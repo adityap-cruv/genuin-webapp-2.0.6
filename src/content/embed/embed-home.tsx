@@ -1,6 +1,6 @@
 export const EmbedHome = [
   {
-    food: {
+    Food: {
       heroSection: {
         title: 'Claim Best Offer on Fast Food & Restaurants',
         caption: 'Our job is to filling your tummy with delicious food and with fast and free delivery.',
@@ -37,6 +37,7 @@ export const EmbedHome = [
           'https://fastly.picsum.photos/id/25/5000/3333.jpg?hmac=yCz9LeSs-i72Ru0YvvpsoECnCTxZjzGde805gWrAHkM',
       },
       getStartedSection: {
+        visibility: true,
         sectionTitle: 'DOWNLOAD APP',
         title: 'Get Started With Us Today!',
         caption: 'Discover food wherever and whenever and get your food delivered quickly.',
@@ -49,7 +50,7 @@ export const EmbedHome = [
       },
     },
 
-    healthcare: {
+    Healthcare: {
       heroSection: {
         title: 'Advancing Healthcare through Tech',
         caption: 'Your trusted partner in healing, wellness, and compassionate healthcare.',
@@ -99,7 +100,7 @@ export const EmbedHome = [
       },
     },
 
-    fintech: {
+    Fintech: {
       heroSection: {
         title: 'Finance with Security And Flexibility',
         caption:

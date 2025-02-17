@@ -1,6 +1,6 @@
 export const EmbedBlog = [
   {
-    food: {
+    Food: {
       blogSection: {
         image: 'https://media.begenuin.com/webapp_assets/embed_pages/food/blogs/blog-img.png',
         blogContent: [
@@ -52,7 +52,7 @@ export const EmbedBlog = [
       },
     },
 
-    healthcare: {
+    Healthcare: {
       blogSection: {
         image: 'https://media.begenuin.com/webapp_assets/embed_pages/healthcare/blogs/blog-img.png',
         blogContent: [
@@ -104,7 +104,7 @@ export const EmbedBlog = [
       },
     },
 
-    fintech: {
+    Fintech: {
       blogSection: {
         image: 'https://media.begenuin.com/webapp_assets/embed_pages/fintech/blogs/blog-img.png',
         blogContent: [

@@ -1,3 +1,4 @@
+'use client'
 import CarouselSection from '@/components/common/embed/carousel-section'
 import EmbedFooter from '@/components/common/embed/embed-footer'
 import EmbedNav from '@/components/common/embed/embed-nav'
@@ -7,9 +8,18 @@ import GetStartedSection from '@/components/common/embed/home/get-started-sectio
 import HeroSection from '@/components/common/embed/home/hero-section'
 import TestimonialSection from '@/components/common/embed/home/testimonial-section'
 import { EmbedHome } from '@/content/embed/embed-home'
+import { useEmbedConfig } from '@/components/embed/embed-config-provider'
+import { getIndustryName } from '@/lib/utils'
+import { useShallow } from 'zustand/react/shallow'
 
-export default async function Page() {
-  const homePageData = EmbedHome.find((item) => item.food)?.food
+export default function Page() {
+  const { config } = useEmbedConfig(
+    useShallow((state) => ({
+      config: state.config,
+    }))
+  )
+  const industryName = getIndustryName(config?.industry_type)
+  const homePageData = (EmbedHome.find((item: any) => item[industryName]) as any)?.[industryName]
 
   return (
     <div className="w-full overflow-scroll px-4 md:px-0">

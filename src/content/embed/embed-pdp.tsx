@@ -1,6 +1,6 @@
 export const EmbedPdp = [
   {
-    food: {
+    Food: {
       pdpSection: {
         title: 'Cheese burger',
         caption:
@@ -34,7 +34,7 @@ export const EmbedPdp = [
       },
     },
 
-    healthcare: {
+    Healthcare: {
       pdpSection: {
         title: 'Jane Cooper',
         caption:
@@ -68,7 +68,7 @@ export const EmbedPdp = [
       },
     },
 
-    fintech: {
+    Fintech: {
       pdpSection: {
         title: 'Premium Plan',
         caption:

@@ -84,3 +84,12 @@ export const INDUSTRY: Record<string, number> = {
   'Media & Entertainment': 6,
   Retail: 7,
 }
+
+export type IndustryName =
+  | 'Food'
+  | 'Healthcare'
+  | 'Automotive'
+  | 'Delivery/E-commerce'
+  | 'Fintech'
+  | 'Media & Entertainment'
+  | 'Retail'

@@ -6,7 +6,7 @@ import { twMerge } from 'tailwind-merge'
 import { useGenuinOptions } from './stores/genuin-options'
 import { AuthenticationModal } from '@components/common/modals/authentication'
 import { type ReactNode } from 'react'
-import { PROTECTED_ROUTES } from './constants'
+import { INDUSTRY, IndustryName, PROTECTED_ROUTES } from './constants'
 import { type CommunityUserRoleType } from './schemas/roles'
 
 export function cn(...inputs: ClassValue[]) {
@@ -419,4 +419,15 @@ export function mapCommunityUserRole(role?: number | null, isRequested?: boolean
 
 export function getYear() {
   return new Date().getFullYear()
+}
+
+export function getIndustryName(industryType: number | undefined): IndustryName {
+  let industryName: IndustryName = (Object.keys(INDUSTRY) as IndustryName[])
+    .find((key) => INDUSTRY[key] === industryType) || 'Food';
+
+  if (!['Food', 'Healthcare', 'Fintech'].includes(industryName)) {
+    industryName = 'Food';
+  }
+
+  return industryName;
 }

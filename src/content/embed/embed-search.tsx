@@ -1,6 +1,6 @@
 export const EmbedSearch = [
   {
-    food: {
+    Food: {
       searchTopSection: {
         searchInputText: 'Enter item or restaurant you are looking for',
         searchResultText: 'Search results for “ Rice Bowls”',
@@ -85,7 +85,7 @@ export const EmbedSearch = [
       },
     },
 
-    healthcare: {
+    Healthcare: {
       searchTopSection: {
         searchInputText: 'Search for doctors, services, or health resources',
         searchResultText: 'Search results for “ Cardiothoracic”',
@@ -233,7 +233,7 @@ export const EmbedSearch = [
       },
     },
 
-    fintech: {
+    Fintech: {
       searchTopSection: {
         searchInputText: 'Enter a financial product or service ',
         searchResultText: 'Search results for “Investment Accounts”',

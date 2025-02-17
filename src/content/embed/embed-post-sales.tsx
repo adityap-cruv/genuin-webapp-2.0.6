@@ -1,6 +1,6 @@
 export const EmbedPostSales = [
   {
-    food: {
+    Food: {
       orderDetailsSection: {
         indexTitle: 'Order Complete!',
         title: 'LunchBox - Meals and Thalis',
@@ -43,7 +43,7 @@ export const EmbedPostSales = [
       },
     },
 
-    healthcare: {
+    Healthcare: {
       orderDetailsSection: {
         indexTitle: 'Appointment booked!',
         title: 'Executive Health Checkup',
@@ -86,7 +86,7 @@ export const EmbedPostSales = [
       },
     },
 
-    fintech: {
+    Fintech: {
       orderDetailsSection: {
         indexTitle: 'Order Complete!',
         title: 'Premium Plan',
