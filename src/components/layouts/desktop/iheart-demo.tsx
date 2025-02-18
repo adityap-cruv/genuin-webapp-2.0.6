@@ -7,17 +7,17 @@ import React, { type ComponentProps, useEffect, useRef, useCallback } from 'reac
 import { useState } from 'react'
 import { useGenuinOptions } from '@/lib/stores/genuin-options'
 
-export function IHeartDemo() {
+export function IHeartDemo({ inModal = false }: { inModal?: boolean }) {
   const { shouldShowIHeartDemo } = useIHeartDemoStates()
 
   if (!shouldShowIHeartDemo) return
 
-  return <AudioPlayer />
+  return <AudioPlayer inModal={inModal} />
 }
 
-type AudioPlayerPropsType = ComponentProps<'audio'>
+type AudioPlayerPropsType = { inModal: boolean } & ComponentProps<'audio'>
 
-function AudioPlayer({ ...restProps }: AudioPlayerPropsType) {
+function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
   const ihrIframeRef = useRef<any>(null)
   const ihrPlayerRef = useRef<any>(null)
   const { audioStateRef, isProgrammatic } = useIHeartDemoStates()
@@ -198,7 +198,7 @@ function AudioPlayer({ ...restProps }: AudioPlayerPropsType) {
               src="https://lottie.host/embed/47b0df3e-5d35-4c1e-859a-778acb4749df/gJ2SwN2VDX.lottie"
               className="absolute right-28 h-8 w-8"></iframe>
           )}
-          {!isPipOpen && !isMobile && (
+          {!isPipOpen && !isMobile && !inModal && (
             <div onClick={handleOpenPipClick} className="cursor-pointer rounded-lg bg-tertiary-200 p-2">
               <PipIcon />
             </div>
