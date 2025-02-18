@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils'
 import { type ComponentProps, useEffect, useRef, useCallback } from 'react'
 import { useState } from 'react'
 import { Loader } from '@/components/ui/loader'
+import { useGenuinOptions } from '@/lib/stores/genuin-options'
 
 export function IHeartDemo() {
   const { shouldShowIHeartDemo } = useIHeartDemoStates()
@@ -19,13 +20,12 @@ type AudioPlayerPropsType = ComponentProps<'audio'>
 function AudioPlayer({ ...restProps }: AudioPlayerPropsType) {
   const ihrIframeRef = useRef<any>(null)
   const ihrPlayerRef = useRef<any>(null)
-  const { audioStateRef } = useIHeartDemoStates()
+  const { audioStateRef, isProgrammatic } = useIHeartDemoStates()
+  const isMobile = useGenuinOptions().isMobile
   const { muted, toggleMuted, setShouldPlay } = usePlayerControlStore()
   const [shouldPlay] = useState(audioStateRef.current.shouldPlay)
   const { shouldPlay: playerShouldPlay } = usePlayerControlStore()
   const [isReady, setIsReady] = useState(false)
-  const isProgrammatic = useRef({ play: false, pause: false })
-  const [isPlaying, setIsPlaying] = useState(false)
 
   const play = useCallback(() => {
     if (!isReady) return
@@ -35,7 +35,6 @@ function AudioPlayer({ ...restProps }: AudioPlayerPropsType) {
     isProgrammatic.current.play = true
     isProgrammatic.current.pause = false
     audioElement.play()
-    setIsPlaying(true)
   }, [muted, isReady])
 
   const pause = useCallback(() => {
@@ -46,7 +45,6 @@ function AudioPlayer({ ...restProps }: AudioPlayerPropsType) {
     isProgrammatic.current.play = false
     isProgrammatic.current.pause = true
     audioElement.pause()
-    setIsPlaying(false)
   }, [isReady])
 
   useEffect(() => {
@@ -139,10 +137,12 @@ function AudioPlayer({ ...restProps }: AudioPlayerPropsType) {
         id={'playerjs-container'}
         className={cn(
           'animated-border relative m-auto flex w-full items-center justify-between overflow-clip 2xl:container 2xl:px-0',
-          { 'border-b-4': isPlaying }
-        )}>
+          { 'border-b-4': isProgrammatic.current.play && !isMobile },
+          { 'border-4 ': isProgrammatic.current.play && isMobile }
+        )}
+        style={{ height: '75px' }}>
         {!isReady && (
-          <div className="text-black pointer-events-none absolute z-10 flex w-full items-center justify-center bg-background">
+          <div className="text-black pointer-events-none absolute z-10 flex h-full w-full items-center justify-center bg-background">
             <Loader size="lg" />
           </div>
         )}
@@ -157,7 +157,7 @@ function AudioPlayer({ ...restProps }: AudioPlayerPropsType) {
           className="relative z-0"
         />
 
-        {isPlaying && (
+        {isProgrammatic.current.play && !isMobile && (
           <iframe
             src="https://lottie.host/embed/47b0df3e-5d35-4c1e-859a-778acb4749df/gJ2SwN2VDX.lottie"
             className="absolute right-16 h-8 w-8"></iframe>
