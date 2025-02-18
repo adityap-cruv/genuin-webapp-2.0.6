@@ -174,11 +174,6 @@ function AudioPlayer({ ...restProps }: AudioPlayerPropsType) {
           'relative m-auto flex w-full items-center justify-between gap-2 overflow-clip border-new-off-black/40 2xl:container 2xl:px-0'
         )}
         style={{ height: '75px' }}>
-        {/* {!isReady && (
-          <div className="text-black pointer-events-none absolute z-10 flex h-full w-full items-center justify-center bg-background">
-            <Loader size="lg" />
-          </div>
-        )} */}
         <section
           id="playerjs-container"
           className={cn(
