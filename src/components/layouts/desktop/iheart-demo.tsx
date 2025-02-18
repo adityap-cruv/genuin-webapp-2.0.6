@@ -25,6 +25,7 @@ function AudioPlayer({ ...restProps }: AudioPlayerPropsType) {
   const { shouldPlay: playerShouldPlay } = usePlayerControlStore()
   const [isReady, setIsReady] = useState(false)
   const isProgrammatic = useRef({ play: false, pause: false })
+  const [isPlaying, setIsPlaying] = useState(false)
 
   const play = useCallback(() => {
     if (!isReady) return
@@ -34,6 +35,7 @@ function AudioPlayer({ ...restProps }: AudioPlayerPropsType) {
     isProgrammatic.current.play = true
     isProgrammatic.current.pause = false
     audioElement.play()
+    setIsPlaying(true)
   }, [muted, isReady])
 
   const pause = useCallback(() => {
@@ -44,6 +46,7 @@ function AudioPlayer({ ...restProps }: AudioPlayerPropsType) {
     isProgrammatic.current.play = false
     isProgrammatic.current.pause = true
     audioElement.pause()
+    setIsPlaying(false)
   }, [isReady])
 
   useEffect(() => {
@@ -135,11 +138,11 @@ function AudioPlayer({ ...restProps }: AudioPlayerPropsType) {
       <section
         id={'playerjs-container'}
         className={cn(
-          'relative m-auto flex w-full items-center justify-between overflow-clip border-new-off-black/40 2xl:container 2xl:px-0'
-        )}
-        style={{ height: '80px' }}>
+          'animated-border relative m-auto flex w-full items-center justify-between overflow-clip 2xl:container 2xl:px-0',
+          { 'border-b-4': isPlaying }
+        )}>
         {!isReady && (
-          <div className="text-black pointer-events-none absolute z-10 flex h-full w-full items-center justify-center bg-background">
+          <div className="text-black pointer-events-none absolute z-10 flex w-full items-center justify-center bg-background">
             <Loader size="lg" />
           </div>
         )}
@@ -153,6 +156,12 @@ function AudioPlayer({ ...restProps }: AudioPlayerPropsType) {
           // sandbox="allow-scripts allow-same-origin"
           className="relative z-0"
         />
+
+        {isPlaying && (
+          <iframe
+            src="https://lottie.host/embed/47b0df3e-5d35-4c1e-859a-778acb4749df/gJ2SwN2VDX.lottie"
+            className="absolute right-16 h-8 w-8"></iframe>
+        )}
       </section>
     </>
   )
