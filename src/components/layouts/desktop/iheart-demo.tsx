@@ -2,9 +2,9 @@
 import { usePlayerControlStore } from '@/components/common/player/player-control-store'
 import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
 import { cn } from '@/lib/utils'
-import { type ComponentProps, useEffect, useRef, useCallback } from 'react'
+import { PipIcon } from '@icons/pip-icon'
+import React, { type ComponentProps, useEffect, useRef, useCallback } from 'react'
 import { useState } from 'react'
-import { Loader } from '@/components/ui/loader'
 
 export function IHeartDemo() {
   const { shouldShowIHeartDemo } = useIHeartDemoStates()
@@ -25,7 +25,7 @@ function AudioPlayer({ ...restProps }: AudioPlayerPropsType) {
   const { shouldPlay: playerShouldPlay } = usePlayerControlStore()
   const [isReady, setIsReady] = useState(false)
   const isProgrammatic = useRef({ play: false, pause: false })
-  const [isPlaying, setIsPlaying] = useState(false)
+  const [isPipOpen, setIsPipOpen] = useState(false)
 
   const play = useCallback(() => {
     if (!isReady) return
@@ -35,7 +35,6 @@ function AudioPlayer({ ...restProps }: AudioPlayerPropsType) {
     isProgrammatic.current.play = true
     isProgrammatic.current.pause = false
     audioElement.play()
-    setIsPlaying(true)
   }, [muted, isReady])
 
   const pause = useCallback(() => {
@@ -46,7 +45,6 @@ function AudioPlayer({ ...restProps }: AudioPlayerPropsType) {
     isProgrammatic.current.play = false
     isProgrammatic.current.pause = true
     audioElement.pause()
-    setIsPlaying(false)
   }, [isReady])
 
   useEffect(() => {
@@ -98,6 +96,40 @@ function AudioPlayer({ ...restProps }: AudioPlayerPropsType) {
     }
   }, [])
 
+  const handleOpenPipClick = useCallback(async () => {
+    if ('documentPictureInPicture' in window) {
+      const container = document.getElementById('playerjs-upper-container')
+      const player = document.getElementById('playerjs-container')
+      // const element = document.getElementById('playerjs-iframe')
+      if (!container || !player) return
+
+      // Open a Picture-in-Picture window.
+      const pipWindow = await (window as any).documentPictureInPicture.requestWindow({
+        height: 428,
+        width: 354,
+      })
+      setIsPipOpen(true)
+      // console.log('pipWindow', pipWindow)
+      player.style.height = '428px'
+      player.style.width = '350px'
+      player.style.boxSizing = 'border-box'
+      pipWindow.document.body.style.margin = '0px'
+      pipWindow.document.body.style.overflow = 'clip'
+      // pipWindow.style.padding = '0px'
+      // Move the player to the Picture-in-Picture window.
+      pipWindow.document.body.append(player)
+
+      // Move the player back when the Picture-in-Picture window closes.
+      pipWindow.addEventListener('pagehide', (event: any) => {
+        const pipContainer = event.target.querySelector('#playerjs-container')
+        pipContainer.style.height = '75px'
+        pipContainer.style.width = '100%'
+        setIsPipOpen(false)
+        container.append(pipContainer)
+      })
+    }
+  }, [])
+
   function iframeClick() {
     if (ihrPlayerRef.current) return
     console.log('Iframe loaded.')
@@ -135,34 +167,41 @@ function AudioPlayer({ ...restProps }: AudioPlayerPropsType) {
 
   return (
     <>
-      <section
-        id={'playerjs-container'}
+      <script src="https://cdn.embed.ly/player-0.1.0.min.js"></script>
+      <div
+        id="playerjs-upper-container"
         className={cn(
-          'animated-border relative m-auto flex w-full items-center justify-between overflow-clip 2xl:container 2xl:px-0',
-          { 'border-b-4': isPlaying }
-        )}>
-        {!isReady && (
-          <div className="text-black pointer-events-none absolute z-10 flex w-full items-center justify-center bg-background">
+          'relative m-auto flex w-full items-center justify-between gap-2 overflow-clip border-new-off-black/40 2xl:container 2xl:px-0'
+        )}
+        style={{ height: '75px' }}>
+        {/* {!isReady && (
+          <div className="text-black pointer-events-none absolute z-10 flex h-full w-full items-center justify-center bg-background">
             <Loader size="lg" />
           </div>
-        )}
-        <iframe
-          src="https://www.iheart.com/live/z100-1469/?embed=true&pname=begeniun&autoplay=1"
-          height="100%"
-          width="100%"
-          id="playerjs-iframe"
-          ref={ihrIframeRef}
-          allow="autoplay"
-          // sandbox="allow-scripts allow-same-origin"
-          className="relative z-0"
-        />
-
-        {isPlaying && (
+        )} */}
+        <section
+          id="playerjs-container"
+          className={cn(
+            'relative m-auto flex w-full items-center justify-between overflow-clip border-new-off-black/40 2xl:container 2xl:px-0'
+          )}
+          style={{ height: '80px' }}>
           <iframe
-            src="https://lottie.host/embed/47b0df3e-5d35-4c1e-859a-778acb4749df/gJ2SwN2VDX.lottie"
-            className="absolute right-16 h-8 w-8"></iframe>
+            src="https://www.iheart.com/live/z100-1469/?embed=true&pname=begeniun&autoplay=1"
+            height="100%"
+            width="100%"
+            id="playerjs-iframe"
+            ref={ihrIframeRef}
+            allow="autoplay"
+            // sandbox="allow-scripts allow-same-origin"
+            className="relative z-0"
+          />
+        </section>
+        {!isPipOpen && (
+          <div onClick={handleOpenPipClick} className="cursor-pointer rounded-lg bg-tertiary-200 p-2">
+            <PipIcon />
+          </div>
         )}
-      </section>
+      </div>
     </>
   )
 }

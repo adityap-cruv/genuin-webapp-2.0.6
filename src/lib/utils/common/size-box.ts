@@ -49,8 +49,9 @@ export function getSizeBoxes(isMobile: boolean, showNavbar: boolean, showIHeartD
  * @returns
  */
 function getSizeDesktop(considerNavbar: boolean, iHeartDemo: boolean): VideoSizeBoxType {
-  let windowHeight = considerNavbar ? window.innerHeight - HEIGHT_OF_HEADER : window.innerHeight
-  windowHeight = iHeartDemo ? windowHeight - 80 : windowHeight
+  const windowHeight = considerNavbar ? window.innerHeight - HEIGHT_OF_HEADER : window.innerHeight
+  // ignoring iHeartDemo as it is  moved to navbar.
+  // windowHeight = iHeartDemo ? windowHeight - 80 : windowHeight
   const windowWidth = window.innerWidth
   let videoWidth = (windowHeight * 9) / 16
 
