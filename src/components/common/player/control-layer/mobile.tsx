@@ -19,6 +19,7 @@ import { PauseIcon } from '@icons/player-controls/pause-icon'
 import { GroupIcon } from '@icons/group-icon'
 import { motion } from 'framer-motion'
 import BrandBadgeIcon from '@components/common/brand-badge-icon'
+import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
 
 type MobileProps = {
   isActive: boolean
@@ -65,6 +66,7 @@ export const Mobile = memo(function Mobile({ clickableUrl, ...props }: MobilePro
       toggleButtonVisibility: state.toggleButtonVisibility,
     }))
   )
+  const { isProgrammatic } = useIHeartDemoStates()
 
   const handleScreenClick = useCallback(
     (e: any) => {
@@ -140,6 +142,12 @@ export const Mobile = memo(function Mobile({ clickableUrl, ...props }: MobilePro
           </span>
         </div>
       </div>
+
+      {isProgrammatic.current.play && (
+        <iframe
+          src="https://lottie.host/embed/47b0df3e-5d35-4c1e-859a-778acb4749df/gJ2SwN2VDX.lottie"
+          className="absolute right-4 top-20 z-10 h-8 w-8"></iframe>
+      )}
 
       <span className="absolute right-2 top-20 z-20 h-fit w-fit cursor-pointer">
         <WalletAmountBadge type="light" />

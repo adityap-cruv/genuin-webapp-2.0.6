@@ -15,6 +15,7 @@ import { useGestureOverlay } from '@/hooks/use-gesture-overlay'
 import { useShallow } from 'zustand/react/shallow'
 import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
 import { IHeartDemo } from '../../layouts/desktop/iheart-demo'
+import { cn } from '@/lib/utils'
 
 type MobileProps = {
   videos?: VideoPlayerModalType[] | null
@@ -77,7 +78,7 @@ function SwiperRenderer({ videoSizeBox }: { videoSizeBox: VideoSizeBoxType }) {
   const { gestureOverlays, setGestureOverlay } = useGestureOverlay(currentIndex)
   // # If comment sheet is open than element should not be scrolled..
   const commentIsOpen = useCommentSheetStore((state) => state.modalIsOpen)
-  const { renderIn, shouldShowIHeartDemo } = useIHeartDemoStates()
+  const { renderIn, shouldShowIHeartDemo, isProgrammatic } = useIHeartDemoStates()
   const showIHeartDemo = renderIn === 'root' && shouldShowIHeartDemo
   const { muted } = usePlayerControlStore(
     useShallow((state) => ({
@@ -97,7 +98,11 @@ function SwiperRenderer({ videoSizeBox }: { videoSizeBox: VideoSizeBoxType }) {
   )
   return (
     <>
-      <div style={{ ...videoSizeBox }} className="relative overflow-clip">
+      <div
+        style={{ ...videoSizeBox }}
+        className={cn('animated-border relative overflow-clip', {
+          'border-4': isProgrammatic.current.pause,
+        })}>
         <Swiper
           // PLAY_PAUSE gesture will end when the user takes action;
           onClick={() => {

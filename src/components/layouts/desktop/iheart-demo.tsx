@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils'
 import { PipIcon } from '@icons/pip-icon'
 import React, { type ComponentProps, useEffect, useRef, useCallback } from 'react'
 import { useState } from 'react'
+import { useGenuinOptions } from '@/lib/stores/genuin-options'
 
 export function IHeartDemo() {
   const { shouldShowIHeartDemo } = useIHeartDemoStates()
@@ -19,12 +20,12 @@ type AudioPlayerPropsType = ComponentProps<'audio'>
 function AudioPlayer({ ...restProps }: AudioPlayerPropsType) {
   const ihrIframeRef = useRef<any>(null)
   const ihrPlayerRef = useRef<any>(null)
-  const { audioStateRef } = useIHeartDemoStates()
+  const { audioStateRef, isProgrammatic } = useIHeartDemoStates()
+  const isMobile = useGenuinOptions().isMobile
   const { muted, toggleMuted, setShouldPlay } = usePlayerControlStore()
   const [shouldPlay] = useState(audioStateRef.current.shouldPlay)
   const { shouldPlay: playerShouldPlay } = usePlayerControlStore()
   const [isReady, setIsReady] = useState(false)
-  const isProgrammatic = useRef({ play: false, pause: false })
   const [isPipOpen, setIsPipOpen] = useState(false)
 
   const play = useCallback(() => {
@@ -170,16 +171,18 @@ function AudioPlayer({ ...restProps }: AudioPlayerPropsType) {
       <script src="https://cdn.embed.ly/player-0.1.0.min.js"></script>
       <div
         id="playerjs-upper-container"
+        style={{ height: 75 }}
         className={cn(
-          'relative m-auto flex w-full items-center justify-between gap-2 overflow-clip border-new-off-black/40 2xl:container 2xl:px-0'
-        )}
-        style={{ height: '75px' }}>
+          'animated-border relative m-auto flex w-full items-center justify-between overflow-clip 2xl:container 2xl:px-0',
+          { 'border-b-4': isProgrammatic.current.play && !isMobile && !isPipOpen },
+          { 'border-4 ': isProgrammatic.current.play && isMobile }
+        )}>
         <section
           id="playerjs-container"
           className={cn(
-            'relative m-auto flex w-full items-center justify-between overflow-clip border-new-off-black/40 2xl:container 2xl:px-0'
+            'relative m-auto flex w-full items-center justify-between gap-2 overflow-clip border-new-off-black/40 2xl:container 2xl:px-0'
           )}
-          style={{ height: '80px' }}>
+          style={{ height: '75px' }}>
           <iframe
             src="https://www.iheart.com/live/z100-1469/?embed=true&pname=begeniun&autoplay=1"
             height="100%"
@@ -190,12 +193,17 @@ function AudioPlayer({ ...restProps }: AudioPlayerPropsType) {
             // sandbox="allow-scripts allow-same-origin"
             className="relative z-0"
           />
+          {isProgrammatic.current.play && !isMobile && (
+            <iframe
+              src="https://lottie.host/embed/47b0df3e-5d35-4c1e-859a-778acb4749df/gJ2SwN2VDX.lottie"
+              className="absolute right-28 h-8 w-8"></iframe>
+          )}
+          {!isPipOpen && !isMobile && (
+            <div onClick={handleOpenPipClick} className="cursor-pointer rounded-lg bg-tertiary-200 p-2">
+              <PipIcon />
+            </div>
+          )}
         </section>
-        {!isPipOpen && (
-          <div onClick={handleOpenPipClick} className="cursor-pointer rounded-lg bg-tertiary-200 p-2">
-            <PipIcon />
-          </div>
-        )}
       </div>
     </>
   )
