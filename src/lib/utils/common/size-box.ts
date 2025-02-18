@@ -25,7 +25,10 @@ export function getSizeBoxes(isMobile: boolean, showNavbar: boolean, showIHeartD
   }
 
   if (isMobile) {
-    const windowHeight = window.innerHeight
+    let windowHeight = window.innerHeight
+    if (showIHeartDemo) {
+      windowHeight -= 80
+    }
     const windowWidth = window.innerWidth
     sizes = {
       default: { height: windowHeight, width: windowWidth },

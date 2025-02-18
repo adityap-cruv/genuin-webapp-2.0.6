@@ -66,11 +66,32 @@ function AudioPlayer({ ...restProps }: AudioPlayerPropsType) {
     }
   }, [shouldPlay, muted])
 
+  // useEffect(() => {
+  //   console.log('DOM is fully loaded.')
+  //   if (ihrPlayerRef.current) return
+  //   if (ihrIframeRef.current) {
+  //     iframeClick()
+  //   }
+  // }, [])
+
   useEffect(() => {
     console.log('DOM is fully loaded.')
     if (ihrPlayerRef.current) return
-    if (ihrIframeRef.current) {
-      iframeClick()
+    const script = document.createElement('script')
+    script.src = 'https://cdn.embed.ly/player-0.1.0.min.js'
+    script.onload = () => {
+      console.log('Script loaded successfully.')
+      if (ihrIframeRef.current) {
+        iframeClick()
+      }
+    }
+    script.onerror = () => {
+      console.error('Failed to load the script.')
+    }
+    document.body.appendChild(script)
+
+    return () => {
+      document.body.removeChild(script)
     }
   }, [])
 
@@ -111,7 +132,6 @@ function AudioPlayer({ ...restProps }: AudioPlayerPropsType) {
 
   return (
     <>
-      <script src="https://cdn.embed.ly/player-0.1.0.min.js"></script>
       <section
         id={'playerjs-container'}
         className={cn(
