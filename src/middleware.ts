@@ -97,6 +97,13 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  if (request.nextUrl.pathname.startsWith('/dlk/') && host) {
+    const shortId = request.nextUrl.pathname.split('/dlk/')[1]
+    if (shortId) {
+      return NextResponse.rewrite(new URL('/dlk', request.url))
+    }
+  }
+
   const STATIC_PATHNAMES = ['/', '/manage', '/market', '/pricing', '/privacy', '/terms', '/discover']
   const parsedUA = userAgent(request)
   const deviceType = parsedUA.device.type
@@ -112,8 +119,8 @@ export async function middleware(request: NextRequest) {
   if (browserType) request.cookies.set('browser_type', browserType)
 
   if (host) {
-    const config = getConfig(host)
-    // const config = getConfig('ankpal.qa.begenuin.com')
+    // const config = getConfig(host)
+    const config = getConfig('coldplay.qa.begenuin.com')
     if (config) request.cookies.set('config_params', JSON.stringify(config))
     const urlObj = new URL(request.url)
     // eslint-disable-next-line no-prototype-builtins
