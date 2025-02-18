@@ -139,7 +139,7 @@ function Content({ unreadMessageCount, isInModal, close }: ContentPropsType) {
         </div>
         {shouldShowIHeartDemo && renderIn === 'modal' && (
           <div id="iframe-modal" style={{ height: '70px' }}>
-            <IHeartDemo />
+            <IHeartDemo inModal />
           </div>
         )}
       </div>
