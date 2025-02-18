@@ -101,7 +101,7 @@ function SwiperRenderer({ videoSizeBox }: { videoSizeBox: VideoSizeBoxType }) {
       <div
         style={{ ...videoSizeBox }}
         className={cn('animated-border relative overflow-clip', {
-          'border-4': isProgrammatic.current.pause,
+          'border-4': !isProgrammatic.current.play,
         })}>
         <Swiper
           // PLAY_PAUSE gesture will end when the user takes action;
