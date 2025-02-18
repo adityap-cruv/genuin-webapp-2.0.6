@@ -34,9 +34,9 @@ export function openModal({
   subtitle?: string | ReactNode
   deepLink?: string
 }) {
-  const { webCTA, isMobile } = useGenuinOptions.getState()
+  const { webCTA, isMobile, user } = useGenuinOptions.getState()
 
-  if (webCTA !== 'app') {
+  if (webCTA !== 'app' && !user) {
     AuthenticationModal.open()
   } else {
     if (!isMobile) {
