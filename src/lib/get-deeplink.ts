@@ -1,5 +1,6 @@
 import { generateDeepLink, getLoopAndCommunityShareString } from './utils'
 import { PATH_NAME } from './utils/constants/path'
+import { axiosInstance } from '@/lib/api/instance'
 
 type GenerateDeepLinkOptions = {
   action?: string
@@ -166,4 +167,20 @@ export async function videoDeepLink(videoSlug: string, shareUrl: string): Promis
     title: `spark ${videoSlug} comment`,
     searchParams: new URLSearchParams(window.location.search),
   })
+}
+
+interface DeepLinkData {
+  link: string
+  path: string
+  query_params: Record<string, string>
+}
+
+export const resolveDeepLink = async (linkIdentifier: string): Promise<DeepLinkData | null> => {
+  try {
+    const res = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/goservices/links/${linkIdentifier}`)
+    return res?.data?.data || null
+  } catch (error) {
+    console.error('Error resolving deep link:', error)
+    return null
+  }
 }
