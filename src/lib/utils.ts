@@ -239,7 +239,8 @@ export const generateDeepLink = async ({
       `${process.env.NEXT_PUBLIC_API_URL}/goservices/links/dynamic_link`,
       finalPayload
     )
-    return res?.data?.data?.shortLink
+    const shortLink = res?.data?.data?.shortLink
+    return shortLink
   } catch (e) {
     return process.env.NEXT_PUBLIC_HOST_URL
   }
