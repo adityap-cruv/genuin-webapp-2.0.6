@@ -191,9 +191,9 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
         id="playerjs-upper-container"
         style={{ height: 75 }}
         className={cn(
-          'animated-border relative m-auto flex w-full items-center justify-between overflow-clip 2xl:container 2xl:px-0',
+          'animated-border relative m-auto flex w-full items-center justify-between overflow-clip transition-all ease-in-out 2xl:container 2xl:px-0',
           { 'border-b-4': isIHeartPlaying && !isMobile && !isPipOpen },
-          { 'border-4 ': showBorder && isMobile }
+          { 'border-4': showBorder && isMobile }
         )}>
         <section
           id="playerjs-container"
@@ -211,7 +211,7 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
             // sandbox="allow-scripts allow-same-origin"
             className="relative z-0"
           />
-          {showBorder && (
+          {isIHeartPlaying && !isPipOpen && (
             <iframe
               src="https://lottie.host/embed/47b0df3e-5d35-4c1e-859a-778acb4749df/gJ2SwN2VDX.lottie"
               className={`absolute  ${isMobile ? 'right-2.5 h-6 w-6' : 'right-28 h-8 w-8'}`}></iframe>

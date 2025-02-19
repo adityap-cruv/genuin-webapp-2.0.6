@@ -7,6 +7,7 @@ import { RECENT_SEARCH_CONTENT_TYPE } from '@lib/constants'
 import { SheetClose } from '@components/ui/sheet'
 import { SearchIcon } from '@icons/search-icon'
 import Analytics from '@services/analytics'
+import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
 
 export const SearchInput = {
   desktop: Desktop,
@@ -15,6 +16,8 @@ export const SearchInput = {
 
 function Desktop() {
   const { updateFocus, setKeyword } = useSearchBarStore()
+  const { renderIn, shouldShowIHeartDemo } = useIHeartDemoStates()
+  const showIHeartDemo = renderIn === 'root' && shouldShowIHeartDemo
 
   const debounced = useDebouncedCallback((value) => {
     if (value.trim() !== '') {
@@ -28,7 +31,7 @@ function Desktop() {
   }, 500)
 
   return (
-    <div className="relative min-w-[100px] md:w-64 lg:w-72 xl:w-96">
+    <div className={`relative min-w-[100px] ${showIHeartDemo ? 'w-60' : 'md:w-64 lg:w-72 xl:w-96'}`}>
       <Input
         onFocus={() => {
           updateFocus(true, false)

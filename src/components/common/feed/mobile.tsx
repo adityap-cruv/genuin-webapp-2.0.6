@@ -112,7 +112,7 @@ function SwiperRenderer({ videoSizeBox }: { videoSizeBox: VideoSizeBoxType }) {
     <>
       <div
         style={{ ...videoSizeBox }}
-        className={cn('animated-border relative overflow-clip', {
+        className={cn('animated-border relative overflow-clip transition-all ease-in-out', {
           'border-4': showBorder,
         })}>
         <Swiper
