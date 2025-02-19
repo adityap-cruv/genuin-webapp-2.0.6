@@ -4,6 +4,9 @@ import { usePlayerControlStore } from '../common/player/player-control-store'
 import { type VideoPlayerModalType } from '@/lib/schemas/player/video'
 import { showInterruption } from '@/components/providers/interruption-provider'
 import { type CommunityUserRoleType } from '@/lib/schemas/roles'
+import { updateIHeartAudio } from '../layouts/desktop/iheart-demo'
+import { PATH_NAME } from '@/lib/utils/constants/path'
+import { useIHeartDemoStates } from './iheart-demo-provider'
 
 type FeedContextType = {
   currentIndex: number
@@ -42,6 +45,7 @@ export function FeedContextProvider({
   hasNextPage,
   onCommunityJoin,
 }: FeedContextProviderType) {
+  const { shouldShowIHeartDemo } = useIHeartDemoStates()
   const [currentIndex, setCurrentIndex] = useState(startIndex)
   const [allowSlideNext, setAllowSlideNext] = useState(true)
   const [feedVideos, setFeedVideos] = useState<VideoPlayerModalType[]>(videos)
@@ -57,7 +61,6 @@ export function FeedContextProvider({
       const { duration, currentTime } = usePlayerControlStore.getState()
       const playerProgress = Math.round((currentTime / duration) * 100)
       const videoId = videos[currentIndex].video.id
-
       setCurrentIndex((currentIndex) => {
         const eventName = newIndex < currentIndex ? 'Swipe Down' : 'Swipe Up'
         const properties = {
@@ -115,6 +118,9 @@ export function FeedContextProvider({
   useEffect(() => {
     if (!videos || videos.length === 0) return
 
+    // update IHeart audio for the community.
+    shouldShowIHeartDemo && updateIHeartAudio(PATH_NAME.community(videos[currentIndex].community.slug))
+
     if (!isFetchingNextPage && currentIndex === videos.length - 3 && hasNextPage) {
       fetchNextPage?.()
     }
@@ -127,7 +133,7 @@ export function FeedContextProvider({
     } else if (!allowSlideNext) {
       setAllowSlideNext(true)
     }
-  }, [currentIndex, videos, hasNextPage])
+  }, [currentIndex, videos, hasNextPage, shouldShowIHeartDemo])
 
   const updateCommunityJoinStatus = useCallback((communityId: string, role: CommunityUserRoleType) => {
     setFeedVideos((prev) =>
