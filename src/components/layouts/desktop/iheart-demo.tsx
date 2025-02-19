@@ -33,9 +33,11 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
     if (isIHeartPlaying) {
       setShowBorder(true)
 
-      setTimeout(() => {
-        setShowBorder(false)
-      }, 3000)
+      if (isMobile) {
+        setTimeout(() => {
+          setShowBorder(false)
+        }, 3000)
+      }
     } else {
       setShowBorder(false)
     }
