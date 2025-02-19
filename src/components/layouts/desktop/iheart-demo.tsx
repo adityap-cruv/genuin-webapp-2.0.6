@@ -22,12 +22,24 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
   const ihrPlayerRef = useRef<any>(null)
   const { audioStateRef, isIHeartPlaying, setIsIHeartPlaying } = useIHeartDemoStates()
   const isMobile = useGenuinOptions().isMobile
-  const { muted, toggleMuted, setShouldPlay } = usePlayerControlStore()
   const [shouldPlay] = useState(audioStateRef.current.shouldPlay)
-  const { shouldPlay: playerShouldPlay } = usePlayerControlStore()
+  const { muted, toggleMuted, setShouldPlay, shouldPlay: playerShouldPlay } = usePlayerControlStore()
   const isProgrammatic = useRef<{ play: boolean; pause: boolean }>({ play: false, pause: false })
   const [isReady, setIsReady] = useState(false)
   const [isPipOpen, setIsPipOpen] = useState(false)
+
+  const [showBorder, setShowBorder] = useState(false)
+  useEffect(() => {
+    if (!isIHeartPlaying) {
+      setShowBorder(true)
+
+      setTimeout(() => {
+        setShowBorder(false)
+      }, 3000)
+    } else {
+      setShowBorder(false)
+    }
+  }, [isIHeartPlaying])
 
   const play = useCallback(() => {
     if (!isReady) return
@@ -148,7 +160,8 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
       console.log('Player is ready!') // Log a message to the console
       ihrPlayerRef.current.ready(e)
       setIsReady(true)
-      // Listen for other player events (optional, for debugging)
+      // setShouldPlay(false) // Stop the usePlayerControlStore video
+
       ihrPlayerRef.current.on('play', function () {
         console.log('Player is playing.')
         isProgrammatic.current.play = false
@@ -180,7 +193,7 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
         className={cn(
           'animated-border relative m-auto flex w-full items-center justify-between overflow-clip 2xl:container 2xl:px-0',
           { 'border-b-4': isIHeartPlaying && !isMobile && !isPipOpen },
-          { 'border-4 ': isIHeartPlaying && isMobile }
+          { 'border-4 ': showBorder && isMobile }
         )}>
         <section
           id="playerjs-container"
