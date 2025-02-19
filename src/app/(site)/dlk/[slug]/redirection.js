@@ -11,8 +11,9 @@ const smartAppRedirect = ({ appStoreUrl, playStoreUrl, fallbackUrl = null, timeo
 
   // Get user agent
   const userAgent = navigator.userAgent.toLowerCase()
-  const isIOS = /ipad|iphone|ipod/.test(userAgent) && !window.MSStream
-  const isAndroid = /android/.test(userAgent)
+  const isIOS = userAgent.includes('ipad') || userAgent.includes('iphone') || userAgent.includes('ipod') && !window.MSStream
+  const isAndroid = userAgent.includes('android')
+  const isSafari = userAgent.includes('safari') && !userAgent.includes('chrome')
 
   console.log('📱 Device detection:', { isIOS, isAndroid })
 
@@ -27,6 +28,28 @@ const smartAppRedirect = ({ appStoreUrl, playStoreUrl, fallbackUrl = null, timeo
     }
   }
 
+  // Handle redirect with Safari check
+  const performRedirect = (url) => {
+    if (isIOS && isSafari) {
+      // For iOS Safari: Create and click a temporary link
+      const link = document.createElement('a')
+      link.setAttribute('href', url)
+      link.style.display = 'none'
+      document.body.appendChild(link)
+      setTimeout(() => {
+        link.click()
+      }, 500)
+
+      // Clean up after a short delay
+      setTimeout(() => {
+        document.body.removeChild(link)
+      }, 300)
+    } else {
+      // For all other browsers
+      window.location.href = url
+    }
+  }
+
   // If not mobile, redirect to fallback once
   if (!isIOS && !isAndroid) {
     const targetUrl = fallbackUrl || appStoreUrl
@@ -37,10 +60,8 @@ const smartAppRedirect = ({ appStoreUrl, playStoreUrl, fallbackUrl = null, timeo
 
   // For iOS, redirect to App Store once
   if (isIOS) {
-    alert("ios detected")
-    alert(appStoreUrl)
     console.log('🍎 iOS detected, redirecting to:', appStoreUrl)
-    redirect(appStoreUrl)
+    performRedirect(appStoreUrl)
     return
   }
 
@@ -57,7 +78,7 @@ const smartAppRedirect = ({ appStoreUrl, playStoreUrl, fallbackUrl = null, timeo
       return
     }
 
-    const isChrome = /chrome/.test(userAgent)
+    const isChrome = userAgent.includes('chrome')
     let appOpened = false
 
     // Set up timeout for store redirect
