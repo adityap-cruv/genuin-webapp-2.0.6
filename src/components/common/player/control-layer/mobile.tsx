@@ -144,9 +144,14 @@ export const Mobile = memo(function Mobile({ clickableUrl, ...props }: MobilePro
       </div>
 
       {!isIHeartPlaying && (
-        <iframe
-          src="https://lottie.host/embed/47b0df3e-5d35-4c1e-859a-778acb4749df/gJ2SwN2VDX.lottie"
-          className="absolute right-4 top-20 z-10 h-12 w-12"></iframe>
+        // <iframe
+        //   src="https://lottie.host/embed/47b0df3e-5d35-4c1e-859a-778acb4749df/gJ2SwN2VDX.lottie"
+        //   className="absolute right-4 top-20 z-10 h-12 w-12"></iframe>
+        <img
+          src="https://media.begenuin.com/iheart_demo/equalizer.gif"
+          alt="gif"
+          className="absolute right-4 top-20 z-10 h-12 w-12"
+        />
       )}
 
       <span className="absolute right-2 top-20 z-20 h-fit w-fit cursor-pointer">

@@ -279,10 +279,17 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
             // sandbox="allow-scripts allow-same-origin"
             className="relative z-0"
           />
-          {isIHeartPlaying && !isPipOpen && (
+          {/* {isIHeartPlaying && !isPipOpen && (
             <iframe
               src="https://lottie.host/embed/47b0df3e-5d35-4c1e-859a-778acb4749df/gJ2SwN2VDX.lottie"
               className={`absolute  ${isMobile ? 'right-2.5 h-6 w-6' : 'right-28 h-8 w-8'}`}></iframe>
+          )} */}
+          {isIHeartPlaying && !isPipOpen && (
+            <img
+              src="https://media.begenuin.com/iheart_demo/equalizer.gif"
+              alt="gif"
+              className={`absolute  ${isMobile ? 'right-2.5 h-6 w-6' : 'right-28 h-8 w-8'}`}
+            />
           )}
           {!isPipOpen && !isMobile && !inModal && (
             <div onClick={handleOpenPipClick} className="cursor-pointer rounded-lg bg-tertiary-200 p-2">
