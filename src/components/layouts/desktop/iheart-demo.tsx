@@ -101,6 +101,18 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
   }, [pathName])
 
   useEffect(() => {
+    // iframe element
+    const iframe = ihrIframeRef.current
+    if (!iframe) return
+    // find communityIndex for which path is equal to pathName
+    const communityIndex = communityPaths.findIndex((path) => path === pathName)
+    // if communityIndex is found, set the src of iframe to audioUrls[communityIndex]
+    if (communityIndex !== -1) {
+      iframe.src = audioUrls[communityIndex]
+    }
+  }, [pathName])
+
+  useEffect(() => {
     if (isIHeartPlaying) {
       setShowBorder(true)
 
@@ -234,7 +246,7 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
         console.log('Player is playing.')
         isProgrammatic.current.play = false
         isProgrammatic.current.pause = false
-        setShouldPlay(false)
+        setShouldPlay(!!muted)
         setIsIHeartPlaying(true)
       })
 
@@ -254,14 +266,13 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
 
   return (
     <>
-      <script src="https://cdn.embed.ly/player-0.1.0.min.js"></script>
       <div
         id="playerjs-upper-container"
         style={{ height: 75 }}
         className={cn(
-          'animated-border relative m-auto flex w-full items-center justify-between overflow-clip transition-all ease-in-out 2xl:container 2xl:px-0',
-          { 'border-b-4': isIHeartPlaying && !isMobile && !isPipOpen },
-          { 'border-4': showBorder && isMobile }
+          'animated-border relative m-auto flex w-full items-center justify-between overflow-clip 2xl:container 2xl:px-0',
+          { 'border-b-4': isIHeartPlaying && !isMobile && !isPipOpen && isReady },
+          { 'border-4 ': showBorder && isMobile && isReady }
         )}>
         <section
           id="playerjs-container"
@@ -284,7 +295,7 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
               src="https://lottie.host/embed/47b0df3e-5d35-4c1e-859a-778acb4749df/gJ2SwN2VDX.lottie"
               className={`absolute  ${isMobile ? 'right-2.5 h-6 w-6' : 'right-28 h-8 w-8'}`}></iframe>
           )} */}
-          {isIHeartPlaying && !isPipOpen && (
+          {isIHeartPlaying && !isPipOpen && isReady && (
             <img
               src="https://media.begenuin.com/iheart_demo/equalizer.gif"
               alt="gif"
