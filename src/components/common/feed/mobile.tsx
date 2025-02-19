@@ -87,7 +87,7 @@ function SwiperRenderer({ videoSizeBox }: { videoSizeBox: VideoSizeBoxType }) {
   )
   const [showBorder, setShowBorder] = useState(false)
   useEffect(() => {
-    if (!isIHeartPlaying) {
+    if (!isIHeartPlaying && !muted) {
       setShowBorder(true)
 
       setTimeout(() => {
@@ -96,7 +96,7 @@ function SwiperRenderer({ videoSizeBox }: { videoSizeBox: VideoSizeBoxType }) {
     } else {
       setShowBorder(false)
     }
-  }, [isIHeartPlaying])
+  }, [isIHeartPlaying, muted])
 
   const handleActiveIndexChange = useCallback(
     (swiper: SwiperType) => {

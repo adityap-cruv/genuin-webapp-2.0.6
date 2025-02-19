@@ -352,15 +352,15 @@
   /* Smooth red gradient */
   border-image: conic-gradient(
       from var(--angle),
-      #ff0000 0deg,
-      #ff4d4d 45deg,
+      #c6002b 0deg,
+      #c6002b 45deg,
       #fc7878 90deg,
-      #f7b2b2 135deg,
-      #fbd1d1 180deg,
-      #f7b2b2 225deg,
+      #eeb2bf 135deg,
+      #eeb2bf 180deg,
+      #eeb2bf 225deg,
       #fc7878 270deg,
-      #ff4d4d 315deg,
-      #ff0000 360deg
+      #c6002b 315deg,
+      #c6002b 360deg
     )
     1 stretch;
 

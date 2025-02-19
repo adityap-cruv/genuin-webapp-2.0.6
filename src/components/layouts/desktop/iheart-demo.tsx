@@ -30,7 +30,7 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
 
   const [showBorder, setShowBorder] = useState(false)
   useEffect(() => {
-    if (!isIHeartPlaying) {
+    if (isIHeartPlaying) {
       setShowBorder(true)
 
       setTimeout(() => {
@@ -125,7 +125,6 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
         width: 354,
       })
       setIsPipOpen(true)
-      // console.log('pipWindow', pipWindow)
       player.style.height = '428px'
       player.style.width = '350px'
       player.style.boxSizing = 'border-box'
@@ -160,8 +159,7 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
       console.log('Player is ready!') // Log a message to the console
       ihrPlayerRef.current.ready(e)
       setIsReady(true)
-      // setShouldPlay(false) // Stop the usePlayerControlStore video
-
+      // Listen for other player events (optional, for debugging)
       ihrPlayerRef.current.on('play', function () {
         console.log('Player is playing.')
         isProgrammatic.current.play = false
@@ -211,7 +209,7 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
             // sandbox="allow-scripts allow-same-origin"
             className="relative z-0"
           />
-          {isIHeartPlaying && (
+          {showBorder && (
             <iframe
               src="https://lottie.host/embed/47b0df3e-5d35-4c1e-859a-778acb4749df/gJ2SwN2VDX.lottie"
               className={`absolute  ${isMobile ? 'right-2.5 h-6 w-6' : 'right-28 h-8 w-8'}`}></iframe>
