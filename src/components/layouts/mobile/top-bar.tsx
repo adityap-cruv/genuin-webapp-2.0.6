@@ -23,7 +23,7 @@ import { BellIcon } from '@icons/bell-icon'
 import { SearchIcon } from '@icons/search-icon'
 import { CloseIcon } from '@icons/close-icon'
 import Analytics from '@services/analytics'
-import { CategoryView } from '@components/common/category-view'
+import { CategoryView, Stations } from '@components/common/category-view'
 import dynamic from 'next/dynamic'
 import BecomeCbCard from '@/components/common/become-cb-card'
 import { LoginIcon } from '@icons/login-icon'
@@ -33,6 +33,7 @@ import { useState, useEffect } from 'react'
 import { Loader } from '@/components/ui/loader'
 import { SettingIcon } from '@icons/settings'
 import { CustomImage } from '@/components/custom/custom-image'
+import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
 
 const DownloadAppDialog = dynamic(
   async () => await import('../download-app-dialog').then((comp) => comp.DownloadAppDialog)
@@ -163,6 +164,7 @@ function Menu({
 }) {
   const pathName = usePathname()
   const { status } = useSession()
+  const { shouldShowIHeartDemo } = useIHeartDemoStates()
   const hamBurgerVariant = variant === 'transparent' ? 'light' : 'dark'
 
   return (
@@ -254,8 +256,17 @@ function Menu({
             <BecomeCbCard />
           </SheetClose>
         )}
-        <CategoryView className="lg:hidden" />
-        <RecentCommunities />
+        {shouldShowIHeartDemo ? (
+          <>
+            <Stations />
+            <CategoryView />
+          </>
+        ) : (
+          <>
+            <CategoryView />
+            <RecentCommunities />
+          </>
+        )}
         <div className="text-tertiary">
           <span className="flex gap-x-2 pb-2">
             <Link href={privacyPolicy ?? PATH_NAME.terms}>

@@ -25,7 +25,10 @@ export function getSizeBoxes(isMobile: boolean, showNavbar: boolean, showIHeartD
   }
 
   if (isMobile) {
-    const windowHeight = window.innerHeight
+    let windowHeight = window.innerHeight
+    if (showIHeartDemo) {
+      windowHeight -= 75
+    }
     const windowWidth = window.innerWidth
     sizes = {
       default: { height: windowHeight, width: windowWidth },
@@ -46,8 +49,7 @@ export function getSizeBoxes(isMobile: boolean, showNavbar: boolean, showIHeartD
  * @returns
  */
 function getSizeDesktop(considerNavbar: boolean, iHeartDemo: boolean): VideoSizeBoxType {
-  let windowHeight = considerNavbar ? window.innerHeight - HEIGHT_OF_HEADER : window.innerHeight
-  windowHeight = iHeartDemo ? windowHeight - 80 : windowHeight
+  const windowHeight = considerNavbar ? window.innerHeight - HEIGHT_OF_HEADER : window.innerHeight
   const windowWidth = window.innerWidth
   let videoWidth = (windowHeight * 9) / 16
 
@@ -60,8 +62,7 @@ function getSizeDesktop(considerNavbar: boolean, iHeartDemo: boolean): VideoSize
 function getSizeModal(showIHeartDemo: boolean): ModalSizeBoxType {
   const windowHeight = window.innerHeight
 
-  let playerHeight = windowHeight * 0.9
-  playerHeight = showIHeartDemo ? playerHeight - 80 : playerHeight
+  const playerHeight = windowHeight * 0.9
   const playerWidth = playerHeight * (9 / 16)
   const modalWidth = playerWidth * 2
 

@@ -13,6 +13,8 @@ type IHeartDemoContextType = {
     currentTime: number
     shouldPlay: boolean
   }>
+  isIHeartPlaying: boolean
+  setIsIHeartPlaying: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const IHeartDemoContext = createContext<IHeartDemoContextType>({
@@ -23,6 +25,8 @@ const IHeartDemoContext = createContext<IHeartDemoContextType>({
   element: null,
   setElement: () => {},
   audioStateRef: { current: { duration: 0, currentTime: 0, shouldPlay: false } },
+  isIHeartPlaying: false,
+  setIsIHeartPlaying: () => {},
 })
 
 const considerBrandIdsToShowIHeartDemo = ['1429', '1729', '1775', '2236', '2249']
@@ -42,6 +46,7 @@ export function IHeartDemoProvider({
     currentTime: 0,
     shouldPlay: true,
   })
+  const [isIHeartPlaying, setIsIHeartPlaying] = useState(false)
 
   return (
     <IHeartDemoContext.Provider
@@ -53,6 +58,8 @@ export function IHeartDemoProvider({
         element,
         setElement,
         audioStateRef: audioPlayerStateRef,
+        isIHeartPlaying,
+        setIsIHeartPlaying,
       }}>
       {children}
     </IHeartDemoContext.Provider>
