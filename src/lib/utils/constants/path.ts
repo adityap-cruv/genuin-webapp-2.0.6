@@ -30,12 +30,5 @@ export const PATH_NAME = {
   terms: `${process.env.NEXT_PUBLIC_HOST_URL}/terms`,
   privacy: `${process.env.NEXT_PUBLIC_HOST_URL}/privacy`,
   mediaNetwork: '/media-network',
-  // dlk: (linkIdentifier: string) => {
-  //   if (!linkIdentifier) {
-  //     console.error('linkIdentifier is required for deep link path')
-  //     return '/dlk'
-  //   }
-  //   return `/dlk/${linkIdentifier}`
-  // },
   dlk: () => `/dlk`,
 }
