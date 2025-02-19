@@ -13,10 +13,8 @@ type IHeartDemoContextType = {
     currentTime: number
     shouldPlay: boolean
   }>
-  isProgrammatic: MutableRefObject<{
-    play: boolean
-    pause: boolean
-  }>
+  isIHeartPlaying: boolean
+  setIsIHeartPlaying: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const IHeartDemoContext = createContext<IHeartDemoContextType>({
@@ -27,7 +25,8 @@ const IHeartDemoContext = createContext<IHeartDemoContextType>({
   element: null,
   setElement: () => {},
   audioStateRef: { current: { duration: 0, currentTime: 0, shouldPlay: false } },
-  isProgrammatic: { current: { play: false, pause: false } },
+  isIHeartPlaying: false,
+  setIsIHeartPlaying: () => {},
 })
 
 const considerBrandIdsToShowIHeartDemo = ['1429', '1729', '1775', '2236', '2249']
@@ -47,7 +46,7 @@ export function IHeartDemoProvider({
     currentTime: 0,
     shouldPlay: true,
   })
-  const isProgrammatic = useRef<{ play: boolean; pause: boolean }>({ play: false, pause: false })
+  const [isIHeartPlaying, setIsIHeartPlaying] = useState(false)
 
   return (
     <IHeartDemoContext.Provider
@@ -59,7 +58,8 @@ export function IHeartDemoProvider({
         element,
         setElement,
         audioStateRef: audioPlayerStateRef,
-        isProgrammatic,
+        isIHeartPlaying,
+        setIsIHeartPlaying,
       }}>
       {children}
     </IHeartDemoContext.Provider>

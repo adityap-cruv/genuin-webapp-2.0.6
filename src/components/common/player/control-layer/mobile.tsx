@@ -66,7 +66,7 @@ export const Mobile = memo(function Mobile({ clickableUrl, ...props }: MobilePro
       toggleButtonVisibility: state.toggleButtonVisibility,
     }))
   )
-  const { isProgrammatic } = useIHeartDemoStates()
+  const { isIHeartPlaying } = useIHeartDemoStates()
 
   const handleScreenClick = useCallback(
     (e: any) => {
@@ -143,7 +143,7 @@ export const Mobile = memo(function Mobile({ clickableUrl, ...props }: MobilePro
         </div>
       </div>
 
-      {!isProgrammatic.current.play && (
+      {!isIHeartPlaying && (
         <iframe
           src="https://lottie.host/embed/47b0df3e-5d35-4c1e-859a-778acb4749df/gJ2SwN2VDX.lottie"
           className="absolute right-4 top-20 z-10 h-8 w-8"></iframe>

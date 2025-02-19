@@ -20,11 +20,12 @@ type AudioPlayerPropsType = { inModal: boolean } & ComponentProps<'audio'>
 function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
   const ihrIframeRef = useRef<any>(null)
   const ihrPlayerRef = useRef<any>(null)
-  const { audioStateRef, isProgrammatic } = useIHeartDemoStates()
+  const { audioStateRef, isIHeartPlaying, setIsIHeartPlaying } = useIHeartDemoStates()
   const isMobile = useGenuinOptions().isMobile
   const { muted, toggleMuted, setShouldPlay } = usePlayerControlStore()
   const [shouldPlay] = useState(audioStateRef.current.shouldPlay)
   const { shouldPlay: playerShouldPlay } = usePlayerControlStore()
+  const isProgrammatic = useRef<{ play: boolean; pause: boolean }>({ play: false, pause: false })
   const [isReady, setIsReady] = useState(false)
   const [isPipOpen, setIsPipOpen] = useState(false)
 
@@ -36,6 +37,7 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
     isProgrammatic.current.play = true
     isProgrammatic.current.pause = false
     audioElement.play()
+    setIsIHeartPlaying(true)
   }, [muted, isReady])
 
   const pause = useCallback(() => {
@@ -46,6 +48,7 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
     isProgrammatic.current.play = false
     isProgrammatic.current.pause = true
     audioElement.pause()
+    setIsIHeartPlaying(false)
   }, [isReady])
 
   useEffect(() => {
@@ -150,7 +153,8 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
         console.log('Player is playing.')
         isProgrammatic.current.play = false
         isProgrammatic.current.pause = false
-        setShouldPlay(!!muted)
+        setShouldPlay(false)
+        setIsIHeartPlaying(true)
       })
 
       ihrPlayerRef.current.on('pause', function () {
@@ -158,6 +162,7 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
         isProgrammatic.current.play = false
         isProgrammatic.current.pause = false
         setShouldPlay(true)
+        setIsIHeartPlaying(false)
       })
 
       ihrPlayerRef.current.on('error', function (error: any) {
@@ -174,8 +179,8 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
         style={{ height: 75 }}
         className={cn(
           'animated-border relative m-auto flex w-full items-center justify-between overflow-clip 2xl:container 2xl:px-0',
-          { 'border-b-4': isProgrammatic.current.play && !isMobile && !isPipOpen },
-          { 'border-4 ': isProgrammatic.current.play && isMobile }
+          { 'border-b-4': isIHeartPlaying && !isMobile && !isPipOpen },
+          { 'border-4 ': isIHeartPlaying && isMobile }
         )}>
         <section
           id="playerjs-container"
@@ -193,10 +198,10 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
             // sandbox="allow-scripts allow-same-origin"
             className="relative z-0"
           />
-          {isProgrammatic.current.play && (
+          {isIHeartPlaying && (
             <iframe
               src="https://lottie.host/embed/47b0df3e-5d35-4c1e-859a-778acb4749df/gJ2SwN2VDX.lottie"
-              className={`absolute  ${isMobile ? 'right-3 h-6 w-6' : 'right-28 h-8 w-8'}`}></iframe>
+              className={`absolute  ${isMobile ? 'right-2.5 h-6 w-6' : 'right-28 h-8 w-8'}`}></iframe>
           )}
           {!isPipOpen && !isMobile && !inModal && (
             <div onClick={handleOpenPipClick} className="cursor-pointer rounded-lg bg-tertiary-200 p-2">

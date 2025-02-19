@@ -1,5 +1,5 @@
 import { Player } from '../player'
-import { useCallback } from 'react'
+import { useCallback, useState, useEffect } from 'react'
 import { useCommentSheetStore } from '../player/comment-sheet/store'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Mousewheel } from 'swiper/modules'
@@ -78,13 +78,25 @@ function SwiperRenderer({ videoSizeBox }: { videoSizeBox: VideoSizeBoxType }) {
   const { gestureOverlays, setGestureOverlay } = useGestureOverlay(currentIndex)
   // # If comment sheet is open than element should not be scrolled..
   const commentIsOpen = useCommentSheetStore((state) => state.modalIsOpen)
-  const { renderIn, shouldShowIHeartDemo, isProgrammatic } = useIHeartDemoStates()
+  const { renderIn, shouldShowIHeartDemo, isIHeartPlaying } = useIHeartDemoStates()
   const showIHeartDemo = renderIn === 'root' && shouldShowIHeartDemo
   const { muted } = usePlayerControlStore(
     useShallow((state) => ({
       muted: state.muted,
     }))
   )
+  const [showBorder, setShowBorder] = useState(false)
+  useEffect(() => {
+    if (!isIHeartPlaying) {
+      setShowBorder(true)
+
+      setTimeout(() => {
+        setShowBorder(false)
+      }, 3000)
+    } else {
+      setShowBorder(false)
+    }
+  }, [isIHeartPlaying])
 
   const handleActiveIndexChange = useCallback(
     (swiper: SwiperType) => {
@@ -101,7 +113,7 @@ function SwiperRenderer({ videoSizeBox }: { videoSizeBox: VideoSizeBoxType }) {
       <div
         style={{ ...videoSizeBox }}
         className={cn('animated-border relative overflow-clip', {
-          'border-4': !isProgrammatic.current.play,
+          'border-4': showBorder,
         })}>
         <Swiper
           // PLAY_PAUSE gesture will end when the user takes action;
