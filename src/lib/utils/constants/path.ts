@@ -37,5 +37,5 @@ export const PATH_NAME = {
   //   }
   //   return `/dlk/${linkIdentifier}`
   // },
-  // dlk: () => `/dlk`,
+  dlk: () => `/dlk`,
 }

@@ -239,7 +239,11 @@ export const generateDeepLink = async ({
       `${process.env.NEXT_PUBLIC_API_URL}/goservices/links/dynamic_link`,
       finalPayload
     )
-    return res?.data?.data?.shortLink
+    const shortLink = res?.data?.data?.shortLink
+    if (shortLink?.includes('coldplay.qa.begenuin.com')) {
+      return shortLink.replace('https://coldplay.qa.begenuin.com', 'http://192.168.0.198:4005')
+    }
+    return shortLink
   } catch (e) {
     return process.env.NEXT_PUBLIC_HOST_URL
   }

@@ -97,13 +97,6 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  if (request.nextUrl.pathname.startsWith('/dlk/') && host) {
-    const shortId = request.nextUrl.pathname.split('/dlk/')[1]
-    if (shortId) {
-      return NextResponse.rewrite(new URL('/dlk', request.url))
-    }
-  }
-
   const STATIC_PATHNAMES = ['/', '/manage', '/market', '/pricing', '/privacy', '/terms', '/discover']
   const parsedUA = userAgent(request)
   const deviceType = parsedUA.device.type
