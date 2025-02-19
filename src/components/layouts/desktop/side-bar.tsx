@@ -17,6 +17,7 @@ import { VerifiedIcon } from '@icons/verified-icon'
 import BecomeCbCard from '@/components/common/become-cb-card'
 import { useSession } from 'next-auth/react'
 import { AuthenticationModal } from '@/components/common/modals/authentication'
+import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
 
 const DownloadAppDialog = dynamic(
   async () => await import('../download-app-dialog').then((comp) => comp.DownloadAppDialog)
@@ -25,6 +26,10 @@ const DownloadAppDialog = dynamic(
 const CategoryViewDynamic = dynamic(
   async () => await import('@components/common/category-view').then((comp) => comp.CategoryView)
 )
+
+const Stations = dynamic(async () => await import('@components/common/category-view').then((comp) => comp.Stations), {
+  ssr: false,
+})
 const RecentCommunities = dynamic(
   async () => await import('./recent-communities').then((comp) => comp.RecentCommunities),
   { ssr: false }
@@ -57,6 +62,7 @@ export function SideBar() {
   )
   const pathName = usePathname()
   const { status } = useSession()
+  const { shouldShowIHeartDemo } = useIHeartDemoStates()
 
   return (
     <nav
@@ -158,8 +164,17 @@ export function SideBar() {
         </span>{' '}
         {/* {(!isClaimed || user?.ksCbRequestStatus !== 3) && <hr className="border-1 my-2 border-monochrome-black/10" />} */}
         {user?.ksCbRequestStatus !== 3 && <BecomeCbCard className="my-4 hidden xl:block" />}
-        <CategoryViewDynamic className="hidden xl:block" />
-        <RecentCommunities />
+        {shouldShowIHeartDemo ? (
+          <>
+            <Stations className="hidden xl:block" />
+            <CategoryViewDynamic className="hidden xl:block" />
+          </>
+        ) : (
+          <>
+            <CategoryViewDynamic className="hidden xl:block" />
+            <RecentCommunities />
+          </>
+        )}
       </div>
       {/* TODO: Genuin as a Brand. Check and discuss to change default true value */}
       {brandId?.toString() !== '99' && (

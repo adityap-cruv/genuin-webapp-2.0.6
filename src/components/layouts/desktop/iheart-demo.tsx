@@ -6,6 +6,56 @@ import { PipIcon } from '@icons/pip-icon'
 import React, { type ComponentProps, useEffect, useRef, useCallback } from 'react'
 import { useState } from 'react'
 import { useGenuinOptions } from '@/lib/stores/genuin-options'
+import { PATH_NAME } from '@/lib/utils/constants/path'
+import { usePathname } from 'next/navigation'
+
+/**
+ * This const is defined for iheart only don't modify it.
+ *
+ */
+export const STATIONS = [
+  {
+    name: 'Favorites',
+    communities: [
+      {
+        name: 'Z100',
+        slug: 'nyc-hit-music-station',
+        audio: 'https://www.iheart.com/live/z100-1469/?embed=true&pname=begeniun&autoplay=1',
+        profileImage: '',
+      },
+      {
+        name: '93.9 FM WNYC',
+        slug: '939-fm-wnyc',
+        audio: 'https://www.iheart.com/live/939-fm-wnyc-5068/?embed=true&pname=begeniun&autoplay=1',
+        profileImage: '',
+      },
+      {
+        name: 'Elvis Duran Show',
+        slug: 'elvis-duran-show',
+        audio:
+          'https://www.iheart.com/podcast/1014-elvis-duran-and-the-morni-26935920/?embed=true&pname=begenuin&autoplay=1',
+        profileImage: '',
+      },
+    ],
+  },
+  {
+    name: 'Recommended',
+    communities: [
+      {
+        name: 'Hot 97',
+        slug: 'hot-97',
+        audio: 'https://www.iheart.com/live/z100-1469/?embed=true&pname=begeniun&autoplay=1',
+        profileImage: '',
+      },
+      {
+        name: 'Sabrina Carpenter',
+        slug: 'sabrina-carpenter',
+        audio: 'https://www.iheart.com/artist/sabrina-carpenter-553828/?embed=true&pname=begenuin&autoplay=1',
+        profileImage: '',
+      },
+    ],
+  },
+]
 
 export function IHeartDemo({ inModal = false }: { inModal?: boolean }) {
   const { shouldShowIHeartDemo } = useIHeartDemoStates()
@@ -17,8 +67,16 @@ export function IHeartDemo({ inModal = false }: { inModal?: boolean }) {
 
 type AudioPlayerPropsType = { inModal: boolean } & ComponentProps<'audio'>
 
+// paths for each communities.
+const communityPaths = STATIONS.flatMap((station) =>
+  station.communities.map((community) => PATH_NAME.community(community.slug))
+)
+
+// audio urls for each communities. Here community index is used to get respective audio stream.
+const audioUrls = STATIONS.flatMap((station) => station.communities.map((community) => community.audio))
+
 function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
-  const ihrIframeRef = useRef<any>(null)
+  const ihrIframeRef = useRef<HTMLIFrameElement>(null)
   const ihrPlayerRef = useRef<any>(null)
   const { audioStateRef, isIHeartPlaying, setIsIHeartPlaying } = useIHeartDemoStates()
   const isMobile = useGenuinOptions().isMobile
@@ -27,8 +85,21 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
   const isProgrammatic = useRef<{ play: boolean; pause: boolean }>({ play: false, pause: false })
   const [isReady, setIsReady] = useState(false)
   const [isPipOpen, setIsPipOpen] = useState(false)
-
   const [showBorder, setShowBorder] = useState(false)
+  const pathName = usePathname()
+
+  useEffect(() => {
+    // iframe element
+    const iframe = ihrIframeRef.current
+    if (!iframe) return
+    // find communityIndex for which path is equal to pathName
+    const communityIndex = communityPaths.findIndex((path) => path === pathName)
+    // if communityIndex is found, set the src of iframe to audioUrls[communityIndex]
+    if (communityIndex !== -1) {
+      iframe.src = audioUrls[communityIndex]
+    }
+  }, [pathName])
+
   useEffect(() => {
     if (isIHeartPlaying) {
       setShowBorder(true)
@@ -46,7 +117,6 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
   const play = useCallback(() => {
     if (!isReady) return
     const audioElement = ihrPlayerRef.current
-    console.log('in play callback')
     if (!muted) toggleMuted()
     isProgrammatic.current.play = true
     isProgrammatic.current.pause = false
@@ -55,10 +125,8 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
   }, [muted, isReady])
 
   const pause = useCallback(() => {
-    console.log('in pause')
     if (!isReady) return
     const audioElement = ihrPlayerRef.current
-    console.log('in pause callback')
     isProgrammatic.current.play = false
     isProgrammatic.current.pause = true
     audioElement.pause()
