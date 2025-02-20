@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 'use client'
 import React, { createContext, useContext, useEffect } from 'react'
 import { UAParser } from 'ua-parser-js'
