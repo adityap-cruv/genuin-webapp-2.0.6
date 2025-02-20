@@ -71,9 +71,6 @@ const CONFIG = {
   },
   DEBOUNCE_TIME: 150, // New debounce time for wheel events
 }
-
-
-const SHELLS = Array.from({ length: 100 })
 function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: SwiperRendererProps) {
   const { defaultSizeBox } = useGenuinOptions(useShallow((state) => ({ defaultSizeBox: state.sizeBoxes.default })))
 
