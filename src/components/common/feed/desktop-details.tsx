@@ -20,8 +20,7 @@ import MentionInput from '../comments/mention-input'
 import ShareButton from '@components/common/actions/ShareButton'
 import { useFeedListContext } from '../../providers/feed-provider'
 import { JoinCommunityButton } from '../join-community-button'
-import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
-import { updateIHeartAudio } from '@/components/layouts/desktop/iheart-demo'
+import { getAudioUrlForCommunity, useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
 
 type DesktopDetailsProps = VideoPlayerModalType
 // TODO: improve this component.
@@ -29,15 +28,15 @@ type DesktopDetailsProps = VideoPlayerModalType
 export function DesktopDetails({ loop, community, owner, video }: DesktopDetailsProps) {
   const scrollDivRef = useRef<HTMLDivElement>(null)
   const { updateCommunityJoinStatus } = useFeedListContext()
-  const { shouldShowIHeartDemo } = useIHeartDemoStates()
+  const { shouldShowIHeartDemo, setAudioUrl } = useIHeartDemoStates()
   // TODO: Here state Comment and setComments are bad they are causing multiple rerenders.
   const [comments, setComments] = useState<CommentListType>([])
 
   useEffect(() => {
     // If should show iheart demo then update the audio of iheart demo.
-    if (shouldShowIHeartDemo) {
-      updateIHeartAudio(PATH_NAME.community(community.slug))
-    }
+    const audioUrl = getAudioUrlForCommunity(community.slug)
+    if (!audioUrl) return
+    setAudioUrl(audioUrl)
   }, [community, shouldShowIHeartDemo])
 
   return (
