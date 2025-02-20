@@ -34,7 +34,7 @@ export function Body({ title, subtitle, deepLink }: DownloadDialogType) {
 
   return (
     <ModalShell>
-      <div className="flex w-full flex-col items-center justify-center px-4 pt-6">
+      <div className="flex w-full flex-col items-center justify-center px-0 pt-6 sm:px-4">
         {deepLink ? (
           <>
             <p className="text-center text-new-h3">Download the app</p>
@@ -67,16 +67,15 @@ export function Body({ title, subtitle, deepLink }: DownloadDialogType) {
             </a>
           </div>
         ) : (
-          <div>
-            <a
-              href={isIOS() ? links.appStoreLink : links.playStoreLink ?? MOBILE_DOWNLOAD_APP_LINK}
-              target="_blank"
-              rel="noopener noreferrer">
-              <Button className="h-8" variant="outline">
-                <p className="text-[15px] text-body-1-demi">Get App</p>
-              </Button>
-            </a>
-          </div>
+          <a
+            href={isIOS() ? links.appStoreLink : links.playStoreLink ?? MOBILE_DOWNLOAD_APP_LINK}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full">
+            <Button className=" w-full" variant="default">
+              <p className="text-body-1-demi">Get App</p>
+            </Button>
+          </a>
         )}
       </div>{' '}
     </ModalShell>
