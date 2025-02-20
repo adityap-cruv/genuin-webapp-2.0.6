@@ -64,6 +64,9 @@ export async function middleware(request: NextRequest) {
       } else if (Number(config?.brand_id) === 1429) {
         // hard coding for ankpal in QA
         return NextResponse.rewrite(new URL('/.well-known/ankpal/apple-app-site-association', request.url))
+      } else if (Number(config?.brand_id) === 2314) {
+        // hard coding for carlist
+        return NextResponse.rewrite(new URL('/.well-known/carlist/apple-app-site-association', request.url))
       } else {
         return NextResponse.next()
       }
