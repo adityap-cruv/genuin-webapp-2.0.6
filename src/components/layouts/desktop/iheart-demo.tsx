@@ -287,17 +287,14 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
         className={cn('relative m-auto flex w-full items-center justify-between overflow-clip 2xl:container 2xl:px-0')}>
         {showBorder && isIHeartPlaying && (
           <div
-            className={cn(
-              'pointer-events-none absolute z-10 h-full w-full border-4 bg-transparent transition-all ease-in-out',
-              {
-                'animated-border':
-                  (isIHeartPlaying && !isMobile && !isPipOpen && isReady) || (showBorder && isMobile && isReady),
-                'border-transparent': !(
-                  (isIHeartPlaying && !isMobile && !isPipOpen && isReady) ||
-                  (showBorder && isMobile && isReady)
-                ),
-              }
-            )}
+            className={cn('pointer-events-none absolute z-10 h-full w-full bg-transparent transition-all ease-in-out', {
+              'animated-border border-4':
+                (isIHeartPlaying && !isMobile && !isPipOpen && isReady) || (showBorder && isMobile && isReady),
+              'border-b-4 border-transparent': !(
+                (isIHeartPlaying && !isMobile && !isPipOpen && isReady) ||
+                (showBorder && isMobile && isReady)
+              ),
+            })}
           />
         )}
 
