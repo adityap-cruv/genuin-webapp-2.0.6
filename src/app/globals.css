@@ -364,7 +364,7 @@
     )
     1 stretch;
 
-  background: rgb(255 255 255 / var(--opacity));
+  /* background: rgb(255 255 255 / var(--opacity)); */
 }
 
 @property --opacity {

@@ -284,11 +284,17 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
       <div
         id="playerjs-upper-container"
         style={{ height: 75 }}
-        className={cn(
-          'animated-border relative m-auto flex w-full items-center justify-between overflow-clip 2xl:container 2xl:px-0',
-          { 'border-b-4': isIHeartPlaying && !isMobile && !isPipOpen && isReady },
-          { 'border-4 ': showBorder && isMobile && isReady }
-        )}>
+        className={cn('relative m-auto flex w-full items-center justify-between overflow-clip 2xl:container 2xl:px-0')}>
+        {showBorder && isIHeartPlaying && (
+          <div
+            className={cn(
+              'pointer-events-none absolute z-10 h-full w-full border-4 border-transparent bg-transparent transition-all ease-in-out',
+              { 'animated-border': isIHeartPlaying && !isMobile && !isPipOpen && isReady },
+              { 'animated-border': showBorder && isMobile && isReady }
+            )}
+          />
+        )}
+
         <section
           id="playerjs-container"
           className={cn(
