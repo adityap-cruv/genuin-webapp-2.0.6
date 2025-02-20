@@ -102,7 +102,7 @@ stations.push({ name: 'Recents', communities: useLocalStorage.getState().communi
 export function Stations({ className, ...props }: StationsPropsType) {
   const pathName = usePathname()
   return (
-    <div className={cn('border-t-2 border-tertiary-200 pt-3', className)} {...props}>
+    <div className={cn(className)} {...props}>
       <p className="text-title-2-demi text-tertiary">Stations</p>
       <Accordion type="single" collapsible className="my-1.5">
         {stations?.map((category, index) => {
