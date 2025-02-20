@@ -261,7 +261,7 @@ class DeviceResolver extends BaseResolver {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolveMake() {
-    const deviceVendor = this.uaParserResult.device?.vendor || 'Unknown'
+    const deviceVendor = this.uaParserResult.device?.vendor ?? 'Unknown'
     this.setKeyValue('device.make', deviceVendor)
   }
 
@@ -273,7 +273,7 @@ class DeviceResolver extends BaseResolver {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolveModel() {
-    const deviceModel = this.uaParserResult.device?.model || 'Unknown'
+    const deviceModel = this.uaParserResult.device?.model ?? 'Unknown'
     this.setKeyValue('device.model', deviceModel)
   }
 
@@ -285,8 +285,8 @@ class DeviceResolver extends BaseResolver {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolveOS() {
-    this.setKeyValue('device.os', this.uaParserResult.os?.name || 'Unknown')
-    this.setKeyValue('device.osv', this.uaParserResult.os?.version || 'Unknown')
+    this.setKeyValue('device.os', this.uaParserResult.os?.name ?? 'Unknown')
+    this.setKeyValue('device.osv', this.uaParserResult.os?.version ?? 'Unknown')
   }
 
   /**
