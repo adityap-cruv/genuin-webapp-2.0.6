@@ -4,9 +4,7 @@ import { usePlayerControlStore } from '../common/player/player-control-store'
 import { type VideoPlayerModalType } from '@/lib/schemas/player/video'
 import { showInterruption } from '@/components/providers/interruption-provider'
 import { type CommunityUserRoleType } from '@/lib/schemas/roles'
-import { updateIHeartAudio } from '../layouts/desktop/iheart-demo'
-import { PATH_NAME } from '@/lib/utils/constants/path'
-import { useIHeartDemoStates } from './iheart-demo-provider'
+import { getAudioUrlForCommunity, useIHeartDemoStates } from './iheart-demo-provider'
 
 type FeedContextType = {
   currentIndex: number
@@ -45,7 +43,7 @@ export function FeedContextProvider({
   hasNextPage,
   onCommunityJoin,
 }: FeedContextProviderType) {
-  const { shouldShowIHeartDemo } = useIHeartDemoStates()
+  const { shouldShowIHeartDemo, setAudioUrl } = useIHeartDemoStates()
   const [currentIndex, setCurrentIndex] = useState(startIndex)
   const [allowSlideNext, setAllowSlideNext] = useState(true)
   const [feedVideos, setFeedVideos] = useState<VideoPlayerModalType[]>(videos)
@@ -119,7 +117,11 @@ export function FeedContextProvider({
     if (!videos || videos.length === 0) return
 
     // update IHeart audio for the community.
-    shouldShowIHeartDemo && updateIHeartAudio(PATH_NAME.community(videos[currentIndex].community.slug))
+    if (shouldShowIHeartDemo) {
+      const audioUrl = getAudioUrlForCommunity(videos[currentIndex].community.slug)
+      if (!audioUrl) return
+      setAudioUrl(audioUrl)
+    }
 
     if (!isFetchingNextPage && currentIndex === videos.length - 3 && hasNextPage) {
       fetchNextPage?.()

@@ -17,6 +17,7 @@ import ShareButton from '@components/common/actions/ShareButton'
 import { useGenuinOptions } from '@/lib/stores/genuin-options'
 import { LinkIcon } from '@icons/link-icon'
 import BrandBadgeIcon from '@/components/common/brand-badge-icon'
+import { getAudioUrlForBrand, useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
 
 interface CompProps {
   profileData: ProfileDetailsType
@@ -27,6 +28,7 @@ export function MainComponent({ profileData }: CompProps) {
   const detailsDivRef = useRef<HTMLDivElement>(null)
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
   const divRef = useRef<HTMLDivElement>(null)
+  const { setAudioUrl } = useIHeartDemoStates()
 
   useEffect(() => {
     void Analytics.track({
@@ -37,6 +39,12 @@ export function MainComponent({ profileData }: CompProps) {
       },
     })
   }, [])
+
+  useEffect(() => {
+    const audioUrl = getAudioUrlForBrand(profileData.brand?.brand_slug ?? '')
+    if (!audioUrl) return
+    setAudioUrl(audioUrl)
+  }, [profileData])
 
   return (
     <>

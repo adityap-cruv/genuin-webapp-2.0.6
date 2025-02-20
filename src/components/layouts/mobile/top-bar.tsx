@@ -264,12 +264,7 @@ function Menu({
             <BecomeCbCard />
           </SheetClose>
         )}
-        {shouldShowIHeartDemo ? (
-          <>
-            <Stations />
-            <CategoryView />
-          </>
-        ) : (
+        {!shouldShowIHeartDemo && (
           <>
             <CategoryView />
             <RecentCommunities />

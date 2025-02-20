@@ -23,6 +23,7 @@ export const STATIONS = [
         audio: 'https://www.iheart.com/live/z100-1469/?embed=true&pname=begeniun&autoplay=1',
         profileImage:
           'https://media.begenuin.com/uploads/profile_images/community/s/f082401c-d6e3-4b2b-8708-a7f111ee2d5d_1721930239902_1721930239902.png',
+        brand: 'z-100',
       },
       {
         name: '93.9 FM WNYC',
@@ -30,6 +31,7 @@ export const STATIONS = [
         audio: 'https://www.iheart.com/live/939-fm-wnyc-5068/?embed=true&pname=begeniun&autoplay=1',
         profileImage:
           'https://media.begenuin.com/uploads/profile_images/community/s/communityProfile_1739852270823.png',
+        brand: 'wnyc',
       },
       {
         name: 'Elvis Duran Show',
@@ -38,6 +40,7 @@ export const STATIONS = [
           'https://www.iheart.com/podcast/1014-elvis-duran-and-the-morni-26935920/?embed=true&pname=begenuin&autoplay=1',
         profileImage:
           'https://media.begenuin.com/uploads/profile_images/community/s/728865a3-6d08-47b1-9a90-4f4ae50a8926_1734008412984_1734008412985.png',
+        brand: 'elvis-duran',
       },
     ],
   },
@@ -50,6 +53,7 @@ export const STATIONS = [
         audio: 'https://www.iheart.com/live/hot-97-6046/?embed=true&pname=begeniun&autoplay=1',
         profileImage:
           'https://media.begenuin.com/uploads/profile_images/community/s/communityProfile_1739855223599.png',
+        brand: 'hot-97',
       },
       {
         name: 'Sabrina Carpenter',
@@ -57,6 +61,7 @@ export const STATIONS = [
         audio: 'https://www.iheart.com/artist/sabrina-carpenter-553828/?embed=true&pname=begenuin&autoplay=1',
         profileImage:
           'https://media.begenuin.com/uploads/profile_images/community/s/communityProfile_1739855388191.png',
+        brand: 'sabrina-carpenter',
       },
     ],
   },
@@ -80,20 +85,18 @@ const communityPaths = STATIONS.flatMap((station) =>
 // audio urls for each communities. Here community index is used to get respective audio stream.
 const audioUrls = STATIONS.flatMap((station) => station.communities.map((community) => community.audio))
 
-export function updateIHeartAudio(pathName: string) {
-  console.log('pathName:', pathName)
-  const communityIndex = communityPaths.findIndex((path) => path === pathName)
-  if (communityIndex !== -1) {
-    const iframe = document.getElementById('playerjs-iframe') as HTMLIFrameElement
-    if (!iframe) return
-    if (iframe.src !== audioUrls[communityIndex]) iframe.src = audioUrls[communityIndex]
-  }
-}
+// export function updateIHeartAudio(pathName: string) {
+//   const { setAudioUrl } = useIHeartDemoStates()
+//   const communityIndex = communityPaths.findIndex((path) => path === pathName)
+//   if (communityIndex !== -1) {
+//     setAudioUrl(audioUrls[communityIndex])
+//   }
+// }
 
 function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
   const ihrIframeRef = useRef<HTMLIFrameElement>(null)
   const ihrPlayerRef = useRef<any>(null)
-  const { audioStateRef, isIHeartPlaying, setIsIHeartPlaying } = useIHeartDemoStates()
+  const { audioStateRef, isIHeartPlaying, setIsIHeartPlaying, audioUrl } = useIHeartDemoStates()
   const isMobile = useGenuinOptions().isMobile
   const [shouldPlay] = useState(audioStateRef.current.shouldPlay)
   const { muted, toggleMuted, setShouldPlay, shouldPlay: playerShouldPlay } = usePlayerControlStore()
@@ -116,25 +119,13 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
   }, [pathName])
 
   useEffect(() => {
-    // iframe element
-    const iframe = ihrIframeRef.current
-    if (!iframe) return
-    // find communityIndex for which path is equal to pathName
-    const communityIndex = communityPaths.findIndex((path) => path === pathName)
-    // if communityIndex is found, set the src of iframe to audioUrls[communityIndex]
-    if (communityIndex !== -1) {
-      iframe.src = audioUrls[communityIndex]
-    }
-  }, [pathName])
-
-  useEffect(() => {
     if (isIHeartPlaying) {
       setShowBorder(true)
 
       if (isMobile) {
         setTimeout(() => {
           setShowBorder(false)
-        }, 3000)
+        }, 5000)
       }
     } else {
       setShowBorder(false)
@@ -344,7 +335,7 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
           )}
           style={{ height: '75px' }}>
           <iframe
-            src="https://www.iheart.com/live/z100-1469/?embed=true&pname=begeniun&autoplay=1"
+            src={audioUrl}
             height="100%"
             width="100%"
             id="playerjs-iframe"
