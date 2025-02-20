@@ -63,12 +63,18 @@ export function SideBar() {
   const pathName = usePathname()
   const { status } = useSession()
   const { shouldShowIHeartDemo } = useIHeartDemoStates()
-
   return (
     <nav
       style={{ height: sizeboxHeight }}
       className="flex h-full w-fit flex-col justify-between overflow-auto border border-monochrome-9 px-4 py-4 transition-[width] xl:mr-16 xl:w-full xl:max-w-[280px] xl:border-none xl:px-0">
       <div>
+        {shouldShowIHeartDemo && (
+          <>
+            <Stations className="mt-2 hidden xl:block" />
+            <hr className="my-1 border border-monochrome-9" />
+          </>
+        )}
+        {shouldShowIHeartDemo && <p className="text-title-2-demi text-tertiary">Menu</p>}
         <Link href={{ pathname: PATH_NAME.home() }}>
           <Item brandName={brandName} title="Home" isActive={pathName === PATH_NAME.home()}>
             <HomeIcon isActive={pathName === PATH_NAME.home()} />
@@ -130,49 +136,91 @@ export function SideBar() {
             </Link>
           </PopoverContent>
         </Popover>
-        <span className="hidden xl:block">
-          {(!isClaimed || user?.ksCbRequestStatus !== 3) && <hr className="border-1 my-2 border-monochrome-black/10" />}
-          <DownloadAppDialog />
-          {isClaimed && status === 'unauthenticated' && webCTA !== 'app' && (
-            <>
-              <div
-                className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
-                onClick={() => {
-                  AuthenticationModal.open()
-                }}>
-                <LoginIcon className="stroke-primary" />
-                <p className={cn('hidden whitespace-nowrap !text-title-3-demi text-primary xl:block')}>Log in</p>
-              </div>
-              <hr className="border-1 my-2 border-monochrome-black/10" />
-            </>
-          )}
-          {!isClaimed && (
-            <>
-              <div
-                className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
-                onClick={() => {
-                  AuthenticationModal.open(undefined, 'CLAIM_BRAND_PROFILE')
-                }}>
-                <VerifiedIcon className="stroke-primary" />
-                <p className={cn('hidden whitespace-nowrap !text-title-3-demi text-primary xl:block')}>
-                  Claim Brand Profile
-                </p>
-              </div>
-              <hr className="border-1 my-2 border-monochrome-black/10" />
-            </>
-          )}
-        </span>{' '}
-        {/* {(!isClaimed || user?.ksCbRequestStatus !== 3) && <hr className="border-1 my-2 border-monochrome-black/10" />} */}
-        {user?.ksCbRequestStatus !== 3 && <BecomeCbCard className="my-4 hidden xl:block" />}
-        {shouldShowIHeartDemo ? (
+        {!shouldShowIHeartDemo && (
           <>
-            <Stations className="hidden xl:block" />
-            <CategoryViewDynamic className="hidden xl:block" />
+            <span className="hidden xl:block">
+              {(!isClaimed || user?.ksCbRequestStatus !== 3) && (
+                <hr className="border-1 my-2 border-monochrome-black/10" />
+              )}
+              <DownloadAppDialog />
+              {isClaimed && status === 'unauthenticated' && webCTA !== 'app' && (
+                <>
+                  <div
+                    className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
+                    onClick={() => {
+                      AuthenticationModal.open()
+                    }}>
+                    <LoginIcon className="stroke-primary" />
+                    <p className={cn('hidden whitespace-nowrap !text-title-3-demi text-primary xl:block')}>Log in</p>
+                  </div>
+                  <hr className="border-1 my-2 border-monochrome-black/10" />
+                </>
+              )}
+              {!isClaimed && (
+                <>
+                  <div
+                    className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
+                    onClick={() => {
+                      AuthenticationModal.open(undefined, 'CLAIM_BRAND_PROFILE')
+                    }}>
+                    <VerifiedIcon className="stroke-primary" />
+                    <p className={cn('hidden whitespace-nowrap !text-title-3-demi text-primary xl:block')}>
+                      Claim Brand Profile
+                    </p>
+                  </div>
+                  <hr className="border-1 my-2 border-monochrome-black/10" />
+                </>
+              )}
+            </span>
+            {/* {(!isClaimed || user?.ksCbRequestStatus !== 3) && <hr className="border-1 my-2 border-monochrome-black/10" />} */}
+            {user?.ksCbRequestStatus !== 3 && <BecomeCbCard className="my-4 hidden xl:block" />}
           </>
-        ) : (
+        )}
+        {shouldShowIHeartDemo && <CategoryViewDynamic className="hidden xl:block" />}
+        {!shouldShowIHeartDemo && (
           <>
             <CategoryViewDynamic className="hidden xl:block" />
             <RecentCommunities />
+          </>
+        )}
+        {shouldShowIHeartDemo && (
+          <>
+            <span className="hidden xl:block">
+              {(!isClaimed || user?.ksCbRequestStatus !== 3) && (
+                <hr className="border-1 my-2 border-monochrome-black/10" />
+              )}
+              <DownloadAppDialog />
+              {isClaimed && status === 'unauthenticated' && webCTA !== 'app' && (
+                <>
+                  <div
+                    className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
+                    onClick={() => {
+                      AuthenticationModal.open()
+                    }}>
+                    <LoginIcon className="stroke-primary" />
+                    <p className={cn('hidden whitespace-nowrap !text-title-3-demi text-primary xl:block')}>Log in</p>
+                  </div>
+                  <hr className="border-1 my-2 border-monochrome-black/10" />
+                </>
+              )}
+              {!isClaimed && (
+                <>
+                  <div
+                    className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
+                    onClick={() => {
+                      AuthenticationModal.open(undefined, 'CLAIM_BRAND_PROFILE')
+                    }}>
+                    <VerifiedIcon className="stroke-primary" />
+                    <p className={cn('hidden whitespace-nowrap !text-title-3-demi text-primary xl:block')}>
+                      Claim Brand Profile
+                    </p>
+                  </div>
+                  <hr className="border-1 my-2 border-monochrome-black/10" />
+                </>
+              )}
+            </span>
+            {/* {(!isClaimed || user?.ksCbRequestStatus !== 3) && <hr className="border-1 my-2 border-monochrome-black/10" />} */}
+            {user?.ksCbRequestStatus !== 3 && <BecomeCbCard className="my-4 hidden xl:block" />}
           </>
         )}
       </div>
@@ -214,7 +262,7 @@ function Item({ title, isActive, children, notificationCount = 0, brandName }: I
       className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 hover:bg-monochrome-6/10">
       <div className="relative">
         {children}
-        {notificationCount !== 0 && (
+        {notificationCount > 0 && (
           <div className="absolute right-0 top-0 flex h-4 w-4 items-center justify-center rounded-full bg-primary  text-cap-1-med text-monochrome-white">
             {notificationCount}
           </div>
