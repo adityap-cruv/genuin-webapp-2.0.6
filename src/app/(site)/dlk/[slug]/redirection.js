@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * Smart app redirect without refresh loops
  * @param {Object} config Configuration object
@@ -11,7 +12,8 @@ const smartAppRedirect = ({ appStoreUrl, playStoreUrl, fallbackUrl = null, timeo
 
   // Get user agent
   const userAgent = navigator.userAgent.toLowerCase()
-  const isIOS = userAgent.includes('ipad') || userAgent.includes('iphone') || userAgent.includes('ipod') && !window.MSStream
+  const isIOS =
+    userAgent.includes('ipad') || userAgent.includes('iphone') || (userAgent.includes('ipod') && !window.MSStream)
   const isAndroid = userAgent.includes('android')
   const isSafari = userAgent.includes('safari') && !userAgent.includes('chrome')
 
