@@ -324,15 +324,16 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
       <div
         id="playerjs-upper-container"
         style={{ height: 75 }}
-        className={cn('relative m-auto flex w-full items-center justify-between overflow-clip 2xl:container 2xl:px-0')}>
+        className={cn(
+          'animated-border relative m-auto flex w-full items-center justify-between overflow-clip transition-all ease-in-out 2xl:container 2xl:px-0',
+          {
+            'border-b-4': isIHeartPlaying && !isMobile && !isPipOpen && isReady,
+          }
+        )}>
         <div
           className={cn('pointer-events-none absolute z-10 h-full w-full bg-transparent transition-all ease-in-out', {
-            'animated-border border-b-4': isIHeartPlaying && !isMobile && !isPipOpen && isReady,
             'animated-border border-4': showBorder && isMobile && isReady,
-            'border-4 border-transparent': !(
-              (isIHeartPlaying && !isMobile && !isPipOpen && isReady) ||
-              (showBorder && isMobile && isReady)
-            ),
+            'border-4 border-transparent': !(showBorder && isMobile && isReady),
           })}
         />
 
