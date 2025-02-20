@@ -314,7 +314,7 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
 
       ihrPlayerRef.current.on('error', function (error: any) {
         console.error('Player error:', error)
-        setIsIHeartPlaying(false)
+        // setIsIHeartPlaying(false)
       })
     })
   }
