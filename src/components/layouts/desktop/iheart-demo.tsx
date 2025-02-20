@@ -288,9 +288,9 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
         {showBorder && isIHeartPlaying && (
           <div
             className={cn('pointer-events-none absolute z-10 h-full w-full bg-transparent transition-all ease-in-out', {
-              'animated-border border-4':
-                (isIHeartPlaying && !isMobile && !isPipOpen && isReady) || (showBorder && isMobile && isReady),
-              'border-b-4 border-transparent': !(
+              'animated-border border-b-4': isIHeartPlaying && !isMobile && !isPipOpen && isReady,
+              'animated-border border-4': showBorder && isMobile && isReady,
+              'border-4 border-transparent': !(
                 (isIHeartPlaying && !isMobile && !isPipOpen && isReady) ||
                 (showBorder && isMobile && isReady)
               ),
