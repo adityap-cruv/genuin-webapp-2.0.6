@@ -80,9 +80,10 @@ function SwiperRenderer({ videoSizeBox }: { videoSizeBox: VideoSizeBoxType }) {
   const commentIsOpen = useCommentSheetStore((state) => state.modalIsOpen)
   const { renderIn, shouldShowIHeartDemo, isIHeartPlaying } = useIHeartDemoStates()
   const showIHeartDemo = renderIn === 'root' && shouldShowIHeartDemo
-  const { muted } = usePlayerControlStore(
+  const { muted, setPlayerShouldPlay } = usePlayerControlStore(
     useShallow((state) => ({
       muted: state.muted,
+      setPlayerShouldPlay: state.setShouldPlay,
     }))
   )
   const [showBorder, setShowBorder] = useState(false)
@@ -108,6 +109,10 @@ function SwiperRenderer({ videoSizeBox }: { videoSizeBox: VideoSizeBoxType }) {
     },
     [videos]
   )
+
+  useEffect(() => {
+    setPlayerShouldPlay(!commentIsOpen)
+  }, [commentIsOpen])
   return (
     <>
       <div style={{ ...videoSizeBox }} className={cn('relative overflow-clip')}>

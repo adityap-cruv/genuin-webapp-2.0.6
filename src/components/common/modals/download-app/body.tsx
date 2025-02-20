@@ -3,11 +3,12 @@ import { ModalShell } from '../authentication/modal-shell'
 import Image from 'next/image'
 import imageAppStore from '@images/appStore.svg'
 import imagePlayStore from '@images/playStore.svg'
-import { URL_TO_APP_STORE, URL_TO_PLAY_STORE } from '@lib/constants'
+import { MOBILE_DOWNLOAD_APP_LINK, URL_TO_APP_STORE, URL_TO_PLAY_STORE } from '@lib/constants'
 import { QRCode } from 'react-qrcode-logo'
 import { useGenuinOptions } from '@/lib/stores/genuin-options'
 import { useShallow } from 'zustand/react/shallow'
 import { CustomImage } from '@/components/custom/custom-image'
+import { Button } from '@/components/ui/button'
 
 type DownloadDialogType = {
   title?: React.ReactNode
@@ -16,13 +17,18 @@ type DownloadDialogType = {
 }
 
 export function Body({ title, subtitle, deepLink }: DownloadDialogType) {
-  const { links, brandLogo } = useGenuinOptions(
+  const isIOS = () => {
+    const win = window as any
+    return typeof window !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent) && !win.MSStream
+  }
+  const { links, brandLogo, isMobile } = useGenuinOptions(
     useShallow((state) => ({
       links: {
         appStoreLink: state.config?.integrations.sdk.ios.appstore_link,
         playStoreLink: state.config?.integrations.sdk.android.playstore_link,
       },
       brandLogo: state.config?.logo,
+      isMobile: state.isMobile,
     }))
   )
 
@@ -51,14 +57,27 @@ export function Body({ title, subtitle, deepLink }: DownloadDialogType) {
             <p className="line-clamp-2 max-w-none text-center text-title-2-demi">{subtitle}</p>
           </div>
         )}
-        <div className="flex gap-x-2">
-          <a href={links.appStoreLink ?? URL_TO_APP_STORE} target="_blank" rel="noopener noreferrer">
-            <Image className="mx-2 h-10 w-auto" src={imageAppStore} alt="app store" />
-          </a>
-          <a href={links.playStoreLink ?? URL_TO_PLAY_STORE} target="_blank" rel="noopener noreferrer">
-            <Image className="mx-2 h-10 w-auto" src={imagePlayStore} alt="play store" />
-          </a>
-        </div>
+        {!isMobile ? (
+          <div className="flex gap-x-2">
+            <a href={links.appStoreLink ?? URL_TO_APP_STORE} target="_blank" rel="noopener noreferrer">
+              <Image className="mx-2 h-10 w-auto" src={imageAppStore} alt="app store" />
+            </a>
+            <a href={links.playStoreLink ?? URL_TO_PLAY_STORE} target="_blank" rel="noopener noreferrer">
+              <Image className="mx-2 h-10 w-auto" src={imagePlayStore} alt="play store" />
+            </a>
+          </div>
+        ) : (
+          <div>
+            <a
+              href={isIOS() ? links.appStoreLink : links.playStoreLink ?? MOBILE_DOWNLOAD_APP_LINK}
+              target="_blank"
+              rel="noopener noreferrer">
+              <Button className="h-8" variant="outline">
+                <p className="text-[15px] text-body-1-demi">Get App</p>
+              </Button>
+            </a>
+          </div>
+        )}
       </div>{' '}
     </ModalShell>
   )
