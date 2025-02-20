@@ -314,7 +314,10 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
             <img
               src="https://media.begenuin.com/iheart_demo/equalizer.gif"
               alt="gif"
-              className={`absolute  ${isMobile ? 'right-2.5 h-6 w-6' : 'right-28 h-8 w-8'}`}
+              style={{
+                right: isMobile || inModal ? '13px' : '56px',
+              }}
+              className={`absolute h-8 w-8`}
             />
           )}
           {!isPipOpen && !isMobile && !inModal && (
