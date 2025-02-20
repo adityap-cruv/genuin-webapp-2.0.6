@@ -328,9 +328,15 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
         {showBorder && isIHeartPlaying && (
           <div
             className={cn(
-              'pointer-events-none absolute z-10 h-full w-full border-4 border-transparent bg-transparent transition-all ease-in-out',
-              { 'animated-border': isIHeartPlaying && !isMobile && !isPipOpen && isReady },
-              { 'animated-border': showBorder && isMobile && isReady }
+              'pointer-events-none absolute z-10 h-full w-full border-4 bg-transparent transition-all ease-in-out',
+              {
+                'animated-border':
+                  (isIHeartPlaying && !isMobile && !isPipOpen && isReady) || (showBorder && isMobile && isReady),
+                'border-transparent': !(
+                  (isIHeartPlaying && !isMobile && !isPipOpen && isReady) ||
+                  (showBorder && isMobile && isReady)
+                ),
+              }
             )}
           />
         )}
