@@ -87,7 +87,7 @@ function SwiperRenderer({ videoSizeBox }: { videoSizeBox: VideoSizeBoxType }) {
   )
   const [showBorder, setShowBorder] = useState(false)
   useEffect(() => {
-    if (!isIHeartPlaying && !muted) {
+    if (!isIHeartPlaying && !muted && showIHeartDemo) {
       setShowBorder(true)
 
       setTimeout(() => {
