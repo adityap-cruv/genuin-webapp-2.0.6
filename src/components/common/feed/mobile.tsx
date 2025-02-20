@@ -110,11 +110,18 @@ function SwiperRenderer({ videoSizeBox }: { videoSizeBox: VideoSizeBoxType }) {
   )
   return (
     <>
-      <div
-        style={{ ...videoSizeBox }}
-        className={cn('animated-border relative overflow-clip transition-all ease-in-out', {
-          'border-4': showBorder,
-        })}>
+      <div style={{ ...videoSizeBox }} className={cn('relative overflow-clip')}>
+        <div
+          className={cn(
+            'pointer-events-none absolute z-10 border-4 border-transparent bg-transparent transition-all ease-in-out',
+            {
+              'animated-border': showBorder,
+            }
+          )}
+          style={{
+            ...videoSizeBox,
+          }}
+        />
         <Swiper
           // PLAY_PAUSE gesture will end when the user takes action;
           onClick={() => {
