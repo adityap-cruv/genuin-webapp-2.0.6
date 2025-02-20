@@ -324,11 +324,17 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
       <div
         id="playerjs-upper-container"
         style={{ height: 75 }}
-        className={cn(
-          'animated-border relative m-auto flex w-full items-center justify-between overflow-clip 2xl:container 2xl:px-0',
-          { 'border-b-4': isIHeartPlaying && !isMobile && !isPipOpen && isReady },
-          { 'border-4 ': showBorder && isMobile && isReady }
-        )}>
+        className={cn('relative m-auto flex w-full items-center justify-between overflow-clip 2xl:container 2xl:px-0')}>
+        {showBorder && isIHeartPlaying && (
+          <div
+            className={cn(
+              'pointer-events-none absolute z-10 h-full w-full border-4 border-transparent bg-transparent transition-all ease-in-out',
+              { 'animated-border': isIHeartPlaying && !isMobile && !isPipOpen && isReady },
+              { 'animated-border': showBorder && isMobile && isReady }
+            )}
+          />
+        )}
+
         <section
           id="playerjs-container"
           className={cn(
@@ -354,7 +360,10 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
             <img
               src="https://media.begenuin.com/iheart_demo/equalizer.gif"
               alt="gif"
-              className={`absolute  ${isMobile ? 'right-2.5 h-6 w-6' : 'right-28 h-8 w-8'}`}
+              style={{
+                right: isMobile || inModal ? '13px' : '56px',
+              }}
+              className={`absolute h-8 w-8`}
             />
           )}
           {!isPipOpen && !isMobile && !inModal && (
