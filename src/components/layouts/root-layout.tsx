@@ -37,7 +37,7 @@ export function RootHTML({
           ...style,
           ...(isIheartDemo ? { fontFamily: "'Helvetica Neue',Helvetica,Arial,sans-serif" } : {}),
         }}
-        className={cn('h-full w-full text-secondary md:h-screen', className)}
+        className={cn('fixed h-full w-full text-secondary md:h-screen', className)}
         {...props}>
         {children}
         <RedirectToHTTPS />
