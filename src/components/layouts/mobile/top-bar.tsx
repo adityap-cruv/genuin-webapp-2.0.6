@@ -190,6 +190,13 @@ function Menu({
             <CloseIcon variant={variant === 'transparent' || variant === 'light' ? 'dark' : 'light'} />
           </SheetClose>
         </div>
+        {shouldShowIHeartDemo && (
+          <>
+            <Stations />
+            <hr className="my-1 border border-monochrome-9" />
+          </>
+        )}
+        {shouldShowIHeartDemo && <p className="text-title-2-demi text-tertiary">Menu</p>}
         <Link href={{ pathname: PATH_NAME.home() }}>
           <MenuItem brandName={brandName} title="Home" isActive={pathName === PATH_NAME.home()}>
             <HomeIcon isActive={pathName === PATH_NAME.home()} />
@@ -222,6 +229,7 @@ function Menu({
             </Link>
           </>
         )}
+        {shouldShowIHeartDemo && <CategoryView />}
         <DownloadAppDialog />
         {isClaimed && status === 'unauthenticated' && webCTA !== 'app' && (
           <>
