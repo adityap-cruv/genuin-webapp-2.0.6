@@ -256,7 +256,46 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
       console.log('Player is ready!') // Log a message to the console
       ihrPlayerRef.current.ready(e)
       setIsReady(true)
-      // Listen for other player events (optional, for debugging)
+
+      // Create an invisible button to simulate user interaction
+      const btn = document.createElement('button')
+      btn.style.position = 'absolute'
+      btn.style.opacity = '0'
+      btn.style.pointerEvents = 'none'
+      document.body.appendChild(btn)
+
+      // Click the button once
+      btn.click()
+
+      // Remove the button after click
+      setTimeout(() => {
+        if (btn && document.body.contains(btn)) {
+          document.body.removeChild(btn)
+        }
+      }, 500)
+
+      let attempts = 0
+      const maxAttempts = 5
+
+      const tryPlaying = () => {
+        if (attempts >= maxAttempts || isIHeartPlaying) {
+          console.warn('Stopping play attempts.')
+          return
+        }
+
+        // console.log(`Attempt #${attempts + 1} to play the player.`)
+        ihrPlayerRef.current.play()
+        attempts++
+
+        setTimeout(() => {
+          if (!isIHeartPlaying) {
+            tryPlaying() // Retry if player is not playing
+          }
+        }, 2000)
+      }
+
+      tryPlaying() // Start the first attempt
+
       ihrPlayerRef.current.on('play', function () {
         console.log('Player is playing.')
         isProgrammatic.current.play = false
@@ -275,6 +314,7 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
 
       ihrPlayerRef.current.on('error', function (error: any) {
         console.error('Player error:', error)
+        setIsIHeartPlaying(false)
       })
     })
   }
