@@ -9,7 +9,7 @@ import { useGenuinOptions } from '@/lib/stores/genuin-options'
 import { useShallow } from 'zustand/react/shallow'
 import { CustomImage } from '@/components/custom/custom-image'
 import { Button } from '@/components/ui/button'
-import { getMobileAppUrl } from '@/lib/utils'
+import { getMobileAppUrl, openGeneratedLink } from '@/lib/utils'
 
 type DownloadDialogType = {
   title?: React.ReactNode
@@ -64,11 +64,14 @@ export function Body({ title, subtitle, deepLink }: DownloadDialogType) {
             </a>
           </div>
         ) : (
-          <a href={getMobileAppUrl()} target="_blank" rel="noopener noreferrer" className="w-full">
-            <Button className=" w-full" variant="default">
-              <p className="text-body-1-demi">Get App</p>
-            </Button>
-          </a>
+          <Button
+            className=" w-full"
+            variant="default"
+            onClick={() => {
+              openGeneratedLink(getMobileAppUrl())
+            }}>
+            <p className="text-body-1-demi">Get App</p>
+          </Button>
         )}
       </div>{' '}
     </ModalShell>

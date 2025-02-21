@@ -2,7 +2,7 @@
 import { Button } from '@components/ui/button'
 import { DownloadAppDialog } from '../pages/build/download-app-dialog'
 import Link from 'next/link'
-import { cn, getMobileAppUrl } from '@lib/utils'
+import { cn, getMobileAppUrl, openGeneratedLink } from '@lib/utils'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@components/ui/dropdown-menu'
 import { HamBurgerMenuIcon } from '@components/ui/ham-burger'
 import { HIRING_LINK } from '@lib/constants'
@@ -49,11 +49,13 @@ type GetAppButtonType = {
 
 function GetAppButton({ isMobile }: GetAppButtonType) {
   return isMobile ? (
-    <Link href={getMobileAppUrl()} target="_blank" rel="noopener noreferrer">
-      <Button size="sm">
-        <p className="text-body-1-bold text-monochrome-white">Get App</p>
-      </Button>
-    </Link>
+    <Button
+      size="sm"
+      onClick={() => {
+        openGeneratedLink(getMobileAppUrl())
+      }}>
+      <p className="text-body-1-bold text-monochrome-white">Get App</p>
+    </Button>
   ) : (
     <DownloadAppDialog>
       <Button size="sm">
