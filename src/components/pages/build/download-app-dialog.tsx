@@ -12,7 +12,7 @@ import Link from 'next/link'
 import { URL_TO_APP_STORE, URL_TO_PLAY_STORE } from '@lib/constants'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { useShallow } from 'zustand/react/shallow'
-import { getMobileGetAppUrl } from '@/lib/utils'
+import { getMobileAppUrl } from '@/lib/utils'
 
 interface FormData {
   phone: string
@@ -41,7 +41,9 @@ export function DownloadAppDialog({ children }: Props) {
   )
 
   return isMobile ? (
-    <div onClick={getMobileGetAppUrl}>{children}</div>
+    <Link href={getMobileAppUrl()} target="_blank" rel="noopener noreferrer">
+      <div>{children}</div>
+    </Link>
   ) : (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>

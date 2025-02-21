@@ -3,7 +3,7 @@ import { HamBurgerMenuIcon } from '@components/ui/ham-burger'
 import { Button } from '@components/ui/button'
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from '@components/ui/sheet'
 import { type ReactNode } from 'react'
-import { cn, getMobileGetAppUrl, getYear } from '@lib/utils'
+import { cn, getMobileAppUrl, getYear } from '@lib/utils'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { PopularIcon, HomeIcon, LatestIcon, ProfileIcon, ExploreIcon } from '@icons/side-bar-icons'
@@ -121,9 +121,11 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
         </SearchBar.mobile>
 
         {(webCTA === 'app' || webCTA === 'both') && (
-          <Button className="h-8" variant="outline" onClick={getMobileGetAppUrl}>
-            <p className="text-[15px] text-body-1-demi">Get App</p>
-          </Button>
+          <Link href={getMobileAppUrl()} target="_blank" rel="noopener noreferrer">
+            <Button className="h-8" variant="outline">
+              <p className="text-[15px] text-body-1-demi">Get App</p>
+            </Button>
+          </Link>
         )}
         {webCTA !== 'app' && <UserTick variant={variant} webCTA={webCTA} />}
         {showClose && (
