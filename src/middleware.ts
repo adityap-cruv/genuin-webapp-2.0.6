@@ -67,6 +67,9 @@ export async function middleware(request: NextRequest) {
       } else if (Number(config?.brand_id) === 2314) {
         // hard coding for carlist
         return NextResponse.rewrite(new URL('/.well-known/carlist/apple-app-site-association', request.url))
+      } else if (Number(config?.brand_id) === 2357) {
+        // hard coding for ted
+        return NextResponse.rewrite(new URL('/.well-known/ted/apple-app-site-association', request.url))
       } else {
         return NextResponse.next()
       }
