@@ -1,0 +1,29 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "387HR8NQ2Y.com.ted.TED",
+        "paths": [
+          "NOT /talks",
+          "NOT /talks/",
+          "NOT /talks/*/discussion*",
+          "NOT /talks/*/reading-list*",
+          "NOT /talks/*/transcript*",
+          "NOT /talks/*=*",
+          "/talks/*"
+        ]
+      },
+      {
+        "appID": "4Z6E862WH7.com.ted.TED.development",
+        "paths": [
+          "NOT /talks",
+          "NOT /talks/",
+          "NOT /talks/*/transcript*",
+          "NOT /talks/*=*",
+          "/talks/*"
+        ]
+      }
+    ]
+  }
+}
