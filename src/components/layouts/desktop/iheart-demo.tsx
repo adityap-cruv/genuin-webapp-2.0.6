@@ -48,12 +48,20 @@ export const STATIONS = [
     name: 'Recommended',
     communities: [
       {
-        name: 'Hot 97',
-        slug: 'hot-97',
-        audio: 'https://www.iheart.com/live/hot-97-6046/?embed=true&pname=begeniun&autoplay=1',
+        name: 'The Breakfast Club',
+        slug: 'the-breakfast-club',
+        audio: 'https://www.iheart.com/podcast/51-the-breakfast-club-24992238/?embed=true&pname=begeniun&autoplay=1',
         profileImage:
-          'https://media.begenuin.com/uploads/profile_images/community/s/communityProfile_1739855223599.png',
-        brand: 'hot-97',
+          'https://media.begenuin.com/uploads/profile_images/community/s/communityProfile_1740381379283.png',
+        brand: 'breakfast-club',
+      },
+      {
+        name: 'Power 105.1',
+        slug: 'power-1051-fm',
+        audio: 'https://www.iheart.com/live/power-1051-1481/?embed=true&pname=begeniun&autoplay=1',
+        profileImage:
+          'https://media.begenuin.com/uploads/profile_images/community/s/communityProfile_1740386971735.png',
+        brand: 'power-1051-fm',
       },
       {
         name: 'Sabrina Carpenter',
