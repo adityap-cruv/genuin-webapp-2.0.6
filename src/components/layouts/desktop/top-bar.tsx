@@ -22,6 +22,7 @@ import { Shimmer } from '@/components/ui/shimmer'
 import { CustomImage } from '@/components/custom/custom-image'
 import { IHeartDemo } from './iheart-demo'
 import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
+import Analytics from '@/services/analytics'
 
 export function TopBar({
   showUserTick = true,
@@ -77,7 +78,18 @@ export function TopBar({
 
               {(webCTA === 'app' || webCTA === 'both') && (
                 <DownloadAppDialog>
-                  <Button variant="outline" size={'custom'} className="h-8 px-4 py-3">
+                  <Button
+                    variant="outline"
+                    size={'custom'}
+                    className="h-8 px-4 py-3"
+                    onClick={() => {
+                      void Analytics.track({
+                        eventName: 'Get App Button Clicked',
+                        properties: {
+                          device_type: 'Web',
+                        },
+                      })
+                    }}>
                     <p className="flex-shrink-0 text-[15px] text-new-para-2 font-semibold">Get App</p>
                   </Button>
                 </DownloadAppDialog>

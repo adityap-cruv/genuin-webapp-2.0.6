@@ -126,6 +126,12 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
             variant="outline"
             onClick={() => {
               openGeneratedLink(getMobileAppUrl())
+              void Analytics.track({
+                eventName: 'Get App Button Clicked',
+                properties: {
+                  device_type: 'Web',
+                },
+              })
             }}>
             <p className="text-[15px] text-body-1-demi">Get App</p>
           </Button>

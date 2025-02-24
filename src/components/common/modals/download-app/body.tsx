@@ -10,6 +10,7 @@ import { useShallow } from 'zustand/react/shallow'
 import { CustomImage } from '@/components/custom/custom-image'
 import { Button } from '@/components/ui/button'
 import { getMobileAppUrl, openGeneratedLink } from '@/lib/utils'
+import Analytics from '@/services/analytics'
 
 type DownloadDialogType = {
   title?: React.ReactNode
@@ -69,6 +70,12 @@ export function Body({ title, subtitle, deepLink }: DownloadDialogType) {
             variant="default"
             onClick={() => {
               openGeneratedLink(getMobileAppUrl())
+              void Analytics.track({
+                eventName: 'Get App Button Clicked',
+                properties: {
+                  device_type: 'Web',
+                },
+              })
             }}>
             <p className="text-body-1-demi">Get App</p>
           </Button>

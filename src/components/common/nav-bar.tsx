@@ -9,6 +9,7 @@ import { HIRING_LINK } from '@lib/constants'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { type VariantProps, cva } from 'class-variance-authority'
 import { AppLogo } from '@components/ui/app-logo'
+import Analytics from '@/services/analytics'
 
 const navbarVariant = cva('fixed left-0 top-0 z-10 m-auto flex h-navbar w-full', {
   variants: {
@@ -53,12 +54,27 @@ function GetAppButton({ isMobile }: GetAppButtonType) {
       size="sm"
       onClick={() => {
         openGeneratedLink(getMobileAppUrl())
+        void Analytics.track({
+          eventName: 'Get App Button Clicked',
+          properties: {
+            device_type: 'Web',
+          },
+        })
       }}>
       <p className="text-body-1-bold text-monochrome-white">Get App</p>
     </Button>
   ) : (
     <DownloadAppDialog>
-      <Button size="sm">
+      <Button
+        size="sm"
+        onClick={() => {
+          void Analytics.track({
+            eventName: 'Get App Button Clicked',
+            properties: {
+              device_type: 'Web',
+            },
+          })
+        }}>
         <p className="line-clamp-1 text-body-1-bold text-monochrome-white">Get App</p>
       </Button>
     </DownloadAppDialog>

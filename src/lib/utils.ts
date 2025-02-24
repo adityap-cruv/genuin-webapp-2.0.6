@@ -8,6 +8,7 @@ import { AuthenticationModal } from '@components/common/modals/authentication'
 import { type ReactNode } from 'react'
 import { MOBILE_DOWNLOAD_APP_LINK, PROTECTED_ROUTES } from './constants'
 import { type CommunityUserRoleType } from './schemas/roles'
+import Analytics from '@/services/analytics'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -242,11 +243,18 @@ export const generateDeepLink = async ({
   ).toString()}`
 
   if (isMobile) {
+    const shortLink = webCTA === 'app' ? getMobileAppUrl() : redirectionUrl
     if (webCTA === 'app') {
-      return getMobileAppUrl()
-    } else {
-      return redirectionUrl
+      await Analytics.track({
+        eventName: action !== '/' ? 'Download App Clicked' : 'Download App Viewed',
+        properties: {
+          device_type: 'Web',
+          redirection_link: shortLink,
+          action,
+        },
+      })
     }
+    return shortLink
   } else {
     try {
       const res = await axiosInstance.post(
@@ -254,6 +262,18 @@ export const generateDeepLink = async ({
         finalPayload
       )
       const shortLink = res?.data?.data?.shortLink
+
+      if (webCTA === 'app') {
+        await Analytics.track({
+          eventName: 'Download App Viewed',
+          properties: {
+            device_type: 'Web',
+            redirection_link: shortLink,
+            action,
+          },
+        })
+      }
+
       return shortLink
     } catch (e) {
       return process.env.NEXT_PUBLIC_HOST_URL

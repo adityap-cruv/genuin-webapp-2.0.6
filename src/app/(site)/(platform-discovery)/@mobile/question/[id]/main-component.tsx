@@ -1,4 +1,5 @@
 'use client'
+import Analytics from '@/services/analytics'
 import { DownloadAppDialog } from '@components/pages/build/download-app-dialog'
 import { Button } from '@components/ui/button'
 
@@ -17,7 +18,16 @@ export function MainComponent({ questionDetails }: Props) {
         </div>
         <div className="mt-6">
           <DownloadAppDialog>
-            <Button className="px-6 py-6">
+            <Button
+              className="px-6 py-6"
+              onClick={() => {
+                void Analytics.track({
+                  eventName: 'Get App Button Clicked',
+                  properties: {
+                    device_type: 'Web',
+                  },
+                })
+              }}>
               <p className="mx-2 text-title-2-bold text-new-off-white">Get App</p>
             </Button>
           </DownloadAppDialog>
