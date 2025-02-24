@@ -23,6 +23,7 @@ import { CustomImage } from '@/components/custom/custom-image'
 import { IHeartDemo } from './iheart-demo'
 import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
 import Analytics from '@/services/analytics'
+import { getPlatform } from '@/lib/utils'
 
 export function TopBar({
   showUserTick = true,
@@ -86,7 +87,7 @@ export function TopBar({
                       void Analytics.track({
                         eventName: 'Get App Button Clicked',
                         properties: {
-                          device_type: 'Web',
+                          device_type: getPlatform(),
                         },
                       })
                     }}>

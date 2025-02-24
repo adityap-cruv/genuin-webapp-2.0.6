@@ -3,7 +3,7 @@ import { HamBurgerMenuIcon } from '@components/ui/ham-burger'
 import { Button } from '@components/ui/button'
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from '@components/ui/sheet'
 import { type ReactNode } from 'react'
-import { cn, getMobileAppUrl, getYear, openGeneratedLink } from '@lib/utils'
+import { cn, getMobileAppUrl, getPlatform, getYear, openGeneratedLink } from '@lib/utils'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { PopularIcon, HomeIcon, LatestIcon, ProfileIcon, ExploreIcon } from '@icons/side-bar-icons'
@@ -129,7 +129,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
               void Analytics.track({
                 eventName: 'Get App Button Clicked',
                 properties: {
-                  device_type: 'Web',
+                  device_type: getPlatform(),
                 },
               })
             }}>

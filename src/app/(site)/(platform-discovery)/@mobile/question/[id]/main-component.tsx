@@ -1,4 +1,5 @@
 'use client'
+import { getPlatform } from '@/lib/utils'
 import Analytics from '@/services/analytics'
 import { DownloadAppDialog } from '@components/pages/build/download-app-dialog'
 import { Button } from '@components/ui/button'
@@ -24,7 +25,7 @@ export function MainComponent({ questionDetails }: Props) {
                 void Analytics.track({
                   eventName: 'Get App Button Clicked',
                   properties: {
-                    device_type: 'Web',
+                    device_type: getPlatform(),
                   },
                 })
               }}>

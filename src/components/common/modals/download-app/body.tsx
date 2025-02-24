@@ -9,7 +9,7 @@ import { useGenuinOptions } from '@/lib/stores/genuin-options'
 import { useShallow } from 'zustand/react/shallow'
 import { CustomImage } from '@/components/custom/custom-image'
 import { Button } from '@/components/ui/button'
-import { getMobileAppUrl, openGeneratedLink } from '@/lib/utils'
+import { getMobileAppUrl, getPlatform, openGeneratedLink } from '@/lib/utils'
 import Analytics from '@/services/analytics'
 
 type DownloadDialogType = {
@@ -73,7 +73,7 @@ export function Body({ title, subtitle, deepLink }: DownloadDialogType) {
               void Analytics.track({
                 eventName: 'Get App Button Clicked',
                 properties: {
-                  device_type: 'Web',
+                  device_type: getPlatform(),
                 },
               })
             }}>

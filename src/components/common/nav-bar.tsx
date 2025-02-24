@@ -2,7 +2,7 @@
 import { Button } from '@components/ui/button'
 import { DownloadAppDialog } from '../pages/build/download-app-dialog'
 import Link from 'next/link'
-import { cn, getMobileAppUrl, openGeneratedLink } from '@lib/utils'
+import { cn, getMobileAppUrl, getPlatform, openGeneratedLink } from '@lib/utils'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@components/ui/dropdown-menu'
 import { HamBurgerMenuIcon } from '@components/ui/ham-burger'
 import { HIRING_LINK } from '@lib/constants'
@@ -57,7 +57,7 @@ function GetAppButton({ isMobile }: GetAppButtonType) {
         void Analytics.track({
           eventName: 'Get App Button Clicked',
           properties: {
-            device_type: 'Web',
+            device_type: getPlatform(),
           },
         })
       }}>
@@ -71,7 +71,7 @@ function GetAppButton({ isMobile }: GetAppButtonType) {
           void Analytics.track({
             eventName: 'Get App Button Clicked',
             properties: {
-              device_type: 'Web',
+              device_type: getPlatform(),
             },
           })
         }}>

@@ -248,7 +248,7 @@ export const generateDeepLink = async ({
       await Analytics.track({
         eventName: action !== '/' ? 'Download App Clicked' : 'Download App Viewed',
         properties: {
-          device_type: 'Web',
+          device_type: getPlatform(),
           redirection_link: shortLink,
           action,
         },
@@ -267,7 +267,7 @@ export const generateDeepLink = async ({
         await Analytics.track({
           eventName: 'Download App Viewed',
           properties: {
-            device_type: 'Web',
+            device_type: getPlatform(),
             redirection_link: shortLink,
             action,
           },
@@ -471,3 +471,17 @@ export function getMobileAppUrl() {
 
   return isIOS ? appStoreLink : playStoreLink
 }
+
+export const getPlatform = () => {
+  if (typeof navigator !== "undefined") {
+    const userAgent = navigator.userAgent || navigator.vendor;
+    
+    if (/android/i.test(userAgent)) {
+      return "Android";
+    }
+    if (/iPhone|iPad|iPod/i.test(userAgent)) {
+      return "iOS";
+    }
+  }
+  return "Web";
+};
