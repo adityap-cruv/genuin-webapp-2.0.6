@@ -3,12 +3,13 @@ import { ModalShell } from '../authentication/modal-shell'
 import Image from 'next/image'
 import imageAppStore from '@images/appStore.svg'
 import imagePlayStore from '@images/playStore.svg'
-import { MOBILE_DOWNLOAD_APP_LINK, URL_TO_APP_STORE, URL_TO_PLAY_STORE } from '@lib/constants'
+import { URL_TO_APP_STORE, URL_TO_PLAY_STORE } from '@lib/constants'
 import { QRCode } from 'react-qrcode-logo'
 import { useGenuinOptions } from '@/lib/stores/genuin-options'
 import { useShallow } from 'zustand/react/shallow'
 import { CustomImage } from '@/components/custom/custom-image'
 import { Button } from '@/components/ui/button'
+import { getMobileAppUrl, openGeneratedLink } from '@/lib/utils'
 
 type DownloadDialogType = {
   title?: React.ReactNode
@@ -17,10 +18,6 @@ type DownloadDialogType = {
 }
 
 export function Body({ title, subtitle, deepLink }: DownloadDialogType) {
-  const isIOS = () => {
-    const win = window as any
-    return typeof window !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent) && !win.MSStream
-  }
   const { links, brandLogo, isMobile } = useGenuinOptions(
     useShallow((state) => ({
       links: {
@@ -67,15 +64,14 @@ export function Body({ title, subtitle, deepLink }: DownloadDialogType) {
             </a>
           </div>
         ) : (
-          <a
-            href={isIOS() ? links.appStoreLink : links.playStoreLink ?? MOBILE_DOWNLOAD_APP_LINK}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full">
-            <Button className=" w-full" variant="default">
-              <p className="text-body-1-demi">Get App</p>
-            </Button>
-          </a>
+          <Button
+            className=" w-full"
+            variant="default"
+            onClick={() => {
+              openGeneratedLink(getMobileAppUrl())
+            }}>
+            <p className="text-body-1-demi">Get App</p>
+          </Button>
         )}
       </div>{' '}
     </ModalShell>
