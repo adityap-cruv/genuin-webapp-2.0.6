@@ -2,7 +2,6 @@
 import { Button } from '@components/ui/button'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { DownloadAppDialog } from '@components/pages/build/download-app-dialog'
 import { AppLogo } from '@components/ui/app-logo'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { AuthenticationModal } from '@components/common/modals/authentication'
@@ -22,8 +21,7 @@ import { Shimmer } from '@/components/ui/shimmer'
 import { CustomImage } from '@/components/custom/custom-image'
 import { IHeartDemo } from './iheart-demo'
 import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
-import Analytics from '@/services/analytics'
-import { getPlatform } from '@/lib/utils'
+import GetAppButton from '@/components/common/get-app-button'
 
 export function TopBar({
   showUserTick = true,
@@ -78,22 +76,12 @@ export function TopBar({
               <WalletAmountBadge type="dark" />
 
               {(webCTA === 'app' || webCTA === 'both') && (
-                <DownloadAppDialog>
-                  <Button
-                    variant="outline"
-                    size={'custom'}
-                    className="h-8 px-4 py-3"
-                    onClick={() => {
-                      void Analytics.track({
-                        eventName: 'Get App Button Clicked',
-                        properties: {
-                          device_type: getPlatform(),
-                        },
-                      })
-                    }}>
-                    <p className="flex-shrink-0 text-[15px] text-new-para-2 font-semibold">Get App</p>
-                  </Button>
-                </DownloadAppDialog>
+                <GetAppButton
+                  buttonText="Get App"
+                  className="h-8 flex-shrink-0 px-4 py-3 text-[15px] text-new-para-2 font-semibold text-primary"
+                  variant="outline"
+                  size="custom"
+                />
               )}
               {webCTA !== 'app' && showUserTick && <UserTick />}
             </div>

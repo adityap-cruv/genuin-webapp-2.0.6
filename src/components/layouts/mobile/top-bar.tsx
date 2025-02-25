@@ -3,7 +3,7 @@ import { HamBurgerMenuIcon } from '@components/ui/ham-burger'
 import { Button } from '@components/ui/button'
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from '@components/ui/sheet'
 import { type ReactNode } from 'react'
-import { cn, getMobileAppUrl, getPlatform, getYear, openGeneratedLink } from '@lib/utils'
+import { cn, getYear } from '@lib/utils'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { PopularIcon, HomeIcon, LatestIcon, ProfileIcon, ExploreIcon } from '@icons/side-bar-icons'
@@ -34,6 +34,7 @@ import { Loader } from '@/components/ui/loader'
 import { SettingIcon } from '@icons/settings'
 import { CustomImage } from '@/components/custom/custom-image'
 import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
+import GetAppButton from '@/components/common/get-app-button'
 
 const DownloadAppDialog = dynamic(
   async () => await import('../download-app-dialog').then((comp) => comp.DownloadAppDialog)
@@ -121,20 +122,11 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
         </SearchBar.mobile>
 
         {(webCTA === 'app' || webCTA === 'both') && (
-          <Button
-            className="h-8"
+          <GetAppButton
+            buttonText="Get App"
+            className="h-8 text-[15px] text-body-1-demi text-primary"
             variant="outline"
-            onClick={() => {
-              openGeneratedLink(getMobileAppUrl())
-              void Analytics.track({
-                eventName: 'Get App Button Clicked',
-                properties: {
-                  device_type: getPlatform(),
-                },
-              })
-            }}>
-            <p className="text-[15px] text-body-1-demi">Get App</p>
-          </Button>
+          />
         )}
         {webCTA !== 'app' && <UserTick variant={variant} webCTA={webCTA} />}
         {showClose && (
