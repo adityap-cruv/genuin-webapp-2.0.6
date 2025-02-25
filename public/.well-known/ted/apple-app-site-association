@@ -11,7 +11,8 @@
           "NOT /talks/*/reading-list*",
           "NOT /talks/*/transcript*",
           "NOT /talks/*=*",
-          "/talks/*"
+          "/talks/*",
+          "/*"
         ]
       },
       {
@@ -21,7 +22,8 @@
           "NOT /talks/",
           "NOT /talks/*/transcript*",
           "NOT /talks/*=*",
-          "/talks/*"
+          "/talks/*",
+          "/*"
         ]
       }
     ]
