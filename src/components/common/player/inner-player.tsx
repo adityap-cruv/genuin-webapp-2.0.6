@@ -10,6 +10,7 @@ import {
 } from 'react'
 import { usePlayerControlStore } from './player-control-store'
 import { cn, encodeVideoSourceUrl } from '@/lib/utils'
+import { useGenuinOptions } from '@/lib/stores/genuin-options'
 import { useShallow } from 'zustand/react/shallow'
 import Analytics from '@/services/analytics'
 import { Loader } from '@/components/ui/loader'
@@ -65,6 +66,7 @@ export const InnerPlayer = memo(function InnerPlayer({
   onCanPlay,
   ...props
 }: Props) {
+  const brandId = useGenuinOptions().brandId
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<OpenPlayerJS | null>(null)
   const [playingState, setPlayingState] = useState<'paused' | 'playing' | 'loading'>('loading')
@@ -82,6 +84,10 @@ export const InnerPlayer = memo(function InnerPlayer({
     )
   const [hasStarted, setHasStarted] = useState(false)
   let encodedVideoSourceUrl = videoSource
+  if (brandId === '1729') {
+    // Replace the video source URL with the OCITest URL
+    encodedVideoSourceUrl = encodedVideoSourceUrl.replace('media.begenuin.com', 'ocitest.begenuin.com')
+  }
   // Create a URL object to easily access query parameters
   const videoUrl = new URL(videoSource)
   // If there are no query parameters meaning either it's m3u8 without query params or mp4 file
