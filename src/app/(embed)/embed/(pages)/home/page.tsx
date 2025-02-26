@@ -1,5 +1,4 @@
 'use client'
-import CarouselSection from '@/components/common/embed/carousel-section'
 import EmbedFooter from '@/components/common/embed/embed-footer'
 import EmbedNav from '@/components/common/embed/embed-nav'
 import CommunitiesSection from '@/components/common/embed/home/communities-section'
