@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, ButtonProps } from '../ui/button'
+import { Button, type ButtonProps } from '../ui/button'
 import Analytics from '@/services/analytics'
 import { getPlatform } from '@/lib/utils'
 import { DownloadAppDialog } from '@components/pages/build/download-app-dialog'
