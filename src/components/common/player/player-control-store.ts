@@ -25,6 +25,8 @@ type PlayerControlStoreType = {
   isIconVisible: boolean
   isFullScreen: boolean
   toggleFullScreen: () => void
+  isCommentBoxOpen: boolean
+  toggleCommentBox: () => void
 }
 
 export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
@@ -130,7 +132,14 @@ export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
     // For Full Screen
     isFullScreen: false,
     toggleFullScreen() {
-      set((state) => ({ isFullScreen: !state.isFullScreen }))
+      set((state) => ({
+        isFullScreen: !state.isFullScreen,
+        isCommentBoxOpen: state.isFullScreen ? false : state.isCommentBoxOpen,
+      }))
+    },
+    isCommentBoxOpen: false,
+    toggleCommentBox() {
+      set((state) => ({ isCommentBoxOpen: !state.isCommentBoxOpen }))
     },
   }
 })

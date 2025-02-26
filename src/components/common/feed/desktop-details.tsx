@@ -163,7 +163,7 @@ export function DesktopDetails({ loop, community, owner, video }: DesktopDetails
   )
 }
 
-function CommentBox({
+export function CommentBox({
   videoId,
   parentRef,
   setComments,

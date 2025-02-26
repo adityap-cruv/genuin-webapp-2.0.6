@@ -1,9 +1,10 @@
-import { checkAndAppendHttps, openModal } from '@lib/utils'
+import { abbreviateNumber, checkAndAppendHttps, openModal } from '@lib/utils'
 import icShare from '@icons/player-controls/icon-share.svg'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import icLinkout from '@icons/player-controls/icLinkout.svg'
 import icRepost from '@icons/player-controls/icon-remix.svg'
+import icComment from '@icons/player-controls/icon-comment.svg'
 import Link from 'next/link'
 import Image from 'next/image'
 import Analytics from '@services/analytics'
@@ -14,6 +15,8 @@ import { RepostModal } from '@components/common/modals/repost'
 import { repostDeepLink } from '@/lib/get-deeplink'
 import { useWalletBalanceHandler } from '@/services/wallet-handler'
 import { Spark } from './spark'
+import { usePlayerControlStore } from '../../player-control-store'
+import { useShallow } from 'zustand/react/shallow'
 
 type DesktopActionsProps = {
   sparkCount: number
@@ -23,6 +26,7 @@ type DesktopActionsProps = {
   attachedLink?: string | null
   description?: string | null
   isSparked?: boolean | null | undefined
+  commentCount?: number
   // /**
   //  * Determines whether repost is allowed or not.
   //  */
@@ -37,6 +41,7 @@ export function Desktop({
   attachedLink,
   description,
   isSparked, // isPostAllowed,
+  commentCount,
 }: DesktopActionsProps) {
   const { handleWalletBalance } = useWalletBalanceHandler()
   const { shareFn } = useAdaptiveShare()
@@ -47,6 +52,12 @@ export function Desktop({
   }))
   const pathname = usePathname()
   const searchParams = Object.fromEntries(useSearchParams())
+  const { isFullScreen, toggleCommentBox } = usePlayerControlStore(
+    useShallow((state) => ({
+      isFullScreen: state.isFullScreen,
+      toggleCommentBox: state.toggleCommentBox,
+    }))
+  )
 
   return (
     <>
@@ -104,6 +115,20 @@ export function Desktop({
           shareUrl={shareUrl}
           videoSlug={videoSlug}
         />
+        {isFullScreen && (
+          <div>
+            <ActionItem
+              title="See Comments!"
+              onClick={() => {
+                toggleCommentBox()
+              }}>
+              <Image src={icComment} alt="comments" height={32} width={32} />
+            </ActionItem>
+            <p className="flex justify-center text-body-1-demi text-monochrome-white">
+              {abbreviateNumber(commentCount ?? 0)}
+            </p>
+          </div>
+        )}
         <ActionItem
           title="Share Video!"
           onClick={async () => {

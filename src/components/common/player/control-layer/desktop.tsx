@@ -21,6 +21,7 @@ type DesktopProps = {
   description?: string | null
   isSparked?: boolean | null | undefined
   isInModal?: boolean
+  commentCount?: number
 }
 
 export const Desktop = memo(function Desktop({
@@ -33,6 +34,7 @@ export const Desktop = memo(function Desktop({
   isSparked,
   isInModal,
   clickableUrl,
+  commentCount,
 }: DesktopProps) {
   const { setShouldPlay, shouldPlay, muted, toggleMuted, toggleButtonVisibility, toggleFullScreen, isFullScreen } =
     usePlayerControlStore(
@@ -80,7 +82,7 @@ export const Desktop = memo(function Desktop({
   )
 
   return (
-    <div className="relative h-full w-full">
+    <div className="relative z-30 h-full w-full">
       <div
         onClick={clickableUrl ? openClickableUrl : handleVideoClick}
         className={cn('absolute inset-0', clickableUrl && 'cursor-pointer')}>
@@ -134,6 +136,7 @@ export const Desktop = memo(function Desktop({
             attachedLink={attachedLink}
             description={description}
             isSparked={isSparked}
+            commentCount={commentCount}
           />
         </div>
       )}

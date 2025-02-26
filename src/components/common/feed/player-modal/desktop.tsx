@@ -5,26 +5,28 @@ import {
   CustomDialogContent,
   CustomDialogTrigger,
 } from '@components/custom/custom-dialog'
-import icUpArrow from '@icons/player-controls/icArrowUp.svg'
-import icDownArrow from '@icons/player-controls/icArrowDown.svg'
-import Image from 'next/image'
 import { Loader } from '@components/ui/loader'
 import { cn } from '@lib/utils'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { UnseenMessageRibbon } from '../../unseen-message-ribbon'
-import { Button } from '@/components/ui/button'
 import { FeedContextProvider, useFeedListContext } from '@/components/providers/feed-provider'
 import { Player } from '../../player'
-import { type VideoSizeBoxType } from '@lib/stores/genuin-options'
 import { usePlayerControlStore } from '../../player/player-control-store'
 import { DesktopDetails } from '../desktop-details'
 import Analytics from '@/services/analytics'
 import { type CommunityUserRoleType } from '@/lib/schemas/roles'
 import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
 import { IHeartDemo } from '@/components/layouts/desktop/iheart-demo'
-import { useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { CloseIcon } from '@icons/close-icon'
+import { type Swiper as SwiperType } from 'swiper/types'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { Mousewheel, Keyboard } from 'swiper/modules'
+import { Actions } from '../../player/control-layer/actions'
+import FullScreenCommentBox from '../../full-screen-comment-box'
+import FullScreenSideButtons from '../../full-screen-side-buttons'
+import FullScreenVideoDetails from '../../full-screen-video-details'
 
 type Props = {
   children?: React.ReactNode
@@ -66,7 +68,7 @@ export function Desktop({
   onCommunityJoin,
 }: Props) {
   const { setRenderIn: setIHeartDemoRenderIn } = useIHeartDemoStates()
-  const { mute } = usePlayerControlStore()
+  const { mute, isFullScreen, isCommentBoxOpen } = usePlayerControlStore()
 
   // This is to show the iheart demo in the modal.
   useEffect(() => {
@@ -86,7 +88,10 @@ export function Desktop({
           e.preventDefault()
         }}
         showDefaultClose={false}>
-        <div className="relative flex items-center gap-x-6">
+        <div
+          className={cn('relative flex items-center gap-x-6', {
+            'fixed inset-0 z-50 h-full w-full justify-center bg-monochrome-black': isFullScreen,
+          })}>
           {isLoading ? (
             <Loader size="md" />
           ) : (
@@ -97,7 +102,13 @@ export function Desktop({
               fetchNextPage={fetchNextVideos}
               isFetchingNextPage={isFetchingNextPage}
               onCommunityJoin={onCommunityJoin}>
-              <Content unreadMessageCount={unreadMessageCount} isInModal={isInModal} close={close} />
+              <Content
+                unreadMessageCount={unreadMessageCount}
+                isInModal={isInModal}
+                close={close}
+                isFullScreen={isFullScreen}
+                isCommentBoxOpen={isCommentBoxOpen}
+              />
             </FeedContextProvider>
           )}
         </div>
@@ -106,106 +117,165 @@ export function Desktop({
   )
 }
 
-type ContentPropsType = { unreadMessageCount?: number; isInModal?: boolean; close?: () => void }
+type ContentPropsType = {
+  unreadMessageCount?: number
+  isInModal?: boolean
+  close?: () => void
+  isFullScreen: boolean
+  isCommentBoxOpen: boolean
+}
 
-function Content({ unreadMessageCount, isInModal, close }: ContentPropsType) {
+function Content({ unreadMessageCount, isInModal, close, isFullScreen, isCommentBoxOpen }: ContentPropsType) {
   const sizeBox = useGenuinOptions().sizeBoxes
   const { videos, updateCurrentIndex, currentIndex } = useFeedListContext()
   const { shouldShowIHeartDemo, renderIn } = useIHeartDemoStates()
+  const [swiperInstance, setSwiperInstance] = useState<SwiperType | null>(null)
+
+  const handleActiveIndexChange = useCallback(
+    (swiper: SwiperType) => {
+      updateCurrentIndex(swiper.activeIndex)
+    },
+    [updateCurrentIndex]
+  )
 
   return (
     <>
       <div
-        style={{ width: sizeBox.modal.width }}
-        className="relative min-w-[800px] overflow-clip rounded-2xl bg-monochrome-white">
-        <div style={{ height: sizeBox.modal.height }} className="relative">
-          <CustomDialogClose
-            onClick={() => {
-              close?.()
-            }}
-            className="absolute right-4 top-4 z-10 border-none outline-none">
-            <CloseIcon />
-          </CustomDialogClose>
+        style={{ width: isFullScreen ? '100%' : sizeBox.modal.width }}
+        className={cn('relative min-w-[800px] overflow-clip rounded-2xl', {
+          'flex h-full w-full justify-center gap-20': isFullScreen,
+        })}>
+        <div style={{ height: isFullScreen ? '100%' : sizeBox.modal.height }} className="relative">
+          {!isFullScreen && (
+            <CustomDialogClose
+              onClick={() => {
+                close?.()
+              }}
+              className="absolute right-4 top-4 z-10 border-none outline-none">
+              <CloseIcon />
+            </CustomDialogClose>
+          )}
           {/* Please done modify below condition to  unreadMessageCount && unreadMessageCount !== 0,
              it is creating the problem on showing the 0 on the UI */}
-          {unreadMessageCount !== undefined && unreadMessageCount !== 0 && (
+          {!isFullScreen && unreadMessageCount !== undefined && unreadMessageCount !== 0 && (
             <div
               style={{ width: sizeBox.modal.player.width }}
               className="absolute inset-0 z-10 flex h-fit w-full items-center justify-center">
               <UnseenMessageRibbon messageCount={unreadMessageCount ?? 0} />
             </div>
           )}
-          <SinglePlayer videoData={{ ...videos[currentIndex] }} sizeBox={sizeBox.modal.player} isInModal={isInModal} />
+          <div className={cn('flex h-full w-full')}>
+            <div
+              style={{
+                width: isFullScreen ? undefined : sizeBox.modal.player.width,
+                height: isFullScreen ? '100vh' : sizeBox.modal.player.height,
+                aspectRatio: isFullScreen ? '9 / 16' : undefined,
+              }}
+              className="hide-scrollbar overflow-x-clip bg-red">
+              <Swiper
+                // PLAY_PAUSE gesture will end when the user takes action;
+                onSwiper={setSwiperInstance} // Correctly assigns Swiper instance
+                onActiveIndexChange={handleActiveIndexChange}
+                // allowSlideNext={allowSlideNext}
+                keyboard={true}
+                // initialSlide={startIndex}
+                speed={500}
+                modules={[Mousewheel, Keyboard]}
+                mousewheel
+                style={{
+                  width: isFullScreen ? undefined : sizeBox.modal.player.width,
+                  height: isFullScreen ? '100%' : sizeBox.modal.player.height,
+                  aspectRatio: isFullScreen ? '9 / 16' : undefined,
+                }}
+                direction="vertical">
+                {videos.map((_, index: number) => {
+                  return (
+                    <SwiperSlide key={index}>
+                      {({ isActive, isPrev, isNext }) => {
+                        if (isActive || isPrev || isNext)
+                          if (videos[index])
+                            return (
+                              <>
+                                <Player.desktop
+                                  isActive
+                                  videoData={{
+                                    id: videos[currentIndex].video.id,
+                                    shareUrl: videos[currentIndex].video.shareUrl,
+                                    attachedLink: videos[currentIndex].video.attachedLink,
+                                    source: videos[currentIndex].video.source,
+                                    sparkCount: videos[currentIndex].video.sparkCount,
+                                    thumbnail: videos[currentIndex].video.thumbnail,
+                                    slug: videos[currentIndex].video.slug,
+                                    description: videos[currentIndex].video.descriptionText,
+                                    clickableUrl: videos[currentIndex].video.clickableUrl,
+                                    isSparked: videos[currentIndex].video.isSparked,
+                                  }}
+                                  loop
+                                  onEnded={() => {
+                                    const { currentTime, duration } = usePlayerControlStore.getState()
+                                    Analytics.triggerAnalyticsForVideoComplete(
+                                      videos[currentIndex].video.id,
+                                      duration,
+                                      currentTime
+                                    )
+                                  }}
+                                  isInModal={isInModal}
+                                />
+
+                                {isFullScreen && (
+                                  <div className="fixed absolute inset-0 h-full w-full">
+                                    <FullScreenVideoDetails
+                                      videos={videos}
+                                      currentIndex={currentIndex}
+                                      isActive={isActive}
+                                    />
+                                  </div>
+                                )}
+                              </>
+                            )
+                      }}
+                    </SwiperSlide>
+                  )
+                })}
+              </Swiper>
+            </div>
+            {!isFullScreen && <DesktopDetails {...videos[currentIndex]} />}
+            {isFullScreen && (
+              <div className="flex h-full flex-col justify-end p-4">
+                <Actions.desktop
+                  shareUrl={videos[currentIndex].video.shareUrl}
+                  sparkCount={videos[currentIndex].video.sparkCount}
+                  videoId={videos[currentIndex].video.id}
+                  videoSlug={videos[currentIndex].video.slug}
+                  attachedLink={videos[currentIndex].video.attachedLink}
+                  description={videos[currentIndex].video.descriptionText}
+                  isSparked={videos[currentIndex].video.isSparked}
+                  commentCount={videos[currentIndex].video.commentCount}
+                />
+              </div>
+            )}
+          </div>
         </div>
         {shouldShowIHeartDemo && renderIn === 'modal' && (
           <div id="iframe-modal" style={{ height: '70px' }}>
             <IHeartDemo />
           </div>
         )}
+
+        {isFullScreen && (
+          <div className="absolute right-2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col gap-4">
+            <FullScreenSideButtons videos={videos} currentIndex={currentIndex} swiperInstance={swiperInstance} />
+          </div>
+        )}
+
+        {isCommentBoxOpen && isFullScreen && <FullScreenCommentBox videos={videos} currentIndex={currentIndex} />}
       </div>
-      <div className="flex flex-col gap-y-4">
-        <Button
-          disabled={currentIndex === 0}
-          onClick={() => {
-            updateCurrentIndex(currentIndex - 1)
-          }}
-          className={cn(
-            'rounded-full bg-monochrome-white/10 p-2 hover:bg-monochrome-white/20',
-            currentIndex === 0 ? 'opacity-40' : undefined
-          )}>
-          <Image src={icUpArrow} alt="" />
-        </Button>
-        <Button
-          disabled={currentIndex === videos.length - 1}
-          onClick={() => {
-            updateCurrentIndex(currentIndex + 1)
-          }}
-          className={cn(
-            'rounded-full bg-monochrome-white/10 p-2 hover:bg-monochrome-white/20',
-            currentIndex === videos?.length - 1 ? 'opacity-40' : undefined
-          )}>
-          <Image src={icDownArrow} alt="" />
-        </Button>
-      </div>
+
+      {!isFullScreen && (
+        <div className="flex flex-col gap-y-4">
+          <FullScreenSideButtons videos={videos} currentIndex={currentIndex} swiperInstance={swiperInstance} />
+        </div>
+      )}
     </>
-  )
-}
-
-type SinglePlayerProps = {
-  videoData: VideoPlayerModalType
-  sizeBox: VideoSizeBoxType
-  className?: string
-  isInModal?: boolean
-}
-
-// TODO: Remove this component and use swiper instead.
-export function SinglePlayer({ sizeBox, className, videoData, isInModal }: SinglePlayerProps) {
-  return (
-    <div className={cn('flex h-full w-full', className)}>
-      <div style={{ ...sizeBox }} className="hide-scrollbar overflow-x-clip">
-        <Player.desktop
-          isActive
-          videoData={{
-            id: videoData.video.id,
-            shareUrl: videoData.video.shareUrl,
-            attachedLink: videoData.video.attachedLink,
-            source: videoData.video.source,
-            sparkCount: videoData.video.sparkCount,
-            thumbnail: videoData.video.thumbnail,
-            slug: videoData.video.slug,
-            description: videoData.video.descriptionText,
-            clickableUrl: videoData.video.clickableUrl,
-            isSparked: videoData.video.isSparked,
-          }}
-          loop
-          onEnded={(event) => {
-            const { currentTime, duration } = usePlayerControlStore.getState()
-            Analytics.triggerAnalyticsForVideoComplete(videoData.video.id, duration, currentTime)
-          }}
-          isInModal={isInModal}
-        />
-      </div>
-      <DesktopDetails {...videoData} />
-    </div>
   )
 }
