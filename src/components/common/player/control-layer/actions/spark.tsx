@@ -7,7 +7,7 @@ import { ActionItem } from './action-item'
 import Analytics from '@/services/analytics'
 import icSpark from '@icons/player-controls/icBulb.svg'
 import icSparkTrue from '@icons/player-controls/icSparkTrue.svg'
-import { abbreviateNumber, openModal } from '@/lib/utils'
+import { abbreviateNumber, cn, openModal } from '@/lib/utils'
 import { sparkDeepLink } from '@/lib/get-deeplink'
 import { useCallback, useState } from 'react'
 
@@ -20,7 +20,7 @@ type SparkComponentProps = {
 }
 
 export function Spark({ isSparked = false, sparkCount, videoId, shareUrl, videoSlug }: SparkComponentProps) {
-  const [, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const { handleWalletBalance } = useWalletBalanceHandler()
   const { user } = useGenuinOptions()
   const { updateSparkStatus } = useFeedListContext()
@@ -73,7 +73,7 @@ export function Spark({ isSparked = false, sparkCount, videoId, shareUrl, videoS
 
   return (
     <div>
-      <ActionItem title="Give spark!" onClick={handleSparkClick}>
+      <ActionItem title="Give spark!" className={cn(isLoading && 'pointer-events-none')} onClick={handleSparkClick}>
         <Image src={isSparked ? icSparkTrue : icSpark} height={32} width={32} alt="spark" />
       </ActionItem>
       <p className="flex justify-center text-body-1-demi text-monochrome-white">
