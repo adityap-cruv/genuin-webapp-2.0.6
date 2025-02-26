@@ -193,6 +193,8 @@ function Content({ isInModal, isFullScreen, isCommentBoxOpen }: ContentPropsType
               <div className="h-full px-4 pt-2">
                 <CommentBox
                   videoId={videos[currentIndex].video.id}
+                  slug={videos[currentIndex].video.slug}
+                  videoShareUrl={videos[currentIndex].video.shareUrl}
                   parentRef={scrollDivRef}
                   setComments={setComments}
                   comments={comments}

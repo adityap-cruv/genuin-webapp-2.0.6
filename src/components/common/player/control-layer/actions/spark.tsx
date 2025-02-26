@@ -7,7 +7,7 @@ import { ActionItem } from './action-item'
 import Analytics from '@/services/analytics'
 import icSpark from '@icons/player-controls/icBulb.svg'
 import icSparkTrue from '@icons/player-controls/icSparkTrue.svg'
-import { abbreviateNumber, cn, openModal } from '@/lib/utils'
+import { abbreviateNumber, openModal } from '@/lib/utils'
 import { sparkDeepLink } from '@/lib/get-deeplink'
 import { useCallback, useState } from 'react'
 
@@ -20,7 +20,7 @@ type SparkComponentProps = {
 }
 
 export function Spark({ isSparked = false, sparkCount, videoId, shareUrl, videoSlug }: SparkComponentProps) {
-  const [isLoading, setIsLoading] = useState(false)
+  const [, setIsLoading] = useState(false)
   const { handleWalletBalance } = useWalletBalanceHandler()
   const { user } = useGenuinOptions()
   const { updateSparkStatus } = useFeedListContext()

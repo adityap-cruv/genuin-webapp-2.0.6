@@ -164,6 +164,7 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
               if (!muted) setGestureOverlay('PLAY_PAUSE', false)
             }}
             onSwiper={(swiper) => {
+              setSwiperInstance(swiper)
               swiperRef.current = swiper
               ;(swiper as any).on('wheel', handleWheel)
             }}
