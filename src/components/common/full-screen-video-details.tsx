@@ -37,8 +37,10 @@ const FullScreenVideoDetails = ({
   const [showLinkouts, setShowLinkouts] = useState(false)
 
   useEffect(() => {
-    if (!videos[currentIndex].video.linkoutId) return
+    const currentVideo = videos[currentIndex]
+    if (!currentVideo?.video.linkoutId) return
     let timeoutId: NodeJS.Timeout | null = null
+
     // If video is active, show linkouts after 10 seconds.
     if (isActive) {
       timeoutId = setTimeout(() => {
@@ -54,69 +56,65 @@ const FullScreenVideoDetails = ({
         clearTimeout(timeoutId)
       }
     }
-  }, [isActive, videos[currentIndex].video.linkoutId])
+  }, [isActive, videos, currentIndex])
+
+  const currentVideo = videos[currentIndex]
 
   return (
     <div className="absolute bottom-4 left-0 flex w-full justify-between px-2">
       <div className="relative z-40 flex w-full flex-col justify-end">
         <div className="overflow-clip">
           <motion.div
-            initial={videos[currentIndex].video.linkoutId ? (showLinkouts ? Animations.hidden : undefined) : undefined}
+            initial={currentVideo?.video.linkoutId ? (showLinkouts ? Animations.hidden : undefined) : undefined}
             animate={
-              videos[currentIndex].video.linkoutId ? (showLinkouts ? Animations.visible : Animations.hidden) : undefined
+              currentVideo?.video.linkoutId ? (showLinkouts ? Animations.visible : Animations.hidden) : undefined
             }>
             <div className="flex items-center">
               <Link
                 className="flex cursor-pointer items-center hover:opacity-60"
                 href={{
-                  pathname: videos[currentIndex].owner.brand
-                    ? PATH_NAME.brand(videos[currentIndex].owner.brand.brand_slug)
-                    : PATH_NAME.profile(videos[currentIndex].owner.userName),
+                  pathname: currentVideo?.owner?.brand?.brand_slug
+                    ? PATH_NAME.brand(currentVideo.owner.brand.brand_slug)
+                    : PATH_NAME.profile(currentVideo.owner.userName),
                 }}>
                 <CustomAvatar
                   className="h-9 w-9 bg-red-40"
-                  imageUrl={videos[currentIndex].owner.profileImage}
-                  fallbackString={videos[currentIndex].owner.name ?? 'U'}
-                  isAvatar={videos[currentIndex].owner.isAvatar}
+                  imageUrl={currentVideo?.owner?.profileImage}
+                  fallbackString={currentVideo?.owner?.name ?? 'U'}
+                  isAvatar={currentVideo?.owner?.isAvatar}
                 />
                 <p className="line-clamp-1 break-all px-1 text-title-3-bold text-monochrome-white">
-                  @{videos[currentIndex].owner.userName}
+                  @{currentVideo?.owner?.userName}
                 </p>
               </Link>
-              {videos[currentIndex].owner.brand && (
+              {currentVideo?.owner?.brand && (
                 <BrandBadgeIcon
-                  userLogoType={videos[currentIndex].owner.brand?.brand_user_logo ?? undefined}
+                  userLogoType={currentVideo.owner.brand.brand_user_logo ?? undefined}
                   variant={'light'}
                 />
               )}
             </div>
             <motion.div
-              initial={
-                videos[currentIndex].video.linkoutId ? (showLinkouts ? Animations.hidden : undefined) : undefined
-              }
+              initial={currentVideo?.video.linkoutId ? (showLinkouts ? Animations.hidden : undefined) : undefined}
               animate={
-                videos[currentIndex].video.linkoutId
-                  ? showLinkouts
-                    ? Animations.fadeIn
-                    : Animations.fadeOut
-                  : undefined
+                currentVideo?.video.linkoutId ? (showLinkouts ? Animations.fadeIn : Animations.fadeOut) : undefined
               }>
-              {videos[currentIndex].video.linkoutId && (
+              {currentVideo?.video.linkoutId && (
                 <Linkout.mobile
-                  linkouts={videos[currentIndex].video.linkouts}
-                  linkoutId={videos[currentIndex].video.linkoutId}
-                  videoId={videos[currentIndex].video.id}
+                  linkouts={currentVideo.video.linkouts}
+                  linkoutId={currentVideo.video.linkoutId}
+                  videoId={currentVideo.video.id}
                 />
               )}
             </motion.div>
           </motion.div>
         </div>
-        {videos[currentIndex].video.descriptionArr?.[0] && (
+        {currentVideo?.video.descriptionArr?.[0] && (
           <div className="py-2">
             <ReadMore.dynamic
-              text={videos[currentIndex].video.descriptionArr}
+              text={currentVideo.video.descriptionArr}
               className="w-full !break-words text-body-1-demi text-monochrome-white"
-              maxLines={videos[currentIndex].video.linkoutId ? 1 : 2}
+              maxLines={currentVideo?.video.linkoutId ? 1 : 2}
               shouldAnimate
               showViewMore={false}
               // isExpanded={isExpanded}
@@ -126,28 +124,28 @@ const FullScreenVideoDetails = ({
         )}
         <div className="hide-scrollbar flex w-full gap-1 overflow-auto py-2">
           <Link
-            href={PATH_NAME.community(videos[currentIndex].community?.slug)}
+            href={PATH_NAME.community(currentVideo?.community?.slug)}
             className="flex items-center gap-1 rounded-full bg-monochrome-black/40 p-1 pr-2">
             <CustomAvatar
               className="h-6 w-6"
-              imageUrl={videos[currentIndex].community?.profileImage ?? ''}
+              imageUrl={currentVideo?.community?.profileImage ?? ''}
               fallbackString="U"
               isAvatar={false}
             />
             <p className="whitespace-nowrap break-all text-cap-1-med leading-5 text-monochrome-white">
-              {(videos[currentIndex].community?.name?.length ?? 0) > 24
-                ? videos[currentIndex].community?.name?.slice(0, 24) + '...'
-                : videos[currentIndex].community?.name ?? ''}
+              {(currentVideo?.community?.name?.length ?? 0) > 24
+                ? currentVideo?.community?.name?.slice(0, 24) + '...'
+                : currentVideo?.community?.name ?? ''}
             </p>
           </Link>
           <Link
-            href={PATH_NAME.loop(videos[currentIndex].loop.slug)}
+            href={PATH_NAME.loop(currentVideo?.loop?.slug)}
             className="flex items-center gap-1 rounded-full bg-monochrome-black/40 p-1 pr-2">
             <div className="rounded-full bg-monochrome-white/20 p-1">
               <GroupIcon className="h-4 w-4" />
             </div>
             <p className="line-clamp-1 whitespace-nowrap text-cap-1-med leading-5 text-monochrome-white">
-              {videos[currentIndex].loop.name}
+              {currentVideo?.loop?.name}
             </p>
           </Link>
         </div>
