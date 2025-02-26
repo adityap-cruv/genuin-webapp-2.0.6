@@ -117,7 +117,7 @@ const FullScreenVideoDetails = ({
               maxLines={currentVideo?.video.linkoutId ? 1 : 2}
               shouldAnimate
               showViewMore={false}
-              // isExpanded={isExpanded}
+              isExpanded={false}
               // setIsExpanded={setIsExpanded}
             />
           </div>

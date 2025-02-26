@@ -1,5 +1,5 @@
 import { DesktopDetails } from './desktop-details'
-import { type ComponentProps, memo, useCallback, useRef, useState } from 'react'
+import { type ComponentProps, memo, useCallback, useRef } from 'react'
 import { type Swiper as SwiperType } from 'swiper/types'
 import { cn } from '@lib/utils'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -76,7 +76,6 @@ const CONFIG = {
   DEBOUNCE_TIME: 150, // New debounce time for wheel events
 }
 function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: SwiperRendererProps) {
-  const [swiperInstance, setSwiperInstance] = useState<SwiperType | null>(null)
   const { defaultSizeBox } = useGenuinOptions(useShallow((state) => ({ defaultSizeBox: state.sizeBoxes.default })))
 
   // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
@@ -164,7 +163,6 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
               if (!muted) setGestureOverlay('PLAY_PAUSE', false)
             }}
             onSwiper={(swiper) => {
-              setSwiperInstance(swiper)
               swiperRef.current = swiper
               ;(swiper as any).on('wheel', handleWheel)
             }}
@@ -196,12 +194,13 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
             onActiveIndexChange={handleActiveIndexChange}
             onSlideChange={handleSlideChange}
             style={{
-              width: sizeBox.width || '100%',
-              height: sizeBox.height || '100vh',
+              width: isFullScreen ? undefined : sizeBox.width,
+              height: isFullScreen ? '100%' : sizeBox.height,
+              aspectRatio: isFullScreen ? '9 / 16' : undefined,
             }}>
             {videos.map((_, index) => {
               return (
-                <SwiperSlide key={index}>
+                <SwiperSlide key={index} virtualIndex={index}>
                   {({ isActive, isPrev, isNext }) => {
                     if (isActive || isPrev || isNext)
                       if (videos[index])
@@ -269,7 +268,7 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
 
         {isFullScreen && (
           <div className="absolute right-2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col gap-4">
-            <FullScreenSideButtons videos={videos} currentIndex={currentIndex} swiperInstance={swiperInstance} />
+            <FullScreenSideButtons videos={videos} currentIndex={currentIndex} swiperInstance={swiperRef.current} />
           </div>
         )}
 

@@ -6,7 +6,7 @@ interface ActionItemProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode
 }
 
-export function ActionItem({ children, onClick, title, ...props }: ActionItemProps) {
+export function ActionItem({ children, onClick, title, className, ...props }: ActionItemProps) {
   const { isFullScreen } = usePlayerControlStore(
     useShallow((state) => ({
       isFullScreen: state.isFullScreen,
@@ -17,7 +17,7 @@ export function ActionItem({ children, onClick, title, ...props }: ActionItemPro
     <div
       onClick={onClick}
       title={title}
-      className={cn('my-2 cursor-pointer', { 'rounded-full bg-secondary-400 p-2': isFullScreen })}
+      className={cn('my-2 cursor-pointer', className, { 'rounded-full bg-secondary-400 p-2': isFullScreen })}
       {...props}>
       {children}
     </div>
