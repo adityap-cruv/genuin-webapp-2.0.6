@@ -1,9 +1,8 @@
-import videoFrame from '@images/embed/video-frame.png'
-import CarouselSection from '../carousel-section'
 import { ChevronRightIcon } from 'lucide-react'
 import { LinkedInIcon } from '@icons/linkedin-icon'
 import { TwitterIcon } from '@icons/twitter-icon'
 import { type BlogSectionType } from '../../../../../types/embed/embed-blog'
+import MultiEmbedBlog from './multi-embed-blog'
 
 const BlogsSection = ({ blogSection }: { blogSection: BlogSectionType }) => {
   return (
@@ -16,7 +15,7 @@ const BlogsSection = ({ blogSection }: { blogSection: BlogSectionType }) => {
               <p className="text-title-1-bold">{blogSection?.blogContent[0].title}</p>
               <p className="text-title-3-med">{blogSection?.blogContent[0].description}</p>
             </div>
-            <CarouselSection />
+            <MultiEmbedBlog type="blog1" />
             {blogSection?.blogContent.slice(1).map((item, index) => (
               <div className="flex flex-col gap-4 opacity-40" key={index}>
                 <p className="text-title-1-bold">{item.title}</p>
@@ -25,7 +24,7 @@ const BlogsSection = ({ blogSection }: { blogSection: BlogSectionType }) => {
             ))}
           </div>
           <div className="flex w-1/4 flex-col gap-6">
-            <img src={videoFrame.src} alt="blog-image" className="h-auto w-full" />
+            <MultiEmbedBlog type="blog2" />
 
             <p className="px-10 py-5 text-title-1-bold opacity-40">Popular</p>
 
@@ -58,7 +57,7 @@ const BlogsSection = ({ blogSection }: { blogSection: BlogSectionType }) => {
               <p className="text-title-1-bold">{blogSection?.blogContent[0].title}</p>
               <p className="text-body-1-med">{blogSection?.blogContent[0].description}</p>
             </div>
-            <CarouselSection />
+            <MultiEmbedBlog type="blog1" />
             {blogSection?.blogContent.slice(1).map((item, index) => (
               <div className="flex flex-col gap-4 opacity-40" key={index}>
                 <p className="text-title-1-bold">{item.title}</p>
@@ -67,7 +66,7 @@ const BlogsSection = ({ blogSection }: { blogSection: BlogSectionType }) => {
             ))}
 
             <div className="flex flex-col gap-6">
-              <img src={videoFrame.src} alt="blog-image" className="h-auto w-full px-4" />
+              <MultiEmbedBlog type="blog2" />
 
               <p className="px-10 py-4 text-title-2-bold opacity-40">Popular</p>
 

@@ -9,7 +9,7 @@ import { EmbedPostSales } from '@/content/embed/embed-post-sales'
 import { getIndustryName } from '@/lib/utils'
 import { useShallow } from 'zustand/react/shallow'
 
-export default async function Page() {
+export default function Page() {
   const { config } = useEmbedConfig(
     useShallow((state) => ({
       config: state.config,

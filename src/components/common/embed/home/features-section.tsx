@@ -1,9 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import Image from 'next/image'
-import carousalEmbed2 from '@images/embed/carousel-2.png'
 import { type FeaturesSectionType } from '../../../../../types/embed/embed-home'
+import MultiEmbedHome from './multi-embed-home'
 
 const FeaturesSection = ({ featuresSection }: { featuresSection: FeaturesSectionType }) => {
   const [selectedItem, setSelectedItem] = useState(featuresSection?.options[1])
@@ -35,7 +34,7 @@ const FeaturesSection = ({ featuresSection }: { featuresSection: FeaturesSection
             ))}
           </div>
           <div className="w-3/4">
-            <Image src={carousalEmbed2} alt="imgPuppet" />
+            <MultiEmbedHome type="home2" />
           </div>
         </div>
       </section>
@@ -60,7 +59,7 @@ const FeaturesSection = ({ featuresSection }: { featuresSection: FeaturesSection
               </p>
             ))}
           </div>
-          <Image src={carousalEmbed2} alt="imgPuppet" className="pt-3" />
+          <MultiEmbedHome type="home2" />
         </div>
       </section>
     </>

@@ -21,7 +21,7 @@ export function Layout(props: any) {
           showNavbar ? 'h-body' : 'h-full'
         )}>
         <SideBar isCollapsed={!!props.isCollapsed} />
-        <section id="root-element" className="relative flex w-full flex-col">
+        <section id="root-element" className="relative flex w-full min-w-0 flex-1 flex-col">
           {props.children}
         </section>
       </section>
