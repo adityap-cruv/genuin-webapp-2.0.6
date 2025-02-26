@@ -1,5 +1,6 @@
 import { generateDeepLink, getLoopAndCommunityShareString } from './utils'
 import { PATH_NAME } from './utils/constants/path'
+import { axiosInstance } from '@/lib/api/instance'
 
 type GenerateDeepLinkOptions = {
   action?: string
@@ -145,4 +146,41 @@ export async function sparkDeepLink(videoSlug: string, shareUrl: string): Promis
     title: `spark ${videoSlug} video`,
     searchParams: new URLSearchParams(window.location.search),
   })
+}
+
+/*
+ * This function will generate deep link for Get App.
+ */
+export async function getAppLink(): Promise<string> {
+  return await getDeepLink('/', {})
+}
+
+/*
+ * This function will generate deep link for spark action.
+ */
+export async function videoDeepLink(videoSlug: string, shareUrl: string): Promise<string> {
+  return await getDeepLink('comment', {
+    contentType: 'video',
+    pathName: PATH_NAME.video(videoSlug),
+    community: getLoopAndCommunityShareString(shareUrl).communityShareString ?? '',
+    loop: getLoopAndCommunityShareString(shareUrl).loopShareString ?? '',
+    title: `spark ${videoSlug} comment`,
+    searchParams: new URLSearchParams(window.location.search),
+  })
+}
+
+interface DeepLinkData {
+  link: string
+  path: string
+  query_params: Record<string, string>
+}
+
+export const resolveDeepLink = async (linkIdentifier: string): Promise<DeepLinkData | null> => {
+  try {
+    const res = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/goservices/links/${linkIdentifier}`)
+    return res?.data?.data || null
+  } catch (error) {
+    console.error('Error resolving deep link:', error)
+    return null
+  }
 }

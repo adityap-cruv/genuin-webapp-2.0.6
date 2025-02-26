@@ -5,9 +5,11 @@ import imageAppStore from '@images/appStore.svg'
 import imagePlayStore from '@images/playStore.svg'
 import { URL_TO_APP_STORE, URL_TO_PLAY_STORE } from '@lib/constants'
 import { QRCode } from 'react-qrcode-logo'
-import { GenuinIcon } from '@icons/genuin-icon'
 import { useGenuinOptions } from '@/lib/stores/genuin-options'
 import { useShallow } from 'zustand/react/shallow'
+import { CustomImage } from '@/components/custom/custom-image'
+import { Button } from '@/components/ui/button'
+import { getMobileAppUrl, openGeneratedLink } from '@/lib/utils'
 
 type DownloadDialogType = {
   title?: React.ReactNode
@@ -16,24 +18,23 @@ type DownloadDialogType = {
 }
 
 export function Body({ title, subtitle, deepLink }: DownloadDialogType) {
-  const { links } = useGenuinOptions(
+  const { links, brandLogo, isMobile } = useGenuinOptions(
     useShallow((state) => ({
       links: {
         appStoreLink: state.config?.integrations.sdk.ios.appstore_link,
         playStoreLink: state.config?.integrations.sdk.android.playstore_link,
       },
+      brandLogo: state.config?.logo,
+      isMobile: state.isMobile,
     }))
   )
 
   return (
     <ModalShell>
-      <div className="flex w-full flex-col items-center justify-center px-4 pt-6">
+      <div className="flex w-full flex-col items-center justify-center px-0 pt-6 sm:px-4">
         {deepLink ? (
           <>
-            <p className="text-center text-new-h3">
-              Download the
-              <br /> app
-            </p>
+            <p className="text-center text-new-h3">Download the app</p>
 
             {subtitle && <p className="mt-4 line-clamp-2 max-w-none text-center text-title-2-demi">{subtitle}</p>}
 
@@ -45,22 +46,33 @@ export function Body({ title, subtitle, deepLink }: DownloadDialogType) {
             </div>
           </>
         ) : (
-          <div className=" mb-4 flex flex-col items-center justify-center">
-            <GenuinIcon.icon className="h-12 fill-blue" />
-            <p style={{ fontSize: '40px' }} className="hidden whitespace-nowrap text-center font-bold sm:block">
+          <div className="flex flex-col items-center justify-center gap-4">
+            {brandLogo && <CustomImage src={brandLogo} height={48} width={48} className="object-cover" alt="logo" />}
+            <p style={{ fontSize: '40px' }} className="whitespace-nowrap text-center font-bold leading-none">
               {title}
             </p>
             <p className="line-clamp-2 max-w-none text-center text-title-2-demi">{subtitle}</p>
           </div>
         )}
-        <div className="flex gap-x-2">
-          <a href={links.appStoreLink ?? URL_TO_APP_STORE} target="_blank" rel="noopener noreferrer">
-            <Image className="mx-2 h-10 w-auto" src={imageAppStore} alt="app store" />
-          </a>
-          <a href={links.playStoreLink ?? URL_TO_PLAY_STORE} target="_blank" rel="noopener noreferrer">
-            <Image className="mx-2 h-10 w-auto" src={imagePlayStore} alt="play store" />
-          </a>
-        </div>
+        {!isMobile ? (
+          <div className="flex gap-x-2">
+            <a href={links.appStoreLink ?? URL_TO_APP_STORE} target="_blank" rel="noopener noreferrer">
+              <Image className="mx-2 h-10 w-auto" src={imageAppStore} alt="app store" />
+            </a>
+            <a href={links.playStoreLink ?? URL_TO_PLAY_STORE} target="_blank" rel="noopener noreferrer">
+              <Image className="mx-2 h-10 w-auto" src={imagePlayStore} alt="play store" />
+            </a>
+          </div>
+        ) : (
+          <Button
+            className=" w-full"
+            variant="default"
+            onClick={() => {
+              openGeneratedLink(getMobileAppUrl())
+            }}>
+            <p className="text-body-1-demi">Get App</p>
+          </Button>
+        )}
       </div>{' '}
     </ModalShell>
   )

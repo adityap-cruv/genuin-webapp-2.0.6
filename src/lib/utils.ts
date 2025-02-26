@@ -6,7 +6,7 @@ import { twMerge } from 'tailwind-merge'
 import { useGenuinOptions } from './stores/genuin-options'
 import { AuthenticationModal } from '@components/common/modals/authentication'
 import { type ReactNode } from 'react'
-import { PROTECTED_ROUTES } from './constants'
+import { MOBILE_DOWNLOAD_APP_LINK, PROTECTED_ROUTES } from './constants'
 import { type CommunityUserRoleType } from './schemas/roles'
 
 export function cn(...inputs: ClassValue[]) {
@@ -33,9 +33,9 @@ export function openModal({
   subtitle?: string | ReactNode
   deepLink?: string
 }) {
-  const { webCTA, isMobile } = useGenuinOptions.getState()
+  const { webCTA, isMobile, user } = useGenuinOptions.getState()
 
-  if (webCTA !== 'app') {
+  if (webCTA !== 'app' && !user) {
     AuthenticationModal.open()
   } else {
     if (!isMobile) {
@@ -169,10 +169,9 @@ export function replaceUrlWithoutReload(url: URL) {
 // }
 
 export const openGeneratedLink = (link = '') => {
-  const element = document.createElement('a')
-  element.setAttribute('href', link)
-  element.target = '_blank'
-  element.click()
+  setTimeout(() => {
+    window.open(link, '_blank', 'noopener,noreferrer')
+  })
 }
 
 //  TODO: This function line can be reduced and validation can be automated.
@@ -234,14 +233,31 @@ export const generateDeepLink = async ({
   if (description) {
     Object.assign(finalPayload, { description })
   }
-  try {
-    const res = await axiosInstance.post(
-      `${process.env.NEXT_PUBLIC_API_URL}/goservices/links/dynamic_link`,
-      finalPayload
-    )
-    return res?.data?.data?.shortLink
-  } catch (e) {
-    return process.env.NEXT_PUBLIC_HOST_URL
+
+  const { host, webCTA, isMobile } = useGenuinOptions.getState()
+
+  // Construct the full URL
+  const redirectionUrl = `${host}${finalPayload.path_params}?${new URLSearchParams(
+    finalPayload.query_params
+  ).toString()}`
+
+  if (isMobile) {
+    if (webCTA === 'app') {
+      return getMobileAppUrl()
+    } else {
+      return redirectionUrl
+    }
+  } else {
+    try {
+      const res = await axiosInstance.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/goservices/links/dynamic_link`,
+        finalPayload
+      )
+      const shortLink = res?.data?.data?.shortLink
+      return shortLink
+    } catch (e) {
+      return process.env.NEXT_PUBLIC_HOST_URL
+    }
   }
 }
 
@@ -419,4 +435,19 @@ export function mapCommunityUserRole(role?: number | null, isRequested?: boolean
 
 export function getYear() {
   return new Date().getFullYear()
+}
+
+export function getMobileAppUrl() {
+  const { config } = useGenuinOptions.getState()
+
+  const userAgent = navigator.userAgent.toLowerCase()
+  const isIOS =
+    userAgent.includes('ipad') ||
+    userAgent.includes('iphone') ||
+    (userAgent.includes('ipod') && !('MSStream' in window))
+
+  const appStoreLink = config?.integrations.sdk.ios.appstore_link ?? MOBILE_DOWNLOAD_APP_LINK
+  const playStoreLink = config?.integrations.sdk.android.playstore_link ?? MOBILE_DOWNLOAD_APP_LINK
+
+  return isIOS ? appStoreLink : playStoreLink
 }

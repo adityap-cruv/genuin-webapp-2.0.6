@@ -143,6 +143,7 @@ type StateType = {
   walletBalance?: number | null
   isLoading: boolean
   webCTA: 'app' | 'login' | 'both'
+  host: string
 }
 
 type ActionsType = {
@@ -171,6 +172,7 @@ const initialState: StateType = {
   walletBalance: 0,
   isLoading: true,
   webCTA: 'app',
+  host: '',
 }
 
 export const useGenuinOptions = create(

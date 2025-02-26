@@ -9,9 +9,10 @@ import Image from 'next/image'
 import imageAppStore from '@images/appStore.svg'
 import imagePlayStore from '@images/playStore.svg'
 import Link from 'next/link'
-import { MOBILE_DOWNLOAD_APP_LINK, URL_TO_APP_STORE, URL_TO_PLAY_STORE } from '@lib/constants'
+import { URL_TO_APP_STORE, URL_TO_PLAY_STORE } from '@lib/constants'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { useShallow } from 'zustand/react/shallow'
+import { getMobileAppUrl, openGeneratedLink } from '@/lib/utils'
 
 interface FormData {
   phone: string
@@ -29,18 +30,25 @@ type Props = {
 
 // TODO: improve it's api implementation
 export function DownloadAppDialog({ children }: Props) {
-  const { isMobile, links } = useGenuinOptions(
+  const { isMobile, links, privacyPolicy, terms } = useGenuinOptions(
     useShallow((state) => ({
       isMobile: state.isMobile,
       links: {
         appStoreLink: state.config?.integrations.sdk.ios.appstore_link,
         playStoreLink: state.config?.integrations.sdk.android.playstore_link,
       },
+      privacyPolicy: state.config?.privacy_policy,
+      terms: state.config?.terms_and_condition,
     }))
   )
 
   return isMobile ? (
-    <Link href={MOBILE_DOWNLOAD_APP_LINK}>{children}</Link>
+    <div
+      onClick={() => {
+        openGeneratedLink(getMobileAppUrl())
+      }}>
+      {children}
+    </div>
   ) : (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
@@ -57,11 +65,11 @@ export function DownloadAppDialog({ children }: Props) {
           <p className="mt-4 text-new-para-2-mobile text-new-dark-grey">
             By clicking Send Link, I acknowledge that I have read the
             <br />{' '}
-            <a href="/privacy" className="border-b">
+            <a href={privacyPolicy ?? '/privacy'} className="border-b" target="_blank" rel="noopener noreferrer">
               Privacy Policy
             </a>{' '}
             and agree to the{' '}
-            <a href="/terms" className="border-b">
+            <a href={terms ?? '/terms'} className="border-b" target="_blank" rel="noopener noreferrer">
               Terms of Service
             </a>
           </p>

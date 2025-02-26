@@ -346,7 +346,6 @@ export function Dynamic({
         setIsOverflowing(element.scrollHeight > element.clientHeight)
       }
     }
-
     checkOverflow()
     window.addEventListener('resize', checkOverflow)
     return () => {

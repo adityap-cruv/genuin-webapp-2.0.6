@@ -1,0 +1,75 @@
+{
+  "applinks": {
+    "apps": [],
+    "substitutionVariables": {
+      "lng": [
+        "ms",
+        "zh"
+      ],
+      "module_path_en": [
+        "cars-for-sale",
+        "used-cars-for-sale",
+        "new-cars-for-sale",
+        "recon-cars-for-sale",
+        "news",
+        "used-cars",
+        "new-cars",
+        "recon-cars",
+        "garage",
+        "dealer"
+      ],
+      "module_path_ms": [
+        "kereta-untuk-dijual",
+        "kereta-terpakai-untuk-dijual",
+        "kereta-baru-untuk-dijual",
+        "kereta-recon-untuk-dijual",
+        "berita",
+        "kereta-terpakai",
+        "kereta-baru",
+        "kereta-recon",
+        "garage",
+        "dealer"
+      ],
+      "module_path_zh": [
+        "cars-for-sale",
+        "used-cars-for-sale",
+        "new-cars-for-sale",
+        "recon-cars-for-sale",
+        "news",
+        "used-cars",
+        "new-cars",
+        "recon-cars",
+        "garage",
+        "dealer"
+      ]
+    },
+    "details": [
+      {
+        "appID": "5B3FA3JHV9.com.icarasia.consumerappmalaysia",
+        "components": [
+          {
+            "/": "/$(lng)/$(module_path_ms)/*"
+          },
+          {
+            "/": "/$(lng)/$(module_path_zh)/*"
+          },
+          {
+            "/": "/$(module_path_en)/*"
+          },
+          {
+            "/": "/video/*"
+          },
+          {
+            "/": "/profile/*"
+          },
+          {
+            "/": "/home/*"
+          },
+          {
+            "/": "/*"
+          }
+        ]
+      }
+    ]
+  }
+}

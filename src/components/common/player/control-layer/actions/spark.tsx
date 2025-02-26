@@ -7,9 +7,9 @@ import { ActionItem } from './action-item'
 import Analytics from '@/services/analytics'
 import icSpark from '@icons/player-controls/icBulb.svg'
 import icSparkTrue from '@icons/player-controls/icSparkTrue.svg'
-import { abbreviateNumber, openModal } from '@/lib/utils'
+import { abbreviateNumber, cn, openModal } from '@/lib/utils'
 import { sparkDeepLink } from '@/lib/get-deeplink'
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 
 type SparkComponentProps = {
   isSparked?: boolean | null
@@ -20,6 +20,7 @@ type SparkComponentProps = {
 }
 
 export function Spark({ isSparked = false, sparkCount, videoId, shareUrl, videoSlug }: SparkComponentProps) {
+  const [isLoading, setIsLoading] = useState(false)
   const { handleWalletBalance } = useWalletBalanceHandler()
   const { user } = useGenuinOptions()
   const { updateSparkStatus } = useFeedListContext()
@@ -31,6 +32,7 @@ export function Spark({ isSparked = false, sparkCount, videoId, shareUrl, videoS
     }
 
     try {
+      setIsLoading(true)
       // If there is no user then we will show the deep link modal.
       if (user) {
         // This call toggle spark status of particular video.
@@ -52,6 +54,8 @@ export function Spark({ isSparked = false, sparkCount, videoId, shareUrl, videoS
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error(e)
+    } finally {
+      setIsLoading(false)
     }
 
     const properties = {
@@ -72,7 +76,9 @@ export function Spark({ isSparked = false, sparkCount, videoId, shareUrl, videoS
       <ActionItem title="Give spark!" onClick={handleSparkClick}>
         <Image src={isSparked ? icSparkTrue : icSpark} height={32} width={32} alt="spark" />
       </ActionItem>
-      <p className="flex justify-center text-body-1-demi text-monochrome-white">{abbreviateNumber(sparkCount)}</p>
+      <p className="flex justify-center text-body-1-demi text-monochrome-white">
+        {abbreviateNumber(sparkCount < 0 ? 0 : sparkCount)}
+      </p>
     </div>
   )
 }

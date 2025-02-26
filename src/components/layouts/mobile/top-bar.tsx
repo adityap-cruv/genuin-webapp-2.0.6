@@ -3,7 +3,7 @@ import { HamBurgerMenuIcon } from '@components/ui/ham-burger'
 import { Button } from '@components/ui/button'
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from '@components/ui/sheet'
 import { type ReactNode } from 'react'
-import { cn, getYear } from '@lib/utils'
+import { cn, getMobileAppUrl, getYear, openGeneratedLink } from '@lib/utils'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { PopularIcon, HomeIcon, LatestIcon, ProfileIcon, ExploreIcon } from '@icons/side-bar-icons'
@@ -18,13 +18,12 @@ import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { LogoutIcon } from '@icons/logout'
 import { removeAllAuthToken } from '@lib/api/instance'
-import { MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
 import { SearchBar } from '@components/common/search-bar'
 import { BellIcon } from '@icons/bell-icon'
 import { SearchIcon } from '@icons/search-icon'
 import { CloseIcon } from '@icons/close-icon'
 import Analytics from '@services/analytics'
-import { CategoryView } from '@components/common/category-view'
+import { CategoryView, Stations } from '@components/common/category-view'
 import dynamic from 'next/dynamic'
 import BecomeCbCard from '@/components/common/become-cb-card'
 import { LoginIcon } from '@icons/login-icon'
@@ -34,6 +33,7 @@ import { useState, useEffect } from 'react'
 import { Loader } from '@/components/ui/loader'
 import { SettingIcon } from '@icons/settings'
 import { CustomImage } from '@/components/custom/custom-image'
+import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
 
 const DownloadAppDialog = dynamic(
   async () => await import('../download-app-dialog').then((comp) => comp.DownloadAppDialog)
@@ -60,29 +60,19 @@ type Props = {
 } & VariantProps<typeof navVariant>
 
 export function TopBar({ variant = 'light', className, showClose = false, onClose }: Props) {
-  const {
-    user,
-    brandName,
-    notificationsCount,
-    isClaimed,
-    brandLogo,
-    webCTA,
-    brandId,
-    privacyPolicy,
-    termsAndCondition,
-  } = useGenuinOptions((state) => ({
-    user: state.user,
-    brandName: state.config?.name ? state.config?.name : 'Genuin',
-    notificationsCount: state.notificationCount,
-    isClaimed: state.config?.is_claimed,
-    brandLogo: state.config?.logo,
-    webCTA: state.webCTA,
-    brandId: state.config?.brand_id,
-    privacyPolicy: state.config?.privacy_policy,
-    termsAndCondition: state.config?.terms_and_condition,
-  })) // If variant is transparent than we have removed show download button.
-  const showDownloadButton = variant !== 'transparent'
-  const searchParams = useSearchParams()
+  const { user, brandName, notificationsCount, isClaimed, brandLogo, webCTA, privacyPolicy, termsAndCondition } =
+    useGenuinOptions((state) => ({
+      user: state.user,
+      brandName: state.config?.name ? state.config?.name : 'Genuin',
+      notificationsCount: state.notificationCount,
+      isClaimed: state.config?.is_claimed,
+      brandLogo: state.config?.logo,
+      webCTA: state.webCTA,
+      privacyPolicy: state.config?.privacy_policy,
+      termsAndCondition: state.config?.terms_and_condition,
+    })) // If variant is transparent than we have removed show download button.
+  // const showDownloadButton = variant !== 'transparent'
+  // const searchParams = useSearchParams()
 
   return (
     <nav className={cn(navVariant({ variant }), className)}>
@@ -130,12 +120,15 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
           <SearchIcon variant={variant} />
         </SearchBar.mobile>
 
-        {!(brandId?.toString() === '99' && !showDownloadButton) && (webCTA === 'app' || webCTA === 'both') && (
-          <Link href={MOBILE_DOWNLOAD_APP_LINK + '?' + searchParams.toString()} target="_blank">
-            <Button className="h-8" variant="outline">
-              <p className="text-[15px] text-body-1-demi">Get App</p>
-            </Button>
-          </Link>
+        {(webCTA === 'app' || webCTA === 'both') && (
+          <Button
+            className="h-8"
+            variant="outline"
+            onClick={() => {
+              openGeneratedLink(getMobileAppUrl())
+            }}>
+            <p className="text-[15px] text-body-1-demi">Get App</p>
+          </Button>
         )}
         {webCTA !== 'app' && <UserTick variant={variant} webCTA={webCTA} />}
         {showClose && (
@@ -176,6 +169,7 @@ function Menu({
 }) {
   const pathName = usePathname()
   const { status } = useSession()
+  const { shouldShowIHeartDemo } = useIHeartDemoStates()
   const hamBurgerVariant = variant === 'transparent' ? 'light' : 'dark'
 
   return (
@@ -201,6 +195,13 @@ function Menu({
             <CloseIcon variant={variant === 'transparent' || variant === 'light' ? 'dark' : 'light'} />
           </SheetClose>
         </div>
+        {shouldShowIHeartDemo && (
+          <>
+            <Stations />
+            <hr className="my-1 border border-monochrome-9" />
+          </>
+        )}
+        {shouldShowIHeartDemo && <p className="text-title-2-demi text-tertiary">Menu</p>}
         <Link href={{ pathname: PATH_NAME.home() }}>
           <MenuItem brandName={brandName} title="Home" isActive={pathName === PATH_NAME.home()}>
             <HomeIcon isActive={pathName === PATH_NAME.home()} />
@@ -233,9 +234,11 @@ function Menu({
             </Link>
           </>
         )}
+        {shouldShowIHeartDemo && <CategoryView />}
         <DownloadAppDialog />
         {isClaimed && status === 'unauthenticated' && webCTA !== 'app' && (
           <>
+            <hr className="border-1 my-2 border-monochrome-black/10" />
             <SheetClose>
               <div
                 className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
@@ -246,7 +249,6 @@ function Menu({
                 <p className={cn('whitespace-nowrap !text-title-3-demi text-primary')}>Log in</p>
               </div>
             </SheetClose>
-            <hr className="border-1 my-2 border-monochrome-black/10" />
           </>
         )}
         {!isClaimed && (
@@ -267,8 +269,12 @@ function Menu({
             <BecomeCbCard />
           </SheetClose>
         )}
-        <CategoryView className="lg:hidden" />
-        <RecentCommunities />
+        {!shouldShowIHeartDemo && (
+          <>
+            <CategoryView />
+            <RecentCommunities />
+          </>
+        )}
         <div className="text-tertiary">
           <span className="flex gap-x-2 pb-2">
             <Link href={privacyPolicy ?? PATH_NAME.terms}>
