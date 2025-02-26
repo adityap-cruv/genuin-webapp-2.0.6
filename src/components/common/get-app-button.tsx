@@ -1,26 +1,14 @@
 import React from 'react'
-import { Button } from '../ui/button'
+import { Button, ButtonProps } from '../ui/button'
 import Analytics from '@/services/analytics'
 import { getPlatform } from '@/lib/utils'
 import { DownloadAppDialog } from '@components/pages/build/download-app-dialog'
 
-const GetAppButton = ({
-  className,
-  variant,
-  buttonText,
-  size,
-}: {
-  className?: string
-  variant: 'outline' | 'custom' | 'default'
-  buttonText: string
-  size?: 'custom' | 'default' | 'sm' | 'lg' | 'index-page'
-}) => {
+const GetAppButton = ({ buttonText, ...buttonProps }: ButtonProps & { buttonText: string }) => {
   return (
     <DownloadAppDialog>
       <Button
-        size={size}
-        className={className}
-        variant={variant}
+        {...buttonProps}
         onClick={() => {
           void Analytics.track({
             eventName: 'Get App Button Clicked',
