@@ -84,7 +84,7 @@ export const InnerPlayer = memo(function InnerPlayer({
     )
   const [hasStarted, setHasStarted] = useState(false)
   let encodedVideoSourceUrl = videoSource
-  if (brandId === '1729') {
+  if (brandId.toString() === '1729') {
     // Replace the video source URL with the OCITest URL
     encodedVideoSourceUrl = encodedVideoSourceUrl.replace('media.begenuin.com', 'ocitest.begenuin.com')
   }
