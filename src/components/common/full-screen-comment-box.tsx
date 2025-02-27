@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useMemo } from 'react'
+import React, { useRef, useState, useMemo } from 'react'
 import { CommentBox } from './feed/desktop-details'
 import MentionInput from './comments/mention-input'
 import { type CommentListType } from '@/lib/schemas/loop/comment'
@@ -12,9 +12,10 @@ import { motion } from 'framer-motion'
 interface FullScreenCommentBoxProps {
   videos: VideoPlayerModalType[]
   currentIndex: number
+  isMobileCommentView: boolean
 }
 
-const FullScreenCommentBox = ({ videos, currentIndex }: FullScreenCommentBoxProps) => {
+const FullScreenCommentBox = ({ videos, currentIndex, isMobileCommentView }: FullScreenCommentBoxProps) => {
   const { toggleCommentBox, isCommentBoxOpen } = usePlayerControlStore(
     useShallow((state) => ({
       toggleCommentBox: state.toggleCommentBox,
@@ -23,24 +24,6 @@ const FullScreenCommentBox = ({ videos, currentIndex }: FullScreenCommentBoxProp
   )
   const scrollDivRef = useRef<HTMLDivElement>(null)
   const [comments, setComments] = useState<CommentListType>([])
-  const [isMobileView, setIsMobileView] = useState(window.innerWidth < 1280)
-
-  useEffect(() => {
-    let resizeTimeout: NodeJS.Timeout
-
-    const handleResize = () => {
-      clearTimeout(resizeTimeout)
-      resizeTimeout = setTimeout(() => {
-        setIsMobileView(window.innerWidth < 1280)
-      }, 100) // Debounce effect
-    }
-
-    window.addEventListener('resize', handleResize)
-    return () => {
-      clearTimeout(resizeTimeout)
-      window.removeEventListener('resize', handleResize)
-    }
-  }, [])
 
   const commentBoxContent = useMemo(
     () => (
@@ -76,7 +59,7 @@ const FullScreenCommentBox = ({ videos, currentIndex }: FullScreenCommentBoxProp
     [comments, videos, currentIndex]
   )
 
-  return isMobileView ? (
+  return isMobileCommentView ? (
     <Dialog open={isCommentBoxOpen}>
       <DialogContent showClose={false} className="mb-4 w-full min-w-[500px] p-0 sm:h-3/4 sm:p-0">
         <DialogClose className="absolute right-4 top-4 z-20 outline-none">
@@ -97,7 +80,7 @@ const FullScreenCommentBox = ({ videos, currentIndex }: FullScreenCommentBoxProp
         style={{
           height: 'calc(100% - 32px)',
         }}
-        className="relative my-4 min-w-[350px] rounded-2xl bg-monochrome-white pb-16 pl-2 ">
+        className="relative my-4 rounded-2xl bg-monochrome-white pb-16 pl-2">
         {commentBoxContent}
       </div>
     </motion.div>

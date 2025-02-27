@@ -1,5 +1,5 @@
 import { DesktopDetails } from './desktop-details'
-import { type ComponentProps, memo, useCallback, useRef } from 'react'
+import { type ComponentProps, memo, useCallback, useEffect, useRef, useState } from 'react'
 import { type Swiper as SwiperType } from 'swiper/types'
 import { cn } from '@lib/utils'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -90,6 +90,7 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
       isCommentBoxOpen: state.isCommentBoxOpen,
     }))
   )
+  const [isMobileCommentView, setIsMobileCommentView] = useState(window.innerWidth < 1280)
   const isWindows = new UAParser().getResult().os.name === 'Windows'
   const touchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const wheelTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -139,6 +140,23 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
     [clearTimeouts]
   )
 
+  useEffect(() => {
+    let resizeTimeout: NodeJS.Timeout
+
+    const handleResize = () => {
+      clearTimeout(resizeTimeout)
+      resizeTimeout = setTimeout(() => {
+        setIsMobileCommentView(window.innerWidth < 1280)
+      }, 100) // Debounce effect
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => {
+      clearTimeout(resizeTimeout)
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [])
+
   if (!videos || videos.length === 0)
     return (
       <div className={cn('flex aspect-reel h-full items-center justify-center bg-tertiary-200', className)}>
@@ -156,7 +174,7 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
         'fixed inset-0 z-50': isFullScreen,
       })}
       {...restProps}>
-      <div className="relative flex h-full w-full justify-center gap-20">
+      <div className="relative flex h-full w-full justify-center">
         <div className={cn('flex', { 'h-full w-full': !isFullScreen })}>
           <Swiper
             // PLAY_PAUSE gesture will end when the user takes action;
@@ -272,19 +290,25 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
             <FullScreenSideButtons videos={videos} currentIndex={currentIndex} swiperInstance={swiperRef.current} />
           </div>
         )}
-        <AnimatePresence>
-          {isFullScreen && isCommentBoxOpen && (
-            <motion.div
-              key="fullscreen-comment-box"
-              className="z-0 h-full"
-              initial={{ width: 0, opacity: 0 }}
-              animate={{ width: '25%', opacity: 1 }}
-              exit={{ width: 0, opacity: 0 }}
-              transition={{ duration: 0.4, ease: 'easeOut' }}>
-              <FullScreenCommentBox videos={videos} currentIndex={currentIndex} />{' '}
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {isFullScreen && (
+          <AnimatePresence>
+            {isCommentBoxOpen && (
+              <motion.div
+                key="fullscreen-comment-box"
+                className="z-0 h-full"
+                initial={{ width: 0, opacity: 0 }}
+                animate={{ width: isMobileCommentView ? 0 : '25%', opacity: 1 }}
+                exit={{ width: 0, opacity: 0 }}
+                transition={{ duration: 0.4, ease: 'easeOut' }}>
+                <FullScreenCommentBox
+                  videos={videos}
+                  currentIndex={currentIndex}
+                  isMobileCommentView={isMobileCommentView}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        )}
       </div>
     </div>
   )
