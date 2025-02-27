@@ -43,7 +43,7 @@ const MultiEmbed: React.FC<MultiEmbedProps> = ({ type, height, width }) => {
         className="gen-sdk-class w-full max-w-full bg-monochrome-white shadow-md"
         data-embed-id={config.embedId}
         data-api-key="0a2b8f8c568584a6302a8944aa865a508b3f9dcf2e2bffd6"
-        style={{ height: height || config.height, width: width || config.width }}></div>
+        style={{ height: height ?? config.height, width: width ?? config.width }}></div>
     </div>
   )
 }
