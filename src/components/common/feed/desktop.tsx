@@ -161,11 +161,11 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
           enabled: true,
           onlyInViewport: true,
         }}
-        virtual={{
-          enabled: true,
-          addSlidesAfter: 1,
-          addSlidesBefore: 1,
-        }}
+        // virtual={{
+        //   enabled: true,
+        //   addSlidesAfter: 1,
+        //   addSlidesBefore: 1,
+        // }}
         mousewheel={{
           forceToAxis: true,
           releaseOnEdges: true,
