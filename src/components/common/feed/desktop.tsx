@@ -19,6 +19,7 @@ import FullScreenCommentBox from '../full-screen-comment-box'
 import FullScreenSideButtons from '../full-screen-side-buttons'
 import FullScreenVideoDetails from '../full-screen-video-details'
 import { UAParser } from 'ua-parser-js'
+import { AnimatePresence } from 'framer-motion'
 
 type DesktopProps = {
   isLoading: boolean
@@ -271,8 +272,9 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
             <FullScreenSideButtons videos={videos} currentIndex={currentIndex} swiperInstance={swiperRef.current} />
           </div>
         )}
-
-        {isFullScreen && isCommentBoxOpen && <FullScreenCommentBox videos={videos} currentIndex={currentIndex} />}
+        <AnimatePresence>
+          {isFullScreen && isCommentBoxOpen && <FullScreenCommentBox videos={videos} currentIndex={currentIndex} />}
+        </AnimatePresence>
       </div>
     </div>
   )

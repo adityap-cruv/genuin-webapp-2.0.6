@@ -27,6 +27,7 @@ import { Actions } from '../../player/control-layer/actions'
 import FullScreenCommentBox from '../../full-screen-comment-box'
 import FullScreenSideButtons from '../../full-screen-side-buttons'
 import FullScreenVideoDetails from '../../full-screen-video-details'
+import { AnimatePresence } from 'framer-motion'
 
 type Props = {
   children?: React.ReactNode
@@ -271,11 +272,9 @@ function Content({ unreadMessageCount, isInModal, close, isFullScreen, isComment
         {isCommentBoxOpen && isFullScreen && <FullScreenCommentBox videos={videos} currentIndex={currentIndex} />}
       </div>
 
-      {!isFullScreen && (
-        <div className="flex flex-col gap-y-4">
-          <FullScreenSideButtons videos={videos} currentIndex={currentIndex} swiperInstance={swiperInstance} />
-        </div>
-      )}
+      <AnimatePresence>
+        {isFullScreen && isCommentBoxOpen && <FullScreenCommentBox videos={videos} currentIndex={currentIndex} />}
+      </AnimatePresence>
     </>
   )
 }

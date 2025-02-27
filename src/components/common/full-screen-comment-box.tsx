@@ -7,6 +7,7 @@ import { Dialog, DialogClose, DialogContent } from '@/components/ui/dialog'
 import { CloseIcon } from '@icons/close-icon'
 import { usePlayerControlStore } from './player/player-control-store'
 import { useShallow } from 'zustand/react/shallow'
+import { motion } from 'framer-motion'
 
 interface FullScreenCommentBoxProps {
   videos: VideoPlayerModalType[]
@@ -85,9 +86,20 @@ const FullScreenCommentBox = ({ videos, currentIndex }: FullScreenCommentBoxProp
       </DialogContent>
     </Dialog>
   ) : (
-    <div className="relative my-4 min-w-[350px] rounded-2xl bg-monochrome-white pb-16 pl-2 xl:w-3/12">
-      {commentBoxContent}
-    </div>
+    <motion.div
+      key="fullscreen-comment-box"
+      initial={{ x: '100%', opacity: 0 }}
+      animate={{ x: '0%', opacity: 1 }}
+      exit={{ x: '100%', opacity: 0 }}
+      transition={{ duration: 0.4, ease: 'easeOut' }}>
+      <div
+        style={{
+          height: 'calc(100% - 32px)',
+        }}
+        className="relative my-4 min-w-[350px] rounded-2xl bg-monochrome-white pb-16 pl-2 xl:w-3/12">
+        {commentBoxContent}
+      </div>
+    </motion.div>
   )
 }
 
