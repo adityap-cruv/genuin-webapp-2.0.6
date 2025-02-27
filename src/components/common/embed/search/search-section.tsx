@@ -4,7 +4,7 @@ import { ShoppingCartIcon } from '@images/embed/social-icons/shopping-cart'
 import React from 'react'
 import SearchItem from './search-item'
 import { type SearchTopSection } from '../../../../../types/embed/embed-search'
-import MultiEmbedSearch from './multi-embed-search'
+import MultiEmbed from '../multi-embed'
 
 const SearchSection = ({ searchTopSection }: { searchTopSection: SearchTopSection }) => {
   return (
@@ -53,7 +53,7 @@ const SearchSection = ({ searchTopSection }: { searchTopSection: SearchTopSectio
           ))}
         </div>
         <div className="py-10">
-          <MultiEmbedSearch type="search1" />
+          <MultiEmbed type="search1" />
         </div>
         <div className="flex w-full items-center gap-6 py-10">
           <div className="grid w-3/4 grid-cols-2 gap-6 opacity-40">
@@ -72,7 +72,7 @@ const SearchSection = ({ searchTopSection }: { searchTopSection: SearchTopSectio
             ))}
           </div>
           <div className="w-1/4">
-            <MultiEmbedSearch type="search2" />
+            <MultiEmbed type="search2" />
           </div>
         </div>
       </section>
@@ -120,7 +120,7 @@ const SearchSection = ({ searchTopSection }: { searchTopSection: SearchTopSectio
           ))}
         </div>
         <div className="py-10">
-          <MultiEmbedSearch type="search1" />
+          <MultiEmbed type="search1" />
         </div>
         <div className="grid grid-cols-1 gap-4 opacity-40">
           {searchTopSection?.searchItemsBottom.map((item, index) => (
@@ -138,7 +138,7 @@ const SearchSection = ({ searchTopSection }: { searchTopSection: SearchTopSectio
           ))}
         </div>
         <div className="my-20 flex justify-center">
-          <MultiEmbedSearch type="search2" />
+          <MultiEmbed type="search2" />
         </div>
       </section>
     </>

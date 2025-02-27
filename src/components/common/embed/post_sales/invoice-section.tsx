@@ -1,6 +1,6 @@
 import React from 'react'
 import { type InvoiceSectionType } from '../../../../../types/embed/embed-post-sales'
-import MultiEmbedPostSales from './multi-embed-post'
+import MultiEmbed from '../multi-embed'
 
 const InvoiceSection = ({ invoiceSection }: { invoiceSection: InvoiceSectionType }) => {
   return (
@@ -12,7 +12,7 @@ const InvoiceSection = ({ invoiceSection }: { invoiceSection: InvoiceSectionType
               <p className="mb-4 text-title-1-bold">{invoiceSection?.subTitle}</p>
               <p className="text-new-h2">{invoiceSection?.title}</p>
             </div>
-            <MultiEmbedPostSales type="post1" />
+            <MultiEmbed type="post1" />
           </div>
 
           <div className="h-full w-1/4 opacity-40">
@@ -63,7 +63,7 @@ const InvoiceSection = ({ invoiceSection }: { invoiceSection: InvoiceSectionType
                 <p className="mb-2 text-title-2-bold">{invoiceSection?.subTitle}</p>
                 <p className="text-new-h3-mobile">{invoiceSection?.title}</p>
               </div>
-              <MultiEmbedPostSales type="post1" />
+              <MultiEmbed type="post1" />
             </div>
           </div>
         </div>

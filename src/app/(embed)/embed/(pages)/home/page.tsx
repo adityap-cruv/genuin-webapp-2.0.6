@@ -10,7 +10,16 @@ import { EmbedHome } from '@/content/embed/embed-home'
 import { useEmbedConfig } from '@/components/embed/embed-config-provider'
 import { getIndustryName } from '@/lib/utils'
 import { useShallow } from 'zustand/react/shallow'
-import MultiEmbedHome from '@/components/common/embed/home/multi-embed-home'
+import { useEffect } from 'react'
+import MultiEmbed from '@/components/common/embed/multi-embed'
+
+declare global {
+  interface Window {
+    genuin: {
+      init: (config: object) => void
+    }
+  }
+}
 
 export default function Page() {
   const { config } = useEmbedConfig(
@@ -21,11 +30,20 @@ export default function Page() {
   const industryName = getIndustryName(config?.industry_type)
   const homePageData = (EmbedHome.find((item: any) => item[industryName]) as any)?.[industryName]
 
+  useEffect(() => {
+    window.genuin.init({})
+    document.body.style.backgroundColor = '#FAFAFA'
+
+    return () => {
+      document.body.style.backgroundColor = ''
+    }
+  }, [])
+
   return (
     <div className="w-full overflow-scroll px-4 md:px-0">
       <EmbedNav />
       <HeroSection heroSection={homePageData?.heroSection} />
-      <MultiEmbedHome type="home1" />
+      <MultiEmbed type="home1" />
       <FeaturesSection featuresSection={homePageData?.featuresSection} />
       <TestimonialSection testimonialSection={homePageData?.testimonialSection} />
       <CommunitiesSection communitiesSection={homePageData?.communitiesSection} />

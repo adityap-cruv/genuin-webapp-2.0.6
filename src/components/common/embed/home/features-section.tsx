@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { type FeaturesSectionType } from '../../../../../types/embed/embed-home'
-import MultiEmbedHome from './multi-embed-home'
+import MultiEmbed from '../multi-embed'
 
 const FeaturesSection = ({ featuresSection }: { featuresSection: FeaturesSectionType }) => {
   const [selectedItem, setSelectedItem] = useState(featuresSection?.options[1])
@@ -34,7 +34,7 @@ const FeaturesSection = ({ featuresSection }: { featuresSection: FeaturesSection
             ))}
           </div>
           <div className="w-3/4">
-            <MultiEmbedHome type="home2" />
+            <MultiEmbed type="home2" />
           </div>
         </div>
       </section>
@@ -59,7 +59,7 @@ const FeaturesSection = ({ featuresSection }: { featuresSection: FeaturesSection
               </p>
             ))}
           </div>
-          <MultiEmbedHome type="home2" />
+          <MultiEmbed type="home2" />
         </div>
       </section>
     </>

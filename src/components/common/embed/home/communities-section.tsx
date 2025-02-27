@@ -1,5 +1,5 @@
 import { type CommunitiesSectionType } from '../../../../../types/embed/embed-home'
-import MultiEmbedHome from './multi-embed-home'
+import MultiEmbed from '../multi-embed'
 
 const CommunitiesSection = ({ communitiesSection }: { communitiesSection?: CommunitiesSectionType }) => {
   if (!communitiesSection) return null
@@ -12,8 +12,8 @@ const CommunitiesSection = ({ communitiesSection }: { communitiesSection?: Commu
           <p className="text-title-2-bold text-primary">{communitiesSection.sectionTitle}</p>
           <p className="text-title-1-bold-home-m">{communitiesSection.title}</p>
         </div>
-        <div className="pt-10 shadow-background">
-          <MultiEmbedHome type="home4" />
+        <div className="pt-10">
+          <MultiEmbed type="home4" />
         </div>
       </section>
 
@@ -23,7 +23,7 @@ const CommunitiesSection = ({ communitiesSection }: { communitiesSection?: Commu
           <p className="text-cap-1-bold-home text-primary opacity-40">{communitiesSection.sectionTitle}</p>
           <p className="text-center text-new-h2-mobile opacity-40">{communitiesSection.title}</p>
           <div className="pt-10">
-            <MultiEmbedHome type="home4" />
+            <MultiEmbed type="home4" />
           </div>
         </div>
       </section>
