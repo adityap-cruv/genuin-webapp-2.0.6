@@ -19,7 +19,7 @@ import FullScreenCommentBox from '../full-screen-comment-box'
 import FullScreenSideButtons from '../full-screen-side-buttons'
 import FullScreenVideoDetails from '../full-screen-video-details'
 import { UAParser } from 'ua-parser-js'
-import { AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 
 type DesktopProps = {
   isLoading: boolean
@@ -152,7 +152,7 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
         height: isFullScreen ? undefined : sizeBox.height,
         backgroundColor: isFullScreen ? 'black' : 'transparent',
       }}
-      className={cn('flex h-full w-full', className, {
+      className={cn('flex h-full w-full transition-all', className, {
         'fixed inset-0 z-50': isFullScreen,
       })}
       {...restProps}>
@@ -273,7 +273,17 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
           </div>
         )}
         <AnimatePresence>
-          {isFullScreen && isCommentBoxOpen && <FullScreenCommentBox videos={videos} currentIndex={currentIndex} />}
+          {isFullScreen && isCommentBoxOpen && (
+            <motion.div
+              key="fullscreen-comment-box"
+              className="z-0 h-full"
+              initial={{ width: 0, opacity: 0 }}
+              animate={{ width: '25%', opacity: 1 }}
+              exit={{ width: 0, opacity: 0 }}
+              transition={{ duration: 0.4, ease: 'easeOut' }}>
+              <FullScreenCommentBox videos={videos} currentIndex={currentIndex} />{' '}
+            </motion.div>
+          )}
         </AnimatePresence>
       </div>
     </div>

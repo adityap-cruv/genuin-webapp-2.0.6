@@ -27,7 +27,7 @@ import { Actions } from '../../player/control-layer/actions'
 import FullScreenCommentBox from '../../full-screen-comment-box'
 import FullScreenSideButtons from '../../full-screen-side-buttons'
 import FullScreenVideoDetails from '../../full-screen-video-details'
-import { AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 
 type Props = {
   children?: React.ReactNode
@@ -143,7 +143,7 @@ function Content({ unreadMessageCount, isInModal, close, isFullScreen, isComment
     <>
       <div
         style={{ width: isFullScreen ? '100%' : sizeBox.modal.width }}
-        className={cn('relative min-w-[800px] overflow-clip rounded-2xl', {
+        className={cn('relative min-w-[800px] overflow-clip rounded-2xl transition-all', {
           'flex h-full w-full justify-center gap-20': isFullScreen,
         })}>
         <div style={{ height: isFullScreen ? '100%' : sizeBox.modal.height }} className="relative">
@@ -262,19 +262,25 @@ function Content({ unreadMessageCount, isInModal, close, isFullScreen, isComment
             <IHeartDemo inModal />
           </div>
         )}
-
         {isFullScreen && (
           <div className="absolute right-2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col gap-4">
             <FullScreenSideButtons videos={videos} currentIndex={currentIndex} swiperInstance={swiperInstance} />
           </div>
         )}
-
-        {isCommentBoxOpen && isFullScreen && <FullScreenCommentBox videos={videos} currentIndex={currentIndex} />}
+        <AnimatePresence>
+          {isFullScreen && isCommentBoxOpen && (
+            <motion.div
+              key="fullscreen-comment-box"
+              className="z-0 h-full"
+              initial={{ width: 0, opacity: 0 }}
+              animate={{ width: '25%', opacity: 1 }}
+              exit={{ width: 0, opacity: 0 }}
+              transition={{ duration: 0.4, ease: 'easeOut' }}>
+              <FullScreenCommentBox videos={videos} currentIndex={currentIndex} />{' '}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-
-      <AnimatePresence>
-        {isFullScreen && isCommentBoxOpen && <FullScreenCommentBox videos={videos} currentIndex={currentIndex} />}
-      </AnimatePresence>
     </>
   )
 }
