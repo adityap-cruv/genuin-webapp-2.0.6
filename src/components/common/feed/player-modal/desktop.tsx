@@ -131,6 +131,7 @@ function Content({ unreadMessageCount, isInModal, close, isFullScreen, isComment
   const { videos, updateCurrentIndex, currentIndex } = useFeedListContext()
   const { shouldShowIHeartDemo, renderIn } = useIHeartDemoStates()
   const [swiperInstance, setSwiperInstance] = useState<SwiperType | null>(null)
+  const [isMobileCommentView, setIsMobileCommentView] = useState(window.innerWidth < 1280)
 
   const handleActiveIndexChange = useCallback(
     (swiper: SwiperType) => {
@@ -138,6 +139,23 @@ function Content({ unreadMessageCount, isInModal, close, isFullScreen, isComment
     },
     [updateCurrentIndex]
   )
+
+  useEffect(() => {
+    let resizeTimeout: NodeJS.Timeout
+
+    const handleResize = () => {
+      clearTimeout(resizeTimeout)
+      resizeTimeout = setTimeout(() => {
+        setIsMobileCommentView(window.innerWidth < 1280)
+      }, 100) // Debounce effect
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => {
+      clearTimeout(resizeTimeout)
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [])
 
   return (
     <>
@@ -267,19 +285,25 @@ function Content({ unreadMessageCount, isInModal, close, isFullScreen, isComment
             <FullScreenSideButtons videos={videos} currentIndex={currentIndex} swiperInstance={swiperInstance} />
           </div>
         )}
-        <AnimatePresence>
-          {isFullScreen && isCommentBoxOpen && (
-            <motion.div
-              key="fullscreen-comment-box"
-              className="z-0 h-full"
-              initial={{ width: 0, opacity: 0 }}
-              animate={{ width: '25%', opacity: 1 }}
-              exit={{ width: 0, opacity: 0 }}
-              transition={{ duration: 0.4, ease: 'easeOut' }}>
-              <FullScreenCommentBox videos={videos} currentIndex={currentIndex} />{' '}
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {isFullScreen && (
+          <AnimatePresence>
+            {isCommentBoxOpen && (
+              <motion.div
+                key="fullscreen-comment-box"
+                className="z-0 h-full"
+                initial={{ width: 0, opacity: 0 }}
+                animate={{ width: isMobileCommentView ? 0 : '25%', opacity: 1 }}
+                exit={{ width: 0, opacity: 0 }}
+                transition={{ duration: 0.4, ease: 'easeOut' }}>
+                <FullScreenCommentBox
+                  videos={videos}
+                  currentIndex={currentIndex}
+                  isMobileCommentView={isMobileCommentView}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        )}
       </div>
     </>
   )
