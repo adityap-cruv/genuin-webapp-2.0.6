@@ -8,8 +8,7 @@ import { QRCode } from 'react-qrcode-logo'
 import { useGenuinOptions } from '@/lib/stores/genuin-options'
 import { useShallow } from 'zustand/react/shallow'
 import { CustomImage } from '@/components/custom/custom-image'
-import { Button } from '@/components/ui/button'
-import { getMobileAppUrl, openGeneratedLink } from '@/lib/utils'
+import GetAppButton from '../../get-app-button'
 
 type DownloadDialogType = {
   title?: React.ReactNode
@@ -64,14 +63,13 @@ export function Body({ title, subtitle, deepLink }: DownloadDialogType) {
             </a>
           </div>
         ) : (
-          <Button
-            className=" w-full"
-            variant="default"
-            onClick={() => {
-              openGeneratedLink(getMobileAppUrl())
-            }}>
-            <p className="text-body-1-demi">Get App</p>
-          </Button>
+          <div className="w-full">
+            <GetAppButton
+              buttonText="Get App"
+              className="w-full text-body-1-demi text-monochrome-white"
+              variant="default"
+            />
+          </div>
         )}
       </div>{' '}
     </ModalShell>

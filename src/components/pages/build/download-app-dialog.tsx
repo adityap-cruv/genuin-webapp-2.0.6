@@ -13,6 +13,7 @@ import { URL_TO_APP_STORE, URL_TO_PLAY_STORE } from '@lib/constants'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { useShallow } from 'zustand/react/shallow'
 import { getMobileAppUrl, openGeneratedLink } from '@/lib/utils'
+import Analytics from '@/services/analytics'
 
 interface FormData {
   phone: string
@@ -169,6 +170,13 @@ function DownloadAppForm() {
         const res = await axios.post(process.env.NEXT_PUBLIC_API_URL + '/api/v3/send_download_link', payload)
 
         if (res.data.code === 200) {
+          void Analytics.track({
+            eventName: 'Get App Link Sent',
+            properties: {
+              phone_no: phone ? selectedCountry.dial_code + phone : '',
+              email,
+            },
+          })
           setIsLinkSent(true)
         }
       } catch (e) {
