@@ -124,7 +124,7 @@ export const InnerPlayer = memo(function InnerPlayer({
         /**
          * Let the player decide the best quality level dynamically.
          */
-        startLevel: -1,
+        startLevel: 1,
         /**
          * Use worker threads for decoding for better performance.
          */
