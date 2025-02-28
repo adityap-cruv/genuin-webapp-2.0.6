@@ -3,19 +3,26 @@ import { LinkedInIcon } from '@icons/linkedin-icon'
 import { TwitterIcon } from '@icons/twitter-icon'
 import { type BlogSectionType } from '../../../../../types/embed/embed-blog'
 import MultiEmbed from '../multi-embed'
+import { EmbedConfigsType } from '@/hooks/use-embed-details'
 
-const BlogsSection = ({ blogSection }: { blogSection: BlogSectionType }) => {
+const BlogsSection = ({ blogSection, embedConfigs }: { blogSection: BlogSectionType; embedConfigs: EmbedConfigsType }) => {
   return (
     <>
       <section className="hidden pb-20 md:block">
         <div className="flex w-full gap-14">
-          <div className="flex w-3/4 flex-col gap-6">
+          <div className="flex w-3/5 flex-col gap-6">
             <img src={blogSection?.image} alt="blog-image" className="h-auto w-full opacity-40" />
             <div className="flex flex-col gap-4 opacity-40">
               <p className="text-title-1-bold">{blogSection?.blogContent[0].title}</p>
               <p className="text-title-3-med">{blogSection?.blogContent[0].description}</p>
             </div>
-            <MultiEmbed type="blog1" />
+            <MultiEmbed
+              dataEmbedId={`${embedConfigs['Home/Blog Embed'].embedId}`}
+              genSdkId={1}
+              style={{
+                height: '400px',
+              }}
+            />
             {blogSection?.blogContent.slice(1).map((item, index) => (
               <div className="flex flex-col gap-4 opacity-40" key={index}>
                 <p className="text-title-1-bold">{item.title}</p>
@@ -23,8 +30,15 @@ const BlogsSection = ({ blogSection }: { blogSection: BlogSectionType }) => {
               </div>
             ))}
           </div>
-          <div className="flex w-1/4 flex-col gap-6">
-            <MultiEmbed type="blog2" />
+          <div className="flex w-2/5 flex-col gap-6">
+            <MultiEmbed
+              dataEmbedId={`${embedConfigs['Blog Embed'].embedId}`}
+              genSdkId={2}
+              style={{
+                height: '615px',
+                width: '350px',
+              }}
+            />
 
             <p className="px-10 py-5 text-title-1-bold opacity-40">Popular</p>
 
@@ -57,7 +71,13 @@ const BlogsSection = ({ blogSection }: { blogSection: BlogSectionType }) => {
               <p className="text-title-1-bold">{blogSection?.blogContent[0].title}</p>
               <p className="text-body-1-med">{blogSection?.blogContent[0].description}</p>
             </div>
-            <MultiEmbed type="blog1" />
+            <MultiEmbed
+              dataEmbedId={`${embedConfigs['Home/Blog Embed'].embedId}`}
+              genSdkId={1}
+              style={{
+                height: '400px',
+              }}
+            />
             {blogSection?.blogContent.slice(1).map((item, index) => (
               <div className="flex flex-col gap-4 opacity-40" key={index}>
                 <p className="text-title-1-bold">{item.title}</p>
@@ -66,7 +86,14 @@ const BlogsSection = ({ blogSection }: { blogSection: BlogSectionType }) => {
             ))}
 
             <div className="flex flex-col gap-6">
-              <MultiEmbed type="blog2" />
+              <MultiEmbed
+                dataEmbedId={`${embedConfigs['Blog Embed'].embedId}`}
+                genSdkId={2}
+                style={{
+                  height: '615px',
+                  width: '350px',
+                }}
+              />
 
               <p className="px-10 py-4 text-title-2-bold opacity-40">Popular</p>
 

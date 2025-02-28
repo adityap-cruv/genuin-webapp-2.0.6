@@ -1,8 +1,15 @@
 import React from 'react'
 import { type InvoiceSectionType } from '../../../../../types/embed/embed-post-sales'
 import MultiEmbed from '../multi-embed'
+import { EmbedConfigsType } from '@/hooks/use-embed-details'
 
-const InvoiceSection = ({ invoiceSection }: { invoiceSection: InvoiceSectionType }) => {
+const InvoiceSection = ({
+  invoiceSection,
+  embedConfigs,
+}: {
+  invoiceSection: InvoiceSectionType
+  embedConfigs: EmbedConfigsType
+}) => {
   return (
     <>
       <section className="hidden py-10 md:block">
@@ -12,7 +19,13 @@ const InvoiceSection = ({ invoiceSection }: { invoiceSection: InvoiceSectionType
               <p className="mb-4 text-title-1-bold">{invoiceSection?.subTitle}</p>
               <p className="text-new-h2">{invoiceSection?.title}</p>
             </div>
-            <MultiEmbed type="post1" />
+            <MultiEmbed
+              dataEmbedId={`${embedConfigs['Post-Sales Embed'].embedId}`}
+              genSdkId={1}
+              style={{
+                height: '400px',
+              }}
+            />
           </div>
 
           <div className="h-full w-1/4 opacity-40">
@@ -63,7 +76,13 @@ const InvoiceSection = ({ invoiceSection }: { invoiceSection: InvoiceSectionType
                 <p className="mb-2 text-title-2-bold">{invoiceSection?.subTitle}</p>
                 <p className="text-new-h3-mobile">{invoiceSection?.title}</p>
               </div>
-              <MultiEmbed type="post1" />
+              <MultiEmbed
+                dataEmbedId={`${embedConfigs['Post-Sales Embed'].embedId}`}
+                genSdkId={1}
+                style={{
+                  height: '400px',
+                }}
+              />
             </div>
           </div>
         </div>

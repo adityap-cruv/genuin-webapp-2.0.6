@@ -5,8 +5,15 @@ import React from 'react'
 import SearchItem from './search-item'
 import { type SearchTopSection } from '../../../../../types/embed/embed-search'
 import MultiEmbed from '../multi-embed'
+import { EmbedConfigsType } from '@/hooks/use-embed-details'
 
-const SearchSection = ({ searchTopSection }: { searchTopSection: SearchTopSection }) => {
+const SearchSection = ({
+  searchTopSection,
+  embedConfigs,
+}: {
+  searchTopSection: SearchTopSection
+  embedConfigs: EmbedConfigsType
+}) => {
   return (
     <>
       {/* Desktop */}
@@ -53,7 +60,13 @@ const SearchSection = ({ searchTopSection }: { searchTopSection: SearchTopSectio
           ))}
         </div>
         <div className="py-10">
-          <MultiEmbed type="search1" />
+          <MultiEmbed
+            dataEmbedId={`${embedConfigs['Home/Search Embed'].embedId}`}
+            genSdkId={1}
+            style={{
+              height: '600px',
+            }}
+          />
         </div>
         <div className="flex w-full items-center gap-6 py-10">
           <div className="grid w-3/4 grid-cols-2 gap-6 opacity-40">
@@ -72,7 +85,14 @@ const SearchSection = ({ searchTopSection }: { searchTopSection: SearchTopSectio
             ))}
           </div>
           <div className="w-1/4">
-            <MultiEmbed type="search2" />
+            <MultiEmbed
+              dataEmbedId={`${embedConfigs['Home/Search Embed1'].embedId}`}
+              genSdkId={2}
+              style={{
+                height: '600px',
+                width: '300px',
+              }}
+            />
           </div>
         </div>
       </section>
@@ -120,7 +140,13 @@ const SearchSection = ({ searchTopSection }: { searchTopSection: SearchTopSectio
           ))}
         </div>
         <div className="py-10">
-          <MultiEmbed type="search1" />
+          <MultiEmbed
+            dataEmbedId={`${embedConfigs['Home/Search Embed'].embedId}`}
+            genSdkId={1}
+            style={{
+              height: '600px',
+            }}
+          />
         </div>
         <div className="grid grid-cols-1 gap-4 opacity-40">
           {searchTopSection?.searchItemsBottom.map((item, index) => (
@@ -138,7 +164,14 @@ const SearchSection = ({ searchTopSection }: { searchTopSection: SearchTopSectio
           ))}
         </div>
         <div className="my-20 flex justify-center">
-          <MultiEmbed type="search2" />
+          <MultiEmbed
+            dataEmbedId={`${embedConfigs['Home/Search Embed1'].embedId}`}
+            genSdkId={2}
+            style={{
+              height: '600px',
+              width: '300px',
+            }}
+          />
         </div>
       </section>
     </>

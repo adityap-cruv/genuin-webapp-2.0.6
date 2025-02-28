@@ -3,8 +3,15 @@
 import { useState } from 'react'
 import { type FeaturesSectionType } from '../../../../../types/embed/embed-home'
 import MultiEmbed from '../multi-embed'
+import { EmbedConfigsType } from '@/hooks/use-embed-details'
 
-const FeaturesSection = ({ featuresSection }: { featuresSection: FeaturesSectionType }) => {
+const FeaturesSection = ({
+  featuresSection,
+  embedConfigs,
+}: {
+  featuresSection: FeaturesSectionType
+  embedConfigs: EmbedConfigsType
+}) => {
   const [selectedItem, setSelectedItem] = useState(featuresSection?.options[1])
 
   if (!featuresSection || featuresSection?.options.length === 0) return null
@@ -34,7 +41,13 @@ const FeaturesSection = ({ featuresSection }: { featuresSection: FeaturesSection
             ))}
           </div>
           <div className="w-3/4">
-            <MultiEmbed type="home2" />
+            <MultiEmbed
+              dataEmbedId={embedConfigs['Home/Search Embed'].embedId}
+              genSdkId={2}
+              style={{
+                height: '600px',
+              }}
+            />
           </div>
         </div>
       </section>
@@ -59,7 +72,13 @@ const FeaturesSection = ({ featuresSection }: { featuresSection: FeaturesSection
               </p>
             ))}
           </div>
-          <MultiEmbed type="home2" />
+          <MultiEmbed
+            dataEmbedId={embedConfigs['Home/Search Embed'].embedId}
+            genSdkId={2}
+            style={{
+              height: '600px',
+            }}
+          />
         </div>
       </section>
     </>

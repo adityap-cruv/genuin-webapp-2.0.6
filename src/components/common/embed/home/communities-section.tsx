@@ -1,7 +1,14 @@
+import { EmbedConfigsType } from '@/hooks/use-embed-details'
 import { type CommunitiesSectionType } from '../../../../../types/embed/embed-home'
 import MultiEmbed from '../multi-embed'
 
-const CommunitiesSection = ({ communitiesSection }: { communitiesSection?: CommunitiesSectionType }) => {
+const CommunitiesSection = ({
+  communitiesSection,
+  embedConfigs,
+}: {
+  communitiesSection?: CommunitiesSectionType
+  embedConfigs: EmbedConfigsType
+}) => {
   if (!communitiesSection) return null
 
   return (
@@ -13,7 +20,13 @@ const CommunitiesSection = ({ communitiesSection }: { communitiesSection?: Commu
           <p className="text-title-1-bold-home-m">{communitiesSection.title}</p>
         </div>
         <div className="pt-10">
-          <MultiEmbed type="home4" />
+          <MultiEmbed
+            dataEmbedId={embedConfigs['Home/Post Sales Embed'].embedId}
+            genSdkId={4}
+            style={{
+              height: '750px',
+            }}
+          />
         </div>
       </section>
 
@@ -23,7 +36,13 @@ const CommunitiesSection = ({ communitiesSection }: { communitiesSection?: Commu
           <p className="text-cap-1-bold-home text-primary opacity-40">{communitiesSection.sectionTitle}</p>
           <p className="text-center text-new-h2-mobile opacity-40">{communitiesSection.title}</p>
           <div className="pt-10">
-            <MultiEmbed type="home4" />
+            <MultiEmbed
+              dataEmbedId={embedConfigs['Home/Post Sales Embed'].embedId}
+              genSdkId={4}
+              style={{
+                height: '600px',
+              }}
+            />
           </div>
         </div>
       </section>

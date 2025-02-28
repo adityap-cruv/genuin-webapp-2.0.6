@@ -1,8 +1,15 @@
 import TestimonialTab from './testimonial-tab'
 import { type TestimonialSectionType } from '../../../../../types/embed/embed-home'
 import MultiEmbed from '../multi-embed'
+import { EmbedConfigsType } from '@/hooks/use-embed-details'
 
-const TestimonialSection = ({ testimonialSection }: { testimonialSection: TestimonialSectionType }) => {
+const TestimonialSection = ({
+  testimonialSection,
+  embedConfigs,
+}: {
+  testimonialSection: TestimonialSectionType
+  embedConfigs: EmbedConfigsType
+}) => {
   if (!testimonialSection) return null
   return (
     <>
@@ -10,7 +17,14 @@ const TestimonialSection = ({ testimonialSection }: { testimonialSection: Testim
       <section className="hidden py-20 md:block">
         <div className="flex w-full items-center gap-6">
           <div className="w-2/5">
-            <MultiEmbed type="home3" />
+            <MultiEmbed
+              dataEmbedId={embedConfigs['Home/Search Embed1'].embedId}
+              genSdkId={3}
+              style={{
+                height: '615px',
+                width: '350px',
+              }}
+            />
           </div>
           <div className="flex w-3/5 flex-col gap-3 opacity-40">
             <p className="text-title-2-bold text-primary">{testimonialSection.sectionTitle}</p>
@@ -26,7 +40,14 @@ const TestimonialSection = ({ testimonialSection }: { testimonialSection: Testim
       {/* Mobile */}
       <section className="py-10 md:hidden">
         <div className="flex flex-col items-center gap-3">
-          <MultiEmbed type="home3" />
+          <MultiEmbed
+            dataEmbedId={embedConfigs['Home/Search Embed1'].embedId}
+            genSdkId={3}
+            style={{
+              height: '615px',
+              width: '350px',
+            }}
+          />
           <p className="text-cap-1-bold-home text-primary opacity-40">{testimonialSection.sectionTitle}</p>
           <p className="text-center text-new-h2-mobile opacity-40">{testimonialSection.title}</p>
           <p className="text-center text-title-2-demi font-medium opacity-40">{testimonialSection.caption}</p>

@@ -10,16 +10,8 @@ import { EmbedHome } from '@/content/embed/embed-home'
 import { useEmbedConfig } from '@/components/embed/embed-config-provider'
 import { getIndustryName } from '@/lib/utils'
 import { useShallow } from 'zustand/react/shallow'
-import { useEffect } from 'react'
 import MultiEmbed from '@/components/common/embed/multi-embed'
-
-declare global {
-  interface Window {
-    genuin: {
-      init: (config: object) => void
-    }
-  }
-}
+import { useEmbedSetup } from '@/hooks/use-embed-details'
 
 export default function Page() {
   const { config } = useEmbedConfig(
@@ -29,24 +21,22 @@ export default function Page() {
   )
   const industryName = getIndustryName(config?.industry_type)
   const homePageData = (EmbedHome.find((item: any) => item[industryName]) as any)?.[industryName]
-
-  useEffect(() => {
-    window.genuin.init({})
-    document.body.style.backgroundColor = '#FAFAFA'
-
-    return () => {
-      document.body.style.backgroundColor = ''
-    }
-  }, [])
+  const { embedConfigs } = useEmbedSetup()
 
   return (
     <div className="w-full overflow-scroll px-4 md:px-0">
       <EmbedNav />
       <HeroSection heroSection={homePageData?.heroSection} />
-      <MultiEmbed type="home1" />
-      <FeaturesSection featuresSection={homePageData?.featuresSection} />
-      <TestimonialSection testimonialSection={homePageData?.testimonialSection} />
-      <CommunitiesSection communitiesSection={homePageData?.communitiesSection} />
+      <MultiEmbed
+        dataEmbedId={`${embedConfigs['Home/Blog Embed'].embedId}`}
+        genSdkId={1}
+        style={{
+          height: '400px',
+        }}
+      />
+      <FeaturesSection featuresSection={homePageData?.featuresSection} embedConfigs={embedConfigs} />
+      <TestimonialSection testimonialSection={homePageData?.testimonialSection} embedConfigs={embedConfigs} />
+      <CommunitiesSection communitiesSection={homePageData?.communitiesSection} embedConfigs={embedConfigs} />
       <GetStartedSection getStartedSection={homePageData?.getStartedSection} />
       <EmbedFooter />
     </div>

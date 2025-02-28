@@ -51,6 +51,61 @@ type RewardPointConfig = {
   repost: number
 }
 
+type EmbedCustomization = {
+  dimensions: {
+    width: number;
+    height: number;
+  };
+  cta_button?: {
+    text: string;
+    url: string;
+  };
+  enable_engagement_tools?: {
+    repost: boolean;
+    spark: boolean;
+    comment: boolean;
+    share: boolean;
+  };
+  enable_redirection_tools?: {
+    community: boolean;
+    group: boolean;
+    user: boolean;
+  };
+  links?: {
+    is_show_links: boolean;
+    position: "outside" | "overlay";
+  };
+  carousel_style?: string;
+  autoplay?: boolean;
+  heading?: string;
+  sub_heading?: string;
+  is_carousel_icon?: boolean;
+  is_floating_view?: boolean;
+  is_expanded_view?: boolean;
+  is_show_username?: boolean;
+  is_show_view_count?: boolean;
+  is_enable_engagement_tools?: boolean;
+  is_enable_redirection?: boolean;
+  is_loop_video?: boolean;
+  is_show_social_interaction_data?: boolean;
+  show_side_panel?: boolean;
+  show_join_community_button?: boolean;
+  show_community_share_button?: boolean;
+  community_ids?: string[];
+  community_loop_ids?: string[];
+};
+
+type Embed = {
+  _id: string;
+  name: string;
+  style: "carousel" | "feed";
+  type: string;
+  brand_id: number;
+  is_default: boolean;
+  customization: EmbedCustomization;
+  __v: number;
+};
+
 export type ConfigType = {
   brand_id: string
   created_at: string
@@ -74,6 +129,8 @@ export type ConfigType = {
   privacy_policy?: string
   terms_and_condition?: string
   industry_type?: number
+  default_embeds?: Embed[]
+  api_key?: string
 } | null
 
 export type User = {
