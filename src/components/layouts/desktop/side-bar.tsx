@@ -230,7 +230,10 @@ export function SideBar() {
           <hr className="border-1 mb-4 mt-1 border-monochrome-black/10" />
           <div className="flex items-center">
             <p className="text-cap-1-demi text-monochrome">Powered by</p>
-            <Link href={{ pathname: PATH_NAME.home() }}>
+            <Link
+              href="https://begenuin.com?utm_source=web&utm_medium=sidebar"
+              target="_blank"
+              rel="noopener noreferrer">
               <GenuinIcon.logo className="ml-1 h-5 w-full fill-new-off-black" />
             </Link>
           </div>
