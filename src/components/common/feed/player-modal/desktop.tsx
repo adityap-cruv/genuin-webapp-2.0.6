@@ -18,16 +18,17 @@ import Analytics from '@/services/analytics'
 import { type CommunityUserRoleType } from '@/lib/schemas/roles'
 import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
 import { IHeartDemo } from '@/components/layouts/desktop/iheart-demo'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { CloseIcon } from '@icons/close-icon'
 import { type Swiper as SwiperType } from 'swiper/types'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { Mousewheel, Keyboard } from 'swiper/modules'
+import { Mousewheel, Keyboard, Virtual } from 'swiper/modules'
 import { Actions } from '../../player/control-layer/actions'
 import FullScreenCommentBox from '../../full-screen-comment-box'
 import FullScreenSideButtons from '../../full-screen-side-buttons'
 import FullScreenVideoDetails from '../../full-screen-video-details'
 import { motion, AnimatePresence } from 'framer-motion'
+import { UAParser } from 'ua-parser-js'
 
 type Props = {
   children?: React.ReactNode
@@ -52,6 +53,20 @@ type Props = {
   isInModal?: boolean
   hasNextPage?: boolean
   onCommunityJoin?: (communityId: string, role: CommunityUserRoleType) => void
+}
+
+const CONFIG = {
+  SCROLL_DELAY: 500,
+  THRESHOLD_TIME: 400, // Increased from 300
+  MOUSE_THRESHOLD: {
+    WINDOWS: 30, // Higher threshold for Windows
+    DEFAULT: 20, // Original threshold for other OS
+  },
+  MOUSE_SENSITIVITY: {
+    WINDOWS: 0.8, // Lower sensitivity for Windows
+    DEFAULT: 1, // Original sensitivity for other OS
+  },
+  DEBOUNCE_TIME: 150, // New debounce time for wheel events
 }
 
 export function Desktop({
@@ -139,8 +154,45 @@ function Content({
   const sizeBox = useGenuinOptions().sizeBoxes
   const { videos, updateCurrentIndex, currentIndex } = useFeedListContext()
   const { shouldShowIHeartDemo, renderIn } = useIHeartDemoStates()
-  const [swiperInstance, setSwiperInstance] = useState<SwiperType | null>(null)
   const [isMobileCommentView, setIsMobileCommentView] = useState(window.innerWidth < 1280)
+  const isWindows = new UAParser().getResult().os.name === 'Windows'
+  const touchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const wheelTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const swiperRef = useRef<SwiperType | null>(null)
+  const lastWheelTime = useRef<number>(0)
+
+  const clearTimeouts = useCallback(() => {
+    if (touchTimeoutRef.current) {
+      clearTimeout(touchTimeoutRef.current)
+      touchTimeoutRef.current = null
+    }
+    if (wheelTimeoutRef.current) {
+      clearTimeout(wheelTimeoutRef.current)
+      wheelTimeoutRef.current = null
+    }
+  }, [])
+
+  const handleWheel = useCallback((swiper: SwiperType, event: WheelEvent) => {
+    const now = Date.now()
+    if (now - lastWheelTime.current < CONFIG.DEBOUNCE_TIME) {
+      event.preventDefault()
+      return false
+    }
+    lastWheelTime.current = now
+    return true
+  }, [])
+
+  const handleSlideChange = useCallback(
+    (swiper: SwiperType) => {
+      clearTimeouts()
+      swiper.mousewheel.disable()
+
+      touchTimeoutRef.current = setTimeout(() => {
+        swiper.mousewheel.enable()
+      }, CONFIG.SCROLL_DELAY)
+    },
+    [clearTimeouts]
+  )
 
   const handleActiveIndexChange = useCallback(
     (swiper: SwiperType) => {
@@ -183,7 +235,7 @@ function Content({
       <div
         style={{ width: isFullScreen ? '100%' : sizeBox.modal.width }}
         className={cn('relative min-w-[800px] overflow-clip rounded-2xl transition-all', {
-          'flex h-full w-full justify-center gap-20': isFullScreen,
+          'flex h-full w-full justify-center': isFullScreen,
         })}>
         <div style={{ height: isFullScreen ? '100%' : sizeBox.modal.height }} className="relative">
           {!isFullScreen && (
@@ -213,21 +265,42 @@ function Content({
               }}
               className="hide-scrollbar overflow-x-clip bg-red">
               <Swiper
-                // PLAY_PAUSE gesture will end when the user takes action;
-                onSwiper={setSwiperInstance} // Correctly assigns Swiper instance
-                onActiveIndexChange={handleActiveIndexChange}
-                // allowSlideNext={allowSlideNext}
-                keyboard={true}
+                onSwiper={(swiper) => {
+                  swiperRef.current = swiper
+                  ;(swiper as any).on('wheel', handleWheel)
+                }}
+                direction="vertical"
+                modules={[Mousewheel, Keyboard, Virtual]}
+                slidesPerView={1}
+                speed={CONFIG.SCROLL_DELAY}
                 // initialSlide={startIndex}
-                speed={500}
-                modules={[Mousewheel, Keyboard]}
-                mousewheel
+                // allowSlideNext={allowSlideNext}
+                allowSlidePrev={true}
+                keyboard={{
+                  enabled: true,
+                  onlyInViewport: true,
+                }}
+                // virtual={{
+                //   enabled: true,
+                //   addSlidesAfter: 1,
+                //   addSlidesBefore: 1,
+                // }}
+                mousewheel={{
+                  forceToAxis: true,
+                  releaseOnEdges: true,
+                  thresholdDelta: isWindows ? CONFIG.MOUSE_THRESHOLD.WINDOWS : CONFIG.MOUSE_THRESHOLD.DEFAULT,
+                  thresholdTime: CONFIG.THRESHOLD_TIME,
+                  sensitivity: isWindows ? CONFIG.MOUSE_SENSITIVITY.WINDOWS : CONFIG.MOUSE_SENSITIVITY.DEFAULT,
+                }}
+                followFinger={false}
+                longSwipesRatio={0.2}
+                onActiveIndexChange={handleActiveIndexChange}
+                onSlideChange={handleSlideChange}
                 style={{
                   width: isFullScreen ? undefined : sizeBox.modal.player.width,
                   height: isFullScreen ? '100%' : sizeBox.modal.player.height,
                   aspectRatio: isFullScreen ? '9 / 16' : undefined,
-                }}
-                direction="vertical">
+                }}>
                 {videos.map((_, index: number) => {
                   return (
                     <SwiperSlide key={index}>
@@ -268,6 +341,7 @@ function Content({
                                       videos={videos}
                                       currentIndex={currentIndex}
                                       isActive={isActive}
+                                      isFullScreen={isFullScreen}
                                     />
                                   </div>
                                 )}
@@ -303,7 +377,7 @@ function Content({
         )}
         {isFullScreen && (
           <div className="absolute right-2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col gap-4">
-            <FullScreenSideButtons videos={videos} currentIndex={currentIndex} swiperInstance={swiperInstance} />
+            <FullScreenSideButtons videos={videos} currentIndex={currentIndex} swiperInstance={swiperRef.current} />
           </div>
         )}
         {isFullScreen && (
@@ -328,7 +402,7 @@ function Content({
       </div>
       {!isFullScreen && (
         <div className="flex flex-col gap-4">
-          <FullScreenSideButtons videos={videos} currentIndex={currentIndex} swiperInstance={swiperInstance} />
+          <FullScreenSideButtons videos={videos} currentIndex={currentIndex} swiperInstance={swiperRef.current} />
         </div>
       )}
     </>

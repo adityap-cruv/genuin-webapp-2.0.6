@@ -29,10 +29,12 @@ const FullScreenVideoDetails = ({
   videos,
   currentIndex,
   isActive,
+  isFullScreen,
 }: {
   videos: VideoPlayerModalType[]
   currentIndex: number
   isActive: boolean
+  isFullScreen: boolean
 }) => {
   const [showLinkouts, setShowLinkouts] = useState(false)
 
@@ -117,7 +119,8 @@ const FullScreenVideoDetails = ({
               maxLines={currentVideo?.video.linkoutId ? 1 : 2}
               shouldAnimate
               showViewMore={false}
-              isExpanded={false}
+              isFullScreen={isFullScreen}
+              // isExpanded={false}
               // setIsExpanded={setIsExpanded}
             />
           </div>

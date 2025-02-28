@@ -266,6 +266,7 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
                                   videos={videos}
                                   currentIndex={currentIndex}
                                   isActive={isActive}
+                                  isFullScreen={isFullScreen}
                                 />
                               </div>
                             )}

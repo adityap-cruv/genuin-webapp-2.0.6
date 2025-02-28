@@ -279,6 +279,7 @@ type DynamicProps = {
   shouldAnimate?: boolean
   isExpanded?: boolean
   setIsExpanded?: (expanded: boolean) => void
+  isFullScreen?: boolean
 } & ComponentProps<'p'>
 
 export function Dynamic({
@@ -288,6 +289,7 @@ export function Dynamic({
   shouldAnimate = false,
   isExpanded: isExpandedExternal,
   setIsExpanded: setIsExpandedExternal,
+  isFullScreen,
   ...props
 }: DynamicProps) {
   // height is used to calculate the max height of the text container.
@@ -393,14 +395,20 @@ export function Dynamic({
       className={cn(
         'whitespace-pre-wrap transition-[max-height] duration-500 sm:max-h-max',
         {
-          'swiper-no-swiping hide-scrollbar overflow-auto': isExpanded && isMobile,
+          'swiper-no-swiping hide-scrollbar overflow-auto': (isExpanded && isMobile) || isFullScreen,
         },
         props.className
       )}
       style={{
         // The max height of the text container is calculated based on the height of the video player.
-        // If mobile, the max height is 30% of the video player height.
-        maxHeight: shouldAnimate ? (isMobile ? (isExpanded ? height * 0.3 : maxLines * 24) : 'unset') : undefined,
+        // If mobile, the max height is 40% of the video player height.
+        maxHeight: shouldAnimate
+          ? isMobile || isFullScreen
+            ? isExpanded
+              ? height * 0.4
+              : maxLines * 24
+            : 'unset'
+          : undefined,
       }}
       onClick={(e) => {
         e.stopPropagation()
