@@ -8,6 +8,7 @@ import { AuthenticationModal } from '@components/common/modals/authentication'
 import { type ReactNode } from 'react'
 import { MOBILE_DOWNLOAD_APP_LINK, PROTECTED_ROUTES } from './constants'
 import { type CommunityUserRoleType } from './schemas/roles'
+import Analytics from '@/services/analytics'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -242,11 +243,18 @@ export const generateDeepLink = async ({
   ).toString()}`
 
   if (isMobile) {
+    const shortLink = webCTA === 'app' ? getMobileAppUrl() : redirectionUrl
     if (webCTA === 'app') {
-      return getMobileAppUrl()
-    } else {
-      return redirectionUrl
+      await Analytics.track({
+        eventName: action !== '/' ? 'Download App Clicked' : 'Download App Viewed',
+        properties: {
+          device_type: getPlatform(),
+          redirection_link: shortLink,
+          action,
+        },
+      })
     }
+    return shortLink
   } else {
     try {
       const res = await axiosInstance.post(
@@ -254,6 +262,18 @@ export const generateDeepLink = async ({
         finalPayload
       )
       const shortLink = res?.data?.data?.shortLink
+
+      if (webCTA === 'app') {
+        await Analytics.track({
+          eventName: 'Download App Viewed',
+          properties: {
+            device_type: getPlatform(),
+            redirection_link: shortLink,
+            action,
+          },
+        })
+      }
+
       return shortLink
     } catch (e) {
       return process.env.NEXT_PUBLIC_HOST_URL
@@ -451,3 +471,23 @@ export function getMobileAppUrl() {
 
   return isIOS ? appStoreLink : playStoreLink
 }
+
+/**
+ * Detects the user's platform based on the `navigator.userAgent` string.
+ * 
+ * @returns {string} - Returns "Android" if the user is on an Android device,
+ *                     "iOS" if on an iPhone, iPad, or iPod, and "Web" otherwise.
+ */
+export const getPlatform = () => {
+  if (typeof navigator !== "undefined") {
+    const userAgent = navigator.userAgent || navigator.vendor;
+    
+    if (/android/i.test(userAgent)) {
+      return "Android";
+    }
+    if (/iPhone|iPad|iPod/i.test(userAgent)) {
+      return "iOS";
+    }
+  }
+  return "Web";
+};

@@ -84,7 +84,7 @@ export const InnerPlayer = memo(function InnerPlayer({
     )
   const [hasStarted, setHasStarted] = useState(false)
   let encodedVideoSourceUrl = videoSource
-  if (brandId.toString() === '1729') {
+  if (brandId && brandId.toString() === '1729') {
     // Replace the video source URL with the OCITest URL
     encodedVideoSourceUrl = encodedVideoSourceUrl.replace('media.begenuin.com', 'ocitest.begenuin.com')
   }
@@ -124,7 +124,7 @@ export const InnerPlayer = memo(function InnerPlayer({
         /**
          * Let the player decide the best quality level dynamically.
          */
-        startLevel: -1,
+        startLevel: 1,
         /**
          * Use worker threads for decoding for better performance.
          */
