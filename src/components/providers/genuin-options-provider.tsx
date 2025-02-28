@@ -65,6 +65,7 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
   const from = searchParams.get('from') ?? ''
   const isMobile = deviceType === 'mobile'
   const isSafari = browserType.toLowerCase().includes('safari')
+  const host = typeof window !== 'undefined' ? window.location.host : process.env.NEXT_PUBLIC_HOST
 
   async function fetchNotificationCount() {
     const response = await notificationsCount()
@@ -154,6 +155,7 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
       config,
       webCTA: config?.web_cta ?? 'app',
       // webCTA: 'app',
+      host,
     })
   }
 

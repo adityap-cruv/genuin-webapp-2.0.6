@@ -13,7 +13,7 @@ import { AnimatedButton } from '../animated-component'
 import { ArrowRight } from 'lucide-react'
 import CreatorsPoster from '@images/home/creators_poster.webp'
 import { motion } from 'framer-motion'
-import { getMobileGetAppUrl } from '@/lib/utils'
+import { getMobileAppUrl, openGeneratedLink } from '@/lib/utils'
 
 const listOfComps = [
   {
@@ -60,7 +60,12 @@ export function CreatorsPage() {
       genuinLogo={genuinLogo}
       initialComponent={<InitialComponent />}
       ctaForMobile={
-        <AnimatedButton className="border bg-monochrome-white" shadowColor="#0645FF" onClick={getMobileGetAppUrl}>
+        <AnimatedButton
+          className="border bg-monochrome-white"
+          shadowColor="#0645FF"
+          onClick={() => {
+            openGeneratedLink(getMobileAppUrl())
+          }}>
           <p className="whitespace-nowrap">Get Genuin</p>
           <ArrowRight />
         </AnimatedButton>

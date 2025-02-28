@@ -8,7 +8,7 @@ import { AuthenticationModal } from '@components/common/modals/authentication'
 import { type ReactNode } from 'react'
 import { MOBILE_DOWNLOAD_APP_LINK, PROTECTED_ROUTES } from './constants'
 import { type CommunityUserRoleType } from './schemas/roles'
-import { getAppLink } from './get-deeplink'
+import Analytics from '@/services/analytics'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -234,15 +234,50 @@ export const generateDeepLink = async ({
   if (description) {
     Object.assign(finalPayload, { description })
   }
-  try {
-    const res = await axiosInstance.post(
-      `${process.env.NEXT_PUBLIC_API_URL}/goservices/links/dynamic_link`,
-      finalPayload
-    )
-    const shortLink = res?.data?.data?.shortLink
+
+  const { host, webCTA, isMobile } = useGenuinOptions.getState()
+
+  // Construct the full URL
+  const redirectionUrl = `${host}${finalPayload.path_params}?${new URLSearchParams(
+    finalPayload.query_params
+  ).toString()}`
+
+  if (isMobile) {
+    const shortLink = webCTA === 'app' ? getMobileAppUrl() : redirectionUrl
+    if (webCTA === 'app') {
+      await Analytics.track({
+        eventName: action !== '/' ? 'Download App Clicked' : 'Download App Viewed',
+        properties: {
+          device_type: getPlatform(),
+          redirection_link: shortLink,
+          action,
+        },
+      })
+    }
     return shortLink
-  } catch (e) {
-    return process.env.NEXT_PUBLIC_HOST_URL
+  } else {
+    try {
+      const res = await axiosInstance.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/goservices/links/dynamic_link`,
+        finalPayload
+      )
+      const shortLink = res?.data?.data?.shortLink
+
+      if (webCTA === 'app') {
+        await Analytics.track({
+          eventName: 'Download App Viewed',
+          properties: {
+            device_type: getPlatform(),
+            redirection_link: shortLink,
+            action,
+          },
+        })
+      }
+
+      return shortLink
+    } catch (e) {
+      return process.env.NEXT_PUBLIC_HOST_URL
+    }
   }
 }
 
@@ -422,8 +457,37 @@ export function getYear() {
   return new Date().getFullYear()
 }
 
-export async function getMobileGetAppUrl() {
-  await getAppLink().then((generatedLink) => {
-    openGeneratedLink(generatedLink ?? MOBILE_DOWNLOAD_APP_LINK)
-  })
+export function getMobileAppUrl() {
+  const { config } = useGenuinOptions.getState()
+
+  const userAgent = navigator.userAgent.toLowerCase()
+  const isIOS =
+    userAgent.includes('ipad') ||
+    userAgent.includes('iphone') ||
+    (userAgent.includes('ipod') && !('MSStream' in window))
+
+  const appStoreLink = config?.integrations.sdk.ios.appstore_link ?? MOBILE_DOWNLOAD_APP_LINK
+  const playStoreLink = config?.integrations.sdk.android.playstore_link ?? MOBILE_DOWNLOAD_APP_LINK
+
+  return isIOS ? appStoreLink : playStoreLink
 }
+
+/**
+ * Detects the user's platform based on the `navigator.userAgent` string.
+ * 
+ * @returns {string} - Returns "Android" if the user is on an Android device,
+ *                     "iOS" if on an iPhone, iPad, or iPod, and "Web" otherwise.
+ */
+export const getPlatform = () => {
+  if (typeof navigator !== "undefined") {
+    const userAgent = navigator.userAgent || navigator.vendor;
+    
+    if (/android/i.test(userAgent)) {
+      return "Android";
+    }
+    if (/iPhone|iPad|iPod/i.test(userAgent)) {
+      return "iOS";
+    }
+  }
+  return "Web";
+};
