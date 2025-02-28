@@ -83,11 +83,12 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
   const sizeBox = customSizeBox || defaultSizeBox
   const { allowSlideNext, currentIndex, updateCurrentIndex, videos } = useFeedListContext()
   const { gestureOverlays, setGestureOverlay } = useGestureOverlay(currentIndex)
-  const { muted, isFullScreen, isCommentBoxOpen } = usePlayerControlStore(
+  const { muted, isFullScreen, isCommentBoxOpen, toggleFullScreen } = usePlayerControlStore(
     useShallow((state) => ({
       muted: state.muted,
       isFullScreen: state.isFullScreen,
       isCommentBoxOpen: state.isCommentBoxOpen,
+      toggleFullScreen: state.toggleFullScreen,
     }))
   )
   const [isMobileCommentView, setIsMobileCommentView] = useState(window.innerWidth < 1280)
@@ -156,6 +157,18 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
       window.removeEventListener('resize', handleResize)
     }
   }, [])
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isFullScreen) {
+        toggleFullScreen()
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isFullScreen])
 
   if (!videos || videos.length === 0)
     return (

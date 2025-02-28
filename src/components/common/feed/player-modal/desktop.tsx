@@ -69,7 +69,7 @@ export function Desktop({
   onCommunityJoin,
 }: Props) {
   const { setRenderIn: setIHeartDemoRenderIn } = useIHeartDemoStates()
-  const { mute, isFullScreen, isCommentBoxOpen } = usePlayerControlStore()
+  const { mute, isFullScreen, isCommentBoxOpen, toggleFullScreen } = usePlayerControlStore()
 
   // This is to show the iheart demo in the modal.
   useEffect(() => {
@@ -109,6 +109,7 @@ export function Desktop({
                 close={close}
                 isFullScreen={isFullScreen}
                 isCommentBoxOpen={isCommentBoxOpen}
+                toggleFullScreen={toggleFullScreen}
               />
             </FeedContextProvider>
           )}
@@ -124,9 +125,17 @@ type ContentPropsType = {
   close?: () => void
   isFullScreen: boolean
   isCommentBoxOpen: boolean
+  toggleFullScreen: () => void
 }
 
-function Content({ unreadMessageCount, isInModal, close, isFullScreen, isCommentBoxOpen }: ContentPropsType) {
+function Content({
+  unreadMessageCount,
+  isInModal,
+  close,
+  isFullScreen,
+  isCommentBoxOpen,
+  toggleFullScreen,
+}: ContentPropsType) {
   const sizeBox = useGenuinOptions().sizeBoxes
   const { videos, updateCurrentIndex, currentIndex } = useFeedListContext()
   const { shouldShowIHeartDemo, renderIn } = useIHeartDemoStates()
@@ -156,6 +165,18 @@ function Content({ unreadMessageCount, isInModal, close, isFullScreen, isComment
       window.removeEventListener('resize', handleResize)
     }
   }, [])
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isFullScreen) {
+        toggleFullScreen()
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isFullScreen])
 
   return (
     <>
@@ -305,6 +326,11 @@ function Content({ unreadMessageCount, isInModal, close, isFullScreen, isComment
           </AnimatePresence>
         )}
       </div>
+      {!isFullScreen && (
+        <div className="flex flex-col gap-4">
+          <FullScreenSideButtons videos={videos} currentIndex={currentIndex} swiperInstance={swiperInstance} />
+        </div>
+      )}
     </>
   )
 }
