@@ -18,10 +18,10 @@ export default function Page() {
   )
   const industryName = getIndustryName(config?.industry_type)
   const postSalesData = (EmbedPostSales.find((item: any) => item[industryName]) as any)?.[industryName]
-  const { embedConfigs } = useEmbedSetup()
+  const { embedConfigs } = useEmbedSetup({ config })
 
   return (
-    <div className="w-full overflow-scroll px-4 md:px-0">
+    <div className="w-full overflow-scroll px-5">
       <EmbedNav />
       <OrderDetailsSection orderDetailsSection={postSalesData?.orderDetailsSection} />
       <InvoiceSection invoiceSection={postSalesData?.invoiceSection} embedConfigs={embedConfigs} />

@@ -1,7 +1,7 @@
 import React from 'react'
 import { type InvoiceSectionType } from '../../../../../types/embed/embed-post-sales'
 import MultiEmbed from '../multi-embed'
-import { EmbedConfigsType } from '@/hooks/use-embed-details'
+import { type EmbedConfigsType } from '@/hooks/use-embed-details'
 
 const InvoiceSection = ({
   invoiceSection,
@@ -12,24 +12,30 @@ const InvoiceSection = ({
 }) => {
   return (
     <>
-      <section className="hidden py-10 md:block">
+      <section className="hidden h-fit py-10 md:block">
         <div className="flex w-full items-center gap-10">
           <div className="flex w-3/4 flex-col gap-10">
-            <div className="opacity-40">
+            <div>
               <p className="mb-4 text-title-1-bold">{invoiceSection?.subTitle}</p>
               <p className="text-new-h2">{invoiceSection?.title}</p>
             </div>
-            <MultiEmbed
-              dataEmbedId={`${embedConfigs['Post-Sales Embed'].embedId}`}
-              genSdkId={1}
+            <div
+              className="rounded-xl"
               style={{
-                height: '400px',
-              }}
-            />
+                boxShadow: '0px 8px 24px rgba(0, 0, 0, 0.1)',
+              }}>
+              <MultiEmbed
+                dataEmbedId={`${embedConfigs['Post-Sales Embed'].embedId}`}
+                genSdkId={1}
+                style={{
+                  height: '400px',
+                }}
+              />
+            </div>
           </div>
 
-          <div className="h-full w-1/4 opacity-40">
-            <div className="flex h-full flex-col gap-40 rounded-xl bg-monochrome-white px-4 py-6 shadow-md">
+          <div className="h-full w-auto ">
+            <div className="flex h-full flex-col gap-60 rounded-xl bg-monochrome-white px-4 py-6 shadow-md">
               <div className="flex flex-col gap-6">
                 <p className="text-title-1-bold">{invoiceSection?.order.title}</p>
                 {invoiceSection?.order.items.map((item, index) => (
@@ -53,7 +59,7 @@ const InvoiceSection = ({
       <section className="pb-10 md:hidden">
         <div className="flex w-full items-center gap-10">
           <div className="flex flex-col gap-6">
-            <div className="flex h-full flex-col gap-28 rounded-xl bg-monochrome-white px-4 py-6 opacity-40 shadow-2xl">
+            <div className="flex h-full flex-col gap-28 rounded-xl bg-monochrome-white px-4 py-6  shadow-2xl">
               <div className="flex flex-col gap-6">
                 <p className="text-title-2-demi font-medium">{invoiceSection?.order.title}</p>
                 {invoiceSection?.order.items.map((item, index) => (
@@ -72,18 +78,20 @@ const InvoiceSection = ({
             </div>
 
             <div className="flex flex-col gap-6">
-              <div className="opacity-40">
+              <div>
                 <p className="mb-2 text-title-2-bold">{invoiceSection?.subTitle}</p>
                 <p className="text-new-h3-mobile">{invoiceSection?.title}</p>
               </div>
-              <MultiEmbed
-                dataEmbedId={`${embedConfigs['Post-Sales Embed'].embedId}`}
-                genSdkId={1}
-                style={{
-                  height: '400px',
-                }}
-              />
             </div>
+
+            <MultiEmbed
+              dataEmbedId={`${embedConfigs['Post-Sales Embed'].embedId}`}
+              genSdkId={1}
+              style={{
+                height: '400px',
+                width: 'calc(100vw - 40px)',
+              }}
+            />
           </div>
         </div>
       </section>

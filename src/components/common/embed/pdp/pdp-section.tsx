@@ -5,7 +5,7 @@ import { type PDPSection } from '../../../../../types/embed/embed-pdp'
 const PdpSection = ({ pdpSection }: { pdpSection: PDPSection }) => {
   return (
     <>
-      <section className="hidden py-11 opacity-40 md:block">
+      <section className="hidden py-11 md:block">
         <div className="flex w-full items-center gap-10">
           <div className="w-1/2">
             <img src={pdpSection?.image} alt="pdp-image" />
@@ -58,7 +58,7 @@ const PdpSection = ({ pdpSection }: { pdpSection: PDPSection }) => {
         </div>
       </section>
 
-      <section className="py-11 opacity-40 md:hidden">
+      <section className="py-11 md:hidden">
         <div className="flex w-full flex-col items-center justify-center gap-4">
           <img src={pdpSection?.image} alt="pdp-image" />
 

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useMemo } from 'react'
-import { useEmbedConfig } from '@/components/embed/embed-config-provider'
+import { type ConfigType } from '@/lib/stores/genuin-options'
 
 declare global {
   interface Window {
@@ -14,9 +14,8 @@ declare global {
  */
 export type EmbedConfigsType = Record<string, { embedId: string; embedType: string; embedApiKey: string | undefined }>
 
-export function useEmbedSetup() {
+export function useEmbedSetup({ config }: { config: ConfigType | undefined }) {
   const initializedRef = useRef(false)
-  const { config } = useEmbedConfig()
 
   const embedConfigs = useMemo(() => {
     const configs: EmbedConfigsType = {}

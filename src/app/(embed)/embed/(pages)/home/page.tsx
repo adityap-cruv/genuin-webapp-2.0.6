@@ -21,16 +21,17 @@ export default function Page() {
   )
   const industryName = getIndustryName(config?.industry_type)
   const homePageData = (EmbedHome.find((item: any) => item[industryName]) as any)?.[industryName]
-  const { embedConfigs } = useEmbedSetup()
+  const { embedConfigs } = useEmbedSetup({ config })
 
   return (
-    <div className="w-full overflow-scroll px-4 md:px-0">
+    <div className="w-full overflow-scroll px-5">
       <EmbedNav />
       <HeroSection heroSection={homePageData?.heroSection} />
       <MultiEmbed
         dataEmbedId={`${embedConfigs['Home/Blog Embed'].embedId}`}
         genSdkId={1}
         style={{
+          boxShadow: '0px 8px 24px rgba(0, 0, 0, 0.1)',
           height: '400px',
         }}
       />

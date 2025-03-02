@@ -7,7 +7,7 @@ const GetStartedSection = ({ getStartedSection }: { getStartedSection: GetStarte
   return (
     <>
       {/* Desktop */}
-      <section className="my-20 hidden rounded-3xl bg-primary-100 opacity-40 md:block">
+      <section className="my-20 hidden rounded-3xl bg-primary-100 md:block">
         <div className="flex w-full items-center justify-between gap-6 ">
           <div className="flex w-1/2 flex-col gap-6 p-20">
             <p className="text-title-2-bold text-primary">{getStartedSection.sectionTitle}</p>
@@ -26,7 +26,7 @@ const GetStartedSection = ({ getStartedSection }: { getStartedSection: GetStarte
       </section>
 
       {/* Mobile */}
-      <section className="my-10 rounded-3xl bg-primary-100 opacity-40 md:hidden">
+      <section className="my-10 rounded-3xl bg-primary-100 md:hidden">
         <div className="flex w-full items-center justify-between gap-6 ">
           <div className="flex flex-col gap-6 p-6">
             <p className="text-cap-1-bold-home text-primary">{getStartedSection.sectionTitle}</p>

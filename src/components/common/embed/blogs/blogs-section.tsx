@@ -3,16 +3,22 @@ import { LinkedInIcon } from '@icons/linkedin-icon'
 import { TwitterIcon } from '@icons/twitter-icon'
 import { type BlogSectionType } from '../../../../../types/embed/embed-blog'
 import MultiEmbed from '../multi-embed'
-import { EmbedConfigsType } from '@/hooks/use-embed-details'
+import { type EmbedConfigsType } from '@/hooks/use-embed-details'
 
-const BlogsSection = ({ blogSection, embedConfigs }: { blogSection: BlogSectionType; embedConfigs: EmbedConfigsType }) => {
+const BlogsSection = ({
+  blogSection,
+  embedConfigs,
+}: {
+  blogSection: BlogSectionType
+  embedConfigs: EmbedConfigsType
+}) => {
   return (
     <>
       <section className="hidden pb-20 md:block">
         <div className="flex w-full gap-14">
           <div className="flex w-3/5 flex-col gap-6">
-            <img src={blogSection?.image} alt="blog-image" className="h-auto w-full opacity-40" />
-            <div className="flex flex-col gap-4 opacity-40">
+            <img src={blogSection?.image} alt="blog-image" className="h-auto w-full" />
+            <div className="flex flex-col gap-4">
               <p className="text-title-1-bold">{blogSection?.blogContent[0].title}</p>
               <p className="text-title-3-med">{blogSection?.blogContent[0].description}</p>
             </div>
@@ -24,7 +30,7 @@ const BlogsSection = ({ blogSection, embedConfigs }: { blogSection: BlogSectionT
               }}
             />
             {blogSection?.blogContent.slice(1).map((item, index) => (
-              <div className="flex flex-col gap-4 opacity-40" key={index}>
+              <div className="flex flex-col gap-4" key={index}>
                 <p className="text-title-1-bold">{item.title}</p>
                 <p className="text-title-3-med">{item.description}</p>
               </div>
@@ -32,7 +38,7 @@ const BlogsSection = ({ blogSection, embedConfigs }: { blogSection: BlogSectionT
           </div>
           <div className="flex w-2/5 flex-col gap-6">
             <MultiEmbed
-              dataEmbedId={`${embedConfigs['Blog Embed'].embedId}`}
+              dataEmbedId={`${embedConfigs['Home/Search Embed1'].embedId}`}
               genSdkId={2}
               style={{
                 height: '615px',
@@ -40,10 +46,10 @@ const BlogsSection = ({ blogSection, embedConfigs }: { blogSection: BlogSectionT
               }}
             />
 
-            <p className="px-10 py-5 text-title-1-bold opacity-40">Popular</p>
+            <p className="p-5 text-title-1-bold">Popular</p>
 
             {blogSection?.popularBlogs.map((item, index) => (
-              <div className="flex flex-col gap-5 p-10 opacity-40" key={index}>
+              <div className="flex flex-col gap-5 p-10 px-5" key={index}>
                 <p className="flex items-center justify-between gap-4">
                   <span className="text-title-3-demi">{item.blog}</span>
                   <ChevronRightIcon />
@@ -52,7 +58,7 @@ const BlogsSection = ({ blogSection, embedConfigs }: { blogSection: BlogSectionT
               </div>
             ))}
 
-            <div className="flex flex-col gap-3 rounded-xl bg-primary p-5 opacity-40">
+            <div className="flex flex-col gap-3 rounded-xl bg-primary p-5">
               <p className="text-title-3-med text-monochrome-white">Share with your community!</p>
               <div className="flex items-center gap-3">
                 <LinkedInIcon className="fill-monochrome-white" />
@@ -66,8 +72,8 @@ const BlogsSection = ({ blogSection, embedConfigs }: { blogSection: BlogSectionT
       <section className="py-10 md:hidden">
         <div className="flex w-full gap-14">
           <div className="flex flex-col gap-6">
-            <img src={blogSection?.image} alt="blog-image" className="h-auto w-full opacity-40" />
-            <div className="flex flex-col gap-4 opacity-40">
+            <img src={blogSection?.image} alt="blog-image" className="h-auto w-full" />
+            <div className="flex flex-col gap-4">
               <p className="text-title-1-bold">{blogSection?.blogContent[0].title}</p>
               <p className="text-body-1-med">{blogSection?.blogContent[0].description}</p>
             </div>
@@ -76,10 +82,11 @@ const BlogsSection = ({ blogSection, embedConfigs }: { blogSection: BlogSectionT
               genSdkId={1}
               style={{
                 height: '400px',
+                width: 'calc(100vw - 40px)',
               }}
             />
             {blogSection?.blogContent.slice(1).map((item, index) => (
-              <div className="flex flex-col gap-4 opacity-40" key={index}>
+              <div className="flex flex-col gap-4" key={index}>
                 <p className="text-title-1-bold">{item.title}</p>
                 <p className="text-body-1-med">{item.description}</p>
               </div>
@@ -87,7 +94,7 @@ const BlogsSection = ({ blogSection, embedConfigs }: { blogSection: BlogSectionT
 
             <div className="flex flex-col gap-6">
               <MultiEmbed
-                dataEmbedId={`${embedConfigs['Blog Embed'].embedId}`}
+                dataEmbedId={`${embedConfigs['Home/Search Embed1'].embedId}`}
                 genSdkId={2}
                 style={{
                   height: '615px',
@@ -95,10 +102,10 @@ const BlogsSection = ({ blogSection, embedConfigs }: { blogSection: BlogSectionT
                 }}
               />
 
-              <p className="px-10 py-4 text-title-2-bold opacity-40">Popular</p>
+              <p className="px-10 py-4 text-title-2-bold">Popular</p>
 
               {blogSection?.popularBlogs.map((item, index) => (
-                <div className="flex flex-col gap-5 px-10 py-4 opacity-40" key={index}>
+                <div className="flex flex-col gap-5 px-10 py-4" key={index}>
                   <p className="flex items-center justify-between gap-4">
                     <span className="text-title-2-demi">{item.blog}</span>
                     <ChevronRightIcon />
@@ -107,7 +114,7 @@ const BlogsSection = ({ blogSection, embedConfigs }: { blogSection: BlogSectionT
                 </div>
               ))}
 
-              <div className="flex flex-col gap-3 rounded-xl bg-primary p-5 opacity-40">
+              <div className="flex flex-col gap-3 rounded-xl bg-primary p-5">
                 <p className="text-body-1-med text-monochrome-white">Share with your community!</p>
                 <div className="flex items-center gap-3">
                   <LinkedInIcon className="fill-monochrome-white" />

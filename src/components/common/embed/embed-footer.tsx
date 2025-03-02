@@ -19,7 +19,7 @@ const FOOTER_OPTIONS = [
 
 const EmbedFooter = () => {
   return (
-    <footer className="py-20 opacity-40">
+    <footer className="py-20">
       <div className="flex flex-col items-center gap-6">
         {/* Logo */}
         <Link draggable={false} href={PATH_NAME.home()}>

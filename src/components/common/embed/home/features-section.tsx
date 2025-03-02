@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { type FeaturesSectionType } from '../../../../../types/embed/embed-home'
 import MultiEmbed from '../multi-embed'
-import { EmbedConfigsType } from '@/hooks/use-embed-details'
+import { type EmbedConfigsType } from '@/hooks/use-embed-details'
 
 const FeaturesSection = ({
   featuresSection,
@@ -19,12 +19,12 @@ const FeaturesSection = ({
   return (
     <>
       <section className="hidden py-20 md:block">
-        <div className="flex flex-col gap-3 text-center opacity-40">
+        <div className="flex flex-col gap-3 text-center">
           <p className="text-title-2-bold text-primary">{featuresSection.sectionTitle}</p>
           <p className="text-title-1-bold-home-m">{featuresSection.title}</p>
         </div>
         <div className="flex items-center gap-20 pt-10">
-          <div className="flex w-1/4 flex-col gap-14 text-center opacity-40">
+          <div className="flex w-1/4 flex-col gap-14 text-center">
             {featuresSection?.options.map((item) => (
               <p
                 className={`cursor-pointer text-title-2-bold transition-all ${
@@ -54,9 +54,9 @@ const FeaturesSection = ({
 
       <section className="py-10 md:hidden">
         <div className="flex flex-col items-center gap-3 text-center">
-          <p className="text-cap-1-bold-home text-primary opacity-40">{featuresSection.sectionTitle}</p>
-          <p className="text-new-h2-mobile opacity-40">{featuresSection.title}</p>
-          <div className="hide-scrollbar flex h-14 w-full items-center gap-8 overflow-hidden overflow-x-scroll text-center opacity-40">
+          <p className="text-cap-1-bold-home text-primary">{featuresSection.sectionTitle}</p>
+          <p className="text-new-h2-mobile">{featuresSection.title}</p>
+          <div className="hide-scrollbar flex h-14 w-full items-center gap-8 overflow-hidden overflow-x-scroll text-center">
             {featuresSection?.options.map((item) => (
               <p
                 className={`cursor-pointer whitespace-nowrap text-cap-1-bold-home transition-all ${
@@ -76,7 +76,7 @@ const FeaturesSection = ({
             dataEmbedId={embedConfigs['Home/Search Embed'].embedId}
             genSdkId={2}
             style={{
-              height: '600px',
+              height: '500px',
             }}
           />
         </div>

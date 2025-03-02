@@ -15,7 +15,7 @@ const HeroSection = ({ heroSection }: { heroSection: HeroSectionType }) => {
   return (
     <>
       {/* Desktop */}
-      <section className="hidden pb-20 opacity-40 md:block">
+      <section className="hidden pb-20 md:block">
         <div className="flex w-full items-center gap-6">
           <div className="flex w-1/2 flex-col gap-6">
             <HeroText title={heroSection.title} caption={heroSection.caption} />
@@ -40,7 +40,7 @@ const HeroSection = ({ heroSection }: { heroSection: HeroSectionType }) => {
       </section>
 
       {/* Mobile */}
-      <section className="py-10 opacity-40 md:hidden">
+      <section className="py-10 md:hidden">
         <div className="flex flex-col items-center gap-6">
           <p className="text-title-1-bold-home-m text-secondary">{heroSection.title}</p>
           <img src={heroSection.heroImage} alt="Hero Image" />

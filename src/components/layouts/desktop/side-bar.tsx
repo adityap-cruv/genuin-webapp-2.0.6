@@ -61,8 +61,8 @@ export function SideBar({ isCollapsed }: { isCollapsed?: boolean }) {
   return (
     <nav
       style={{ height: sizeboxHeight }}
-      className={`flex flex-shrink-0 h-full w-fit flex-col justify-between overflow-auto border border-monochrome-9 px-4 py-4 transition-[width] ${
-        isCollapsed ? 'mr-10' : 'xl:mr-16 xl:w-full xl:max-w-[280px] xl:border-none xl:px-0'
+      className={`flex h-full w-fit flex-shrink-0 flex-col justify-between overflow-auto border border-monochrome-9 px-4 py-4 transition-[width] ${
+        isCollapsed ? 'border-none' : 'xl:mr-16 xl:w-full xl:max-w-[280px] xl:border-none xl:px-0'
       }`}>
       <div>
         <Link href={{ pathname: PATH_NAME.home() }}>

@@ -5,7 +5,7 @@ import { type OrderDetailsSectionType } from '../../../../../types/embed/embed-p
 const OrderDetailsSection = ({ orderDetailsSection }: { orderDetailsSection: OrderDetailsSectionType }) => {
   return (
     <>
-      <section className="hidden py-10 opacity-40 md:block">
+      <section className="hidden py-10 md:block">
         <p className="mb-10 text-center text-new-h1">{orderDetailsSection?.indexTitle}</p>
         <div className="flex w-full items-center gap-14 rounded-2xl bg-monochrome-black px-20 py-6 text-monochrome-white">
           <div className="w-2/5">
@@ -35,7 +35,7 @@ const OrderDetailsSection = ({ orderDetailsSection }: { orderDetailsSection: Ord
         </div>
       </section>
 
-      <section className="py-10 opacity-40 md:hidden">
+      <section className="py-10 md:hidden">
         <p className="mb-6 text-center text-new-h3-mobile">{orderDetailsSection?.indexTitle}</p>
         <div className="flex w-full items-center gap-14 rounded-2xl bg-monochrome-black p-4 text-monochrome-white">
           <div className="flex flex-col gap-2">

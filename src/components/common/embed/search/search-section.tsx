@@ -5,7 +5,7 @@ import React from 'react'
 import SearchItem from './search-item'
 import { type SearchTopSection } from '../../../../../types/embed/embed-search'
 import MultiEmbed from '../multi-embed'
-import { EmbedConfigsType } from '@/hooks/use-embed-details'
+import { type EmbedConfigsType } from '@/hooks/use-embed-details'
 
 const SearchSection = ({
   searchTopSection,
@@ -18,7 +18,7 @@ const SearchSection = ({
     <>
       {/* Desktop */}
       <section className="hidden md:block">
-        <div className="flex flex-col gap-6 py-10 opacity-40">
+        <div className="flex flex-col gap-6 py-10">
           <div className="flex items-center justify-end gap-6">
             <div className="flex w-[450px] items-center justify-between rounded-full border border-secondary-400 p-2 px-5">
               <p className="text-body-1-med text-secondary-400">{searchTopSection?.searchInputText}</p>
@@ -43,7 +43,7 @@ const SearchSection = ({
             </Button>
           </div>
         </div>
-        <div className="hide-scrollbar flex w-full snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth opacity-40">
+        <div className="hide-scrollbar flex w-full snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth p-4">
           {searchTopSection?.searchItemsTop.map((item, index) => (
             <SearchItem
               className="max-w-[420px] flex-shrink-0 snap-start"
@@ -59,7 +59,7 @@ const SearchSection = ({
             />
           ))}
         </div>
-        <div className="py-10">
+        <div className="py-20">
           <MultiEmbed
             dataEmbedId={`${embedConfigs['Home/Search Embed'].embedId}`}
             genSdkId={1}
@@ -69,7 +69,7 @@ const SearchSection = ({
           />
         </div>
         <div className="flex w-full items-center gap-6 py-10">
-          <div className="grid w-3/4 grid-cols-2 gap-6 opacity-40">
+          <div className="grid w-auto grid-cols-2 gap-6">
             {searchTopSection?.searchItemsBottom.map((item, index) => (
               <SearchItem
                 caption={item.caption}
@@ -84,13 +84,18 @@ const SearchSection = ({
               />
             ))}
           </div>
-          <div className="w-1/4">
+          <div
+            style={{
+              height: '650px',
+              width: '350px',
+            }}
+            className="flex items-center justify-center">
             <MultiEmbed
               dataEmbedId={`${embedConfigs['Home/Search Embed1'].embedId}`}
               genSdkId={2}
               style={{
-                height: '600px',
-                width: '300px',
+                height: '650px',
+                width: '350px',
               }}
             />
           </div>
@@ -99,7 +104,7 @@ const SearchSection = ({
 
       {/* Mobile */}
       <section className="md:hidden">
-        <div className="flex flex-col gap-4 py-10 opacity-40">
+        <div className="flex flex-col gap-4 py-10">
           <div className="flex items-center justify-end gap-2">
             <div className="flex w-[450px] items-center justify-between rounded-full border border-secondary-400 p-1.5 px-3">
               <p className="line-clamp-1 text-cap-2-demi text-secondary-400">{searchTopSection?.searchInputText}</p>
@@ -124,7 +129,7 @@ const SearchSection = ({
             </Button>
           </div>
         </div>
-        <div className="grid grid-cols-1 gap-4 opacity-40">
+        <div className="grid grid-cols-1 gap-4">
           {searchTopSection?.searchItemsTop.map((item, index) => (
             <SearchItem
               caption={item.caption}
@@ -148,7 +153,7 @@ const SearchSection = ({
             }}
           />
         </div>
-        <div className="grid grid-cols-1 gap-4 opacity-40">
+        <div className="grid grid-cols-1 gap-4">
           {searchTopSection?.searchItemsBottom.map((item, index) => (
             <SearchItem
               caption={item.caption}
@@ -163,13 +168,13 @@ const SearchSection = ({
             />
           ))}
         </div>
-        <div className="my-20 flex justify-center">
+        <div className="my-10 flex justify-center">
           <MultiEmbed
             dataEmbedId={`${embedConfigs['Home/Search Embed1'].embedId}`}
             genSdkId={2}
             style={{
-              height: '600px',
-              width: '300px',
+              height: '650px',
+              width: '350px',
             }}
           />
         </div>
