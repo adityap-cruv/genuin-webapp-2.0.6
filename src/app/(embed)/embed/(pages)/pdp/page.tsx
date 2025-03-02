@@ -9,14 +9,16 @@ import { useEmbedSetup } from '@/hooks/use-embed-details'
 import { getIndustryName } from '@/lib/utils'
 import { useShallow } from 'zustand/react/shallow'
 
+type IndustryName = keyof (typeof EmbedPdp)[number]
+
 export default function Page() {
   const { config } = useEmbedConfig(
     useShallow((state) => ({
       config: state.config,
     }))
   )
-  const industryName = getIndustryName(config?.industry_type)
-  const pdpPageData = (EmbedPdp.find((item: any) => item[industryName]) as any)?.[industryName]
+  const industryName = getIndustryName(config?.industry_type) as IndustryName
+  const pdpPageData = EmbedPdp.find((item) => Object.keys(item).includes(industryName))?.[industryName]
   const { embedConfigs } = useEmbedSetup({ config })
 
   return (

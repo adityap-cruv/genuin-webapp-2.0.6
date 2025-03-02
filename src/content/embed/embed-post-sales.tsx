@@ -1,5 +1,48 @@
 export const EmbedPostSales = [
   {
+    Default: {
+      orderDetailsSection: {
+        indexTitle: '2 Seater Sofa',
+        title: '𝐔𝐩𝐡𝐨𝐥𝐬𝐭𝐞𝐫𝐲 𝐌𝐚𝐭𝐞𝐫𝐢𝐚𝐥,Cyan  ',
+        captions: ['North Indian, Punjabi'],
+        image: 'https://media.begenuin.com/webapp_assets/embed_pages/default/post-sales/post-sales-image.png',
+        subItems: [
+          {
+            label: '4.0',
+            value: '100+ ratings',
+          },
+          {
+            label: '200 Kilograms',
+            value: 'Weight Limit',
+          },
+          {
+            label: 'Loveseat',
+            value: 'Type',
+          },
+        ],
+      },
+
+      invoiceSection: {
+        subTitle: 'Thank you! 🎉',
+        title: 'Your order is on its way to making your home even more beautiful!',
+        order: {
+          title: 'Order Details',
+          items: [
+            ['from Two Seater Sofa ', 'Upholstery material - Loveseat', '$21'],
+            ['from Accent Chair', 'Upholstered Round Back', '$21'],
+          ],
+        },
+        subtotal: '$42',
+      },
+
+      communitiesSection: {
+        sectionTitle: 'COMMUNITIES',
+        title: 'Connect and share your stories with others like you.',
+        carousalImage:
+          'https://fastly.picsum.photos/id/25/5000/3333.jpg?hmac=yCz9LeSs-i72Ru0YvvpsoECnCTxZjzGde805gWrAHkM',
+      },
+    },
+
     Food: {
       orderDetailsSection: {
         indexTitle: 'Order Complete!',

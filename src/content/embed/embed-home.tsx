@@ -1,5 +1,55 @@
 export const EmbedHome = [
   {
+    Default: {
+      heroSection: {
+        title: 'Transform Your Home, Elevate Your Life ',
+        caption: 'Discover stylish, high-quality home essentials designed for comfort, elegance, and everyday living.',
+        button: [
+          {
+            text: 'Shop Now',
+          },
+          {
+            text: 'Explore Collections',
+            buttonColor: '#0000001A',
+          },
+        ],
+        heroImage: 'https://media.begenuin.com/webapp_assets/embed_pages/default/home/hero_section.png',
+      },
+      featuresSection: {
+        sectionTitle: 'SHOP BY CATEGORY',
+        title: 'Home Designs That Always Makes You Fall In Love',
+        options: ['Furniture', 'Home Decor', 'Lighting', 'Kitchen', 'Bedroom'],
+        carousalImage:
+          'https://fastly.picsum.photos/id/25/5000/3333.jpg?hmac=yCz9LeSs-i72Ru0YvvpsoECnCTxZjzGde805gWrAHkM',
+      },
+      testimonialSection: {
+        sectionTitle: 'WHAT THEY SAY',
+        title: 'What Our Customers Say About Us',
+        caption:
+          '"Home Zone completely transformed my space! The quality and design exceeded my expectations. Highly recommend!"',
+        carousalImage:
+          'https://fastly.picsum.photos/id/25/5000/3333.jpg?hmac=yCz9LeSs-i72Ru0YvvpsoECnCTxZjzGde805gWrAHkM',
+      },
+      communitiesSection: {
+        sectionTitle: 'COMMUNITIES',
+        title: 'Connect and share your stories with others like you.',
+        carousalImage:
+          'https://fastly.picsum.photos/id/25/5000/3333.jpg?hmac=yCz9LeSs-i72Ru0YvvpsoECnCTxZjzGde805gWrAHkM',
+      },
+      getStartedSection: {
+        visibility: false,
+        sectionTitle: 'DOWNLOAD APP',
+        title: 'Get Started With Us Today!',
+        caption: 'Discover food wherever and whenever and get your food delivered quickly.',
+        carousalImage: 'https://media.begenuin.com/webapp_assets/embed_pages/default/home/get-started.png',
+        button: [
+          {
+            text: 'Get Started',
+          },
+        ],
+      },
+    },
+
     Food: {
       heroSection: {
         title: 'Claim Best Offer on Fast Food & Restaurants',

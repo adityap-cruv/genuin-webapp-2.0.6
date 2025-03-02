@@ -1,5 +1,39 @@
 export const EmbedPdp = [
   {
+    Default: {
+      pdpSection: {
+        title: 'Shell Chair',
+        caption:
+          'Luxurious velvet accent chair featuring a stunning shell-back design with channel tufting and golden metal legs for a sophisticated look',
+        price: '$22.00',
+        image: 'https://media.begenuin.com/webapp_assets/embed_pages/default/pdp/pdp-image.png',
+        category: [
+          {
+            label: 'Size',
+            value: 'Medium',
+          },
+          {
+            label: 'Material',
+            value: 'Velvet',
+          },
+          {
+            label: 'Dimensions',
+            value: '71D x 78W x 76H',
+          },
+        ],
+        button: [
+          {
+            text: 'Wishlist',
+            variant: 'outline',
+          },
+          {
+            text: 'Add to Cart',
+            variant: 'default',
+          },
+        ],
+      },
+    },
+
     Food: {
       pdpSection: {
         title: 'Cheese burger',

@@ -1,5 +1,90 @@
 export const EmbedSearch = [
   {
+    Default: {
+      searchTopSection: {
+        searchInputText: 'Search for products, styles, or categories...',
+        searchResultText: 'Search results for “ Furniture”',
+        button: [
+          {
+            text: 'Furniture',
+            variant: 'default',
+          },
+          {
+            text: 'Lighting',
+            variant: 'outline',
+          },
+        ],
+        searchItemType: 1,
+        searchItemsTop: [
+          {
+            image: 'https://media.begenuin.com/webapp_assets/embed_pages/default/search/item1.png',
+            title: 'Pearl Fabric Recliner Single Seater',
+            caption: 'Chair Recliner',
+            price: '$11.50',
+            time: '20 Mins',
+          },
+          {
+            image: 'https://media.begenuin.com/webapp_assets/embed_pages/default/search/item2.png',
+            title: 'Modern Accent Chair',
+            caption: 'Solid Wood Frame',
+            price: '$7.49',
+            time: '20 Mins',
+          },
+          {
+            image: 'https://media.begenuin.com/webapp_assets/embed_pages/default/search/item3.png',
+            title: 'Hazy Premium Fabric Sofa Set ',
+            caption: ' 3 Seater Sofa',
+            price: '$7.49',
+            time: '20 Mins',
+          },
+        ],
+        searchItemsBottom: [
+          {
+            image: 'https://media.begenuin.com/webapp_assets/embed_pages/default/search/item1.png',
+            title: 'Polyester Armchair',
+            caption: 'Fabric Joot/Velvet',
+            price: '$11.50',
+            time: '20 Mins',
+          },
+          {
+            image: 'https://media.begenuin.com/webapp_assets/embed_pages/default/search/item2.png',
+            title: 'Small Wooden Side Table',
+            caption: 'Table Furniture ',
+            price: '$7.49',
+            time: '20 Mins',
+          },
+          {
+            image: 'https://media.begenuin.com/webapp_assets/embed_pages/default/search/item3.png',
+            title: 'Wood Computer Desk',
+            caption: 'Modern Desk',
+            price: '$7.49',
+            time: '20 Mins',
+          },
+          {
+            image: 'https://media.begenuin.com/webapp_assets/embed_pages/default/search/item4.png',
+            title: 'Stylish & Modern Heavy  Luxurious ',
+            caption: 'Chesterfield Sofa',
+            price: '$11.50',
+            time: '20 Mins',
+          },
+          {
+            image: 'https://media.begenuin.com/webapp_assets/embed_pages/default/search/item5.png',
+            title: 'Couch Covers Recliner Chair',
+            caption: 'The Good seat',
+            price: '$7.49',
+            time: '20 Mins',
+          },
+          {
+            image: 'https://media.begenuin.com/webapp_assets/embed_pages/default/search/item6.png',
+            title: 'Ellementry Boxy Wooden Wall Shelf ',
+            caption: 'Wall Shelves',
+            price: '$7.49',
+            time: '20 Mins',
+          },
+        ],
+      },
+    },
+
     Food: {
       searchTopSection: {
         searchInputText: 'Enter item or restaurant you are looking for',

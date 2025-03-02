@@ -75,7 +75,7 @@ export const NOT_FOUND_ERROR_MESSAGES = {
 
 export const IHEART_BRAND_URL = [1429, 1729, 1775, 2236, 2249]
 
-export const INDUSTRY: Record<string, number> = {
+export const INDUSTRY: Record<IndustryName, number> = {
   Automotive: 1,
   'Delivery/E-commerce': 2,
   Fintech: 3,
@@ -83,6 +83,7 @@ export const INDUSTRY: Record<string, number> = {
   Healthcare: 5,
   'Media & Entertainment': 6,
   Retail: 7,
+  Default: 0,
 }
 
 export type IndustryName =
@@ -93,3 +94,4 @@ export type IndustryName =
   | 'Fintech'
   | 'Media & Entertainment'
   | 'Retail'
+  | 'Default'

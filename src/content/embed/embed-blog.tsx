@@ -1,5 +1,57 @@
 export const EmbedBlog = [
   {
+    Default: {
+      blogSection: {
+        image: 'https://media.begenuin.com/webapp_assets/embed_pages/default/blogs/blog-img.png',
+        blogContent: [
+          {
+            title: 'Add Statement Pieces',
+            description:
+              'Your home is a reflection of your personality, and with the right decor, you can create a space that is both stylish and comfortable. Whether you love modern minimalism or cozy aesthetics, these simple yet effective decor tips will help you transform your home effortlessly.',
+          },
+          {
+            title: 'Add Statement Pieces',
+            description:
+              'A bold piece of furniture, an eye-catching rug, or unique wall art can instantly elevate the look of any room. Choose something that speaks to your style and makes a statement. A well-designed home isn’t just about functionality—it’s about creating a space that reflects your personality and style. Statement pieces are the perfect way to add character, elegance, and a unique touch to any room. A bold decor item, like a sculptural coffee table or an oversized mirror, draws attention and defines the space.',
+          },
+          {
+            title: 'Incorporate Greenery',
+            description:
+              'Plants bring life to any space! Whether its small succulents, hanging planters, or large indoor trees, adding greenery makes your home feel fresh and lively. Bringing nature indoors is one of the easiest ways to create a refreshing and lively atmosphere. Incorporating greenery not only enhances your home’s aesthetic but also improves air quality and adds a calming vibe.',
+          },
+          {
+            title: 'Use Smart Storage Solutions',
+            description:
+              'Clutter can make even the most stylish home feel chaotic. Opt for storage solutions like floating shelves, multipurpose furniture, and decorative baskets to keep your space organized and functional.A well-organized home is not just about keeping things tidy—it’s about using smart storage solutions that enhance functionality and style. Whether you’re dealing with a small apartment or a spacious home, the right storage can make a huge difference.',
+          },
+          {
+            title: 'Personalize with Accessories',
+            description:
+              'Cushions, throws, photo frames, and candles add warmth and character to your home. Mix and match textures and colors to create a cozy, personalized space.Your home should be a reflection of your personality, and the best way to achieve that is through thoughtfully chosen accessories. From decorative pieces to functional accents, the right accessories can elevate any space with style and warmth.',
+          },
+          {
+            title: 'Conclusion',
+            description:
+              'With these simple decor tips, you can easily enhance the beauty and comfort of your home. At Home Zone, we offer a wide range of stylish furniture and decor pieces to help you create your dream space. Explore our collection today!',
+          },
+        ],
+        popularBlogs: [
+          {
+            blog: 'Choosing the Right Color Palette for Your Space',
+            videos: '15 videos',
+          },
+          {
+            blog: 'How to Mix and Match Home Decor Like a Pro',
+            videos: '15 videos',
+          },
+          {
+            blog: 'Budget-Friendly Ways to Refresh Your Home',
+            videos: '15 videos',
+          },
+        ],
+      },
+    },
+
     Food: {
       blogSection: {
         image: 'https://media.begenuin.com/webapp_assets/embed_pages/food/blogs/blog-img.png',

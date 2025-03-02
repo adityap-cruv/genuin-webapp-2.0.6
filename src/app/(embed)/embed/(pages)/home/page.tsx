@@ -13,14 +13,16 @@ import { useShallow } from 'zustand/react/shallow'
 import MultiEmbed from '@/components/common/embed/multi-embed'
 import { useEmbedSetup } from '@/hooks/use-embed-details'
 
+type IndustryName = keyof (typeof EmbedHome)[number]
+
 export default function Page() {
   const { config } = useEmbedConfig(
     useShallow((state) => ({
       config: state.config,
     }))
   )
-  const industryName = getIndustryName(config?.industry_type)
-  const homePageData = (EmbedHome.find((item: any) => item[industryName]) as any)?.[industryName]
+  const industryName = getIndustryName(config?.industry_type) as IndustryName
+  const homePageData = EmbedHome.find((item) => Object.keys(item).includes(industryName))?.[industryName]
   const { embedConfigs } = useEmbedSetup({ config })
 
   return (
