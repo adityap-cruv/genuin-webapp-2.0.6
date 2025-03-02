@@ -1,6 +1,6 @@
 'use client'
+import GetAppButton from '@/components/common/get-app-button'
 import { DownloadAppDialog } from '@components/pages/build/download-app-dialog'
-import { Button } from '@components/ui/button'
 
 interface Props {
   questionDetails: any
@@ -17,9 +17,11 @@ export function MainComponent({ questionDetails }: Props) {
         </div>
         <div className="mt-6">
           <DownloadAppDialog>
-            <Button className="px-6 py-6">
-              <p className="mx-2 text-title-2-bold text-new-off-white">Get App</p>
-            </Button>
+            <GetAppButton
+              buttonText="Get App"
+              className="mx-2 px-6 py-6 text-title-2-bold text-new-off-white"
+              variant="default"
+            />
           </DownloadAppDialog>
         </div>
       </div>

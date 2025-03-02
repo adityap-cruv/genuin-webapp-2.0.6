@@ -64,6 +64,12 @@ export async function middleware(request: NextRequest) {
       } else if (Number(config?.brand_id) === 1429) {
         // hard coding for ankpal in QA
         return NextResponse.rewrite(new URL('/.well-known/ankpal/apple-app-site-association', request.url))
+      } else if (Number(config?.brand_id) === 2314) {
+        // hard coding for carlist
+        return NextResponse.rewrite(new URL('/.well-known/carlist/apple-app-site-association', request.url))
+      } else if (Number(config?.brand_id) === 2357) {
+        // hard coding for ted
+        return NextResponse.rewrite(new URL('/.well-known/ted/apple-app-site-association', request.url))
       } else {
         return NextResponse.next()
       }
@@ -113,7 +119,7 @@ export async function middleware(request: NextRequest) {
 
   if (host) {
     const config = getConfig(host)
-    // const config = getConfig('ankpal.qa.begenuin.com')
+    // const config = getConfig('iheartmedia.qa.begenuin.com')
     if (config) request.cookies.set('config_params', JSON.stringify(config))
     const urlObj = new URL(request.url)
     // eslint-disable-next-line no-prototype-builtins

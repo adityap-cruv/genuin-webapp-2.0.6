@@ -1,14 +1,13 @@
 'use client'
-import { Button } from '@components/ui/button'
-import { DownloadAppDialog } from '../pages/build/download-app-dialog'
 import Link from 'next/link'
-import { cn, getMobileGetAppUrl } from '@lib/utils'
+import { cn } from '@lib/utils'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@components/ui/dropdown-menu'
 import { HamBurgerMenuIcon } from '@components/ui/ham-burger'
 import { HIRING_LINK } from '@lib/constants'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { type VariantProps, cva } from 'class-variance-authority'
 import { AppLogo } from '@components/ui/app-logo'
+import GetAppButton from './get-app-button'
 
 const navbarVariant = cva('fixed left-0 top-0 z-10 m-auto flex h-navbar w-full', {
   variants: {
@@ -35,29 +34,16 @@ export function NavBar({ variant, isMobile }: Props) {
         )}
         {/* <GenuinAdaptiveLogo variant={isVariantLight ? 'light' : 'dark'} /> */}
         <div className="flex items-center">
-          <GetAppButton isMobile={isMobile} />
+          <GetAppButton
+            buttonText="Get App"
+            className="line-clamp-1 text-body-1-bold text-monochrome-white"
+            variant="default"
+            size="sm"
+          />
           <BurgerMenu variant={isVariantLight ? 'light' : 'dark'} />
         </div>
       </div>
     </nav>
-  )
-}
-
-type GetAppButtonType = {
-  isMobile: boolean
-}
-
-function GetAppButton({ isMobile }: GetAppButtonType) {
-  return isMobile ? (
-    <Button size="sm" onClick={getMobileGetAppUrl}>
-      <p className="text-body-1-bold text-monochrome-white">Get App</p>
-    </Button>
-  ) : (
-    <DownloadAppDialog>
-      <Button size="sm">
-        <p className="line-clamp-1 text-body-1-bold text-monochrome-white">Get App</p>
-      </Button>
-    </DownloadAppDialog>
   )
 }
 

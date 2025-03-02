@@ -4,7 +4,7 @@ import type { LoopDetailsType } from '@lib/schemas/loop/details'
 import Image from 'next/image'
 import icLock from '@icons/icLock.svg'
 import { CustomAvatar } from '@components/custom/custom-avatar'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useInView } from 'framer-motion'
 import { TopStickyBar } from './top-bar'
 import { getLoopCohosts, getLoopDetails, getLoopSubscribers, subscribeLoop } from '@lib/api/loop'
@@ -31,6 +31,7 @@ import { NOT_FOUND_ERROR_CODES } from '@/lib/constants'
 import EmptyView from '@/components/common/empty-view'
 import ShareButton from '@components/common/actions/ShareButton'
 import SubscriptionButton from '@components/common/actions/SubscriptionButton'
+import { getAudioUrlForCommunity, useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
 
 interface Props {
   loopDetails: LoopDetailsType
@@ -38,6 +39,16 @@ interface Props {
 
 export function LoopDetails({ slug }: { slug: string }) {
   const { data, isLoading, error } = getLoopDetails(slug)
+  const { shouldShowIHeartDemo, setAudioUrl } = useIHeartDemoStates()
+
+  useEffect(() => {
+    if (!shouldShowIHeartDemo) return
+    if (!data) return
+    const communitySlug = (data as LoopDetailsType).community.slug
+    const audioUrl = getAudioUrlForCommunity(communitySlug)
+    if (!audioUrl) return
+    setAudioUrl(audioUrl)
+  }, [shouldShowIHeartDemo, data])
 
   if (isLoading) return <Loading />
 
@@ -48,7 +59,6 @@ export function LoopDetails({ slug }: { slug: string }) {
       return <Error />
     }
   }
-
   if (data) return <MainComponent loopDetails={data} />
 }
 

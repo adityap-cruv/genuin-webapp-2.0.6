@@ -1,5 +1,5 @@
 import { Player } from '../player'
-import { useCallback } from 'react'
+import { useCallback, useState, useEffect } from 'react'
 import { useCommentSheetStore } from '../player/comment-sheet/store'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Mousewheel } from 'swiper/modules'
@@ -13,6 +13,9 @@ import { FeedContextProvider, useFeedListContext } from '@/components/providers/
 import { KsGestureTypes } from '../ks-gestures-types'
 import { useGestureOverlay } from '@/hooks/use-gesture-overlay'
 import { useShallow } from 'zustand/react/shallow'
+import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
+import { IHeartDemo } from '../../layouts/desktop/iheart-demo'
+import { cn } from '@/lib/utils'
 
 type MobileProps = {
   videos?: VideoPlayerModalType[] | null
@@ -75,11 +78,26 @@ function SwiperRenderer({ videoSizeBox }: { videoSizeBox: VideoSizeBoxType }) {
   const { gestureOverlays, setGestureOverlay } = useGestureOverlay(currentIndex)
   // # If comment sheet is open than element should not be scrolled..
   const commentIsOpen = useCommentSheetStore((state) => state.modalIsOpen)
-  const { muted } = usePlayerControlStore(
+  const { renderIn, shouldShowIHeartDemo, isIHeartPlaying } = useIHeartDemoStates()
+  const showIHeartDemo = renderIn === 'root' && shouldShowIHeartDemo
+  const { muted, setPlayerShouldPlay } = usePlayerControlStore(
     useShallow((state) => ({
       muted: state.muted,
+      setPlayerShouldPlay: state.setShouldPlay,
     }))
   )
+  const [showBorder, setShowBorder] = useState(false)
+  useEffect(() => {
+    if (!isIHeartPlaying && !muted && showIHeartDemo) {
+      setShowBorder(true)
+
+      setTimeout(() => {
+        setShowBorder(false)
+      }, 3000)
+    } else {
+      setShowBorder(false)
+    }
+  }, [isIHeartPlaying, muted])
 
   const handleActiveIndexChange = useCallback(
     (swiper: SwiperType) => {
@@ -91,49 +109,65 @@ function SwiperRenderer({ videoSizeBox }: { videoSizeBox: VideoSizeBoxType }) {
     },
     [videos]
   )
+
+  useEffect(() => {
+    setPlayerShouldPlay(!commentIsOpen)
+  }, [commentIsOpen])
   return (
-    <div style={{ ...videoSizeBox }} className="relative overflow-clip">
-      <Swiper
-        // PLAY_PAUSE gesture will end when the user takes action;
-        onClick={() => {
-          if (!muted) setGestureOverlay('PLAY_PAUSE', false)
-        }}
-        modules={[Mousewheel]}
-        mousewheel={true}
-        direction="vertical"
-        initialSlide={currentIndex}
-        onActiveIndexChange={handleActiveIndexChange}
-        allowSlideNext={!commentIsOpen}
-        allowSlidePrev={!commentIsOpen}
-        style={videoSizeBox}>
-        {videos.map((item, index) => (
-          <SwiperSlide key={index}>
-            {({ isActive, isPrev, isNext, isVisible }) => {
-              if (isActive || isPrev || isNext || isVisible)
-                return (
-                  <Player.mobile
-                    isActive={isActive}
-                    loop
-                    videoDetails={item}
-                    customSizeBox={videoSizeBox}
-                    onEnded={(event) => {
-                      const { duration, currentTime } = usePlayerControlStore.getState()
-                      Analytics.triggerAnalyticsForVideoComplete(item.video.id, duration, currentTime)
+    <>
+      <div style={{ ...videoSizeBox }} className={cn('relative overflow-clip')}>
+        <div
+          className={cn(
+            'pointer-events-none absolute z-10 h-full w-full border-4 bg-transparent transition-all ease-in-out',
+            { 'animated-border': showBorder },
+            { 'border-transparent': !showBorder }
+          )}
+        />
+        <Swiper
+          // PLAY_PAUSE gesture will end when the user takes action;
+          onClick={() => {
+            if (!muted) setGestureOverlay('PLAY_PAUSE', false)
+          }}
+          modules={[Mousewheel]}
+          mousewheel={true}
+          direction="vertical"
+          initialSlide={currentIndex}
+          onActiveIndexChange={handleActiveIndexChange}
+          allowSlideNext={!commentIsOpen}
+          allowSlidePrev={!commentIsOpen}
+          style={videoSizeBox}>
+          {videos.map((item, index) => (
+            <SwiperSlide key={index}>
+              {({ isActive, isPrev, isNext, isVisible }) => {
+                if (isActive || isPrev || isNext || isVisible)
+                  return (
+                    <>
+                      <Player.mobile
+                        isActive={isActive}
+                        loop
+                        videoDetails={item}
+                        customSizeBox={videoSizeBox}
+                        onEnded={(event) => {
+                          const { duration, currentTime } = usePlayerControlStore.getState()
+                          Analytics.triggerAnalyticsForVideoComplete(item.video.id, duration, currentTime)
 
-                      if (!gestureOverlays.SWIPE.hasShown && videos.length > 1) {
-                        setGestureOverlay('SWIPE', true)
-                      }
-                    }}
-                  />
-                )
-            }}
-          </SwiperSlide>
-        ))}
+                          if (!gestureOverlays.SWIPE.hasShown && videos.length > 1) {
+                            setGestureOverlay('SWIPE', true)
+                          }
+                        }}
+                      />
+                    </>
+                  )
+              }}
+            </SwiperSlide>
+          ))}
 
-        {/* Display gestures according to kind gestureStep */}
-        {gestureOverlays.SWIPE.isVisible && <KsGestureTypes gestureStep="SWIPE" />}
-        {gestureOverlays.PLAY_PAUSE.isVisible && !muted && <KsGestureTypes gestureStep="PLAY_PAUSE" />}
-      </Swiper>
-    </div>
+          {/* Display gestures according to kind gestureStep */}
+          {gestureOverlays.SWIPE.isVisible && <KsGestureTypes gestureStep="SWIPE" />}
+          {gestureOverlays.PLAY_PAUSE.isVisible && !muted && <KsGestureTypes gestureStep="PLAY_PAUSE" />}
+        </Swiper>
+      </div>
+      {showIHeartDemo && <IHeartDemo />}
+    </>
   )
 }

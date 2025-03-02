@@ -1,3 +1,4 @@
 nxs.infy.tv, IY99, DIRECT
 nxs.infy.tv, IY99, RESELLER
-Media.net,8CU9K63EZ,reseller,
+Media.net,8CU9K63EZ,reseller
+indexexchange.com, 211170, DIRECT, 50b1c356f2c5c8fc

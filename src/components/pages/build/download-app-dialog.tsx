@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useEffect } from 'react'
 import { Button } from '@components/ui/button'
-import axios from 'axios'
+import { axiosInstance } from '@/lib/api/instance'
 import { Countries } from '../../../content/countries'
 import { FlagIcon, type FlagIconCode } from 'react-flag-kit' // Import Flag from react-flag-kit
 import { Dialog, DialogTrigger, DialogContent } from '@components/ui/dialog'
@@ -12,7 +12,8 @@ import Link from 'next/link'
 import { URL_TO_APP_STORE, URL_TO_PLAY_STORE } from '@lib/constants'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { useShallow } from 'zustand/react/shallow'
-import { getMobileGetAppUrl } from '@/lib/utils'
+import { getMobileAppUrl, openGeneratedLink } from '@/lib/utils'
+import Analytics from '@/services/analytics'
 
 interface FormData {
   phone: string
@@ -30,18 +31,25 @@ type Props = {
 
 // TODO: improve it's api implementation
 export function DownloadAppDialog({ children }: Props) {
-  const { isMobile, links } = useGenuinOptions(
+  const { isMobile, links, privacyPolicy, terms } = useGenuinOptions(
     useShallow((state) => ({
       isMobile: state.isMobile,
       links: {
         appStoreLink: state.config?.integrations.sdk.ios.appstore_link,
         playStoreLink: state.config?.integrations.sdk.android.playstore_link,
       },
+      privacyPolicy: state.config?.privacy_policy,
+      terms: state.config?.terms_and_condition,
     }))
   )
 
   return isMobile ? (
-    <div onClick={getMobileGetAppUrl}>{children}</div>
+    <div
+      onClick={() => {
+        openGeneratedLink(getMobileAppUrl())
+      }}>
+      {children}
+    </div>
   ) : (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
@@ -58,11 +66,11 @@ export function DownloadAppDialog({ children }: Props) {
           <p className="mt-4 text-new-para-2-mobile text-new-dark-grey">
             By clicking Send Link, I acknowledge that I have read the
             <br />{' '}
-            <a href="/privacy" className="border-b">
+            <a href={privacyPolicy ?? '/privacy'} className="border-b" target="_blank" rel="noopener noreferrer">
               Privacy Policy
             </a>{' '}
             and agree to the{' '}
-            <a href="/terms" className="border-b">
+            <a href={terms ?? '/terms'} className="border-b" target="_blank" rel="noopener noreferrer">
               Terms of Service
             </a>
           </p>
@@ -159,9 +167,16 @@ function DownloadAppForm() {
       setIsLoading(true)
 
       try {
-        const res = await axios.post(process.env.NEXT_PUBLIC_API_URL + '/api/v3/send_download_link', payload)
+        const res = await axiosInstance.post(process.env.NEXT_PUBLIC_API_URL + '/api/v3/send_download_link', payload)
 
         if (res.data.code === 200) {
+          void Analytics.track({
+            eventName: 'Get App Link Sent',
+            properties: {
+              phone_no: phone ? selectedCountry.dial_code + phone : '',
+              email,
+            },
+          })
           setIsLinkSent(true)
         }
       } catch (e) {

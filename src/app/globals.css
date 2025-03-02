@@ -342,3 +342,61 @@
     padding-left: 200px;
   }
 } */
+
+/* For iHeart Demo */
+.animated-border {
+  width: 100%;
+  height: 100%;
+  /* border: var(--border-size) solid transparent; */
+
+  /* Smooth red gradient */
+  border-image: conic-gradient(
+      from var(--angle),
+      #c6002b 0deg,
+      #c6002b 45deg,
+      #fc7878 90deg,
+      #eeb2bf 135deg,
+      #eeb2bf 180deg,
+      #eeb2bf 225deg,
+      #fc7878 270deg,
+      #c6002b 315deg,
+      #c6002b 360deg
+    )
+    1 stretch;
+
+  /* background: rgb(255 255 255 / var(--opacity)); */
+}
+
+@property --opacity {
+  syntax: '<number>';
+  initial-value: 0.5;
+  inherits: false;
+}
+
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes rotateSmooth {
+  to {
+    --angle: 360deg;
+  }
+}
+
+@keyframes opacityFade {
+  0%,
+  100% {
+    --opacity: 1;
+  }
+  50% {
+    --opacity: 0.7;
+  }
+}
+
+.animated-border {
+  animation:
+    rotateSmooth 3s linear infinite,
+    opacityFade 3s infinite alternate;
+}
