@@ -44,7 +44,7 @@ const CommunitiesSection = ({
             <MultiEmbed
               dataEmbedId={`${embedConfigs['Home/Search Embed1'].embedId}`}
               dataEmbedApiKey={embedConfigs['Home/Search Embed1'].embedApiKey}
-              genSdkId={2}
+              genSdkId={4}
               style={{
                 height: '615px',
                 width: '350px',

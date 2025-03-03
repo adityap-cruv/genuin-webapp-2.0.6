@@ -29,8 +29,6 @@ export function RootHTML({
         <link rel="icon" type="image/x-icon" href={favicon ?? '/favicon.svg'} />
         <link rel="mask-icon" href={favicon ?? '/favicon.svg'} />
         <meta rel="x-brand-id" content={subdomain} />
-        {/* TODO PUT PROD BUILD */}
-        <script src="/gen_sdk.js" />
         {noIndex && <meta name="robots" content="noindex" />}
       </head>
       <body

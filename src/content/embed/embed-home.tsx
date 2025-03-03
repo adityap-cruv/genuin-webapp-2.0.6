@@ -13,7 +13,7 @@ export const EmbedHome = [
             buttonColor: '#0000001A',
           },
         ],
-        heroImage: 'https://media.begenuin.com/webapp_assets/embed_pages/default/home/hero_section.webp',
+        heroImage: 'https://media.begenuin.com/webapp_assets/embed_pages/default/home/hero-section.webp',
       },
       featuresSection: {
         sectionTitle: 'SHOP BY CATEGORY',
