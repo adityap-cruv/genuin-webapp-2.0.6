@@ -204,7 +204,7 @@ export function GetNotificationAttributedText({ notification }: { notification: 
       return (
         <div>
           {ProfileTag(notification)}
-          sparked your post in
+          reacted your post in
           <strong>
             {' '}
             {LoopTag(notification?.conversation?.group?.slug, notification?.conversation?.group?.name)}
@@ -215,7 +215,7 @@ export function GetNotificationAttributedText({ notification }: { notification: 
       return (
         <div>
           {ProfileTag(notification)}
-          sparked your comment in
+          reacted your comment in
           <strong>
             {' '}
             {LoopTag(notification?.conversation?.group?.slug, notification?.conversation?.group?.name)}

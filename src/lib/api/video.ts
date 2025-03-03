@@ -131,19 +131,11 @@ export async function fetchVideoMetadata(videoSlug: string) {
 // TODO: Figure out what is type here.
 export async function videoSpark(contentId: string, type: number, spark: boolean) {
   return await axiosInstance
-    .post(
-      '/api/v3/spark',
-      {
-        content_id: contentId,
-        type,
-        spark,
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    )
+    .post('/api/v3/spark', {
+      content_id: contentId,
+      type,
+      spark,
+    })
     .then((res) => {
       return { code: res.status, data: res.data.data }
     })

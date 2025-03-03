@@ -71,7 +71,6 @@ export function Mobile({
                 openModal({ deepLink: generatedLink, subtitle: 'Get the app to repost the video.' })
               })
             }
-            // DownloadDialogModal.open({ title: 'Get the Genuin app', subtitle: 'Get the app to spark the video.' })
           }}>
           <Image src={icRepost} height={32} width={32} alt="repost" />
         </ActionItem>

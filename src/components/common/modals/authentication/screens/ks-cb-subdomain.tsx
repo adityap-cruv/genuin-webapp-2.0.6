@@ -96,8 +96,7 @@ export function KsToCbSubdomain() {
             <CommunityDiscussion03 className="h-40 fill-primary" />
             <p className="text-center text-title-1-bold">Moderate your Community</p>
             <p className="text-center text-body-1-med">
-              Create a safe space where your members can thrive. Customize your community with guidelines, add
-              admins, and more.
+              Create a safe space where your members can thrive. Customize your community with guidelines, add and more.
             </p>
             <br />
           </div>

@@ -17,7 +17,7 @@ const AudioPlayer = dynamic(async () => await import('./audio-player').then((com
 export function CommentItem({
   comment,
   videoShareUrl,
-  slug
+  slug,
 }: {
   comment: CommentType
   videoShareUrl: string
@@ -47,7 +47,7 @@ export function CommentItem({
           className="flex items-center pt-2"
           onClick={async () => {
             await videoDeepLink(slug, videoShareUrl).then((generatedLink) => {
-              openModal({ deepLink: generatedLink, subtitle: <>Get the app to spark the comment.</> })
+              openModal({ deepLink: generatedLink, subtitle: <>Get the app to react on the comment.</> })
             })
           }}>
           <Image src={icSpark} alt="" className="h-4 w-4" />

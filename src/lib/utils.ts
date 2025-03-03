@@ -474,20 +474,20 @@ export function getMobileAppUrl() {
 
 /**
  * Detects the user's platform based on the `navigator.userAgent` string.
- * 
+ *
  * @returns {string} - Returns "Android" if the user is on an Android device,
  *                     "iOS" if on an iPhone, iPad, or iPod, and "Web" otherwise.
  */
 export const getPlatform = () => {
-  if (typeof navigator !== "undefined") {
-    const userAgent = navigator.userAgent || navigator.vendor;
-    
+  if (typeof navigator !== 'undefined') {
+    const userAgent = navigator.userAgent || navigator.vendor
+
     if (/android/i.test(userAgent)) {
-      return "Android";
+      return 'Android'
     }
     if (/iPhone|iPad|iPod/i.test(userAgent)) {
-      return "iOS";
+      return 'iOS'
     }
   }
-  return "Web";
-};
+  return 'Web'
+}

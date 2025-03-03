@@ -143,7 +143,7 @@ export async function sparkDeepLink(videoSlug: string, shareUrl: string): Promis
     pathName: PATH_NAME.video(videoSlug),
     community: getLoopAndCommunityShareString(shareUrl).communityShareString ?? '',
     loop: getLoopAndCommunityShareString(shareUrl).loopShareString ?? '',
-    title: `spark ${videoSlug} video`,
+    title: `React on the ${videoSlug} video`,
     searchParams: new URLSearchParams(window.location.search),
   })
 }
@@ -164,7 +164,7 @@ export async function videoDeepLink(videoSlug: string, shareUrl: string): Promis
     pathName: PATH_NAME.video(videoSlug),
     community: getLoopAndCommunityShareString(shareUrl).communityShareString ?? '',
     loop: getLoopAndCommunityShareString(shareUrl).loopShareString ?? '',
-    title: `spark ${videoSlug} comment`,
+    title: `React on the ${videoSlug} comment`,
     searchParams: new URLSearchParams(window.location.search),
   })
 }

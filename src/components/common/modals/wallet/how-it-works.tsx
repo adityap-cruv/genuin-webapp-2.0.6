@@ -12,7 +12,7 @@ const HOW_IT_WORKS = {
     {
       icon: <PlayIconRound className="h-8 stroke-primary" />,
       title: 'Engage with Videos & Earn Rewards',
-      description: 'Watch videos, comment, spark, share or repost to earn reward credits.',
+      description: 'Watch videos, comment, react, share or repost to earn reward credits.',
     },
     {
       icon: <TrophyIcon className="h-8 stroke-primary" />,

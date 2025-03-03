@@ -43,7 +43,7 @@ export function Spark({ isSparked = false, sparkCount, videoId, shareUrl, videoS
       } else {
         // This call will generate the deep link for the video.
         await sparkDeepLink(videoSlug, shareUrl).then((generatedLink) => {
-          openModal({ deepLink: generatedLink, subtitle: 'Get the app to spark the video.' })
+          openModal({ deepLink: generatedLink, subtitle: 'Get the app to react on the video.' })
         })
       }
 
@@ -72,7 +72,10 @@ export function Spark({ isSparked = false, sparkCount, videoId, shareUrl, videoS
   }, [user, isSparked, videoId])
 
   return (
-    <ActionItem title="Give spark!" className={cn(isLoading && 'pointer-events-none')} onClick={handleSparkClick}>
+    <ActionItem
+      title="React on the video!"
+      className={cn('cursor-pointer', isLoading && 'pointer-events-none')}
+      onClick={handleSparkClick}>
       <Image src={isSparked ? icSparkTrue : icSpark} height={32} width={32} alt="spark" />
       <p className="flex justify-center text-body-1-demi text-monochrome-white">
         {abbreviateNumber(sparkCount < 0 ? 0 : sparkCount)}
