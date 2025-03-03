@@ -83,9 +83,9 @@ export function KsToCbSubdomain() {
         <SwiperSlide>
           <div className="flex flex-col items-center gap-2">
             <CommunityDiscussion02 className="h-40 fill-primary" />
-            <p className="text-center text-title-1-bold">Make Connections & Spark Dialogues</p>
+            <p className="text-center text-title-1-bold">Make Connections & React on Dialogues</p>
             <p className="text-center text-body-1-med">
-              Invite others to join your {brandName} community, share engaging content, and spark meaningful
+              Invite others to join your {brandName} community, share engaging content, and react on meaningful
               conversations to make connections and foster intellectual dialogue.
             </p>
             <br />
