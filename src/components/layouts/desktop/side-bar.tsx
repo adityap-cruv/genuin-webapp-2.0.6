@@ -63,7 +63,7 @@ export function SideBar() {
       webCTA: state.config?.web_cta,
       privacyPolicy: state.config?.privacy_policy,
       termsAndCondition: state.config?.terms_and_condition,
-      showBecomeACreator: state.config?.show_become_creator,
+      showBecomeACreator: state.config?.show_become_creator ?? true,
     }))
   )
   const pathName = usePathname()
