@@ -19,6 +19,7 @@ const TestimonialSection = ({
           <div className="w-2/5">
             <MultiEmbed
               dataEmbedId={embedConfigs['Home/Search Embed1'].embedId}
+              dataEmbedApiKey={embedConfigs['Home/Search Embed1'].embedApiKey}
               genSdkId={3}
               style={{
                 height: '615px',

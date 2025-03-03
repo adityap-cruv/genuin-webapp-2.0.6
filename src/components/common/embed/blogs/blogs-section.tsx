@@ -24,6 +24,7 @@ const BlogsSection = ({
             </div>
             <MultiEmbed
               dataEmbedId={`${embedConfigs['Home/Blog Embed'].embedId}`}
+              dataEmbedApiKey={embedConfigs['Home/Blog Embed'].embedApiKey}
               genSdkId={1}
               style={{
                 height: '400px',
@@ -39,6 +40,7 @@ const BlogsSection = ({
           <div className="flex w-2/5 flex-col gap-6">
             <MultiEmbed
               dataEmbedId={`${embedConfigs['Home/Search Embed1'].embedId}`}
+              dataEmbedApiKey={embedConfigs['Home/Search Embed1'].embedApiKey}
               genSdkId={2}
               style={{
                 height: '615px',
@@ -49,7 +51,7 @@ const BlogsSection = ({
             <p className="p-5 text-title-1-bold">Popular</p>
 
             {blogSection?.popularBlogs.map((item, index) => (
-              <div className="flex flex-col gap-5 p-10 px-5" key={index}>
+              <div className="flex flex-col gap-5 p-5" key={index}>
                 <p className="flex items-center justify-between gap-4">
                   <span className="text-title-3-demi">{item.blog}</span>
                   <ChevronRightIcon />
@@ -79,6 +81,7 @@ const BlogsSection = ({
             </div>
             <MultiEmbed
               dataEmbedId={`${embedConfigs['Home/Blog Embed'].embedId}`}
+              dataEmbedApiKey={embedConfigs['Home/Blog Embed'].embedApiKey}
               genSdkId={1}
               style={{
                 height: '400px',
@@ -95,6 +98,7 @@ const BlogsSection = ({
             <div className="flex flex-col gap-6">
               <MultiEmbed
                 dataEmbedId={`${embedConfigs['Home/Search Embed1'].embedId}`}
+                dataEmbedApiKey={embedConfigs['Home/Search Embed1'].embedApiKey}
                 genSdkId={2}
                 style={{
                   height: '615px',

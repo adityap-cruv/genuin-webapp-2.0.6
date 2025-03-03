@@ -6,7 +6,7 @@ export const EmbedPdp = [
         caption:
           'Luxurious velvet accent chair featuring a stunning shell-back design with channel tufting and golden metal legs for a sophisticated look',
         price: '$22.00',
-        image: 'https://media.begenuin.com/webapp_assets/embed_pages/default/pdp/pdp-image.png',
+        image: 'https://media.begenuin.com/webapp_assets/embed_pages/default/pdp/pdp-image.webp',
         category: [
           {
             label: 'Size',

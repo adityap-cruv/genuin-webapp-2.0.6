@@ -62,6 +62,7 @@ const SearchSection = ({
         <div className="py-20">
           <MultiEmbed
             dataEmbedId={`${embedConfigs['Home/Search Embed'].embedId}`}
+            dataEmbedApiKey={embedConfigs['Home/Search Embed'].embedApiKey}
             genSdkId={1}
             style={{
               height: '600px',
@@ -92,6 +93,7 @@ const SearchSection = ({
             className="flex items-center justify-center">
             <MultiEmbed
               dataEmbedId={`${embedConfigs['Home/Search Embed1'].embedId}`}
+              dataEmbedApiKey={embedConfigs['Home/Search Embed1'].embedApiKey}
               genSdkId={2}
               style={{
                 height: '650px',
@@ -147,6 +149,7 @@ const SearchSection = ({
         <div className="py-10">
           <MultiEmbed
             dataEmbedId={`${embedConfigs['Home/Search Embed'].embedId}`}
+            dataEmbedApiKey={embedConfigs['Home/Search Embed'].embedApiKey}
             genSdkId={1}
             style={{
               height: '600px',
@@ -171,6 +174,7 @@ const SearchSection = ({
         <div className="my-10 flex justify-center">
           <MultiEmbed
             dataEmbedId={`${embedConfigs['Home/Search Embed1'].embedId}`}
+            dataEmbedApiKey={embedConfigs['Home/Search Embed1'].embedApiKey}
             genSdkId={2}
             style={{
               height: '650px',

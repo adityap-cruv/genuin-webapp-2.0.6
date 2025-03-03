@@ -27,6 +27,7 @@ export default function Page() {
       <PdpSection pdpSection={pdpPageData?.pdpSection} />
       <MultiEmbed
         dataEmbedId={`${embedConfigs['PDP Embed'].embedId}`}
+        dataEmbedApiKey={embedConfigs['PDP Embed'].embedApiKey}
         genSdkId={1}
         style={{
           height: '600px',

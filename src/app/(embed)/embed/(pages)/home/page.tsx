@@ -31,9 +31,9 @@ export default function Page() {
       <HeroSection heroSection={homePageData?.heroSection} />
       <MultiEmbed
         dataEmbedId={`${embedConfigs['Home/Blog Embed'].embedId}`}
+        dataEmbedApiKey={embedConfigs['Home/Blog Embed'].embedApiKey}
         genSdkId={1}
         style={{
-          boxShadow: '0px 8px 24px rgba(0, 0, 0, 0.1)',
           height: '400px',
         }}
       />

@@ -13,7 +13,7 @@ export const EmbedHome = [
             buttonColor: '#0000001A',
           },
         ],
-        heroImage: 'https://media.begenuin.com/webapp_assets/embed_pages/default/home/hero_section.png',
+        heroImage: 'https://media.begenuin.com/webapp_assets/embed_pages/default/home/hero_section.webp',
       },
       featuresSection: {
         sectionTitle: 'SHOP BY CATEGORY',
@@ -41,7 +41,7 @@ export const EmbedHome = [
         sectionTitle: 'DOWNLOAD APP',
         title: 'Get Started With Us Today!',
         caption: 'Discover food wherever and whenever and get your food delivered quickly.',
-        carousalImage: 'https://media.begenuin.com/webapp_assets/embed_pages/default/home/get-started.png',
+        carousalImage: 'https://media.begenuin.com/webapp_assets/embed_pages/default/home/get-started.webp',
         button: [
           {
             text: 'Get Started',

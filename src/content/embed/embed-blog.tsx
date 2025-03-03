@@ -2,7 +2,7 @@ export const EmbedBlog = [
   {
     Default: {
       blogSection: {
-        image: 'https://media.begenuin.com/webapp_assets/embed_pages/default/blogs/blog-img.png',
+        image: 'https://media.begenuin.com/webapp_assets/embed_pages/default/blogs/blog-img.webp',
         blogContent: [
           {
             title: 'Add Statement Pieces',

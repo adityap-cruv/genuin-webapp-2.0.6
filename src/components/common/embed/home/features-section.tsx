@@ -43,6 +43,7 @@ const FeaturesSection = ({
           <div className="w-3/4">
             <MultiEmbed
               dataEmbedId={embedConfigs['Home/Search Embed'].embedId}
+              dataEmbedApiKey={embedConfigs['Home/Search Embed'].embedApiKey}
               genSdkId={2}
               style={{
                 height: '600px',
@@ -74,6 +75,7 @@ const FeaturesSection = ({
           </div>
           <MultiEmbed
             dataEmbedId={embedConfigs['Home/Search Embed'].embedId}
+            dataEmbedApiKey={embedConfigs['Home/Search Embed'].embedApiKey}
             genSdkId={2}
             style={{
               height: '500px',

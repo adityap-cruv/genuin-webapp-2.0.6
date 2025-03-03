@@ -6,7 +6,7 @@ import { type ReactNode } from 'react'
 import { cn, getYear } from '@lib/utils'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { PopularIcon, HomeIcon, LatestIcon, ProfileIcon, ExploreIcon } from '@icons/side-bar-icons'
+import { PopularIcon, HomeIcon, LatestIcon, ProfileIcon, ExploreIcon, EmbedIcon } from '@icons/side-bar-icons'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { RecentCommunities } from './recent-communities'
@@ -36,6 +36,7 @@ import { CustomImage } from '@/components/custom/custom-image'
 // import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
 import GetAppButton from '@/components/common/get-app-button'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 
 const DownloadAppDialog = dynamic(
   async () => await import('../download-app-dialog').then((comp) => comp.DownloadAppDialog)
@@ -221,11 +222,11 @@ function Menu({
             <ExploreIcon isActive={pathName === PATH_NAME.explore()} />
           </MenuItem>
         </Link>
-        {/* <Accordion type="single" collapsible>
+        <Accordion type="single" collapsible>
           <AccordionItem value={'Embed'} className="border-none">
             <AccordionTrigger className="p-0">
-              <MenuItem brandName={brandName} title="Embed Page" isActive={pathName === PATH_NAME.embed('')}>
-                <EmbedIcon isActive={pathName === PATH_NAME.embed('')} />
+              <MenuItem brandName={brandName} title="Embed Page" isActive={pathName.includes('/embed')}>
+                <EmbedIcon isActive={pathName.includes('/embed')} />
               </MenuItem>
             </AccordionTrigger>
             {[
@@ -245,7 +246,7 @@ function Menu({
               </AccordionContent>
             ))}
           </AccordionItem>
-        </Accordion> */}
+        </Accordion>
 
         {user && (
           <>

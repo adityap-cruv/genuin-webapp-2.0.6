@@ -5,7 +5,7 @@ export const EmbedPostSales = [
         indexTitle: '2 Seater Sofa',
         title: '𝐔𝐩𝐡𝐨𝐥𝐬𝐭𝐞𝐫𝐲 𝐌𝐚𝐭𝐞𝐫𝐢𝐚𝐥,Cyan  ',
         captions: ['North Indian, Punjabi'],
-        image: 'https://media.begenuin.com/webapp_assets/embed_pages/default/post-sales/post-sales-image.png',
+        image: 'https://media.begenuin.com/webapp_assets/embed_pages/default/post-sales/post-sales-image.webp',
         subItems: [
           {
             label: '4.0',
