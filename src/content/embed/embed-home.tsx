@@ -63,7 +63,7 @@ export const EmbedHome = [
             buttonColor: '#F2C94C',
           },
         ],
-        heroImage: 'https://media.begenuin.com/webapp_assets/embed_pages/food/home/hero_section.png',
+        heroImage: 'https://media.begenuin.com/webapp_assets/embed_pages/food/home/hero_section.webp',
       },
       featuresSection: {
         sectionTitle: 'OUR MENU',
@@ -91,7 +91,7 @@ export const EmbedHome = [
         sectionTitle: 'DOWNLOAD APP',
         title: 'Get Started With Us Today!',
         caption: 'Discover food wherever and whenever and get your food delivered quickly.',
-        carousalImage: 'https://media.begenuin.com/webapp_assets/embed_pages/food/home/get-started.png',
+        carousalImage: 'https://media.begenuin.com/webapp_assets/embed_pages/food/home/get-started.webp',
         button: [
           {
             text: 'Get Started',
@@ -114,7 +114,7 @@ export const EmbedHome = [
             visibility: false,
           },
         ],
-        heroImage: 'https://media.begenuin.com/webapp_assets/embed_pages/healthcare/home/hero-section.png',
+        heroImage: 'https://media.begenuin.com/webapp_assets/embed_pages/healthcare/home/hero-section.webp',
       },
       featuresSection: {
         sectionTitle: 'FEATURES',
@@ -141,7 +141,7 @@ export const EmbedHome = [
         sectionTitle: 'DOWNLOAD APP',
         title: 'Get Started With Us Today!',
         caption: 'Discover food wherever and whenever and get your food delivered quickly.',
-        carousalImage: 'https://media.begenuin.com/webapp_assets/embed_pages/healthcare/home/get-started.png',
+        carousalImage: 'https://media.begenuin.com/webapp_assets/embed_pages/healthcare/home/get-started.webp',
         button: [
           {
             text: 'Get Started',
@@ -164,7 +164,7 @@ export const EmbedHome = [
             buttonColor: '#F2C94C',
           },
         ],
-        heroImage: 'https://media.begenuin.com/webapp_assets/embed_pages/fintech/home/hero-section.png',
+        heroImage: 'https://media.begenuin.com/webapp_assets/embed_pages/fintech/home/hero-section.webp',
       },
       featuresSection: {
         sectionTitle: 'FEATURED',
@@ -193,7 +193,7 @@ export const EmbedHome = [
         title: 'Get Started With Us Today!',
         caption:
           'Personalize your settings, follow your progress, archive your highlights and notes automatically Glose is the ultimate reading ',
-        carousalImage: 'https://media.begenuin.com/webapp_assets/embed_pages/fintech/home/get-started.png',
+        carousalImage: 'https://media.begenuin.com/webapp_assets/embed_pages/fintech/home/get-started.webp',
         button: [
           {
             text: 'Get Started',

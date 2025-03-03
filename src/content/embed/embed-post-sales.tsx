@@ -48,7 +48,7 @@ export const EmbedPostSales = [
         indexTitle: 'Order Complete!',
         title: 'LunchBox - Meals and Thalis',
         captions: ['North Indian, Punjabi'],
-        image: 'https://media.begenuin.com/webapp_assets/embed_pages/food/post-sales/post-sales-image.png',
+        image: 'https://media.begenuin.com/webapp_assets/embed_pages/food/post-sales/post-sales-image.webp',
         subItems: [
           {
             label: '4.0',
@@ -91,7 +91,7 @@ export const EmbedPostSales = [
         indexTitle: 'Appointment booked!',
         title: 'Executive Health Checkup',
         captions: ['BLOOD UREA NITROGEN, SERUM (1079H-SRL)', 'CONSULTATION'],
-        image: 'https://media.begenuin.com/webapp_assets/embed_pages/healthcare/post-sales/post-sales-image.png',
+        image: 'https://media.begenuin.com/webapp_assets/embed_pages/healthcare/post-sales/post-sales-image.webp',
         subItems: [
           {
             label: '4.0',
@@ -134,7 +134,7 @@ export const EmbedPostSales = [
         indexTitle: 'Order Complete!',
         title: 'Premium Plan',
         captions: ['High-net-worth individuals seeking premium services'],
-        image: 'https://media.begenuin.com/webapp_assets/embed_pages/fintech/post-sales/post-sales-image.png',
+        image: 'https://media.begenuin.com/webapp_assets/embed_pages/fintech/post-sales/post-sales-image.webp',
         subItems: [
           {
             label: '4.0',

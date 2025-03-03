@@ -1,6 +1,4 @@
-import { useEmbedConfig } from '@/components/embed/embed-config-provider'
 import React from 'react'
-import { useShallow } from 'zustand/react/shallow'
 
 type MultiEmbedProps = {
   genSdkId: number

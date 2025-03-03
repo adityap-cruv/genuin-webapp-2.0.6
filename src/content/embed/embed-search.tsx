@@ -102,21 +102,21 @@ export const EmbedSearch = [
         searchItemType: 1,
         searchItemsTop: [
           {
-            image: 'https://media.begenuin.com/webapp_assets/embed_pages/food/search/item1.png',
+            image: 'https://media.begenuin.com/webapp_assets/embed_pages/food/search/item1.webp',
             title: 'Paneer Tikka Rice Bowl',
             caption: 'The Good Bowl',
             price: '$11.50',
             time: '20 Mins',
           },
           {
-            image: 'https://media.begenuin.com/webapp_assets/embed_pages/food/search/item2.png',
+            image: 'https://media.begenuin.com/webapp_assets/embed_pages/food/search/item2.webp',
             title: 'Dal Fry Rice Bowl - Fried With Ghee',
             caption: 'The Good Bowl',
             price: '$7.49',
             time: '20 Mins',
           },
           {
-            image: 'https://media.begenuin.com/webapp_assets/embed_pages/food/search/item3.png',
+            image: 'https://media.begenuin.com/webapp_assets/embed_pages/food/search/item3.webp',
             title: 'Butter Paneer Rice Bowl Large',
             caption: 'The Good Bowl',
             price: '$7.49',
@@ -125,42 +125,42 @@ export const EmbedSearch = [
         ],
         searchItemsBottom: [
           {
-            image: 'https://media.begenuin.com/webapp_assets/embed_pages/food/search/item1.png',
+            image: 'https://media.begenuin.com/webapp_assets/embed_pages/food/search/item1.webp',
             title: 'Paneer Tikka Rice Bowl',
             caption: 'The Good Bowl',
             price: '$11.50',
             time: '20 Mins',
           },
           {
-            image: 'https://media.begenuin.com/webapp_assets/embed_pages/food/search/item2.png',
+            image: 'https://media.begenuin.com/webapp_assets/embed_pages/food/search/item2.webp',
             title: 'Dal Fry Rice Bowl - Fried With Ghee',
             caption: 'The Good Bowl',
             price: '$7.49',
             time: '20 Mins',
           },
           {
-            image: 'https://media.begenuin.com/webapp_assets/embed_pages/food/search/item3.png',
+            image: 'https://media.begenuin.com/webapp_assets/embed_pages/food/search/item3.webp',
             title: 'Butter Paneer Rice Bowl Large',
             caption: 'The Good Bowl',
             price: '$7.49',
             time: '20 Mins',
           },
           {
-            image: 'https://media.begenuin.com/webapp_assets/embed_pages/food/search/item1.png',
+            image: 'https://media.begenuin.com/webapp_assets/embed_pages/food/search/item1.webp',
             title: 'Paneer Tikka Rice Bowl',
             caption: 'The Good Bowl',
             price: '$11.50',
             time: '20 Mins',
           },
           {
-            image: 'https://media.begenuin.com/webapp_assets/embed_pages/food/search/item2.png',
+            image: 'https://media.begenuin.com/webapp_assets/embed_pages/food/search/item2.webp',
             title: 'Dal Fry Rice Bowl - Fried With Ghee',
             caption: 'The Good Bowl',
             price: '$7.49',
             time: '20 Mins',
           },
           {
-            image: 'https://media.begenuin.com/webapp_assets/embed_pages/food/search/item3.png',
+            image: 'https://media.begenuin.com/webapp_assets/embed_pages/food/search/item3.webp',
             title: 'Butter Paneer Rice Bowl Large',
             caption: 'The Good Bowl',
             price: '$7.49',
@@ -187,7 +187,7 @@ export const EmbedSearch = [
         searchItemType: 2,
         searchItemsTop: [
           {
-            image: 'https://media.begenuin.com/webapp_assets/embed_pages/healthcare/search/item1.png',
+            image: 'https://media.begenuin.com/webapp_assets/embed_pages/healthcare/search/item1.webp',
             title: 'Dr. Serra Ali',
             caption: 'CHAIRMAN & HEAD PAEDIATRIC AND CONGENITAL HEART SURGERY',
             price: '100 Fees',
@@ -205,7 +205,7 @@ export const EmbedSearch = [
             ],
           },
           {
-            image: 'https://media.begenuin.com/webapp_assets/embed_pages/healthcare/search/item2.png',
+            image: 'https://media.begenuin.com/webapp_assets/embed_pages/healthcare/search/item2.webp',
             title: 'Jane Cooper',
             caption: 'EXECUTIVE CHAIRMAN FORTIS C DOC | FORTIS C-DOC',
             price: '110 Fees',
@@ -223,7 +223,7 @@ export const EmbedSearch = [
             ],
           },
           {
-            image: 'https://media.begenuin.com/webapp_assets/embed_pages/healthcare/search/item3.png',
+            image: 'https://media.begenuin.com/webapp_assets/embed_pages/healthcare/search/item3.webp',
             title: 'Dr. Sam B.Sen',
             caption: 'CHAIRMAN – LIVER TRANSPLANT & HEPATO - BILIARY SCIENCE ',
             price: '110 Fees',
@@ -243,7 +243,7 @@ export const EmbedSearch = [
         ],
         searchItemsBottom: [
           {
-            image: 'https://media.begenuin.com/webapp_assets/embed_pages/healthcare/search/item1.png',
+            image: 'https://media.begenuin.com/webapp_assets/embed_pages/healthcare/search/item1.webp',
             title: 'Dr. Jhon wheller',
             caption: 'SENIOR DIRECTOR ORTHOPAEDICS | TORTIS',
             price: '110 Fees',
@@ -261,7 +261,7 @@ export const EmbedSearch = [
             ],
           },
           {
-            image: 'https://media.begenuin.com/webapp_assets/embed_pages/healthcare/search/item1.png',
+            image: 'https://media.begenuin.com/webapp_assets/embed_pages/healthcare/search/item1.webp',
             title: 'Dr. Serra Ali',
             caption: 'CHAIRMAN & HEAD PAEDIATRIC AND CONGENITAL HEART SURGERY',
             price: '110 Fees',
@@ -279,7 +279,7 @@ export const EmbedSearch = [
             ],
           },
           {
-            image: 'https://media.begenuin.com/webapp_assets/embed_pages/healthcare/search/item3.png',
+            image: 'https://media.begenuin.com/webapp_assets/embed_pages/healthcare/search/item3.webp',
             title: 'Jerome Bell',
             caption: 'PRINCIPAL DIRECTOR & UNIT HEAD - PULMONOLOGY & SLEEP MEDICINE ',
             price: '110 Fees',
@@ -297,7 +297,7 @@ export const EmbedSearch = [
             ],
           },
           {
-            image: 'https://media.begenuin.com/webapp_assets/embed_pages/healthcare/search/item4.png',
+            image: 'https://media.begenuin.com/webapp_assets/embed_pages/healthcare/search/item4.webp',
             title: 'Esther Howard',
             caption: 'PRINCIPAL DIRECTOR & HOD - OPHTHALMOLOGY ',
             price: '110 Fees',

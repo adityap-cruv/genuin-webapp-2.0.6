@@ -54,7 +54,7 @@ export const EmbedBlog = [
 
     Food: {
       blogSection: {
-        image: 'https://media.begenuin.com/webapp_assets/embed_pages/food/blogs/blog-img.png',
+        image: 'https://media.begenuin.com/webapp_assets/embed_pages/food/blogs/blog-img.webp',
         blogContent: [
           {
             title: 'The Power of Food as a Connector',
@@ -106,7 +106,7 @@ export const EmbedBlog = [
 
     Healthcare: {
       blogSection: {
-        image: 'https://media.begenuin.com/webapp_assets/embed_pages/healthcare/blogs/blog-img.png',
+        image: 'https://media.begenuin.com/webapp_assets/embed_pages/healthcare/blogs/blog-img.webp',
         blogContent: [
           {
             title: 'Your Trusted Source for Health and Wellness Insights',
@@ -158,7 +158,7 @@ export const EmbedBlog = [
 
     Fintech: {
       blogSection: {
-        image: 'https://media.begenuin.com/webapp_assets/embed_pages/fintech/blogs/blog-img.png',
+        image: 'https://media.begenuin.com/webapp_assets/embed_pages/fintech/blogs/blog-img.webp',
         blogContent: [
           {
             title: ' The Future of Fintech: Trends to Watch in 2025',

@@ -40,7 +40,7 @@ export const EmbedPdp = [
         caption:
           'Crispy seasoned chicken breast, topped with mandatory melted cheese and piled onto soft rolls with onion, avocado, lettuce, tomato and garlic mayo (if ordered). ',
         price: '$22.00',
-        image: 'https://media.begenuin.com/webapp_assets/embed_pages/food/pdp/pdp-image.png',
+        image: 'https://media.begenuin.com/webapp_assets/embed_pages/food/pdp/pdp-image.webp',
         category: [
           {
             label: 'Size',
@@ -74,7 +74,7 @@ export const EmbedPdp = [
         caption:
           'Dr Jane Cooper is the Senior Director & Head for Urology at Tortis Hospital, USA. He received advance training in knee surgeries from various world-renowned international institutes in Japan, Italy & Germany.',
         price: '$122.00',
-        image: 'https://media.begenuin.com/webapp_assets/embed_pages/healthcare/pdp/pdp-image.png',
+        image: 'https://media.begenuin.com/webapp_assets/embed_pages/healthcare/pdp/pdp-image.webp',
         category: [
           {
             label: 'Time',
@@ -108,7 +108,7 @@ export const EmbedPdp = [
         caption:
           'Elevate your financial journey with tailored strategies and exclusive opportunities designed for discerning investors. Enjoy personalized guidance and priority support to maximize your wealth.',
         price: '$50,001 - $250,000',
-        image: 'https://media.begenuin.com/webapp_assets/embed_pages/fintech/pdp/pdp-image.png',
+        image: 'https://media.begenuin.com/webapp_assets/embed_pages/fintech/pdp/pdp-image.webp',
         category: [
           {
             label: 'Plan Size',
