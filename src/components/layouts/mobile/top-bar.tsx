@@ -25,7 +25,6 @@ import { CloseIcon } from '@icons/close-icon'
 import Analytics from '@services/analytics'
 import { CategoryView, Stations } from '@components/common/category-view'
 import dynamic from 'next/dynamic'
-import BecomeCbCard from '@/components/common/become-cb-card'
 import { LoginIcon } from '@icons/login-icon'
 import { VerifiedIcon } from '@icons/verified-icon'
 import { formatPhoneNumberIntl } from 'react-phone-number-input'
@@ -38,6 +37,11 @@ import GetAppButton from '@/components/common/get-app-button'
 
 const DownloadAppDialog = dynamic(
   async () => await import('../download-app-dialog').then((comp) => comp.DownloadAppDialog)
+)
+
+const BecomeCbCard = dynamic(
+  async () => await import('@/components/common/become-cb-card').then((comp) => comp.default),
+  { ssr: false }
 )
 
 const navVariant = cva('sticky top-0 flex z-40 h-[76px] w-full items-center justify-between px-4', {

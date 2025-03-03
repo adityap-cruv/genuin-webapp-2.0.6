@@ -14,7 +14,6 @@ import Analytics from '@services/analytics'
 import { useShallow } from 'zustand/react/shallow'
 import { LoginIcon } from '@icons/login-icon'
 import { VerifiedIcon } from '@icons/verified-icon'
-import BecomeCbCard from '@/components/common/become-cb-card'
 import { useSession } from 'next-auth/react'
 import { AuthenticationModal } from '@/components/common/modals/authentication'
 import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
@@ -32,6 +31,11 @@ const Stations = dynamic(async () => await import('@components/common/category-v
 })
 const RecentCommunities = dynamic(
   async () => await import('./recent-communities').then((comp) => comp.RecentCommunities),
+  { ssr: false }
+)
+
+const BecomeCbCard = dynamic(
+  async () => await import('@/components/common/become-cb-card').then((comp) => comp.default),
   { ssr: false }
 )
 
