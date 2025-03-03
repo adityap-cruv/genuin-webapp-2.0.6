@@ -28,13 +28,18 @@ const EmbedFooter = () => {
 
         {/* Social Icons */}
         <div className="mt-4 flex gap-4">
-          <TwitterIcon className="cursor-pointer fill-primary" />
-
-          <FacebookIcon className="cursor-pointer fill-primary" />
-
-          <InstagramIcon className="cursor-pointer fill-primary" />
-
-          <LinkedInIcon className="cursor-pointer fill-primary" />
+          <div className="rounded-full bg-primary">
+            <TwitterIcon className="cursor-pointer" variant={'light'} />
+          </div>
+          <div className="rounded-full bg-primary">
+            <FacebookIcon className="cursor-pointer" variant={'light'} />
+          </div>
+          <div className="rounded-full bg-primary">
+            <InstagramIcon className="cursor-pointer" variant={'light'} />
+          </div>
+          <div className="rounded-full bg-primary">
+            <LinkedInIcon className="cursor-pointer" variant={'light'} />
+          </div>
         </div>
 
         {/* Footer Options */}

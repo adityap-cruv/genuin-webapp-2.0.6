@@ -1,22 +1,42 @@
+import { cn } from '@/lib/utils'
 import { type ComponentProps } from 'react'
+import { cva, type VariantProps } from 'class-variance-authority'
 
-type Props = ComponentProps<'svg'>
-export function InstagramIcon({ ...props }: Props) {
+const iconVariant = cva('', {
+  variants: {
+    variant: {
+      dark: 'fill-monochrome-black',
+      transparent: 'fill-monochrome-white',
+      light: 'fill-monochrome-white',
+    },
+  },
+})
+
+type InstagramIconPropsType = ComponentProps<'svg'> &
+  VariantProps<typeof iconVariant> & { variant?: 'light' | 'transparent' | 'dark' | null }
+
+export function InstagramIcon({ variant = 'dark', className, ...props }: InstagramIconPropsType) {
   return (
-    <svg width="41" height="40" viewBox="0 0 41 40" fill="black" xmlns="http://www.w3.org/2000/svg" {...props}>
-      <rect x="0.5" width="40" height="40" rx="20" />
+    <svg
+      className={cn('', className)}
+      width="41"
+      height="40"
+      viewBox="0 0 41 40"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}>
       <g clipPath="url(#clip0_6415_16488)">
         <path
           d="M26.0034 8H14.9966C11.4143 8 8.5 10.9143 8.5 14.4966V25.5036C8.5 29.0857 11.4143 32 14.9966 32H26.0036C29.5857 32 32.5 29.0857 32.5 25.5036V14.4966C32.5 10.9143 29.5857 8 26.0034 8ZM31.093 25.5036C31.093 28.3098 28.8098 30.593 26.0034 30.593H14.9966C12.1901 30.593 9.90698 28.3098 9.90698 25.5036V14.4966C9.90698 11.6901 12.1901 9.40698 14.9966 9.40698H26.0036C28.8098 9.40698 31.093 11.6901 31.093 14.4966V25.5036Z"
-          fill="white"
+          className={cn(iconVariant({ variant }), className)}
         />
         <path
           d="M20.4998 13.4375C16.8813 13.4375 13.9375 16.3813 13.9375 19.9998C13.9375 23.6183 16.8813 26.5621 20.4998 26.5621C24.1183 26.5621 27.0621 23.6183 27.0621 19.9998C27.0621 16.3813 24.1183 13.4375 20.4998 13.4375ZM20.4998 25.1551C17.6573 25.1551 15.3445 22.8425 15.3445 19.9998C15.3445 17.1573 17.6573 14.8445 20.4998 14.8445C23.3425 14.8445 25.6551 17.1573 25.6551 19.9998C25.6551 22.8425 23.3425 25.1551 20.4998 25.1551Z"
-          fill="white"
+          className={cn(iconVariant({ variant }), className)}
         />
         <path
           d="M27.2203 11.1094C26.151 11.1094 25.2812 11.9793 25.2812 13.0485C25.2812 14.1178 26.151 14.9877 27.2203 14.9877C28.2897 14.9877 29.1596 14.1178 29.1596 13.0485C29.1596 11.9791 28.2897 11.1094 27.2203 11.1094ZM27.2203 13.5806C26.927 13.5806 26.6882 13.3418 26.6882 13.0485C26.6882 12.7549 26.927 12.5164 27.2203 12.5164C27.5139 12.5164 27.7526 12.7549 27.7526 13.0485C27.7526 13.3418 27.5139 13.5806 27.2203 13.5806Z"
-          fill="white"
+          className={cn(iconVariant({ variant }), className)}
         />
       </g>
       <defs>
