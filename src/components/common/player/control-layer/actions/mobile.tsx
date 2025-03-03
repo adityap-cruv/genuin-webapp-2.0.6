@@ -13,8 +13,9 @@ import { ActionItem } from './action-item'
 import { useCommentSheetStore } from '../../comment-sheet/store'
 import { repostDeepLink } from '@/lib/get-deeplink'
 import { useWalletBalanceHandler } from '@/services/wallet-handler'
-import { Spark } from './spark'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
+import { Reaction } from '@/components/common/reaction'
+import { useFeedListContext } from '@/components/providers/feed-provider'
 
 type MobileActionsProps = {
   attachedLink?: string | null
@@ -45,6 +46,7 @@ export function Mobile({
     commentsIsOpen: state.modalIsOpen,
   }))
   const { user } = useGenuinOptions((state) => ({ user: state.user }))
+  const { updateSparkStatus } = useFeedListContext()
   const searchParams = Object.fromEntries(useSearchParams())
 
   return (
@@ -74,12 +76,15 @@ export function Mobile({
           }}>
           <Image src={icRepost} height={32} width={32} alt="repost" />
         </ActionItem>
-        <Spark
+        <Reaction
           shareUrl={shareUrl}
           sparkCount={sparkCount}
-          videoId={videoId}
+          contentId={videoId}
           videoSlug={videoSlug}
-          isSparked={isSparked}
+          isSparked={isSparked ?? false}
+          onSparkChange={(newSparkStatus) => {
+            updateSparkStatus(videoId, newSparkStatus)
+          }}
         />
       </span>
       <ActionItem

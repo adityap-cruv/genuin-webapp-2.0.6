@@ -3,7 +3,7 @@ import { type RefObject, useRef, useState, useEffect } from 'react'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { DecorativeList } from '@components/custom/decorative-list'
-import { Comments, NoComments } from '@components/common/comments'
+import { Comments, NoComments, updateCommentReactionData } from '@components/common/comments'
 import { getVideosComments } from '@lib/api/loop'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
 import { Toaster } from '@components/ui/toaster'
@@ -179,21 +179,16 @@ export function DesktopDetails({ loop, community, owner, video }: DesktopDetails
   )
 }
 
-function CommentBox({
-  videoId,
-  slug,
-  videoShareUrl,
-  parentRef,
-  setComments,
-  comments,
-}: {
+type CommentBoxPropsType = {
   videoId: string
   slug: string
   videoShareUrl: string
   parentRef: RefObject<HTMLDivElement>
   setComments: any
   comments: any
-}) {
+}
+
+function CommentBox({ videoId, slug, videoShareUrl, parentRef, setComments, comments }: CommentBoxPropsType) {
   const {
     data: commentPages,
     fetchNextPage,
@@ -231,6 +226,9 @@ function CommentBox({
           videoId={videoId}
           slug={slug}
           videoShareUrl={videoShareUrl}
+          onCommentReactionChange={(commentId, isReacted) => {
+            updateCommentReactionData(videoId, commentId, isReacted)
+          }}
         />
       </div>
     )

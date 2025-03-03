@@ -426,6 +426,7 @@ export function encodeVideoSourceUrl(videoSource: string) {
     const paramString = params.toString()
     return `${url.origin}${url.pathname}${paramString ? '?' + paramString : ''}`
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('Invalid URL:', error)
     return videoSource
   }
@@ -490,4 +491,16 @@ export const getPlatform = () => {
     }
   }
   return 'Web'
+}
+
+/**
+ * This func returns the url for the reaction.
+ * @param reaction type of reaction
+ * @param isReacted if user have already reacted.
+ * @returns
+ */
+export function getUrlForReaction(reaction: string, isReacted: boolean, forComment: boolean = false) {
+  return `https://media.begenuin.com/webapp_assets/reactions/${reaction}/${forComment ? 'comment_' : 'feed_'}${
+    isReacted ? 'selected' : 'unselected'
+  }.svg`
 }
