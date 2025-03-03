@@ -73,6 +73,7 @@ export type ConfigType = {
   web_cta: 'app' | 'login' | 'both'
   privacy_policy?: string
   terms_and_condition?: string
+  show_become_creator: boolean
 } | null
 
 export type User = {

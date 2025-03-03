@@ -61,17 +61,27 @@ type Props = {
 } & VariantProps<typeof navVariant>
 
 export function TopBar({ variant = 'light', className, showClose = false, onClose }: Props) {
-  const { user, brandName, notificationsCount, isClaimed, brandLogo, webCTA, privacyPolicy, termsAndCondition } =
-    useGenuinOptions((state) => ({
-      user: state.user,
-      brandName: state.config?.name ? state.config?.name : 'Genuin',
-      notificationsCount: state.notificationCount,
-      isClaimed: state.config?.is_claimed,
-      brandLogo: state.config?.logo,
-      webCTA: state.webCTA,
-      privacyPolicy: state.config?.privacy_policy,
-      termsAndCondition: state.config?.terms_and_condition,
-    })) // If variant is transparent than we have removed show download button.
+  const {
+    user,
+    brandName,
+    notificationsCount,
+    isClaimed,
+    brandLogo,
+    webCTA,
+    privacyPolicy,
+    termsAndCondition,
+    showBecomeACreator,
+  } = useGenuinOptions((state) => ({
+    user: state.user,
+    brandName: state.config?.name ? state.config?.name : 'Genuin',
+    notificationsCount: state.notificationCount,
+    isClaimed: state.config?.is_claimed,
+    brandLogo: state.config?.logo,
+    webCTA: state.webCTA,
+    privacyPolicy: state.config?.privacy_policy,
+    termsAndCondition: state.config?.terms_and_condition,
+    showBecomeACreator: state.config?.show_become_creator,
+  })) // If variant is transparent than we have removed show download button.
   // const showDownloadButton = variant !== 'transparent'
   // const searchParams = useSearchParams()
 
@@ -86,6 +96,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
           isClaimed={isClaimed}
           privacyPolicy={privacyPolicy}
           termsAndCondition={termsAndCondition}
+          showBecomeACreator={showBecomeACreator}
         />
         {brandLogo && (
           <Link href={{ pathname: PATH_NAME.home() }}>
@@ -156,6 +167,7 @@ function Menu({
   webCTA,
   privacyPolicy,
   termsAndCondition,
+  showBecomeACreator,
 }: {
   variant: 'dark' | 'light' | 'transparent' | null
   brandName: string
@@ -164,6 +176,7 @@ function Menu({
   webCTA: 'app' | 'login' | 'both'
   privacyPolicy?: string
   termsAndCondition?: string
+  showBecomeACreator: boolean
 }) {
   const pathName = usePathname()
   const { status } = useSession()
@@ -262,7 +275,7 @@ function Menu({
           </SheetClose>
         )}
         {(!isClaimed || user?.ksCbRequestStatus !== 3) && <hr className="border-1 my-2 border-monochrome-black/10" />}
-        {user?.ksCbRequestStatus !== 3 && (
+        {user?.ksCbRequestStatus !== 3 && showBecomeACreator && (
           <SheetClose className="my-4 lg:hidden">
             <BecomeCbCard />
           </SheetClose>

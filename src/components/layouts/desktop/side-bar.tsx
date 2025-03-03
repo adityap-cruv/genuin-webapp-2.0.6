@@ -47,6 +47,7 @@ export function SideBar() {
     brandId,
     privacyPolicy,
     termsAndCondition,
+    showBecomeACreator,
   } = useGenuinOptions(
     useShallow((state) => ({
       user: state.user,
@@ -58,6 +59,7 @@ export function SideBar() {
       webCTA: state.config?.web_cta,
       privacyPolicy: state.config?.privacy_policy,
       termsAndCondition: state.config?.terms_and_condition,
+      showBecomeACreator: state.config?.show_become_creator,
     }))
   )
   const pathName = usePathname()
@@ -173,7 +175,7 @@ export function SideBar() {
               )}
             </span>
             {/* {(!isClaimed || user?.ksCbRequestStatus !== 3) && <hr className="border-1 my-2 border-monochrome-black/10" />} */}
-            {user?.ksCbRequestStatus !== 3 && <BecomeCbCard className="my-4 hidden xl:block" />}
+            {user?.ksCbRequestStatus !== 3 && showBecomeACreator && <BecomeCbCard className="my-4 hidden xl:block" />}
           </>
         )}
         {shouldShowIHeartDemo && <CategoryViewDynamic className="hidden xl:block" />}
@@ -220,7 +222,7 @@ export function SideBar() {
               )}
             </span>
             {/* {(!isClaimed || user?.ksCbRequestStatus !== 3) && <hr className="border-1 my-2 border-monochrome-black/10" />} */}
-            {user?.ksCbRequestStatus !== 3 && <BecomeCbCard className="my-4 hidden xl:block" />}
+            {user?.ksCbRequestStatus !== 3 && showBecomeACreator && <BecomeCbCard className="my-4 hidden xl:block" />}
           </>
         )}
       </div>
