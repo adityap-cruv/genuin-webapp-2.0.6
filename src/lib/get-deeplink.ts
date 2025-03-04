@@ -1,4 +1,4 @@
-import { generateDeepLink, getLoopAndCommunityShareString } from './utils'
+import { generateDeepLink, getLoopAndCommunityShareString, toTitleCase } from './utils'
 import { PATH_NAME } from './utils/constants/path'
 import { axiosInstance } from '@/lib/api/instance'
 
@@ -137,14 +137,13 @@ export async function repostDeepLink({
 /*
  * This function will generate deep link for spark action.
  */
-export async function sparkDeepLink(videoSlug: string, shareUrl: string): Promise<string> {
+export async function sparkDeepLink(videoSlug: string, shareUrl: string, reactionTitle: string): Promise<string> {
   return await getDeepLink('spark', {
     contentType: 'video',
     pathName: PATH_NAME.video(videoSlug),
     community: getLoopAndCommunityShareString(shareUrl).communityShareString ?? '',
     loop: getLoopAndCommunityShareString(shareUrl).loopShareString ?? '',
-    // Haven't used the reaction title here.
-    title: `React on the ${videoSlug} video`,
+    title: `${toTitleCase(reactionTitle)} on the ${videoSlug} video`,
     searchParams: new URLSearchParams(window.location.search),
   })
 }
@@ -154,20 +153,6 @@ export async function sparkDeepLink(videoSlug: string, shareUrl: string): Promis
  */
 export async function getAppLink(): Promise<string> {
   return await getDeepLink('/', {})
-}
-
-/*
- * This function will generate deep link for spark action.
- */
-export async function videoDeepLink(videoSlug: string, shareUrl: string): Promise<string> {
-  return await getDeepLink('comment', {
-    contentType: 'video',
-    pathName: PATH_NAME.video(videoSlug),
-    community: getLoopAndCommunityShareString(shareUrl).communityShareString ?? '',
-    loop: getLoopAndCommunityShareString(shareUrl).loopShareString ?? '',
-    title: `React on the ${videoSlug} comment`,
-    searchParams: new URLSearchParams(window.location.search),
-  })
 }
 
 interface DeepLinkData {
@@ -181,6 +166,7 @@ export const resolveDeepLink = async (linkIdentifier: string): Promise<DeepLinkD
     const res = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/goservices/links/${linkIdentifier}`)
     return res?.data?.data || null
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('Error resolving deep link:', error)
     return null
   }
