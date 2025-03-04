@@ -143,6 +143,7 @@ export async function sparkDeepLink(videoSlug: string, shareUrl: string): Promis
     pathName: PATH_NAME.video(videoSlug),
     community: getLoopAndCommunityShareString(shareUrl).communityShareString ?? '',
     loop: getLoopAndCommunityShareString(shareUrl).loopShareString ?? '',
+    // Haven't used the reaction title here.
     title: `React on the ${videoSlug} video`,
     searchParams: new URLSearchParams(window.location.search),
   })

@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import { useWalletBalanceHandler } from '@/services/wallet-handler'
 import { useGenuinOptions } from '@/lib/stores/genuin-options'
 import { videoSpark } from '@/lib/api/video'
@@ -6,7 +5,7 @@ import { ActionItem } from './player/control-layer/actions/action-item'
 import Analytics from '@/services/analytics'
 import { abbreviateNumber, cn, getUrlForReaction, openModal } from '@/lib/utils'
 import { sparkDeepLink } from '@/lib/get-deeplink'
-import { type ComponentProps, useCallback, useState } from 'react'
+import { type ComponentProps, useCallback, useMemo, useState } from 'react'
 
 type ReactionsComponentProps = {
   isSparked: boolean
@@ -59,7 +58,10 @@ export function Reaction({
       } else {
         // This call will generate the deep link for the video.
         await sparkDeepLink(videoSlug, shareUrl).then((generatedLink) => {
-          openModal({ deepLink: generatedLink, subtitle: 'Get the app to react on the video.' })
+          openModal({
+            deepLink: generatedLink,
+            subtitle: `Get the app to ${config?.reactions?.title ?? 'react'} on the video.`,
+          })
         })
       }
 
@@ -89,6 +91,19 @@ export function Reaction({
     })
   }, [user, isSparked, contentId, onSparkChange, forComment])
 
+  const iconToShow = useMemo(() => {
+    const reaction = config?.reactions
+
+    // In case there is no reactions in config then we will show the spark icon.
+    if (!reaction) return getUrlForReaction('spark', isSparked, forComment)
+
+    if (forComment) {
+      return isSparked ? reaction?.keys.comment_selected.svg : reaction?.keys.comment_unselected.svg
+    } else {
+      return isSparked ? reaction?.keys.feed_selected.svg : reaction?.keys.feed_unselected.svg
+    }
+  }, [config?.reactions, isSparked, forComment])
+
   return (
     <ActionItem
       title="React on the video!"
@@ -102,8 +117,9 @@ export function Reaction({
         await handleSparkClick()
       }}
       {...restProps}>
-      <Image
-        src={getUrlForReaction(config?.reaction_type ?? 'spark', Boolean(isSparked), forComment)}
+      <img
+        src={iconToShow}
+        style={{ height: iconHeight, width: iconWidth }}
         height={iconHeight}
         width={iconWidth}
         alt="reaction"

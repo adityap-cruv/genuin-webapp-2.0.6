@@ -51,6 +51,25 @@ type RewardPointConfig = {
   repost: number
 }
 
+type ReactionKey = {
+  png: string
+  svg: string
+}
+
+type ReactionKeys = {
+  comment_selected: ReactionKey
+  comment_unselected: ReactionKey
+  feed_selected: ReactionKey
+  feed_unselected: ReactionKey
+  // feed_animate: ReactionKey
+}
+
+type ReactionType = {
+  type: string
+  title: string
+  keys: ReactionKeys
+}
+
 export type ConfigType = {
   brand_id: string
   created_at: string
@@ -73,8 +92,8 @@ export type ConfigType = {
   web_cta: 'app' | 'login' | 'both'
   privacy_policy?: string
   terms_and_condition?: string
-  reaction_type: string
   show_become_creator: boolean
+  reactions?: ReactionType
 } | null
 
 export type User = {

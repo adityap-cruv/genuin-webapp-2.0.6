@@ -15,14 +15,16 @@ import { useSession } from 'next-auth/react'
 import { Loader } from '@components/ui/loader'
 import Analytics from '@services/analytics'
 import { type User } from 'next-auth'
+import { toTitleCase } from '@/lib/utils'
 
 SwiperCore.use([Pagination])
 export function KsToCbSubdomain() {
   const { setStep } = useAuthenticationModalStore()
   const { data: sessionData, update: updateSession } = useSession()
-  const { brandName, user } = useGenuinOptions((state) => ({
+  const { brandName, user, reactionTitle } = useGenuinOptions((state) => ({
     brandName: state.config?.name ? state.config?.name : 'Genuin',
     user: state.user,
+    reactionTitle: state.config?.reactions?.title,
   }))
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -83,10 +85,12 @@ export function KsToCbSubdomain() {
         <SwiperSlide>
           <div className="flex flex-col items-center gap-2">
             <CommunityDiscussion02 className="h-40 fill-primary" />
-            <p className="text-center text-title-1-bold">Make Connections & React on Dialogues</p>
+            <p className="text-center text-title-1-bold">
+              Make Connections & {toTitleCase(reactionTitle ?? 'react')} on Dialogues
+            </p>
             <p className="text-center text-body-1-med">
-              Invite others to join your {brandName} community, share engaging content, and react on meaningful
-              conversations to make connections and foster intellectual dialogue.
+              Invite others to join your {brandName} community, share engaging content, and {reactionTitle ?? 'react'}{' '}
+              on meaningful conversations to make connections and foster intellectual dialogue.
             </p>
             <br />
           </div>

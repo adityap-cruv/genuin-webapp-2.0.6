@@ -62,7 +62,6 @@ export function EmbedConfigProvider({ children, config }: { children: ReactNode;
 
   useEffect(() => {
     const element = document.getElementsByTagName('body')[0]
-    console.log('element::', element)
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {

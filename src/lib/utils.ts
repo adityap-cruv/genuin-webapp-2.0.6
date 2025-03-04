@@ -138,36 +138,10 @@ export const abbreviateNumber = (value: number) => {
   return newValue
 }
 
-// Not used anywhere rn.
-// type UrlObjType = {
-//   pathname: string
-//   query: Array<{ key: string; value: string | undefined }>
-// }
-
-// Not used anywhere rn.
-// function getUrlToChange(urlObj: UrlObjType) {
-//   const replaceUrlObj = new URL(window.location.href)
-//   const searchParams = new URLSearchParams(replaceUrlObj.search)
-//   urlObj.query.forEach((entry, index) => {
-//     if (entry.value) {
-//       searchParams.set(entry.key, entry.value)
-//     }
-//   })
-//   replaceUrlObj.pathname = urlObj.pathname ?? ''
-//   replaceUrlObj.search = urlObj.query.length > 0 ? searchParams.toString() : ''
-//   return replaceUrlObj.href
-// }
-
 export function replaceUrlWithoutReload(url: URL) {
   if (!window) return
   window.history.replaceState(null, '', url.href)
 }
-
-// Not used anywhere rn.
-// export function pushUrlWithoutReload(urlObj: UrlObjType) {
-//   if (!window) return
-//   window.history.pushState(null, '', getUrlToChange(urlObj))
-// }
 
 export const openGeneratedLink = (link = '') => {
   setTimeout(() => {
@@ -503,4 +477,38 @@ export function getUrlForReaction(reaction: string, isReacted: boolean, forComme
   return `https://media.begenuin.com/webapp_assets/reactions/${reaction}/${forComment ? 'comment_' : 'feed_'}${
     isReacted ? 'selected' : 'unselected'
   }.svg`
+}
+
+/**
+ * This function will return titled case of the given string. Example, react => React.
+ * @param str
+ * @returns
+ * */
+export function toTitleCase(word: string) {
+  return word
+    .toLowerCase()
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
+}
+
+/**
+ * This function returns past tense of given word(should be verb).
+ * @param word
+ * @returns
+ */
+export function getPastTense(word: string) {
+  if (/e$/.test(word)) {
+    // If the word already ends in 'e', just add 'd'
+    return word + 'd'
+  } else if (/[^aeiou]y$/.test(word)) {
+    // If the word ends in a consonant + 'y', replace 'y' with 'ied'
+    return word.slice(0, -1) + 'ied'
+  } else if (/([aeiou])([^aeiou])$/.test(word)) {
+    // If the word ends in vowel + consonant, double the consonant and add 'ed'
+    return word + word.slice(-1) + 'ed'
+  } else {
+    // For most cases, just add 'ed'
+    return word + 'ed'
+  }
 }
