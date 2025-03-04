@@ -6,10 +6,8 @@ import PdpSection from '@/components/common/embed/pdp/pdp-section'
 import { useEmbedConfig } from '@/components/embed/embed-config-provider'
 import { EmbedPdp } from '@/content/embed/embed-pdp'
 import { useEmbedSetup } from '@/hooks/use-embed-details'
-import { getIndustryName } from '@/lib/utils'
+import { getDataForIndustry } from '@/lib/utils'
 import { useShallow } from 'zustand/react/shallow'
-
-type IndustryName = keyof (typeof EmbedPdp)[number]
 
 export default function Page() {
   const { config } = useEmbedConfig(
@@ -17,8 +15,7 @@ export default function Page() {
       config: state.config,
     }))
   )
-  const industryName = getIndustryName(config?.industry_type) as IndustryName
-  const pdpPageData = EmbedPdp.find((item) => Object.keys(item).includes(industryName))?.[industryName]
+  const pdpPageData = getDataForIndustry(config, EmbedPdp)
   const { embedConfigs } = useEmbedSetup({ config })
 
   return (
@@ -28,7 +25,6 @@ export default function Page() {
       <MultiEmbed
         dataEmbedId={`${embedConfigs['PDP Embed'].embedId}`}
         dataEmbedApiKey={embedConfigs['PDP Embed'].embedApiKey}
-        genSdkId={1}
         style={{
           height: '600px',
         }}

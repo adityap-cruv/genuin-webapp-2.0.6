@@ -7,7 +7,6 @@ const facebookVariant = cva('', {
   variants: {
     variant: {
       dark: 'fill-monochrome-black',
-      transparent: 'fill-monochrome-white',
       light: 'fill-monochrome-white',
     },
   },
@@ -15,7 +14,7 @@ const facebookVariant = cva('', {
 
 // Define the Props type for the FacebookIcon component
 type FacebookIconPropsType = ComponentProps<'svg'> &
-  VariantProps<typeof facebookVariant> & { variant?: 'light' | 'transparent' | 'dark' | null }
+  VariantProps<typeof facebookVariant> & { variant?: 'light' | 'dark' | null }
 
 export function FacebookIcon({ variant = 'dark', className, ...restProps }: FacebookIconPropsType) {
   return (

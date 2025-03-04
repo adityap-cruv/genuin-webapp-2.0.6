@@ -27,7 +27,6 @@ const CommunitiesSection = ({
           <MultiEmbed
             dataEmbedId={embedConfigs['Home/Post Sales Embed'].embedId}
             dataEmbedApiKey={embedConfigs['Home/Post Sales Embed'].embedApiKey}
-            genSdkId={4}
             style={{
               height: '750px',
             }}
@@ -44,7 +43,6 @@ const CommunitiesSection = ({
             <MultiEmbed
               dataEmbedId={`${embedConfigs['Home/Search Embed1'].embedId}`}
               dataEmbedApiKey={embedConfigs['Home/Search Embed1'].embedApiKey}
-              genSdkId={4}
               style={{
                 height: '615px',
                 width: '350px',

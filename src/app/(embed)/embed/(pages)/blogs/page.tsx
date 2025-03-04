@@ -3,12 +3,10 @@ import BlogsSection from '@/components/common/embed/blogs/blogs-section'
 import EmbedNav from '@/components/common/embed/embed-nav'
 import EmbedFooter from '@/components/common/embed/embed-footer'
 import { EmbedBlog } from '@/content/embed/embed-blog'
-import { getIndustryName } from '@/lib/utils'
+import { getDataForIndustry } from '@/lib/utils'
 import { useEmbedConfig } from '@/components/embed/embed-config-provider'
 import { useShallow } from 'zustand/react/shallow'
 import { useEmbedSetup } from '@/hooks/use-embed-details'
-
-type IndustryName = keyof (typeof EmbedBlog)[number]
 
 export default function Page() {
   const { config } = useEmbedConfig(
@@ -16,8 +14,7 @@ export default function Page() {
       config: state.config,
     }))
   )
-  const industryName = getIndustryName(config?.industry_type) as IndustryName
-  const blogData = EmbedBlog.find((item) => Object.keys(item).includes(industryName))?.[industryName]
+  const blogData = getDataForIndustry(config, EmbedBlog)
   const { embedConfigs } = useEmbedSetup({ config })
 
   return (

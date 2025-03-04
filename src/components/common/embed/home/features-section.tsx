@@ -44,7 +44,6 @@ const FeaturesSection = ({
             <MultiEmbed
               dataEmbedId={embedConfigs['Home/Search Embed'].embedId}
               dataEmbedApiKey={embedConfigs['Home/Search Embed'].embedApiKey}
-              genSdkId={2}
               style={{
                 height: '600px',
               }}
@@ -76,7 +75,6 @@ const FeaturesSection = ({
           <MultiEmbed
             dataEmbedId={embedConfigs['Home/Search Embed'].embedId}
             dataEmbedApiKey={embedConfigs['Home/Search Embed'].embedApiKey}
-            genSdkId={2}
             style={{
               height: '500px',
             }}

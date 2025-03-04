@@ -1,9 +1,9 @@
 import { ChevronRightIcon } from 'lucide-react'
-import { LinkedInIcon } from '@icons/linkedin-icon'
-import { TwitterIcon } from '@icons/twitter-icon'
 import { type BlogSectionType } from '../../../../../types/embed/embed-blog'
 import MultiEmbed from '../multi-embed'
 import { type EmbedConfigsType } from '@/hooks/use-embed-details'
+import { TwitterIcon } from '@images/embed/social-icons/twitter-icon'
+import { LinkedInIcon } from '@images/embed/social-icons/linkedin-icon'
 
 const BlogsSection = ({
   blogSection,
@@ -25,7 +25,6 @@ const BlogsSection = ({
             <MultiEmbed
               dataEmbedId={`${embedConfigs['Home/Blog Embed'].embedId}`}
               dataEmbedApiKey={embedConfigs['Home/Blog Embed'].embedApiKey}
-              genSdkId={1}
               style={{
                 height: '400px',
               }}
@@ -41,7 +40,6 @@ const BlogsSection = ({
             <MultiEmbed
               dataEmbedId={`${embedConfigs['Home/Search Embed1'].embedId}`}
               dataEmbedApiKey={embedConfigs['Home/Search Embed1'].embedApiKey}
-              genSdkId={2}
               style={{
                 height: '615px',
                 width: '350px',
@@ -63,8 +61,8 @@ const BlogsSection = ({
             <div className="flex flex-col gap-3 rounded-xl bg-primary p-5">
               <p className="text-title-3-med text-monochrome-white">Share with your community!</p>
               <div className="flex items-center gap-3">
-                <LinkedInIcon className="fill-monochrome-white" />
-                <TwitterIcon className="fill-monochrome-white" />
+                <LinkedInIcon variant="light" />
+                <TwitterIcon variant="light" />
               </div>
             </div>
           </div>
@@ -82,7 +80,6 @@ const BlogsSection = ({
             <MultiEmbed
               dataEmbedId={`${embedConfigs['Home/Blog Embed'].embedId}`}
               dataEmbedApiKey={embedConfigs['Home/Blog Embed'].embedApiKey}
-              genSdkId={1}
               style={{
                 height: '400px',
                 width: 'calc(100vw - 40px)',
@@ -99,7 +96,6 @@ const BlogsSection = ({
               <MultiEmbed
                 dataEmbedId={`${embedConfigs['Home/Search Embed1'].embedId}`}
                 dataEmbedApiKey={embedConfigs['Home/Search Embed1'].embedApiKey}
-                genSdkId={2}
                 style={{
                   height: '615px',
                   width: '350px',

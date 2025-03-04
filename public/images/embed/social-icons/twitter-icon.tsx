@@ -7,7 +7,6 @@ const twitterVariant = cva('', {
   variants: {
     variant: {
       dark: 'fill-monochrome-black',
-      transparent: 'fill-monochrome-white',
       light: 'fill-monochrome-white',
     },
   },
@@ -15,7 +14,7 @@ const twitterVariant = cva('', {
 
 // Define the Props type for the TwitterIcon component
 type TwitterIconPropsType = ComponentProps<'svg'> &
-  VariantProps<typeof twitterVariant> & { variant?: 'light' | 'transparent' | 'dark' | null }
+  VariantProps<typeof twitterVariant> & { variant?: 'light' | 'dark' | null }
 
 export function TwitterIcon({ variant = 'dark', className, ...restProps }: TwitterIconPropsType) {
   return (

@@ -24,7 +24,7 @@ const OrderDetailsSection = ({ orderDetailsSection }: { orderDetailsSection: Ord
               {orderDetailsSection?.subItems.map((item, index) => (
                 <div className="flex flex-col gap-1 text-body-1-demi" key={index}>
                   <p className="flex items-end gap-1">
-                    {index === 0 && <TestimonialStarIcon type="filled" className="fill-[#1AC84B]" />}
+                    {index === 0 && <TestimonialStarIcon variant={'filled'} className="fill-[#1AC84B]" />}
                     <span>{item.label}</span>
                   </p>
                   <p>{item.value}</p>
@@ -52,7 +52,7 @@ const OrderDetailsSection = ({ orderDetailsSection }: { orderDetailsSection: Ord
               {orderDetailsSection?.subItems.map((item, index) => (
                 <div className="flex flex-col gap-1 text-body-1-med" key={index}>
                   <p className="flex items-end gap-1">
-                    {index === 0 && <TestimonialStarIcon type="filled" className="fill-[#1AC84B]" />}
+                    {index === 0 && <TestimonialStarIcon variant={'filled'} className="fill-[#1AC84B]" />}
                     <span>{item.label}</span>
                   </p>
                   <p>{item.value}</p>

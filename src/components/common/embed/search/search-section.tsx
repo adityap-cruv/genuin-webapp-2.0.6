@@ -63,7 +63,6 @@ const SearchSection = ({
           <MultiEmbed
             dataEmbedId={`${embedConfigs['Home/Search Embed'].embedId}`}
             dataEmbedApiKey={embedConfigs['Home/Search Embed'].embedApiKey}
-            genSdkId={1}
             style={{
               height: '600px',
             }}
@@ -94,7 +93,6 @@ const SearchSection = ({
             <MultiEmbed
               dataEmbedId={`${embedConfigs['Home/Search Embed1'].embedId}`}
               dataEmbedApiKey={embedConfigs['Home/Search Embed1'].embedApiKey}
-              genSdkId={2}
               style={{
                 height: '650px',
                 width: '350px',
@@ -150,7 +148,6 @@ const SearchSection = ({
           <MultiEmbed
             dataEmbedId={`${embedConfigs['Home/Search Embed'].embedId}`}
             dataEmbedApiKey={embedConfigs['Home/Search Embed'].embedApiKey}
-            genSdkId={1}
             style={{
               height: '600px',
             }}
@@ -175,7 +172,6 @@ const SearchSection = ({
           <MultiEmbed
             dataEmbedId={`${embedConfigs['Home/Search Embed1'].embedId}`}
             dataEmbedApiKey={embedConfigs['Home/Search Embed1'].embedApiKey}
-            genSdkId={2}
             style={{
               height: '650px',
               width: '350px',

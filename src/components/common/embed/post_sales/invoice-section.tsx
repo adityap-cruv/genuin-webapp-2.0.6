@@ -27,7 +27,6 @@ const InvoiceSection = ({
               <MultiEmbed
                 dataEmbedId={`${embedConfigs['Post-Sales Embed'].embedId}`}
                 dataEmbedApiKey={embedConfigs['Post-Sales Embed'].embedApiKey}
-                genSdkId={1}
                 style={{
                   height: '400px',
                 }}
@@ -88,7 +87,6 @@ const InvoiceSection = ({
             <MultiEmbed
               dataEmbedId={`${embedConfigs['Post-Sales Embed'].embedId}`}
               dataEmbedApiKey={embedConfigs['Post-Sales Embed'].embedApiKey}
-              genSdkId={1}
               style={{
                 height: '400px',
                 width: 'calc(100vw - 40px)',

@@ -6,14 +6,12 @@ const iconVariant = cva('', {
   variants: {
     variant: {
       dark: 'fill-monochrome-black',
-      transparent: 'fill-monochrome-white',
       light: 'fill-monochrome-white',
     },
   },
 })
 
-type IconPropsType = ComponentProps<'svg'> &
-  VariantProps<typeof iconVariant> & { variant?: 'light' | 'transparent' | 'dark' | null }
+type IconPropsType = ComponentProps<'svg'> & VariantProps<typeof iconVariant> & { variant?: 'light' | 'dark' | null }
 
 export function LinkedInIcon({ variant = 'dark', className, ...props }: IconPropsType) {
   return (

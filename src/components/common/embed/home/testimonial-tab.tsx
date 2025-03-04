@@ -14,11 +14,11 @@ const TestimonialTab = () => {
         </div>
       </div>
       <div className="mt-2 flex items-end gap-2">
-        <TestimonialStarIcon type="filled" className="fill-[#F2C94C]" />
-        <TestimonialStarIcon type="filled" className="fill-[#F2C94C]" />
-        <TestimonialStarIcon type="filled" className="fill-[#F2C94C]" />
-        <TestimonialStarIcon type="filled" className="fill-[#F2C94C]" />
-        <TestimonialStarIcon className="fill-[#F2C94C]" />
+        <TestimonialStarIcon variant={'filled'} />
+        <TestimonialStarIcon variant={'filled'} />
+        <TestimonialStarIcon variant={'filled'} />
+        <TestimonialStarIcon variant={'filled'} />
+        <TestimonialStarIcon variant={'outlined'} />
         <span>4.8</span>
       </div>
     </div>

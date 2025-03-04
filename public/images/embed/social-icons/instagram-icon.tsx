@@ -6,16 +6,15 @@ const iconVariant = cva('', {
   variants: {
     variant: {
       dark: 'fill-monochrome-black',
-      transparent: 'fill-monochrome-white',
       light: 'fill-monochrome-white',
     },
   },
 })
 
 type InstagramIconPropsType = ComponentProps<'svg'> &
-  VariantProps<typeof iconVariant> & { variant?: 'light' | 'transparent' | 'dark' | null }
+  VariantProps<typeof iconVariant> & { variant?: 'light' | 'dark' | null }
 
-export function InstagramIcon({ variant = 'dark', className, ...props }: InstagramIconPropsType) {
+export function InstagramIcon({ variant = 'light', className, ...props }: InstagramIconPropsType) {
   return (
     <svg
       className={cn('', className)}
@@ -39,11 +38,6 @@ export function InstagramIcon({ variant = 'dark', className, ...props }: Instagr
           className={cn(iconVariant({ variant }), className)}
         />
       </g>
-      <defs>
-        <clipPath id="clip0_6415_16488">
-          <rect width="24" height="24" fill="white" transform="translate(8.5 8)" />
-        </clipPath>
-      </defs>
     </svg>
   )
 }

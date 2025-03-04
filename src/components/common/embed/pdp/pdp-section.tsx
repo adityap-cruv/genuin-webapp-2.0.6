@@ -12,11 +12,11 @@ const PdpSection = ({ pdpSection }: { pdpSection: PDPSection }) => {
           </div>
           <div className="flex w-1/2 flex-col gap-4">
             <div className="mt-2 flex items-end gap-2">
-              <TestimonialStarIcon type="filled" />
-              <TestimonialStarIcon type="filled" />
-              <TestimonialStarIcon type="filled" />
-              <TestimonialStarIcon type="filled" />
-              <TestimonialStarIcon />
+              <TestimonialStarIcon variant={'filled'} />
+              <TestimonialStarIcon variant={'filled'} />
+              <TestimonialStarIcon variant={'filled'} />
+              <TestimonialStarIcon variant={'filled'} />
+              <TestimonialStarIcon variant={'outlined'} />
               <span>11 Reviews</span>
             </div>
 
@@ -64,11 +64,11 @@ const PdpSection = ({ pdpSection }: { pdpSection: PDPSection }) => {
 
           <div className="flex flex-col gap-4">
             <div className="mt-2 flex items-end">
-              <TestimonialStarIcon type="filled" className="h-4" />
-              <TestimonialStarIcon type="filled" className="h-4" />
-              <TestimonialStarIcon type="filled" className="h-4" />
-              <TestimonialStarIcon type="filled" className="h-4" />
-              <TestimonialStarIcon className="h-4" />
+              <TestimonialStarIcon variant={'filled'} className="h-4" />
+              <TestimonialStarIcon variant={'filled'} className="h-4" />
+              <TestimonialStarIcon variant={'filled'} className="h-4" />
+              <TestimonialStarIcon variant={'filled'} className="h-4" />
+              <TestimonialStarIcon variant={'outlined'} className="h-4" />
               <span className="text-cap-2-demi">11 Reviews</span>
             </div>
 

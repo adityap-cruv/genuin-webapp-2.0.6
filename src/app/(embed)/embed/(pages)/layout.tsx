@@ -6,9 +6,9 @@ export default function AppLayout(props: any) {
   const isMobile = cookies().get('device_type')?.value === 'mobile'
 
   return isMobile ? (
-    <main>
+    <main className="h-full w-full">
       <MobileTopBar />
-      <section className="flex w-full overflow-clip px-0 2xl:container xl:px-10 2xl:px-0">{props.children}</section>
+      <section className="flex h-full w-full px-0 2xl:container xl:px-10 2xl:px-0">{props.children}</section>
     </main>
   ) : (
     <Layout isCollapsed>{props.children}</Layout>

@@ -3,7 +3,7 @@ import { axiosInstance } from '@/lib/api/instance'
 import { type ClassValue, clsx } from 'clsx'
 import { createCipheriv } from 'crypto'
 import { twMerge } from 'tailwind-merge'
-import { useGenuinOptions } from './stores/genuin-options'
+import { type ConfigType, useGenuinOptions } from './stores/genuin-options'
 import { AuthenticationModal } from '@components/common/modals/authentication'
 import { type ReactNode } from 'react'
 import { INDUSTRY, type IndustryName, PROTECTED_ROUTES, MOBILE_DOWNLOAD_APP_LINK } from './constants'
@@ -466,6 +466,11 @@ export function getIndustryName(industryType: number | undefined): IndustryName 
   }
 
   return industryName
+}
+export function getDataForIndustry(config: ConfigType | undefined, embedSource: any) {
+  type IndustryName = keyof (typeof embedSource)[number]
+  const industryName = getIndustryName(config?.industry_type) as IndustryName
+  return embedSource.find((item: Record<string, any>) => Object.keys(item).includes(industryName as string))?.[industryName as string]
 }
 
 export function getMobileAppUrl() {
