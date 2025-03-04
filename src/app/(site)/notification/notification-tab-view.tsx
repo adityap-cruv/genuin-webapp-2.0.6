@@ -207,7 +207,7 @@ export function GetNotificationAttributedText({ notification }: { notification: 
       return (
         <div>
           {ProfileTag(notification)}
-          {getPastTense(reactionTitle ?? 'react')} on your post in
+          {getPastTense(reactionTitle)} on your post in
           <strong>
             {LoopTag(notification?.conversation?.group?.slug, notification?.conversation?.group?.name)}
           </strong>. {agoTimeString}
@@ -217,7 +217,7 @@ export function GetNotificationAttributedText({ notification }: { notification: 
       return (
         <div>
           {ProfileTag(notification)}
-          {getPastTense(reactionTitle ?? 'react')} on your comment in
+          {getPastTense(reactionTitle)} on your comment in
           <strong>
             {LoopTag(notification?.conversation?.group?.slug, notification?.conversation?.group?.name)}
           </strong>. {agoTimeString}

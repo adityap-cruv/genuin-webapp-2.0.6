@@ -60,7 +60,7 @@ export function Reaction({
         await sparkDeepLink(videoSlug, shareUrl).then((generatedLink) => {
           openModal({
             deepLink: generatedLink,
-            subtitle: `Get the app to ${config?.reactions?.title ?? 'react'} on the video.`,
+            subtitle: `Get the app to ${config.reactions.title} on the video.`,
           })
         })
       }

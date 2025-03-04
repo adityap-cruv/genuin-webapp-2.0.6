@@ -93,8 +93,8 @@ export type ConfigType = {
   privacy_policy?: string
   terms_and_condition?: string
   show_become_creator: boolean
-  reactions?: ReactionType
-} | null
+  reactions: ReactionType
+}
 
 export type User = {
   bio?: string
@@ -188,7 +188,7 @@ const initialState: StateType = {
   isSafari: false,
   userHasFocus: true,
   parentUrl: '',
-  config: null,
+  config: {} as any,
   notificationCount: -1,
   walletBalance: 0,
   isLoading: true,
