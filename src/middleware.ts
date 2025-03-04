@@ -119,7 +119,7 @@ export async function middleware(request: NextRequest) {
 
   if (host) {
     const config = getConfig(host)
-    // const config = getConfig('iheartmedia.qa.begenuin.com')
+    // const config = getConfig('ankpal.qa.begenuin.com')
     if (config) request.cookies.set('config_params', JSON.stringify(config))
     const urlObj = new URL(request.url)
     // eslint-disable-next-line no-prototype-builtins
@@ -146,7 +146,7 @@ export const config = {
 }
 
 export function getConfig(host: string): { domain?: string; subdomain?: string } | null {
-  if (['localhost:4005', 'www', '192'].includes(host.split('.')[0])) return null
+  if (['localhost:4005', 'www', '192'].includes(host.split('.')[0])) return { subdomain: 'app' }
 
   if (!host.includes('begenuin')) return { domain: host }
   const subdomain =
