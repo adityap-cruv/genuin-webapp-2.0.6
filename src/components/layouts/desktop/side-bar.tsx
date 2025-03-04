@@ -14,7 +14,6 @@ import Analytics from '@services/analytics'
 import { useShallow } from 'zustand/react/shallow'
 import { LoginIcon } from '@icons/login-icon'
 import { VerifiedIcon } from '@icons/verified-icon'
-import BecomeCbCard from '@/components/common/become-cb-card'
 import { useSession } from 'next-auth/react'
 import { AuthenticationModal } from '@/components/common/modals/authentication'
 import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
@@ -35,6 +34,11 @@ const RecentCommunities = dynamic(
   { ssr: false }
 )
 
+const BecomeCbCard = dynamic(
+  async () => await import('@/components/common/become-cb-card').then((comp) => comp.default),
+  { ssr: false }
+)
+
 // TODO: Improve active states on all items.
 export function SideBar({ isCollapsed }: { isCollapsed?: boolean }) {
   const {
@@ -47,6 +51,7 @@ export function SideBar({ isCollapsed }: { isCollapsed?: boolean }) {
     brandId,
     privacyPolicy,
     termsAndCondition,
+    showBecomeACreator,
   } = useGenuinOptions(
     useShallow((state) => ({
       user: state.user,
@@ -58,6 +63,7 @@ export function SideBar({ isCollapsed }: { isCollapsed?: boolean }) {
       webCTA: state.config?.web_cta,
       privacyPolicy: state.config?.privacy_policy,
       termsAndCondition: state.config?.terms_and_condition,
+      showBecomeACreator: state.config?.show_become_creator ?? true,
     }))
   )
   const pathName = usePathname()
@@ -199,7 +205,7 @@ export function SideBar({ isCollapsed }: { isCollapsed?: boolean }) {
               )}
             </span>
             {/* {(!isClaimed || user?.ksCbRequestStatus !== 3) && <hr className="border-1 my-2 border-monochrome-black/10" />} */}
-            {user?.ksCbRequestStatus !== 3 && <BecomeCbCard className="my-4 hidden xl:block" />}
+            {user?.ksCbRequestStatus !== 3 && showBecomeACreator && <BecomeCbCard className="my-4 hidden xl:block" />}
           </>
         )}
         {shouldShowIHeartDemo && !isCollapsed && <CategoryViewDynamic className="hidden xl:block" />}
@@ -246,7 +252,7 @@ export function SideBar({ isCollapsed }: { isCollapsed?: boolean }) {
               )}
             </span>
             {/* {(!isClaimed || user?.ksCbRequestStatus !== 3) && <hr className="border-1 my-2 border-monochrome-black/10" />} */}
-            {user?.ksCbRequestStatus !== 3 && <BecomeCbCard className="my-4 hidden xl:block" />}
+            {user?.ksCbRequestStatus !== 3 && showBecomeACreator && <BecomeCbCard className="my-4 hidden xl:block" />}
           </>
         )}
       </div>

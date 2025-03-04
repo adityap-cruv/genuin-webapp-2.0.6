@@ -25,7 +25,7 @@ export default function ShareButton({ className, url }: ShareButtonProps) {
       title="Copy Link" // Tooltip text for the button
       size="custom" // Custom size for the button
       variant="outline" // Outline variant for the button
-      className={`border border-primary p-[3px] group ${className}`} // Apply custom styles and additional className
+      className={`group border border-primary p-[3px] ${className}`} // Apply custom styles and additional className
       onClick={async () =>
         // Handle the button click event
         await shareFn({

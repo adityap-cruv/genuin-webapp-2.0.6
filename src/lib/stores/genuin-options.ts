@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
+import { getUrlForReaction } from '../utils'
 
 export type VideoSizeBoxType = {
   width: number
@@ -105,6 +106,25 @@ type Embed = {
   customization: EmbedCustomization;
   __v: number;
 };
+type ReactionKey = {
+  png: string
+  svg: string
+}
+
+type ReactionKeys = {
+  comment_selected: ReactionKey
+  comment_unselected: ReactionKey
+  feed_selected: ReactionKey
+  feed_unselected: ReactionKey
+  // feed_animate: ReactionKey
+}
+
+type ReactionType = {
+  type: string
+  title: string
+  suffix: string
+  keys: ReactionKeys
+}
 
 export type ConfigType = {
   brand_id: string
@@ -131,6 +151,8 @@ export type ConfigType = {
   industry_type?: number
   default_embeds?: Embed[]
   api_key?: string
+  show_become_creator: boolean
+  reactions: ReactionType
 } | null
 
 export type User = {
@@ -225,7 +247,19 @@ const initialState: StateType = {
   isSafari: false,
   userHasFocus: true,
   parentUrl: '',
-  config: null,
+  config: {
+    reactions: {
+      keys: {
+        comment_selected: { svg: getUrlForReaction('spark', true, true), png: '' },
+        comment_unselected: { svg: getUrlForReaction('spark', false, true), png: '' },
+        feed_selected: { svg: getUrlForReaction('spark', true, false), png: '' },
+        feed_unselected: { svg: getUrlForReaction('spark', false, false), png: '' },
+      },
+      suffix: 'to',
+      title: 'react',
+      type: 'default',
+    },
+  } as any,
   notificationCount: -1,
   walletBalance: 0,
   isLoading: true,
