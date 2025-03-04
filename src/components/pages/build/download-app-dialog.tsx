@@ -35,8 +35,8 @@ export function DownloadAppDialog({ children }: Props) {
     useShallow((state) => ({
       isMobile: state.isMobile,
       links: {
-        appStoreLink: state.config?.integrations.sdk.ios.appstore_link,
-        playStoreLink: state.config?.integrations.sdk.android.playstore_link,
+        appStoreLink: state.config?.integrations?.sdk.ios.appstore_link,
+        playStoreLink: state.config?.integrations?.sdk.android.playstore_link,
       },
       privacyPolicy: state.config?.privacy_policy,
       terms: state.config?.terms_and_condition,
