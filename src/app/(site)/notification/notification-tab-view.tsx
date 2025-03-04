@@ -1,12 +1,12 @@
 'use client'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
-import { getPastTense, getTimeAgo } from '@lib/utils'
+import { getTimeAgo } from '@lib/utils'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import Link from 'next/link'
 
 export function GetNotificationAttributedText({ notification }: { notification: any }): JSX.Element {
-  const { user, reactionTitle } = useGenuinOptions((state) => ({
-    reactionTitle: state.config?.reactions?.title,
+  const { user, reactionSuffix } = useGenuinOptions((state) => ({
+    reactionSuffix: state.config.reactions.suffix,
     user: state.user,
   }))
   const agoTimeString = <span className="text-body-1-demi text-tertiary">{getTimeAgo(notification?.created_at)}</span>
@@ -207,7 +207,7 @@ export function GetNotificationAttributedText({ notification }: { notification: 
       return (
         <div>
           {ProfileTag(notification)}
-          {getPastTense(reactionTitle)} on your post in
+          {reactionSuffix} your post in
           <strong>
             {LoopTag(notification?.conversation?.group?.slug, notification?.conversation?.group?.name)}
           </strong>. {agoTimeString}
@@ -217,7 +217,7 @@ export function GetNotificationAttributedText({ notification }: { notification: 
       return (
         <div>
           {ProfileTag(notification)}
-          {getPastTense(reactionTitle)} on your comment in
+          {reactionSuffix} your comment in
           <strong>
             {LoopTag(notification?.conversation?.group?.slug, notification?.conversation?.group?.name)}
           </strong>. {agoTimeString}

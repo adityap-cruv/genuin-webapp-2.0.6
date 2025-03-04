@@ -57,10 +57,10 @@ export function Reaction({
         }
       } else {
         // This call will generate the deep link for the video.
-        await sparkDeepLink(videoSlug, shareUrl, config.reactions.title).then((generatedLink) => {
+        await sparkDeepLink(videoSlug, shareUrl, config.reactions.suffix).then((generatedLink) => {
           openModal({
             deepLink: generatedLink,
-            subtitle: `Get the app to ${config.reactions.title} on the video.`,
+            subtitle: `Get the app to ${config.reactions.suffix} the video.`,
           })
         })
       }

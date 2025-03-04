@@ -67,6 +67,7 @@ type ReactionKeys = {
 type ReactionType = {
   type: string
   title: string
+  suffix: string
   keys: ReactionKeys
 }
 
