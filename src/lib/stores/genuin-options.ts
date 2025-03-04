@@ -74,6 +74,7 @@ export type ConfigType = {
   privacy_policy?: string
   terms_and_condition?: string
   reaction_type: string
+  show_become_creator: boolean
 } | null
 
 export type User = {
