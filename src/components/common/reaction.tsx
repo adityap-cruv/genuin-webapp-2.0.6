@@ -57,12 +57,14 @@ export function Reaction({
         }
       } else {
         // This call will generate the deep link for the video.
-        await sparkDeepLink(videoSlug, shareUrl, config.reactions.suffix).then((generatedLink) => {
-          openModal({
-            deepLink: generatedLink,
-            subtitle: `Get the app to ${config.reactions.suffix} the video.`,
-          })
-        })
+        await sparkDeepLink(videoSlug, shareUrl, config.reactions.suffix, config.reactions.title).then(
+          (generatedLink) => {
+            openModal({
+              deepLink: generatedLink,
+              subtitle: `Get the app to ${config.reactions.title + ' ' + config.reactions.suffix} the video.`,
+            })
+          }
+        )
       }
 
       // If user is not logged in then we will not call the wallet balance api.
