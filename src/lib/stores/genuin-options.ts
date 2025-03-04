@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
+import { getUrlForReaction } from '../utils'
 
 export type VideoSizeBoxType = {
   width: number
@@ -189,7 +190,19 @@ const initialState: StateType = {
   isSafari: false,
   userHasFocus: true,
   parentUrl: '',
-  config: {} as any,
+  config: {
+    reactions: {
+      keys: {
+        comment_selected: { svg: getUrlForReaction('spark', true, true), png: '' },
+        comment_unselected: { svg: getUrlForReaction('spark', false, true), png: '' },
+        feed_selected: { svg: getUrlForReaction('spark', true, false), png: '' },
+        feed_unselected: { svg: getUrlForReaction('spark', false, false), png: '' },
+      },
+      suffix: 'to',
+      title: 'react',
+      type: 'default',
+    },
+  } as any,
   notificationCount: -1,
   walletBalance: 0,
   isLoading: true,
