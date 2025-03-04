@@ -57,8 +57,8 @@ export function KsToCbWeb() {
             </p>
             <p className="text-center text-body-1-med">
               Invite others to join your {brandName} community, share engaging content, and{' '}
-              {reactionTitle + ' ' + reactionSuffix}
-              meaningful conversations to make connections and foster intellectual dialogue.
+              {reactionTitle + ' ' + reactionSuffix} meaningful conversations to make connections and foster
+              intellectual dialogue.
             </p>
             <br />
           </div>
