@@ -24,8 +24,8 @@ export function KsToCbSubdomain() {
   const { brandName, user, reactionSuffix, reactionTitle } = useGenuinOptions((state) => ({
     brandName: state.config?.name ? state.config?.name : 'Genuin',
     user: state.user,
-    reactionSuffix: state.config?.reactions?.suffix,
-    reactionTitle: state.config?.reactions.title,
+    reactionSuffix: state.config.reactions?.suffix,
+    reactionTitle: state.config.reactions.title,
   }))
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -87,7 +87,7 @@ export function KsToCbSubdomain() {
           <div className="flex flex-col items-center gap-2">
             <CommunityDiscussion02 className="h-40 fill-primary" />
             <p className="text-center text-title-1-bold">
-              Make Connections & {reactionTitle ? toTitleCase(reactionTitle) + ' ' + reactionSuffix : ''} Dialogues
+              Make Connections & {toTitleCase(reactionTitle) + ' ' + reactionSuffix} Dialogues
             </p>
             <p className="text-center text-body-1-med">
               Invite others to join your {brandName} community, share engaging content, and{' '}

@@ -6,8 +6,8 @@ import Link from 'next/link'
 
 export function GetNotificationAttributedText({ notification }: { notification: any }): JSX.Element {
   const { user, reactionSuffix, reactionTitle } = useGenuinOptions((state) => ({
-    reactionSuffix: state.config?.reactions?.suffix ?? '',
-    reactionTitle: state.config?.reactions?.title ?? '',
+    reactionSuffix: state.config.reactions.suffix,
+    reactionTitle: state.config.reactions.title,
     user: state.user,
   }))
   const agoTimeString = <span className="text-body-1-demi text-tertiary">{getTimeAgo(notification?.created_at)}</span>

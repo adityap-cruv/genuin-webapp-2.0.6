@@ -46,7 +46,7 @@ const TABS_TRIGGER_CLASS =
 
 export function HowItWorks() {
   const [flowType, setFlowType] = useState<'rewards' | 'cash'>('rewards')
-  const { reactionTitle } = useGenuinOptions(useShallow((state) => ({ reactionTitle: state.config?.reactions.title })))
+  const { reactionTitle } = useGenuinOptions(useShallow((state) => ({ reactionTitle: state.config.reactions.title })))
 
   return (
     <ModalShell>
@@ -74,7 +74,7 @@ export function HowItWorks() {
           shop.
         </p>
         <div className="h-[40vh] overflow-auto">
-          {HOW_IT_WORKS(reactionTitle ?? '')[flowType].map((item, index) => {
+          {HOW_IT_WORKS(reactionTitle)[flowType].map((item, index) => {
             return (
               <div key={index} className="bg-white flex items-center pb-8">
                 <div className="mr-4 flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-full bg-tertiary-200">
