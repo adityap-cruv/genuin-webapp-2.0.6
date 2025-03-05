@@ -15,8 +15,8 @@ export function Layout(props: any) {
           'flex w-full overflow-clip px-0 2xl:container xl:px-10 2xl:px-0',
           showNavbar ? 'h-body' : 'h-full'
         )}>
-        <SideBar />
-        <section id="root-element" className="relative flex w-full flex-col">
+        <SideBar isCollapsed={!!props.isCollapsed} />
+        <section id="root-element" className="relative flex w-full min-w-0 flex-1 flex-col ">
           {props.children}
         </section>
       </section>

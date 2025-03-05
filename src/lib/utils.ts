@@ -3,10 +3,10 @@ import { axiosInstance } from '@/lib/api/instance'
 import { type ClassValue, clsx } from 'clsx'
 import { createCipheriv } from 'crypto'
 import { twMerge } from 'tailwind-merge'
-import { useGenuinOptions } from './stores/genuin-options'
+import { type ConfigType, useGenuinOptions } from './stores/genuin-options'
 import { AuthenticationModal } from '@components/common/modals/authentication'
 import { type ReactNode } from 'react'
-import { MOBILE_DOWNLOAD_APP_LINK, PROTECTED_ROUTES } from './constants'
+import { INDUSTRY, type IndustryName, PROTECTED_ROUTES, MOBILE_DOWNLOAD_APP_LINK } from './constants'
 import { type CommunityUserRoleType } from './schemas/roles'
 import Analytics from '@/services/analytics'
 
@@ -430,6 +430,22 @@ export function mapCommunityUserRole(role?: number | null, isRequested?: boolean
 
 export function getYear() {
   return new Date().getFullYear()
+}
+
+export function getIndustryName(industryType: number | undefined): IndustryName {
+  let industryName: IndustryName =
+    (Object.keys(INDUSTRY) as IndustryName[]).find((key) => INDUSTRY[key] === industryType) ?? 'Default'
+
+  if (!['Food', 'Healthcare', 'Fintech'].includes(industryName)) {
+    industryName = 'Default'
+  }
+
+  return industryName
+}
+export function getDataForIndustry(config: ConfigType | undefined, embedSource: any) {
+  type IndustryName = keyof (typeof embedSource)[number]
+  const industryName = getIndustryName(config?.industry_type) as IndustryName
+  return embedSource.find((item: Record<string, any>) => Object.keys(item).includes(industryName as string))?.[industryName as string]
 }
 
 export function getMobileAppUrl() {

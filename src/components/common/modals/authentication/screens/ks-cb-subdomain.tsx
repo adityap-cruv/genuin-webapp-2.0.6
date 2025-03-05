@@ -24,7 +24,7 @@ export function KsToCbSubdomain() {
   const { brandName, user, reactionSuffix, reactionTitle } = useGenuinOptions((state) => ({
     brandName: state.config?.name ? state.config?.name : 'Genuin',
     user: state.user,
-    reactionSuffix: state.config.reactions.suffix,
+    reactionSuffix: state.config.reactions?.suffix,
     reactionTitle: state.config.reactions.title,
   }))
   const [loading, setLoading] = useState(false)
