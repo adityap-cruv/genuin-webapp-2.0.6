@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
+import { getUrlForReaction } from '../utils'
 
 export type VideoSizeBoxType = {
   width: number
@@ -51,6 +52,80 @@ type RewardPointConfig = {
   repost: number
 }
 
+type EmbedCustomization = {
+  dimensions: {
+    width: number
+    height: number
+  }
+  cta_button?: {
+    text: string
+    url: string
+  }
+  enable_engagement_tools?: {
+    repost: boolean
+    spark: boolean
+    comment: boolean
+    share: boolean
+  }
+  enable_redirection_tools?: {
+    community: boolean
+    group: boolean
+    user: boolean
+  }
+  links?: {
+    is_show_links: boolean
+    position: 'outside' | 'overlay'
+  }
+  carousel_style?: string
+  autoplay?: boolean
+  heading?: string
+  sub_heading?: string
+  is_carousel_icon?: boolean
+  is_floating_view?: boolean
+  is_expanded_view?: boolean
+  is_show_username?: boolean
+  is_show_view_count?: boolean
+  is_enable_engagement_tools?: boolean
+  is_enable_redirection?: boolean
+  is_loop_video?: boolean
+  is_show_social_interaction_data?: boolean
+  show_side_panel?: boolean
+  show_join_community_button?: boolean
+  show_community_share_button?: boolean
+  community_ids?: string[]
+  community_loop_ids?: string[]
+}
+
+type Embed = {
+  _id: string
+  name: string
+  style: 'carousel' | 'feed'
+  type: string
+  brand_id: number
+  is_default: boolean
+  customization: EmbedCustomization
+  __v: number
+}
+type ReactionKey = {
+  png: string
+  svg: string
+}
+
+type ReactionKeys = {
+  comment_selected: ReactionKey
+  comment_unselected: ReactionKey
+  feed_selected: ReactionKey
+  feed_unselected: ReactionKey
+  // feed_animate: ReactionKey
+}
+
+type ReactionType = {
+  type: string
+  title: string
+  suffix: string
+  keys: ReactionKeys
+}
+
 export type ConfigType = {
   brand_id: string
   created_at: string
@@ -73,7 +148,12 @@ export type ConfigType = {
   web_cta: 'app' | 'login' | 'both'
   privacy_policy?: string
   terms_and_condition?: string
-} | null
+  industry_type?: number
+  default_embeds?: Embed[]
+  api_key?: string
+  show_become_creator: boolean
+  reactions: ReactionType
+}
 
 export type User = {
   bio?: string
@@ -167,7 +247,19 @@ const initialState: StateType = {
   isSafari: false,
   userHasFocus: true,
   parentUrl: '',
-  config: null,
+  config: {
+    reactions: {
+      keys: {
+        comment_selected: { svg: getUrlForReaction('spark', true, true), png: '' },
+        comment_unselected: { svg: getUrlForReaction('spark', false, true), png: '' },
+        feed_selected: { svg: getUrlForReaction('spark', true, false), png: '' },
+        feed_unselected: { svg: getUrlForReaction('spark', false, false), png: '' },
+      },
+      suffix: 'to',
+      title: 'react',
+      type: 'default',
+    },
+  } as any,
   notificationCount: -1,
   walletBalance: 0,
   isLoading: true,

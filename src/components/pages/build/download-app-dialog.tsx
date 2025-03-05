@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useEffect } from 'react'
 import { Button } from '@components/ui/button'
-import axios from 'axios'
+import { axiosInstance } from '@/lib/api/instance'
 import { Countries } from '../../../content/countries'
 import { FlagIcon, type FlagIconCode } from 'react-flag-kit' // Import Flag from react-flag-kit
 import { Dialog, DialogTrigger, DialogContent } from '@components/ui/dialog'
@@ -35,8 +35,8 @@ export function DownloadAppDialog({ children }: Props) {
     useShallow((state) => ({
       isMobile: state.isMobile,
       links: {
-        appStoreLink: state.config?.integrations.sdk.ios.appstore_link,
-        playStoreLink: state.config?.integrations.sdk.android.playstore_link,
+        appStoreLink: state.config?.integrations?.sdk.ios.appstore_link,
+        playStoreLink: state.config?.integrations?.sdk.android.playstore_link,
       },
       privacyPolicy: state.config?.privacy_policy,
       terms: state.config?.terms_and_condition,
@@ -167,7 +167,7 @@ function DownloadAppForm() {
       setIsLoading(true)
 
       try {
-        const res = await axios.post(process.env.NEXT_PUBLIC_API_URL + '/api/v3/send_download_link', payload)
+        const res = await axiosInstance.post(process.env.NEXT_PUBLIC_API_URL + '/api/v3/send_download_link', payload)
 
         if (res.data.code === 200) {
           void Analytics.track({

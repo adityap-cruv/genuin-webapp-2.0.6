@@ -6,7 +6,7 @@ import { type ReactNode } from 'react'
 import { cn, getYear } from '@lib/utils'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { PopularIcon, HomeIcon, LatestIcon, ProfileIcon, ExploreIcon } from '@icons/side-bar-icons'
+import { PopularIcon, HomeIcon, LatestIcon, ProfileIcon, ExploreIcon, EmbedIcon } from '@icons/side-bar-icons'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { RecentCommunities } from './recent-communities'
@@ -25,7 +25,6 @@ import { CloseIcon } from '@icons/close-icon'
 import Analytics from '@services/analytics'
 import { CategoryView, Stations } from '@components/common/category-view'
 import dynamic from 'next/dynamic'
-import BecomeCbCard from '@/components/common/become-cb-card'
 import { LoginIcon } from '@icons/login-icon'
 import { VerifiedIcon } from '@icons/verified-icon'
 import { formatPhoneNumberIntl } from 'react-phone-number-input'
@@ -33,11 +32,18 @@ import { useState, useEffect } from 'react'
 import { Loader } from '@/components/ui/loader'
 import { SettingIcon } from '@icons/settings'
 import { CustomImage } from '@/components/custom/custom-image'
+// import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
 import GetAppButton from '@/components/common/get-app-button'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 
 const DownloadAppDialog = dynamic(
   async () => await import('../download-app-dialog').then((comp) => comp.DownloadAppDialog)
+)
+
+const BecomeCbCard = dynamic(
+  async () => await import('@/components/common/become-cb-card').then((comp) => comp.default),
+  { ssr: false }
 )
 
 const navVariant = cva('sticky top-0 flex z-40 h-[76px] w-full items-center justify-between px-4', {
@@ -61,17 +67,29 @@ type Props = {
 } & VariantProps<typeof navVariant>
 
 export function TopBar({ variant = 'light', className, showClose = false, onClose }: Props) {
-  const { user, brandName, notificationsCount, isClaimed, brandLogo, webCTA, privacyPolicy, termsAndCondition } =
-    useGenuinOptions((state) => ({
-      user: state.user,
-      brandName: state.config?.name ? state.config?.name : 'Genuin',
-      notificationsCount: state.notificationCount,
-      isClaimed: state.config?.is_claimed,
-      brandLogo: state.config?.logo,
-      webCTA: state.webCTA,
-      privacyPolicy: state.config?.privacy_policy,
-      termsAndCondition: state.config?.terms_and_condition,
-    })) // If variant is transparent than we have removed show download button.
+  const {
+    user,
+    brandName,
+    brandId,
+    notificationsCount,
+    isClaimed,
+    brandLogo,
+    webCTA,
+    privacyPolicy,
+    termsAndCondition,
+    showBecomeACreator,
+  } = useGenuinOptions((state) => ({
+    user: state.user,
+    brandName: state.config?.name ? state.config?.name : 'Genuin',
+    brandId: state.brandId,
+    notificationsCount: state.notificationCount,
+    isClaimed: state.config?.is_claimed,
+    brandLogo: state.config?.logo,
+    webCTA: state.webCTA,
+    privacyPolicy: state.config?.privacy_policy,
+    termsAndCondition: state.config?.terms_and_condition,
+    showBecomeACreator: state.config?.show_become_creator ?? true,
+  })) // If variant is transparent than we have removed show download button.
   // const showDownloadButton = variant !== 'transparent'
   // const searchParams = useSearchParams()
 
@@ -83,9 +101,11 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
           webCTA={webCTA}
           user={user}
           brandName={brandName}
+          brandId={brandId}
           isClaimed={isClaimed}
           privacyPolicy={privacyPolicy}
           termsAndCondition={termsAndCondition}
+          showBecomeACreator={showBecomeACreator}
         />
         {brandLogo && (
           <Link href={{ pathname: PATH_NAME.home() }}>
@@ -151,19 +171,23 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
 function Menu({
   variant = 'light',
   brandName,
+  brandId,
   user,
   isClaimed,
   webCTA,
   privacyPolicy,
   termsAndCondition,
+  showBecomeACreator,
 }: {
   variant: 'dark' | 'light' | 'transparent' | null
   brandName: string
+  brandId: string
   user?: User
   isClaimed?: boolean
   webCTA: 'app' | 'login' | 'both'
   privacyPolicy?: string
   termsAndCondition?: string
+  showBecomeACreator: boolean
 }) {
   const pathName = usePathname()
   const { status } = useSession()
@@ -220,6 +244,36 @@ function Menu({
             <ExploreIcon isActive={pathName === PATH_NAME.explore()} />
           </MenuItem>
         </Link>
+        {brandId?.toString() !== '99' && (
+          <Accordion type="single" collapsible>
+            <AccordionItem value={'Embed'} className="border-none">
+              <AccordionTrigger className="p-0">
+                <MenuItem brandName={brandName} title="Embed Page" isActive={pathName.includes('/embed')}>
+                  <EmbedIcon isActive={pathName.includes('/embed')} />
+                </MenuItem>
+              </AccordionTrigger>
+              {[
+                { label: 'Home', path: 'home' },
+                { label: 'Search', path: 'search' },
+                { label: 'PDP', path: 'pdp' },
+                { label: 'Post Sales', path: 'post_sales' },
+                { label: 'Blogs', path: 'blogs' },
+              ].map(({ label, path }: { label: string; path: string }) => (
+                <AccordionContent key={path} className="p-0">
+                  <a href={PATH_NAME.embed(path)}>
+                    <p
+                      className={`p-1.5 pl-14 text-title-3-demi ${
+                        pathName === PATH_NAME.embed(path) && 'text-primary'
+                      }`}>
+                      {label}
+                    </p>
+                  </a>
+                </AccordionContent>
+              ))}
+            </AccordionItem>
+          </Accordion>
+        )}
+
         {user && (
           <>
             <Link
@@ -262,7 +316,7 @@ function Menu({
           </SheetClose>
         )}
         {(!isClaimed || user?.ksCbRequestStatus !== 3) && <hr className="border-1 my-2 border-monochrome-black/10" />}
-        {user?.ksCbRequestStatus !== 3 && (
+        {user?.ksCbRequestStatus !== 3 && showBecomeACreator && (
           <SheetClose className="my-4 lg:hidden">
             <BecomeCbCard />
           </SheetClose>

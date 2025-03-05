@@ -14,9 +14,10 @@ import { ActionItem } from './action-item'
 import { RepostModal } from '@components/common/modals/repost'
 import { repostDeepLink } from '@/lib/get-deeplink'
 import { useWalletBalanceHandler } from '@/services/wallet-handler'
-import { Spark } from './spark'
 import { usePlayerControlStore } from '../../player-control-store'
 import { useShallow } from 'zustand/react/shallow'
+import { Reaction } from '@/components/common/reaction'
+import { useFeedListContext } from '@/components/providers/feed-provider'
 
 type DesktopActionsProps = {
   sparkCount: number
@@ -43,6 +44,7 @@ export function Desktop({
   isSparked, // isPostAllowed,
   commentCount,
 }: DesktopActionsProps) {
+  const { updateSparkStatus } = useFeedListContext()
   const { handleWalletBalance } = useWalletBalanceHandler()
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
@@ -108,12 +110,15 @@ export function Desktop({
           }}>
           <Image src={icRepost} alt="repost" height={32} width={32} />
         </ActionItem>
-        <Spark
-          isSparked={isSparked}
+        <Reaction
+          isSparked={isSparked ?? false}
           sparkCount={sparkCount}
-          videoId={videoId}
+          contentId={videoId}
           shareUrl={shareUrl}
           videoSlug={videoSlug}
+          onSparkChange={(isSparked) => {
+            updateSparkStatus(videoId, isSparked)
+          }}
         />
         {isFullScreen && (
           <div>

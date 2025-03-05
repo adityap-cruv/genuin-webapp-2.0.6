@@ -128,27 +128,32 @@ export async function fetchVideoMetadata(videoSlug: string) {
     })
 }
 
-// TODO: Figure out what is type here.
-export async function videoSpark(contentId: string, type: number, spark: boolean) {
+const TYPE_MAPPING = {
+  VIDEO: 2,
+  COMMENT: 3,
+}
+/**
+ *
+ * @param contentId comment/video id
+ * @param type video or comment.
+ * @param reaction reacted or not.
+ * @returns
+ */
+export async function videoSpark(contentId: string, type: 'VIDEO' | 'COMMENT', reaction: boolean) {
   return await axiosInstance
-    .post(
-      '/api/v3/spark',
-      {
-        content_id: contentId,
-        type,
-        spark,
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    )
+    .post('/api/v3/spark', {
+      content_id: contentId,
+      type: TYPE_MAPPING[type],
+      spark: reaction,
+    })
     .then((res) => {
-      return { code: res.status, data: res.data.data }
+      if (res.status === 200) {
+        return true
+      }
+      return false
     })
     .catch((e) => {
-      return { code: Number(e.response.data.code) }
+      return false
     })
 }
 

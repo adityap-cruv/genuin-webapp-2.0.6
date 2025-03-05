@@ -26,8 +26,8 @@ export function DownloadAppDialog() {
       brandLogo: state.config?.logo,
       isMobile: state.isMobile,
       links: {
-        appStoreLink: state.config?.integrations.sdk.ios.appstore_link,
-        playStoreLink: state.config?.integrations.sdk.android.playstore_link,
+        appStoreLink: state.config?.integrations?.sdk.ios.appstore_link,
+        playStoreLink: state.config?.integrations?.sdk.android.playstore_link,
       },
       email: state.user?.email,
     }))

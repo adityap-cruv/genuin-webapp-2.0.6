@@ -1,0 +1,37 @@
+import { cn } from '@/lib/utils'
+import { type ComponentProps } from 'react'
+import { cva, type VariantProps } from 'class-variance-authority'
+
+const iconVariant = cva('', {
+  variants: {
+    variant: {
+      dark: 'fill-monochrome-black',
+      light: 'fill-monochrome-white',
+    },
+  },
+})
+
+type IconPropsType = ComponentProps<'svg'> & VariantProps<typeof iconVariant> & { variant?: 'light' | 'dark' | null }
+
+export function LinkedInIcon({ variant = 'dark', className, ...props }: IconPropsType) {
+  return (
+    <svg
+      className={cn('', className)}
+      width="41"
+      height="40"
+      viewBox="0 0 41 40"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}>
+      <path
+        d="M30.0999 29.5999V22.5679C30.0999 19.1119 29.3559 16.4719 25.3239 16.4719C23.3799 16.4719 22.0839 17.5279 21.5559 18.5359H21.5079V16.7839H17.6919V29.5999H21.6759V23.2399C21.6759 21.5599 21.9879 19.9519 24.0519 19.9519C26.0919 19.9519 26.1159 21.8479 26.1159 23.3359V29.5759H30.0999V29.5999Z"
+        className={cn(iconVariant({ variant }), className)}
+      />
+      <path d="M11.2118 16.7839H15.1958V29.5999H11.2118V16.7839Z" className={cn(iconVariant({ variant }), className)} />
+      <path
+        d="M13.2039 10.3999C11.9319 10.3999 10.8999 11.4319 10.8999 12.7039C10.8999 13.9759 11.9319 15.0319 13.2039 15.0319C14.4759 15.0319 15.5079 13.9759 15.5079 12.7039C15.5079 11.4319 14.4759 10.3999 13.2039 10.3999Z"
+        className={cn(iconVariant({ variant }), className)}
+      />
+    </svg>
+  )
+}
