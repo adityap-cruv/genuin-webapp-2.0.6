@@ -70,6 +70,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
   const {
     user,
     brandName,
+    brandId,
     notificationsCount,
     isClaimed,
     brandLogo,
@@ -80,6 +81,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
   } = useGenuinOptions((state) => ({
     user: state.user,
     brandName: state.config?.name ? state.config?.name : 'Genuin',
+    brandId: state.brandId,
     notificationsCount: state.notificationCount,
     isClaimed: state.config?.is_claimed,
     brandLogo: state.config?.logo,
@@ -99,6 +101,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
           webCTA={webCTA}
           user={user}
           brandName={brandName}
+          brandId={brandId}
           isClaimed={isClaimed}
           privacyPolicy={privacyPolicy}
           termsAndCondition={termsAndCondition}
@@ -168,6 +171,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
 function Menu({
   variant = 'light',
   brandName,
+  brandId,
   user,
   isClaimed,
   webCTA,
@@ -177,6 +181,7 @@ function Menu({
 }: {
   variant: 'dark' | 'light' | 'transparent' | null
   brandName: string
+  brandId: string
   user?: User
   isClaimed?: boolean
   webCTA: 'app' | 'login' | 'both'
@@ -239,31 +244,35 @@ function Menu({
             <ExploreIcon isActive={pathName === PATH_NAME.explore()} />
           </MenuItem>
         </Link>
-        <Accordion type="single" collapsible>
-          <AccordionItem value={'Embed'} className="border-none">
-            <AccordionTrigger className="p-0">
-              <MenuItem brandName={brandName} title="Embed Page" isActive={pathName.includes('/embed')}>
-                <EmbedIcon isActive={pathName.includes('/embed')} />
-              </MenuItem>
-            </AccordionTrigger>
-            {[
-              { label: 'Home', path: 'home' },
-              { label: 'Search', path: 'search' },
-              { label: 'PDP', path: 'pdp' },
-              { label: 'Post Sales', path: 'post_sales' },
-              { label: 'Blogs', path: 'blogs' },
-            ].map(({ label, path }: { label: string; path: string }) => (
-              <AccordionContent key={path} className="p-0">
-                <a href={PATH_NAME.embed(path)}>
-                  <p
-                    className={`p-1.5 pl-14 text-title-3-demi ${pathName === PATH_NAME.embed(path) && 'text-primary'}`}>
-                    {label}
-                  </p>
-                </a>
-              </AccordionContent>
-            ))}
-          </AccordionItem>
-        </Accordion>
+        {brandId?.toString() !== '99' && (
+          <Accordion type="single" collapsible>
+            <AccordionItem value={'Embed'} className="border-none">
+              <AccordionTrigger className="p-0">
+                <MenuItem brandName={brandName} title="Embed Page" isActive={pathName.includes('/embed')}>
+                  <EmbedIcon isActive={pathName.includes('/embed')} />
+                </MenuItem>
+              </AccordionTrigger>
+              {[
+                { label: 'Home', path: 'home' },
+                { label: 'Search', path: 'search' },
+                { label: 'PDP', path: 'pdp' },
+                { label: 'Post Sales', path: 'post_sales' },
+                { label: 'Blogs', path: 'blogs' },
+              ].map(({ label, path }: { label: string; path: string }) => (
+                <AccordionContent key={path} className="p-0">
+                  <a href={PATH_NAME.embed(path)}>
+                    <p
+                      className={`p-1.5 pl-14 text-title-3-demi ${
+                        pathName === PATH_NAME.embed(path) && 'text-primary'
+                      }`}>
+                      {label}
+                    </p>
+                  </a>
+                </AccordionContent>
+              ))}
+            </AccordionItem>
+          </Accordion>
+        )}
 
         {user && (
           <>

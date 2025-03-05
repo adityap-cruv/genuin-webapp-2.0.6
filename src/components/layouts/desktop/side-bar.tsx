@@ -115,11 +115,13 @@ export function SideBar({ isCollapsed }: { isCollapsed?: boolean }) {
             <ExploreIcon isActive={pathName === PATH_NAME.explore()} />
           </Item>
         </Link>
-        <Link href={{ pathname: PATH_NAME.embed('home') }}>
-          <Item isCollapsed={isCollapsed} brandName={brandName} title="Embed" isActive={pathName.includes('/embed')}>
-            <EmbedIcon isActive={pathName.includes('/embed')} />
-          </Item>
-        </Link>
+        {brandId?.toString() !== '99' && (
+          <Link href={{ pathname: PATH_NAME.embed('home') }}>
+            <Item isCollapsed={isCollapsed} brandName={brandName} title="Embed" isActive={pathName.includes('/embed')}>
+              <EmbedIcon isActive={pathName.includes('/embed')} />
+            </Item>
+          </Link>
+        )}
         {user && (
           <>
             <Link href={{ pathname: PATH_NAME.notification() }}>
