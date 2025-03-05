@@ -18,7 +18,7 @@ export default function Page() {
   const { embedConfigs } = useEmbedSetup({ config })
 
   return (
-    <div className="w-full overflow-scroll px-5">
+    <div className="h-full w-full px-5">
       <EmbedNav />
       <BlogsSection blogSection={blogData?.blogSection} embedConfigs={embedConfigs} />
       <EmbedFooter />

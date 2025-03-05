@@ -1,6 +1,6 @@
 import { TopBar as MobileTopBar } from '@/components/layouts/mobile/top-bar'
 import { cookies } from 'next/headers'
-import { Layout } from '@/components/layouts/desktop/layout'
+import { EmbedLayout } from '@/components/layouts/desktop/embed-layout'
 
 export default function AppLayout(props: any) {
   const isMobile = cookies().get('device_type')?.value === 'mobile'
@@ -11,6 +11,6 @@ export default function AppLayout(props: any) {
       <section className="flex h-full w-full px-0 2xl:container xl:px-10 2xl:px-0">{props.children}</section>
     </main>
   ) : (
-    <Layout isCollapsed>{props.children}</Layout>
+    <EmbedLayout isCollapsed>{props.children}</EmbedLayout>
   )
 }

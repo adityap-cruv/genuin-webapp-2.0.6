@@ -1,6 +1,7 @@
 'use client'
 
 import { AppLogo } from '@/components/ui/app-logo'
+import { useGenuinOptions } from '@/lib/stores/genuin-options'
 import { PATH_NAME } from '@/lib/utils/constants/path'
 import { FacebookIcon } from '@images/embed/social-icons/facebook-icon'
 import { InstagramIcon } from '@images/embed/social-icons/instagram-icon'
@@ -18,6 +19,9 @@ const FOOTER_OPTIONS = [
 ]
 
 const EmbedFooter = () => {
+  const brandName = useGenuinOptions().config.name
+  const currentYear = new Date().getFullYear()
+
   return (
     <footer className="py-20">
       <div className="flex flex-col items-center gap-6">
@@ -53,7 +57,9 @@ const EmbedFooter = () => {
         </nav>
 
         {/* Copyright */}
-        <p className="text-body-1-med">© 2025 Genuin. All rights reserved.</p>
+        <p className="text-body-1-med">
+          © {currentYear} {brandName}. All rights reserved.
+        </p>
       </div>
     </footer>
   )

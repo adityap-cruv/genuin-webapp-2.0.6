@@ -19,16 +19,13 @@ const InvoiceSection = ({
               <p className="mb-4 text-title-1-bold">{invoiceSection?.subTitle}</p>
               <p className="text-new-h2">{invoiceSection?.title}</p>
             </div>
-            <div
-              className="rounded-xl"
-              style={{
-                boxShadow: '0px 8px 24px rgba(0, 0, 0, 0.1)',
-              }}>
+            <div className="rounded-xl">
               <MultiEmbed
                 dataEmbedId={`${embedConfigs['Post-Sales Embed'].embedId}`}
                 dataEmbedApiKey={embedConfigs['Post-Sales Embed'].embedApiKey}
                 style={{
                   height: '400px',
+                  padding: '8px',
                 }}
               />
             </div>
