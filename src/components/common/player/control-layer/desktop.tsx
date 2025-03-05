@@ -10,6 +10,7 @@ import { PauseIcon } from '@icons/player-controls/pause-icon'
 import { AnimatedMuteIcon } from './animated-mute-icon'
 import { ExpandIcon } from '@icons/player-controls/expand-icon'
 import { CollapseIcon } from '@icons/player-controls/collapse-icon'
+import Analytics from '@/services/analytics'
 
 type DesktopProps = {
   sparkCount: number
@@ -115,6 +116,13 @@ export const Desktop = memo(function Desktop({
             onClick={(e) => {
               e.stopPropagation()
               toggleFullScreen()
+
+              void Analytics.track({
+                eventName: isFullScreen ? 'Video Minimized' : 'Video Maximized',
+                properties: {
+                  video_id: videoId,
+                },
+              })
             }}
             className="flex h-12 w-12 flex-shrink-0 cursor-pointer items-center justify-center rounded-full bg-monochrome-black/40">
             {isFullScreen ? <CollapseIcon variant="light" /> : <ExpandIcon variant="light" />}

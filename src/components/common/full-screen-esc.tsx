@@ -1,7 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import Analytics from '@/services/analytics'
 
-const FullScreenEsc = ({ isFullScreen, toggleFullScreen }: { isFullScreen: boolean; toggleFullScreen: () => void }) => {
+const FullScreenEsc = ({
+  isFullScreen,
+  toggleFullScreen,
+  videoId,
+}: {
+  isFullScreen: boolean
+  toggleFullScreen: () => void
+  videoId: string
+}) => {
   const [showFullscreenMessage, setShowFullscreenMessage] = useState(false)
 
   useEffect(() => {
@@ -20,6 +29,12 @@ const FullScreenEsc = ({ isFullScreen, toggleFullScreen }: { isFullScreen: boole
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && isFullScreen) {
         toggleFullScreen()
+        void Analytics.track({
+          eventName: 'Video Minimized',
+          properties: {
+            video_id: videoId,
+          },
+        })
       }
     }
     document.addEventListener('keydown', handleKeyDown)
