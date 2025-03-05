@@ -29,6 +29,7 @@ import FullScreenSideButtons from '../../full-screen-side-buttons'
 import FullScreenVideoDetails from '../../full-screen-video-details'
 import { motion, AnimatePresence } from 'framer-motion'
 import { UAParser } from 'ua-parser-js'
+import FullScreenEsc from '../../full-screen-esc'
 
 type Props = {
   children?: React.ReactNode
@@ -218,18 +219,6 @@ function Content({
     }
   }, [])
 
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && isFullScreen) {
-        toggleFullScreen()
-      }
-    }
-    document.addEventListener('keydown', handleKeyDown)
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [isFullScreen])
-
   return (
     <>
       <div
@@ -260,10 +249,12 @@ function Content({
             <div
               style={{
                 width: isFullScreen ? undefined : sizeBox.modal.player.width,
-                height: isFullScreen ? '100vh' : sizeBox.modal.player.height,
+                height: isFullScreen ? '100%' : sizeBox.modal.player.height,
                 aspectRatio: isFullScreen ? '9 / 16' : undefined,
               }}
-              className="hide-scrollbar overflow-x-clip bg-red">
+              className={cn('hide-scrollbar relative flex flex-col overflow-x-clip', {
+                'w-full flex-row': !isFullScreen,
+              })}>
               <Swiper
                 onSwiper={(swiper) => {
                   swiperRef.current = swiper
@@ -297,9 +288,8 @@ function Content({
                 onActiveIndexChange={handleActiveIndexChange}
                 onSlideChange={handleSlideChange}
                 style={{
-                  width: isFullScreen ? undefined : sizeBox.modal.player.width,
+                  width: isFullScreen ? '100%' : sizeBox.modal.player.width,
                   height: isFullScreen ? '100%' : sizeBox.modal.player.height,
-                  aspectRatio: isFullScreen ? '9 / 16' : undefined,
                 }}>
                 {videos.map((_, index: number) => {
                   return (
@@ -352,6 +342,8 @@ function Content({
                   )
                 })}
               </Swiper>
+              {shouldShowIHeartDemo && isFullScreen && <IHeartDemo />}
+              {isFullScreen && <FullScreenEsc isFullScreen={isFullScreen} toggleFullScreen={toggleFullScreen} />}
             </div>
             {!isFullScreen && <DesktopDetails {...videos[currentIndex]} />}
             {isFullScreen && (
@@ -370,7 +362,7 @@ function Content({
             )}
           </div>
         </div>
-        {shouldShowIHeartDemo && renderIn === 'modal' && (
+        {shouldShowIHeartDemo && !isFullScreen && renderIn === 'modal' && (
           <div id="iframe-modal" style={{ height: '70px' }}>
             <IHeartDemo inModal />
           </div>

@@ -1,13 +1,11 @@
-import React, { useRef, useState, useMemo } from 'react'
-import { CommentBox } from './feed/desktop-details'
-import MentionInput from './comments/mention-input'
-import { type CommentListType } from '@/lib/schemas/loop/comment'
+import React, { useRef, useMemo } from 'react'
 import { type VideoPlayerModalType } from '@/lib/schemas/player/video'
 import { Dialog, DialogClose, DialogContent } from '@/components/ui/dialog'
 import { CloseIcon } from '@icons/close-icon'
 import { usePlayerControlStore } from './player/player-control-store'
 import { useShallow } from 'zustand/react/shallow'
 import { motion } from 'framer-motion'
+import CommentsLayout from './comments-layout'
 
 interface FullScreenCommentBoxProps {
   videos: VideoPlayerModalType[]
@@ -23,40 +21,24 @@ const FullScreenCommentBox = ({ videos, currentIndex, isMobileCommentView }: Ful
     }))
   )
   const scrollDivRef = useRef<HTMLDivElement>(null)
-  const [comments, setComments] = useState<CommentListType>([])
 
   const commentBoxContent = useMemo(
     () => (
       <>
-        <div ref={scrollDivRef} className="flex flex-col overflow-auto overflow-x-clip rounded-2xl">
-          <div className="sticky top-0 z-10">
-            <p className="border-b border-t border-tertiary-200 bg-monochrome-white px-4 py-3 text-title-3-demi">
-              Comments{' '}
-              {videos[currentIndex].video.commentCount !== 0 ? `(${videos[currentIndex].video.commentCount})` : ''}
-            </p>
-          </div>
-          <div className="h-full px-4 pt-2">
-            <CommentBox
-              videoId={videos[currentIndex].video.id}
-              slug={videos[currentIndex].video.slug}
-              videoShareUrl={videos[currentIndex].video.shareUrl}
-              parentRef={scrollDivRef}
-              setComments={setComments}
-              comments={comments}
-            />
-          </div>
+        <div
+          ref={scrollDivRef}
+          className="hide-scrollbar flex h-full flex-col overflow-hidden overflow-y-scroll rounded-2xl">
+          <CommentsLayout
+            community={videos[currentIndex].community}
+            loop={videos[currentIndex].loop}
+            video={videos[currentIndex].video}
+            owner={videos[currentIndex].owner}
+            scrollDivRef={scrollDivRef}
+          />
         </div>
-        <MentionInput
-          setComments={setComments}
-          videoId={videos[currentIndex].video.id}
-          loopId={videos[currentIndex].loop.id}
-          videoSlug={videos[currentIndex].video.slug}
-          communityId={videos[currentIndex].community.id}
-          className="rounded-2xl"
-        />
       </>
     ),
-    [comments, videos, currentIndex]
+    [videos, currentIndex]
   )
 
   return isMobileCommentView ? (

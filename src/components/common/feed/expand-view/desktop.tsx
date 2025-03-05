@@ -6,17 +6,15 @@ import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { FeedContextProvider, useFeedListContext } from '@/components/providers/feed-provider'
 import { Player } from '../../player'
 import { usePlayerControlStore } from '../../player/player-control-store'
-import { CommentBox } from '../desktop-details'
 import Analytics from '@/services/analytics'
 import { type CommunityUserRoleType } from '@/lib/schemas/roles'
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Actions } from '../../player/control-layer/actions'
 import { ChevronDown, ChevronUp } from 'lucide-react'
-import MentionInput from '../../comments/mention-input'
-import { type CommentListType } from '@/lib/schemas/loop/comment'
 import { type Swiper as SwiperType } from 'swiper/types'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Mousewheel, Keyboard } from 'swiper/modules'
+import FullScreenCommentBox from '../../full-screen-comment-box'
 type Props = {
   videos: VideoPlayerModalType[]
   /**
@@ -76,9 +74,25 @@ type ContentPropsType = { isInModal?: boolean; isFullScreen?: boolean; isComment
 
 function Content({ isInModal, isFullScreen, isCommentBoxOpen }: ContentPropsType) {
   const { videos, updateCurrentIndex, currentIndex } = useFeedListContext()
-  const scrollDivRef = useRef<HTMLDivElement>(null)
-  const [comments, setComments] = useState<CommentListType>([])
   const [swiperInstance, setSwiperInstance] = useState<SwiperType | null>(null)
+  const [isMobileCommentView, setIsMobileCommentView] = useState(window.innerWidth < 1280)
+
+  useEffect(() => {
+    let resizeTimeout: NodeJS.Timeout
+
+    const handleResize = () => {
+      clearTimeout(resizeTimeout)
+      resizeTimeout = setTimeout(() => {
+        setIsMobileCommentView(window.innerWidth < 1280)
+      }, 100) // Debounce effect
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => {
+      clearTimeout(resizeTimeout)
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [])
 
   const handleActiveIndexChange = useCallback(
     (swiper: SwiperType) => {
@@ -182,33 +196,7 @@ function Content({ isInModal, isFullScreen, isCommentBoxOpen }: ContentPropsType
         </div>
 
         {isCommentBoxOpen && (
-          <div className="relative aspect-reel h-full rounded-2xl bg-monochrome-white pb-16 pl-2">
-            <div ref={scrollDivRef} className="flex h-full flex-col overflow-auto overflow-x-clip rounded-2xl">
-              <div className="sticky top-0 z-10">
-                <p className="border-b border-t border-tertiary-200 bg-monochrome-white px-4 py-3 text-title-3-demi">
-                  Comments{' '}
-                  {videos[currentIndex].video.commentCount !== 0 ? `(${videos[currentIndex].video.commentCount})` : ''}
-                </p>
-              </div>
-              <div className="h-full px-4 pt-2">
-                <CommentBox
-                  videoId={videos[currentIndex].video.id}
-                  slug={videos[currentIndex].video.slug}
-                  videoShareUrl={videos[currentIndex].video.shareUrl}
-                  parentRef={scrollDivRef}
-                  setComments={setComments}
-                  comments={comments}
-                />
-              </div>
-            </div>
-            <MentionInput
-              setComments={setComments}
-              videoId={videos[currentIndex].video.id}
-              loopId={videos[currentIndex].loop.id}
-              videoSlug={videos[currentIndex].video.slug}
-              communityId={videos[currentIndex].community.id}
-            />
-          </div>
+          <FullScreenCommentBox videos={videos} currentIndex={currentIndex} isMobileCommentView={isMobileCommentView} />
         )}
       </div>
     </>
