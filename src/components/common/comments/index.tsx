@@ -3,7 +3,7 @@ import { getVideosComments } from '@lib/api/loop'
 import { Loader } from '@components/ui/loader'
 import { type CommentListType, type CommentType } from '@lib/schemas/loop/comment'
 import { CommentItem } from './comment-item'
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useMemo, useRef } from 'react'
 import { CommentIcon } from '@icons/comment-icon'
 import { getQueryKeyForVideoComments } from '@/lib/utils/keys'
 import { queryClient } from '@/components/providers/query-client-provider'
@@ -17,8 +17,6 @@ type Props = {
   videoId: string
   slug: string
   videoShareUrl: string
-  comments: CommentListType
-  setComments: (comments: CommentListType) => void
 }
 
 /**
@@ -51,12 +49,10 @@ export const updateCommentReactionData = (videoId: string, commentId: string, is
   })
 }
 
-function WithApi({ videoId, slug, videoShareUrl, comments, setComments }: Props) {
-  const { isLoading, data, isError, isFetchingNextPage, fetchNextPage } = getVideosComments(videoId)
+function WithApi({ videoId, slug, videoShareUrl }: Props) {
+  const { isLoading, data: commentsData, isError, isFetchingNextPage, fetchNextPage } = getVideosComments(videoId)
 
-  useEffect(() => {
-    if (data) setComments(data.pages.flatMap((item) => item.comments))
-  }, [data])
+  const comments = useMemo(() => commentsData?.pages.flatMap((page) => page.comments), [commentsData])
 
   const handleCommentReactionChange = useCallback((commentId: string, isReacted: boolean) => {
     updateCommentReactionData(videoId, commentId, isReacted)
@@ -69,22 +65,19 @@ function WithApi({ videoId, slug, videoShareUrl, comments, setComments }: Props)
       </div>
     )
   }
-  if (isError) {
-    throw new Error('Something went wrong!')
-  }
-  if (comments?.length === 0) return <NoComments />
+
+  if (isError || !comments || comments.length === 0) return <NoComments />
+
   return (
     <div className="h-full">
-      {comments && (
-        <CommentList
-          videoShareUrl={videoShareUrl}
-          slug={slug}
-          comments={comments}
-          isFetchingNextPage={isFetchingNextPage}
-          fetchNextPage={fetchNextPage}
-          onCommentReactionChange={handleCommentReactionChange}
-        />
-      )}
+      <CommentList
+        videoShareUrl={videoShareUrl}
+        slug={slug}
+        comments={comments}
+        isFetchingNextPage={isFetchingNextPage}
+        fetchNextPage={fetchNextPage}
+        onCommentReactionChange={handleCommentReactionChange}
+      />
     </div>
   )
 }
@@ -154,7 +147,6 @@ function CommentList({
 
 // without api component is only used in desktop-details.tsx.
 function WithoutApi({ comments, slug, videoShareUrl, onCommentReactionChange }: WithoutApiProps) {
-  // if (comments.length === 0) return <NoComments />
   return (
     <>
       {comments.map((item, index) => (

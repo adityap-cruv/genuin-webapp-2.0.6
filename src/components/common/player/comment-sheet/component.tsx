@@ -2,8 +2,6 @@ import { CommentSheet, CommentSheetContent } from '@components/custom/comment-sh
 import { CloseIcon } from '@icons/close-icon'
 import { useCommentSheetStore } from './store'
 import { Comments } from '@components/common/comments'
-import { useState } from 'react'
-import { type CommentListType } from '@lib/schemas/loop/comment'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import MentionInput from '../../comments/mention-input'
 
@@ -14,7 +12,6 @@ type Props = {
 }
 
 // TODO: remove comment sheet with general sheet because there is no difference between.
-// TODO: Here state Comment and setComments are bad they are causing multiple rerenders.
 // Sheet is only used in mobile component for now.
 export function Sheet({ commentCount, videoId, videoDetails }: Props) {
   const { isOpen, close, currentVideoId } = useCommentSheetStore((state) => ({
@@ -23,7 +20,6 @@ export function Sheet({ commentCount, videoId, videoDetails }: Props) {
     currentVideoId: state.currentVideoId,
   }))
   const shouldOpen = isOpen && currentVideoId === videoId
-  const [comments, setComments] = useState<CommentListType>([])
 
   return (
     <CommentSheet open={shouldOpen} modal={true}>
@@ -45,13 +41,10 @@ export function Sheet({ commentCount, videoId, videoDetails }: Props) {
               videoId={videoId}
               slug={videoDetails.video.slug}
               videoShareUrl={videoDetails.video.shareUrl}
-              comments={comments}
-              setComments={setComments}
             />
           </div>
         </div>
         <MentionInput
-          setComments={setComments}
           videoId={videoDetails.video.id}
           loopId={videoDetails.loop.id}
           videoSlug={videoDetails.video?.slug}

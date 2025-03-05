@@ -1,6 +1,5 @@
 import { type CommentListType, validateCommentList } from '@lib/schemas/loop/comment'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
-import axios from 'axios'
 import { axiosInstance } from './instance'
 import { validateLoopCohosts } from '@lib/schemas/loop/cohosts'
 import { validateLoopSubscribers } from '@lib/schemas/loop/subscribers'
