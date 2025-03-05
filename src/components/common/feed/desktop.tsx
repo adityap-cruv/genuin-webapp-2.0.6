@@ -281,7 +281,13 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
             {shouldShowIHeartDemo && isFullScreen && <IHeartDemo />}
             {!isFullScreen && <DesktopDetails {...videos[currentIndex]} />}
 
-            {isFullScreen && <FullScreenEsc isFullScreen={isFullScreen} toggleFullScreen={toggleFullScreen} />}
+            {isFullScreen && (
+              <FullScreenEsc
+                isFullScreen={isFullScreen}
+                toggleFullScreen={toggleFullScreen}
+                videoId={videos[currentIndex].video.id}
+              />
+            )}
           </div>
           {isFullScreen && (
             <div className="flex h-full flex-col justify-end p-4">

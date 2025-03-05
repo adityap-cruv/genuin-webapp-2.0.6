@@ -343,7 +343,13 @@ function Content({
                 })}
               </Swiper>
               {shouldShowIHeartDemo && isFullScreen && <IHeartDemo />}
-              {isFullScreen && <FullScreenEsc isFullScreen={isFullScreen} toggleFullScreen={toggleFullScreen} />}
+              {isFullScreen && (
+                <FullScreenEsc
+                  isFullScreen={isFullScreen}
+                  toggleFullScreen={toggleFullScreen}
+                  videoId={videos[currentIndex].video.id}
+                />
+              )}
             </div>
             {!isFullScreen && <DesktopDetails {...videos[currentIndex]} />}
             {isFullScreen && (
