@@ -117,7 +117,7 @@ export function getVideosComments(videoId: string) {
   return useInfiniteQuery({
     queryFn: async ({ pageParam }) => {
       if (!promise) {
-        promise = axios
+        promise = axiosInstance
           .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/comments', {
             params: {
               conversation_id: videoId,
