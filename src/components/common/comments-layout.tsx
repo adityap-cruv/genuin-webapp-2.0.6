@@ -5,7 +5,7 @@ import { type VideoPlayerModalType } from '@/lib/schemas/player/video'
 import { getVideosComments } from '@/lib/api/loop'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
 import { FeedShimmer } from './shimmers/feed-shimmer'
-import { Comments, NoComments } from './comments'
+import { Comments, NoComments, updateCommentReactionData } from './comments'
 
 type DesktopDetailsProps = VideoPlayerModalType & { scrollDivRef: React.RefObject<HTMLDivElement> }
 
@@ -93,6 +93,9 @@ function CommentBox({
           videoId={videoId}
           slug={slug}
           videoShareUrl={videoShareUrl}
+          onCommentReactionChange={(commentId, isReacted) => {
+            updateCommentReactionData(videoId, commentId, isReacted)
+          }}
         />
       </div>
     )
