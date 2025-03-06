@@ -1,6 +1,5 @@
 import { type CommentListType, validateCommentList } from '@lib/schemas/loop/comment'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
-import axios from 'axios'
 import { axiosInstance } from './instance'
 import { validateLoopCohosts } from '@lib/schemas/loop/cohosts'
 import { validateLoopSubscribers } from '@lib/schemas/loop/subscribers'
@@ -117,7 +116,7 @@ export function getVideosComments(videoId: string) {
   return useInfiniteQuery({
     queryFn: async ({ pageParam }) => {
       if (!promise) {
-        promise = axios
+        promise = axiosInstance
           .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/comments', {
             params: {
               conversation_id: videoId,
