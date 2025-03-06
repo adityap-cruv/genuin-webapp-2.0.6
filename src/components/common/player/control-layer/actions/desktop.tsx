@@ -1,4 +1,4 @@
-import { checkAndAppendHttps, openModal } from '@lib/utils'
+import { abbreviateNumber, checkAndAppendHttps, openModal } from '@lib/utils'
 import icShare from '@icons/player-controls/icon-share.svg'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
@@ -99,16 +99,24 @@ export function Desktop({
           }}>
           <Image src={icRepost} alt="repost" height={32} width={32} />
         </ActionItem>
-        <Reaction
-          isSparked={isSparked ?? false}
-          sparkCount={sparkCount}
-          contentId={videoId}
-          shareUrl={shareUrl}
-          videoSlug={videoSlug}
-          onSparkChange={(isSparked) => {
-            updateSparkStatus(videoId, isSparked)
-          }}
-        />
+        <div>
+          <ActionItem>
+            <Reaction
+              isSparked={isSparked ?? false}
+              sparkCount={sparkCount}
+              contentId={videoId}
+              shareUrl={shareUrl}
+              videoSlug={videoSlug}
+              showSparkCount={false}
+              onSparkChange={(isSparked) => {
+                updateSparkStatus(videoId, isSparked)
+              }}
+            />
+          </ActionItem>
+          <p className="flex justify-center text-body-1-demi text-monochrome-white">
+            {abbreviateNumber(sparkCount < 0 ? 0 : sparkCount)}
+          </p>
+        </div>
         <ActionItem
           title="Share Video!"
           onClick={async () => {

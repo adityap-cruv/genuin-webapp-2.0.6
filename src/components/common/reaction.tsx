@@ -1,7 +1,6 @@
 import { useWalletBalanceHandler } from '@/services/wallet-handler'
 import { useGenuinOptions } from '@/lib/stores/genuin-options'
 import { videoSpark } from '@/lib/api/video'
-import { ActionItem } from './player/control-layer/actions/action-item'
 import Analytics from '@/services/analytics'
 import { abbreviateNumber, cn, getUrlForReaction, openModal } from '@/lib/utils'
 import { sparkDeepLink } from '@/lib/get-deeplink'
@@ -13,6 +12,7 @@ type ReactionsComponentProps = {
   contentId: string
   shareUrl: string
   videoSlug: string
+  showSparkCount?: boolean
   iconHeight?: number
   iconWidth?: number
   /**
@@ -31,6 +31,7 @@ export function Reaction({
   forComment = false,
   iconHeight = 32,
   iconWidth = 32,
+  showSparkCount = true,
   className,
   onClick,
   onSparkChange,
@@ -107,8 +108,7 @@ export function Reaction({
   }, [config?.reactions, isSparked, forComment])
 
   return (
-    <ActionItem
-      title="React on the video!"
+    <div
       className={cn(
         'flex cursor-pointer flex-col items-center text-monochrome-white',
         isLoading && 'pointer-events-none',
@@ -126,7 +126,9 @@ export function Reaction({
         width={iconWidth}
         alt="reaction"
       />
-      <p className="text-body-1-demi">{abbreviateNumber(sparkCount < 0 ? 0 : sparkCount)}</p>
-    </ActionItem>
+      {showSparkCount && (
+        <p className="flex  justify-center text-body-1-demi">{abbreviateNumber(sparkCount < 0 ? 0 : sparkCount)}</p>
+      )}
+    </div>
   )
 }
