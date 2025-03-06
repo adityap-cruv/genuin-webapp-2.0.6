@@ -63,7 +63,7 @@ function CommentBox({
     return <FeedShimmer.comments iterations={2} />
   }
 
-  if (isError || !comments || comments.length)
+  if (isError || !comments || comments.length === 0)
     return (
       <div className="h-full pb-20">
         <NoComments />
