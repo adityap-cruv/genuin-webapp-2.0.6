@@ -103,7 +103,9 @@ export function useEmbedSetup({ config }: { config: ConfigType | undefined }) {
         embedApiKey: config.api_key,
       }
     })
-    return Object.keys(configs).length > 0 ? configs : defaultEmbedConfigs
+
+    // Merge with default configs, ensuring all required keys are present
+    return Object.keys(configs).length > 0 ? { ...defaultEmbedConfigs, ...configs } : defaultEmbedConfigs
   }, [config])
 
   useEffect(() => {
