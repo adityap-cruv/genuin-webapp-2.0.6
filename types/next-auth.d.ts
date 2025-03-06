@@ -25,7 +25,14 @@ declare module 'next-auth' {
      */
     refreshToken?: string
     accessToken: string
-    ksCbRequestStatus?: number
+    /*
+     * 0 - Not requested
+     * 1 - Requested
+     * 2 - Approved
+     * 3 - Rejected
+     * 4 - Pending
+     */
+    ksCbRequestStatus: number
     /**
      * if user is brand user.
      */
