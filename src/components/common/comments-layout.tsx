@@ -1,6 +1,5 @@
-import React, { type RefObject, useEffect, useState } from 'react'
+import React, { type RefObject, useMemo } from 'react'
 import MentionInput from './comments/mention-input'
-import { type CommentListType } from '@/lib/schemas/loop/comment'
 import { type VideoPlayerModalType } from '@/lib/schemas/player/video'
 import { getVideosComments } from '@/lib/api/loop'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
@@ -10,8 +9,6 @@ import { Comments, NoComments, updateCommentReactionData } from './comments'
 type DesktopDetailsProps = VideoPlayerModalType & { scrollDivRef: React.RefObject<HTMLDivElement> }
 
 const CommentsLayout = ({ video, loop, community, owner, scrollDivRef }: DesktopDetailsProps) => {
-  const [comments, setComments] = useState<CommentListType>([])
-
   return (
     <>
       <div className="sticky top-0 z-10">
@@ -20,17 +17,9 @@ const CommentsLayout = ({ video, loop, community, owner, scrollDivRef }: Desktop
         </p>
       </div>
       <div className="h-full px-4 pt-2">
-        <CommentBox
-          videoId={video.id}
-          slug={video.slug}
-          videoShareUrl={video.shareUrl}
-          parentRef={scrollDivRef}
-          setComments={setComments}
-          comments={comments}
-        />
+        <CommentBox videoId={video.id} slug={video.slug} videoShareUrl={video.shareUrl} parentRef={scrollDivRef} />
       </div>
       <MentionInput
-        setComments={setComments}
         videoId={video.id}
         loopId={loop.id}
         videoSlug={video.slug}
@@ -46,15 +35,11 @@ function CommentBox({
   slug,
   videoShareUrl,
   parentRef,
-  setComments,
-  comments,
 }: {
   videoId: string
   slug: string
   videoShareUrl: string
   parentRef: RefObject<HTMLDivElement>
-  setComments: any
-  comments: any
 }) {
   const {
     data: commentPages,
@@ -65,11 +50,9 @@ function CommentBox({
     isLoading,
   } = getVideosComments(videoId)
 
-  useEffect(() => {
-    setComments(commentPages?.pages.flatMap((item) => item.comments))
-  }, [commentPages])
-
   const { scrollYProgress } = useScroll({ container: parentRef, layoutEffect: false })
+
+  const comments = useMemo(() => commentPages?.pages.flatMap((page) => page.comments), [commentPages])
 
   useMotionValueEvent(scrollYProgress, 'change', (value) => {
     value = Number(value.toFixed(1))
@@ -80,29 +63,29 @@ function CommentBox({
     return <FeedShimmer.comments iterations={2} />
   }
 
-  if (comments && comments?.length !== 0)
+  if (isError || !comments || comments.length)
     return (
-      <div className="h-full overflow-visible">
-        <Comments.withoutApi
-          comments={comments}
-          fetchNextPage={() => {}}
-          hasNextPage={hasNextPage}
-          isError={isError}
-          isFetchingNextPage={isFetchingNextPage}
-          isLoading={isLoading}
-          videoId={videoId}
-          slug={slug}
-          videoShareUrl={videoShareUrl}
-          onCommentReactionChange={(commentId, isReacted) => {
-            updateCommentReactionData(videoId, commentId, isReacted)
-          }}
-        />
+      <div className="h-full pb-20">
+        <NoComments />
       </div>
     )
 
   return (
-    <div className="h-full pb-20">
-      <NoComments />
+    <div className="h-full overflow-visible">
+      <Comments.withoutApi
+        comments={comments}
+        fetchNextPage={() => {}}
+        hasNextPage={hasNextPage}
+        isError={isError}
+        isFetchingNextPage={isFetchingNextPage}
+        isLoading={isLoading}
+        videoId={videoId}
+        slug={slug}
+        videoShareUrl={videoShareUrl}
+        onCommentReactionChange={(commentId, isReacted) => {
+          updateCommentReactionData(videoId, commentId, isReacted)
+        }}
+      />
     </div>
   )
 }
