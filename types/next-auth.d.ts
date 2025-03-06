@@ -91,7 +91,7 @@ declare module 'next-auth/jwt' {
        */
       refreshToken?: string
       accessToken: string
-      ksCbRequestStatus?: number
+      ksCbRequestStatus: number
       /**
        * if user is brand user.
        */
