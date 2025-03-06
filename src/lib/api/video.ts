@@ -218,26 +218,18 @@ export async function createComment(
   commentData: any
 ) {
   return await axiosInstance
-    .post(
-      '/api/v3/comment/create',
-      {
-        conversation_id: videoId,
-        chat_id: loopId,
-        type,
-        comment_text: commentText,
-        comment_data: JSON.stringify(commentData),
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    )
+    .post('/api/v3/comment/create', {
+      conversation_id: videoId,
+      chat_id: loopId,
+      type,
+      comment_text: commentText,
+      comment_data: JSON.stringify(commentData),
+    })
     .then((res) => {
-      return { code: res.status, data: res.data.data }
+      return { code: res.status, commentData: res.data.data }
     })
     .catch((e) => {
-      return { code: Number(e.response.data.code), data: null }
+      return { code: Number(e.response.data.code), commentData: null }
     })
 }
 

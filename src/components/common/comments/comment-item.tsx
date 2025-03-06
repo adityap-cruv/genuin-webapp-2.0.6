@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { getTimeAgo, tryJsonParse } from '@lib/utils'
 import { Reaction } from '../reaction'
+import { memo } from 'react'
 
 const CommentPlayer = dynamic(async () => await import('./video-player').then((comp) => comp.CommentPlayer))
 const AudioPlayer = dynamic(async () => await import('./audio-player').then((comp) => comp.AudioPlayer))
@@ -18,7 +19,12 @@ type CommentItemPropsType = {
   onCommentReactionChange: (isSparked: boolean) => void
 }
 
-export function CommentItem({ comment, videoShareUrl, slug, onCommentReactionChange }: CommentItemPropsType) {
+export const CommentItem = memo(function CommentItem({
+  comment,
+  videoShareUrl,
+  slug,
+  onCommentReactionChange,
+}: CommentItemPropsType) {
   const UI = Comment[comment.type]
   return (
     <div className="flex w-full flex-col gap-y-2 py-2 last:pb-20">
@@ -39,7 +45,7 @@ export function CommentItem({ comment, videoShareUrl, slug, onCommentReactionCha
         <Reaction
           isSparked={comment.is_sparked ?? false}
           shareUrl={videoShareUrl}
-          className="w-fit flex-row pt-2 !text-secondary [&_p]:!text-cap-1-med"
+          className="w-fit flex-row gap-1 pt-2 !text-secondary [&_p]:!text-cap-1-med"
           sparkCount={comment.no_of_sparks}
           contentId={comment.comment_id}
           videoSlug={slug}
@@ -53,7 +59,7 @@ export function CommentItem({ comment, videoShareUrl, slug, onCommentReactionCha
       </div>
     </div>
   )
-}
+})
 
 const Comment = {
   video({ comment }: { comment: CommentType }) {

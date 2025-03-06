@@ -8,14 +8,33 @@ import { commentDeepLink } from '@/lib/get-deeplink'
 import { openModal } from '@/lib/utils'
 import { CustomAvatar } from '@/components/custom/custom-avatar'
 import { type SelectedMention, type CommentMention } from '@/lib/schemas/player/comment'
+import { type getVideosComments } from '@/lib/api/loop'
+import { queryClient } from '@/components/providers/query-client-provider'
+import { getQueryKeyForVideoComments } from '@/lib/utils/keys'
+import { validateCommentDetails } from '@/lib/schemas/loop/comment'
+
+function prependComment(commentData: any, videoId: string) {
+  type QueryDataType = ReturnType<typeof getVideosComments>['data']
+  queryClient.setQueryData(getQueryKeyForVideoComments(videoId), (oldData: QueryDataType): QueryDataType => {
+    if (!oldData) return
+    return {
+      ...oldData,
+      pages: oldData.pages.map((page, index) => {
+        if (index === 0) {
+          return { ...page, comments: [commentData, ...page.comments] }
+        }
+        return page
+      }),
+    }
+  })
+}
 
 const MentionInput: React.FC<{
-  setComments: any
   videoId: string
   loopId: string
   videoSlug: string
   communityId: string
-}> = ({ setComments, videoId, loopId, videoSlug, communityId }) => {
+}> = ({ videoId, loopId, videoSlug, communityId }) => {
   const { handleWalletBalance } = useWalletBalanceHandler()
   const { user } = useGenuinOptions((state) => ({
     user: state.user,
@@ -42,37 +61,12 @@ const MentionInput: React.FC<{
       setIsPosting(true)
       await handleWalletBalance({ action: 'comments', videoId, type: 'POST' })
       const commentData = convertCommentTextToArray(text, selectedMentions)
-      const newComment = {
-        owner: {
-          member_id: user?.id,
-          name: user?.name,
-          nickname: user?.nickname,
-          bio: user?.bio,
-          is_avatar: user?.isAvatar,
-          profile_image: user?.image,
-        },
-        chat_id: null,
-        conversation_id: null,
-        comment_id: null,
-        type: 'text',
-        url: null,
-        video_url_m3u8: null,
-        thumbnail: null,
-        link: null,
-        duration: null,
-        meta_data: null,
-        created_at: Date.now(),
-        no_of_views: 0,
-        is_read: false,
-        comment_text: text,
-        comment_data: JSON.stringify(commentData),
-        no_of_sparks: 0,
-        is_sparked: false,
-      }
 
       const response = await createComment(videoId, loopId, 3, text, commentData)
       if (response.code === 200) {
-        setComments((prev: any) => [newComment, ...prev])
+        if (response.commentData) {
+          prependComment(validateCommentDetails(response.commentData), videoId)
+        }
         setText('')
         setCaretPosition(0)
         setSelectedMentions([])
