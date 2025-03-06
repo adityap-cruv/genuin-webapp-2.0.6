@@ -1,5 +1,5 @@
 import { DesktopDetails } from './desktop-details'
-import { type ComponentProps, memo, useCallback, useEffect, useRef, useState } from 'react'
+import { type ComponentProps, memo, useCallback, useRef } from 'react'
 import { type Swiper as SwiperType } from 'swiper/types'
 import { cn } from '@lib/utils'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -15,14 +15,16 @@ import { Player } from '../player'
 import { KsGestureTypes } from '../ks-gestures-types'
 import { useGestureOverlay } from '@/hooks/use-gesture-overlay'
 import { Actions } from '../player/control-layer/actions'
-import FullScreenCommentBox from '../full-screen-comment-box'
-import FullScreenSideButtons from '../full-screen-side-buttons'
-import FullScreenVideoDetails from '../full-screen-video-details'
+import FullScreenSideButtons from '../expand-view/full-screen-side-buttons'
+import FullScreenVideoDetails from '../expand-view/full-screen-video-details'
+import FullScreenCommentBoxLayout from '../expand-view/full-screen-comment-box'
 import { UAParser } from 'ua-parser-js'
-import { motion, AnimatePresence } from 'framer-motion'
 import { IHeartDemo } from '@/components/layouts/desktop/iheart-demo'
 import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
-import FullScreenEsc from '../full-screen-esc'
+import FullScreenEsc from '../expand-view/full-screen-esc'
+import { Toaster } from '@/components/ui/toaster'
+import { AnimatePresence } from 'framer-motion'
+import { useIheartBorderState } from '@/hooks/use-iheart-border'
 
 type DesktopProps = {
   isLoading: boolean
@@ -84,7 +86,7 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
 
   // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   const sizeBox = customSizeBox || defaultSizeBox
-  const { shouldShowIHeartDemo } = useIHeartDemoStates()
+  const { shouldShowIHeartDemo, isIHeartPlaying } = useIHeartDemoStates()
   const { allowSlideNext, currentIndex, updateCurrentIndex, videos } = useFeedListContext()
   const { gestureOverlays, setGestureOverlay } = useGestureOverlay(currentIndex)
   const { muted, isFullScreen, isCommentBoxOpen, toggleFullScreen } = usePlayerControlStore(
@@ -95,12 +97,12 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
       toggleFullScreen: state.toggleFullScreen,
     }))
   )
-  const [isMobileCommentView, setIsMobileCommentView] = useState(window.innerWidth < 1280)
   const isWindows = new UAParser().getResult().os.name === 'Windows'
   const touchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const wheelTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const swiperRef = useRef<SwiperType | null>(null)
   const lastWheelTime = useRef<number>(0)
+  const showBorder = useIheartBorderState(!isIHeartPlaying && !muted && shouldShowIHeartDemo)
 
   const clearTimeouts = useCallback(() => {
     if (touchTimeoutRef.current) {
@@ -145,23 +147,6 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
     [clearTimeouts]
   )
 
-  useEffect(() => {
-    let resizeTimeout: NodeJS.Timeout
-
-    const handleResize = () => {
-      clearTimeout(resizeTimeout)
-      resizeTimeout = setTimeout(() => {
-        setIsMobileCommentView(window.innerWidth < 1280)
-      }, 100) // Debounce effect
-    }
-
-    window.addEventListener('resize', handleResize)
-    return () => {
-      clearTimeout(resizeTimeout)
-      window.removeEventListener('resize', handleResize)
-    }
-  }, [])
-
   if (!videos || videos.length === 0)
     return (
       <div className={cn('flex aspect-reel h-full items-center justify-center bg-tertiary-200', className)}>
@@ -187,6 +172,18 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
               height: '100%',
               aspectRatio: isFullScreen ? '9 / 16' : undefined,
             }}>
+            {isFullScreen && (
+              <div
+                style={{
+                  height: 'calc(100% - 75px)',
+                }}
+                className={cn(
+                  'pointer-events-none absolute z-10 w-full border-4 bg-transparent transition-all ease-in-out',
+                  { 'animated-border': showBorder },
+                  { 'border-transparent': !showBorder }
+                )}
+              />
+            )}
             <Swiper
               // PLAY_PAUSE gesture will end when the user takes action;
               onClick={() => {
@@ -310,26 +307,14 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
             <FullScreenSideButtons videos={videos} currentIndex={currentIndex} swiperInstance={swiperRef.current} />
           </div>
         )}
+
         {isFullScreen && (
           <AnimatePresence>
-            {isCommentBoxOpen && (
-              <motion.div
-                key="fullscreen-comment-box"
-                className="z-0 h-full"
-                initial={{ width: 0, opacity: 0 }}
-                animate={{ width: isMobileCommentView ? 0 : '25%', opacity: 1 }}
-                exit={{ width: 0, opacity: 0 }}
-                transition={{ duration: 0.4, ease: 'easeOut' }}>
-                <FullScreenCommentBox
-                  videos={videos}
-                  currentIndex={currentIndex}
-                  isMobileCommentView={isMobileCommentView}
-                />
-              </motion.div>
-            )}
+            {isCommentBoxOpen && <FullScreenCommentBoxLayout videos={videos} currentIndex={currentIndex} />}
           </AnimatePresence>
         )}
       </div>
+      <Toaster />
     </div>
   )
 }

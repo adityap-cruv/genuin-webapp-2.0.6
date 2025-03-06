@@ -8,6 +8,7 @@ import { useState } from 'react'
 import { useGenuinOptions } from '@/lib/stores/genuin-options'
 import { PATH_NAME } from '@/lib/utils/constants/path'
 import { usePathname } from 'next/navigation'
+import { useIheartBorderState } from '@/hooks/use-iheart-border'
 
 /**
  * This const is defined for iheart only don't modify it.
@@ -111,7 +112,7 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
   const isProgrammatic = useRef<{ play: boolean; pause: boolean }>({ play: false, pause: false })
   const [isReady, setIsReady] = useState(false)
   const [isPipOpen, setIsPipOpen] = useState(false)
-  const [showBorder, setShowBorder] = useState(false)
+  const showBorder = useIheartBorderState((isIHeartPlaying && isMobile) || (isIHeartPlaying && isFullScreen))
   const pathName = usePathname()
 
   useEffect(() => {
@@ -125,20 +126,6 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
       if (iframe.src !== audioUrls[communityIndex]) iframe.src = audioUrls[communityIndex]
     }
   }, [pathName])
-
-  useEffect(() => {
-    if (isIHeartPlaying) {
-      setShowBorder(true)
-
-      if (isMobile || isFullScreen) {
-        setTimeout(() => {
-          setShowBorder(false)
-        }, 5000)
-      }
-    } else {
-      setShowBorder(false)
-    }
-  }, [isIHeartPlaying])
 
   const play = useCallback(() => {
     if (!isReady) return

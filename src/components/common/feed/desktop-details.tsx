@@ -3,7 +3,6 @@ import { useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { DecorativeList } from '@components/custom/decorative-list'
-import { Toaster } from '@components/ui/toaster'
 import { getTimeAgo } from '@lib/utils'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { LockIcon } from '@icons/LockIcon'
@@ -15,7 +14,7 @@ import ShareButton from '@components/common/actions/ShareButton'
 import { useFeedListContext } from '../../providers/feed-provider'
 import { JoinCommunityButton } from '../join-community-button'
 import { getAudioUrlForCommunity, useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
-import CommentsLayout from '../comments-layout'
+import CommentsLayout from '../comments/comments-layout'
 
 type DesktopDetailsProps = VideoPlayerModalType
 // TODO: improve this component.
@@ -146,8 +145,6 @@ export function DesktopDetails({ loop, community, owner, video }: DesktopDetails
         )}
         <CommentsLayout community={community} loop={loop} video={video} owner={owner} scrollDivRef={scrollDivRef} />
       </div>
-
-      <Toaster />
     </div>
   )
 }

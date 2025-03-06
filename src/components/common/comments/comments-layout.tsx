@@ -1,10 +1,10 @@
 import React, { type RefObject, useMemo } from 'react'
-import MentionInput from './comments/mention-input'
+import MentionInput from './mention-input'
 import { type VideoPlayerModalType } from '@/lib/schemas/player/video'
 import { getVideosComments } from '@/lib/api/loop'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
-import { FeedShimmer } from './shimmers/feed-shimmer'
-import { Comments, NoComments, updateCommentReactionData } from './comments'
+import { FeedShimmer } from '../shimmers/feed-shimmer'
+import { Comments, NoComments, updateCommentReactionData } from '.'
 
 type DesktopDetailsProps = VideoPlayerModalType & { scrollDivRef: React.RefObject<HTMLDivElement> }
 

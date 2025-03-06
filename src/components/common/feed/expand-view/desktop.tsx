@@ -8,13 +8,17 @@ import { Player } from '../../player'
 import { usePlayerControlStore } from '../../player/player-control-store'
 import Analytics from '@/services/analytics'
 import { type CommunityUserRoleType } from '@/lib/schemas/roles'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Actions } from '../../player/control-layer/actions'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { type Swiper as SwiperType } from 'swiper/types'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Mousewheel, Keyboard } from 'swiper/modules'
-import FullScreenCommentBox from '../../full-screen-comment-box'
+
+/**
+ * This component is not in use right now, use it to directly open expand-view on click
+ */
+
 type Props = {
   videos: VideoPlayerModalType[]
   /**
@@ -75,24 +79,7 @@ type ContentPropsType = { isInModal?: boolean; isFullScreen?: boolean; isComment
 function Content({ isInModal, isFullScreen, isCommentBoxOpen }: ContentPropsType) {
   const { videos, updateCurrentIndex, currentIndex } = useFeedListContext()
   const [swiperInstance, setSwiperInstance] = useState<SwiperType | null>(null)
-  const [isMobileCommentView, setIsMobileCommentView] = useState(window.innerWidth < 1280)
-
-  useEffect(() => {
-    let resizeTimeout: NodeJS.Timeout
-
-    const handleResize = () => {
-      clearTimeout(resizeTimeout)
-      resizeTimeout = setTimeout(() => {
-        setIsMobileCommentView(window.innerWidth < 1280)
-      }, 100) // Debounce effect
-    }
-
-    window.addEventListener('resize', handleResize)
-    return () => {
-      clearTimeout(resizeTimeout)
-      window.removeEventListener('resize', handleResize)
-    }
-  }, [])
+  // const [isMobileCommentView, setIsMobileCommentView] = useState(window.innerWidth < 1280)
 
   const handleActiveIndexChange = useCallback(
     (swiper: SwiperType) => {
@@ -195,9 +182,9 @@ function Content({ isInModal, isFullScreen, isCommentBoxOpen }: ContentPropsType
           </div>
         </div>
 
-        {isCommentBoxOpen && (
+        {/* {isCommentBoxOpen && (
           <FullScreenCommentBox videos={videos} currentIndex={currentIndex} isMobileCommentView={isMobileCommentView} />
-        )}
+        )} */}
       </div>
     </>
   )

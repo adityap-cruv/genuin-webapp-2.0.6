@@ -18,18 +18,19 @@ import Analytics from '@/services/analytics'
 import { type CommunityUserRoleType } from '@/lib/schemas/roles'
 import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
 import { IHeartDemo } from '@/components/layouts/desktop/iheart-demo'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { CloseIcon } from '@icons/close-icon'
 import { type Swiper as SwiperType } from 'swiper/types'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Mousewheel, Keyboard, Virtual } from 'swiper/modules'
 import { Actions } from '../../player/control-layer/actions'
-import FullScreenCommentBox from '../../full-screen-comment-box'
-import FullScreenSideButtons from '../../full-screen-side-buttons'
-import FullScreenVideoDetails from '../../full-screen-video-details'
-import { motion, AnimatePresence } from 'framer-motion'
+import FullScreenSideButtons from '../../expand-view/full-screen-side-buttons'
+import FullScreenVideoDetails from '../../expand-view/full-screen-video-details'
+import FullScreenCommentBoxLayout from '../../expand-view/full-screen-comment-box'
+import { AnimatePresence } from 'framer-motion'
 import { UAParser } from 'ua-parser-js'
-import FullScreenEsc from '../../full-screen-esc'
+import FullScreenEsc from '../../expand-view/full-screen-esc'
+import { useIheartBorderState } from '@/hooks/use-iheart-border'
 
 type Props = {
   children?: React.ReactNode
@@ -85,7 +86,7 @@ export function Desktop({
   onCommunityJoin,
 }: Props) {
   const { setRenderIn: setIHeartDemoRenderIn } = useIHeartDemoStates()
-  const { mute, isFullScreen, isCommentBoxOpen, toggleFullScreen } = usePlayerControlStore()
+  const { mute, isFullScreen, isCommentBoxOpen, toggleFullScreen, muted } = usePlayerControlStore()
 
   // This is to show the iheart demo in the modal.
   useEffect(() => {
@@ -126,6 +127,7 @@ export function Desktop({
                 isFullScreen={isFullScreen}
                 isCommentBoxOpen={isCommentBoxOpen}
                 toggleFullScreen={toggleFullScreen}
+                muted={muted}
               />
             </FeedContextProvider>
           )}
@@ -142,6 +144,7 @@ type ContentPropsType = {
   isFullScreen: boolean
   isCommentBoxOpen: boolean
   toggleFullScreen: () => void
+  muted?: boolean
 }
 
 function Content({
@@ -151,16 +154,17 @@ function Content({
   isFullScreen,
   isCommentBoxOpen,
   toggleFullScreen,
+  muted,
 }: ContentPropsType) {
   const sizeBox = useGenuinOptions().sizeBoxes
   const { videos, updateCurrentIndex, currentIndex } = useFeedListContext()
-  const { shouldShowIHeartDemo, renderIn } = useIHeartDemoStates()
-  const [isMobileCommentView, setIsMobileCommentView] = useState(window.innerWidth < 1280)
+  const { shouldShowIHeartDemo, renderIn, isIHeartPlaying } = useIHeartDemoStates()
   const isWindows = new UAParser().getResult().os.name === 'Windows'
   const touchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const wheelTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const swiperRef = useRef<SwiperType | null>(null)
   const lastWheelTime = useRef<number>(0)
+  const showBorder = useIheartBorderState(!isIHeartPlaying && !muted && shouldShowIHeartDemo)
 
   const clearTimeouts = useCallback(() => {
     if (touchTimeoutRef.current) {
@@ -202,23 +206,6 @@ function Content({
     [updateCurrentIndex]
   )
 
-  useEffect(() => {
-    let resizeTimeout: NodeJS.Timeout
-
-    const handleResize = () => {
-      clearTimeout(resizeTimeout)
-      resizeTimeout = setTimeout(() => {
-        setIsMobileCommentView(window.innerWidth < 1280)
-      }, 100) // Debounce effect
-    }
-
-    window.addEventListener('resize', handleResize)
-    return () => {
-      clearTimeout(resizeTimeout)
-      window.removeEventListener('resize', handleResize)
-    }
-  }, [])
-
   return (
     <>
       <div
@@ -255,6 +242,18 @@ function Content({
               className={cn('hide-scrollbar relative flex flex-col overflow-x-clip', {
                 'w-full flex-row': !isFullScreen,
               })}>
+              {isFullScreen && (
+                <div
+                  style={{
+                    height: 'calc(100% - 75px)',
+                  }}
+                  className={cn(
+                    'pointer-events-none absolute z-40 w-full border-4 bg-transparent transition-all ease-in-out',
+                    { 'animated-border': showBorder },
+                    { 'border-transparent': !showBorder }
+                  )}
+                />
+              )}
               <Swiper
                 onSwiper={(swiper) => {
                   swiperRef.current = swiper
@@ -380,21 +379,7 @@ function Content({
         )}
         {isFullScreen && (
           <AnimatePresence>
-            {isCommentBoxOpen && (
-              <motion.div
-                key="fullscreen-comment-box"
-                className="z-0 h-full"
-                initial={{ width: 0, opacity: 0 }}
-                animate={{ width: isMobileCommentView ? 0 : '25%', opacity: 1 }}
-                exit={{ width: 0, opacity: 0 }}
-                transition={{ duration: 0.4, ease: 'easeOut' }}>
-                <FullScreenCommentBox
-                  videos={videos}
-                  currentIndex={currentIndex}
-                  isMobileCommentView={isMobileCommentView}
-                />
-              </motion.div>
-            )}
+            {isCommentBoxOpen && <FullScreenCommentBoxLayout videos={videos} currentIndex={currentIndex} />}
           </AnimatePresence>
         )}
       </div>
