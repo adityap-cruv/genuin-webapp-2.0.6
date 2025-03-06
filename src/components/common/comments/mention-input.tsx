@@ -65,8 +65,6 @@ const MentionInput: React.FC<{
       const response = await createComment(videoId, loopId, 3, text, commentData)
       if (response.code === 200) {
         if (response.commentData) {
-          // TODO: remove this when the API is updated to return the comment data in the correct format.
-          Object.assign(response.commentData, { is_sparked: false, no_of_sparks: 0 })
           prependComment(validateCommentDetails(response.commentData), videoId)
         }
         setText('')
