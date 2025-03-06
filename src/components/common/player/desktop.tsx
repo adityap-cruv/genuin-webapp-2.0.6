@@ -20,6 +20,7 @@ type DesktopProps = {
     sparkCount: number
     slug: string
     clickableUrl: string | null
+    commentCount?: number
   }
   isActive: boolean
   /**
@@ -84,6 +85,7 @@ export function Desktop({ videoData, loop = false, isActive, isInModal, ...restP
           isSparked={videoData.isSparked}
           isInModal={isInModal}
           clickableUrl={videoData.clickableUrl}
+          commentCount={videoData.commentCount}
         />
       </div>
     </div>

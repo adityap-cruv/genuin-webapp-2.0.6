@@ -22,6 +22,8 @@ import { CustomImage } from '@/components/custom/custom-image'
 import { IHeartDemo } from './iheart-demo'
 import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
 import GetAppButton from '@/components/common/get-app-button'
+import { usePlayerControlStore } from '@/components/common/player/player-control-store'
+import { useShallow } from 'zustand/react/shallow'
 
 export function TopBar({
   showUserTick = true,
@@ -31,6 +33,11 @@ export function TopBar({
   showSearchBar?: boolean
 }) {
   const { config, isLoading, webCTA } = useGenuinOptions()
+  const { isFullScreen } = usePlayerControlStore(
+    useShallow((state) => ({
+      isFullScreen: state.isFullScreen,
+    }))
+  )
   const { renderIn, shouldShowIHeartDemo } = useIHeartDemoStates()
   const showIHeartDemo = renderIn === 'root' && shouldShowIHeartDemo
   return (
@@ -65,7 +72,7 @@ export function TopBar({
               </div>
             )}
 
-            {showIHeartDemo && (
+            {showIHeartDemo && !isFullScreen && (
               <div className="h-full w-full">
                 <IHeartDemo />
               </div>

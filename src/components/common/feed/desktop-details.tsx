@@ -1,25 +1,20 @@
 import { CustomAvatar } from '@components/custom/custom-avatar'
-import { type RefObject, useRef, useEffect, useMemo } from 'react'
+import { useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { DecorativeList } from '@components/custom/decorative-list'
-import { Comments, NoComments, updateCommentReactionData } from '@components/common/comments'
-import { getVideosComments } from '@lib/api/loop'
-import { useMotionValueEvent, useScroll } from 'framer-motion'
-import { Toaster } from '@components/ui/toaster'
 import { getTimeAgo } from '@lib/utils'
-import { FeedShimmer } from '../shimmers/feed-shimmer'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { LockIcon } from '@icons/LockIcon'
 import BrandBadgeIcon from '@/components/common/brand-badge-icon'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@components/ui/tooltip'
 import { ReadMore } from '../read-more'
 import { Linkout } from '../linkout'
-import MentionInput from '../comments/mention-input'
 import ShareButton from '@components/common/actions/ShareButton'
 import { useFeedListContext } from '../../providers/feed-provider'
 import { JoinCommunityButton } from '../join-community-button'
 import { getAudioUrlForCommunity, useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
+import CommentsLayout from '../comments/comments-layout'
 
 type DesktopDetailsProps = VideoPlayerModalType
 // TODO: improve this component.
@@ -148,75 +143,8 @@ export function DesktopDetails({ loop, community, owner, video }: DesktopDetails
             <Linkout.desktop linkouts={video.linkouts} linkoutId={video.linkoutId} videoId={video.id} />
           </div>
         )}
-        <div className="sticky top-0 z-10">
-          <p className="border-b border-t border-tertiary-200 bg-monochrome-white px-4 py-3 text-title-3-demi">
-            Comments {video.commentCount !== 0 ? `(${video.commentCount})` : ''}
-          </p>
-        </div>
-        <div className="h-full px-4 pt-2">
-          <CommentBox videoId={video.id} slug={video.slug} videoShareUrl={video.shareUrl} parentRef={scrollDivRef} />
-        </div>
+        <CommentsLayout community={community} loop={loop} video={video} owner={owner} scrollDivRef={scrollDivRef} />
       </div>
-      <MentionInput videoId={video.id} loopId={loop.id} videoSlug={video.slug} communityId={community.id} />
-      <Toaster />
-    </div>
-  )
-}
-
-type CommentBoxPropsType = {
-  videoId: string
-  slug: string
-  videoShareUrl: string
-  parentRef: RefObject<HTMLDivElement>
-}
-
-function CommentBox({ videoId, slug, videoShareUrl, parentRef }: CommentBoxPropsType) {
-  const {
-    data: commentPages,
-    fetchNextPage,
-    hasNextPage,
-    isError,
-    isFetchingNextPage,
-    isLoading,
-  } = getVideosComments(videoId)
-
-  const comments = useMemo(() => commentPages?.pages.flatMap((page) => page.comments), [commentPages])
-
-  const { scrollYProgress } = useScroll({ container: parentRef, layoutEffect: false })
-
-  useMotionValueEvent(scrollYProgress, 'change', (value) => {
-    value = Number(value.toFixed(1))
-    if (value >= 0.8) void fetchNextPage()
-  })
-
-  if (isLoading) {
-    return <FeedShimmer.comments iterations={2} />
-  }
-
-  if (isError || !comments || comments.length === 0) {
-    return (
-      <div className="h-full pb-20">
-        <NoComments />
-      </div>
-    )
-  }
-
-  return (
-    <div className="h-full overflow-visible">
-      <Comments.withoutApi
-        comments={comments}
-        fetchNextPage={() => {}}
-        hasNextPage={hasNextPage}
-        isError={isError}
-        isFetchingNextPage={isFetchingNextPage}
-        isLoading={isLoading}
-        videoId={videoId}
-        slug={slug}
-        videoShareUrl={videoShareUrl}
-        onCommentReactionChange={(commentId, isReacted) => {
-          updateCommentReactionData(videoId, commentId, isReacted)
-        }}
-      />
     </div>
   )
 }

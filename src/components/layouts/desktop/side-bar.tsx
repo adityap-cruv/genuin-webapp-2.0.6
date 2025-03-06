@@ -126,7 +126,7 @@ export function SideBar({ isCollapsed }: { isCollapsed?: boolean }) {
           <>
             <Link href={{ pathname: PATH_NAME.notification() }}>
               <Item
-                isCollapsed
+                isCollapsed={isCollapsed}
                 brandName={brandName}
                 title="Notification"
                 isActive={pathName === PATH_NAME.notification()}
@@ -139,7 +139,7 @@ export function SideBar({ isCollapsed }: { isCollapsed?: boolean }) {
                 pathname: user.isBrandSystemUser ? PATH_NAME.brand(user.brandSlug) : PATH_NAME.profile(user.nickname),
               }}>
               <Item
-                isCollapsed
+                isCollapsed={isCollapsed}
                 brandName={brandName}
                 title="Profile"
                 isActive={pathName === PATH_NAME.profile(user.nickname)}>
