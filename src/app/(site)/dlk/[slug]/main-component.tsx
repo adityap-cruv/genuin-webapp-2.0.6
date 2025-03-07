@@ -12,8 +12,8 @@ export function MainComponent() {
   const { links } = useGenuinOptions(
     useShallow((state) => ({
       links: {
-        appStoreLink: state.config?.integrations.sdk.ios.appstore_link,
-        playStoreLink: state.config?.integrations.sdk.android.playstore_link,
+        appStoreLink: state.config?.integrations?.sdk.ios.appstore_link,
+        playStoreLink: state.config?.integrations?.sdk.android.playstore_link,
       },
     }))
   )
