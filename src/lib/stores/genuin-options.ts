@@ -111,11 +111,10 @@ export type User = {
   birth?: string | null
   id?: string
   /**
-   * 1 → 'no request or all request are rejected'
-   *
-   * 2 → 'all request is in progress'
-   *
-   * 3 → 'any request is approved or user is already CB'
+   * The status can be:
+   * - 1: Pending to request.
+   * - 2: Requested. -> If request is rejected or approved then the status will be updated to 3 (in case of appr.) or 1 (in case of rejected).
+   * - 3: Accepted.
    */
   ksCbRequestStatus?: number
   /**

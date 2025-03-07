@@ -71,7 +71,7 @@ export const {
           bio,
           name,
           accessToken: String(credentials.accessToken),
-          ksCbRequestStatus: credentials.ksCbRequestStatus ? Number(credentials.ksCbRequestStatus) : undefined,
+          ksCbRequestStatus: Number(credentials.ksCbRequestStatus),
           isBrandSystemUser: credentials.isBrandSystemUser === 'true',
           brandId,
           brandSlug,
