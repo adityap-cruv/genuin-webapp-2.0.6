@@ -5,58 +5,61 @@ import dynamic from 'next/dynamic'
 import { type CommentType } from '@lib/schemas/loop/comment'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { getTimeAgo, openModal, tryJsonParse } from '@lib/utils'
-import Image from 'next/image'
-import icSpark from '@icons/icSparkBlack.svg'
-import { videoDeepLink } from '@/lib/get-deeplink'
+import { getTimeAgo, tryJsonParse } from '@lib/utils'
+import { Reaction } from '../reaction'
+import { memo } from 'react'
 
 const CommentPlayer = dynamic(async () => await import('./video-player').then((comp) => comp.CommentPlayer))
 const AudioPlayer = dynamic(async () => await import('./audio-player').then((comp) => comp.AudioPlayer))
 
-// TODO: pass data here only on need to know basis.
-export function CommentItem({
-  comment,
-  videoShareUrl,
-  slug
-}: {
+type CommentItemPropsType = {
   comment: CommentType
   videoShareUrl: string
   slug: string
-}) {
+  onCommentReactionChange: (isSparked: boolean) => void
+}
+
+export const CommentItem = memo(function CommentItem({
+  comment,
+  videoShareUrl,
+  slug,
+  onCommentReactionChange,
+}: CommentItemPropsType) {
   const UI = Comment[comment.type]
   return (
     <div className="flex w-full flex-col gap-y-2 py-2 last:pb-20">
-      <span className="flex items-center justify-between">
-        <span className="flex items-center gap-x-2">
-          <CustomAvatar
-            className="bg-slate-500 h-6 w-6 bg-red-40"
-            fallbackString={comment?.owner.nickname}
-            imageUrl={comment.owner?.profile_image}
-            isAvatar={comment.owner.is_avatar}
-          />
-          <Link href={{ pathname: PATH_NAME.profile(comment.owner.nickname) }}>
-            <p className="line-clamp-1 break-all text-body-1-bold hover:underline">@{comment.owner.nickname}</p>
-          </Link>
-          <p className="shrink-0 text-cap-1-demi text-tertiary">{getTimeAgo(comment.created_at) + ' ago'}</p>
-        </span>
-        {/* <Image src={icMore} alt="" className="h-5 w-5" /> */}
-      </span>
-      <span className="h-full w-full pl-6">
+      <div className="flex items-center gap-2">
+        <CustomAvatar
+          className="bg-slate-500 h-6 w-6 bg-red-40"
+          fallbackString={comment?.owner.nickname}
+          imageUrl={comment.owner?.profile_image}
+          isAvatar={comment.owner.is_avatar}
+        />
+        <Link href={{ pathname: PATH_NAME.profile(comment.owner.nickname) }}>
+          <p className="line-clamp-1 break-all text-body-1-bold">@{comment.owner.nickname}</p>
+        </Link>
+        <p className="shrink-0 text-cap-1-demi text-tertiary">{getTimeAgo(comment.created_at) + ' ago'}</p>
+      </div>
+      <div className="h-full w-full pl-6">
         <UI comment={comment} />
-        <button
-          className="flex items-center pt-2"
-          onClick={async () => {
-            await videoDeepLink(slug, videoShareUrl).then((generatedLink) => {
-              openModal({ deepLink: generatedLink, subtitle: <>Get the app to spark the comment.</> })
-            })
-          }}>
-          <Image src={icSpark} alt="" className="h-4 w-4" />
-          <p className="text-cap-1-med">{comment.no_of_sparks}</p>
-        </button>
-      </span>
+        <Reaction
+          isSparked={comment.is_sparked ?? false}
+          shareUrl={videoShareUrl}
+          className="w-fit flex-row gap-1 pt-2 !text-secondary [&_p]:!text-cap-1-med"
+          sparkCount={comment.no_of_sparks}
+          contentId={comment.comment_id}
+          videoSlug={slug}
+          iconHeight={16}
+          iconWidth={16}
+          forComment
+          onSparkChange={(newSparkStatus) => {
+            onCommentReactionChange(newSparkStatus)
+          }}
+        />
+      </div>
     </div>
   )
-}
+})
 
 const Comment = {
   video({ comment }: { comment: CommentType }) {

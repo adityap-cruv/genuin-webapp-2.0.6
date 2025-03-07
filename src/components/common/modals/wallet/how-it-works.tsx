@@ -6,13 +6,15 @@ import { TrophyIcon } from '@icons/wallet/trophy-icon'
 import { PlayIconRound } from '@icons/wallet/play-icon'
 import { RubricIcon } from '@icons/wallet/rubric-icon'
 import { MoneyAtmIcon } from '@icons/wallet/money-atm-icon'
+import { useGenuinOptions } from '@/lib/stores/genuin-options'
+import { useShallow } from 'zustand/react/shallow'
 
-const HOW_IT_WORKS = {
+const HOW_IT_WORKS = (reactionTitle: string) => ({
   rewards: [
     {
       icon: <PlayIconRound className="h-8 stroke-primary" />,
       title: 'Engage with Videos & Earn Rewards',
-      description: 'Watch videos, comment, spark, share or repost to earn reward credits.',
+      description: `Watch videos, comment, ${reactionTitle}, share or repost to earn reward credits.`,
     },
     {
       icon: <TrophyIcon className="h-8 stroke-primary" />,
@@ -37,13 +39,14 @@ const HOW_IT_WORKS = {
       description: 'Easily deposit your cash earnings directly into your bank account anytime.',
     },
   ],
-}
+})
 
 const TABS_TRIGGER_CLASS =
   'rounded-lg border-none py-2 !text-title-3-med data-[state=active]:!text-title-3-demi text-secondary-300 data-[state=active]:bg-monochrome-white data-[state=active]:text-primary'
 
 export function HowItWorks() {
   const [flowType, setFlowType] = useState<'rewards' | 'cash'>('rewards')
+  const { reactionTitle } = useGenuinOptions(useShallow((state) => ({ reactionTitle: state.config.reactions.title })))
 
   return (
     <ModalShell>
@@ -71,7 +74,7 @@ export function HowItWorks() {
           shop.
         </p>
         <div className="h-[40vh] overflow-auto">
-          {HOW_IT_WORKS[flowType].map((item, index) => {
+          {HOW_IT_WORKS(reactionTitle)[flowType].map((item, index) => {
             return (
               <div key={index} className="bg-white flex items-center pb-8">
                 <div className="mr-4 flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-full bg-tertiary-200">

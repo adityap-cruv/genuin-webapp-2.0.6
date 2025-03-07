@@ -263,6 +263,27 @@ export async function ksCbRequest(): Promise<{ code: number; data: any }> {
     })
 }
 
+/**
+ * Returns the KS CB request status. If there is an error, it will return status 4.
+ * The status can be:
+ * - 1: Pending to request.
+ * - 2: Requested. -> If request is rejected or approved then the status will be updated to 3 (in case of appr.) or 1 (in case of rejected).
+ * - 3: Accepted.
+ * @returns { { status: number } } - The status of the request.
+ */
+export async function fetchKsCbRequestStatus(): Promise<{ status: number }> {
+  return await axiosInstance
+    .get('/api/v3/brand/cb_request_status')
+    .then((res) => {
+      return { status: res.data.data.cb_request_status }
+    })
+    .catch((e) => {
+      return {
+        status: 1,
+      }
+    })
+}
+
 export async function miniProfile(verifiedKsToken: boolean): Promise<{ code: number; data: any }> {
   return await axiosInstance
     .get('/api/v3/users/mini_profile', {

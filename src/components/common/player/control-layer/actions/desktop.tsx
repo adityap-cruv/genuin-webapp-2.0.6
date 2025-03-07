@@ -1,4 +1,4 @@
-import { checkAndAppendHttps, openModal } from '@lib/utils'
+import { abbreviateNumber, checkAndAppendHttps, openModal } from '@lib/utils'
 import icShare from '@icons/player-controls/icon-share.svg'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
@@ -13,7 +13,8 @@ import { ActionItem } from './action-item'
 import { RepostModal } from '@components/common/modals/repost'
 import { repostDeepLink } from '@/lib/get-deeplink'
 import { useWalletBalanceHandler } from '@/services/wallet-handler'
-import { Spark } from './spark'
+import { Reaction } from '@/components/common/reaction'
+import { useFeedListContext } from '@/components/providers/feed-provider'
 
 type DesktopActionsProps = {
   sparkCount: number
@@ -38,6 +39,7 @@ export function Desktop({
   description,
   isSparked, // isPostAllowed,
 }: DesktopActionsProps) {
+  const { updateSparkStatus } = useFeedListContext()
   const { handleWalletBalance } = useWalletBalanceHandler()
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
@@ -97,13 +99,24 @@ export function Desktop({
           }}>
           <Image src={icRepost} alt="repost" height={32} width={32} />
         </ActionItem>
-        <Spark
-          isSparked={isSparked}
-          sparkCount={sparkCount}
-          videoId={videoId}
-          shareUrl={shareUrl}
-          videoSlug={videoSlug}
-        />
+        <div>
+          <ActionItem>
+            <Reaction
+              isSparked={isSparked ?? false}
+              sparkCount={sparkCount}
+              contentId={videoId}
+              shareUrl={shareUrl}
+              videoSlug={videoSlug}
+              showSparkCount={false}
+              onSparkChange={(isSparked) => {
+                updateSparkStatus(videoId, isSparked)
+              }}
+            />
+          </ActionItem>
+          <p className="flex justify-center text-body-1-demi text-monochrome-white">
+            {abbreviateNumber(sparkCount < 0 ? 0 : sparkCount)}
+          </p>
+        </div>
         <ActionItem
           title="Share Video!"
           onClick={async () => {

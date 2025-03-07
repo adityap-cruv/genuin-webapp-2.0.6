@@ -1,15 +1,14 @@
 import { CustomAvatar } from '@components/custom/custom-avatar'
-import { type RefObject, useRef, useState, useEffect } from 'react'
+import { type RefObject, useRef, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { DecorativeList } from '@components/custom/decorative-list'
-import { Comments, NoComments } from '@components/common/comments'
+import { Comments, NoComments, updateCommentReactionData } from '@components/common/comments'
 import { getVideosComments } from '@lib/api/loop'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
 import { Toaster } from '@components/ui/toaster'
 import { getTimeAgo } from '@lib/utils'
 import { FeedShimmer } from '../shimmers/feed-shimmer'
-import { type CommentListType } from '@lib/schemas/loop/comment'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { LockIcon } from '@icons/LockIcon'
 import BrandBadgeIcon from '@/components/common/brand-badge-icon'
@@ -29,8 +28,6 @@ export function DesktopDetails({ loop, community, owner, video }: DesktopDetails
   const scrollDivRef = useRef<HTMLDivElement>(null)
   const { updateCommunityJoinStatus } = useFeedListContext()
   const { shouldShowIHeartDemo, setAudioUrl } = useIHeartDemoStates()
-  // TODO: Here state Comment and setComments are bad they are causing multiple rerenders.
-  const [comments, setComments] = useState<CommentListType>([])
 
   useEffect(() => {
     // If should show iheart demo then update the audio of iheart demo.
@@ -157,43 +154,23 @@ export function DesktopDetails({ loop, community, owner, video }: DesktopDetails
           </p>
         </div>
         <div className="h-full px-4 pt-2">
-          <CommentBox
-            videoId={video.id}
-            slug={video.slug}
-            videoShareUrl={video.shareUrl}
-            parentRef={scrollDivRef}
-            setComments={setComments}
-            comments={comments}
-          />
+          <CommentBox videoId={video.id} slug={video.slug} videoShareUrl={video.shareUrl} parentRef={scrollDivRef} />
         </div>
       </div>
-      <MentionInput
-        setComments={setComments}
-        videoId={video.id}
-        loopId={loop.id}
-        videoSlug={video.slug}
-        communityId={community.id}
-      />
+      <MentionInput videoId={video.id} loopId={loop.id} videoSlug={video.slug} communityId={community.id} />
       <Toaster />
     </div>
   )
 }
 
-function CommentBox({
-  videoId,
-  slug,
-  videoShareUrl,
-  parentRef,
-  setComments,
-  comments,
-}: {
+type CommentBoxPropsType = {
   videoId: string
   slug: string
   videoShareUrl: string
   parentRef: RefObject<HTMLDivElement>
-  setComments: any
-  comments: any
-}) {
+}
+
+function CommentBox({ videoId, slug, videoShareUrl, parentRef }: CommentBoxPropsType) {
   const {
     data: commentPages,
     fetchNextPage,
@@ -203,9 +180,7 @@ function CommentBox({
     isLoading,
   } = getVideosComments(videoId)
 
-  useEffect(() => {
-    setComments(commentPages?.pages.flatMap((item) => item.comments))
-  }, [commentPages])
+  const comments = useMemo(() => commentPages?.pages.flatMap((page) => page.comments), [commentPages])
 
   const { scrollYProgress } = useScroll({ container: parentRef, layoutEffect: false })
 
@@ -218,26 +193,30 @@ function CommentBox({
     return <FeedShimmer.comments iterations={2} />
   }
 
-  if (comments && comments?.length !== 0)
+  if (isError || !comments || comments.length === 0) {
     return (
-      <div className="h-full overflow-visible">
-        <Comments.withoutApi
-          comments={comments}
-          fetchNextPage={() => {}}
-          hasNextPage={hasNextPage}
-          isError={isError}
-          isFetchingNextPage={isFetchingNextPage}
-          isLoading={isLoading}
-          videoId={videoId}
-          slug={slug}
-          videoShareUrl={videoShareUrl}
-        />
+      <div className="h-full pb-20">
+        <NoComments />
       </div>
     )
+  }
 
   return (
-    <div className="h-full pb-20">
-      <NoComments />
+    <div className="h-full overflow-visible">
+      <Comments.withoutApi
+        comments={comments}
+        fetchNextPage={() => {}}
+        hasNextPage={hasNextPage}
+        isError={isError}
+        isFetchingNextPage={isFetchingNextPage}
+        isLoading={isLoading}
+        videoId={videoId}
+        slug={slug}
+        videoShareUrl={videoShareUrl}
+        onCommentReactionChange={(commentId, isReacted) => {
+          updateCommentReactionData(videoId, commentId, isReacted)
+        }}
+      />
     </div>
   )
 }

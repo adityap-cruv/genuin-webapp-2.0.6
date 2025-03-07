@@ -3,8 +3,10 @@ import { getVideosComments } from '@lib/api/loop'
 import { Loader } from '@components/ui/loader'
 import { type CommentListType, type CommentType } from '@lib/schemas/loop/comment'
 import { CommentItem } from './comment-item'
-import { useEffect, useRef } from 'react'
+import { useCallback, useMemo, useRef } from 'react'
 import { CommentIcon } from '@icons/comment-icon'
+import { getQueryKeyForVideoComments } from '@/lib/utils/keys'
+import { queryClient } from '@/components/providers/query-client-provider'
 
 export const Comments = {
   withApi: WithApi,
@@ -15,16 +17,46 @@ type Props = {
   videoId: string
   slug: string
   videoShareUrl: string
-  comments: CommentListType
-  setComments: (comments: CommentListType) => void
 }
 
-function WithApi({ videoId, slug, videoShareUrl, comments, setComments }: Props) {
-  const { isLoading, data, isError, isFetchingNextPage, fetchNextPage } = getVideosComments(videoId)
+/**
+ * This function will update data in queryClient
+ * @param id
+ * @param isReacted
+ */
+export const updateCommentReactionData = (videoId: string, commentId: string, isReacted: boolean) => {
+  type QueryDataType = ReturnType<typeof getVideosComments>['data']
 
-  useEffect(() => {
-    if (data) setComments(data.pages.flatMap((item) => item.comments))
-  }, [data])
+  queryClient.setQueryData(getQueryKeyForVideoComments(videoId), (oldData: QueryDataType) => {
+    if (!oldData) return
+    return {
+      ...oldData,
+      pages: oldData?.pages.map((page) => {
+        return {
+          ...page,
+          comments: page.comments.map((comment) => {
+            if (comment.comment_id === commentId)
+              return {
+                ...comment,
+                no_of_sparks: isReacted ? comment.no_of_sparks + 1 : comment.no_of_sparks - 1,
+                is_sparked: isReacted,
+              }
+            return comment
+          }),
+        }
+      }),
+    }
+  })
+}
+
+function WithApi({ videoId, slug, videoShareUrl }: Props) {
+  const { isLoading, data: commentsData, isError, isFetchingNextPage, fetchNextPage } = getVideosComments(videoId)
+
+  const comments = useMemo(() => commentsData?.pages.flatMap((page) => page.comments), [commentsData])
+
+  const handleCommentReactionChange = useCallback((commentId: string, isReacted: boolean) => {
+    updateCommentReactionData(videoId, commentId, isReacted)
+  }, [])
 
   if (isLoading) {
     return (
@@ -33,21 +65,19 @@ function WithApi({ videoId, slug, videoShareUrl, comments, setComments }: Props)
       </div>
     )
   }
-  if (isError) {
-    throw new Error('Something went wrong!')
-  }
-  if (comments?.length === 0) return <NoComments />
+
+  if (isError || !comments || comments.length === 0) return <NoComments />
+
   return (
     <div className="h-full">
-      {comments && (
-        <CommentList
-          videoShareUrl={videoShareUrl}
-          slug={slug}
-          comments={comments}
-          isFetchingNextPage={isFetchingNextPage}
-          fetchNextPage={fetchNextPage}
-        />
-      )}
+      <CommentList
+        videoShareUrl={videoShareUrl}
+        slug={slug}
+        comments={comments}
+        isFetchingNextPage={isFetchingNextPage}
+        fetchNextPage={fetchNextPage}
+        onCommentReactionChange={handleCommentReactionChange}
+      />
     </div>
   )
 }
@@ -62,6 +92,7 @@ type WithoutApiProps = {
   videoId: string
   videoShareUrl: string
   slug: string
+  onCommentReactionChange: (id: string, isReacted: boolean) => void
 }
 
 type CommentListProps = {
@@ -70,9 +101,17 @@ type CommentListProps = {
   fetchNextPage: any
   videoShareUrl: string
   slug: string
+  onCommentReactionChange: (id: string, isReacted: boolean) => void
 }
 
-function CommentList({ comments, slug, isFetchingNextPage, fetchNextPage, videoShareUrl }: CommentListProps) {
+function CommentList({
+  comments,
+  slug,
+  isFetchingNextPage,
+  fetchNextPage,
+  videoShareUrl,
+  onCommentReactionChange,
+}: CommentListProps) {
   const scrollDivRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ container: scrollDivRef, layoutEffect: false })
 
@@ -81,10 +120,21 @@ function CommentList({ comments, slug, isFetchingNextPage, fetchNextPage, videoS
       void fetchNextPage()
     }
   })
+
   return (
     <div ref={scrollDivRef} className="h-full overflow-x-clip overflow-y-scroll px-2 pb-20 sm:px-4">
       {comments.map((comment, index) => {
-        return <CommentItem key={index} comment={comment} slug={slug} videoShareUrl={videoShareUrl} />
+        return (
+          <CommentItem
+            key={index}
+            comment={comment}
+            slug={slug}
+            videoShareUrl={videoShareUrl}
+            onCommentReactionChange={(isReacted) => {
+              onCommentReactionChange(comment.comment_id, isReacted)
+            }}
+          />
+        )
       })}
       {isFetchingNextPage && (
         <div className="flex w-full justify-center">
@@ -96,12 +146,19 @@ function CommentList({ comments, slug, isFetchingNextPage, fetchNextPage, videoS
 }
 
 // without api component is only used in desktop-details.tsx.
-function WithoutApi({ comments, slug, videoShareUrl }: WithoutApiProps) {
-  // if (comments.length === 0) return <NoComments />
+function WithoutApi({ comments, slug, videoShareUrl, onCommentReactionChange }: WithoutApiProps) {
   return (
     <>
       {comments.map((item, index) => (
-        <CommentItem key={index} comment={item} slug={slug} videoShareUrl={videoShareUrl} />
+        <CommentItem
+          key={index}
+          comment={item}
+          slug={slug}
+          videoShareUrl={videoShareUrl}
+          onCommentReactionChange={(isReacted) => {
+            onCommentReactionChange(item.comment_id, isReacted)
+          }}
+        />
       ))}
     </>
   )

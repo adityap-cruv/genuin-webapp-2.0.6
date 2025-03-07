@@ -1,11 +1,11 @@
 import { type CommentListType, validateCommentList } from '@lib/schemas/loop/comment'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
-import axios from 'axios'
 import { axiosInstance } from './instance'
 import { validateLoopCohosts } from '@lib/schemas/loop/cohosts'
 import { validateLoopSubscribers } from '@lib/schemas/loop/subscribers'
 import { parseFeedResponseFromGoApi } from './api-response-parser'
 import { NOT_FOUND_ERROR_CODES } from '../constants'
+import { getQueryKeyForVideoComments } from '../utils/keys'
 
 export async function fetchLoopDetails(slug: string) {
   try {
@@ -116,7 +116,7 @@ export function getVideosComments(videoId: string) {
   return useInfiniteQuery({
     queryFn: async ({ pageParam }) => {
       if (!promise) {
-        promise = axios
+        promise = axiosInstance
           .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/comments', {
             params: {
               conversation_id: videoId,
@@ -142,7 +142,7 @@ export function getVideosComments(videoId: string) {
       }
       return lastPage.comments[lastPage.comments.length - 1].comment_id
     },
-    queryKey: ['comments', videoId],
+    queryKey: getQueryKeyForVideoComments(videoId),
   })
 }
 

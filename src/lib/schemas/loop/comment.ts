@@ -55,6 +55,16 @@ export type CommentType = z.infer<typeof CommentSchema>
 
 export type CommentListType = z.infer<typeof CommentListSchema>
 
+export function validateCommentDetails(data: any) {
+  try {
+    return CommentSchema.parse(data)
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log('error in parsing comment list::', e)
+    throw new Error('Something went wrong with comments fetching api. Error is::', e as ErrorOptions | undefined)
+  }
+}
+
 export function validateCommentList(data: any) {
   try {
     return CommentListSchema.parse(data)

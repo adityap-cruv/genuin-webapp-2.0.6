@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
+import { getUrlForReaction } from '../utils'
 
 export type VideoSizeBoxType = {
   width: number
@@ -51,6 +52,26 @@ type RewardPointConfig = {
   repost: number
 }
 
+type ReactionKey = {
+  png: string
+  svg: string
+}
+
+type ReactionKeys = {
+  comment_selected: ReactionKey
+  comment_unselected: ReactionKey
+  feed_selected: ReactionKey
+  feed_unselected: ReactionKey
+  // feed_animate: ReactionKey
+}
+
+type ReactionType = {
+  type: string
+  title: string
+  suffix: string
+  keys: ReactionKeys
+}
+
 export type ConfigType = {
   brand_id: string
   created_at: string
@@ -74,7 +95,8 @@ export type ConfigType = {
   privacy_policy?: string
   terms_and_condition?: string
   show_become_creator: boolean
-} | null
+  reactions: ReactionType
+}
 
 export type User = {
   bio?: string
@@ -89,11 +111,10 @@ export type User = {
   birth?: string | null
   id?: string
   /**
-   * 1 → 'no request or all request are rejected'
-   *
-   * 2 → 'all request is in progress'
-   *
-   * 3 → 'any request is approved or user is already CB'
+   * The status can be:
+   * - 1: Pending to request.
+   * - 2: Requested. -> If request is rejected or approved then the status will be updated to 3 (in case of appr.) or 1 (in case of rejected).
+   * - 3: Accepted.
    */
   ksCbRequestStatus?: number
   /**
@@ -168,7 +189,19 @@ const initialState: StateType = {
   isSafari: false,
   userHasFocus: true,
   parentUrl: '',
-  config: null,
+  config: {
+    reactions: {
+      keys: {
+        comment_selected: { svg: getUrlForReaction('spark', true, true), png: '' },
+        comment_unselected: { svg: getUrlForReaction('spark', false, true), png: '' },
+        feed_selected: { svg: getUrlForReaction('spark', true, false), png: '' },
+        feed_unselected: { svg: getUrlForReaction('spark', false, false), png: '' },
+      },
+      suffix: 'to',
+      title: 'react',
+      type: 'default',
+    },
+  } as any,
   notificationCount: -1,
   walletBalance: 0,
   isLoading: true,
