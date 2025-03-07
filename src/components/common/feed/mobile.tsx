@@ -1,5 +1,5 @@
 import { Player } from '../player'
-import { useCallback, useState, useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useCommentSheetStore } from '../player/comment-sheet/store'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Mousewheel } from 'swiper/modules'
@@ -16,6 +16,7 @@ import { useShallow } from 'zustand/react/shallow'
 import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
 import { IHeartDemo } from '../../layouts/desktop/iheart-demo'
 import { cn } from '@/lib/utils'
+import { useIheartBorderState } from '@/hooks/use-iheart-border'
 
 type MobileProps = {
   videos?: VideoPlayerModalType[] | null
@@ -86,18 +87,7 @@ function SwiperRenderer({ videoSizeBox }: { videoSizeBox: VideoSizeBoxType }) {
       setPlayerShouldPlay: state.setShouldPlay,
     }))
   )
-  const [showBorder, setShowBorder] = useState(false)
-  useEffect(() => {
-    if (!isIHeartPlaying && !muted && showIHeartDemo) {
-      setShowBorder(true)
-
-      setTimeout(() => {
-        setShowBorder(false)
-      }, 3000)
-    } else {
-      setShowBorder(false)
-    }
-  }, [isIHeartPlaying, muted])
+  const showBorder = useIheartBorderState(!isIHeartPlaying && !muted && showIHeartDemo)
 
   const handleActiveIndexChange = useCallback(
     (swiper: SwiperType) => {

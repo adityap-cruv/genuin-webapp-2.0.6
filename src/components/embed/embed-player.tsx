@@ -215,6 +215,7 @@ export function EmbedPlayer({
                 description={videoData.video.descriptionText}
                 videoSlug={videoData.video.slug}
                 isSparked={false}
+                commentCount={videoData.video.commentCount}
               />
             </div>
           </div>

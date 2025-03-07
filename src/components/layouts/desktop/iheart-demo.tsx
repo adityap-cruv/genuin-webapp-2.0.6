@@ -8,6 +8,7 @@ import { useState } from 'react'
 import { useGenuinOptions } from '@/lib/stores/genuin-options'
 import { PATH_NAME } from '@/lib/utils/constants/path'
 import { usePathname } from 'next/navigation'
+import { useIheartBorderState } from '@/hooks/use-iheart-border'
 
 /**
  * This const is defined for iheart only don't modify it.
@@ -107,11 +108,11 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
   const { audioStateRef, isIHeartPlaying, setIsIHeartPlaying, audioUrl } = useIHeartDemoStates()
   const isMobile = useGenuinOptions().isMobile
   const [shouldPlay] = useState(audioStateRef.current.shouldPlay)
-  const { muted, toggleMuted, setShouldPlay, shouldPlay: playerShouldPlay } = usePlayerControlStore()
+  const { muted, toggleMuted, setShouldPlay, shouldPlay: playerShouldPlay, isFullScreen } = usePlayerControlStore()
   const isProgrammatic = useRef<{ play: boolean; pause: boolean }>({ play: false, pause: false })
   const [isReady, setIsReady] = useState(false)
   const [isPipOpen, setIsPipOpen] = useState(false)
-  const [showBorder, setShowBorder] = useState(false)
+  const showBorder = useIheartBorderState((isIHeartPlaying && isMobile) || (isIHeartPlaying && isFullScreen))
   const pathName = usePathname()
 
   useEffect(() => {
@@ -125,20 +126,6 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
       if (iframe.src !== audioUrls[communityIndex]) iframe.src = audioUrls[communityIndex]
     }
   }, [pathName])
-
-  useEffect(() => {
-    if (isIHeartPlaying) {
-      setShowBorder(true)
-
-      if (isMobile) {
-        setTimeout(() => {
-          setShowBorder(false)
-        }, 5000)
-      }
-    } else {
-      setShowBorder(false)
-    }
-  }, [isIHeartPlaying])
 
   const play = useCallback(() => {
     if (!isReady) return
@@ -326,12 +313,12 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
         className={cn(
           'animated-border relative m-auto flex w-full items-center justify-between overflow-clip transition-all ease-in-out 2xl:container 2xl:px-0',
           {
-            'border-b-4': isIHeartPlaying && !isMobile && !isPipOpen && isReady,
+            'border-b-4': isIHeartPlaying && !isMobile && !isPipOpen && isReady && !isFullScreen,
           }
         )}>
         <div
           className={cn('pointer-events-none absolute z-10 h-full w-full bg-transparent transition-all ease-in-out', {
-            'animated-border border-4': showBorder && isMobile && isReady,
+            'animated-border border-4': (showBorder && isMobile && isReady) || (isFullScreen && showBorder),
             'border-4 border-transparent': !(showBorder && isMobile && isReady),
           })}
         />
@@ -362,12 +349,12 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
               src="https://media.begenuin.com/iheart_demo/equalizer.gif"
               alt="gif"
               style={{
-                right: isMobile || inModal ? '13px' : '56px',
+                right: isMobile || inModal || isFullScreen ? '13px' : '56px',
               }}
               className={`absolute h-8 w-8`}
             />
           )}
-          {!isPipOpen && !isMobile && !inModal && (
+          {!isPipOpen && !isMobile && !inModal && !isFullScreen && (
             <div onClick={handleOpenPipClick} className="cursor-pointer rounded-lg bg-tertiary-200 p-2">
               <PipIcon />
             </div>
