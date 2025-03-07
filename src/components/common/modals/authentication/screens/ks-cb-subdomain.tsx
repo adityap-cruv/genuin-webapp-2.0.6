@@ -86,7 +86,9 @@ export function KsToCbSubdomain() {
           ) : isRequested ? (
             'Requested'
           ) : (
-            `Become a Creator for ${brandName}`
+            <>
+              Become a Creator&nbsp;<span className="hidden md:block">for&nbsp;{brandName}</span>
+            </>
           )}
         </Button>
       )}
