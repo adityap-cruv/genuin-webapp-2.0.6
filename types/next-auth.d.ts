@@ -25,7 +25,13 @@ declare module 'next-auth' {
      */
     refreshToken?: string
     accessToken: string
-    ksCbRequestStatus?: number
+    /**
+     * The status can be:
+     * - 1: Pending to request.
+     * - 2: Requested. -> If request is rejected or approved then the status will be updated to 3 (in case of appr.) or 1 (in case of rejected).
+     * - 3: Accepted.
+     */
+    ksCbRequestStatus: number
     /**
      * if user is brand user.
      */
@@ -84,7 +90,7 @@ declare module 'next-auth/jwt' {
        */
       refreshToken?: string
       accessToken: string
-      ksCbRequestStatus?: number
+      ksCbRequestStatus: number
       /**
        * if user is brand user.
        */

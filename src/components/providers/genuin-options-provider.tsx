@@ -41,7 +41,7 @@ if (process.env.NEXT_PUBLIC_CURRENT_ENV === 'prod') console.log = () => {}
 // TODO: This component is too big, consider splitting it into smaller components.
 export function GenuinOptionsProvider({ children, deviceType, os, browserType, config, user }: Props) {
   const router = useRouter()
-  const { data, status } = useSession()
+  const { data: sessionData, status } = useSession()
   const { shouldShowIHeartDemo } = useIHeartDemoStates()
   const { setInitialData } = useGenuinOptions((state) => ({
     setInitialData: state.setData,
@@ -127,14 +127,21 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
       setInitialData({ user: undefined, isLoading: false })
       setAuthTokenInAxiosInstance(undefined)
     } else {
-      setInitialData({ user: data?.user, isLoading: false })
-      setAuthTokenInAxiosInstance(data?.user?.accessToken)
-      if (data?.user) {
+      setInitialData({ user: sessionData?.user, isLoading: false })
+      setAuthTokenInAxiosInstance(sessionData?.user?.accessToken)
+      if (sessionData?.user) {
         void fetchNotificationCount()
         void fetchWalletBalance()
       }
     }
   }, [user, status])
+
+  // update user data when session data is updated.
+  useEffect(() => {
+    if (sessionData?.user) {
+      setInitialData({ user: sessionData?.user })
+    }
+  }, [sessionData])
 
   function init() {
     if (config?.brand_id) setBrandIdInAxiosInstance(Number(config?.brand_id))
