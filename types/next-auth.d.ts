@@ -25,12 +25,11 @@ declare module 'next-auth' {
      */
     refreshToken?: string
     accessToken: string
-    /*
-     * 0 - Not requested
-     * 1 - Requested
-     * 2 - Approved
-     * 3 - Rejected
-     * 4 - Pending
+    /**
+     * The status can be:
+     * - 1: Pending to request.
+     * - 2: Requested. -> If request is rejected or approved then the status will be updated to 3 (in case of appr.) or 1 (in case of rejected).
+     * - 3: Accepted.
      */
     ksCbRequestStatus: number
     /**

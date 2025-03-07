@@ -20,6 +20,8 @@ export function KsToCbSubdomain() {
   }))
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  // Check if the user has requested to become a cb.
+  const isRequested = user?.ksCbRequestStatus === 2
 
   useEffect(() => {
     setLoading(true)
@@ -29,8 +31,7 @@ export function KsToCbSubdomain() {
       if (res.status && sessionData?.user.ksCbRequestStatus !== res.status) {
         await updateSession({
           ...sessionData,
-          // If res.status is 3(Rejected.), then set ksCbRequestStatus to 4(pending state.).
-          user: { ...sessionData?.user, ksCbRequestStatus: res.status === 3 ? 4 : res.status } as User,
+          user: { ...sessionData?.user, ksCbRequestStatus: res.status } as User,
         })
       }
       setLoading(false)
@@ -78,18 +79,18 @@ export function KsToCbSubdomain() {
           type="submit"
           variant="default"
           className="w-full"
-          disabled={user?.ksCbRequestStatus === 2}
+          disabled={loading || isRequested}
           onClick={handleClick}>
           {loading ? (
             <Loader size="sm" className="stroke-monochrome-white" />
-          ) : user?.ksCbRequestStatus === 2 ? (
+          ) : isRequested ? (
             'Requested'
           ) : (
             `Become a Creator for ${brandName}`
           )}
         </Button>
       )}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {error && <p className="text-supplementary-red">{error}</p>}
     </ModalShell>
   )
 }
