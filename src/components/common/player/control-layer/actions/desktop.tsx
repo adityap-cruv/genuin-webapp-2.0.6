@@ -76,7 +76,7 @@ export function Desktop({
           </Link>
         )}
         <ActionItem
-          title="Repost the video!"
+          title="Repost"
           onClick={async () => {
             await handleWalletBalance({ action: 'repost', videoId, type: 'POST' })
             if (pathname.includes('embed')) {
@@ -111,7 +111,7 @@ export function Desktop({
           <Image src={icRepost} alt="repost" height={32} width={32} />
         </ActionItem>
         <div>
-          <ActionItem>
+          <ActionItem title="I find this insightful">
             <Reaction
               isSparked={isSparked ?? false}
               sparkCount={sparkCount}
@@ -131,7 +131,7 @@ export function Desktop({
         {isFullScreen && (
           <div>
             <ActionItem
-              title="See Comments!"
+              title="Add Comments"
               onClick={() => {
                 toggleCommentBox()
               }}>
@@ -143,7 +143,7 @@ export function Desktop({
           </div>
         )}
         <ActionItem
-          title="Share Video!"
+          title="Share"
           onClick={async () => {
             if (pathname.includes('embed')) {
               window.open(shareUrl, '_blank', 'noopener,noreferrer')
