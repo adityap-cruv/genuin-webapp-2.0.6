@@ -1,5 +1,4 @@
 import { abbreviateNumber, checkAndAppendHttps, openModal } from '@lib/utils'
-import { abbreviateNumber, checkAndAppendHttps, openModal } from '@lib/utils'
 import icShare from '@icons/player-controls/icon-share.svg'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
