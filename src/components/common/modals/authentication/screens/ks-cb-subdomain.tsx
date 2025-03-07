@@ -14,8 +14,7 @@ import { KsCbSlides } from '../components/ks-cb-slides'
 export function KsToCbSubdomain() {
   const { setStep } = useAuthenticationModalStore()
   const { data: sessionData, update: updateSession } = useSession()
-  const { brandName, user } = useGenuinOptions((state) => ({
-    brandName: state.config?.name ? state.config?.name : 'Genuin',
+  const { user } = useGenuinOptions((state) => ({
     user: state.user,
   }))
   const [loading, setLoading] = useState(false)
@@ -86,9 +85,7 @@ export function KsToCbSubdomain() {
           ) : isRequested ? (
             'Requested'
           ) : (
-            <>
-              Become a Creator&nbsp;<span className="hidden md:block">for&nbsp;{brandName}</span>
-            </>
+            'Become a Creator'
           )}
         </Button>
       )}
