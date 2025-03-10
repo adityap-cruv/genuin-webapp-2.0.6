@@ -124,6 +124,7 @@ type ReactionType = {
   title: string
   suffix: string
   keys: ReactionKeys
+  tooltip: string
 }
 
 export type ConfigType = {

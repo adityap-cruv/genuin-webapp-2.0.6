@@ -48,9 +48,10 @@ export function Desktop({
   const { handleWalletBalance } = useWalletBalanceHandler()
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
-  const { brandId, user } = useGenuinOptions((state) => ({
+  const { brandId, user, config } = useGenuinOptions((state) => ({
     brandId: state.brandId,
     user: state.user,
+    config: state.config,
   }))
   const pathname = usePathname()
   const searchParams = Object.fromEntries(useSearchParams())
@@ -76,7 +77,7 @@ export function Desktop({
           </Link>
         )}
         <ActionItem
-          title="Repost the video!"
+          title="Repost"
           onClick={async () => {
             await handleWalletBalance({ action: 'repost', videoId, type: 'POST' })
             if (pathname.includes('embed')) {
@@ -111,7 +112,7 @@ export function Desktop({
           <Image src={icRepost} alt="repost" height={32} width={32} />
         </ActionItem>
         <div>
-          <ActionItem>
+          <ActionItem title={config.reactions.tooltip ?? ''}>
             <Reaction
               isSparked={isSparked ?? false}
               sparkCount={sparkCount}
@@ -131,7 +132,7 @@ export function Desktop({
         {isFullScreen && (
           <div>
             <ActionItem
-              title="See Comments!"
+              title="Add Comments"
               onClick={() => {
                 toggleCommentBox()
               }}>
@@ -143,7 +144,7 @@ export function Desktop({
           </div>
         )}
         <ActionItem
-          title="Share Video!"
+          title="Share"
           onClick={async () => {
             if (pathname.includes('embed')) {
               window.open(shareUrl, '_blank', 'noopener,noreferrer')
