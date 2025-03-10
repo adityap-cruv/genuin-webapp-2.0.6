@@ -8,9 +8,9 @@ interface Props {
 export default function Layout({ children }: Props) {
   // const isMobile = cookies().get('mobile')?.value === 'true'
   return (
-    <main>
+    <main className="h-full w-full overflow-hidden">
       <NavBar />
-      <section className="container">{children}</section>
+      <section className="container h-full overflow-y-auto">{children}</section>
       <Footer />
     </main>
   )
