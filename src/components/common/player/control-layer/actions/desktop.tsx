@@ -48,9 +48,10 @@ export function Desktop({
   const { handleWalletBalance } = useWalletBalanceHandler()
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
-  const { brandId, user } = useGenuinOptions((state) => ({
+  const { brandId, user, config } = useGenuinOptions((state) => ({
     brandId: state.brandId,
     user: state.user,
+    config: state.config,
   }))
   const pathname = usePathname()
   const searchParams = Object.fromEntries(useSearchParams())
@@ -111,7 +112,7 @@ export function Desktop({
           <Image src={icRepost} alt="repost" height={32} width={32} />
         </ActionItem>
         <div>
-          <ActionItem title="I find this insightful">
+          <ActionItem title={config.reactions.tooltip ?? ''}>
             <Reaction
               isSparked={isSparked ?? false}
               sparkCount={sparkCount}
