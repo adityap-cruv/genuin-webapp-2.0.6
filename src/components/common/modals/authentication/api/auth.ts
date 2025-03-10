@@ -279,7 +279,7 @@ export async function fetchKsCbRequestStatus(): Promise<{ status: number }> {
     })
     .catch((e) => {
       return {
-        status: 4,
+        status: 1,
       }
     })
 }

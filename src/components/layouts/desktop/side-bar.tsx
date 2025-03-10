@@ -2,7 +2,7 @@
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { type ReactNode } from 'react'
-import { EmbedIcon, ExploreIcon, HomeIcon, LatestIcon, MoreIcon, PopularIcon, ProfileIcon } from '@icons/side-bar-icons'
+import { ExploreIcon, HomeIcon, LatestIcon, MoreIcon, PopularIcon, ProfileIcon } from '@icons/side-bar-icons'
 import { cn } from '@lib/utils'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
@@ -115,13 +115,6 @@ export function SideBar({ isCollapsed }: { isCollapsed?: boolean }) {
             <ExploreIcon isActive={pathName === PATH_NAME.explore()} />
           </Item>
         </Link>
-        {brandId?.toString() !== '99' && (
-          <Link href={{ pathname: PATH_NAME.embed('home') }}>
-            <Item isCollapsed={isCollapsed} brandName={brandName} title="Embed" isActive={pathName.includes('/embed')}>
-              <EmbedIcon isActive={pathName.includes('/embed')} />
-            </Item>
-          </Link>
-        )}
         {user && (
           <>
             <Link href={{ pathname: PATH_NAME.notification() }}>
@@ -161,6 +154,11 @@ export function SideBar({ isCollapsed }: { isCollapsed?: boolean }) {
               className=" rounded-2xl p-2 shadow-lg shadow-monochrome-3/40"
               side="bottom"
               align="start">
+              {brandId?.toString() !== '99' && (
+                <Link href={{ pathname: PATH_NAME.embed('home') }}>
+                  <p className="rounded-md p-2 text-title-2-demi hover:bg-monochrome-6/10">Embed Page</p>
+                </Link>
+              )}
               <Link href={{ pathname: termsAndCondition ?? PATH_NAME.terms }}>
                 <p className="rounded-md p-2 text-title-2-demi hover:bg-monochrome-6/10">Terms and Conditions</p>
               </Link>
