@@ -38,8 +38,8 @@ const BlogsSection = ({
           </div>
           <div className="flex w-2/5 flex-col gap-6">
             <MultiEmbed
-              dataEmbedId={`${embedConfigs['Home/Search Embed1'].embedId}`}
-              dataEmbedApiKey={embedConfigs['Home/Search Embed1'].embedApiKey}
+              dataEmbedId={`${embedConfigs['Blog Embed'].embedId}`}
+              dataEmbedApiKey={embedConfigs['Blog Embed'].embedApiKey}
               style={{
                 height: '615px',
                 width: '350px',
@@ -94,8 +94,8 @@ const BlogsSection = ({
 
             <div className="flex flex-col gap-6">
               <MultiEmbed
-                dataEmbedId={`${embedConfigs['Home/Search Embed1'].embedId}`}
-                dataEmbedApiKey={embedConfigs['Home/Search Embed1'].embedApiKey}
+                dataEmbedId={`${embedConfigs['Blog Embed'].embedId}`}
+                dataEmbedApiKey={embedConfigs['Blog Embed'].embedApiKey}
                 style={{
                   height: '615px',
                   width: '350px',
