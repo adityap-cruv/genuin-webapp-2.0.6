@@ -74,6 +74,118 @@ export const STATIONS = [
       },
     ],
   },
+  {
+    name: 'Others',
+    communities: [
+      {
+        name: 'Red, Right & Ready 🇺🇸',
+        slug: 'red-right-ready',
+        audio:
+          'https://www.iheart.com/podcast/1119-the-clay-travis-and-buck-57927691/episode/hour-3-president-trump-calls-201512488/?embed=true&pname=begeniun&autoplay=1',
+        profileImage:
+          'https://media.begenuin.com/uploads/profile_images/community/s/999e6734-2dd2-44c3-a4ee-6d9c3b4d43dd_20250302_105118.jpg',
+        brand: 'clay-and-buck',
+      },
+      {
+        name: 'Herd with Colin Cowherd',
+        slug: 'herd-with-colin-cowherd',
+        audio:
+          'https://www.iheart.com/podcast/1-the-herd-with-colin-cowherd-27332740/episode/hour-3-michael-irvin-stops-257782152/?embed=true&pname=begeniun&autoplay=1',
+        profileImage:
+          'https://media.begenuin.com/uploads/profile_images/community/s/communityProfile_1741451483787.png',
+        brand: 'herd-with-colin-cowherd',
+      },
+      {
+        name: 'Enrique Santos',
+        slug: 'enrique-santos',
+        audio:
+          'https://www.iheart.com/podcast/1119-enrique-santos-podcast-60735270/episode/por-que-siempre-la-amante-es-257688982/?embed=true&pname=begeniun&autoplay=1',
+        profileImage:
+          'https://media.begenuin.com/uploads/profile_images/community/s/communityProfile_1741452169258.png',
+        brand: 'enrique-santos',
+      },
+      {
+        name: 'Ryan Seacrest',
+        slug: 'ryan-seacrest',
+        audio:
+          'https://www.iheart.com/podcast/51-on-air-with-ryan-seacrest-80159774/episode/full-show-the-new-years-resolution-255211383/?embed=true&pname=begeniun&autoplay=1',
+        profileImage: 'https://media.begenuin.com/uploads/profile_images/s/brandProfileLogo_1741452427622.png',
+        brand: 'ryan-seacrest',
+      },
+      {
+        name: 'The Woody Show',
+        slug: 'the-woody-show',
+        audio:
+          'https://www.iheart.com/podcast/684-the-woody-show-26318098/episode/full-show-pod-the-woody-show-257398130/?embed=true&pname=begeniun&autoplay=1',
+        profileImage:
+          'https://media.begenuin.com/uploads/profile_images/community/s/communityProfile_1741453313040.png',
+        brand: 'the-woody-show',
+      },
+      {
+        name: 'Stuff You Should Know',
+        slug: 'stuff-you-should-know',
+        audio:
+          'https://www.iheart.com/podcast/1119-stuff-you-should-know-26940277/episode/how-lsd-works-29467646/?embed=true&pname=begeniun&autoplay=1',
+        profileImage:
+          'https://media.begenuin.com/uploads/profile_images/community/s/communityProfile_1741453920785.png',
+        brand: 'stuff-you-should-know',
+      },
+      {
+        name: 'The Happiness Lab',
+        slug: 'the-happiness-lab',
+        audio:
+          'https://www.iheart.com/podcast/1297-the-happiness-lab-with-dr-47445035/episode/how-to-fight-perfectionism-182108110/?embed=true&pname=begeniun&autoplay=1',
+        profileImage:
+          'https://media.begenuin.com/uploads/profile_images/community/s/communityProfile_1741454389681.png',
+        brand: 'the-happiness-lab',
+      },
+      {
+        name: 'Stuff To Blow Your Mind',
+        slug: 'stuff-to-blow-your-mind',
+        audio:
+          'https://www.iheart.com/podcast/105-stuff-to-blow-your-mind-21123915/episode/weirdhouse-cinema-santo-vs-the-martian-256570042/?embed=true&pname=begeniun&autoplay=1',
+        profileImage:
+          'https://media.begenuin.com/uploads/profile_images/community/s/communityProfile_1741454775849.png',
+        brand: 'stuff-to-blow-your-mind',
+      },
+      {
+        name: 'All The Smoke',
+        slug: 'all-the-smoke',
+        audio:
+          'https://www.iheart.com/podcast/1119-all-the-smoke-51664494/episode/vice-president-kamala-harris-interview-221970816/?embed=true&pname=begeniun&autoplay=1',
+        profileImage:
+          'https://media.begenuin.com/uploads/profile_images/community/s/communityProfile_1741458089492.png',
+        brand: 'all-the-smoke',
+      },
+      {
+        name: 'Las Culturistas',
+        slug: 'las-culturistas',
+        audio:
+          'https://www.iheart.com/podcast/1119-las-culturistas-with-matt-31090140/episode/ive-been-through-w-ariana-grande-235445958/?embed=true&pname=begeniun&autoplay=1',
+        profileImage:
+          'https://media.begenuin.com/uploads/profile_images/community/s/communityProfile_1741455436669.png',
+        brand: 'las-culturistas',
+      },
+      {
+        name: 'Ridiculous History',
+        slug: 'ridiculous-history',
+        audio:
+          'https://www.iheart.com/podcast/105-ridiculous-history-28588696/episode/the-ridiculous-history-of-hot-sauce-154562470/?embed=true&pname=begeniun&autoplay=1',
+        profileImage:
+          'https://media.begenuin.com/uploads/profile_images/community/s/communityProfile_1741455805084.png',
+        brand: 'ridiculous-history',
+      },
+      {
+        name: 'Nikki Glaser',
+        slug: 'nikki-glaser',
+        audio:
+          'https://www.iheart.com/podcast/1119-the-nikki-glaser-podcast-79573913/episode/500-golden-globes-glow-up-nikki-glasers-255294659/?embed=true&pname=begeniun&autoplay=1',
+        profileImage:
+          'https://media.begenuin.com/uploads/profile_images/community/s/communityProfile_1741456167596.png',
+        brand: 'nikki-glaser',
+      },
+    ],
+  },
 ]
 
 export function IHeartDemo({ inModal = false }: { inModal?: boolean }) {
