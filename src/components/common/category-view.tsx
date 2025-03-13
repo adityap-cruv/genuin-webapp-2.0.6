@@ -107,33 +107,35 @@ export function Stations({ className, ...props }: StationsPropsType) {
       <Accordion type="single" collapsible className="my-1.5">
         {stations?.map((category, index) => {
           return (
-            <div key={index}>
-              <AccordionItem value={category.name} className="border-none">
-                <AccordionTrigger className="p-0 py-1.5">
-                  <p className="line-clamp-1 text-left text-title-2-demi">{category.name}</p>
-                </AccordionTrigger>
-                {category.communities.map((item, index) => (
-                  <AccordionContent key={index} className="p-0">
-                    <Link href={PATH_NAME.community(item.slug) + '?feed=1'}>
-                      <div className="flex items-center gap-3 rounded-md px-3 py-1.5 hover:bg-monochrome-6/10">
-                        <CustomAvatar
-                          className="h-8 w-8 bg-tertiary-300"
-                          imageUrl={item.profileImage ?? ''}
-                          fallbackString={item.name ?? ''}
-                          isAvatar={false}
-                        />
-                        <p
-                          className={`break-all text-title-2-demi lg:line-clamp-1 ${
-                            pathName === PATH_NAME.community(item.slug) && 'text-primary'
-                          }`}>
-                          {item.name}
-                        </p>
-                      </div>
-                    </Link>
-                  </AccordionContent>
-                ))}
-              </AccordionItem>
-            </div>
+            category.name !== 'Others' && (
+              <div key={index}>
+                <AccordionItem value={category.name} className="border-none">
+                  <AccordionTrigger className="p-0 py-1.5">
+                    <p className="line-clamp-1 text-left text-title-2-demi">{category.name}</p>
+                  </AccordionTrigger>
+                  {category.communities.map((item, index) => (
+                    <AccordionContent key={index} className="p-0">
+                      <Link href={PATH_NAME.community(item.slug) + '?feed=1'}>
+                        <div className="flex items-center gap-3 rounded-md px-3 py-1.5 hover:bg-monochrome-6/10">
+                          <CustomAvatar
+                            className="h-8 w-8 bg-tertiary-300"
+                            imageUrl={item.profileImage ?? ''}
+                            fallbackString={item.name ?? ''}
+                            isAvatar={false}
+                          />
+                          <p
+                            className={`break-all text-title-2-demi lg:line-clamp-1 ${
+                              pathName === PATH_NAME.community(item.slug) && 'text-primary'
+                            }`}>
+                            {item.name}
+                          </p>
+                        </div>
+                      </Link>
+                    </AccordionContent>
+                  ))}
+                </AccordionItem>
+              </div>
+            )
           )
         })}
       </Accordion>
