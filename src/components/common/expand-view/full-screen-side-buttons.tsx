@@ -27,7 +27,7 @@ const FullScreenSideButtons = ({ videos, currentIndex, swiperInstance }: FullScr
   return (
     <>
       <Button
-        disabled={currentIndex === videos.length - 1}
+        disabled={currentIndex === 0}
         className={cn(
           'flex-shrink-0 rounded-full bg-monochrome-white/10 p-3 hover:bg-monochrome-white/20',
           currentIndex === 0 ? 'opacity-40' : undefined
