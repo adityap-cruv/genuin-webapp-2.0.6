@@ -43,7 +43,11 @@ export function DownloadAppDialog({ children }: Props) {
     }))
   )
 
-  return isMobile ? (
+  // had to cover this for use case of having smart get app for ipad
+  // isMobile flag is not detecting ipad as mobile device
+  const isIpad = typeof window !== 'undefined' ? window.navigator.userAgent.toLowerCase().includes('ipad') : false
+
+  return isMobile || isIpad ? (
     <div
       onClick={() => {
         openGeneratedLink(getMobileAppUrl())
