@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.ted.android",
+      "sha256_cert_fingerprints": [
+        "97:F3:62:52:21:39:A2:47:4C:3D:DA:98:E6:C6:9C:8B:97:85:D6:D7:8A:5B:31:24:EA:C2:0C:35:52:AC:3D:E9"
+      ]
+    }
+  }
+]
