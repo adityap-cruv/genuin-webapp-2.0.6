@@ -171,7 +171,7 @@ export function SideBar({ isCollapsed }: { isCollapsed?: boolean }) {
         {!shouldShowIHeartDemo && !isCollapsed && (
           <>
             <span className="hidden xl:block">
-              {(!isClaimed || user?.ksCbRequestStatus !== 3) && (
+              {(!isClaimed || (user?.ksCbRequestStatus !== 3 && showBecomeACreator)) && (
                 <hr className="border-1 my-2 border-monochrome-black/10" />
               )}
               <DownloadAppDialog />
@@ -218,7 +218,7 @@ export function SideBar({ isCollapsed }: { isCollapsed?: boolean }) {
         {shouldShowIHeartDemo && (
           <>
             <span className="hidden xl:block">
-              {(!isClaimed || user?.ksCbRequestStatus !== 3) && (
+              {(!isClaimed || (user?.ksCbRequestStatus !== 3 && showBecomeACreator)) && (
                 <hr className="border-1 my-2 border-monochrome-black/10" />
               )}
               <DownloadAppDialog />
