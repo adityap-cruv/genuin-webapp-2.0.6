@@ -62,7 +62,7 @@ export function Reaction({
           (generatedLink) => {
             openModal({
               deepLink: generatedLink,
-              subtitle: `Get the app to ${config.reactions.title + ' ' + config.reactions.suffix} the video.`,
+              subtitle: `Get the app to ${config?.reactions?.title + ' ' + config?.reactions?.suffix} the video.`,
             })
           }
         )

@@ -40,7 +40,7 @@ const BecomeCbCard = dynamic(
 )
 
 // TODO: Improve active states on all items.
-export function SideBar() {
+export function SideBar({ isCollapsed }: { isCollapsed?: boolean }) {
   const {
     user,
     brandName,
@@ -72,7 +72,9 @@ export function SideBar() {
   return (
     <nav
       style={{ height: sizeboxHeight }}
-      className="flex h-full w-fit flex-col justify-between overflow-auto border border-monochrome-9 px-4 py-4 transition-[width] xl:mr-16 xl:w-full xl:max-w-[280px] xl:border-none xl:px-0">
+      className={`flex h-full w-fit flex-shrink-0 flex-col justify-between overflow-auto border border-monochrome-9 px-4 py-4 transition-[width] ${
+        isCollapsed ? 'border-none' : 'xl:mr-16 xl:w-full xl:max-w-[280px] xl:border-none xl:px-0'
+      }`}>
       <div>
         {shouldShowIHeartDemo && (
           <>
@@ -82,22 +84,34 @@ export function SideBar() {
         )}
         {shouldShowIHeartDemo && <p className="text-title-2-demi text-tertiary">Menu</p>}
         <Link href={{ pathname: PATH_NAME.home() }}>
-          <Item brandName={brandName} title="Home" isActive={pathName === PATH_NAME.home()}>
+          <Item isCollapsed={isCollapsed} brandName={brandName} title="Home" isActive={pathName === PATH_NAME.home()}>
             <HomeIcon isActive={pathName === PATH_NAME.home()} />
           </Item>
         </Link>
         <Link href={{ pathname: PATH_NAME.popular() }}>
-          <Item brandName={brandName} title="Popular" isActive={pathName === PATH_NAME.popular()}>
+          <Item
+            isCollapsed={isCollapsed}
+            brandName={brandName}
+            title="Popular"
+            isActive={pathName === PATH_NAME.popular()}>
             <PopularIcon isActive={pathName === PATH_NAME.popular()} />
           </Item>
         </Link>
         <Link href={{ pathname: PATH_NAME.latest() }}>
-          <Item brandName={brandName} title="Latest" isActive={pathName === PATH_NAME.latest()}>
+          <Item
+            isCollapsed={isCollapsed}
+            brandName={brandName}
+            title="Latest"
+            isActive={pathName === PATH_NAME.latest()}>
             <LatestIcon isActive={pathName === PATH_NAME.latest()} />
           </Item>
         </Link>
         <Link href={{ pathname: PATH_NAME.explore() }}>
-          <Item brandName={brandName} title="Explore" isActive={pathName === PATH_NAME.explore()}>
+          <Item
+            isCollapsed={isCollapsed}
+            brandName={brandName}
+            title="Explore"
+            isActive={pathName === PATH_NAME.explore()}>
             <ExploreIcon isActive={pathName === PATH_NAME.explore()} />
           </Item>
         </Link>
@@ -105,6 +119,7 @@ export function SideBar() {
           <>
             <Link href={{ pathname: PATH_NAME.notification() }}>
               <Item
+                isCollapsed={isCollapsed}
                 brandName={brandName}
                 title="Notification"
                 isActive={pathName === PATH_NAME.notification()}
@@ -116,33 +131,44 @@ export function SideBar() {
               href={{
                 pathname: user.isBrandSystemUser ? PATH_NAME.brand(user.brandSlug) : PATH_NAME.profile(user.nickname),
               }}>
-              <Item brandName={brandName} title="Profile" isActive={pathName === PATH_NAME.profile(user.nickname)}>
+              <Item
+                isCollapsed={isCollapsed}
+                brandName={brandName}
+                title="Profile"
+                isActive={pathName === PATH_NAME.profile(user.nickname)}>
                 <ProfileIcon isActive={pathName === PATH_NAME.profile(user.nickname)} />
               </Item>
             </Link>
           </>
         )}
         {/* TODO: Genuin as a Brand. Check and discuss to change default true value */}
-        <Popover>
-          <PopoverTrigger className="w-full">
-            <Item title="More">
-              <MoreIcon className="fill-secondary" isActive={false} />
-            </Item>
-          </PopoverTrigger>
-          <PopoverContent
-            sideOffset={-6}
-            className=" rounded-2xl p-2 shadow-lg shadow-monochrome-3/40"
-            side="bottom"
-            align="start">
-            <Link href={{ pathname: termsAndCondition ?? PATH_NAME.terms }}>
-              <p className="rounded-md p-2 text-title-2-demi hover:bg-monochrome-6/10">Terms and Conditions</p>
-            </Link>
-            <Link href={{ pathname: privacyPolicy ?? PATH_NAME.privacy }}>
-              <p className="rounded-md p-2 text-title-2-demi hover:bg-monochrome-6/10">Privacy Policy</p>
-            </Link>
-          </PopoverContent>
-        </Popover>
-        {!shouldShowIHeartDemo && (
+        {!isCollapsed && (
+          <Popover>
+            <PopoverTrigger className="w-full">
+              <Item title="More">
+                <MoreIcon className="fill-secondary" isActive={false} />
+              </Item>
+            </PopoverTrigger>
+            <PopoverContent
+              sideOffset={-6}
+              className=" rounded-2xl p-2 shadow-lg shadow-monochrome-3/40"
+              side="bottom"
+              align="start">
+              {/* {brandId?.toString() !== '99' && (
+                <Link href={{ pathname: PATH_NAME.embed('home') }}>
+                  <p className="rounded-md p-2 text-title-2-demi hover:bg-monochrome-6/10">Embed Page</p>
+                </Link>
+              )} */}
+              <Link href={{ pathname: termsAndCondition ?? PATH_NAME.terms }}>
+                <p className="rounded-md p-2 text-title-2-demi hover:bg-monochrome-6/10">Terms and Conditions</p>
+              </Link>
+              <Link href={{ pathname: privacyPolicy ?? PATH_NAME.privacy }}>
+                <p className="rounded-md p-2 text-title-2-demi hover:bg-monochrome-6/10">Privacy Policy</p>
+              </Link>
+            </PopoverContent>
+          </Popover>
+        )}
+        {!shouldShowIHeartDemo && !isCollapsed && (
           <>
             <span className="hidden xl:block">
               {(!isClaimed || user?.ksCbRequestStatus !== 3) && (
@@ -182,8 +208,8 @@ export function SideBar() {
             {user?.ksCbRequestStatus !== 3 && showBecomeACreator && <BecomeCbCard className="my-4 hidden xl:block" />}
           </>
         )}
-        {shouldShowIHeartDemo && <CategoryViewDynamic className="hidden xl:block" />}
-        {!shouldShowIHeartDemo && (
+        {shouldShowIHeartDemo && !isCollapsed && <CategoryViewDynamic className="hidden xl:block" />}
+        {!shouldShowIHeartDemo && !isCollapsed && (
           <>
             <CategoryViewDynamic className="hidden xl:block" />
             <RecentCommunities />
@@ -231,7 +257,7 @@ export function SideBar() {
         )}
       </div>
       {/* TODO: Genuin as a Brand. Check and discuss to change default true value */}
-      {brandId?.toString() !== '99' && (
+      {!isCollapsed && brandId?.toString() !== '99' && (
         <div className="hidden xl:block">
           <hr className="border-1 mb-4 mt-1 border-monochrome-black/10" />
           <div className="flex items-center">
@@ -255,9 +281,10 @@ type ItemProps = {
   children: ReactNode
   notificationCount?: number
   brandName?: string
+  isCollapsed?: boolean
 }
 
-function Item({ title, isActive, children, notificationCount = 0, brandName }: ItemProps) {
+function Item({ title, isActive, children, notificationCount = 0, brandName, isCollapsed }: ItemProps) {
   return (
     <div
       onClick={() => {
@@ -277,7 +304,11 @@ function Item({ title, isActive, children, notificationCount = 0, brandName }: I
           </div>
         )}
       </div>
-      <p className={cn('hidden whitespace-nowrap !text-title-2-demi xl:block', isActive && 'text-primary')}>{title}</p>
+      {!isCollapsed && (
+        <p className={cn('hidden whitespace-nowrap !text-title-2-demi xl:block', isActive && 'text-primary')}>
+          {title}
+        </p>
+      )}
     </div>
   )
 }

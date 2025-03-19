@@ -6,6 +6,7 @@ export const PATH_NAME = {
   community: (id?: string) => `/community/${id}`,
   settings: (page?: string) => `/settings/${page}`,
   brand: (id?: string) => `/brand/${id}`,
+  embed: (page?: string) => `/embed/${page}`,
   home: () => `/home`,
   popular: () => `/popular`,
   latest: () => `/latest`,
