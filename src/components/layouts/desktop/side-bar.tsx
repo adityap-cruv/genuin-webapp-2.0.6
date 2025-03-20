@@ -154,11 +154,11 @@ export function SideBar({ isCollapsed }: { isCollapsed?: boolean }) {
               className=" rounded-2xl p-2 shadow-lg shadow-monochrome-3/40"
               side="bottom"
               align="start">
-              {/* {brandId?.toString() !== '99' && (
+              {brandId?.toString() !== '99' && (
                 <Link href={{ pathname: PATH_NAME.embed('home') }}>
                   <p className="rounded-md p-2 text-title-2-demi hover:bg-monochrome-6/10">Embed Page</p>
                 </Link>
-              )} */}
+              )}
               <Link href={{ pathname: termsAndCondition ?? PATH_NAME.terms }}>
                 <p className="rounded-md p-2 text-title-2-demi hover:bg-monochrome-6/10">Terms and Conditions</p>
               </Link>
