@@ -70,6 +70,9 @@ export async function middleware(request: NextRequest) {
       } else if (Number(config?.brand_id) === 2357) {
         // hard coding for ted
         return NextResponse.rewrite(new URL('/.well-known/ted/apple-app-site-association', request.url))
+      } else if (Number(config?.brand_id) === 1323) {
+        // hard coding for ted demo on meetshahcode
+        return NextResponse.rewrite(new URL('/.well-known/meetshahcode/apple-app-site-association', request.url))
       } else {
         return NextResponse.next()
       }
