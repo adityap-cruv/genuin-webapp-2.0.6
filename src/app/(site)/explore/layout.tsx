@@ -8,9 +8,9 @@ export default function PageLayout({ children }: { children: ReactNode }) {
 
   if (isMobile) {
     return (
-      <main>
+      <main className="h-screen overflow-auto">
         <TopBar />
-        {children}
+        <div className="h-full">{children}</div>
       </main>
     )
   }

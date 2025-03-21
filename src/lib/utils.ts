@@ -9,6 +9,7 @@ import { type ReactNode } from 'react'
 import { INDUSTRY, type IndustryName, PROTECTED_ROUTES, MOBILE_DOWNLOAD_APP_LINK } from './constants'
 import { type CommunityUserRoleType } from './schemas/roles'
 import Analytics from '@/services/analytics'
+import { UAParser } from 'ua-parser-js'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -445,17 +446,17 @@ export function getIndustryName(industryType: number | undefined): IndustryName 
 export function getDataForIndustry(config: ConfigType | undefined, embedSource: any) {
   type IndustryName = keyof (typeof embedSource)[number]
   const industryName = getIndustryName(config?.industry_type) as IndustryName
-  return embedSource.find((item: Record<string, any>) => Object.keys(item).includes(industryName as string))?.[industryName as string]
+  return embedSource.find((item: Record<string, any>) => Object.keys(item).includes(industryName as string))?.[
+    industryName as string
+  ]
 }
 
 export function getMobileAppUrl() {
   const { config } = useGenuinOptions.getState()
 
   const userAgent = navigator.userAgent.toLowerCase()
-  const isIOS =
-    userAgent.includes('ipad') ||
-    userAgent.includes('iphone') ||
-    (userAgent.includes('ipod') && !('MSStream' in window))
+  const osName = new UAParser().getResult().os.name?.toLowerCase().replace(/\s+/g, '')
+  const isIOS = osName === 'macos' || osName === 'ios' || /iphone|ipad|ipod/.test(userAgent)
 
   const appStoreLink = config?.integrations.sdk.ios.appstore_link ?? MOBILE_DOWNLOAD_APP_LINK
   const playStoreLink = config?.integrations.sdk.android.playstore_link ?? MOBILE_DOWNLOAD_APP_LINK
