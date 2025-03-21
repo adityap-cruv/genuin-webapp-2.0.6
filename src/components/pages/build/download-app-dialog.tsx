@@ -14,6 +14,7 @@ import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { useShallow } from 'zustand/react/shallow'
 import { getMobileAppUrl, openGeneratedLink } from '@/lib/utils'
 import Analytics from '@/services/analytics'
+import { UAParser } from 'ua-parser-js'
 
 interface FormData {
   phone: string
@@ -45,7 +46,7 @@ export function DownloadAppDialog({ children }: Props) {
 
   // had to cover this for use case of having smart get app for ipad
   // isMobile flag is not detecting ipad as mobile device
-  const isIpad = typeof window !== 'undefined' ? window.navigator.userAgent.toLowerCase().includes('ipad') : false
+  const isIpad = new UAParser().getResult().device.model?.toLowerCase() === 'ipad'
 
   return isMobile || isIpad ? (
     <div
