@@ -32,16 +32,16 @@ const EmbedFooter = () => {
 
         {/* Social Icons */}
         <div className="mt-4 flex gap-4">
-          <div className="rounded-full bg-primary">
+          <div className="rounded-full bg-primary p-3">
             <TwitterIcon className="cursor-pointer" variant={'light'} />
           </div>
-          <div className="rounded-full bg-primary">
+          <div className="rounded-full bg-primary p-3">
             <FacebookIcon className="cursor-pointer" variant={'light'} />
           </div>
-          <div className="rounded-full bg-primary">
+          <div className="rounded-full bg-primary p-3">
             <InstagramIcon className="cursor-pointer" variant={'light'} />
           </div>
-          <div className="rounded-full bg-primary">
+          <div className="rounded-full bg-primary p-3">
             <LinkedInIcon className="cursor-pointer" variant={'light'} />
           </div>
         </div>
