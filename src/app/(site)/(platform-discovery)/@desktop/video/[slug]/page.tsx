@@ -76,5 +76,11 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
       type: 'video.other',
       images: [{ url: `${videoDetails?.preview_image}` }],
     },
+    // have to overwrite the image url to avoid cache issue
+    // when share_image_id is passed in the query params
+    other: {
+      'og:image': videoDetails?.preview_image,
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+    },
   }
 }
