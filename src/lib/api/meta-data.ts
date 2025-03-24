@@ -19,11 +19,20 @@ type MetadataPayloadType = Partial<{
   slug: string
   domain: string
   subdomain: string
+  shareImageId: number
 }> & {
   type: number
 }
 
-export async function fetchMetadata({ type, brandId, username, slug, domain, subdomain }: MetadataPayloadType) {
+export async function fetchMetadata({
+  type,
+  brandId,
+  username,
+  slug,
+  domain,
+  subdomain,
+  shareImageId,
+}: MetadataPayloadType) {
   try {
     const response = await axios.get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/web/meta_data', {
       params: {
@@ -33,6 +42,7 @@ export async function fetchMetadata({ type, brandId, username, slug, domain, sub
         slug,
         domain,
         subdomain,
+        share_image_id: shareImageId,
       },
     })
     return response.data.data
