@@ -86,7 +86,7 @@ const MentionInput: React.FC<{
     setCaretPosition(selectionStart ?? 0)
 
     const textBeforeCaret = value.slice(0, selectionStart ?? 0)
-    const mentionMatch = textBeforeCaret.match(/@(\w*)$/)
+    const mentionMatch = textBeforeCaret.match(/@([\w._]*)$/)
     const urlMatches = value.match(REGEX_FOR_URLS)
 
     if (mentionMatch) {
