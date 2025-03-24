@@ -323,8 +323,8 @@ export function Dynamic({
               ${item.text}
             </a>`
         }
-        if (typeof item === 'object' && item.community_id && item.text) {
-          return `<a href="${PATH_NAME.community(item.text)}"
+        if (typeof item === 'object' && item.slug && item.text) {
+          return `<a href="${PATH_NAME.community(item.slug)}"
               key="community-${index}"
               class="text-primary">
               ${item.text}
