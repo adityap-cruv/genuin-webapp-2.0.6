@@ -14,6 +14,7 @@ type PageProps = {
     community: string
     group: string
     utm_source: string
+    share_image_id?: number
   }
 }
 
@@ -41,8 +42,6 @@ type VideoDataType = {
 }
 
 export async function generateMetadata({ params, searchParams }: PageProps): Promise<Metadata> {
-  const videoDetails: VideoDataType = await fetchMetadata({ type: 4, slug: params.slug })
-
   let shareLink = `${process.env.NEXT_PUBLIC_HOST_URL}${PATH_NAME.video(params.slug)}`
   const queryParams = []
   if (searchParams?.community) {
@@ -54,9 +53,18 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   if (searchParams?.utm_source) {
     queryParams.push(`utm_source=${searchParams.utm_source}`)
   }
+  if (searchParams?.share_image_id) {
+    queryParams.push(`share_image_id=${searchParams.share_image_id}`)
+  }
   if (queryParams.length > 0) {
     shareLink += `?${queryParams.join('&')}`
   }
+
+  const videoDetails: VideoDataType = await fetchMetadata({
+    type: 4,
+    slug: params.slug,
+    shareImageId: searchParams.share_image_id,
+  })
 
   return {
     title: videoDetails?.title,
