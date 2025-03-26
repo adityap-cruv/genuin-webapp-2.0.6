@@ -1,12 +1,11 @@
-import React, { useEffect, useRef, useState, type ComponentProps } from 'react'
+import React, { useEffect, useMemo, useRef, useState, type ComponentProps } from 'react'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import Link from 'next/link'
-import { cn } from '@lib/utils'
+import { cn, tryJsonParse } from '@lib/utils'
 import { useGenuinOptions } from '@/lib/stores/genuin-options'
+import Link from 'next/link'
 
 export const ReadMore = {
   default: WithoutMentions,
-  withMention: WithMentions,
   dynamic: Dynamic,
 }
 
@@ -63,199 +62,6 @@ function WithoutMentions({ text, maxChars = 150, ...props }: Props) {
   )
 }
 
-type WithMentionsProps = {
-  textArr:
-    | Array<
-        | string
-        | { member_id: string; text: string }
-        | { community_id: string; text: string }
-        | { url: string; text: string }
-      >
-    | string
-  showMore?: boolean
-  setShowMore?: (showMore: boolean) => void
-} & Omit<Props, 'text'>
-
-export function WithMentions({
-  textArr,
-  maxChars = 50,
-  className,
-  showMore: externalShowMore,
-  setShowMore: externalSetShowMore,
-  ...props
-}: WithMentionsProps) {
-  if (typeof textArr === 'string') return <WithoutMentions text={textArr} {...props} />
-  const [internalShowMore, setInternalShowMore] = useState(true)
-  // Use the external state if provided, otherwise fallback to internal state
-  const showMore = externalShowMore ?? internalShowMore
-  const setShowMore = externalSetShowMore ?? setInternalShowMore
-
-  const [processedComponent, setProcessedComponent] = useState<Array<string | JSX.Element>>([])
-
-  useEffect(() => {
-    const SHOW_MORE_BUTTON = (
-      <span
-        key="show-more"
-        onClick={(e) => {
-          e.stopPropagation()
-          setShowMore(false)
-        }}
-        className="cursor-pointer pl-1 text-tertiary">
-        (View more)
-      </span>
-    )
-    const SHOW_LESS_BUTTON = (
-      <span
-        key="show-less"
-        onClick={(e) => {
-          e.stopPropagation()
-          setShowMore(true)
-        }}
-        className="cursor-pointer pl-1 text-tertiary">
-        (View less)
-      </span>
-    )
-    let limit = maxChars
-    // Type guards for identifying the specific shape of the item
-    const isMemberItem = (item: any): item is { member_id: string; text: string } => 'member_id' in item
-    const isCommunityItem = (item: any): item is { community_id: string; text: string } => 'community_id' in item
-    const isUrlItem = (item: any): item is { url: string; text: string } => 'url' in item
-
-    const newArr: Array<string | JSX.Element> = []
-    if (showMore) {
-      for (let i = 0; i < textArr.length; i++) {
-        const item = textArr[i]
-        if (limit <= 0) {
-          break
-        }
-        if (typeof item === 'string') {
-          if (item.length <= limit) {
-            newArr.push(item)
-            limit -= item.length
-          } else {
-            newArr.push(item.slice(0, limit) + '...')
-            newArr.push(SHOW_MORE_BUTTON)
-            break
-          }
-        } else if (isMemberItem(item)) {
-          newArr.push(
-            <Link
-              onClick={(e) => {
-                e.stopPropagation()
-              }}
-              key={i}
-              href={PATH_NAME.profile(item.text.slice(1)) ?? ''}
-              className="text-primary">
-              {item.text}
-            </Link>
-          )
-          limit -= item?.text.length ?? 0
-        } else if (isCommunityItem(item)) {
-          newArr.push(
-            <Link
-              onClick={(e) => {
-                e.stopPropagation()
-              }}
-              key={i}
-              href={PATH_NAME.community(item.text) ?? ''}
-              className="text-primary">
-              {item.text}
-            </Link>
-          )
-          limit -= item.text.length
-        } else if (isUrlItem(item)) {
-          newArr.push(
-            <Link
-              onClick={(e) => {
-                e.stopPropagation()
-              }}
-              key={i}
-              href={item.url}
-              className="text-primary"
-              target="_blank">
-              {item.text}
-            </Link>
-          )
-          limit -= item.text.length
-        }
-      }
-    } else {
-      textArr.forEach((item, index) => {
-        if (typeof item === 'string') {
-          newArr.push(item)
-          limit -= item.length
-        } else if (isMemberItem(item)) {
-          newArr.push(
-            <Link
-              onClick={(e) => {
-                e.stopPropagation()
-              }}
-              key={`member-${index}`}
-              href={PATH_NAME.profile(item.text.slice(1))}
-              className="text-primary">
-              {item.text}
-            </Link>
-          )
-          limit -= item?.text.length ?? 0
-        } else if (isCommunityItem(item)) {
-          newArr.push(
-            <Link
-              onClick={(e) => {
-                e.stopPropagation()
-              }}
-              key={index}
-              href={PATH_NAME.community(item.text) ?? ''}
-              className="text-primary">
-              {item.text}
-            </Link>
-          )
-          limit -= item.text.length
-        } else if (isUrlItem(item)) {
-          newArr.push(
-            <Link
-              onClick={(e) => {
-                e.stopPropagation()
-              }}
-              key={`url-${index}`}
-              href={item.url}
-              className="text-primary"
-              target="_blank">
-              {item.text}
-            </Link>
-          )
-          limit -= item.text.length
-        }
-      })
-      if (limit < 0) {
-        newArr.push(SHOW_LESS_BUTTON)
-      }
-    }
-
-    if (newArr) setProcessedComponent(newArr)
-  }, [textArr, showMore, maxChars])
-
-  return (
-    <p
-      className={cn(
-        `hide-scrollbar max-h-60 overflow-auto sm:max-h-full sm:overflow-clip ${!showMore && 'swiper-no-swiping'}`,
-        className
-      )}
-      onClick={(e) => {
-        e.stopPropagation()
-        // Only toggle if the "View More" or "View Less" button is present
-        const hasToggleButton = processedComponent.some(
-          (item) => React.isValidElement(item) && (item.key === 'show-more' || item.key === 'show-less')
-        )
-        if (hasToggleButton) {
-          setShowMore(!showMore)
-        }
-      }}
-      {...props}>
-      {processedComponent}
-    </p>
-  )
-}
-
 function applyLineClampStyles(element: HTMLElement, maxLines: number | null) {
   if (maxLines === null) {
     element.style.display = '' // Reset display
@@ -272,13 +78,67 @@ function applyLineClampStyles(element: HTMLElement, maxLines: number | null) {
   }
 }
 
+const convertUrlsToAnchorTags = (strArr: any) => {
+  return strArr.map((item: any, index: number) => {
+    if (typeof item === 'object' && item.url && item.text) {
+      return (
+        <Link
+          key={`url-${index}`}
+          href={item.url.startsWith('http') ? item.url : `https://${item.url.replace(/^\/+|\/+$/g, '')}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={cn('text-primary')}
+          onClick={(e) => {
+            e.stopPropagation()
+          }}>
+          {item.text}
+        </Link>
+      )
+    }
+    if (typeof item === 'object' && item.member_id && item.text) {
+      return (
+        <Link
+          key={`member-${index}`}
+          href={PATH_NAME.profile(item.text.slice(1))}
+          className={cn('text-primary')}
+          onClick={(e) => {
+            e.stopPropagation()
+          }}>
+          {item.text}
+        </Link>
+      )
+    }
+    if (typeof item === 'object' && item.slug && item.text) {
+      return (
+        <Link
+          key={`community-${index}`}
+          href={PATH_NAME.community(item.slug)}
+          className={cn('text-primary')}
+          onClick={(e) => {
+            e.stopPropagation()
+          }}>
+          {item.text}
+        </Link>
+      )
+    }
+    if (typeof item !== 'object') return item
+    return null
+  })
+}
+
 type DynamicProps = {
   text: any
   maxLines?: number
   showViewMore?: boolean
   shouldAnimate?: boolean
+  /**
+   * The position of the text.
+   * If position is on video or something else than it will have white text. But for outside it will have default behavior.
+   * @default 'outside'
+   */
+  position: 'overlay' | 'outside'
   isExpanded?: boolean
-  setIsExpanded?: (expanded: boolean) => void
+  setIsExpanded?: React.Dispatch<React.SetStateAction<boolean>>
   isFullScreen?: boolean
 } & ComponentProps<'p'>
 
@@ -290,12 +150,13 @@ export function Dynamic({
   isExpanded: isExpandedExternal,
   setIsExpanded: setIsExpandedExternal,
   isFullScreen,
+  position = 'outside',
+  onClick,
   ...props
 }: DynamicProps) {
   // height is used to calculate the max height of the text container.
-  const { height, isMobile } = useGenuinOptions((state) => ({
+  const { height } = useGenuinOptions((state) => ({
     height: state.sizeBoxes.default.height,
-    isMobile: state.isMobile,
   }))
   const textRef = useRef(null)
   const [isExpandedInternal, setIsExpandedInternal] = useState(false)
@@ -303,37 +164,10 @@ export function Dynamic({
   const isExpanded = isExpandedExternal ?? isExpandedInternal
   const setIsExpanded = setIsExpandedExternal ?? setIsExpandedInternal
 
-  const convertUrlsToAnchorTags = (strArr: any) => {
-    return strArr
-      .map((item: any, index: number) => {
-        if (typeof item === 'object' && item.url && item.text) {
-          return `<a
-              href="${item.url}"
-              target="_blank"
-              key="url-${index}"
-              class="text-primary">
-              ${item.text}
-            </a>`
-        }
-        if (typeof item === 'object' && item.member_id && item.text) {
-          return `<a
-              href="${PATH_NAME.profile(item.text.slice(1))}"
-              key="member-${index}"
-              class="text-primary">
-              ${item.text}
-            </a>`
-        }
-        if (typeof item === 'object' && item.slug && item.text) {
-          return `<a href="${PATH_NAME.community(item.slug)}"
-              key="community-${index}"
-              class="text-primary">
-              ${item.text}
-            </a>`
-        }
-        return item
-      })
-      .join('')
-  }
+  const processedText = useMemo(() => {
+    const textObj = tryJsonParse(text)
+    return Array.isArray(textObj) ? convertUrlsToAnchorTags(textObj) : textObj
+  }, [text])
 
   useEffect(() => {
     const checkOverflow = () => {
@@ -393,30 +227,25 @@ export function Dynamic({
     <p
       {...props}
       className={cn(
-        'whitespace-pre-wrap transition-[max-height] duration-500 sm:max-h-max',
+        'overflow-clip whitespace-pre-wrap transition-[max-height] duration-500 sm:max-h-max',
         {
-          'swiper-no-swiping hide-scrollbar overflow-auto': (isExpanded && isMobile) || isFullScreen,
+          'swiper-no-swiping __gen__sdk__hide__scrollbar overflow-auto': isExpanded,
         },
         props.className
       )}
       style={{
         // The max height of the text container is calculated based on the height of the video player.
-        // If mobile, the max height is 40% of the video player height.
-        maxHeight: shouldAnimate
-          ? isMobile || isFullScreen
-            ? isExpanded
-              ? height * 0.4
-              : maxLines * 24
-            : 'unset'
-          : undefined,
+        // If mobile, the max height is 30% of the video player height.
+        maxHeight: shouldAnimate ? (isExpanded ? height * 0.3 : maxLines * 24) : undefined,
       }}
       onClick={(e) => {
+        onClick?.(e)
         e.stopPropagation()
       }}>
       <span
         ref={textRef}
-        className="w-full break-words"
-        style={shouldAnimate ? undefined : !isExpanded ? clampedStyle : { wordBreak: 'break-word' }}
+        className={cn('w-full break-words', position !== 'outside' && 'text-white')}
+        style={!shouldAnimate && !isExpanded ? clampedStyle : { wordBreak: 'break-word' }}
         onClick={
           !showViewMore
             ? (e) => {
@@ -424,23 +253,16 @@ export function Dynamic({
                 setIsExpanded(!isExpanded)
               }
             : undefined
-        }
-        dangerouslySetInnerHTML={{ __html: Array.isArray(text) ? convertUrlsToAnchorTags(text) : text }}
-      />
-      {showViewMore && (isExpanded || isOverflowing) && (
+        }>
+        {processedText}
+      </span>
+      {showViewMore && isOverflowing && (
         <span
           className="cursor-pointer pl-1 text-body-1-med text-tertiary"
           onClick={() => {
-            setIsExpanded(!isExpanded)
+            setIsExpanded((x) => !x)
           }}>
-          {isExpanded ? (
-            <>
-              <br />
-              (View less)
-            </>
-          ) : (
-            '(View more)'
-          )}
+          {isExpanded ? '(View less)' : '(View more)'}
         </span>
       )}
     </p>

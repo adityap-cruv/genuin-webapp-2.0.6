@@ -111,9 +111,10 @@ const FullScreenVideoDetails = ({
             </motion.div>
           </motion.div>
         </div>
-        {currentVideo?.video.descriptionArr?.[0] && (
+        {currentVideo?.video.descriptionArr && (
           <div className="py-2">
             <ReadMore.dynamic
+              position="overlay"
               text={currentVideo.video.descriptionArr}
               className="w-full !break-words text-body-1-demi text-monochrome-white"
               maxLines={currentVideo?.video.linkoutId ? 1 : 2}

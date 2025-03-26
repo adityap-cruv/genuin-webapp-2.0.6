@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic'
 import { type CommentType } from '@lib/schemas/loop/comment'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { getTimeAgo, tryJsonParse } from '@lib/utils'
+import { getTimeAgo } from '@lib/utils'
 import { Reaction } from '../reaction'
 import { memo } from 'react'
 
@@ -101,6 +101,8 @@ const Comment = {
   },
   text({ comment }: { comment: CommentType }) {
     if (comment.comment_data)
-      return <ReadMore.dynamic className="text-body-1-med" text={tryJsonParse(comment.comment_data)} maxLines={2} />
+      return (
+        <ReadMore.dynamic position="outside" className="text-body-1-med" text={comment.comment_data} maxLines={2} />
+      )
   },
 }

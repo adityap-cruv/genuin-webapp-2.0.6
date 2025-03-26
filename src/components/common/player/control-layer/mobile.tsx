@@ -53,7 +53,7 @@ type MobileProps = {
   loopName: string
   loopSlug: string
   isExpanded?: boolean
-  setIsExpanded?: (showMore: boolean) => void
+  setIsExpanded?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export const Mobile = memo(function Mobile({ clickableUrl, ...props }: MobileProps) {
@@ -279,9 +279,10 @@ function Details({
             </motion.div>
           </motion.div>
         </div>
-        {descriptionArr?.[0] && (
+        {descriptionArr && (
           <div className="py-2">
             <ReadMore.dynamic
+              position="overlay"
               text={descriptionArr}
               className="w-full !break-words text-body-1-demi text-monochrome-white"
               maxLines={linkoutId ? 1 : 2}

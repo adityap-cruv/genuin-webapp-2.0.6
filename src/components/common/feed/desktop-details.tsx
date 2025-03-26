@@ -3,7 +3,7 @@ import { useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { DecorativeList } from '@components/custom/decorative-list'
-import { getTimeAgo } from '@lib/utils'
+import { cn, getTimeAgo } from '@lib/utils'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { LockIcon } from '@icons/LockIcon'
 import BrandBadgeIcon from '@/components/common/brand-badge-icon'
@@ -59,13 +59,11 @@ export function DesktopDetails({ loop, community, owner, video }: DesktopDetails
         </span>
       </div>
       <div ref={scrollDivRef} className="flex h-full flex-col overflow-auto overflow-x-clip">
-        {(video.descriptionArr ?? video.descriptionText) && (
-          <ReadMore.dynamic
-            text={Array.isArray(video.descriptionArr) ? video.descriptionArr : video.descriptionText}
-            maxLines={2}
-            className="border-b border-tertiary-200 p-4 pt-0"
-          />
-        )}
+        <div className={cn('border-b border-tertiary-200', video.descriptionArr ? 'p-4 pt-0' : '')}>
+          {(video.descriptionArr ?? video.descriptionText) && (
+            <ReadMore.dynamic position="outside" text={video.descriptionArr} maxLines={2} />
+          )}
+        </div>
         <div className="border-b border-tertiary-200 p-4">
           <p className="text-title-3-bold">Posted in</p>
           <div className="pt-3">

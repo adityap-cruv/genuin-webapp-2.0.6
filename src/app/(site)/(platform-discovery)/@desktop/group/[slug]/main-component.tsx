@@ -185,6 +185,7 @@ export function MainComponent({ loopDetails }: Props) {
         />
         <span className="w-1/2">
           <ReadMore.dynamic
+            position="outside"
             text={loopDetails.group.group_description ?? ''}
             maxLines={2}
             className="my-1 w-1/2 break-words text-body-1-med text-secondary"
