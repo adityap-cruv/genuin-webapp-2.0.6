@@ -30,7 +30,7 @@ const BlogsSection = ({
             style={{
               height: '400px',
               width: '100%',
-              zIndex: 999,
+              zIndex: 20,
             }}
           />
 

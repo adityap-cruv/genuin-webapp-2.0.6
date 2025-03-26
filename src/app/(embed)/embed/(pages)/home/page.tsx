@@ -31,7 +31,7 @@ export default function Page() {
         dataEmbedApiKey={embedConfigs['Home/Blog Embed'].embedApiKey}
         style={{
           height: '400px',
-          zIndex: 999,
+          zIndex: 20,
         }}
       />
       <FeaturesSection featuresSection={homePageData?.featuresSection} embedConfigs={embedConfigs} />
