@@ -48,11 +48,11 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   if (searchParams?.utm_source) {
     queryParams.push(`utm_source=${searchParams.utm_source}`)
   }
-  if (queryParams.length > 0) {
-    shareLink += `?${queryParams.join('&')}`
-  }
   if (searchParams?.share_image_id) {
     queryParams.push(`share_image_id=${searchParams.share_image_id}`)
+  }
+  if (queryParams.length > 0) {
+    shareLink += `?${queryParams.join('&')}`
   }
 
   const videoDetails: VideoDataType = await fetchMetadata({
