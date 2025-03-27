@@ -1,3 +1,4 @@
+import { useGenuinOptions } from '@/lib/stores/genuin-options'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
@@ -16,7 +17,7 @@ type GestureOverlayStateType = {
   hasShown: boolean
 }
 
-type GestureOverlayKeysType = 'SWIPE' | 'PLAY_PAUSE'
+export type GestureOverlayKeysType = 'SWIPE' | 'PLAY_PAUSE'
 
 type GestureType = {
   /**
@@ -43,6 +44,10 @@ export const useKsGestureStore = create(
           PLAY_PAUSE: { isVisible: false, hasShown: false },
         },
         setGestureOverlay: (gesture, isVisible) => {
+          // If gestures are disabled, do not change anything
+          const { config } = useGenuinOptions.getState()
+          if (!config.web_configs?.gesture_guidance) return
+
           set((state) => {
             if (state.gestureOverlays[gesture].hasShown && isVisible) return state
             return {

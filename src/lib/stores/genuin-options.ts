@@ -127,6 +127,42 @@ type ReactionType = {
   tooltip: string
 }
 
+type VideoAutoplayConfig = {
+  type: number
+  is_start_with_sound: boolean
+  auto_play_after: number
+}
+
+type FeedVideoPlayConfig = {
+  type: number
+  repeat_video: number
+  swipe_after: number
+}
+
+type LinkoutDelayConfig = {
+  type: number
+  appear_after: number
+}
+
+type PopupConfig = {
+  enable: boolean
+  popup_after: number
+}
+
+type WebConfigs = {
+  video_autoplay: VideoAutoplayConfig
+  feed_video_play: FeedVideoPlayConfig
+  linkout_deplay: LinkoutDelayConfig
+  login_signup_popup: PopupConfig
+  interest_selection_popup: PopupConfig
+  username_popup: PopupConfig
+  complete_profile_popup: PopupConfig
+  idle_time_interruption: PopupConfig
+  video_aspect_ratio: string
+  tap_behavior: number
+  gesture_guidance: boolean
+}
+
 export type ConfigType = {
   brand_id: string
   created_at: string
@@ -154,6 +190,7 @@ export type ConfigType = {
   api_key?: string
   show_become_creator: boolean
   reactions: ReactionType
+  web_configs?: WebConfigs
 }
 
 export type User = {

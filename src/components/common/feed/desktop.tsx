@@ -12,8 +12,6 @@ import { FeedShimmer } from '../shimmers/feed-shimmer'
 import Analytics from '@/services/analytics'
 import { usePlayerControlStore } from '../player/player-control-store'
 import { Player } from '../player'
-import { KsGestureTypes } from '../ks-gestures-types'
-import { useGestureOverlay } from '@/hooks/use-gesture-overlay'
 import { Actions } from '../player/control-layer/actions'
 import FullScreenSideButtons from '../expand-view/full-screen-side-buttons'
 import FullScreenVideoDetails from '../expand-view/full-screen-video-details'
@@ -25,6 +23,7 @@ import FullScreenEsc from '../expand-view/full-screen-esc'
 import { Toaster } from '@/components/ui/toaster'
 import { AnimatePresence } from 'framer-motion'
 import { useIheartBorderState } from '@/hooks/use-iheart-border'
+import { useGestureOverlayManager } from '../gestures/gesture-overlay-manager'
 
 type DesktopProps = {
   isLoading: boolean
@@ -88,7 +87,7 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
   const sizeBox = customSizeBox || defaultSizeBox
   const { shouldShowIHeartDemo, isIHeartPlaying } = useIHeartDemoStates()
   const { allowSlideNext, currentIndex, updateCurrentIndex, videos } = useFeedListContext()
-  const { gestureOverlays, setGestureOverlay } = useGestureOverlay(currentIndex)
+  const { showGestureOverlay, hideGestureOverlay, gestureOverlayUI } = useGestureOverlayManager()
   const { muted, isFullScreen, isCommentBoxOpen, toggleFullScreen } = usePlayerControlStore(
     useShallow((state) => ({
       muted: state.muted,
@@ -128,7 +127,7 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
   const handleActiveIndexChange = useCallback(
     (swiper: SwiperType) => {
       // SWIPE gesture will end when the user takes action;
-      setGestureOverlay('SWIPE', false)
+      hideGestureOverlay('SWIPE')
 
       updateCurrentIndex(swiper.activeIndex)
     },
@@ -187,7 +186,7 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
             <Swiper
               // PLAY_PAUSE gesture will end when the user takes action;
               onClick={() => {
-                if (!muted) setGestureOverlay('PLAY_PAUSE', false)
+                if (!muted) hideGestureOverlay('PLAY_PAUSE')
               }}
               onSwiper={(swiper) => {
                 swiperRef.current = swiper
@@ -248,8 +247,8 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
                                     currentTime
                                   )
 
-                                  if (!gestureOverlays.SWIPE.hasShown && videos.length > 1) {
-                                    setGestureOverlay('SWIPE', true)
+                                  if (videos.length > 1) {
+                                    showGestureOverlay('SWIPE')
                                   }
                                 }}
                               />
@@ -271,9 +270,7 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
                 )
               })}
 
-              {/* Display gestures according to kind gestureStep */}
-              {gestureOverlays.SWIPE.isVisible && <KsGestureTypes gestureStep="SWIPE" />}
-              {gestureOverlays.PLAY_PAUSE.isVisible && !muted && <KsGestureTypes gestureStep="PLAY_PAUSE" />}
+              {gestureOverlayUI}
             </Swiper>
             {shouldShowIHeartDemo && isFullScreen && <IHeartDemo />}
             {!isFullScreen && <DesktopDetails {...videos[currentIndex]} />}

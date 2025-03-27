@@ -7,6 +7,7 @@ import {
   useEffect,
   useState,
   useRef,
+  useCallback,
 } from 'react'
 import { usePlayerControlStore } from './player-control-store'
 import { cn, encodeVideoSourceUrl } from '@/lib/utils'
@@ -19,6 +20,8 @@ import { PlayIcon } from '@icons/player-controls/play-icon'
 import { PauseIcon } from '@icons/player-controls/pause-icon'
 import { MuteIcon } from '@icons/player-controls/mute-icon'
 import { UnmuteIcon } from '@icons/player-controls/unmute-icon'
+import { useGestureOverlayManager } from '../gestures/gesture-overlay-manager'
+import { useFeedListContext } from '@/components/providers/feed-provider'
 
 type Props = DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement> & {
   videoSource: string
@@ -82,6 +85,8 @@ export const InnerPlayer = memo(function InnerPlayer({
         toggleButtonVisibility: state.toggleButtonVisibility,
       }))
     )
+  const { showGestureOverlay } = useGestureOverlayManager()
+  const { currentIndex } = useFeedListContext()
   const [hasStarted, setHasStarted] = useState(false)
   let encodedVideoSourceUrl = videoSource
   if (brandId && brandId.toString() === '1729') {
@@ -218,9 +223,21 @@ export const InnerPlayer = memo(function InnerPlayer({
     }
   }, [isActive, shouldPlay])
 
-  const onTimeUpdateEventHandler: ReactEventHandler<HTMLVideoElement> = (event) => {
-    setTimeState(event.currentTarget.currentTime, event.currentTarget.duration, id)
-  }
+  const onTimeUpdateEventHandler: ReactEventHandler<HTMLVideoElement> = useCallback(
+    (event: React.SyntheticEvent<HTMLVideoElement>) => {
+      const video = event.currentTarget
+
+      setTimeState(video.currentTime, video.duration, id)
+
+      if (video.duration > 0) {
+        const progress = (video.currentTime / video.duration) * 100
+        if (currentIndex === 1 && progress >= 50 && !muted) {
+          showGestureOverlay('PLAY_PAUSE')
+        }
+      }
+    },
+    [currentIndex, muted, showGestureOverlay, setTimeState]
+  )
 
   return (
     <div className="relative h-full w-full">

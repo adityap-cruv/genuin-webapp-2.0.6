@@ -10,13 +10,12 @@ import { usePlayerControlStore } from '../player/player-control-store'
 import { FeedShimmer } from '../shimmers/feed-shimmer'
 import { type Swiper as SwiperType } from 'swiper/types'
 import { FeedContextProvider, useFeedListContext } from '@/components/providers/feed-provider'
-import { KsGestureTypes } from '../ks-gestures-types'
-import { useGestureOverlay } from '@/hooks/use-gesture-overlay'
 import { useShallow } from 'zustand/react/shallow'
 import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
 import { IHeartDemo } from '../../layouts/desktop/iheart-demo'
 import { cn } from '@/lib/utils'
 import { useIheartBorderState } from '@/hooks/use-iheart-border'
+import { useGestureOverlayManager } from '../gestures/gesture-overlay-manager'
 
 type MobileProps = {
   videos?: VideoPlayerModalType[] | null
@@ -76,7 +75,7 @@ export function Mobile({
 
 function SwiperRenderer({ videoSizeBox }: { videoSizeBox: VideoSizeBoxType }) {
   const { videos, updateCurrentIndex, currentIndex } = useFeedListContext()
-  const { gestureOverlays, setGestureOverlay } = useGestureOverlay(currentIndex)
+  const { showGestureOverlay, hideGestureOverlay, gestureOverlayUI } = useGestureOverlayManager()
   // # If comment sheet is open than element should not be scrolled..
   const commentIsOpen = useCommentSheetStore((state) => state.modalIsOpen)
   const { renderIn, shouldShowIHeartDemo, isIHeartPlaying } = useIHeartDemoStates()
@@ -93,8 +92,7 @@ function SwiperRenderer({ videoSizeBox }: { videoSizeBox: VideoSizeBoxType }) {
     (swiper: SwiperType) => {
       if (!videos) return
       // SWIPE gesture will end when the user takes action;
-      setGestureOverlay('SWIPE', false)
-
+      hideGestureOverlay('SWIPE')
       updateCurrentIndex(swiper.activeIndex)
     },
     [videos]
@@ -116,7 +114,7 @@ function SwiperRenderer({ videoSizeBox }: { videoSizeBox: VideoSizeBoxType }) {
         <Swiper
           // PLAY_PAUSE gesture will end when the user takes action;
           onClick={() => {
-            if (!muted) setGestureOverlay('PLAY_PAUSE', false)
+            if (!muted) hideGestureOverlay('PLAY_PAUSE')
           }}
           modules={[Mousewheel]}
           mousewheel={true}
@@ -141,8 +139,8 @@ function SwiperRenderer({ videoSizeBox }: { videoSizeBox: VideoSizeBoxType }) {
                           const { duration, currentTime } = usePlayerControlStore.getState()
                           Analytics.triggerAnalyticsForVideoComplete(item.video.id, duration, currentTime)
 
-                          if (!gestureOverlays.SWIPE.hasShown && videos.length > 1) {
-                            setGestureOverlay('SWIPE', true)
+                          if (videos.length > 1) {
+                            showGestureOverlay('SWIPE')
                           }
                         }}
                       />
@@ -152,9 +150,7 @@ function SwiperRenderer({ videoSizeBox }: { videoSizeBox: VideoSizeBoxType }) {
             </SwiperSlide>
           ))}
 
-          {/* Display gestures according to kind gestureStep */}
-          {gestureOverlays.SWIPE.isVisible && <KsGestureTypes gestureStep="SWIPE" />}
-          {gestureOverlays.PLAY_PAUSE.isVisible && !muted && <KsGestureTypes gestureStep="PLAY_PAUSE" />}
+          {gestureOverlayUI}
         </Swiper>
       </div>
       {showIHeartDemo && <IHeartDemo />}
