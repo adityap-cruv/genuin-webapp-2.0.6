@@ -28,6 +28,7 @@ const CommunitiesSection = ({
           style={{
             height: isMobile ? '615px' : '750px',
             width: isMobile ? '350px' : '100%',
+            zIndex: 40,
           }}
         />
       </div>
