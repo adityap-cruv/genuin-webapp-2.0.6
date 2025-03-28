@@ -40,7 +40,7 @@ export const CommentItem = memo(function CommentItem({
         </Link>
         <p className="shrink-0 text-cap-1-demi text-tertiary">{getTimeAgo(comment.created_at) + ' ago'}</p>
       </div>
-      <div className="h-full w-full pl-6">
+      <div className="h-full w-full pl-6 flex justify-between items-start">
         <UI comment={comment} />
         <Reaction
           isSparked={comment.is_sparked ?? false}

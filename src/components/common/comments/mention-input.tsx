@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { createComment, mentionUser } from '@/lib/api/video'
 import { useGenuinOptions } from '@/lib/stores/genuin-options'
@@ -215,6 +215,12 @@ const MentionInput: React.FC<{
     }
   }, [])
 
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      void postComment();
+    }
+  }, [postComment]);
+
   return (
     <div>
       {isMentioning && (
@@ -264,15 +270,16 @@ const MentionInput: React.FC<{
         <div className="flex w-full flex-1 items-center gap-x-4 px-4">
           {user ? (
             <div className="w-full">
-              <div className="relative flex w-full items-center">
+              <div className="flex items-center rounded-full border border-tertiary-200 bg-monochrome-white px-4">
                 <Input
                   ref={textareaRef}
                   placeholder="Add a comment"
                   value={text}
                   maxLength={500}
                   disabled={!user}
-                  className="w-full rounded-full border border-tertiary-200 bg-monochrome-white px-14 pl-4"
+                  className="border-none rounded-full"
                   onChange={handleInputChange}
+                  onKeyDown={handleKeyDown}
                   onClick={(e: React.MouseEvent<HTMLInputElement>) => {
                     setCaretPosition(e.currentTarget.selectionStart ?? 0)
                   }}
@@ -284,7 +291,7 @@ const MentionInput: React.FC<{
                 <button
                   onClick={postComment}
                   disabled={text.trim().length === 0 || isPosting}
-                  className={`absolute right-4 text-body-1-bold ${
+                  className={`text-body-1-bold ${
                     text.trim().length === 0 || isPosting ? 'text-primary-600' : 'text-primary'
                   }`}>
                   {isPosting ? 'Posting...' : 'Post'}
