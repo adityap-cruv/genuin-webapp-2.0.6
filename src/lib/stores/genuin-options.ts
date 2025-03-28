@@ -159,6 +159,13 @@ type WebConfigs = {
   complete_profile_popup: PopupConfig
   idle_time_interruption: PopupConfig
   video_aspect_ratio: string
+  /**
+   * 1: Tap to mute/unmute.
+   *
+   * 2: Tap to play/pause.
+   *
+   * 3: Tap to unmute and than play/pause.
+   */
   tap_behavior: number
   gesture_guidance: boolean
 }

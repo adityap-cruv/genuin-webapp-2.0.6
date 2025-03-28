@@ -7,7 +7,7 @@ import { motion, useAnimationControls } from 'framer-motion'
 import { useGenuinOptions } from '@/lib/stores/genuin-options'
 
 export const AnimatedMuteIcon = ({ videoId }: { videoId: string }) => {
-  const { muted, toggleMuted, setVolume, volume, toggleButtonVisibility } = usePlayerControlStore()
+  const { muted, toggleMuted, setVolume, volume } = usePlayerControlStore()
   const muteAnimationController = useAnimationControls()
   const isMobile = useGenuinOptions().isMobile
   const [showVolumeSlider, setShowVolumeSlider] = useState(false)
@@ -30,8 +30,7 @@ export const AnimatedMuteIcon = ({ videoId }: { videoId: string }) => {
   const handleClick = useCallback(
     (e: any) => {
       e.stopPropagation()
-      toggleMuted()
-      toggleButtonVisibility(muted ? 'unmute' : 'mute')
+      toggleMuted(true)
       void Analytics.track({
         eventName: muted ? 'Unmute' : 'Mute',
         properties: { video_id: videoId },

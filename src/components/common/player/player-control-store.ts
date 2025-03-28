@@ -1,11 +1,13 @@
 import { create } from 'zustand'
 import { Analytics } from '@services/analytics'
 
-type PlayerControlStoreType = {
+type ButtonActionType = 'mute' | 'unmute' | 'play' | 'pause' | ''
+
+export type PlayerControlStoreType = {
   isPlaying: boolean
   shouldPlay: boolean
   muted: boolean
-  toggleMuted: () => void
+  toggleMuted: (byUser?: boolean) => void
   mute: () => void
   showMutedLayer: boolean
   toggleMutedLayer: () => void
@@ -13,20 +15,27 @@ type PlayerControlStoreType = {
   pause: () => void
   setIsPlaying: (isPlaying: boolean) => void
   toggleShouldPlay: () => void
-  setShouldPlay: (shouldPlay: boolean) => void
+  /**
+   * Set shouldPlay and buttonAction.
+   * If user is playing the video, pass byUser to true.
+   * @param shouldPlay
+   * @param byUser
+   * @returns
+   */
+  setShouldPlay: (shouldPlay: boolean, byUser?: boolean) => void
   duration: number
   currentTime: number
   setTimeState: (currentTime: number, duration: number, videoId: string) => void
   volume: number
   setVolume: (volume: number) => void
   prevVolume: number
-  toggleButtonVisibility: (action: 'mute' | 'unmute' | 'play' | 'pause' | '') => void
-  buttonAction: 'mute' | 'unmute' | 'play' | 'pause' | ''
-  isIconVisible: boolean
+  buttonAction: ButtonActionType
   isFullScreen: boolean
   toggleFullScreen: () => void
   isCommentBoxOpen: boolean
   toggleCommentBox: () => void
+  playingState: 'paused' | 'playing' | 'loading'
+  setPlayingState: (state: 'paused' | 'playing' | 'loading') => void
 }
 
 export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
@@ -36,13 +45,17 @@ export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
     showMutedLayer: true,
     volume: 0,
     prevVolume: 100,
+    playingState: 'loading',
+    setPlayingState: (state) => {
+      set((oldState) => ({ playingState: state, ...(oldState.playingState === 'loading' && { buttonAction: '' }) }))
+    },
     toggleMutedLayer() {
       set((state) => ({ showMutedLayer: !state.showMutedLayer }))
     },
     mute() {
       set((state) => ({ muted: true, prevVolume: state.volume, volume: 0 }))
     },
-    toggleMuted() {
+    toggleMuted(byUser) {
       set((state) => {
         const newMuted = !state.muted
         const prevVolume = state.volume > 0 ? state.volume : state.prevVolume
@@ -50,22 +63,23 @@ export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
           muted: newMuted,
           volume: newMuted ? 0 : prevVolume > 0 ? prevVolume : 100,
           prevVolume: state.volume > 0 ? state.volume : state.prevVolume,
+          ...(!!byUser && { buttonAction: newMuted ? 'mute' : 'unmute' }),
         }
       })
     },
     play() {
-      set({ shouldPlay: true })
+      set({ shouldPlay: true, buttonAction: 'pause' })
     },
     pause() {
-      set({ shouldPlay: false })
+      set({ shouldPlay: false, buttonAction: 'play' })
     },
     toggleShouldPlay() {
       set((state) => ({
         shouldPlay: !state.shouldPlay,
       }))
     },
-    setShouldPlay(shouldPlay) {
-      set({ shouldPlay })
+    setShouldPlay(shouldPlay, byUser) {
+      set({ shouldPlay, ...(!!byUser && { buttonAction: !shouldPlay ? 'pause' : 'play' }) })
     },
     duration: 0,
     currentTime: 0,
@@ -110,24 +124,8 @@ export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
 
       set({ currentTime, duration })
     },
-
     // For Action button
     buttonAction: '',
-    isIconVisible: false,
-    toggleButtonVisibility(action: 'mute' | 'unmute' | 'play' | 'pause' | '') {
-      if (!action) {
-        set({ buttonAction: action })
-        return
-      } // Do nothing if there is no action
-
-      set({ isIconVisible: true }) // Show the element
-      set({ buttonAction: action }) // Set the button action (play, pause, etc.)
-
-      // Hide the element after 1 second
-      setTimeout(() => {
-        set({ isIconVisible: false })
-      }, 1000)
-    },
 
     // For Full Screen
     isFullScreen: false,
@@ -137,6 +135,7 @@ export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
         isCommentBoxOpen: state.isFullScreen ? false : state.isCommentBoxOpen,
       }))
     },
+    // For comment box.
     isCommentBoxOpen: false,
     toggleCommentBox() {
       set((state) => ({ isCommentBoxOpen: !state.isCommentBoxOpen }))

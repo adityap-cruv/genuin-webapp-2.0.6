@@ -5,12 +5,15 @@ import { memo, useCallback } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { WalletAmountBadge } from '../../wallet/wallet-amount-badge'
 import { cn } from '@/lib/utils'
-import { PlayIcon } from '@icons/player-controls/play-icon'
-import { PauseIcon } from '@icons/player-controls/pause-icon'
 import { AnimatedMuteIcon } from './animated-mute-icon'
 import { ExpandIcon } from '@icons/player-controls/expand-icon'
 import { CollapseIcon } from '@icons/player-controls/collapse-icon'
 import Analytics from '@/services/analytics'
+import { useGenuinOptions } from '@/lib/stores/genuin-options'
+import { PlayIcon } from '@icons/player-controls/play-icon'
+import { PauseIcon } from '@icons/player-controls/pause-icon'
+
+import { handleTapBehavior, PlayingState } from './playing-state'
 
 type DesktopProps = {
   sparkCount: number
@@ -37,41 +40,32 @@ export const Desktop = memo(function Desktop({
   clickableUrl,
   commentCount,
 }: DesktopProps) {
-  const { setShouldPlay, shouldPlay, muted, toggleMuted, toggleButtonVisibility, toggleFullScreen, isFullScreen } =
-    usePlayerControlStore(
-      useShallow((state) => ({
-        setShouldPlay: state.setShouldPlay,
-        shouldPlay: state.shouldPlay,
-        muted: state.muted,
-        toggleMuted: state.toggleMuted,
-        toggleButtonVisibility: state.toggleButtonVisibility,
-        toggleFullScreen: state.toggleFullScreen,
-        isFullScreen: state.isFullScreen,
-      }))
-    )
+  const config = useGenuinOptions(useShallow((state) => state.config))
+  const { setShouldPlay, shouldPlay, muted, toggleMuted, toggleFullScreen, isFullScreen } = usePlayerControlStore(
+    useShallow((state) => ({
+      setShouldPlay: state.setShouldPlay,
+      shouldPlay: state.shouldPlay,
+      muted: state.muted,
+      toggleMuted: state.toggleMuted,
+      toggleFullScreen: state.toggleFullScreen,
+      isFullScreen: state.isFullScreen,
+    }))
+  )
 
   const handleVideoClick = useCallback(
     (e: any) => {
       e.stopPropagation()
+      const tapBehavior = config.web_configs?.tap_behavior ?? 3 // Default to 3 if not configured
 
-      // If the video is paused and muted, unmute and play it
-      if (!shouldPlay && muted) {
-        toggleMuted()
-        setShouldPlay(true)
-        toggleButtonVisibility('play')
-        return
-      }
-
-      // Then, handle the mute/unmute behavior
-      if (muted) {
-        toggleMuted()
-        toggleButtonVisibility('unmute')
-      } else {
-        setShouldPlay(!shouldPlay)
-        toggleButtonVisibility(shouldPlay ? 'pause' : 'play')
-      }
+      handleTapBehavior({
+        tapBehavior,
+        muted,
+        shouldPlay,
+        toggleMuted,
+        setShouldPlay,
+      })
     },
-    [muted, toggleMuted, shouldPlay, setShouldPlay]
+    [muted, toggleMuted, shouldPlay, setShouldPlay, config.web_configs?.tap_behavior]
   )
 
   const openClickableUrl = useCallback(
@@ -84,6 +78,7 @@ export const Desktop = memo(function Desktop({
 
   return (
     <div className="relative z-30 h-full w-full">
+      <PlayingState />
       <div
         onClick={clickableUrl ? openClickableUrl : handleVideoClick}
         className={cn('absolute inset-0', clickableUrl && 'cursor-pointer')}>
@@ -99,20 +94,18 @@ export const Desktop = memo(function Desktop({
             width: 'calc(100% - 32px)',
           }}>
           <div className="flex w-full gap-3">
-            <span
+            <div
               onClick={(e) => {
                 e.stopPropagation()
                 setShouldPlay(!shouldPlay)
-                toggleButtonVisibility(shouldPlay ? 'pause' : 'play')
               }}
               className="flex h-12 w-12 flex-shrink-0 cursor-pointer items-center justify-center rounded-full bg-monochrome-black/40">
               {!shouldPlay ? <PlayIcon variant="light" /> : <PauseIcon variant="light" />}
-            </span>
-
+            </div>
             <AnimatedMuteIcon videoId={videoId} />
           </div>
 
-          <span
+          <div
             onClick={(e) => {
               e.stopPropagation()
               toggleFullScreen()
@@ -126,7 +119,7 @@ export const Desktop = memo(function Desktop({
             }}
             className="flex h-12 w-12 flex-shrink-0 cursor-pointer items-center justify-center rounded-full bg-monochrome-black/40">
             {isFullScreen ? <CollapseIcon variant="light" /> : <ExpandIcon variant="light" />}
-          </span>
+          </div>
         </div>
       </div>
       {isInModal && (

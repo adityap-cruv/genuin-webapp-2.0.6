@@ -7,7 +7,6 @@ import { ReadMore } from '@components/common/read-more'
 import { cn } from '@lib/utils'
 import { AnimatedMuteIcon } from './animated-mute-icon'
 import { type DescriptionArrType } from '@lib/schemas/player/video'
-import Analytics from '@services/analytics'
 import { PlayerProgressBar } from './player-progress-bar'
 import { memo, useEffect, useState, useCallback } from 'react'
 import { Linkout } from '../../linkout'
@@ -20,6 +19,8 @@ import { GroupIcon } from '@icons/group-icon'
 import { motion } from 'framer-motion'
 import BrandBadgeIcon from '@components/common/brand-badge-icon'
 import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
+import { handleTapBehavior, PlayingState } from './playing-state'
+import { useGenuinOptions } from '@/lib/stores/genuin-options'
 
 type MobileProps = {
   isActive: boolean
@@ -57,44 +58,31 @@ type MobileProps = {
 }
 
 export const Mobile = memo(function Mobile({ clickableUrl, ...props }: MobileProps) {
-  const { toggleMuted, muted, shouldPlay, setShouldPlay, toggleButtonVisibility } = usePlayerControlStore(
+  const { toggleMuted, muted, shouldPlay, setShouldPlay } = usePlayerControlStore(
     useShallow((state) => ({
       toggleMuted: state.toggleMuted,
       muted: state.muted,
       shouldPlay: state.shouldPlay,
       setShouldPlay: state.setShouldPlay,
-      toggleButtonVisibility: state.toggleButtonVisibility,
     }))
   )
+  const config = useGenuinOptions(useShallow((state) => state.config))
   const { renderIn, shouldShowIHeartDemo, isIHeartPlaying } = useIHeartDemoStates()
   const showIHeartDemo = renderIn === 'root' && shouldShowIHeartDemo
 
   const handleScreenClick = useCallback(
     (e: any) => {
       e.stopPropagation()
-
-      // If the video is paused and muted, unmute and play it
-      if (!shouldPlay && muted) {
-        toggleMuted()
-        setShouldPlay(true)
-        toggleButtonVisibility('play')
-        return
-      }
-
-      // Then unmute the video if it's muted
-      if (muted) {
-        toggleMuted()
-        void Analytics.track({
-          eventName: 'Unmute',
-          properties: { video_id: props.videoId },
-        })
-        toggleButtonVisibility('unmute')
-      } else {
-        setShouldPlay(!shouldPlay)
-        toggleButtonVisibility(shouldPlay ? 'pause' : 'play')
-      }
+      const tapBehavior = config.web_configs?.tap_behavior ?? 3 // Default to 3 if not configured
+      handleTapBehavior({
+        tapBehavior,
+        muted,
+        shouldPlay,
+        toggleMuted,
+        setShouldPlay,
+      })
     },
-    [shouldPlay, muted, setShouldPlay, toggleMuted]
+    [shouldPlay, muted, setShouldPlay, toggleMuted, config.web_configs?.tap_behavior]
   )
 
   const openClickableUrl = useCallback(
@@ -109,24 +97,13 @@ export const Mobile = memo(function Mobile({ clickableUrl, ...props }: MobilePro
     (e: any) => {
       e.stopPropagation()
       setShouldPlay(!shouldPlay)
-      toggleButtonVisibility(shouldPlay ? 'pause' : 'play')
     },
     [shouldPlay, setShouldPlay]
   )
 
   return (
     <div className="relative h-full w-full">
-      {/* <div
-        className={cn(
-          'absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-monochrome-black/40 p-2 transition-all duration-300 ',
-          !shouldPlay ? 'scale-125 opacity-100 ease-in' : 'scale-100 opacity-0 ease-out'
-        )}>
-        <Image
-          src={icPlay}
-          alt="volume-control"
-          className={cn('pointer-events-none z-10 cursor-pointer rounded-full')}
-        />
-      </div> */}
+      <PlayingState />
       <div
         onClick={clickableUrl ? openClickableUrl : handleScreenClick}
         className={cn('absolute inset-0', clickableUrl && 'cursor-pointer')}>
@@ -143,22 +120,16 @@ export const Mobile = memo(function Mobile({ clickableUrl, ...props }: MobilePro
           </span>
         </div>
       </div>
-
       {!isIHeartPlaying && showIHeartDemo && !muted && (
-        // <iframe
-        //   src="https://lottie.host/embed/47b0df3e-5d35-4c1e-859a-778acb4749df/gJ2SwN2VDX.lottie"
-        //   className="absolute right-4 top-20 z-10 h-12 w-12"></iframe>
         <img
           src="https://media.begenuin.com/iheart_demo/equalizer.gif"
           alt="gif"
           className="absolute right-4 top-20 z-10 h-12 w-12"
         />
       )}
-
-      <span className="absolute right-2 top-20 z-20 h-fit w-fit cursor-pointer">
+      <div className="absolute right-2 top-20 z-20 h-fit w-fit cursor-pointer">
         <WalletAmountBadge type="light" />
-      </span>
-
+      </div>
       <Details {...props} clickableUrl={clickableUrl} />
       <PlayerProgressBar />
     </div>
@@ -205,28 +176,6 @@ function Details({
   setIsExpanded,
 }: MobileProps) {
   const [showLinkouts, setShowLinkouts] = useState(false)
-
-  // // This logic is to show linkouts after 10 second of video play.
-  // useEffect(() => {
-  //   if (!linkoutId) return
-  //   let timeoutId: NodeJS.Timeout | null = null
-
-  //   // If video is active, show linkouts after 10 seconds.
-  //   if (isActive) {
-  //     timeoutId = setTimeout(() => {
-  //       setShowLinkouts(true)
-  //     }, 10000)
-  //   }
-
-  //   // Clear timeout if video is not active.
-  //   return () => {
-  //     if (timeoutId) {
-  //       clearTimeout(timeoutId)
-  //       timeoutId = null
-  //     }
-  //     setShowLinkouts(false)
-  //   }
-  // }, [isActive])
 
   // This logic is to show linkouts after 10 second of video play.
   useEffect(() => {

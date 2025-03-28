@@ -10,16 +10,11 @@ import {
   useCallback,
 } from 'react'
 import { usePlayerControlStore } from './player-control-store'
-import { cn, encodeVideoSourceUrl } from '@/lib/utils'
+import { encodeVideoSourceUrl } from '@/lib/utils'
 import { useGenuinOptions } from '@/lib/stores/genuin-options'
 import { useShallow } from 'zustand/react/shallow'
 import Analytics from '@/services/analytics'
-import { Loader } from '@/components/ui/loader'
 import { useUrlParams } from '@/lib/utils/ssai/urlParamResolver'
-import { PlayIcon } from '@icons/player-controls/play-icon'
-import { PauseIcon } from '@icons/player-controls/pause-icon'
-import { MuteIcon } from '@icons/player-controls/mute-icon'
-import { UnmuteIcon } from '@icons/player-controls/unmute-icon'
 import { useGestureOverlayManager } from '../gestures/gesture-overlay-manager'
 import { useFeedListContext } from '@/components/providers/feed-provider'
 
@@ -27,6 +22,7 @@ type Props = DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoE
   videoSource: string
   id: string
   isActive: boolean
+  onPlayingStateChange?: (state: 'paused' | 'playing' | 'loading') => void
 }
 
 function triggerAnalyticsForVideoStart(videoId: string, latency: number) {
@@ -67,24 +63,22 @@ export const InnerPlayer = memo(function InnerPlayer({
   onError,
   onLoadStart,
   onCanPlay,
+  onPlayingStateChange,
   ...props
 }: Props) {
   const brandId = useGenuinOptions().brandId
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<OpenPlayerJS | null>(null)
-  const [playingState, setPlayingState] = useState<'paused' | 'playing' | 'loading'>('loading')
-  const { shouldPlay, muted, setTimeState, volume, isIconVisible, buttonAction, toggleButtonVisibility } =
-    usePlayerControlStore(
-      useShallow((state) => ({
-        shouldPlay: state.shouldPlay,
-        muted: state.muted,
-        setTimeState: state.setTimeState,
-        volume: state.volume,
-        isIconVisible: state.isIconVisible,
-        buttonAction: state.buttonAction,
-        toggleButtonVisibility: state.toggleButtonVisibility,
-      }))
-    )
+  const { shouldPlay, muted, setTimeState, volume, playingState, setPlayingState } = usePlayerControlStore(
+    useShallow((state) => ({
+      shouldPlay: state.shouldPlay,
+      muted: state.muted,
+      setTimeState: state.setTimeState,
+      volume: state.volume,
+      playingState: state.playingState,
+      setPlayingState: state.setPlayingState,
+    }))
+  )
   const { showGestureOverlay } = useGestureOverlayManager()
   const { currentIndex } = useFeedListContext()
   const [hasStarted, setHasStarted] = useState(false)
@@ -111,7 +105,7 @@ export const InnerPlayer = memo(function InnerPlayer({
   useEffect(() => {
     // Reset the analytics flag when the video source changes
     setHasStarted(false)
-    toggleButtonVisibility('')
+    // toggleButtonVisibility('')
 
     if (!videoRef.current) return
     const player = new OpenPlayerJS(videoRef.current, {
@@ -239,6 +233,24 @@ export const InnerPlayer = memo(function InnerPlayer({
     [currentIndex, muted, showGestureOverlay, setTimeState]
   )
 
+  useEffect(() => {
+    if (onPlayingStateChange) {
+      onPlayingStateChange(playingState)
+    }
+  }, [playingState, onPlayingStateChange])
+
+  const onCanPlayEventHandler: ReactEventHandler<HTMLVideoElement> = useCallback(
+    (ev) => {
+      if (shouldPlay) {
+        setPlayingState('playing')
+      } else {
+        setPlayingState('paused')
+      }
+      onCanPlay?.(ev)
+    },
+    [onCanPlay, setPlayingState]
+  )
+
   return (
     <div className="relative h-full w-full">
       <video
@@ -251,14 +263,17 @@ export const InnerPlayer = memo(function InnerPlayer({
         playsInline
         onPlay={onPlay}
         onPlaying={(ev) => {
-          setPlayingState('playing')
           onPlaying?.(ev)
+          setPlayingState('playing')
         }}
-        onError={onError}
+        onError={(ev) => {
+          onError?.(ev)
+          setPlayingState('paused')
+        }}
         onTimeUpdate={onTimeUpdateEventHandler}
         onPause={(ev) => {
-          setPlayingState('paused')
           onPause?.(ev)
+          setPlayingState('paused')
           triggerAnalyticsForVideoPause(id)
         }}
         onEnded={(e) => {
@@ -267,55 +282,13 @@ export const InnerPlayer = memo(function InnerPlayer({
             void playerRef.current.play()
           }
         }}
-        onCanPlay={(e) => {
-          setPlayingState('paused')
-          onCanPlay?.(e)
-        }}
-        onLoadStart={(e) => {
+        onLoadStart={(ev) => {
           setPlayingState('loading')
-          onLoadStart?.(e)
+          onLoadStart?.(ev)
         }}
+        onCanPlay={onCanPlayEventHandler}
         {...props}
       />
-      {/* {playingState !== 'playing' && (
-        <div
-          className={cn(
-            'absolute left-1/2 top-1/2 flex h-[64px] w-[64px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-monochrome-black/40 align-middle transition-all duration-100',
-            playingState === 'paused' || playingState === 'loading'
-              ? 'opacity-100 ease-in '
-              : 'scale-100 opacity-0 ease-out'
-          )}>
-          {playingState === 'paused' && (
-            <Image
-              src={icPlay}
-              alt="volume-control"
-              className={cn('pointer-events-none z-10 cursor-pointer rounded-full')}
-            />
-          )}
-          {playingState === 'loading' && <Loader size="md" />}
-        </div>
-      )} */}
-
-      {playingState === 'loading' && (
-        <div className="absolute left-1/2 top-1/2 flex h-[64px] w-[64px] -translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-full bg-monochrome-black/40 align-middle opacity-100 backdrop-blur-sm transition-all duration-100">
-          <Loader size="md" />
-        </div>
-      )}
-
-      {playingState !== 'loading' && buttonAction && (
-        <div
-          className={cn(
-            'absolute left-1/2 top-1/2 flex h-[64px] w-[64px] -translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-full bg-monochrome-black/40 align-middle backdrop-blur-sm transition-all duration-1000',
-            isIconVisible ? 'opacity-100' : 'opacity-0'
-          )}>
-          <>
-            {buttonAction === 'play' && <PlayIcon variant="light" className="h-8 w-8" />}
-            {buttonAction === 'pause' && <PauseIcon variant="light" className="h-8 w-8" />}
-            {buttonAction === 'mute' && <MuteIcon variant="light" className="h-8 w-8" />}
-            {buttonAction === 'unmute' && <UnmuteIcon variant="light" className="h-8 w-8" />}
-          </>
-        </div>
-      )}
     </div>
   )
 })

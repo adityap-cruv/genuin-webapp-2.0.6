@@ -259,6 +259,11 @@ module.exports = {
           '0%': { transform: 'translateX(0%)' },
           '100%': { transform: 'translateX(-100%)' },
         },
+        fadeOutDelay: {
+          '0%': { opacity: '1' },
+          '50%': { opacity: '1' },
+          '100%': { opacity: '0' },
+        },
         zoomIn: {
           '0%': { transform: 'scale(0.7)' },
           '100%': { transform: 'scale(1)' },
@@ -288,6 +293,7 @@ module.exports = {
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'fade-out-delay': 'fadeOutDelay 2s ease-out forwards',
         marquee: 'marquee 25s linear infinite',
         zoomIn: 'zoomIn 0.2s ease-in-out forwards',
         zoomInOut: 'zoomInOut 2s ease-in-out forwards',
