@@ -34,17 +34,17 @@ export async function fetchMetadata({
   shareImageId,
 }: MetadataPayloadType) {
   try {
-    const response = await axios.get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/web/meta_data', {
-      params: {
-        type,
-        brand_id: brandId,
-        username,
-        slug,
-        domain,
-        subdomain,
-        share_image_id: shareImageId,
-      },
-    })
+    const params: Record<string, any> = {
+      type,
+      ...(brandId !== undefined && { brand_id: brandId }),
+      ...(username !== undefined && { username }),
+      ...(slug !== undefined && { slug }),
+      ...(domain !== undefined && { domain }),
+      ...(subdomain !== undefined && { subdomain }),
+      ...(shareImageId !== undefined && { share_image_id: shareImageId }),
+    }
+
+    const response = await axios.get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/web/meta_data', { params })
     return response.data.data
   } catch (error) {
     // eslint-disable-next-line no-console

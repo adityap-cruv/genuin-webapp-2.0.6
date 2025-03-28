@@ -1,6 +1,7 @@
 import { TopBar as MobileTopBar } from '@/components/layouts/mobile/top-bar'
 import { cookies } from 'next/headers'
 import { EmbedLayout } from '@/components/layouts/desktop/embed-layout'
+import { type Metadata } from 'next'
 
 export default function AppLayout(props: any) {
   const isMobile = cookies().get('device_type')?.value === 'mobile'
@@ -13,4 +14,17 @@ export default function AppLayout(props: any) {
   ) : (
     <EmbedLayout isCollapsed>{props.children}</EmbedLayout>
   )
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    robots: {
+      index: false,
+      follow: false,
+      googleBot: {
+        index: false,
+        follow: false,
+      },
+    },
+  }
 }

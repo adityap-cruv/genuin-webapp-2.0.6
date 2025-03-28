@@ -42,7 +42,7 @@ export function TopBar({
   const showIHeartDemo = renderIn === 'root' && shouldShowIHeartDemo
   return (
     <>
-      <div className="z-20 flex h-[76px] w-full justify-center border-b border-monochrome-9  bg-monochrome-white sm:flex">
+      <div className="z-40 flex h-[76px] w-full justify-center border-b border-monochrome-9  bg-monochrome-white sm:flex">
         {isLoading ? (
           <div className="sticky top-0 flex  w-full items-center justify-between px-2 2xl:container xl:px-10 2xl:px-0 ">
             <Shimmer className="h-10 w-20" />
@@ -52,7 +52,7 @@ export function TopBar({
             </div>
           </div>
         ) : (
-          <nav className="sticky top-0 flex h-full w-full items-center justify-between gap-6 px-2 2xl:container xl:px-10 2xl:px-0">
+          <nav className="sticky top-0 z-40 flex h-full w-full items-center justify-between gap-6 px-2 2xl:container xl:px-10 2xl:px-0">
             <div className="flex flex-shrink-0">
               <Link draggable={false} href={{ pathname: PATH_NAME.home() }}>
                 <AppLogo.logo className="fill-new-off-black" imageHeight={44} />

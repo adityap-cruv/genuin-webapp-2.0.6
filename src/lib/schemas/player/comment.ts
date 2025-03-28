@@ -39,5 +39,6 @@ export type CommentMention = {
 export type SelectedMention = {
   handle: string
   id: string | number
+  slug?: string
   type: 'member' | 'community' | 'url'
 }

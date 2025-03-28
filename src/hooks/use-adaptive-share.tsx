@@ -15,7 +15,19 @@ export function useAdaptiveShare() {
     toast?: any
   }): Promise<boolean> {
     if (window) {
-      const linkToCopy = shareLink ?? window.location.href
+      let linkToCopy = shareLink ?? window.location.href
+
+      // Check if share_image_id exists in the current URL but not in shareLink
+      if (shareLink && window.location.href.includes('share_image_id=')) {
+        const urlParams = new URLSearchParams(window.location.search)
+        const shareImageId = urlParams.get('share_image_id')
+
+        if (shareImageId && !shareLink.includes('share_image_id=')) {
+          // Add share_image_id to the shareLink
+          const separator = shareLink.includes('?') ? '&' : '?'
+          linkToCopy = `${shareLink}${separator}share_image_id=${shareImageId}`
+        }
+      }
       if (isMobile) {
         if (window.location.href.includes('embed')) {
           window.open(shareLink, '_blank', 'noopener,noreferrer')

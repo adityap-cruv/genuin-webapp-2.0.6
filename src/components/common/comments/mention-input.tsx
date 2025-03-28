@@ -128,7 +128,7 @@ const MentionInput: React.FC<{
         if (matchedMention.type === 'member') {
           result.push({ member_id: matchedMention.id, text: matchedMention.handle })
         } else if (matchedMention.type === 'community') {
-          result.push({ community_id: matchedMention.id, text: matchedMention.handle })
+          result.push({ community_id: matchedMention.id, text: matchedMention.handle, slug: matchedMention.slug })
         } else if (matchedMention.type === 'url') {
           result.push({ url: matchedMention.handle, text: matchedMention.handle })
         }
@@ -187,13 +187,14 @@ const MentionInput: React.FC<{
       const isCommunity = selected.type === 3
       const handle = isCommunity ? selected.community?.handle ?? '' : '@' + selected.user?.nickname
       const id = isCommunity ? selected.community?.community_id ?? '' : selected.user?.member_id ?? ''
+      const slug = isCommunity ? selected.community?.slug ?? '' : ''
       const type = isCommunity ? 'community' : 'member'
 
       const updatedText = `${start}${handle} ${end}`
       setText(updatedText)
       setIsMentioning(false)
       setMentionQuery('')
-      setSelectedMentions((prev: any) => [...prev, { handle, id, type }])
+      setSelectedMentions((prev: any) => [...prev, { handle, id, slug, type }])
 
       const newCaretPosition = start.length + handle.length + 2
       textareaRef.current.setSelectionRange(newCaretPosition, newCaretPosition)
