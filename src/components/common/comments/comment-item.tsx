@@ -40,12 +40,12 @@ export const CommentItem = memo(function CommentItem({
         </Link>
         <p className="shrink-0 text-cap-1-demi text-tertiary">{getTimeAgo(comment.created_at) + ' ago'}</p>
       </div>
-      <div className="h-full w-full pl-6 flex justify-between items-start">
+      <div className="h-full w-full pl-6 flex justify-between items-start gap-x-2">
         <UI comment={comment} />
         <Reaction
           isSparked={comment.is_sparked ?? false}
           shareUrl={videoShareUrl}
-          className="w-fit flex-row gap-1 pt-2 !text-secondary [&_p]:!text-cap-1-med"
+          className="w-fit flex-row gap-1 !text-secondary [&_p]:!text-cap-1-med"
           sparkCount={comment.no_of_sparks}
           contentId={comment.comment_id}
           videoSlug={slug}

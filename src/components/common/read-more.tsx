@@ -155,8 +155,9 @@ export function Dynamic({
   ...props
 }: DynamicProps) {
   // height is used to calculate the max height of the text container.
-  const { height } = useGenuinOptions((state) => ({
+  const { height, isMobile } = useGenuinOptions((state) => ({
     height: state.sizeBoxes.default.height,
+    isMobile: state.isMobile,
   }))
   const textRef = useRef(null)
   const [isExpandedInternal, setIsExpandedInternal] = useState(false)
@@ -224,47 +225,50 @@ export function Dynamic({
   }
 
   return (
-    <p
-      {...props}
-      className={cn(
-        'overflow-clip whitespace-pre-wrap transition-[max-height] duration-500 sm:max-h-max',
-        {
-          'swiper-no-swiping __gen__sdk__hide__scrollbar overflow-auto': isExpanded,
-        },
-        props.className
-      )}
-      style={{
-        // The max height of the text container is calculated based on the height of the video player.
-        // If mobile, the max height is 30% of the video player height.
-        maxHeight: shouldAnimate ? (isExpanded ? height * 0.3 : maxLines * 24) : undefined,
-      }}
-      onClick={(e) => {
-        onClick?.(e)
-        e.stopPropagation()
-      }}>
-      <span
-        ref={textRef}
-        className={cn('w-full break-words', position !== 'outside' && 'text-white')}
-        style={!shouldAnimate && !isExpanded ? clampedStyle : { wordBreak: 'break-word' }}
-        onClick={
-          !showViewMore
-            ? (e) => {
+    <div className='w-full'>
+      <p
+        {...props}
+        className={cn(
+          'transition-[max-height] duration-500 sm:max-h-max',
+          {
+            'swiper-no-swiping __gen__sdk__hide__scrollbar overflow-auto':
+              isExpanded && isMobile,
+          },
+          props.className,
+        )}
+        style={{
+          // The max height of the text container is calculated based on the height of the video player.
+          // If mobile, the max height is 30% of the video player height.
+          maxHeight: shouldAnimate ? (isExpanded ? height * 0.3 : maxLines * 24) : undefined,
+        }}
+        onClick={(e) => {
+          onClick?.(e)
+          e.stopPropagation()
+        }}>
+        <span
+          ref={textRef}
+          className={cn('w-full break-words', position !== 'outside' && 'text-white')}
+          style={!shouldAnimate && !isExpanded ? clampedStyle : { wordBreak: 'break-word' }}
+          onClick={
+            !showViewMore
+              ? (e) => {
                 e.stopPropagation()
                 setIsExpanded(!isExpanded)
               }
-            : undefined
-        }>
-        {processedText}
-      </span>
-      {showViewMore && isOverflowing && (
-        <span
-          className="cursor-pointer pl-1 text-body-1-med text-tertiary"
-          onClick={() => {
-            setIsExpanded((x) => !x)
-          }}>
-          {isExpanded ? '(View less)' : '(View more)'}
+              : undefined
+          }>
+          {processedText}
         </span>
-      )}
-    </p>
+        {showViewMore && isOverflowing && (
+          <span
+            className="cursor-pointer pl-1 text-body-1-med text-tertiary"
+            onClick={() => {
+              setIsExpanded((x) => !x)
+            }}>
+            {isExpanded ? '(View less)' : '(View more)'}
+          </span>
+        )}
+      </p>
+    </div>
   )
 }
