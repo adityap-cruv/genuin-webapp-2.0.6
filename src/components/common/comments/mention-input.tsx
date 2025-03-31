@@ -277,7 +277,7 @@ const MentionInput: React.FC<{
                   value={text}
                   maxLength={500}
                   disabled={!user}
-                  className="border-none rounded-full pr-4"
+                  className="border-none rounded-full px-0 pl-1 pr-4"
                   onChange={handleInputChange}
                   onKeyDown={handleKeyDown}
                   onClick={(e: React.MouseEvent<HTMLInputElement>) => {
