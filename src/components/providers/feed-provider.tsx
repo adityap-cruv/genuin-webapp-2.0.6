@@ -2,9 +2,9 @@ import { createContext, useCallback, useContext, useEffect, useState } from 'rea
 import Analytics from '@/services/analytics'
 import { usePlayerControlStore } from '../common/player/player-control-store'
 import { type VideoPlayerModalType } from '@/lib/schemas/player/video'
-import { showInterruption } from '@/components/providers/interruption-provider'
 import { type CommunityUserRoleType } from '@/lib/schemas/roles'
 import { getAudioUrlForCommunity, useIHeartDemoStates } from './iheart-demo-provider'
+import { useInterruptionManager } from '../../hooks/use-interruption-manager'
 
 type FeedContextType = {
   currentIndex: number
@@ -49,6 +49,7 @@ export function FeedContextProvider({
   const [feedVideos, setFeedVideos] = useState<VideoPlayerModalType[]>(videos)
   // Track the last videoId that was used for 'Video Inview' event
   const [lastTrackedVideoId, setLastTrackedVideoId] = useState<string | null>(null)
+  const { handleSwipeCount } = useInterruptionManager()
 
   useEffect(() => {
     setFeedVideos((oldFeedVideos) => [...oldFeedVideos, ...videos.slice(oldFeedVideos.length)])
@@ -116,6 +117,9 @@ export function FeedContextProvider({
   useEffect(() => {
     if (!videos || videos.length === 0) return
 
+    // Track user interactions to determine if an interruption popup should be shown
+    handleSwipeCount(currentIndex)
+
     // update IHeart audio for the community.
     if (shouldShowIHeartDemo) {
       const audioUrl = getAudioUrlForCommunity(videos[currentIndex].community.slug)
@@ -125,9 +129,6 @@ export function FeedContextProvider({
 
     if (!isFetchingNextPage && currentIndex === videos.length - 3 && hasNextPage) {
       fetchNextPage?.()
-    }
-    if ((currentIndex + 1) % 5 === 0) {
-      void showInterruption()
     }
 
     if (videos.length - 1 === currentIndex) {
