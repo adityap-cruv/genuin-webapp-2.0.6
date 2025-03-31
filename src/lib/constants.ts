@@ -98,37 +98,37 @@ export type IndustryName =
 
 export const DEFAULT_EMBED_PROD = {
   'Home/Search Embed': {
-    embedId: '67c55cdac71e679e40b2497c',
+    embedId: '67ea7d5597d4b55f87c5a8b9',
     embedType: 'brand_feed',
     embedApiKey: '0bb6e6e8667a66183edeafa919f4f1b3e725a92021fa5b87',
   },
   'Blog Embed': {
-    embedId: '67c55cdac71e679e40b2497d',
+    embedId: '67ea7d5597d4b55f87c5a8ba',
     embedType: 'brand_feed',
     embedApiKey: '0bb6e6e8667a66183edeafa919f4f1b3e725a92021fa5b87',
   },
   'Home/Search Embed1': {
-    embedId: '67c55cdac71e679e40b2497e',
+    embedId: '67ea7d5597d4b55f87c5a8bb',
     embedType: 'brand_feed',
     embedApiKey: '0bb6e6e8667a66183edeafa919f4f1b3e725a92021fa5b87',
   },
   'Post-Sales Embed': {
-    embedId: '67c55cdac71e679e40b2497f',
+    embedId: '67ea7d5597d4b55f87c5a8bc',
     embedType: 'brand_feed',
     embedApiKey: '0bb6e6e8667a66183edeafa919f4f1b3e725a92021fa5b87',
   },
   'PDP Embed': {
-    embedId: '67c55cdac71e679e40b24980',
+    embedId: '67ea7d5597d4b55f87c5a8bd',
     embedType: 'brand_feed',
     embedApiKey: '0bb6e6e8667a66183edeafa919f4f1b3e725a92021fa5b87',
   },
   'Home/Blog Embed': {
-    embedId: '67c55cdac71e679e40b24981',
+    embedId: '67ea7d5597d4b55f87c5a8be',
     embedType: 'brand_feed',
     embedApiKey: '0bb6e6e8667a66183edeafa919f4f1b3e725a92021fa5b87',
   },
   'Home/Post Sales Embed': {
-    embedId: '67c55cdac71e679e40b24982',
+    embedId: '67ea7d5597d4b55f87c5a8bf',
     embedType: 'brand_feed',
     embedApiKey: '0bb6e6e8667a66183edeafa919f4f1b3e725a92021fa5b87',
   },
