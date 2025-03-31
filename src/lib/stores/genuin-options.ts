@@ -152,7 +152,7 @@ type PopupConfig = {
 type WebConfigs = {
   video_autoplay: VideoAutoplayConfig
   feed_video_play: FeedVideoPlayConfig
-  linkout_deplay: LinkoutDelayConfig
+  linkout_delay: LinkoutDelayConfig
   login_signup_popup: PopupConfig
   interest_selection_popup: PopupConfig
   username_popup: PopupConfig
@@ -302,6 +302,45 @@ const initialState: StateType = {
       suffix: 'to',
       title: 'react',
       type: 'default',
+    },
+    web_configs: {
+      video_autoplay: {
+        type: 1,
+        is_start_with_sound: true,
+        auto_play_after: 5,
+      },
+      feed_video_play: {
+        type: 1,
+        repeat_video: 0,
+        swipe_after: 0,
+      },
+      linkout_delay: {
+        type: 1,
+        appear_after: 10,
+      },
+      login_signup_popup: {
+        enable: true,
+        popup_after: 5,
+      },
+      interest_selection_popup: {
+        enable: true,
+        popup_after: 5,
+      },
+      username_popup: {
+        enable: true,
+        popup_after: 5,
+      },
+      complete_profile_popup: {
+        enable: true,
+        popup_after: 5,
+      },
+      idle_time_interruption: {
+        enable: true,
+        popup_after: 60,
+      },
+      video_aspect_ratio: '9:16',
+      tap_behavior: 3,
+      gesture_guidance: true,
     },
   } as any,
   notificationCount: -1,

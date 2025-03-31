@@ -143,8 +143,25 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     }
   }, [sessionData])
 
+  function getParsedWebConfigs() {
+    let parsedWebConfigs = null
+    try {
+      const webConfigs = searchParams.get('web_configs') ?? '{}'
+      parsedWebConfigs = JSON.parse(decodeURIComponent(webConfigs))
+    } catch (error) {
+      console.error('Failed to parse web_configs:', error)
+    }
+    return parsedWebConfigs
+  }
+
   function init() {
     if (config?.brand_id) setBrandIdInAxiosInstance(Number(config?.brand_id))
+
+    const parsedWebConfigs = getParsedWebConfigs()
+    if (config?.web_configs && parsedWebConfigs) {
+      Object.assign(config.web_configs, parsedWebConfigs)
+    }
+
     const isIframe = window !== window.parent
     setInitialData({
       logoUrl: config?.logo,
