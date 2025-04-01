@@ -45,7 +45,7 @@ export const CommentItem = memo(function CommentItem({
         <Reaction
           isSparked={comment.is_sparked ?? false}
           shareUrl={videoShareUrl}
-          className="w-fit flex-row gap-1 !text-secondary [&_p]:!text-cap-1-med"
+          className="w-fit !text-secondary [&_p]:!text-cap-1-med"
           sparkCount={comment.no_of_sparks}
           contentId={comment.comment_id}
           videoSlug={slug}

@@ -159,7 +159,7 @@ export function Dynamic({
     height: state.sizeBoxes.default.height,
     isMobile: state.isMobile,
   }))
-  const textRef = useRef(null)
+  const textRef = useRef(null);
   const [isExpandedInternal, setIsExpandedInternal] = useState(false)
   const [isOverflowing, setIsOverflowing] = useState(false)
   const isExpanded = isExpandedExternal ?? isExpandedInternal
