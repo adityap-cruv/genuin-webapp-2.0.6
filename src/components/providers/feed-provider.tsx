@@ -120,13 +120,6 @@ export function FeedContextProvider({
     // Track user interactions to determine if an interruption popup should be shown
     handleSwipeCount(currentIndex)
 
-    // update IHeart audio for the community.
-    if (shouldShowIHeartDemo) {
-      const audioUrl = getAudioUrlForCommunity(videos[currentIndex].community.slug)
-      if (!audioUrl) return
-      setAudioUrl(audioUrl)
-    }
-
     if (!isFetchingNextPage && currentIndex === videos.length - 3 && hasNextPage) {
       fetchNextPage?.()
     }
@@ -135,6 +128,13 @@ export function FeedContextProvider({
       setAllowSlideNext(false)
     } else if (!allowSlideNext) {
       setAllowSlideNext(true)
+    }
+
+    // update IHeart audio for the community.
+    if (shouldShowIHeartDemo) {
+      const audioUrl = getAudioUrlForCommunity(videos[currentIndex].community.slug)
+      if (!audioUrl) return
+      setAudioUrl(audioUrl)
     }
   }, [currentIndex, videos, hasNextPage, shouldShowIHeartDemo])
 
