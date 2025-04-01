@@ -225,16 +225,15 @@ export function Dynamic({
   }
 
   return (
-    <div className='w-full'>
+    <div className="w-full">
       <p
         {...props}
         className={cn(
           'transition-[max-height] duration-500 sm:max-h-max',
           {
-            'swiper-no-swiping __gen__sdk__hide__scrollbar overflow-auto':
-              isExpanded && isMobile,
+            'swiper-no-swiping __gen__sdk__hide__scrollbar overflow-auto': isExpanded && isMobile,
           },
-          props.className,
+          props.className
         )}
         style={{
           // The max height of the text container is calculated based on the height of the video player.
@@ -252,9 +251,9 @@ export function Dynamic({
           onClick={
             !showViewMore
               ? (e) => {
-                e.stopPropagation()
-                setIsExpanded(!isExpanded)
-              }
+                  e.stopPropagation()
+                  setIsExpanded(!isExpanded)
+                }
               : undefined
           }>
           {processedText}

@@ -3,7 +3,7 @@
 import * as React from 'react'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
 import { CloseIcon } from '@icons/close-icon'
-
+import { usePathname } from 'next/navigation'
 import { cn } from '@lib/utils'
 
 const Dialog = DialogPrimitive.Root
@@ -17,41 +17,61 @@ const DialogClose = DialogPrimitive.Close
 const DialogOverlay = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Overlay>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
->(({ className, ...props }, ref) => (
-  <DialogPrimitive.Overlay
-    ref={ref}
-    className={cn(
-      'fixed inset-0 z-50 bg-monochrome-black/80  data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
-      className
-    )}
-    {...props}
-  />
-))
+>(({ className, ...props }, ref) => {
+  const pathname = usePathname()
+  const isEmbed = pathname.includes('embed')
+
+  return (
+    <DialogPrimitive.Overlay
+      ref={ref}
+      className={cn(
+        `fixed inset-0 bg-monochrome-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out 
+         data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0`,
+        isEmbed ? 'z-[9999999999999]' : 'z-50',
+        className
+      )}
+      {...props}
+    />
+  )
+})
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName
 
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & { showClose?: boolean }
->(({ className, children, showClose = true, ...props }, ref) => (
-  <DialogPortal>
-    <DialogOverlay />
-    <DialogPrimitive.Content
-      ref={ref}
-      className={cn(
-        'fixed bottom-0 left-0 z-50 w-full border-0 bg-monochrome-white p-4 shadow-lg outline-0 ring-0 duration-200 focus:ring-0 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom sm:left-[50%] sm:top-[50%] sm:h-max sm:w-auto sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-lg sm:p-6 sm:data-[state=closed]:slide-out-to-left-1/2 sm:data-[state=closed]:slide-out-to-top-[48%] sm:data-[state=open]:slide-in-from-left-1/2 sm:data-[state=open]:slide-in-from-top-[48%]',
-        className
-      )}
-      {...props}>
-      {children}
-      {showClose && (
-        <DialogPrimitive.Close className="absolute right-3 top-3 rounded-sm opacity-70 outline-none transition-opacity hover:opacity-100 focus:outline-none disabled:pointer-events-none">
-          <CloseIcon />
-          <span className="sr-only">Close</span>
-        </DialogPrimitive.Close>
-      )}
-    </DialogPrimitive.Content>
-  </DialogPortal>
-))
+>(({ className, children, showClose = true, ...props }, ref) => {
+  const pathname = usePathname()
+  const isEmbed = pathname.includes('embed')
+
+  return (
+    <DialogPortal>
+      <DialogOverlay />
+      <DialogPrimitive.Content
+        ref={ref}
+        className={cn(
+          `fixed bottom-0 left-0 w-full border-0 bg-monochrome-white p-4 shadow-lg outline-0 ring-0 duration-200 
+           focus:ring-0 data-[state=open]:animate-in data-[state=closed]:animate-out 
+           data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 
+           data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-bottom 
+           data-[state=open]:slide-in-from-bottom sm:left-[50%] sm:top-[50%] sm:h-max sm:w-auto 
+           sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-lg sm:p-6 
+           sm:data-[state=closed]:slide-out-to-left-1/2 sm:data-[state=closed]:slide-out-to-top-[48%] 
+           sm:data-[state=open]:slide-in-from-left-1/2 sm:data-[state=open]:slide-in-from-top-[48%]`,
+          isEmbed ? 'z-[9999999999999]' : 'z-50',
+          className
+        )}
+        {...props}>
+        {children}
+        {showClose && (
+          <DialogPrimitive.Close className="absolute right-3 top-3 rounded-sm opacity-70 outline-none transition-opacity hover:opacity-100 focus:outline-none disabled:pointer-events-none">
+            <CloseIcon />
+            <span className="sr-only">Close</span>
+          </DialogPrimitive.Close>
+        )}
+      </DialogPrimitive.Content>
+    </DialogPortal>
+  )
+})
 DialogContent.displayName = DialogPrimitive.Content.displayName
 
 const DialogHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
