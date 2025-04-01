@@ -45,7 +45,7 @@ export function Mobile({
     closeComments: state.closeModal,
     commentsIsOpen: state.modalIsOpen,
   }))
-  const { user } = useGenuinOptions((state) => ({ user: state.user }))
+  const { user, brandId } = useGenuinOptions((state) => ({ user: state.user, brandId: state.brandId }))
   const { updateSparkStatus } = useFeedListContext()
   const searchParams = Object.fromEntries(useSearchParams())
 
@@ -62,20 +62,23 @@ export function Mobile({
         </Link>
       )}
       <span className="flex flex-col">
-        <ActionItem
-          title="Repost the video!"
-          onClick={async () => {
-            await handleWalletBalance({ action: 'repost', videoId, type: 'POST' })
-            if (user) {
-              RepostModal.open(videoId)
-            } else {
-              await repostDeepLink({ videoSlug, shareUrl, searchParams }).then((generatedLink) => {
-                openModal({ deepLink: generatedLink, subtitle: 'Get the app to repost the video.' })
-              })
-            }
-          }}>
-          <Image src={icRepost} height={32} width={32} alt="repost" />
-        </ActionItem>
+        {/* Disabling repost for TED in prod */}
+        {brandId.toString() !== '2357' && (
+          <ActionItem
+            title="Repost the video!"
+            onClick={async () => {
+              await handleWalletBalance({ action: 'repost', videoId, type: 'POST' })
+              if (user) {
+                RepostModal.open(videoId)
+              } else {
+                await repostDeepLink({ videoSlug, shareUrl, searchParams }).then((generatedLink) => {
+                  openModal({ deepLink: generatedLink, subtitle: 'Get the app to repost the video.' })
+                })
+              }
+            }}>
+            <Image src={icRepost} height={32} width={32} alt="repost" />
+          </ActionItem>
+        )}
         <Reaction
           shareUrl={shareUrl}
           sparkCount={sparkCount}
