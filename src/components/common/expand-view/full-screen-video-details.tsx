@@ -97,7 +97,6 @@ const FullScreenVideoDetails = ({
               maxLines={currentVideo?.video.linkoutId ? 1 : 2}
               shouldAnimate
               showViewMore={false}
-              isFullScreen={isFullScreen}
               // isExpanded={false}
               // setIsExpanded={setIsExpanded}
             />

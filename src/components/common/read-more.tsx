@@ -139,7 +139,6 @@ type DynamicProps = {
   position: 'overlay' | 'outside'
   isExpanded?: boolean
   setIsExpanded?: React.Dispatch<React.SetStateAction<boolean>>
-  isFullScreen?: boolean
 } & ComponentProps<'p'>
 
 export function Dynamic({
@@ -149,7 +148,6 @@ export function Dynamic({
   shouldAnimate = false,
   isExpanded: isExpandedExternal,
   setIsExpanded: setIsExpandedExternal,
-  isFullScreen,
   position = 'outside',
   onClick,
   ...props
@@ -159,7 +157,7 @@ export function Dynamic({
     height: state.sizeBoxes.default.height,
     isMobile: state.isMobile,
   }))
-  const textRef = useRef(null);
+  const textRef = useRef(null)
   const [isExpandedInternal, setIsExpandedInternal] = useState(false)
   const [isOverflowing, setIsOverflowing] = useState(false)
   const isExpanded = isExpandedExternal ?? isExpandedInternal
@@ -169,6 +167,13 @@ export function Dynamic({
     const textObj = tryJsonParse(text)
     return Array.isArray(textObj) ? convertUrlsToAnchorTags(textObj) : textObj
   }, [text])
+
+  useEffect(() => {
+    const textElement = textRef.current as unknown as HTMLParagraphElement
+    if (textElement) {
+      applyLineClampStyles(textElement, maxLines)
+    }
+  }, [processedText])
 
   useEffect(() => {
     const checkOverflow = () => {
@@ -187,6 +192,7 @@ export function Dynamic({
     window.addEventListener('resize', checkOverflow)
     return () => {
       window.removeEventListener('resize', checkOverflow)
+      setIsExpanded(false)
     }
   }, [text])
 
@@ -196,7 +202,6 @@ export function Dynamic({
     if (!textRef.current) return
     const textElement = textRef.current as HTMLParagraphElement
 
-    // If the text is expanded, remove the line clamp effect.
     if (isExpanded) {
       applyLineClampStyles(textElement, null)
       return
@@ -225,7 +230,7 @@ export function Dynamic({
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full overflow-clip">
       <p
         {...props}
         className={cn(
