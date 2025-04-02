@@ -175,10 +175,6 @@ export function EmbedPlayer({
           onClick={(e) => {
             e.stopPropagation()
             toggleMuted()
-            void Analytics.track({
-              eventName: 'Unmute',
-              properties: {},
-            })
           }}>
           <AnimatedMuteIcon videoId={videoData.video.id} />
         </div>

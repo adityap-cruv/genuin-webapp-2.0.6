@@ -7,7 +7,6 @@ import { ReadMore } from '@components/common/read-more'
 import { cn } from '@lib/utils'
 import { AnimatedMuteIcon } from './animated-mute-icon'
 import { type DescriptionArrType } from '@lib/schemas/player/video'
-import Analytics from '@services/analytics'
 import { PlayerProgressBar } from './player-progress-bar'
 import { memo, useEffect, useState, useCallback } from 'react'
 import { Linkout } from '../../linkout'
@@ -83,11 +82,7 @@ export const Mobile = memo(function Mobile({ clickableUrl, ...props }: MobilePro
 
       // Then unmute the video if it's muted
       if (muted) {
-        toggleMuted()
-        void Analytics.track({
-          eventName: 'Unmute',
-          properties: { video_id: props.videoId },
-        })
+        toggleMuted(props.videoId)
         toggleButtonVisibility('unmute')
       } else {
         setShouldPlay(!shouldPlay)

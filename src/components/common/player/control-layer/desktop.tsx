@@ -64,7 +64,7 @@ export const Desktop = memo(function Desktop({
 
       // Then, handle the mute/unmute behavior
       if (muted) {
-        toggleMuted()
+        toggleMuted(videoId)
         toggleButtonVisibility('unmute')
       } else {
         setShouldPlay(!shouldPlay)
