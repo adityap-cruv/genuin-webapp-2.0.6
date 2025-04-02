@@ -7,7 +7,7 @@ import { Linkout } from '../linkout'
 import BrandBadgeIcon from '../brand-badge-icon'
 import { ReadMore } from '../read-more'
 import { type VideoPlayerModalType } from '@/lib/schemas/player/video'
-import { useEffect, useState } from 'react'
+import useShowLinkouts from '@/hooks/use-show-linkouts'
 
 const Animations = {
   hidden: { translateY: 'calc(100% - 40px)' },
@@ -36,31 +36,8 @@ const FullScreenVideoDetails = ({
   isActive: boolean
   isFullScreen: boolean
 }) => {
-  const [showLinkouts, setShowLinkouts] = useState(false)
-
-  useEffect(() => {
-    const currentVideo = videos[currentIndex]
-    if (!currentVideo?.video.linkoutId) return
-    let timeoutId: NodeJS.Timeout | null = null
-
-    // If video is active, show linkouts after 10 seconds.
-    if (isActive) {
-      timeoutId = setTimeout(() => {
-        setShowLinkouts(true)
-      }, 10000)
-    } else {
-      setShowLinkouts(false)
-    }
-
-    // Clear timeout if video is not active.
-    return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId)
-      }
-    }
-  }, [isActive, videos, currentIndex])
-
   const currentVideo = videos[currentIndex]
+  const { showLinkouts } = useShowLinkouts({ isActive, linkoutId: currentVideo.video.linkoutId })
 
   return (
     <div className="absolute bottom-4 left-0 flex w-full justify-between px-2">

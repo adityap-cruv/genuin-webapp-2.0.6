@@ -140,7 +140,15 @@ type FeedVideoPlayConfig = {
 }
 
 type LinkoutDelayConfig = {
+  /**
+   * 1: Custom.
+   *
+   * 2: Immediately.
+   */
   type: number
+  /**
+   * appear_after is in seconds..
+   */
   appear_after: number
 }
 

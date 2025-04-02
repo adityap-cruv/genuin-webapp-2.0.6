@@ -8,7 +8,7 @@ import { cn } from '@lib/utils'
 import { AnimatedMuteIcon } from './animated-mute-icon'
 import { type DescriptionArrType } from '@lib/schemas/player/video'
 import { PlayerProgressBar } from './player-progress-bar'
-import { memo, useEffect, useState, useCallback } from 'react'
+import { memo, useCallback } from 'react'
 import { Linkout } from '../../linkout'
 import { useShallow } from 'zustand/react/shallow'
 import { type LinkoutsType } from '../../linkout/schema'
@@ -21,6 +21,7 @@ import BrandBadgeIcon from '@components/common/brand-badge-icon'
 import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
 import { handleTapBehavior, PlayingState } from './playing-state'
 import { useGenuinOptions } from '@/lib/stores/genuin-options'
+import useShowLinkouts from '@/hooks/use-show-linkouts'
 
 type MobileProps = {
   isActive: boolean
@@ -175,28 +176,7 @@ function Details({
   loopSlug,
   setIsExpanded,
 }: MobileProps) {
-  const [showLinkouts, setShowLinkouts] = useState(false)
-
-  // This logic is to show linkouts after 10 second of video play.
-  useEffect(() => {
-    if (!linkoutId) return
-    let timeoutId: NodeJS.Timeout | null = null
-    // If video is active, show linkouts after 10 seconds.
-    if (isActive) {
-      timeoutId = setTimeout(() => {
-        setShowLinkouts(true)
-      }, 10000)
-    } else {
-      setShowLinkouts(false)
-    }
-
-    // Clear timeout if video is not active.
-    return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId)
-      }
-    }
-  }, [isActive, linkoutId])
+  const { showLinkouts } = useShowLinkouts({ isActive, linkoutId })
 
   return (
     <div className="absolute bottom-4 left-0 flex w-full justify-between px-2">
