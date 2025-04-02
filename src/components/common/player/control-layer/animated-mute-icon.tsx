@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from 'react'
-import Analytics from '@/services/analytics'
 import { MuteIcon } from '@icons/player-controls/mute-icon'
 import { UnmuteIcon } from '@icons/player-controls/unmute-icon'
 import { usePlayerControlStore } from '../player-control-store'
@@ -30,11 +29,7 @@ export const AnimatedMuteIcon = ({ videoId }: { videoId: string }) => {
   const handleClick = useCallback(
     (e: any) => {
       e.stopPropagation()
-      toggleMuted(true)
-      void Analytics.track({
-        eventName: muted ? 'Unmute' : 'Mute',
-        properties: { video_id: videoId },
-      })
+      toggleMuted({ byUser: true, videoId })
     },
     [muted, toggleMuted, videoId]
   )

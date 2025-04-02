@@ -44,6 +44,7 @@ type TapBehaviorParams = {
   shouldPlay: boolean
   toggleMuted: PlayerControlStoreType['toggleMuted']
   setShouldPlay: PlayerControlStoreType['setShouldPlay']
+  videoId: string
 }
 
 // this is the tap behavior for the player
@@ -53,10 +54,11 @@ export const handleTapBehavior = ({
   shouldPlay,
   toggleMuted,
   setShouldPlay,
+  videoId,
 }: TapBehaviorParams) => {
   switch (tapBehavior) {
     case 1: // Tap to mute/unmute
-      toggleMuted(true)
+      toggleMuted({ byUser: true, videoId })
       break
 
     case 2: // Tap to play/pause
@@ -68,7 +70,7 @@ export const handleTapBehavior = ({
       if (muted || !shouldPlay) {
         // If muted then unmute.
         if (muted) {
-          toggleMuted(true)
+          toggleMuted({ byUser: true, videoId })
         }
         // If not playing then play.
         if (!shouldPlay) {

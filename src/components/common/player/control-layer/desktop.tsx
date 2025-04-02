@@ -63,9 +63,10 @@ export const Desktop = memo(function Desktop({
         shouldPlay,
         toggleMuted,
         setShouldPlay,
+        videoId,
       })
     },
-    [muted, toggleMuted, shouldPlay, setShouldPlay, config.web_configs?.tap_behavior]
+    [muted, toggleMuted, shouldPlay, setShouldPlay, config.web_configs?.tap_behavior, videoId]
   )
 
   const openClickableUrl = useCallback(

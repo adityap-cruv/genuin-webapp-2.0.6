@@ -81,9 +81,10 @@ export const Mobile = memo(function Mobile({ clickableUrl, ...props }: MobilePro
         shouldPlay,
         toggleMuted,
         setShouldPlay,
+        videoId: props.videoId,
       })
     },
-    [shouldPlay, muted, setShouldPlay, toggleMuted, config.web_configs?.tap_behavior]
+    [shouldPlay, muted, setShouldPlay, toggleMuted, config.web_configs?.tap_behavior, props.videoId]
   )
 
   const openClickableUrl = useCallback(

@@ -9,6 +9,7 @@ import { useGenuinOptions } from '@/lib/stores/genuin-options'
 import { PATH_NAME } from '@/lib/utils/constants/path'
 import { usePathname } from 'next/navigation'
 import { useIheartBorderState } from '@/hooks/use-iheart-border'
+import { useFeedListContext } from '@/components/providers/feed-provider'
 
 /**
  * This const is defined for iheart only don't modify it.
@@ -221,6 +222,7 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
   const isMobile = useGenuinOptions().isMobile
   const [shouldPlay] = useState(audioStateRef.current.shouldPlay)
   const { muted, toggleMuted, setShouldPlay, shouldPlay: playerShouldPlay, isFullScreen } = usePlayerControlStore()
+  const { videos, currentIndex } = useFeedListContext()
   const isProgrammatic = useRef<{ play: boolean; pause: boolean }>({ play: false, pause: false })
   const [isReady, setIsReady] = useState(false)
   const [isPipOpen, setIsPipOpen] = useState(false)
@@ -242,7 +244,7 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
   const play = useCallback(() => {
     if (!isReady) return
     const audioElement = ihrPlayerRef.current
-    if (!muted) toggleMuted()
+    if (!muted) toggleMuted({ byUser: false, videoId: videos[currentIndex].video.id })
     isProgrammatic.current.play = true
     isProgrammatic.current.pause = false
     audioElement.play()
