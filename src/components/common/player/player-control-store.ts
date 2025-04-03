@@ -60,10 +60,14 @@ export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
       set((state) => {
         const newMuted = !state.muted
         const prevVolume = state.volume > 0 ? state.volume : state.prevVolume
-        void Analytics.track({
-          eventName: newMuted ? 'Muted' : 'Unmuted',
-          properties: { video_id: videoId },
-        })
+
+        if (byUser) {
+          void Analytics.track({
+            eventName: newMuted ? 'Muted' : 'Unmuted',
+            properties: { video_id: videoId },
+          })
+        }
+
         return {
           muted: newMuted,
           volume: newMuted ? 0 : prevVolume > 0 ? prevVolume : 100,
