@@ -27,6 +27,8 @@ function Desktop() {
         eventName: 'Keyword Searched',
         properties: { keyword_searched: value.trim(), search_source: 'web' },
       })
+    } else {
+      setKeyword('')
     }
   }, 500)
 
