@@ -137,15 +137,15 @@ export const JoinCommunityButton = memo(function JoinCommunityButton({
   // If user has requested to join the community, then show the requested button.
   if (role === 'REQUESTED')
     return (
-      <Button size="custom" className="border border-primary" variant="outline">
-        <p className="h-[32px] px-4 text-body-1-demi text-primary">Requested</p>
+      <Button size="custom" className="h-[32px] border border-primary" variant="outline">
+        <p className="px-4 text-center text-body-1-demi text-primary">Requested</p>
       </Button>
     )
   // According to design we have to go with text-monochrome-white and stroke, as we can't use primary, secondary or tertiary colors
   return (
     <Button
       size="custom"
-      className="h-[32px] rounded border border-primary px-4"
+      className="h-[32px] rounded border border-primary px-4 text-center"
       variant={role === 'MEMBER' ? 'outline' : 'default'}
       onClick={user ? toggleCommunityJoinState : joinCommunityDeepLinkHandler}>
       {isLoading ? (
