@@ -112,11 +112,7 @@ export function Mobile({
             setIsExpanded={setIsExpanded}
           />
         </div>
-        <CommentSheet
-          videoDetails={videoDetails}
-          videoId={videoDetails.video.id}
-          commentCount={videoDetails.video.commentCount}
-        />
+        <CommentSheet videoDetails={videoDetails} />
       </div>
     </div>
   )

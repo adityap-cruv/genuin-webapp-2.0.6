@@ -9,10 +9,7 @@ import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { useShallow } from 'zustand/react/shallow'
 import { FeedContextProvider, useFeedListContext } from '@components/providers/feed-provider'
 import { FeedShimmer } from '../shimmers/feed-shimmer'
-import Analytics from '@/services/analytics'
 import { usePlayerControlStore } from '../player/player-control-store'
-import { Player } from '../player'
-import { Actions } from '../player/control-layer/actions'
 import FullScreenSideButtons from '../expand-view/full-screen-side-buttons'
 import FullScreenVideoDetails from '../expand-view/full-screen-video-details'
 import FullScreenCommentBoxLayout from '../expand-view/full-screen-comment-box'
@@ -24,6 +21,9 @@ import { Toaster } from '@/components/ui/toaster'
 import { AnimatePresence } from 'framer-motion'
 import { useIheartBorderState } from '@/hooks/use-iheart-border'
 import { useGestureOverlayManager } from '../gestures/gesture-overlay-manager'
+import { NewPlayer } from '../player/new'
+import { Actions } from '../player/control-layer/actions'
+import Analytics from '@/services/analytics'
 
 type DesktopProps = {
   isLoading: boolean
@@ -231,14 +231,12 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
                         if (videos[index])
                           return (
                             <>
-                              <Player.desktop
-                                isActive={isActive}
-                                videoData={{
-                                  ...videos[index].video,
-                                  clickableUrl: videos[index].video.clickableUrl,
-                                }}
-                                loop
+                              <NewPlayer
                                 key={index}
+                                videoDetails={videos[index]}
+                                isActive={isActive}
+                                loop
+                                isInModal={isFullScreen}
                                 onEnded={() => {
                                   const { currentTime, duration } = usePlayerControlStore.getState()
                                   Analytics.triggerAnalyticsForVideoComplete(
@@ -252,16 +250,13 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
                                   }
                                 }}
                               />
-
                               {isFullScreen && (
-                                <div className="fixed absolute inset-0 h-full w-full">
-                                  <FullScreenVideoDetails
-                                    videos={videos}
-                                    currentIndex={currentIndex}
-                                    isActive={isActive}
-                                    isFullScreen={isFullScreen}
-                                  />
-                                </div>
+                                <FullScreenVideoDetails
+                                  videos={videos}
+                                  currentIndex={currentIndex}
+                                  isActive={isActive}
+                                  isFullScreen={isFullScreen}
+                                />
                               )}
                             </>
                           )
@@ -286,6 +281,7 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
           {isFullScreen && (
             <div className="flex h-full flex-col justify-end p-4">
               <Actions.desktop
+                className="gap-2"
                 shareUrl={videos[currentIndex].video.shareUrl}
                 sparkCount={videos[currentIndex].video.sparkCount}
                 videoId={videos[currentIndex].video.id}

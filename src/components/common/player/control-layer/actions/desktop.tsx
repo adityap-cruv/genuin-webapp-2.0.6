@@ -1,4 +1,4 @@
-import { abbreviateNumber, checkAndAppendHttps, openModal } from '@lib/utils'
+import { abbreviateNumber, checkAndAppendHttps, cn, openModal } from '@lib/utils'
 import icShare from '@icons/player-controls/icon-share.svg'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
@@ -18,6 +18,7 @@ import { usePlayerControlStore } from '../../player-control-store'
 import { useShallow } from 'zustand/react/shallow'
 import { Reaction } from '@/components/common/reaction'
 import { useFeedListContext } from '@/components/providers/feed-provider'
+import { type ComponentProps } from 'react'
 
 type DesktopActionsProps = {
   sparkCount: number
@@ -32,7 +33,7 @@ type DesktopActionsProps = {
   //  * Determines whether repost is allowed or not.
   //  */
   // isPostAllowed: boolean
-}
+} & ComponentProps<'div'>
 
 export function Desktop({
   shareUrl,
@@ -43,6 +44,9 @@ export function Desktop({
   description,
   isSparked, // isPostAllowed,
   commentCount,
+  className,
+  onClick,
+  ...restProps
 }: DesktopActionsProps) {
   const { updateSparkStatus } = useFeedListContext()
   const { handleWalletBalance } = useWalletBalanceHandler()
@@ -65,10 +69,12 @@ export function Desktop({
   return (
     <>
       <div
-        className="flex flex-col"
+        className={cn('flex flex-col', className)}
         onClick={(e) => {
           e.stopPropagation()
-        }}>
+          onClick?.(e)
+        }}
+        {...restProps}>
         {attachedLink && (
           <Link href={checkAndAppendHttps(attachedLink)} target="_blank">
             <ActionItem title="Click Here!">

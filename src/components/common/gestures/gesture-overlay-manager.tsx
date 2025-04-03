@@ -9,7 +9,12 @@ const LazyGestureGuideOverlay = dynamic(
 )
 
 export function useGestureOverlayManager() {
-  const isGuidanceEnabled = useGenuinOptions(useShallow((state) => state.config.web_configs?.gesture_guidance ?? false))
+  const { isGuidanceEnabled, tapBehaviour } = useGenuinOptions(
+    useShallow((state) => ({
+      isGuidanceEnabled: state.config.web_configs?.gesture_guidance ?? false,
+      tapBehaviour: state.config.web_configs?.tap_behavior,
+    }))
+  )
 
   const { gestureOverlays, setGestureOverlay } = useKsGestureStore(
     useShallow((state) => ({
@@ -21,6 +26,9 @@ export function useGestureOverlayManager() {
   const showGestureOverlay = useCallback(
     (step: GestureOverlayKeysType) => {
       if (!isGuidanceEnabled || gestureOverlays[step].hasShown) return
+      // don't show the overlay only if tap behaviour is set to 1 (which means tap to mute/unmute)
+      if (tapBehaviour === 1 && step === 'PLAY_PAUSE') return
+
       setGestureOverlay(step, true)
     },
     [isGuidanceEnabled, gestureOverlays, setGestureOverlay]

@@ -11,10 +11,8 @@ import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { UnseenMessageRibbon } from '../../unseen-message-ribbon'
 import { FeedContextProvider, useFeedListContext } from '@/components/providers/feed-provider'
-import { Player } from '../../player'
 import { usePlayerControlStore } from '../../player/player-control-store'
 import { DesktopDetails } from '../desktop-details'
-import Analytics from '@/services/analytics'
 import { type CommunityUserRoleType } from '@/lib/schemas/roles'
 import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
 import { IHeartDemo } from '@/components/layouts/desktop/iheart-demo'
@@ -25,12 +23,14 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { Mousewheel, Keyboard, Virtual } from 'swiper/modules'
 import { Actions } from '../../player/control-layer/actions'
 import FullScreenSideButtons from '../../expand-view/full-screen-side-buttons'
-import FullScreenVideoDetails from '../../expand-view/full-screen-video-details'
 import FullScreenCommentBoxLayout from '../../expand-view/full-screen-comment-box'
 import { AnimatePresence } from 'framer-motion'
 import { UAParser } from 'ua-parser-js'
 import FullScreenEsc from '../../expand-view/full-screen-esc'
 import { useIheartBorderState } from '@/hooks/use-iheart-border'
+import { NewPlayer } from '../../player/new'
+import Analytics from '@/services/analytics'
+import FullScreenVideoDetails from '../../expand-view/full-screen-video-details'
 
 type Props = {
   children?: React.ReactNode
@@ -298,20 +298,9 @@ function Content({
                           if (videos[index])
                             return (
                               <>
-                                <Player.desktop
-                                  isActive
-                                  videoData={{
-                                    id: videos[currentIndex].video.id,
-                                    shareUrl: videos[currentIndex].video.shareUrl,
-                                    attachedLink: videos[currentIndex].video.attachedLink,
-                                    source: videos[currentIndex].video.source,
-                                    sparkCount: videos[currentIndex].video.sparkCount,
-                                    thumbnail: videos[currentIndex].video.thumbnail,
-                                    slug: videos[currentIndex].video.slug,
-                                    description: videos[currentIndex].video.descriptionText,
-                                    clickableUrl: videos[currentIndex].video.clickableUrl,
-                                    isSparked: videos[currentIndex].video.isSparked,
-                                  }}
+                                <NewPlayer
+                                  videoDetails={videos[index]}
+                                  isActive={isActive}
                                   loop
                                   onEnded={() => {
                                     const { currentTime, duration } = usePlayerControlStore.getState()
@@ -321,18 +310,15 @@ function Content({
                                       currentTime
                                     )
                                   }}
-                                  isInModal={isInModal}
+                                  isInModal
                                 />
-
                                 {isFullScreen && (
-                                  <div className="fixed absolute inset-0 h-full w-full">
-                                    <FullScreenVideoDetails
-                                      videos={videos}
-                                      currentIndex={currentIndex}
-                                      isActive={isActive}
-                                      isFullScreen={isFullScreen}
-                                    />
-                                  </div>
+                                  <FullScreenVideoDetails
+                                    videos={videos}
+                                    currentIndex={currentIndex}
+                                    isActive={isActive}
+                                    isFullScreen={isFullScreen}
+                                  />
                                 )}
                               </>
                             )
@@ -354,6 +340,7 @@ function Content({
             {isFullScreen && (
               <div className="flex h-full flex-col justify-end p-4">
                 <Actions.desktop
+                  className="gap-2"
                   shareUrl={videos[currentIndex].video.shareUrl}
                   sparkCount={videos[currentIndex].video.sparkCount}
                   videoId={videos[currentIndex].video.id}

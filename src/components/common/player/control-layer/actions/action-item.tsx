@@ -18,7 +18,7 @@ export function ActionItem({ children, onClick, title, className, ...props }: Ac
     <div
       onClick={onClick}
       title={!isFullScreen ? title : undefined}
-      className={cn('my-2 cursor-pointer', className, {
+      className={cn('cursor-pointer', className, {
         'rounded-full bg-secondary-400 p-2': isFullScreen,
       })}
       {...props}>

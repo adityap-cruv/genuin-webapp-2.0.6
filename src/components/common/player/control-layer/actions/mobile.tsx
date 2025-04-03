@@ -124,17 +124,6 @@ export function Mobile({
         }}>
         <Image src={icShare} alt="share" height={32} width={32} />
       </ActionItem>
-      {/* <ActionItem
-        title="more options!"
-        onClick={() => {
-          if (user) {
-            DownloadDialogModal.open({ title: 'Get the Genuin app', subtitle: 'Get the app to report video.' })
-          } else {
-            AuthenticationModal.open()
-          }
-        }}>
-        <Image src={ic3Dot} alt="more options" height={32} width={32} />
-      </ActionItem> */}
     </div>
   )
 }

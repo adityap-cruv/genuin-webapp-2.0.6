@@ -5,7 +5,6 @@ import { CustomAvatar } from '@components/custom/custom-avatar'
 import { Actions } from './actions'
 import { ReadMore } from '@components/common/read-more'
 import { cn } from '@lib/utils'
-import { AnimatedMuteIcon } from './animated-mute-icon'
 import { type DescriptionArrType } from '@lib/schemas/player/video'
 import { PlayerProgressBar } from './player-progress-bar'
 import { memo, useCallback } from 'react'
@@ -21,6 +20,7 @@ import BrandBadgeIcon from '@components/common/brand-badge-icon'
 import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
 import { handleTapBehavior, PlayingState } from './playing-state'
 import { useGenuinOptions } from '@/lib/stores/genuin-options'
+import { AnimatedMuteButton } from './mute-button'
 import useShowLinkouts from '@/hooks/use-show-linkouts'
 
 type MobileProps = {
@@ -118,7 +118,7 @@ export const Mobile = memo(function Mobile({ clickableUrl, ...props }: MobilePro
             </span>
           )}
           <span onClick={clickableUrl ? handleScreenClick : undefined} className="h-fit w-fit cursor-pointer">
-            <AnimatedMuteIcon videoId={props.videoId} />
+            <AnimatedMuteButton shouldAnimate videoId={props.videoId} />
           </span>
         </div>
       </div>

@@ -25,6 +25,7 @@ const Animations = {
   },
 }
 
+// TODO: scrap this component.
 const FullScreenVideoDetails = ({
   videos,
   currentIndex,

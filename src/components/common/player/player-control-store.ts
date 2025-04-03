@@ -34,8 +34,8 @@ export type PlayerControlStoreType = {
   toggleFullScreen: () => void
   isCommentBoxOpen: boolean
   toggleCommentBox: () => void
-  playingState: 'paused' | 'playing' | 'loading'
-  setPlayingState: (state: 'paused' | 'playing' | 'loading') => void
+  playingState?: 'paused' | 'playing' | 'loading'
+  setPlayingState: (state?: 'paused' | 'playing' | 'loading') => void
 }
 
 export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {

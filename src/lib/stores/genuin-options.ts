@@ -128,14 +128,42 @@ type ReactionType = {
 }
 
 type VideoAutoplayConfig = {
+  /**
+   * 1: video should auto playe always
+   *
+   * 2. video should never autoplay
+   *
+   * 3. custom autoplay and consider auto_play_after.
+   */
   type: number
-  is_start_with_sound: boolean
+  /**
+   * Time to play after
+   */
   auto_play_after: number
 }
 
 type FeedVideoPlayConfig = {
+  /**
+   * 1: Video will loop
+   *
+   * 2: video will loop and swipe
+   */
   type: number
+  /**
+   * How many times video will loop(consider this only if type is 1).
+   *
+   * 0: Infinite
+   *
+   * 1: 1 time
+   */
   repeat_video: number
+  /**
+   * How many times video will loop and then swipe. (consider this only if type is 1).
+   *
+   * 0: Infinite
+   *
+   * 1: 1 time
+   */
   swipe_after: number
 }
 
@@ -157,8 +185,14 @@ type PopupConfig = {
   popup_after: number
 }
 
-type WebConfigs = {
+export type WebConfigs = {
+  /**
+   * Video autoplay behaviour config.
+   */
   video_autoplay: VideoAutoplayConfig
+  /**
+   * Depicts how video will play in feed. If loop or swipe to next video.
+   */
   feed_video_play: FeedVideoPlayConfig
   linkout_delay: LinkoutDelayConfig
   login_signup_popup: PopupConfig
@@ -166,6 +200,10 @@ type WebConfigs = {
   username_popup: PopupConfig
   complete_profile_popup: PopupConfig
   idle_time_interruption: PopupConfig
+  /**
+   * Start with sound if true.
+   */
+  is_start_with_sound: boolean
   video_aspect_ratio: string
   /**
    * 1: Tap to mute/unmute.

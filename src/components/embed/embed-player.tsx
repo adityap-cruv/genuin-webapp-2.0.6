@@ -2,7 +2,7 @@ import { type DetailedHTMLProps, type VideoHTMLAttributes, useRef, useState } fr
 import OpenPlayerJS from 'openplayerjs'
 import { useEffect, useMemo } from 'react'
 import { useEmbedPlayerState } from './embed-player-state'
-import { AnimatedMuteIcon } from '@components/common/player/control-layer/animated-mute-icon'
+import { AnimatedMuteButton } from '@/components/common/player/control-layer/mute-button'
 import { Actions } from '@components/common/player/control-layer/actions'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
@@ -180,7 +180,7 @@ export function EmbedPlayer({
               properties: {},
             })
           }}>
-          <AnimatedMuteIcon videoId={videoData.video.id} />
+          <AnimatedMuteButton videoId={videoData.video.id} />
         </div>
       )}
       {isActiveVideo && (

@@ -4,14 +4,25 @@ import { UnmuteIcon } from '@icons/player-controls/unmute-icon'
 import { usePlayerControlStore } from '../player-control-store'
 import { motion, useAnimationControls } from 'framer-motion'
 import { useGenuinOptions } from '@/lib/stores/genuin-options'
+import { ControlAnimation } from './control-animations'
 
-export const AnimatedMuteIcon = ({ videoId }: { videoId: string }) => {
+type AnimatedMuteButtonPropsType = {
+  videoId: string
+  /**
+   * Whether to animate the button
+   * @default true
+   */
+  shouldAnimate?: boolean
+}
+
+export const AnimatedMuteButton = ({ videoId, shouldAnimate = true }: AnimatedMuteButtonPropsType) => {
   const { muted, toggleMuted, setVolume, volume } = usePlayerControlStore()
   const muteAnimationController = useAnimationControls()
   const isMobile = useGenuinOptions().isMobile
   const [showVolumeSlider, setShowVolumeSlider] = useState(false)
 
   useEffect(() => {
+    if (!shouldAnimate) return
     muteAnimationController
       ?.start({
         width: 122,
@@ -69,16 +80,11 @@ export const AnimatedMuteIcon = ({ videoId }: { videoId: string }) => {
         {volume > 0 ? <UnmuteIcon variant="light" /> : <MuteIcon variant="light" />}
       </div>
 
-      {!showVolumeSlider && muted && (
-        <motion.div
-          animate={muteAnimationController}
-          exit={{ width: 0 }}
-          initial={{ width: 0 }}
-          className="text-body-1 flex w-auto min-w-0 overflow-clip text-clip whitespace-nowrap">
-          <p className="text-monochrome-white">Tap to unmute</p>
-          <div className="h-full w-2" />
-        </motion.div>
-      )}
+      <ControlAnimation
+        text="Tap to unmute"
+        animationController={muteAnimationController}
+        show={muted && !showVolumeSlider}
+      />
 
       {/* Volume slider with smooth animation */}
       {!isMobile && (

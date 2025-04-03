@@ -5,7 +5,6 @@ import { memo, useCallback } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { WalletAmountBadge } from '../../wallet/wallet-amount-badge'
 import { cn } from '@/lib/utils'
-import { AnimatedMuteIcon } from './animated-mute-icon'
 import { ExpandIcon } from '@icons/player-controls/expand-icon'
 import { CollapseIcon } from '@icons/player-controls/collapse-icon'
 import Analytics from '@/services/analytics'
@@ -14,6 +13,7 @@ import { PlayIcon } from '@icons/player-controls/play-icon'
 import { PauseIcon } from '@icons/player-controls/pause-icon'
 
 import { handleTapBehavior, PlayingState } from './playing-state'
+import { AnimatedMuteButton } from './mute-button'
 
 type DesktopProps = {
   sparkCount: number
@@ -103,7 +103,7 @@ export const Desktop = memo(function Desktop({
               className="flex h-12 w-12 flex-shrink-0 cursor-pointer items-center justify-center rounded-full bg-monochrome-black/40">
               {!shouldPlay ? <PlayIcon variant="light" /> : <PauseIcon variant="light" />}
             </div>
-            <AnimatedMuteIcon videoId={videoId} />
+            <AnimatedMuteButton shouldAnimate videoId={videoId} />
           </div>
 
           <div

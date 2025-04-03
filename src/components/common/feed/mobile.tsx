@@ -1,11 +1,9 @@
-import { Player } from '../player'
 import { useCallback, useEffect } from 'react'
 import { useCommentSheetStore } from '../player/comment-sheet/store'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Mousewheel } from 'swiper/modules'
 import { useGenuinOptions, type VideoSizeBoxType } from '@lib/stores/genuin-options'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
-import Analytics from '@/services/analytics'
 import { usePlayerControlStore } from '../player/player-control-store'
 import { FeedShimmer } from '../shimmers/feed-shimmer'
 import { type Swiper as SwiperType } from 'swiper/types'
@@ -16,6 +14,8 @@ import { IHeartDemo } from '../../layouts/desktop/iheart-demo'
 import { cn } from '@/lib/utils'
 import { useIheartBorderState } from '@/hooks/use-iheart-border'
 import { useGestureOverlayManager } from '../gestures/gesture-overlay-manager'
+import { NewPlayer } from '../player/new'
+import Analytics from '@/services/analytics'
 
 type MobileProps = {
   videos?: VideoPlayerModalType[] | null
@@ -124,13 +124,13 @@ function SwiperRenderer({ videoSizeBox }: { videoSizeBox: VideoSizeBoxType }) {
           allowSlideNext={!commentIsOpen}
           allowSlidePrev={!commentIsOpen}
           style={videoSizeBox}>
-          {videos.map((item, index) => (
+          {videos.map((videoDetails, index) => (
             <SwiperSlide key={index}>
               {({ isActive, isPrev, isNext, isVisible }) => {
                 if (isActive || isPrev || isNext || isVisible)
                   return (
                     <>
-                      <Player.mobile
+                      {/* <Player.mobile
                         isActive={isActive}
                         loop
                         videoDetails={item}
@@ -138,6 +138,18 @@ function SwiperRenderer({ videoSizeBox }: { videoSizeBox: VideoSizeBoxType }) {
                         onEnded={(event) => {
                           const { duration, currentTime } = usePlayerControlStore.getState()
                           Analytics.triggerAnalyticsForVideoComplete(item.video.id, duration, currentTime)
+
+                          if (videos.length > 1) {
+                            showGestureOverlay('SWIPE')
+                          }
+                        }}
+                      /> */}
+                      <NewPlayer
+                        videoDetails={videoDetails}
+                        isActive={isActive}
+                        onEnded={(event) => {
+                          const { duration, currentTime } = usePlayerControlStore.getState()
+                          Analytics.triggerAnalyticsForVideoComplete(videoDetails.video.id, duration, currentTime)
 
                           if (videos.length > 1) {
                             showGestureOverlay('SWIPE')

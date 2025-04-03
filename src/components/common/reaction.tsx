@@ -5,6 +5,7 @@ import Analytics from '@/services/analytics'
 import { abbreviateNumber, cn, getUrlForReaction, openModal } from '@/lib/utils'
 import { sparkDeepLink } from '@/lib/get-deeplink'
 import { type ComponentProps, useCallback, useMemo, useState } from 'react'
+import Image from 'next/image'
 
 type ReactionsComponentProps = {
   isSparked: boolean
@@ -119,7 +120,7 @@ export function Reaction({
         await handleSparkClick()
       }}
       {...restProps}>
-      <img
+      <Image
         src={iconToShow}
         style={{ height: iconHeight, width: iconWidth }}
         height={iconHeight}
