@@ -7,7 +7,7 @@ export type PlayerControlStoreType = {
   isPlaying: boolean
   shouldPlay: boolean
   muted: boolean
-  toggleMuted: ({ byUser, videoId }: { byUser?: boolean; videoId?: string }) => void
+  toggleMuted: (params?: { byUser?: boolean; videoId?: string }) => void
   mute: () => void
   showMutedLayer: boolean
   toggleMutedLayer: () => void
@@ -55,7 +55,8 @@ export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
     mute() {
       set((state) => ({ muted: true, prevVolume: state.volume, volume: 0 }))
     },
-    toggleMuted({ byUser, videoId }) {
+    toggleMuted(params) {
+      const { byUser, videoId } = params ?? {}
       set((state) => {
         const newMuted = !state.muted
         const prevVolume = state.volume > 0 ? state.volume : state.prevVolume

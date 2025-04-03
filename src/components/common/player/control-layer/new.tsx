@@ -53,6 +53,7 @@ export const ControlLayer = memo(function ControlLayer({
       }
 
       handleTapBehavior({
+        videoId: videoDetails.video.id,
         tapBehavior: tapBehaviour ?? 3,
         muted,
         shouldPlay,
