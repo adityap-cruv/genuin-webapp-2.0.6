@@ -81,11 +81,11 @@ export function DesktopDetails({ loop, community, owner, video }: DesktopDetails
                     <Link
                       href={{ pathname: PATH_NAME.community(community.slug) }}
                       title={community.name ?? 'Genuin community'}>
-                      <p className="line-clamp-2 break-all text-title-3-bold">{community.name}</p>
+                      <p className="line-clamp-2 break-words text-title-3-bold">{community.name}</p>
                     </Link>
                     {community.brand && (
                       <p
-                        className="line-clamp-1 max-w-[30ch] break-all text-body-1-demi text-tertiary-400"
+                        className="line-clamp-1 max-w-[30ch] break-words text-body-1-demi text-tertiary-400"
                         title={community.brand.name}>
                         on {community.brand?.name}
                       </p>

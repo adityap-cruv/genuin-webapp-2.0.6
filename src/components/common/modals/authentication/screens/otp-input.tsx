@@ -223,6 +223,7 @@ function TimerMessage({ time, verificationType }: { verificationType: Verificati
   return timer <= 0 ? (
     <Button
       variant="custom"
+      type="button"
       disabled={isSendingOtp}
       className="w-full cursor-pointer text-center text-body-1-med text-primary"
       onClick={handleResendOtp}>
