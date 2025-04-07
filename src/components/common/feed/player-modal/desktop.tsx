@@ -205,7 +205,6 @@ function Content({
     },
     [updateCurrentIndex]
   )
-
   return (
     <>
       <div
@@ -290,27 +289,27 @@ function Content({
                   width: isFullScreen ? '100%' : sizeBox.modal.player.width,
                   height: isFullScreen ? '100%' : sizeBox.modal.player.height,
                 }}>
-                {videos.map((_, index: number) => {
+                {videos.map((video, index: number) => {
                   return (
                     <SwiperSlide key={index}>
                       {({ isActive, isPrev, isNext }) => {
                         if (isActive || isPrev || isNext)
-                          if (videos[index])
+                          if (video)
                             return (
                               <>
                                 <Player.desktop
-                                  isActive
+                                  isActive={isActive}
                                   videoData={{
-                                    id: videos[currentIndex].video.id,
-                                    shareUrl: videos[currentIndex].video.shareUrl,
-                                    attachedLink: videos[currentIndex].video.attachedLink,
-                                    source: videos[currentIndex].video.source,
-                                    sparkCount: videos[currentIndex].video.sparkCount,
-                                    thumbnail: videos[currentIndex].video.thumbnail,
-                                    slug: videos[currentIndex].video.slug,
-                                    description: videos[currentIndex].video.descriptionText,
-                                    clickableUrl: videos[currentIndex].video.clickableUrl,
-                                    isSparked: videos[currentIndex].video.isSparked,
+                                    id: video.video.id,
+                                    shareUrl: video.video.shareUrl,
+                                    attachedLink: video.video.attachedLink,
+                                    source: video.video.source,
+                                    sparkCount: video.video.sparkCount,
+                                    thumbnail: video.video.thumbnail,
+                                    slug: video.video.slug,
+                                    description: video.video.descriptionText,
+                                    clickableUrl: video.video.clickableUrl,
+                                    isSparked: video.video.isSparked,
                                   }}
                                   loop
                                   onEnded={() => {
