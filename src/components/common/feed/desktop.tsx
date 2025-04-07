@@ -165,7 +165,7 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
       })}
       {...restProps}>
       <div className="relative flex h-full w-full justify-center">
-        <div className={cn('flex', { 'h-full w-full': !isFullScreen })}>
+        <div className={cn('flex aspect-reel h-full', { 'h-full w-full': !isFullScreen })}>
           <div
             className={cn('relative flex flex-col', { ' w-full flex-row': !isFullScreen })}
             style={{
