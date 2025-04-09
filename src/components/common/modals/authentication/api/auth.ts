@@ -63,6 +63,8 @@ export async function sendOtp({ email, phoneNumber, isUpdate }: Partial<SendOtpP
         message = isUpdate
           ? 'Unable to send the code. Please use another phone number.'
           : 'Unable to send the code. Please use another phone number or email to log in.'
+      } else if (e.response.data.code === '5205') {
+        message = 'Email already exists. Please try another one.'
       } else if (!isNaN(retryTime)) {
         if (retryTime < 1) {
           const minutes = Math.floor(retryTime / 60)
