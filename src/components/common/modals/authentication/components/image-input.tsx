@@ -3,6 +3,13 @@ import { getAvatarUrl } from '@lib/utils'
 import { Label } from '@components/ui/label'
 import { AuthenticationModal } from '..'
 import { usePathname } from 'next/navigation'
+import { toast } from '@/components/ui/use-toast'
+
+const validateImage = (image: File): boolean => {
+  const validImageTypes = ['image/png', 'image/jpeg', 'image/jpg']
+  if (!validImageTypes.includes(image.type)) return false
+  return true
+}
 
 export function ImageInput() {
   const { formData, setStep, setFormData } = useAuthenticationModalStore((state) => ({
@@ -32,6 +39,13 @@ export function ImageInput() {
         className="hidden w-full"
         accept="image/png, image/jpeg, image/jpg"
         onChange={(e) => {
+          const validationResponse: boolean = validateImage(e.target.files?.[0] as File)
+          if (!validationResponse) {
+            toast({
+              description: 'Choose a valid file format',
+            })
+            return
+          }
           setFormData({ image: URL.createObjectURL(e.target.files?.[0] as any) })
           pathname.includes('settings')
             ? AuthenticationModal.open(undefined, 'IMAGE_CROPPER')
