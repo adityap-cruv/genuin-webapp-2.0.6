@@ -215,11 +215,14 @@ const MentionInput: React.FC<{
     }
   }, [])
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      void postComment();
-    }
-  }, [postComment]);
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'Enter') {
+        void postComment()
+      }
+    },
+    [postComment]
+  )
 
   return (
     <div>
@@ -277,7 +280,7 @@ const MentionInput: React.FC<{
                   value={text}
                   maxLength={500}
                   disabled={!user}
-                  className="border-none rounded-full px-0 pl-1 pr-4"
+                  className="rounded-full border-none px-0 pl-1 pr-4"
                   onChange={handleInputChange}
                   onKeyDown={handleKeyDown}
                   onClick={(e: React.MouseEvent<HTMLInputElement>) => {

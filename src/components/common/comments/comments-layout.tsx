@@ -19,13 +19,7 @@ const CommentsLayout = ({ video, loop, community, owner, scrollDivRef }: Desktop
       <div className="h-full px-4 pt-2">
         <CommentBox videoId={video.id} slug={video.slug} videoShareUrl={video.shareUrl} parentRef={scrollDivRef} />
       </div>
-      <MentionInput
-        videoId={video.id}
-        loopId={loop.id}
-        videoSlug={video.slug}
-        communityId={community.id}
-        className="rounded-2xl"
-      />
+      <MentionInput videoId={video.id} loopId={loop.id} videoSlug={video.slug} communityId={community.id} />
     </>
   )
 }

@@ -28,9 +28,15 @@ export function NavBar({ variant, isMobile }: Props) {
     <nav className={cn(navbarVariant({ variant }))}>
       <div className={'container flex h-full items-center justify-between py-1'}>
         {isMobile ? (
-          <AppLogo.icon imageHeight={32} className={cn(isVariantLight ? 'fill-new-off-white' : 'fill-new-off-black')} />
+          <AppLogo.icon
+            imageHeight={32}
+            className={cn(isVariantLight ? 'fill-monochrome-white' : 'fill-new-off-black')}
+          />
         ) : (
-          <AppLogo.logo imageHeight={42} className={cn(isVariantLight ? 'fill-new-off-white' : 'fill-new-off-black')} />
+          <AppLogo.logo
+            imageHeight={42}
+            className={cn(isVariantLight ? 'fill-monochrome-white' : 'fill-new-off-black')}
+          />
         )}
         {/* <GenuinAdaptiveLogo variant={isVariantLight ? 'light' : 'dark'} /> */}
         <div className="flex items-center">

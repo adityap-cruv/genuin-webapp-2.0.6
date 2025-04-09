@@ -160,7 +160,7 @@ export function OtpInput({ title, verificationType, onNext, onBack }: OtpInputPr
               <TimerMessage time={30} verificationType={verificationType} />
               <Button type="submit" variant="default" className="mt-2 w-full" disabled={isLoading || !isValid}>
                 {isLoading ? (
-                  <Loader size="sm" className="fill-new-off-white" />
+                  <Loader size="sm" className="fill-monochrome-white stroke-monochrome-white" />
                 ) : (
                   <p className="text-title-3-demi">Verify</p>
                 )}

@@ -72,7 +72,7 @@ export function NavBar() {
             <Link href={HIRING_LINK}>
               <Button
                 variant="outline"
-                className="hover:bg-new-off-black hover:text-new-off-white"
+                className="hover:bg-new-off-black hover:text-monochrome-white"
                 outlineColor="black"
                 size="index-page">
                 <p className="text-new-sm font-semibold">We're hiring!</p>
@@ -80,7 +80,7 @@ export function NavBar() {
             </Link>
             <DownloadAppDialog>
               <Button size="index-page" className="bg-new-off-black after:bg-new-dark-grey hover:bg-new-dark-grey">
-                <p className="text-new-sm font-semibold text-new-off-white">Download App</p>
+                <p className="text-new-sm font-semibold text-monochrome-white">Download App</p>
               </Button>
             </DownloadAppDialog>
           </div>
@@ -105,7 +105,7 @@ export function NavBar() {
                   <div className="flex h-full min-w-full flex-col gap-y-4 py-7">
                     <DownloadAppDialog>
                       <Button size="index-page" className="my-2 w-full bg-new-off-black hover:bg-new-dark-grey">
-                        <p className="text-new-md text-new-off-white">Download App</p>
+                        <p className="text-new-md text-monochrome-white">Download App</p>
                       </Button>
                     </DownloadAppDialog>
                     <Link href={PATH_NAME.build()}>

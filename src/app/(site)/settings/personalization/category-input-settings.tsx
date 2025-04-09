@@ -104,7 +104,7 @@ export function CategoryInputSettings({
       )}
       <Button onClick={handleSubmit} className="h-9 w-full" disabled={!hasSelectionChanged() || selectedItems.size < 3}>
         {postingTopics ? (
-          <Loader size="sm" className="fill-monochrome-white" />
+          <Loader size="sm" className="fill-monochrome-white stroke-monochrome-white" />
         ) : (
           <p className="text-title-3-demi">{selectedItems.size < 3 ? 'Choose 3+' : 'Save'}</p>
         )}

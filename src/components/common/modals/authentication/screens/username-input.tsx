@@ -134,9 +134,9 @@ export function UsernameInput({ onNext }: ScreenProps) {
             disabled={!isUsernameValid || isLoading || !isValid}
             className="mt-4 flex w-full items-center justify-center border-0">
             {isLoading ? (
-              <Loader size="sm" className="fill-new-off-white" />
+              <Loader size="sm" className="fill-monochrome-white stroke-monochrome-white" />
             ) : (
-              <p className="text-title-3-demi text-new-off-white">Save and proceed</p>
+              <p className="text-title-3-demi text-monochrome-white">Save and proceed</p>
             )}
           </Button>
           {form.formState.errors.root && (

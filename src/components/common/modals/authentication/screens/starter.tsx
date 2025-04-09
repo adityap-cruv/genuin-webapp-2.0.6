@@ -119,7 +119,7 @@ function EmailForm({ onNext }: { onNext: () => void }) {
         />
         <Button type="submit" className="w-full" disabled={!isValid || isLoading}>
           {isLoading ? (
-            <Loader size="sm" className="fill-monochrome-white" />
+            <Loader size="sm" className="fill-monochrome-white stroke-monochrome-white" />
           ) : (
             <p className="text-body-1-demi text-monochrome-white">Continue</p>
           )}
@@ -200,7 +200,7 @@ function NumberForm({ onNext }: { onNext: () => void }) {
           className="w-full"
           disabled={!isValidPhoneNumber(phoneNumber ?? '') || isLoading}>
           {isLoading ? (
-            <Loader size="sm" className="fill-new-off-white" />
+            <Loader size="sm" className="fill-monochrome-white stroke-monochrome-white" />
           ) : (
             <p className="text-body-1-demi text-monochrome-white">Continue</p>
           )}

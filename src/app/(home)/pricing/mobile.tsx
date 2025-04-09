@@ -25,7 +25,7 @@ SwiperCore.use([Pagination])
 
 export default function Mobile() {
   return (
-    <div className="bg-new-off-white">
+    <div className="bg-monochrome-white">
       <NavBar />
       <Component1 />
       <Component2 />

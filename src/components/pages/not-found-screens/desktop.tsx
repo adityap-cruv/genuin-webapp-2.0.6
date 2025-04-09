@@ -30,7 +30,7 @@ export function NotFound() {
             <Link href={PATH_NAME.home()}>
               <Button
                 size="custom"
-                className="rounded-xl bg-new-off-black px-4 py-3 text-new-off-white hover:bg-new-dark-grey">
+                className="rounded-xl bg-new-off-black px-4 py-3 text-monochrome-white hover:bg-new-dark-grey">
                 <p className="text-new-para-2">Go to Home</p>
               </Button>
             </Link>

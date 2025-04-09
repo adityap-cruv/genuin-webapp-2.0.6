@@ -110,7 +110,7 @@ export function CategoryInput({ onNext }: ScreenProps) {
             className="w-full"
             disabled={selectedItems.size < 3}>
             {postingTopics ? (
-              <Loader size="md" className="fill-monochrome-white" />
+              <Loader size="md" className="fill-monochrome-white stroke-monochrome-white" />
             ) : (
               <p className="text-title-3-demi">{selectedItems.size < 3 ? 'Choose 3+' : 'Continue'}</p>
             )}
@@ -122,7 +122,7 @@ export function CategoryInput({ onNext }: ScreenProps) {
             variant="outline"
             className="h-9 w-full">
             {postingTopics ? (
-              <Loader size="sm" className="fill-monochrome-white" />
+              <Loader size="sm" className="fill-monochrome-white stroke-monochrome-white" />
             ) : (
               <p className="text-title-3-demi">Surprise Me</p>
             )}

@@ -408,7 +408,7 @@ function Component5() {
         <div className="my-10 mt-15 flex w-full justify-between gap-10">
           <div className="flex w-3/5 flex-col gap-y-10">
             <div className="-border-spacing-10 flex h-1/2 flex-col justify-around rounded-[10px] border-[18px] border-[#E9CAF4] bg-new-off-black p-8">
-              <h3 className="text-new-h3 text-new-off-white">
+              <h3 className="text-new-h3 text-monochrome-white">
                 “I love that new community members can see the history of discussion in the video feed”
               </h3>
               <div className="mt-5 flex items-center">
@@ -419,7 +419,7 @@ function Component5() {
                   src={imgReviewerDp.src}
                   className="mr-4 h-12 w-12"
                 />
-                <p className="text-new-off-white">Lauren Hall, Community Builder</p>
+                <p className="text-monochrome-white">Lauren Hall, Community Builder</p>
               </div>
             </div>
             <div className="flex h-1/2 flex-col justify-between rounded-[15px] border-[1px] border-new-light-grey p-10">
@@ -439,7 +439,7 @@ function Component5() {
         </div>
         <div className="flex w-full justify-between gap-x-10">
           <img loading="lazy" fetchPriority="low" className="w-1/4" decoding="async" src={imgC5_2.src} />
-          <div className="flex flex-col justify-between rounded-2xl bg-primary p-10 text-new-off-white">
+          <div className="flex flex-col justify-between rounded-2xl bg-primary p-10 text-monochrome-white">
             <h5 className="text-new-h5">
               “Link-outs are so hard on the big social platforms and the rules always change. I loved being able to link
               to my store sell more merch!”
@@ -453,7 +453,7 @@ function Component5() {
       <div className="my-20 flex min-h-full flex-col items-center gap-y-10 px-5 lg:hidden">
         <h2 className="text-center text-new-h2-mobile sm:text-new-h2">What our Community Builders say</h2>
         <div className=" flex flex-col rounded-[10px] border-[18px] border-[#E9CAF4] bg-new-off-black p-4 sm:w-4/5">
-          <p className="font-bold text-new-off-white" style={{ fontSize: '28px' }}>
+          <p className="font-bold text-monochrome-white" style={{ fontSize: '28px' }}>
             “I love that new community members can see the history of discussion in the video feed”
           </p>
           <div className="mt-5 flex w-full">
@@ -464,14 +464,14 @@ function Component5() {
               src={imgReviewerDp.src}
               className="mr-4 h-12 w-12"
             />
-            <p className="text-new-off-white">
+            <p className="text-monochrome-white">
               Lauren Hall, <br />
               App Member
             </p>
           </div>
         </div>
         <img loading="lazy" fetchPriority="low" decoding="async" src={imgC5.src} className="sm:w-1/2" />
-        <div className="flex flex-col justify-between rounded-2xl bg-primary p-4 text-new-off-white sm:w-4/5">
+        <div className="flex flex-col justify-between rounded-2xl bg-primary p-4 text-monochrome-white sm:w-4/5">
           <p className="text-new-para-1">
             “Link-outs are so hard on the big social platforms and the rules always change. I loved being able to link
             to my store sell more merch!”

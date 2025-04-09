@@ -16,7 +16,7 @@ export function Logout() {
       </p>
       <Button
         variant="default"
-        className="w-full text-title-3-med !text-new-off-white"
+        className="w-full text-title-3-med !text-monochrome-white"
         onClick={() => {
           let redirectUrl = window.location.pathname
           if (checkIfUrlIncludesProtectedRoute(redirectUrl)) {

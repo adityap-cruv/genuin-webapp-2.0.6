@@ -59,9 +59,13 @@ export function DesktopDetails({ loop, community, owner, video }: DesktopDetails
         </span>
       </div>
       <div ref={scrollDivRef} className="flex h-full flex-col overflow-auto overflow-x-clip">
-        <div className={cn('border-b border-tertiary-200', video.descriptionArr ? 'p-4 pt-0' : '')}>
+        <div
+          className={cn(
+            'border-b border-tertiary-200',
+            video.descriptionArr ?? video.descriptionText ? 'p-4 pt-0' : ''
+          )}>
           {(video.descriptionArr ?? video.descriptionText) && (
-            <ReadMore.dynamic position="outside" text={video.descriptionArr} maxLines={2} />
+            <ReadMore.dynamic position="outside" text={video.descriptionArr ?? video.descriptionText} maxLines={2} />
           )}
         </div>
         <div className="border-b border-tertiary-200 p-4">

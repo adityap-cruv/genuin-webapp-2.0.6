@@ -11,7 +11,7 @@ import { Footer } from '@components/pages/build/footer'
 
 export default function Desktop() {
   return (
-    <div className="bg-new-off-white">
+    <div className="bg-monochrome-white">
       <div className={style.sectionOne}>
         {/* Header component */}
         <NavBar />

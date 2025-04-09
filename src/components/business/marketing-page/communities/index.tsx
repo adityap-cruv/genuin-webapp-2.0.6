@@ -20,21 +20,21 @@ export default function Communities() {
       <div className="flex justify-center">
         <div className="flex rounded-2xl bg-[#ECEAF2] p-2">
           <div
-            className={`${isSelected === 'community' && 'bg-primary text-new-off-white'} rounded-xl px-4 py-2`}
+            className={`${isSelected === 'community' && 'bg-primary text-monochrome-white'} rounded-xl px-4 py-2`}
             onClick={() => {
               setIsSelected('community')
             }}>
             Community
           </div>
           <div
-            className={`${isSelected === 'loop' && 'bg-primary text-new-off-white'} rounded-xl px-4 py-2`}
+            className={`${isSelected === 'loop' && 'bg-primary text-monochrome-white'} rounded-xl px-4 py-2`}
             onClick={() => {
               setIsSelected('loop')
             }}>
             Loops
           </div>
           <div
-            className={`${isSelected === 'post' && 'bg-primary text-new-off-white'} rounded-xl px-4 py-2`}
+            className={`${isSelected === 'post' && 'bg-primary text-monochrome-white'} rounded-xl px-4 py-2`}
             onClick={() => {
               setIsSelected('post')
             }}>

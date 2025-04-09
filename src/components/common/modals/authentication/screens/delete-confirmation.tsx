@@ -51,7 +51,7 @@ export function DeleteConfirmation({ onNext }: ScreenProps) {
         </Button>
         <Button variant="default" className="w-full bg-primary hover:bg-primary-700" onClick={onDelete}>
           {isLoading ? (
-            <Loader size="sm" className="fill-new-off-white" />
+            <Loader size="sm" className="fill-monochrome-white stroke-monochrome-white" />
           ) : (
             <p className="text-title-3-demi">Delete</p>
           )}

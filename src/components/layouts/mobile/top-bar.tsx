@@ -208,7 +208,7 @@ function Menu({
         side="left"
         className="z-[60] w-full overflow-auto border-none shadow-none outline-none">
         <div className="mb-4 flex justify-between">
-          <AppLogo.icon imageHeight={32} className={cn('fill-new-off-white')} />
+          <AppLogo.icon imageHeight={32} className={cn('fill-monochrome-white')} />
           <SheetClose
             className={cn(
               'flex h-[40px] w-[40px] items-center justify-center rounded-full shadow-none outline-none',
@@ -394,7 +394,9 @@ function UserTick({ variant = 'light', webCTA }: { variant: 'light' | 'transpare
         onClick={() => {
           AuthenticationModal.open()
         }}>
-        {(status === 'loading' || loadingAuthData) && <Loader size="sm" className="fill-monochrome-white" />}
+        {(status === 'loading' || loadingAuthData) && (
+          <Loader size="sm" className="fill-monochrome-white stroke-monochrome-white" />
+        )}
         <p className="min-w-max text-title-3-demi text-monochrome-white">Log in</p>
       </Button>
     )

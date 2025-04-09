@@ -172,7 +172,7 @@ function Component3() {
         <div className="flex rounded-2xl bg-[#ECEAF2] p-2">
           <div
             className={`${
-              isSelected === 'community' && 'bg-primary text-new-off-white'
+              isSelected === 'community' && 'bg-primary text-monochrome-white'
             } rounded-lg px-4 py-2 text-new-para-2-mobile`}
             onClick={() => {
               setIsSelected('community')
@@ -181,7 +181,7 @@ function Component3() {
           </div>
           <div
             className={`${
-              isSelected === 'loop' && 'bg-primary text-new-off-white'
+              isSelected === 'loop' && 'bg-primary text-monochrome-white'
             } rounded-lg px-4 py-2 text-new-para-2-mobile`}
             onClick={() => {
               setIsSelected('loop')
@@ -190,7 +190,7 @@ function Component3() {
           </div>
           <div
             className={`${
-              isSelected === 'post' && 'bg-primary text-new-off-white'
+              isSelected === 'post' && 'bg-primary text-monochrome-white'
             } rounded-lg px-4 py-2 text-new-para-2-mobile`}
             onClick={() => {
               setIsSelected('post')

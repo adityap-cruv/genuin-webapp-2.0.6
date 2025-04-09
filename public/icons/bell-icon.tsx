@@ -6,7 +6,7 @@ import { cva, type VariantProps } from 'class-variance-authority'
 const bellVariant = cva('', {
   variants: {
     variant: {
-      light: 'stroke-new-off-white', // Light variant style
+      light: 'stroke-monochrome-white', // Light variant style
       primary: 'stroke-primary', // Primary variant style
       dark: 'stroke-secondary', // Dark variant style
     },

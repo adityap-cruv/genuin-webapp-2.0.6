@@ -124,7 +124,9 @@ function UserTick() {
         onClick={() => {
           AuthenticationModal.open()
         }}>
-        {(status === 'loading' || loadingAuthData) && <Loader size="sm" className="fill-monochrome-white" />}
+        {(status === 'loading' || loadingAuthData) && (
+          <Loader size="sm" className="fill-monochrome-white stroke-monochrome-white" />
+        )}
         <p className="min-w-max text-[15px] text-title-3-demi text-monochrome-white">Log in</p>
       </Button>
     )

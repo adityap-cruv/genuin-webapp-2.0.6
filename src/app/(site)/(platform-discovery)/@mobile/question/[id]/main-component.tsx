@@ -19,7 +19,7 @@ export function MainComponent({ questionDetails }: Props) {
           <DownloadAppDialog>
             <GetAppButton
               buttonText="Get App"
-              className="mx-2 px-6 py-6 text-title-2-bold text-new-off-white"
+              className="mx-2 px-6 py-6 text-title-2-bold text-monochrome-white"
               variant="default"
             />
           </DownloadAppDialog>

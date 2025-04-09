@@ -80,7 +80,7 @@ export function EditNumber({ onNext }: ScreenProps) {
               className="w-full"
               disabled={!isValidPhoneNumber(formData.phoneNumber ?? '') || isLoading}>
               {isLoading ? (
-                <Loader size="sm" className="fill-new-off-white" />
+                <Loader size="sm" className="fill-monochrome-white stroke-monochrome-white" />
               ) : (
                 <p className="text-title-3-demi">Save</p>
               )}

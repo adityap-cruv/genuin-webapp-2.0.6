@@ -111,7 +111,7 @@ export function BirthInput({ onNext }: ScreenProps) {
           />
           <Button type="submit" variant="default" className="w-full" disabled={!isValid || isLoading || !isDirty}>
             {isLoading ? (
-              <Loader className="fill-monochrome-white" size="sm" />
+              <Loader className="fill-monochrome-white stroke-monochrome-white" size="sm" />
             ) : (
               <p className="text-title-3-demi">Save</p>
             )}

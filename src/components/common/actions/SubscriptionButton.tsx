@@ -36,7 +36,7 @@ export default function SubscriptionButton({ onClick, isSubscribed }: Subscripti
   return (
     <Button size="custom" className={`border border-primary p-[3px]`} variant="outline" onClick={onClick}>
       {isSubscribed && <SubscribedBellIcon className="fill-primary stroke-primary"></SubscribedBellIcon>}
-      {!isSubscribed && <BellIconOff className="stroke-new-off-white"></BellIconOff>}
+      {!isSubscribed && <BellIconOff className="stroke-monochrome-white"></BellIconOff>}
     </Button>
   )
 }

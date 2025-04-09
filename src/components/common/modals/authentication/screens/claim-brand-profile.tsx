@@ -25,7 +25,7 @@ export function ClaimBrandProfile() {
         href={`${process.env.NEXT_PUBLIC_BCC_URL}/claim-brand?domain=${cleanURL(brandUrl)}&brand_id=${brandId}`}
         target="_blank"
         className="w-full">
-        <Button variant="default" className="w-full text-title-3-med !text-new-off-white">
+        <Button variant="default" className="w-full text-title-3-med !text-monochrome-white">
           Verify your brand
         </Button>
       </Link>

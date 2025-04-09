@@ -230,7 +230,7 @@ function DownloadAppForm() {
                           </div>
 
                           {isOpen && (
-                            <ul className="bg-white absolute z-10 mt-2 h-60 w-80 overflow-y-auto rounded-md border bg-new-off-white shadow-lg">
+                            <ul className="bg-white absolute z-10 mt-2 h-60 w-80 overflow-y-auto rounded-md border bg-monochrome-white shadow-lg">
                               {Countries.map((country) => (
                                 <li
                                   key={country.code}

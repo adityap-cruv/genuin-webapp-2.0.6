@@ -10,7 +10,6 @@ import { ContactUs } from '@components/common/modals/contact-us'
 import { Button } from '@components/ui/button'
 import { getYear } from '@lib/utils'
 
-
 export default function Footer() {
   return (
     // Outer container for the footer section
@@ -31,7 +30,7 @@ export default function Footer() {
               size="index-page"
               variant="default"
               className="bg-new-off-black after:bg-new-dark-grey hover:bg-new-dark-grey">
-              <p className="whitespace-nowrap text-new-sm text-new-off-white">Contact Us</p>
+              <p className="whitespace-nowrap text-new-sm text-monochrome-white">Contact Us</p>
             </Button>
           </ContactUs>
         </div>

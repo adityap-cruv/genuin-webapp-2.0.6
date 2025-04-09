@@ -8,7 +8,7 @@ const bellVariant = cva('', {
     variant: {
       light: '',
       transparent: 'stroke-primary',
-      dark: 'stroke-new-off-white',
+      dark: 'stroke-monochrome-white',
     },
     type: {
       stroke: '',

@@ -13,8 +13,8 @@ export function Footer() {
         <div className="mx-20 flex h-full flex-col gap-y-6 xl:container">
           <div className="flex w-full items-end pb-6 pt-7">
             <div className="flex w-full flex-col gap-y-8 pt-10">
-              <h2 className="text-new-h2 text-new-off-white">Join the world of Genuin.</h2>
-              <h5 className="mr-6 max-w-3xl text-new-para-1 text-new-off-white">
+              <h2 className="text-new-h2 text-monochrome-white">Join the world of Genuin.</h2>
+              <h5 className="mr-6 max-w-3xl text-new-para-1 text-monochrome-white">
                 Download the app to join communities across brands and add to the conversation. Don’t see a community
                 that speaks to you? Start your own!
               </h5>
@@ -24,7 +24,7 @@ export function Footer() {
           <div
             className="flex flex-col gap-y-10 bg-new-off-black px-20 pb-8 pt-12 text-primary-foreground"
             style={{ borderRadius: '20px 20px 0px 0px' }}>
-            <GenuinIcon.text className="fill-new-off-white" />
+            <GenuinIcon.text className="fill-monochrome-white" />
             <div className="flex justify-between text-new-para-1">
               <div className="flex items-end">
                 <p>© 2024 Genuin Inc.</p>
@@ -54,7 +54,7 @@ export function Footer() {
       <footer className="relative bg-primary lg:hidden">
         <div className="mx-8 flex h-full flex-col gap-y-6 sm:mx-15">
           <div className="mt-14 flex flex-col items-center justify-center gap-y-2">
-            <p className="text-center text-new-h1-mobile text-new-off-white">
+            <p className="text-center text-new-h1-mobile text-monochrome-white">
               Join the world
               <br /> of Genuin.
             </p>
@@ -84,7 +84,7 @@ export function Footer() {
               </div>
             </div>
             <div className="flex w-full items-center justify-between">
-              <GenuinIcon.text className="w-20 fill-new-off-white" />
+              <GenuinIcon.text className="w-20 fill-monochrome-white" />
               <p className="text-new-para-2-mobile sm:text-new-para-2">© 2024 Genuin Inc.</p>
             </div>
           </div>
@@ -103,7 +103,7 @@ function ContactButton() {
         size="index-page"
         variant="default"
         className="bg-new-off-black after:bg-new-dark-grey hover:bg-new-dark-grey">
-        <p className="whitespace-nowrap text-new-md text-new-off-white">Contact Us</p>
+        <p className="whitespace-nowrap text-new-md text-monochrome-white">Contact Us</p>
       </Button>
     </ContactUs>
   ) : (
@@ -112,7 +112,7 @@ function ContactButton() {
         size="index-page"
         variant="default"
         className="bg-new-off-black after:bg-new-dark-grey hover:bg-new-dark-grey">
-        <p className="whitespace-nowrap text-new-md text-new-off-white">Contact Us</p>
+        <p className="whitespace-nowrap text-new-md text-monochrome-white">Contact Us</p>
       </Button>
     </ContactUs>
   )

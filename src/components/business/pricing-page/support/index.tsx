@@ -25,7 +25,7 @@ export default function Support() {
               size="index-page"
               variant="default"
               className="bg-new-off-black after:bg-new-dark-grey hover:bg-new-dark-grey">
-              <p className="whitespace-nowrap text-new-sm text-new-off-white">Book Demo</p>
+              <p className="whitespace-nowrap text-new-sm text-monochrome-white">Book Demo</p>
             </Button>
           </ContactUs>
         </div>

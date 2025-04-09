@@ -138,7 +138,7 @@ export function CompleteProfile() {
           <span className="flex flex-col gap-y-3 text-title-3-demi">
             <Button type="submit" className="flex w-full items-center justify-center rounded-lg" disabled={isLoading}>
               {isLoading ? (
-                <Loader size="sm" className="fill-new-off-white" />
+                <Loader size="sm" className="fill-monochrome-white stroke-monochrome-white" />
               ) : (
                 <p className="text-title-3-demi text-monochrome-white">Save</p>
               )}

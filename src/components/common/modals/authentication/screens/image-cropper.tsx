@@ -111,7 +111,10 @@ export function ImageCropper() {
           style={{ maxHeight: '400px', maxWidth: '500px' }}
         />
       </div>
-      <Button disabled={uploadingImage} className="w-full text-title-3-demi !text-new-off-white" onClick={getCropData}>
+      <Button
+        disabled={uploadingImage}
+        className="w-full text-title-3-demi !text-monochrome-white"
+        onClick={getCropData}>
         {uploadingImage ? <p>Uploading...</p> : <p>Save Changes</p>}
       </Button>
       {error && <p className="flex items-center justify-center text-title-3-med text-supplementary-red">{error}</p>}

@@ -20,7 +20,7 @@ export default function PlanDetails() {
             size="index-page"
             variant="default"
             className="bg-new-off-black after:bg-new-dark-grey hover:bg-new-dark-grey">
-            <p className="whitespace-nowrap text-new-sm text-new-off-white">Contact us for demo and pricing</p>
+            <p className="whitespace-nowrap text-new-sm text-monochrome-white">Contact us for demo and pricing</p>
           </Button>
         </ContactUs>
       </div>
