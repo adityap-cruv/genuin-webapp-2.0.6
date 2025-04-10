@@ -39,32 +39,43 @@ export function useInterruptionManager() {
   )
   const interactionRef = useRef({ lastIndex: 0, swipeCount: 0 })
 
-  // Determine the next interruption step that should be shown
-  const interruptionToShow = INTERRUPTION_STEPS.find(
-    (step) => config?.web_configs?.[step.configKey]?.enable && !step.isComplete(user)
-  )
+  // First check if get_app_popup is enabled
+  const getAppConfig = config?.web_configs?.get_app_popup
+  const shouldShowAppDownload = getAppConfig?.enable && config.web_cta === 'app'
 
-  // Trigger authentication modal based on interruption step
+  // Only check interruption steps if get_app_popup is not enabled
+  const interruptionToShow = shouldShowAppDownload
+    ? null
+    : INTERRUPTION_STEPS.find((step) => config?.web_configs?.[step.configKey]?.enable && !step.isComplete(user))
+
+  // Trigger authentication or download modal based on configuration
   const triggerAuthenticationModal = useCallback(async () => {
-    if (interruptionToShow && brandId?.toString() !== '99') {
-      if (config.web_cta !== 'app') {
-        AuthenticationModal.open(undefined, interruptionToShow.key)
-      } else {
-        await getAppLink().then((generatedLink) => {
-          DownloadDialogModal.open({
-            title: <>Download the app</>,
-            deepLink: generatedLink,
-          })
+    if (brandId?.toString() === '99') return
+
+    if (shouldShowAppDownload) {
+      await getAppLink().then((generatedLink) => {
+        DownloadDialogModal.open({
+          title: <>Download the app</>,
+          deepLink: generatedLink,
         })
-      }
+      })
+      return
     }
-  }, [interruptionToShow])
+
+    if (interruptionToShow) {
+      AuthenticationModal.open(undefined, interruptionToShow.key)
+    }
+  }, [interruptionToShow, shouldShowAppDownload, config.web_cta, brandId])
 
   // Handle swipe interactions to trigger modal after a set count
   const handleSwipeCount = useCallback(
     (index: number) => {
       const { swipeCount, lastIndex } = interactionRef.current
-      const popupAfter = interruptionToShow ? config?.web_configs?.[interruptionToShow.configKey]?.popup_after ?? 0 : 0
+      const popupAfter = shouldShowAppDownload
+        ? getAppConfig?.popup_after ?? 0
+        : interruptionToShow
+        ? config?.web_configs?.[interruptionToShow.configKey]?.popup_after ?? 0
+        : 0
 
       if (index !== lastIndex) {
         interactionRef.current.swipeCount = swipeCount + 1
@@ -76,12 +87,12 @@ export function useInterruptionManager() {
         void triggerAuthenticationModal()
       }
     },
-    [config?.web_configs, interruptionToShow, interactionRef.current, triggerAuthenticationModal]
+    [config?.web_configs, interruptionToShow, shouldShowAppDownload, getAppConfig, triggerAuthenticationModal]
   )
 
   // Detect idle time and trigger modal if necessary
   useEffect(() => {
-    if (!interruptionToShow || AuthenticationModal.isOpen) return
+    if (AuthenticationModal.isOpen) return
 
     const idleConfig = config?.web_configs?.idle_time_interruption
     if (!idleConfig?.enable) return

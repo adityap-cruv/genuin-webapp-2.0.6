@@ -195,6 +195,14 @@ export type WebConfigs = {
    */
   feed_video_play: FeedVideoPlayConfig
   linkout_delay: LinkoutDelayConfig
+  get_app_popup: PopupConfig
+  /**
+   * If there is get_app_popup then show this popup.
+   * If user is not logged in then show login/signup popup.
+   * If user is logged in and has not selected interest then show interest selection popup.
+   * If user is logged in and has selected interest then show username popup.
+   * If user is logged in and has selected interest and username then show complete profile popup.
+   */
   login_signup_popup: PopupConfig
   interest_selection_popup: PopupConfig
   username_popup: PopupConfig
@@ -363,6 +371,10 @@ const initialState: StateType = {
       linkout_delay: {
         type: 1,
         appear_after: 10,
+      },
+      get_app_popup: {
+        enable: true,
+        popup_after: 5,
       },
       login_signup_popup: {
         enable: true,
