@@ -7,7 +7,7 @@ import { CustomAvatar } from '@components/custom/custom-avatar'
 import { useEffect, useRef, useState } from 'react'
 import { useInView } from 'framer-motion'
 import { TopStickyBar } from './top-bar'
-import { getLoopCohosts, getLoopDetails, getLoopSubscribers, subscribeLoop } from '@lib/api/loop'
+import { getLoopCohosts, getLoopDetails, subscribeLoop } from '@lib/api/loop'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { ListItem } from '@components/common/list-item'
@@ -281,7 +281,6 @@ export function MainComponent({ loopDetails }: Props) {
             </div>
             <div className="snap-y snap-proximity overflow-auto scroll-smooth py-2">
               <LoopCohosts slug={loopDetails.slug} />
-              <LoopSubscribers slug={loopDetails.slug} />
             </div>
           </div>
         )}
@@ -350,54 +349,6 @@ function LoopCohosts({ slug }: { slug: string }) {
               </Link>
             )
           })}
-        </div>
-      </div>
-    )
-}
-
-// TODO: think about pagination
-function LoopSubscribers({ slug }: { slug: string }) {
-  const { data, isLoading } = getLoopSubscribers(slug)
-  const subscribers = data?.pages.flatMap((item) => item.subscribers)
-
-  if (isLoading)
-    return (
-      <>
-        {Array.from({ length: 2 }).map((_, index) => (
-          <div key={index} className="m-2 flex items-center justify-center">
-            <Shimmer className="h-12 w-12 shrink-0 rounded-full" />
-            <div className="ml-2 w-full">
-              <Shimmer className="my-1 h-4 w-1/4 rounded-full" />
-              <Shimmer className="my-1 h-4 w-1/5 rounded-full" />
-              <Shimmer className="my-1 h-4 w-full rounded-full" />
-            </div>
-          </div>
-        ))}
-      </>
-    )
-
-  if (subscribers && subscribers.length !== 0)
-    return (
-      <div>
-        <p className="my-2 text-title-3-bold">Subscribers</p>
-        <div className="h-full w-full overflow-auto">
-          {subscribers.map((item, index) => (
-            <Link
-              key={index}
-              href={{
-                pathname: item.brand ? PATH_NAME.brand(item.brand.brand_slug) : PATH_NAME.profile(item.nickname),
-              }}>
-              <ListItem
-                title={item.name ?? ''}
-                subtitle={'@' + item.nickname}
-                description={item.bio ?? ''}
-                image={item.profile_image_m ?? item.profile_image}
-                isAvatar={item.is_avatar}
-                brand={item.brand ? { ...item.brand, brand_user_logo: item.brand.brand_user_logo ?? 1 } : null}
-                isOwner={false}
-              />
-            </Link>
-          ))}
         </div>
       </div>
     )

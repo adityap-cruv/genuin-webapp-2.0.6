@@ -33,6 +33,8 @@ import { RedeemCredits } from '../wallet/redeem-credits'
 import { getUserDataForSSO } from './api/auth'
 import { signIn } from 'next-auth/react'
 import { setAuthTokenInAxiosInstance } from '@/lib/api/instance'
+import { getAppLink } from '@/lib/get-deeplink'
+import { DownloadDialogModal } from '../download-app'
 
 type Props = DialogProps & { showClose?: boolean }
 
@@ -45,7 +47,12 @@ function removeQueryParams() {
 
 export function Modal({ children, showClose, ...props }: Props) {
   const searchParams = useSearchParams()
-  const user = useGenuinOptions().user
+  const { user, webCTA } = useGenuinOptions(
+    useShallow((state) => ({
+      user: state.user,
+      webCTA: state.webCTA,
+    }))
+  )
   const { action, isModalOpen, closeModal, step, setFormData, open, openWithStep } = useAuthenticationModalStore(
     useShallow((state) => ({
       isModalOpen: state.isOpen,
@@ -82,7 +89,17 @@ export function Modal({ children, showClose, ...props }: Props) {
 
   useEffect(() => {
     if (!user) {
-      if (searchParams.get('show_login') === '1') {
+      const showPopup = searchParams.get('show_login') === '1'
+      if (!showPopup) return
+
+      if (webCTA === 'app') {
+        void getAppLink().then((generatedLink) => {
+          DownloadDialogModal.open({
+            title: <>Download the app</>,
+            deepLink: generatedLink,
+          })
+        })
+      } else {
         open()
       }
       return

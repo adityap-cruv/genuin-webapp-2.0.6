@@ -205,7 +205,6 @@ function Content({
     },
     [updateCurrentIndex]
   )
-
   return (
     <>
       <div
@@ -290,12 +289,12 @@ function Content({
                   width: isFullScreen ? '100%' : sizeBox.modal.player.width,
                   height: isFullScreen ? '100%' : sizeBox.modal.player.height,
                 }}>
-                {videos.map((_, index: number) => {
+                {videos.map((video, index: number) => {
                   return (
                     <SwiperSlide key={index}>
                       {({ isActive, isPrev, isNext }) => {
                         if (isActive || isPrev || isNext)
-                          if (videos[index])
+                          if (video)
                             return (
                               <>
                                 <NewPlayer

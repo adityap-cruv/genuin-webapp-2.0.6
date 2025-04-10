@@ -82,41 +82,44 @@ export function Desktop({
             </ActionItem>
           </Link>
         )}
-        <ActionItem
-          title="Repost"
-          onClick={async () => {
-            await handleWalletBalance({ action: 'repost', videoId, type: 'POST' })
-            if (pathname.includes('embed')) {
-              window.open(shareUrl, '_blank', 'noopener,noreferrer')
-            } else {
-              if (user) {
-                RepostModal.open(videoId)
+        {/* Disabling repost for TED in prod */}
+        {brandId.toString() !== '2357' && (
+          <ActionItem
+            title="Repost"
+            onClick={async () => {
+              await handleWalletBalance({ action: 'repost', videoId, type: 'POST' })
+              if (pathname.includes('embed')) {
+                window.open(shareUrl, '_blank', 'noopener,noreferrer')
               } else {
-                await repostDeepLink({ videoSlug, shareUrl, searchParams }).then((generatedLink) => {
-                  openModal({ deepLink: generatedLink, subtitle: 'Get the app to repost the video.' })
+                if (user) {
+                  RepostModal.open(videoId)
+                } else {
+                  await repostDeepLink({ videoSlug, shareUrl, searchParams }).then((generatedLink) => {
+                    openModal({ deepLink: generatedLink, subtitle: 'Get the app to repost the video.' })
+                  })
+                }
+              }
+
+              const properties = {
+                content_category: 'loop',
+                content_id: videoId,
+                event_record_screen: 'feed',
+                event_target_screen: 'none',
+                user_id: user?.id,
+              }
+              if (pathname.includes('embed')) {
+                Object.assign(properties, {
+                  brand_id: brandId,
                 })
               }
-            }
-
-            const properties = {
-              content_category: 'loop',
-              content_id: videoId,
-              event_record_screen: 'feed',
-              event_target_screen: 'none',
-              user_id: user?.id,
-            }
-            if (pathname.includes('embed')) {
-              Object.assign(properties, {
-                brand_id: brandId,
+              void Analytics.track({
+                eventName: 'Repost',
+                properties,
               })
-            }
-            void Analytics.track({
-              eventName: 'Repost',
-              properties,
-            })
-          }}>
-          <Image src={icRepost} alt="repost" height={32} width={32} />
-        </ActionItem>
+            }}>
+            <Image src={icRepost} alt="repost" height={32} width={32} />
+          </ActionItem>
+        )}
         <div>
           <ActionItem title={config.reactions.tooltip ?? ''}>
             <Reaction

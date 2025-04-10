@@ -8,7 +8,7 @@ const linkSchema = z.object({
 })
 
 const linkoutSchema = z.object({
-  style: z.number(),
+  style: z.number().optional(),
   cta_text: z.string().nullish(),
   cta_link: z.string().url().nullish(),
   links: z.array(linkSchema),
