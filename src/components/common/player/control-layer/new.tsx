@@ -86,7 +86,7 @@ export const ControlLayer = memo(function ControlLayer({
       <PlayingState />
       {!isFullScreen && (
         <Actions
-          className="absolute bottom-2 right-2"
+          className="absolute bottom-2 right-2 z-10"
           shareUrl={videoDetails.video.shareUrl}
           sparkCount={videoDetails.video.sparkCount}
           videoId={videoDetails.video.id}

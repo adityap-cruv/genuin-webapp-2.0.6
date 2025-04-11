@@ -200,16 +200,14 @@ function UserTick() {
               </>
             )}
 
-            <div className="flex items-center gap-2">
+            <div
+              className="flex cursor-pointer items-center gap-2"
+              onClick={() => {
+                void signOut({ callbackUrl: `${window.location.pathname}${window.location.search}`, redirect: true })
+                removeAllAuthToken()
+              }}>
               <LogoutIcon className="h-6 w-6 stroke-secondary" />
-              <p
-                className="cursor-pointer text-body-1-demi"
-                onClick={() => {
-                  void signOut({ callbackUrl: `${window.location.pathname}${window.location.search}`, redirect: true })
-                  removeAllAuthToken()
-                }}>
-                Log out
-              </p>
+              <p className="text-body-1-demi">Log out</p>
             </div>
           </div>
         </PopoverContent>

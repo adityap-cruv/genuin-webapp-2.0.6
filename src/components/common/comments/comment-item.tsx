@@ -27,40 +27,36 @@ export const CommentItem = memo(function CommentItem({
 }: CommentItemPropsType) {
   const UI = Comment[comment.type]
   return (
-    <div className="flex w-full gap-x-2 py-2 last:pb-20">
-      <div className="flex w-full flex-col items-start justify-between gap-2">
-        <div className="flex items-center gap-x-2">
-          <CustomAvatar
-            className="bg-slate-500 h-6 w-6 bg-red-40"
-            fallbackString={comment?.owner.nickname}
-            imageUrl={comment.owner?.profile_image}
-            isAvatar={comment.owner.is_avatar}
-          />
-          <Link href={{ pathname: PATH_NAME.profile(comment.owner.nickname) }}>
-            <p className="line-clamp-1 break-all text-body-1-bold">@{comment.owner.nickname}</p>
-          </Link>
-          <p className="shrink-0 text-cap-1-demi text-tertiary">{getTimeAgo(comment.created_at) + ' ago'}</p>
-        </div>
-        <div className="h-full w-full pl-6">
-          <UI comment={comment} />
-        </div>
+    <div className="flex w-full flex-col gap-y-0.5 py-2 last:pb-20">
+      <div className="flex items-center gap-2">
+        <CustomAvatar
+          className="bg-slate-500 h-6 w-6 bg-red-40"
+          fallbackString={comment?.owner.nickname}
+          imageUrl={comment.owner?.profile_image}
+          isAvatar={comment.owner.is_avatar}
+        />
+        <Link href={{ pathname: PATH_NAME.profile(comment.owner.nickname) }}>
+          <p className="line-clamp-1 break-all text-body-1-bold">@{comment.owner.nickname}</p>
+        </Link>
+        <p className="shrink-0 text-cap-1-demi text-tertiary">{getTimeAgo(comment.created_at) + ' ago'}</p>
       </div>
-      {/* <div> */}
-      <Reaction
-        isSparked={comment.is_sparked ?? false}
-        shareUrl={videoShareUrl}
-        className="w-fit !text-secondary [&_p]:!text-cap-1-med"
-        sparkCount={comment.no_of_sparks}
-        contentId={comment.comment_id}
-        videoSlug={slug}
-        iconHeight={16}
-        iconWidth={16}
-        forComment
-        onSparkChange={(newSparkStatus) => {
-          onCommentReactionChange(newSparkStatus)
-        }}
-      />
-      {/* </div> */}
+      <div className="h-full w-full pl-8">
+        <UI comment={comment} />
+        <Reaction
+          isSparked={comment.is_sparked ?? false}
+          shareUrl={videoShareUrl}
+          className="w-fit flex-row gap-1 pt-2 !text-secondary [&_p]:!text-cap-1-med"
+          sparkCount={comment.no_of_sparks}
+          contentId={comment.comment_id}
+          videoSlug={slug}
+          iconHeight={16}
+          iconWidth={16}
+          forComment
+          onSparkChange={(newSparkStatus) => {
+            onCommentReactionChange(newSparkStatus)
+          }}
+        />
+      </div>
     </div>
   )
 })

@@ -238,7 +238,7 @@ export function Dynamic({
             className={cn(
               'transition-[max-height] duration-500 sm:max-h-max',
               {
-                'swiper-no-swiping __gen__sdk__hide__scrollbar overflow-auto': isExpanded && isMobile,
+                'swiper-no-swiping hide-scrollbar overflow-auto': isExpanded && isMobile,
               },
               props.className
             )}
@@ -256,7 +256,7 @@ export function Dynamic({
               className={cn('w-full break-words', position !== 'outside' && 'text-white')}
               style={!shouldAnimate && !isExpanded ? clampedStyle : { wordBreak: 'break-word' }}
               onClick={
-                !showViewMore
+                !showViewMore && isOverflowing
                   ? (e) => {
                       e.stopPropagation()
                       setIsExpanded(!isExpanded)
