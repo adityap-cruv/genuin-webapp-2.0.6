@@ -527,6 +527,13 @@ export function getPastTense(word: string) {
   }
 }
 
+export function getApiUrl(pathName: string, searchParams: URLSearchParams = new URLSearchParams()) {
+  const url = new URL(process.env.NEXT_PUBLIC_API_URL)
+  url.pathname = pathName
+  url.search = searchParams.toString()
+  return url.toString()
+}
+
 // This function is used in multiple places to trigger the app download modal.
 // It generates the appropriate deep link and opens a modal prompting users to download the app,
 export async function handleAppDownloadModal() {

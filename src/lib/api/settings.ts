@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { axiosInstance } from './instance'
-import { fetchUserData } from './profile'
 import { useGenuinOptions } from '../stores/genuin-options'
+import { fetchUserData } from './profile'
 
 type FeedbackType = {
   email?: string | null

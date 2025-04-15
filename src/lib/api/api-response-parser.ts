@@ -3,12 +3,6 @@
 /* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
 import { type FeedResponseFromGoApi } from '@lib/schemas/feed/response'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
-import { type ProfileLoopType, type ProfileCommunityType, type ProfileVideoType } from '@lib/schemas/profile/community'
-import {
-  type ProfileLoopResponseType,
-  type ProfileCommunityResponseType,
-  type ProfileVideoResponseType,
-} from '@lib/schemas/profile/community-response'
 import { mapCommunityUserRole, tryJsonParse } from '@lib/utils'
 
 /**
@@ -73,87 +67,4 @@ export function parseFeedResponseFromGoApi(feeds: FeedResponseFromGoApi[]) {
       linkouts: video.linkouts,
     },
   }))
-}
-
-export function parseProfileCommunityResponse(communities: ProfileCommunityResponseType[]) {
-  return communities.map<ProfileCommunityType>((item) => {
-    return {
-      brand: item?.brand
-        ? {
-            brand_id: item.brand.brand_id,
-            name: item.brand.name,
-            subdomain: item.brand.subdomain,
-            logo: item.brand.logo,
-            created_at: item.brand.created_at,
-            brand_web_logo: item.brand.brand_web_logo,
-            favicon: item.brand.favicon,
-            brand_system_user_id: item.brand.brand_system_user_id,
-            brand_slug: item.brand.brand_slug,
-          }
-        : null,
-      handle: item.handle,
-      id: item.community_id,
-      userRole: mapCommunityUserRole(item.logged_in_user_role, item.is_community_join_requested),
-      slug: item.slug,
-      name: item.name,
-      profileImage: item.dp_m ?? item.dp,
-      loopCount: item.no_of_loops,
-      type: item.type ?? null,
-      loops: item.loops.map((item) => {
-        return {
-          id: item.chat_id,
-          slug: item.slug,
-          name: item.group.group_name,
-          private: !item.is_view_allowed,
-          videoCount: item.group.no_of_videos,
-          actions: item.actions
-            ? item.actions.map((item) => {
-                return { action_id: item.action_id, access_type_id: item.access_type_id }
-              })
-            : null,
-          videos: item.messages.map((item) => {
-            return {
-              id: item.message_id,
-              thumbnail: item.thumbnail_url_m ? item.thumbnail_url_m : item.thumbnail_url_l ?? item.thumbnail_url,
-              viewCount: item.no_of_views,
-            }
-          }),
-        }
-      }),
-    }
-  })
-}
-
-export function parseProfileLoopResponse(loops: ProfileLoopResponseType[]) {
-  return loops.map<ProfileLoopType>((item) => {
-    return {
-      id: item.chat_id,
-      private: !item.is_view_allowed,
-      slug: item.slug,
-      videoCount: item.group.no_of_videos,
-      name: item.group.group_name,
-      actions: item.actions
-        ? item.actions.map((item) => {
-            return { action_id: item.action_id, access_type_id: item.access_type_id }
-          })
-        : null,
-      videos: item.messages.map((item) => {
-        return {
-          id: item.message_id,
-          viewCount: item.no_of_views,
-          thumbnail: item.thumbnail_url_m ? item.thumbnail_url_m : item.thumbnail_url_l ?? item.thumbnail_url,
-        }
-      }),
-    }
-  })
-}
-
-export function parseProfileVideoResponse(videos: ProfileVideoResponseType[]) {
-  return videos.map<ProfileVideoType>((item) => {
-    return {
-      id: item.message_id,
-      viewCount: item.no_of_views,
-      thumbnail: item.thumbnail_url_l ?? item.thumbnail_url,
-    }
-  })
 }
