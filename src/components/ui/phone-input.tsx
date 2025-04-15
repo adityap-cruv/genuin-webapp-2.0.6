@@ -17,17 +17,18 @@ type PhoneInputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChan
   Omit<RPNInput.Props<typeof RPNInput.default>, 'onChange'> & {
     onChange: (value: RPNInput.Value) => void
     value: RPNInput.Value
+    popoverClassName?: string
   }
 
 const PhoneInput: React.ForwardRefExoticComponent<PhoneInputProps> = React.forwardRef<
   React.ElementRef<typeof RPNInput.default>,
   PhoneInputProps
->(({ className, onChange, ...props }, ref) => (
+>(({ className, onChange, popoverClassName, ...props }, ref) => (
   <RPNInput.default
     ref={ref}
     className={cn('flex', className)}
     flagComponent={FlagComponent}
-    countrySelectComponent={CountrySelect}
+    countrySelectComponent={(selectProps) => <CountrySelect {...selectProps} popoverClassName={popoverClassName} />}
     inputComponent={InputComponent}
     defaultCountry="US"
     /**
@@ -63,9 +64,10 @@ type CountrySelectProps = {
   value: RPNInput.Country
   onChange: (value: RPNInput.Country) => void
   options: CountrySelectOption[]
+  popoverClassName?: string
 }
 
-const CountrySelect = ({ disabled, value, onChange, options }: CountrySelectProps) => {
+const CountrySelect = ({ disabled, value, onChange, options, popoverClassName }: CountrySelectProps) => {
   const handleSelect = React.useCallback(
     (country: RPNInput.Country) => {
       onChange(country)
@@ -85,7 +87,7 @@ const CountrySelect = ({ disabled, value, onChange, options }: CountrySelectProp
           <ChevronsUpDown className={cn('h-4 w-4 opacity-50', disabled ? 'hidden' : 'opacity-100')} />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[300px] p-0">
+      <PopoverContent className={cn('w-[300px] p-0', popoverClassName)}>
         <Command>
           <CommandList>
             {/* <CommandInput placeholder="Search country..." /> */}

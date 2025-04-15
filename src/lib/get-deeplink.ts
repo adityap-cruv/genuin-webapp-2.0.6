@@ -176,3 +176,14 @@ export const resolveDeepLink = async (linkIdentifier: string): Promise<DeepLinkD
     return null
   }
 }
+
+export const sendGetAppLink = async (payload: { email?: string; mobile?: string; query_params?: string }) => {
+  try {
+    const res = await axiosInstance.post('/api/v3/send_download_link', payload)
+    return res?.data || null
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('Error resolving deep link:', error)
+    return null
+  }
+}

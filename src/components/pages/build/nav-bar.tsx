@@ -5,10 +5,10 @@ import { HamBurgerMenuIcon } from '@components/ui/ham-burger'
 import Link from 'next/link'
 import { Sheet, SheetContent, SheetTrigger } from '@components/ui/sheet'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { DownloadAppDialog } from './download-app-dialog'
 import { HIRING_LINK } from '@lib/constants'
 import { GenuinIcon } from '@icons/genuin-icon'
 import { usePathname } from 'next/navigation'
+import GetAppButton from '@/components/common/get-app-button'
 
 export function NavBar() {
   const pathname = usePathname()
@@ -78,11 +78,10 @@ export function NavBar() {
                 <p className="text-new-sm font-semibold">We're hiring!</p>
               </Button>
             </Link>
-            <DownloadAppDialog>
-              <Button size="index-page" className="bg-new-off-black after:bg-new-dark-grey hover:bg-new-dark-grey">
-                <p className="text-new-sm font-semibold text-monochrome-white">Download App</p>
-              </Button>
-            </DownloadAppDialog>
+            <GetAppButton
+              buttonText="Download App"
+              className="bg-new-off-black text-new-sm font-semibold text-monochrome-white after:bg-new-dark-grey hover:bg-new-dark-grey"
+            />
           </div>
         </div>
       </nav>
@@ -103,11 +102,10 @@ export function NavBar() {
                 }}>
                 <div className="flex h-full min-w-full flex-col gap-y-1 pt-7">
                   <div className="flex h-full min-w-full flex-col gap-y-4 py-7">
-                    <DownloadAppDialog>
-                      <Button size="index-page" className="my-2 w-full bg-new-off-black hover:bg-new-dark-grey">
-                        <p className="text-new-md text-monochrome-white">Download App</p>
-                      </Button>
-                    </DownloadAppDialog>
+                    <GetAppButton
+                      buttonText="Download App"
+                      className="bg-new-off-black text-new-sm font-semibold text-monochrome-white after:bg-new-dark-grey hover:bg-new-dark-grey"
+                    />
                     <Link href={PATH_NAME.build()}>
                       <h3 className="text-new-h3-mobile font-semibold">Build</h3>
                     </Link>

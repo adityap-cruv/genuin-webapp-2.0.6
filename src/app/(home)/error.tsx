@@ -3,8 +3,7 @@ import { NavBar } from '@components/common/nav-bar'
 import Image from 'next/image'
 import imageAppStore from '@images/appStore.svg'
 import imagePlayStore from '@images/playStore.svg'
-import { DownloadAppDialog } from '../../components/pages/build/download-app-dialog'
-import { Button } from '@components/ui/button'
+import GetAppButton from '@/components/common/get-app-button'
 
 export default function Error({ error, reset }: { error: Error; reset: () => void }) {
   const URL_TO_APP_STORE = 'https://apps.apple.com/US/app/id1511177838?mt=8'
@@ -26,12 +25,7 @@ export default function Error({ error, reset }: { error: Error; reset: () => voi
               Something went wrong!
               <a href="/">Genuin Home Page.</a>
             </h5>
-
-            <DownloadAppDialog>
-              <Button className="px-6 py-6">
-                <p className="mx-2 text-title-2-bold text-monochrome-white">Download App</p>
-              </Button>
-            </DownloadAppDialog>
+            <GetAppButton buttonText="Download App" className="mx-2 text-title-2-bold text-monochrome-white" />
           </div>
           <div className="hidden w-[70%] flex-col items-center sm:flex">
             <h2 className="text-new-h2 text-monochrome-white">Something went wrong!</h2>

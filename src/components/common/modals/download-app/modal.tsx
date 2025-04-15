@@ -23,7 +23,7 @@ export function Modal({ ...props }: Props) {
         onInteractOutside={(e) => {
           e.preventDefault()
         }}
-        className="rounded-t-lg !py-10">
+        className="max-h-[90vh] overflow-y-auto rounded-t-lg !py-10">
         <DialogClose className="absolute right-3 top-3">
           <CloseIcon
             onClick={() => {

@@ -8,8 +8,8 @@ import star2 from '@images/business/pricing/star2.webp'
 import exclamation from '@icons/business/exclamation.svg'
 import { Button } from '@components/ui/button'
 import style from './subscriptionPlan.module.scss'
-import { DownloadAppDialog } from '@components/pages/build/download-app-dialog'
 import { ContactUs } from '@components/common/modals/contact-us'
+import GetAppButton from '@/components/common/get-app-button'
 
 export default function SubscriptionPlan() {
   return (
@@ -24,13 +24,10 @@ export default function SubscriptionPlan() {
             <p className="text-center text-new-h2">
               $39<span className="text-new-md">/month</span>
             </p>
-            <DownloadAppDialog>
-              <Button
-                size="custom"
-                className="mt-8 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
-                <p className="text-new-para-2">Get Started</p>
-              </Button>
-            </DownloadAppDialog>
+            <GetAppButton
+              buttonText="Get Started"
+              className="mt-8 bg-new-off-black px-12 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey"
+            />
           </div>
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2">

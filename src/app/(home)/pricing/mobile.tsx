@@ -10,7 +10,6 @@ import content from '../../../content/pricing-page.json'
 import exclamation from '@icons/business/exclamation.svg'
 import Image from 'next/image'
 import { Footer } from '@components/pages/build/footer'
-import { DownloadAppDialog } from '@components/pages/build/download-app-dialog'
 import { ContactUs } from '@components/common/modals/contact-us'
 import check_p from '@icons/icCheck.svg'
 import Link from 'next/link'
@@ -20,6 +19,7 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { Pagination } from 'swiper/modules'
 import SwiperCore from 'swiper'
 import 'swiper/swiper-bundle.css'
+import GetAppButton from '@/components/common/get-app-button'
 
 SwiperCore.use([Pagination])
 
@@ -96,13 +96,10 @@ function Component1() {
                 <p className="text-center text-new-h3">
                   $39<span className="text-new-md">/month</span>
                 </p>
-                <DownloadAppDialog>
-                  <Button
-                    size="custom"
-                    className="mt-8 bg-new-off-black px-12 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
-                    <p className="text-new-para-2">Get Started</p>
-                  </Button>
-                </DownloadAppDialog>
+                <GetAppButton
+                  buttonText="Get Started"
+                  className="mt-8 bg-new-off-black px-12 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey"
+                />
               </div>
               <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-2">

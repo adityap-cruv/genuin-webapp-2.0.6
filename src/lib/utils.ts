@@ -10,6 +10,7 @@ import { INDUSTRY, type IndustryName, PROTECTED_ROUTES, MOBILE_DOWNLOAD_APP_LINK
 import { type CommunityUserRoleType } from './schemas/roles'
 import Analytics from '@/services/analytics'
 import { UAParser } from 'ua-parser-js'
+import { getAppLink } from './get-deeplink'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -524,4 +525,15 @@ export function getPastTense(word: string) {
     // For most cases, just add 'ed'
     return word + 'ed'
   }
+}
+
+// This function is used in multiple places to trigger the app download modal.
+// It generates the appropriate deep link and opens a modal prompting users to download the app,
+export async function handleAppDownloadModal() {
+  const generatedLink = await getAppLink()
+  openModal({
+    title: 'Download the app',
+    subtitle: 'Download app to browse more communities',
+    deepLink: generatedLink,
+  })
 }

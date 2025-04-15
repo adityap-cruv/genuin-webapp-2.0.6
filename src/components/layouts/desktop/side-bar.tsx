@@ -3,7 +3,7 @@ import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { type ReactNode } from 'react'
 import { ExploreIcon, HomeIcon, LatestIcon, MoreIcon, PopularIcon, ProfileIcon } from '@icons/side-bar-icons'
-import { cn } from '@lib/utils'
+import { cn, handleAppDownloadModal } from '@lib/utils'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
 import dynamic from 'next/dynamic'
@@ -17,10 +17,7 @@ import { VerifiedIcon } from '@icons/verified-icon'
 import { useSession } from 'next-auth/react'
 import { AuthenticationModal } from '@/components/common/modals/authentication'
 import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
-
-const DownloadAppDialog = dynamic(
-  async () => await import('../download-app-dialog').then((comp) => comp.DownloadAppDialog)
-)
+import { AddIcon } from '@icons/add-icon'
 
 const CategoryViewDynamic = dynamic(
   async () => await import('@components/common/category-view').then((comp) => comp.CategoryView)
@@ -174,7 +171,16 @@ export function SideBar({ isCollapsed }: { isCollapsed?: boolean }) {
               {(!isClaimed || (user?.ksCbRequestStatus !== 3 && showBecomeACreator)) && (
                 <hr className="border-1 my-2 border-monochrome-black/10" />
               )}
-              <DownloadAppDialog />
+              {user?.ksCbRequestStatus === 3 && (
+                <div
+                  className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
+                  onClick={() => {
+                    void handleAppDownloadModal()
+                  }}>
+                  <AddIcon className="stroke-primary" />
+                  <p className={cn('whitespace-nowrap !text-title-3-demi text-primary')}>Create Community</p>
+                </div>
+              )}
               {isClaimed && status === 'unauthenticated' && webCTA !== 'app' && (
                 <>
                   <div
@@ -221,7 +227,16 @@ export function SideBar({ isCollapsed }: { isCollapsed?: boolean }) {
               {(!isClaimed || (user?.ksCbRequestStatus !== 3 && showBecomeACreator)) && (
                 <hr className="border-1 my-2 border-monochrome-black/10" />
               )}
-              <DownloadAppDialog />
+              {user?.ksCbRequestStatus === 3 && (
+                <div
+                  className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
+                  onClick={() => {
+                    void handleAppDownloadModal()
+                  }}>
+                  <AddIcon className="stroke-primary" />
+                  <p className={cn('whitespace-nowrap !text-title-3-demi text-primary')}>Create Community</p>
+                </div>
+              )}
               {isClaimed && status === 'unauthenticated' && webCTA !== 'app' && (
                 <>
                   <div

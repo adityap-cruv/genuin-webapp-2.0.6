@@ -3,7 +3,7 @@ import { HamBurgerMenuIcon } from '@components/ui/ham-burger'
 import { Button } from '@components/ui/button'
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from '@components/ui/sheet'
 import { type ReactNode } from 'react'
-import { cn, getYear } from '@lib/utils'
+import { cn, getYear, handleAppDownloadModal } from '@lib/utils'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { PopularIcon, HomeIcon, LatestIcon, ProfileIcon, ExploreIcon } from '@icons/side-bar-icons'
@@ -36,10 +36,7 @@ import { CustomImage } from '@/components/custom/custom-image'
 import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
 import GetAppButton from '@/components/common/get-app-button'
 import { Accordion, AccordionContent, AccordionItem } from '@/components/ui/accordion'
-
-const DownloadAppDialog = dynamic(
-  async () => await import('../download-app-dialog').then((comp) => comp.DownloadAppDialog)
-)
+import { AddIcon } from '@icons/add-icon'
 
 const BecomeCbCard = dynamic(
   async () => await import('@/components/common/become-cb-card').then((comp) => comp.default),
@@ -287,7 +284,16 @@ function Menu({
           </>
         )}
         {shouldShowIHeartDemo && <CategoryView />}
-        <DownloadAppDialog />
+        {user?.ksCbRequestStatus === 3 && (
+          <div
+            className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
+            onClick={() => {
+              void handleAppDownloadModal()
+            }}>
+            <AddIcon className="stroke-primary" />
+            <p className={cn('whitespace-nowrap !text-title-3-demi text-primary')}>Create Community</p>
+          </div>
+        )}
         {isClaimed && status === 'unauthenticated' && webCTA !== 'app' && (
           <>
             <hr className="border-1 my-2 border-monochrome-black/10" />

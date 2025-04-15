@@ -3,8 +3,7 @@ import { useEffect, useRef, useCallback } from 'react'
 import { AuthenticationModal } from '@components/common/modals/authentication'
 import { useGenuinOptions, type User } from '@lib/stores/genuin-options'
 import { useShallow } from 'zustand/react/shallow'
-import { getAppLink } from '@/lib/get-deeplink'
-import { DownloadDialogModal } from '@/components/common/modals/download-app'
+import { handleAppDownloadModal } from '@/lib/utils'
 
 const INTERRUPTION_STEPS = [
   {
@@ -53,12 +52,7 @@ export function useInterruptionManager() {
     if (brandId?.toString() === '99') return
 
     if (shouldShowAppDownload) {
-      await getAppLink().then((generatedLink) => {
-        DownloadDialogModal.open({
-          title: <>Download the app</>,
-          deepLink: generatedLink,
-        })
-      })
+      void handleAppDownloadModal()
       return
     }
 
