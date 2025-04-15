@@ -36,7 +36,7 @@ const IHeartDemoContext = createContext<IHeartDemoContextType>({
   setAudioUrl: () => {},
 })
 
-const considerBrandIdsToShowIHeartDemo = ['1429', '1729', '1775', '2236', '2249']
+const considerBrandIdsToShowIHeartDemo = ['1729']
 
 // paths for each communities.
 const communityPaths = STATIONS.flatMap((station) =>

@@ -73,7 +73,7 @@ export const NOT_FOUND_ERROR_MESSAGES = {
   },
 }
 
-export const IHEART_BRAND_URL = [1429, 1729, 1775, 2236, 2249]
+export const IHEART_BRAND_URL = [1729]
 
 export const INDUSTRY: Record<IndustryName, number> = {
   Automotive: 1,
