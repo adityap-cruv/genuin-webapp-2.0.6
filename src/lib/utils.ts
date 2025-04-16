@@ -537,10 +537,19 @@ export function getApiUrl(pathName: string, searchParams: URLSearchParams = new 
 // This function is used in multiple places to trigger the app download modal.
 // It generates the appropriate deep link and opens a modal prompting users to download the app,
 export async function handleAppDownloadModal() {
+  const { isMobile } = useGenuinOptions.getState()
+  // had to cover this for use case of having smart get app for ipad
+  // isMobile flag is not detecting ipad as mobile device
+  const isIpad = new UAParser().getResult().device.model?.toLowerCase() === 'ipad'
   const generatedLink = await getAppLink()
-  openModal({
-    title: 'Download the app',
-    subtitle: 'Download app to browse more communities',
-    deepLink: generatedLink,
-  })
+
+  if (isMobile || isIpad) {
+    openGeneratedLink(generatedLink)
+  } else {
+    DownloadDialogModal.open({
+      title: 'Download the app',
+      subtitle: 'Download app to browse more communities',
+      deepLink: generatedLink,
+    })
+  }
 }
