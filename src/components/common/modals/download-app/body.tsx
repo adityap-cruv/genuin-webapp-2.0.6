@@ -48,7 +48,13 @@ export function Body({ title, subtitle, deepLink }: DownloadDialogType) {
   return (
     <div className="flex w-full flex-col items-center justify-center gap-6 text-center sm:min-w-[384px] sm:max-w-md sm:px-4">
       {brandLogo && (
-        <CustomImage src={brandLogo} height={40} width={40} className="rounded-full object-cover" alt="logo" />
+        <CustomImage
+          src={brandLogo}
+          height={40}
+          width={40}
+          className="h-10 w-10 rounded-full object-cover"
+          alt="logo"
+        />
       )}
 
       <div className="flex flex-col items-center gap-2">

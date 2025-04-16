@@ -229,11 +229,11 @@ function PlayerModalWrapper({ profileId, forBrand }: BasePropsType) {
 
   const {
     data: videosData,
-    isFetching,
     fetchNextPage,
     isError,
     isFetchingNextPage,
     hasNextPage,
+    isLoading,
   } = useInfiniteQuery({
     queryKey: queryKeyForFeed,
     queryFn: async ({ pageParam = { lastMessageId: '' } }) => {
@@ -241,15 +241,6 @@ function PlayerModalWrapper({ profileId, forBrand }: BasePropsType) {
         return await fetchProfileFeed(profileId, forBrand, undefined, videoId)
       }
       return await fetchProfileFeed(profileId, forBrand, pageParam, undefined)
-    },
-    initialData: {
-      pageParams: [{ lastMessageId: '' }],
-      pages: [
-        {
-          videos: [],
-          end: false,
-        },
-      ],
     },
     getNextPageParam: (lastPage) => {
       if (lastPage.end) {
@@ -272,7 +263,7 @@ function PlayerModalWrapper({ profileId, forBrand }: BasePropsType) {
         isError={isError}
         isFetchingNextPage={isFetchingNextPage}
         startIndex={0}
-        isLoading={isFetching}
+        isLoading={isLoading}
         open={!!videoId}
         videos={videos ?? []}
         close={() => {
@@ -288,7 +279,7 @@ function PlayerModalWrapper({ profileId, forBrand }: BasePropsType) {
       isError={isError}
       isFetchingNextPage={isFetchingNextPage}
       startIndex={0}
-      isLoading={isFetching}
+      isLoading={isLoading}
       open={!!videoId}
       videos={videos ?? []}
       close={() => {

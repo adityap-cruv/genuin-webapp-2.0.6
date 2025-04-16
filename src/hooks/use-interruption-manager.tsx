@@ -76,7 +76,7 @@ export function useInterruptionManager() {
         interactionRef.current.lastIndex = index
       }
 
-      if (interactionRef.current.swipeCount > popupAfter) {
+      if (interactionRef.current.swipeCount >= popupAfter) {
         interactionRef.current.swipeCount = 0
         void triggerAuthenticationModal()
       }
