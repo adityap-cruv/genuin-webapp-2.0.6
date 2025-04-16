@@ -90,7 +90,7 @@ export function Details({ communityDetails }: Props) {
           <ReadMore.default
             text={communityDetailsModule?.description}
             maxChars={150}
-            className="my-1 break-all text-body-1-demi"
+            className="my-1 break-words text-body-1-demi"
           />
 
           <div className="my-1 flex items-center gap-x-2">
