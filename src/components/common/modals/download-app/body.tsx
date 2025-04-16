@@ -33,7 +33,7 @@ type DownloadDialogType = {
 }
 
 export function Body({ title, subtitle, deepLink }: DownloadDialogType) {
-  const { links, brandLogo, brandName, isMobile } = useGenuinOptions(
+  const { links, brandLogo, brandName, isMobile, privacyPolicy, termsAndCondition } = useGenuinOptions(
     useShallow((state) => ({
       links: {
         appStoreLink: state.config?.integrations.sdk.ios.appstore_link,
@@ -42,6 +42,8 @@ export function Body({ title, subtitle, deepLink }: DownloadDialogType) {
       brandLogo: state.config?.logo,
       brandName: state.config?.name,
       isMobile: state.isMobile,
+      privacyPolicy: state.config?.privacy_policy ?? PATH_NAME.privacy,
+      termsAndCondition: state.config?.terms_and_condition ?? PATH_NAME.terms,
     }))
   )
 
@@ -71,7 +73,7 @@ export function Body({ title, subtitle, deepLink }: DownloadDialogType) {
 
           <hr className="border-1 w-3/4 border-tertiary" />
 
-          <FormContent />
+          <FormContent privacyPolicy={privacyPolicy} termsAndCondition={termsAndCondition} />
 
           <div className="flex gap-x-2">
             <a href={links.appStoreLink ?? URL_TO_APP_STORE} target="_blank" rel="noopener noreferrer">
@@ -112,7 +114,7 @@ const formSchema = z
     path: ['_form'],
   })
 
-function FormContent() {
+function FormContent({ privacyPolicy, termsAndCondition }: { privacyPolicy: string; termsAndCondition: string }) {
   const searchParams = useSearchParams()
   const [isLinkSent, setIsLinkSent] = useState(false)
   const [error, setError] = useState<string>('')
@@ -240,11 +242,11 @@ function FormContent() {
 
       <p className="text-cap-1-med">
         By clicking Send Link, I acknowledge that I have read the{' '}
-        <Link href={PATH_NAME.privacy} className="underline">
+        <Link href={{ pathname: privacyPolicy }} className="underline">
           Privacy Policy
         </Link>{' '}
         and agree to the{' '}
-        <Link href={PATH_NAME.terms} className="underline">
+        <Link href={{ pathname: termsAndCondition }} className="underline">
           Terms of Service
         </Link>
       </p>
