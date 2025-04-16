@@ -42,7 +42,7 @@ export const getVideoPlayerConfigs = (webConfigs?: WebConfigs) => {
     autoplayAfter = webConfigs.video_autoplay.auto_play_after
   }
 
-  const unmuteVideo = webConfigs?.is_start_with_sound ?? false
+  const unmuteVideo = (webConfigs?.is_start_with_sound && webConfigs.tap_behavior !== 2) ?? false
 
   return { repeatCount: repeatCount - 1, shouldSwipeNext, autoplay, autoplayAfter, unmuteVideo }
 }
