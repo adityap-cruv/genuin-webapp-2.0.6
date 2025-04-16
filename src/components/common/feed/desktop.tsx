@@ -81,8 +81,11 @@ const CONFIG = {
   DEBOUNCE_TIME: 150, // New debounce time for wheel events
 }
 function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: SwiperRendererProps) {
-  const { defaultSizeBox } = useGenuinOptions(useShallow((state) => ({ defaultSizeBox: state.sizeBoxes.default })))
-
+  const { defaultSizeBox } = useGenuinOptions(
+    useShallow((state) => ({
+      defaultSizeBox: state.sizeBoxes.default,
+    }))
+  )
   // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   const sizeBox = customSizeBox || defaultSizeBox
   const { shouldShowIHeartDemo, isIHeartPlaying } = useIHeartDemoStates()
@@ -184,10 +187,6 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
               />
             )}
             <Swiper
-              // PLAY_PAUSE gesture will end when the user takes action;
-              onClick={() => {
-                if (!muted) hideGestureOverlay('PLAY_PAUSE')
-              }}
               onSwiper={(swiper) => {
                 swiperRef.current = swiper
                 ;(swiper as any).on('wheel', handleWheel)

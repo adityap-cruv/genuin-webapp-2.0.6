@@ -32,29 +32,55 @@ type GestureType = {
    * Stores the visibility state of all gesture overlays.
    */
   gestureOverlays: Record<GestureOverlayKeysType, GestureOverlayStateType>
+
+  /**
+   * Resets all gesture overlays to their default state.
+   * This will clear all hasShown flags and hide all overlays.
+   */
+  resetAllGestures: () => void
+
+  /**
+   * Resets specific gesture overlay to their default state.
+   * This will clear all hasShown flags and hide all overlays.
+   */
+  resetGestureOverlay: (gesture: GestureOverlayKeysType) => void
+}
+
+const DEFAULT_GESTURE_STATE: Record<GestureOverlayKeysType, GestureOverlayStateType> = {
+  SWIPE: { isVisible: false, hasShown: false },
+  PLAY_PAUSE: { isVisible: false, hasShown: false },
 }
 
 export const useKsGestureStore = create(
   persist<GestureType>(
-    (set) => {
-      return {
-        gestureOverlays: {
-          SWIPE: { isVisible: false, hasShown: false },
-          PLAY_PAUSE: { isVisible: false, hasShown: false },
-        },
-        setGestureOverlay: (gesture, isVisible) => {
-          set((state) => {
-            if (state.gestureOverlays[gesture].hasShown && isVisible) return state
-            return {
-              gestureOverlays: {
-                ...state.gestureOverlays,
-                [gesture]: { isVisible, hasShown: true },
-              },
-            }
-          })
-        },
-      }
-    },
+    (set) => ({
+      gestureOverlays: { ...DEFAULT_GESTURE_STATE },
+
+      setGestureOverlay: (gesture, isVisible) => {
+        set((state) => {
+          if (state.gestureOverlays[gesture].hasShown && isVisible) return state
+          return {
+            gestureOverlays: {
+              ...state.gestureOverlays,
+              [gesture]: { isVisible, hasShown: true },
+            },
+          }
+        })
+      },
+
+      resetAllGestures: () => {
+        set(() => ({ gestureOverlays: { ...DEFAULT_GESTURE_STATE } }))
+      },
+
+      resetGestureOverlay: (gesture) => {
+        set((state) => ({
+          gestureOverlays: {
+            ...state.gestureOverlays,
+            [gesture]: { isVisible: false, hasShown: false },
+          },
+        }))
+      },
+    }),
     { name: '_ks_gestures_' }
   )
 )

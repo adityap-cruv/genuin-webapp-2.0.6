@@ -13,6 +13,7 @@ import { WalletAmountBadge } from '../../wallet/wallet-amount-badge'
 import { MobileDetails } from './mobile-details'
 import { CommentSheet } from '../comment-sheet'
 import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
+import { useGestureOverlayManager } from '../../gestures/gesture-overlay-manager'
 
 type ControlLayerPropsType = ComponentProps<'div'> & { videoDetails: VideoPlayerModalType; isInModal?: boolean }
 
@@ -27,6 +28,7 @@ export const ControlLayer = memo(function ControlLayer({
   )
   const clickableUrl = videoDetails.video.clickableUrl
   const [isExpanded, setIsExpanded] = useState(false)
+  const { hideGestureOverlay } = useGestureOverlayManager()
 
   const { setShouldPlay, shouldPlay, muted, toggleMuted, isFullScreen } = usePlayerControlStore(
     useShallow((state) => ({
@@ -42,6 +44,9 @@ export const ControlLayer = memo(function ControlLayer({
   const handleVideoClick = useCallback(
     (e: any) => {
       e.stopPropagation()
+
+      hideGestureOverlay('PLAY_PAUSE', muted)
+
       if (isExpanded) {
         setIsExpanded(false)
         return

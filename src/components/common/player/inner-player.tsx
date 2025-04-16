@@ -117,7 +117,11 @@ export const InnerPlayer = memo(function InnerPlayer({
   onPlayingStateChange,
   ...props
 }: Props) {
-  const brandId = useGenuinOptions().brandId
+  const { brandId } = useGenuinOptions(
+    useShallow((state) => ({
+      brandId: state.brandId,
+    }))
+  )
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<OpenPlayerJS | null>(null)
   const { shouldPlay, muted, setTimeState, volume, setPlayingState, toggleMuted, setShouldPlay } =
@@ -283,8 +287,8 @@ export const InnerPlayer = memo(function InnerPlayer({
 
       if (video.duration > 0) {
         const progress = (video.currentTime / video.duration) * 100
-        if (currentIndex === 1 && progress >= 50 && !muted) {
-          showGestureOverlay('PLAY_PAUSE')
+        if (currentIndex === 1 && progress >= 50) {
+          showGestureOverlay('PLAY_PAUSE', muted)
         }
       }
     },

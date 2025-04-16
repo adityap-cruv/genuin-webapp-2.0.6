@@ -112,10 +112,6 @@ function SwiperRenderer({ videoSizeBox }: { videoSizeBox: VideoSizeBoxType }) {
           )}
         />
         <Swiper
-          // PLAY_PAUSE gesture will end when the user takes action;
-          onClick={() => {
-            if (!muted) hideGestureOverlay('PLAY_PAUSE')
-          }}
           modules={[Mousewheel]}
           mousewheel={true}
           direction="vertical"
@@ -130,20 +126,6 @@ function SwiperRenderer({ videoSizeBox }: { videoSizeBox: VideoSizeBoxType }) {
                 if (isActive || isPrev || isNext || isVisible)
                   return (
                     <>
-                      {/* <Player.mobile
-                        isActive={isActive}
-                        loop
-                        videoDetails={item}
-                        customSizeBox={videoSizeBox}
-                        onEnded={(event) => {
-                          const { duration, currentTime } = usePlayerControlStore.getState()
-                          Analytics.triggerAnalyticsForVideoComplete(item.video.id, duration, currentTime)
-
-                          if (videos.length > 1) {
-                            showGestureOverlay('SWIPE')
-                          }
-                        }}
-                      /> */}
                       <NewPlayer
                         videoDetails={videoDetails}
                         isActive={isActive}
