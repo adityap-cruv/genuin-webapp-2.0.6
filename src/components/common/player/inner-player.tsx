@@ -177,22 +177,36 @@ export const InnerPlayer = memo(function InnerPlayer({
       // this function is used to play the video and trigger analytics
       const playWithAnalytics = async () => {
         const startTime = performance.now()
-        await player
-          .getMedia()
-          .play()
-          .catch(async (error) => {
-            // convert the error to a string
-            const errorString = error?.toString() || ''
-            // if the error is not allowed(in case of default unmuted browser policy won't allow us to play the video if user has not interacted with the page), then toggle the muted state and play the video
-            if (errorString.startsWith('NotAllowedError')) {
-              // if the video is muted, then unmute it
+        try {
+          await player.getMedia().play()
+        } catch (error) {
+          const errorString = error?.toString() ?? ''
+
+          if (errorString.includes('NotAllowedError')) {
+            // First try: mute and play
+            if (!player.getMedia().muted) {
               toggleMuted()
-              // play the video
-              await player.getMedia().play()
+              try {
+                await player.getMedia().play()
+                return // Successfully played muted
+              } catch (innerError) {
+                // If muted playback also fails, log the error
+                console.warn('Failed to play even after muting:', innerError)
+              }
             }
-            // eslint-disable-next-line no-console
-            console.log('error in playing the video', error)
-          })
+
+            // Show a user interaction prompt if needed
+            setPlayingState('paused')
+            // You might want to show a UI element here to prompt for user interaction
+            return
+          }
+
+          // Handle other errors
+          console.error('Playback error:', error)
+          setPlayingState('paused')
+          return
+        }
+
         if (!playerConfigRef.current.hasStarted) {
           const endTime = performance.now()
           triggerAnalyticsForVideoStart(id, endTime - startTime)
@@ -347,6 +361,11 @@ export const InnerPlayer = memo(function InnerPlayer({
       }
 
       if (shouldSwipeNext && swiper) {
+        playerConfigRef.current = {
+          ...getVideoPlayerConfigs(webConfigs),
+          hasStarted: false,
+        }
+
         swiper.slideNext()
       }
     },

@@ -18,9 +18,10 @@ type PlayerProps = {
    */
   loop?: boolean
   isInModal?: boolean
+  currentIndex?: number
 } & ComponentProps<'video'>
 
-export function NewPlayer({ videoDetails, isActive, isInModal, ...restProps }: PlayerProps) {
+export function NewPlayer({ videoDetails, isActive, isInModal, currentIndex, ...restProps }: PlayerProps) {
   // const hasFocus = useGenuinOptions(useShallow((state) => ({ userHasFocus: state.userHasFocus }))).userHasFocus
   const { playerConfigs, hasFocus } = useGenuinOptions(
     useShallow((state) => ({
@@ -73,7 +74,7 @@ export function NewPlayer({ videoDetails, isActive, isInModal, ...restProps }: P
         onClick={handleOnClick}
         {...restProps}
       />
-      <ControlLayer videoDetails={videoDetails} />
+      <ControlLayer videoDetails={videoDetails} key={currentIndex} />
     </div>
   )
 }

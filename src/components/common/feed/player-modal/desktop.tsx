@@ -298,6 +298,7 @@ function Content({
                             return (
                               <>
                                 <NewPlayer
+                                  currentIndex={currentIndex}
                                   videoDetails={videos[index]}
                                   isActive={isActive}
                                   loop

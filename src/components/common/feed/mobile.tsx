@@ -127,6 +127,7 @@ function SwiperRenderer({ videoSizeBox }: { videoSizeBox: VideoSizeBoxType }) {
                   return (
                     <>
                       <NewPlayer
+                        currentIndex={currentIndex}
                         videoDetails={videoDetails}
                         isActive={isActive}
                         onEnded={(event) => {

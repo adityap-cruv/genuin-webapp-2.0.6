@@ -231,7 +231,7 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
                           return (
                             <>
                               <NewPlayer
-                                key={index}
+                                currentIndex={currentIndex}
                                 videoDetails={videos[index]}
                                 isActive={isActive}
                                 loop
