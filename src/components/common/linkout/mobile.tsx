@@ -50,12 +50,10 @@ export const Mobile = memo(function Mobile({
                       <div className="flex">
                         {item.image && (
                           <div className="flex items-center justify-center rounded-lg bg-tertiary-200 p-2">
-                            <Image
-                              width={56}
-                              height={56}
+                            <img
                               src={item.image}
-                              className="aspect-square object-contain"
-                              alt={item.title ?? 'Linkouts'}
+                              className="aspect-square h-14 w-14 object-contain"
+                              alt={'Linkout Image'}
                             />
                           </div>
                         )}
