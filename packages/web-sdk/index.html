@@ -1,0 +1,56 @@
+<!doctype html>
+<html
+  lang="en"
+  style="font-size: 10.5px">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0" />
+  </head>
+
+  <body>
+    <div
+      id="gen-sdk"
+      class="gen-sdk-class"
+      style="width: 100%; height: 700px"></div>
+    <script src="./dist/gen_sdk.js"></script>
+    <!-- <script src="https://media.qa.begenuin.com/sdk/gen_sdk.min.js"></script> -->
+    <script>
+      // Callback function that can be used to initiate the SDK
+      window.onGenuinReady = (genuin) => {
+        genuin.initialize({
+          // Standard Wall::
+          embed_id: '67c6fbf1276505435b015abd',
+          api_key: 'e895c22b1281e14ff16405aa54f1d68ac6238de9b709383c',
+        }) // Added closing parenthesis here
+      } // Added closing brace here
+      // window.genuin.init({
+      //     embed_id: '665f13b652fb292245ffaf1e',
+      //     api_key: '697c87215c31b7e50a801e62ebefb22efa4d171f4bbcfec0',
+      //     token: 'b1383ac6-88a7-4399-827e-b6a46f215095',
+      //   })
+      // Callback function that can be used to initiate the SDK
+      // window.onGenuinReady = (genuin) => {
+      //   genuin.initialize({
+      //     // Standard Wall::
+      //     embed_id: '665f13b652fb292245ffaf1e',
+      //     api_key: '697c87215c31b7e50a801e62ebefb22efa4d171f4bbcfec0',
+
+      //     // token: 'b1383ac6-88a7-4399-827e-b6a46f215095'
+      //   })
+      // }
+
+      // window.onGenuinReady = (genuin) => {
+      //   genuin.initialize({
+      //     embed_id: '6789fb6a031c9b0300b7ab5f',
+      //     api_key: 'f025019d83de1f8c63aba0dd0114ae5ad7297e2f378d6046',
+      //   })
+      // }
+
+      // window.genuinAuth = (data) => {
+      //   console.log('data :>> ', data)
+      // }
+    </script>
+  </body>
+</html>

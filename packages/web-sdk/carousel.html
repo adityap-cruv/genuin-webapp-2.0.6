@@ -1,0 +1,29 @@
+<!-- test/index.html -->
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Genuin sdk demo</title>
+</head>
+
+<body style="">
+  <div id="gen-sdk" style="width: 100%; height: 370px;"></div>
+  <script src="./dist/gen_sdk.js"></script>
+  <!-- <script src="./dist/gen_sdk.min.js"></script> -->
+  <script>
+    // Callback function that can be used to initiate the SDK
+    window.onGenuinReady = (genuin) => {
+      genuin.initialize({
+        // For carousel
+        // Carousel Wall::
+        embed_id: '676a66f9c0bc6c7245a8d45d',
+        api_key: 'a2b795f0737ca25a9efcae0283d44bc22cd18f5795885f4a',
+      })
+    }
+  </script>
+  <!-- <iframe width="560" height="315" src="https://www.youtube.com/embed/ZgweMRYv0WM?si=pJZ5TTKTwAyd3izS" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe> -->
+</body>
+
+</html>

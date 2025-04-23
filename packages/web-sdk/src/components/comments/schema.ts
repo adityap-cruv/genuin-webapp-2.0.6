@@ -1,0 +1,88 @@
+import { z } from 'zod'
+
+const ownerSchema = z.object({
+  member_id: z.string(),
+  name: z.string().nullish(),
+  nickname: z.string(),
+  bio: z.string().nullish(),
+  is_avatar: z.boolean(),
+  profile_image: z.string(),
+  profile_image_m: z.string().nullish(),
+  profile_image_l: z.string().nullish(),
+  profile_image_s: z.string().nullish(),
+  brand: z
+    .object({ brand_slug: z.string(), brand_user_logo: z.number() })
+    .optional(),
+})
+
+// Define the main schema
+const CommentSchema = z.object({
+  owner: ownerSchema,
+  chat_id: z.string(),
+  conversation_id: z.string(),
+  comment_id: z.string(),
+  type: z.number().transform((value) => {
+    if (value === 1) {
+      return 'VIDEO'
+    } else if (value === 2) {
+      return 'AUDIO'
+    } else {
+      return 'TEXT'
+    }
+  }),
+  url: z.string().nullish(),
+  video_url_m3u8: z.string().nullish(),
+  thumbnail: z.string().nullish(),
+  link: z.string().nullish(),
+  duration: z
+    .string()
+    .transform((value) => Number(value))
+    .nullish(),
+  meta_data: z
+    .object({
+      duration: z
+        .string()
+        .transform((value) => Number(value))
+        .nullish(),
+    })
+    .nullish(),
+  created_at: z.number().nullish(),
+  no_of_views: z.number(),
+  is_read: z.boolean(),
+  comment_text: z.string().nullish(),
+  comment_data: z.string().nullish(),
+  no_of_sparks: z.number(),
+  is_sparked: z.boolean(),
+})
+
+const CommentListSchema = z.array(CommentSchema)
+
+export type CommentDetailsType = z.infer<typeof CommentSchema>
+
+export type CommentListType = z.infer<typeof CommentListSchema>
+
+export function validateComment(data: any) {
+  try {
+    return CommentSchema.parse(data)
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log('error in parsing comment list::', e)
+    throw new Error(
+      'Something went wrong with comments fetching api. Error is::',
+      e as ErrorOptions | undefined,
+    )
+  }
+}
+
+export function validateCommentList(data: any) {
+  try {
+    return CommentListSchema.parse(data)
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log('error in parsing comment list::', e)
+    throw new Error(
+      'Something went wrong with comments fetching api. Error is::',
+      e as ErrorOptions | undefined,
+    )
+  }
+}

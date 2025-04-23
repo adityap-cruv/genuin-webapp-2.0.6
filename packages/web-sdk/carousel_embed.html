@@ -1,0 +1,33 @@
+<!-- test/index.html -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0" />
+    <title>Genuin sdk demo</title>
+  </head>
+  <body>
+    <div
+      id="gen-sdk"
+      style="width: 1000px; height: 80px; background: #efefef"></div>
+    <script src="https://genuin-qa-media.s3.us-west-2.amazonaws.com/sdk/gen_sdk.js"></script>
+    <!-- <script src="./dist/gen_sdk.min.js"></script> -->
+    <script>
+      // Callback function that can be used to initiate the SDK
+      window.onGenuinReady = (genuin) => {
+        genuin.initialize({
+          // brand_id: 'ankpal',
+          hide_navbar: 1,
+          video: '1c06b61c808015fa',
+          loop: 'macys-fashion-otjj',
+          community: 'manual-3',
+          embed_id: '665ee0de52fb292245ffa63d',
+          api_key: '697c87215c31b7e50a801e62ebefb22efa4d171f4bbcfec0',
+        })
+      }
+    </script>
+    <!-- <iframe width="560" height="315" src="https://www.youtube.com/embed/ZgweMRYv0WM?si=pJZ5TTKTwAyd3izS" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe> -->
+  </body>
+</html>

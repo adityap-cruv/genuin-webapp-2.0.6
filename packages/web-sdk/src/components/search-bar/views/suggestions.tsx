@@ -1,0 +1,187 @@
+import { useQuery } from '@tanstack/react-query'
+import { fetchSuggestions, postRecents } from '../api'
+import { CustomAvatar } from '@/components/custom-avatar'
+import { LoopIcon } from '@/components/icons/loop-icon'
+import { NoResults } from './tabs/no-results'
+import { RECENT_SEARCH_CONTENT_TYPE } from '@/const'
+import { type ComponentProps, type ReactNode } from 'react'
+import { ItemShimmer } from './item-shimmer'
+import { cn } from '@/utils'
+import { CustomLink } from '@/router/custom-link'
+import { usePathNameWithSubdomain } from '@/hooks/usePathNameWithSubdomain'
+import { useSearchBarContext } from '@/components/search-bar/context'
+
+export default function Suggestions() {
+  return (
+    <div className='relative h-full w-full overflow-auto'>
+      <Inner />
+    </div>
+  )
+}
+
+function Inner() {
+  const pathName = usePathNameWithSubdomain()
+  const { keyword } = useSearchBarContext()
+  const { data: list, isLoading } = useQuery({
+    queryFn: async () => await fetchSuggestions(keyword),
+    queryKey: ['search', 'suggestions', keyword],
+  })
+
+  if (isLoading) return <SuggestionsShimmer />
+
+  if (list && list?.length !== 0)
+    return (
+      <>
+        <div className='px-3 pb-14 pt-4'>
+          {list.map((item: any) => {
+            if (item.type === 'community')
+              if (item.community)
+                return (
+                  <div
+                    key={item.community.community_id}
+                    onClick={() => {
+                      postRecents(
+                        RECENT_SEARCH_CONTENT_TYPE.community,
+                        item.community?.community_id,
+                      )
+                    }}>
+                    <ListItem
+                      avatar={
+                        <CustomAvatar
+                          className='h-12 w-12'
+                          fallbackString={item.community.name ?? ''}
+                          imageUrl={
+                            item.community.dp_m ?? item.community.dp ?? ''
+                          }
+                          isAvatar={false}
+                        />
+                      }
+                      subtitle={`Community • ${item.community.description ?? ''}`}
+                      title={item.community.name ?? ''}
+                      href={pathName.community(item.community.slug)}
+                    />
+                  </div>
+                )
+            if (item.type === 'loop')
+              if (item.loop)
+                return (
+                  <div
+                    key={item.loop.chat_id}
+                    onClick={() => {
+                      postRecents(
+                        RECENT_SEARCH_CONTENT_TYPE.loop,
+                        item.loop?.chat_id,
+                      )
+                    }}>
+                    <ListItem
+                      avatar={
+                        <div className='flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-tertiary-300'>
+                          <LoopIcon className='h-5 w-5 stroke-tertiary' />
+                        </div>
+                      }
+                      subtitle={`Group • ${item.loop.group.group_description ?? ''}`}
+                      title={item.loop.group.group_name ?? ''}
+                      href={pathName.loop(
+                        item.loop.slug
+                          ? item.loop.slug
+                          : item.loop?.group?.slug ?? '',
+                      )}
+                    />
+                  </div>
+                )
+            if (item.type === 'user')
+              if (item.user)
+                return (
+                  <div
+                    key={item.user.user_id}
+                    onClick={() => {
+                      postRecents(
+                        RECENT_SEARCH_CONTENT_TYPE.user,
+                        item.user?.user_id,
+                      )
+                    }}>
+                    <ListItem
+                      avatar={
+                        <CustomAvatar
+                          fallbackString={item.user.name ?? ''}
+                          imageUrl={
+                            item.user.profile_image_m ??
+                            item.user.profile_image ??
+                            ''
+                          }
+                          isAvatar={item.user.is_avatar}
+                          className='h-12 w-12'
+                        />
+                      }
+                      subtitle={item.user?.name ?? ''}
+                      title={`@${item.user?.nickname}`}
+                      href={pathName.profile(item.user?.nickname)}
+                    />
+                  </div>
+                )
+            return <></>
+          })}
+        </div>
+        <Bottom />
+      </>
+    )
+
+  return <NoResults />
+}
+
+type ListItemPropsType = {
+  title: string
+  subtitle: string
+  avatar: ReactNode
+} & ComponentProps<'a'>
+
+function ListItem({
+  subtitle = '',
+  title = '',
+  avatar: Avatar,
+  className,
+  ...restProps
+}: ListItemPropsType) {
+  const { close } = useSearchBarContext()
+  return (
+    <CustomLink
+      target='_blank'
+      onClick={() => {
+        close()
+      }}
+      className={cn(
+        'flex items-center gap-x-3 rounded-md px-3 py-2 hover:bg-tertiary-200',
+        className,
+      )}
+      {...restProps}>
+      {Avatar}
+      <div>
+        {title && (
+          <p className='line-clamp-1 break-all text-body-1-bold'>{title}</p>
+        )}
+        {subtitle && (
+          <p className='line-clamp-1 break-all text-cap-1-demi'>{subtitle}</p>
+        )}
+      </div>
+    </CustomLink>
+  )
+}
+
+function SuggestionsShimmer() {
+  return <ItemShimmer count={10} />
+}
+
+function Bottom() {
+  const { setView } = useSearchBarContext()
+  return (
+    <div className='fixed bottom-0 flex h-10 w-full items-center justify-center border-t border-tertiary-200 bg-background'>
+      <p
+        className='cursor-pointer text-body-1-bold text-primary'
+        onClick={() => {
+          setView('TABS')
+        }}>
+        See all results
+      </p>
+    </div>
+  )
+}

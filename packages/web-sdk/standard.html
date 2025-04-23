@@ -1,0 +1,50 @@
+<!-- test/index.html -->
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Genuin sdk demo</title>
+</head>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Genuin sdk demo</title>
+</head>
+
+<body>
+  <div id="gen-sdk" class="gen-sdk-class" style="width: 100%; height: 800px;"></div>
+  <!-- <div id="gen-sdk" class="gen-sdk-class" style="width: 900px; height: 400px; background-color: aliceblue;"></div> -->
+
+  <!-- <div style="height: 150vh; width: 100vw;background-color: red;">Hello world..</div> -->
+  <!-- <div style="height: 300vh; width: 100%;background-color: red;">Hello world..</div> -->
+  <!-- <div style="height: 300vh; width: 100%;background-color: red;">Hello world..</div> -->
+  <script src="./dist/gen_sdk.js"></script>
+  <!-- <script src="https://genuin-qa-media.s3.us-west-2.amazonaws.com/sdk/gen_sdk.min.js"></script> -->
+  <script>
+    // Callback function that can be used to initiate the SDK
+    window.onGenuinReady = (genuin) => {
+      genuin.initialize({
+        embed_id: '667515bb40c3fc198b3afade',
+        api_key: '01d3a1638ec1e12b4d0068e454b99839f2ec93953aed30f3',
+        // For carousel
+        // embed_id: '6669791ba927da9734f4ad9d',
+        // api_key: '697c87215c31b7e50a801e62ebefb22efa4d171f4bbcfec0',
+        // live_customization_data: {
+        //   links: {
+        //     is_show_links: true
+        //   },
+        //   show_navigation: true
+        // }
+        // community: 'check-email'
+        // loop: 'check-email'
+        // video: '1cf087879280142d'
+      })
+    }
+  </script>
+  <!-- <iframe width="560" height="315" src="https://www.youtube.com/embed/ZgweMRYv0WM?si=pJZ5TTKTwAyd3izS" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe> -->
+</body>
+
+</html>

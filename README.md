@@ -1,86 +1,144 @@
-# Genuin-Webapp
+# Genuin Monorepo
 
-Website for genuin.
+This monorepo contains the Genuin web application and SDK packages, managed using Turborepo and pnpm workspaces.
 
-## Running genuin-webapp
+## Project Structure
 
-### Prerequisites
+```
+genuin/
+├── apps/
+│   └── webapp/           # Next.js web application
+├── packages/
+│   └── web-sdk/         # React-based SDK package
+├── package.json         # Root package.json with shared dependencies
+├── pnpm-workspace.yaml  # Workspace configuration
+├── turbo.json          # Turborepo configuration
+└── .gitignore          # Root .gitignore
+```
 
-- Node.js(v18.17.0) and npm (or yarn) installed on your system. You can check by running `node -v` and `npm -v` (or `yarn -v`) in your terminal.
+## Prerequisites
 
-### Build Steps
+- Node.js >= 18.17.0
+- pnpm >= 8.0.0
+- Git
 
-1. **Clone the project:** If you haven't already, clone the genuin-webapp repository locally.
-2. **Install dependencies:** Navigate to the project directory in your terminal and run:
+## Getting Started
+
+1. Install dependencies:
 
    ```bash
-   npm install  # or yarn install
-   npm run dev
+   pnpm install
    ```
 
-### Tools Used
+2. Start development servers:
 
-- [Zustand](https://github.com/pmndrs/zustand) - State Management Library
-- [React-Query](https://tanstack.com/query/latest/docs/) - Managing and caching server response.
-- [Axios](https://axios-http.com/) - HTTP Client for making reqest.
-- [Tailwind CSS](https://tailwindcss.com/) – Utility-first CSS framework for rapid UI development
-- [Shadcn/ui](https://ui.shadcn.com/) – Re-usable components built using Radix UI and Tailwind CSS
-- [Framer Motion](https://framer.com/motion) – Motion library for React to animate components with ease
+   ```bash
+   pnpm dev
+   ```
 
-## Commit Message Guidelines
+3. Build all packages:
+   ```bash
+   pnpm build
+   ```
 
-Clear and informative commit messages are essential for maintaining a well-organized and collaborative codebase. These guidelines ensure consistency and clarity in your genuin-webapp project's version control history.
+## Monorepo Management
 
-### Format
+### Workspace Commands
 
-We recommend following the Conventional Commits specification (<https://www.conventionalcommits.org/en/v1.0.0/>). This format promotes clear and concise messages that are easily understood by developers.
+- `pnpm dev` - Start all development servers
+- `pnpm build` - Build all packages
+- `pnpm lint` - Run linting across all packages
+- `pnpm format` - Format code across all packages
 
-A commit message typically consists of three parts:
+### Project-Specific Commands
 
-1. **Type:** A brief description of the change (mandatory)
-2. **Scope (optional):** The specific area of the project affected (e.g., `ui`, `api`, `routing`)
-3. **Subject:** A concise description of the change (mandatory)
+Each project has its own set of commands. See their respective README files for details:
 
-**Example:**
+- [Webapp Commands](./apps/webapp/README.md)
+- [Web SDK Commands](./packages/web-sdk/README.md)
 
-**Types:**
+## Shared Configuration
 
-- `feat`: Introduces a new feature
-- `fix`: Fixes a bug
-- `docs`: Adds or updates documentation
-- `style`: Changes code formatting or styling without affecting functionality
-- `refactor`: Improves code structure without adding new features or fixing bugs
-- `perf`: Optimizes performance
-- `test`: Adds or updates tests
-- `build`: Changes build process or configuration
-- `ci`: Changes Continuous Integration configuration
-- `chore`: Updates non-code assets (dependencies, build tools, etc.)
+The monorepo uses shared configurations for:
 
-**Scope:**
+- ESLint (`.eslintrc.js`)
+- Prettier (`.prettierrc`)
+- TypeScript (base config)
+- Git Hooks (Husky)
 
-Use the scope to indicate the specific part of the genuin-webapp project affected by the change. This helps with code navigation and understanding the impact of changes.
+## Dependencies
 
-## Additional Tips
+Shared dependencies are managed at the root level. Project-specific dependencies are managed in their respective `package.json` files.
 
-- Keep the subject line concise (ideally under 50 characters).
-- Use imperative mood (e.g., "Implemented" instead of "Implements").
-- Capitalize the first word of the subject line.
-- Wrap the subject line if it exceeds the recommended length.
-- If necessary, include a body section below the subject line to provide more details about the change.
-- Please add <b>bugID</b> if you have fixed any bug
+## Troubleshooting
 
-## Benefits of Clear Commit Messages
+### Common Issues
 
-- Improved code history navigation and understanding.
-- Easier identification of changes related to specific features or bug fixes.
-- Enhanced collaboration and communication among developers.
+1. **Dependency Conflicts**
 
-By following these guidelines, you'll contribute to a well-documented and maintainable genuin-webapp project.
+   - Run `pnpm install` to resolve conflicts
+   - Check for version mismatches in `package.json` files
 
-## Need Help?
+2. **Build Failures**
 
-If you encounter any issues or require assistance, feel free to contact the development team:
+   - Clear Turborepo cache: `pnpm turbo clean`
+   - Rebuild: `pnpm build`
 
-- Himanshu - <himanshu@begenuin.com>
-- Jimit - <jimit@begenuin.com>
-- Dev Tejot - <dev@begenuin.com>
+3. **TypeScript Errors**
+
+   - Run `pnpm typecheck` to check for type errors
+   - Ensure all dependencies are properly typed
+
+4. **Workspace Issues**
+   - Run `pnpm install` to update workspace dependencies
+   - Check `pnpm-workspace.yaml` for correct configuration
+
+### Environment Setup
+
+1. **Node Version**
+
+   ```bash
+   node -v  # Should be >= 18.17.0
+   ```
+
+2. **pnpm Version**
+
+   ```bash
+   pnpm -v  # Should be >= 8.0.0
+   ```
+
+3. **Git Hooks**
+   ```bash
+   pnpm prepare  # Install Git hooks
+   ```
+
+## Development Workflow
+
+1. **Starting Development**
+
+   ```bash
+   pnpm install
+   pnpm dev
+   ```
+
+2. **Making Changes**
+
+   - Create feature branches from `main`
+   - Follow conventional commits
+   - Run tests before pushing
+
+3. **Building for Production**
+   ```bash
+   pnpm build
+   ```
+
+## Contributing
+
+1. Create a feature branch
+2. Make your changes
+3. Run tests and linting
+4. Submit a pull request
+
+## License
+
+ISC

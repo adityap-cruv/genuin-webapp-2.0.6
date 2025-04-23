@@ -1,0 +1,66 @@
+<!-- test/index.html -->
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Genuin sdk demo</title>
+</head>
+
+<body>
+  <!-- <div style="height: 150vh; width: 100vw;background-color: red;">Hello world..</div> -->
+  <div id="gen-sdk" class="gen-sdk-class" style="width: 400px; height: 700px;"></div>
+  <div style="height: 300vh; width: 100vw;background-color: red;">Hello world..</div>
+  <script src="./dist/gen_sdk.js"></script>
+  <!-- <script src="https://media.qa.begenuin.com/sdk/gen_sdk.min.js"></script> -->
+  <script>
+    // Callback function that can be used to initiate the SDK
+    window.onGenuinReady = (genuin) => {
+      genuin.initialize({
+        token: 'karan@mobiuso.com',
+        embed_id: '6669791ba927da9734f4ad99',
+        api_key: '697c87215c31b7e50a801e62ebefb22efa4d171f4bbcfec0',
+        // live_customization_data: {
+        //   "dimensions": {
+        //     "width": 300,
+        //     "height": 600
+        //   },
+        //   "cta_button": {
+        //     "text": "",
+        //     "url": ""
+        //   },
+        //   "links": {
+        //     "is_show_links": false,
+        //     "position": "overlay"
+        //   },
+        //   "autoplay": true,
+        //   "heading": "h",
+        //   "sub_heading": "",
+        //   "is_floating_view": true,
+        //   "is_expanded_view": false,
+        //   "is_show_username": false,
+        //   "is_show_view_count": false,
+        //   "is_enable_engagement_tools": false,
+        //   "is_loop_video": false,
+        //   "is_show_social_interaction_data": true,
+        // }
+        // community: 'check-email'
+        // loop: 'check-email'
+        // video: '1cf087879280142d'
+      })
+
+      // Callback function that can be used to initiate the SDK
+      // window.onGenuinReady = (genuin) => {
+      // genuin.initialize({
+      //   embed: 1,
+      //   brand_id: 'panova',
+      //   api_key: 'f29b46d4db0f3035159379b1e8985bfb57143764e9625059',
+      //   hide_navbar: 1,
+      // })
+    }
+  </script>
+  <!-- <iframe width="560" height="315" src="https://www.youtube.com/embed/ZgweMRYv0WM?si=pJZ5TTKTwAyd3izS" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe> -->
+</body>
+
+</html>

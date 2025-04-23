@@ -1,0 +1,122 @@
+import typescript from 'rollup-plugin-typescript2'
+import { terser } from 'rollup-plugin-terser'
+import replace from '@rollup/plugin-replace'
+import nodeResolve from '@rollup/plugin-node-resolve'
+import commonjs from '@rollup/plugin-commonjs'
+import babel from '@rollup/plugin-babel'
+import postcss from 'rollup-plugin-postcss'
+import cssnano from 'cssnano'
+import json from '@rollup/plugin-json'
+import dotenv from 'dotenv'
+import path from 'path'
+import fs from 'fs'
+// import tailwindcss from 'tailwindcss'
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+// const tailwindConfig = require('./tailwind.config.js')
+
+const NODE_ENV = process.env.NODE_ENV || 'development'
+const isDevelopment = NODE_ENV === 'development'
+
+// Read package.json for version information
+const packageJson = JSON.parse(
+  fs.readFileSync(path.resolve(process.cwd(), 'package.json'), 'utf-8'),
+)
+
+// Version information now comes from package.json
+let versionInfo = {
+  version: packageJson.version,
+  lastBuildDate: new Date().toISOString(),
+  environment: NODE_ENV,
+}
+
+// Load environment variables in order of priority
+const commonEnv = dotenv.config({ path: '.env.common' }).parsed || {}
+const envFile =
+  NODE_ENV === 'production' ? '.env.production' : `.env.${NODE_ENV}`
+const envConfig = dotenv.config({ path: envFile }).parsed || {}
+
+// Combine environment variables with common taking precedence
+const combinedEnv = {
+  ...envConfig, // Environment specific variables
+  ...commonEnv, // Common variables override environment specific ones
+}
+
+// Convert env variables to process.env format
+const processEnvValues = Object.entries(combinedEnv).reduce(
+  (acc, [key, value]) => ({
+    ...acc,
+    [`process.env.${key}`]: JSON.stringify(value),
+  }),
+  {
+    'process.env.NODE_ENV': JSON.stringify(NODE_ENV),
+    'process.env.BUILD_DATE': JSON.stringify(versionInfo.lastBuildDate),
+  },
+)
+
+// Terser configuration for minification
+const terserConfig = {
+  compress: {
+    drop_console: true,
+    dead_code: true,
+    unused: true,
+    warnings: true,
+    passes: 2,
+    evaluate: true,
+  },
+  mangle: {
+    toplevel: true,
+  },
+  format: {
+    comments: /^!/, // Preserve comments that start with '!'
+  },
+}
+
+// Generate banner comment
+const getBanner = () => {
+  if (isDevelopment) {
+    return '/*! Genuin Web SDK - Development Build */'
+  }
+  return `/*! Genuin Web SDK v${versionInfo.version} - ${versionInfo.environment} - Built on ${versionInfo.lastBuildDate} */`
+}
+
+export default {
+  input: 'src/index.ts',
+  output: {
+    file: isDevelopment ? 'dist/gen_sdk.js' : 'dist/gen_sdk.min.js',
+    format: 'iife',
+    sourcemap: isDevelopment,
+    globals: {
+      'react/jsx-runtime': 'jsxRuntime',
+      'react-dom/client': 'client',
+    },
+    banner: getBanner(),
+  },
+  plugins: [
+    postcss({
+      extensions: ['.css'],
+      include: !isDevelopment ? '**/*.css' : undefined,
+      extract: !isDevelopment ? 'gen-sdk.css' : undefined,
+      minimize: true,
+      plugins: [cssnano()],
+      // plugins: [tailwindcss(tailwindConfig)], // Use the tailwind.config.js file
+    }),
+    typescript({
+      tsconfig: 'tsconfig.json',
+    }),
+    !isDevelopment && terser(terserConfig),
+    replace({
+      preventAssignment: true,
+      values: processEnvValues,
+    }),
+    nodeResolve({
+      extensions: ['.js', '.jsx'],
+    }),
+    babel({
+      babelHelpers: 'bundled',
+      presets: ['@babel/preset-react'],
+      extensions: ['.js', '.jsx'],
+    }),
+    commonjs(),
+    json(),
+  ],
+}
