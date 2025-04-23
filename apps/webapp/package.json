@@ -14,6 +14,11 @@
     "lint:fix": "lint . --fix",
     "br": "next build && next start"
   },
+  "husky": {
+    "hooks": {
+      "pre-push": "npm run build"
+    }
+  },
   "dependencies": {
     "@auth/core": "^0.28.0",
     "@fingerprintjs/fingerprintjs": "^4.2.2",
