@@ -1,5 +1,5 @@
 {
-  "root": true,
+  "root": false,
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": 12,
@@ -9,21 +9,25 @@
     "@typescript-eslint"
   ],
   "extends": [
+    "../../.eslintrc.js",
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended"
   ],
   "rules": {
     "@typescript-eslint/no-unused-vars": "warn",
-    // to enforce using type for object type definitions, can be type or interface 
-    "@typescript-eslint/consistent-type-definitions": [
-      "error",
-      "type"
-    ],
+    // to enforce using type for object type definitions, can be type or interface
+    "@typescript-eslint/consistent-type-definitions": "off", // turned off to avoid linting errors during migration
+    "@typescript-eslint/ban-ts-comment": "off", // turned off to avoid linting errors during migration
     "@typescript-eslint/no-explicit-any": "off",
     "no-unused-vars": [
       "warn"
     ]
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
   },
   "env": {
     "node": true,

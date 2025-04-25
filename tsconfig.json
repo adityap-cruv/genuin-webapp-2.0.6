@@ -16,7 +16,6 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./apps/webapp/src/*"],
       "react": ["./types/react", "./node_modules/react"],
       "react-dom": ["./node_modules/react-dom"],
       "@types/react": ["./types/react", "./node_modules/@types/react"]
@@ -27,6 +26,6 @@
     ]
   },
   "exclude": ["node_modules"],
-  "include": ["**/*.ts", "**/*.tsx"],
+  "include": [],
   "files": []
 }

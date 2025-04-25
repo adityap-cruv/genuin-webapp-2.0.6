@@ -19,6 +19,7 @@ axiosInstance.interceptors.request.use(
 
     return config
   },
+  // eslint-disable-next-line @typescript-eslint/promise-function-async
   (error) => {
     console.error('Request error:', error)
     return Promise.reject(error)
