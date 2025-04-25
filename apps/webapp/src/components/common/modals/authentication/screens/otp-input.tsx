@@ -48,23 +48,29 @@ export function OtpInput({ title, verificationType, onNext, onBack }: OtpInputPr
     },
   })
 
+  // Track OTP input validation separately to avoid recursive error setting
   useEffect(() => {
-    const w = form.watch((value) => {
+    // Create a safe handler that won't cause infinite loops
+    const handleOTPChange = (value: any) => {
       const isValidLength = value.otp?.length === 6
-      if (isValidLength) {
-        setIsValid(true)
-      } else {
-        setIsValid(false)
-      }
-
-      if (!isValidLength) {
-        form.control.setError('root', { message: '' })
-      }
-    })
-    return () => {
-      w.unsubscribe()
+      setIsValid(isValidLength)
     }
-  }, [form.watch])
+
+    // Use the form's watch method to observe changes
+    const subscription = form.watch(handleOTPChange)
+
+    // Clean up subscription when component unmounts
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [form])
+
+  // Handle error state separately from the watch subscription
+  useEffect(() => {
+    if (!isValid && form.getValues().otp?.length > 0) {
+      form.clearErrors('root')
+    }
+  }, [isValid, form])
 
   async function onSubmit({ otp }: { otp: string }) {
     setIsLoading(true)
