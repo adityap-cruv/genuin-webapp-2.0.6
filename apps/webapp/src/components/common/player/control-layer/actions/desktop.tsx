@@ -19,6 +19,7 @@ import { useShallow } from 'zustand/react/shallow'
 import { Reaction } from '@/components/common/reaction'
 import { useFeedListContext } from '@/components/providers/feed-provider'
 import { type ComponentProps } from 'react'
+import { MenuAction } from './menu'
 
 type DesktopActionsProps = {
   sparkCount: number
@@ -95,7 +96,7 @@ export function Desktop({
                   RepostModal.open(videoId)
                 } else {
                   await repostDeepLink({ videoSlug, shareUrl, searchParams }).then((generatedLink) => {
-                    openModal({ deepLink: generatedLink, subtitle: 'Get the app to repost the video.' })
+                    openModal({ deepLink: generatedLink, subtitle: 'Download app to repost the video.' })
                   })
                 }
               }
@@ -185,6 +186,7 @@ export function Desktop({
           }}>
           <Image src={icShare} alt="share" height={32} width={32} />
         </ActionItem>
+        <MenuAction shareUrl={shareUrl} videoSlug={videoSlug} contentId={videoId} />
       </div>
     </>
   )

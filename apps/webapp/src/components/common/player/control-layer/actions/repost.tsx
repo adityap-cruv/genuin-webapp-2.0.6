@@ -51,7 +51,7 @@ export function RepostAction({ videoId, videoSlug, shareUrl }: RepostActionProps
     } else {
       // For anonymous users, generate a deep link to the app
       await repostDeepLink({ videoSlug, shareUrl, searchParams }).then((generatedLink) => {
-        openModal({ deepLink: generatedLink, subtitle: 'Get the app to repost the video.' })
+        openModal({ deepLink: generatedLink, subtitle: 'Download app to repost the video.' })
       })
     }
 

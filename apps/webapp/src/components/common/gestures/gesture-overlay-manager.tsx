@@ -9,10 +9,12 @@ const LazyGestureGuideOverlay = dynamic(
 )
 
 export function useGestureOverlayMethods({ tapBehavior }: { tapBehavior: number }) {
-  const { gestureOverlays, setGestureOverlay } = useKsGestureStore(
+  const { gestureOverlays, setGestureOverlay, resetAllGestures, resetGestureOverlay } = useKsGestureStore(
     useShallow((state) => ({
       gestureOverlays: state.gestureOverlays,
       setGestureOverlay: state.setGestureOverlay,
+      resetAllGestures: state.resetAllGestures,
+      resetGestureOverlay: state.resetGestureOverlay,
     }))
   )
 
@@ -84,6 +86,8 @@ export function useGestureOverlayMethods({ tapBehavior }: { tapBehavior: number 
     showGestureOverlay,
     hideGestureOverlay,
     hasGestureBeenShown,
+    resetAllGestures,
+    resetGestureOverlay,
   }
 }
 
@@ -99,10 +103,10 @@ export function useGestureOverlayMethods({ tapBehavior }: { tapBehavior: number 
  * 3: Tap to unmute and then play/pause
  */
 const VALID_TAP_BEHAVIORS = [1, 2, 3]
-export function useGestureOverlayManager() {
+export function useGestureOverlayManager(gestureGuidance?: boolean) {
   const { isGuidanceEnabled, tapBehavior } = useGenuinOptions(
     useShallow((state) => ({
-      isGuidanceEnabled: state.config.web_configs?.gesture_guidance ?? false,
+      isGuidanceEnabled: gestureGuidance ?? state.config.web_configs?.gesture_guidance,
       tapBehavior: state.config.web_configs?.tap_behavior,
     }))
   )
@@ -115,6 +119,8 @@ export function useGestureOverlayManager() {
       showGestureOverlay: () => {},
       hideGestureOverlay: () => {},
       hasGestureBeenShown: () => false,
+      resetGestureOverlay: () => {},
+      resetAllGestures: () => {},
     }
   }
 

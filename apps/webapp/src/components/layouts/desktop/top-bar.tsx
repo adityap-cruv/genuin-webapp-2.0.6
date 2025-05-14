@@ -21,7 +21,7 @@ import { Shimmer } from '@/components/ui/shimmer'
 import { CustomImage } from '@/components/custom/custom-image'
 import { IHeartDemo } from './iheart-demo'
 import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
-import GetAppButton from '@/components/common/get-app-button'
+import GetAppButton from '@/components/common/actions/get-app-button'
 import { usePlayerControlStore } from '@/components/common/player/player-control-store'
 import { useShallow } from 'zustand/react/shallow'
 

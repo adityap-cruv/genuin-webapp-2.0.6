@@ -80,6 +80,7 @@ export async function fetchCommunityLoops(slug: string): Promise<{ loops: Commun
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/community/loops', {
       params: {
         slug,
+        position: true,
       },
     })
     .then((res) => {

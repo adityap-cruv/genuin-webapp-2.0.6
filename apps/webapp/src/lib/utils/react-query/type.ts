@@ -90,6 +90,7 @@ export type FeedVideoType = {
     video_summary: string | null
     is_sparked?: boolean
     is_read?: boolean
+    is_pinned?: boolean
   }
 }
 

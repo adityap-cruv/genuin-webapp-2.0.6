@@ -1,6 +1,6 @@
 import { type DetailedHTMLProps, type VideoHTMLAttributes, useRef, useState } from 'react'
 import OpenPlayerJS from 'openplayerjs'
-import { useEffect, useMemo } from 'react'
+import { useEffect } from 'react'
 import { useEmbedPlayerState } from './embed-player-state'
 import { AnimatedMuteButton } from '@/components/common/player/control-layer/mute-button'
 import { Actions } from '@components/common/player/control-layer/actions'
@@ -9,9 +9,9 @@ import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import Link from 'next/link'
 import Analytics from '@services/analytics'
 import { useShallow } from 'zustand/react/shallow'
-import { Progress } from '@/components/ui/progress'
 import { useEmbedConfig } from './embed-config-provider'
 import { Play } from 'lucide-react'
+import { Scrubber } from '../common/player/control-layer/scrubber'
 
 type Props = DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement> & {
   videoData: VideoPlayerModalType
@@ -215,7 +215,7 @@ export function EmbedPlayer({
               />
             </div>
           </div>
-          <PlayerProgressBar />
+          <Scrubber spriteUrl={videoData.video.spriteUrl ?? ''} />
         </div>
       )}
       {!isPlaying && (
@@ -225,17 +225,4 @@ export function EmbedPlayer({
       )}
     </>
   )
-}
-
-function PlayerProgressBar() {
-  const { currentTime, duration } = useEmbedPlayerState(
-    useShallow((state) => ({ timeState: state.timeState }))
-  ).timeState
-
-  const progressValue = useMemo(() => {
-    if (duration === 0) return 0
-    return Math.round((currentTime / duration) * 100)
-  }, [currentTime, duration])
-
-  return <Progress value={progressValue} className="absolute bottom-0 left-0 h-[2px] transition-all duration-300" />
 }

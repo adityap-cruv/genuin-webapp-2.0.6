@@ -1,4 +1,5 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
+import { usePlayerControlStore } from '../common/player/player-control-store'
 
 type OtherContextProps = {
   forEmbed?: boolean
@@ -29,6 +30,14 @@ export function useTreeStructure() {
 
 export function TreeStructureProvider({ children, ...restProps }: TreeStructureProviderPropsType) {
   const [activeId, setActiveId] = useState('')
+  const { isFullScreen, toggleFullScreen } = usePlayerControlStore()
+
+  useEffect(() => {
+    if (!isFullScreen) {
+      setActiveId('')
+    }
+  }, [isFullScreen])
+
   return (
     <TreeStructureContext.Provider
       value={{
@@ -36,9 +45,11 @@ export function TreeStructureProvider({ children, ...restProps }: TreeStructureP
         activeVideoId: activeId,
         openPlayerModal(videoId) {
           setActiveId(videoId)
+          toggleFullScreen(true)
         },
         closePlayerModal() {
           setActiveId('')
+          toggleFullScreen(false)
         },
       }}>
       {children}

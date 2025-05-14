@@ -1,16 +1,47 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "pipeline": {
+  "globalDependencies": [
+    "tsconfig.json",
+    ".env.*local"
+  ],
+  "globalEnv": [
+    "NODE_ENV",
+    "NEXT_PUBLIC_\\*"
+  ],
+  "tasks": {
     "build": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**", "!.next/cache/**"],
-      "env": ["NEXT_PUBLIC_*"]
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "dist/**",
+        ".next/**",
+        "!.next/cache/**"
+      ],
+      "env": [
+        "NEXT_PUBLIC_\\*"
+      ]
     },
-    "dev": { "cache": false, "persistent": true, "outputs": [".next/**"] },
-    "lint": { "outputs": [] },
-    "format": { "outputs": [] },
-    "start": { "dependsOn": ["build"], "outputs": [".next/**"] }
-  },
-  "globalDependencies": ["tsconfig.json", ".env.*local"],
-  "globalEnv": ["NODE_ENV", "NEXT_PUBLIC_*"]
+    "dev": {
+      "cache": false,
+      "persistent": true,
+      "outputs": [
+        ".next/**"
+      ]
+    },
+    "lint": {
+      "outputs": []
+    },
+    "format": {
+      "outputs": []
+    },
+    "start": {
+      "dependsOn": [
+        "build"
+      ],
+      "outputs": [
+        ".next/**"
+      ]
+    }
+  }
 }

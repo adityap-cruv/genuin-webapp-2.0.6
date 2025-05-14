@@ -1,86 +1,98 @@
-import { useEffect, useState } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { ModalShell } from '../modal-shell'
 import { Button } from '@components/ui/button'
 import { useAuthenticationModalStore } from '../store'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
-import { fetchKsCbRequestStatus, ksCbRequest } from '../api/auth'
+import { ksCbRequest, useKsCbStatus } from '../api/auth'
 import { useSession } from 'next-auth/react'
 import { Loader } from '@components/ui/loader'
 import Analytics from '@services/analytics'
-import { type User } from 'next-auth'
 import { KsCbSlides } from '../components/ks-cb-slides'
+import { openModal } from '@/lib/utils'
+import { getAppLink } from '@/lib/get-deeplink'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { getQueryKeyForksCbStatus } from '@/lib/utils/react-query/keys'
 
-// TODO: Modify this this component's api calls to accept Enum values instead of numbers. For readability and maintainability.
 export function KsToCbSubdomain() {
   const { setStep } = useAuthenticationModalStore()
   const { data: sessionData, update: updateSession } = useSession()
-  const { user } = useGenuinOptions((state) => ({
+  const { user, webCTA } = useGenuinOptions((state) => ({
     user: state.user,
+    webCTA: state.webCTA,
   }))
-  const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  // Check if the user has requested to become a cb.
-  const isRequested = user?.ksCbRequestStatus === 2
+  const { data: ksCbStatus, isLoading: isKsCbStatusLoading } = useKsCbStatus()
+  const isRequested = ksCbStatus?.status === 2
+  const queryClient = useQueryClient()
 
   useEffect(() => {
-    setLoading(true)
-    // This func won't return any error so no need to handle it.
-    void fetchKsCbRequestStatus().then(async (res) => {
-      // Update the session data if the status is changed.
-      if (res.status && sessionData?.user.ksCbRequestStatus !== res.status) {
+    if (ksCbStatus?.status && sessionData?.user) {
+      void updateSession({
+        ...sessionData,
+        user: {
+          ...sessionData.user,
+          ksCbRequestStatus: ksCbStatus.status,
+        },
+      })
+    }
+  }, [ksCbStatus])
+
+  const { mutate: requestKsCb, isLoading: isMutating } = useMutation({
+    mutationFn: ksCbRequest,
+    onSuccess: async (res) => {
+      if (res.code === 200) {
         await updateSession({
           ...sessionData,
-          user: { ...sessionData?.user, ksCbRequestStatus: res.status } as User,
+          user: {
+            ...sessionData?.user,
+            ksCbRequestStatus: res.data.ks_cb_request_status,
+          },
         })
+        void queryClient.invalidateQueries({ queryKey: getQueryKeyForksCbStatus() })
+        void Analytics.track({
+          eventName: 'Become Cb Request Clicked',
+          properties: {},
+        })
+      } else {
+        setError('Something went wrong.')
       }
-      setLoading(false)
-    })
-  }, [])
+    },
+    onError: () => {
+      setError('Something went wrong.')
+    },
+  })
 
-  const handleClick = () => {
-    setLoading(true)
+  const handleClick = useCallback(() => {
     setError(null)
 
     if (!user) {
-      setStep('STARTER', 'KS_CB_REQUEST')
-      setLoading(false)
+      if (webCTA === 'app') {
+        void getAppLink().then((generatedLink) => {
+          openModal({
+            deepLink: generatedLink,
+            subtitle: 'Download app to become a creator.',
+          })
+        })
+      } else {
+        setStep('STARTER', 'KS_CB_REQUEST')
+      }
       return
     }
 
-    ksCbRequest()
-      .then(async (res) => {
-        if (res.code === 200) {
-          await updateSession({
-            ...sessionData,
-            user: { ...sessionData?.user, ksCbRequestStatus: res.data.ks_cb_request_status } as User,
-          })
-          void Analytics.track({
-            eventName: 'Become Cb Request Clicked',
-            properties: {},
-          })
-        } else {
-          setError('Something went wrong.')
-        }
-      })
-      .catch((e) => {
-        setError('Something went wrong.')
-      })
-      .finally(() => {
-        setLoading(false)
-      })
-  }
+    requestKsCb()
+  }, [user, webCTA, setStep, requestKsCb])
 
   return (
     <ModalShell className="sm:max-w-[384px]">
       <KsCbSlides />
-      {user?.ksCbRequestStatus !== 3 && (
+      {ksCbStatus?.status !== 3 && (
         <Button
           type="submit"
           variant="default"
           className="w-full"
-          disabled={loading || isRequested}
+          disabled={isMutating || isRequested || isKsCbStatusLoading}
           onClick={handleClick}>
-          {loading ? (
+          {isMutating || isKsCbStatusLoading ? (
             <Loader size="sm" className="stroke-monochrome-white" />
           ) : isRequested ? (
             'Requested'

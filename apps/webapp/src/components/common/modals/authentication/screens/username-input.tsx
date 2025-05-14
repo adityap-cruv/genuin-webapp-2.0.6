@@ -1,5 +1,5 @@
 import { Form, FormField, useFormField, FormItem, FormLabel, FormControl, FormMessage } from '@components/ui/form'
-import { cn } from '@lib/utils'
+import { cn, sanitizeInput } from '@lib/utils'
 import { Input } from '@components/ui/input'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -68,7 +68,7 @@ export function UsernameInput({ onNext }: ScreenProps) {
     setIsLoading(true)
     try {
       if (isUsernameValid) {
-        const { status } = await updateUser({ nickname: username })
+        const { status } = await updateUser({ nickname: sanitizeInput(username) })
         if (status) {
           await updateSession({
             ...sessionData,

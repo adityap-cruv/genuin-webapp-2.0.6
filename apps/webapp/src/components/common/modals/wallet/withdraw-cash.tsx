@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/button'
 import { Form, FormField, FormItem, FormControl, FormMessage } from '@components/ui/form'
 import { Input } from '@components/ui/input'
-import { cn } from '@/lib/utils'
+import { cn, sanitizeInput } from '@/lib/utils'
 import { Loader } from '@/components/ui/loader'
 import { ModalShell } from '../authentication/modal-shell'
 import { useWalletStore } from '../../wallet/store'
@@ -65,7 +65,7 @@ export function WithdrawDialog() {
     const redirectUrl = window.location.href
 
     try {
-      const withdrawAmount: number = Math.round(Number(data.amount) * 100)
+      const withdrawAmount: number = Math.round(Number(sanitizeInput(data.amount)) * 100)
       const resp = await cashWithdrawAPI({ amount: withdrawAmount, redirectUrl })
 
       if (resp?.data?.code === 200) {

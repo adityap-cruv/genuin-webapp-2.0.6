@@ -6,7 +6,7 @@ import { useAuthenticationModalStore } from '../store'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { cn } from '@lib/utils'
+import { cn, sanitizeInput } from '@lib/utils'
 import { Loader } from '@components/ui/loader'
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@components/ui/input-otp'
 import { type ScreenProps } from '.'
@@ -80,7 +80,7 @@ export function OtpInput({ title, verificationType, onNext, onBack }: OtpInputPr
     }
     if (verificationType === 'login') {
       flowType === 'email' ? (properties.email = email) : (properties.phoneNumber = phone)
-      const data = await consumeOtp({ code: otp, ...properties })
+      const data = await consumeOtp({ code: sanitizeInput(otp), ...properties })
       if (data.otpVerified) {
         await signIn('credentials', { ...data.user, redirect: false })
         // If user comes from action delete account

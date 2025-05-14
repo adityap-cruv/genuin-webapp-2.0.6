@@ -17,7 +17,7 @@ import { cn } from '@/lib/utils'
 import { PATH_NAME } from '@/lib/utils/constants/path'
 import { LockIcon } from '@icons/LockIcon'
 import { GeneralError } from '../profile-new/general-error'
-import { JoinCommunityButton } from '../common/join-community-button'
+import { JoinCommunityButton } from '../common/actions/join-community-button'
 import { useTreeStructure } from './context'
 
 type CommunitiesNodePropsType = {
@@ -99,7 +99,7 @@ export const CommunityItem = memo(function CommunityNode({
         {/* Render only user him/her self is not there. */}
         {!isSelfUser && (
           <JoinCommunityButton
-            buttonText="Join Community"
+            buttonText="Join"
             handle={handle}
             communityName={name ?? ''}
             id={id}

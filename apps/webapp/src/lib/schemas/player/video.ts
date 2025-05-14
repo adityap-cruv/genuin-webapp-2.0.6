@@ -29,6 +29,8 @@ const videoSchema = z.object({
   linkoutId: z.number().nullish(),
   clickableUrl: z.string().nullable(),
   linkouts: z.any(),
+  is_pinned: z.boolean(),
+  spriteUrl: z.string().nullish(),
 })
 
 // Define the loop schema
@@ -36,6 +38,9 @@ const loopSchema = z.object({
   slug: z.string(),
   name: z.string().nullable().optional(),
   id: z.string(),
+  isSubscribed: z.boolean().optional(),
+  description: z.string(),
+  shareUrl: z.string().optional(),
 })
 
 const BrandSchema = z

@@ -38,18 +38,20 @@ async function getDeepLink(action: string, options: GenerateDeepLinkOptions): Pr
 // subscribe action
 export async function subscribeDeepLink({
   ldDescription,
-  loopDetails,
+  groupName,
+  shareUrl,
   searchParams,
 }: {
   ldDescription: string
-  loopDetails: any
+  groupName: string
+  shareUrl: string
   searchParams: Record<string, any>
 }): Promise<string> {
   return await getDeepLink('subscribe', {
     contentType: 'loop',
     description: ldDescription,
-    title: loopDetails.group.group_name,
-    community: getLoopAndCommunityShareString(loopDetails.share_url).communityShareString ?? '',
+    title: groupName,
+    community: getLoopAndCommunityShareString(shareUrl).communityShareString ?? '',
     searchParams,
   })
 }
@@ -149,6 +151,20 @@ export async function sparkDeepLink(
     community: getLoopAndCommunityShareString(shareUrl).communityShareString ?? '',
     loop: getLoopAndCommunityShareString(shareUrl).loopShareString ?? '',
     title: `${toTitleCase(reactionTitle) + ' ' + reactionSuffix} the ${videoSlug} video`,
+    searchParams: new URLSearchParams(window.location.search),
+  })
+}
+
+/*
+ * This function will generate deep link for report action.
+ */
+export async function reportDeepLink(videoSlug: string, shareUrl: string): Promise<string> {
+  return await getDeepLink('report', {
+    contentType: 'video',
+    pathName: PATH_NAME.video(videoSlug),
+    community: getLoopAndCommunityShareString(shareUrl).communityShareString ?? '',
+    loop: getLoopAndCommunityShareString(shareUrl).loopShareString ?? '',
+    title: `report ${videoSlug} video`,
     searchParams: new URLSearchParams(window.location.search),
   })
 }

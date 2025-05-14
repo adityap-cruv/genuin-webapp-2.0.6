@@ -5,11 +5,13 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { useEffect, useId, useState } from 'react'
 import icPlay from '@icons/player-controls/icPlay.svg'
-import { PlayerModal } from '@/components/common/feed/player-modal'
 import { useSearchParams } from 'next/navigation'
 import { Shimmer } from '@components/ui/shimmer'
 import { CustomImage } from '@/components/custom/custom-image'
 import { Loader } from '@/components/ui/loader'
+import { PinIcon } from '@icons/pin-icon'
+import { usePlayerControlStore } from '@/components/common/player/player-control-store'
+import { ExpandView } from '@/components/common/expand-view'
 
 type Props = { slug: string }
 export function LoopVideos({ slug }: Props) {
@@ -17,12 +19,19 @@ export function LoopVideos({ slug }: Props) {
   const loaderId = useId()
   const { data, isLoading, fetchNextPage, isError, isFetchingNextPage, hasNextPage } = getLoopVideos(slug)
   const videos = data?.pages.flatMap((item) => item.videos)
+  const { isFullScreen, toggleFullScreen } = usePlayerControlStore()
 
   const [modalControl, setModalControl] = useState({ open: false, startIndex: -1 })
 
   useEffect(() => {
     if (searchParams.get('show_videos') === '1') setModalControl({ startIndex: 0, open: true })
   }, [searchParams])
+
+  useEffect(() => {
+    if (!isFullScreen) {
+      setModalControl({ open: false, startIndex: -1 })
+    }
+  }, [isFullScreen])
 
   useEffect(() => {
     if (!hasNextPage || isLoading) return
@@ -67,6 +76,7 @@ export function LoopVideos({ slug }: Props) {
                       x.startIndex = index
                       return { ...x }
                     })
+                    toggleFullScreen(true)
                   }}
                   className="group/video relative flex aspect-reel w-full items-center justify-center duration-300 hover:cursor-pointer">
                   <CustomImage
@@ -75,6 +85,7 @@ export function LoopVideos({ slug }: Props) {
                     className="rounded-xl"
                     fill
                   />
+                  {item.video.is_pinned && <PinIcon className="absolute right-2 top-2 h-6 w-6 fill-monochrome-white" />}
                   <div className="absolute bottom-2 left-2">
                     <Link href={{ pathname: PATH_NAME.profile(item.owner.userName) }}>
                       <div className="flex h-6 w-6 items-center">
@@ -109,7 +120,7 @@ export function LoopVideos({ slug }: Props) {
         </>
       )}
 
-      <PlayerModal.desktop
+      <ExpandView
         videos={videos ?? []}
         isLoading={isLoading}
         close={() => {
@@ -117,13 +128,13 @@ export function LoopVideos({ slug }: Props) {
             x.open = false
             return { ...x }
           })
+          toggleFullScreen(false)
         }}
         fetchNextVideos={fetchNextPage}
         isError={isError}
         open={modalControl.open}
         isFetchingNextPage={isFetchingNextPage}
         startIndex={modalControl.startIndex}
-        isInModal={true}
       />
     </div>
   )

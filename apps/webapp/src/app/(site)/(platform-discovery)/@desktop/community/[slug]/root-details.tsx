@@ -29,8 +29,8 @@ import { CustomImage } from '@/components/custom/custom-image'
 import { ReadMore } from '@/components/common/read-more'
 import { NOT_FOUND_ERROR_CODES } from '@/lib/constants'
 import EmptyView from '@/components/common/empty-view'
-import ShareButton from '@components/common/actions/ShareButton'
-import { JoinCommunityButton } from '@/components/common/join-community-button'
+import ShareButton from '@/components/common/actions/share-button'
+import { JoinCommunityButton } from '@/components/common/actions/join-community-button'
 
 export function CommunityDetails({ slug }: { slug: string }) {
   const { data, isLoading, error } = getCommunityDetails(slug)

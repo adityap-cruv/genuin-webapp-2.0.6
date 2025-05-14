@@ -1,19 +1,31 @@
 import { getCommunityLoops } from '@lib/api/community'
 import Image from 'next/image'
 import noLoopsImage from '@images/noLoopImage.svg'
-import { useState } from 'react'
-import { PlayerModal } from '@/components/common/feed/player-modal'
+import { useState, useEffect } from 'react'
 import { getLoopVideos } from '@lib/api/loop'
 import { type VideoPlayerModalLoopType } from '@lib/schemas/player/video'
 import { LoopCard, LoopCardShimmer } from '@components/common/loop-card'
+import { usePlayerControlStore } from '@/components/common/player/player-control-store'
+import { ExpandView } from '@/components/common/expand-view'
 
 // TODO: remove this component from here and put at better location
 export function CommunityLoopTab({ slug }: { slug: string }) {
+  const { isFullScreen, toggleFullScreen } = usePlayerControlStore()
   const { data, isLoading } = getCommunityLoops(slug)
   const [modalController, setModalController] = useState<{ open: boolean; loop: VideoPlayerModalLoopType | null }>({
     open: false,
     loop: null,
   })
+
+  useEffect(() => {
+    if (!isFullScreen) {
+      setModalController({
+        open: false,
+        loop: null,
+      })
+    }
+  }, [isFullScreen])
+
   if (isLoading)
     return (
       <>
@@ -46,7 +58,7 @@ export function CommunityLoopTab({ slug }: { slug: string }) {
                 owner: { userName: item.owner.username },
                 thumbnail: item.thumbnail_url_m
                   ? item.thumbnail_url_m
-                  : item.thumbnail_url_l ?? item.thumbnail_url ?? '',
+                  : (item.thumbnail_url_l ?? item.thumbnail_url ?? ''),
                 createdAt: item.message_at,
               }))}
               loopSlug={item.slug}
@@ -63,12 +75,20 @@ export function CommunityLoopTab({ slug }: { slug: string }) {
                 setModalController((x) => {
                   const newLoop = data.loops.find((item) => item.chat_id === id)
                   x.open = true
-                  if (newLoop && id) x.loop = { id, slug: newLoop.slug, name: newLoop.group.group_name }
+                  if (newLoop && id)
+                    x.loop = {
+                      id,
+                      slug: newLoop.slug,
+                      name: newLoop.group.group_name,
+                      description: newLoop.group.group_description ?? '',
+                    }
+                  toggleFullScreen(true)
                   return { ...x }
                 })
               }}
               viewCount={item.group.no_of_views}
               noOfVideos={item.group.no_of_videos}
+              position={item.position}
             />
           )
         })}
@@ -77,6 +97,7 @@ export function CommunityLoopTab({ slug }: { slug: string }) {
             close={() => {
               setModalController((x) => {
                 x.open = false
+                toggleFullScreen(false)
                 return { ...x }
               })
             }}
@@ -116,14 +137,14 @@ function PlayerModalWrapper({ open = false, slug, close, unreadMessageCount }: P
   const videos = data?.pages.flatMap((item) => item.videos)
 
   return (
-    <PlayerModal.mobile
+    <ExpandView
       fetchNextVideos={fetchNextPage}
       isError={isError}
       isFetchingNextPage={isFetchingNextPage}
       startIndex={0}
       isLoading={isFetching}
       open={open}
-      videos={videos}
+      videos={videos ?? []}
       close={close}
       unreadMessageCount={unreadMessageCount}
       hasNextPage={hasNextPage}

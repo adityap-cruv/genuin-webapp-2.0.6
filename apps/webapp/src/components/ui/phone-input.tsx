@@ -50,9 +50,10 @@ PhoneInput.displayName = 'PhoneInput'
 
 const InputComponent = React.forwardRef<HTMLInputElement, InputProps>(({ className, ...props }, ref) => (
   <Input
-    className={cn('ml-2 rounded-lg border border-monochrome-9 bg-monochrome-11', className)}
+    className={cn('ml-2 rounded-lg border border-tertiary-300 bg-tertiary-100', className)}
     {...props}
     ref={ref}
+    placeholder="Phone number"
   />
 ))
 InputComponent.displayName = 'InputComponent'
@@ -81,7 +82,7 @@ const CountrySelect = ({ disabled, value, onChange, options, popoverClassName }:
         <Button
           type="button"
           variant={'outline'}
-          className={cn('flex gap-1 rounded-lg border-[10x] border-monochrome-9 bg-monochrome-11 pl-3 pr-1')}
+          className={cn('flex gap-1 rounded-lg border-tertiary-300 bg-tertiary-100 pl-3 pr-1')}
           disabled={disabled}>
           <FlagComponent country={value} countryName={value} />
           <ChevronsUpDown className={cn('h-4 w-4 opacity-50', disabled ? 'hidden' : 'opacity-100')} />

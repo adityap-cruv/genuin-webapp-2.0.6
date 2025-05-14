@@ -11,6 +11,8 @@ import { type CommunityUserRoleType } from './schemas/roles'
 import Analytics from '@/services/analytics'
 import { UAParser } from 'ua-parser-js'
 import { getAppLink } from './get-deeplink'
+import DOMPurify from 'dompurify'
+import { type GestureOverlayKeysType, useKsGestureStore } from '@/components/common/gestures/gesture-store'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -75,6 +77,19 @@ export function deleteSearchParam({
   }
 }
 
+/**
+ * Sanitizes user input to prevent XSS attacks
+ * Only allows plain text by escaping dangerous HTML characters
+ * @param input - The user input to sanitize
+ * @returns Sanitized plain text string
+ */
+export function sanitizeInput(input: string | null | undefined): string {
+  if (typeof input !== 'string' || input.trim() === '') return ''
+  return DOMPurify.sanitize(input, {
+    USE_PROFILES: { html: false },
+  })
+}
+
 export function getTimeAgo(createdAt: any) {
   const currentDate: any = new Date()
   const createdAtDate: any = new Date(Number(createdAt))
@@ -100,7 +115,7 @@ export function getAvatarUrl(avatarUrl: any) {
   if (avatarUrl) {
     return isValidHTTPS(avatarUrl)
       ? avatarUrl
-      : `https://media.qa.begenuin.com/webapp_assets/assets/avatar/${avatarUrl}.gif`
+      : `https://media${process.env.NEXT_PUBLIC_CURRENT_ENV === 'local' || process.env.NEXT_PUBLIC_CURRENT_ENV === 'qa' ? '.qa' : ''}.begenuin.com/webapp_assets/assets/avatar/${avatarUrl}.gif`
   }
   return null
 }
@@ -370,7 +385,8 @@ export function tryJsonParse(data: string) {
 
 export function getWebpUrlForImage(url?: string | null): string {
   if (!url) return ''
-  return url.includes('/uploads/') ? url.replace(/(\/)([^/]+)\.([^/.]+)$/, '$1webp/$2.webp') : url
+  return url
+  // return url.includes('/uploads/') ? url.replace(/(\/)([^/]+)\.([^/.]+)$/, '$1webp/$2.webp') : url
 }
 
 /**
@@ -536,7 +552,7 @@ export function getApiUrl(pathName: string, searchParams: URLSearchParams = new 
 
 // This function is used in multiple places to trigger the app download modal.
 // It generates the appropriate deep link and opens a modal prompting users to download the app,
-export async function handleAppDownloadModal() {
+export async function handleAppDownloadModal(options?: { title?: string; subtitle?: string }) {
   const { isMobile } = useGenuinOptions.getState()
   // had to cover this for use case of having smart get app for ipad
   // isMobile flag is not detecting ipad as mobile device
@@ -547,9 +563,105 @@ export async function handleAppDownloadModal() {
     openGeneratedLink(generatedLink)
   } else {
     DownloadDialogModal.open({
-      title: 'Download the app',
-      subtitle: 'Download app to browse more communities',
+      title: options?.title ?? 'Download the app',
+      subtitle: options?.subtitle ?? 'Download app to browse more communities',
       deepLink: generatedLink,
     })
+  }
+}
+
+/**
+ * Validates if a file is a genuine image (JPEG or PNG) by examining both its
+ * reported MIME type and its binary signature (magic numbers).
+ *
+ * @param file - The File object to validate, typically from file input or drag-and-drop
+ * @returns A Promise that resolves to boolean - true if valid image, false otherwise
+ */
+export async function validateImage(file: File): Promise<boolean> {
+  try {
+    // Check MIME type reported by the browser
+    const validMimeTypes = ['image/jpeg', 'image/jpg', 'image/png']
+    if (!validMimeTypes.includes(file.type)) {
+      return false
+    }
+    // Read the first few bytes to check for image signatures (magic numbers)
+    const buffer = await readFileAsArrayBuffer(file.slice(0, 12))
+    const arr = new Uint8Array(buffer)
+    // Check for JPEG signature (FF D8 FF)
+    if (arr[0] === 0xff && arr[1] === 0xd8 && arr[2] === 0xff) {
+      return true
+    }
+    // Check for PNG signature (89 50 4E 47 0D 0A 1A 0A)
+    if (
+      arr[0] === 0x89 &&
+      arr[1] === 0x50 &&
+      arr[2] === 0x4e &&
+      arr[3] === 0x47 &&
+      arr[4] === 0x0d &&
+      arr[5] === 0x0a &&
+      arr[6] === 0x1a &&
+      arr[7] === 0x0a
+    ) {
+      return true
+    }
+    return false
+  } catch (err) {
+    return false
+  }
+}
+
+async function readFileAsArrayBuffer(file: Blob): Promise<ArrayBuffer> {
+  return await new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => {
+      resolve(reader.result as ArrayBuffer)
+    }
+    reader.onerror = reject
+    reader.readAsArrayBuffer(file)
+  })
+}
+
+/**
+ * Resets any gesture overlays that are stuck in a visible state after page loads
+ * by checking and comparing localStorage state with current state
+ */
+export const checkAndResetGestures = () => {
+  const { resetGestureOverlay } = useKsGestureStore.getState()
+
+  try {
+    const storedGestures = localStorage.getItem('_ks_gestures_')
+    if (!storedGestures) return
+
+    const parsed = JSON.parse(storedGestures)
+    const storedOverlays = parsed?.state?.gestureOverlays
+
+    if (!storedOverlays) return
+
+    // Check each gesture in the store
+    Object.entries(storedOverlays).forEach(([gestureKey, gesture]: [string, any]) => {
+      if (gesture?.isVisible && gesture?.hasShown) {
+        resetGestureOverlay(gestureKey as GestureOverlayKeysType)
+      }
+    })
+  } catch (error) {
+    console.error('Failed to parse _ks_gestures_:', error)
+  }
+}
+
+/**
+ * Synchronizes tap behavior between config and localStorage
+ * If tap behavior changes, resets PLAY_PAUSE gesture to show new interaction guide
+ *
+ * @param tapBehavior - The tap behavior value from config
+ */
+export function syncTapBehavior(tapBehavior: number | undefined) {
+  const { resetGestureOverlay } = useKsGestureStore.getState()
+
+  if (!tapBehavior) return
+
+  const localTapBehavior = localStorage.getItem('_tap_behavior_')
+  if (localTapBehavior !== tapBehavior.toString()) {
+    localStorage.setItem('_tap_behavior_', tapBehavior.toString())
+    resetGestureOverlay('PLAY_PAUSE')
   }
 }

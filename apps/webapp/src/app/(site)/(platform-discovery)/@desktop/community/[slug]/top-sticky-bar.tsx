@@ -1,9 +1,9 @@
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { motion, useAnimationControls } from 'framer-motion'
 import { useEffect } from 'react'
-import ShareButton from '@components/common/actions/ShareButton'
+import ShareButton from '@/components/common/actions/share-button'
 import { type CommunityUserRoleType } from '@/lib/schemas/roles'
-import { JoinCommunityButton } from '@/components/common/join-community-button'
+import { JoinCommunityButton } from '@/components/common/actions/join-community-button'
 
 type Props = {
   /**

@@ -11,6 +11,7 @@ import { BrandNotFound } from '@components/common/brand-not-found'
 import { ThirdPartyScriptProvider } from '@components/providers/third-party-script-provider'
 import { EmbedConfigProvider } from '@/components/embed/embed-config-provider'
 import { GenuinOptionsProvider } from '@/components/providers/genuin-options-provider'
+import { RedirectHandler } from '@components/providers/redirect-handler'
 
 export default async function Layout({ children }: { children: ReactNode }) {
   const deviceType = cookies().get('device_type')?.value ?? ''
@@ -35,15 +36,17 @@ export default async function Layout({ children }: { children: ReactNode }) {
   if (error) return <BrandNotFound />
   return (
     <RootHTML brandColors={brandColors} noIndex>
-      <ThirdPartyScriptProvider>
-        <SessionProvider>
-          <ReactQueryProvider>
-            <GenuinOptionsProvider browserType={browserType} deviceType={deviceType} os={os} config={config}>
-              <EmbedConfigProvider config={config}>{children}</EmbedConfigProvider>
-            </GenuinOptionsProvider>
-          </ReactQueryProvider>
-        </SessionProvider>
-      </ThirdPartyScriptProvider>
+      <RedirectHandler config={config} shouldRedirect={Object.hasOwn(configParams ?? {}, 'subdomain')}>
+        <ThirdPartyScriptProvider>
+          <SessionProvider>
+            <ReactQueryProvider>
+              <GenuinOptionsProvider browserType={browserType} deviceType={deviceType} os={os} config={config}>
+                <EmbedConfigProvider config={config}>{children}</EmbedConfigProvider>
+              </GenuinOptionsProvider>
+            </ReactQueryProvider>
+          </SessionProvider>
+        </ThirdPartyScriptProvider>
+      </RedirectHandler>
     </RootHTML>
   )
 }

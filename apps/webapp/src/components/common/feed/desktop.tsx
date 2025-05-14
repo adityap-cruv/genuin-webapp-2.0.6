@@ -10,20 +10,17 @@ import { useShallow } from 'zustand/react/shallow'
 import { FeedContextProvider, useFeedListContext } from '@components/providers/feed-provider'
 import { FeedShimmer } from '../shimmers/feed-shimmer'
 import { usePlayerControlStore } from '../player/player-control-store'
-import FullScreenSideButtons from '../expand-view/full-screen-side-buttons'
-import FullScreenVideoDetails from '../expand-view/full-screen-video-details'
-import FullScreenCommentBoxLayout from '../expand-view/full-screen-comment-box'
 import { UAParser } from 'ua-parser-js'
 import { IHeartDemo } from '@/components/layouts/desktop/iheart-demo'
 import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
-import FullScreenEsc from '../expand-view/full-screen-esc'
+import ExpandViewEsc from '../expand-view/esc-tab'
 import { Toaster } from '@/components/ui/toaster'
-import { AnimatePresence } from 'framer-motion'
 import { useIheartBorderState } from '@/hooks/use-iheart-border'
 import { useGestureOverlayManager } from '../gestures/gesture-overlay-manager'
 import { NewPlayer } from '../player/new'
-import { Actions } from '../player/control-layer/actions'
 import Analytics from '@/services/analytics'
+import { FullScreenLayout } from '../expand-view/layout'
+import { UnseenMessageRibbon } from '../unseen-message-ribbon'
 
 type DesktopProps = {
   isLoading: boolean
@@ -37,6 +34,7 @@ type DesktopProps = {
    * Pass this parameter if you want to configure custom size box.
    */
   customSizeBox?: VideoSizeBoxType
+  unreadMessageCount?: number
 } & ComponentProps<'div'>
 
 export const Desktop = memo(function Desktop({
@@ -48,6 +46,7 @@ export const Desktop = memo(function Desktop({
   hasNextPage,
   isLoading,
   startIndex,
+  unreadMessageCount,
   ...restProps
 }: DesktopProps) {
   if (isLoading || !videos || videos.length === 0) {
@@ -61,12 +60,21 @@ export const Desktop = memo(function Desktop({
       fetchNextPage={fetchNextPage}
       hasNextPage={hasNextPage}
       isFetchingNextPage={isFetchingNextPage}>
-      <SwiperRenderer customSizeBox={customSizeBox} startIndex={startIndex} {...restProps} />
+      <SwiperRenderer
+        customSizeBox={customSizeBox}
+        startIndex={startIndex}
+        unreadMessageCount={unreadMessageCount}
+        {...restProps}
+      />
     </FeedContextProvider>
   )
 })
 
-type SwiperRendererProps = { customSizeBox?: VideoSizeBoxType; startIndex: number } & ComponentProps<'div'>
+type SwiperRendererProps = {
+  customSizeBox?: VideoSizeBoxType
+  startIndex: number
+  unreadMessageCount?: number
+} & ComponentProps<'div'>
 const CONFIG = {
   SCROLL_DELAY: 500,
   THRESHOLD_TIME: 400, // Increased from 300
@@ -80,7 +88,13 @@ const CONFIG = {
   },
   DEBOUNCE_TIME: 150, // New debounce time for wheel events
 }
-function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: SwiperRendererProps) {
+function SwiperRenderer({
+  customSizeBox,
+  startIndex,
+  className,
+  unreadMessageCount,
+  ...restProps
+}: SwiperRendererProps) {
   const { defaultSizeBox } = useGenuinOptions(
     useShallow((state) => ({
       defaultSizeBox: state.sizeBoxes.default,
@@ -91,7 +105,7 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
   const { shouldShowIHeartDemo, isIHeartPlaying } = useIHeartDemoStates()
   const { allowSlideNext, currentIndex, updateCurrentIndex, videos } = useFeedListContext()
   const { showGestureOverlay, hideGestureOverlay, gestureOverlayUI } = useGestureOverlayManager()
-  const { muted, isFullScreen, isCommentBoxOpen, toggleFullScreen } = usePlayerControlStore(
+  const { muted, isFullScreen, isCommentBoxOpen } = usePlayerControlStore(
     useShallow((state) => ({
       muted: state.muted,
       isFullScreen: state.isFullScreen,
@@ -160,152 +174,114 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
     <div
       style={{
         height: isFullScreen ? undefined : sizeBox.height,
-        backgroundColor: isFullScreen ? 'black' : 'transparent',
       }}
-      className={cn('flex h-full w-full transition-all', className, {
-        'fixed inset-0 z-50': isFullScreen,
+      className={cn('relative flex h-full w-full justify-center transition-all', className, {
+        'fixed inset-0 z-50 bg-monochrome-black': isFullScreen,
       })}
       {...restProps}>
-      <div className="relative flex h-full w-full justify-center">
-        <div className={cn('flex aspect-reel h-full', { 'h-full w-full': !isFullScreen })}>
-          <div
-            className={cn('relative flex flex-col', { ' w-full flex-row': !isFullScreen })}
-            style={{
-              height: '100%',
-              aspectRatio: isFullScreen ? '9 / 16' : undefined,
-            }}>
-            {isFullScreen && (
-              <div
-                style={{
-                  height: 'calc(100% - 75px)',
-                }}
-                className={cn(
-                  'pointer-events-none absolute z-10 w-full border-4 bg-transparent transition-all ease-in-out',
-                  { 'animated-border': showBorder },
-                  { 'border-transparent': !showBorder }
-                )}
-              />
-            )}
-            <Swiper
-              onSwiper={(swiper) => {
-                swiperRef.current = swiper
-                ;(swiper as any).on('wheel', handleWheel)
-              }}
-              direction="vertical"
-              modules={[Mousewheel, Keyboard, Virtual]}
-              slidesPerView={1}
-              speed={CONFIG.SCROLL_DELAY}
-              initialSlide={startIndex}
-              allowSlideNext={allowSlideNext}
-              allowSlidePrev={true}
-              keyboard={{
-                enabled: true,
-                onlyInViewport: true,
-              }}
-              // virtual={{
-              //   enabled: true,
-              //   addSlidesAfter: 1,
-              //   addSlidesBefore: 1,
-              // }}
-              mousewheel={{
-                forceToAxis: true,
-                releaseOnEdges: true,
-                thresholdDelta: isWindows ? CONFIG.MOUSE_THRESHOLD.WINDOWS : CONFIG.MOUSE_THRESHOLD.DEFAULT,
-                thresholdTime: CONFIG.THRESHOLD_TIME,
-                sensitivity: isWindows ? CONFIG.MOUSE_SENSITIVITY.WINDOWS : CONFIG.MOUSE_SENSITIVITY.DEFAULT,
-              }}
-              followFinger={false}
-              longSwipesRatio={0.2}
-              onActiveIndexChange={handleActiveIndexChange}
-              onSlideChange={handleSlideChange}
+      <div className={cn('relative flex h-full flex-col', { 'w-full flex-row': !isFullScreen })}>
+        {/* For UnseenMessageRibbon */}
+        {unreadMessageCount !== undefined && unreadMessageCount !== 0 && (
+          <div className="absolute inset-0 z-10 flex h-fit w-full items-center justify-center">
+            <UnseenMessageRibbon messageCount={unreadMessageCount ?? 0} />
+          </div>
+        )}
+
+        {/* For iHeart */}
+        {shouldShowIHeartDemo && isFullScreen && (
+          <>
+            <IHeartDemo />
+            <div
               style={{
-                width: isFullScreen ? '100%' : sizeBox.width,
-                height: isFullScreen ? '100%' : sizeBox.height,
-              }}>
-              {videos.map((_, index) => {
-                return (
-                  <SwiperSlide key={index} virtualIndex={index}>
-                    {({ isActive, isPrev, isNext }) => {
-                      if (isActive || isPrev || isNext)
-                        if (videos[index])
-                          return (
-                            <>
-                              <NewPlayer
-                                currentIndex={currentIndex}
-                                videoDetails={videos[index]}
-                                isActive={isActive}
-                                loop
-                                isInModal={isFullScreen}
-                                onEnded={() => {
-                                  const { currentTime, duration } = usePlayerControlStore.getState()
-                                  Analytics.triggerAnalyticsForVideoComplete(
-                                    videos[index].video.id,
-                                    duration,
-                                    currentTime
-                                  )
-
-                                  if (videos.length > 1) {
-                                    showGestureOverlay('SWIPE')
-                                  }
-                                }}
-                              />
-                              {isFullScreen && (
-                                <FullScreenVideoDetails
-                                  videos={videos}
-                                  currentIndex={currentIndex}
-                                  isActive={isActive}
-                                  isFullScreen={isFullScreen}
-                                />
-                              )}
-                            </>
-                          )
-                    }}
-                  </SwiperSlide>
-                )
-              })}
-
-              {gestureOverlayUI}
-            </Swiper>
-            {shouldShowIHeartDemo && isFullScreen && <IHeartDemo />}
-            {!isFullScreen && <DesktopDetails {...videos[currentIndex]} />}
-
-            {isFullScreen && (
-              <FullScreenEsc
-                isFullScreen={isFullScreen}
-                toggleFullScreen={toggleFullScreen}
-                videoId={videos[currentIndex].video.id}
-              />
-            )}
-          </div>
-          {isFullScreen && (
-            <div className="flex h-full flex-col justify-end p-4">
-              <Actions.desktop
-                className="gap-2"
-                shareUrl={videos[currentIndex].video.shareUrl}
-                sparkCount={videos[currentIndex].video.sparkCount}
-                videoId={videos[currentIndex].video.id}
-                videoSlug={videos[currentIndex].video.slug}
-                attachedLink={videos[currentIndex].video.attachedLink}
-                description={videos[currentIndex].video.descriptionText}
-                isSparked={videos[currentIndex].video.isSparked}
-                commentCount={videos[currentIndex].video.commentCount}
-              />
-            </div>
-          )}
-        </div>
-
-        {isFullScreen && (
-          <div className="absolute right-2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col gap-4">
-            <FullScreenSideButtons videos={videos} currentIndex={currentIndex} swiperInstance={swiperRef.current} />
-          </div>
+                height: 'calc(100% - 75px)',
+              }}
+              className={cn(
+                'pointer-events-none absolute z-10 w-full border-4 bg-transparent transition-all ease-in-out',
+                { 'animated-border': showBorder },
+                { 'border-transparent': !showBorder }
+              )}
+            />
+          </>
         )}
 
-        {isFullScreen && (
-          <AnimatePresence>
-            {isCommentBoxOpen && <FullScreenCommentBoxLayout videos={videos} currentIndex={currentIndex} />}
-          </AnimatePresence>
-        )}
+        <Swiper
+          onSwiper={(swiper) => {
+            swiperRef.current = swiper
+            ;(swiper as any).on('wheel', handleWheel)
+          }}
+          direction="vertical"
+          modules={[Mousewheel, Keyboard, Virtual]}
+          slidesPerView={1}
+          speed={CONFIG.SCROLL_DELAY}
+          initialSlide={startIndex}
+          allowSlideNext={allowSlideNext}
+          allowSlidePrev={true}
+          keyboard={{
+            enabled: true,
+            onlyInViewport: true,
+          }}
+          // virtual={{
+          //   enabled: true,
+          //   addSlidesAfter: 1,
+          //   addSlidesBefore: 1,
+          // }}
+          mousewheel={{
+            forceToAxis: true,
+            releaseOnEdges: true,
+            thresholdDelta: isWindows ? CONFIG.MOUSE_THRESHOLD.WINDOWS : CONFIG.MOUSE_THRESHOLD.DEFAULT,
+            thresholdTime: CONFIG.THRESHOLD_TIME,
+            sensitivity: isWindows ? CONFIG.MOUSE_SENSITIVITY.WINDOWS : CONFIG.MOUSE_SENSITIVITY.DEFAULT,
+          }}
+          followFinger={false}
+          longSwipesRatio={0.2}
+          onActiveIndexChange={handleActiveIndexChange}
+          onSlideChange={handleSlideChange}
+          className="aspect-reel h-full">
+          {videos.map((_, index) => {
+            return (
+              <SwiperSlide key={index} virtualIndex={index}>
+                {({ isActive, isPrev, isNext }) => {
+                  if (isActive || isPrev || isNext)
+                    if (videos[index])
+                      return (
+                        <>
+                          <NewPlayer
+                            currentIndex={currentIndex}
+                            videoDetails={videos[index]}
+                            isActive={isActive}
+                            loop
+                            onEnded={() => {
+                              const { currentTime, duration } = usePlayerControlStore.getState()
+                              Analytics.triggerAnalyticsForVideoComplete(videos[index].video.id, duration, currentTime)
+
+                              if (videos.length > 1) {
+                                showGestureOverlay('SWIPE')
+                              }
+                            }}
+                          />
+                        </>
+                      )
+                }}
+              </SwiperSlide>
+            )
+          })}
+          <ExpandViewEsc videoId={videos[currentIndex].video.id} />
+          {gestureOverlayUI}
+        </Swiper>
+
+        {/* Desktop Details for feed view */}
+        {!isFullScreen && <DesktopDetails {...videos[currentIndex]} />}
       </div>
+
+      {/* FullScreen Components  */}
+      {isFullScreen && (
+        <FullScreenLayout
+          currentIndex={currentIndex}
+          videos={videos}
+          isCommentBoxOpen={isCommentBoxOpen}
+          swiperInstance={swiperRef.current}
+        />
+      )}
       <Toaster />
     </div>
   )

@@ -175,7 +175,7 @@ export function SideBar({ isCollapsed }: { isCollapsed?: boolean }) {
                 <div
                   className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
                   onClick={() => {
-                    void handleAppDownloadModal()
+                    void handleAppDownloadModal({ subtitle: 'Download app to create a community' })
                   }}>
                   <AddIcon className="stroke-primary" />
                   <p className={cn('whitespace-nowrap !text-title-3-demi text-primary')}>Create Community</p>

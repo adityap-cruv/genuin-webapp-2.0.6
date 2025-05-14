@@ -2,16 +2,18 @@
 import { getCommunityLoops } from '@lib/api/community'
 import Image from 'next/image'
 import noLoopsImage from '@images/noLoopImage.svg'
-import { PlayerModal } from '@/components/common/feed/player-modal'
 import { getLoopVideos } from '@lib/api/loop'
-import { memo, useState } from 'react'
+import { memo, useState, useEffect } from 'react'
 import { type VideoPlayerModalLoopType } from '@lib/schemas/player/video'
 import { LoopCard, LoopCardShimmer } from '@components/common/loop-card'
+import { usePlayerControlStore } from '@/components/common/player/player-control-store'
+import { ExpandView } from '@/components/common/expand-view'
 
 // TODO: remove this component from here and put at better location
 // TODO: improve player-modal opening logic. As not meeting standards.
 export const CommunityLoopTab = memo(Component)
 function Component({ slug }: { slug: string }) {
+  const { isFullScreen, toggleFullScreen } = usePlayerControlStore()
   const { isLoading, data } = getCommunityLoops(slug)
   const [modalController, setModalController] = useState<{
     open: boolean
@@ -20,6 +22,15 @@ function Component({ slug }: { slug: string }) {
     open: false,
     loop: null,
   })
+
+  useEffect(() => {
+    if (!isFullScreen) {
+      setModalController({
+        open: false,
+        loop: null,
+      })
+    }
+  }, [isFullScreen])
 
   if (isLoading)
     return (
@@ -50,12 +61,12 @@ function Component({ slug }: { slug: string }) {
           isViewAllowed={item.is_view_allowed}
           latestMessages={item.latest_messages.map((item) => ({
             owner: { userName: item.owner.username },
-            thumbnail: item.thumbnail_url_m ? item.thumbnail_url_m : item.thumbnail_url_l ?? item.thumbnail_url ?? '',
+            thumbnail: item.thumbnail_url_m ? item.thumbnail_url_m : (item.thumbnail_url_l ?? item.thumbnail_url ?? ''),
             createdAt: item.message_at ?? '',
           }))}
           loopSlug={item.slug}
           memberCount={item.group.no_of_members}
-          members={item.group.members.map((item, index) => ({
+          members={item.group.members.map((item) => ({
             isAvatar: item.is_avatar,
             name: item.name ?? '',
             profileImage: item.profile_image,
@@ -65,8 +76,15 @@ function Component({ slug }: { slug: string }) {
           onClickOnImage={(id) => {
             setModalController((x) => {
               const newLoop = data.loops.find((item) => item.chat_id === id)
-              if (newLoop && id) x.loop = { id, slug: newLoop.slug, name: newLoop.group.group_name }
+              if (newLoop && id)
+                x.loop = {
+                  id,
+                  slug: newLoop.slug,
+                  name: newLoop.group.group_name,
+                  description: newLoop.group.group_description ?? '',
+                }
               x.open = true
+              toggleFullScreen(true)
               return { ...x }
             })
           }}
@@ -74,6 +92,7 @@ function Component({ slug }: { slug: string }) {
           viewCount={item.group.no_of_views}
           unreadMessageCount={item.unread_message_count}
           noOfVideos={item.group.no_of_videos}
+          position={item.position}
         />
       ))}
       {modalController.loop && (
@@ -86,6 +105,7 @@ function Component({ slug }: { slug: string }) {
               x.open = false
               return { ...x }
             })
+            toggleFullScreen(false)
           }}
         />
       )}
@@ -114,22 +134,21 @@ type PlayerModalWrapperProps = {
 }
 
 function PlayerModalWrapper({ open = false, close, slug, unreadMessageCount }: PlayerModalWrapperProps) {
-  const { data, fetchNextPage, isError, isFetchingNextPage, isFetching } = getLoopVideos(slug)
+  const { data, fetchNextPage, isError, isFetchingNextPage, isLoading } = getLoopVideos(slug)
   const videos = data?.pages.flatMap((item) => item.videos)
 
   if (videos)
     return (
-      <PlayerModal.desktop
+      <ExpandView
         fetchNextVideos={fetchNextPage}
         isError={isError}
         isFetchingNextPage={isFetchingNextPage}
         startIndex={0}
-        isLoading={isFetching}
+        isLoading={isLoading}
         open={open}
         videos={videos}
         close={close}
         unreadMessageCount={unreadMessageCount}
-        isInModal={true}
       />
     )
 }

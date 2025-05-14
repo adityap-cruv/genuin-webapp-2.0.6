@@ -21,8 +21,8 @@ import { LinkedInIcon } from '@icons/linkedin-icon'
 import { TwitterIcon } from '@icons/twitter-icon'
 import { TopStickyBar } from './top-sticky-bar'
 import { ReadMore } from '@/components/common/read-more'
-import ShareButton from '@components/common/actions/ShareButton'
-import { JoinCommunityButton } from '@components/common/join-community-button'
+import ShareButton from '@/components/common/actions/share-button'
+import { JoinCommunityButton } from '@/components/common/actions/join-community-button'
 
 let communityDetailsModule: CommunityDetailsType
 

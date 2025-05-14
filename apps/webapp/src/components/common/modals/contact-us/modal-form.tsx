@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader } from '@components/ui/loader'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@components/ui/select'
 import { userContactDetails } from '@lib/api/contact-us'
+import { sanitizeInput } from '@/lib/utils'
 
 const formSchema = z.object({
   firstName: z.string().trim().min(1, { message: 'First name is required' }),
@@ -50,15 +51,15 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
     setIsLoading(true)
     try {
       const payload = {
-        email: values.email,
-        company: values.companyName,
-        company_type: values.companyType,
-        company_size: values.companySize,
-        firstname: values.firstName,
-        lastname: values.lastName,
-        what_piqued_your_interest_in_genuin_: values.piquedInterest,
-        country: values.country,
-        website: values.website,
+        email: sanitizeInput(values.email),
+        company: sanitizeInput(values.companyName),
+        company_type: sanitizeInput(values.companyType),
+        company_size: sanitizeInput(values.companySize),
+        firstname: sanitizeInput(values.firstName),
+        lastname: sanitizeInput(values.lastName),
+        what_piqued_your_interest_in_genuin_: sanitizeInput(values.piquedInterest),
+        country: sanitizeInput(values.country),
+        website: sanitizeInput(values.website),
       }
 
       const filteredPayload = Object.fromEntries(

@@ -1,6 +1,7 @@
 'use client'
 import React, { useState, type ChangeEvent } from 'react'
 import styles from './InlineButtonInput.module.scss'
+import { sanitizeInput } from '@/lib/utils'
 
 interface InlineButtonInputProps {
   onButtonClick: (value: string) => void
@@ -14,7 +15,7 @@ const InlineButtonInput: React.FC<InlineButtonInputProps> = ({ onButtonClick }) 
   }
 
   const handleButtonClick = () => {
-    onButtonClick(inputValue)
+    onButtonClick(sanitizeInput(inputValue))
     setInputValue('')
   }
 

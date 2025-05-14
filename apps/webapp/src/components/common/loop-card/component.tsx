@@ -7,6 +7,7 @@ import Image from 'next/image'
 import icLock from '@icons/icLock.svg'
 import icPlay from '@icons/player-controls/icPlay.svg'
 import { CustomImage } from '@/components/custom/custom-image'
+import { PinIcon } from '@icons/pin-icon'
 
 type MessageType = {
   owner: {
@@ -52,6 +53,7 @@ type Props = ComponentProps<'div'> & {
    * Pass this link if you want to redirect user to certain page.
    */
   linkOnImage?: Partial<URL>
+  position?: number | null
 }
 
 const TRANSFORM_VALUES = [[50], [48, 52], [46, 50, 54]]
@@ -76,12 +78,13 @@ export function Component({
   className,
   linkOnImage,
   latestMessageAt,
+  position,
   ...props
 }: Props) {
   const hasUnreadMessages = unreadMessageCount > 0
 
   return (
-    <div className={cn('relative max-h-[210px]', className)} {...props}>
+    <div className={cn('relative max-h-[250px]', className)} {...props}>
       <div className="relative">
         <Link className="relative h-full w-full" href={{ pathname: PATH_NAME.loop(loopSlug) }}>
           <div
@@ -90,6 +93,12 @@ export function Component({
               hasUnreadMessages && 'border-primary-200 bg-primary-100 '
             )}>
             <div className="h-[30%] w-[70%] items-center p-4">
+              {position && (
+                <div className="mb-1.5 flex items-center gap-1">
+                  <PinIcon className="fill-tertiary" />
+                  <span className="line-clamp-1 break-words text-cap-1-demi text-tertiary">Pinned by admin</span>
+                </div>
+              )}
               <p className="line-clamp-2 break-words text-body-1-demi sm:text-title-3-demi">{name}</p>
               {!isViewAllowed && <p className="text-cap-1-med text-tertiary">Visible to members only</p>}
               {latestMessages.length === 0 ? (

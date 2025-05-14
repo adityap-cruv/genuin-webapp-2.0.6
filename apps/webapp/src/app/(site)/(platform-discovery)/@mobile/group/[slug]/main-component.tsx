@@ -1,21 +1,19 @@
 'use client'
 import { Button } from '@components/ui/button'
 import type { LoopDetailsType } from '@lib/schemas/loop/details'
-import { openGeneratedLink, openModal } from '@lib/utils'
+import { openGeneratedLink } from '@lib/utils'
 import Image from 'next/image'
 import icLock from '@icons/icLock.svg'
-import { useToast } from '@components/ui/use-toast'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
-import { getLoopCohosts, subscribeLoop, getLoopDetails } from '@lib/api/loop'
+import { getLoopCohosts, getLoopDetails } from '@lib/api/loop'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { TopBar } from '@components/layouts/mobile/top-bar'
-import { useRef, useState } from 'react'
+import { useRef } from 'react'
 import { useInView } from 'framer-motion'
 import { TopStickyBar } from '../../../@desktop/group/[slug]/top-bar'
 import { LoopVideos } from './loop-videos'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { useSearchParams } from 'next/navigation'
 import Loading from './loading'
 import Error from '../../error'
@@ -23,14 +21,15 @@ import { Shimmer } from '@components/ui/shimmer'
 import { LockIcon } from '@icons/LockIcon'
 import { LoopPrivacyInfo } from '@components/common/loop-privacy-info'
 import { PrivateModal } from '@components/common/modals/private'
-import Analytics from '@services/analytics'
-import { joinAsCollaboratorDeepLink, subscribeDeepLink } from '@/lib/get-deeplink'
+import { joinAsCollaboratorDeepLink } from '@/lib/get-deeplink'
 import { ReadMore } from '@/components/common/read-more'
 import EmptyView from '@/components/common/empty-view'
 import { NOT_FOUND_ERROR_CODES } from '@/lib/constants'
 import BrandBadgeIcon from '@/components/common/brand-badge-icon'
-import ShareButton from '@components/common/actions/ShareButton'
-import SubscriptionButton from '@components/common/actions/SubscriptionButton'
+import ShareButton from '@/components/common/actions/share-button'
+import SubscriptionButton from '@/components/common/actions/subscription-button'
+import { getQueryKeyForLoopDetails } from '@/lib/utils/react-query/keys'
+import { useQueryClient } from '@tanstack/react-query'
 
 let loopDetailsModule: LoopDetailsType
 
@@ -59,41 +58,8 @@ export function MainComponent({ loopDetails }: Props) {
   loopDetailsModule = loopDetails
   const detailsDivRef = useRef<HTMLDivElement>(null)
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
-  const { toast } = useToast()
-  const [isLoopSubscribed, setIsLoopSubscribed] = useState(!!loopDetails.is_subscriber)
-  const { user, webCTA } = useGenuinOptions()
+  const queryClient = useQueryClient()
   const searchParams = Object.fromEntries(useSearchParams())
-
-  function toggleLoopSubscription() {
-    const newValue = !isLoopSubscribed
-    void subscribeLoop(loopDetails.chat_id, newValue).then((res) => {
-      if (res.code === 200) {
-        setIsLoopSubscribed(newValue)
-        if (newValue) {
-          // Notifications turned on for this Group
-          toast({ title: 'Notifications turned on for this Group', duration: 1000 })
-        } else {
-          // Notifications turned off for this Group
-          toast({ title: 'Notifications turned off for this Group', duration: 1000 })
-        }
-      }
-    })
-  }
-
-  const handleSubscribeClick = async () => {
-    await subscribeDeepLink({ ldDescription, loopDetails, searchParams }).then((generatedLink) => {
-      openGeneratedLink(generatedLink)
-    })
-
-    void Analytics.track({
-      eventName: 'Subscription Clicked',
-      properties: {
-        loop_id: loopDetails.chat_id,
-        loop_slug: loopDetails.slug,
-        loop_name: loopDetails.group.group_name ?? '',
-      },
-    })
-  }
 
   const ldDescription = `${
     loopDetails.group?.group_description !== null &&
@@ -112,7 +78,10 @@ export function MainComponent({ loopDetails }: Props) {
         loopName={loopDetails.group.group_name ?? ''}
         shareUrl={loopDetails.share_url}
         communitySlug={loopDetails.community.slug}
-        isLoopSubscribed={loopDetails.is_subscriber}
+        isSubscribed={loopDetails.is_subscriber}
+        ldDescription={ldDescription}
+        slug={loopDetails.slug}
+        chatId={loopDetails.chat_id}
       />
       <div
         className="hide-scrollbar absolute inset-0 mt-navbar flex w-full flex-col gap-y-2 overflow-auto p-4 md:flex-row md:gap-x-2"
@@ -194,30 +163,22 @@ export function MainComponent({ loopDetails }: Props) {
           <div className="flex items-center gap-x-2">
             {loopDetails.is_view_allowed && (
               <SubscriptionButton
-                onClick={
-                  user
-                    ? () => {
-                        toggleLoopSubscription()
-                      }
-                    : async () => {
-                        if (webCTA === 'app') {
-                          await handleSubscribeClick()
-                        } else {
-                          openModal({
-                            title: 'Get the Genuin app',
-                            subtitle: (
-                              <>
-                                Get the app to subscribe to
-                                <span className="font-bold"> {loopDetails.group.group_name}</span> Group.
-                              </>
-                            ),
-                          })
-                        }
-                      }
-                }
-                isSubscribed={isLoopSubscribed}
+                isSubscribed={loopDetails.is_subscriber}
+                chatId={loopDetails.chat_id}
+                groupName={loopDetails.group.group_name ?? ''}
+                ldDescription={ldDescription}
+                shareUrl={loopDetails.share_url}
+                slug={loopDetails.slug}
+                key={loopDetails.chat_id}
+                onSuccess={async () => {
+                  await queryClient.invalidateQueries({
+                    queryKey: getQueryKeyForLoopDetails(loopDetails.slug),
+                    type: 'all',
+                  })
+                }}
               />
             )}
+
             {!loopDetails.is_view_allowed && (
               <Button
                 size="custom"

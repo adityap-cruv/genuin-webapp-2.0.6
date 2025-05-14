@@ -15,8 +15,9 @@ import { getBalanceAPI } from '@/lib/api/wallet'
 import { type User } from 'next-auth'
 import { useSession, signIn } from 'next-auth/react'
 import { RepostModal } from '@components/common/modals/repost'
-import { replaceUrlWithoutReload } from '@/lib/utils'
+import { checkAndResetGestures, replaceUrlWithoutReload, syncTapBehavior } from '@/lib/utils'
 import { useIHeartDemoStates } from './iheart-demo-provider'
+import { WEB_CONFIGS } from '@/lib/constants'
 import { useKsGestureStore } from '../common/gestures/gesture-store'
 
 const AuthenticationModal = dynamic(
@@ -42,7 +43,7 @@ if (process.env.NEXT_PUBLIC_CURRENT_ENV === 'prod') console.log = () => {}
 // TODO: This component is too big, consider splitting it into smaller components.
 export function GenuinOptionsProvider({ children, deviceType, os, browserType, config, user }: Props) {
   const router = useRouter()
-  const { resetAllGestures, resetGestureOverlay } = useKsGestureStore()
+  const { resetAllGestures } = useKsGestureStore()
   const { data: sessionData, status } = useSession()
   const { shouldShowIHeartDemo } = useIHeartDemoStates()
   const { setInitialData } = useGenuinOptions((state) => ({
@@ -156,35 +157,24 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     return parsedWebConfigs
   }
 
-  /**
-   * Synchronizes tap behavior between config and localStorage
-   * If tap behavior changes, resets PLAY_PAUSE gesture to show new interaction guide
-   *
-   * @param tapBehavior - The tap behavior value from config
-   */
-  function syncTapBehavior(tapBehavior: string | undefined) {
-    if (!tapBehavior) return
-
-    const localTapBehavior = localStorage.getItem('_tap_behavior_')
-    if (localTapBehavior !== tapBehavior) {
-      localStorage.setItem('_tap_behavior_', tapBehavior)
-      resetGestureOverlay('PLAY_PAUSE')
-    }
-  }
-
   function init() {
-    if (config?.brand_id) setBrandIdInAxiosInstance(Number(config?.brand_id))
+    checkAndResetGestures()
+    syncTapBehavior(config?.web_configs?.tap_behavior)
 
     // If 'device_type' is present in the URL (e.g., for demo purposes in BCC to simulate mobile view),
     // reset gestures to ensure the correct touch interactions are applied for the simulated device
     if (searchParams.get('device_type')) resetAllGestures()
 
-    const tapBehavior = config?.web_configs?.tap_behavior
-    syncTapBehavior(tapBehavior?.toString())
+    if (config?.brand_id) setBrandIdInAxiosInstance(Number(config?.brand_id))
 
     const parsedWebConfigs = getParsedWebConfigs()
-    if (config?.web_configs && parsedWebConfigs) {
-      Object.assign(config.web_configs, parsedWebConfigs)
+    if (config) {
+      // Create merged web configs by combining defaults with API response and URL params
+      config.web_configs = {
+        ...WEB_CONFIGS,
+        ...config.web_configs,
+        ...parsedWebConfigs,
+      }
     }
 
     const isIframe = window !== window.parent

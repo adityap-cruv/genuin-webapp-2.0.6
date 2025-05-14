@@ -3,7 +3,7 @@ import { NavBar } from '@components/common/nav-bar'
 import Image from 'next/image'
 import imageAppStore from '@images/appStore.svg'
 import imagePlayStore from '@images/playStore.svg'
-import GetAppButton from '@/components/common/get-app-button'
+import GetAppButton from '@/components/common/actions/get-app-button'
 
 export default function Error({ error, reset }: { error: Error; reset: () => void }) {
   const URL_TO_APP_STORE = 'https://apps.apple.com/US/app/id1511177838?mt=8'

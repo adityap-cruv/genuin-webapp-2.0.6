@@ -11,6 +11,7 @@ import { CommentAction } from './comment'
 import { ShareAction } from './share'
 import { useFeedListContext } from '@/components/providers/feed-provider'
 import { cn } from '@/lib/utils'
+import { MenuAction } from './menu'
 
 type ActionsProps = {
   /** Number of reactions/sparks on the content */
@@ -45,7 +46,6 @@ export function Actions({
 }: ActionsProps) {
   // Get the function to update spark status in the feed list
   const { updateSparkStatus } = useFeedListContext()
-
   return (
     <div
       className={cn('flex w-10 flex-col items-center gap-2', className)}
@@ -78,6 +78,8 @@ export function Actions({
 
       {/* Share action */}
       <ShareAction videoId={videoId} shareUrl={shareUrl} description={description} />
+
+      <MenuAction contentId={videoId} shareUrl={shareUrl} videoSlug={videoSlug} />
     </div>
   )
 }

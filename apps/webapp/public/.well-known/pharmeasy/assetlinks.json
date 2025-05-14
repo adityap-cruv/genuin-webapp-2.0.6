@@ -1,9 +1,0 @@
-[{
-  "relation": ["delegate_permission/common.handle_all_urls"],
-  "target": {
-    "namespace": "android_app",
-    "package_name": "com.begenuin.pharmeasy",
-    "sha256_cert_fingerprints":
-    ["36:10:4F:67:BA:3A:BB:72:8E:D8:83:03:C1:D4:EC:A8:01:93:C9:0F:19:8E:CF:B4:73:F4:A8:18:90:0F:86:58","46:57:EB:C7:34:FC:66:D0:C1:24:A7:DC:0C:5A:82:9C:C6:5B:C4:17:2A:B4:2D:91:5D:DF:D7:F6:27:5B:67:BD"]
-  }
-}]

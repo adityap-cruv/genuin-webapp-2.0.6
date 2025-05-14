@@ -6,7 +6,7 @@ import { Actions } from './actions'
 import { ReadMore } from '@components/common/read-more'
 import { cn } from '@lib/utils'
 import { type DescriptionArrType } from '@lib/schemas/player/video'
-import { PlayerProgressBar } from './player-progress-bar'
+import { Scrubber } from './scrubber'
 import { memo, useCallback } from 'react'
 import { Linkout } from '../../linkout'
 import { useShallow } from 'zustand/react/shallow'
@@ -133,7 +133,7 @@ export const Mobile = memo(function Mobile({ clickableUrl, ...props }: MobilePro
         <WalletAmountBadge type="light" />
       </div>
       <Details {...props} clickableUrl={clickableUrl} />
-      <PlayerProgressBar />
+      <Scrubber spriteUrl="" />
     </div>
   )
 })

@@ -31,11 +31,16 @@ export type PlayerControlStoreType = {
   prevVolume: number
   buttonAction: ButtonActionType
   isFullScreen: boolean
-  toggleFullScreen: () => void
+  toggleFullScreen: (value?: boolean) => void
   isCommentBoxOpen: boolean
   toggleCommentBox: () => void
   playingState?: 'paused' | 'playing' | 'loading'
   setPlayingState: (state?: 'paused' | 'playing' | 'loading') => void
+  playbackSpeed: {
+    speed: number
+    isSpeedFromGesture: boolean
+  }
+  setPlaybackSpeed: (speed: number, isGestureControl?: boolean) => void
 }
 
 export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
@@ -138,16 +143,30 @@ export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
 
     // For Full Screen
     isFullScreen: false,
-    toggleFullScreen() {
+    toggleFullScreen(value?: boolean) {
       set((state) => ({
-        isFullScreen: !state.isFullScreen,
-        isCommentBoxOpen: state.isFullScreen ? false : state.isCommentBoxOpen,
+        isFullScreen: value ?? !state.isFullScreen,
+        isCommentBoxOpen: value ?? !state.isFullScreen ? false : state.isCommentBoxOpen,
       }))
     },
+
     // For comment box.
     isCommentBoxOpen: false,
     toggleCommentBox() {
       set((state) => ({ isCommentBoxOpen: !state.isCommentBoxOpen }))
+    },
+
+    playbackSpeed: {
+      speed: 1,
+      isSpeedFromGesture: false,
+    },
+    setPlaybackSpeed: (speed, isGestureControl = false) => {
+      set({
+        playbackSpeed: {
+          speed,
+          isSpeedFromGesture: isGestureControl,
+        },
+      })
     },
   }
 })

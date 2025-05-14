@@ -1,173 +1,158 @@
-# Genuin Webapp
+# Genuin Monorepo
 
-Next.js web application for Genuin platform.
+This monorepo contains the Genuin web application and SDK packages, managed using Turborepo and pnpm workspaces.
 
 ## Project Structure
 
 ```
-webapp/
-├── src/              # Source code
-├── public/           # Static assets
-├── components/       # React components
-├── pages/           # Next.js pages
-├── styles/          # Global styles
-└── utils/           # Utility functions
+genuin/
+├── apps/
+│   └── webapp/           # Next.js web application
+├── packages/
+│   └── web-sdk/         # React-based SDK package
+├── package.json         # Root package.json with shared dependencies
+├── pnpm-workspace.yaml  # Workspace configuration
+├── turbo.json          # Turborepo configuration
+└── .gitignore          # Root .gitignore
 ```
 
 ## Prerequisites
 
 - Node.js >= 18.17.0
 - pnpm >= 8.0.0
-
-## Environment Setup
-
-This project uses different environment configurations for development, QA, and production. Follow these steps to set up your environment:
-
-1. Copy the example environment files to create your local configurations:
-
-   ```bash
-   cp .env.development.example .env.development
-   cp .env.qa.example .env.qa
-   cp .env.production.example .env.production
-   ```
-
-2. Update the environment files with your specific values:
-
-   - `.env.development`: Local development configuration
-   - `.env.qa`: QA environment configuration
-   - `.env.production`: Production environment configuration
-   - `.env.common`: Shared configuration across all environments (already included in repository)
-
-3. Environment Variables:
-
-   Common Variables (`.env.common`, committed to repository):
-
-   - `NEXT_PUBLIC_API_URL`: Base URL for API calls
-   - `NEXT_PUBLIC_APP_URL`: Base URL for the web application
-   - `NEXT_PUBLIC_SDK_VERSION`: Version of the web-sdk package
-   - `NEXT_PUBLIC_ANALYTICS_ID`: Analytics tracking ID
-
-   Environment-specific Variables (need to be configured locally):
-
-   - `NODE_ENV`: Environment type ("development", "qa", "production")
-   - `NEXT_PUBLIC_BASE_URL`: Base URL for the web application
-   - `NEXT_PUBLIC_API_BASE_URL`: Base URL for API calls
-   - `NEXT_PUBLIC_MEDIA_BASE_URL`: Base URL for media assets
-   - `NEXT_PUBLIC_RUDDERSTACK_URL`: RudderStack analytics URL
-   - `NEXT_PUBLIC_RUDDERSTACK_API_KEY`: RudderStack API key
-
-4. Environment Validation:
-   The project includes automatic environment validation that runs before builds and during development. If you see any validation errors:
-   - Check that you have the correct environment file for your target environment
-   - Ensure all required variables are properly set
-   - Contact your team lead if you need the correct values for any environment
-   - Run validation manually with: `pnpm validate:env`
+- Git
 
 ## Getting Started
 
 1. Install dependencies:
 
    ```bash
-   pnpm install
+   npm install  # or yarn install
    ```
 
-2. Start development server:
+2. **Configure your local environment:**
+
+   For local development, you can create a `.env.local` file to override environment variables:
+
+   ```bash
+   # Copy the example file to .env.local
+   cp .env.local.example .env.local
+
+   # Edit the file as needed
+   nano .env.local
+   ```
+
+   Important environment variables:
+
+   - `MIDDLEWARE_OVERRIDE_HOST`: Set this to override the host used in middleware.
+
+3. **Start the development server:**
+
+   ```bash
+   npm run dev
+   ```
+
+4. Start development servers:
 
    ```bash
    pnpm dev
    ```
 
-3. Build for production:
+5. Build all packages:
    ```bash
    pnpm build
    ```
 
-## Available Scripts
+## Monorepo Management
 
-- `pnpm dev` - Start development server
-- `pnpm build` - Build for production
-- `pnpm start` - Start production server
-- `pnpm lint` - Run ESLint
-- `pnpm format` - Format code with Prettier
-- `pnpm validate:env` - Validate environment configuration
-- `pnpm test` - Run tests
+### Workspace Commands
 
-## Features
+- `pnpm dev` - Start all development servers
+- `pnpm build` - Build all packages
+- `pnpm lint` - Run linting across all packages
+- `pnpm format` - Format code across all packages
 
-- Next.js 14
-- TypeScript
-- Tailwind CSS
-- Radix UI Components
-- React Query
-- Authentication
-- API Integration
-- Web SDK Integration
+### Project-Specific Commands
 
-## Development
+Each project has its own set of commands. See their respective README files for details:
 
-### Local Development
+- [Webapp Commands](./apps/webapp/README.md)
+- [Web SDK Commands](./packages/web-sdk/README.md)
 
-1. Start the development server:
+## Shared Configuration
 
-   ```bash
-   pnpm dev
-   ```
+The monorepo uses shared configurations for:
 
-2. Open [http://localhost:4005](http://localhost:4005)
+- ESLint (`.eslintrc.js`)
+- Prettier (`.prettierrc`)
+- TypeScript (base config)
+- Git Hooks (Husky)
 
-### Building
+## Dependencies
 
-1. Build the application:
-
-   ```bash
-   pnpm build
-   ```
-
-2. Start the production server:
-   ```bash
-   pnpm start
-   ```
-
-## Testing
-
-Run tests with:
-
-```bash
-pnpm test
-```
+Shared dependencies are managed at the root level. Project-specific dependencies are managed in their respective `package.json` files.
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **Build Failures**
+1. **Dependency Conflicts**
 
-   - Clear Next.js cache: `rm -rf .next`
+   - Run `pnpm install` to resolve conflicts
+   - Check for version mismatches in `package.json` files
+
+2. **Build Failures**
+
+   - Clear Turborepo cache: `pnpm turbo clean`
    - Rebuild: `pnpm build`
 
-2. **TypeScript Errors**
+3. **TypeScript Errors**
 
-   - Run type checking: `pnpm typecheck`
-   - Check for missing types
+   - Run `pnpm typecheck` to check for type errors
+   - Ensure all dependencies are properly typed
 
-3. **Environment Issues**
+4. **Workspace Issues**
+   - Run `pnpm install` to update workspace dependencies
+   - Check `pnpm-workspace.yaml` for correct configuration
 
-   - Verify `.env` file exists
-   - Check environment variables
+### Environment Setup
 
-4. **Dependency Issues**
-   - Run `pnpm install`
-   - Check for version conflicts
+1. **Node Version**
 
-### Performance
+   ```bash
+   node -v  # Should be >= 18.17.0
+   ```
 
-- Use `next/image` for images
-- Implement proper code splitting
-- Monitor bundle size
+2. **pnpm Version**
 
-## Deployment
+   ```bash
+   pnpm -v  # Should be >= 8.0.0
+   ```
 
-The application is deployed using Jenkins. See the deployment documentation for details.
+3. **Git Hooks**
+   ```bash
+   pnpm prepare  # Install Git hooks
+   ```
+
+## Development Workflow
+
+1. **Starting Development**
+
+   ```bash
+   pnpm install
+   pnpm dev
+   ```
+
+2. **Making Changes**
+
+   - Create feature branches from `main`
+   - Follow conventional commits
+   - Run tests before pushing
+
+3. **Building for Production**
+   ```bash
+   pnpm build
+   ```
 
 ## Contributing
 

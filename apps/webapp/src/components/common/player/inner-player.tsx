@@ -1,5 +1,5 @@
 import OpenPlayerJS from 'openplayerjs'
-import { type ReactEventHandler, memo, useEffect, useRef, useCallback, type ComponentProps } from 'react'
+import { type ReactEventHandler, memo, useEffect, useCallback, type ComponentProps } from 'react'
 import { usePlayerControlStore } from './player-control-store'
 import { encodeVideoSourceUrl } from '@/lib/utils'
 import { useGenuinOptions } from '@/lib/stores/genuin-options'
@@ -9,7 +9,7 @@ import { useUrlParams } from '@/lib/utils/ssai/urlParamResolver'
 import { useGestureOverlayManager } from '../gestures/gesture-overlay-manager'
 import { useFeedListContext } from '@/components/providers/feed-provider'
 import { useSwiper } from 'swiper/react'
-import { getVideoPlayerConfigs } from './utils'
+import { usePlayerContext } from './context'
 
 type Props = Exclude<
   ComponentProps<'video'> & {
@@ -21,19 +21,7 @@ type Props = Exclude<
   'loop'
 >
 
-function triggerAnalyticsForVideoStart(videoId: string, latency: number) {
-  void Analytics.track({
-    eventName: 'Video Started',
-    properties: {
-      content_category: 'loop',
-      content_id: videoId,
-      event_record_screen: 'feed',
-      event_target_screen: 'none',
-      latency,
-    },
-  })
-}
-
+// This function is now only referenced - implementation moved to singleVideoContext
 function triggerAnalyticsForVideoPause(videoId: string) {
   void Analytics.track({
     eventName: 'Video Paused',
@@ -122,9 +110,15 @@ export const InnerPlayer = memo(function InnerPlayer({
       brandId: state.brandId,
     }))
   )
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const playerRef = useRef<OpenPlayerJS | null>(null)
-  const { shouldPlay, muted, setTimeState, volume, setPlayingState, toggleMuted, setShouldPlay } =
+  const {
+    playerRef,
+    videoRef,
+    setTimeState: singleVideoSetTimeState,
+    playerConfigRef,
+    resetPlayerConfig,
+    play: contextPlay,
+  } = usePlayerContext()
+  const { shouldPlay, muted, setTimeState, volume, setPlayingState, setShouldPlay, playbackSpeed } =
     usePlayerControlStore(
       useShallow((state) => ({
         shouldPlay: state.shouldPlay,
@@ -134,13 +128,13 @@ export const InnerPlayer = memo(function InnerPlayer({
         setPlayingState: state.setPlayingState,
         toggleMuted: state.toggleMuted,
         setShouldPlay: state.setShouldPlay,
+        playbackSpeed: state.playbackSpeed,
       }))
     )
   const { showGestureOverlay } = useGestureOverlayManager()
   const { currentIndex } = useFeedListContext()
-  const webConfigs = useGenuinOptions((state) => state.config.web_configs)
   const swiper = useSwiper()
-  const playerConfigRef = useRef({ ...getVideoPlayerConfigs(webConfigs), hasStarted: false })
+  const webConfigs = useGenuinOptions((state) => state.config.web_configs)
 
   let encodedVideoSourceUrl = videoSource
   if (brandId && brandId.toString() === '1729') {
@@ -162,72 +156,11 @@ export const InnerPlayer = memo(function InnerPlayer({
     }
   }, [volume])
 
-  /**
-   * Handles video playback with configurable autoplay delay and unmuting
-   * @param player OpenPlayerJS instance to control video playback
-   */
-  const play = useCallback(async (player: OpenPlayerJS) => {
-    const playerConfig = playerConfigRef.current
-    try {
-      // Unmute video if configured to start with sound
-      if (playerConfig.unmuteVideo && player.getMedia().muted) {
-        toggleMuted()
-      }
-
-      // this function is used to play the video and trigger analytics
-      const playWithAnalytics = async () => {
-        const startTime = performance.now()
-        try {
-          await player.getMedia().play()
-        } catch (error) {
-          const errorString = error?.toString() ?? ''
-
-          if (errorString.includes('NotAllowedError')) {
-            // First try: mute and play
-            if (!player.getMedia().muted) {
-              toggleMuted()
-              try {
-                await player.getMedia().play()
-                return // Successfully played muted
-              } catch (innerError) {
-                // If muted playback also fails, log the error
-                console.warn('Failed to play even after muting:', innerError)
-              }
-            }
-
-            // Show a user interaction prompt if needed
-            setPlayingState('paused')
-            // You might want to show a UI element here to prompt for user interaction
-            return
-          }
-
-          // Handle other errors
-          console.error('Playback error:', error)
-          setPlayingState('paused')
-          return
-        }
-
-        if (!playerConfigRef.current.hasStarted) {
-          const endTime = performance.now()
-          triggerAnalyticsForVideoStart(id, endTime - startTime)
-          playerConfigRef.current.hasStarted = true
-        }
-      }
-
-      if (playerConfig.autoplayAfter > 0) {
-        setTimeout(() => {
-          void playWithAnalytics()
-          playerConfigRef.current.autoplayAfter = 0
-        }, playerConfig.autoplayAfter * 1000)
-      } else {
-        await playWithAnalytics()
-      }
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error('Error playing video:', e)
-      // Silently handle playback errors
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.playbackRate = playbackSpeed.speed
     }
-  }, [])
+  }, [playbackSpeed])
 
   const initializePlayer = useCallback(
     async (player: OpenPlayerJS, playAfterInit: boolean) => {
@@ -235,19 +168,19 @@ export const InnerPlayer = memo(function InnerPlayer({
       await player.load()
       setPlayingState(undefined)
       if (playAfterInit) {
-        await play(player).catch(async (error) => {
+        await contextPlay(player).catch(async (error) => {
           // eslint-disable-next-line no-console
           console.log('error in player', error)
         })
       }
       return player
     },
-    [play]
+    [contextPlay, setPlayingState]
   )
 
   useEffect(() => {
     // Reset hasStarted when video source changes
-    playerConfigRef.current.hasStarted = false
+    resetPlayerConfig(webConfigs)
 
     if (!videoRef.current) return
     const player = new OpenPlayerJS(videoRef.current, {
@@ -264,9 +197,18 @@ export const InnerPlayer = memo(function InnerPlayer({
       hls: hlsConfigs,
     })
 
+    // Set initial playback speed for the new video
+    videoRef.current.playbackRate = playbackSpeed.speed
+
     void initializePlayer(player, isActive && playerConfigRef.current.autoplay).then((initializedPlayer) => {
       playerRef.current = initializedPlayer
+
+      // Ensure playback speed is set after initialization
+      if (videoRef.current) {
+        videoRef.current.playbackRate = playbackSpeed.speed
+      }
     })
+
     if (isActive && !playerConfigRef.current.autoplay) {
       setShouldPlay(false)
     }
@@ -278,14 +220,14 @@ export const InnerPlayer = memo(function InnerPlayer({
 
     if (isActive) {
       if (shouldPlay) {
-        void play(player)
+        void contextPlay(player)
       } else {
         player.pause()
       }
     } else {
       player.pause()
     }
-  }, [isActive, play, shouldPlay])
+  }, [isActive, shouldPlay, contextPlay])
 
   useEffect(() => {
     if (isActive && !playerConfigRef.current.autoplay) {
@@ -298,6 +240,7 @@ export const InnerPlayer = memo(function InnerPlayer({
       const video = event.currentTarget
 
       setTimeState(video.currentTime, video.duration, id)
+      singleVideoSetTimeState(video.currentTime, video.duration)
 
       if (video.duration > 0) {
         const progress = (video.currentTime / video.duration) * 100
@@ -357,19 +300,16 @@ export const InnerPlayer = memo(function InnerPlayer({
         void playerRef.current.play()
         return
       } else {
+        resetPlayerConfig(webConfigs)
         setShouldPlay(false)
       }
 
       if (shouldSwipeNext && swiper) {
-        playerConfigRef.current = {
-          ...getVideoPlayerConfigs(webConfigs),
-          hasStarted: false,
-        }
-
+        resetPlayerConfig(webConfigs)
         swiper.slideNext()
       }
     },
-    [onEnded, swiper]
+    [onEnded, playerConfigRef, resetPlayerConfig, playerRef, setShouldPlay, swiper, webConfigs]
   )
 
   const handleLoadStart: ReactEventHandler<HTMLVideoElement> = useCallback(

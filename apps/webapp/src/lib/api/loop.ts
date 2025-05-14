@@ -6,6 +6,7 @@ import { validateLoopSubscribers } from '@lib/schemas/loop/subscribers'
 import { parseFeedResponseFromGoApi } from './api-response-parser'
 import { NOT_FOUND_ERROR_CODES } from '../constants'
 import { getQueryKeyForVideoComments } from '../utils/keys'
+import { getQueryKeyForLoopDetails } from '../utils/react-query/keys'
 
 export async function fetchLoopDetails(slug: string) {
   try {
@@ -23,7 +24,7 @@ export async function fetchLoopDetails(slug: string) {
 
 export function getLoopDetails(slug: string) {
   return useQuery({
-    queryKey: ['loop', 'details', slug],
+    queryKey: getQueryKeyForLoopDetails(slug),
     queryFn: async () => await fetchLoopDetails(slug),
   })
 }
@@ -33,6 +34,7 @@ async function fetchLoopVideos(pageParams: any, slug: string) {
     .get('goservices/feed/loop', {
       params: {
         slug,
+        is_order_by_pinned: true,
         last_video_id: pageParams?.lastVideoId,
       },
     })

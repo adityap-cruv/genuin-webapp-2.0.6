@@ -1,3 +1,5 @@
+import { type WebConfigs } from './stores/genuin-options'
+
 /**
  * This is mobile app download which will redirect to app store if it is iphone or else android.
  */
@@ -52,8 +54,8 @@ export const NOT_FOUND_ERROR_MESSAGES = {
     showButton: true,
   },
   brand: {
-    title: 'User not found',
-    description: "We're sorry, but the user you are looking for no longer exists.",
+    title: 'Brand not found',
+    description: "We're sorry, but the brand you are looking for no longer exists.",
     showButton: true,
   },
   community: {
@@ -74,6 +76,51 @@ export const NOT_FOUND_ERROR_MESSAGES = {
 }
 
 export const IHEART_BRAND_URL = [1729]
+
+export const WEB_CONFIGS: WebConfigs = {
+  video_autoplay: {
+    type: 1,
+    auto_play_after: 5,
+  },
+  feed_video_play: {
+    type: 1,
+    repeat_video: 0,
+    swipe_after: 0,
+  },
+  linkout_delay: {
+    type: 1,
+    appear_after: 10,
+  },
+  get_app_popup: {
+    enable: true,
+    popup_after: 5,
+  },
+  login_signup_popup: {
+    enable: true,
+    popup_after: 5,
+  },
+  interest_selection_popup: {
+    enable: true,
+    popup_after: 5,
+  },
+  username_popup: {
+    enable: true,
+    popup_after: 5,
+  },
+  complete_profile_popup: {
+    enable: true,
+    popup_after: 5,
+  },
+  idle_time_interruption: {
+    enable: true,
+    popup_after: 60,
+  },
+  video_aspect_ratio: '9:16',
+  tap_behavior: 3,
+  gesture_guidance: true,
+  playback_speed_enabled: true,
+  is_start_with_sound: false,
+}
 
 export const INDUSTRY: Record<IndustryName, number> = {
   Automotive: 1,

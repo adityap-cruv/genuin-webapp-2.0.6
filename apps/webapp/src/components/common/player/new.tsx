@@ -8,6 +8,7 @@ import { useShallow } from 'zustand/react/shallow'
 import { useCommentStore } from '../comments/store'
 import { useGenuinOptions } from '@/lib/stores/genuin-options'
 import { getVideoPlayerConfigs } from './utils'
+import { PlayerProvider } from './context'
 
 type PlayerProps = {
   videoDetails: VideoPlayerModalType
@@ -65,16 +66,18 @@ export function NewPlayer({ videoDetails, isActive, isInModal, currentIndex, ...
   )
 
   return (
-    <div className="relative h-full w-full">
-      <InnerPlayer
-        isActive={isActive}
-        id={videoDetails.video.id}
-        videoSource={videoDetails.video.source}
-        poster={getWebpUrlForImage(videoDetails.video.thumbnail)}
-        onClick={handleOnClick}
-        {...restProps}
-      />
-      <ControlLayer videoDetails={videoDetails} key={currentIndex} />
-    </div>
+    <PlayerProvider videoId={videoDetails.video.id}>
+      <div className="relative h-full w-full overflow-clip">
+        <InnerPlayer
+          isActive={isActive}
+          id={videoDetails.video.id}
+          videoSource={videoDetails.video.source}
+          poster={getWebpUrlForImage(videoDetails.video.thumbnail)}
+          onClick={handleOnClick}
+          {...restProps}
+        />
+        <ControlLayer videoDetails={videoDetails} isActive={isActive} />
+      </div>
+    </PlayerProvider>
   )
 }

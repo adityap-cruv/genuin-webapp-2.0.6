@@ -13,6 +13,7 @@ type FeedContextType = {
   videos: VideoPlayerModalType[]
   updateCommunityJoinStatus: (communityId: string, role: CommunityUserRoleType) => void
   updateSparkStatus: (videoId: string, isSparked: boolean) => void
+  updateSubscriberStatus: (loopId: string, isSubscribed: boolean) => void
 }
 
 export const FeedContext = createContext<FeedContextType>({
@@ -22,6 +23,7 @@ export const FeedContext = createContext<FeedContextType>({
   videos: [],
   updateCommunityJoinStatus: () => {},
   updateSparkStatus: () => {},
+  updateSubscriberStatus: () => {},
 })
 
 type FeedContextProviderType = {
@@ -174,6 +176,23 @@ export function FeedContextProvider({
     )
   }, [])
 
+  const updateSubscriberStatus = useCallback((loopId: string, isSubscribed: boolean) => {
+    setFeedVideos((prev) =>
+      prev.map((video) => {
+        if (video.loop.id === loopId) {
+          return {
+            ...video,
+            loop: {
+              ...video.loop,
+              isSubscribed,
+            },
+          }
+        }
+        return video
+      })
+    )
+  }, [])
+
   // useEffect(() => {
   //   console.log('feedVideos', feedVideos)
   // }, [feedVideos])
@@ -187,6 +206,7 @@ export function FeedContextProvider({
         videos: feedVideos,
         updateCommunityJoinStatus,
         updateSparkStatus,
+        updateSubscriberStatus,
       }}>
       {children}
     </FeedContext.Provider>

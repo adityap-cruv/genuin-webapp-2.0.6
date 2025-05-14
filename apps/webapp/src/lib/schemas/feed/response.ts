@@ -104,6 +104,7 @@ type FeedLoopInfo = {
   type?: number
   share_url?: string
   member_info?: MemberInfo
+  is_loop_subscribe?: boolean
 }
 
 type FeedCommunityInfo = {

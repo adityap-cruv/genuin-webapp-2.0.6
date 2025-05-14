@@ -8,7 +8,7 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 import { HIRING_LINK } from '@lib/constants'
 import { GenuinIcon } from '@icons/genuin-icon'
 import { usePathname } from 'next/navigation'
-import GetAppButton from '@/components/common/get-app-button'
+import GetAppButton from '@/components/common/actions/get-app-button'
 
 export function NavBar() {
   const pathname = usePathname()

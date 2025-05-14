@@ -26,7 +26,7 @@ import { cn } from '@/lib/utils'
 import { useGenuinOptions } from '@/lib/stores/genuin-options'
 import { fetchProfileCommunities, fetchProfileFeed, fetchProfileLoops, fetchProfileVideos } from '../../lib/api/profile'
 import { useInfiniteQuery } from '@tanstack/react-query'
-import { PlayerModal } from '../common/feed/player-modal'
+import { ExpandView } from '../common/expand-view'
 
 type BasePropsType = {
   profileId: string
@@ -220,12 +220,10 @@ function Videos({ initialVideos, loopId, communityId, totalVideos, profileId, fo
   )
 }
 
-// TODO: this implementation is only for web-sdk. I haven't thought about web-application yet.
 // Will be moving this component to tree structure soon.
 function PlayerModalWrapper({ profileId, forBrand }: BasePropsType) {
   const { activeVideoId: videoId, closePlayerModal } = useTreeStructure()
   const queryKeyForFeed = getQueryKeyForProfileFeed(profileId, forBrand, videoId)
-  const { isMobile } = useGenuinOptions()
 
   const {
     data: videosData,
@@ -256,25 +254,8 @@ function PlayerModalWrapper({ profileId, forBrand }: BasePropsType) {
     return videosData?.pages.flatMap((page) => page.videos)
   }, [videosData])
 
-  if (isMobile)
-    return (
-      <PlayerModal.mobile
-        fetchNextVideos={fetchNextPage}
-        isError={isError}
-        isFetchingNextPage={isFetchingNextPage}
-        startIndex={0}
-        isLoading={isLoading}
-        open={!!videoId}
-        videos={videos ?? []}
-        close={() => {
-          closePlayerModal?.()
-        }}
-        hasNextPage={hasNextPage}
-      />
-    )
-
   return (
-    <PlayerModal.desktop
+    <ExpandView
       fetchNextVideos={fetchNextPage}
       isError={isError}
       isFetchingNextPage={isFetchingNextPage}
@@ -285,7 +266,6 @@ function PlayerModalWrapper({ profileId, forBrand }: BasePropsType) {
       close={() => {
         closePlayerModal?.()
       }}
-      isInModal={true}
       hasNextPage={hasNextPage}
       onCommunityJoin={(communityId, role) => {
         updateCommunityUserRoleForProfileCommunities(profileId, forBrand, communityId, role as CommunityUserRole)

@@ -7,7 +7,7 @@ import { QRCode } from 'react-qrcode-logo'
 import { useGenuinOptions } from '@/lib/stores/genuin-options'
 import { useShallow } from 'zustand/react/shallow'
 import { CustomImage } from '@/components/custom/custom-image'
-import GetAppButton from '../../get-app-button'
+import GetAppButton from '../../actions/get-app-button'
 import Link from 'next/link'
 import { PATH_NAME } from '@/lib/utils/constants/path'
 import { Form, FormControl, FormItem, FormField, FormMessage } from '@/components/ui/form'
@@ -18,7 +18,7 @@ import { z } from 'zod'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { isValidPhoneNumber } from 'react-phone-number-input'
-import { cn } from '@/lib/utils'
+import { cn, sanitizeInput } from '@/lib/utils'
 import { Input } from '@/components/ui/input'
 import { useSearchParams } from 'next/navigation'
 import { sendGetAppLink } from '@/lib/get-deeplink'
@@ -91,6 +91,16 @@ export function Body({ title, subtitle, deepLink }: DownloadDialogType) {
             className="w-full text-body-1-demi text-monochrome-white"
             variant="default"
           />
+          <p className="pt-4 text-cap-1-med">
+            By continuing, you agree to our{' '}
+            <Link href={{ pathname: privacyPolicy }} className="text-primary">
+              Privacy Policy
+            </Link>{' '}
+            and{' '}
+            <Link href={{ pathname: termsAndCondition }} className="text-primary">
+              Terms of Service
+            </Link>
+          </p>
         </div>
       )}
     </div>
@@ -122,8 +132,8 @@ function FormContent({ privacyPolicy, termsAndCondition }: { privacyPolicy: stri
   const mutation = useMutation({
     mutationFn: async (data: z.infer<typeof formSchema>) => {
       const payload: Record<string, any> = {}
-      if (data.phone) payload.mobile = data.phone
-      if (data.email) payload.email = data.email
+      if (data.phone) payload.mobile = sanitizeInput(data.phone)
+      if (data.email) payload.email = sanitizeInput(data.email)
       if (searchParams.toString()) {
         payload.query_params = '?' + searchParams.toString()
       }
@@ -211,7 +221,7 @@ function FormContent({ privacyPolicy, termsAndCondition }: { privacyPolicy: stri
                       <Input
                         placeholder="Enter Email"
                         className={cn(
-                          'border border-tertiary-200 bg-tertiary-100 !text-title-3-med placeholder:!text-tertiary-300'
+                          'border border-tertiary-300 bg-tertiary-100 !text-title-3-med placeholder:!text-tertiary-300'
                         )}
                         {...field}
                       />

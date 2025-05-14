@@ -16,6 +16,7 @@ import { useIheartBorderState } from '@/hooks/use-iheart-border'
 import { useGestureOverlayManager } from '../gestures/gesture-overlay-manager'
 import { NewPlayer } from '../player/new'
 import Analytics from '@/services/analytics'
+import { Toaster } from '@/components/ui/toaster'
 
 type MobileProps = {
   videos?: VideoPlayerModalType[] | null
@@ -33,6 +34,7 @@ type MobileProps = {
    * Pass this parameter if you want to configure custom size box.
    */
   customSizeBox?: VideoSizeBoxType
+  unreadMessageCount?: number
 }
 
 export function Mobile({
@@ -125,21 +127,19 @@ function SwiperRenderer({ videoSizeBox }: { videoSizeBox: VideoSizeBoxType }) {
               {({ isActive, isPrev, isNext, isVisible }) => {
                 if (isActive || isPrev || isNext || isVisible)
                   return (
-                    <>
-                      <NewPlayer
-                        currentIndex={currentIndex}
-                        videoDetails={videoDetails}
-                        isActive={isActive}
-                        onEnded={(event) => {
-                          const { duration, currentTime } = usePlayerControlStore.getState()
-                          Analytics.triggerAnalyticsForVideoComplete(videoDetails.video.id, duration, currentTime)
+                    <NewPlayer
+                      currentIndex={currentIndex}
+                      videoDetails={videoDetails}
+                      isActive={isActive}
+                      onEnded={(event) => {
+                        const { duration, currentTime } = usePlayerControlStore.getState()
+                        Analytics.triggerAnalyticsForVideoComplete(videoDetails.video.id, duration, currentTime)
 
-                          if (videos.length > 1) {
-                            showGestureOverlay('SWIPE')
-                          }
-                        }}
-                      />
-                    </>
+                        if (videos.length > 1) {
+                          showGestureOverlay('SWIPE')
+                        }
+                      }}
+                    />
                   )
               }}
             </SwiperSlide>
@@ -149,6 +149,7 @@ function SwiperRenderer({ videoSizeBox }: { videoSizeBox: VideoSizeBoxType }) {
         </Swiper>
       </div>
       {showIHeartDemo && <IHeartDemo />}
+      <Toaster />
     </>
   )
 }

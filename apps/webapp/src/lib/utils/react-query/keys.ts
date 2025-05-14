@@ -185,3 +185,12 @@ export function getQueryKeyForUserSettings() {
 export function getQueryKeyForCategoryList() {
   return ['categories']
 }
+
+/**
+ * This func returns a QueryKey for fetching community builder status.
+ * No need to pass dynamic values as it is a static data and will be same for one user.
+ * @returns
+ */
+export function getQueryKeyForksCbStatus() {
+  return ['ksCbStatus']
+}

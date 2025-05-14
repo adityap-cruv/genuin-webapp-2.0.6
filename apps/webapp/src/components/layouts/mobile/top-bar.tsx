@@ -34,7 +34,7 @@ import { SettingIcon } from '@icons/settings'
 import { CustomImage } from '@/components/custom/custom-image'
 // import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
-import GetAppButton from '@/components/common/get-app-button'
+import GetAppButton from '@/components/common/actions/get-app-button'
 import { Accordion, AccordionContent, AccordionItem } from '@/components/ui/accordion'
 import { AddIcon } from '@icons/add-icon'
 
@@ -91,7 +91,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
   // const searchParams = useSearchParams()
 
   return (
-    <nav className={cn(navVariant({ variant }), className)}>
+    <nav className={cn('playback-speed-class', navVariant({ variant }), className)}>
       <span className="flex items-center gap-x-3">
         <Menu
           variant={variant}

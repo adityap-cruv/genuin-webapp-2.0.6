@@ -2,6 +2,8 @@ import { axiosInstance } from '@/lib/api/instance'
 import { LOGIN_SOURCE } from '@/lib/constants'
 import { useLocalStorage } from '@/lib/stores/local-storage'
 import { encryptText } from '@/lib/utils'
+import { getQueryKeyForksCbStatus } from '@/lib/utils/react-query/keys'
+import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 
 type SendOtpProps = {
@@ -284,6 +286,15 @@ export async function fetchKsCbRequestStatus(): Promise<{ status: number }> {
         status: 1,
       }
     })
+}
+
+export function useKsCbStatus() {
+  return useQuery({
+    queryKey: getQueryKeyForksCbStatus(),
+    queryFn: fetchKsCbRequestStatus,
+    staleTime: 1000 * 60 * 5,
+    retry: 2,
+  })
 }
 
 export async function miniProfile(verifiedKsToken: boolean): Promise<{ code: number; data: any }> {

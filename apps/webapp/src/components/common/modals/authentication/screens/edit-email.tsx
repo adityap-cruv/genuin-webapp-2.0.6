@@ -3,7 +3,7 @@ import { Form, FormControl, FormField, FormItem, FormMessage, useFormField } fro
 import { Input } from '@components/ui/input'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { cn } from '@lib/utils'
+import { cn, sanitizeInput } from '@lib/utils'
 import { z } from 'zod'
 import { useAuthenticationModalStore } from '../store'
 import { useEffect, useState } from 'react'
@@ -39,7 +39,7 @@ export function EditEmail({ onNext }: ScreenProps) {
   async function onSubmit({ email }: { email: string }) {
     setIsLoading(true)
     try {
-      const response = await sendOtp({ email, isUpdate: true })
+      const response = await sendOtp({ email: sanitizeInput(email), isUpdate: true })
       if (response.codeSent) {
         onNext()
       } else {

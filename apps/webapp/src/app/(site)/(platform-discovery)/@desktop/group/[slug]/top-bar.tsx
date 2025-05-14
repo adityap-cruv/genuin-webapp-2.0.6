@@ -1,7 +1,9 @@
 import { motion, useAnimationControls } from 'framer-motion'
 import { useEffect } from 'react'
-import ShareButton from '@components/common/actions/ShareButton'
-import SubscriptionButton from '@components/common/actions/SubscriptionButton'
+import ShareButton from '@/components/common/actions/share-button'
+import SubscriptionButton from '@/components/common/actions/subscription-button'
+import { getQueryKeyForLoopDetails } from '@/lib/utils/react-query/keys'
+import { useQueryClient } from '@tanstack/react-query'
 
 type Props = {
   /**
@@ -15,9 +17,10 @@ type Props = {
   loopName: string
   shareUrl: string
   communitySlug: string
-  chatId?: string
-  isLoopSubscribed?: boolean
-  handleSubscribeClick?: () => void
+  chatId: string
+  isSubscribed: boolean
+  slug: string
+  ldDescription: string
 }
 
 export const TopStickyBar = {
@@ -32,11 +35,13 @@ function Desktop({
   shareUrl,
   communitySlug,
   chatId,
-  isLoopSubscribed = false,
-  handleSubscribeClick = () => {},
+  isSubscribed,
+  ldDescription,
+  slug,
   ...props
 }: Props) {
   const navAnimationControl = useAnimationControls()
+  const queryClient = useQueryClient()
 
   useEffect(() => {
     if (defaultOpen || isOpen) {
@@ -66,7 +71,20 @@ function Desktop({
         <p className="text-title-2-demi">{loopName}</p>
       </span>
       <span className="my-2 flex items-center gap-x-3">
-        <SubscriptionButton onClick={handleSubscribeClick} isSubscribed={isLoopSubscribed} />
+        <SubscriptionButton
+          isSubscribed={isSubscribed}
+          chatId={chatId}
+          groupName={loopName}
+          ldDescription={ldDescription}
+          shareUrl={shareUrl}
+          slug={slug}
+          onSuccess={async () => {
+            await queryClient.invalidateQueries({
+              queryKey: getQueryKeyForLoopDetails(slug),
+              type: 'all',
+            })
+          }}
+        />
 
         {/* Hidden by requirement. */}
         {/* <Button size="custom" variant="outline" className="border-primary px-4">

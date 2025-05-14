@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import { getUrlForReaction } from '../utils'
+import { WEB_CONFIGS } from '../constants'
 
 export type VideoSizeBoxType = {
   width: number
@@ -222,6 +223,7 @@ export type WebConfigs = {
    */
   tap_behavior: number
   gesture_guidance: boolean
+  playback_speed_enabled?: boolean
 }
 
 export type ConfigType = {
@@ -357,49 +359,7 @@ const initialState: StateType = {
       title: 'react',
       type: 'default',
     },
-    web_configs: {
-      video_autoplay: {
-        type: 1,
-        is_start_with_sound: true,
-        auto_play_after: 5,
-      },
-      feed_video_play: {
-        type: 1,
-        repeat_video: 0,
-        swipe_after: 0,
-      },
-      linkout_delay: {
-        type: 1,
-        appear_after: 10,
-      },
-      get_app_popup: {
-        enable: true,
-        popup_after: 5,
-      },
-      login_signup_popup: {
-        enable: true,
-        popup_after: 5,
-      },
-      interest_selection_popup: {
-        enable: true,
-        popup_after: 5,
-      },
-      username_popup: {
-        enable: true,
-        popup_after: 5,
-      },
-      complete_profile_popup: {
-        enable: true,
-        popup_after: 5,
-      },
-      idle_time_interruption: {
-        enable: true,
-        popup_after: 60,
-      },
-      video_aspect_ratio: '9:16',
-      tap_behavior: 3,
-      gesture_guidance: true,
-    },
+    web_configs: WEB_CONFIGS,
   } as any,
   notificationCount: -1,
   walletBalance: 0,

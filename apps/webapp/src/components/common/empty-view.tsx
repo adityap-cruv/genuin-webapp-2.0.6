@@ -45,9 +45,11 @@ export default function EmptyView({ type }: Props) {
 
   return (
     <main className="h-full w-full">
-      <div className="block sm:hidden">
-        <TopBar variant={'light'} />
-      </div>
+      {type !== 'user' && type !== 'brand' && (
+        <div className="block sm:hidden">
+          <TopBar variant={'light'} />
+        </div>
+      )}
       <div className="h-full w-full p-4">
         <div
           className="flex h-full w-full flex-col items-center justify-center gap-14 rounded-2xl bg-cover bg-center bg-no-repeat xl:py-10"

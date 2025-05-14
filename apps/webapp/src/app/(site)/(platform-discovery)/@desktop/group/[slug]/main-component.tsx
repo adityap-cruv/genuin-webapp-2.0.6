@@ -4,18 +4,16 @@ import type { LoopDetailsType } from '@lib/schemas/loop/details'
 import Image from 'next/image'
 import icLock from '@icons/icLock.svg'
 import { CustomAvatar } from '@components/custom/custom-avatar'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { useInView } from 'framer-motion'
 import { TopStickyBar } from './top-bar'
-import { getLoopCohosts, getLoopDetails, subscribeLoop } from '@lib/api/loop'
+import { getLoopCohosts, getLoopDetails } from '@lib/api/loop'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { ListItem } from '@components/common/list-item'
 import { LoopVideos } from './loop-videos'
-import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
 import { openModal } from '@lib/utils'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
 import Loading from './loading'
 import Error from '../../error'
 import { Shimmer } from '@components/ui/shimmer'
@@ -23,15 +21,16 @@ import { LockIcon } from '@icons/LockIcon'
 import { LoopPrivacyInfo } from '@components/common/loop-privacy-info'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@components/ui/tooltip'
 import BrandBadgeIcon from '@/components/common/brand-badge-icon'
-import Analytics from '@services/analytics'
 import { useSearchParams } from 'next/navigation'
-import { joinAsCollaboratorDeepLink, subscribeDeepLink } from '@/lib/get-deeplink'
+import { joinAsCollaboratorDeepLink } from '@/lib/get-deeplink'
 import { ReadMore } from '@/components/common/read-more'
 import { NOT_FOUND_ERROR_CODES } from '@/lib/constants'
 import EmptyView from '@/components/common/empty-view'
-import ShareButton from '@components/common/actions/ShareButton'
-import SubscriptionButton from '@components/common/actions/SubscriptionButton'
+import ShareButton from '@/components/common/actions/share-button'
+import SubscriptionButton from '@/components/common/actions/subscription-button'
 import { getAudioUrlForCommunity, useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
+import { useQueryClient } from '@tanstack/react-query'
+import { getQueryKeyForLoopDetails } from '@/lib/utils/react-query/keys'
 
 interface Props {
   loopDetails: LoopDetailsType
@@ -64,12 +63,10 @@ export function LoopDetails({ slug }: { slug: string }) {
 
 // TODO: Improve this component.
 export function MainComponent({ loopDetails }: Props) {
-  const { toast } = useToast()
   const detailsDivRef = useRef<HTMLDivElement>(null)
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
-  const [isLoopSubscribed, setIsLoopSubscribed] = useState(!!loopDetails.is_subscriber)
-  const user = useGenuinOptions().user
   const searchParams = Object.fromEntries(useSearchParams())
+  const queryClient = useQueryClient()
 
   const ldDescription = `${
     loopDetails.group?.group_description !== null &&
@@ -79,49 +76,6 @@ export function MainComponent({ loopDetails }: Props) {
       : ''
   } • Join ${loopDetails.group.group_name} to talk about it`
 
-  function toggleLoopSubscription() {
-    const newValue = !isLoopSubscribed
-    void subscribeLoop(loopDetails.chat_id, newValue).then((res) => {
-      if (res.code === 200) {
-        setIsLoopSubscribed(newValue)
-        if (newValue) {
-          // Notifications turned on for this Group
-          toast({ title: 'Notifications turned on for this Group', duration: 1000 })
-        } else {
-          // Notifications turned off for this Group
-          toast({ title: 'Notifications turned off for this Group', duration: 1000 })
-        }
-      }
-    })
-  }
-
-  const handleSubscribeClick = async () => {
-    void Analytics.track({
-      eventName: 'subscription_clicked',
-      properties: {
-        loop_id: loopDetails.chat_id,
-        loop_slug: loopDetails.slug,
-        loop_name: loopDetails.group.group_name ?? '',
-      },
-    })
-
-    if (user) {
-      toggleLoopSubscription()
-    } else {
-      await subscribeDeepLink({ ldDescription, loopDetails, searchParams }).then((generatedLink) => {
-        openModal({
-          deepLink: generatedLink,
-          subtitle: (
-            <>
-              Get the app to subscribe to
-              <span className="font-bold"> {loopDetails.group.group_name}</span> Group.
-            </>
-          ),
-        })
-      })
-    }
-  }
-
   return (
     <>
       <TopStickyBar.desktop
@@ -130,16 +84,31 @@ export function MainComponent({ loopDetails }: Props) {
         loopName={loopDetails.group.group_name ?? ''}
         shareUrl={loopDetails.share_url}
         communitySlug={loopDetails.community.slug}
+        isSubscribed={loopDetails.is_subscriber}
+        ldDescription={ldDescription}
+        slug={loopDetails.slug}
         chatId={loopDetails.chat_id}
-        isLoopSubscribed={isLoopSubscribed}
-        handleSubscribeClick={handleSubscribeClick}
       />
       <main className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto pl-6">
         <div className="mt-6 flex justify-between">
           <p className="text-title-1-bold text-secondary">{loopDetails.group.group_name}</p>
           <div className="flex items-center gap-x-3">
             {loopDetails.is_view_allowed && (
-              <SubscriptionButton onClick={handleSubscribeClick} isSubscribed={isLoopSubscribed} />
+              <SubscriptionButton
+                isSubscribed={loopDetails.is_subscriber}
+                chatId={loopDetails.chat_id}
+                groupName={loopDetails.group.group_name ?? ''}
+                ldDescription={ldDescription}
+                shareUrl={loopDetails.share_url}
+                slug={loopDetails.slug}
+                key={loopDetails.chat_id}
+                onSuccess={async () => {
+                  await queryClient.invalidateQueries({
+                    queryKey: getQueryKeyForLoopDetails(loopDetails.slug),
+                    type: 'all',
+                  })
+                }}
+              />
             )}
 
             {!loopDetails.is_view_allowed && (
@@ -154,7 +123,7 @@ export function MainComponent({ loopDetails }: Props) {
                         deepLink: generatedLink,
                         subtitle: (
                           <>
-                            Get the app to Join as Member to
+                            Download app to Join as Member to
                             <span className="font-bold"> {loopDetails.group.group_name}</span> Group.
                           </>
                         ),

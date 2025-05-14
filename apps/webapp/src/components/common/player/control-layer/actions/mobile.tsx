@@ -72,7 +72,7 @@ export function Mobile({
                 RepostModal.open(videoId)
               } else {
                 await repostDeepLink({ videoSlug, shareUrl, searchParams }).then((generatedLink) => {
-                  openModal({ deepLink: generatedLink, subtitle: 'Get the app to repost the video.' })
+                  openModal({ deepLink: generatedLink, subtitle: 'Download app to repost the video.' })
                 })
               }
             }}>

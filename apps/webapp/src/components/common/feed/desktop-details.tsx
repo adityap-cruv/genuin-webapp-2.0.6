@@ -10,9 +10,9 @@ import BrandBadgeIcon from '@/components/common/brand-badge-icon'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@components/ui/tooltip'
 import { ReadMore } from '../read-more'
 import { Linkout } from '../linkout'
-import ShareButton from '@components/common/actions/ShareButton'
+import ShareButton from '@/components/common/actions/share-button'
 import { useFeedListContext } from '../../providers/feed-provider'
-import { JoinCommunityButton } from '../join-community-button'
+import { JoinCommunityButton } from '../actions/join-community-button'
 import { getAudioUrlForCommunity, useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
 import CommentsLayout from '../comments/comments-layout'
 
@@ -21,7 +21,7 @@ type DesktopDetailsProps = VideoPlayerModalType
 // TODO: Remove scrollDivRef dependency from CommentBox.
 export function DesktopDetails({ loop, community, owner, video }: DesktopDetailsProps) {
   const scrollDivRef = useRef<HTMLDivElement>(null)
-  const { updateCommunityJoinStatus } = useFeedListContext()
+  const { updateCommunityJoinStatus, updateSubscriberStatus } = useFeedListContext()
   const { shouldShowIHeartDemo, setAudioUrl } = useIHeartDemoStates()
 
   useEffect(() => {
@@ -122,6 +122,7 @@ export function DesktopDetails({ loop, community, owner, video }: DesktopDetails
                   role={community.userRole}
                   onStatusChange={(role) => {
                     updateCommunityJoinStatus(community.id, role)
+                    if (role === 'UNJOINED') updateSubscriberStatus(loop.id, false)
                   }}
                   isMobile={false}
                   shareUrl={community.shareUrl}

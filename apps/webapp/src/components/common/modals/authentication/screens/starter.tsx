@@ -1,6 +1,6 @@
 import { Form, FormControl, FormItem, FormField, FormMessage, useFormField } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { cn } from '@/lib/utils'
+import { cn, sanitizeInput } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { ModalShell } from '../modal-shell'
 import { FooterInfo } from '../components/footer-info'
@@ -69,7 +69,7 @@ function EmailForm({ onNext }: { onNext: () => void }) {
 
   async function handleSubmit({ email }: { email: string }) {
     setIsLoading(true)
-    const response = await sendOtp({ email })
+    const response = await sendOtp({ email: sanitizeInput(email) })
     if (response.codeSent) {
       onNext()
     } else {

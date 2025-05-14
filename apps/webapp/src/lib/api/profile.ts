@@ -42,7 +42,7 @@ export async function fetchUserData(nickname: string, headers?: Headers, forBran
       return validateProfileDetails(res.data.data)
     })
     .catch((e) => {
-      if (e.response.data.code === NOT_FOUND_ERROR_CODES.user) {
+      if (e.response.data.code === NOT_FOUND_ERROR_CODES.user || e.response.data.code === NOT_FOUND_ERROR_CODES.brand) {
         throw new Error(e.response.data.code)
       }
       throw new Error('Something went wrong in profile details api.')
@@ -264,6 +264,7 @@ function parseFeedResponse(feeds: FeedVideoType[]) {
       id: loop?.uuid || '',
       slug: loop?.slug || '',
       name: loop?.group_name || null,
+      description: loop?.group_description,
     },
     owner: {
       isAvatar: owner.is_avatar ?? false,
@@ -295,6 +296,7 @@ function parseFeedResponse(feeds: FeedVideoType[]) {
       clickableUrl: video.clickable_url ?? null,
       thumbnailM: video.thumbnail_url_l || video.thumbnail_url,
       linkouts: video.linkouts,
+      is_pinned: video.is_pinned ?? false,
     },
   }))
 }

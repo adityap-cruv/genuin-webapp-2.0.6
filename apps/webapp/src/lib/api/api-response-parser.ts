@@ -34,6 +34,9 @@ export function parseFeedResponseFromGoApi(feeds: FeedResponseFromGoApi[]) {
       id: loop?.uuid || '',
       slug: loop?.slug || '',
       name: loop?.group_name || null,
+      description: loop?.group_description || '',
+      shareUrl: loop?.share_url,
+      isSubscribed: loop?.is_loop_subscribe || false,
     },
     owner: {
       isAvatar: owner.is_avatar,
@@ -65,6 +68,8 @@ export function parseFeedResponseFromGoApi(feeds: FeedResponseFromGoApi[]) {
       clickableUrl: video.clickable_url || null,
       thumbnailM: video.thumbnail_url_l || video.thumbnail_url,
       linkouts: video.linkouts,
+      is_pinned: video.is_pinned || false,
+      spriteUrl: video.sprite_image_url,
     },
   }))
 }

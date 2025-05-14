@@ -57,9 +57,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "**/*.js"
-    // "src/app/api/auth/[...nextauth]/route.js",
-    // "src/components/business/marketing-page/social-connections/index.js"
+    "**/*.js",
   ],
   "exclude": [
     "node_modules",

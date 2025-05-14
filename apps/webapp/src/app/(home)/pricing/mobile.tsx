@@ -19,7 +19,7 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { Pagination } from 'swiper/modules'
 import SwiperCore from 'swiper'
 import 'swiper/swiper-bundle.css'
-import GetAppButton from '@/components/common/get-app-button'
+import GetAppButton from '@/components/common/actions/get-app-button'
 
 SwiperCore.use([Pagination])
 

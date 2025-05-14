@@ -9,7 +9,7 @@ import exclamation from '@icons/business/exclamation.svg'
 import { Button } from '@components/ui/button'
 import style from './subscriptionPlan.module.scss'
 import { ContactUs } from '@components/common/modals/contact-us'
-import GetAppButton from '@/components/common/get-app-button'
+import GetAppButton from '@/components/common/actions/get-app-button'
 
 export default function SubscriptionPlan() {
   return (

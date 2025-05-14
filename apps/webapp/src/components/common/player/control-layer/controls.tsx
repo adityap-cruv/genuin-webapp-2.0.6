@@ -21,13 +21,13 @@ export const Controls = memo(function Controls({ videoId, className, ...restProp
   return (
     <>
       <div
-        className="absolute inset-0 h-20"
+        className="absolute inset-0 z-10 h-20"
         style={{
           background: 'linear-gradient(0deg, rgba(0, 0, 0, 0.00) 0%, rgba(0, 0, 0, 0.50) 100%)',
         }}
       />
       <div
-        className={cn('absolute top-16 z-10 flex h-20 w-full justify-between gap-3 px-4 pt-4 sm:top-0', className)}
+        className={cn('absolute top-16 z-40 flex h-20 w-full justify-between gap-3 px-4 pt-4 sm:top-0', className)}
         {...restProps}>
         <ControlButtons videoId={videoId} />
         {!isMobile && (

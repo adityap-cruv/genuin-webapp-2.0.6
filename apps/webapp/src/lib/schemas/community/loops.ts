@@ -67,6 +67,7 @@ const CommunityLoopSchema = z.object({
   latest_messages: z.array(latestMessageSchema),
   group: groupSchema,
   settings: settingsSchema,
+  position: z.number().nullish(),
 })
 
 const CommunityLoopListSchema = z.array(CommunityLoopSchema)

@@ -7,7 +7,7 @@ import { HIRING_LINK } from '@lib/constants'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { type VariantProps, cva } from 'class-variance-authority'
 import { AppLogo } from '@components/ui/app-logo'
-import GetAppButton from './get-app-button'
+import GetAppButton from './actions/get-app-button'
 
 const navbarVariant = cva('fixed left-0 top-0 z-10 m-auto flex h-navbar w-full', {
   variants: {

@@ -1,7 +1,7 @@
 import { FormField, Form, FormItem, FormLabel, FormControl, FormMessage, useFormField } from '@components/ui/form'
 import { ImageInput } from '../components/image-input'
 import { Input } from '@components/ui/input'
-import { cn } from '@lib/utils'
+import { cn, sanitizeInput } from '@lib/utils'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -45,8 +45,8 @@ export function CompleteProfile() {
     setIsLoading(true)
     try {
       const { status, user } = await updateUser({
-        name: displayName,
-        bio,
+        name: sanitizeInput(displayName),
+        bio: sanitizeInput(bio),
         is_avatar: formData.imageName ? formData.isAvatar : undefined,
         profile_image: formData.imageName,
       })

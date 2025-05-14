@@ -1,4 +1,4 @@
-import ShareButton from '@/components/common/actions/ShareButton'
+import ShareButton from '@/components/common/actions/share-button'
 import BrandBadgeIcon from '@/components/common/brand-badge-icon'
 import { CustomAvatar } from '@/components/custom/custom-avatar'
 import { cn } from '@/lib/utils'

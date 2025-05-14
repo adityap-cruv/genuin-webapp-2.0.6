@@ -18,7 +18,7 @@ export async function getEmbedConfig(params: Record<string, string>) {
 }
 
 export async function getIpAddress() {
-  return await fetch('https://api.ipify.org?format=json')
+  return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/goservices/data/ip_info`)
     .then(async (res) => await res.json())
     .then((res) => {
       return res.ip

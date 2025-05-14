@@ -1,6 +1,6 @@
 import { usePlayerControlStore } from '../player-control-store'
 import { Actions } from './actions'
-import { PlayerProgressBar } from './player-progress-bar'
+import { Scrubber } from './scrubber'
 import { memo, useCallback } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { WalletAmountBadge } from '../../wallet/wallet-amount-badge'
@@ -142,7 +142,7 @@ export const Desktop = memo(function Desktop({
           />
         </div>
       )}
-      <PlayerProgressBar />
+      <Scrubber spriteUrl="" />
     </div>
   )
 })

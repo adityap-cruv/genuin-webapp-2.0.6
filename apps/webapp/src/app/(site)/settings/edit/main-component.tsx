@@ -1,5 +1,5 @@
 'use client'
-import { cn } from '@lib/utils'
+import { cn, sanitizeInput } from '@lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -113,14 +113,14 @@ function EditProfile({ profileData }: { profileData: ProfileDetailsType }) {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const { status, user } = await updateUser({
-        name: values.displayName ? values.displayName : undefined,
-        bio: values.bio ? values.bio : undefined,
+        name: sanitizeInput(values.displayName),
+        bio: sanitizeInput(values.bio),
         is_avatar: formData.imageName ? formData.isAvatar : undefined,
         profile_image: formData.imageName,
-        insta_id: values.instagram ? values.instagram : undefined,
-        linkedin_id: values.linkedIn ? values.linkedIn : undefined,
-        twitter_id: values.twitter ? values.twitter : undefined,
-        tiktok_id: values.tiktok ? values.tiktok : undefined,
+        insta_id: sanitizeInput(values.instagram),
+        linkedin_id: sanitizeInput(values.linkedIn),
+        twitter_id: sanitizeInput(values.twitter),
+        tiktok_id: sanitizeInput(values.tiktok),
       })
       if (status) {
         await updateSession({

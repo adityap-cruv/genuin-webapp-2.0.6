@@ -1,5 +1,5 @@
 'use client'
-import GetAppButton from '@/components/common/get-app-button'
+import GetAppButton from '@/components/common/actions/get-app-button'
 
 interface Props {
   questionDetails: any

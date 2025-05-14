@@ -1,5 +1,5 @@
 'use client'
-import { JoinCommunityButton } from '@/components/common/join-community-button'
+import { JoinCommunityButton } from '@/components/common/actions/join-community-button'
 import { abbreviateNumber } from '@lib/utils'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { getFeaturedCommunity } from '@lib/api/community'
@@ -37,58 +37,62 @@ export function Communities() {
 
   return (
     <>
-      <div className="hidden sm:block">
-        <p className="pb-2 pt-6 text-title-1-bold">Featured Communities</p>
-        {isLoading ? (
-          <CommunitiesShimmer />
-        ) : (
-          <div className="grid h-auto w-full min-w-fit grid-cols-1 gap-4 md:grid-cols-2 md:grid-rows-2">
-            {communities?.map((community) => {
-              return (
-                <CommunityItem
-                  key={community.community_id}
-                  id={community.community_id}
-                  memberCount={community.no_of_members}
-                  profileImage={community.dp_m ?? community.dp ?? ''}
-                  description={community.description ?? ''}
-                  name={community.name}
-                  slug={community.slug}
-                  handle={community.handle}
-                  role={joinedCommunities.includes(community.community_id) ? 'MEMBER' : 'UNJOINED'}
-                  onCommunityStatusChange={(role) => {
-                    handleCommunityRoleChange(community.community_id, role)
-                  }}
-                />
-              )
-            })}
+      {isLoading ? (
+        <CommunitiesShimmer />
+      ) : (
+        communities.length !== 0 && (
+          <div className="hidden sm:block">
+            <p className="pb-2 pt-6 text-title-1-bold">Featured Communities</p>
+            <div className="md:grid-rows-auto grid h-auto w-full min-w-fit grid-cols-1 gap-4 md:grid-cols-2">
+              {communities?.map((community) => {
+                return (
+                  <CommunityItem
+                    key={community.community_id}
+                    id={community.community_id}
+                    memberCount={community.no_of_members}
+                    profileImage={community.dp_m ?? community.dp ?? ''}
+                    description={community.description ?? ''}
+                    name={community.name}
+                    slug={community.slug}
+                    handle={community.handle}
+                    role={joinedCommunities.includes(community.community_id) ? 'MEMBER' : 'UNJOINED'}
+                    onCommunityStatusChange={(role) => {
+                      handleCommunityRoleChange(community.community_id, role)
+                    }}
+                  />
+                )
+              })}
+            </div>
           </div>
-        )}
-      </div>
-      <div className="block w-full sm:hidden">
-        <p className="pb-2 pt-6 text-title-1-bold">Featured Communities</p>
-        {isLoading ? (
-          <CommunitiesShimmer />
-        ) : (
-          <Swiper direction="horizontal" loop spaceBetween={16} centeredSlides slidesPerView={1.2}>
-            {communities?.map((community) => (
-              <SwiperSlide key={community.community_id}>
-                <CommunityItem
-                  role={joinedCommunities.includes(community.community_id) ? 'MEMBER' : 'UNJOINED'}
-                  id={community.community_id}
-                  memberCount={community.no_of_members}
-                  profileImage={community.dp ?? ''}
-                  description={community.description ?? ''}
-                  slug={community.slug}
-                  handle={community.handle}
-                  onCommunityStatusChange={(role) => {
-                    handleCommunityRoleChange(community.community_id, role)
-                  }}
-                />
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        )}
-      </div>
+        )
+      )}
+      {isLoading ? (
+        <CommunitiesShimmer />
+      ) : (
+        communities.length !== 0 && (
+          <div className="block w-full sm:hidden">
+            <p className="pb-2 pt-6 text-title-1-bold">Featured Communities</p>
+            <Swiper direction="horizontal" loop spaceBetween={16} centeredSlides slidesPerView={1.2}>
+              {communities?.map((community) => (
+                <SwiperSlide key={community.community_id}>
+                  <CommunityItem
+                    role={joinedCommunities.includes(community.community_id) ? 'MEMBER' : 'UNJOINED'}
+                    id={community.community_id}
+                    memberCount={community.no_of_members}
+                    profileImage={community.dp ?? ''}
+                    description={community.description ?? ''}
+                    slug={community.slug}
+                    handle={community.handle}
+                    onCommunityStatusChange={(role) => {
+                      handleCommunityRoleChange(community.community_id, role)
+                    }}
+                  />
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
+        )
+      )}
     </>
   )
 }

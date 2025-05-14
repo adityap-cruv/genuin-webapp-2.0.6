@@ -20,6 +20,20 @@ const nextConfig = {
       { source: '/q/:id', destination: '/question/:id', permanent: true },
     ]
   },
+  /**
+   * HTTP Headers Configuration
+   *
+   * This method imports and applies the HTTP security headers defined in the headers.js module.
+   * Security headers protect against common web vulnerabilities like XSS, clickjacking, etc.
+   *
+   * @see /config/headers.js for detailed documentation on each security header
+   * @returns {Promise<Array>} Array of header configurations in Next.js format
+   */
+  async headers() {
+    // Import headers configuration from separate file using dynamic import
+    const getHeaders = require('./config/headers.js')
+    return getHeaders()
+  },
   // webpack(config, ) {},
 }
 
