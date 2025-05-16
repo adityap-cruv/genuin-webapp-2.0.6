@@ -47,7 +47,7 @@ export default function BecomeCbCard({ className, style, onClick, ...restProps }
   return (
     <div
       className={cn(
-        'max-w-64 relative flex max-h-16 rounded-lg border border-primary-200 bg-primary-200 text-title-3-demi text-monochrome-black hover:cursor-pointer',
+        'relative flex max-h-16 max-w-64 rounded-lg border border-primary-200 bg-primary-200 text-title-3-demi text-monochrome-black hover:cursor-pointer',
         className
       )}
       style={{

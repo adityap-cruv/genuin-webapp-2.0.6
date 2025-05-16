@@ -26,7 +26,8 @@ export default function Desktop() {
                   Get First Party Data & Capabilities to Moderate your Communities
                 </p>
                 <p className="my-4 text-new-para-1">
-                  Full Transparency, access, and control over your community’s activity with help from AI assistants{' '}
+                  Full Transparency, access, and control over your community’s activity with help from AI
+                  assistants{' '}
                 </p>
                 <ContactUs>
                   <Button

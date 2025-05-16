@@ -9,7 +9,7 @@ function checkAndAppendHttps(link: string): string {
 
 export const authConfig = {
   callbacks: {
-    session(params) {
+    session(params: any) {
       return { user: params.token.user, expires: params.session.expires }
     },
     jwt({
@@ -23,18 +23,27 @@ export const authConfig = {
       user,
       // Available only in the first call once the user signs in. Not available in subsequent calls
       account,
+    }: {
+      token: any
+      trigger?: 'signIn' | 'signUp' | 'update' | undefined
+      session?: any
+      user?: any
+      account?: any
     }) {
       if (trigger === 'update') {
         return session
       }
       if (user && trigger === 'signIn') {
-        // console.log('user in jwt::', user, account, session)
         return { ...token, user }
       }
       return token
     },
-    redirect({ baseUrl, url }) {
-      baseUrl = checkAndAppendHttps(headers().get('host') ?? 'app.qa.begenuin.com')
+    authorized({ auth, request }: { auth: any; request: any }) {
+      return !!auth?.user
+    },
+    async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
+      const headersList = await headers()
+      baseUrl = checkAndAppendHttps(headersList.get('host') ?? 'app.qa.begenuin.com')
       if (url.startsWith('/')) baseUrl += url
       return baseUrl
     },

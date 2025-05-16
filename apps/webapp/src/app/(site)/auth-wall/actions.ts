@@ -26,25 +26,27 @@ export async function verifyCredentials(username: string, password: string): Pro
   // If valid credentials, set a secure HTTP-only cookie
   if (isValid) {
     // Generate a secure token
-    const secureToken = generateSecureToken()
-
-    // Set the secure cookie
-    cookies().set('gn_bx_acc', secureToken, {
-      httpOnly: true, // Prevents JavaScript access
-      secure: process.env.NODE_ENV === 'production', // HTTPS only in production
-      maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
-      path: '/', // Available across the site
-      sameSite: 'strict', // Prevents CSRF attacks
-    })
-
-    // Set a client-readable cookie to trigger UI updates
-    cookies().set('gn_bx_auth_state', 'authenticated', {
-      httpOnly: false, // Client can read this
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
-      path: '/',
-      sameSite: 'strict',
-    })
+    const secureToken = generateSecureToken()(
+      // Set the secure cookie
+      await cookies()
+    )
+      .set('gn_bx_acc', secureToken, {
+        httpOnly: true, // Prevents JavaScript access
+        secure: process.env.NODE_ENV === 'production', // HTTPS only in production
+        maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
+        path: '/', // Available across the site
+        sameSite: 'strict', // Prevents CSRF attacks
+      })(
+        // Set a client-readable cookie to trigger UI updates
+        await cookies()
+      )
+      .set('gn_bx_auth_state', 'authenticated', {
+        httpOnly: false, // Client can read this
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
+        path: '/',
+        sameSite: 'strict',
+      })
   }
 
   return isValid

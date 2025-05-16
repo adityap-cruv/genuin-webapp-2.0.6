@@ -3,8 +3,8 @@ import { cookies } from 'next/headers'
 import { EmbedLayout } from '@/components/layouts/desktop/embed-layout'
 import { type Metadata } from 'next'
 
-export default function AppLayout(props: any) {
-  const isMobile = cookies().get('device_type')?.value === 'mobile'
+export default async function AppLayout(props: any) {
+  const isMobile = (await cookies()).get('device_type')?.value === 'mobile'
 
   return isMobile ? (
     <main className="h-full w-full overflow-scroll">

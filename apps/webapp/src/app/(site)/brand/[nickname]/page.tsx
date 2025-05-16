@@ -7,16 +7,19 @@ import { BrandPage } from './main-component'
 import { fetchUserData } from '@/lib/api/profile'
 
 interface CompProps {
-  params: {
+  params: Promise<{
     nickname: string
-  }
-  searchParams: Record<string, unknown>
+  }>
+  searchParams: Promise<Record<string, unknown>>
 }
 
 export default async function Component({ params }: CompProps) {
-  const configs = cookies().get('config_params')?.value
+  const cookieStore = await cookies()
+  const configs = cookieStore.get('config_params')?.value
+
   try {
-    const brandDetails = await fetchUserData(params.nickname, configs ? JSON.parse(configs) : undefined, true)
+    const resolvedParams = await params
+    const brandDetails = await fetchUserData(resolvedParams.nickname, configs ? JSON.parse(configs) : undefined, true)
     return <BrandPage brandDetails={brandDetails} />
   } catch (error: any) {
     // Check the type of error
@@ -36,7 +39,8 @@ type ProfileDataType = {
 }
 
 export async function generateMetadata({ params }: CompProps): Promise<Metadata> {
-  const data: ProfileDataType = await fetchMetadata({ type: 6, slug: params.nickname })
+  const resolvedParams = await params
+  const data: ProfileDataType = await fetchMetadata({ type: 6, slug: resolvedParams.nickname })
   return {
     title: data?.title,
     // applicationName: 'Genuin',
@@ -44,7 +48,7 @@ export async function generateMetadata({ params }: CompProps): Promise<Metadata>
     openGraph: {
       title: data?.title,
       description: data?.description,
-      url: `${process.env.NEXT_PUBLIC_HOST_URL}${PATH_NAME.brand(params.nickname)}`,
+      url: `${process.env.NEXT_PUBLIC_HOST_URL}${PATH_NAME.brand(resolvedParams.nickname)}`,
       images: [
         {
           url: data?.preview_image,

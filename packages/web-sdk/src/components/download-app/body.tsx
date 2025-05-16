@@ -81,8 +81,8 @@ export function Body({ title, subtitle, deepLink }: DownloadDialogType) {
               href={
                 typeof brandDetails?.integrations.sdk.ios === 'string'
                   ? brandDetails.integrations.sdk.ios
-                  : brandDetails?.integrations.sdk.ios?.appstore_link ??
-                    URL_TO_APP_STORE
+                  : (brandDetails?.integrations.sdk.ios?.appstore_link ??
+                    URL_TO_APP_STORE)
               }
               target='_blank'
               rel='noopener noreferrer'>
@@ -96,8 +96,8 @@ export function Body({ title, subtitle, deepLink }: DownloadDialogType) {
               href={
                 typeof brandDetails?.integrations.sdk.android === 'string'
                   ? brandDetails.integrations.sdk.android
-                  : brandDetails?.integrations.sdk.android?.playstore_link ??
-                    URL_TO_PLAY_STORE
+                  : (brandDetails?.integrations.sdk.android?.playstore_link ??
+                    URL_TO_PLAY_STORE)
               }
               target='_blank'
               rel='noopener noreferrer'>

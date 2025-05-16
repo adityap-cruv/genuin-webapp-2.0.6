@@ -57,8 +57,10 @@ export function UserTick({ user }: { user: User | null }) {
               {user.usernameSet
                 ? '@' + user.nickname
                 : user.email
-                ? user.email
-                : formatPhoneNumberIntl(user.phoneNumber?.startsWith('+') ? user.phoneNumber : `+${user.phoneNumber}`)}
+                  ? user.email
+                  : formatPhoneNumberIntl(
+                      user.phoneNumber?.startsWith('+') ? user.phoneNumber : `+${user.phoneNumber}`
+                    )}
             </p>
             {!user?.isBrandSystemUser && (
               <Link

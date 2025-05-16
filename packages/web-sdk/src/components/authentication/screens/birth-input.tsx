@@ -57,7 +57,7 @@ export function BirthInput({ onNext }: ScreenProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       birth: formData.birth
-        ? getCurrentDate(formData.birth) ?? ''
+        ? (getCurrentDate(formData.birth) ?? '')
         : suggestionDate.toISOString().split('T')[0],
     },
     criteriaMode: 'firstError',

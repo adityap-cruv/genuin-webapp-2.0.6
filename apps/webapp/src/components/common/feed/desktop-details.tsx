@@ -62,7 +62,7 @@ export function DesktopDetails({ loop, community, owner, video }: DesktopDetails
         <div
           className={cn(
             'border-b border-tertiary-200',
-            video.descriptionArr ?? video.descriptionText ? 'p-4 pt-0' : ''
+            (video.descriptionArr ?? video.descriptionText) ? 'p-4 pt-0' : ''
           )}>
           {(video.descriptionArr ?? video.descriptionText) && (
             <ReadMore.dynamic position="outside" text={video.descriptionArr ?? video.descriptionText} maxLines={2} />

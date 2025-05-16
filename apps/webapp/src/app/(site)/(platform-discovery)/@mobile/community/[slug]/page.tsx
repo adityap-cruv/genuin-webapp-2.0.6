@@ -5,17 +5,20 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 import { type Metadata } from 'next'
 
 type Props = {
-  params: {
+  params: Promise<{
     slug: string
-  }
-  searchParams: {
+  }>
+  searchParams: Promise<{
     feed: string
-  }
+  }>
 }
 
 export default async function Component({ params, searchParams }: Props) {
-  if (searchParams.feed === '1') return <RootFeed slug={params.slug} />
-  return <CommunityDetails slug={params.slug} />
+  const resolvedParams = await params
+  const resolvedSearchParams = await searchParams
+
+  if (resolvedSearchParams.feed === '1') return <RootFeed slug={resolvedParams.slug} />
+  return <CommunityDetails slug={resolvedParams.slug} />
 }
 interface CommunityDataType {
   title: string
@@ -24,7 +27,8 @@ interface CommunityDataType {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const communityData: CommunityDataType = await fetchMetadata({ type: 2, slug: params.slug })
+  const resolvedParams = await params
+  const communityData: CommunityDataType = await fetchMetadata({ type: 2, slug: resolvedParams.slug })
 
   return {
     title: communityData?.title,
@@ -33,7 +37,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title: communityData?.title,
       description: communityData?.description,
-      url: `${process.env.NEXT_PUBLIC_HOST_URL}` + PATH_NAME.community(params.slug),
+      url: `${process.env.NEXT_PUBLIC_HOST_URL}` + PATH_NAME.community(resolvedParams.slug),
       images: [{ url: communityData?.preview_image ?? '' }],
     },
   }

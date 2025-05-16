@@ -31,7 +31,7 @@ export function Loops() {
                     owner: { userName: item.owner.username },
                     thumbnail: item.thumbnail_url_m
                       ? item.thumbnail_url_m
-                      : item.thumbnail_url_l ?? item.thumbnail_url ?? '',
+                      : (item.thumbnail_url_l ?? item.thumbnail_url ?? ''),
                     createdAt: item.message_at,
                   }))}
                   loopSlug={item.slug}

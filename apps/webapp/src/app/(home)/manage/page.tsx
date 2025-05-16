@@ -3,8 +3,8 @@ import Desktop from './desktop'
 import { cookies } from 'next/headers'
 import { type Metadata } from 'next'
 
-export default function Component() {
-  const isMobile = cookies().get('device_type')?.value === 'mobile'
+export default async function Component() {
+  const isMobile = (await cookies()).get('device_type')?.value === 'mobile'
   return isMobile ? <Mobile /> : <Desktop />
 }
 

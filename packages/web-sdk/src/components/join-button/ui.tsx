@@ -64,8 +64,8 @@ export function JoinButtonUi({
             role === CommunityUserRole.MEMBER ? 'text-primary' : 'text-white',
           )}>
           {role === CommunityUserRole.MEMBER
-            ? textForStates.MEMBER ?? DEFAULT_ROLE_TEXTS.MEMBER
-            : textForStates.UNJOINED ?? DEFAULT_ROLE_TEXTS.UNJOINED}
+            ? (textForStates.MEMBER ?? DEFAULT_ROLE_TEXTS.MEMBER)
+            : (textForStates.UNJOINED ?? DEFAULT_ROLE_TEXTS.UNJOINED)}
         </p>
       )}
     </Button>

@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2022",
     "downlevelIteration": true,
     "lib": [
       "dom",
@@ -19,6 +19,7 @@
     "jsx": "preserve",
     "incremental": true,
     "noImplicitAny": true,
+    "verbatimModuleSyntax": true,
     "plugins": [
       {
         "name": "next",

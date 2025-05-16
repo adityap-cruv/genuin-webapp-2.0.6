@@ -74,7 +74,7 @@ export default function EngagementHooks() {
             </defs>
           </svg>
         </div>
-        <div className="grid-rows-7 flex w-2/5 flex-col justify-between">
+        <div className="flex w-2/5 grid-rows-7 flex-col justify-between">
           {brandImages.map((option: any, index: any) => (
             <p
               key={index}

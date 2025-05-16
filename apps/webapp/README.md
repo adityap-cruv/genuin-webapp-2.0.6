@@ -2,6 +2,19 @@
 
 This monorepo contains the Genuin web application and SDK packages, managed using Turborepo and pnpm workspaces.
 
+## Technology Stack (Updated May 2025)
+
+- **Next.js**: v15.0.0
+- **React**: v19.0.0
+- **TypeScript**: v5.2.2+
+- **Authentication**: NextAuth.js v5.0.0
+- **State Management**: Zustand, Immer
+- **API Client**: TanStack Query v5
+- **CSS**: Tailwind CSS, CSS Modules
+- **Node.js**: v20.0.0+
+
+For information on the Next.js 15 and React 19 upgrade, see [UPGRADE_GUIDE.md](./UPGRADE_GUIDE.md) and the [testing checklist](./UPGRADE_TESTING_CHECKLIST.md).
+
 ## Project Structure
 
 ```
@@ -30,35 +43,13 @@ genuin/
    npm install  # or yarn install
    ```
 
-2. **Configure your local environment:**
-
-   For local development, you can create a `.env.local` file to override environment variables:
-
-   ```bash
-   # Copy the example file to .env.local
-   cp .env.local.example .env.local
-
-   # Edit the file as needed
-   nano .env.local
-   ```
-
-   Important environment variables:
-
-   - `MIDDLEWARE_OVERRIDE_HOST`: Set this to override the host used in middleware.
-
-3. **Start the development server:**
-
-   ```bash
-   npm run dev
-   ```
-
-4. Start development servers:
+2. Start development servers:
 
    ```bash
    pnpm dev
    ```
 
-5. Build all packages:
+3. Build all packages:
    ```bash
    pnpm build
    ```

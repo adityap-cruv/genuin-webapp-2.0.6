@@ -7,7 +7,7 @@ interface HeadingComponentProps {
   colorVariant?: 'black' | 'white'
 }
 
-const HeadingComponent: React.FC<HeadingComponentProps> = ({ headingLevel = 1, title, colorVariant = 'black' }) => {
+function HeadingComponent({ headingLevel = 1, title, colorVariant = 'black' }: HeadingComponentProps) {
   const HeadingTag = `h${headingLevel}` as keyof JSX.IntrinsicElements
 
   const titleClassName = `${style.title} ${style[`${HeadingTag}Title`] || ''} ${style[`${colorVariant}Title`] || ''}`

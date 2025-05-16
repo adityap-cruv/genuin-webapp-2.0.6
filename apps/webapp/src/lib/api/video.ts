@@ -44,11 +44,11 @@ export async function getVideoDetails(slug: string): Promise<VideoPlayerModalTyp
           }
         : null,
     },
-    loop: { 
-      id: loopDetails.chat_id, 
-      slug: loopDetails.slug, 
-      name: loopDetails.group.group_name, 
-      description: loopDetails.group.group_description ?? '' 
+    loop: {
+      id: loopDetails.chat_id,
+      slug: loopDetails.slug,
+      name: loopDetails.group.group_name,
+      description: loopDetails.group.group_description ?? '',
     },
     owner: {
       isAvatar: videoDetails.owner.is_avatar,
@@ -78,7 +78,7 @@ export async function getVideoDetails(slug: string): Promise<VideoPlayerModalTyp
       linkoutId: videoDetails.linkouts_id,
       clickableUrl: videoDetails.clickable_url ? videoDetails.clickable_url : null,
       thumbnailM: videoDetails.thumbnail_url_l,
-      is_pinned: videoDetails.is_pinned ?? false
+      is_pinned: videoDetails.is_pinned ?? false,
     },
   }
 }

@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation'
 import { PATH_NAME } from '@/lib/utils/constants/path'
 
 export default async function AppLayout(props: any) {
-  const isMobile = cookies().get('device_type')?.value === 'mobile'
+  const isMobile = (await cookies()).get('device_type')?.value === 'mobile'
   const userSession = await auth()
   if (userSession === null) {
     redirect(PATH_NAME.home())

@@ -40,7 +40,7 @@ const Community = z.object({
   text_color_code: z.string(),
   share_url: z.string(),
   brand: Brand.optional(),
-  dp: z.string().nullish()
+  dp: z.string().nullish(),
 })
 
 const Owner = z.object({
@@ -129,7 +129,7 @@ const Notification = z
       community: Community.optional(),
       conversation: Conversation.optional(),
       conversation_video: ConversationVideo.optional(),
-    })
+    }),
   )
   .nullish()
 
@@ -142,7 +142,9 @@ export type NotificationsType = z.infer<typeof Notification>
 
 export type NotificationDetailsType = z.infer<typeof NotificationDetailsSchema>
 
-export function validateCommunityDetails(communityDetails: NotificationDetailsType) {
+export function validateCommunityDetails(
+  communityDetails: NotificationDetailsType,
+) {
   try {
     return NotificationDetailsSchema.parse(communityDetails)
   } catch (e) {

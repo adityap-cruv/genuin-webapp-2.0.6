@@ -18,10 +18,10 @@ import { IHeartDemoProvider } from '@/components/providers/iheart-demo-provider'
 import { IHEART_BRAND_URL } from '@/lib/constants'
 
 export default async function RootLayout(props: any) {
-  const deviceType = cookies().get('device_type')?.value ?? ''
-  const os = cookies().get('os')?.value ?? ''
-  const browserType = cookies().get('browser_type')?.value ?? ''
-  const configParamsStr = cookies().get('config_params')?.value ?? ''
+  const deviceType = (await cookies()).get('device_type')?.value ?? ''
+  const os = (await cookies()).get('os')?.value ?? ''
+  const browserType = (await cookies()).get('browser_type')?.value ?? ''
+  const configParamsStr = (await cookies()).get('config_params')?.value ?? ''
   let configParams = null
   if (configParamsStr) configParams = JSON.parse(configParamsStr)
   let userSession: Session | null = null

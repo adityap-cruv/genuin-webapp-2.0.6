@@ -1,13 +1,35 @@
-import * as Sentry from '@sentry/nextjs';
+/**
+ * Instrumentation file for Next.js 15 with Sentry integration
+ * This file is used to initialize Sentry and OpenTelemetry
+ */
+import * as Sentry from '@sentry/nextjs'
 
 export async function register() {
-  if (process.env.NEXT_RUNTIME === 'nodejs') {
-    await import('../sentry.server.config');
-  }
+  // Only load Sentry configuration if we're in production
+  if (process.env.NODE_ENV === 'production') {
+    if (process.env.NEXT_RUNTIME === 'nodejs') {
+      await import('../sentry.server.config')
+    }
 
-  if (process.env.NEXT_RUNTIME === 'edge') {
-    await import('../sentry.edge.config');
+    if (process.env.NEXT_RUNTIME === 'edge') {
+      await import('../sentry.edge.config')
+    }
+  } else {
+    console.log('Sentry instrumentation disabled in development mode')
   }
 }
 
-export const onRequestError = Sentry.captureRequestError;
+// Next.js 15 compatible request error handler
+export const onRequestError = (request: Request, error: Error) => {
+  // Only capture errors in production to avoid noise during development
+  if (process.env.NODE_ENV === 'production') {
+    Sentry.captureException(error, {
+      contexts: {
+        request: {
+          url: request.url,
+          method: request.method,
+        },
+      },
+    })
+  }
+}

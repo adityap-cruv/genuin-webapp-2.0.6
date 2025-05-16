@@ -5,15 +5,18 @@ This branch represents the conversion of the standalone webapp repository to a m
 ## Changes Made
 
 1. **Directory Structure**:
+
    - Moved all webapp files to `apps/webapp/` using git-mv to preserve history
    - Created monorepo directory structure with `apps/` and `packages/` folders
    - Added `packages/web-sdk/` from the monorepo
 
 2. **Configuration**:
+
    - Added monorepo-specific configuration files at the root level
    - Added pnpm workspace and Turborepo configuration
 
 3. **QA Branch Integrity**:
+
    - Preserved all QA branch changes and files
    - Deleted files in QA branch remain deleted
    - Recent changes in QA branch are preserved
@@ -26,17 +29,17 @@ This branch represents the conversion of the standalone webapp repository to a m
 ## File Changes Summary
 
 === WEBAPP CHANGES ===
-Files unique to monorepo:       41
-Files modified in monorepo:        9
-Files prioritized from QA branch:       36
-Files deleted in QA branch (respecting deletion):        7
+Files unique to monorepo: 41
+Files modified in monorepo: 9
+Files prioritized from QA branch: 36
+Files deleted in QA branch (respecting deletion): 7
 
 === WEB-SDK CHANGES ===
-Web-SDK files unique to monorepo:       10
-Web-SDK files modified in monorepo:       62
+Web-SDK files unique to monorepo: 10
+Web-SDK files modified in monorepo: 62
 
 === MONOREPO STRUCTURE ===
-Root configuration files:       15
+Root configuration files: 15
 
 ## Next Steps
 

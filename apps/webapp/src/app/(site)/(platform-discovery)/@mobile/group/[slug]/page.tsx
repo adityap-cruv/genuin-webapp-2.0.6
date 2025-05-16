@@ -4,14 +4,15 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 import { fetchMetadata } from '@lib/api/meta-data'
 
 interface Props {
-  params: {
+  params: Promise<{
     slug: string
-  }
-  searchParams: Record<string, unknown>
+  }>
+  searchParams: Promise<Record<string, unknown>>
 }
 
 export default async function Component({ params }: Props) {
-  return <LoopDetails slug={params.slug} />
+  const resolvedParams = await params
+  return <LoopDetails slug={resolvedParams.slug} />
 }
 
 interface LoopDataType {
@@ -20,7 +21,8 @@ interface LoopDataType {
   preview_image: string
 }
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const loopDetails: LoopDataType = await fetchMetadata({ type: 3, slug: params.slug })
+  const resolvedParams = await params
+  const loopDetails: LoopDataType = await fetchMetadata({ type: 3, slug: resolvedParams.slug })
 
   return {
     title: loopDetails?.title,
@@ -29,7 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title: loopDetails?.title,
       description: loopDetails?.description,
-      url: process.env.NEXT_PUBLIC_HOST_URL + PATH_NAME.loop(params.slug),
+      url: process.env.NEXT_PUBLIC_HOST_URL + PATH_NAME.loop(resolvedParams.slug),
       images: [
         {
           url: loopDetails?.preview_image,

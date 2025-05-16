@@ -2,33 +2,35 @@ import { type ConfigType } from '@lib/stores/genuin-options'
 import { checkAndAppendHttps } from '@lib/utils'
 import { headers } from 'next/headers'
 import { permanentRedirect } from 'next/navigation'
+import type { ReactNode } from 'react'
 
-export function RedirectHandler({
+export async function RedirectHandler({
   children,
   config,
   shouldRedirect = false,
 }: {
-  children: React.ReactNode
+  children: ReactNode
   config?: ConfigType
   shouldRedirect: boolean
 }) {
   if (config && Object.keys(config).length === 0) {
     permanentRedirect('/inactive')
   }
+  const headersList = await headers()
   if (config) {
     if (config?.integrations.white_label.enable && config?.integrations.white_label.allowed_domains[0]) {
       if (shouldRedirect) {
-        const searchParamStr = headers().get('x-search-params')
-        const pathParamStr = headers().get('x-path-params')
+        const searchParamStr = headersList.get('x-search-params')
+        const pathParamStr = headersList.get('x-path-params')
         permanentRedirect(
           checkAndAppendHttps(config.integrations.white_label.allowed_domains[0]) + pathParamStr + searchParamStr
         )
       }
     } else {
       // Skip auth check if running on localhost or if loaded in an iframe from BCC_URL
-      const host = headers().get('host') ?? ''
-      const referer = headers().get('referer') ?? ''
-      const secFetchDest = headers().get('sec-fetch-dest') ?? ''
+      const host = headersList.get('host') ?? ''
+      const referer = headersList.get('referer') ?? ''
+      const secFetchDest = headersList.get('sec-fetch-dest') ?? ''
       const bccUrl = process.env.NEXT_PUBLIC_BCC_URL || 'https://brands.qa.begenuin.com'
 
       // Check if the app is running locally, is embedded in an iframe from BCC_URL,
@@ -44,18 +46,18 @@ export function RedirectHandler({
 
       if (config && config?.brand_id.toString() === '99') {
         // Skip auth check for the begenuin brand
-        return children
+        return await children
       }
 
       if (config) {
         // Skip auth check for the auth-wall page itself to avoid redirect loops
-        const pathParamStr = headers().get('x-path-params') ?? ''
+        const pathParamStr = headersList.get('x-path-params') ?? ''
         if (pathParamStr === '/auth-wall' || pathParamStr === '/dlk/') {
-          return children
+          return await children
         }
 
         // Check if this is a return from Google auth (contains provider=google and code parameters)
-        const searchParams = headers().get('x-search-params') ?? ''
+        const searchParams = headersList.get('x-search-params') ?? ''
         if (
           (searchParams.includes('provider=google') && searchParams.includes('code=')) ||
           (searchParams.includes('provider=apple') && searchParams.includes('code=')) ||
@@ -64,11 +66,11 @@ export function RedirectHandler({
           // This is a auth callback, allow access without checking session
           // The session will be established during the callback processing
           // Detected auth callback, allowing access
-          return children
+          return await children
         }
 
         // Check if user is authenticated with our custom auth wall
-        const cookieHeader = headers().get('cookie') ?? ''
+        const cookieHeader = headersList.get('cookie') ?? ''
         let hasAuthCookie = false
 
         if (cookieHeader) {
@@ -87,7 +89,7 @@ export function RedirectHandler({
         if (!hasAuthCookie) {
           // Store the intended destination URL to redirect back after authentication
           const currentPath = pathParamStr
-          const searchParams = headers().get('x-search-params') ?? ''
+          const searchParams = headersList.get('x-search-params') ?? ''
           const destinationUrl = currentPath + searchParams
 
           // Redirect to auth wall with the return URL as a parameter
@@ -97,5 +99,5 @@ export function RedirectHandler({
     }
   }
 
-  return children
+  return await children
 }

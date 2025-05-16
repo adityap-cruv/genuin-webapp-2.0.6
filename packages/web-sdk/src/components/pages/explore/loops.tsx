@@ -44,7 +44,7 @@ export function Loops({ className, ...restProps }: LoopsPropsType) {
                   owner: { userName: message.owner.username },
                   thumbnail: message.thumbnail_url_m
                     ? message.thumbnail_url_m
-                    : message.thumbnail_url_l ?? message.thumbnail_url ?? '',
+                    : (message.thumbnail_url_l ?? message.thumbnail_url ?? ''),
                   createdAt: message.message_at,
                 }))}
                 loopSlug={loop.slug}

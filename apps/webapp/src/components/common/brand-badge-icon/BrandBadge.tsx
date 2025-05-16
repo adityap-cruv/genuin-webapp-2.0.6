@@ -23,8 +23,8 @@ const textClasses = cva('', {
   },
 })
 
-// Define the BrandBadge component
-const BrandBadge: React.FC<BrandBadgeProps> = ({ variant = 'primary', className }) => {
+// Define the BrandBadge component (updated for React 19)
+function BrandBadge({ variant = 'primary', className }: BrandBadgeProps) {
   return (
     // Container div with flexbox properties and additional custom classes
     <div className={`flex items-center gap-1 ${className}`}>

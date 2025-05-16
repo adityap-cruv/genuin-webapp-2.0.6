@@ -10,7 +10,7 @@ interface ButtonProps {
   children?: ReactNode
 }
 
-const Button: React.FC<ButtonProps> = ({ text, size = 'small', variant = 'solid', color, children }) => {
+const Button = ({ text, size = 'small', variant = 'solid', color, children }: ButtonProps) => {
   const buttonClassName = `${style.button} ${style[`${color}Button`]} ${style[`${variant}Button`]} ${
     style[`${size}Button`]
   }`

@@ -16,7 +16,8 @@ type HomeMetadata = {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const host = headers().get('host') ?? ''
+  const headersList = await headers()
+  const host = headersList.get('host') ?? ''
   const config = getConfig(host)
   if (config) {
     const metadataParams = { type: 5, ...config }

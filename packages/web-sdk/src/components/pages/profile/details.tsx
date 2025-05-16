@@ -68,9 +68,11 @@ export const Details = memo(function Details({
             />
           )}
         </div>
-        <p className='my-1 text-body-1-demi md:text-body-1-med' style={{
-          wordBreak: 'break-word',
-        }}>
+        <p
+          className='my-1 text-body-1-demi md:text-body-1-med'
+          style={{
+            wordBreak: 'break-word',
+          }}>
           {profileDetails?.bio}
         </p>
         <Stats

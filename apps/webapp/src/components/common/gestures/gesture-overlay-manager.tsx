@@ -81,6 +81,27 @@ export function useGestureOverlayMethods({ tapBehavior }: { tapBehavior: number 
     )
   }, [gestureOverlays, tapBehavior])
 
+  const checkAndResetGestures = useCallback(() => {
+    try {
+      const storedGestures = localStorage.getItem('_ks_gestures_')
+      if (!storedGestures) return
+
+      const parsed = JSON.parse(storedGestures)
+      const storedOverlays = parsed?.state?.gestureOverlays
+
+      if (!storedOverlays) return
+
+      // Check each gesture in the store
+      Object.entries(storedOverlays).forEach(([gestureKey, gesture]: [string, any]) => {
+        if (gesture?.isVisible && gesture?.hasShown) {
+          resetGestureOverlay(gestureKey as GestureOverlayKeysType)
+        }
+      })
+    } catch (error) {
+      console.error('Failed to parse _ks_gestures_:', error)
+    }
+  }, [resetGestureOverlay])
+
   return {
     gestureOverlayUI,
     showGestureOverlay,

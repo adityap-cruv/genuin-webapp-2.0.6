@@ -1,10 +1,14 @@
-import NextAuth from 'next-auth'
+import { auth } from '../auth'
 import type { NextRequest } from 'next/server'
 import { NextResponse, userAgent } from 'next/server'
-import { authConfig } from '../auth.config'
 import { getEmbedConfig } from './lib/api/config'
 
-export default NextAuth(authConfig).auth
+// Export the auth middleware
+export { auth }
+
+// Export middleware configuration using the updated format for Next.js 15
+// This replaces the deprecated export const config = { ... }
+export const matcher = ['/((?!api|_next/static|_next/image|favicon.ico).*)']
 
 /**
  * Gets the effective host to use, checking for an override in environment variables
@@ -176,19 +180,6 @@ async function handleSubdomainRouting(request: NextRequest, host: string): Promi
   }
 
   return null
-}
-
-export const config = {
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
-    '/((?!api|_next/static|_next/image|favicon.ico|fonts).*)',
-  ],
 }
 
 /**

@@ -38,7 +38,7 @@ export function Modal() {
           <div className="flex h-full items-center justify-center">
             <Loader size="md" />
           </div>
-        ) : data ?? searchStr !== '' ? (
+        ) : (data ?? searchStr !== '') ? (
           <>
             <SearchInput />
             <Body />

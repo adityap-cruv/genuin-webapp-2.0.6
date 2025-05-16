@@ -44,8 +44,8 @@ interface GenuinBadgeProps extends VariantProps<typeof badgeVariants> {
   className?: string // Optional className prop to apply additional custom classes
 }
 
-// Define the GenuinBadge component
-const GenuinBadge: React.FC<GenuinBadgeProps> = ({ size, variant, className }) => {
+// Define the GenuinBadge component (updated for React 19)
+function GenuinBadge({ size, variant, className }: GenuinBadgeProps) {
   return (
     // Container div with flexbox properties and additional custom classes
     <div className={`flex items-center gap-1 ${className}`}>

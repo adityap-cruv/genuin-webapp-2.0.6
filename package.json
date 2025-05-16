@@ -4,7 +4,7 @@
   "private": true,
   "packageManager": "pnpm@8.15.3",
   "engines": {
-    "node": ">=18.17.0"
+    "node": ">=20.0.0"
   },
   "workspaces": [
     "apps/*",
@@ -15,13 +15,35 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "check-node": "node ./scripts/check-node-version.js",
+    "preinstall": "npm run check-node",
+    "predev": "ALLOW_NODE_VERSION_WARNING=true npm run check-node",
+    "prebuild": "npm run check-node",
+    "use-correct-node": "nvm install && nvm use",
+    "upgrade-node": "nvm install 20.12.0 && nvm alias default 20.12.0 && nvm use 20.12.0"
   },
   "devDependencies": {
+    "@alloc/quick-lru": "^5.2.0",
+    "@opentelemetry/api": "^1.9.0",
     "@types/classnames": "^2.3.4",
     "@types/react": "18.2.21",
     "husky": "^8.0.0",
     "prettier": "^3.2.4",
     "turbo": "^2.5.3"
+  },
+  "pnpm": {
+    "overrides": {
+      "react": "^19.0.0",
+      "react-dom": "^19.0.0",
+      "@tanstack/react-query": "^5.74.4",
+      "react-is": "^18.0.0"
+    },
+    "peerDependencyRules": {
+      "allowedVersions": {
+        "react": "19",
+        "react-dom": "19"
+      }
+    }
   }
 }

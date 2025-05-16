@@ -48,7 +48,7 @@ interface VideoProviderProps {
   videoId: string
 }
 
-export const PlayerProvider: React.FC<VideoProviderProps> = ({ children, videoId }) => {
+export const PlayerProvider = ({ children, videoId }: VideoProviderProps) => {
   const { toggleMuted, setPlayingState, buttonAction, playingState } = usePlayerControlStore()
   // State
   const [duration, setDuration] = useState(0)

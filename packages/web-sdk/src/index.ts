@@ -61,7 +61,9 @@ function initializeDivWithCallback(
 }
 
 // Add new manual initialization function
-function init(configOrObject?: { config: SDKInitConfig } | SDKInitConfig): void {
+function init(
+  configOrObject?: { config: SDKInitConfig } | SDKInitConfig,
+): void {
   // If onGenuinReady is there don't execute in init.
   if (window.onGenuinReady) return
   const div = document.getElementById('gen-sdk')
@@ -72,8 +74,10 @@ function init(configOrObject?: { config: SDKInitConfig } | SDKInitConfig): void 
   }
 
   // Handle both initialization patterns
-  const config = configOrObject 
-    ? ('config' in configOrObject ? configOrObject.config : configOrObject)
+  const config = configOrObject
+    ? 'config' in configOrObject
+      ? configOrObject.config
+      : configOrObject
     : {}
 
   // Validate required fields
@@ -118,9 +122,9 @@ document.addEventListener('readystatechange', () => {
 async function sdkInitiation(container: HTMLElement, config: SDKConfig) {
   // Remove the access token if it is not provided, It is required for authentication
   if (!config.token) {
-    localStorage.removeItem(ACCESS_TOKEN_KEY);
+    localStorage.removeItem(ACCESS_TOKEN_KEY)
   }
-  
+
   if (!container) {
     console.log('Unable to load, no container found')
     return
@@ -267,17 +271,17 @@ async function sdkInitiation(container: HTMLElement, config: SDKConfig) {
       let user: AuthUser | undefined = undefined
       const accessToken = localStorage.getItem(ACCESS_TOKEN_KEY)
       if (config.token && config.brand_id) {
-        user = await getAuthenticatedUserDetails(config.token, config.brand_id);
+        user = await getAuthenticatedUserDetails(config.token, config.brand_id)
         if (user) {
-          user.autoLoginToken = config.token;
+          user.autoLoginToken = config.token
         }
       } else if (accessToken) {
-        user = (await miniProfile()).data;
+        user = (await miniProfile()).data
       }
-      
+
       // Remove the access token if authentication fails. It was causing the issue in the authentication flow.
       if (!user) {
-        localStorage.removeItem(ACCESS_TOKEN_KEY);
+        localStorage.removeItem(ACCESS_TOKEN_KEY)
       }
 
       embedData.brandDetails = brandData

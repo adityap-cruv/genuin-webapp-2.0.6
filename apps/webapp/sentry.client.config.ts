@@ -1,6 +1,10 @@
-// This file configures the initialization of Sentry on the client.
-// The config you add here will be used whenever a users loads a page in their browser.
-// https://docs.sentry.io/platforms/javascript/guides/nextjs/
+/**
+ * This file configures the initialization of Sentry on the client.
+ * The config you add here will be used whenever a users loads a page in their browser.
+ * https://docs.sentry.io/platforms/javascript/guides/nextjs/
+ *
+ * Updated for compatibility with Next.js 15 and React 19
+ */
 
 import * as Sentry from '@sentry/nextjs'
 
@@ -23,9 +27,20 @@ Sentry.init({
 
   // Setting this option to true will print useful information to the console while you're setting up Sentry.
   debug: false,
+
+  // Next.js 15 specific configuration
+  // Adjust this for production to avoid excessive telemetry
+  enableTracing: process.env.NODE_ENV === 'production',
+
+  // Filter out unwanted transactions
   beforeSendTransaction(event) {
+    // Ignore middleware transactions to reduce noise
     if (event.transaction && event.transaction.startsWith('middleware')) {
-      return null // Ignore all middleware transactions
+      return null
+    }
+    // Ignore internal Next.js transactions for better signal-to-noise ratio
+    if (event.transaction && event.transaction.includes('/_next/')) {
+      return null
     }
     return event
   },

@@ -71,7 +71,7 @@ function Inner() {
                       }
                       subtitle={`Group • ${item.loop.group.group_description ?? ''}`}
                       title={item.loop.group.group_name ?? ''}
-                      urlToGo={PATH_NAME.loop(item.loop.slug ? item.loop.slug : item.loop?.group?.slug ?? '')}
+                      urlToGo={PATH_NAME.loop(item.loop.slug ? item.loop.slug : (item.loop?.group?.slug ?? ''))}
                     />
                   </div>
                 )

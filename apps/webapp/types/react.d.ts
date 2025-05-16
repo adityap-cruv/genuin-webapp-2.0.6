@@ -1,23 +1,13 @@
 // This file ensures consistent React type resolution across the monorepo
-import * as React from 'react';
+// Updated for React 19
+import * as React from 'react'
 
 // Force React type definitions to be consistent
 declare module 'react' {
-  // Re-export to ensure consistency
-  export = React;
+  // ReactNode definition for React 19
+  export type ReactNode = React.ReactElement | string | number | boolean | null | undefined | Iterable<ReactNode>
 
-  // Explicitly define ReactNode to resolve the type conflict
-  export type ReactNode =
-    | React.ReactElement
-    | string
-    | number
-    | boolean
-    | null
-    | undefined
-    | React.ReactNodeArray;
-
-  export type ReactNodeArray = Array<ReactNode>;
+  // FC type is deprecated in React 19, providing an alternative
+  export type FC<P = {}> = React.FunctionComponent<P>
+  export type FunctionComponent<P = {}> = (props: P) => React.ReactNode
 }
-
-export = React;
-export as namespace React;

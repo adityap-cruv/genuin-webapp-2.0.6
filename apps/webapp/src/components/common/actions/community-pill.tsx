@@ -53,7 +53,7 @@ export const CommunityPill = ({
       <Link href={PATH_NAME.community(slug)} className="flex items-center gap-1">
         <CustomAvatar className="h-6 w-6" imageUrl={profileImage ?? ''} fallbackString={name ?? ''} isAvatar={false} />
         <p className="whitespace-nowrap break-all pr-1.5 text-cap-1-med leading-5 text-monochrome-white">
-          {(name.length ?? 0) > 24 ? name.slice(0, 24) + '...' : name ?? ''}
+          {(name.length ?? 0) > 24 ? name.slice(0, 24) + '...' : (name ?? '')}
         </p>
       </Link>
 

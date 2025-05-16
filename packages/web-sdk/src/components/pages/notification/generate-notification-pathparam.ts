@@ -1,4 +1,4 @@
-import { PATH_NAME } from "@/hooks/usePathNameWithSubdomain"
+import { PATH_NAME } from '@/hooks/usePathNameWithSubdomain'
 
 export function generatePathname(notification: any) {
   switch (notification.type) {

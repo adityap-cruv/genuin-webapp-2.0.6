@@ -90,7 +90,7 @@ const SuggestionsResSchema = z.array(
     community: communitySchema.nullish(),
     user: userSchema.nullish(),
     match_score: z.number(),
-  })
+  }),
 )
 
 export function validateSuggestionsResp(data: any) {
@@ -119,7 +119,7 @@ const RecentsRespSchema = z.array(
     loop: loopSchema.nullish(),
     community: communitySchema.nullish(),
     user: userSchema.nullish(),
-  })
+  }),
 )
 
 export function validateRecentsResp(data: any) {

@@ -89,13 +89,14 @@ const MentionInput: React.FC<{
     }
   }
 
-
-  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      void postComment();
-    }
-  }, [postComment]);
-
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'Enter') {
+        void postComment()
+      }
+    },
+    [postComment],
+  )
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, selectionStart } = e.target
@@ -229,12 +230,12 @@ const MentionInput: React.FC<{
 
       const isCommunity = selected.type === 3
       const handle = isCommunity
-        ? selected.community?.handle ?? ''
+        ? (selected.community?.handle ?? '')
         : '@' + selected.user?.nickname
       const id = isCommunity
-        ? selected.community?.community_id ?? ''
-        : selected.user?.member_id ?? ''
-      const slug = isCommunity ? selected.community?.slug ?? '' : ''
+        ? (selected.community?.community_id ?? '')
+        : (selected.user?.member_id ?? '')
+      const slug = isCommunity ? (selected.community?.slug ?? '') : ''
       const type = isCommunity ? 'community' : 'member'
 
       const updatedText = `${start}${handle} ${end}`
@@ -351,10 +352,11 @@ const MentionInput: React.FC<{
                 <button
                   onClick={postComment}
                   disabled={text.trim().length === 0 || isPosting}
-                  className={`text-body-1-bold ${text.trim().length === 0 || isPosting
+                  className={`text-body-1-bold ${
+                    text.trim().length === 0 || isPosting
                       ? 'text-primary-600'
                       : 'text-primary'
-                    }`}>
+                  }`}>
                   {isPosting ? 'Posting...' : 'Post'}
                 </button>
               </div>

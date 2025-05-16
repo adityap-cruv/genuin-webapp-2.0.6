@@ -1,4 +1,4 @@
-import { WebConfigsType } from "@/type"
+import { WebConfigsType } from '@/type'
 
 /**
  * Determines video playback configuration based on web configs
@@ -20,7 +20,10 @@ export const getVideoPlayerConfigs = (webConfigs?: WebConfigsType) => {
   if (webConfigs?.feed_video_play.type === 2) {
     repeatCount = webConfigs.feed_video_play.swipe_after
     // Check if feed_video_play.repeat_video is 0 (infinite repeats)
-  } else if (webConfigs?.feed_video_play.type === 1 && webConfigs?.feed_video_play.repeat_video === 0) {
+  } else if (
+    webConfigs?.feed_video_play.type === 1 &&
+    webConfigs?.feed_video_play.repeat_video === 0
+  ) {
     repeatCount = Infinity // infinite repeats
     // Otherwise, set repeatCount to the value of repeat_video
   } else {
@@ -44,5 +47,11 @@ export const getVideoPlayerConfigs = (webConfigs?: WebConfigsType) => {
 
   const unmuteVideo = webConfigs?.is_start_with_sound ?? false
 
-  return { repeatCount: repeatCount - 1, shouldSwipeNext, autoplay, autoplayAfter, unmuteVideo }
+  return {
+    repeatCount: repeatCount - 1,
+    shouldSwipeNext,
+    autoplay,
+    autoplayAfter,
+    unmuteVideo,
+  }
 }

@@ -14,10 +14,10 @@ import { GenuinOptionsProvider } from '@/components/providers/genuin-options-pro
 import { RedirectHandler } from '@components/providers/redirect-handler'
 
 export default async function Layout({ children }: { children: ReactNode }) {
-  const deviceType = cookies().get('device_type')?.value ?? ''
-  const os = cookies().get('os')?.value ?? ''
-  const browserType = cookies().get('browser_type')?.value ?? ''
-  const configParamsStr = cookies().get('config_params')?.value ?? ''
+  const deviceType = (await cookies()).get('device_type')?.value ?? ''
+  const os = (await cookies()).get('os')?.value ?? ''
+  const browserType = (await cookies()).get('browser_type')?.value ?? ''
+  const configParamsStr = (await cookies()).get('config_params')?.value ?? ''
   let configParams = null
   if (configParamsStr) configParams = JSON.parse(configParamsStr)
 

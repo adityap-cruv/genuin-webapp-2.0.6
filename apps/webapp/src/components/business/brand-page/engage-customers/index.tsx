@@ -16,10 +16,10 @@ import style from './customer.module.scss'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const EngageCustomers: React.FC = () => {
+function EngageCustomers() {
   const [progressValue, setProgressValue] = useState(0)
-  const component: any = useRef()
-  const slider: any = useRef()
+  const component = useRef<HTMLDivElement>(null)
+  const slider = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const ctx = gsap.context(() => {

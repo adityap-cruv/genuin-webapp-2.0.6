@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers'
 
-export default function Layout(props: any) {
-  const isMobile = cookies().get('device_type')?.value === 'mobile'
+export default async function Layout(props: any) {
+  const isMobile = (await cookies()).get('device_type')?.value === 'mobile'
 
   return <>{isMobile ? props.mobile : props.desktop}</>
 }

@@ -21,7 +21,8 @@ import SwiperCore from 'swiper'
 import 'swiper/swiper-bundle.css'
 import GetAppButton from '@/components/common/actions/get-app-button'
 
-SwiperCore.use([Pagination])
+// Updated for React 19 - remove SwiperCore.use in favor of direct import
+// SwiperCore.use([Pagination])
 
 export default function Mobile() {
   return (

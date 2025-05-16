@@ -1,6 +1,6 @@
 // Import necessary libraries and modules
 import React from 'react'
-import { TickIcon } from '@icons/tick-icon' // Import the TickIcon component
+import { TickIcon } from '@icons/tick-icon' // Import the TickIcon component using the path alias
 import { cva } from 'class-variance-authority' // Import the class variance authority (cva) function
 import cn from 'classnames' // Import the classnames utility for conditional class names
 
@@ -26,7 +26,7 @@ const badgeClasses = cva('', {
 })
 
 // Define the VerifiedBadge component
-const VerifiedBadge: React.FC<VerifiedBadgeProps> = ({ className, variant, size }) => {
+function VerifiedBadge({ className, variant, size }: VerifiedBadgeProps) {
   return (
     // Container div with flexbox properties, size-specific classes, and additional custom classes
     <div className={cn('flex items-center gap-1', badgeClasses({ size }), className)}>

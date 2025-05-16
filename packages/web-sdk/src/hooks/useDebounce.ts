@@ -8,16 +8,18 @@ function useDebounce(
 ): [debouncedFunction: CallbackFunction, cancelDebounce: () => void] {
   const [timeoutId, setTimeoutId] = useState<number | null>(null)
 
-  const debouncedFunction = useCallback((...args: any[]) => {
-    if (timeoutId)
-      return
+  const debouncedFunction = useCallback(
+    (...args: any[]) => {
+      if (timeoutId) return
 
-    const newTimeoutId = window.setTimeout(() => {
-      callback(...args)
-    }, delay)
+      const newTimeoutId = window.setTimeout(() => {
+        callback(...args)
+      }, delay)
 
-    setTimeoutId(newTimeoutId)
-  }, [callback])
+      setTimeoutId(newTimeoutId)
+    },
+    [callback],
+  )
   const cancelDebounce = useCallback(() => {
     if (timeoutId) {
       clearTimeout(timeoutId)

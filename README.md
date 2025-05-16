@@ -18,7 +18,11 @@ genuin/
 
 ## Prerequisites
 
-- Node.js >= 18.17.0
+- Node.js >= 20.12.0 (required for Next.js 15 and React 19)
+- [nvm](https://github.com/nvm-sh/nvm) (recommended for managing Node.js versions)
+
+See [NODE_VERSION.md](./NODE_VERSION.md) for detailed instructions on setting up the correct Node.js version.
+
 - pnpm >= 8.0.0
 - Git
 

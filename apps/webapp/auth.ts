@@ -1,16 +1,17 @@
 import NextAuth from 'next-auth'
 import { authConfig } from './auth.config'
-import credentials from 'next-auth/providers/credentials'
+import CredentialsProvider from 'next-auth/providers/credentials'
 
 export const {
   handlers: { GET, POST },
   signIn,
   auth,
   signOut,
+  update,
 } = NextAuth({
   ...authConfig,
   providers: [
-    credentials({
+    CredentialsProvider({
       name: 'credentials',
       type: 'credentials',
       credentials: {

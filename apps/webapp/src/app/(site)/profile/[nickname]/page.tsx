@@ -10,18 +10,20 @@ import { ProfilePage } from './main-component'
 import { getConfig } from '@/middleware'
 
 interface CompProps {
-  params: {
+  params: Promise<{
     nickname: string
-  }
-  searchParams: Record<string, unknown>
+  }>
+  searchParams: Promise<Record<string, unknown>>
 }
 
 export default async function Component({ params }: CompProps) {
-  const configs = cookies().get('config_params')?.value
+  const cookieStore = await cookies()
+  const configs = cookieStore.get('config_params')?.value
   let profileData
+  const resolvedParams = await params
 
   try {
-    profileData = await fetchUserData(params.nickname, configs ? JSON.parse(configs) : undefined, false)
+    profileData = await fetchUserData(resolvedParams.nickname, configs ? JSON.parse(configs) : undefined, false)
   } catch (error: any) {
     // Check the type of error
     if (error.message === NOT_FOUND_ERROR_CODES.user) {
@@ -45,11 +47,13 @@ type ProfileMetaDataType = {
 }
 
 export async function generateMetadata({ params }: CompProps): Promise<Metadata> {
-  const host = headers().get('host') ?? ''
+  const headersList = await headers()
+  const host = headersList.get('host') ?? ''
   const config = getConfig(host)
-  let metadataParams = { type: 1, username: params.nickname }
+  const resolvedParams = await params
+  let metadataParams = { type: 1, username: resolvedParams.nickname }
   if (config) {
-    metadataParams = { type: 1, username: params.nickname, ...config }
+    metadataParams = { type: 1, username: resolvedParams.nickname, ...config }
   }
   const profileMetadata: ProfileMetaDataType = await fetchMetadata(metadataParams)
 
@@ -61,7 +65,7 @@ export async function generateMetadata({ params }: CompProps): Promise<Metadata>
     openGraph: {
       title: profileMetadata?.title,
       description: profileMetadata?.description,
-      url: `${process.env.NEXT_PUBLIC_HOST_URL}${PATH_NAME.profile(params.nickname)}`,
+      url: `${process.env.NEXT_PUBLIC_HOST_URL}${PATH_NAME.profile(resolvedParams.nickname)}`,
       images: [
         {
           url: profileMetadata?.preview_image,

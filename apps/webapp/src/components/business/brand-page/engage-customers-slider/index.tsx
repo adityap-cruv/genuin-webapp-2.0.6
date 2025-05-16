@@ -16,7 +16,7 @@ import Engagement2 from '@images/business/brand-page/customer-engage/engagement-
 import Automation1 from '@images/business/brand-page/customer-engage/automation-1.png'
 import Automation2 from '@images/business/brand-page/customer-engage/automation-2.png'
 
-const EngageCustomers: React.FC = () => {
+function EngageCustomers() {
   // Define the steps for the swiper bullets
   const steps = ['Interaction', 'Engagement', 'Automation']
 

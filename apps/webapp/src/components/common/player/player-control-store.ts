@@ -146,7 +146,7 @@ export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
     toggleFullScreen(value?: boolean) {
       set((state) => ({
         isFullScreen: value ?? !state.isFullScreen,
-        isCommentBoxOpen: value ?? !state.isFullScreen ? false : state.isCommentBoxOpen,
+        isCommentBoxOpen: (value ?? !state.isFullScreen) ? false : state.isCommentBoxOpen,
       }))
     },
 

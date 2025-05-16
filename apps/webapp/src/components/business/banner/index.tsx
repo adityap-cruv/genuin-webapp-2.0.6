@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import style from './banner.module.scss'
 import HeadingComponent from '../heading'
@@ -24,7 +24,7 @@ interface BannerProps {
   brandImages?: any
 }
 
-const MainBanner: React.FC<BannerProps> = ({
+const MainBanner = ({
   titleHtmlTag,
   bannerTitle,
   titleVariant,
@@ -33,7 +33,7 @@ const MainBanner: React.FC<BannerProps> = ({
   buttonData,
   bannerImg,
   brandImages,
-}) => {
+}: BannerProps) => {
   // Render buttons based on buttonData
   const renderedButtons = buttonData?.map((button, index) => (
     <>

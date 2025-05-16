@@ -5,7 +5,7 @@ export async function getEmbedConfig(params: Record<string, string>) {
   Object.keys(params).forEach((key) => {
     url.searchParams.append(key, params[key])
   })
-  return await fetch(url.href, {})
+  return await fetch(url.href, { cache: 'no-store' })
     .then(async (res) => {
       const resData = await res.json()
       return resData.data as ConfigType
@@ -18,7 +18,7 @@ export async function getEmbedConfig(params: Record<string, string>) {
 }
 
 export async function getIpAddress() {
-  return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/goservices/data/ip_info`)
+  return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/goservices/data/ip_info`, { cache: 'no-store' })
     .then(async (res) => await res.json())
     .then((res) => {
       return res.ip

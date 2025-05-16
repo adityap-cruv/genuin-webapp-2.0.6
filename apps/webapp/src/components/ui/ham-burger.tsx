@@ -26,10 +26,7 @@ export function HamBurgerMenuIcon({
   toggleToClose = true,
 }: Props) {
   const [isOpen, setIsOpen] = useState(false)
-  const line = cn(
-    `my-0.5 rounded-full transition ease transform duration-100 delay-0`,
-    burgerVariants({ variant })
-  )
+  const line = cn(`my-0.5 rounded-full transition ease transform duration-100 delay-0`, burgerVariants({ variant }))
 
   function toggle() {
     !isOpen ? onOpen() : onClose()

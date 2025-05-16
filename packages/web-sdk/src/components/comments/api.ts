@@ -70,27 +70,31 @@ export async function postComment(
     })
 }
 
-export async function mentionUser(chatId: string, queryString: string, signal: AbortSignal) {
+export async function mentionUser(
+  chatId: string,
+  queryString: string,
+  signal: AbortSignal,
+) {
   const searchParams = new URLSearchParams({
     query_string: queryString,
     chat_id: chatId,
-  });
+  })
 
   try {
     const response = await fetch(getApiUrl('/api/v3/mentions', searchParams), {
       method: 'GET',
       headers: getBaseHeaders(true),
       signal,
-    });
+    })
 
     if (!response.ok) {
-      throw new Error('Failed to fetch mentions');
+      throw new Error('Failed to fetch mentions')
     }
 
-    const resData = await response.json();
-    return { code: response.status, data: resData.data };
+    const resData = await response.json()
+    return { code: response.status, data: resData.data }
   } catch (e: any) {
-    return { code: Number(e?.response?.data?.code) || 500, data: [] };
+    return { code: Number(e?.response?.data?.code) || 500, data: [] }
   }
 }
 
@@ -99,7 +103,7 @@ export async function createComment(
   loopId: string,
   type: number,
   commentText: string,
-  commentData: any
+  commentData: any,
 ) {
   try {
     const response = await fetch(getApiUrl('/api/v3/comment/create'), {
@@ -112,15 +116,15 @@ export async function createComment(
         comment_text: commentText,
         comment_data: JSON.stringify(commentData),
       }),
-    });
+    })
 
     if (!response.ok) {
-      throw new Error('Failed to create comment');
+      throw new Error('Failed to create comment')
     }
 
-    const resData = await response.json();
-    return { code: response.status, commentData: resData.data };
+    const resData = await response.json()
+    return { code: response.status, commentData: resData.data }
   } catch (e: any) {
-    return { code: Number(e?.response?.data?.code) || 500, commentData: null };
+    return { code: Number(e?.response?.data?.code) || 500, commentData: null }
   }
 }

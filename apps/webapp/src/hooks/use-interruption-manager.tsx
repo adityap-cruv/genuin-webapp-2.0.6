@@ -72,10 +72,10 @@ export function useInterruptionManager() {
     (index: number) => {
       const { swipeCount, lastIndex } = interactionRef.current
       const popupAfter = shouldShowAppDownload
-        ? getAppConfig?.popup_after ?? 0
+        ? (getAppConfig?.popup_after ?? 0)
         : interruptionToShow
-        ? config?.web_configs?.[interruptionToShow.configKey]?.popup_after ?? 0
-        : 0
+          ? (config?.web_configs?.[interruptionToShow.configKey]?.popup_after ?? 0)
+          : 0
 
       if (index !== lastIndex) {
         interactionRef.current.swipeCount = swipeCount + 1

@@ -5,22 +5,22 @@ import { CarouselView } from '@/components/embed/views/carousel-view'
 import 'swiper/css'
 
 type Props = {
-  params: {
+  params: Promise<{
     id: string
-  }
-  searchParams: {
+  }>
+  searchParams: Promise<{
     hide_navbar: '0' | '1'
     embed_page: string
     api_key: string
     brand_id: string
     subdomain: string
     embed: '0' | '1'
-  }
+  }>
 }
 
 export default async function Page(props: Props) {
   try {
-    const embedDetails = await getEmbedDetails(props.params.id)
+    const embedDetails = await getEmbedDetails((await props.params).id)
     const embedPage = embedDetails.data.style
 
     let viewComponent

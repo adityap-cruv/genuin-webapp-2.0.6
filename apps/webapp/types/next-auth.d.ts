@@ -1,16 +1,23 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import NextAuth, { Session } from 'next-auth'
+// Updated for Next-Auth 5.0
+import { DefaultSession } from 'next-auth'
 import 'next-auth/jwt'
 
 declare module 'next-auth' {
   /**
    * Returned by `useSession`, `getSession` and received as a prop on the `SessionProvider` React Context
    */
-  interface Session {
+  interface Session extends DefaultSession {
     user: User
+    error?: 'RefreshAccessTokenError'
   }
 
-  type UpdateSession = (data: { name: string }) => Promise<Session | null>
+  // For use with session callback return type
+  interface JWT {
+    user?: User
+  }
+
+  // For use with the useSession().update function in React 19
+  type UpdateSession = (data?: { user?: Partial<User> }) => Promise<Session>
 
   interface User {
     bio?: string

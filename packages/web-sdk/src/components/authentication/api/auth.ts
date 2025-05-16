@@ -60,9 +60,9 @@ export async function sendOtp({
       }),
     })
 
-    if(!response.ok) {
+    if (!response.ok) {
       const errorBody = await response.json()
-      throw {data : {...errorBody,status: response.status}}
+      throw { data: { ...errorBody, status: response.status } }
     }
 
     const resData = (await response.json()).data
@@ -74,7 +74,7 @@ export async function sendOtp({
       codeSent: true,
       retryTime: resData.retryTime,
       message: resData.message,
-      responseCode: response.status
+      responseCode: response.status,
     }
   } catch (e: any) {
     let message = 'Something went wrong. Please try again!'
@@ -83,11 +83,9 @@ export async function sendOtp({
     if (e?.data?.code === '5262') {
       message =
         'This number is linked to another account. Please use a different one.'
-    } 
-    else if (e?.data?.code === '5205') {
+    } else if (e?.data?.code === '5205') {
       message = 'Email already exists. Please try another one.'
-    } 
-    else if (e?.data?.code === '5263') {
+    } else if (e?.data?.code === '5263') {
       message = isUpdate
         ? 'Unable to send the code. Please use another phone number.'
         : 'Unable to send the code. Please use another phone number or email to log in.'
@@ -111,7 +109,7 @@ export async function sendOtp({
       codeSent: false,
       retryTime,
       message,
-      responseCode: e?.data?.status
+      responseCode: e?.data?.status,
     }
   }
 }

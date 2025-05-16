@@ -1,3 +1,4 @@
+// filepath: /Users/kunalshah/genuin/genuin-webapp-standalone/apps/webapp/src/components/business/paragraph/index.tsx
 import React from 'react'
 import style from '../paragraph/paragraph.module.scss'
 
@@ -8,12 +9,7 @@ interface ParagraphComponentProps {
   fontWeight?: number
 }
 
-const ParagraphComponent: React.FC<ParagraphComponentProps> = ({
-  text,
-  sizeVariant = 'medium',
-  colorVariant,
-  fontWeight,
-}) => {
+function ParagraphComponent({ text, sizeVariant = 'medium', colorVariant, fontWeight }: ParagraphComponentProps) {
   const titleClassName = `${style.para} ${style[`${sizeVariant}Para`] || ''} ${
     style[`fontWeight-${fontWeight}`] || ''
   } ${style[`${colorVariant}Para`] || ''}`

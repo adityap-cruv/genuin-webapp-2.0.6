@@ -277,7 +277,7 @@ export function parseCommunityResponse(input: z.infer<typeof CommunityListSchema
       role: mapCommunityUserRole(community.logged_in_user_role, community.is_community_join_requested),
       loops: parseGroupResponse(community.loops),
       handle: community.handle,
-      shareUrl: community.share_url ?? ''
+      shareUrl: community.share_url ?? '',
     }
   })
 }
@@ -308,6 +308,5 @@ export function parseVideoResponse(messages: Array<z.infer<typeof messageSchema>
     }
   })
 }
-
 
 export default {}

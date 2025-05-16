@@ -94,7 +94,7 @@ function Loops({
         owner: { userName: video.owner.username },
         thumbnail: video.thumbnail_url_m
           ? video.thumbnail_url_m
-          : video.thumbnail_url_l ?? video.thumbnail_url ?? '',
+          : (video.thumbnail_url_l ?? video.thumbnail_url ?? ''),
         createdAt: video.message_at ?? '',
       }))}
       loopSlug={loop.slug}

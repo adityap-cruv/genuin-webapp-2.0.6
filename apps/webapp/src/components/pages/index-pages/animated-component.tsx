@@ -22,7 +22,6 @@ export function AnimatedButton({ className, shadowColor, children }: AnimatedBut
         boxShadow: `8px 8px ${shadowColor}`,
         transform: 'translate(0, 0)',
         transition: 'transform 0.5s, box-shadow 0.5s', // Transition for both properties
-
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.transform = 'translate(8px, 8px)'

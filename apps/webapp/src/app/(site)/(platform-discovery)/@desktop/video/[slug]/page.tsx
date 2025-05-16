@@ -7,18 +7,19 @@ import EmptyView from '@/components/common/empty-view'
 import { NOT_FOUND_ERROR_CODES } from '@/lib/constants'
 
 type PageProps = {
-  params: {
+  params: Promise<{
     slug: string
-  }
-  searchParams: {
+  }>
+  searchParams: Promise<{
     community: string
     group: string
     utm_source: string
     share_image_id?: number
-  }
+  }>
 }
 
-export default async function Component({ params, searchParams }: PageProps) {
+export default async function Component(props: PageProps) {
+  const params = await props.params
   try {
     const videoDetails = await getVideoDetails(params.slug)
     return (
@@ -41,7 +42,9 @@ type VideoDataType = {
   preview_image: string
 }
 
-export async function generateMetadata({ params, searchParams }: PageProps): Promise<Metadata> {
+export async function generateMetadata(props: PageProps): Promise<Metadata> {
+  const searchParams = await props.searchParams
+  const params = await props.params
   let shareLink = `${process.env.NEXT_PUBLIC_HOST_URL}${PATH_NAME.video(params.slug)}`
   const queryParams = []
   if (searchParams?.community) {

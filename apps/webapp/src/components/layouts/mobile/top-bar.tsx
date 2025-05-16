@@ -436,10 +436,10 @@ function UserTick({ variant = 'light', webCTA }: { variant: 'light' | 'transpare
                 {data.user.usernameSet
                   ? '@' + data.user.nickname
                   : data.user.email
-                  ? data.user.email
-                  : formatPhoneNumberIntl(
-                      data.user.phoneNumber?.startsWith('+') ? data.user.phoneNumber : `+${data.user.phoneNumber}`
-                    )}
+                    ? data.user.email
+                    : formatPhoneNumberIntl(
+                        data.user.phoneNumber?.startsWith('+') ? data.user.phoneNumber : `+${data.user.phoneNumber}`
+                      )}
               </p>
               {!data.user.isBrandSystemUser && <p className="text-body-1-demi text-monochrome-6">Complete profile</p>}
             </div>

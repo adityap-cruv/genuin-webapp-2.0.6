@@ -11,8 +11,8 @@ interface BrandBadgeIconProps {
   variant: 'light' | 'primary' | 'dark' // Required prop to determine the color scheme of the badge
 }
 
-// Define the BrandBadgeIcon component
-const BrandBadgeIcon: React.FC<BrandBadgeIconProps> = ({ userLogoType = 1, className, variant = 'primary' }) => {
+// Define the BrandBadgeIcon component (updated for React 19)
+function BrandBadgeIcon({ userLogoType = 1, className, variant = 'primary' }: BrandBadgeIconProps) {
   return (
     <>
       {/* Render the GenuinBadge component if userLogoType is 1 */}

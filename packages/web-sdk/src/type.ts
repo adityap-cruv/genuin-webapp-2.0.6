@@ -80,7 +80,7 @@ type PopupConfig = {
   popup_after: number
 }
 
-export type WebConfigsType = { 
+export type WebConfigsType = {
   video_autoplay: VideoAutoplayConfig
   feed_video_play: FeedVideoPlayConfig
   linkout_delay: LinkoutDelayConfig

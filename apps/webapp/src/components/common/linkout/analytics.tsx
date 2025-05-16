@@ -71,8 +71,8 @@ export function triggerLinkoutViewEvent({ cta, linkoutId, videoId, link, noOfLin
     content_type: 'video',
     no_of_links: noOfLinks ?? 0,
     cta_button: cta ? 'Yes' : 'No',
-    thumbnail: noOfLinks ?? 0 > 1 ? null : link?.hasThumbnail ? 'Yes' : 'No',
-    text: noOfLinks ?? 0 > 1 ? null : link?.hasText ? 'Yes' : 'No',
+    thumbnail: (noOfLinks ?? 0 > 1) ? null : link?.hasThumbnail ? 'Yes' : 'No',
+    text: (noOfLinks ?? 0 > 1) ? null : link?.hasText ? 'Yes' : 'No',
   }
 
   void Analytics.track({

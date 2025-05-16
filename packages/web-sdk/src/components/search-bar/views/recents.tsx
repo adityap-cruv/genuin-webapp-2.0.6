@@ -106,7 +106,7 @@ export function Recents() {
                 href={pathName.loop(
                   item.loop.slug
                     ? item.loop.slug
-                    : item.loop?.group?.slug ?? '',
+                    : (item.loop?.group?.slug ?? ''),
                 )}
                 deletionHandler={() => {
                   void deleteClickHandler(item.id)

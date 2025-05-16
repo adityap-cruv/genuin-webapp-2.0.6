@@ -3,37 +3,37 @@ import { UAParser } from 'ua-parser-js'
 import keyParamMapping from './keyParamMapping.json'
 // Add types for class properties and methods
 type BaseResolverConfig = {
-  keyParamMapping: Record<string, any>;
+  keyParamMapping: Record<string, any>
 }
 
 type DeviceResolverConfig = BaseResolverConfig & {
-  instance?: DeviceResolver;
-  uaParserResult: UAParser.IResult;
-  resolvers: Record<string, () => void | Promise<void>>;
+  instance?: DeviceResolver
+  uaParserResult: UAParser.IResult
+  resolvers: Record<string, () => void | Promise<void>>
 }
 
 type SiteResolverConfig = BaseResolverConfig & {
-  instance?: SiteResolver;
-  config: Record<string, any>;
-  resolvers: Record<string, () => void | Promise<void>>;
+  instance?: SiteResolver
+  config: Record<string, any>
+  resolvers: Record<string, () => void | Promise<void>>
 }
 
 type UserResolverConfig = BaseResolverConfig & {
-  instance?: UserResolver;
-  config: Record<string, any>;
-  resolvers: Record<string, () => void | Promise<void>>;
+  instance?: UserResolver
+  config: Record<string, any>
+  resolvers: Record<string, () => void | Promise<void>>
 }
 
 type MainResolverConfig = {
-  deviceResolver: DeviceResolver;
-  siteResolver: SiteResolver;
-  userResolver: UserResolver;
+  deviceResolver: DeviceResolver
+  siteResolver: SiteResolver
+  userResolver: UserResolver
 }
 
 // Base Resolver class
 class BaseResolver implements BaseResolverConfig {
-  keyParamMapping: Record<string, any>;
-  private static publisherName: string = 'begenuin';
+  keyParamMapping: Record<string, any>
+  private static publisherName: string = 'begenuin'
 
   constructor() {
     // Initialize an empty object to store key-param mappings
@@ -41,11 +41,11 @@ class BaseResolver implements BaseResolverConfig {
   }
 
   static setPublisherName(name: string): void {
-    BaseResolver.publisherName = name;
+    BaseResolver.publisherName = name
   }
 
   protected getPublisherName(): string {
-    return BaseResolver.publisherName;
+    return BaseResolver.publisherName
   }
 
   /**
@@ -109,7 +109,10 @@ class BaseResolver implements BaseResolverConfig {
    * // Safely executes the resolveOS function
    * safeExecute('device.os', resolveOS)
    */
-  async safeExecute(keyPath: string, func: () => void | Promise<void>): Promise<void> {
+  async safeExecute(
+    keyPath: string,
+    func: () => void | Promise<void>,
+  ): Promise<void> {
     try {
       await func()
     } catch (error: unknown) {
@@ -148,9 +151,9 @@ class BaseResolver implements BaseResolverConfig {
  * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
  */
 class DeviceResolver extends BaseResolver implements DeviceResolverConfig {
-  static instance?: DeviceResolver;
-  uaParserResult!: UAParser.IResult;
-  resolvers!: Record<string, () => void | Promise<void>>;
+  static instance?: DeviceResolver
+  uaParserResult!: UAParser.IResult
+  resolvers!: Record<string, () => void | Promise<void>>
 
   constructor() {
     super()
@@ -235,7 +238,10 @@ class DeviceResolver extends BaseResolver implements DeviceResolverConfig {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolvePxRatio() {
-    this.setKeyValue('device.pxratio', parseFloat(window.devicePixelRatio.toFixed(2)) || 1.0)
+    this.setKeyValue(
+      'device.pxratio',
+      parseFloat(window.devicePixelRatio.toFixed(2)) || 1.0,
+    )
   }
 
   /**
@@ -296,7 +302,10 @@ class DeviceResolver extends BaseResolver implements DeviceResolverConfig {
       wifi: 2,
       ethernet: 1,
     }
-    this.setKeyValue('device.connectiontype', conn ? types[conn.effectiveType] || 3 : 3)
+    this.setKeyValue(
+      'device.connectiontype',
+      conn ? types[conn.effectiveType] || 3 : 3,
+    )
   }
 
   /**
@@ -396,7 +405,9 @@ class DeviceResolver extends BaseResolver implements DeviceResolverConfig {
   resolvePPI() {
     const diagPixels = Math.sqrt(screen.width ** 2 + screen.height ** 2)
     const diagInches = 6 // Approximate
-    const ppi = Math.round((diagPixels / diagInches) * (window.devicePixelRatio || 1))
+    const ppi = Math.round(
+      (diagPixels / diagInches) * (window.devicePixelRatio || 1),
+    )
     this.setKeyValue('device.ppi', ppi || 'Unknown')
   }
 
@@ -408,8 +419,13 @@ class DeviceResolver extends BaseResolver implements DeviceResolverConfig {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolveFlashVersion() {
-    const flashPlugin = Array.from(navigator.plugins || []).find((plugin) => plugin.name.includes('Shockwave Flash'))
-    this.setKeyValue('device.flashver', flashPlugin ? flashPlugin.description.split(' ')[2] : 'Unknown')
+    const flashPlugin = Array.from(navigator.plugins || []).find((plugin) =>
+      plugin.name.includes('Shockwave Flash'),
+    )
+    this.setKeyValue(
+      'device.flashver',
+      flashPlugin ? flashPlugin.description.split(' ')[2] : 'Unknown',
+    )
   }
 
   /**
@@ -422,8 +438,10 @@ class DeviceResolver extends BaseResolver implements DeviceResolverConfig {
   resolveLMT(): void {
     this.setKeyValue(
       'device.lmt',
-      navigator.doNotTrack === '1' || (window as any).doNotTrack === '1' ? 1 : 0
-    );
+      navigator.doNotTrack === '1' || (window as any).doNotTrack === '1'
+        ? 1
+        : 0,
+    )
   }
 
   /**
@@ -436,8 +454,10 @@ class DeviceResolver extends BaseResolver implements DeviceResolverConfig {
   resolveDNT(): void {
     this.setKeyValue(
       'device.dnt',
-      navigator.doNotTrack === '1' || (window as any).doNotTrack === '1' ? 1 : 0
-    );
+      navigator.doNotTrack === '1' || (window as any).doNotTrack === '1'
+        ? 1
+        : 0,
+    )
   }
 
   /**
@@ -461,9 +481,9 @@ class DeviceResolver extends BaseResolver implements DeviceResolverConfig {
  * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
  */
 class SiteResolver extends BaseResolver implements SiteResolverConfig {
-  static instance?: SiteResolver;
-  config!: Record<string, any>;
-  resolvers!: Record<string, () => void | Promise<void>>;
+  static instance?: SiteResolver
+  config!: Record<string, any>
+  resolvers!: Record<string, () => void | Promise<void>>
 
   constructor() {
     super()
@@ -663,7 +683,11 @@ class SiteResolver extends BaseResolver implements SiteResolverConfig {
 
     // Combine all keywords, remove duplicates, and filter out empty strings
     const combinedKeywords = [
-      ...new Set([...metaKeywords.split(','), ...ogKeywords.split(','), ...configKeywords.split(',')]),
+      ...new Set([
+        ...metaKeywords.split(','),
+        ...ogKeywords.split(','),
+        ...configKeywords.split(','),
+      ]),
     ]
       .map((keyword) => keyword.trim())
       .filter((keyword) => keyword !== '')
@@ -678,7 +702,7 @@ class SiteResolver extends BaseResolver implements SiteResolverConfig {
    */
   getMetaKeywords() {
     const metaTag = document.querySelector('meta[name="keywords"]')
-    return metaTag ? metaTag.getAttribute('content') ?? '' : ''
+    return metaTag ? (metaTag.getAttribute('content') ?? '') : ''
   }
 
   /**
@@ -687,7 +711,7 @@ class SiteResolver extends BaseResolver implements SiteResolverConfig {
    */
   getOgKeywords() {
     const ogTag = document.querySelector('meta[property="og:keywords"]')
-    return ogTag ? ogTag.getAttribute('content') ?? '' : ''
+    return ogTag ? (ogTag.getAttribute('content') ?? '') : ''
   }
 
   /**
@@ -731,9 +755,9 @@ class SiteResolver extends BaseResolver implements SiteResolverConfig {
  * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
  */
 class UserResolver extends BaseResolver implements UserResolverConfig {
-  static instance?: UserResolver;
-  config!: Record<string, any>;
-  resolvers!: Record<string, () => void | Promise<void>>;
+  static instance?: UserResolver
+  config!: Record<string, any>
+  resolvers!: Record<string, () => void | Promise<void>>
 
   constructor() {
     super()
@@ -827,12 +851,12 @@ class UserResolver extends BaseResolver implements UserResolverConfig {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolveKwarray(): void {
-    const keywords = this.keyParamMapping.user.keywords?.value || '';
+    const keywords = this.keyParamMapping.user.keywords?.value || ''
     const kwarray = keywords
       .split(',')
       .map((kw: string) => kw.trim())
-      .filter((kw: string) => kw !== '');
-    this.setKeyValue('user.kwarray', kwarray);
+      .filter((kw: string) => kw !== '')
+    this.setKeyValue('user.kwarray', kwarray)
   }
 
   /**
@@ -851,9 +875,9 @@ class UserResolver extends BaseResolver implements UserResolverConfig {
 
 // MainResolver class to orchestrate all resolvers
 class MainResolver implements MainResolverConfig {
-  deviceResolver: DeviceResolver;
-  siteResolver: SiteResolver;
-  userResolver: UserResolver;
+  deviceResolver: DeviceResolver
+  siteResolver: SiteResolver
+  userResolver: UserResolver
 
   constructor() {
     // Initialize individual resolvers
@@ -866,7 +890,10 @@ class MainResolver implements MainResolverConfig {
    * Resolves all properties from all resolvers
    */
   async resolveAll() {
-    await Promise.all([this.deviceResolver.resolve(), this.siteResolver.resolve()])
+    await Promise.all([
+      this.deviceResolver.resolve(),
+      this.siteResolver.resolve(),
+    ])
     await this.userResolver.resolve()
   }
 
@@ -909,7 +936,10 @@ class MainResolver implements MainResolverConfig {
           ) {
             // If the macros property exists in the URL's search string, replace the macro with the value
             if (obj[key].macros && urlObj.search.includes(obj[key].macros)) {
-              urlObj.search = urlObj.search.replace(obj[key].macros, obj[key].value)
+              urlObj.search = urlObj.search.replace(
+                obj[key].macros,
+                obj[key].value,
+              )
             }
             // If the value is an object, recursively call traverseJson
           } else {
@@ -975,7 +1005,7 @@ class MainResolver implements MainResolverConfig {
   }
 
   setPublisherName(name: string): void {
-    BaseResolver.setPublisherName(name);
+    BaseResolver.setPublisherName(name)
   }
 }
 
@@ -1004,7 +1034,10 @@ const UrlParamContext = createContext<UrlParamContextType>({
  *   <MyComponent />
  * </UrlParamProvider>
  */
-export const UrlParamProvider: React.FC<{ children: React.ReactNode, name: string }> = ({ children, name }) => {
+export const UrlParamProvider: React.FC<{
+  children: React.ReactNode
+  name: string
+}> = ({ children, name }) => {
   // Set publisher name in BaseResolver config
   const resolvedParamsRef = React.useRef<Record<string, any>>({})
   const resolverRef = React.useRef<MainResolver | null>(null)
@@ -1034,10 +1067,12 @@ export const UrlParamProvider: React.FC<{ children: React.ReactNode, name: strin
   }
 
   return (
-    <UrlParamContext.Provider value={{ resolvedParams: resolvedParamsRef.current, appendParamsToUrl }}>
+    <UrlParamContext.Provider
+      value={{ resolvedParams: resolvedParamsRef.current, appendParamsToUrl }}>
       {children}
     </UrlParamContext.Provider>
   )
 }
 
-export const useUrlParams = (): UrlParamContextType => useContext(UrlParamContext)
+export const useUrlParams = (): UrlParamContextType =>
+  useContext(UrlParamContext)

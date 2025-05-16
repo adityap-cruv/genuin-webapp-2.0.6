@@ -13,7 +13,7 @@ import { queryClient } from '@/components/providers/query-client-provider'
 import { getQueryKeyForVideoComments } from '@/lib/utils/keys'
 import { validateCommentDetails } from '@/lib/schemas/loop/comment'
 
-function prependComment(commentData: any, videoId: string) {
+function prependComment(commentData: ReturnType<typeof validateCommentDetails>, videoId: string) {
   type QueryDataType = ReturnType<typeof getVideosComments>['data']
   queryClient.setQueryData(getQueryKeyForVideoComments(videoId), (oldData: QueryDataType): QueryDataType => {
     if (!oldData) return
@@ -29,13 +29,15 @@ function prependComment(commentData: any, videoId: string) {
   })
 }
 
-const MentionInput: React.FC<{
+interface MentionInputProps {
   videoId: string
   loopId: string
   videoSlug: string
   communityId: string
   className?: string
-}> = ({ videoId, loopId, videoSlug, className, communityId }) => {
+}
+
+function MentionInput({ videoId, loopId, videoSlug, className, communityId }: MentionInputProps) {
   const { handleWalletBalance } = useWalletBalanceHandler()
   const { user } = useGenuinOptions((state) => ({
     user: state.user,
@@ -49,10 +51,10 @@ const MentionInput: React.FC<{
   const [isPosting, setIsPosting] = useState(false)
   const [filteredMentions, setFilteredMentions] = useState<CommentMention[]>([])
   const [selectedMentions, setSelectedMentions] = useState<SelectedMention[]>([])
-  const mentionListRef = useRef<any>(null)
-  const textareaRef = useRef<any>(null)
+  const mentionListRef = useRef<HTMLDivElement>(null)
+  const textareaRef = useRef<HTMLInputElement>(null)
   const debounceTimer = useRef<NodeJS.Timeout | null>(null)
-  const shouldOpenRef = useRef(false)
+  const shouldOpenRef = useRef<boolean>(false)
   const abortControllerRef = useRef<AbortController | null>(null)
   const REGEX_FOR_URLS = /(?:https?:\/\/)?(?:www\.)?[\w-]+(\.[\w-]+)+(\/[^\s]*)?/g
 
@@ -76,7 +78,11 @@ const MentionInput: React.FC<{
         setFilteredMentions([])
       }
     } catch (error) {
-      console.error('Failed to post comment', error)
+      // Log error silently in production, only log in development
+      if (process.env.NODE_ENV !== 'production') {
+        // eslint-disable-next-line no-console
+        console.error('Failed to post comment', error)
+      }
     } finally {
       setIsPosting(false)
     }
@@ -102,10 +108,10 @@ const MentionInput: React.FC<{
     }
 
     if (urlMatches) {
-      urlMatches.forEach((url: any) => {
-        const isUrlAlreadyAdded = selectedMentions.some((mention: any) => mention.id === url)
+      urlMatches.forEach((url: string) => {
+        const isUrlAlreadyAdded = selectedMentions.some((mention) => mention.id === url)
         if (!isUrlAlreadyAdded) {
-          setSelectedMentions((prev: any) => [...prev, { handle: url, id: url, type: 'url' }])
+          setSelectedMentions((prev) => [...prev, { handle: url, id: url, type: 'url' as const }])
         }
       })
     }
@@ -175,7 +181,11 @@ const MentionInput: React.FC<{
           }
         }
       } catch (error) {
-        console.error('Error fetching mentions', error)
+        // Log error silently in production, only log in development
+        if (process.env.NODE_ENV !== 'production') {
+          // eslint-disable-next-line no-console
+          console.error('Error fetching mentions', error)
+        }
       }
     }, 300)
   }
@@ -187,16 +197,16 @@ const MentionInput: React.FC<{
       const end = value.slice(caretPosition) // Text after caret
 
       const isCommunity = selected.type === 3
-      const handle = isCommunity ? selected.community?.handle ?? '' : '@' + selected.user?.nickname
-      const id = isCommunity ? selected.community?.community_id ?? '' : selected.user?.member_id ?? ''
-      const slug = isCommunity ? selected.community?.slug ?? '' : ''
+      const handle = isCommunity ? (selected.community?.handle ?? '') : '@' + (selected.user?.nickname ?? '')
+      const id = isCommunity ? (selected.community?.community_id ?? '') : (selected.user?.member_id ?? '')
+      const slug = isCommunity ? (selected.community?.slug ?? '') : ''
       const type = isCommunity ? 'community' : 'member'
 
       const updatedText = `${start}${handle} ${end}`
       setText(updatedText)
       setIsMentioning(false)
       setMentionQuery('')
-      setSelectedMentions((prev: any) => [...prev, { handle, id, slug, type }])
+      setSelectedMentions((prev) => [...prev, { handle, id, slug, type: type as 'community' | 'member' }])
 
       const newCaretPosition = start.length + handle.length + 2
       textareaRef.current.setSelectionRange(newCaretPosition, newCaretPosition)
@@ -234,19 +244,25 @@ const MentionInput: React.FC<{
           className="absolute bottom-16 left-0 z-50 flex max-h-60 w-full flex-col gap-1 overflow-hidden overflow-y-scroll rounded-t-2xl bg-monochrome-white p-3"
           style={{ boxShadow: '0px -4px 11.7px 0px rgba(0, 0, 0, 0.08)' }}>
           {filteredMentions.length > 0 &&
-            filteredMentions.map((mention: any) => {
+            filteredMentions.map((mention: CommentMention) => {
               const isCommunity = mention.type === 3
-              const name = isCommunity ? mention.community.name : '@' + mention.user.nickname
-              const profileImage = isCommunity ? mention.community.dp : mention.user.profile_image
+              const name = isCommunity
+                ? (mention.community?.name ?? 'Community')
+                : '@' + (mention.user?.nickname ?? 'User')
+              const profileImage = isCommunity ? mention.community?.dp : mention.user?.profile_image
               const description = isCommunity
-                ? mention.community.description
+                ? mention.community?.description
                   ? 'Community ・ ' + mention.community.description
                   : 'Community'
-                : mention.user.bio
+                : (mention.user?.bio ?? '')
 
               return (
                 <div
-                  key={isCommunity ? mention.community.community_id : mention.user.name}
+                  key={
+                    isCommunity
+                      ? `community-${mention.community?.community_id ?? ''}`
+                      : `user-${mention.user?.member_id ?? ''}`
+                  }
                   onClick={() => {
                     handleUserSelect(mention)
                   }}
@@ -310,7 +326,7 @@ const MentionInput: React.FC<{
                   openModal({ deepLink: generatedLink, subtitle: <>Download app to comment on this video.</> })
                 })
               }}
-              placeholder="Add a comment"
+              aria-label="Add a comment"
               className="h-full w-full rounded-full border-2 border-tertiary-200 bg-monochrome-white py-2 pl-6">
               <p className="text-start text-title-3-demi text-tertiary">Add a Comment</p>
             </div>
