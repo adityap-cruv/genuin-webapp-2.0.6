@@ -1,0 +1,45 @@
+{
+    "applinks": {
+        "apps": [],
+        "substitutionVariables": {
+            "lng": [
+                "en"
+            ],
+            "module_path_en": [
+                "cars-for-sale",
+                "used-cars-for-sale",
+                "new-cars-for-sale",
+                "news",
+                "for-sale",
+                "garage",
+                "dealer"
+            ],
+            "module_path_th": [
+                "รถ-สำหรับ-ขาย",
+                "รถมือสอง-สำหรับ-ขาย",
+                "รถใหม่-สำหรับ-ขาย",
+                "ข่าว",
+                "for-sale",
+                "garage",
+                "dealer"
+            ]
+        },
+        "details": [
+            {
+                "appID": "5B3FA3JHV9.com.imagineering.one2car",
+                "components": [
+                    {
+                        "/": "/$(lng)/$(module_path_en)/*"
+                    },
+                    {
+                        "/": "/$(module_path_th)/*",
+                        "percentEncoded": false
+                    },
+           	    {
+            		"/": "/*"
+          	    }
+                ]
+            }
+        ]
+    }
+}

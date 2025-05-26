@@ -44,7 +44,7 @@ export function BirthInput({ onNext }: ScreenProps) {
 
   const [isLoading, setIsLoading] = useState(false)
   const { data: sessionData, update: updateSession } = useSession()
-  const form = useForm({
+  const form = useForm<{ birth: string }>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       birth: formData.birth ? (getCurrentDate(formData.birth) ?? '') : suggestionDate.toISOString().split('T')[0],

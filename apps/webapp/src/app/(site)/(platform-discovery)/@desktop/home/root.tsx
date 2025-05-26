@@ -1,7 +1,7 @@
 'use client'
 import { getFeed } from '@lib/api/feed'
-import { useMemo } from 'react'
 import { Feed } from '@/components/common/feed'
+import { useMemo } from 'react'
 import EmptyView from '@/components/common/empty-view'
 
 export function Root() {
@@ -11,13 +11,15 @@ export function Root() {
   if (!isLoading && videos.length === 0) return <EmptyView type="feed" />
 
   return (
-    <Feed.desktop
-      hasNextPage={hasNextPage ?? true}
-      isLoading={isLoading}
-      startIndex={0}
-      videos={videos}
-      isFetchingNextPage={isFetchingNextPage}
-      fetchNextPage={fetchNextPage}
-    />
+    <>
+      <Feed.desktop
+        hasNextPage={hasNextPage ?? true}
+        isLoading={isLoading}
+        startIndex={0}
+        videos={videos}
+        isFetchingNextPage={isFetchingNextPage}
+        fetchNextPage={fetchNextPage}
+      />
+    </>
   )
 }

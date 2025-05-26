@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-cd apps/webapp && npm run build
+# cd apps/webapp && npm run build

@@ -1,0 +1,46 @@
+import { cva, type VariantProps } from "class-variance-authority";
+import { type ComponentProps } from "react";
+import React from "react";
+
+import { cn } from "../../lib/utils";
+
+const loaderVariant = cva(
+  "gencl:animate-spin gencl:rounded-full gencl:stroke-primary",
+  {
+    variants: {
+      size: {
+        xs: "gencl:h-4 gencl:w-4",
+        sm: "gencl:h-5 gencl:w-5",
+        md: "gencl:h-7 gencl:w-7",
+        lg: "gencl:h-9 gencl:w-9",
+        xl: "gencl:h-11 gencl:w-11",
+      },
+    },
+    defaultVariants: {
+      size: "sm",
+    },
+  }
+);
+
+type Props = ComponentProps<"svg"> & VariantProps<typeof loaderVariant>;
+
+export function Loader({ size = "sm", className }: Props) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      className={cn(loaderVariant({ size }), className)}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M24 12C24 13.9132 23.5425 15.7987 22.6658 17.4992C21.789 19.1997 20.5184 20.6659 18.9599 21.7755C17.4013 22.8851 15.6 23.606 13.7063 23.8781C11.8125 24.1501 9.88115 23.9654 8.07327 23.3393C6.2654 22.7133 4.63342 21.664 3.31345 20.2791C1.99348 18.8942 1.02378 17.2137 0.48523 15.3779C-0.0533181 13.542 -0.145105 11.604 0.217526 9.72551C0.580156 7.84699 1.38669 6.0824 2.56986 4.57891L3.98224 5.69039C2.97627 6.96869 2.29054 8.46899 1.98222 10.0662C1.6739 11.6633 1.75194 13.3111 2.20983 14.872C2.66772 16.4328 3.49218 17.8616 4.61445 19.0391C5.73673 20.2166 7.12428 21.1087 8.66139 21.641C10.1985 22.1733 11.8406 22.3304 13.4507 22.0991C15.0609 21.8678 16.5923 21.2548 17.9175 20.3114C19.2426 19.368 20.3229 18.1213 21.0683 16.6755C21.8138 15.2297 22.2027 13.6267 22.2027 12H24Z"
+      />
+    </svg>
+  );
+}

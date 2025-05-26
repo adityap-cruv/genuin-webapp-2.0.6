@@ -1,0 +1,27 @@
+{
+  "extends": "@genuin/typescript-config/react-library.json",
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "baseUrl": ".",
+    "paths": {
+      "~/*": [
+        "/*"
+      ]
+    },
+    "types": [
+      "eslint",
+      "react"
+    ],
+    "resolveJsonModule": true,
+    "esModuleInterop": true
+  },
+  "include": [
+    "src",
+  ],
+  "exclude": [
+    "dist",
+    "build",
+    "**/node_modules/**",
+  ]
+}

@@ -1,0 +1,213 @@
+@import "tailwindcss" prefix(gencl);
+@import "tailwind-animate" prefix(gencl);
+@custom-variant dark (&: is(.dark *));
+
+:root {
+  --primary: #0645ff;
+  --primary-foreground: 0 0% 100%;
+  --primary-100: #e6ecff;
+  --primary-200: #cddaff;
+  --primary-300: #83a2ff;
+  --primary-400: #517dff;
+  --primary: #0645ff;
+  --primary-600: #0430b3;
+  --primary-700: #032380;
+
+  --secondary-900: #1d1f20;
+  --secondary-800: #3b3e40;
+  --secondary-700: #585c61;
+  --secondary-600: #767b81;
+  --secondary-500: #939aa1;
+  --secondary-400: #a9aeb4;
+  --secondary-300: #bec2c7;
+  --secondary-200: #d4d7d9;
+  --secondary-150: #dfe1e3;
+  --secondary-100: #e9ebec;
+  --secondary-50: #f4f5f6;
+
+  --secondary-300: #707070;
+  --secondary-400: #414141;
+  --secondary: #111111;
+  --secondary-600: #0e0e0e;
+  --secondary-foreground: 0 0% 100%;
+
+  --tertiary-400: #a9aeb4;
+  --tertiary-300: #bec2c7;
+  --tertiary-200: #d4d7d9;
+  --tertiary-100: #f4f5f6;
+  --tertiary-50: #f9fafb;
+
+  font-family:
+    "Inter",
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    "Noto Sans",
+    sans-serif,
+    "Apple Color Emoji",
+    "Segoe UI Emoji",
+    "Segoe UI Symbol",
+    "Noto Color Emoji";
+}
+
+@theme {
+  /**
+  * Theme variables for typography
+  */
+  --text-*: initial;
+  --text-h1-bold: 100px;
+  --text-h1-bold--line-height: 100px;
+  --text-h1-bold--font-weight: 700;
+
+  --text-h2-bold: 64px;
+  --text-h2-bold--line-height: 72px;
+  --text-h2-bold--font-weight: 700;
+
+  --text-h2-semi-bold: 64px;
+  --text-h2-semi-bold--line-height: 72px;
+  --text-h2-semi-bold--font-weight: 600;
+
+  --text-h3-semi-bold: 48px;
+  --text-h3-semi-bold--line-height: 56px;
+  --text-h3-semi-bold--font-weight: 600;
+
+  --text-headline-1-semi-bold: 36px;
+  --text-headline-1-semi-bold--line-height: 44px;
+  --text-headline-1-semi-bold--font-weight: 600;
+
+  --text-headline-2-semi-bold: 32px;
+  --text-headline-2-semi-bold--line-height: 36px;
+  --text-headline-2-semi-bold--font-weight: 600;
+
+  --tesxt-headline-3-bold: 24px;
+  --text-headline-3-bold--line-height: 28px;
+  --text-headline-3-bold--font-weight: 600;
+
+  --text-headline-4-semi-bold: 20px;
+  --text-headline-4-semi-bold--line-height: 24px;
+  --text-headline-4-semi-bold--font-weight: 600;
+
+  --text-headline-4-medium: 20px;
+  --text-headline-4-medium--line-height: 24px;
+  --text-headline-4-medium--font-weight: 500;
+
+  --text-body-0-semi-bold: 16px;
+  --text-body-0-semi-bold--line-height: 22px;
+  --text-body-0-semi-bold--font-weight: 600;
+
+  --text-body-1-bold: 14px;
+  --text-body-1-bold--line-height: 20px;
+  --text-body-1-bold--font-weight: 700;
+
+  --text-body-1-semi-bold: 14px;
+  --text-body-1-semi-bold--line-height: 20px;
+  --text-body-1-semi-bold--font-weight: 600;
+
+  --text-body-1-medium: 14px;
+  --text-body-1-medium--line-height: 20px;
+  --text-body-1-medium--font-weight: 500;
+
+  --text-body-2-bold: 11px;
+  --text-body-2-bold--line-height: 16px;
+  --text-body-2-bold--font-weight: 700;
+
+  --text-body-2-medium: 11px;
+  --text-body-2-medium--line-height: 16px;
+  --text-body-2-medium--font-weight: 500;
+
+  /*
+  * Theme variable for color
+  */
+
+  --color-*: initial;
+
+  --color-white: #ffffff;
+  --color-black: #131415;
+  --color-blue: #0645ff;
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-100: var(--primary-100);
+  --color-primary-200: var(--primary-200);
+  --color-primary-300: var(--primary-300);
+  --color-primary-400: var(--primary-400);
+  --color-primary-600: var(--primary-600);
+  --color-primary-700: var(--primary-700);
+
+  --color-secondary-900: var(--secondary-900);
+  --color-secondary-800: var(--secondary-800);
+  --color-secondary-700: var(--secondary-700);
+  --color-secondary-600: var(--secondary-600);
+  --color-secondary-500: var(--secondary-500);
+  --color-secondary-400: var(--secondary-400);
+  --color-secondary-300: var(--secondary-300);
+  --color-secondary-200: var(--secondary-200);
+  --color-secondary-150: var(--secondary-150);
+  --color-secondary-100: var(--secondary-100);
+  --color-secondary-50: var(--secondary-50);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-tertiary-100: var(--tertiary-100);
+  --color-tertiary-200: var(--tertiary-200);
+  --color-tertiary-300: var(--tertiary-300);
+  --color-tertiary-400: var(--tertiary-400);
+  --color-tertiary-50: var(--tertiary-50);
+
+  --color-red-100: #fbe9e8;
+  --color-red-200: #f7d2d1;
+  --color-red-300: #ec8f8c;
+  --color-red-400: #e4625d;
+  --color-red: #d91e18;
+  --color-red-600: #981511;
+  --color-red-700: #6d0f0c;
+
+  --aspect-reel: 9/16;
+
+  --animate-fade-out: fadeOut 0.5s ease-in-out forwards;
+
+  @keyframes fadeOut {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+}
+
+@keyframes fadeOutDelay {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.fade-out-delay {
+  animation: fadeOutDelay 2s ease-out forwards;
+}
+
+@layer base {
+  body {
+    padding: 0px !important;
+  }
+}
+
+/* @layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+} */

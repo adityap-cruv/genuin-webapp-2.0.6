@@ -53,7 +53,7 @@ export function BirthInput({ onNext }: ScreenProps) {
 
   const [isLoading, setIsLoading] = useState(false)
   const { updateUser } = useAuth()
-  const form = useForm({
+  const form = useForm<{ birth: string }>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       birth: formData.birth

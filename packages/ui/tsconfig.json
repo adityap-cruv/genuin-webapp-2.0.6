@@ -1,0 +1,36 @@
+{
+  "extends": "@genuin/typescript-config/react-library.json",
+  "compilerOptions": {
+    "resolveJsonModule": true,
+    "experimentalDecorators": true,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "baseUrl": ".",
+    "types": [
+      "eslint",
+      "react",
+      "react-dom",
+      "node"
+    ],
+    "paths": {
+      // "@components/*": [
+      //   "src/components/*"
+      // ],
+      // "@hooks": [
+      //   "src/hooks/*"
+      // ],
+      // "@lib/*": [
+      //   "src/lib/*"
+      // ],
+    }
+  },
+  "include": [
+    "src",
+    "src/components/popover/popover.tsx",
+  ],
+  "exclude": [
+    "dist",
+    "build",
+    "**/node_modules/**",
+  ]
+}
