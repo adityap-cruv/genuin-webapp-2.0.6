@@ -25,14 +25,14 @@
     "upgrade-node": "nvm install 20.12.0 && nvm alias default 20.12.0 && nvm use 20.12.0"
   },
   "dependencies": {
-    "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
   },
   "devDependencies": {
     "@alloc/quick-lru": "^5.2.0",
     "@opentelemetry/api": "^1.9.0",
     "@types/classnames": "^2.3.4",
-    "@types/react": "18.2.21",
+    "@types/react": "19.1.5",
     "husky": "^8.0.0",
     "prettier": "^3.2.4",
     "turbo": "^2.5.3"

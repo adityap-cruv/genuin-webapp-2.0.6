@@ -26,7 +26,6 @@
   },
   "include": [
     "src",
-    "src/components/popover/popover.tsx",
   ],
   "exclude": [
     "dist",

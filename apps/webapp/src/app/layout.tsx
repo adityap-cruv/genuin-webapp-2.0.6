@@ -1,6 +1,6 @@
 import { Inter } from 'next/font/google'
 import './globals.css'
-import { Metadata, Viewport } from 'next'
+import { type Metadata, type Viewport } from 'next'
 
 // Root layout is now split into server and client parts for Next.js 15
 // Client components are wrapped in ClientProviders
