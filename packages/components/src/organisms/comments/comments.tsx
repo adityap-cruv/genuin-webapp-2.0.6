@@ -1,6 +1,6 @@
+import { CommentIcon, ErrorIcon } from "@genuin/ui/icons";
 import { InfiniteScroll } from "@genuin/ui/infinite-scroll";
 import { Loader } from "@genuin/ui/loader";
-import { CommentIcon, ErrorIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/utils";
 import { useMemo, type ComponentProps } from "react";
 

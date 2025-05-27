@@ -1,9 +1,9 @@
 import { Avatar } from "@genuin/ui/avatar";
-import { ReadMore } from "@genuin/ui/read-more";
 import { SparkIcon } from "@genuin/ui/icons";
+import { ReadMore } from "@genuin/ui/read-more";
+import { getTimeAgo } from "@genuin/ui/utils";
 
 import type { CommentListType } from "src/react-query/api/comments";
-import { getTimeAgo } from "@genuin/ui/utils";
 
 export type CommentItemProps = {
   comment: CommentListType[number];
@@ -28,7 +28,7 @@ export function CommentItem({ comment }: CommentItemProps) {
         </div>
         <ReadMore
           text={comment.commentText}
-          className="gencl:text-body-1-medium gencl:text-secondary-900 gencl:break-all"
+          className="gencl:text-body-1-medium! gencl:text-secondary-900 gencl:break-all"
         />
         <div className="gencl:flex gencl:items-center">
           <SparkIcon className="gencl:size-4" />
