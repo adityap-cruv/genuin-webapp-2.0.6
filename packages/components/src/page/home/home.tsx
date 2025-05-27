@@ -1,8 +1,9 @@
+import { useWindowSize } from "usehooks-ts";
+
 import { TOP_BAR_HEIGHT } from "src/lib/constants";
 import { SideBar } from "src/organisms/side-bar";
 import { TopBar } from "src/organisms/top-bar";
 import { Feed } from "src/templates/feed";
-import { useWindowSize } from "usehooks-ts";
 
 export function Home() {
   const { height } = useWindowSize();

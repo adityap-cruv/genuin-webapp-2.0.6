@@ -425,6 +425,9 @@ importers:
       tailwindcss:
         specifier: ^4.1.6
         version: 4.1.7
+      vite:
+        specifier: ^6.3.5
+        version: 6.3.5(@types/node@22.15.19)
       vite-tsconfig-paths:
         specifier: ^5.1.4
         version: 5.1.4(typescript@5.8.3)(vite@6.3.5)
@@ -5431,6 +5434,7 @@ packages:
       estree-walker: 2.0.2
       picomatch: 4.0.2
       rollup: 3.29.5
+    dev: false
 
   /@rollup/pluginutils@5.1.4(rollup@4.41.0):
     resolution: {integrity: sha512-USm05zrsFxYLPdWWq+K3STlWiT/3ELn3RcV5hJMghpeAIhxfsUIg6mt12CBJBInWMV4VneoV7SfGv8xIwo2qNQ==}
@@ -6726,7 +6730,7 @@ packages:
         optional: true
     dependencies:
       '@joshwooding/vite-plugin-react-docgen-typescript': 0.5.0(typescript@5.8.3)(vite@6.3.5)
-      '@rollup/pluginutils': 5.1.4(rollup@3.29.5)
+      '@rollup/pluginutils': 5.1.4(rollup@4.41.0)
       '@storybook/builder-vite': 8.6.14(storybook@8.6.14)(vite@6.3.5)
       '@storybook/react': 8.6.14(@storybook/test@8.6.14)(react-dom@19.1.0)(react@19.1.0)(storybook@8.6.14)(typescript@5.8.3)
       '@storybook/test': 8.6.14(storybook@8.6.14)
@@ -15027,6 +15031,7 @@ packages:
     hasBin: true
     optionalDependencies:
       fsevents: 2.3.3
+    dev: false
 
   /rollup@4.41.0:
     resolution: {integrity: sha512-HqMFpUbWlf/tvcxBFNKnJyzc7Lk+XO3FGc3pbNBLqEbOz0gPLRgcrlS3UF4MfUrVlstOaP/q0kM6GVvi+LrLRg==}

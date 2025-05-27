@@ -1,4 +1,5 @@
 {
+  "extends": "@genuin/typescript-config/nextjs.json",
   "compilerOptions": {
     "target": "es2022",
     "downlevelIteration": true,
@@ -11,24 +12,25 @@
       "eslint",
       "react"
     ],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "noEmit": true,
-    "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "preserve",
-    "incremental": true,
-    "noImplicitAny": true,
-    "verbatimModuleSyntax": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
+    "baseUrl": ".",
+    // "allowJs": true,
+    // "skipLibCheck": true,
+    // "strict": true,
+    // "noEmit": true,
+    // "esModuleInterop": true,
+    // "module": "NodeNext",
+    // "moduleResolution": "nodenext",
+    // "resolveJsonModule": true,
+    // "isolatedModules": true,
+    // "jsx": "preserve",
+    // "incremental": true,
+    // "noImplicitAny": true,
+    // "verbatimModuleSyntax": true,
+    // "plugins": [
+    //   {
+    //     "name": "next"
+    //   }
+    // ],
     "paths": {
       "@/*": [
         "./src/*"
