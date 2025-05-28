@@ -1,4 +1,4 @@
-## Genuin Monorepo Instructions for GitHub Copilot
+# Genuin Monorepo Instructions for GitHub Copilot
 
 You are assisting with the Genuin monorepo project. When answering questions or providing code examples, consider the following context:
 
@@ -37,7 +37,7 @@ genuin-webapp-standalone/
 - **Authentication**: NextAuth.js v5.0.0+
 - **State Management**: React Context API (preferred), Zustand (limited use)
 - **API Client**: TanStack Query v5
-- **CSS**: Tailwind CSS, CSS Modules
+- **CSS**: Tailwind CSS v4, CSS Modules
 - **Testing**: React Testing Library, Vitest
 - **UI Development**: Storybook v8.6+
 
@@ -67,6 +67,36 @@ genuin-webapp-standalone/
      - **Pages**: Complete views with real content and data
    - Ensure clear separation between primitive components (UI package) and business-specific components (Components package)
    - Follow progressive composition from atoms to pages
+
+#### Tailwind CSS v4 Patterns
+
+1. CSS and PostCSS Configuration
+   - Use `@tailwind` directives in globals.css for compatibility
+   - Use `@config '../../tailwind.config.ts'` directive in globals.css to specify the config file path
+   - Configure PostCSS to use `@tailwindcss/postcss` plugin
+   - Follow the gradual migration approach documented in TAILWIND_V4_MIGRATION_GUIDE.md
+2. Theme Configuration and Usage
+   - The project uses a hybrid approach compatible with both Tailwind v3 and v4
+   - CSS variables are defined in the Tailwind theme and accessed via utility classes
+   - Currently using `@import "tailwindcss"` along with `@config '../../tailwind.config.ts'` in globals.css
+   - Use proper color opacity syntax: `bg-primary/[0.5]` instead of `bg-primary/50`
+   - Configure CSS variables in the root element rather than using theme() function
+3. Utility Class Renaming
+   - Be aware of renamed utilities:
+     - `shadow-sm` → `shadow-xs`
+     - `shadow` → `shadow-sm`
+     - `rounded-sm` → `rounded-xs`
+     - `rounded` → `rounded-sm`
+     - `outline-none` → `outline-hidden`
+     - `ring` → `ring-3`
+4. Custom Utilities
+   - Use `@utility` directive for custom utilities instead of `@layer utilities`
+   - Follow the new variant stacking order (left to right) when combining variants
+   - Example: Change `first:*:pt-0` to `*:first:pt-0`
+5. Migration References
+   - Refer to TAILWIND_V4_MIGRATION.md for migration status
+   - Follow TAILWIND_V4_MIGRATION_GUIDE.md for gradual transition steps
+   - Use hybrid approaches where needed to maintain compatibility
 
 #### React & Next.js Patterns
 
@@ -272,5 +302,7 @@ genuin-webapp-standalone/
 
 - UPGRADE_GUIDE.md contains details on Next.js 15 and React 19 upgrade
 - MONOREPO_CONVERSION.md explains the repository structure conversion
+- TAILWIND_V4_MIGRATION.md explains the migration status and approach
+- TAILWIND_V4_MIGRATION_GUIDE.md provides detailed steps for the migration
 - Package-specific README files contain detailed instructions
 - NODE_VERSION.md for Node.js version requirements and setup

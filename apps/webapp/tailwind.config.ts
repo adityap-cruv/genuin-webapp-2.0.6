@@ -1,7 +1,8 @@
 import { type Config } from 'tailwindcss'
 import * as defaultTheme from 'tailwindcss/defaultTheme'
-module.exports = {
-  darkMode: ['class'],
+
+const config: Config = {
+  darkMode: ['class', '[data-mode="dark"]'],
   content: [
     './pages/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
@@ -11,8 +12,12 @@ module.exports = {
   ],
   theme: {
     colors: {
-      background: 'hsl(var(--background))',
-      foreground: 'hsl(var(--foreground))',
+      background: {
+        DEFAULT: 'hsl(var(--background))',
+      },
+      foreground: {
+        DEFAULT: 'hsl(var(--foreground))',
+      },
       primary: {
         DEFAULT: 'var(--primary)',
         foreground: 'hsl(var(--primary-foreground))',
@@ -97,89 +102,63 @@ module.exports = {
       'light-blue': {
         DEFAULT: '#1685FD',
       },
-      // border: 'hsl(var(--border))',
-      // input: 'hsl(var(--input))',
-      // ring: 'hsl(var(--ring))',
-      // destructive: {
-      //   DEFAULT: 'hsl(var(--destructive))',
-      //   foreground: 'hsl(var(--destructive-foreground))',
-      // },
-      // muted: {
-      //   DEFAULT: 'hsl(var(--muted))',
-      //   foreground: 'hsl(var(--muted-foreground))',
-      // },
-      // accent: {
-      //   DEFAULT: 'hsl(var(--accent))',
-      //   foreground: 'hsl(var(--accent-foreground))',
-      // },
-      // popover: {
-      //   DEFAULT: 'hsl(var(--popover))',
-      //   foreground: 'hsl(var(--popover-foreground))',
-      // },
-      // card: {
-      //   DEFAULT: 'hsl(var(--card))',
-      //   foreground: 'hsl(var(--card-foreground))',
-      // },
     },
     fontSize: {
-      // Updated Typography for new index page
-      'title-1-bold-home': ['100px', { fontWeight: 700, lineHeight: '100%' }],
-      'title-2-bold-home': ['52px', { fontWeight: 700, lineHeight: '100%' }],
-      'title-3-bold-home': ['36px', { fontWeight: 700, lineHeight: '140%' }],
-      'title-1-bold-home-m': ['48px', { fontWeight: 700, lineHeight: '100%' }],
-      'title-2-bold-home-m': ['36px', { fontWeight: 700, lineHeight: '100%' }],
-      'body-1-home': ['28px', { fontWeight: 500, lineHeight: '140%' }],
-      'body-2-bold-home': ['24px', { fontWeight: 700, lineHeight: '100%' }],
-      'body-2-demi-home': ['24px', { fontWeight: 500, lineHeight: '140%' }],
-      'body-2-home': ['24px', { fontWeight: 400, lineHeight: '140%' }],
-      'des-1-bold-home': ['18px', { fontWeight: 700, lineHeight: '140%' }],
-      'des-1-demi-home': ['18px', { fontWeight: 500, lineHeight: '140%' }],
-      'des-1-home': ['18px', { fontWeight: 400, lineHeight: '140%' }],
-      'cap-1-bold-home': ['16px', { fontWeight: 700, lineHeight: '100%' }],
-      'cap-1-demi-home': ['16px', { fontWeight: 600, lineHeight: '100%' }],
-      'cap-1-home': ['16px', { fontWeight: 500, lineHeight: '100%' }],
-      'cap-1-home-m': ['16px', { fontWeight: 500, lineHeight: '140%' }],
-      'cap-2-home-m': ['16px', { fontWeight: 400, lineHeight: '140%' }],
-      'para-1-home-m': ['10px', { fontWeight: 400, lineHeight: '140%' }],
-      // New Typography developed by design team for new web.
-      'heading-3': ['32px', { fontWeight: 600, lineHeight: '120%', letterSpacing: '-0.96px' }],
-      'title-1-bold': ['24px', { fontWeight: 700, lineHeight: '32px' }],
-      'title-1-demi': ['24px', { fontWeight: 600, lineHeight: '32px' }],
-      'title-1-med': ['24px', { fontWeight: 500, lineHeight: '32px' }],
-      'title-2-bold': ['20px', { fontWeight: 700, lineHeight: '32px' }],
-      'title-2-demi': ['20px', { fontWeight: 600, lineHeight: '32px' }],
-      'title-3-bold': ['17px', { fontWeight: 700, lineHeight: '24px' }],
-      'title-3-demi': ['17px', { fontWeight: 600, lineHeight: '24px' }],
-      'title-3-med': ['17px', { fontWeight: 500, lineHeight: '24px' }],
-      'body-1-bold': ['15px', { fontWeight: 700, lineHeight: '20px' }],
-      'body-1-demi': ['15px', { fontWeight: 600, lineHeight: '20px' }],
-      'body-1-med': ['15px', { fontWeight: 500, lineHeight: '20px' }],
-      'cap-1-bold': ['12px', { fontWeight: 700, lineHeight: '16px' }],
-      'cap-1-demi': ['12px', { fontWeight: 600, lineHeight: '16px' }],
-      'cap-1-med': ['12px', { fontWeight: 500, lineHeight: '16px' }],
-      'cap-2-demi': ['10px', { fontWeight: 600, lineHeight: '16px' }],
-      // This typography is only used for index page.
-      'new-h1': ['60px', { fontWeight: 700, lineHeight: '110%', letterSpacing: '-1.8px' }],
-      'new-h2': ['48px', { fontWeight: 700, lineHeight: '110%', letterSpacing: '-1.44px' }],
-      'new-h3': ['40px', { fontWeight: 700, lineHeight: '110%', letterSpacing: '-1.2px' }],
-      'new-h4': ['28px', { fontWeight: 600, lineHeight: '120%', letterSpacing: '-0.84px' }],
-      'new-h5': ['24px', { fontWeight: 500, lineHeight: '120%', letterSpacing: '-0.72px' }],
-      'new-para-1': ['20px', { fontWeight: 500, lineHeight: '120%', letterSpacing: '-0.6px' }],
-      'new-para-2': ['16px', { fontWeight: 500, lineHeight: '120%', letterSpacing: '-0.48px' }],
-      'new-h1-mobile': ['40px', { fontWeight: 700, lineHeight: '110%', letterSpacing: '-1.2px' }],
-      'new-h2-mobile': ['32px', { fontWeight: 700, lineHeight: '120%', letterSpacing: '-0.96px' }],
-      'new-h3-mobile': ['28px', { fontWeight: 700, lineHeight: '120%', letterSpacing: '-0.84px' }],
-      'new-h4-mobile': ['24px', { fontWeight: 700, lineHeight: '110%', letterSpacing: '-0.72px' }],
-      'new-h5-mobile': ['20px', { fontWeight: 500, lineHeight: '120%', letterSpacing: '-0.6px' }],
-      'new-para-1-mobile': ['16px', { fontWeight: 500, lineHeight: '125%', letterSpacing: '-0.6px' }],
-      'new-para-2-mobile': ['12px', { fontWeight: 500, lineHeight: '110%', letterSpacing: '-0.36px' }],
-      'new-sm': ['16px', { fontWeight: 500, lineHeight: '120%', letterSpacing: '-0.48px' }],
-      'new-md': ['20px', { fontWeight: 500, lineHeight: '120%', letterSpacing: '-0.6px' }],
-      'new-lg': ['24px', { fontWeight: 500, lineHeight: '120%', letterSpacing: '-0.72px' }],
+      // Ensure fontWeight values are strings as per Tailwind v4 recommendations
+      'title-1-bold-home': ['100px', { fontWeight: '700', lineHeight: '100%' }],
+      'title-2-bold-home': ['52px', { fontWeight: '700', lineHeight: '100%' }],
+      'title-3-bold-home': ['36px', { fontWeight: '700', lineHeight: '140%' }],
+      'title-1-bold-home-m': ['48px', { fontWeight: '700', lineHeight: '100%' }],
+      'title-2-bold-home-m': ['36px', { fontWeight: '700', lineHeight: '100%' }],
+      'body-1-home': ['28px', { fontWeight: '500', lineHeight: '140%' }],
+      'body-2-bold-home': ['24px', { fontWeight: '700', lineHeight: '100%' }],
+      'body-2-demi-home': ['24px', { fontWeight: '500', lineHeight: '140%' }],
+      'body-2-home': ['24px', { fontWeight: '400', lineHeight: '140%' }],
+      'des-1-bold-home': ['18px', { fontWeight: '700', lineHeight: '140%' }],
+      'des-1-demi-home': ['18px', { fontWeight: '500', lineHeight: '140%' }],
+      'des-1-home': ['18px', { fontWeight: '400', lineHeight: '140%' }],
+      'cap-1-bold-home': ['16px', { fontWeight: '700', lineHeight: '100%' }],
+      'cap-1-demi-home': ['16px', { fontWeight: '600', lineHeight: '100%' }],
+      'cap-1-home': ['16px', { fontWeight: '500', lineHeight: '100%' }],
+      'cap-1-home-m': ['16px', { fontWeight: '500', lineHeight: '140%' }],
+      'cap-2-home-m': ['16px', { fontWeight: '400', lineHeight: '140%' }],
+      'para-1-home-m': ['10px', { fontWeight: '400', lineHeight: '140%' }],
+      'heading-3': ['32px', { fontWeight: '600', lineHeight: '120%', letterSpacing: '-0.96px' }],
+      'title-1-bold': ['24px', { fontWeight: '700', lineHeight: '32px' }],
+      'title-1-demi': ['24px', { fontWeight: '600', lineHeight: '32px' }],
+      'title-1-med': ['24px', { fontWeight: '500', lineHeight: '32px' }],
+      'title-2-bold': ['20px', { fontWeight: '700', lineHeight: '32px' }],
+      'title-2-demi': ['20px', { fontWeight: '600', lineHeight: '32px' }],
+      'title-3-bold': ['17px', { fontWeight: '700', lineHeight: '24px' }],
+      'title-3-demi': ['17px', { fontWeight: '600', lineHeight: '24px' }],
+      'title-3-med': ['17px', { fontWeight: '500', lineHeight: '24px' }],
+      'body-1-bold': ['15px', { fontWeight: '700', lineHeight: '20px' }],
+      'body-1-demi': ['15px', { fontWeight: '600', lineHeight: '20px' }],
+      'body-1-med': ['15px', { fontWeight: '500', lineHeight: '20px' }],
+      'cap-1-bold': ['12px', { fontWeight: '700', lineHeight: '16px' }],
+      'cap-1-demi': ['12px', { fontWeight: '600', lineHeight: '16px' }],
+      'cap-1-med': ['12px', { fontWeight: '500', lineHeight: '16px' }],
+      'cap-2-demi': ['10px', { fontWeight: '600', lineHeight: '16px' }],
+      'new-h1': ['60px', { fontWeight: '700', lineHeight: '110%', letterSpacing: '-1.8px' }],
+      'new-h2': ['48px', { fontWeight: '700', lineHeight: '110%', letterSpacing: '-1.44px' }],
+      'new-h3': ['40px', { fontWeight: '700', lineHeight: '110%', letterSpacing: '-1.2px' }],
+      'new-h4': ['28px', { fontWeight: '600', lineHeight: '120%', letterSpacing: '-0.84px' }],
+      'new-h5': ['24px', { fontWeight: '500', lineHeight: '120%', letterSpacing: '-0.72px' }],
+      'new-para-1': ['20px', { fontWeight: '500', lineHeight: '120%', letterSpacing: '-0.6px' }],
+      'new-para-2': ['16px', { fontWeight: '500', lineHeight: '120%', letterSpacing: '-0.48px' }],
+      'new-h1-mobile': ['40px', { fontWeight: '700', lineHeight: '110%', letterSpacing: '-1.2px' }],
+      'new-h2-mobile': ['32px', { fontWeight: '700', lineHeight: '120%', letterSpacing: '-0.96px' }],
+      'new-h3-mobile': ['28px', { fontWeight: '700', lineHeight: '120%', letterSpacing: '-0.84px' }],
+      'new-h4-mobile': ['24px', { fontWeight: '700', lineHeight: '110%', letterSpacing: '-0.72px' }],
+      'new-h5-mobile': ['20px', { fontWeight: '500', lineHeight: '120%', letterSpacing: '-0.6px' }],
+      'new-para-1-mobile': ['16px', { fontWeight: '500', lineHeight: '125%', letterSpacing: '-0.6px' }],
+      'new-para-2-mobile': ['12px', { fontWeight: '500', lineHeight: '110%', letterSpacing: '-0.36px' }],
+      'new-sm': ['16px', { fontWeight: '500', lineHeight: '120%', letterSpacing: '-0.48px' }],
+      'new-md': ['20px', { fontWeight: '500', lineHeight: '120%', letterSpacing: '-0.6px' }],
+      'new-lg': ['24px', { fontWeight: '500', lineHeight: '120%', letterSpacing: '-0.72px' }],
     },
     fontFamily: {
-      sans: ['"Avenir Next"', ...defaultTheme.fontFamily.sans], // Here sans is default font in tailwindcss so updated it to avenir next
-      // manrope: ['"Manrope"', ...defaultTheme.fontFamily.sans],
+      sans: ['Avenir Next', ...defaultTheme.fontFamily.sans],
     },
     aspectRatio: {
       reel: '9 / 16',
@@ -188,15 +167,15 @@ module.exports = {
     },
     extend: {
       transitionDuration: {
-        '8000': '8000ms',
-        '4000': '4000ms',
-        '3000': '3000ms',
-        '2600': '2600ms',
-        '2200': '2200ms',
-        '1800': '1800ms',
-        '1600': '1600ms',
-        '1400': '1400ms',
-        '1200': '1200ms',
+        8000: '8000ms',
+        4000: '4000ms',
+        3000: '3000ms',
+        2600: '2600ms',
+        2200: '2200ms',
+        1800: '1800ms',
+        1600: '1600ms',
+        1400: '1400ms',
+        1200: '1200ms',
       },
       backgroundColor: {
         'white-alpha': 'rgba(255, 255, 255, 0.50)',
@@ -219,7 +198,6 @@ module.exports = {
         9: '9',
       },
       dropShadow: {
-        // given by design team.
         'circle-shadow': '0px 8px 16px rgba(17, 17, 17, 0.1)',
       },
       container: {
@@ -260,8 +238,7 @@ module.exports = {
           '100%': { transform: 'translateX(-100%)' },
         },
         fadeOutDelay: {
-          '0%': { opacity: '1' },
-          '50%': { opacity: '1' },
+          '0%, 50%': { opacity: '1' },
           '100%': { opacity: '0' },
         },
         zoomIn: {
@@ -275,11 +252,11 @@ module.exports = {
         },
         rotateRight: {
           '0%': { transform: 'rotate(15deg)' },
-          '100%': { transform: 'rotate(0)' },
+          '100%': { transform: 'rotate(0deg)' },
         },
         rotateLeft: {
           '0%': { transform: 'rotate(-15deg)' },
-          '100%': { transform: 'rotate(0)' },
+          '100%': { transform: 'rotate(0deg)' },
         },
         'accordion-down': {
           from: { height: '0' },
@@ -301,16 +278,18 @@ module.exports = {
         rotateLeft: 'rotateLeft 1s ease-in-out forwards',
       },
       linearGradientColors: {
-        'black-70': ['rgba(17, 17, 17, 0.00)', 'rgba(17, 17, 17, 0.70)'],
+        'black-70': ['rgba(17, 17, 17, 0)', 'rgba(17, 17, 17, 0.7)'],
       },
       letterSpacing: {},
     },
   },
+  plugins: [require('tailwindcss-animate')],
   variants: {
     extend: {
-      fill: ['hover', 'focus'], // Enables hover and focus variants for `fill`
-      stroke: ['hover', 'focus'], // Enables hover and focus variants for `stroke`
+      fill: ['hover', 'focus'],
+      stroke: ['hover', 'focus'],
     },
   },
-  plugins: [require('tailwindcss-animate')],
-} as Config
+}
+
+export default config

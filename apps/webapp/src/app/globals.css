@@ -1,6 +1,6 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@config '../../tailwind.config.ts';
 
 @layer base {
   :root {
@@ -31,7 +31,7 @@
 
     --transparent: 0 0% 0% 1;
 
-    --monochrome-4: theme('colors.monochrome.4');
+    --monochrome-4: #707070;
     /* --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
 
@@ -260,7 +260,9 @@
 
 @layer base {
   body {
-    @apply select-none bg-background text-foreground;
+    user-select: none;
+    background-color: var(--background);
+    color: var(--foreground);
   }
 
   .hide-scrollbar::-webkit-scrollbar {
@@ -350,8 +352,7 @@
   /* border: var(--border-size) solid transparent; */
 
   /* Smooth red gradient */
-  border-image: conic-gradient(
-      from var(--angle),
+  border-image: conic-gradient(from var(--angle),
       #c6002b 0deg,
       #c6002b 45deg,
       #fc7878 90deg,
@@ -360,9 +361,7 @@
       #eeb2bf 225deg,
       #fc7878 270deg,
       #c6002b 315deg,
-      #c6002b 360deg
-    )
-    1 stretch;
+      #c6002b 360deg) 1 stretch;
 
   /* background: rgb(255 255 255 / var(--opacity)); */
 }
@@ -386,10 +385,12 @@
 }
 
 @keyframes opacityFade {
+
   0%,
   100% {
     --opacity: 1;
   }
+
   50% {
     --opacity: 0.7;
   }
