@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { ChevronDown, ChevronUp, Plus, Minus } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 import {
   Accordion,
@@ -15,6 +15,45 @@ const meta = {
   parameters: {
     layout: "centered",
   },
+  argTypes: {
+    type: {
+      control: { type: "radio" },
+      options: ["single", "multiple"],
+      description:
+        "Determines whether one or multiple items can be opened at the same time.",
+    },
+    collapsible: {
+      control: "boolean",
+      description:
+        "When type is 'single', allows closing content by clicking trigger for an open item.",
+      if: { arg: "type", eq: "single" }, // Only show if type is 'single'
+    },
+    defaultValue: {
+      control: "text",
+      description:
+        "The value of the item to be initially open when type is 'single'.",
+      if: { arg: "type", eq: "single" },
+    },
+    // defaultValue for type="multiple" would be string[] which is harder to control in Storybook args
+    // value: { control: 'text', description: 'The controlled value of the open item(s).' },
+    // onValueChange: { action: 'onValueChange', description: 'Event handler called when the open item(s) change.' },
+    dir: {
+      control: { type: "radio" },
+      options: ["ltr", "rtl"],
+      description: "The reading direction of the accordion.",
+    },
+    orientation: {
+      control: { type: "radio" },
+      options: ["vertical", "horizontal"],
+      description: "The orientation of the accordion.",
+    },
+    className: {
+      control: "text",
+      description: "Optional CSS class names to apply to the accordion root.",
+    },
+    // It's also good to document props for sub-components if they are commonly customized
+    // However, for argTypes at the main component level, focus on the Accordion props.
+  },
 } satisfies Meta<typeof Accordion>;
 
 export default meta;
@@ -29,9 +68,10 @@ export const Single: Story = {
   args: {
     type: "single",
     collapsible: true,
+    className: "w-[400px]", // Ensure width is applied via args for clarity
   },
   render: (args) => (
-    <Accordion className="gencl:w-[400px]" {...args}>
+    <Accordion {...args}>
       <AccordionItem value="item-1">
         <AccordionTrigger>Getting Started</AccordionTrigger>
         <AccordionContent>
@@ -64,34 +104,69 @@ export const Single: Story = {
 export const Multiple: Story = {
   args: {
     type: "multiple",
+    className: "w-[400px]", // Ensure width is applied via args for clarity
   },
   render: (args) => (
-    <Accordion className="gencl:w-[400px]" {...args}>
+    <Accordion {...args}>
       <AccordionItem value="item-1">
-        <AccordionTrigger openIcon={<Minus />} closedIcon={<Plus />}>
-          Account Settings
-        </AccordionTrigger>
+        {/* Note: The openIcon/closedIcon props are on AccordionTrigger, not Accordion itself.
+            To make these configurable via Storybook args for this specific story,
+            you might need a more complex render function or a wrapper component.
+            For simplicity, they are hardcoded here as per the original story. */}
+        <AccordionTrigger>Account Settings</AccordionTrigger>
         <AccordionContent>
           Manage your account preferences, security settings, and notification
           preferences.
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="item-2">
-        <AccordionTrigger openIcon={<Minus />} closedIcon={<Plus />}>
-          Billing Information
-        </AccordionTrigger>
+        <AccordionTrigger>Billing Information</AccordionTrigger>
         <AccordionContent>
           View and update your billing details, payment methods, and
           subscription plans.
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="item-3">
-        <AccordionTrigger openIcon={<Minus />} closedIcon={<Plus />}>
-          API Documentation
-        </AccordionTrigger>
+        <AccordionTrigger>API Documentation</AccordionTrigger>
         <AccordionContent>
           Access comprehensive API documentation, examples, and integration
           guides.
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  ),
+};
+
+/**
+ * Accordion with a default open item.
+ * Uses the `defaultValue` prop to specify which item is open initially.
+ */
+export const WithDefaultValue: Story = {
+  args: {
+    type: "single",
+    collapsible: true,
+    defaultValue: "item-2",
+    className: "w-[400px]",
+  },
+  render: (args) => (
+    <Accordion {...args}>
+      <AccordionItem value="item-1">
+        <AccordionTrigger>Introduction</AccordionTrigger>
+        <AccordionContent>
+          This is the first section of the accordion.
+        </AccordionContent>
+      </AccordionItem>
+      <AccordionItem value="item-2">
+        <AccordionTrigger>Default Open Section</AccordionTrigger>
+        <AccordionContent>
+          This section is open by default because its value matches the
+          `defaultValue` prop.
+        </AccordionContent>
+      </AccordionItem>
+      <AccordionItem value="item-3">
+        <AccordionTrigger>Another Section</AccordionTrigger>
+        <AccordionContent>
+          This is the third section of the accordion.
         </AccordionContent>
       </AccordionItem>
     </Accordion>

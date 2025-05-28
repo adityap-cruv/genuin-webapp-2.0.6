@@ -16,6 +16,7 @@ const config: StorybookConfig = {
     getAbsolutePath("@storybook/addon-onboarding"),
     getAbsolutePath("@chromatic-com/storybook"),
     getAbsolutePath("@storybook/addon-interactions"),
+    getAbsolutePath("@storybook/addon-a11y"), // Added accessibility addon
   ],
   framework: {
     name: getAbsolutePath("@storybook/react-vite"),

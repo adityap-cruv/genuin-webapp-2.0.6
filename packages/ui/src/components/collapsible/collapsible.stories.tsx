@@ -12,6 +12,28 @@ import {
 export default {
   title: "Components/Collapsible",
   component: Collapsible,
+  tags: ["autodocs"],
+  argTypes: {
+    open: {
+      control: "boolean",
+      description: "The controlled open state of the collapsible.",
+    },
+    defaultOpen: {
+      control: "boolean",
+      description:
+        "The initial open state of the collapsible when uncontrolled.",
+    },
+    disabled: {
+      control: "boolean",
+      description:
+        "When true, prevents the user from interacting with the collapsible.",
+    },
+    onOpenChange: {
+      action: "onOpenChange",
+      description:
+        "Event handler called when the open state of the collapsible changes.",
+    },
+  },
 } as Meta;
 
 export function CollapsibleDemo() {
@@ -51,8 +73,14 @@ export function CollapsibleDemo() {
 
 export const Default: StoryObj<typeof Collapsible> = {
   render: (args) => <CollapsibleDemo {...args} />,
+  args: {
+    defaultOpen: false,
+  },
 };
 
-export const CollapsibleDemoStory: StoryObj<typeof Collapsible> = {
-  render: () => <CollapsibleDemo />,
+export const InitiallyOpen: StoryObj<typeof Collapsible> = {
+  render: (args) => <CollapsibleDemo {...args} />,
+  args: {
+    defaultOpen: true,
+  },
 };

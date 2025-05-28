@@ -59,7 +59,7 @@ const hlsConfigs = {
   // recoverFragLoadError: true, // Attempt to reload fragments on failure.
 };
 
-type PlayerProps = ComponentProps<"video"> & {
+export type PlayerProps = ComponentProps<"video"> & {
   volume?: number;
   playbackSpeed?: number;
   play?: boolean;
@@ -78,7 +78,7 @@ export const VideoPlayer = memo(function VideoPlayer({
   volume = 100,
   playbackSpeed = 1,
   play = true,
-  loop = false,
+  loop = false, // loop prop is now destructured
   ...props
 }: PlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -100,10 +100,11 @@ export const VideoPlayer = memo(function VideoPlayer({
   // Listen for customLoad event and call onCustomLoad
   useEffect(() => {
     if (!videoRef.current || !onPlayerLoad) return;
+    const currentVideoElement = videoRef.current; // Capture current value
     const handler = () => onPlayerLoad(playerRef.current);
-    videoRef.current.addEventListener("playerLoad", handler);
+    currentVideoElement.addEventListener("playerLoad", handler);
     return () => {
-      videoRef.current?.removeEventListener("playerLoad", handler);
+      currentVideoElement?.removeEventListener("playerLoad", handler); // Use captured value
     };
   }, [onPlayerLoad]);
 
@@ -168,6 +169,7 @@ export const VideoPlayer = memo(function VideoPlayer({
       ref={videoRef}
       src={src}
       playsInline={playsInline}
+      loop={loop} // Pass loop prop to video element
       {...props}
     />
   );

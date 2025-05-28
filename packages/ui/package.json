@@ -69,6 +69,7 @@
     "@genuin/eslint-config": "workspace:*",
     "@genuin/tailwind-config": "workspace:*",
     "@genuin/typescript-config": "workspace:*",
+    "@storybook/addon-a11y": "^8.6.14",
     "@storybook/addon-essentials": "^8.6.14",
     "@storybook/addon-interactions": "^8.6.14",
     "@storybook/addon-onboarding": "^8.6.14",

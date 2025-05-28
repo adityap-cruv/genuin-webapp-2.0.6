@@ -1,6 +1,7 @@
 {
   "extends": "@genuin/typescript-config/react-library.json",
   "compilerOptions": {
+    "jsx": "react-jsx", // Added for React 19+ JSX transform
     "resolveJsonModule": true,
     "experimentalDecorators": true,
     "module": "NodeNext",
