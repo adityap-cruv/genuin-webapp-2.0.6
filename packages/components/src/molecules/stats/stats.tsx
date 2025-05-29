@@ -1,5 +1,5 @@
 import { cn } from "@genuin/ui/utils";
-import { abbreviateNumber } from "@genuin/utils";
+import { abbreviateNumber } from "@genuin/ui/utils";
 import type { ComponentProps, ReactNode } from "react";
 
 type StatsPropsType = {

@@ -24,6 +24,12 @@ importers:
       '@alloc/quick-lru':
         specifier: ^5.2.0
         version: 5.2.0
+      '@genuin/eslint-config':
+        specifier: workspace:*
+        version: link:packages/eslint-config
+      '@genuin/typescript-config':
+        specifier: workspace:*
+        version: link:packages/typescript-config
       '@opentelemetry/api':
         specifier: ^1.9.0
         version: 1.9.0
@@ -395,9 +401,6 @@ importers:
       '@genuin/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
-      '@genuin/utils':
-        specifier: workspace:*
-        version: link:../utils
       '@storybook/addon-essentials':
         specifier: ^8.6.12
         version: 8.6.14(@types/react@19.1.5)(storybook@8.6.14)
@@ -692,12 +695,6 @@ importers:
       vitest:
         specifier: ^3.1.4
         version: 3.1.4(@types/node@22.15.23)(@vitest/browser@3.1.4)(jsdom@26.1.0)
-
-  packages/utils:
-    devDependencies:
-      '@genuin/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
 
   packages/web-sdk:
     dependencies:
