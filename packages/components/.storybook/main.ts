@@ -16,10 +16,10 @@ const config: StorybookConfig = {
     "!../src/**/__wip__/**/*.stories.@(js|jsx|mjs|ts|tsx)",
   ],
   addons: [
-    getAbsolutePath("@storybook/addon-essentials"),
     getAbsolutePath("@storybook/addon-onboarding"),
     getAbsolutePath("@chromatic-com/storybook"),
-    getAbsolutePath("@storybook/experimental-addon-test"),
+    getAbsolutePath("@storybook/addon-vitest"),
+    getAbsolutePath("@storybook/addon-docs")
   ],
   framework: {
     name: getAbsolutePath("@storybook/react-vite"),
