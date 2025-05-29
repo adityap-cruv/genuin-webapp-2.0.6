@@ -10,7 +10,7 @@ export function SideBar({ className, ...restProps }: SideBarProps) {
   return (
     <aside
       className={cn(
-        "gencl:border-r gencl:h-full gencl:border-secondary-150",
+        "gencl:border-r gencl:w-60 gencl:h-full gencl:border-secondary-150",
         className
       )}
       {...restProps}

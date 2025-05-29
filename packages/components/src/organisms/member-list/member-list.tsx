@@ -25,30 +25,31 @@ export function MemberList({
   className,
   ...restProps
 }: MemberListProps) {
-  return (
-    <div
-      className={cn("gencl:flex gencl:w-full gencl:flex-col", className)}
-      {...restProps}
-    >
-      {title && (
-        <p className="gencl:pl-4 gencl:pb-4 gencl:text-body-1-medium">
-          {title}
-        </p>
-      )}
-      <InfiniteScroll
-        hasNextPage={hasNextPage}
-        getNextPage={fetchNextPage}
-        isLoadingNextPage={isFetchingNextPage}
-        loader={<div></div>}
+  if (members.length === 0 && isLoading)
+    return (
+      <div
+        className={cn("gencl:flex gencl:w-full gencl:flex-col", className)}
+        {...restProps}
       >
-        {members.map((member) => (
-          <MemberItem
-            key={member.memberId}
-            memberData={member}
-            className="gencl:py-2 gencl:rounded-lg gencl:hover:bg-secondary-150 gencl:pl-2 gencl:pr-4"
-          />
-        ))}
-      </InfiniteScroll>
-    </div>
-  );
+        {title && (
+          <p className="gencl:pl-4 gencl:pb-4 gencl:text-body-1-medium">
+            {title}
+          </p>
+        )}
+        <InfiniteScroll
+          hasNextPage={hasNextPage}
+          getNextPage={fetchNextPage}
+          isLoadingNextPage={isFetchingNextPage}
+          loader={<div></div>}
+        >
+          {members.map((member) => (
+            <MemberItem
+              key={member.memberId}
+              memberData={member}
+              className="gencl:py-2 gencl:rounded-lg gencl:hover:bg-secondary-150 gencl:pl-2 gencl:pr-4"
+            />
+          ))}
+        </InfiniteScroll>
+      </div>
+    );
 }

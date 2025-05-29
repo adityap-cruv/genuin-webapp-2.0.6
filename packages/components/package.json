@@ -32,7 +32,6 @@
     "@genuin/eslint-config": "workspace:*",
     "@genuin/tailwind-config": "workspace:*",
     "@genuin/typescript-config": "workspace:*",
-    "@genuin/utils": "workspace:*",
     "@storybook/addon-essentials": "^8.6.12",
     "@storybook/addon-onboarding": "^8.6.12",
     "@storybook/blocks": "^8.6.12",

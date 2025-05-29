@@ -3,6 +3,7 @@ import { Loader } from "@genuin/ui/loader";
 import { ReadMore, type ReadMoreTextType } from "@genuin/ui/read-more";
 import { cn } from "@genuin/ui/utils";
 import type { ComponentProps, ReactNode } from "react";
+
 import { Link } from "src/molecules/link";
 import type { LinksType } from "src/molecules/social-links";
 import { SocialLinks } from "src/molecules/social-links";
@@ -28,7 +29,7 @@ type GenericDetailsProps = {
    *
    * list - It can also be used for list view community, group details.
    */
-  variant: "default" | "list";
+  variant?: "default" | "list";
   /**
    * Optional profile image configuration. When provided, displays an avatar
    * with the specified image URL, alt text, and avatar styling.
@@ -38,15 +39,15 @@ type GenericDetailsProps = {
    * Optional title text to display. When provided, renders as a headline
    * using the headline-2-semi-bold styling.
    */
-  title?: string;
+  title: string;
   /**
    * Pass the url if you want to make the title clickable.
    */
-  url: string;
+  url?: string;
   /**
    * Optional metadata component for displaying additional information such as brand details and stats.
    */
-  metadata?: ReactNode;
+  metadata: ReactNode;
   /**
    * Description text to display. This can be a string or a more complex structure
    */
