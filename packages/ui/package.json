@@ -27,7 +27,8 @@
     "./accordion": "./src/components/accordion/index.ts",
     "./image": "./src/components/image/index.ts",
     "./chip": "./src/components/chip/index.ts",
-    "./hover-card": "./src/components/hover-card/index.ts"
+    "./hover-card": "./src/components/hover-card/index.ts",
+    "./tabs": "./src/components/tabs/index.ts"
   },
   "scripts": {
     "lint": "eslint . --max-warnings 0",

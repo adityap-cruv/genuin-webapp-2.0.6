@@ -8,6 +8,7 @@ import { SideBar } from "src/organisms/side-bar";
 import { SideInfo } from "src/organisms/side-info";
 import { TopBar } from "src/organisms/top-bar";
 import { useGetGroupDetails } from "src/react-query/api/group/details";
+import { GroupDetailsTabs } from "src/templates/group-details-tabs";
 import { useWindowSize } from "usehooks-ts";
 
 export function GroupDetailsPage({ slug }: { slug: string }) {
@@ -32,7 +33,7 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
       <main className="gencl:flex gencl:h-full">
         <SideBar style={{ height: height - TOP_BAR_HEIGHT }} />
         <div className="gencl:p-6 gencl:flex gencl:gap-9 gencl:w-full gencl:items-start">
-          <div className="gencl:w-full">
+          <div className="gencl:w-full gencl:space-y-6">
             <GenericDetails
               variant="default"
               title={groupDetails.name ?? ""}
@@ -53,6 +54,7 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
                 </div>
               }
             />
+            <GroupDetailsTabs slug={slug} />
           </div>
           <SideInfo
             className="gencl:shrink-0"
