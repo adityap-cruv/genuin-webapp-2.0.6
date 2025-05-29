@@ -1,8 +1,10 @@
-import { ReadMore } from "@genuin/ui/read-more";
 import { Avatar } from "@genuin/ui/avatar";
-import { PostDetailsType } from "src/react-query/api/feed/schema";
-import { ComponentProps } from "react";
+import { ReadMore } from "@genuin/ui/read-more";
 import { cn } from "@genuin/ui/utils";
+import type { ComponentProps } from "react";
+import { CommunityPill } from "src/molecules/community-pill";
+import { GroupPill } from "src/molecules/group-pill";
+import type { PostDetailsType } from "src/react-query/api/feed/schema";
 
 type ExpandViewProps = ComponentProps<"div"> & {
   postDetails: PostDetailsType;
@@ -43,8 +45,33 @@ export function ExpandViewDetails({
         shouldAnimate
         className="gencl:text-white! gencl:text-body-1-medium"
       />
-      <div>Add community/group pills here.</div>
-      <div className={cn("", className)} />
+      <div className="gencl:flex gencl:flex-nowrap gencl:gap-2 gencl:w-full gencl:overflow-x-auto gencl:z-10">
+        {/* TODO ADD REMAINING DETAILS, PENDING FROM BACKEND */}
+        <CommunityPill
+          isHoverable={true}
+          variant="dark"
+          data={{
+            id: postDetails.community.id,
+            isPrivate: postDetails.community.isPrivate,
+            name: postDetails.community.name ?? "",
+            profileImage: postDetails.community.profileImage ?? "",
+            brand: { slug: postDetails.community.brand?.slug ?? "" },
+          }}
+        />
+
+        <GroupPill
+          isHoverable={true}
+          variant="dark"
+          data={{
+            isPrivate: false,
+            name: postDetails.group.name ?? "",
+            community: {
+              name: postDetails.community.name ?? "",
+              profileImage: postDetails.community.profileImage ?? "",
+            },
+          }}
+        />
+      </div>
     </div>
   );
 }

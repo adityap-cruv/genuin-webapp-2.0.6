@@ -1,13 +1,6 @@
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@genuin/ui/collapsible";
 import { ReadMore } from "@genuin/ui/read-more";
-import { ChevronUpIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/utils";
-import { type ComponentProps, useState } from "react";
-
+import { type ComponentProps } from "react";
 import type { PostDetailsType } from "src/react-query/api/feed/schema";
 
 import { CommunityDetails } from "./community-details";
@@ -30,8 +23,6 @@ export function PostDetails({
   className,
   ...restProps
 }: DetailsPropsType) {
-  const [collapsibleOpen, setCollapsibleOpen] = useState(true);
-
   return (
     <div
       className={cn(
@@ -40,37 +31,14 @@ export function PostDetails({
       )}
       {...restProps}
     >
-      <Collapsible
-        defaultOpen
-        open={collapsibleOpen}
-        onOpenChange={setCollapsibleOpen}
-      >
-        <div
-          className={cn(
-            "gencl:border-secondary-150  gencl:space-y-3",
-            collapsibleOpen && "gencl:border-b gencl:pb-4"
-          )}
-        >
-          <div className="gencl:flex gencl:items-center gencl:justify-between gencl:gap-x-2">
-            <OwnerInfo owner={owner} />
-            <CollapsibleTrigger className="gencl:cursor-pointer">
-              <ChevronUpIcon
-                className={cn(
-                  "gencl:transition-all",
-                  collapsibleOpen ? "gencl:-rotate-180" : "gencl:rotate-0"
-                )}
-              />
-            </CollapsibleTrigger>
-          </div>
-          <ReadMore
-            text={video.description ?? ""}
-            className="gencl:text-body-1-medium"
-          />
-        </div>
-        <CollapsibleContent>
-          <CommunityDetails communityDetails={community} groupDetails={group} />
-        </CollapsibleContent>
-      </Collapsible>
+      <OwnerInfo owner={owner} />
+      {video.description && (
+        <ReadMore
+          text={video.description ?? null}
+          className={cn("gencl:text-body-1-medium gencl:pt-3")}
+        />
+      )}
+      <CommunityDetails communityDetails={community} groupDetails={group} />
     </div>
   );
 }

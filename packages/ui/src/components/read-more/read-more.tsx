@@ -314,22 +314,22 @@ export function ReadMore({
         >
           {displayText}
         </span>
+        {showExpandText && isOverflowing && (
+          <button
+            type="button"
+            className={cn(
+              "gencl:mt-1 gencl:text-primary gencl:hover:underline",
+              buttonClassName
+            )}
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleExpand();
+            }}
+          >
+            {isExpanded ? viewLessText : viewMoreText}
+          </button>
+        )}
       </p>
-      {showExpandText && isOverflowing && (
-        <button
-          type="button"
-          className={cn(
-            "gencl:mt-1 gencl:text-sm gencl:text-primary gencl:hover:underline",
-            buttonClassName
-          )}
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleExpand();
-          }}
-        >
-          {isExpanded ? viewLessText : viewMoreText}
-        </button>
-      )}
     </div>
   );
 }

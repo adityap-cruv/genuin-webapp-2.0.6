@@ -11,32 +11,57 @@ const buttonVariants = cva(
       theme: {
         primary:
           "gencl:bg-primary gencl:text-white! gencl:shadow-xs gencl:hover:bg-primary-600",
-        secondary: "gencl:bg-secondary-50 gencl:hover:bg-secondary-100",
+        secondary:
+          "gencl:bg-secondary-50 gencl:text-black! gencl:hover:bg-secondary-100",
         outline: "gencl:border gencl:border-secondary-200 gencl:bg-white",
         text: "",
       },
       size: {
         sm: "gencl:h-9 gencl:rounded-md gencl:gap-1.5 gencl:text-body-1-semi-bold gencl:has-[>svg]:px-2.5",
         md: "gencl:h-10",
-        lg: "gencl:h-12 gencl:rounded-md  gencl:has-[>svg]:px-4",
+        lg: "gencl:h-12 gencl:has-[>svg]:px-4",
+      },
+      shape: {
+        default: "gencl:rounded-md",
+        pill: "gencl:rounded-full",
       },
     },
+    compoundVariants: [
+      {
+        shape: "pill",
+        size: "sm",
+        class: "gencl:text-body-2-semi-bold gencl:py-1 gencl:px-3 gencl:h-auto",
+      },
+      {
+        shape: "pill",
+        size: "md",
+        class:
+          "gencl:text-body-2-semi-bold gencl:py-1.5 gencl:px-4 gencl:h-auto",
+      },
+      {
+        shape: "pill",
+        size: "lg",
+        class: "gencl:text-body-2-semi-bold gencl:py-2 gencl:px-5 gencl:h-auto",
+      },
+    ],
     defaultVariants: {
       size: "md",
       theme: "primary",
+      shape: "default",
     },
   }
 );
 
-type ButtonPropsType = React.ComponentProps<"button"> &
+export type ButtonPropsType = React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean;
   };
 
 function Button({
   className,
-  theme = "primary",
-  size = "md",
+  theme,
+  size,
+  shape,
   asChild = false,
   ...props
 }: ButtonPropsType) {
@@ -45,7 +70,7 @@ function Button({
   return (
     <Comp
       data-slot="button"
-      className={cn(buttonVariants({ theme, size }), className, "")}
+      className={cn(buttonVariants({ theme, size, shape }), className)}
       {...props}
     />
   );

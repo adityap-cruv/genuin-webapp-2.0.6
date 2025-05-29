@@ -116,6 +116,10 @@
   --text-body-2-bold--line-height: 16px;
   --text-body-2-bold--font-weight: 700;
 
+  --text-body-2-semi-bold: 11px;
+  --text-body-2-semi-bold--line-height: 16px;
+  --text-body-2-semi-bold--font-weight: 600;
+
   --text-body-2-medium: 11px;
   --text-body-2-medium--line-height: 16px;
   --text-body-2-medium--font-weight: 500;

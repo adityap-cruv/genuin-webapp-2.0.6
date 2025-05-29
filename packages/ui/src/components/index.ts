@@ -14,3 +14,4 @@ export * from "./label";
 export * from "./popover";
 export * from "./command";
 export * from "./phone-input";
+export * from "./hover-card";
