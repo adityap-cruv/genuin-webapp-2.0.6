@@ -6,7 +6,14 @@ import { type Metadata, type Viewport } from 'next'
 // Client components are wrapped in ClientProviders
 import ClientProviders from './client-providers'
 
-const inter = Inter({ subsets: ['latin'] })
+// Enhanced font configuration for better performance
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap', // Ensures text remains visible during font load
+  preload: true, // Preloads font files
+  fallback: ['system-ui', 'sans-serif'], // Fallback fonts
+  adjustFontFallback: true, // Automatically adjusts the fallback font to match
+})
 
 // Metadata API for Next.js 15
 export const metadata: Metadata = {

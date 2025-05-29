@@ -7,6 +7,7 @@
   },
   "scripts": {
     "dev": "next dev -p 4005",
+    "dev:turbo": "NEXT_TURBO=true next dev --turbo -p 4005",
     "build": "next build",
     "start": "next start -p 4000",
     "lint": "eslint .",
@@ -14,7 +15,8 @@
     "lint:fix": "lint . --fix",
     "br": "next build && next start",
     "check-node": "node ../../scripts/check-node-version.js",
-    "predev": "ALLOW_NODE_VERSION_WARNING=true npm run check-node"
+    "predev": "ALLOW_NODE_VERSION_WARNING=true npm run check-node",
+    "predev:turbo": "ALLOW_NODE_VERSION_WARNING=true npm run check-node"
   },
   "husky": {
     "hooks": {
@@ -102,6 +104,7 @@
     "@genuin/typescript-config": "workspace:*",
     "@next/eslint-plugin-next": "^15.3.2",
     "@opentelemetry/api": "^1.9.0",
+    "@svgr/webpack": "^8.1.0",
     "@tailwindcss/postcss": "^4.1.7",
     "@tanstack/eslint-plugin-query": "^4.34.1",
     "@types/grecaptcha": "^3.0.8",
@@ -113,6 +116,7 @@
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
     "autoprefixer": "10.4.21",
+    "babel-plugin-react-compiler": "19.1.0-rc.2",
     "eslint": "^8.57.1",
     "eslint-config-next": "15.4.0-canary.51",
     "eslint-config-prettier": "^8.8.0",
@@ -128,6 +132,7 @@
     "tailwind-merge": "^3.3.0",
     "tailwindcss": "^4.1.7",
     "tailwindcss-animate": "^1.0.7",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "url-loader": "^4.1.1"
   }
 }
