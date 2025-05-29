@@ -1,2 +1,1 @@
-export * from "./post-side-panel";
 export * from "./generic-details";

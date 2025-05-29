@@ -26,6 +26,7 @@
     "./icons": "./src/icons/index.ts",
     "./accordion": "./src/components/accordion/index.ts",
     "./image": "./src/components/image/index.ts",
+    "./chip": "./src/components/chip/index.ts",
     "./hover-card": "./src/components/hover-card/index.ts"
   },
   "scripts": {

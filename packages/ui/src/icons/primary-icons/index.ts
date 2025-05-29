@@ -20,3 +20,7 @@ export * from "./home-icon";
 export * from "./explore-icon";
 export * from "./latest-icon";
 export * from "./popular-icon";
+export * from "./pin-icon";
+export * from "./created-profile-icon";
+export * from "./pencil-with-line-icon";
+export * from "./bag-icon";

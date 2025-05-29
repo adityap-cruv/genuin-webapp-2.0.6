@@ -4,8 +4,8 @@ import { Loader } from "../loader";
 
 type InfiniteScrollProps = {
   children: React.ReactNode;
-  hasNextPage: boolean;
-  getNextPage: () => void;
+  hasNextPage?: boolean;
+  getNextPage?: () => void;
   isLoadingNextPage?: boolean;
 
   /**
@@ -36,7 +36,7 @@ export const InfiniteScroll = ({
 
   const callNextPage = useCallback(() => {
     if (hasNextPage && !isLoadingNextPage) {
-      getNextPage();
+      getNextPage?.();
     }
   }, [getNextPage, hasNextPage, isLoadingNextPage]);
 

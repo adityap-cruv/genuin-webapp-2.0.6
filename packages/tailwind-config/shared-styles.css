@@ -25,18 +25,6 @@
   --secondary-100: #e9ebec;
   --secondary-50: #f4f5f6;
 
-  --secondary-300: #707070;
-  --secondary-400: #414141;
-  --secondary: #111111;
-  --secondary-600: #0e0e0e;
-  --secondary-foreground: 0 0% 100%;
-
-  --tertiary-400: #a9aeb4;
-  --tertiary-300: #bec2c7;
-  --tertiary-200: #d4d7d9;
-  --tertiary-100: #f4f5f6;
-  --tertiary-50: #f9fafb;
-
   font-family:
     "Inter",
     ui-sans-serif,
@@ -84,13 +72,17 @@
   --text-headline-2-semi-bold--line-height: 36px;
   --text-headline-2-semi-bold--font-weight: 600;
 
-  --tesxt-headline-3-bold: 24px;
+  --text-headline-3-bold: 24px;
   --text-headline-3-bold--line-height: 28px;
   --text-headline-3-bold--font-weight: 600;
 
+  --text-headline-3-semi-bold: 24px;
+  --text-headline-3-semi-bold--line-height: 28px;
+  --text-headline-3-semi-bold--font-weight: 600;
+
   --text-headline-4-semi-bold: 20px;
   --text-headline-4-semi-bold--line-height: 24px;
-  --text-headline-4-semi-bold--font-weight: 600;
+  --text-headline-4-semi-bold--font-weight: 700;
 
   --text-headline-4-medium: 20px;
   --text-headline-4-medium--line-height: 24px;
@@ -204,6 +196,12 @@
 @layer base {
   body {
     padding: 0px !important;
+  }
+}
+
+@layer utilities {
+  .gencl\:flex-center {
+    @apply gencl:flex gencl:items-center gencl:justify-center;
   }
 }
 

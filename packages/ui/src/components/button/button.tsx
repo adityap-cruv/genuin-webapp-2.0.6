@@ -4,10 +4,15 @@ import * as React from "react";
 
 import { cn } from "../../lib/utils";
 
+// TODO: think about composite theme for icon as well.
 const buttonVariants = cva(
   "gencl:inline-flex gencl:items-center gencl:px-4 gencl:text-body-0-semi-bold gencl:justify-center gencl:hover:cursor-pointer gencl:gap-2 gencl:whitespace-nowrap gencl:rounded-md gencl:transition-[color,box-shadow] gencl:disabled:pointer-events-none gencl:disabled:opacity-50 [&_svg]:gencl:pointer-events-none [&_svg:not([class*='size-'])]:gencl:size-4 gencl:shrink-0 [&_svg]:gencl:shrink-0 gencl:outline-none",
   {
     variants: {
+      variant: {
+        default: "",
+        icon: "gencl:px-1!",
+      },
       theme: {
         primary:
           "gencl:bg-primary gencl:text-white! gencl:shadow-xs gencl:hover:bg-primary-600",
@@ -47,6 +52,7 @@ const buttonVariants = cva(
     defaultVariants: {
       size: "md",
       theme: "primary",
+      variant: "default",
       shape: "default",
     },
   }

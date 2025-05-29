@@ -1,6 +1,5 @@
 import type { ComponentProps } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
-
 import { cn } from "src/lib/utils";
 
 import {
@@ -10,15 +9,16 @@ import {
   safeJsonParse,
 } from "./utils";
 
+export type ReadMoreTextType =
+  | string
+  | null
+  | Array<Record<string, unknown> | string | null>;
+
 export type ReadMoreProps = {
   /**
    * The text content to display. Can be a string or an array of objects for rich text.
    */
-  text:
-    | string
-    | undefined
-    | null
-    | Array<Record<string, unknown> | string | null>;
+  text?: ReadMoreTextType;
   /**
    * Maximum number of characters to show before truncation.
    * Only used when truncateBy is 'characters'

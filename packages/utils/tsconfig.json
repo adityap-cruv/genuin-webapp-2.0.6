@@ -1,8 +1,0 @@
-{
-  "extends": "@genuin/typescript-config/base.json",
-  "compilerOptions": {
-    "types": [
-      "eslint"
-    ]
-  }
-}

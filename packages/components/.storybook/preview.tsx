@@ -1,12 +1,13 @@
 import type { Preview } from "@storybook/react";
+
 import "../src/globals.css";
-import { ReactQueryClientProvider } from "../src/react-query/react-query-provider";
+import { AuthProvider } from "../src/context/auth";
 import {
   BaseContextProvider,
   DEFAULT_BRAND_DETAILS,
 } from "../src/context/base";
 import { parseBrandColors } from "../src/lib/utils/brand-color-parser";
-import { AuthProvider } from "../src/context/auth";
+import { ReactQueryClientProvider } from "../src/react-query/react-query-provider";
 
 const brandDetails = {
   brand_id: 2260,
@@ -50,19 +51,6 @@ const brandDetails = {
       primary: "#73a540",
       primary_600: "#51732d",
       primary_700: "#3a5320",
-    },
-    secondary: {
-      secondary_300: "#707070",
-      secondary_400: "#414141",
-      secondary: "#111111",
-      secondary_600: "#0e0e0e",
-    },
-    tertiary: {
-      tertiary: "#949494",
-      tertiary_400: "#b4b4b4",
-      tertiary_300: "#d4d4d4",
-      tertiary_200: "#f4f4f4",
-      tertiary_100: "#fafafa",
     },
   },
   brand_web_logo:
