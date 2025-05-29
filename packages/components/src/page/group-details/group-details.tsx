@@ -32,8 +32,11 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
       <TopBar className="gencl:border-b gencl:border-secondary-150" />
       <main className="gencl:flex gencl:h-full">
         <SideBar style={{ height: height - TOP_BAR_HEIGHT }} />
-        <div className="gencl:p-6 gencl:flex gencl:gap-9 gencl:w-full gencl:items-start">
-          <div className="gencl:w-full gencl:space-y-6">
+        <div
+          style={{ height: height - TOP_BAR_HEIGHT }}
+          className="gencl:p-6 gencl:pb-0! gencl:flex gencl:gap-9 gencl:w-full gencl:overflow-auto gencl:items-start"
+        >
+          <div className="gencl:w-full gencl:h-full gencl:flex gencl:flex-col gencl:gap-6">
             <GenericDetails
               variant="default"
               title={groupDetails.name ?? ""}
@@ -54,10 +57,13 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
                 </div>
               }
             />
-            <GroupDetailsTabs slug={slug} />
+            <GroupDetailsTabs
+              className="gencl:flex-grow gencl:min-h-0 gencl:overflow-y-auto gencl:pb-6"
+              slug={slug}
+            />
           </div>
           <SideInfo
-            className="gencl:shrink-0"
+            className="gencl:shrink-0 gencl:sticky gencl:top-0"
             sideInfoData={{
               createdAt: "17th October 2023",
               createdBy: {

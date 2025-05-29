@@ -6,4 +6,7 @@ export type PostsGridProps = {
   posts: PostTileDataType[];
   hasNextPage: boolean;
   fetchNextPage: () => void;
+  isLoading: boolean;
+  isError: boolean;
+  isFetchingNextPage: boolean;
 } & ComponentProps<"div">;

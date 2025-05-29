@@ -12,3 +12,12 @@ import { baseQueryKey } from "./base";
 export function getQueryKeyForFeed(feedType: FeedType): QueryKey {
   return [...baseQueryKey, "feed", feedType];
 }
+
+/**
+ * This function generates a unique query key for the group feed based on the group slug.
+ * @param slug
+ * @returns
+ */
+export function getQueryKeyForGroupFeed(slug: string): QueryKey {
+  return [...baseQueryKey, "group-feed", slug];
+}

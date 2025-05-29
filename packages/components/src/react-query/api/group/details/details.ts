@@ -5,10 +5,11 @@ import { axiosInstance } from "src/react-query/axios-instance";
 import { getQueryKeyForLoopDetails } from "src/react-query/keys/group";
 
 import { parseGroupDetails } from "./parser";
+import { API_PATHS } from "src/react-query/paths";
 
 async function fetchLoopDetails(slug: string) {
   try {
-    const response = await axiosInstance.get("/api/v3/conversation/details", {
+    const response = await axiosInstance.get(API_PATHS.GROUP_DETAILS, {
       params: { slug },
     });
     return parseGroupDetails(response?.data?.data);

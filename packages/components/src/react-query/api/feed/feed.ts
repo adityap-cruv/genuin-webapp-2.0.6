@@ -30,6 +30,7 @@ async function fetchFeed(
   const deviceId = getDeviceId()
     ? encodeURI(getDeviceId() as string)
     : undefined;
+
   return await axiosInstance
     .post("/goservices/feed/home", {
       type: feedTypeToNumber[feedType],
