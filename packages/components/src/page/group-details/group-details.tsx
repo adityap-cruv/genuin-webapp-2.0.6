@@ -66,7 +66,11 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
           <SideInfo
             className="gencl:shrink-0 gencl:sticky gencl:top-0"
             sideInfoData={{
-              createdAt: convertISOToLocalDateFormate(groupDetails.createdAt),
+              createdAt: convertISOToLocalDateFormate(
+                groupDetails.createdAt
+                  ? groupDetails.createdAt
+                  : new Date().toISOString()
+              ),
               createdBy: {
                 profileImage: {
                   isAvatar: groupDetails.owner.isAvatar,
