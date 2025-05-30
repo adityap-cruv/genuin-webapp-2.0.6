@@ -152,6 +152,25 @@ export function sanitizeInput(input: string | null | undefined): string {
   });
 }
 
+/**
+ * Converts an ISO 8601 date string to a local date format.
+ *
+ * @param isoString - The ISO 8601 date string to convert.
+ * @returns The local date format as a string.
+ * @example
+ * // returns "October 23, 2024"
+ * convertISOToLocalDateFormate("2024-10-23T10:00:00.000Z")
+ */
+export function convertISOToLocalDateFormate(isoString: string): string {
+  const date = new Date(isoString);
+  const options: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  };
+  return date.toLocaleDateString("en-US", options);
+}
+
 // /**
 //  * Encrypts the given text using AES-256-CBC encryption.
 //  * @param text - The text to encrypt.

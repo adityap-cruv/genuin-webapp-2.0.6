@@ -1,6 +1,5 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { type ComponentProps } from "react";
-
 import { cn } from "src/lib/utils";
 
 // Define the playVariant function using cva to handle different styles based on props

@@ -121,10 +121,7 @@ export function GenericDetails({
             <ReadMore
               className="gencl:text-secondary-600! gencl:text-body-1-medium"
               text={description}
-              // viewMoreText="more"
-              // viewLessText="less"
-              showExpandText={false}
-              shouldAnimate
+              maxLines={2}
             />
           )}
           {links && <SocialLinks links={links} />}

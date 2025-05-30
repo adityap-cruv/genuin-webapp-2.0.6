@@ -1,10 +1,11 @@
+import { Button } from "@genuin/ui/button";
 import {
   BagIcon,
   CreatedProfileIcon,
   PencilWithLineIcon,
 } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/utils";
-import type { ComponentProps, ReactNode } from "react";
+import { useState, type ComponentProps, type ReactNode } from "react";
 
 import { Stats } from "src/molecules/stats";
 import { Tag } from "src/molecules/tag";
@@ -37,6 +38,9 @@ type EntityInfoProps = {
   entity: EntityDataType;
 };
 
+/**
+ * EntityInfo component displays information about an entity like created IN, or created BY.
+ */
 function EntityInfo({ title, icon, entity }: EntityInfoProps) {
   return (
     <div className="gencl:flex gencl:gap-2 gencl:items-center">
@@ -69,11 +73,11 @@ export function SideInfo({
     >
       {stats && (
         <Stats
-          valueClassName="gencl:text-body-0-semi-bold"
-          pairClassName="gencl:flex-col"
-          labelClassName="gencl:text-body-2-medium gencl:text-secondary-600"
+          valueClassName="gencl:text-body-0-semi-bold!"
+          pairClassName="gencl:flex-col gencl:items-start"
+          labelClassName="gencl:text-body-2-medium! gencl:text-secondary-600"
           valueFirst
-          className="gencl:flex gencl:justify-around"
+          className="gencl:flex gencl:justify-between gencl:max-w-3xs"
           stats={stats}
         />
       )}
@@ -100,31 +104,43 @@ export function SideInfo({
             icon={
               <BagIcon className="gencl:stroke-secondary-600 gencl:size-6" />
             }
-            title="Created in"
+            title="Created in&nbsp;"
             entity={createdIn}
           />
         )}
       </div>
-      {guidelines && guidelines.length > 0 && (
-        <div className="gencl:space-y-4">
-          <p className="gencl:text-body-1-semi-bold">Guidelines</p>
-          <ol className="gencl:list-decimal gencl:list-inside">
-            {guidelines.map((guideline, index) => (
-              <li
-                key={index}
-                className="gencl:text-body-1-semi-bold gencl:text-secondary-600"
-              >
-                {guideline}
-              </li>
-            ))}
-          </ol>
-        </div>
-      )}
+      <Guidelines guidelines={guidelines} />
+      {/* Uncomment the following line to include the Admins component */}
       {/* <Admins /> */}
     </div>
   );
 }
 
-// function Admins() {
-//   return <MemberList title="Admins" members={[]} />;
-// }
+function Guidelines({ guidelines }: { guidelines?: string[] }) {
+  const [showMore, setShowMore] = useState(
+    guidelines ? (guidelines?.length > 3 ? false : true) : false
+  );
+
+  if (!guidelines || guidelines.length === 0) return;
+
+  return (
+    <div className="gencl:space-y-4 gencl:border-t gencl:pt-4 gencl:border-secondary-300">
+      <p className="gencl:text-body-1-semi-bold">Guidelines</p>
+      <ol className="gencl:list-decimal gencl:list-inside">
+        {guidelines
+          .slice(0, showMore ? undefined : 3)
+          .map((guideline, index) => (
+            <li
+              key={index}
+              className="gencl:text-body-1-semi-bold gencl:text-secondary-600"
+            >
+              {guideline}
+            </li>
+          ))}
+      </ol>
+      <Button theme="text" size="sm" onClick={() => setShowMore(!showMore)}>
+        Show More
+      </Button>
+    </div>
+  );
+}

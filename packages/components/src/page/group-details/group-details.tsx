@@ -1,3 +1,4 @@
+import { convertISOToLocalDateFormate } from "@genuin/ui/utils";
 import { useWindowSize } from "usehooks-ts";
 
 import { TOP_BAR_HEIGHT } from "src/lib/constants";
@@ -10,7 +11,6 @@ import { SideInfo } from "src/organisms/side-info";
 import { TopBar } from "src/organisms/top-bar";
 import { useGetGroupDetails } from "src/react-query/api/group/details";
 import { GroupDetailsTabs } from "src/templates/group-details-tabs";
-import { group } from "console";
 
 export function GroupDetailsPage({ slug }: { slug: string }) {
   const { height } = useWindowSize();
@@ -66,7 +66,7 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
           <SideInfo
             className="gencl:shrink-0 gencl:sticky gencl:top-0"
             sideInfoData={{
-              createdAt: "17th October 2023",
+              createdAt: convertISOToLocalDateFormate(groupDetails.createdAt),
               createdBy: {
                 profileImage: {
                   isAvatar: groupDetails.owner.isAvatar,

@@ -3,7 +3,7 @@ import {
   PinIcon,
   PlayIcon,
   ShareIcon,
-  ThreeDotsIcon,
+  // ThreeDotsIcon,
 } from "@genuin/ui/icons";
 import { Image } from "@genuin/ui/image";
 import { cn } from "@genuin/ui/utils";
@@ -73,9 +73,9 @@ export function PostTile({
       )}
       {showHover && (
         <div className="gencl:hidden gencl:cursor-pointer gencl:group-hover:flex gencl:items-center gencl:justify-center gencl:absolute gencl:h-full gencl:w-full gencl:inset-0 gencl:bg-black/40">
-          <ThreeDotsIcon className="gencl:absolute gencl:top-2 gencl:p-1 gencl:rounded-md gencl:right-2 gencl:stroke-white gencl:bg-black/40" />
+          {/* <ThreeDotsIcon className="gencl:absolute gencl:top-2 gencl:p-1 gencl:rounded-md gencl:right-2 gencl:stroke-white gencl:bg-black/40" /> */}
           <div className="gencl:p-2.5 gencl:rounded-full gencl:bg-black/40 gencl:backdrop:blur-[3px]">
-            <PlayIcon className="gencl:fill-white gencl:size-6" />
+            <PlayIcon variant="light" className="gencl:size-6" />
           </div>
         </div>
       )}

@@ -22,6 +22,7 @@ export function parseGroupDetails(
     isPrivate: data.type === 2, //type 2 means private
     shareUrl: data.share_url,
     slug: data.slug,
+    // TODO: handle createdAt when available
     createdAt: "", // Placeholder, as createdAt is not in ResponseGroupDetailsType
     isAiGenerated: data.is_ai_generated,
     isSubscriber: data.is_subscriber,
