@@ -3,7 +3,8 @@ import { TickIcon } from "@genuin/ui/icons";
 import { ReadMore } from "@genuin/ui/read-more";
 import { cn } from "@genuin/ui/utils";
 import type { ComponentProps } from "react";
-import { GroupNotificationButton } from "src/molecules/group-notification-button";
+
+import { GroupSubscriptionButton } from "src/molecules/group-subscription-button";
 import { JoinCommunityButton } from "src/molecules/join-community-button";
 import { JoinGroupButton } from "src/molecules/join-group-button";
 import { PrivacyInfo } from "src/molecules/privacy-info";
@@ -149,7 +150,7 @@ export function EntityHoverCardContent(
               <div className="gencl:w-full">
                 <JoinGroupButton className="gencl:w-full" />
               </div>
-              <GroupNotificationButton />
+              <GroupSubscriptionButton />
             </>
           )}
           <ShareButton />

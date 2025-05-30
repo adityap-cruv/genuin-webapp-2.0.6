@@ -5,9 +5,10 @@ import {
   HoverCardContent,
 } from "@genuin/ui/hover-card";
 import { cva } from "class-variance-authority";
+
 import { EntityHoverCardContent } from "src/organisms/post-details/pill-hover-card-content";
 
-import { GroupNotificationButton } from "../group-notification-button";
+import { GroupSubscriptionButton } from "../group-subscription-button";
 
 const groupPillVariants = cva(
   "gencl:flex gencl:w-fit gencl:items-center gencl:gap-1 gencl:p-1 gencl:rounded-full gencl:transition-all gencl:cursor-pointer",
@@ -54,7 +55,7 @@ export function GroupPill({
         </span>
       </div>
       {auth && (
-        <GroupNotificationButton
+        <GroupSubscriptionButton
           className="gencl:px-2"
           shape="pill"
           // theme={variant === "dark" ? "secondary" : "primary"}

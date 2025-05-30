@@ -2,6 +2,7 @@ import { convertISOToLocalDateFormate } from "@genuin/ui/utils";
 import { useWindowSize } from "usehooks-ts";
 
 import { TOP_BAR_HEIGHT } from "src/lib/constants";
+import { GroupSubscriptionButton } from "src/molecules/group-subscription-button";
 import { JoinGroupButton } from "src/molecules/join-group-button";
 import { ShareButton } from "src/molecules/share-button";
 import { GenericDetails } from "src/organisms";
@@ -54,7 +55,8 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
               ctas={
                 <div className="gencl:flex gencl:gap-2">
                   <JoinGroupButton />
-                  <ShareButton />
+                  <GroupSubscriptionButton showText />
+                  <ShareButton showText />
                 </div>
               }
             />
