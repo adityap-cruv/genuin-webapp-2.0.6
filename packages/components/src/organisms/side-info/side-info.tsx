@@ -9,7 +9,7 @@ import type { ComponentProps, ReactNode } from "react";
 import { Stats } from "src/molecules/stats";
 import { Tag } from "src/molecules/tag";
 
-import { MemberList } from "../member-list";
+// import { MemberList } from "../member-list";
 
 type EntityDataType = {
   userName: string;
@@ -120,11 +120,11 @@ export function SideInfo({
           </ol>
         </div>
       )}
-      <Admins />
+      {/* <Admins /> */}
     </div>
   );
 }
 
-function Admins() {
-  return <MemberList title="Admins" members={[]} />;
-}
+// function Admins() {
+//   return <MemberList title="Admins" members={[]} />;
+// }

@@ -1,8 +1,11 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@genuin/ui/tabs";
 import { cn } from "@genuin/ui/utils";
 import { useMemo } from "react";
+
+import { MemberList } from "src/organisms/member-list";
 import { PostsGrid } from "src/organisms/posts-grid";
 import { useGetGroupFeed } from "src/react-query/api/group/feed";
+import { useGetGroupMembers } from "src/react-query/api/group/members";
 
 type GroupDetailsTabsProps = Omit<
   {
@@ -24,7 +27,7 @@ export function GroupDetailsTabs({
     >
       <TabsList className="">
         <TabsTrigger value="posts">Posts</TabsTrigger>
-        <TabsTrigger value="members">Member</TabsTrigger>
+        <TabsTrigger value="members">Members</TabsTrigger>
       </TabsList>
       <TabsContent value="posts">
         <GroupPosts slug={slug} />
@@ -71,5 +74,40 @@ function GroupPosts({ slug }: { slug: string }) {
 }
 
 function GroupMembers({ slug }: { slug: string }) {
-  return <div>Group member</div>;
+  const {
+    isError,
+    isLoading,
+    data: membersData,
+    fetchNextPage,
+    hasNextPage,
+  } = useGetGroupMembers(slug);
+
+  const members = useMemo(
+    () => membersData?.pages.flatMap((page) => page.members) ?? [],
+    [membersData]
+  );
+
+  return (
+    <MemberList
+      className="gencl:max-w-md"
+      isLoading={isLoading}
+      isError={isError}
+      fetchNextPage={fetchNextPage}
+      hasNextPage={hasNextPage}
+      members={members.map((member) => ({
+        bio: member.bio ?? "",
+        name: member.name ?? "",
+        profileImage: {
+          isAvatar: member.is_avatar,
+          url: member.profile_image_m ?? member.profile_image ?? "",
+        },
+        userName: member.nickname ?? member.phone ?? member.member_id,
+        isOwner: false,
+        memberId: member.member_id,
+        brand: member.brand,
+        //TODO: handle url paths.
+        url: `/${member.nickname}`,
+      }))}
+    />
+  );
 }

@@ -3,9 +3,9 @@ import { useQuery } from "@tanstack/react-query";
 import { NOT_FOUND_ERROR_CODES } from "src/lib/constants/errors";
 import { axiosInstance } from "src/react-query/axios-instance";
 import { getQueryKeyForLoopDetails } from "src/react-query/keys/group";
+import { API_PATHS } from "src/react-query/paths";
 
 import { parseGroupDetails } from "./parser";
-import { API_PATHS } from "src/react-query/paths";
 
 async function fetchLoopDetails(slug: string) {
   try {

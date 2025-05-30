@@ -73,6 +73,8 @@ export const GroupDetailsSchema = z.object({
   noOfVideos: z.number().default(0),
   noOfMembers: z.number().default(0),
   noOfSubscribers: z.number().default(0),
+  noOfComments: z.number().default(0),
+  noOfSparks: z.number().default(0),
   isWelcomeLoop: z.boolean().default(false),
   isPrivate: z.boolean(),
   shareUrl: z.string(),

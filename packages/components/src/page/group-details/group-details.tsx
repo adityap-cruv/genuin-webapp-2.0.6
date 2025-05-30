@@ -1,4 +1,5 @@
-import { group } from "console";
+import { useWindowSize } from "usehooks-ts";
+
 import { TOP_BAR_HEIGHT } from "src/lib/constants";
 import { JoinGroupButton } from "src/molecules/join-group-button";
 import { ShareButton } from "src/molecules/share-button";
@@ -9,7 +10,7 @@ import { SideInfo } from "src/organisms/side-info";
 import { TopBar } from "src/organisms/top-bar";
 import { useGetGroupDetails } from "src/react-query/api/group/details";
 import { GroupDetailsTabs } from "src/templates/group-details-tabs";
-import { useWindowSize } from "usehooks-ts";
+import { group } from "console";
 
 export function GroupDetailsPage({ slug }: { slug: string }) {
   const { height } = useWindowSize();
@@ -77,8 +78,8 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
               },
               stats: {
                 Views: groupDetails.noOfViews,
-                Comments: 0,
-                Sparks: 0,
+                Comments: groupDetails.noOfComments,
+                Sparks: groupDetails.noOfSparks,
               },
               createdIn: {
                 profileImage: {

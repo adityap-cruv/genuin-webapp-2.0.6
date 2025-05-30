@@ -30,7 +30,7 @@ export function useGetGroupMembers(slug: string) {
   return useInfiniteQuery({
     queryKey: getQueryKeyForGroupMembers(slug),
     queryFn: ({ pageParam }: { pageParam?: string }) =>
-      fetchGroupMembers(slug, pageParam ?? ""),
+      fetchGroupMembers(slug, pageParam),
     getNextPageParam: (lastPage) => {
       return lastPage.end ? undefined : lastPage.end;
     },
