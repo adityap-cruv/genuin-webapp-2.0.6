@@ -7,10 +7,9 @@ import {
 import { cn } from "@genuin/ui/utils";
 import { useState, type ComponentProps, type ReactNode } from "react";
 
+import { formateDateToLocaleString } from "src/lib/utils";
 import { Stats } from "src/molecules/stats";
 import { Tag } from "src/molecules/tag";
-
-// import { MemberList } from "../member-list";
 
 type EntityDataType = {
   userName: string;
@@ -30,7 +29,13 @@ type SideInfoDataType = {
   guidelines?: string[];
 };
 
-type SideInfoProps = { sideInfoData: SideInfoDataType } & ComponentProps<"div">;
+type SideInfoProps = {
+  sideInfoData: SideInfoDataType;
+  /**
+   * Additional comonent that can be passed to the side info component.
+   */
+  others?: ReactNode;
+} & ComponentProps<"div">;
 
 type EntityInfoProps = {
   icon: ReactNode;
@@ -45,7 +50,7 @@ function EntityInfo({ title, icon, entity }: EntityInfoProps) {
   return (
     <div className="gencl:flex gencl:gap-2 gencl:items-center">
       {icon}
-      <p className="gencl:text-body-1-medium gencl:text-secondary-600">
+      <p className="gencl:text-body-1-medium gencl:text-secondary-600 gencl:whitespace-nowrap">
         {title}
       </p>
       <Tag
@@ -60,13 +65,14 @@ function EntityInfo({ title, icon, entity }: EntityInfoProps) {
 
 export function SideInfo({
   sideInfoData: { createdAt, createdBy, createdIn, stats, guidelines },
+  others,
   className,
   ...restProps
 }: SideInfoProps) {
   return (
     <div
       className={cn(
-        "gencl:bg-secondary-50 gencl:p-4 gencl:rounded-lg gencl:gap-2 gencl:space-y-4",
+        "gencl:bg-secondary-50 gencl:overflow-auto gencl:max-w-xs gencl:w-full gencl:p-4 gencl:rounded-lg gencl:gap-2 gencl:space-y-4",
         className
       )}
       {...restProps}
@@ -86,7 +92,7 @@ export function SideInfo({
           <div className="gencl:flex gencl:gap-2 gencl:items-center">
             <PencilWithLineIcon className="gencl:size-5 gencl:stroke-secondary-600" />
             <p className="gencl:text-body-1-medium gencl:text-secondary-600">
-              Created on {createdAt}
+              Created on {formateDateToLocaleString(createdAt)}
             </p>
           </div>
         )}
@@ -109,18 +115,18 @@ export function SideInfo({
           />
         )}
       </div>
-      <Guidelines guidelines={guidelines} />
-      {/* Uncomment the following line to include the Admins component */}
-      {/* <Admins /> */}
+      {guidelines && <Guidelines guidelines={guidelines} />}
+      {others && others}
     </div>
   );
 }
 
+// todo: use accordion in guidelines.
 function Guidelines({ guidelines }: { guidelines?: string[] }) {
   const [showMore, setShowMore] = useState(
     guidelines ? (guidelines?.length > 3 ? false : true) : false
   );
-
+  console.log("guidelines", guidelines, showMore);
   if (!guidelines || guidelines.length === 0) return;
 
   return (
@@ -138,9 +144,11 @@ function Guidelines({ guidelines }: { guidelines?: string[] }) {
             </li>
           ))}
       </ol>
-      <Button theme="text" size="sm" onClick={() => setShowMore(!showMore)}>
-        Show More
-      </Button>
+      {!showMore && (
+        <Button theme="text" size="sm" onClick={() => setShowMore(!showMore)}>
+          Show More
+        </Button>
+      )}
     </div>
   );
 }

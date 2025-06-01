@@ -12,6 +12,7 @@ const imageVariants = cva("gencl:transition-all", {
       video: "gencl:aspect-video",
       portrait: "gencl:aspect-[3/4]",
       landscape: "gencl:aspect-[4/3]",
+      banner: "gencl:aspect-[2/5]",
     },
     radius: {
       none: "gencl:rounded-none",

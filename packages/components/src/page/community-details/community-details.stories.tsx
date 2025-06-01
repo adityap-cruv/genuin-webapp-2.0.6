@@ -2,11 +2,11 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 import { BaseLayout } from "src/templates/base-layout";
 
-import { GroupDetailsPage } from "./group-details";
+import { CommunityDetails } from "./community-details";
 
-const meta: Meta<typeof GroupDetailsPage> = {
-  title: "Page/GroupDetailsPage",
-  component: GroupDetailsPage,
+const meta: Meta<typeof CommunityDetails> = {
+  title: "Page/CommunityDetails",
+  component: CommunityDetails,
   decorators: [
     (Story) => (
       <BaseLayout>
@@ -25,6 +25,6 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    slug: "hshshs",
+    slug: "sports-cars",
   },
 };

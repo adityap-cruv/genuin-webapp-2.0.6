@@ -1,0 +1,38 @@
+import { cn } from "@genuin/ui/utils";
+import type { ComponentProps } from "react";
+import { useWindowSize } from "usehooks-ts";
+
+import { TOP_BAR_HEIGHT } from "src/lib/constants";
+import { SideBar } from "src/organisms/side-bar";
+import { TopBar } from "src/organisms/top-bar";
+
+type BaseLayoutProps = ComponentProps<"section">;
+
+export function BaseLayout({
+  children,
+  className,
+  ...restProps
+}: BaseLayoutProps) {
+  const { height } = useWindowSize();
+
+  return (
+    <div
+      className="gencl:h-full gencl:w-full gencl:mx-auto"
+      style={{ maxWidth: 1440 }}
+    >
+      <TopBar className="gencl:border-b gencl:border-secondary-150" />
+      <main
+        className="gencl:flex gencl:h-full"
+        style={{ height: height - TOP_BAR_HEIGHT }}
+      >
+        <SideBar className="gencl:h-full" />
+        <section
+          className={cn("gencl:w-full gencl:h-full", className)}
+          {...restProps}
+        >
+          {children}
+        </section>
+      </main>
+    </div>
+  );
+}
