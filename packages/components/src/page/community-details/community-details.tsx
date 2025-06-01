@@ -59,126 +59,6 @@ export function CommunityDetails({ slug }: { slug: string }) {
           url: `/test/${moderator.member_id}`,
           userName: moderator.nickname,
         })),
-        ...communityDetails.moderators.map((moderator) => ({
-          bio: moderator.bio ?? "",
-          isOwner: moderator.member_id === communityDetails.leader.member_id,
-          memberId: moderator.member_id,
-          profileImage: {
-            isAvatar: moderator.is_avatar,
-            url: moderator.profile_image_m ?? moderator.profile_image ?? "",
-          },
-          name: moderator.name ?? "",
-          url: `/test/${moderator.member_id}`,
-          userName: moderator.nickname,
-        })),
-        ...communityDetails.moderators.map((moderator) => ({
-          bio: moderator.bio ?? "",
-          isOwner: moderator.member_id === communityDetails.leader.member_id,
-          memberId: moderator.member_id,
-          profileImage: {
-            isAvatar: moderator.is_avatar,
-            url: moderator.profile_image_m ?? moderator.profile_image ?? "",
-          },
-          name: moderator.name ?? "",
-          url: `/test/${moderator.member_id}`,
-          userName: moderator.nickname,
-        })),
-        ...communityDetails.moderators.map((moderator) => ({
-          bio: moderator.bio ?? "",
-          isOwner: moderator.member_id === communityDetails.leader.member_id,
-          memberId: moderator.member_id,
-          profileImage: {
-            isAvatar: moderator.is_avatar,
-            url: moderator.profile_image_m ?? moderator.profile_image ?? "",
-          },
-          name: moderator.name ?? "",
-          url: `/test/${moderator.member_id}`,
-          userName: moderator.nickname,
-        })),
-        ...communityDetails.moderators.map((moderator) => ({
-          bio: moderator.bio ?? "",
-          isOwner: moderator.member_id === communityDetails.leader.member_id,
-          memberId: moderator.member_id,
-          profileImage: {
-            isAvatar: moderator.is_avatar,
-            url: moderator.profile_image_m ?? moderator.profile_image ?? "",
-          },
-          name: moderator.name ?? "",
-          url: `/test/${moderator.member_id}`,
-          userName: moderator.nickname,
-        })),
-        ...communityDetails.moderators.map((moderator) => ({
-          bio: moderator.bio ?? "",
-          isOwner: moderator.member_id === communityDetails.leader.member_id,
-          memberId: moderator.member_id,
-          profileImage: {
-            isAvatar: moderator.is_avatar,
-            url: moderator.profile_image_m ?? moderator.profile_image ?? "",
-          },
-          name: moderator.name ?? "",
-          url: `/test/${moderator.member_id}`,
-          userName: moderator.nickname,
-        })),
-        ...communityDetails.moderators.map((moderator) => ({
-          bio: moderator.bio ?? "",
-          isOwner: moderator.member_id === communityDetails.leader.member_id,
-          memberId: moderator.member_id,
-          profileImage: {
-            isAvatar: moderator.is_avatar,
-            url: moderator.profile_image_m ?? moderator.profile_image ?? "",
-          },
-          name: moderator.name ?? "",
-          url: `/test/${moderator.member_id}`,
-          userName: moderator.nickname,
-        })),
-        ...communityDetails.moderators.map((moderator) => ({
-          bio: moderator.bio ?? "",
-          isOwner: moderator.member_id === communityDetails.leader.member_id,
-          memberId: moderator.member_id,
-          profileImage: {
-            isAvatar: moderator.is_avatar,
-            url: moderator.profile_image_m ?? moderator.profile_image ?? "",
-          },
-          name: moderator.name ?? "",
-          url: `/test/${moderator.member_id}`,
-          userName: moderator.nickname,
-        })),
-        ...communityDetails.moderators.map((moderator) => ({
-          bio: moderator.bio ?? "",
-          isOwner: moderator.member_id === communityDetails.leader.member_id,
-          memberId: moderator.member_id,
-          profileImage: {
-            isAvatar: moderator.is_avatar,
-            url: moderator.profile_image_m ?? moderator.profile_image ?? "",
-          },
-          name: moderator.name ?? "",
-          url: `/test/${moderator.member_id}`,
-          userName: moderator.nickname,
-        })),
-        ...communityDetails.moderators.map((moderator) => ({
-          bio: moderator.bio ?? "",
-          isOwner: moderator.member_id === communityDetails.leader.member_id,
-          memberId: moderator.member_id,
-          profileImage: {
-            isAvatar: moderator.is_avatar,
-            url: moderator.profile_image_m ?? moderator.profile_image ?? "",
-          },
-          name: moderator.name ?? "",
-          url: `/test/${moderator.member_id}`,
-          userName: moderator.nickname,
-        })),
-        ...communityDetails.moderators.map((moderator) => ({
-          bio: moderator.bio ?? "",
-          isOwner: moderator.member_id === communityDetails.leader.member_id,
-          memberId: moderator.member_id,
-          profileImage: {
-            isAvatar: moderator.is_avatar,
-            url: moderator.profile_image_m ?? moderator.profile_image ?? "",
-          },
-          name: moderator.name ?? "",
-          url: `/test/${moderator.member_id}`,
-          userName: moderator.nickname,
-        })),
       ]}
     />
   );
@@ -189,7 +69,7 @@ export function CommunityDetails({ slug }: { slug: string }) {
         src={communityDetails?.banner ?? ""}
         className="gencl:shrink-0"
       />
-      <div className="gencl:pt-6 gencl:flex-grow gencl:bg-primary-300 gencl:flex gencl:items-start">
+      <div className="gencl:pt-6 gencl:h-full  gencl:overflow-auto gencl:flex-grow gencl:flex gencl:items-start">
         <GenericDetails
           title={communityDetails?.name ?? ""}
           profileImageDetails={{
@@ -231,6 +111,7 @@ export function CommunityDetails({ slug }: { slug: string }) {
           }
         />
         <SideInfo
+          className="gencl:h-fit"
           sideInfoData={{
             createdAt: communityDetails.created_at ?? new Date().toISOString(),
             createdBy: {

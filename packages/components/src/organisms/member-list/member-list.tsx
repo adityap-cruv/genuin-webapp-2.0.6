@@ -46,11 +46,7 @@ export function MemberList({
       className={cn("gencl:flex gencl:w-full gencl:flex-col", className)}
       {...restProps}
     >
-      {title && (
-        <p className="gencl:pl-4 gencl:pb-4 gencl:text-body-1-medium">
-          {title}
-        </p>
-      )}
+      {title && <p className="gencl:pb-4 gencl:text-body-1-medium">{title}</p>}
       <InfiniteScroll
         hasNextPage={hasNextPage}
         getNextPage={fetchNextPage}

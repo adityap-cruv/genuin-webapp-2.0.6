@@ -22,7 +22,7 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
   }
 
   return (
-    <div className="gencl:flex gencl:p-6 gencl:gap-6 gencl:flex-grow">
+    <div className="gencl:p-6 gencl:gap-6 gencl:flex-grow gencl:overflow-auto">
       <div className="gencl:w-full gencl:h-full gencl:flex gencl:flex-col gencl:gap-6">
         <GenericDetails
           variant="default"
