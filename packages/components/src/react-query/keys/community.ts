@@ -7,3 +7,12 @@ import { baseQueryKey } from "./base";
 export function getQueryKeyForCommunityDetails(slug: string) {
   return [...baseQueryKey, "community", "details", slug];
 }
+
+/**
+ * Generates a query key for fetching community groups.
+ * @param slug
+ * @returns
+ */
+export function getQueryKeyForCommunityGroups(slug: string) {
+  return [...baseQueryKey, "community", "groups", slug];
+}

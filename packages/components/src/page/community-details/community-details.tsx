@@ -9,7 +9,8 @@ import { GenericDetails } from "src/organisms";
 import { GenericDetailsMetadata } from "src/organisms/generic-details/generic-details-metadata";
 import { MemberList } from "src/organisms/member-list";
 import { SideInfo } from "src/organisms/side-info";
-import { useGetCommunityDetails } from "src/react-query/api/community/community";
+import { useGetCommunityDetails } from "src/react-query/api/community/details/details";
+import { CommunityDetailsTabs } from "src/templates/community-details-tabs";
 
 export function CommunityDetails({ slug }: { slug: string }) {
   const {
@@ -70,46 +71,50 @@ export function CommunityDetails({ slug }: { slug: string }) {
         className="gencl:shrink-0"
       />
       <div className="gencl:pt-6 gencl:h-full  gencl:overflow-auto gencl:flex-grow gencl:flex gencl:items-start">
-        <GenericDetails
-          title={communityDetails?.name ?? ""}
-          profileImageDetails={{
-            imageUrl: communityDetails?.dp_m ?? communityDetails.dp ?? "",
-            isAvatar: false,
-            alt: communityDetails?.name ?? "",
-          }}
-          description={communityDetails.description ?? ""}
-          metadata={
-            <GenericDetailsMetadata
-              // TODO: clarify with product what does this verified brand means */
-              brandDetails={
-                communityDetails.brand
-                  ? {
-                      isVerified: true,
-                      url: communityDetails.brand.brand_web_logo ?? "",
-                      userName: communityDetails.brand.brand_slug,
-                    }
-                  : undefined
-              }
-              privacyInfo={{ isPrivate: communityDetails.type === "PRIVATE" }}
-              stats={{
-                Members: communityDetails.no_of_members,
-                Groups: communityDetails.no_of_loops,
-                Posts: communityDetails.no_of_videos,
-              }}
-            />
-          }
-          links={{
-            custom: communityDetails.social_links.social_web_url ?? undefined,
-            x: communityDetails.social_links.twitter?.url ?? undefined,
-            instagram: communityDetails.social_links.insta?.url ?? undefined,
-          }}
-          ctas={
-            <div className="gencl:flex gencl:gap-2">
-              <JoinCommunityButton />
-              <ShareButton showText />
-            </div>
-          }
-        />
+        <div className="gencl:w-full">
+          <GenericDetails
+            title={communityDetails?.name ?? ""}
+            profileImageDetails={{
+              imageUrl: communityDetails?.dp_m ?? communityDetails.dp ?? "",
+              isAvatar: false,
+              alt: communityDetails?.name ?? "",
+            }}
+            description={communityDetails.description ?? ""}
+            metadata={
+              <GenericDetailsMetadata
+                // TODO: clarify with product what does this verified brand means */
+                brandDetails={
+                  communityDetails.brand
+                    ? {
+                        isVerified: true,
+                        url: communityDetails.brand.brand_web_logo ?? "",
+                        userName: communityDetails.brand.brand_slug,
+                      }
+                    : undefined
+                }
+                privacyInfo={{ isPrivate: communityDetails.type === "PRIVATE" }}
+                stats={{
+                  Members: communityDetails.no_of_members,
+                  Groups: communityDetails.no_of_loops,
+                  Posts: communityDetails.no_of_videos,
+                }}
+              />
+            }
+            links={{
+              custom: communityDetails.social_links.social_web_url ?? undefined,
+              x: communityDetails.social_links.twitter?.url ?? undefined,
+              instagram: communityDetails.social_links.insta?.url ?? undefined,
+            }}
+            ctas={
+              <div className="gencl:flex gencl:gap-2">
+                <JoinCommunityButton />
+                <ShareButton showText />
+              </div>
+            }
+          />
+          <CommunityDetailsTabs slug={slug} />
+        </div>
+
         <SideInfo
           className="gencl:h-fit"
           sideInfoData={{
