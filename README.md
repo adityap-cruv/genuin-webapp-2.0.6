@@ -73,9 +73,31 @@ The monorepo uses shared configurations for:
 - TypeScript (base config)
 - Git Hooks (Husky)
 
-## Dependencies
+## Dependency Management
 
-Shared dependencies are managed at the root level. Project-specific dependencies are managed in their respective `package.json` files.
+This monorepo employs a centralized dependency management strategy using pnpm workspaces to optimize performance, ensure consistency, and simplify maintenance.
+
+**Key Principles:**
+
+*   **Root-Level Dependencies:** Common dependencies, especially those shared across multiple packages (e.g., React, Next.js, Radix UI components, Tailwind CSS, major UI libraries), are declared in the root `package.json`. This promotes version consistency and allows pnpm to hoist them efficiently.
+*   **Peer Dependencies:** Workspace packages (e.g., `@genuin/ui`, `@genuin/components`) declare shared libraries they rely on (like React, Radix UI components) as `peerDependencies`. This makes the dependency relationship explicit and ensures that the consuming application or package provides a compatible version (usually hoisted from the root).
+*   **Workspace Packages:** Internal packages (`@genuin/*`) are referenced using `workspace:*` protocol in `package.json` files, ensuring pnpm links them locally.
+*   **Hoisting Configuration:** The `.npmrc` file is configured with `shamefully-hoist=false` to encourage explicit dependency declarations. Specific, widely-used dependencies are hoisted to the root `node_modules` via `public-hoist-pattern[]` for easy access by all packages and to ensure single instances (e.g., React, Radix UI).
+*   **Package-Specific Dependencies:** Dependencies that are unique to a single application or package are declared directly in its own `package.json`.
+
+**Managing Dependencies:**
+
+The root `package.json` includes several scripts to help manage and validate dependencies across the monorepo:
+
+*   `pnpm deps:check`: Lists any version mismatches for shared dependencies between packages (using `syncpack`).
+*   `pnpm deps:fix`: Attempts to automatically fix version mismatches found by `syncpack`.
+*   `pnpm deps:update`: Interactively updates dependencies to their latest versions (using `npm-check-updates`) and then runs `pnpm install`.
+*   `pnpm deps:unused`: Checks for unused dependencies within each package (using `depcheck`). A root `.depcheckrc.json` file is configured to ignore intentionally hoisted or monorepo-tooling-related false positives.
+*   `pnpm deps:validate`: A convenience script that runs both `deps:check` and `deps:unused`.
+
+When adding a new shared dependency, prefer adding it to the root `package.json`. If a package requires a specific version of a shared library that conflicts with the root, carefully consider the implications. For new package-specific dependencies, add them directly to the package's `package.json`. Always run `pnpm install` from the root after making changes to dependencies.
+
+For more detailed information on the dependency management strategy and its implementation, see the [Dependency Optimization Instructions](./DEPENDECY_MANAGEMENT_IMPROVEMENT.md).
 
 ## Troubleshooting
 

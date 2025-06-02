@@ -26,6 +26,18 @@
   },
   "author": "Genuin Inc.",
   "license": "ISC",
+  "peerDependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": false
+    },
+    "react-dom": {
+      "optional": false
+    }
+  },
   "devDependencies": {
     "@aws-sdk/client-cloudfront": "^3.540.0",
     "@aws-sdk/client-s3": "^3.540.0",
@@ -40,10 +52,10 @@
     "@rollup/plugin-strip": "^3.0.4",
     "@rollup/plugin-terser": "^0.4.4",
     "@types/cli-progress": "^3.11.5",
-    "@types/node": "^20.17.6",
+    "@types/node": "^22.15.21",
     "@types/react": "^19.1.5",
     "@types/react-dom": "^19.1.5",
-    "autoprefixer": "^10.4.20",
+    "autoprefixer": "10.4.21",
     "chalk": "^4.1.2",
     "cli-progress": "^3.12.0",
     "concurrently": "^8.2.2",
@@ -59,44 +71,34 @@
     "rollup-plugin-postcss": "^4.0.2",
     "rollup-plugin-typescript2": "^0.36.0",
     "serve": "^14.2.1",
-    "tailwindcss": "^3.4.17",
+    "tailwindcss": "^4.1.8",
     "ts-node": "^10.9.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.8.3"
   },
   "dependencies": {
-    "@hookform/resolvers": "^3.10.0",
-    "@radix-ui/react-accordion": "^1.2.2",
-    "@radix-ui/react-avatar": "^1.1.2",
-    "@radix-ui/react-checkbox": "^1.1.3",
-    "@radix-ui/react-dialog": "^1.1.14",
-    "@radix-ui/react-label": "^2.1.1",
-    "@radix-ui/react-popover": "^1.1.4",
-    "@radix-ui/react-slot": "^1.1.1",
-    "@radix-ui/react-switch": "^1.1.3",
-    "@radix-ui/react-tabs": "^1.1.2",
-    "@radix-ui/react-toast": "^1.2.5",
-    "@radix-ui/react-tooltip": "^1.1.7",
-    "@tanstack/react-query": "^5.62.16",
-    "class-variance-authority": "^0.7.1",
+    "@genuin/ui": "workspace:*",
+    "@genuin/components": "workspace:*",
+    "@hookform/resolvers": "^5.0.1",
+    "@radix-ui/react-checkbox": "^1.3.1",
+    "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-switch": "^1.2.4",
+    "@radix-ui/react-toast": "^1.2.13",
+    "@tanstack/react-query": "^5.76.1",
     "classnames": "^2.5.1",
-    "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "crypto-es": "^2.1.0",
     "input-otp": "^1.4.2",
-    "lucide-react": "^0.469.0",
-    "react": "^19.1.0",
     "react-cropper": "^2.3.3",
-    "react-dom": "^19.1.0",
-    "react-hook-form": "^7.54.2",
-    "react-phone-number-input": "^3.4.11",
+    "react-hook-form": "^7.56.4",
+    "react-phone-number-input": "^3.4.12",
     "react-qrcode-logo": "^3.0.0",
-    "swiper": "^11.2.0",
-    "tailwind-merge": "^2.6.0",
+    "swiper": "^11.2.7",
+    "tailwind-merge": "^3.3.0",
     "tailwindcss-animate": "^1.0.7",
-    "ua-parser-js": "^2.0.0",
+    "ua-parser-js": "^2.0.3",
     "use-debounce": "^10.0.4",
     "uuid": "^11.0.5",
     "wouter": "^3.5.1",
-    "zod": "^3.24.1"
+    "zod": "^3.25.16"
   }
 }
