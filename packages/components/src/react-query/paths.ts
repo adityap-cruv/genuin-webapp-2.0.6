@@ -19,4 +19,8 @@ export const API_PATHS = {
    * Api path to fetch community groups.
    */
   COMMUNITY_GROUPS: "/api/v3/community/loops",
+  /**
+   * Api path to fetch community members.
+   */
+  COMMUNITY_MEMBERS: "/api/v3/community/members",
 } as const;

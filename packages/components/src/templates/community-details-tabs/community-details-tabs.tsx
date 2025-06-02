@@ -8,7 +8,9 @@ import { ShareButton } from "src/molecules/share-button";
 import { GenericDetails } from "src/organisms";
 import { GenericDetailsMetadata } from "src/organisms/generic-details/generic-details-metadata";
 import { GroupPosts } from "src/organisms/group-posts";
+import { MemberList } from "src/organisms/member-list";
 import { useGetCommunityGroups } from "src/react-query/api/community/groups";
+import { useGetCommunityMembers } from "src/react-query/api/community/members";
 
 type CommunityDetailsTabsPropsType = Omit<
   {
@@ -97,6 +99,31 @@ function CommunityGroups({ slug }: { slug: string }) {
   ));
 }
 
+// TODO: owner is missing here.
 function CommunityMembers({ slug }: { slug: string }) {
-  return <div>Community members content goes here.</div>;
+  const {
+    data: communityMembers,
+    isError,
+    isLoading,
+  } = useGetCommunityMembers(slug);
+
+  return (
+    <MemberList
+      className="gencl:max-w-sm"
+      isError={isError}
+      isLoading={isLoading}
+      members={communityMembers?.members.map((member) => ({
+        isOwner: false,
+        bio: member.bio ?? "",
+        memberId: member.member_id,
+        name: member.name ?? "",
+        profileImage: {
+          isAvatar: member.is_avatar,
+          url: member.profile_image,
+        },
+        url: `/test/${member.member_id}`,
+        userName: member.nickname,
+      }))}
+    />
+  );
 }

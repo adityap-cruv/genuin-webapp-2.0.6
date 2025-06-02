@@ -7,7 +7,7 @@ import { MemberItem, type MemberDataType } from "src/molecules/member-item";
 
 type MemberListProps = {
   title?: string;
-  members: MemberDataType[];
+  members?: MemberDataType[];
   fetchNextPage?: () => void;
   isLoading?: boolean;
   isError?: boolean;

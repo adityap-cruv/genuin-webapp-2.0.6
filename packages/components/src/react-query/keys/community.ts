@@ -16,3 +16,12 @@ export function getQueryKeyForCommunityDetails(slug: string) {
 export function getQueryKeyForCommunityGroups(slug: string) {
   return [...baseQueryKey, "community", "groups", slug];
 }
+
+/**
+ * Generates a query key for fetching community members.
+ * @param slug
+ * @returns
+ */
+export function getQueryKeyForCommunityMembers(slug: string) {
+  return [...baseQueryKey, "community", "members", slug];
+}
