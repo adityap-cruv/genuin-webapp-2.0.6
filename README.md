@@ -1,3 +1,6 @@
+## Linting
+
+See [LINTING.md](./LINTING.md) for details on the monorepo linting and ESLint setup.
 # Genuin Monorepo
 
 This monorepo contains the Genuin web application and SDK packages, managed using Turborepo and pnpm workspaces.

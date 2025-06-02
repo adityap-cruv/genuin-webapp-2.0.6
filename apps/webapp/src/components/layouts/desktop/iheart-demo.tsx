@@ -344,7 +344,7 @@ function AudioPlayer({ inModal, ...restProps }: AudioPlayerPropsType) {
     if (ihrPlayerRef.current) return
     console.log('Iframe loaded.')
     // @ts-expect-error playerjs is not defined
-    // eslint-disable-next-line no-undef
+     
     ihrPlayerRef.current = new playerjs.Player(ihrIframeRef.current, { debug: true, autoplay: 1 }) // Enable debug mode
 
     console.log('Player initialized with debug mode enabled.')

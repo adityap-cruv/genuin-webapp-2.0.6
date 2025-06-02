@@ -82,7 +82,7 @@ export function validateProfileCommunity(data: any) {
   try {
     return CommunityListSchema.parse(data)
   } catch (e) {
-    // eslint-disable-next-line no-console
+     
     console.log('error in validation of profile community::', e)
     throw new Error('error in validation of profile community')
   }
@@ -92,7 +92,7 @@ export function validateProfileLoopResponse(data: any) {
   try {
     return loopSchema.parse(data)
   } catch (e) {
-    // eslint-disable-next-line no-console
+     
     console.log('error in validation:', e)
     throw new Error('error in validation of profile loops.')
   }
@@ -102,7 +102,7 @@ export function validateProfileVideoResponse(data: any) {
   try {
     return z.array(messageSchema).parse(data)
   } catch (e) {
-    // eslint-disable-next-line no-console
+     
     console.log('error in validation of profile videos::', e)
     throw new Error('error in validation of profile videos')
   }

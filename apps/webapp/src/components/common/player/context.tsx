@@ -128,7 +128,7 @@ export const PlayerProvider = ({ children, videoId }: VideoProviderProps) => {
                   return // Successfully played muted
                 } catch (innerError) {
                   // If muted playback also fails, log the error
-                  // eslint-disable-next-line no-console
+                   
                   console.warn('Failed to play even after muting:', innerError)
                 }
               }
@@ -140,7 +140,7 @@ export const PlayerProvider = ({ children, videoId }: VideoProviderProps) => {
             }
 
             // Handle other errors
-            // eslint-disable-next-line no-console
+             
             console.error('Playback error:', error)
             setPlayingState('paused')
             return
@@ -162,7 +162,7 @@ export const PlayerProvider = ({ children, videoId }: VideoProviderProps) => {
           await playWithAnalytics()
         }
       } catch (e) {
-        // eslint-disable-next-line no-console
+         
         console.error('Error playing video:', e)
         // Silently handle playback errors
       }

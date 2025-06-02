@@ -64,7 +64,7 @@ export function validateRepostCommunityListData(data: any) {
   try {
     return CommunityListSchema.parse(data)
   } catch (e) {
-    // eslint-disable-next-line no-console
+     
     console.log('error i validation of repost api data::', e)
     throw new Error('Something went wrong::')
   }

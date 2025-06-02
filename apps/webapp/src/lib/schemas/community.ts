@@ -155,7 +155,7 @@ export function validateCommunityDetails(communityDetails: CommunityDetailsType)
     return communityDetails
     // return CommunityDetailsSchema.parse(communityDetails)
   } catch (e) {
-    // eslint-disable-next-line no-console
+     
     console.log('error in parsing community details:', e)
     throw new Error('parsing not done right!!!')
   }

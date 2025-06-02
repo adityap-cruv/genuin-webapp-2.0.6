@@ -418,7 +418,7 @@ export function encodeVideoSourceUrl(videoSource: string) {
     const paramString = params.toString()
     return `${url.origin}${url.pathname}${paramString ? '?' + paramString : ''}`
   } catch (error) {
-    // eslint-disable-next-line no-console
+     
     console.error('Invalid URL:', error)
     return videoSource
   }

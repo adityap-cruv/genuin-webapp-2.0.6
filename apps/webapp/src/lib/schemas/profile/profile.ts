@@ -49,7 +49,7 @@ export function validateProfileDetails(data: any) {
   try {
     return ProfileDetailsSchema.parse(data)
   } catch (e) {
-    // eslint-disable-next-line no-console
+     
     console.log('error::', e)
     throw new Error('Validation error in profile details.')
   }

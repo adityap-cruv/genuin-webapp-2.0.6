@@ -33,7 +33,7 @@ async function fetchCategoryList() {
       return validateCategoryListResp(res.data.data)
     })
     .catch((e) => {
-      // eslint-disable-next-line no-console
+       
       console.log('error::', e)
       throw new Error('Something went wrong category list api.')
     })
@@ -50,7 +50,7 @@ export async function addTopics(topics: string[]) {
       return true
     })
     .catch((e) => {
-      // eslint-disable-next-line no-console
+       
       console.log('Something went wrong posting topics')
       return false
     })

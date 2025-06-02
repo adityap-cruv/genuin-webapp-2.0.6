@@ -1,4 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-namespace, @typescript-eslint/no-unused-vars
+// eslint-disable-next-line @typescript-eslint/no-namespace
 declare namespace NodeJS {
   export interface ProcessEnv {
     HOST_NAME: string

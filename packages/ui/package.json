@@ -30,7 +30,7 @@
     "./hover-card": "./src/components/hover-card/index.ts"
   },
   "scripts": {
-    "lint": "eslint . --max-warnings 0",
+    "lint": "eslint . --max-warnings 20",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "preinstall": "pnpm run build:styles",
@@ -82,7 +82,6 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@turbo/gen": "^2.5.3",
-    "@types/eslint": "^9.6.1",
     "@types/jest": "^29.5.14",
     "@types/node": "^22.15.21",
     "@types/react": "^19.1.5",

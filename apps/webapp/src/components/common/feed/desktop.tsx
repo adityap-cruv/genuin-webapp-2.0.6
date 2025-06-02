@@ -100,7 +100,7 @@ function SwiperRenderer({
       defaultSizeBox: state.sizeBoxes.default,
     }))
   )
-  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+   
   const sizeBox = customSizeBox || defaultSizeBox
   const { shouldShowIHeartDemo, isIHeartPlaying } = useIHeartDemoStates()
   const { allowSlideNext, currentIndex, updateCurrentIndex, videos } = useFeedListContext()

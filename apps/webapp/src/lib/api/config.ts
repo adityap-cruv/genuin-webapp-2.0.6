@@ -11,7 +11,7 @@ export async function getEmbedConfig(params: Record<string, string>) {
       return resData.data as ConfigType
     })
     .catch((e) => {
-      // eslint-disable-next-line no-console
+       
       console.log('error:;', e)
       throw new Error('Something went wrong::')
     })

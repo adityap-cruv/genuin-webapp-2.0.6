@@ -37,7 +37,7 @@ function Desktop() {
           e.preventDefault()
           setTimeout(() => {
             const searchElement = document.getElementById('search-input') as HTMLInputElement
-            // eslint-disable-next-line eqeqeq
+             
             const focus = document.activeElement == searchElement
             if (!focus) close()
             if (!focus && searchElement) searchElement.value = ''

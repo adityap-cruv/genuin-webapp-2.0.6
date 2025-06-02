@@ -12,7 +12,7 @@ export async function getBalanceAPI({ isCurrentBalance }: { isCurrentBalance: bo
       return { wallet: res.data.data.wallet }
     })
     .catch((e) => {
-      // eslint-disable-next-line no-console
+       
       console.log('error:;', e)
       throw new Error('Something went wrong::')
     })
@@ -33,7 +33,7 @@ export async function updateBalanceAPI({
       return res.data.data
     })
     .catch((e) => {
-      // eslint-disable-next-line no-console
+       
       console.log('error:;', e)
       throw new Error('Something went wrong::')
     })
@@ -93,7 +93,7 @@ export async function redeemCouponAPI() {
       return res
     })
     .catch((e) => {
-      // eslint-disable-next-line no-console
+       
       console.log('error:;', e)
       return { data: { code: Number(e.response.data.code), message: e.response.data.message } }
       // throw new Error('Something went wrong::')
@@ -110,7 +110,7 @@ export async function cashWithdrawAPI({ amount, redirectUrl }: { amount: number;
       return res
     })
     .catch((e) => {
-      // eslint-disable-next-line no-console
+       
       console.log('error:;', e)
       return { data: { code: Number(e.response.data.code), message: e.response.data.message } }
       // throw new Error('Something went wrong::')

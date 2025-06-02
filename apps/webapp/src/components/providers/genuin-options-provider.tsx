@@ -36,7 +36,7 @@ type Props = {
   user?: User | null
 }
 // it won't log any consoles in production.
-// eslint-disable-next-line no-console
+ 
 if (process.env.NEXT_PUBLIC_CURRENT_ENV === 'prod') console.log = () => {}
 
 // TODO: separate this component into 2 comps with once has auth and second doesn't have auth.

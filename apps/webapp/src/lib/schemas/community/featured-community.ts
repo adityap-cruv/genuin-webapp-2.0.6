@@ -29,7 +29,7 @@ export function parseFeaturedCommunityList(data: any) {
   try {
     return featuredCommunityListSchema.parse(data)
   } catch (e) {
-    // eslint-disable-next-line no-console
+     
     console.log('error in parsing featured community list::', e)
     throw new Error('Something went with validation!!')
   }
