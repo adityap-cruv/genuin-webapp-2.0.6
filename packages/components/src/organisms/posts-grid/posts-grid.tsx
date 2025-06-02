@@ -1,9 +1,9 @@
+import { InfiniteScroll } from "@genuin/ui/infinite-scroll";
 import { cn } from "@genuin/ui/utils";
 
 import { PostTile } from "src/molecules/post-tile";
 
 import type { PostsGridProps } from "./posts-grid.types";
-import { InfiniteScroll } from "@genuin/ui/infinite-scroll";
 
 export function PostsGrid({
   posts,

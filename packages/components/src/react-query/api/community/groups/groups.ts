@@ -15,13 +15,14 @@ export async function fetchCommunityGroups(slug: string) {
       },
     })
     .then((res) => {
-      return { loops: validateCommunityGroups(res.data.data.conversations) };
+      return { groups: validateCommunityGroups(res.data.data.conversations) };
     })
     .catch(() => {
       throw new Error("Something went wrong with loop community.!");
     });
 }
 
+// TODO: think about adding a lazy loading for community groups.
 export function useGetCommunityGroups(slug: string) {
   return useQuery({
     queryFn: async () => await fetchCommunityGroups(slug),

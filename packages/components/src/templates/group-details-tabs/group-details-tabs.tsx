@@ -2,9 +2,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@genuin/ui/tabs";
 import { cn } from "@genuin/ui/utils";
 import { useMemo } from "react";
 
+import { GroupPosts } from "src/organisms/group-posts";
 import { MemberList } from "src/organisms/member-list";
-import { PostsGrid } from "src/organisms/posts-grid";
-import { useGetGroupFeed } from "src/react-query/api/group/feed";
 import { useGetGroupMembers } from "src/react-query/api/group/members";
 
 type GroupDetailsTabsProps = Omit<
@@ -36,40 +35,6 @@ export function GroupDetailsTabs({
         <GroupMembers slug={slug} />
       </TabsContent>
     </Tabs>
-  );
-}
-
-function GroupPosts({ slug }: { slug: string }) {
-  const {
-    isError,
-    isLoading,
-    isFetchingNextPage,
-    data: feedData,
-    fetchNextPage,
-    hasNextPage,
-  } = useGetGroupFeed(slug);
-  const feed = useMemo(
-    () => feedData?.pages.flatMap((page) => page.feed),
-    [feedData]
-  );
-
-  return (
-    <PostsGrid
-      posts={
-        feed?.map((post) => ({
-          imageUrl: post.video.thumbnailM ?? post.video.thumbnail ?? "",
-          postId: post.video.id,
-          isPinned: post.video.isPinned,
-          linkouts: null,
-          stats: { comments: post.video.commentCount, shares: 0, views: 0 },
-        })) ?? []
-      }
-      fetchNextPage={fetchNextPage}
-      hasNextPage={hasNextPage}
-      isLoading={isLoading}
-      isFetchingNextPage={isFetchingNextPage}
-      isError={isError}
-    />
   );
 }
 

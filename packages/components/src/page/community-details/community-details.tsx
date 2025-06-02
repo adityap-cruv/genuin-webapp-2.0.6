@@ -70,8 +70,8 @@ export function CommunityDetails({ slug }: { slug: string }) {
         src={communityDetails?.banner ?? ""}
         className="gencl:shrink-0"
       />
-      <div className="gencl:pt-6 gencl:h-full  gencl:overflow-auto gencl:flex-grow gencl:flex gencl:items-start">
-        <div className="gencl:w-full">
+      <div className="gencl:pt-6 gencl:h-full gencl:gap-6 gencl:overflow-auto gencl:flex-grow gencl:flex gencl:items-start">
+        <div className="gencl:w-full gencl:h-full gencl:overflow-auto">
           <GenericDetails
             title={communityDetails?.name ?? ""}
             profileImageDetails={{
@@ -112,9 +112,8 @@ export function CommunityDetails({ slug }: { slug: string }) {
               </div>
             }
           />
-          <CommunityDetailsTabs slug={slug} />
+          <CommunityDetailsTabs slug={slug} className="gencl:pt-6" />
         </div>
-
         <SideInfo
           className="gencl:h-fit"
           sideInfoData={{
