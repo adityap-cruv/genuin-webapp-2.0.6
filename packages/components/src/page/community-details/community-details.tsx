@@ -124,6 +124,7 @@ export function CommunityDetails({ slug }: { slug: string }) {
               url: `/test`,
               userName: communityDetails.leader.nickname ?? "",
               name: communityDetails.leader.name ?? "",
+              userLogoType: communityDetails.brand?.brand_user_logo,
             },
             createdIn: {
               profileImage: {

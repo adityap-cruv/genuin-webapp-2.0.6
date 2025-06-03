@@ -6,6 +6,7 @@ import { GroupSubscriptionButton } from "src/molecules/group-subscription-button
 import { JoinCommunityButton } from "src/molecules/join-community-button";
 import { JoinGroupButton } from "src/molecules/join-group-button";
 import { ShareButton } from "src/molecules/share-button";
+import { Tag } from "src/molecules/tag";
 import { GenericDetails } from "src/organisms";
 import { GenericDetailsMetadata } from "src/organisms/generic-details/generic-details-metadata";
 import { PostsGrid } from "src/organisms/posts-grid";
@@ -90,6 +91,14 @@ export function CommunityList({
                 }}
                 ctas={
                   <div className="gencl:flex gencl:gap-2">
+                    {community.brand && (
+                      <Tag
+                        alt={community.brand?.name}
+                        url={`/brand/${community.brand?.slug}`}
+                        profileImage={{ url: community.brand.logo }}
+                        userName={community.brand?.name}
+                      />
+                    )}
                     <JoinCommunityButton buttonText="Join" />
                     <ShareButton showText />
                   </div>
