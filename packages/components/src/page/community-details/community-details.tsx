@@ -47,6 +47,9 @@ export function CommunityDetails({ slug }: { slug: string }) {
           name: communityDetails.leader.name ?? "",
           url: `/test/${communityDetails.leader.member_id}`,
           userName: communityDetails.leader.nickname,
+          brand: {
+            userLogoType: communityDetails.leader.brand?.brand_user_logo,
+          },
         },
         ...communityDetails.moderators.map((moderator) => ({
           bio: moderator.bio ?? "",
@@ -82,16 +85,10 @@ export function CommunityDetails({ slug }: { slug: string }) {
             description={communityDetails.description ?? ""}
             metadata={
               <GenericDetailsMetadata
-                // TODO: clarify with product what does this verified brand means */
-                brandDetails={
-                  communityDetails.brand
-                    ? {
-                        isVerified: true,
-                        url: communityDetails.brand.brand_web_logo ?? "",
-                        userName: communityDetails.brand.brand_slug,
-                      }
-                    : undefined
-                }
+                handle={{
+                  userName: communityDetails.handle ?? "",
+                  url: `/community/${slug}`,
+                }}
                 privacyInfo={{ isPrivate: communityDetails.type === "PRIVATE" }}
                 stats={{
                   Members: communityDetails.no_of_members,

@@ -69,7 +69,9 @@ function GroupMembers({ slug }: { slug: string }) {
         userName: member.nickname ?? member.phone ?? member.member_id,
         isOwner: false,
         memberId: member.member_id,
-        brand: member.brand,
+        brand: {
+          userLogoType: member.brand?.brand_user_logo ?? null,
+        },
         //TODO: handle url paths.
         url: `/${member.nickname}`,
       }))}

@@ -41,17 +41,14 @@ export function ProfileDetails({
           isAvatar: profileData.is_avatar,
           alt: profileData.name ?? "",
         }}
+        userLogoType={profileData.brand?.brand_user_logo}
         metadata={
           <GenericDetailsMetadata
-            brandDetails={
-              profileData.brand
-                ? {
-                    isVerified: profileData.brand?.brand_user_logo === 1,
-                    url: profileData.brand?.brand_url ?? "",
-                    userName: profileData.brand?.brand_slug ?? "",
-                  }
-                : undefined
-            }
+            handle={{
+              brandUserLogo: profileData.brand?.brand_user_logo,
+              url: profileData.brand?.brand_url ?? "",
+              userName: profileData.brand?.brand_slug ?? "",
+            }}
             stats={{
               Communities: profileData.no_of_communities,
               Groups: profileData.no_of_groups,

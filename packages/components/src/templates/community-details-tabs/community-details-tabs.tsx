@@ -123,6 +123,9 @@ function CommunityMembers({ slug }: { slug: string }) {
         },
         url: `/test/${member.member_id}`,
         userName: member.nickname,
+        brand: {
+          userLogoType: member.brand?.brand_user_logo,
+        },
       }))}
     />
   );
