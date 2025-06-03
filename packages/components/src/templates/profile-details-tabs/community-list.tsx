@@ -1,0 +1,210 @@
+import { DecorativeList } from "@genuin/ui/decorative-list";
+import { useMemo } from "react";
+
+import { GroupSubscriptionButton } from "src/molecules/group-subscription-button";
+import { JoinCommunityButton } from "src/molecules/join-community-button";
+import { JoinGroupButton } from "src/molecules/join-group-button";
+import { ShareButton } from "src/molecules/share-button";
+import { GenericDetails } from "src/organisms";
+import { GenericDetailsMetadata } from "src/organisms/generic-details/generic-details-metadata";
+import { PostsGrid } from "src/organisms/posts-grid";
+import {
+  useGetProfileCommunities,
+  useGetProfileGroups,
+  useGetProfileVideos,
+} from "src/react-query/api/profile/posts";
+import type {
+  LoopType,
+  VideoType,
+} from "src/react-query/api/profile/posts/schema";
+
+export function CommunityList({ userId }: { userId: string }) {
+  const { data, isLoading, isError } = useGetProfileCommunities(userId);
+
+  const communities = useMemo(
+    () => data?.pages.flatMap((page) => page.communities) ?? [],
+    [data]
+  );
+
+  // TODO: HANDLE THE LOADING STATE
+  if (isLoading) {
+    return <div>Loading communities...</div>;
+  }
+
+  // TODO: HANDLE THE ERROR STATE
+  if (isError || !communities) {
+    return <div>Error loading communities.</div>;
+  }
+
+  // TODO: HANDLE THE CASE WHEN THERE ARE NO COMMUNITIES
+  if (communities.length === 0) {
+    return <div>No communities found</div>;
+  }
+
+  // Placeholder for community list component
+  return (
+    <div className="gencl:w-full gencl:space-y-6">
+      {communities.map((community) => {
+        return (
+          <div className="gencl:w-full" key={community.id}>
+            <GenericDetails
+              className="gencl:border-none gencl:[&>div]:p-0"
+              title={community.name}
+              url={`/test/${community.slug}`}
+              metadata={
+                <GenericDetailsMetadata
+                  stats={{
+                    Members: community.noOfMembers,
+                    Groups: community.noOfGroups,
+                    Posts: community.noOfVideos,
+                  }}
+                  privacyInfo={{
+                    isPrivate: community.isPrivate,
+                  }}
+                />
+              }
+              variant="list"
+              profileImageDetails={{
+                imageUrl: community.profileImage ?? "",
+                isAvatar: false,
+                alt: community.name ?? "",
+              }}
+              ctas={
+                <div className="gencl:flex gencl:gap-2">
+                  <JoinCommunityButton buttonText="Join" />
+                  <ShareButton showText />
+                </div>
+              }
+            />
+            <DecorativeList className="gencl:ml-7">
+              <div className="gencl:h-6" />
+              <Groups
+                profileId={userId}
+                communityId={community.id}
+                initialLoops={community.loops}
+              />
+            </DecorativeList>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function Groups({
+  profileId,
+  communityId,
+  initialLoops,
+}: {
+  profileId: string;
+  communityId: string;
+  initialLoops: LoopType[];
+}) {
+  const { isLoading, isError, data } = useGetProfileGroups(
+    profileId,
+    communityId,
+    false,
+    initialLoops
+  );
+
+  const groups = useMemo(() => {
+    return data?.pages.flatMap((page) => page.loops) ?? [];
+  }, [data]);
+
+  // TODO: handle loading state.
+  if (isLoading) {
+    return <div>Loading groups...</div>;
+  }
+
+  // TODO: handle error state.
+  if (isError || !groups) {
+    return <div>Error loading groups.</div>;
+  }
+
+  return groups.map((group) => {
+    return (
+      <li key={group.id}>
+        <GenericDetails
+          className="gencl:overflow-clip"
+          variant="list"
+          title={group.name}
+          key={group.id}
+          metadata={
+            <GenericDetailsMetadata
+              privacyInfo={{ isPrivate: group.isPrivate }}
+              stats={{
+                members: group.noOfMembers,
+                posts: group.noOfVideos,
+                views: group.noOfViews,
+              }}
+            />
+          }
+          ctas={
+            <div className="gencl:flex gencl:gap-2 gencl:items-center">
+              <JoinGroupButton buttonText="Join" />
+              <GroupSubscriptionButton showText={false} />
+              <ShareButton showText={false} />
+            </div>
+          }
+        >
+          <GroupVideos
+            communityId={communityId}
+            initialVideos={group.videos}
+            loopId={group.id}
+            profileId={profileId}
+          />
+        </GenericDetails>
+      </li>
+    );
+  });
+}
+
+function GroupVideos({
+  profileId,
+  communityId,
+  loopId,
+  initialVideos,
+}: {
+  profileId: string;
+  communityId: string;
+  loopId: string;
+  initialVideos: VideoType[];
+}) {
+  const { data, isLoading, isError, fetchNextPage, isFetchingNextPage } =
+    useGetProfileVideos(profileId, communityId, loopId, false, initialVideos);
+
+  const videos = useMemo(
+    () => data.pages.flatMap((page) => page.videos),
+    [data]
+  );
+
+  // TODO: Handle loading state
+  if (isLoading) {
+    return <div>Loading videos...</div>;
+  }
+
+  // TODO: Handle error state
+  if (isError || !data) {
+    return <div>Error loading videos.</div>;
+  }
+
+  return (
+    <PostsGrid
+      className="gencl:p-4 gencl:bg-secondary-50"
+      posts={videos.map((video) => ({
+        imageUrl: video.thumbnail ?? "",
+        postId: video.id,
+        stats: {
+          comments: 0,
+          shares: 0,
+          views: 0,
+        },
+      }))}
+      hasNextPage={false}
+      isFetchingNextPage={isFetchingNextPage}
+      fetchNextPage={fetchNextPage}
+      isLoading={isLoading}
+      isError={isError}
+    />
+  );
+}

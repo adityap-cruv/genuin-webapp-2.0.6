@@ -1,6 +1,8 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@genuin/ui/tabs";
 import { cn } from "@genuin/ui/utils";
 
+import { CommunityList } from "./community-list";
+
 type ProfileDetailsTabsPropsType = Omit<
   {
     userId: string;
@@ -27,9 +29,4 @@ export function ProfileDetailsTabs({
       </TabsContent>
     </Tabs>
   );
-}
-
-function CommunityList({ userId }: { userId: string }) {
-  // Placeholder for community list component
-  return <div>Community List for User ID: {userId}</div>;
 }

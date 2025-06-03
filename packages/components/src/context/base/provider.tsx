@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 
-import { BaseContext } from "./context";
-import { BrandDetailsConfigType } from "src/types/brand";
 import { useFeedVideoSizeBox } from "src/hooks/use-feed-video-size-box";
 import { getNewDeviceId, useGetDeviceId } from "src/lib/utils/device-id";
 import { setBrandIdInAxiosInstance } from "src/react-query/axios-instance";
+import type { BrandDetailsConfigType } from "src/types/brand";
+
+import { BaseContext } from "./context";
 
 type BaseContextProviderProps = {
   children: React.ReactNode;
@@ -23,7 +24,7 @@ export function BaseContextProvider({
 }: BaseContextProviderProps) {
   //TODO:  Figure out a way to run this only once. Not in useEffect.
   if (brandDetails) {
-    setBrandIdInAxiosInstance(brandDetails.brand_id);
+    setBrandIdInAxiosInstance(99);
   }
 
   const [isInitiating, setIsInitiating] = useState(true);

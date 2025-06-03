@@ -27,6 +27,7 @@ export function ProfileDetails({ userName }: { userName: string }) {
   return (
     <div className="gencl:w-full gencl:p-6">
       <GenericDetails
+        className=""
         title={profileData?.name ?? ""}
         profileImageDetails={{
           imageUrl:
@@ -65,7 +66,7 @@ export function ProfileDetails({ userName }: { userName: string }) {
           </div>
         }
       />
-      <ProfileDetailsTabs userId={profileData.user_id} />
+      <ProfileDetailsTabs className="gencl:pt-6" userId={profileData.user_id} />
     </div>
   );
 }
