@@ -1,6 +1,6 @@
 import type { ComponentProps } from "react";
 
-import BrandBadgeIcon from "../brand-badge-icon";
+import { BrandBadge } from "../brand-badge";
 import { Link } from "../link";
 
 type ProfileLinkPropsType = {
@@ -26,7 +26,7 @@ export function ProfileLink({
       <div className="gencl:flex gencl:items-center gencl:gap-1">
         <p {...restProps}>{children}</p>
         {userLogoType && (
-          <BrandBadgeIcon userLogoType={userLogoType} variant="dark" />
+          <BrandBadge userLogoType={userLogoType} variant="dark" />
         )}
       </div>
     </Link>

@@ -11,7 +11,7 @@ type BrandBadgeIconProps = {
 };
 
 // Define the BrandBadgeIcon component
-const BrandBadgeIcon: React.FC<BrandBadgeIconProps> = ({
+export const BrandBadge: React.FC<BrandBadgeIconProps> = ({
   userLogoType = 1,
   className,
   variant = "primary",
@@ -34,6 +34,3 @@ const BrandBadgeIcon: React.FC<BrandBadgeIconProps> = ({
     </>
   );
 };
-
-// Export the BrandBadgeIcon component as the default export
-export default BrandBadgeIcon;
