@@ -19,6 +19,7 @@ type EntityDataType = {
   };
   name?: string; // Optional name property
   url: string;
+  userLogoType?: number | null;
 };
 
 type SideInfoDataType = {
@@ -58,6 +59,7 @@ function EntityInfo({ title, icon, entity }: EntityInfoProps) {
         profileImage={entity.profileImage}
         url={entity.url}
         userName={"@" + entity.userName}
+        userLogoType={entity.userLogoType}
       />
     </div>
   );

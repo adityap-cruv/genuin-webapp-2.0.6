@@ -1,5 +1,5 @@
 import { cn } from "@genuin/ui/utils";
-import { ComponentProps, useEffect, useMemo } from "react";
+import { useEffect, useMemo, type ComponentProps } from "react";
 
 import "swiper/css";
 import { useWindowSize } from "usehooks-ts";

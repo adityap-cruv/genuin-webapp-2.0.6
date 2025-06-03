@@ -133,6 +133,7 @@ export function CommunityDetails({ slug }: { slug: string }) {
               url: `/test`,
               name: communityDetails.brand?.name ?? "",
               userName: communityDetails.brand?.brand_slug ?? "",
+              userLogoType: communityDetails.brand?.brand_user_logo,
             },
             stats: {
               Views: communityDetails.no_of_views ?? 0,

@@ -66,6 +66,7 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
             name: groupDetails.owner.name ?? "",
             userName: groupDetails.owner.userName,
             url: `/@${groupDetails.owner.userName}`,
+            userLogoType: groupDetails.owner.brand?.brandUserLogo,
           },
           stats: {
             Views: groupDetails.noOfViews,
