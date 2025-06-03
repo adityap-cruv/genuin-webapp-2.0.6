@@ -1,4 +1,5 @@
 import { DecorativeList } from "@genuin/ui/decorative-list";
+import { InfiniteScroll } from "@genuin/ui/infinite-scroll";
 import { useMemo } from "react";
 
 import { GroupSubscriptionButton } from "src/molecules/group-subscription-button";
@@ -19,7 +20,14 @@ import type {
 } from "src/react-query/api/profile/posts/schema";
 
 export function CommunityList({ userId }: { userId: string }) {
-  const { data, isLoading, isError } = useGetProfileCommunities(userId);
+  const {
+    data,
+    isLoading,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useGetProfileCommunities(userId);
 
   const communities = useMemo(
     () => data?.pages.flatMap((page) => page.communities) ?? [],
@@ -43,50 +51,56 @@ export function CommunityList({ userId }: { userId: string }) {
 
   // Placeholder for community list component
   return (
-    <div className="gencl:w-full gencl:space-y-6">
-      {communities.map((community) => {
-        return (
-          <div className="gencl:w-full" key={community.id}>
-            <GenericDetails
-              className="gencl:border-none gencl:[&>div]:p-0"
-              title={community.name}
-              url={`/test/${community.slug}`}
-              metadata={
-                <GenericDetailsMetadata
-                  stats={{
-                    Members: community.noOfMembers,
-                    Groups: community.noOfGroups,
-                    Posts: community.noOfVideos,
-                  }}
-                  privacyInfo={{
-                    isPrivate: community.isPrivate,
-                  }}
-                />
-              }
-              variant="list"
-              profileImageDetails={{
-                imageUrl: community.profileImage ?? "",
-                isAvatar: false,
-                alt: community.name ?? "",
-              }}
-              ctas={
-                <div className="gencl:flex gencl:gap-2">
-                  <JoinCommunityButton buttonText="Join" />
-                  <ShareButton showText />
-                </div>
-              }
-            />
-            <DecorativeList className="gencl:ml-7">
-              <div className="gencl:h-6" />
-              <Groups
-                profileId={userId}
-                communityId={community.id}
-                initialLoops={community.loops}
+    <div className="gencl:w-full gencl:space-y-6 gencl:pb-6">
+      <InfiniteScroll
+        getNextPage={fetchNextPage}
+        hasNextPage={hasNextPage}
+        isLoadingNextPage={isFetchingNextPage}
+      >
+        {communities.map((community) => {
+          return (
+            <div className="gencl:w-full" key={community.id}>
+              <GenericDetails
+                className="gencl:border-none gencl:[&>div]:p-0"
+                title={community.name}
+                url={`/test/${community.slug}`}
+                metadata={
+                  <GenericDetailsMetadata
+                    stats={{
+                      Members: community.noOfMembers,
+                      Groups: community.noOfGroups,
+                      Posts: community.noOfVideos,
+                    }}
+                    privacyInfo={{
+                      isPrivate: community.isPrivate,
+                    }}
+                  />
+                }
+                variant="list"
+                profileImageDetails={{
+                  imageUrl: community.profileImage ?? "",
+                  isAvatar: false,
+                  alt: community.name ?? "",
+                }}
+                ctas={
+                  <div className="gencl:flex gencl:gap-2">
+                    <JoinCommunityButton buttonText="Join" />
+                    <ShareButton showText />
+                  </div>
+                }
               />
-            </DecorativeList>
-          </div>
-        );
-      })}
+              <DecorativeList className="gencl:ml-7">
+                <div className="gencl:h-6" />
+                <Groups
+                  profileId={userId}
+                  communityId={community.id}
+                  initialLoops={community.loops}
+                />
+              </DecorativeList>
+            </div>
+          );
+        })}
+      </InfiniteScroll>
     </div>
   );
 }

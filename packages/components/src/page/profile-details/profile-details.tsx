@@ -25,7 +25,7 @@ export function ProfileDetails({ userName }: { userName: string }) {
   }
 
   return (
-    <div className="gencl:w-full gencl:p-6">
+    <div className="gencl:w-full gencl:overflow-auto gencl:h-full gencl:p-6">
       <GenericDetails
         className=""
         title={profileData?.name ?? ""}
