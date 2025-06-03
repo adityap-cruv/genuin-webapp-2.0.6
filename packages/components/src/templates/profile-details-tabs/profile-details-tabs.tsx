@@ -6,12 +6,14 @@ import { CommunityList } from "./community-list";
 type ProfileDetailsTabsPropsType = Omit<
   {
     userId: string;
+    forBrand: boolean;
   } & React.ComponentProps<typeof Tabs>,
   "defaultValue" | "defaultChecked" | "children"
 >;
 
 export function ProfileDetailsTabs({
   userId,
+  forBrand,
   className,
   ...restProps
 }: ProfileDetailsTabsPropsType) {
@@ -25,7 +27,7 @@ export function ProfileDetailsTabs({
         <TabsTrigger value="communities">Communities</TabsTrigger>
       </TabsList>
       <TabsContent value="communities">
-        <CommunityList userId={userId} />
+        <CommunityList userId={userId} forBrand={forBrand} />
       </TabsContent>
     </Tabs>
   );

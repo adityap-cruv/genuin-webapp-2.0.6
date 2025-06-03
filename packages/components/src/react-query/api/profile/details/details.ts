@@ -12,10 +12,13 @@ import { validateProfileDetails } from "./schema";
  * @param nickname - The nickname of the user.
  * @returns The user data.
  */
-export async function fetchProfileDetails(nickname: string) {
+export async function fetchProfileDetails(
+  nickname: string,
+  forBrand: boolean = false
+) {
   return await axiosInstance
     .post(API_PATHS.USER_DETAILS, {
-      nickname,
+      [forBrand ? "brand_slug" : "user_name"]: nickname,
     })
     .then((res) => {
       return validateProfileDetails(res.data.data);
@@ -31,9 +34,9 @@ export async function fetchProfileDetails(nickname: string) {
     });
 }
 
-export function useGetProfileDetails(userName: string) {
+export function useGetProfileDetails(userName: string, forBrand: boolean) {
   return useQuery({
-    queryKey: getQueryKeyForProfileDetails(userName),
-    queryFn: () => fetchProfileDetails(userName),
+    queryKey: getQueryKeyForProfileDetails(userName, forBrand),
+    queryFn: () => fetchProfileDetails(userName, forBrand),
   });
 }

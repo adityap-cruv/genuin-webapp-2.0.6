@@ -19,7 +19,13 @@ import type {
   VideoType,
 } from "src/react-query/api/profile/posts/schema";
 
-export function CommunityList({ userId }: { userId: string }) {
+export function CommunityList({
+  userId,
+  forBrand,
+}: {
+  userId: string;
+  forBrand: boolean;
+}) {
   const {
     data,
     isLoading,
@@ -27,7 +33,7 @@ export function CommunityList({ userId }: { userId: string }) {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useGetProfileCommunities(userId);
+  } = useGetProfileCommunities(userId, forBrand);
 
   const communities = useMemo(
     () => data?.pages.flatMap((page) => page.communities) ?? [],
@@ -89,12 +95,13 @@ export function CommunityList({ userId }: { userId: string }) {
                   </div>
                 }
               />
-              <DecorativeList className="gencl:ml-7">
+              <DecorativeList className="gencl:ml-7 gencl:[&_li]:mb-6">
                 <div className="gencl:h-6" />
                 <Groups
                   profileId={userId}
                   communityId={community.id}
                   initialLoops={community.loops}
+                  forBrand={forBrand}
                 />
               </DecorativeList>
             </div>
@@ -109,15 +116,17 @@ function Groups({
   profileId,
   communityId,
   initialLoops,
+  forBrand,
 }: {
   profileId: string;
   communityId: string;
   initialLoops: LoopType[];
+  forBrand: boolean;
 }) {
   const { isLoading, isError, data } = useGetProfileGroups(
     profileId,
     communityId,
-    false,
+    forBrand,
     initialLoops
   );
 
@@ -166,6 +175,7 @@ function Groups({
             initialVideos={group.videos}
             loopId={group.id}
             profileId={profileId}
+            forBrand={forBrand}
           />
         </GenericDetails>
       </li>
@@ -178,14 +188,22 @@ function GroupVideos({
   communityId,
   loopId,
   initialVideos,
+  forBrand,
 }: {
   profileId: string;
   communityId: string;
   loopId: string;
   initialVideos: VideoType[];
+  forBrand: boolean;
 }) {
   const { data, isLoading, isError, fetchNextPage, isFetchingNextPage } =
-    useGetProfileVideos(profileId, communityId, loopId, false, initialVideos);
+    useGetProfileVideos(
+      profileId,
+      communityId,
+      loopId,
+      forBrand,
+      initialVideos
+    );
 
   const videos = useMemo(
     () => data.pages.flatMap((page) => page.videos),

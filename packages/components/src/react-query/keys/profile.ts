@@ -7,8 +7,11 @@ import { baseQueryKey } from "./base";
  * @param userName - The username for which to get the profile details query key.
  * @returns
  */
-export function getQueryKeyForProfileDetails(userName: string): QueryKey {
-  return [...baseQueryKey, "profile", "details", userName];
+export function getQueryKeyForProfileDetails(
+  userName: string,
+  forBrand: boolean
+): QueryKey {
+  return [...baseQueryKey, forBrand ? "brand" : "profile", "details", userName];
 }
 
 /**

@@ -31,6 +31,7 @@ type Story = StoryObj<typeof ProfileDetails>;
 
 export const Default: Story = {
   args: {
-    userName: "justin.bieberr",
+    userName: "dhruv-zpoz",
+    forBrand: true,
   },
 };

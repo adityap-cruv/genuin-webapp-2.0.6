@@ -7,12 +7,18 @@ import { GenericDetailsMetadata } from "src/organisms/generic-details/generic-de
 import { useGetProfileDetails } from "src/react-query/api/profile/details";
 import { ProfileDetailsTabs } from "src/templates/profile-details-tabs";
 
-export function ProfileDetails({ userName }: { userName: string }) {
+export function ProfileDetails({
+  userName,
+  forBrand,
+}: {
+  userName: string;
+  forBrand: boolean;
+}) {
   const {
     isLoading,
     isError,
     data: profileData,
-  } = useGetProfileDetails(userName);
+  } = useGetProfileDetails(userName, forBrand);
 
   // TODO: handle the loading state.
   if (isLoading) {
@@ -66,7 +72,15 @@ export function ProfileDetails({ userName }: { userName: string }) {
           </div>
         }
       />
-      <ProfileDetailsTabs className="gencl:pt-6" userId={profileData.user_id} />
+      <ProfileDetailsTabs
+        className="gencl:pt-6"
+        userId={
+          forBrand && profileData.brand
+            ? profileData.brand?.brand_id.toString()
+            : profileData.user_id
+        }
+        forBrand={forBrand}
+      />
     </div>
   );
 }
