@@ -1,6 +1,6 @@
 import { DecorativeList } from "@genuin/ui/decorative-list";
 import { InfiniteScroll } from "@genuin/ui/infinite-scroll";
-import { useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import { GroupSubscriptionButton } from "src/molecules/group-subscription-button";
 import { JoinCommunityButton } from "src/molecules/join-community-button";
@@ -19,6 +19,8 @@ import type {
   LoopType,
   VideoType,
 } from "src/react-query/api/profile/posts/schema";
+
+import { FeedViewWrapper } from "./feed-view-wrapper";
 
 export function CommunityList({
   userId,
@@ -206,6 +208,10 @@ function GroupVideos({
   initialVideos: VideoType[];
   forBrand: boolean;
 }) {
+  // post id from which the expand view is opened
+  const [expandViewId, setExpandViewId] = useState<undefined | string>(
+    undefined
+  );
   const {
     data,
     isLoading,
@@ -226,33 +232,48 @@ function GroupVideos({
     [data]
   );
 
+  const handlePostTileClick = useCallback((postId: string) => {
+    setExpandViewId(postId);
+  }, []);
+
   return (
-    <PostsGrid
-      className="gencl:p-4 gencl:bg-secondary-50"
-      posts={videos.map((video) => ({
-        imageUrl: video.thumbnail ?? "",
-        postId: video.id,
-        stats: {
-          comments: 0,
-          shares: 0,
-          views: 0,
-        },
-      }))}
-      hasNextPage={false}
-      isFetchingNextPage={isFetchingNextPage}
-      fetchNextPage={fetchNextPage}
-      isLoading={isLoading}
-      isError={isError}
-      lazyLoad="manual"
-    >
-      {hasNextPage && !isFetchingNextPage && (
-        <div
-          className="gencl:flex-center gencl:pt-4 gencl:text-body-2-bold gencl:text-secondary-600 gencl:cursor-pointer"
-          onClick={() => fetchNextPage()}
-        >
-          View more
-        </div>
+    <>
+      <PostsGrid
+        className="gencl:p-4 gencl:bg-secondary-50"
+        posts={videos.map((video) => ({
+          imageUrl: video.thumbnail ?? "",
+          postId: video.id,
+          stats: {
+            comments: 0,
+            shares: 0,
+            views: 0,
+          },
+        }))}
+        hasNextPage={false}
+        isFetchingNextPage={isFetchingNextPage}
+        fetchNextPage={fetchNextPage}
+        isLoading={isLoading}
+        isError={isError}
+        lazyLoad="manual"
+        onPostTileClick={handlePostTileClick}
+      >
+        {hasNextPage && !isFetchingNextPage && (
+          <div
+            className="gencl:flex-center gencl:pt-4 gencl:text-body-2-bold gencl:text-secondary-600 gencl:cursor-pointer"
+            onClick={() => fetchNextPage()}
+          >
+            View more
+          </div>
+        )}
+      </PostsGrid>
+      {expandViewId !== undefined && (
+        <FeedViewWrapper
+          profileId={profileId}
+          forBrand={forBrand}
+          videoId={expandViewId}
+          onCloseExpandView={() => setExpandViewId(undefined)}
+        />
       )}
-    </PostsGrid>
+    </>
   );
 }

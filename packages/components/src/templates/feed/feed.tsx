@@ -29,6 +29,27 @@ export type FeedData = {
   fetchNextPage: () => void;
 };
 
+type BaseFeedPropsType = {
+  /**
+   * Enable expand view for the feed.
+   * This will allow the user to expand the feed to full screen.
+   * @default true
+   */
+  enableExpandView?: boolean;
+  /**
+   * Whether to show the expand view by default.
+   */
+  defaultExpandView?: boolean;
+  /**
+   * Callback function to handle when the expand view is closed.
+   */
+  onCloseExpandView?: () => void;
+  /**
+   * The index of the first video to display in the feed.
+   */
+  startIndex?: number;
+};
+
 /**
  * Props for FeedWithData component
  * @interface FeedWithDataPropsType
@@ -36,13 +57,8 @@ export type FeedData = {
 type FeedWithDataPropsType = {
   /** Type of feed to display (HOME, POPULAR, LATEST) */
   feedType: FeedType;
-  /**
-   * Enable expand view for the feed.
-   * This will allow the user to expand the feed to full screen.
-   * @default true
-   */
-  enableExpandView?: boolean;
-} & ComponentProps<"div">;
+} & BaseFeedPropsType &
+  ComponentProps<"div">;
 
 /**
  * Props for FeedView component
@@ -51,13 +67,8 @@ type FeedWithDataPropsType = {
 type FeedViewPropsType = {
   /** Feed data containing videos and state */
   feedData: FeedData;
-  /**
-   * Enable expand view for the feed.
-   * This will allow the user to expand the feed to full screen.
-   * @default true
-   */
-  enableExpandView?: boolean;
-} & ComponentProps<"div">;
+} & BaseFeedPropsType &
+  ComponentProps<"div">;
 
 export type { FeedWithDataPropsType, FeedViewPropsType };
 
@@ -75,6 +86,8 @@ export type { FeedWithDataPropsType, FeedViewPropsType };
  */
 export function FeedWithData({
   feedType,
+  defaultExpandView,
+  onCloseExpandView,
   ...restProps
 }: FeedWithDataPropsType) {
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
@@ -94,7 +107,10 @@ export function FeedWithData({
   };
 
   return (
-    <FeedContextProvider>
+    <FeedContextProvider
+      defaultExpandView={defaultExpandView}
+      onCloseExpandView={onCloseExpandView}
+    >
       <FeedViewCore feedData={feedData} {...restProps} />
     </FeedContextProvider>
   );
@@ -115,9 +131,17 @@ export const Feed = FeedWithData;
  * <FeedView feedData={myCustomFeedData} className="my-feed" />
  * ```
  */
-export function FeedView({ feedData, ...restProps }: FeedViewPropsType) {
+export function FeedView({
+  feedData,
+  defaultExpandView,
+  onCloseExpandView,
+  ...restProps
+}: FeedViewPropsType) {
   return (
-    <FeedContextProvider>
+    <FeedContextProvider
+      defaultExpandView={defaultExpandView}
+      onCloseExpandView={onCloseExpandView}
+    >
       <FeedViewCore feedData={feedData} {...restProps} />
     </FeedContextProvider>
   );
@@ -133,6 +157,7 @@ export function FeedView({ feedData, ...restProps }: FeedViewPropsType) {
 function FeedViewCore({
   feedData,
   className,
+  startIndex = 0,
   style,
   ...restProps
 }: FeedViewPropsType) {
@@ -181,6 +206,7 @@ function FeedViewCore({
         {...restProps}
       >
         <PlayerList
+          startIndex={startIndex}
           posts={videos}
           onActiveIndexChange={(newIndex) => {
             setActiveIndex(newIndex);

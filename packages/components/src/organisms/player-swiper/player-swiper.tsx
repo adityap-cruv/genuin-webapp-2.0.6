@@ -1,12 +1,16 @@
 import "swiper/css";
-import type { PostDetailsType } from "src/react-query/api/feed/schema";
-import { useFeedContext } from "src/templates/feed/context";
 import { SwiperSlide } from "swiper/react";
 import { useBoolean } from "usehooks-ts";
-import { Comments } from "../comments";
-import { SwiperImplementation } from "./swiper-implementation";
+
 import { Actions } from "src/molecules/actions";
+import type { PostDetailsType } from "src/react-query/api/feed/schema";
+import { useFeedContext } from "src/templates/feed/context";
+
+import { Comments } from "../comments";
+
 import { Player } from "./player";
+import { SwiperImplementation } from "./swiper-implementation";
+
 
 type PlayerListPropsType = {
   posts: PostDetailsType[];
