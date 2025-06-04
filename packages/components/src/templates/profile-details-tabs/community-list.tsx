@@ -219,16 +219,6 @@ function GroupVideos({
     [data]
   );
 
-  // TODO: Handle loading state
-  if (isLoading) {
-    return <div>Loading videos...</div>;
-  }
-
-  // TODO: Handle error state
-  if (isError || !data) {
-    return <div>Error loading videos.</div>;
-  }
-
   return (
     <PostsGrid
       className="gencl:p-4 gencl:bg-secondary-50"
@@ -246,6 +236,7 @@ function GroupVideos({
       fetchNextPage={fetchNextPage}
       isLoading={isLoading}
       isError={isError}
+      lazyLoad="manual"
     />
   );
 }

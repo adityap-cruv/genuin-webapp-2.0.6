@@ -94,6 +94,7 @@ function CommunityGroups({ slug }: { slug: string }) {
       <GroupPosts
         slug={group.slug}
         className="gencl:bg-secondary-50 gencl:p-4"
+        lazyLoad="manual"
       />
     </GenericDetails>
   ));

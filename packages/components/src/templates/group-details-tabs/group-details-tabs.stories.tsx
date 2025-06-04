@@ -24,6 +24,6 @@ type Story = StoryObj<typeof GroupDetailsTabs>;
 
 export const Default: Story = {
   args: {
-    slug: "hshshs",
+    slug: "test-b1y0",
   },
 };

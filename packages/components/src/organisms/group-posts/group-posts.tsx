@@ -14,7 +14,11 @@ type GroupPostsPropsType = Omit<
   | "isLoading"
 > & { slug: string };
 
-export function GroupPosts({ slug, ...restProps }: GroupPostsPropsType) {
+export function GroupPosts({
+  slug,
+  lazyLoad,
+  ...restProps
+}: GroupPostsPropsType) {
   const {
     isError,
     isLoading,
@@ -23,28 +27,40 @@ export function GroupPosts({ slug, ...restProps }: GroupPostsPropsType) {
     fetchNextPage,
     hasNextPage,
   } = useGetGroupFeed(slug);
+
   const feed = useMemo(
     () => feedData?.pages.flatMap((page) => page.feed),
     [feedData]
   );
 
   return (
-    <PostsGrid
-      posts={
-        feed?.map((post) => ({
-          imageUrl: post.video.thumbnailM ?? post.video.thumbnail ?? "",
-          postId: post.video.id,
-          isPinned: post.video.isPinned,
-          linkouts: null,
-          stats: { comments: post.video.commentCount, shares: 0, views: 0 },
-        })) ?? []
-      }
-      fetchNextPage={fetchNextPage}
-      hasNextPage={hasNextPage}
-      isLoading={isLoading}
-      isFetchingNextPage={isFetchingNextPage}
-      isError={isError}
-      {...restProps}
-    />
+    <>
+      <PostsGrid
+        posts={
+          feed?.map((post) => ({
+            imageUrl: post.video.thumbnailM ?? post.video.thumbnail ?? "",
+            postId: post.video.id,
+            isPinned: post.video.isPinned,
+            linkouts: null,
+            stats: { comments: post.video.commentCount, shares: 0, views: 0 },
+          })) ?? []
+        }
+        fetchNextPage={fetchNextPage}
+        hasNextPage={hasNextPage}
+        isLoading={isLoading}
+        isFetchingNextPage={isFetchingNextPage}
+        isError={isError}
+        lazyLoad={lazyLoad}
+        {...restProps}
+      />
+      {lazyLoad === "manual" && (
+        <>
+          {isFetchingNextPage && <div>Loading...</div>}
+          {hasNextPage && !isFetchingNextPage && (
+            <div onClick={() => fetchNextPage()}>Load more</div>
+          )}
+        </>
+      )}
+    </>
   );
 }
