@@ -121,6 +121,7 @@ export function CommunityList({
   );
 }
 
+// TODO:  use <GroupCard/> component here.
 function Groups({
   profileId,
   communityId,
@@ -205,14 +206,20 @@ function GroupVideos({
   initialVideos: VideoType[];
   forBrand: boolean;
 }) {
-  const { data, isLoading, isError, fetchNextPage, isFetchingNextPage } =
-    useGetProfileVideos(
-      profileId,
-      communityId,
-      loopId,
-      forBrand,
-      initialVideos
-    );
+  const {
+    data,
+    isLoading,
+    isError,
+    fetchNextPage,
+    isFetchingNextPage,
+    hasNextPage,
+  } = useGetProfileVideos(
+    profileId,
+    communityId,
+    loopId,
+    forBrand,
+    initialVideos
+  );
 
   const videos = useMemo(
     () => data.pages.flatMap((page) => page.videos),
@@ -237,6 +244,15 @@ function GroupVideos({
       isLoading={isLoading}
       isError={isError}
       lazyLoad="manual"
-    />
+    >
+      {hasNextPage && !isFetchingNextPage && (
+        <div
+          className="gencl:flex-center gencl:pt-4 gencl:text-body-2-bold gencl:text-secondary-600 gencl:cursor-pointer"
+          onClick={() => fetchNextPage()}
+        >
+          View more
+        </div>
+      )}
+    </PostsGrid>
   );
 }

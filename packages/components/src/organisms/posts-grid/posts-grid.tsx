@@ -16,6 +16,7 @@ export function PostsGrid({
   fetchNextPage,
   hasNextPage,
   isFetchingNextPage,
+  children,
   ...restProps
 }: PostsGridProps) {
   const Posts = useMemo(() => {
@@ -75,24 +76,21 @@ export function PostsGrid({
   }
 
   return (
-    <div
-      className={cn(
-        "gencl:flex gencl:flex-wrap gencl:w-full gencl:h-full gencl:gap-4",
-        className
-      )}
-      {...restProps}
-    >
-      {lazyLoad === "auto" ? (
-        <InfiniteScroll
-          getNextPage={fetchNextPage}
-          hasNextPage={hasNextPage}
-          isLoadingNextPage={isFetchingNextPage}
-        >
-          {Posts}
-        </InfiniteScroll>
-      ) : (
-        Posts
-      )}
+    <div className={cn("gencl:w-full gencl:h-full ", className)} {...restProps}>
+      <div className="gencl:flex gencl:flex-wrap gencl:gap-4">
+        {lazyLoad === "auto" ? (
+          <InfiniteScroll
+            getNextPage={fetchNextPage}
+            hasNextPage={hasNextPage}
+            isLoadingNextPage={isFetchingNextPage}
+          >
+            {Posts}
+          </InfiniteScroll>
+        ) : (
+          Posts
+        )}
+      </div>
+      {children}
     </div>
   );
 }

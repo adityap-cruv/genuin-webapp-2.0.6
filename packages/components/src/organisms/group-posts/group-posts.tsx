@@ -34,33 +34,36 @@ export function GroupPosts({
   );
 
   return (
-    <>
-      <PostsGrid
-        posts={
-          feed?.map((post) => ({
-            imageUrl: post.video.thumbnailM ?? post.video.thumbnail ?? "",
-            postId: post.video.id,
-            isPinned: post.video.isPinned,
-            linkouts: null,
-            stats: { comments: post.video.commentCount, shares: 0, views: 0 },
-          })) ?? []
-        }
-        fetchNextPage={fetchNextPage}
-        hasNextPage={hasNextPage}
-        isLoading={isLoading}
-        isFetchingNextPage={isFetchingNextPage}
-        isError={isError}
-        lazyLoad={lazyLoad}
-        {...restProps}
-      />
+    <PostsGrid
+      posts={
+        feed?.map((post) => ({
+          imageUrl: post.video.thumbnailM ?? post.video.thumbnail ?? "",
+          postId: post.video.id,
+          isPinned: post.video.isPinned,
+          linkouts: null,
+          stats: { comments: post.video.commentCount, shares: 0, views: 0 },
+        })) ?? []
+      }
+      fetchNextPage={fetchNextPage}
+      hasNextPage={hasNextPage}
+      isLoading={isLoading}
+      isFetchingNextPage={isFetchingNextPage}
+      isError={isError}
+      lazyLoad={lazyLoad}
+      {...restProps}
+    >
       {lazyLoad === "manual" && (
         <>
-          {isFetchingNextPage && <div>Loading...</div>}
           {hasNextPage && !isFetchingNextPage && (
-            <div onClick={() => fetchNextPage()}>Load more</div>
+            <div
+              className="gencl:flex-center gencl:pt-4 gencl:text-body-2-bold gencl:text-secondary-600 gencl:cursor-pointer"
+              onClick={() => fetchNextPage()}
+            >
+              View more
+            </div>
           )}
         </>
       )}
-    </>
+    </PostsGrid>
   );
 }

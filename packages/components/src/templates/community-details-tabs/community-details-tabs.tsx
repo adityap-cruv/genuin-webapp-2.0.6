@@ -44,6 +44,7 @@ export function CommunityDetailsTabs({
   );
 }
 
+// TODO: USE <GroupCard/> component here.
 function CommunityGroups({ slug }: { slug: string }) {
   const {
     data: communityGroups,
