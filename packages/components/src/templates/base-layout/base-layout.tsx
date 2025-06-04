@@ -16,10 +16,7 @@ export function BaseLayout({
   const { height } = useWindowSize();
 
   return (
-    <div
-      className="gencl:h-full gencl:w-full gencl:mx-auto"
-      style={{ maxWidth: 1440 }}
-    >
+    <div className="gencl:h-full gencl:w-full gencl:mx-auto">
       <TopBar className="gencl:border-b gencl:border-secondary-150" />
       <main
         className="gencl:flex gencl:h-full"
@@ -27,7 +24,8 @@ export function BaseLayout({
       >
         <SideBar className="gencl:h-full" />
         <section
-          className={cn("gencl:w-full gencl:h-full", className)}
+          className={cn("gencl:w-full gencl:h-full gencl:mx-auto", className)}
+          style={{ maxWidth: "1300px" }}
           {...restProps}
         >
           {children}
