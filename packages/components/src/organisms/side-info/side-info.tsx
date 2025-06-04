@@ -1,15 +1,16 @@
-import { Button } from "@genuin/ui/button";
 import {
   BagIcon,
   CreatedProfileIcon,
   PencilWithLineIcon,
 } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/utils";
-import { useState, type ComponentProps, type ReactNode } from "react";
+import { type ComponentProps, type ReactNode } from "react";
 
 import { formateDateToLocaleString } from "src/lib/utils";
 import { Stats } from "src/molecules/stats";
 import { Tag } from "src/molecules/tag";
+
+import { Guidelines } from "./guide-lines";
 
 type EntityDataType = {
   userName: string;
@@ -22,12 +23,19 @@ type EntityDataType = {
   userLogoType?: number | null;
 };
 
+export type GuidelineType = {
+  id: number;
+  position: number;
+  title: string;
+  description: string;
+};
+
 type SideInfoDataType = {
   stats: Record<"Views" | "Comments" | "Sparks", number>;
   createdAt: string;
   createdBy: EntityDataType;
   createdIn: EntityDataType;
-  guidelines?: string[];
+  guidelines?: GuidelineType[];
 };
 
 type SideInfoProps = {
@@ -119,38 +127,6 @@ export function SideInfo({
       </div>
       {guidelines && <Guidelines guidelines={guidelines} />}
       {others && others}
-    </div>
-  );
-}
-
-// todo: use accordion in guidelines.
-function Guidelines({ guidelines }: { guidelines?: string[] }) {
-  const [showMore, setShowMore] = useState(
-    guidelines ? (guidelines?.length > 3 ? false : true) : false
-  );
-  console.log("guidelines", guidelines, showMore);
-  if (!guidelines || guidelines.length === 0) return;
-
-  return (
-    <div className="gencl:space-y-4 gencl:border-t gencl:pt-4 gencl:border-secondary-300">
-      <p className="gencl:text-body-1-semi-bold">Guidelines</p>
-      <ol className="gencl:list-decimal gencl:list-inside">
-        {guidelines
-          .slice(0, showMore ? undefined : 3)
-          .map((guideline, index) => (
-            <li
-              key={index}
-              className="gencl:text-body-1-semi-bold gencl:text-secondary-600"
-            >
-              {guideline}
-            </li>
-          ))}
-      </ol>
-      {!showMore && (
-        <Button theme="text" size="sm" onClick={() => setShowMore(!showMore)}>
-          Show More
-        </Button>
-      )}
     </div>
   );
 }

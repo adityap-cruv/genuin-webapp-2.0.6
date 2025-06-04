@@ -111,42 +111,43 @@ export function CommunityDetails({ slug }: { slug: string }) {
           />
           <CommunityDetailsTabs slug={slug} className="gencl:pt-6" />
         </div>
-        <SideInfo
-          className="gencl:h-fit"
-          sideInfoData={{
-            createdAt: communityDetails.created_at ?? new Date().toISOString(),
-            createdBy: {
-              profileImage: {
-                url: communityDetails.leader.profile_image ?? "",
-                isAvatar: communityDetails.leader.is_avatar,
+        <div className="gencl:h-full gencl:pb-6">
+          <SideInfo
+            className="gencl:h-fit gencl:shrink-0 gencl:pb-6 gencl:max-h-full gencl:overflow-auto"
+            sideInfoData={{
+              createdAt:
+                communityDetails.created_at ?? new Date().toISOString(),
+              createdBy: {
+                profileImage: {
+                  url: communityDetails.leader.profile_image ?? "",
+                  isAvatar: communityDetails.leader.is_avatar,
+                },
+                // TODO: add path  name
+                url: `/test`,
+                userName: communityDetails.leader.nickname ?? "",
+                name: communityDetails.leader.name ?? "",
+                userLogoType: communityDetails.brand?.brand_user_logo,
               },
-              // TODO: add path  name
-              url: `/test`,
-              userName: communityDetails.leader.nickname ?? "",
-              name: communityDetails.leader.name ?? "",
-              userLogoType: communityDetails.brand?.brand_user_logo,
-            },
-            createdIn: {
-              profileImage: {
-                url: communityDetails.brand?.logo ?? "",
-                isAvatar: false,
+              createdIn: {
+                profileImage: {
+                  url: communityDetails.brand?.logo ?? "",
+                  isAvatar: false,
+                },
+                url: `/test`,
+                name: communityDetails.brand?.name ?? "",
+                userName: communityDetails.brand?.brand_slug ?? "",
+                userLogoType: communityDetails.brand?.brand_user_logo,
               },
-              url: `/test`,
-              name: communityDetails.brand?.name ?? "",
-              userName: communityDetails.brand?.brand_slug ?? "",
-              userLogoType: communityDetails.brand?.brand_user_logo,
-            },
-            stats: {
-              Views: communityDetails.no_of_views ?? 0,
-              Comments: communityDetails.no_of_comments ?? 0,
-              Sparks: communityDetails.no_of_sparks ?? 0,
-            },
-            guidelines: communityDetails.guidelines.map(
-              (guideline) => guideline.title
-            ),
-          }}
-          others={admins}
-        />
+              stats: {
+                Views: communityDetails.no_of_views ?? 0,
+                Comments: communityDetails.no_of_comments ?? 0,
+                Sparks: communityDetails.no_of_sparks ?? 0,
+              },
+              guidelines: communityDetails.guidelines,
+            }}
+            others={admins}
+          />
+        </div>
       </div>
     </div>
   );

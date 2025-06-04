@@ -26,6 +26,6 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     // slug: "dhruv-2-new",
-    slug: "genuin-coccmmuniffty-232r",
+    slug: "koda-lovers",
   },
 };

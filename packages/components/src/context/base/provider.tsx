@@ -24,7 +24,7 @@ export function BaseContextProvider({
 }: BaseContextProviderProps) {
   //TODO:  Figure out a way to run this only once. Not in useEffect.
   if (brandDetails) {
-    setBrandIdInAxiosInstance(99);
+    setBrandIdInAxiosInstance(brandDetails.brand_id);
   }
 
   const [isInitiating, setIsInitiating] = useState(true);
