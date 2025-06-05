@@ -25,13 +25,19 @@ const chipVariants = cva(
 
 type ChipProps = ComponentProps<"p"> & VariantProps<typeof chipVariants>;
 
-export function Chip({ variant, rounded, className, ...restProps }: ChipProps) {
+export function Chip({
+  variant,
+  children,
+  rounded,
+  className,
+  ...restProps
+}: ChipProps) {
   return (
     <p
       className={cn(chipVariants({ variant, rounded }), className)}
       {...restProps}
     >
-      Owner
+      {children}
     </p>
   );
 }

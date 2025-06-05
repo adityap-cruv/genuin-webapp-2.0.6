@@ -1,6 +1,5 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { type ComponentProps } from "react";
-
 import { cn } from "src/lib/utils";
 
 // Define the playVariant function using cva to handle different styles based on props
@@ -10,15 +9,15 @@ const playVariant = cva("", {
       dark: "gencl:fill-black", // Light variant style
       transparent: "gencl:fill-white", // Transparent variant style
       light: "gencl:fill-white", // Dark variant style
+      "stroke-dark": "gencl:stroke-black", // Stroke variant style
+      "stroke-secondary": "gencl:stroke-secondary-600",
     },
   },
 });
 
 // Define the Props type for the PlayIcon component
 type PlayIconPropsType = ComponentProps<"svg"> &
-  VariantProps<typeof playVariant> & {
-    variant?: "light" | "transparent" | "dark" | null;
-  };
+  VariantProps<typeof playVariant>;
 
 export function PlayIcon({
   variant = "light",

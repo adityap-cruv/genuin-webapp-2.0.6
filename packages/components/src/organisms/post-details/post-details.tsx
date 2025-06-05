@@ -1,6 +1,7 @@
 import { ReadMore } from "@genuin/ui/read-more";
 import { cn } from "@genuin/ui/utils";
 import { type ComponentProps } from "react";
+
 import type { PostDetailsType } from "src/react-query/api/feed/schema";
 
 import { CommunityDetails } from "./community-details";

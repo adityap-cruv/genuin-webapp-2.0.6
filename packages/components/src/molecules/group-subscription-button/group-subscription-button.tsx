@@ -1,14 +1,16 @@
 import { Button, type ButtonPropsType } from "@genuin/ui/button";
 import { NotificationIcon } from "@genuin/ui/icons";
 
-type GroupNotificationButtonProps = {
+type GroupSubscriptionButtonProps = {
   onNotificationStatusChange?: () => void;
+  showText?: boolean;
 } & ButtonPropsType;
 
-export function GroupNotificationButton({
+export function GroupSubscriptionButton({
+  showText = false,
   onNotificationStatusChange,
   ...rest
-}: GroupNotificationButtonProps) {
+}: GroupSubscriptionButtonProps) {
   return (
     <Button
       size="sm"
@@ -19,6 +21,7 @@ export function GroupNotificationButton({
       <NotificationIcon
         className={rest.shape === "pill" ? "gencl:h-3.5" : ""}
       />
+      {showText && "Subscribe"}
     </Button>
   );
 }

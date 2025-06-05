@@ -1,12 +1,12 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 
+import { getDeviceId } from "src/lib/utils/device-id";
 import { getQueryKeyForFeed } from "src/react-query/keys/feed";
 import type { FeedType } from "src/types/post";
 
 import { axiosInstance } from "../../axios-instance";
 
 import { parseFeed } from "./parser";
-import { getDeviceId } from "src/lib/utils/device-id";
 // Mapper for FeedType to corresponding numbers
 const feedTypeToNumber: Record<FeedType, number> = {
   HOME: 1,
@@ -30,6 +30,7 @@ async function fetchFeed(
   const deviceId = getDeviceId()
     ? encodeURI(getDeviceId() as string)
     : undefined;
+
   return await axiosInstance
     .post("/goservices/feed/home", {
       type: feedTypeToNumber[feedType],

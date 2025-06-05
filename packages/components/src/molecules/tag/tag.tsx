@@ -1,7 +1,7 @@
 import { Avatar } from "@genuin/ui/avatar";
-import { TickIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/utils";
 
+import { BrandBadge } from "../brand-badge";
 import { Link } from "../link";
 
 import type { TagProps } from "./tag.types";
@@ -16,7 +16,7 @@ export function Tag({
   alt,
   userName,
   url,
-  isVerified = false,
+  userLogoType,
   className,
   ...restProps
 }: TagProps) {
@@ -39,8 +39,13 @@ export function Tag({
             imageUrl={profileImage.url}
           />
         )}
-        <p className="gencl:text-body-1-semi-bold">{userName}</p>
-        {isVerified && <TickIcon className="gencl:size-3" />}
+        <p className="gencl:text-body-1-semi-bold">
+          {/* No userName will be bigger than 24 characters */}
+          {userName.length > 24 ? `${userName.slice(0, 21)}...` : userName}
+        </p>
+        {userLogoType && (
+          <BrandBadge userLogoType={userLogoType} variant="dark" />
+        )}
       </div>
     </Link>
   );

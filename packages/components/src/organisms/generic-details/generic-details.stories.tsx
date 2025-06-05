@@ -38,9 +38,8 @@ export const Default: Story = {
     },
     metadata: (
       <GenericDetailsMetadata
-        brandDetails={{
+        handle={{
           userName: "john_doe",
-          isVerified: true,
           url: "https://example.com/john_doe",
         }}
         stats={{
@@ -83,9 +82,8 @@ export const List: Story = {
     // },
     metadata: (
       <GenericDetailsMetadata
-        brandDetails={{
+        handle={{
           userName: "john_doe",
-          isVerified: true,
           url: "https://example.com/john_doe",
         }}
         stats={{

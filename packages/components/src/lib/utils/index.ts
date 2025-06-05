@@ -1,3 +1,5 @@
+import type { CommunityUserRole } from "src/types/post";
+
 import { PROTECTED_ROUTES } from "../constants";
 
 /**
@@ -7,4 +9,44 @@ import { PROTECTED_ROUTES } from "../constants";
  */
 export function checkIfUrlIncludesProtectedRoute(url: string) {
   return PROTECTED_ROUTES.some((route) => url.includes(route));
+}
+
+/**
+ * This function formats a date string in ISO format to a more readable format.
+ * @param isoString = string - The ISO date string to format.
+ * @returns
+ */
+export function formateDateToLocaleString(isoString: string): string {
+  const date = new Date(isoString);
+  const options: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  };
+  return date.toLocaleDateString("en-US", options);
+}
+
+/*
+ * This function maps the role of the user in the community.
+ * @param role - Role of the user in the community.
+ * @param isRequested - If the user has requested to join the community.
+ */
+export function mapCommunityUserRole(
+  role?: number | null,
+  isRequested?: boolean | null
+): CommunityUserRole {
+  // If isRequested is true, return 'REQUESTED'.
+  if (isRequested) return "REQUESTED";
+
+  switch (role) {
+    case 1:
+      return "LEADER";
+    case 2:
+      return "MEMBER";
+    case 3:
+      return "MODERATOR";
+    // If role is null or anything other than above cases than return 'UNJOINED'.
+    default:
+      return "UNJOINED";
+  }
 }

@@ -11,6 +11,9 @@ export type MemberDataType = {
   };
   bio: string;
   isOwner: boolean;
+  brand?: {
+    userLogoType?: number | null;
+  };
 };
 
 export type MemberItemProps = {
