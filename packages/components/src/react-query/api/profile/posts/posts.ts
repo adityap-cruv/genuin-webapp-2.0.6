@@ -3,10 +3,13 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { axiosInstance } from "src/react-query/axios-instance";
 import {
   getQueryKeyForProfileCommunities,
+  getQueryKeyForProfileFeed,
   getQueryKeyForProfileLoops,
   getQueryKeyForProfileVideos,
 } from "src/react-query/keys/profile";
 import { API_PATHS } from "src/react-query/paths";
+
+import { parseFeed } from "../../feed/parser";
 
 import type { VideoType, LoopType } from "./schema";
 import {
@@ -311,5 +314,99 @@ export function useGetProfileVideos(
       return lastPage.nextPageParam;
     },
     enabled: false,
+  });
+}
+
+/**
+ *
+ * @param profileId - The ID of the profile to fetch the feed for.
+ * @param forBrand - A boolean indicating whether to fetch the feed for a brand or a user profile.
+ * @param pageParam - An optional parameter to handle pagination, containing the last message ID.
+ * @param fromVideoId - An optional parameter to specify the video ID from which to start fetching.
+ * @returns
+ */
+export async function fetchProfileFeed(
+  profileId: string,
+  forBrand: boolean,
+  pageParam?: { lastMessageId?: string },
+  fromVideoId?: string
+) {
+  try {
+    const url = prepareApiUrl(
+      `goservices${!forBrand ? "/profile" : ""}/feed${forBrand ? "/brand" : ""}`,
+      {
+        forBrand,
+        profileId,
+      }
+    );
+
+    if (pageParam?.lastMessageId) {
+      url.searchParams.append("last_video_id", pageParam.lastMessageId);
+    }
+
+    if (!pageParam?.lastMessageId && fromVideoId) {
+      url.searchParams.append("from_video_id", fromVideoId);
+    }
+
+    const response = await axiosInstance.get(url.toString());
+
+    const data = response.data;
+    const feeds = parseFeed(data.data.feeds);
+
+    return {
+      videos: feeds,
+      end: data.data.end_of_feed as boolean,
+    };
+  } catch (e) {
+    console.error("Error in fetchBrandFeed:", e);
+    throw new Error("Something went wrong!!");
+  }
+}
+
+/**
+ * Returns a QueryKey for fetching profile feed.
+ * @param profileId - The identifier for the profile.
+ * @param forBrand - Determines if the key is for a brand or profile.
+ * @param videoId - The identifier for the video.
+ * @returns The generated query key.
+ */
+export function useGetProfileFeed(
+  profileId: string,
+  forBrand: boolean,
+  videoId?: string
+) {
+  return useInfiniteQuery({
+    queryKey: getQueryKeyForProfileFeed(profileId, forBrand, videoId ?? ""),
+    queryFn: async ({
+      pageParam,
+    }: {
+      pageParam: { lastMessageId?: string };
+    }) => {
+      // pageParam will be of type ProfileFeedPageParam | undefined here
+      // TanStack Query v5 passes the initialPageParam as the first pageParam
+      // or the result of getNextPageParam for subsequent pages.
+      // If initialPageParam is undefined, pageParam will be undefined for the first call.
+      const currentLastMessageId = pageParam?.lastMessageId;
+
+      if (!currentLastMessageId && videoId) {
+        return await fetchProfileFeed(profileId, forBrand, undefined, videoId);
+      }
+
+      return await fetchProfileFeed(
+        profileId,
+        forBrand,
+        pageParam, // pageParam can be { lastMessageId: string } or undefined
+        undefined
+      );
+    },
+    initialPageParam: { lastMessageId: "" }, // Start with an empty object or specific initial lastMessageId if needed
+    getNextPageParam: (lastPage) => {
+      if (lastPage.end) {
+        return undefined; // Return undefined to indicate no more pages
+      }
+      // Get the last video ID from the current page
+      const lastVideo = lastPage.videos[lastPage.videos.length - 1];
+      return lastVideo ? { lastMessageId: lastVideo.video.id } : undefined;
+    },
   });
 }

@@ -24,7 +24,7 @@ export function GroupDetailsTabs({
       className={cn("gencl:w-full gencl:h-full", className)}
       {...restProps}
     >
-      <TabsList className="">
+      <TabsList className="gencl:bg-white">
         <TabsTrigger value="posts">Posts</TabsTrigger>
         <TabsTrigger value="members">Members</TabsTrigger>
       </TabsList>

@@ -17,6 +17,7 @@ export function PostsGrid({
   hasNextPage,
   isFetchingNextPage,
   children,
+  onPostTileClick,
   ...restProps
 }: PostsGridProps) {
   const Posts = useMemo(() => {
@@ -27,10 +28,13 @@ export function PostsGrid({
           className="gencl:shrink-0"
           postData={post}
           imageCompProps={{ useWebp: false }}
+          onClick={() => {
+            onPostTileClick?.(post.postId);
+          }}
         />
       );
     });
-  }, [posts]);
+  }, [onPostTileClick, posts]);
   //TODO: handle loading screen.
   if (isLoading) {
     return (

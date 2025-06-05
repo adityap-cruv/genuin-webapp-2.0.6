@@ -1,8 +1,9 @@
 import { Mousewheel, Keyboard } from "swiper/modules";
 import { Swiper } from "swiper/react";
-import { useFeedContext } from "src/templates/feed/context";
+
 import { useBaseContext } from "src/context/base";
 import { useDeviceDetection } from "src/hooks/use-device-detection";
+import { useFeedContext } from "src/templates/feed/context";
 
 const CONFIG = {
   SCROLL_DELAY: 500,
