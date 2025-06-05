@@ -67,7 +67,7 @@ export const CharacterBased: Story = {
   args: {
     text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
     maxChars: 100,
-    maxWidth: "400px",
+    maxWidth: "700px",
   },
 };
 
@@ -136,6 +136,7 @@ export const DynamicExpandedWithAnimation: Story = {
     showExpandText: false,
     position: "outside",
     maxWidth: "400px",
+    shouldAnimate: true,
   },
   render: (args) => {
     const [isExpanded, setIsExpanded] = React.useState(true);
