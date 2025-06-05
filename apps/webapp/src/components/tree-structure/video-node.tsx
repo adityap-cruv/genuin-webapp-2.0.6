@@ -56,7 +56,7 @@ export function VideosNode({
 
 type VideoItem = ComponentProps<'div'> & { videoDetails: VideoType }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
+ 
 export const VideoItem = memo(function VideoItem({
   videoDetails: { sparkCount, thumbnail },
   className,

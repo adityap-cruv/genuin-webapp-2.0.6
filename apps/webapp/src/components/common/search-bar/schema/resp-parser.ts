@@ -64,7 +64,7 @@ export function parseVideos(videos: VideosResType) {
       id: item.message_id,
       slug: item.slug,
       owner: { isAvatar: item.owner.is_avatar, profileImage: item.owner.profile_image, userName: item.owner.username },
-      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+       
       thumbnail: (item.thumbnail_url_l ? item.thumbnail_url_l : item.thumbnail_url) || '',
       // TODO: What should be description
       description: '',

@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+ 
 /**
  * Smart app redirect without refresh loops
  * @param {Object} config Configuration object

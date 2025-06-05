@@ -74,7 +74,7 @@ export function Reaction({
         void handleWalletBalance({ action: 'spark', videoId: contentId, type: 'POST' })
       }
     } catch (e) {
-      // eslint-disable-next-line no-console
+       
       console.error(e)
     } finally {
       setIsLoading(false)

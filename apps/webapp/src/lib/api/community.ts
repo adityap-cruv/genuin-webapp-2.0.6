@@ -25,7 +25,7 @@ export async function fetchCommunityDetails(slug: string) {
        * Figure out why this error happening and solve the issue.
        * @example Community handle: @kvkic
        */
-      // eslint-disable-next-line no-console
+       
       if (e.response.data.code === NOT_FOUND_ERROR_CODES.community) {
         throw new Error(e.response.data.code)
       }
@@ -125,7 +125,7 @@ async function fetchFeaturedCommunity() {
       return parseFeaturedCommunityList(res.data.data.communities)
     })
     .catch((e) => {
-      // eslint-disable-next-line no-console
+       
       console.log('error in featured api::', e)
       throw new Error('Something went wrong with fetching featured community!')
     })
@@ -146,7 +146,7 @@ async function fetchFeaturedLoop() {
       return validateCommunityLoopList(res.data.data.loops)
     })
     .catch((e) => {
-      // eslint-disable-next-line no-console
+       
       console.log('error in featured api::', e)
       throw new Error('Something went wrong with fetching featured community!')
     })

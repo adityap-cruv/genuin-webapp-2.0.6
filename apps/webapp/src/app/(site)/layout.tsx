@@ -18,10 +18,10 @@ import { IHeartDemoProvider } from '@/components/providers/iheart-demo-provider'
 import { IHEART_BRAND_URL } from '@/lib/constants'
 
 export default async function RootLayout(props: any) {
-  const deviceType = (await cookies()).get('device_type')?.value ?? ''
-  const os = (await cookies()).get('os')?.value ?? ''
-  const browserType = (await cookies()).get('browser_type')?.value ?? ''
-  const configParamsStr = (await cookies()).get('config_params')?.value ?? ''
+  const deviceType = (await cookies()).get('device_type')?.value || ''
+  const os = (await cookies()).get('os')?.value || ''
+  const browserType = (await cookies()).get('browser_type')?.value || ''
+  const configParamsStr = (await cookies()).get('config_params')?.value || ''
   let configParams = null
   if (configParamsStr) configParams = JSON.parse(configParamsStr)
   let userSession: Session | null = null
@@ -47,12 +47,12 @@ export default async function RootLayout(props: any) {
 
   const brandColors = parseColors(config?.brand_colors)
   const favicon = config?.favicon
-  const isIheartDemo = IHEART_BRAND_URL.includes(Number(config?.brand_id) ?? '')
+  const isIheartDemo = IHEART_BRAND_URL.includes(Number(config?.brand_id) || '')
 
   return (
     <RootHTML brandColors={brandColors} favicon={favicon} subdomain={config?.subdomain} isIheartDemo={isIheartDemo}>
-      <RedirectHandler config={config} shouldRedirect={Object.hasOwn(configParams ?? {}, 'subdomain')}>
-        <IHeartDemoProvider shouldShowDemo={isIheartDemo} brandId={config?.brand_id ?? ''}>
+      <RedirectHandler config={config} shouldRedirect={Object.hasOwn(configParams || {}, 'subdomain')}>
+        <IHeartDemoProvider shouldShowDemo={isIheartDemo} brandId={config?.brand_id || ''}>
           <ThirdPartyScriptProvider>
             <SessionProvider refetchOnWindowFocus={false} refetchInterval={3600}>
               <ReactQueryProvider>
@@ -61,7 +61,7 @@ export default async function RootLayout(props: any) {
                   deviceType={deviceType}
                   os={os}
                   config={config}
-                  user={userSession?.user ?? null}>
+                  user={userSession?.user || null}>
                   <UrlParamProvider>{props.children}</UrlParamProvider>
                 </GenuinOptionsProvider>
               </ReactQueryProvider>

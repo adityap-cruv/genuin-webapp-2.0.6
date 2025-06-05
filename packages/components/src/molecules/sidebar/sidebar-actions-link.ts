@@ -3,7 +3,6 @@ import {
   PopularIcon,
   ExploreIcon,
   LatestIcon,
-  ThreeDotsIcon,
 } from "@genuin/ui/icons";
 
 export const SideBarActionLinks = [
@@ -26,10 +25,5 @@ export const SideBarActionLinks = [
     icon: ExploreIcon,
     text: "Explore",
     href: "",
-  },
-  {
-    icon: ThreeDotsIcon,
-    text: "More",
-    href: "",
-  },
+  }
 ];

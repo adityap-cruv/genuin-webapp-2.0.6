@@ -168,7 +168,7 @@ export async function uploadProfileImage(file: File) {
     })
     return uploadResponse.status === 200
   } catch (e) {
-    // eslint-disable-next-line no-console
+     
     console.log('::ERROR IN UPLOAD API::', e)
     return false
   }
@@ -182,7 +182,7 @@ export async function validateUsername(nickname: string) {
       else if (res.data.code === '5073') return false
     })
     .catch((e) => {
-      // eslint-disable-next-line no-console
+       
       console.log('::ERROR in validata username::', e)
       return false
     })
@@ -211,7 +211,7 @@ export async function updateUser(user: Partial<UserType>): Promise<{ status: boo
       return { status: res.status === 200, user: res.data.data }
     })
     .catch((e) => {
-      // eslint-disable-next-line no-console
+       
       console.log('::ERROR in updata user profile::', e)
       throw new Error('Something went wrong')
     })
@@ -246,7 +246,7 @@ export async function getBrandGuidelines({
       return { code: res.data.code, data: res.data.data }
     })
     .catch((e) => {
-      // eslint-disable-next-line no-console
+       
       console.log('::error in guidelines api::', e.response.data.code)
       return { code: Number(e.response.data.code), data: e.response.data.data }
     })
@@ -261,7 +261,7 @@ export async function ksCbRequest(): Promise<{ code: number; data: any }> {
       return { code: res.data.code, data: res.data.data }
     })
     .catch((e) => {
-      // eslint-disable-next-line no-console
+       
       console.log('::error in ks_cb_request api::', e.response.data.code)
       return { code: Number(e.response.data.code), data: e.response.data.data }
     })
@@ -308,7 +308,7 @@ export async function miniProfile(verifiedKsToken: boolean): Promise<{ code: num
       return { code: res.data.code, data: res.data.data }
     })
     .catch((e) => {
-      // eslint-disable-next-line no-console
+       
       console.log('::error in mini_profile api::', e.response.data.code)
       return { code: Number(e.response.data.code), data: e.response.data.data }
     })

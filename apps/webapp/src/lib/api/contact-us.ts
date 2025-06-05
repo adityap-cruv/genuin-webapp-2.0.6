@@ -16,7 +16,7 @@ export async function userContactDetails(payload: {
       return { status: res.status === 200, user: res.data.data }
     })
     .catch((e) => {
-      // eslint-disable-next-line no-console
+       
       console.log('::ERROR in contact_us api::', e)
       throw new Error('Something went wrong')
     })

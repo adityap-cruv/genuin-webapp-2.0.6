@@ -80,7 +80,7 @@ function MentionInput({ videoId, loopId, videoSlug, className, communityId }: Me
     } catch (error) {
       // Log error silently in production, only log in development
       if (process.env.NODE_ENV !== 'production') {
-        // eslint-disable-next-line no-console
+         
         console.error('Failed to post comment', error)
       }
     } finally {
@@ -183,7 +183,7 @@ function MentionInput({ videoId, loopId, videoSlug, className, communityId }: Me
       } catch (error) {
         // Log error silently in production, only log in development
         if (process.env.NODE_ENV !== 'production') {
-          // eslint-disable-next-line no-console
+           
           console.error('Error fetching mentions', error)
         }
       }

@@ -169,7 +169,7 @@ export const InnerPlayer = memo(function InnerPlayer({
       setPlayingState(undefined)
       if (playAfterInit) {
         await contextPlay(player).catch(async (error) => {
-          // eslint-disable-next-line no-console
+           
           console.log('error in player', error)
         })
       }
@@ -191,7 +191,7 @@ export const InnerPlayer = memo(function InnerPlayer({
       forceNative: true,
       showLoaderOnInit: true,
       onError: (e) => {
-        // eslint-disable-next-line no-console
+         
         console.error(e, 'error')
       },
       hls: hlsConfigs,

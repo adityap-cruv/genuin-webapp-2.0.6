@@ -120,7 +120,7 @@ const nextConfig = {
     ],
 
     // Enable Partial Prerendering for production
-    ppr: process.env.NODE_ENV === 'production',
+    // ppr: process.env.NODE_ENV === 'production',
 
     // React Compiler for production builds
     reactCompiler: process.env.NODE_ENV === 'production',

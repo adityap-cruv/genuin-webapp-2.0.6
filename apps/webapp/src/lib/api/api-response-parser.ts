@@ -1,6 +1,6 @@
 // TODO: scrap this file and move the parsing logic to the respective api files.
 
-/* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
+ 
 import { type FeedResponseFromGoApi } from '@lib/schemas/feed/response'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { mapCommunityUserRole, tryJsonParse } from '@lib/utils'

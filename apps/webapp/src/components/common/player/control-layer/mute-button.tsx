@@ -111,7 +111,7 @@ export const AnimatedMuteButton = ({ videoId, shouldAnimate = true }: AnimatedMu
       )}
 
       {/* Custom thumb and track progress styling */}
-      {/* eslint-disable-next-line react/no-unknown-property */}
+      { }
       <style jsx>{`
         input[type='range'] {
           -webkit-appearance: none;
