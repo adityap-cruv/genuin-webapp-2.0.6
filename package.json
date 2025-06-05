@@ -41,8 +41,10 @@
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-tabs": "^1.1.12",
     "class-variance-authority": "^0.7.1",
+    "classnames": "^2.5.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.511.0",
+    "mitt": "^3.0.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "tailwindcss": "^4.1.8"
@@ -61,6 +63,7 @@
     "@typescript-eslint/eslint-plugin": "^8.33.1",
     "@typescript-eslint/parser": "^8.33.1",
     "chalk": "^5.4.1",
+    "concurrently": "^8.2.2",
     "depcheck": "^1.4.7",
     "eslint": "^9.28.0",
     "eslint-config-prettier": "^10.1.5",

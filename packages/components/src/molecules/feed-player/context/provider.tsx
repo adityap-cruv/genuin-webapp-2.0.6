@@ -8,7 +8,8 @@ import {
   VideoTimeStateType,
 } from "./types";
 import { PlayerContext, PlayerContextType } from "./context";
-import { EventEmitter } from "events";
+import mitt from "mitt";
+import type { MittEmitter } from "./mitt";
 import { useBaseContext } from "src/context/base";
 
 type VideoProviderProps = {
@@ -64,7 +65,8 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     getInitialShouldPlayState(getVideoPlayerConfigs(brandDetails?.web_configs))
   );
   // event emitter for time updates
-  const timeUpdateEventEmitterRef = useRef(new EventEmitter());
+  // Use mitt with unknown for browser compatibility and type safety
+  const timeUpdateEventEmitterRef = useRef(mitt());
 
   const { muted, setMuted } = useBaseContext();
 
@@ -108,15 +110,25 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     };
     const timeUpdateEmitter = timeUpdateEventEmitterRef.current;
     if (!timeUpdateEmitter) return;
-
     timeUpdateEmitter.emit("timeUpdate", videoStateRef.current);
   }, []);
 
   const onVideoTimeStateChange = useCallback(
     (callback: (state: VideoTimeStateType) => void) => {
-      timeUpdateEventEmitterRef.current?.on("timeUpdate", callback);
+      // Wrap callback to enforce type safety
+      const handler = (event: unknown) => {
+        if (
+          typeof event === "object" &&
+          event !== null &&
+          "currentTime" in event &&
+          "duration" in event
+        ) {
+          callback(event as VideoTimeStateType);
+        }
+      };
+      timeUpdateEventEmitterRef.current?.on("timeUpdate", handler);
       return () => {
-        timeUpdateEventEmitterRef.current?.off("timeUpdate", callback);
+        timeUpdateEventEmitterRef.current?.off("timeUpdate", handler);
       };
     },
     []
