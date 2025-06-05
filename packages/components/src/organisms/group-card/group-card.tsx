@@ -9,8 +9,6 @@ import { ShareButton } from "src/molecules/share-button";
 import { GenericDetails } from "../generic-details";
 import { GenericDetailsMetadata } from "../generic-details/generic-details-metadata";
 
-import { Posts } from "./group-posts";
-
 type OwnerInfoType = {
   userName: string;
   url: string;
@@ -82,7 +80,6 @@ export function GroupCard({
           </div>
         }
       />
-      <Posts />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { useBoolean } from "usehooks-ts";
 
 type FeedContextType = {
@@ -44,13 +44,20 @@ const useFeedContext = () => {
 
 type FeedContextProviderProps = {
   children: React.ReactNode;
-  // TODO: manage this prop in feed provider to whether to enable expand view or not.
-  enableExpandView?: boolean;
+  /**
+   * Whether to show the expand view by default.
+   */
+  defaultExpandView?: boolean;
+  /**
+   * Callback function to handle when the expand view is closed.
+   */
+  onCloseExpandView?: () => void;
 };
 
 export function FeedContextProvider({
   children,
-  enableExpandView = true,
+  defaultExpandView = false,
+  onCloseExpandView,
 }: FeedContextProviderProps) {
   // State is used to track the active index of the feed.
   const [activeIndex, setActiveIndex] = useState(0);
@@ -61,7 +68,13 @@ export function FeedContextProvider({
     setFalse: closeExpandView,
     setTrue: openExpandView,
     toggle: toggleExpandView,
-  } = useBoolean(false);
+  } = useBoolean(defaultExpandView);
+
+  useEffect(() => {
+    if (!showExpandView) {
+      onCloseExpandView?.();
+    }
+  }, [onCloseExpandView, showExpandView]);
 
   return (
     <FeedContext.Provider

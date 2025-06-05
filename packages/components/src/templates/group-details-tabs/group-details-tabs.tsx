@@ -2,9 +2,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@genuin/ui/tabs";
 import { cn } from "@genuin/ui/utils";
 import { useMemo } from "react";
 
+import { GroupPosts } from "src/organisms/group-posts";
 import { MemberList } from "src/organisms/member-list";
-import { PostsGrid } from "src/organisms/posts-grid";
-import { useGetGroupFeed } from "src/react-query/api/group/feed";
 import { useGetGroupMembers } from "src/react-query/api/group/members";
 
 type GroupDetailsTabsProps = Omit<
@@ -25,51 +24,17 @@ export function GroupDetailsTabs({
       className={cn("gencl:w-full gencl:h-full", className)}
       {...restProps}
     >
-      <TabsList className="">
+      <TabsList className="gencl:bg-white">
         <TabsTrigger value="posts">Posts</TabsTrigger>
         <TabsTrigger value="members">Members</TabsTrigger>
       </TabsList>
       <TabsContent value="posts">
-        <GroupPosts slug={slug} />
+        <GroupPosts slug={slug} lazyLoad="auto" />
       </TabsContent>
       <TabsContent value="members">
         <GroupMembers slug={slug} />
       </TabsContent>
     </Tabs>
-  );
-}
-
-function GroupPosts({ slug }: { slug: string }) {
-  const {
-    isError,
-    isLoading,
-    isFetchingNextPage,
-    data: feedData,
-    fetchNextPage,
-    hasNextPage,
-  } = useGetGroupFeed(slug);
-  const feed = useMemo(
-    () => feedData?.pages.flatMap((page) => page.feed),
-    [feedData]
-  );
-
-  return (
-    <PostsGrid
-      posts={
-        feed?.map((post) => ({
-          imageUrl: post.video.thumbnailM ?? post.video.thumbnail ?? "",
-          postId: post.video.id,
-          isPinned: post.video.isPinned,
-          linkouts: null,
-          stats: { comments: post.video.commentCount, shares: 0, views: 0 },
-        })) ?? []
-      }
-      fetchNextPage={fetchNextPage}
-      hasNextPage={hasNextPage}
-      isLoading={isLoading}
-      isFetchingNextPage={isFetchingNextPage}
-      isError={isError}
-    />
   );
 }
 
@@ -104,7 +69,9 @@ function GroupMembers({ slug }: { slug: string }) {
         userName: member.nickname ?? member.phone ?? member.member_id,
         isOwner: false,
         memberId: member.member_id,
-        brand: member.brand,
+        brand: {
+          userLogoType: member.brand?.brand_user_logo ?? null,
+        },
         //TODO: handle url paths.
         url: `/${member.nickname}`,
       }))}

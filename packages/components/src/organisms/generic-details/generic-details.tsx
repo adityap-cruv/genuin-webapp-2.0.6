@@ -41,6 +41,10 @@ type GenericDetailsProps = {
    */
   title: string;
   /**
+   * Pass it if you want to render user.
+   */
+  userLogoType?: number | null;
+  /**
    * Pass the url if you want to make the title clickable.
    */
   url?: string;
@@ -81,54 +85,64 @@ export function GenericDetails({
   links,
   ctas,
   className,
+  children,
   ...restProps
 }: GenericDetailsProps) {
   return (
     <div
       className={cn(
-        "gencl:flex gencl:gap-6 gencl:w-full gencl:items-center",
-        variant === "list" && "gencl:gap-4",
+        "",
+        variant === "list" &&
+          "gencl:gap-4 gencl:border-secondary-200 gencl:border gencl:rounded-xl",
         className
       )}
       {...restProps}
     >
-      {profileImageDetails && (
-        <Avatar
-          alt={profileImageDetails.alt}
-          imageUrl={profileImageDetails.imageUrl}
-          isAvatar={profileImageDetails.isAvatar}
-          size={variant === "list" ? "2xl" : "3xl"}
-        />
-      )}
-      <div className="gencl:flex gencl:w-full gencl:gap-4 gencl:justify-between">
-        <div className="gencl:flex gencl:flex-col gencl:gap-2">
-          {title && (
-            <Link href={url}>
-              <p
-                className={cn(
-                  "gencl:line-clamp-2",
-                  variant === "default"
-                    ? "gencl:text-headline-2-semi-bold"
-                    : "gencl:text-headline-3-semi-bold"
-                )}
-              >
-                {title}
-              </p>
-            </Link>
-          )}
-          {metadata && metadata}
-          {description && (
-            <ReadMore
-              className="gencl:text-secondary-600! gencl:text-body-1-medium"
-              text={description}
-              maxLines={2}
-            />
-          )}
-          {links && <SocialLinks links={links} />}
-          {ctas && variant === "default" && ctas}
+      <div
+        className={cn(
+          "gencl:flex gencl:gap-6 gencl:w-full gencl:items-center",
+          variant === "list" && "gencl:p-4"
+        )}
+      >
+        {profileImageDetails && (
+          <Avatar
+            alt={profileImageDetails.alt}
+            imageUrl={profileImageDetails.imageUrl}
+            isAvatar={profileImageDetails.isAvatar}
+            size={variant === "list" ? "2xl" : "3xl"}
+          />
+        )}
+        <div className="gencl:flex gencl:w-full gencl:gap-4 gencl:justify-between">
+          <div className="gencl:flex gencl:flex-col gencl:gap-2">
+            {title && (
+              <Link href={url}>
+                <p
+                  className={cn(
+                    "gencl:line-clamp-2",
+                    variant === "default"
+                      ? "gencl:text-headline-2-semi-bold"
+                      : "gencl:text-headline-3-semi-bold"
+                  )}
+                >
+                  {title}
+                </p>
+              </Link>
+            )}
+            {metadata && metadata}
+            {description && (
+              <ReadMore
+                className="gencl:text-secondary-600! gencl:text-body-1-medium"
+                text={description}
+                maxLines={2}
+              />
+            )}
+            {links && <SocialLinks links={links} />}
+            {ctas && variant === "default" && ctas}
+          </div>
+          {ctas && variant === "list" && ctas}
         </div>
-        {ctas && variant === "list" && ctas}
       </div>
+      {children}
     </div>
   );
 }

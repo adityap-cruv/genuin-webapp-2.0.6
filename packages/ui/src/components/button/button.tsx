@@ -12,6 +12,7 @@ const buttonVariants = cva(
       variant: {
         default: "",
         icon: "gencl:px-1!",
+        rounded: "gencl:rounded-full",
       },
       theme: {
         primary:
@@ -20,6 +21,8 @@ const buttonVariants = cva(
           "gencl:bg-secondary-50 gencl:text-black! gencl:hover:bg-secondary-100",
         outline: "gencl:border gencl:border-secondary-200 gencl:bg-white",
         text: "",
+        navigation:
+          "gencl:p-0 gencl:size-12! gencl:rounded-full! gencl:flex-center gencl:bg-secondary-800 gencl:text-white gencl:backdrop-blur-sm gencl:hover:bg-secondary-600 gencl:border-0 gencl:transition-all gencl:duration-200 [&_svg]:gencl:size-5",
       },
       size: {
         sm: "gencl:h-9 gencl:rounded-md gencl:gap-1.5 gencl:text-body-1-semi-bold gencl:has-[>svg]:px-2.5",

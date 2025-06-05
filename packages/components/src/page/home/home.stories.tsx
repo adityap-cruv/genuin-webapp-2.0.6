@@ -1,10 +1,20 @@
-import { Meta, StoryFn } from "@storybook/react-vite";
+import type { Meta, StoryFn } from "@storybook/react-vite";
+
+import { BaseLayout } from "src/templates/base-layout";
+
 import { Home } from "./home";
 
 export default {
   title: "Page/Home",
   component: Home,
-} as Meta;
+  decorators: [
+    (Story) => (
+      <BaseLayout>
+        <Story />
+      </BaseLayout>
+    ),
+  ],
+} as Meta<typeof Home>;
 
 const Template: StoryFn = (args) => <Home {...args} />;
 

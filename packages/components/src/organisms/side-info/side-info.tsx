@@ -1,16 +1,16 @@
-import { Button } from "@genuin/ui/button";
 import {
   BagIcon,
   CreatedProfileIcon,
   PencilWithLineIcon,
 } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/utils";
-import { useState, type ComponentProps, type ReactNode } from "react";
+import { type ComponentProps, type ReactNode } from "react";
 
+import { formateDateToLocaleString } from "src/lib/utils";
 import { Stats } from "src/molecules/stats";
 import { Tag } from "src/molecules/tag";
 
-// import { MemberList } from "../member-list";
+import { Guidelines } from "./guide-lines";
 
 type EntityDataType = {
   userName: string;
@@ -20,6 +20,14 @@ type EntityDataType = {
   };
   name?: string; // Optional name property
   url: string;
+  userLogoType?: number | null;
+};
+
+export type GuidelineType = {
+  id: number;
+  position: number;
+  title: string;
+  description: string;
 };
 
 type SideInfoDataType = {
@@ -27,10 +35,16 @@ type SideInfoDataType = {
   createdAt: string;
   createdBy: EntityDataType;
   createdIn: EntityDataType;
-  guidelines?: string[];
+  guidelines?: GuidelineType[];
 };
 
-type SideInfoProps = { sideInfoData: SideInfoDataType } & ComponentProps<"div">;
+type SideInfoProps = {
+  sideInfoData: SideInfoDataType;
+  /**
+   * Additional comonent that can be passed to the side info component.
+   */
+  others?: ReactNode;
+} & ComponentProps<"div">;
 
 type EntityInfoProps = {
   icon: ReactNode;
@@ -45,7 +59,7 @@ function EntityInfo({ title, icon, entity }: EntityInfoProps) {
   return (
     <div className="gencl:flex gencl:gap-2 gencl:items-center">
       {icon}
-      <p className="gencl:text-body-1-medium gencl:text-secondary-600">
+      <p className="gencl:text-body-1-medium gencl:text-secondary-600 gencl:whitespace-nowrap">
         {title}
       </p>
       <Tag
@@ -53,6 +67,7 @@ function EntityInfo({ title, icon, entity }: EntityInfoProps) {
         profileImage={entity.profileImage}
         url={entity.url}
         userName={"@" + entity.userName}
+        userLogoType={entity.userLogoType}
       />
     </div>
   );
@@ -60,13 +75,14 @@ function EntityInfo({ title, icon, entity }: EntityInfoProps) {
 
 export function SideInfo({
   sideInfoData: { createdAt, createdBy, createdIn, stats, guidelines },
+  others,
   className,
   ...restProps
 }: SideInfoProps) {
   return (
     <div
       className={cn(
-        "gencl:bg-secondary-50 gencl:p-4 gencl:rounded-lg gencl:gap-2 gencl:space-y-4",
+        "gencl:bg-secondary-50 gencl:overflow-auto gencl:max-w-xs gencl:w-full gencl:p-4 gencl:rounded-lg gencl:gap-2 gencl:space-y-4",
         className
       )}
       {...restProps}
@@ -86,7 +102,7 @@ export function SideInfo({
           <div className="gencl:flex gencl:gap-2 gencl:items-center">
             <PencilWithLineIcon className="gencl:size-5 gencl:stroke-secondary-600" />
             <p className="gencl:text-body-1-medium gencl:text-secondary-600">
-              Created on {createdAt}
+              Created on {formateDateToLocaleString(createdAt)}
             </p>
           </div>
         )}
@@ -109,38 +125,8 @@ export function SideInfo({
           />
         )}
       </div>
-      <Guidelines guidelines={guidelines} />
-      {/* Uncomment the following line to include the Admins component */}
-      {/* <Admins /> */}
-    </div>
-  );
-}
-
-function Guidelines({ guidelines }: { guidelines?: string[] }) {
-  const [showMore, setShowMore] = useState(
-    guidelines ? (guidelines?.length > 3 ? false : true) : false
-  );
-
-  if (!guidelines || guidelines.length === 0) return;
-
-  return (
-    <div className="gencl:space-y-4 gencl:border-t gencl:pt-4 gencl:border-secondary-300">
-      <p className="gencl:text-body-1-semi-bold">Guidelines</p>
-      <ol className="gencl:list-decimal gencl:list-inside">
-        {guidelines
-          .slice(0, showMore ? undefined : 3)
-          .map((guideline, index) => (
-            <li
-              key={index}
-              className="gencl:text-body-1-semi-bold gencl:text-secondary-600"
-            >
-              {guideline}
-            </li>
-          ))}
-      </ol>
-      <Button theme="text" size="sm" onClick={() => setShowMore(!showMore)}>
-        Show More
-      </Button>
+      {guidelines && <Guidelines guidelines={guidelines} />}
+      {others && others}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { Avatar } from "@genuin/ui/avatar";
-import { Button } from "@genuin/ui/button";
 
+import { ProfileLink } from "src/molecules/profile-link";
 import type { PostDetailsType } from "src/react-query/api/feed/schema";
 
 // TODO: Figure out how to use links.
@@ -13,13 +13,13 @@ export function OwnerInfo({ owner }: { owner: PostDetailsType["owner"] }) {
         isAvatar={owner.isAvatar}
         size="md"
       />
-      <Button
-        theme="text"
-        className="gencl:text-body-1-medium gencl:px-0"
-        asChild
+      <ProfileLink
+        url={`/profile/${owner.userName}`}
+        userLogoType={owner.brand?.userLogo}
+        className="gencl:text-body-1-medium"
       >
-        <a>{owner.userName}</a>
-      </Button>
+        @{owner.userName}
+      </ProfileLink>
     </div>
   );
 }

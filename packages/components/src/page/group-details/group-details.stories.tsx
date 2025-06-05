@@ -1,10 +1,19 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
+import { BaseLayout } from "src/templates/base-layout";
+
 import { GroupDetailsPage } from "./group-details";
 
 const meta: Meta<typeof GroupDetailsPage> = {
   title: "Page/GroupDetailsPage",
   component: GroupDetailsPage,
+  decorators: [
+    (Story) => (
+      <BaseLayout>
+        <Story />
+      </BaseLayout>
+    ),
+  ],
   parameters: {
     layout: "fullscreen",
   },
