@@ -141,7 +141,7 @@ export function ReadMore({
   maxLines = 1,
   maxWidth = "100%",
   showExpandText = true,
-  shouldAnimate = false,
+  shouldAnimate = false,  
   position = "outside",
   className,
   textClassName,
@@ -223,7 +223,17 @@ export function ReadMore({
     };
   }, [text, maxLines, maxChars]);
 
-  // Handle animation
+  // Calculate collapsed height based on line height and maxLines
+  const getCollapsedHeight = () => {
+    return `${maxLines * 24}px`;
+  };
+
+  // Calculate expanded height based on content
+  const getExpandedHeight = () => {
+    return `${parseInt(expandedHeight)*0.2}px`;
+  };
+
+  // Modified animation logic
   useEffect(() => {
     if (!shouldAnimate || !textRef.current) return;
 
@@ -280,10 +290,10 @@ export function ReadMore({
           className
         )}
         style={{
-          maxHeight: shouldAnimate
+          height: shouldAnimate
             ? isExpanded
-              ? parseInt(expandedHeight) * 0.3
-              : `${maxLines * 24}px`
+              ? getExpandedHeight()
+              : getCollapsedHeight()
             : undefined,
         }}
         onClick={(e) => {
