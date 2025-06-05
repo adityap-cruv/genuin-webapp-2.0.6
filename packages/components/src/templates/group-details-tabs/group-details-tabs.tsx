@@ -24,12 +24,12 @@ export function GroupDetailsTabs({
       className={cn("gencl:w-full gencl:h-full", className)}
       {...restProps}
     >
-      <TabsList className="">
+      <TabsList className="gencl:bg-white">
         <TabsTrigger value="posts">Posts</TabsTrigger>
         <TabsTrigger value="members">Members</TabsTrigger>
       </TabsList>
       <TabsContent value="posts">
-        <GroupPosts slug={slug} />
+        <GroupPosts slug={slug} lazyLoad="auto" />
       </TabsContent>
       <TabsContent value="members">
         <GroupMembers slug={slug} />
@@ -69,7 +69,9 @@ function GroupMembers({ slug }: { slug: string }) {
         userName: member.nickname ?? member.phone ?? member.member_id,
         isOwner: false,
         memberId: member.member_id,
-        brand: member.brand,
+        brand: {
+          userLogoType: member.brand?.brand_user_logo ?? null,
+        },
         //TODO: handle url paths.
         url: `/${member.nickname}`,
       }))}

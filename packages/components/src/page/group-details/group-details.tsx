@@ -45,10 +45,7 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
             </div>
           }
         />
-        <GroupDetailsTabs
-          className="gencl:flex-grow gencl:min-h-0 gencl:overflow-y-auto gencl:pb-6"
-          slug={slug}
-        />
+        <GroupDetailsTabs className="gencl:pb-6" slug={slug} />
       </div>
       <SideInfo
         className="gencl:h-fit"
@@ -66,6 +63,7 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
             name: groupDetails.owner.name ?? "",
             userName: groupDetails.owner.userName,
             url: `/@${groupDetails.owner.userName}`,
+            userLogoType: groupDetails.owner.brand?.brandUserLogo,
           },
           stats: {
             Views: groupDetails.noOfViews,

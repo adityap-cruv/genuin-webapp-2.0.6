@@ -41,6 +41,10 @@ type GenericDetailsProps = {
    */
   title: string;
   /**
+   * Pass it if you want to render user.
+   */
+  userLogoType?: number | null;
+  /**
    * Pass the url if you want to make the title clickable.
    */
   url?: string;

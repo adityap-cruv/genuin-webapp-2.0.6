@@ -25,5 +25,5 @@ export type TagProps = {
    * Whether the user is verified.
    * @default false
    */
-  isVerified?: boolean;
+  userLogoType?: number | null;
 } & ComponentProps<"div">;

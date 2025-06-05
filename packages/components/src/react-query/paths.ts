@@ -23,4 +23,20 @@ export const API_PATHS = {
    * Api path to fetch community members.
    */
   COMMUNITY_MEMBERS: "/api/v3/community/members",
+  /**
+   * Api path to fetch user/brand details.
+   */
+  USER_DETAILS: "/goservices/profile/info",
+  /**
+   * Api path to fetch user/brand communities.
+   */
+  USER_COMMUNITIES: "goservices/profile/brand/communities",
+  /**
+   * Api path to fetch user/brand groups.
+   */
+  USER_GROUPS: "goservices/profile/brand/loops",
+  /**
+   * Api path to fetch user/brand videos.
+   */
+  USER_VIDEOS: "goservices/profile/brand/videos",
 } as const;

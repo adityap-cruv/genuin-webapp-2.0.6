@@ -4,10 +4,12 @@ import { cn } from "@genuin/ui/utils";
 
 import { Link } from "src/molecules/link";
 
+import { ProfileLink } from "../profile-link";
+
 import type { MemberItemProps } from "./member-item.types";
 
 export function MemberItem({
-  memberData: { isOwner, name, url, profileImage, bio, userName },
+  memberData: { isOwner, name, url, profileImage, bio, userName, brand },
   className,
   ...restProps
 }: MemberItemProps) {
@@ -30,9 +32,12 @@ export function MemberItem({
         )}
         <div>
           <div className="gencl:flex gencl:items-center gencl:gap-1">
-            <p className="gencl:text-body-1-medium gencl:text-secondary-600">
+            <ProfileLink
+              className="gencl:text-body-1-medium gencl:text-secondary-600"
+              userLogoType={brand?.userLogoType}
+            >
               @{userName}
-            </p>
+            </ProfileLink>
             {isOwner && (
               <Chip variant="default" rounded="full">
                 Owner

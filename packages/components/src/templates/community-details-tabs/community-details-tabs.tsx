@@ -44,6 +44,7 @@ export function CommunityDetailsTabs({
   );
 }
 
+// TODO: USE <GroupCard/> component here.
 function CommunityGroups({ slug }: { slug: string }) {
   const {
     data: communityGroups,
@@ -94,6 +95,7 @@ function CommunityGroups({ slug }: { slug: string }) {
       <GroupPosts
         slug={group.slug}
         className="gencl:bg-secondary-50 gencl:p-4"
+        lazyLoad="manual"
       />
     </GenericDetails>
   ));
@@ -123,6 +125,9 @@ function CommunityMembers({ slug }: { slug: string }) {
         },
         url: `/test/${member.member_id}`,
         userName: member.nickname,
+        brand: {
+          userLogoType: member.brand?.brand_user_logo,
+        },
       }))}
     />
   );

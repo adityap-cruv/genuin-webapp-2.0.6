@@ -47,6 +47,9 @@ export function CommunityDetails({ slug }: { slug: string }) {
           name: communityDetails.leader.name ?? "",
           url: `/test/${communityDetails.leader.member_id}`,
           userName: communityDetails.leader.nickname,
+          brand: {
+            userLogoType: communityDetails.leader.brand?.brand_user_logo,
+          },
         },
         ...communityDetails.moderators.map((moderator) => ({
           bio: moderator.bio ?? "",
@@ -65,13 +68,13 @@ export function CommunityDetails({ slug }: { slug: string }) {
   );
 
   return (
-    <div className="gencl:w-full gencl:flex gencl:flex-col gencl:h-full gencl:px-6">
+    <div className="gencl:w-full gencl:overflow-auto gencl:h-full gencl:px-6">
       <CommunityBanner
         src={communityDetails?.banner ?? ""}
         className="gencl:shrink-0"
       />
-      <div className="gencl:pt-6 gencl:h-full gencl:gap-6 gencl:overflow-auto gencl:flex-grow gencl:flex gencl:items-start">
-        <div className="gencl:w-full gencl:h-full gencl:overflow-auto">
+      <div className="gencl:flex gencl:pt-6">
+        <div>
           <GenericDetails
             title={communityDetails?.name ?? ""}
             profileImageDetails={{
@@ -82,16 +85,10 @@ export function CommunityDetails({ slug }: { slug: string }) {
             description={communityDetails.description ?? ""}
             metadata={
               <GenericDetailsMetadata
-                // TODO: clarify with product what does this verified brand means */
-                brandDetails={
-                  communityDetails.brand
-                    ? {
-                        isVerified: true,
-                        url: communityDetails.brand.brand_web_logo ?? "",
-                        userName: communityDetails.brand.brand_slug,
-                      }
-                    : undefined
-                }
+                handle={{
+                  userName: communityDetails.handle ?? "",
+                  url: `/community/${slug}`,
+                }}
                 privacyInfo={{ isPrivate: communityDetails.type === "PRIVATE" }}
                 stats={{
                   Members: communityDetails.no_of_members,
@@ -115,7 +112,7 @@ export function CommunityDetails({ slug }: { slug: string }) {
           <CommunityDetailsTabs slug={slug} className="gencl:pt-6" />
         </div>
         <SideInfo
-          className="gencl:h-fit"
+          className="gencl:h-fit gencl:sticky gencl:top-2 gencl:shrink-0 gencl:pb-6 gencl:max-h-full gencl:overflow-auto"
           sideInfoData={{
             createdAt: communityDetails.created_at ?? new Date().toISOString(),
             createdBy: {
@@ -127,6 +124,7 @@ export function CommunityDetails({ slug }: { slug: string }) {
               url: `/test`,
               userName: communityDetails.leader.nickname ?? "",
               name: communityDetails.leader.name ?? "",
+              userLogoType: communityDetails.brand?.brand_user_logo,
             },
             createdIn: {
               profileImage: {
@@ -136,15 +134,14 @@ export function CommunityDetails({ slug }: { slug: string }) {
               url: `/test`,
               name: communityDetails.brand?.name ?? "",
               userName: communityDetails.brand?.brand_slug ?? "",
+              userLogoType: communityDetails.brand?.brand_user_logo,
             },
             stats: {
               Views: communityDetails.no_of_views ?? 0,
               Comments: communityDetails.no_of_comments ?? 0,
               Sparks: communityDetails.no_of_sparks ?? 0,
             },
-            guidelines: communityDetails.guidelines.map(
-              (guideline) => guideline.title
-            ),
+            guidelines: communityDetails.guidelines,
           }}
           others={admins}
         />

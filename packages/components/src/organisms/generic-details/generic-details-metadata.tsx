@@ -1,33 +1,18 @@
-import { TickIcon } from "@genuin/ui/icons";
 import { PublicIcon, LockIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/utils";
 import type { ComponentProps } from "react";
 
-import { Link } from "src/molecules/link";
+import { ProfileLink } from "src/molecules/profile-link";
 import { Stats } from "src/molecules/stats/stats";
 
 /**
  * Props for the GenericDetailsMetadata component
  */
 type GenericDetailsMetadataProps = ComponentProps<"div"> & {
-  /**
-   * Brand/user details to display
-   * @example
-   * ```tsx
-   * brandDetails={{
-   *   userName: "johndoe",
-   *   isVerified: true,
-   *   url: "https://example.com/johndoe"
-   * }}
-   * ```
-   */
-  brandDetails?: {
-    /** The username to display (will be prefixed with @) */
+  handle?: {
     userName: string;
-    /** Whether the user/brand is verified (shows verification icon) */
-    isVerified: boolean;
-    /** URL to link to when username is clicked */
     url: string;
+    brandUserLogo?: number | null;
   };
   /**
    * Statistics to display as key-value pairs
@@ -98,7 +83,7 @@ type GenericDetailsMetadataProps = ComponentProps<"div"> & {
  * ```
  */
 export function GenericDetailsMetadata({
-  brandDetails,
+  handle,
   stats,
   privacyInfo,
   className,
@@ -126,11 +111,12 @@ export function GenericDetailsMetadata({
           <p>•</p>
         </>
       )}
-      {brandDetails && (
+      {handle && (
         <>
           <span className="gencl:flex gencl:items-center">
-            <Link href={brandDetails.url}>@{brandDetails.userName}</Link>&nbsp;
-            <TickIcon className="gencl:size-3" />
+            <ProfileLink userLogoType={handle.brandUserLogo}>
+              @{handle.userName}
+            </ProfileLink>
           </span>
           <p>•</p>
         </>

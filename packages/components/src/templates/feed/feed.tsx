@@ -1,6 +1,5 @@
 import { cn } from "@genuin/ui/utils";
-import { ComponentProps, useEffect, useMemo } from "react";
-
+import { useEffect, useMemo, type ComponentProps } from "react";
 import "swiper/css";
 import { useWindowSize } from "usehooks-ts";
 
@@ -8,44 +7,165 @@ import { useBaseContext } from "src/context/base";
 import { PostSidePanel } from "src/organisms";
 import { PlayerList } from "src/organisms/player-swiper";
 import { useFeed } from "src/react-query/api/feed";
+import type { PostDetailsType } from "src/react-query/api/feed/schema";
 import type { FeedType } from "src/types/post";
 
 import { FeedContextProvider, useFeedContext } from "./context";
 
-type FeedPropsType = {
-  feedType: FeedType;
+/**
+ * Feed data structure containing videos and pagination state
+ * @interface FeedData
+ */
+export type FeedData = {
+  /** Array of video posts to display */
+  videos: PostDetailsType[];
+  /** Whether the feed is currently loading */
+  isLoading: boolean;
+  /** Whether there are more pages available */
+  hasNextPage: boolean;
+  /** Whether the next page is currently being fetched */
+  isFetchingNextPage: boolean;
+  /** Function to fetch the next page of videos */
+  fetchNextPage: () => void;
+};
+
+type BaseFeedPropsType = {
   /**
    * Enable expand view for the feed.
    * This will allow the user to expand the feed to full screen.
    * @default true
    */
   enableExpandView?: boolean;
-} & ComponentProps<"div">;
+  /**
+   * Whether to show the expand view by default.
+   */
+  defaultExpandView?: boolean;
+  /**
+   * Callback function to handle when the expand view is closed.
+   */
+  onCloseExpandView?: () => void;
+  /**
+   * The index of the first video to display in the feed.
+   */
+  startIndex?: number;
+};
 
-export function Feed({ feedType, ...restProps }: FeedPropsType) {
+/**
+ * Props for FeedWithData component
+ * @interface FeedWithDataPropsType
+ */
+type FeedWithDataPropsType = {
+  /** Type of feed to display (HOME, POPULAR, LATEST) */
+  feedType: FeedType;
+} & BaseFeedPropsType &
+  ComponentProps<"div">;
+
+/**
+ * Props for FeedView component
+ * @interface FeedViewPropsType
+ */
+type FeedViewPropsType = {
+  /** Feed data containing videos and state */
+  feedData: FeedData;
+} & BaseFeedPropsType &
+  ComponentProps<"div">;
+
+export type { FeedWithDataPropsType, FeedViewPropsType };
+
+/**
+ * Complete feed solution with built-in data fetching and context management.
+ * This is the recommended component for most use cases.
+ *
+ * @param props - Component props including feedType and standard div props
+ * @returns Complete feed component with data fetching
+ *
+ * @example
+ * ```tsx
+ * <FeedWithData feedType="HOME" className="my-feed" />
+ * ```
+ */
+export function FeedWithData({
+  feedType,
+  defaultExpandView,
+  onCloseExpandView,
+  ...restProps
+}: FeedWithDataPropsType) {
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useFeed(feedType);
+
+  const videos = useMemo(
+    () => data?.pages.flatMap((page) => page.feed) ?? [],
+    [data]
+  );
+
+  const feedData: FeedData = {
+    videos,
+    isLoading,
+    hasNextPage: hasNextPage ?? false,
+    isFetchingNextPage,
+    fetchNextPage,
+  };
+
   return (
-    <FeedContextProvider>
-      <FeedComponent feedType={feedType} {...restProps} />
+    <FeedContextProvider
+      defaultExpandView={defaultExpandView}
+      onCloseExpandView={onCloseExpandView}
+    >
+      <FeedViewCore feedData={feedData} {...restProps} />
     </FeedContextProvider>
   );
 }
 
-function FeedComponent({
-  feedType,
+// Backward compatibility alias
+export const Feed = FeedWithData;
+
+/**
+ * Pure presentation component for displaying feed data with automatic context management.
+ * Use this when you need custom data fetching logic but want the convenience of automatic context setup.
+ *
+ * @param props - Component props including feedData and standard div props
+ * @returns Feed presentation component wrapped with context provider
+ *
+ * @example
+ * ```tsx
+ * <FeedView feedData={myCustomFeedData} className="my-feed" />
+ * ```
+ */
+export function FeedView({
+  feedData,
+  defaultExpandView,
+  onCloseExpandView,
+  ...restProps
+}: FeedViewPropsType) {
+  return (
+    <FeedContextProvider
+      defaultExpandView={defaultExpandView}
+      onCloseExpandView={onCloseExpandView}
+    >
+      <FeedViewCore feedData={feedData} {...restProps} />
+    </FeedContextProvider>
+  );
+}
+
+/**
+ * Internal core presentation component for displaying feed data.
+ * This component requires FeedContextProvider to be wrapped by a parent component.
+ * Use FeedView instead for automatic context management.
+ *
+ * @internal
+ */
+function FeedViewCore({
+  feedData,
   className,
+  startIndex = 0,
   style,
   ...restProps
-}: FeedPropsType) {
+}: FeedViewPropsType) {
   const { height } = useWindowSize();
   const { feedVideoSizeBox } = useBaseContext();
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useFeed(feedType);
+  const { videos, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    feedData;
   const { setActiveIndex, activeIndex, showExpandView } = useFeedContext();
-
-  const videos = useMemo(
-    () => data?.pages.flatMap((page) => page.feed),
-    [data]
-  );
 
   // this useEffect is used to fetch the next page of videos when the user scrolls to the end of the list.
   // it checks if there is a next page and if the user is not already fetching the next page.
@@ -86,6 +206,7 @@ function FeedComponent({
         {...restProps}
       >
         <PlayerList
+          startIndex={startIndex}
           posts={videos}
           onActiveIndexChange={(newIndex) => {
             setActiveIndex(newIndex);

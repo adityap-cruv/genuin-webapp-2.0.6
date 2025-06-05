@@ -6,8 +6,6 @@ import React, {
   type ComponentProps,
 } from "react";
 
-import "./decorative-list.css";
-
 import { cn } from "../../lib/utils";
 
 type Props = ComponentProps<"ul"> & { children: React.ReactNode };
@@ -17,7 +15,12 @@ type Props = ComponentProps<"ul"> & { children: React.ReactNode };
  * @param param0
  * @returns
  */
-export function DecorativeList({ children, className, ...props }: Props) {
+export function DecorativeList({
+  children,
+  className,
+  style,
+  ...props
+}: Props) {
   const [lastLiHeight, setLastLiHeight] = useState(0);
   const ul = useRef<HTMLUListElement>(null);
 
@@ -54,18 +57,30 @@ export function DecorativeList({ children, className, ...props }: Props) {
   // Note: Consider moving styles to a CSS module or styled-jsx for maintainability
   return (
     <ul
-      className={cn("custom-list gencl:relative gencl:h-fit", className)}
+      className={cn(
+        "gencl:relative gencl:h-fit gencl:border-l",
+        // Base list styles
+        "gencl:[&>li]:relative gencl:pl-4 gencl:[&>li]:pl-8",
+        // Pseudo-element styles for list decoration
+        "gencl:[&>li]:before:content-[''] gencl:[&>li]:before:w-12 gencl:[&>li]:before:h-2.5",
+        "gencl:[&>li]:before:rounded-bl-[12px] gencl:[&>li]:before:border-secondary-300",
+        "gencl:[&>li]:before:border-b gencl:[&>li]:before:border-l gencl:[&>li]:before:border-solid",
+        "gencl:[&>li]:before:absolute gencl:[&>li]:before:left-[-1.01em] gencl:[&>li]:before:top-1/2",
+        "gencl:[&>li]:before:-translate-y-full",
+        // Hide pseudo-element for items with has-child class
+        "gencl:[&>li.has-child]:before:hidden",
+        className
+      )}
       ref={ul}
       role="list"
       style={{
-        borderLeft: "1px solid",
-        marginLeft: "22px",
-        paddingLeft: "0.85em",
-        borderImage: `linear-gradient(to bottom, var(--tertiary-200) calc(100% - ${lastLiHeight / 2}px - ${
+        paddingLeft: "0.9em",
+        borderImage: `linear-gradient(to bottom, var(--secondary-200) calc(100% - ${lastLiHeight / 2}px - ${
           window.devicePixelRatio > 1
             ? (4 * window.devicePixelRatio).toFixed(1) + "px"
             : "0px"
         }), transparent 50%) 1`,
+        ...style,
       }}
       {...props}
     >
