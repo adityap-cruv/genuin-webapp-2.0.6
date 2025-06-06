@@ -1,6 +1,5 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { type ComponentProps } from "react";
-import React from "react";
 
 import { cn } from "../../lib/utils";
 
@@ -15,16 +14,22 @@ const loaderVariant = cva(
         lg: "gencl:h-9 gencl:w-9",
         xl: "gencl:h-11 gencl:w-11",
       },
+      strokeColor: {
+        primary: "gencl:stroke-primary",
+        white: "gencl:stroke-white",
+        muted: "gencl:stroke-muted",
+      },
     },
     defaultVariants: {
       size: "sm",
+      strokeColor: "primary",
     },
   }
 );
 
 type Props = ComponentProps<"svg"> & VariantProps<typeof loaderVariant>;
 
-export function Loader({ size = "sm", className }: Props) {
+export function Loader({ size = "sm", className, ...props }: Props) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -35,6 +40,7 @@ export function Loader({ size = "sm", className }: Props) {
       stroke="currentColor"
       strokeWidth="2"
       className={cn(loaderVariant({ size }), className)}
+      {...props}
     >
       <path
         strokeLinecap="round"

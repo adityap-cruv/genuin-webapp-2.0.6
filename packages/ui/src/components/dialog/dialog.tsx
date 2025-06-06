@@ -59,10 +59,10 @@ function DialogContent({
         className={cn(
           "gencl:data-[state=open]:animate-in gencl:data-[state=closed]:animate-out",
           "gencl:data-[state=closed]:fade-out-0 gencl:data-[state=open]:fade-in-0",
-          "gencl:data-[state=closed]:zoom-out-95 gencl:data-[state=open]:zoom-in-95 ",
+          "gencl:data-[state=closed]:zoom-out-95 gencl:data-[state=open]:zoom-in-95",
           "gencl:fixed gencl:top-1/2 gencl:left-1/2 gencl:-translate-y-1/2",
           "gencl:-translate-x-1/2 gencl:z-50 gencl:grid gencl:w-full",
-          "gencl:gap-4 gencl:rounded-lg ",
+          "gencl:gap-4 gencl:rounded-lg",
           "gencl:bg-white gencl:p-6 gencl:shadow-lg gencl:duration-200 gencl:sm:max-w-lg",
           className
         )}
@@ -72,9 +72,9 @@ function DialogContent({
         <DialogPrimitive.Close
           className={cn(
             "gencl:absolute gencl:top-4 gencl:right-4 gencl:rounded-xs",
-            " gencl:opacity-70 gencl:transition-opacity hover:gencl:opacity-100 ",
+            "gencl:opacity-70 gencl:transition-opacity gencl:hover:opacity-100 ",
             "gencl:disabled:pointer-events-none gencl:[&_svg]:pointer-events-none",
-            " gencl:[&_svg]:shrink-0 gencl:[&_svg:not([class*=size-])]:size-4"
+            "gencl:[&_svg]:shrink-0 gencl:[&_svg:not([class*=size-])]:size-4"
           )}
         >
           <XIcon />
@@ -103,7 +103,7 @@ function DialogFooter({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="dialog-footer"
       className={cn(
-        "gencl:flex gencl:flex-col-reverse gencl:gap-2 sm:gencl:flex-row sm:gencl:justify-end",
+        "gencl:flex gencl:flex-col-reverse gencl:gap-2 gencl:sm:flex-row gencl:sm:justify-end",
         className
       )}
       {...props}
