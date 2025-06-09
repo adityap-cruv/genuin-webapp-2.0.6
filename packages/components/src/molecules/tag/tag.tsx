@@ -1,5 +1,6 @@
 import { Avatar } from "@genuin/ui/avatar";
 import { cn } from "@genuin/ui/utils";
+import { Skeleton } from "@genuin/ui/skeleton";
 
 import { BrandBadge } from "../brand-badge";
 import { Link } from "../link";
@@ -54,4 +55,8 @@ export function Tag({
       </div>
     </Link>
   );
+}
+
+export function TagSkeleton() {
+  return <Skeleton className="gencl:w-full gencl:h-9 gencl:rounded-full" />;
 }

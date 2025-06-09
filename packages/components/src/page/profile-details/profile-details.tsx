@@ -1,11 +1,17 @@
-import { Loader } from "@genuin/ui/loader";
+import { TabsSkeleton } from "@genuin/ui/tabs";
 
 import { BecomeCreatorButton } from "@molecules/become-creator-button";
 import { ShareButton } from "@molecules/share-button";
-import { GenericDetails } from "@organisms/generic-details";
+import {
+  GenericDetails,
+  GenericDetailsSkeleton,
+} from "@organisms/generic-details";
 import { GenericDetailsMetadata } from "@organisms/generic-details/generic-details-metadata";
 import { useGetProfileDetails } from "@react-query/api/profile/details";
-import { ProfileDetailsTabs } from "@templates/profile-details-tabs";
+import {
+  CommunityListSkeleton,
+  ProfileDetailsTabs,
+} from "@templates/profile-details-tabs";
 
 export function ProfileDetails({
   userName,
@@ -20,9 +26,8 @@ export function ProfileDetails({
     data: profileData,
   } = useGetProfileDetails(userName, forBrand);
 
-  // TODO: handle the loading state.
   if (isLoading) {
-    return <Loader />;
+    return <ProfileDetailsSkeleton />;
   }
 
   // TODO: handle the error state.
@@ -78,6 +83,18 @@ export function ProfileDetails({
         }
         forBrand={forBrand}
       />
+    </div>
+  );
+}
+
+export function ProfileDetailsSkeleton() {
+  return (
+    <div className="gencl:w-full gencl:overflow-auto gencl:h-full gencl:p-6">
+      <GenericDetailsSkeleton />
+      <TabsSkeleton noOfTabs={1} className="gencl:pt-6" />
+      <div className="gencl:pt-6">
+        <CommunityListSkeleton />
+      </div>
     </div>
   );
 }

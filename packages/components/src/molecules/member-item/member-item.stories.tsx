@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { MemberItem } from "./member-item";
+import { MemberItem, MemberItemSkeleton } from "./member-item";
 
 const meta: Meta<typeof MemberItem> = {
   title: "Molecules/MemberItem",
@@ -135,5 +135,11 @@ export const WithoutBio: Story = {
       bio: "",
       userName: "patg",
     },
+  },
+};
+
+export const Skeleton: Story = {
+  render: () => {
+    return <MemberItemSkeleton />;
   },
 };

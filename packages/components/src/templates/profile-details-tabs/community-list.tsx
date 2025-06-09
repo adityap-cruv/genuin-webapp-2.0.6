@@ -22,6 +22,8 @@ import type {
 
 import { FeedViewWrapper } from "./feed-view-wrapper";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { CommunityListSkeleton } from "./skeleton";
+import { CommunityGroupsSkeleton } from "../community-details-tabs";
 
 export function CommunityList({
   userId,
@@ -44,9 +46,8 @@ export function CommunityList({
     [data]
   );
 
-  // TODO: HANDLE THE LOADING STATE
   if (isLoading) {
-    return <div>Loading communities...</div>;
+    return <CommunityListSkeleton />;
   }
 
   // TODO: HANDLE THE ERROR STATE
@@ -171,9 +172,8 @@ function Groups({
     return data?.pages.flatMap((page) => page.loops) ?? [];
   }, [data]);
 
-  // TODO: handle loading state.
   if (isLoading) {
-    return <div>Loading groups...</div>;
+    return <CommunityGroupsSkeleton />;
   }
 
   // TODO: handle error state.

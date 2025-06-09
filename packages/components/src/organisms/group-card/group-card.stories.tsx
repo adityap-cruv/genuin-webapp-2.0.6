@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { GroupCard } from "./group-card";
+import { GroupCard, GroupCardSkeleton } from "./group-card";
 
 const meta: Meta<typeof GroupCard> = {
   title: "Organisms/GroupCard",
@@ -27,6 +27,10 @@ const meta: Meta<typeof GroupCard> = {
 
 export default meta;
 type Story = StoryObj<typeof GroupCard>;
+type SkeletonStoryProps = {
+  width?: string;
+  className?: string;
+};
 
 // Default story - Public group
 export const Default: Story = {
@@ -172,5 +176,24 @@ export const LongNameGroup: Story = {
         views: 5670,
       },
     },
+  },
+};
+
+export const Skeleton: Story & { args: SkeletonStoryProps } = {
+  render: (arg: SkeletonStoryProps) => {
+    return (
+      <div
+        className="gencl:border gencl:border-secondary-200 gencl:p-4 gencl:rounded-xl"
+        style={{ width: arg.width ? arg.width : "600px" }}
+      >
+        <GroupCardSkeleton className={arg.className} />
+      </div>
+    );
+  },
+  args: { width: "600px" },
+  argTypes: {
+    isPinned: { table: { disable: true } },
+    owner: { table: { disable: true } },
+    group: { table: { disable: true } },
   },
 };

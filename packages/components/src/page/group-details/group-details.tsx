@@ -1,21 +1,26 @@
+import { Skeleton } from "@genuin/ui/skeleton";
+import { TabsSkeleton } from "@genuin/ui/tabs";
 import { convertISOToLocalDateFormate } from "@genuin/ui/utils";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 
 import { GroupSubscriptionButton } from "@molecules/group-subscription-button";
 import { JoinGroupButton } from "@molecules/join-group-button";
 import { ShareButton } from "@molecules/share-button";
-import { GenericDetails } from "@organisms/generic-details";
+import {
+  GenericDetails,
+  GenericDetailsSkeleton,
+} from "@organisms/generic-details";
 import { GenericDetailsMetadata } from "@organisms/generic-details/generic-details-metadata";
 import { SideInfo } from "@organisms/side-info";
 import { useGetGroupDetails } from "@react-query/api/group/details";
 import { GroupDetailsTabs } from "@templates/group-details-tabs";
+import { PostsGridSkeleton } from "@/organisms/posts-grid";
 
 export function GroupDetailsPage({ slug }: { slug: string }) {
   const { data: groupDetails, isLoading, isError } = useGetGroupDetails(slug);
 
-  // TODO: Handle loading state
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <GroupDetailsSkeleton />;
   }
 
   if (isError || !groupDetails) {
@@ -88,6 +93,25 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
           },
         }}
       />
+    </div>
+  );
+}
+
+export function GroupDetailsSkeleton() {
+  return (
+    <div className="gencl:p-6 gencl:flex gencl:h-full gencl:gap-6 gencl:flex-grow gencl:overflow-auto">
+      <div className="gencl:w-full gencl:overflow-auto gencl:flex gencl:flex-col gencl:gap-6">
+        <GenericDetailsSkeleton
+          variant="default"
+          hasImage={false}
+          hasLinks={false}
+        />
+        <TabsSkeleton />
+        <PostsGridSkeleton noOfPosts={4} />
+      </div>
+      <div style={{ width: "100%", maxWidth: "320px" }}>
+        <Skeleton className="gencl:w-full gencl:h-49" />
+      </div>
     </div>
   );
 }

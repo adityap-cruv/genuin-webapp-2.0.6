@@ -31,7 +31,8 @@
     "./timer-message": "./src/components/timer-message/index.ts",
     "./checkbox": "./src/components/checkbox/index.ts",
     "./radio": "./src/components/radio-input/index.ts",
-    "./tabs": "./src/components/tabs/index.ts"
+    "./tabs": "./src/components/tabs/index.ts",
+    "./skeleton": "./src/components/skeleton/index.ts"
   },
   "scripts": {
     "lint": "eslint . --max-warnings 20",

@@ -1,6 +1,7 @@
 import { Avatar } from "@genuin/ui/avatar";
 import { Chip } from "@genuin/ui/chip";
 import { cn } from "@genuin/ui/utils";
+import { Skeleton } from "@genuin/ui/skeleton";
 
 import { Link } from "@molecules/link";
 
@@ -53,5 +54,18 @@ export function MemberItem({
         </div>
       </div>
     </Link>
+  );
+}
+
+export function MemberItemSkeleton() {
+  return (
+    <div className="gencl:w-100 gencl:flex gencl:gap-2 gencl:overflow-hidden">
+      <Skeleton className="gencl:size-10 gencl:rounded-full gencl:shrink-0" />
+      <div className="gencl:w-full gencl:flex gencl:flex-col gencl:justify-center gencl:gap-2">
+        <Skeleton className="gencl:w-full gencl:h-3 gencl:rounded-md gencl:mt-1.5" />
+        <Skeleton className="gencl:w-full gencl:h-3 gencl:rounded-md" />
+        <Skeleton className="gencl:w-full gencl:h-3 gencl:rounded-md" />
+      </div>
+    </div>
   );
 }

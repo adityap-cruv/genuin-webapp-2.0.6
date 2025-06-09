@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { PostTile } from "./post-tile";
+import { PostTile, PostTileSkeleton } from "./post-tile";
 
 const meta: Meta<typeof PostTile> = {
   title: "Molecules/PostTile",
@@ -37,5 +37,32 @@ export const Default: Story = {
     imageCompProps: {
       useWebp: false,
     },
+  },
+};
+
+export const Skeleton: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `
+          <div className="gencl:flex gencl:gap-4"> 
+            <PostTileSkeleton size="sm" />
+          </div>`,
+        language: "tsx",
+        type: "auto",
+      },
+    },
+  },
+  render: (args) => {
+    return (
+      <div className="gencl:flex gencl:gap-4">
+        <PostTileSkeleton size={args.size} />
+      </div>
+    );
+  },
+  argTypes: {
+    showHover: { table: { disable: true } },
+    postData: { table: { disable: true } },
+    imageCompProps: { table: { disable: true } },
   },
 };

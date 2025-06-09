@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { Tag } from "./tag";
+import { Tag, TagSkeleton } from "./tag";
 
 const meta: Meta<typeof Tag> = {
   title: "Molecules/Tag",
@@ -91,5 +91,15 @@ export const CustomStyle: Story = {
     url: "#",
     isVerified: false,
     className: "gencl:bg-primary-300 gencl:rounded-full",
+  },
+};
+
+export const Skeleton: Story = {
+  render: () => {
+    return (
+      <div className="gencl:w-50">
+        <TagSkeleton />
+      </div>
+    );
   },
 };

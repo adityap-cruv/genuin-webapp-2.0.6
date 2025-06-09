@@ -4,6 +4,7 @@ import * as React from "react";
 import * as TabsPrimitive from "@radix-ui/react-tabs";
 
 import { cn } from "@genuin/ui/lib/utils";
+import { Skeleton } from "@genuin/ui/components/skeleton";
 
 function Tabs({
   className,
@@ -72,4 +73,27 @@ function TabsContent({
   );
 }
 
-export { Tabs, TabsList, TabsTrigger, TabsContent };
+function TabsSkeleton({
+  noOfTabs = 2,
+  className,
+}: {
+  noOfTabs?: number;
+  className?: string;
+}) {
+  return (
+    <div
+      className={cn(
+        "gencl:border-b gencl:border-b-secondary-200 gencl:py-1.5",
+        className
+      )}
+    >
+      <div className="gencl:flex gencl:items-center gencl:gap-3 gencl:pb-2 gencl:pt-2 gencl:ps-2">
+        {Array.from({ length: noOfTabs }).map(() => (
+          <Skeleton className="gencl:w-13 gencl:h-3 gencl:rounded-full gencl:shrink-0" />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export { Tabs, TabsList, TabsTrigger, TabsContent, TabsSkeleton };

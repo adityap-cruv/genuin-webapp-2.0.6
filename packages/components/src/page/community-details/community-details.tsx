@@ -1,5 +1,4 @@
 import { Image } from "@genuin/ui/image";
-import { Loader } from "@genuin/ui/loader";
 import { cn } from "@genuin/ui/utils";
 import type { ComponentProps } from "react";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
@@ -12,6 +11,7 @@ import { MemberList } from "@organisms/member-list";
 import { SideInfo } from "@organisms/side-info";
 import { useGetCommunityDetails } from "@react-query/api/community/details/details";
 import { CommunityDetailsTabs } from "@templates/community-details-tabs";
+import { CommunityDetailsSkeleton } from "./skeleton";
 
 export function CommunityDetails({ slug }: { slug: string }) {
   const {
@@ -20,11 +20,8 @@ export function CommunityDetails({ slug }: { slug: string }) {
     isError,
   } = useGetCommunityDetails(slug);
 
-  // TODO: Handle if community doesn't exist.
-
-  // TODO: Add loading state for the communit  details
   if (isLoading) {
-    return <Loader size="md" />;
+    return <CommunityDetailsSkeleton />;
   }
 
   // TODO: Hnadle error statse for this.

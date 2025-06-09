@@ -1,9 +1,12 @@
 import { InfiniteScroll } from "@genuin/ui/infinite-scroll";
-import { Loader } from "@genuin/ui/loader";
 import { cn } from "@genuin/ui/utils";
 import type { ComponentProps } from "react";
 
-import { MemberItem, type MemberDataType } from "@molecules/member-item";
+import {
+  MemberItem,
+  MemberItemSkeleton,
+  type MemberDataType,
+} from "@molecules/member-item";
 
 type MemberListProps = {
   title?: string;
@@ -26,9 +29,8 @@ export function MemberList({
   className,
   ...restProps
 }: MemberListProps) {
-  // TODO: Handle loading state properly, e.g., show a skeleton or spinner
   if (isLoading) {
-    return <Loader size="sm" />;
+    return <MemberListSkeleton />;
   }
 
   // TODO: Handle error state properly, e.g., show an error message
@@ -62,6 +64,16 @@ export function MemberList({
           />
         ))}
       </InfiniteScroll>
+    </div>
+  );
+}
+
+export function MemberListSkeleton() {
+  return (
+    <div className="gencl:flex gencl:flex-col gencl:gap-4 gencl:overflow-clip">
+      {Array.from({ length: 10 }).map(() => (
+        <MemberItemSkeleton />
+      ))}
     </div>
   );
 }

@@ -3,7 +3,7 @@ import { InfiniteScroll } from "@genuin/ui/infinite-scroll";
 import { cn } from "@genuin/ui/utils";
 import { useMemo } from "react";
 
-import { PostTile } from "@molecules/post-tile";
+import { PostTile, PostTileSkeleton } from "@molecules/post-tile";
 
 import type { PostsGridProps } from "./posts-grid.types";
 
@@ -35,11 +35,11 @@ export function PostsGrid({
       );
     });
   }, [onPostTileClick, posts]);
-  //TODO: handle loading screen.
+
   if (isLoading) {
     return (
-      <div className="gencl:w-full gencl:h-full gencl:text-center">
-        Loading...
+      <div className={cn("gencl:w-full gencl:h-full ", className)}>
+        <PostsGridSkeleton noOfPosts={4} />
       </div>
     );
   }
@@ -95,6 +95,29 @@ export function PostsGrid({
         )}
       </div>
       {children}
+    </div>
+  );
+}
+
+export function PostsGridSkeleton({
+  noOfPosts = 1,
+  className,
+  size = "sm",
+}: {
+  noOfPosts?: number;
+  className?: string;
+  size?: "sm" | "lg";
+}) {
+  return (
+    <div
+      className={cn(
+        "gencl:flex gencl:w-full gencl:h-full gencl:flex-wrap gencl:gap-4",
+        className
+      )}
+    >
+      {Array.from({ length: noOfPosts }).map(() => (
+        <PostTileSkeleton size={size} />
+      ))}
     </div>
   );
 }

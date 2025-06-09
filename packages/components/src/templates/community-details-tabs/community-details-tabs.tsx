@@ -1,5 +1,4 @@
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
-import { Loader } from "@genuin/ui/loader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@genuin/ui/tabs";
 import { cn } from "@genuin/ui/utils";
 
@@ -9,6 +8,8 @@ import { ShareButton } from "@molecules/share-button";
 import { GenericDetails } from "@organisms/generic-details";
 import { GenericDetailsMetadata } from "@organisms/generic-details/generic-details-metadata";
 import { MemberList } from "@organisms/member-list";
+import { GroupCardSkeleton } from "@organisms/group-card";
+import { PostsGridSkeleton } from "@organisms/posts-grid";
 import { useGetCommunityGroups } from "@react-query/api/community/groups";
 import { useGetCommunityMembers } from "@react-query/api/community/members";
 import { Posts } from "./posts";
@@ -53,9 +54,8 @@ function CommunityGroups({ slug }: { slug: string }) {
     isError,
   } = useGetCommunityGroups(slug);
 
-  // TODO: handle community groups shimmer
   if (isLoading) {
-    return <Loader size="md" />;
+    return <CommunityGroupsSkeleton />;
   }
   // todo: handle if community groups doesn't exist
   if (isError) {
@@ -131,5 +131,14 @@ function CommunityMembers({ slug }: { slug: string }) {
         },
       }))}
     />
+  );
+}
+
+export function CommunityGroupsSkeleton() {
+  return (
+    <div className="gencl:gap-4 gencl:border-secondary-200 gencl:border gencl:rounded-xl gencl:mb-4 gencl:overflow-clip">
+      <GroupCardSkeleton className="gencl:p-4" />
+      <PostsGridSkeleton className="gencl:p-4" noOfPosts={4} />
+    </div>
   );
 }

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger, TabsSkeleton } from "./tabs";
 
 const meta: Meta<typeof Tabs> = {
   title: "UI/Tabs",
@@ -27,4 +27,8 @@ export const Default: Story = {
       </TabsContent>
     </Tabs>
   ),
+};
+
+export const Skeleton: Story = {
+  render: () => <TabsSkeleton />,
 };

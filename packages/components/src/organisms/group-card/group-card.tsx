@@ -1,6 +1,7 @@
 import { Button } from "@genuin/ui/button";
 import { NotificationIcon, PinIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/utils";
+import { Skeleton } from "@genuin/ui/skeleton";
 import type { ComponentProps } from "react";
 
 import { Link } from "@molecules/link";
@@ -80,6 +81,40 @@ export function GroupCard({
           </div>
         }
       />
+    </div>
+  );
+}
+
+export function GroupCardSkeleton({
+  className,
+}: {
+  className: string | undefined;
+}) {
+  return (
+    <div
+      className={cn(
+        "gencl:w-full gencl:flex gencl:flex-col gencl:gap-3",
+        className
+      )}
+    >
+      <div className="gencl:flex gencl:justify-between gencl:items-center">
+        <Skeleton className="gencl:w-[50%] gencl:h-9 gencl:rounded-md" />
+        <div className="gencl:flex gencl:gap-2">
+          <Skeleton className="gencl:w-12 gencl:h-9 gencl:rounded-md" />
+          <Skeleton className="gencl:w-12 gencl:h-9 gencl:rounded-md" />
+          <Skeleton className="gencl:w-12 gencl:h-9 gencl:rounded-md" />
+        </div>
+      </div>
+      <div className="gencl:flex gencl:items-center gencl:gap-2">
+        {Array.from({ length: 4 }).map((_, idx, arr) => (
+          <>
+            <Skeleton className="gencl:w-18 gencl:h-4 gencl:rounded-md" />
+            {idx < arr.length - 1 && (
+              <Skeleton className="gencl:w-1 gencl:h-1 gencl:rounded-md" />
+            )}
+          </>
+        ))}
+      </div>
     </div>
   );
 }

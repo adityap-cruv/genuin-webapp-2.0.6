@@ -7,6 +7,7 @@ import {
 } from "@genuin/ui/icons";
 import { Image } from "@genuin/ui/image";
 import { cn } from "@genuin/ui/utils";
+import { Skeleton } from "@genuin/ui/skeleton";
 import { cva } from "class-variance-authority";
 
 import { Stats } from "../stats";
@@ -80,5 +81,19 @@ export function PostTile({
         </div>
       )}
     </div>
+  );
+}
+
+export function PostTileSkeleton({
+  size = "sm",
+  className,
+}: {
+  size: PostTileProps["size"];
+  className?: string;
+}) {
+  return (
+    <Skeleton
+      className={cn(postTileVariants({ size }), "gencl:shrink-0", className)}
+    />
   );
 }

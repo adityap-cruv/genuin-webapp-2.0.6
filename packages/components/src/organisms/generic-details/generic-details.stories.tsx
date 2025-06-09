@@ -1,7 +1,7 @@
 import { Button } from "@genuin/ui/button";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { GenericDetails } from "./generic-details";
+import { GenericDetails, GenericDetailsSkeleton } from "./generic-details";
 import { GenericDetailsMetadata } from "./generic-details-metadata";
 
 const meta: Meta<typeof GenericDetails> = {
@@ -104,5 +104,33 @@ export const List: Story = {
       </>
     ),
     // Add default args here if the component has props
+  },
+};
+
+export const Skeleton: Story = {
+  render: (args) => {
+    return (
+      <div className="gencl:w-[750px]">
+        <GenericDetailsSkeleton variant={args.variant} />
+      </div>
+    );
+  },
+  args: {
+    variant: "default",
+  },
+  argTypes: {
+    variant: {
+      control: { type: "select" },
+      options: ["default", "list"],
+      description: "Select the variant of the GenericDetailsSkeleton.",
+    },
+    profileImageDetails: { table: { disable: true } },
+    title: { table: { disable: true } },
+    description: { table: { disable: true } },
+    links: { table: { disable: true } },
+    metadata: { table: { disable: true } },
+    ctas: { table: { disable: true } },
+    userLogoType: { table: { disable: true } },
+    url: { table: { disable: true } },
   },
 };
