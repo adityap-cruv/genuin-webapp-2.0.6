@@ -31,7 +31,7 @@ const PhoneInput: React.ForwardRefExoticComponent<PhoneInputProps> =
     ({ className, onChange, popoverClassName, ...props }, ref) => (
       <RPNInput.default
         ref={ref}
-        className={cn("flex", className)}
+        className={cn("gencl:flex", className)}
         flagComponent={FlagComponent}
         countrySelectComponent={(selectProps) => (
           <CountrySelect {...selectProps} popoverClassName={popoverClassName} />
@@ -60,7 +60,7 @@ const InputComponent = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, ...props }, ref) => (
     <Input
       className={cn(
-        "ml-2 rounded-lg border border-tertiary-300 bg-tertiary-100",
+        "gencl:ml-2 gencl:rounded-lg gencl:border gencl:border-secondary-300",
         className
       )}
       {...props}
@@ -102,20 +102,20 @@ const CountrySelect = ({
           type="button"
           theme="outline"
           className={cn(
-            "flex gap-1 rounded-lg border-tertiary-300 bg-tertiary-100 pl-3 pr-1"
+            "gencl:flex gencl:gap-1 gencl:rounded-lg gencl:border-secondary-300 gencl:pl-3 gencl:pr-1"
           )}
           disabled={disabled}
         >
           <FlagComponent country={value} countryName={value} />
           <ChevronsUpDown
             className={cn(
-              "h-4 w-4 opacity-50",
-              disabled ? "hidden" : "opacity-100"
+              "gencl:h-4 gencl:w-4 gencl:opacity-50",
+              disabled ? "gencl:hidden" : "gencl:opacity-100"
             )}
           />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className={cn("w-[300px] p-0", popoverClassName)}>
+      <PopoverContent className={cn("gencl:w-[300px] gencl:p-0", popoverClassName)}>
         <Command>
           <CommandList>
             {/* <CommandInput placeholder="Search country..." /> */}
@@ -125,7 +125,7 @@ const CountrySelect = ({
                 .filter((x) => x.value)
                 .map((option) => (
                   <CommandItem
-                    className="gap-2"
+                    className="gencl:gap-2"
                     key={option.value}
                     onSelect={() => {
                       handleSelect(option.value);
@@ -135,18 +135,18 @@ const CountrySelect = ({
                       country={option.value}
                       countryName={option.label}
                     />
-                    <span className="text-sm flex-1 text-left">
+                    <span className="gencl:text-sm gencl:flex-1 gencl:text-left">
                       {option.label}
                     </span>
                     {option.value && (
-                      <span className="text-sm text-foreground/50">
+                      <span className="gencl:text-sm gencl:text-foreground/50">
                         {`+${RPNInput.getCountryCallingCode(option.value)}`}
                       </span>
                     )}
                     <CheckIcon
                       className={cn(
-                        "ml-auto h-4 w-4",
-                        option.value === value ? "opacity-100" : "opacity-0"
+                        "gencl:ml-auto gencl:h-4 gencl:w-4",
+                        option.value === value ? "gencl:opacity-100" : "gencl:opacity-0"
                       )}
                     />
                   </CommandItem>
@@ -163,7 +163,7 @@ const FlagComponent = ({ country, countryName }: RPNInput.FlagProps) => {
   const Flag = flags[country];
 
   return (
-    <span className="flex h-4 w-6 overflow-hidden rounded-sm bg-foreground/20">
+    <span className="gencl:flex gencl:h-4 gencl:w-6 gencl:overflow-hidden gencl:rounded-sm gencl:bg-foreground/20">
       {Flag && <Flag title={countryName} />}
     </span>
   );

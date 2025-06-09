@@ -28,6 +28,8 @@
     "./image": "./src/components/image/index.ts",
     "./chip": "./src/components/chip/index.ts",
     "./hover-card": "./src/components/hover-card/index.ts",
+    "./timer-message": "./src/components/timer-message/index.ts",
+    "./checkbox": "./src/components/checkbox/index.ts",
     "./radio": "./src/components/radio-input/index.ts",
     "./tabs": "./src/components/tabs/index.ts"
   },

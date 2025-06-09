@@ -56,7 +56,11 @@ function InputOTPSlot({
       )}
       {...props}
     >
-      {char}
+      {/* Show dot when no character is entered */}
+      {!char && (
+        <div className="gencl:h-2 gencl:w-2 gencl:rounded-full gencl:bg-secondary-500" />
+      )}
+      {char && <p>{char}</p>}
       {hasFakeCaret && (
         <div className="gencl:pointer-events-none gencl:absolute gencl:inset-0 gencl:flex gencl:items-center gencl:justify-center">
           <div className="gencl:animate-caret-blink gencl:h-4 gencl:bg-black gencl:w-px gencl:duration-1000" />
