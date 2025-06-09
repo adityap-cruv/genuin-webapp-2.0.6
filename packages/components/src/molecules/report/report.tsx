@@ -8,9 +8,9 @@ import {
 } from "@genuin/ui/dialog";
 import { RadioGroup, RadioItem } from "@genuin/ui/radio";
 import React, { ComponentProps, useCallback, useState } from "react";
-import { REPORT_HEADER_DATA, REPORT_REASON_DATA} from "./report-data";
+import { REPORT_HEADER_DATA, REPORT_REASON_DATA } from "./report-data";
 import { Button } from "@genuin/ui/button";
-import { ReportType, useReport } from "src/react-query/api/report";
+import { ReportType, useReport } from "@react-query/api/report";
 import { Loader } from "@genuin/ui/loader";
 import { UseMutationResult } from "@tanstack/react-query";
 import { Image } from "@genuin/ui/image";
@@ -33,20 +33,17 @@ export function Report({
     setSelectedReason(value);
   };
 
-  const reportMutation = useReport(
-    contentId,
-    reportFor
-  );
+  const reportMutation = useReport(contentId, reportFor);
 
   const handleSubmit = useCallback(() => {
     const feedbackPayload = {
-    type: reportFor,
-    contentId,
-    feedback: {
-      type: REPORT_REASON_DATA.indexOf(selectedReason),
-      text: selectedReason,
-    },
-  };
+      type: reportFor,
+      contentId,
+      feedback: {
+        type: REPORT_REASON_DATA.indexOf(selectedReason),
+        text: selectedReason,
+      },
+    };
     reportMutation.mutate(feedbackPayload);
   }, [reportMutation]);
 
@@ -121,11 +118,7 @@ function ReportContent({
 function ReportSuccess() {
   return (
     <div className="gencl:flex gencl:flex-col gencl:items-center gencl:justify-center gencl:text-center gencl:gap-5">
-      <Image
-        alt="Success"
-        src="put-path"
-        className="gencl:h-40"
-      />
+      <Image alt="Success" src="put-path" className="gencl:h-40" />
       <div className="gencl:flex gencl:flex-col gencl:gap-2">
         <p className="gencl:text-headline-4-semi-bold">
           Thanks for your Feedback

@@ -1,4 +1,4 @@
-import type { CommunityUserRole } from "src/types/post";
+import type { CommunityUserRole } from "@types/post";
 
 import { PROTECTED_ROUTES } from "../constants";
 

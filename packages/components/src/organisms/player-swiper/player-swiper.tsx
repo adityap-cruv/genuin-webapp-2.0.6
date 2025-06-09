@@ -4,9 +4,9 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { SwiperSlide, useSwiper } from "swiper/react";
 import { useBoolean } from "usehooks-ts";
 
-import { Actions } from "src/molecules/actions";
-import type { PostDetailsType } from "src/react-query/api/feed/schema";
-import { useFeedContext } from "src/templates/feed/context";
+import { Actions } from "@molecules/actions";
+import type { PostDetailsType } from "@react-query/api/feed/schema";
+import { useFeedContext } from "@templates/feed/context";
 
 import { Comments } from "../comments";
 

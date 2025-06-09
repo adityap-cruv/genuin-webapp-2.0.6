@@ -3,12 +3,12 @@ import { useEffect, useMemo, type ComponentProps } from "react";
 import "swiper/css";
 import { useWindowSize } from "usehooks-ts";
 
-import { useBaseContext } from "src/context/base";
-import { PostSidePanel } from "src/organisms";
-import { PlayerList } from "src/organisms/player-swiper";
-import { useFeed } from "src/react-query/api/feed";
-import type { PostDetailsType } from "src/react-query/api/feed/schema";
-import type { FeedType } from "src/types/post";
+import { useBaseContext } from "@genuin/components/context/base";
+import { PostSidePanel } from "@organisms";
+import { PlayerList } from "@organisms/player-swiper";
+import { useFeed } from "@react-query/api/feed";
+import type { PostDetailsType } from "@react-query/api/feed/schema";
+import type { FeedType } from "@types/post";
 
 import { FeedContextProvider, useFeedContext } from "./context";
 

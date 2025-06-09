@@ -1,6 +1,6 @@
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
-import { cn } from "src/lib/utils";
+import { cn } from "@genuin/ui/lib/utils";
 
 import type { SVGIconsProps } from "../type";
 

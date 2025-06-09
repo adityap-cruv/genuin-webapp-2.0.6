@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { BaseLayout } from "src/templates/base-layout";
+import { BaseLayout } from "@templates/base-layout";
 
 import { GroupDetailsPage } from "./group-details";
 

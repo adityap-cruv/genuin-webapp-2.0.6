@@ -4,11 +4,11 @@ import { ReadMore } from "@genuin/ui/read-more";
 import { cn } from "@genuin/ui/utils";
 import type { ComponentProps } from "react";
 
-import { GroupSubscriptionButton } from "src/molecules/group-subscription-button";
-import { JoinCommunityButton } from "src/molecules/join-community-button";
-import { JoinGroupButton } from "src/molecules/join-group-button";
-import { PrivacyInfo } from "src/molecules/privacy-info";
-import { ShareButton } from "src/molecules/share-button";
+import { GroupSubscriptionButton } from "@molecules/group-subscription-button";
+import { JoinCommunityButton } from "@molecules/join-community-button";
+import { JoinGroupButton } from "@molecules/join-group-button";
+import { PrivacyInfo } from "@molecules/privacy-info";
+import { ShareButton } from "@molecules/share-button";
 
 type CommunityType = {
   name: string;

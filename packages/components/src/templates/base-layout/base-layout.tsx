@@ -2,9 +2,9 @@ import { cn } from "@genuin/ui/utils";
 import type { ComponentProps } from "react";
 import { useWindowSize } from "usehooks-ts";
 
-import { TOP_BAR_HEIGHT } from "src/lib/constants";
-import { SideBar } from "src/organisms/side-bar";
-import { TopBar } from "src/organisms/top-bar";
+import { TOP_BAR_HEIGHT } from "@genuin/components/lib/constants";
+import { SideBar } from "@organisms/side-bar";
+import { TopBar } from "@organisms/top-bar";
 
 type BaseLayoutProps = ComponentProps<"section">;
 

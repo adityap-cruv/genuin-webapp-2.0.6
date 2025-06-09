@@ -1,6 +1,6 @@
 import type { Meta, StoryFn } from "@storybook/react-vite";
 
-import { BaseLayout } from "src/templates/base-layout";
+import { BaseLayout } from "@templates/base-layout";
 
 import { Home } from "./home";
 

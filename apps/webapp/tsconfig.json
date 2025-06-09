@@ -55,7 +55,11 @@
       ],
       "@lotties/*": [
         "./public/lotties/*"
-      ]
+      ],
+      "@genuin/ui": ["../../packages/ui/src"],
+      "@genuin/ui/*": ["../../packages/ui/src/*"],
+      "@genuin/components": ["../../packages/components/src"],
+      "@genuin/components/*": ["../../packages/components/src/*"]
     }
   },
   "include": [

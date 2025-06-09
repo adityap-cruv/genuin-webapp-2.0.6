@@ -2,8 +2,8 @@ import { PublicIcon, LockIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/utils";
 import type { ComponentProps } from "react";
 
-import { ProfileLink } from "src/molecules/profile-link";
-import { Stats } from "src/molecules/stats/stats";
+import { ProfileLink } from "@molecules/profile-link";
+import { Stats } from "@molecules/stats/stats";
 
 /**
  * Props for the GenericDetailsMetadata component

@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Settings } from "lucide-react";
 
-import { Button } from "../button/button";
-import { Input } from "../input/input";
-import { Label } from "../label/label";
+import { Button } from "@components/button";
+import { Input } from "@components/input";
+import { Label } from "@components/label";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 
 const meta: Meta<typeof Popover> = {

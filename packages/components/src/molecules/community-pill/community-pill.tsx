@@ -6,7 +6,7 @@ import {
 } from "@genuin/ui/hover-card";
 import { cva } from "class-variance-authority";
 
-import { EntityHoverCardContent } from "src/organisms/post-details/pill-hover-card-content";
+import { EntityHoverCardContent } from "@organisms/post-details/pill-hover-card-content";
 
 import { JoinCommunityButton } from "../join-community-button";
 

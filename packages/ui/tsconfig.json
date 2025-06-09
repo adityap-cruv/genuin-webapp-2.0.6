@@ -14,15 +14,13 @@
       "node"
     ],
     "paths": {
-      // "@components/*": [
-      //   "src/components/*"
-      // ],
-      // "@hooks": [
-      //   "src/hooks/*"
-      // ],
-      // "@lib/*": [
-      //   "src/lib/*"
-      // ],
+      "@/*": ["./src/*"],
+      "@components/*": ["./src/components/*"],
+      "@lib/*": ["./src/lib/*"],
+      "@genuin/ui": ["./src"],
+      "@genuin/ui/*": ["./src/*"],
+      "@hooks/*": ["./src/hooks/*"],
+      "@icons/*": ["./src/icons/*"]
     }
   },
   "include": [

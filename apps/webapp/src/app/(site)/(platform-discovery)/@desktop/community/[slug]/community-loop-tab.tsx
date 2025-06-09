@@ -115,10 +115,10 @@ function Component({ slug }: { slug: string }) {
 
 function NoLoops() {
   return (
-    <div className="flex h-full flex-col items-center justify-center bg-monochrome-11">
+    <div className="bg-monochrome-11 flex h-full flex-col items-center justify-center">
       <Image src={noLoopsImage} alt="share" />
       <p className="text-title-2-bold">No Groups... yet!</p>
-      <p className="w-[80%] text-center text-body-1-demi text-monochrome">
+      <p className="text-body-1-demi text-monochrome w-[80%] text-center">
         Groups are dynamic discussion spaces centered around specific themes. Members can share videos, get reactions,
         and enjoy engaging comments from the community.
       </p>
@@ -135,7 +135,7 @@ type PlayerModalWrapperProps = {
 
 function PlayerModalWrapper({ open = false, close, slug, unreadMessageCount }: PlayerModalWrapperProps) {
   const { data, fetchNextPage, isError, isFetchingNextPage, isLoading } = getLoopVideos(slug)
-  const videos = data?.pages.flatMap((item) => item.videos)
+  const videos = data?.pages.flatMap((item: any) => item.videos)
 
   if (videos)
     return (

@@ -6,7 +6,7 @@ import React, {
   type ComponentProps,
 } from "react";
 
-import { cn } from "../../lib/utils";
+import { cn } from "@genuin/ui/lib/utils";
 
 type Props = ComponentProps<"ul"> & { children: React.ReactNode };
 

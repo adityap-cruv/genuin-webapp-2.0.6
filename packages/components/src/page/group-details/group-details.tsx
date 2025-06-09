@@ -1,13 +1,13 @@
 import { convertISOToLocalDateFormate } from "@genuin/ui/utils";
 
-import { GroupSubscriptionButton } from "src/molecules/group-subscription-button";
-import { JoinGroupButton } from "src/molecules/join-group-button";
-import { ShareButton } from "src/molecules/share-button";
-import { GenericDetails } from "src/organisms";
-import { GenericDetailsMetadata } from "src/organisms/generic-details/generic-details-metadata";
-import { SideInfo } from "src/organisms/side-info";
-import { useGetGroupDetails } from "src/react-query/api/group/details";
-import { GroupDetailsTabs } from "src/templates/group-details-tabs";
+import { GroupSubscriptionButton } from "@molecules/group-subscription-button";
+import { JoinGroupButton } from "@molecules/join-group-button";
+import { ShareButton } from "@molecules/share-button";
+import { GenericDetails } from "@organisms";
+import { GenericDetailsMetadata } from "@organisms/generic-details/generic-details-metadata";
+import { SideInfo } from "@organisms/side-info";
+import { useGetGroupDetails } from "@react-query/api/group/details";
+import { GroupDetailsTabs } from "@templates/group-details-tabs";
 
 export function GroupDetailsPage({ slug }: { slug: string }) {
   const { data: groupDetails, isLoading, isError } = useGetGroupDetails(slug);

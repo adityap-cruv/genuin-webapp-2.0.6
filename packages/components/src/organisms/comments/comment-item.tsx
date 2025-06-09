@@ -3,7 +3,7 @@ import { SparkIcon } from "@genuin/ui/icons";
 import { ReadMore } from "@genuin/ui/read-more";
 import { getTimeAgo } from "@genuin/ui/utils";
 
-import type { CommentListType } from "src/react-query/api/comments";
+import type { CommentListType } from "@react-query/api/comments";
 
 export type CommentItemProps = {
   comment: CommentListType[number];

@@ -4,9 +4,9 @@ import { ReadMore, type ReadMoreTextType } from "@genuin/ui/read-more";
 import { cn } from "@genuin/ui/utils";
 import type { ComponentProps, ReactNode } from "react";
 
-import { Link } from "src/molecules/link";
-import type { LinksType } from "src/molecules/social-links";
-import { SocialLinks } from "src/molecules/social-links";
+import { Link } from "@molecules/link";
+import type { LinksType } from "@molecules/social-links";
+import { SocialLinks } from "@molecules/social-links";
 
 /**
  * Configuration for the profile image displayed in the generic details component.

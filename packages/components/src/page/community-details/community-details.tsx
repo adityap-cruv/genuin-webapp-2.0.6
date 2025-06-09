@@ -3,14 +3,14 @@ import { Loader } from "@genuin/ui/loader";
 import { cn } from "@genuin/ui/utils";
 import type { ComponentProps } from "react";
 
-import { JoinCommunityButton } from "src/molecules/join-community-button";
-import { ShareButton } from "src/molecules/share-button";
-import { GenericDetails } from "src/organisms";
-import { GenericDetailsMetadata } from "src/organisms/generic-details/generic-details-metadata";
-import { MemberList } from "src/organisms/member-list";
-import { SideInfo } from "src/organisms/side-info";
-import { useGetCommunityDetails } from "src/react-query/api/community/details/details";
-import { CommunityDetailsTabs } from "src/templates/community-details-tabs";
+import { JoinCommunityButton } from "@molecules/join-community-button";
+import { ShareButton } from "@molecules/share-button";
+import { GenericDetails } from "@organisms";
+import { GenericDetailsMetadata } from "@organisms/generic-details/generic-details-metadata";
+import { MemberList } from "@organisms/member-list";
+import { SideInfo } from "@organisms/side-info";
+import { useGetCommunityDetails } from "@react-query/api/community/details/details";
+import { CommunityDetailsTabs } from "@templates/community-details-tabs";
 
 export function CommunityDetails({ slug }: { slug: string }) {
   const {

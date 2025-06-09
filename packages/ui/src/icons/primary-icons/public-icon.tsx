@@ -1,6 +1,6 @@
 import React from "react";
 
-import { cn } from "../../lib/utils";
+import { cn } from "@genuin/ui/lib/utils";
 import type { SVGIconsProps } from "../type";
 export function PublicIcon({ className, ...restProps }: SVGIconsProps) {
   return (

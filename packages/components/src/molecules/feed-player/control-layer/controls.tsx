@@ -3,10 +3,10 @@ import { memo, type ComponentProps } from "react";
 
 import { ExpandIcon } from "@genuin/ui/icons";
 import { CollapseIcon } from "@genuin/ui/icons";
-import { useBaseContext } from "src/context/base";
+import { useBaseContext } from "@genuin/components/context/base";
 import { AnimatedPlayButton } from "./control-buttons";
 import { AnimatedMuteIcon } from "./control-buttons";
-import { useDeviceDetectMediaQuery } from "src/hooks/use-devide-detect-media-query";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { usePlayerContext } from "../context/context";
 
 type ControlButtonsPropsType = ComponentProps<"div">;

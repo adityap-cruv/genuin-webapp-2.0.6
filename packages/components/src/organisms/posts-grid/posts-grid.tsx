@@ -3,7 +3,7 @@ import { InfiniteScroll } from "@genuin/ui/infinite-scroll";
 import { cn } from "@genuin/ui/utils";
 import { useMemo } from "react";
 
-import { PostTile } from "src/molecules/post-tile";
+import { PostTile } from "@molecules/post-tile";
 
 import type { PostsGridProps } from "./posts-grid.types";
 

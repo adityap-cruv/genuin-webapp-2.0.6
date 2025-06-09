@@ -3,8 +3,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { Button } from "../button/button";
-import { Input } from "../input/input";
+import { Button } from "@components/button";
+import { Input } from "@components/input";
 import {
   Form,
   FormControl,

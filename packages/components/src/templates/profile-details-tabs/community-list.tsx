@@ -2,23 +2,23 @@ import { DecorativeList } from "@genuin/ui/decorative-list";
 import { InfiniteScroll } from "@genuin/ui/infinite-scroll";
 import { useCallback, useMemo, useState } from "react";
 
-import { GroupSubscriptionButton } from "src/molecules/group-subscription-button";
-import { JoinCommunityButton } from "src/molecules/join-community-button";
-import { JoinGroupButton } from "src/molecules/join-group-button";
-import { ShareButton } from "src/molecules/share-button";
-import { Tag } from "src/molecules/tag";
-import { GenericDetails } from "src/organisms";
-import { GenericDetailsMetadata } from "src/organisms/generic-details/generic-details-metadata";
-import { PostsGrid } from "src/organisms/posts-grid";
+import { GroupSubscriptionButton } from "@molecules/group-subscription-button";
+import { JoinCommunityButton } from "@molecules/join-community-button";
+import { JoinGroupButton } from "@molecules/join-group-button";
+import { ShareButton } from "@molecules/share-button";
+import { Tag } from "@molecules/tag";
+import { GenericDetails } from "@organisms";
+import { GenericDetailsMetadata } from "@organisms/generic-details/generic-details-metadata";
+import { PostsGrid } from "@organisms/posts-grid";
 import {
   useGetProfileCommunities,
   useGetProfileGroups,
   useGetProfileVideos,
-} from "src/react-query/api/profile/posts";
+} from "@react-query/api/profile/posts";
 import type {
   LoopType,
   VideoType,
-} from "src/react-query/api/profile/posts/schema";
+} from "@react-query/api/profile/posts/schema";
 
 import { FeedViewWrapper } from "./feed-view-wrapper";
 

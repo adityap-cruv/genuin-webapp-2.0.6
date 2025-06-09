@@ -1,6 +1,6 @@
 import { type QueryKey } from "@tanstack/react-query";
 
-import type { FeedType } from "src/types/post";
+import type { FeedType } from "@types/post";
 
 import { baseQueryKey } from "./base";
 

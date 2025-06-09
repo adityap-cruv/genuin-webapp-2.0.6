@@ -2,15 +2,15 @@ import { Loader } from "@genuin/ui/loader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@genuin/ui/tabs";
 import { cn } from "@genuin/ui/utils";
 
-import { GroupSubscriptionButton } from "src/molecules/group-subscription-button";
-import { JoinGroupButton } from "src/molecules/join-group-button";
-import { ShareButton } from "src/molecules/share-button";
-import { GenericDetails } from "src/organisms";
-import { GenericDetailsMetadata } from "src/organisms/generic-details/generic-details-metadata";
-import { GroupPosts } from "src/organisms/group-posts";
-import { MemberList } from "src/organisms/member-list";
-import { useGetCommunityGroups } from "src/react-query/api/community/groups";
-import { useGetCommunityMembers } from "src/react-query/api/community/members";
+import { GroupSubscriptionButton } from "@molecules/group-subscription-button";
+import { JoinGroupButton } from "@molecules/join-group-button";
+import { ShareButton } from "@molecules/share-button";
+import { GenericDetails } from "@organisms";
+import { GenericDetailsMetadata } from "@organisms/generic-details/generic-details-metadata";
+import { GroupPosts } from "@organisms/group-posts";
+import { MemberList } from "@organisms/member-list";
+import { useGetCommunityGroups } from "@react-query/api/community/groups";
+import { useGetCommunityMembers } from "@react-query/api/community/members";
 
 type CommunityDetailsTabsPropsType = Omit<
   {

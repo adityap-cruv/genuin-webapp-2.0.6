@@ -4,7 +4,7 @@ import { UnmuteIcon } from "@genuin/ui/icons";
 import { MuteIcon } from "@genuin/ui/icons";
 
 import { AnimatedText } from "./animated-text";
-import { useBaseContext } from "src/context/base";
+import { useBaseContext } from "@genuin/components/context/base";
 import { usePlayerContext } from "../../context";
 
 // todo: check if we can use <Slider/> component instead of input[type="range"] here.

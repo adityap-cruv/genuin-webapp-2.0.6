@@ -2,7 +2,7 @@ import OpenPlayerJS from "openplayerjs";
 import type { ComponentProps } from "react";
 import { memo, useCallback, useEffect, useRef } from "react";
 
-import { cn } from "src/lib/utils";
+import { cn } from "@genuin/ui/lib/utils";
 
 const hlsConfigs = {
   // debug: true,

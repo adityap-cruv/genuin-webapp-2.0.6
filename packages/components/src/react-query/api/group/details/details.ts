@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { NOT_FOUND_ERROR_CODES } from "src/lib/constants/errors";
-import { axiosInstance } from "src/react-query/axios-instance";
-import { getQueryKeyForLoopDetails } from "src/react-query/keys/group";
-import { API_PATHS } from "src/react-query/paths";
+import { NOT_FOUND_ERROR_CODES } from "@genuin/components/lib/constants/errors";
+import { axiosInstance } from "@react-query/axios-instance";
+import { getQueryKeyForLoopDetails } from "@react-query/keys/group";
+import { API_PATHS } from "@react-query/paths";
 
 import { parseGroupDetails } from "./parser";
 

@@ -1,6 +1,6 @@
 import type { ComponentProps } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { cn } from "src/lib/utils";
+import { cn } from "@genuin/ui/lib/utils";
 
 import {
   applyLineClampStyles,
@@ -141,7 +141,7 @@ export function ReadMore({
   maxLines = 1,
   maxWidth = "100%",
   showExpandText = true,
-  shouldAnimate = false,  
+  shouldAnimate = false,
   position = "outside",
   className,
   textClassName,
@@ -230,7 +230,7 @@ export function ReadMore({
 
   // Calculate expanded height based on content
   const getExpandedHeight = () => {
-    return `${parseInt(expandedHeight)*0.2}px`;
+    return `${parseInt(expandedHeight) * 0.2}px`;
   };
 
   // Modified animation logic

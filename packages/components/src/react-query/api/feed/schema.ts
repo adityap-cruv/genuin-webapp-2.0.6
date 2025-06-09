@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { CommunityUserRoleSchema } from "src/types/post";
+import { CommunityUserRoleSchema } from "@types/post";
 
 const description = z.array(
   z

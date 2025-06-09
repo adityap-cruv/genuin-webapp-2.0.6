@@ -9,27 +9,11 @@ const nextConfig = {
   // === Turbopack config (root-level, not experimental) ===
   turbopack: {
     rules: {
-      // Support for SVG files
-      // '*.svg': {
-      //   loaders: ['@svgr/webpack'],
-      //   as: '*.js',
-      // },
-      // // Support for SCSS/SASS files
-      // '*.scss': {
-      //   loaders: ['sass-loader'],
-      //   as: '*.css',
-      // },
-      // // Support for other file types as needed
-      // '*.yml': {
-      //   loaders: ['yaml-loader'],
-      // },
+      // ...existing code...
     },
-    // Configure module resolution aliases if needed
     resolveAlias: {
-      // Example: Map specific package imports
-      // 'some-package': 'alternative-package',
+      // ...existing code...
     },
-    // Custom extensions resolution (optional)
     resolveExtensions: ['.tsx', '.ts', '.jsx', '.js', '.json', '.css', '.scss', '.svg'],
   },
 
@@ -79,6 +63,20 @@ const nextConfig = {
       test: /\.svg$/,
       use: ['@svgr/webpack', 'url-loader'],
     })
+    // Sync aliases with packages/components/tsconfig.json
+    const path = require('path')
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@components': path.resolve(__dirname, '../../packages/components/src/components'),
+      '@templates': path.resolve(__dirname, '../../packages/components/src/templates'),
+      '@pages': path.resolve(__dirname, '../../packages/components/src/page'),
+      '@organisms': path.resolve(__dirname, '../../packages/components/src/organisms'),
+      '@molecules': path.resolve(__dirname, '../../packages/components/src/molecules'),
+      '@atoms': path.resolve(__dirname, '../../packages/components/src/atoms'),
+      '@react-query': path.resolve(__dirname, '../../packages/components/src/react-query'),
+      '@types': path.resolve(__dirname, '../../packages/components/src/types'),
+      '@context': path.resolve(__dirname, '../../packages/components/src/context'),
+    }
     return config
   },
 
@@ -100,6 +98,8 @@ const nextConfig = {
 
     // Package imports to optimize
     optimizePackageImports: [
+      '@genuin/ui',
+      '@genuin/components',
       '@radix-ui/react-accordion',
       '@radix-ui/react-avatar',
       '@radix-ui/react-dialog',

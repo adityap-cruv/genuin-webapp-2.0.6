@@ -1,7 +1,7 @@
 import { Avatar } from "@genuin/ui/avatar";
 
-import { ProfileLink } from "src/molecules/profile-link";
-import type { PostDetailsType } from "src/react-query/api/feed/schema";
+import { ProfileLink } from "@molecules/profile-link";
+import type { PostDetailsType } from "@react-query/api/feed/schema";
 
 // TODO: Figure out how to use links.
 export function OwnerInfo({ owner }: { owner: PostDetailsType["owner"] }) {

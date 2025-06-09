@@ -1,13 +1,13 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 
-import { axiosInstance } from "src/react-query/axios-instance";
+import { axiosInstance } from "@react-query/axios-instance";
 import {
   getQueryKeyForProfileCommunities,
   getQueryKeyForProfileFeed,
   getQueryKeyForProfileLoops,
   getQueryKeyForProfileVideos,
-} from "src/react-query/keys/profile";
-import { API_PATHS } from "src/react-query/paths";
+} from "@react-query/keys/profile";
+import { API_PATHS } from "@react-query/paths";
 
 import { parseFeed } from "../../feed/parser";
 

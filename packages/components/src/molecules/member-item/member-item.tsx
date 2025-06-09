@@ -2,7 +2,7 @@ import { Avatar } from "@genuin/ui/avatar";
 import { Chip } from "@genuin/ui/chip";
 import { cn } from "@genuin/ui/utils";
 
-import { Link } from "src/molecules/link";
+import { Link } from "@molecules/link";
 
 import { ProfileLink } from "../profile-link";
 

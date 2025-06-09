@@ -1,7 +1,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 
-import { axiosInstance } from "src/react-query/axios-instance";
-import { getQueryKeyForComments } from "src/react-query/keys/comment";
+import { axiosInstance } from "@react-query/axios-instance";
+import { getQueryKeyForComments } from "@react-query/keys/comment";
 
 import { parseComments } from "./parser";
 

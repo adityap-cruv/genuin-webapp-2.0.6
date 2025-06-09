@@ -1,8 +1,8 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 
-import { getDeviceId } from "src/lib/utils/device-id";
-import { getQueryKeyForFeed } from "src/react-query/keys/feed";
-import type { FeedType } from "src/types/post";
+import { getDeviceId } from "@genuin/components/lib/utils/device-id";
+import { getQueryKeyForFeed } from "@react-query/keys/feed";
+import type { FeedType } from "@types/post";
 
 import { axiosInstance } from "../../axios-instance";
 

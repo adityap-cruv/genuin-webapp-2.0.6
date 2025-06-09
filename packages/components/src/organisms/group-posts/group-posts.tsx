@@ -1,12 +1,12 @@
 import type { ComponentProps } from "react";
 import { lazy, Suspense, useCallback, useMemo, useState } from "react";
 
-import { PostsGrid } from "src/organisms/posts-grid";
-import { useGetGroupFeed } from "src/react-query/api/group/feed";
+import { PostsGrid } from "@organisms/posts-grid";
+import { useGetGroupFeed } from "@react-query/api/group/feed";
 
 // Lazy load the FeedView component
 const FeedView = lazy(() =>
-  import("src/templates/feed/index.js").then((module) => ({
+  import("@templates/feed/index.js").then((module) => ({
     default: module.FeedView,
   }))
 );

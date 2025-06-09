@@ -19,7 +19,7 @@ import {
   CommandShortcut,
 } from "./command";
 import { useState } from "react";
-import { Button } from "../button/button";
+import { Button } from "@components/button";
 
 const meta: Meta<typeof Command> = {
   title: "Components/Command",

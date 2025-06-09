@@ -1,6 +1,6 @@
 import React from "react";
 
-import { cn, tryJsonParse } from "../../lib/utils";
+import { cn, tryJsonParse } from "@genuin/ui/lib/utils";
 
 // Define PATH_NAME locally since it's used in the component
 const PATH_NAME = {

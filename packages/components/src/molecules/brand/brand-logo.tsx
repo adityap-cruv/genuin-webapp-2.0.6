@@ -2,7 +2,7 @@ import { Image } from "@genuin/ui/image";
 import { cn } from "@genuin/ui/utils";
 import type { ComponentProps } from "react";
 
-import { useBaseContext } from "src/context/base";
+import { useBaseContext } from "@genuin/components/context/base";
 
 type BrandLogoProps = ComponentProps<typeof Image>;
 

@@ -1,7 +1,7 @@
 import { VideoPlayer } from "@genuin/ui/video-player";
 import { memo, useCallback, type ComponentProps } from "react";
-import { useBaseContext } from "src/context/base";
-import type { PostDetailsType } from "src/react-query/api/feed/schema";
+import { useBaseContext } from "@genuin/components/context/base";
+import type { PostDetailsType } from "@react-query/api/feed/schema";
 
 import { usePlayerContext } from "./context/context";
 // import { useSwiper } from "swiper/react";

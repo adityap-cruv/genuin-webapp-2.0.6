@@ -10,7 +10,7 @@ import { memo, useCallback } from 'react'
 import { type CommunityUserRoleType } from '@/lib/schemas/roles'
 import { PATH_NAME } from '@/lib/utils/constants/path'
 import { AuthenticationModal } from '../modals/authentication'
-import { useToast } from '../../ui/use-toast'
+import { useToast } from '@components/ui/use-toast'
 import { getQueryKeyForCommunityDetails } from '@/lib/utils/react-query/keys'
 
 type Props = {
@@ -37,7 +37,7 @@ type VariantButtonProps = {
 const DefaultButton = ({ role, isLoading, buttonText, onClick }: VariantButtonProps) => (
   <Button
     size="custom"
-    className="h-[32px] rounded border border-primary px-4 text-center"
+    className="border-primary h-[32px] rounded border px-4 text-center"
     variant={role === 'MEMBER' ? 'outline' : 'default'}
     onClick={onClick}>
     {isLoading ? (
@@ -45,7 +45,7 @@ const DefaultButton = ({ role, isLoading, buttonText, onClick }: VariantButtonPr
     ) : (
       <p
         className={cn(
-          'whitespace-nowrap text-body-1-demi',
+          'text-body-1-demi whitespace-nowrap',
           role === 'MEMBER' ? 'text-primary' : 'text-monochrome-white'
         )}>
         {role === 'MEMBER' ? 'Joined' : buttonText}
@@ -57,7 +57,7 @@ const DefaultButton = ({ role, isLoading, buttonText, onClick }: VariantButtonPr
 const PillButton = ({ role, isLoading, buttonText, onClick }: VariantButtonProps) => (
   <Button
     variant="custom"
-    className="ml-1 flex rounded-2xl bg-monochrome-white p-1 px-2 text-cap-1-med"
+    className="bg-monochrome-white text-cap-1-med ml-1 flex rounded-2xl p-1 px-2"
     onClick={(e) => {
       e.stopPropagation()
       onClick?.()
@@ -68,8 +68,8 @@ const PillButton = ({ role, isLoading, buttonText, onClick }: VariantButtonProps
           'flex w-fit flex-col transition-transform duration-300 ease-in-out',
           role === 'MEMBER' ? '-translate-y-4' : 'translate-y-0'
         )}>
-        <span className="h-4 text-monochrome-black">{buttonText}</span>
-        <span className="h-4 text-monochrome-black">Joined</span>
+        <span className="text-monochrome-black h-4">{buttonText}</span>
+        <span className="text-monochrome-black h-4">Joined</span>
       </div>
     </div>
     {isLoading && <Loader size="xs" />}
@@ -79,15 +79,15 @@ const PillButton = ({ role, isLoading, buttonText, onClick }: VariantButtonProps
 const RequestedButton = ({ variant = 'default' }: { variant?: 'default' | 'pill' }) => {
   if (variant === 'pill') {
     return (
-      <Button variant="custom" className="ml-1 rounded-2xl bg-monochrome-white px-3 py-1 text-cap-1-med">
+      <Button variant="custom" className="bg-monochrome-white text-cap-1-med ml-1 rounded-2xl px-3 py-1">
         <p className="text-primary">Requested</p>
       </Button>
     )
   }
 
   return (
-    <Button size="custom" className="h-[32px] border border-primary" variant="outline">
-      <p className="px-4 text-center text-body-1-demi text-primary">Requested</p>
+    <Button size="custom" className="border-primary h-[32px] border" variant="outline">
+      <p className="text-body-1-demi text-primary px-4 text-center">Requested</p>
     </Button>
   )
 }

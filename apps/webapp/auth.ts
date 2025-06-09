@@ -2,13 +2,7 @@ import NextAuth from 'next-auth'
 import { authConfig } from './auth.config'
 import CredentialsProvider from 'next-auth/providers/credentials'
 
-export const {
-  handlers: { GET, POST },
-  signIn,
-  auth,
-  signOut,
-  update,
-} = NextAuth({
+const nextAuth = NextAuth({
   ...authConfig,
   providers: [
     CredentialsProvider({
@@ -83,3 +77,9 @@ export const {
     }),
   ],
 })
+
+export const handlers = nextAuth.handlers
+export const auth = nextAuth.auth
+export const signIn: typeof nextAuth.signIn = nextAuth.signIn
+export const signOut: typeof nextAuth.signOut = nextAuth.signOut
+export const { GET, POST } = nextAuth.handlers

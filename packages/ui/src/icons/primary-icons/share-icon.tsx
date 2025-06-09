@@ -1,7 +1,7 @@
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 
-import { cn } from "../../lib/utils";
+import { cn } from "@genuin/ui/lib/utils";
 import type { SVGIconsProps } from "../type";
 
 const shareIconVariants = cva("gencl:stroke-black", {

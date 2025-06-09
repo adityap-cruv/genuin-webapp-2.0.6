@@ -1,7 +1,7 @@
 import z from "zod";
 
-import { mapCommunityUserRole } from "src/lib/utils";
-import type { CommunityUserRole } from "src/types/post";
+import { mapCommunityUserRole } from "@lib/utils";
+import type { CommunityUserRole } from "@types/post";
 
 const messageSchema = z.object({
   media_url: z.string(),

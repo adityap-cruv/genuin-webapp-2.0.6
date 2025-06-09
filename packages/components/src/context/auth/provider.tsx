@@ -2,8 +2,8 @@
 import {
   removeAllAuthToken,
   setAuthTokenInAxiosInstance,
-} from "src/react-query/axios-instance";
-import type { AuthUser } from "src/types/auth";
+} from "@react-query/axios-instance";
+import type { AuthUser } from "@types/auth";
 
 import { AuthContext } from "./context";
 

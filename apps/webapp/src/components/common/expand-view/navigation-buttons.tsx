@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button } from '../../ui/button'
+import { Button } from '@genuin/ui/button'
 import { cn } from '@/lib/utils'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { type VideoPlayerModalType } from '@/lib/schemas/player/video'
@@ -29,7 +29,7 @@ const NavigationButtons = ({ videos, currentIndex, swiperInstance }: FullScreenC
       <Button
         disabled={currentIndex === 0}
         className={cn(
-          'flex-shrink-0 rounded-full bg-monochrome-white/10 p-3 hover:bg-monochrome-white/20',
+          'bg-monochrome-white/10 hover:bg-monochrome-white/20 flex-shrink-0 rounded-full p-3',
           currentIndex === 0 ? 'opacity-40' : undefined
         )}
         onClick={handleSwipeUp}>
@@ -39,7 +39,7 @@ const NavigationButtons = ({ videos, currentIndex, swiperInstance }: FullScreenC
       <Button
         disabled={currentIndex === videos.length - 1}
         className={cn(
-          'flex-shrink-0 rounded-full bg-monochrome-white/10 p-3 hover:bg-monochrome-white/20',
+          'bg-monochrome-white/10 hover:bg-monochrome-white/20 flex-shrink-0 rounded-full p-3',
           currentIndex === videos?.length - 1 ? 'opacity-40' : undefined
         )}
         onClick={handleSwipeDown}>

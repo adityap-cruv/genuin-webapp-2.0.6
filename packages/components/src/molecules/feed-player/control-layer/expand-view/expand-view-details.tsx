@@ -2,9 +2,9 @@ import { Avatar } from "@genuin/ui/avatar";
 import { ReadMore } from "@genuin/ui/read-more";
 import { cn } from "@genuin/ui/utils";
 import type { ComponentProps } from "react";
-import { CommunityPill } from "src/molecules/community-pill";
-import { GroupPill } from "src/molecules/group-pill";
-import type { PostDetailsType } from "src/react-query/api/feed/schema";
+import { CommunityPill } from "@molecules/community-pill";
+import { GroupPill } from "@molecules/group-pill";
+import type { PostDetailsType } from "@react-query/api/feed/schema";
 
 type ExpandViewProps = ComponentProps<"div"> & {
   postDetails: PostDetailsType;

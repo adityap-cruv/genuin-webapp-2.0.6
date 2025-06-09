@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "src/components/dialog";
-import { cn } from "src/lib/utils";
+import { cn } from "@genuin/ui/lib/utils";
 
 function Command({
   className,

@@ -1,7 +1,7 @@
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 
-import { cn } from "../../lib/utils";
+import { cn } from "@genuin/ui/lib/utils";
 import type { SVGIconsProps } from "../type";
 
 // Define the class variance authority (cva) for the TickIcon component

@@ -1,6 +1,6 @@
 import { CtaButtons } from "./cta-buttons";
-import { BrandLogo } from "src/molecules/brand";
-import { BrandSlogan } from "src/molecules/brand";
+import { BrandLogo } from "@molecules/brand";
+import { BrandSlogan } from "@molecules/brand";
 import { cn } from "@genuin/ui/utils";
 
 type TopBarProps = React.ComponentProps<"div">;

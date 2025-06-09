@@ -5,7 +5,7 @@ import {
   AccordionTrigger,
 } from "@genuin/ui/accordion";
 import { Avatar } from "@genuin/ui/avatar";
-import { RECENT_COMMUNITIES_KEY } from "src/lib/constants";
+import { RECENT_COMMUNITIES_KEY } from "@genuin/components/lib/constants";
 import { useLocalStorage } from "usehooks-ts";
 
 type Community = {
@@ -58,7 +58,7 @@ export function Recent() {
                   alt={community.community_name}
                   size="xs"
                 />
-                <p className="gencl:text-body-1-medium gencl:hidden gencl:xl:block">  
+                <p className="gencl:text-body-1-medium gencl:hidden gencl:xl:block">
                   {community.community_name}
                 </p>
               </div>

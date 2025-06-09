@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { SizeBoxType } from "src/types/base";
+import type { SizeBoxType } from "@types/base";
 
 /**
  * A custom hook that returns the size of the feed video container.

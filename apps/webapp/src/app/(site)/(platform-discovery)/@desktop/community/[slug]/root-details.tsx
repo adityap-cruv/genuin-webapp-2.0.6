@@ -48,7 +48,7 @@ export function CommunityDetails({ slug }: { slug: string }) {
 function RootDetails({ communityDetails }: { communityDetails: CommunityDetailsType }) {
   const addCommunity = useLocalStorage((state) => state.addCommunity)
   const detailsDivRef = useRef<HTMLDivElement>(null)
-  const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
+  const detailsInView = useInView(detailsDivRef as React.RefObject<HTMLElement>, { amount: 0.6 })
 
   useEffect(() => {
     addCommunity({
@@ -76,7 +76,7 @@ function RootDetails({ communityDetails }: { communityDetails: CommunityDetailsT
       />
       <main className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto">
         <div>
-          <div className="-px-6 aspect-w-5 aspect-h-1 relative h-40  rounded-b-lg bg-tertiary-200">
+          <div className="-px-6 aspect-w-5 aspect-h-1 bg-tertiary-200 relative h-40 rounded-b-lg">
             {communityDetails?.banner && (
               <CustomImage src={communityDetails?.banner} alt="banner" fill className="object-cover" />
             )}
@@ -84,7 +84,7 @@ function RootDetails({ communityDetails }: { communityDetails: CommunityDetailsT
               isAvatar={false}
               imageUrl={communityDetails.dp ?? ''}
               fallbackString={communityDetails.name ?? ''}
-              className="absolute -bottom-14 left-6 h-20 w-20 border-2 border-monochrome-white text-new-h2 font-medium"
+              className="border-monochrome-white text-new-h2 absolute -bottom-14 left-6 h-20 w-20 border-2 font-medium"
             />
           </div>
           <div ref={detailsDivRef} className="my-3 flex items-center justify-end gap-x-2">
@@ -113,13 +113,13 @@ function RootDetails({ communityDetails }: { communityDetails: CommunityDetailsT
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className="flex items-center justify-center rounded-full bg-tertiary-200 p-1 px-1.5">
-                      <LockIcon className="h-4 w-4 stroke-tertiary" />
+                    <div className="bg-tertiary-200 flex items-center justify-center rounded-full p-1 px-1.5">
+                      <LockIcon className="stroke-tertiary h-4 w-4" />
                       <p className="text-cap-1-demi text-tertiary">Private</p>
                     </div>
                   </TooltipTrigger>
-                  <TooltipContent className="w-64 bg-monochrome-black">
-                    <p className="text-center text-cap-1-med text-monochrome-white">
+                  <TooltipContent className="bg-monochrome-black w-64">
+                    <p className="text-cap-1-med text-monochrome-white text-center">
                       This community is private. Only people approved by it's moderators can see and participate in this
                       community.
                     </p>
@@ -146,7 +146,7 @@ function RootDetails({ communityDetails }: { communityDetails: CommunityDetailsT
               <p className="text-title-2-bold" style={{ fontWeight: 600 }}>
                 This community is private
               </p>
-              <p className="text-center text-body-1-med">
+              <p className="text-body-1-med text-center">
                 Join this community to see and interact
                 <br /> with their posts
               </p>
@@ -192,7 +192,7 @@ function CommunityDetailsTabs({ communityDetails }: { communityDetails: Communit
           <p className="text-title-3-bold">Members</p>
         </TabsTrigger>
       </TabsList>
-      <hr className="border-t border-tertiary-200" />
+      <hr className="border-tertiary-200 border-t" />
       <TabsContent value="Loops" className="mr-2 h-full py-4">
         <CommunityLoopTab slug={communityDetails.slug} />
       </TabsContent>
@@ -207,11 +207,11 @@ function Categories({ communityDetails }: { communityDetails: CommunityDetailsTy
   if (communityDetails.categories && communityDetails.categories?.length !== 0)
     return (
       <div className="mb-4">
-        <p className="my-2 text-title-3-bold">Categories</p>
+        <p className="text-title-3-bold my-2">Categories</p>
         <div>
           {communityDetails?.categories?.map((cat, index) => {
             return (
-              <p key={index} className="my-1 mr-1 inline-block rounded-full bg-tertiary-200 p-2 px-4 text-body-1-med">
+              <p key={index} className="bg-tertiary-200 text-body-1-med my-1 mr-1 inline-block rounded-full p-2 px-4">
                 <span className="line-clamp-1 break-all">{cat.title}</span>
               </p>
             )
@@ -226,31 +226,31 @@ function Links({ communityDetails }: { communityDetails: CommunityDetailsType })
   if (links?.insta?.id ?? links?.linkedin?.id ?? links?.twitter?.id ?? links?.social_web_url)
     return (
       <div className="mb-4">
-        <p className="my-2 text-title-3-bold">Links</p>
+        <p className="text-title-3-bold my-2">Links</p>
         <div className="flex">
           {links?.insta?.id && (
-            <div className="mx-1 flex items-center rounded-md bg-tertiary-200 p-1">
+            <div className="bg-tertiary-200 mx-1 flex items-center rounded-md p-1">
               <Link href={checkAndAppendHttps(links?.insta?.url + links.insta.id)} target="_blank">
-                <InstagramIcon className="h-5 w-5 fill-primary " />
+                <InstagramIcon className="fill-primary h-5 w-5" />
               </Link>
             </div>
           )}
           {links?.linkedin?.id && (
-            <div className="mx-1 flex items-center rounded-md bg-tertiary-200 p-1">
+            <div className="bg-tertiary-200 mx-1 flex items-center rounded-md p-1">
               <Link href={checkAndAppendHttps(links?.linkedin?.url + links?.linkedin?.id)} target="_blank">
-                <LinkedInIcon className="h-5 w-5 fill-primary " />
+                <LinkedInIcon className="fill-primary h-5 w-5" />
               </Link>
             </div>
           )}
           {links?.twitter?.id && (
-            <div className="mx-1 flex items-center rounded-md bg-tertiary-200 p-1">
+            <div className="bg-tertiary-200 mx-1 flex items-center rounded-md p-1">
               <Link href={checkAndAppendHttps(links?.twitter?.url + links?.twitter?.id)} target="_blank">
-                <TwitterIcon className="h-5 w-5 fill-primary " />
+                <TwitterIcon className="fill-primary h-5 w-5" />
               </Link>
             </div>
           )}
           {links?.social_web_url && (
-            <div className="mx-1 flex items-center rounded-md bg-tertiary-200 p-1">
+            <div className="bg-tertiary-200 mx-1 flex items-center rounded-md p-1">
               <Link href={checkAndAppendHttps(links?.social_web_url)} target="_blank">
                 <div className="flex">
                   <Image src={icLink} alt="web-site" />
@@ -268,7 +268,7 @@ function Guidelines({ communityDetails }: { communityDetails: CommunityDetailsTy
   if (communityDetails.guidelines.length !== 0)
     return (
       <div className="mb-4">
-        <p className="my-2 text-title-3-bold">Guidelines</p>
+        <p className="text-title-3-bold my-2">Guidelines</p>
         <>
           <Accordion type="single" collapsible>
             {communityDetails?.guidelines.map((guideline: any, index: any) => {
@@ -276,12 +276,12 @@ function Guidelines({ communityDetails }: { communityDetails: CommunityDetailsTy
                 <div key={index}>
                   <AccordionItem value={guideline.title} className="border-none">
                     <AccordionTrigger className="my-1 p-0">
-                      <p className="line-clamp-1 text-left text-body-1-med">
+                      <p className="text-body-1-med line-clamp-1 text-left">
                         {index + 1}. {guideline.title}
                       </p>
                     </AccordionTrigger>
                     <AccordionContent className="w-[80%] pl-4">
-                      <p className="line-clamp-2 text-left  text-tertiary">{guideline.description}</p>
+                      <p className="text-tertiary line-clamp-2 text-left">{guideline.description}</p>
                     </AccordionContent>
                   </AccordionItem>
                 </div>
@@ -303,7 +303,7 @@ function Leaders({ communityDetails }: { communityDetails: CommunityDetailsType 
 
   return (
     <div className="mb-4">
-      <p className="my-2 text-title-3-bold">Admins</p>
+      <p className="text-title-3-bold my-2">Admins</p>
       <Link
         href={{
           pathname: leader.brand ? PATH_NAME.brand(leader.brand.brand_slug) : PATH_NAME.profile(leader.nickname),

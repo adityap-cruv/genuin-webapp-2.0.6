@@ -1,6 +1,6 @@
-import { CommunityPill } from "src/molecules/community-pill";
-import { GroupPill } from "src/molecules/group-pill";
-import type { PostDetailsType } from "src/react-query/api/feed/schema";
+import { CommunityPill } from "@molecules/community-pill";
+import { GroupPill } from "@molecules/group-pill";
+import type { PostDetailsType } from "@react-query/api/feed/schema";
 
 export function CommunityDetails({
   communityDetails,

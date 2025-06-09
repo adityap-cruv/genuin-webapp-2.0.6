@@ -1,6 +1,6 @@
-import { axiosInstance } from "src/react-query/axios-instance";
+import { axiosInstance } from "@react-query/axios-instance";
 import { useMutation } from "@tanstack/react-query";
-import { getQueryKeyForReport } from "src/react-query/keys/report";
+import { getQueryKeyForReport } from "@react-query/keys/report";
 
 /**
  * Submits a report for a video or comment to the server.
@@ -31,7 +31,7 @@ export type ReportType = {
 
 async function submitReport(data: ReportType): Promise<boolean> {
   try {
-    const response = await axiosInstance.post('/api/v3/report', {
+    const response = await axiosInstance.post("/api/v3/report", {
       content_id: data.contentId,
       type: TYPE_MAPPING[data.type],
       feedback: data.feedback,
@@ -46,14 +46,14 @@ async function submitReport(data: ReportType): Promise<boolean> {
  * React hook for submitting reports
  * @returns Mutation object for handling report submissions
  */
-function useReport(contentId : string,type : "VIDEO" | "COMMENT") {
+function useReport(contentId: string, type: "VIDEO" | "COMMENT") {
   return useMutation({
     mutationKey: getQueryKeyForReport(contentId, type),
     mutationFn: submitReport,
     onError: (error) => {
-      console.error('Report submission failed:', error);
-    }
+      console.error("Report submission failed:", error);
+    },
   });
 }
 
-export { useReport, submitReport};
+export { useReport, submitReport };

@@ -10,7 +10,7 @@ import {
 import { PlayerContext, PlayerContextType } from "./context";
 import mitt from "mitt";
 import type { MittEmitter } from "./mitt";
-import { useBaseContext } from "src/context/base";
+import { useBaseContext } from "@genuin/components/context/base";
 
 type VideoProviderProps = {
   children: React.ReactNode;

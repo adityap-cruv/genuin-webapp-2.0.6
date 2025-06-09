@@ -3,7 +3,7 @@ import { Loader } from "@genuin/ui/loader";
 import { cn } from "@genuin/ui/utils";
 import type { ComponentProps } from "react";
 
-import { MemberItem, type MemberDataType } from "src/molecules/member-item";
+import { MemberItem, type MemberDataType } from "@molecules/member-item";
 
 type MemberListProps = {
   title?: string;

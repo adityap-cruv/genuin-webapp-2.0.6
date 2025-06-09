@@ -4,7 +4,7 @@ import { Loader } from "@genuin/ui/loader";
 import { cn } from "@genuin/ui/utils";
 import { useMemo, type ComponentProps } from "react";
 
-import { useComments } from "src/react-query/api/comments";
+import { useComments } from "@react-query/api/comments";
 
 import { CommentItem } from "./comment-item";
 

@@ -7,7 +7,7 @@ import {
 import { Avatar } from "@genuin/ui/avatar";
 import { useMemo } from "react";
 
-import { useCategory } from "src/react-query/api/category/category";
+import { useCategory } from "@react-query/api/category/category";
 
 export function Category() {
   const { data } = useCategory();

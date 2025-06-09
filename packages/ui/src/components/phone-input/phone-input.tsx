@@ -3,9 +3,9 @@ import * as React from "react";
 import * as RPNInput from "react-phone-number-input";
 import flags from "react-phone-number-input/flags";
 
-import { cn } from "src/lib/utils";
+import { cn } from "@genuin/ui/lib/utils";
 
-import { Button } from "../button";
+import { Button } from "@components/button";
 import {
   Command,
   CommandEmpty,
@@ -15,7 +15,6 @@ import {
 } from "../command";
 import { Input, type InputProps } from "../input";
 import { Popover, PopoverContent, PopoverTrigger } from "../popover/popover";
-
 
 type PhoneInputProps = Omit<
   React.InputHTMLAttributes<HTMLInputElement>,

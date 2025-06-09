@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { NOT_FOUND_ERROR_CODES } from "src/lib/constants/errors";
-import { axiosInstance } from "src/react-query/axios-instance";
-import { getQueryKeyForCommunityDetails } from "src/react-query/keys/community";
-import { API_PATHS } from "src/react-query/paths";
+import { NOT_FOUND_ERROR_CODES } from "@genuin/components/lib/constants/errors";
+import { axiosInstance } from "@react-query/axios-instance";
+import { getQueryKeyForCommunityDetails } from "@react-query/keys/community";
+import { API_PATHS } from "@react-query/paths";
 
 import { validateCommunityDetails } from "./schema";
 

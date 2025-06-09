@@ -1,7 +1,7 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { type ComponentProps } from "react";
 
-import { cn } from "../../lib/utils";
+import { cn } from "@genuin/ui/lib/utils";
 
 const loaderVariant = cva(
   "gencl:animate-spin gencl:rounded-full gencl:stroke-primary",

@@ -3,8 +3,8 @@ import { NotificationIcon, PinIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/utils";
 import type { ComponentProps } from "react";
 
-import { Link } from "src/molecules/link";
-import { ShareButton } from "src/molecules/share-button";
+import { Link } from "@molecules/link";
+import { ShareButton } from "@molecules/share-button";
 
 import { GenericDetails } from "../generic-details";
 import { GenericDetailsMetadata } from "../generic-details/generic-details-metadata";

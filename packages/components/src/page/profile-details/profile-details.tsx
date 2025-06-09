@@ -1,11 +1,11 @@
 import { Loader } from "@genuin/ui/loader";
 
-import { BecomeCreatorButton } from "src/molecules/become-creator-button";
-import { ShareButton } from "src/molecules/share-button";
-import { GenericDetails } from "src/organisms";
-import { GenericDetailsMetadata } from "src/organisms/generic-details/generic-details-metadata";
-import { useGetProfileDetails } from "src/react-query/api/profile/details";
-import { ProfileDetailsTabs } from "src/templates/profile-details-tabs";
+import { BecomeCreatorButton } from "@molecules/become-creator-button";
+import { ShareButton } from "@molecules/share-button";
+import { GenericDetails } from "@organisms";
+import { GenericDetailsMetadata } from "@organisms/generic-details/generic-details-metadata";
+import { useGetProfileDetails } from "@react-query/api/profile/details";
+import { ProfileDetailsTabs } from "@templates/profile-details-tabs";
 
 export function ProfileDetails({
   userName,

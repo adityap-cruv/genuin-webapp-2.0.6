@@ -1,7 +1,7 @@
 import { Image } from "@genuin/ui/image";
 import type { ComponentProps } from "react";
 
-import { useBaseContext } from "src/context/base";
+import { useBaseContext } from "@genuin/components/context/base";
 
 type BrandSloganProps = ComponentProps<typeof Image>;
 

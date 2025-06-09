@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import type { PostTileDataType } from "src/molecules/post-tile";
+import type { PostTileDataType } from "@molecules/post-tile";
 
 import { PostsGrid } from "./index"; // Assuming the component is in index.ts
 

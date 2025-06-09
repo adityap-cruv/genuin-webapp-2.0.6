@@ -1,5 +1,5 @@
 import { Button } from "@genuin/ui/button";
-import { useBaseContext } from "src/context/base";
+import { useBaseContext } from "@genuin/components/context/base";
 
 export function CtaButtons() {
   const { web_cta } = useBaseContext().brandDetails;

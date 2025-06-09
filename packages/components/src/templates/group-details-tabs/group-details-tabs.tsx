@@ -2,9 +2,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@genuin/ui/tabs";
 import { cn } from "@genuin/ui/utils";
 import { useMemo } from "react";
 
-import { GroupPosts } from "src/organisms/group-posts";
-import { MemberList } from "src/organisms/member-list";
-import { useGetGroupMembers } from "src/react-query/api/group/members";
+import { GroupPosts } from "@organisms/group-posts";
+import { MemberList } from "@organisms/member-list";
+import { useGetGroupMembers } from "@react-query/api/group/members";
 
 type GroupDetailsTabsProps = Omit<
   {

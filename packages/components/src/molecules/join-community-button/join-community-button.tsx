@@ -1,5 +1,5 @@
 import { Button, type ButtonPropsType } from "@genuin/ui/button";
-import type { CommunityUserRole } from "src/types/post";
+import type { CommunityUserRole } from "@types/post";
 
 type JoinCommunityButtonProps = {
   onCommunityJoinStatusChange?: (newRole: CommunityUserRole) => void;

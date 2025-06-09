@@ -1,7 +1,7 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { type ComponentProps } from "react";
-import { cn } from "../../lib/utils";
-import { getWebpUrlForImage } from "../../lib/utils";
+import { cn } from "@genuin/ui/lib/utils";
+import { getWebpUrlForImage } from "@genuin/ui/lib/utils";
 
 const imageVariants = cva("gencl:transition-all", {
   variants: {
@@ -60,7 +60,7 @@ export function Image({
 
   return (
     <img
-      className={cn(imageVariants({ aspectRatio, radius, scale}), className)}
+      className={cn(imageVariants({ aspectRatio, radius, scale }), className)}
       src={imageSrc}
       {...props}
     />

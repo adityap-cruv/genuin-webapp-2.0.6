@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 
-import { useFeedVideoSizeBox } from "src/hooks/use-feed-video-size-box";
-import { getNewDeviceId, useGetDeviceId } from "src/lib/utils/device-id";
-import { setBrandIdInAxiosInstance } from "src/react-query/axios-instance";
-import type { BrandDetailsConfigType } from "src/types/brand";
+import { useFeedVideoSizeBox } from "@genuin/components/hooks/use-feed-video-size-box";
+import {
+  getNewDeviceId,
+  useGetDeviceId,
+} from "@genuin/components/lib/utils/device-id";
+import { setBrandIdInAxiosInstance } from "@react-query/axios-instance";
+import type { BrandDetailsConfigType } from "@types/brand";
 
 import { BaseContext } from "./context";
 
