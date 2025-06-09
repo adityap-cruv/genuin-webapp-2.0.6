@@ -20,8 +20,8 @@ export function parseComments(data: CommentsResponseType): CommentListType {
         : Number(comment.type) === 2
           ? "audio"
           : "text",
-    url: comment.url ?? null,
-    videoUrlM3u8: comment.video_url_m3u8 ?? null,
+    audioUrl: comment.url ?? null,
+    videoUrlM3u8: comment.video_url_m3u8 ?? comment.url ?? null,
     thumbnail: comment.thumbnail ?? null,
     link: comment.link ?? null,
     duration: comment.duration ? Number(comment.duration) : null,

@@ -1,11 +1,14 @@
 import { Avatar } from "@genuin/ui/avatar";
-import { SparkIcon } from "@genuin/ui/icons";
 import { ReadMore } from "@genuin/ui/read-more";
+import { SparkIcon } from "@genuin/ui/icons";
+
+import type { CommentListType } from "src/react-query/api/comments";
 import { getTimeAgo } from "@genuin/ui/utils";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { ProfileLink } from "@molecules/profile-link";
 
-import type { CommentListType } from "@react-query/api/comments";
+import { Audio } from "src/organisms/comments/audio";
+import { Video } from "src/organisms/comments/video";
 
 export type CommentItemProps = {
   comment: CommentListType[number];
@@ -33,10 +36,7 @@ export function CommentItem({ comment }: CommentItemProps) {
             &nbsp; {comment.createdAt && getTimeAgo(comment.createdAt)}
           </span>
         </div>
-        <ReadMore
-          text={comment.commentText}
-          className="gencl:text-body-1-medium! gencl:text-secondary-900 gencl:break-all"
-        />
+        <CommentContent comment={comment} />
         <div className="gencl:flex gencl:items-center">
           <SparkIcon className="gencl:size-4" />
           <p className="gencl:text-body-2-medium gencl:text-secondary-300">
@@ -45,5 +45,25 @@ export function CommentItem({ comment }: CommentItemProps) {
         </div>
       </div>
     </div>
+  );
+}
+
+export function CommentContent({ comment }: CommentItemProps) {
+  return (
+    <>
+      {comment.type === "text" && (
+        <ReadMore
+          text={comment.commentText}
+          className="gencl:text-body-1-medium gencl:text-secondary-900 gencl:break-all"
+        />
+      )}
+      {comment.type === "video" && (
+        <Video
+          videoUrl={comment.videoUrlM3u8 || ""}
+          thumbnail={comment.thumbnail || ""}
+        />
+      )}
+      {comment.type === "audio" && <Audio audioUrl={comment.audioUrl || ""} />}
+    </>
   );
 }

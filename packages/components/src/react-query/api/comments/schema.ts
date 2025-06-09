@@ -24,7 +24,7 @@ const CommentSchema = z.object({
       return "text";
     }
   }),
-  url: z.string().nullish(),
+  audioUrl: z.string().nullish(),
   videoUrlM3u8: z.string().nullish(),
   thumbnail: z.string().nullish(),
   link: z.string().nullish(),

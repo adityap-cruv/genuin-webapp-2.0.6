@@ -1,6 +1,5 @@
+import { SVGIconsProps } from "../type";
 import React from "react";
-
-import type { SVGIconsProps } from "../type";
 export function ChevronUpIcon({ className, ...restProps }: SVGIconsProps) {
   return (
     <svg

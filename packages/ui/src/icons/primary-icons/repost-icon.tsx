@@ -1,8 +1,6 @@
-import type { VariantProps } from "class-variance-authority";
-import { cva } from "class-variance-authority";
-
 import { cn } from "@genuin/ui/lib/utils";
 import type { SVGIconsProps } from "../type";
+import { cva, VariantProps } from "class-variance-authority";
 
 const repostIconVariants = cva("gencl:stroke-black", {
   variants: {
