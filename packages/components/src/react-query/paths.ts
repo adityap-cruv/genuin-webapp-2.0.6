@@ -24,6 +24,10 @@ export const API_PATHS = {
    */
   COMMUNITY_MEMBERS: "/api/v3/community/members",
   /**
+   * Api path to fetch community feed.
+   */
+  COMMUNITY_FEED: "/goservices/feed/community",
+  /**
    * Api path to fetch user/brand details.
    */
   USER_DETAILS: "/goservices/profile/info",

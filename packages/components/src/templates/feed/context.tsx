@@ -71,6 +71,26 @@ export function FeedContextProvider({
   } = useBoolean(defaultExpandView);
 
   useEffect(() => {
+    const element = document.getElementsByTagName("body")[0];
+    if (showExpandView) {
+      element?.requestFullscreen({ navigationUI: "hide" });
+    } else {
+      document.exitFullscreen();
+    }
+
+    function handleFullScreenChange() {
+      if (!document.fullscreenElement) {
+        closeExpandView();
+      }
+    }
+    document.addEventListener("fullscreenchange", handleFullScreenChange);
+    // Cleanup the event listener on component unmount
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullScreenChange);
+    };
+  }, [showExpandView]);
+
+  useEffect(() => {
     if (!showExpandView) {
       onCloseExpandView?.();
     }

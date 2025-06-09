@@ -274,8 +274,7 @@ export function ReadMore({
     typeof processedText === "string" && !isExpanded
       ? truncatedText
       : processedText;
-
-  if (!text) return null;
+  if (!text || text.length === 0) return null;
 
   return (
     <div className="gencl:w-full gencl:overflow-clip" style={{ maxWidth }}>

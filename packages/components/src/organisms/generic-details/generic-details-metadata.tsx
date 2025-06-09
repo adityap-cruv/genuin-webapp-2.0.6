@@ -114,7 +114,7 @@ export function GenericDetailsMetadata({
       {handle && (
         <>
           <span className="gencl:flex gencl:items-center">
-            <ProfileLink userLogoType={handle.brandUserLogo}>
+            <ProfileLink url={handle.url} userLogoType={handle.brandUserLogo}>
               @{handle.userName}
             </ProfileLink>
           </span>

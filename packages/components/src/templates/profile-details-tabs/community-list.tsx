@@ -7,7 +7,7 @@ import { JoinCommunityButton } from "@molecules/join-community-button";
 import { JoinGroupButton } from "@molecules/join-group-button";
 import { ShareButton } from "@molecules/share-button";
 import { Tag } from "@molecules/tag";
-import { GenericDetails } from "@organisms";
+import { GenericDetails } from "@organisms/generic-details";
 import { GenericDetailsMetadata } from "@organisms/generic-details/generic-details-metadata";
 import { PostsGrid } from "@organisms/posts-grid";
 import {
@@ -21,6 +21,7 @@ import type {
 } from "@react-query/api/profile/posts/schema";
 
 import { FeedViewWrapper } from "./feed-view-wrapper";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 
 export function CommunityList({
   userId,
@@ -72,13 +73,23 @@ export function CommunityList({
               <GenericDetails
                 className="gencl:border-none gencl:[&>div]:p-0"
                 title={community.name}
-                url={`/test/${community.slug}`}
+                url={buildPageUrl({
+                  type: "community",
+                  slug: community.slug,
+                })}
                 metadata={
                   <GenericDetailsMetadata
                     stats={{
                       Members: community.noOfMembers,
                       Groups: community.noOfGroups,
                       Posts: community.noOfVideos,
+                    }}
+                    handle={{
+                      url: buildPageUrl({
+                        type: "community",
+                        slug: community.slug,
+                      }),
+                      userName: community.slug,
                     }}
                     privacyInfo={{
                       isPrivate: community.isPrivate,
@@ -96,7 +107,10 @@ export function CommunityList({
                     {community.brand && (
                       <Tag
                         alt={community.brand?.name}
-                        url={`/brand/${community.brand?.slug}`}
+                        url={buildPageUrl({
+                          type: "brand",
+                          slug: community.brand?.slug ?? "",
+                        })}
                         profileImage={{ url: community.brand.logo }}
                         userName={community.brand?.name}
                       />
@@ -113,6 +127,7 @@ export function CommunityList({
                   communityId={community.id}
                   initialLoops={community.loops}
                   forBrand={forBrand}
+                  totalLoops={community.noOfGroups}
                 />
               </DecorativeList>
             </div>
@@ -129,17 +144,27 @@ function Groups({
   communityId,
   initialLoops,
   forBrand,
+  totalLoops = 0,
 }: {
   profileId: string;
   communityId: string;
   initialLoops: LoopType[];
   forBrand: boolean;
+  totalLoops: number;
 }) {
-  const { isLoading, isError, data } = useGetProfileGroups(
+  const {
+    isLoading,
+    isError,
+    data,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useGetProfileGroups(
     profileId,
     communityId,
     forBrand,
-    initialLoops
+    initialLoops,
+    totalLoops
   );
 
   const groups = useMemo(() => {
@@ -156,43 +181,69 @@ function Groups({
     return <div>Error loading groups.</div>;
   }
 
-  return groups.map((group) => {
-    return (
-      <li key={group.id}>
-        <GenericDetails
-          className="gencl:overflow-clip"
-          variant="list"
-          title={group.name}
-          key={group.id}
-          metadata={
-            <GenericDetailsMetadata
-              privacyInfo={{ isPrivate: group.isPrivate }}
-              stats={{
-                members: group.noOfMembers,
-                posts: group.noOfVideos,
-                views: group.noOfViews,
-              }}
-            />
-          }
-          ctas={
-            <div className="gencl:flex gencl:gap-2 gencl:items-center">
-              <JoinGroupButton buttonText="Join" />
-              <GroupSubscriptionButton showText={false} />
-              <ShareButton showText={false} />
-            </div>
-          }
-        >
-          <GroupVideos
-            communityId={communityId}
-            initialVideos={group.videos}
-            loopId={group.id}
-            profileId={profileId}
-            forBrand={forBrand}
-          />
-        </GenericDetails>
-      </li>
-    );
-  });
+  return (
+    <>
+      {groups.map((group) => {
+        return (
+          <li key={group.id}>
+            <GenericDetails
+              className="gencl:overflow-clip"
+              variant="list"
+              url={buildPageUrl({
+                type: "group",
+                slug: group.slug,
+              })}
+              title={group.name}
+              key={group.id}
+              metadata={
+                <GenericDetailsMetadata
+                  privacyInfo={{ isPrivate: group.isPrivate }}
+                  stats={{
+                    Members: group.noOfMembers,
+                    Posts: group.noOfVideos,
+                    Views: group.noOfViews,
+                  }}
+                />
+              }
+              ctas={
+                <div className="gencl:flex gencl:gap-2 gencl:items-center">
+                  <JoinGroupButton buttonText="Join" />
+                  <GroupSubscriptionButton showText={false} />
+                  <ShareButton showText={false} />
+                </div>
+              }
+            >
+              <GroupVideos
+                communityId={communityId}
+                initialVideos={group.videos}
+                loopId={group.id}
+                profileId={profileId}
+                forBrand={forBrand}
+                totalVideos={group.noOfVideos}
+              />
+            </GenericDetails>
+          </li>
+        );
+      })}
+      {/* TODO: add lazy load shimmer here. */}
+      {isFetchingNextPage && (
+        <li>
+          <div className="gencl:animate-pulse gencl:h-4 gencl:bg-gray-200"></div>
+          Loading more groups...
+        </li>
+      )}
+      {hasNextPage && !isFetchingNextPage && (
+        <li>
+          <div
+            onClick={() => fetchNextPage()}
+            className="gencl:bg-secondary-50 gencl:cursor-pointer gencl:py-4 gencl:border gencl:flex gencl:w-full gencl:justify-center gencl:text-body-1-semi-bold gencl:text-secondary-600 gencl:border-secondary-150 gencl:rounded-xl"
+          >
+            View more groups
+          </div>
+        </li>
+      )}
+    </>
+  );
 }
 
 function GroupVideos({
@@ -201,12 +252,14 @@ function GroupVideos({
   loopId,
   initialVideos,
   forBrand,
+  totalVideos = 0,
 }: {
   profileId: string;
   communityId: string;
   loopId: string;
   initialVideos: VideoType[];
   forBrand: boolean;
+  totalVideos: number;
 }) {
   // post id from which the expand view is opened
   const [expandViewId, setExpandViewId] = useState<undefined | string>(
@@ -221,10 +274,11 @@ function GroupVideos({
     hasNextPage,
   } = useGetProfileVideos(
     profileId,
-    communityId,
     loopId,
+    communityId,
     forBrand,
-    initialVideos
+    initialVideos,
+    totalVideos
   );
 
   const videos = useMemo(
@@ -249,7 +303,7 @@ function GroupVideos({
             views: 0,
           },
         }))}
-        hasNextPage={false}
+        hasNextPage={hasNextPage}
         isFetchingNextPage={isFetchingNextPage}
         fetchNextPage={fetchNextPage}
         isLoading={isLoading}
@@ -259,7 +313,7 @@ function GroupVideos({
       >
         {hasNextPage && !isFetchingNextPage && (
           <div
-            className="gencl:flex-center gencl:pt-4 gencl:text-body-2-bold gencl:text-secondary-600 gencl:cursor-pointer"
+            className="gencl:flex-center gencl:pt-4 gencl:text-body-1-semi-bold gencl:text-secondary-600 gencl:cursor-pointer"
             onClick={() => fetchNextPage()}
           >
             View more

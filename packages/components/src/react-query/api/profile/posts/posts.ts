@@ -47,7 +47,6 @@ function prepareApiUrl(
     "https://api.qa.begenuin.com/" +
       (forBrand ? endpoint : endpoint.replace("/brand", ""))
   );
-  console.log("::API URL::", url.toString());
   url.searchParams.append(forBrand ? "brand_id" : "user_id", profileId);
   if (videosLimit)
     url.searchParams.append(
@@ -181,7 +180,8 @@ export function useGetProfileGroups(
   profileId: string,
   communityId: string,
   forBrand = false,
-  initialLoops: LoopType[]
+  initialLoops: LoopType[],
+  totalLoops: number
 ) {
   return useInfiniteQuery({
     queryFn: ({ pageParam }) =>
@@ -201,11 +201,15 @@ export function useGetProfileGroups(
       pages: [
         {
           loops: initialLoops,
-          nextPageParam: {
-            lastLoopId: initialLoops[initialLoops.length - 1]?.id ?? "",
-            pageSession: "",
-          },
-          end: false,
+          nextPageParam:
+            // If totalLoops is equal to the length of initialLoops, it means there are no more loops to fetch.
+            totalLoops === initialLoops.length
+              ? null
+              : {
+                  lastLoopId: initialLoops[initialLoops.length - 1]?.id ?? "",
+                  pageSession: "",
+                },
+          end: totalLoops === initialLoops.length,
         },
       ],
     },
@@ -257,7 +261,7 @@ async function fetchProfileVideos({
 
     return {
       videos,
-      end: false, // Assuming this stays hardcoded like your original
+      end: resData.data.end_of_messages,
       nextPageParam: {
         lastVideoId: videos[videos.length - 1]?.id ?? "",
         pageSession: resData.data?.page_session ?? "",
@@ -274,11 +278,12 @@ export function useGetProfileVideos(
   loopId: string,
   communityId: string,
   forBrand = false,
-  initialVideos: VideoType[]
+  initialVideos: VideoType[],
+  totalVideos: number
 ) {
   return useInfiniteQuery({
     queryKey: getQueryKeyForProfileVideos(communityId, loopId, forBrand),
-    queryFn: ({ pageParam }) =>
+    queryFn: ({ pageParam }: { pageParam: FetchVideosPageParamType }) =>
       fetchProfileVideos({
         profileId,
         loopId,
@@ -287,25 +292,22 @@ export function useGetProfileVideos(
         videosLimit: getVideoLimit(!!pageParam?.lastVideoId, false),
         forBrand,
       }),
-    initialPageParam: {
-      lastVideoId: initialVideos[initialVideos.length - 1]?.id ?? "",
-      pageSession: "",
-    },
+    initialPageParam: null,
     initialData: {
-      pageParams: [
-        {
-          lastVideoId: initialVideos[initialVideos.length - 1]?.id ?? "",
-          pageSession: "",
-        },
-      ],
+      pageParams: [null],
       pages: [
         {
           videos: initialVideos,
-          end: false,
-          nextPageParam: {
-            lastVideoId: initialVideos[initialVideos.length - 1]?.id ?? "",
-            pageSession: "",
-          },
+          end: initialVideos.length === totalVideos,
+          nextPageParam:
+            // If totalVideos is equal to the length of initialVideos, it means there are no more videos to fetch.
+            initialVideos.length === totalVideos
+              ? null
+              : {
+                  lastVideoId: initialVideos[initialVideos.length - 1]
+                    ?.id as string,
+                  pageSession: "",
+                },
         },
       ],
     },

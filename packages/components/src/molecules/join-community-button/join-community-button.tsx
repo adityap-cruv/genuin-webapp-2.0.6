@@ -13,7 +13,7 @@ export function JoinCommunityButton({
 }: JoinCommunityButtonProps) {
   return (
     <Button
-      size="sm"
+      size="md"
       onClick={() => onCommunityJoinStatusChange?.("MEMBER")}
       {...rest}
     >

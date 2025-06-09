@@ -2,6 +2,8 @@ import { Avatar } from "@genuin/ui/avatar";
 import { SparkIcon } from "@genuin/ui/icons";
 import { ReadMore } from "@genuin/ui/read-more";
 import { getTimeAgo } from "@genuin/ui/utils";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { ProfileLink } from "@molecules/profile-link";
 
 import type { CommentListType } from "@react-query/api/comments";
 
@@ -9,6 +11,7 @@ export type CommentItemProps = {
   comment: CommentListType[number];
 };
 
+// TODO: Check why brand is not handled in the comment item
 export function CommentItem({ comment }: CommentItemProps) {
   const { owner } = comment;
   return (
@@ -21,10 +24,14 @@ export function CommentItem({ comment }: CommentItemProps) {
       />
       <div className="gencl:space-y-2">
         <div className="gencl:flex">
-          <p className="gencl:text-body-1-bold gencl:px-0">{owner.nickname}</p>
-          <p className="gencl:text-body-1-medium gencl:text-secondary-500">
+          <ProfileLink
+            url={buildPageUrl({ type: "profile", slug: owner.nickname })}
+          >
+            @{owner.nickname}
+          </ProfileLink>
+          <span className="gencl:text-body-1-medium gencl:text-secondary-500">
             &nbsp; {comment.createdAt && getTimeAgo(comment.createdAt)}
-          </p>
+          </span>
         </div>
         <ReadMore
           text={comment.commentText}

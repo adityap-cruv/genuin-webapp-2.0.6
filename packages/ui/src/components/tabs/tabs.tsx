@@ -44,7 +44,7 @@ function TabsTrigger({
       data-slot="tabs-trigger"
       className={cn(
         "gencl:data-[state=active]:border-b-2 gencl:border-b-2 gencl:border-transparent gencl:data-[state=active]:border-primary ",
-        "gencl:inline-flex gencl:h-[calc(100%-1px)] gencl:flex-1 gencl:items-center gencl:justify-center ",
+        "gencl:inline-flex gencl:cursor-pointer gencl:h-[calc(100%-1px)] gencl:flex-1 gencl:items-center gencl:justify-center ",
         "gencl:gap-1.5 gencl:p-2 gencl:whitespace-nowrap gencl:transition-[color,box-shadow]",
         "gencl:disabled:pointer-events-none gencl:disabled:opacity-50 gencl:[&_svg]:pointer-events-none",
         "gencl:[&_svg]:shrink-0 gencl:[&_svg:not([class*=\'size-\'])]:size-4",
@@ -64,7 +64,7 @@ function TabsContent({
     <TabsPrimitive.Content
       data-slot="tabs-content"
       className={cn(
-        "gencl:flex-1 gencl:border-t gencl:border-secondary-300 gencl:box-border gencl:pt-6 gencl:outline-none",
+        "gencl:flex-1 gencl:border-t gencl:border-secondary-150 gencl:box-border gencl:pt-6 gencl:outline-none",
         className
       )}
       {...props}

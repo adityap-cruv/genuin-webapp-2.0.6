@@ -59,6 +59,11 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   const [buttonAction, setButtonAction] = useState<ButtonActionType>();
   const [playingState, setPlayingState] = useState<PlayingStateType>("LOADING");
   /**
+   * Whether to show seeker for player or not.
+   * Shows when user performs PAUSE action, hides when user performs PLAY action.
+   */
+  const [showSeeker, setShowSeeker] = useState(false);
+  /**
    * This state is used to play or pause the video player.
    */
   const [feedPlayerShouldPlay, setFeedPlayerShouldPlay] = useState(
@@ -102,6 +107,18 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       };
     }
   }, [isActive]);
+
+  /**
+   * In case of user action only we need to show seeker.
+   * If user action is play or pause, we need to show the seeker.
+   */
+  useEffect(() => {
+    if (buttonAction === "PAUSE") {
+      setShowSeeker(true);
+    } else if (buttonAction === "PLAY") {
+      setShowSeeker(false);
+    }
+  }, [buttonAction]);
 
   const setVideoTimeState = useCallback((timeState: VideoTimeStateType) => {
     videoStateRef.current = {
@@ -241,6 +258,9 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
 
     setVideoTimeState,
     onVideoTimeStateChange,
+
+    showSeeker,
+    setShowSeeker,
 
     feedPlayerShouldPlay: isActive && feedPlayerShouldPlay,
     togglePlay,

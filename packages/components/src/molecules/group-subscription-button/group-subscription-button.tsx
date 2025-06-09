@@ -13,7 +13,7 @@ export function GroupSubscriptionButton({
 }: GroupSubscriptionButtonProps) {
   return (
     <Button
-      size="sm"
+      size="md"
       theme="secondary"
       {...rest}
       onClick={() => onNotificationStatusChange?.()}
@@ -21,7 +21,7 @@ export function GroupSubscriptionButton({
       <NotificationIcon
         className={rest.shape === "pill" ? "gencl:h-3.5" : ""}
       />
-      {showText && "Subscribe"}
+      {showText && "Notify Me"}
     </Button>
   );
 }

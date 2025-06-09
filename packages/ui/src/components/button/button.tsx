@@ -11,7 +11,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: "",
-        icon: "gencl:px-1!",
+        icon: "",
         rounded: "gencl:rounded-full",
       },
       theme: {
@@ -71,6 +71,7 @@ function Button({
   theme,
   size,
   shape,
+  variant,
   asChild = false,
   ...props
 }: ButtonPropsType) {
@@ -79,7 +80,7 @@ function Button({
   return (
     <Comp
       data-slot="button"
-      className={cn(buttonVariants({ theme, size, shape }), className)}
+      className={cn(buttonVariants({ theme, size, shape, variant }), className)}
       {...props}
     />
   );

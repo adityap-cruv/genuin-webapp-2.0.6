@@ -118,7 +118,7 @@ export function SideInfo({
         {createdIn && (
           <EntityInfo
             icon={
-              <BagIcon className="gencl:stroke-secondary-600 gencl:size-6" />
+              <BagIcon className="gencl:stroke-secondary-600 gencl:size-6 gencl:shrink-0" />
             }
             title="Created in&nbsp;"
             entity={createdIn}

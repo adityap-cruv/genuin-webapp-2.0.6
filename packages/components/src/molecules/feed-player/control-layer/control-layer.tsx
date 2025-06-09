@@ -22,8 +22,7 @@ export const ControlLayer = memo(function ControlLayer({
   className,
   ...restProps
 }: ControlLayerPropsType) {
-  const { showSeeker, showExpandView, togglePlay, toggleMuted, muted } =
-    usePlayerContext();
+  const { showExpandView, togglePlay, toggleMuted, muted } = usePlayerContext();
   // const { hideGestureOverlay } = useGestureOverlayManager();
 
   const {
@@ -124,8 +123,8 @@ export const ControlLayer = memo(function ControlLayer({
         <Scrubber
           spriteUrl={postDetails.video.thumbnailSprite ?? ""}
           className={cn(
-            "gencl:absolute gencl:bottom-0 gencl:z-10 gencl:transition-all",
-            showSeeker && "gencl:bottom-4"
+            "gencl:absolute gencl:bottom-0 gencl:z-10 gencl:transition-all"
+            // showSeeker && "gencl:bottom-4"
           )}
         />
       </div>

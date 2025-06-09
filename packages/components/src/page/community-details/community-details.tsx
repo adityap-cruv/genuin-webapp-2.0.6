@@ -2,10 +2,11 @@ import { Image } from "@genuin/ui/image";
 import { Loader } from "@genuin/ui/loader";
 import { cn } from "@genuin/ui/utils";
 import type { ComponentProps } from "react";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 
 import { JoinCommunityButton } from "@molecules/join-community-button";
 import { ShareButton } from "@molecules/share-button";
-import { GenericDetails } from "@organisms";
+import { GenericDetails } from "@organisms/generic-details";
 import { GenericDetailsMetadata } from "@organisms/generic-details/generic-details-metadata";
 import { MemberList } from "@organisms/member-list";
 import { SideInfo } from "@organisms/side-info";
@@ -45,7 +46,10 @@ export function CommunityDetails({ slug }: { slug: string }) {
             url: communityDetails.leader.profile_image ?? "",
           },
           name: communityDetails.leader.name ?? "",
-          url: `/test/${communityDetails.leader.member_id}`,
+          url: buildPageUrl({
+            type: !!communityDetails.leader.brand ? "brand" : "profile",
+            slug: communityDetails.leader.nickname,
+          }),
           userName: communityDetails.leader.nickname,
           brand: {
             userLogoType: communityDetails.leader.brand?.brand_user_logo,
@@ -60,7 +64,10 @@ export function CommunityDetails({ slug }: { slug: string }) {
             url: moderator.profile_image_m ?? moderator.profile_image ?? "",
           },
           name: moderator.name ?? "",
-          url: `/test/${moderator.member_id}`,
+          url: buildPageUrl({
+            type: !!moderator.brand ? "brand" : "profile",
+            slug: moderator.nickname,
+          }),
           userName: moderator.nickname,
         })),
       ]}
@@ -73,7 +80,7 @@ export function CommunityDetails({ slug }: { slug: string }) {
         src={communityDetails?.banner ?? ""}
         className="gencl:shrink-0"
       />
-      <div className="gencl:flex gencl:pt-6">
+      <div className="gencl:flex gencl:pt-6 gencl:gap-6">
         <div>
           <GenericDetails
             title={communityDetails?.name ?? ""}
@@ -105,7 +112,7 @@ export function CommunityDetails({ slug }: { slug: string }) {
             ctas={
               <div className="gencl:flex gencl:gap-2">
                 <JoinCommunityButton />
-                <ShareButton showText />
+                <ShareButton />
               </div>
             }
           />
@@ -120,8 +127,10 @@ export function CommunityDetails({ slug }: { slug: string }) {
                 url: communityDetails.leader.profile_image ?? "",
                 isAvatar: communityDetails.leader.is_avatar,
               },
-              // TODO: add path  name
-              url: `/test`,
+              url: buildPageUrl({
+                type: !!communityDetails.leader.brand ? "brand" : "profile",
+                slug: communityDetails.leader.nickname,
+              }),
               userName: communityDetails.leader.nickname ?? "",
               name: communityDetails.leader.name ?? "",
               userLogoType: communityDetails.brand?.brand_user_logo,
@@ -131,7 +140,10 @@ export function CommunityDetails({ slug }: { slug: string }) {
                 url: communityDetails.brand?.logo ?? "",
                 isAvatar: false,
               },
-              url: `/test`,
+              url: buildPageUrl({
+                type: "brand",
+                slug: communityDetails.brand?.brand_slug ?? "",
+              }),
               name: communityDetails.brand?.name ?? "",
               userName: communityDetails.brand?.brand_slug ?? "",
               userLogoType: communityDetails.brand?.brand_user_logo,

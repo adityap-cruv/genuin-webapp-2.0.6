@@ -128,7 +128,6 @@ export const VideoPlayer = memo(function VideoPlayer({
 
   useEffect(() => {
     const player = playerRef.current;
-    console.log("play in useEffect::", play);
     playRef.current = play;
     if (play) {
       player?.play();

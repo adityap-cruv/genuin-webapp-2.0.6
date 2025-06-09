@@ -29,7 +29,7 @@ export function GroupDetailsTabs({
         <TabsTrigger value="members">Members</TabsTrigger>
       </TabsList>
       <TabsContent value="posts">
-        <GroupPosts slug={slug} lazyLoad="auto" />
+        <GroupPosts slug={slug} lazyLoad="auto" enableFeedView />
       </TabsContent>
       <TabsContent value="members">
         <GroupMembers slug={slug} />

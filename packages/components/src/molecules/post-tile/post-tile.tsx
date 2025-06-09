@@ -47,7 +47,7 @@ export function PostTile({
       )}
       {stats && (
         <Stats
-          className="gencl:group-hover:hidden gencl:flex gencl:gap-2 gencl:justify-around gencl:p-2 gencl:absolute gencl:bottom-0 gencl:w-full"
+          className="gencl:group-hover:hidden gencl:flex gencl:gap-2 gencl:justify-between gencl:p-2 gencl:absolute gencl:bottom-0 gencl:w-full"
           valueClassName="gencl:text-white! gencl:text-body-2-medium"
           stats={{
             views: {

@@ -9,6 +9,8 @@ import { cva } from "class-variance-authority";
 import { EntityHoverCardContent } from "@organisms/post-details/pill-hover-card-content";
 
 import { JoinCommunityButton } from "../join-community-button";
+import { Link } from "../link";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 
 const communityPillVariants = cva(
   "gencl:flex gencl:w-fit gencl:items-center gencl:gap-1 gencl:p-1 gencl:rounded-full gencl:transition-all gencl:cursor-pointer",
@@ -34,6 +36,7 @@ type CommunityPillProps = {
     name: string;
     profileImage: string;
     isPrivate: boolean;
+    slug: string;
     brand?: {
       slug: string;
     };
@@ -48,26 +51,28 @@ export function CommunityPill({
   const auth = false;
 
   const pill = (
-    <div className={communityPillVariants({ variant })}>
-      <div className="gencl:flex gencl:gap-1 gencl:items-center">
-        <Avatar
-          alt={data?.name}
-          imageUrl={data?.profileImage}
-          isAvatar={false}
-          size="xs"
-        />
-        <span className="gencl:text-body-2-medium gencl:line-clamp-1">
-          {data?.name}
-        </span>
+    <Link href={buildPageUrl({ type: "community", slug: data.slug })}>
+      <div className={communityPillVariants({ variant })}>
+        <div className="gencl:flex gencl:gap-1 gencl:items-center">
+          <Avatar
+            alt={data?.name}
+            imageUrl={data?.profileImage}
+            isAvatar={false}
+            size="xs"
+          />
+          <span className="gencl:text-body-2-medium gencl:line-clamp-1">
+            {data?.name}
+          </span>
+        </div>
+        {auth && (
+          <JoinCommunityButton
+            buttonText="Join"
+            shape="pill"
+            theme={variant === "dark" ? "secondary" : "primary"}
+          />
+        )}
       </div>
-      {auth && (
-        <JoinCommunityButton
-          buttonText="Join"
-          shape="pill"
-          theme={variant === "dark" ? "secondary" : "primary"}
-        />
-      )}
-    </div>
+    </Link>
   );
 
   if (!isHoverable) {

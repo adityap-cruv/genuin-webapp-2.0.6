@@ -81,7 +81,7 @@ export function PostsGrid({
 
   return (
     <div className={cn("gencl:w-full gencl:h-full ", className)} {...restProps}>
-      <div className="gencl:flex gencl:flex-wrap gencl:gap-4">
+      <div className="gencl:flex gencl:flex-wrap gencl:gap-2">
         {lazyLoad === "auto" ? (
           <InfiniteScroll
             getNextPage={fetchNextPage}

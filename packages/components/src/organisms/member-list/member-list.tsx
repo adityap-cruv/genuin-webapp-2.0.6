@@ -58,7 +58,7 @@ export function MemberList({
           <MemberItem
             key={member.memberId}
             memberData={member}
-            className="gencl:py-2 gencl:rounded-lg gencl:hover:bg-secondary-150 gencl:pl-2 gencl:pr-4"
+            className="gencl:py-2 gencl:mb-2 gencl:rounded-lg gencl:hover:bg-secondary-150 gencl:pl-2 gencl:pr-4"
           />
         ))}
       </InfiniteScroll>

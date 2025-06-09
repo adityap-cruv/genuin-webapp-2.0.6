@@ -93,7 +93,7 @@ export function GenericDetails({
       className={cn(
         "",
         variant === "list" &&
-          "gencl:gap-4 gencl:border-secondary-200 gencl:border gencl:rounded-xl",
+          "gencl:gap-4 gencl:border-secondary-150 gencl:border gencl:rounded-xl",
         className
       )}
       {...restProps}
@@ -113,30 +113,32 @@ export function GenericDetails({
           />
         )}
         <div className="gencl:flex gencl:w-full gencl:gap-4 gencl:justify-between">
-          <div className="gencl:flex gencl:flex-col gencl:gap-2">
-            {title && (
-              <Link href={url}>
-                <p
-                  className={cn(
-                    "gencl:line-clamp-2",
-                    variant === "default"
-                      ? "gencl:text-headline-2-semi-bold"
-                      : "gencl:text-headline-3-semi-bold"
-                  )}
-                >
-                  {title}
-                </p>
-              </Link>
-            )}
-            {metadata && metadata}
-            {description && (
-              <ReadMore
-                className="gencl:text-secondary-600! gencl:text-body-1-medium"
-                text={description}
-                maxLines={2}
-              />
-            )}
-            {links && <SocialLinks links={links} />}
+          <div className="gencl:space-y-4">
+            <div className="gencl:space-y-2">
+              {title && (
+                <Link href={url}>
+                  <p
+                    className={cn(
+                      "gencl:line-clamp-2",
+                      variant === "default"
+                        ? "gencl:text-headline-2-semi-bold"
+                        : "gencl:text-headline-3-semi-bold"
+                    )}
+                  >
+                    {title}
+                  </p>
+                </Link>
+              )}
+              {metadata && metadata}
+              {description && (
+                <ReadMore
+                  className="gencl:text-secondary-600! gencl:text-body-1-medium"
+                  text={description}
+                  maxLines={2}
+                />
+              )}
+              {links && <SocialLinks links={links} />}
+            </div>
             {ctas && variant === "default" && ctas}
           </div>
           {ctas && variant === "list" && ctas}

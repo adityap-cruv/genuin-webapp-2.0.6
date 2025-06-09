@@ -25,3 +25,12 @@ export function getQueryKeyForCommunityGroups(slug: string) {
 export function getQueryKeyForCommunityMembers(slug: string) {
   return [...baseQueryKey, "community", "members", slug];
 }
+
+/**
+ * Generates a query key for fetching community feed.
+ * @param slug
+ * @returns
+ */
+export function getQueryKeyForCommunityFeed(slug: string, videoId: string) {
+  return [...baseQueryKey, "community", "feed", slug, videoId];
+}

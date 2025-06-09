@@ -63,9 +63,9 @@ export function DecorativeList({
         "gencl:[&>li]:relative gencl:pl-4 gencl:[&>li]:pl-8",
         // Pseudo-element styles for list decoration
         "gencl:[&>li]:before:content-[''] gencl:[&>li]:before:w-12 gencl:[&>li]:before:h-2.5",
-        "gencl:[&>li]:before:rounded-bl-[12px] gencl:[&>li]:before:border-secondary-300",
+        "gencl:[&>li]:before:rounded-bl-[12px] gencl:[&>li]:before:border-secondary-150",
         "gencl:[&>li]:before:border-b gencl:[&>li]:before:border-l gencl:[&>li]:before:border-solid",
-        "gencl:[&>li]:before:absolute gencl:[&>li]:before:left-[-1.01em] gencl:[&>li]:before:top-1/2",
+        "gencl:[&>li]:before:absolute gencl:[&>li]:before:left-[-1em] gencl:[&>li]:before:top-1/2",
         "gencl:[&>li]:before:-translate-y-full",
         // Hide pseudo-element for items with has-child class
         "gencl:[&>li.has-child]:before:hidden",

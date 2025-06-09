@@ -47,7 +47,6 @@ export function Stats({
   ...restProps
 }: StatsPropsType) {
   const statEntries = Object.entries(stats);
-  console.log("statEntries", statEntries);
   return (
     <div className={cn(className)} {...restProps}>
       {statEntries.map(([key, value], index) => {

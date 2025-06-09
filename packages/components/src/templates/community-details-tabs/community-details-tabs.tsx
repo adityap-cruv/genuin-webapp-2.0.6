@@ -1,3 +1,4 @@
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { Loader } from "@genuin/ui/loader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@genuin/ui/tabs";
 import { cn } from "@genuin/ui/utils";
@@ -5,12 +6,12 @@ import { cn } from "@genuin/ui/utils";
 import { GroupSubscriptionButton } from "@molecules/group-subscription-button";
 import { JoinGroupButton } from "@molecules/join-group-button";
 import { ShareButton } from "@molecules/share-button";
-import { GenericDetails } from "@organisms";
+import { GenericDetails } from "@organisms/generic-details";
 import { GenericDetailsMetadata } from "@organisms/generic-details/generic-details-metadata";
-import { GroupPosts } from "@organisms/group-posts";
 import { MemberList } from "@organisms/member-list";
 import { useGetCommunityGroups } from "@react-query/api/community/groups";
 import { useGetCommunityMembers } from "@react-query/api/community/members";
+import { Posts } from "./posts";
 
 type CommunityDetailsTabsPropsType = Omit<
   {
@@ -34,7 +35,7 @@ export function CommunityDetailsTabs({
         <TabsTrigger value="posts">Posts</TabsTrigger>
         <TabsTrigger value="members">Members</TabsTrigger>
       </TabsList>
-      <TabsContent value="posts" className="gencl:px-4">
+      <TabsContent value="posts">
         <CommunityGroups slug={slug} />
       </TabsContent>
       <TabsContent value="members">
@@ -74,13 +75,17 @@ function CommunityGroups({ slug }: { slug: string }) {
       key={group.slug}
       className="gencl:mb-4 gencl:overflow-clip"
       title={group.group.group_name ?? ""}
+      url={buildPageUrl({
+        type: "group",
+        slug: group.slug,
+      })}
       metadata={
         <GenericDetailsMetadata
           privacyInfo={{ isPrivate: !group.is_view_allowed }}
           stats={{
-            members: group.group.no_of_members,
-            posts: group.group.no_of_videos,
-            views: group.group.no_of_views,
+            Members: group.group.no_of_members,
+            Posts: group.group.no_of_videos,
+            Views: group.group.no_of_views,
           }}
         />
       }
@@ -92,11 +97,7 @@ function CommunityGroups({ slug }: { slug: string }) {
         </div>
       }
     >
-      <GroupPosts
-        slug={group.slug}
-        className="gencl:bg-secondary-50 gencl:p-4"
-        lazyLoad="manual"
-      />
+      <Posts groupSlug={group.slug} communitySlug={slug} />
     </GenericDetails>
   ));
 }

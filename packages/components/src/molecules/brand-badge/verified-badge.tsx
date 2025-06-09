@@ -1,8 +1,8 @@
 // Import necessary libraries and modules
 import { TickIcon } from "@genuin/ui/icons";
 import { cva } from "class-variance-authority"; // Import the class variance authority (cva) function
-import cn from "classnames"; // Import the classnames utility for conditional class names
 import React from "react";
+import { cn } from "@genuin/ui/utils";
 
 // Define the properties for the VerifiedBadge component
 type VerifiedBadgeProps = {

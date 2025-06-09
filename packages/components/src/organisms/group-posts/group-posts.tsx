@@ -1,5 +1,5 @@
 import type { ComponentProps } from "react";
-import { lazy, Suspense, useCallback, useMemo, useState } from "react";
+import { Suspense, useCallback, useMemo, useState, lazy } from "react";
 
 import { PostsGrid } from "@organisms/posts-grid";
 import { useGetGroupFeed } from "@react-query/api/group/feed";
@@ -19,14 +19,23 @@ type GroupPostsPropsType = Omit<
   | "isFetchingNextPage"
   | "isError"
   | "isLoading"
-> & { slug: string };
+> & {
+  slug: string;
+  /**
+   * if you want to enable expand view for group posts, set this to true
+   */
+  enableFeedView: boolean;
+};
 
 export function GroupPosts({
   slug,
   lazyLoad,
+  enableFeedView = false,
+  onPostTileClick,
   ...restProps
 }: GroupPostsPropsType) {
-  const [expandViewIndex, setExpandViewIndex] = useState<number>(-1);
+  // State to manage the index of the post to expand
+  const [expandViewId, setExpandViewId] = useState<string | null>(null);
   const {
     isError,
     isLoading,
@@ -41,14 +50,18 @@ export function GroupPosts({
     [feedData]
   );
 
-  const handlePostClick = useCallback(
+  const handlePostTileClick = useCallback(
     (postId: string) => {
-      setExpandViewIndex(
-        feed?.findIndex((post) => post.video.id === postId) ?? -1
-      );
+      onPostTileClick?.(postId);
+      enableFeedView && setExpandViewId(postId);
     },
-    [feed]
+    [enableFeedView, onPostTileClick]
   );
+
+  const handleCloseExpandView = useCallback(() => {
+    if (!enableFeedView) return;
+    setExpandViewId(null);
+  }, [enableFeedView]);
 
   return (
     <>
@@ -68,7 +81,7 @@ export function GroupPosts({
         isFetchingNextPage={isFetchingNextPage}
         isError={isError}
         lazyLoad={lazyLoad}
-        onPostTileClick={handlePostClick}
+        onPostTileClick={handlePostTileClick}
         {...restProps}
       >
         {lazyLoad === "manual" && (
@@ -84,10 +97,12 @@ export function GroupPosts({
           </>
         )}
       </PostsGrid>
-      {feed && expandViewIndex !== -1 && (
+      {enableFeedView && feed && expandViewId !== null && (
         <Suspense>
           <FeedView
-            startIndex={expandViewIndex}
+            startIndex={feed.findIndex(
+              (post) => post.video.id === expandViewId
+            )}
             defaultExpandView={true}
             feedData={{
               videos: feed,
@@ -96,9 +111,7 @@ export function GroupPosts({
               hasNextPage,
               isFetchingNextPage,
             }}
-            onCloseExpandView={() => {
-              setExpandViewIndex(-1);
-            }}
+            onCloseExpandView={handleCloseExpandView}
           />
         </Suspense>
       )}

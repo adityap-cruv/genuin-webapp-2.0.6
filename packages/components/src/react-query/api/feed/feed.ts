@@ -22,7 +22,7 @@ const feedTypeToNumber: Record<FeedType, number> = {
  */
 async function fetchFeed(
   feedType: FeedType,
-  pageParam: {
+  pageParam?: {
     pageSession?: string;
     lastVideoId?: string | undefined;
   }
@@ -60,26 +60,19 @@ async function fetchFeed(
 export const useFeed = (feedType: FeedType) => {
   return useInfiniteQuery({
     queryKey: getQueryKeyForFeed(feedType),
-    queryFn: ({
+    queryFn: async ({
       pageParam,
     }: {
-      pageParam?: { pageSession?: string; lastVideoId?: string | undefined };
-    }) =>
-      fetchFeed(
-        feedType,
-        pageParam ?? { pageSession: undefined, lastVideoId: undefined }
-      ),
-    initialPageParam: {
-      pageSession: undefined,
-      lastVideoId: undefined,
-    },
+      pageParam?: { pageSession?: string; lastVideoId?: string };
+    }) => await fetchFeed(feedType, pageParam),
+    initialPageParam: undefined,
     getNextPageParam: (lastPage) => {
       const lastPageData = lastPage.feed[lastPage.feed.length - 1];
       if (!lastPageData) return undefined;
 
       return {
         pageSession: lastPage.pageSession,
-        lastVideoId: lastPageData.video.id as string | undefined,
+        lastVideoId: lastPageData.video.id,
       };
     },
   });

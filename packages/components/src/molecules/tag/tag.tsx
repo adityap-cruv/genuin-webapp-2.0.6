@@ -17,10 +17,11 @@ export function Tag({
   userName,
   url,
   userLogoType,
+  title,
   className,
   ...restProps
 }: TagProps) {
-  const hasProfileImage = profileImage && profileImage.url;
+  const hasProfileImage = profileImage;
   return (
     <Link href={url}>
       <div
@@ -29,6 +30,7 @@ export function Tag({
           !hasProfileImage && "gencl:pl-2",
           className
         )}
+        title={title ?? userName}
         {...restProps}
       >
         {hasProfileImage && (
@@ -39,7 +41,10 @@ export function Tag({
             imageUrl={profileImage.url}
           />
         )}
-        <p className="gencl:text-body-1-semi-bold">
+        <p
+          title={userName}
+          className="gencl:text-body-1-semi-bold gencl:line-clamp-1 gencl:break-all"
+        >
           {/* No userName will be bigger than 24 characters */}
           {userName.length > 24 ? `${userName.slice(0, 21)}...` : userName}
         </p>

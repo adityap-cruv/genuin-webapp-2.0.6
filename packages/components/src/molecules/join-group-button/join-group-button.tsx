@@ -11,7 +11,7 @@ export function JoinGroupButton({
   ...rest
 }: JoinGroupButtonProps) {
   return (
-    <Button size="sm" onClick={() => onGroupJoinStatusChange?.()} {...rest}>
+    <Button size="md" onClick={() => onGroupJoinStatusChange?.()} {...rest}>
       {buttonText}
     </Button>
   );

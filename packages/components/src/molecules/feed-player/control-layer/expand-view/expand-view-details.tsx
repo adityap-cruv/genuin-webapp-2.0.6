@@ -5,6 +5,9 @@ import type { ComponentProps } from "react";
 import { CommunityPill } from "@molecules/community-pill";
 import { GroupPill } from "@molecules/group-pill";
 import type { PostDetailsType } from "@react-query/api/feed/schema";
+import { usePlayerContext } from "../../context";
+import { ProfileLink } from "@molecules/profile-link";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 
 type ExpandViewProps = ComponentProps<"div"> & {
   postDetails: PostDetailsType;
@@ -15,6 +18,8 @@ export function ExpandViewDetails({
   postDetails,
   ...restProps
 }: ExpandViewProps) {
+  const { showSeeker } = usePlayerContext();
+
   return (
     <div
       className={cn(
@@ -30,19 +35,22 @@ export function ExpandViewDetails({
           alt={postDetails.owner.name ?? ""}
           isAvatar={postDetails.owner.isAvatar}
         />
-        {postDetails.owner.brand ? (
-          <a href={postDetails.owner.brand.slug}>
-            @{postDetails.owner.userName}
-          </a>
-        ) : (
-          <a href={postDetails.owner.userName}>@{postDetails.owner.userName}</a>
-        )}
+        <ProfileLink
+          url={buildPageUrl({
+            type: !!postDetails.owner.brand ? "brand" : "profile",
+            slug: postDetails.owner.userName,
+          })}
+          userLogoType={postDetails.owner.brand?.userLogo}
+        >
+          @{postDetails.owner.userName}
+        </ProfileLink>
       </div>
       <ReadMore
         showExpandText={false}
         text={postDetails.video.description}
         maxLines={2}
         shouldAnimate
+        position="overlay"
         className="gencl:text-white! gencl:text-body-1-medium"
       />
       <div className="gencl:flex gencl:flex-nowrap gencl:gap-2 gencl:w-full gencl:overflow-x-auto gencl:z-10">
@@ -52,6 +60,7 @@ export function ExpandViewDetails({
           variant="dark"
           data={{
             id: postDetails.community.id,
+            slug: postDetails.community.slug,
             isPrivate: postDetails.community.isPrivate,
             name: postDetails.community.name ?? "",
             profileImage: postDetails.community.profileImage ?? "",
@@ -64,6 +73,7 @@ export function ExpandViewDetails({
           variant="dark"
           data={{
             isPrivate: false,
+            slug: postDetails.group.slug,
             name: postDetails.group.name ?? "",
             community: {
               name: postDetails.community.name ?? "",
@@ -72,6 +82,12 @@ export function ExpandViewDetails({
           }}
         />
       </div>
+      <div
+        className={cn(
+          "gencl:transition-all",
+          showSeeker ? "gencl:h-4" : "gencl:h-0"
+        )}
+      />
     </div>
   );
 }

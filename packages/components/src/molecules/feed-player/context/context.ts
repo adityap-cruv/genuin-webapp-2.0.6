@@ -45,11 +45,11 @@ export type PlayerContextType = {
     callback: (state: VideoTimeStateType) => void
   ) => () => void;
 
-  // /**
-  //  * Whether to show seeker for player or not.
-  //  */
-  // showSeeker: boolean;
-  // setShowSeeker: React.Dispatch<React.SetStateAction<boolean>>;
+  /**
+   * Whether to show seeker for player or not.
+   */
+  showSeeker: boolean;
+  setShowSeeker: React.Dispatch<React.SetStateAction<boolean>>;
 
   /**
    * This is the state of the video player.
@@ -108,8 +108,8 @@ export const PlayerContext = createContext<PlayerContextType>({
   setPlayerRef: () => {},
   setVideoTimeState: () => {},
   onVideoTimeStateChange: () => () => {},
-  // showSeeker: false,
-  // setShowSeeker: () => {},
+  showSeeker: false,
+  setShowSeeker: () => {},
   playingState: "PAUSED",
   setPlayingState: () => {},
   feedPlayerShouldPlay: false,

@@ -1,9 +1,10 @@
 import { convertISOToLocalDateFormate } from "@genuin/ui/utils";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 
 import { GroupSubscriptionButton } from "@molecules/group-subscription-button";
 import { JoinGroupButton } from "@molecules/join-group-button";
 import { ShareButton } from "@molecules/share-button";
-import { GenericDetails } from "@organisms";
+import { GenericDetails } from "@organisms/generic-details";
 import { GenericDetailsMetadata } from "@organisms/generic-details/generic-details-metadata";
 import { SideInfo } from "@organisms/side-info";
 import { useGetGroupDetails } from "@react-query/api/group/details";
@@ -31,8 +32,8 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
             <GenericDetailsMetadata
               privacyInfo={{ isPrivate: groupDetails.isPrivate }}
               stats={{
-                members: groupDetails.noOfMembers,
-                posts: groupDetails.noOfVideos,
+                Members: groupDetails.noOfMembers,
+                Posts: groupDetails.noOfVideos,
               }}
             />
           }
@@ -41,7 +42,7 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
             <div className="gencl:flex gencl:gap-2">
               <JoinGroupButton />
               <GroupSubscriptionButton showText />
-              <ShareButton showText />
+              <ShareButton />
             </div>
           }
         />
@@ -62,7 +63,10 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
             },
             name: groupDetails.owner.name ?? "",
             userName: groupDetails.owner.userName,
-            url: `/@${groupDetails.owner.userName}`,
+            url: buildPageUrl({
+              type: !!groupDetails.owner.brand ? "brand" : "profile",
+              slug: groupDetails.owner.userName,
+            }),
             userLogoType: groupDetails.owner.brand?.brandUserLogo,
           },
           stats: {
@@ -77,7 +81,10 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
             },
             userName: groupDetails.community.handle,
             name: groupDetails.community.name ?? "",
-            url: `/community/${groupDetails.community.slug}`,
+            url: buildPageUrl({
+              type: "community",
+              slug: groupDetails.community.handle,
+            }),
           },
         }}
       />

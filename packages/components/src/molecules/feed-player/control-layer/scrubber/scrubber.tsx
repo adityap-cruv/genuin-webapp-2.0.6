@@ -27,25 +27,12 @@ export function Scrubber({
   ...restProps
 }: ScrubberPropsType) {
   const [showScrubber, setShowScrubber] = useState(false);
-  const [showSeeker, setShowSeeker] = useState(false);
   const [playerTimeState, setPlayerTimeState] = useState({
     duration: 0,
     currentTime: 0,
   });
-  const { onVideoTimeStateChange, buttonAction, play } = usePlayerContext();
+  const { onVideoTimeStateChange, showSeeker, play } = usePlayerContext();
   const [progressValue, setProgressValue] = useState(0);
-
-  /**
-   * In case of user action only we need to show seeker.
-   * If user action is play or pause, we need to show the seeker.
-   */
-  useEffect(() => {
-    if (buttonAction === "PAUSE") {
-      setShowSeeker(true);
-    } else if (buttonAction === "PLAY") {
-      setShowSeeker(false);
-    }
-  }, [buttonAction]);
 
   useEffect(() => {
     if (!playerTimeState.duration) return;

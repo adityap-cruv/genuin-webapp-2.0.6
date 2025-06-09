@@ -110,7 +110,7 @@ const ScrubberSlider = React.forwardRef<
       >
         <SliderPrimitive.Track
           className={cn(
-            "gencl:relative gencl:h-[3px] gencl:w-full gencl:grow gencl:overflow-hidden gencl:bg-secondary "
+            "gencl:relative gencl:h-[3px] gencl:w-full gencl:grow gencl:overflow-hidden gencl:bg-white/50 "
           )}
         >
           <SliderPrimitive.Range className="gencl:absolute gencl:h-full gencl:bg-primary " />
@@ -118,7 +118,7 @@ const ScrubberSlider = React.forwardRef<
         {showSeeker && (
           <SliderPrimitive.Thumb
             className={cn(
-              "gencl:block gencl:h-3 gencl:w-3 gencl:rounded-full gencl:border-2 gencl:border-primary gencl:bg-primary gencl:outline-none gencl:transition-all gencl:disabled:pointer-events-none gencl:disabled:opacity-50"
+              "gencl:block gencl:cursor-pointer gencl:h-3 gencl:w-3 gencl:rounded-full gencl:border-2 gencl:border-primary gencl:bg-primary gencl:outline-none gencl:transition-all gencl:disabled:pointer-events-none gencl:disabled:opacity-50"
             )}
           >
             {showScrubber && (

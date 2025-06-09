@@ -46,6 +46,10 @@ export function SwiperImplementation({
       speed={CONFIG.SCROLL_DELAY}
       initialSlide={startIndex}
       modules={[Mousewheel, Keyboard]}
+      keyboard={{
+        enabled: true,
+        onlyInViewport: false,
+      }}
       mousewheel={{
         forceToAxis: true,
         releaseOnEdges: true,

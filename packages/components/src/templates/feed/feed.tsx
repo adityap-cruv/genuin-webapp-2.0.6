@@ -1,14 +1,14 @@
 import { cn } from "@genuin/ui/utils";
+import { FeedType } from "@/types/post";
 import { useEffect, useMemo, type ComponentProps } from "react";
 import "swiper/css";
 import { useWindowSize } from "usehooks-ts";
 
 import { useBaseContext } from "@genuin/components/context/base";
-import { PostSidePanel } from "@organisms";
+import { PostSidePanel } from "@organisms/post-side-panel";
 import { PlayerList } from "@organisms/player-swiper";
 import { useFeed } from "@react-query/api/feed";
 import type { PostDetailsType } from "@react-query/api/feed/schema";
-import type { FeedType } from "@types/post";
 
 import { FeedContextProvider, useFeedContext } from "./context";
 
@@ -191,6 +191,7 @@ function FeedViewCore({
   if (videos && videos.length !== 0) {
     return (
       <div
+        id="gencl-feed-view"
         className={cn(
           "gencl:grid gencl:mt-4 gencl:w-full gencl:pr-4 gencl:h-full gencl:grid-cols-2 gencl:gap-4",
           {

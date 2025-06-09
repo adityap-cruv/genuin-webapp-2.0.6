@@ -1,4 +1,5 @@
 import { Avatar } from "@genuin/ui/avatar";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 
 import { ProfileLink } from "@molecules/profile-link";
 import type { PostDetailsType } from "@react-query/api/feed/schema";
@@ -14,7 +15,10 @@ export function OwnerInfo({ owner }: { owner: PostDetailsType["owner"] }) {
         size="md"
       />
       <ProfileLink
-        url={`/profile/${owner.userName}`}
+        url={buildPageUrl({
+          type: !!owner.brand ? "brand" : "profile",
+          slug: owner.userName,
+        })}
         userLogoType={owner.brand?.userLogo}
         className="gencl:text-body-1-medium"
       >

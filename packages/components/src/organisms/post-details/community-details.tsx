@@ -19,6 +19,7 @@ export function CommunityDetails({
           isPrivate: communityDetails.isPrivate,
           name: communityDetails.name ?? "",
           profileImage: communityDetails.profileImage ?? "",
+          slug: communityDetails.slug ?? "",
           brand: { slug: communityDetails.brand?.slug ?? "" },
         }}
       />
@@ -29,6 +30,7 @@ export function CommunityDetails({
         data={{
           isPrivate: false,
           name: groupDetails.name ?? "",
+          slug: groupDetails.slug,
           community: {
             name: communityDetails.name ?? "",
             profileImage: communityDetails.profileImage ?? "",
