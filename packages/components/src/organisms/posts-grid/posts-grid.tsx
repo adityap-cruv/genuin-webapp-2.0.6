@@ -38,8 +38,8 @@ export function PostsGrid({
 
   if (isLoading) {
     return (
-      <div className={cn("gencl:w-full gencl:h-full ", className)}>
-        <PostsGridSkeleton noOfPosts={4} />
+      <div className={cn("gencl:w-full gencl:h-full", className)}>
+        <PostsGridSkeleton noOfPosts={6} />
       </div>
     );
   }
@@ -109,12 +109,7 @@ export function PostsGridSkeleton({
   size?: "sm" | "lg";
 }) {
   return (
-    <div
-      className={cn(
-        "gencl:flex gencl:w-full gencl:h-full gencl:flex-wrap gencl:gap-4",
-        className
-      )}
-    >
+    <div className={cn("gencl:flex gencl:flex-wrap gencl:gap-2", className)}>
       {Array.from({ length: noOfPosts }).map(() => (
         <PostTileSkeleton size={size} />
       ))}

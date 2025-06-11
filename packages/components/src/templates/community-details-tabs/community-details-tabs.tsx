@@ -138,7 +138,7 @@ export function CommunityGroupsSkeleton() {
   return (
     <div className="gencl:gap-4 gencl:border-secondary-200 gencl:border gencl:rounded-xl gencl:mb-4 gencl:overflow-clip">
       <GroupCardSkeleton className="gencl:p-4" />
-      <PostsGridSkeleton className="gencl:p-4" noOfPosts={4} />
+      <PostsGridSkeleton className="gencl:p-4" noOfPosts={6} />
     </div>
   );
 }
