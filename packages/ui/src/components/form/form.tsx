@@ -97,7 +97,10 @@ function FormLabel({
     <Label
       data-slot="form-label"
       data-error={!!error}
-      className={cn("gencl:data-[error=true]:text-red", className)}
+      className={cn(
+        "gencl:text-body-1-medium gencl: gencl:data-[error=true]:text-red",
+        className
+      )}
       htmlFor={formItemId}
       {...props}
     />
@@ -136,7 +139,11 @@ function FormDescription({ className, ...props }: React.ComponentProps<"p">) {
   );
 }
 
-function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
+function FormMessage({
+  error: defaultError,
+  className,
+  ...props
+}: React.ComponentProps<"p"> & { error?: boolean }) {
   const { error, formMessageId } = useFormField();
   const body = error ? String(error?.message ?? "") : props.children;
 
@@ -148,7 +155,11 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
     <p
       data-slot="form-message"
       id={formMessageId}
-      className={cn("", className)}
+      className={cn(
+        "gencl:text-body-1-medium! gencl:text-secondary-600 gencl:text-start",
+        (error || defaultError) && "gencl:text-red",
+        className
+      )}
       {...props}
     >
       {body}

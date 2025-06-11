@@ -1,20 +1,22 @@
 import { createContext, useContext } from "react";
-import type { AuthUser } from "@types/auth";
+import type { AuthUser } from "@/types/auth";
+
+export type AuthenticationStatusType =
+  | "unauthenticated"
+  | "authenticated"
+  | "loading";
 
 type AuthContextType = {
   user?: AuthUser | null;
-  isAuthenticated: boolean;
-  signIn: (
-    user: AuthUser,
-    callback: (status: "success" | "error", user: AuthUser) => void
-  ) => void;
-  signOut: () => void;
-  updateUser: (user: AuthUser) => void;
+  authenticationStatus: AuthenticationStatusType;
+  signIn: (user: AuthUser) => void;
+  signOut: (redirectPath: string) => void;
+  updateUser: (user: Partial<AuthUser>) => void;
 };
 
 export const AuthContext = createContext<AuthContextType>({
   user: null,
-  isAuthenticated: false,
+  authenticationStatus: "unauthenticated",
   signIn: () => {},
   signOut: () => {},
   updateUser: () => {},

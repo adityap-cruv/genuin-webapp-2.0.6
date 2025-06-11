@@ -38,7 +38,7 @@ function DialogOverlay({
     <DialogPrimitive.Overlay
       data-slot="dialog-overlay"
       className={cn(
-        "gencl:data-[state=open]:animate-in gencl:data-[state=closed]:animate-out gencl:data-[state=closed]:fade-out-0 gencl:data-[state=open]:fade-in-0 gencl:fixed gencl:inset-0 gencl:z-50 gencl:bg-black/50",
+        "data-[state=open]:gencl:animate-in data-[state=closed]:gencl:animate-out data-[state=closed]:gencl:fade-out-0 data-[state=open]:gencl:fade-in-0 gencl:fixed gencl:inset-0 gencl:z-50 gencl:bg-black/50",
         className
       )}
       {...props}
@@ -57,10 +57,10 @@ function DialogContent({
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          "gencl:data-[state=open]:animate-in gencl:data-[state=closed]:animate-out",
-          "gencl:data-[state=closed]:fade-out-0 gencl:data-[state=open]:fade-in-0",
-          "gencl:data-[state=closed]:zoom-out-95 gencl:data-[state=open]:zoom-in-95",
-          "gencl:fixed gencl:top-1/2 gencl:left-1/2 gencl:-translate-y-1/2",
+          "data-[state=open]:gencl:animate-in data-[state=closed]:gencl:animate-out",
+          "data-[state=closed]:gencl:fade-out-0 data-[state=open]:gencl:fade-in-0",
+          "data-[state=closed]:gencl:zoom-out-95 data-[state=open]:gencl:zoom-in-95",
+          "gencl:fixed gencl:bottom-0 gencl:sm:bottom-auto gencl:sm:top-1/2 gencl:left-1/2 gencl:sm:-translate-y-1/2",
           "gencl:-translate-x-1/2 gencl:z-50 gencl:grid gencl:w-full",
           "gencl:gap-4 gencl:rounded-lg",
           "gencl:bg-white gencl:p-6 gencl:shadow-lg gencl:duration-200 gencl:sm:max-w-lg",

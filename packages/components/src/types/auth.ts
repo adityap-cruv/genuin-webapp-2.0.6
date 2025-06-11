@@ -2,6 +2,7 @@
  * Authenticated user object.
  */
 export type AuthUser = {
+  id: string;
   bio?: string;
   email?: string;
   phoneNumber?: string;
@@ -33,4 +34,8 @@ export type AuthUser = {
   hasTopics?: boolean;
   birth?: string;
   usernameSet: boolean;
+  /**
+   * Checks if user has accepted brand guidelines.
+   */
+  brandGuidelines?: boolean;
 };

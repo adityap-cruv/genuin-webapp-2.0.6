@@ -1,7 +1,7 @@
 import axios from "axios";
 
-// TODO: Figure out a way for implementing env variables in the package.
-// TODO: also create user builder for api calls.
+let authTokenInterceptorId: number | null = null;
+
 /**
  * This is the axios instance that will be used for all requests.
  */
@@ -10,18 +10,35 @@ export const axiosInstance = axios.create({
 });
 
 /**
- * This request will send Authorization headers in future request.
+ * Sets the Authorization header for all future requests.
+ * Ejects any previous interceptor to avoid stacking.
  * @param token
  */
 export function setAuthTokenInAxiosInstance(token?: string) {
-  return axiosInstance.interceptors.request.use((config) => {
-    if (token) config.headers.Authorization = "Bearer " + token;
-    return config;
-  });
+  // Eject previous interceptor if it exists
+  if (authTokenInterceptorId !== null) {
+    axiosInstance.interceptors.request.eject(authTokenInterceptorId);
+    authTokenInterceptorId = null;
+  }
+  if (token) {
+    authTokenInterceptorId = axiosInstance.interceptors.request.use(
+      (config) => {
+        console.log("Setting auth token in Axios instance:", token);
+        config.headers.Authorization = "Bearer " + token;
+        return config;
+      }
+    );
+  }
 }
 
-export function ejectAuthTokenInterceptor(id: number) {
-  axiosInstance.interceptors.request.eject(id);
+/**
+ * Clears the Authorization header interceptor.
+ */
+export function clearAuthTokenInterceptor() {
+  if (authTokenInterceptorId !== null) {
+    axiosInstance.interceptors.request.eject(authTokenInterceptorId);
+    authTokenInterceptorId = null;
+  }
 }
 
 export function setBrandIdInAxiosInstance(brandId?: number) {

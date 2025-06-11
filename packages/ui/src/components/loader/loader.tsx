@@ -29,7 +29,12 @@ const loaderVariant = cva(
 
 type Props = ComponentProps<"svg"> & VariantProps<typeof loaderVariant>;
 
-export function Loader({ size = "sm", className, ...props }: Props) {
+export function Loader({
+  size = "sm",
+  strokeColor,
+  className,
+  ...props
+}: Props) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -39,7 +44,7 @@ export function Loader({ size = "sm", className, ...props }: Props) {
       fill="none"
       stroke="currentColor"
       strokeWidth="2"
-      className={cn(loaderVariant({ size }), className)}
+      className={cn(loaderVariant({ size, strokeColor }), className)}
       {...props}
     >
       <path

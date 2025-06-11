@@ -807,7 +807,29 @@ const preview: Preview = {
     (Story) => {
       const parsedColor = parseBrandColors(brandDetails.brand_colors);
       return (
-        <AuthProvider user={null}>
+        <AuthProvider
+        // user={{
+        //   id: "e427978f-44db-4a5f-8fb9-2760458027dd",
+        //   image: "pile_of_poo",
+        //   isAvatar: true,
+        //   phoneNumber: null,
+        //   nickname: "dhanji",
+        //   email: "dhanji@yopmail.com",
+        //   bio: null,
+        //   name: null,
+        //   accessToken:
+        //     "eyJraWQiOiJkLTE3NDkyMDE0MzYxMzYiLCJ0eXAiOiJKV1QiLCJ2ZXJzaW9uIjoiNSIsImFsZyI6IlJTMjU2In0.eyJpYXQiOjE3NDk1NTc3ODMsImV4cCI6MTc1MDc2NzM4Miwic3ViIjoiNjhjMzA4NWUtYTNjMC00ZWViLThhZGUtN2RmOTE2MzViYjhlIiwidElkIjoicHVibGljIiwicnN1YiI6IjY4YzMwODVlLWEzYzAtNGVlYi04YWRlLTdkZjkxNjM1YmI4ZSIsInNlc3Npb25IYW5kbGUiOiI2NWNjYjE5MC1iMWFiLTQwMjQtYmUyNC1hMjUzNGEzMDc3MjQiLCJyZWZyZXNoVG9rZW5IYXNoMSI6ImE3N2JjMmVmMmU4ZWM4NzE1ODdlNjk3MTkwMmY0ZDE4OWQ3YzNhYjQ4NjllNGJkMzE1NjkwODAwZTFkZDQ1NTIiLCJwYXJlbnRSZWZyZXNoVG9rZW5IYXNoMSI6bnVsbCwiYW50aUNzcmZUb2tlbiI6bnVsbCwiaXNzIjoiaHR0cHM6Ly9ub2RlanMucWEuYmVnZW51aW4uY29tL2FwaS92NC9hdXRoIiwic3Qtcm9sZSI6eyJ2IjpbXSwidCI6MTc0OTU1Nzc4MjYzNn0sInN0LXBlcm0iOnsidiI6W10sInQiOjE3NDk1NTc3ODI2MzZ9LCJnZW51aW4iOnsidXNlcl9pZCI6ImU0Mjc5NzhmLTQ0ZGItNGE1Zi04ZmI5LTI3NjA0NTgwMjdkZCIsImxvZ2luX3NvdXJjZSI6MywiZGV2aWNlX3R5cGUiOiJ3ZWIiLCJicmFuZF9pZCI6MjkyMn19.BOIOF-_sUEQVX6ow-vSgxKhwse7TGJWrMHrim32ZLLDi3B9TmImoW20Nq5ld7AFExzNb1Bu1K7Muph_H7bLE4GeqyLAo5z0mzi9YKe4yREf3xGevN3LvLTeE1q3zJHFgfMqH_CDnfYYOH78r82LE-iKTczEketbKknB5rwuoptsFLcduyfDsphT3W5WQblMAkr_c6LVEid9SiNTrq3lXgRbVQRe5rmf7EpI_vJ_A2zFkoHCv9VkEcIeUhgKfoOKXyqxGbWL41aNpJEJ57nTbMjxOPpxWF_tu7a3ohSrBwUhCOpyQ4fxoyNG7XS5fbWNIMkv4JTUmDVGtnFWpHiXPjw",
+        //   ksCbRequestStatus: 1,
+        //   isBrandSystemUser: false,
+        //   brandId: 2922,
+        //   brandSlug: null,
+        //   hasTopics: false,
+        //   brandGuidelines: false,
+        //   refreshToken:
+        //     "H6uCa5yhYXitof+PUxKv6uTc+ccgMJqjlk8f9cRx+doS+qacDeZqPWZgpr3E8S4e67pd1Eqs0L0HH2Amj6XuJwxFCix4aGr5w2aY8b7Qe60oSkr5uSUencEPInuQEqGfQrzTmg9RFtBV1VnVsFedo7xfcwSuQTBdfCW6xT3XDfY455K1IyP96CnO9eJJAs4pyKo+zIQ5po70z3W7p8y3oghNobWPl571lSnFrg5vsavvKFnjAs3CVAQeuQNYl0+CXk952/Ug6LV1sUbvR78U.ec84a0e2f0af57d23c844f3f2f46df05ce96dd342b38f56ab27c02c018ad1741.V2",
+        //   usernameSet: false,
+        // }}
+        >
           <BaseContextProvider brandDetails={brandDetails}>
             <ReactQueryClientProvider>
               <main style={{ ...parsedColor }}>

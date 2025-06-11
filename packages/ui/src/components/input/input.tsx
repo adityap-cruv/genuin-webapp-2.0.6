@@ -10,10 +10,11 @@ function Input({ className, type, ...props }: InputProps) {
       type={type}
       data-slot="input"
       className={cn(
-        "gencl:flex gencl:h-10 gencl:w-full gencl:rounded-2 gencl:border-2 gencl:px-3 gencl:py-2",
-        "gencl:invalid:border-supplementary-red gencl:focus-visible:border-monochrome-6",
-        "gencl:focus-visible:outline-none gencl:focus-visible:ring-offset-0 gencl:disabled:cursor-not-allowed",
-        "gencl:disabled:opacity-50",
+        "gencl:flex gencl:h-10 gencl:text-body-1-medium gencl:w-full gencl:px-3 gencl:py-2",
+        "gencl:disabled:cursor-not-allowed gencl:disabled:opacity-50",
+        "gencl:rounded-lg gencl:border gencl:border-secondary-300 gencl:p-2 gencl:pl-3",
+        "gencl:aria-[invalid=true]:border-red!", // Apply red border when aria-invalid is true
+        "gencl:focus:border-secondary-600 gencl:focus:border-2 gencl:outline-none", // Add border color and hide default outline on focus
         className
       )}
       {...props}

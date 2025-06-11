@@ -38,6 +38,8 @@ const PhoneInput: React.ForwardRefExoticComponent<PhoneInputProps> =
         )}
         inputComponent={InputComponent}
         defaultCountry="US"
+        withCountryCallingCode
+        countryCallingCodeEditable
         /**
          * Handles the onChange event.
          *
@@ -115,7 +117,9 @@ const CountrySelect = ({
           />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className={cn("gencl:w-[300px] gencl:p-0", popoverClassName)}>
+      <PopoverContent
+        className={cn("gencl:w-[300px] gencl:z-10 gencl:p-0", popoverClassName)}
+      >
         <Command>
           <CommandList>
             {/* <CommandInput placeholder="Search country..." /> */}
@@ -146,7 +150,9 @@ const CountrySelect = ({
                     <CheckIcon
                       className={cn(
                         "gencl:ml-auto gencl:h-4 gencl:w-4",
-                        option.value === value ? "gencl:opacity-100" : "gencl:opacity-0"
+                        option.value === value
+                          ? "gencl:opacity-100"
+                          : "gencl:opacity-0"
                       )}
                     />
                   </CommandItem>

@@ -12,7 +12,7 @@ import type {
 // import { usePlayerControlStore } from "./player-control-store";
 // import { getVideoPlayerConfigs } from "./utils";
 
-// import { type WebConfigs } from "@/lib/stores/genuin-options";
+// import { type WebConfigs } from "@genuin/components/lib/stores/genuin-options";
 // import Analytics from "@/services/analytics";
 
 // Helper functions for analytics
