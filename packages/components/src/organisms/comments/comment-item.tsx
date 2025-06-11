@@ -54,6 +54,7 @@ export function CommentContent({ comment }: CommentItemProps) {
       {comment.type === "text" && (
         <ReadMore
           text={comment.commentText}
+          maxLines={2}
           className="gencl:text-body-1-medium gencl:text-secondary-900 gencl:break-all"
         />
       )}

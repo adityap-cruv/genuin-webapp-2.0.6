@@ -51,7 +51,7 @@ export function ExpandViewDetails({
         maxLines={2}
         shouldAnimate
         position="overlay"
-        className="gencl:text-white! gencl:text-body-1-medium"
+        className="gencl:text-body-1-medium"
       />
       <div className="gencl:flex gencl:flex-nowrap gencl:gap-2 gencl:w-full gencl:overflow-x-auto gencl:z-10">
         {/* TODO ADD REMAINING DETAILS, PENDING FROM BACKEND */}
@@ -67,7 +67,6 @@ export function ExpandViewDetails({
             brand: { slug: postDetails.community.brand?.slug ?? "" },
           }}
         />
-
         <GroupPill
           isHoverable={true}
           variant="dark"

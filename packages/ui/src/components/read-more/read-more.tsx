@@ -160,16 +160,19 @@ export function ReadMore({
   const [isOverflowing, setIsOverflowing] = useState(false);
   const [truncatedText, setTruncatedText] = useState<string>("");
 
+  // Only stringify text when it changes
+  const stringifiedText = useMemo(() => JSON.stringify(text), [text]);
+
   // Process text content for rich text support
   const processedText = useMemo<React.ReactNode>(() => {
-    if (!text) return null;
+    if (!stringifiedText) return null;
 
     let textObj: unknown;
-    if (typeof text === "string") {
+    if (typeof stringifiedText === "string") {
       try {
-        textObj = safeJsonParse(text);
+        textObj = safeJsonParse(stringifiedText);
       } catch {
-        textObj = text;
+        textObj = stringifiedText;
       }
     }
 
@@ -182,17 +185,17 @@ export function ReadMore({
     return Array.isArray(anchorDataArr)
       ? anchorDataArr.map((item, idx) => renderAnchorTag(item, idx))
       : String(textObj);
-  }, [text]);
+  }, [stringifiedText]);
 
   // Handle text truncation for maxChars
   useEffect(() => {
-    if (typeof text === "string" && !isExpanded) {
-      const shouldTruncate = text.length > maxChars;
-      setTruncatedText(shouldTruncate ? text.slice(0, maxChars) + "..." : text);
+    if (typeof stringifiedText === "string" && !isExpanded) {
+      const shouldTruncate = stringifiedText.length > maxChars;
+      setTruncatedText(shouldTruncate ? stringifiedText.slice(0, maxChars) + "..." : stringifiedText);
     } else {
       setTruncatedText("");
     }
-  }, [text, maxChars, isExpanded]);
+  }, [stringifiedText, maxChars, isExpanded]);
 
   // Handle line-based truncation
   useEffect(() => {
@@ -205,13 +208,13 @@ export function ReadMore({
   useEffect(() => {
     const checkOverflow = () => {
       const element = textRef.current;
-      if (!element || !text) return;
+      if (!element || !stringifiedText) return;
 
       const lineHeight = parseInt(getComputedStyle(element).lineHeight);
       const height = element.scrollHeight;
       const maxHeight = lineHeight * maxLines;
       const isTextOverflowing =
-        typeof text === "string" && text.length > maxChars;
+        typeof stringifiedText === "string" && stringifiedText.length > maxChars;
       setIsOverflowing(height > maxHeight || isTextOverflowing);
     };
 
@@ -221,7 +224,7 @@ export function ReadMore({
       window.removeEventListener("resize", checkOverflow);
       onExpandChange?.(open ?? false);
     };
-  }, [text, maxLines, maxChars]);
+  }, [stringifiedText, maxLines, maxChars]);
 
   // Calculate collapsed height based on line height and maxLines
   const getCollapsedHeight = () => {
@@ -274,7 +277,8 @@ export function ReadMore({
     typeof processedText === "string" && !isExpanded
       ? truncatedText
       : processedText;
-  if (!text || text.length === 0) return null;
+
+  if (!stringifiedText || stringifiedText.length === 0) return null;
 
   return (
     <div className="gencl:w-full gencl:overflow-clip" style={{ maxWidth }}>

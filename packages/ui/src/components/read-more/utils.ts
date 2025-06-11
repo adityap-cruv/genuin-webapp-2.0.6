@@ -30,7 +30,7 @@ export function applyLineClampStyles(
     element.style.overflow = ""; // Reset overflow
     element.style.textOverflow = ""; // Reset text-overflow
   } else {
-    element.style.display = "inline";
+    element.style.display = "-webkit-box";
     (
       element.style as unknown as {
         webkitLineClamp?: string;

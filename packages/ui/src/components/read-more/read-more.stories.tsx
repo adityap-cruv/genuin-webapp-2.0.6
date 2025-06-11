@@ -77,6 +77,7 @@ export const OverlayPosition: Story = {
     text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     maxLines: 2,
     position: "overlay",
+    className : "gencl:bg-black"
   },
   parameters: {
     backgrounds: {
@@ -154,7 +155,7 @@ export const DynamicExpandedWithAnimation: Story = {
 // Dynamic with mentions
 export const DynamicWithMentions: Story = {
   args: {
-    text: JSON.stringify([
+    text: [
       "Hello ",
       { member_id: "1", text: "@john" },
       ", welcome to ",
@@ -162,7 +163,7 @@ export const DynamicWithMentions: Story = {
       ". Visit ",
       { url: "example.com", text: "our site" },
       ".",
-    ]),
+    ],
     maxLines: 2,
     showExpandText: false,
     position: "outside",
