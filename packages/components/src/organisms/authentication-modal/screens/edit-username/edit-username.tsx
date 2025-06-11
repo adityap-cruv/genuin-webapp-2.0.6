@@ -16,7 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuthContext } from "@context/auth";
 import { useValidateUsername } from "@react-query/api/authentication/validate-username";
 import { useDebounceValue } from "usehooks-ts";
-import { useUpdateUserMutation } from "@/react-query/api/authentication";
+import { useUpdateUserMutation } from "@react-query/api/authentication";
 import { sanitizeInput } from "@genuin/components/lib/utils";
 import { useAuthenticationModalContext } from "../../context";
 

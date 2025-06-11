@@ -5,9 +5,6 @@
     "moduleResolution": "NodeNext",
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
       "@components/*": [
         "./src/components/*"
       ],

@@ -14,7 +14,7 @@ import { GenericDetailsMetadata } from "@organisms/generic-details/generic-detai
 import { SideInfo } from "@organisms/side-info";
 import { useGetGroupDetails } from "@react-query/api/group/details";
 import { GroupDetailsTabs } from "@templates/group-details-tabs";
-import { PostsGridSkeleton } from "@/organisms/posts-grid";
+import { PostsGridSkeleton } from "@organisms/posts-grid";
 
 export function GroupDetailsPage({ slug }: { slug: string }) {
   const { data: groupDetails, isLoading, isError } = useGetGroupDetails(slug);

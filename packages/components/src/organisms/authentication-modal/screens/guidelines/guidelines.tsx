@@ -18,7 +18,7 @@ import {
   useAcceptGuidelinesMutation,
   useGetGuidelines,
 } from "@react-query/api/authentication";
-import { useAuthContext } from "@/context/auth";
+import { useAuthContext } from "@context/auth";
 import { useAuthenticationModalContext } from "../../context";
 import { SubmitButton } from "../../submit-button";
 

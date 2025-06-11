@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import {
   TrendingGroupCard,
   TrendingGroupCardSkeleton,
-} from "@/organisms/trending-groups-card";
+} from "@organisms/trending-groups-card";
 import { Button } from "@genuin/ui/components/button";
 import { Skeleton } from "@genuin/ui/components/skeleton";
 

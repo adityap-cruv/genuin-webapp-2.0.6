@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import type { AuthUser } from "@/types/auth";
+import type { AuthUser } from "@genuin/components/types/auth";
 
 export type AuthenticationStatusType =
   | "unauthenticated"

@@ -1,5 +1,5 @@
 import { cn } from "@genuin/ui/utils";
-import { FeedType } from "@/types/post";
+import { FeedType } from "@genuin/components/types/post";
 import { useEffect, useMemo, type ComponentProps } from "react";
 import "swiper/css";
 import { useWindowSize } from "usehooks-ts";
