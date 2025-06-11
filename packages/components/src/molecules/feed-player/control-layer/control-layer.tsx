@@ -8,6 +8,7 @@ import { Controls } from "./controls";
 import { PlayingState } from "./playing-state";
 import { Scrubber } from "./scrubber";
 import { ExpandViewDetails } from "./expand-view";
+import { PlaybackSpeedCapsule } from "@molecules/playback-speed/speed-capsule";
 
 type ControlLayerPropsType = ComponentProps<"div"> & {
   postDetails: PostDetailsType;
@@ -27,7 +28,7 @@ export const ControlLayer = memo(function ControlLayer({
 
   const {
     brandDetails: {
-      web_configs: { tap_behavior: tapBehavior },
+      web_configs: { tap_behavior: tapBehavior , playback_speed_enabled  },
     },
   } = useBaseContext();
 
@@ -78,7 +79,7 @@ export const ControlLayer = memo(function ControlLayer({
       <div
         onClick={handleVideoClick}
         className={cn(
-          "gencl:absolute gencl:inset-0 gencl:z-10 gencl:h-full gencl:w-full gencl:overflow-clip gencl:transition-all",
+          "gencl:absolute gencl:inset-0 gencl:z-10 gencl:h-full gencl:w-full gencl:overflow-clip gencl:transition-all gencl:flex gencl:justify-center",
           // showSeeker && "gencl:-translate-y-4",
           // showScrubber ? "gencl:hidden" : "gencl:block",
           className
@@ -116,6 +117,9 @@ export const ControlLayer = memo(function ControlLayer({
             "gencl:-translate-x-1/2 gencl:-translate-y-1/2"
           )}
         />
+
+        {/* This is the playback speed controls for the desktop. */}
+        { playback_speed_enabled && <PlaybackSpeedCapsule className="gencl:absolute gencl:bottom-7 gencl:z-10 gencl:transition-all"/>}
 
         {/**
          * This is basically player scrubber.

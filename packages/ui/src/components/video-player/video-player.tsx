@@ -84,6 +84,7 @@ export const VideoPlayer = memo(function VideoPlayer({
   const videoRef = useRef<HTMLVideoElement>(null);
   const playerRef = useRef<OpenPlayerJS | null>(null);
   const playRef = useRef(play);
+
   useEffect(() => {
     if (typeof volume === "undefined") return;
     if (videoRef.current) {

@@ -9,7 +9,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@genuin/ui/tooltip";
 import { cn } from "@genuin/ui/utils";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
-import type { ComponentProps, ReactNode } from "react";
+import { type ComponentProps, type ReactNode } from "react";
+import { Menu } from "./menu";
 
 const tooltipVariants = cva("", {
   variants: {
@@ -80,7 +81,7 @@ export const defaultActionWrappers: Record<
   REACTION: (node) => node,
   COMMENT: (node) => node,
   SHARE: (node) => node,
-  MORE: (node) => node,
+  MORE: (node) => <Menu children={node} />,
 };
 
 export function Actions({

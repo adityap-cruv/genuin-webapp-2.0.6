@@ -33,7 +33,8 @@
     "./radio": "./src/components/radio-input/index.ts",
     "./tabs": "./src/components/tabs/index.ts",
     "./carousel" : "./src/components/carousel/index.ts",
-    "./skeleton": "./src/components/skeleton/index.ts"
+    "./skeleton": "./src/components/skeleton/index.ts",
+    "./slider" : "./src/components/slider/index.ts"
   },
   "scripts": {
     "lint": "eslint . --max-warnings 20",

@@ -1,3 +1,4 @@
+import { PlaybackSpeedType } from "@molecules/feed-player/context/types";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useBoolean } from "usehooks-ts";
 
@@ -23,6 +24,10 @@ type FeedContextType = {
    * Whether to show the expand view or not.
    */
   showExpandView: boolean;
+
+    playbackSpeed: PlaybackSpeedType
+
+  setPlaybackSpeed: React.Dispatch<React.SetStateAction<PlaybackSpeedType>>
 };
 
 const FeedContext = createContext<FeedContextType>({
@@ -32,6 +37,11 @@ const FeedContext = createContext<FeedContextType>({
   openExpandView: () => {},
   closeExpandView: () => {},
   toggleExpandView: () => {},
+  playbackSpeed : {
+    speed: 1.0,
+    isSpeedFromGesture: false
+  },
+  setPlaybackSpeed : () => {}
 });
 
 const useFeedContext = () => {
@@ -70,6 +80,11 @@ export function FeedContextProvider({
     toggle: toggleExpandView,
   } = useBoolean(defaultExpandView);
 
+  const [playbackSpeed, setPlaybackSpeed] = useState<PlaybackSpeedType>({
+    speed: 1.0,
+    isSpeedFromGesture: false
+  });
+
   useEffect(() => {
     const element = document.getElementsByTagName("body")[0];
     if (showExpandView) {
@@ -105,6 +120,8 @@ export function FeedContextProvider({
         openExpandView,
         closeExpandView,
         toggleExpandView,
+        playbackSpeed,
+        setPlaybackSpeed
       }}
     >
       {children}

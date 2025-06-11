@@ -1,0 +1,33 @@
+"use client";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+  DialogHeader,
+} from "@genuin/ui/dialog";
+import React, { ComponentProps } from "react";
+import PlaybackSpeedControlSlider from "./speed-control-buttons";
+import { useFeedContext } from "@templates/feed/context";
+
+type PlaybackSpeedProps = ComponentProps<typeof Dialog> & {
+  children: React.ReactNode;
+};
+
+export function PlaybackSpeed({ children, ...props }: PlaybackSpeedProps) {
+  const { playbackSpeed } = useFeedContext();
+  return (
+    <Dialog modal {...props}>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent className="gencl:text-center gencl:bg-white gencl:sm:min-w-lg gencl:sm:p-10 gencl:md:min-w-xl gencl:md:rounded-3xl">
+        <DialogHeader className="gencl:text-secondary-900 gencl:text-headline-2-semi-bold">
+          Playback Speed
+        </DialogHeader>
+        <p className="gencl:text-headline-4-semi-bold gencl:text-secondary-900">
+          {playbackSpeed.speed}x
+        </p>
+        <PlaybackSpeedControlSlider />
+      </DialogContent>
+    </Dialog>
+  );
+}

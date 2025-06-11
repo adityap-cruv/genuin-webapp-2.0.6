@@ -4,6 +4,7 @@ import { useBaseContext } from "@genuin/components/context/base";
 import type { PostDetailsType } from "@react-query/api/feed/schema";
 
 import { usePlayerContext } from "./context/context";
+import { useFeedContext } from "@templates/feed/context";
 // import { useSwiper } from "swiper/react";
 
 // import { usePlayerContext } from "./context";
@@ -47,6 +48,7 @@ export const FeedPlayer = memo(function FeedPlayer({
     setPlayerRef,
     handleEnded: stateHandleEnded,
   } = usePlayerContext();
+  const {playbackSpeed} = useFeedContext()
 
   // const { brandId } = useGenuinOptions(
   //   useShallow((state) => ({
@@ -289,7 +291,7 @@ export const FeedPlayer = memo(function FeedPlayer({
       loop={false}
       volume={volume}
       play={feedPlayerShouldPlay}
-      playbackSpeed={1}
+      playbackSpeed={playbackSpeed.speed}
       onPlayerLoad={handlePlayerLoad}
       onOpenPlayerReady={(player) => {
         onOpenPlayerReady?.(player);

@@ -108,7 +108,7 @@ function ReportContent({
         onClick={handleSubmit}
         className="gencl:w-full gencl:bg-primary"
       >
-        {reportMutation.isPending ? <Loader strokeColor={"white"} /> : "Submit"}
+        {reportMutation.isPending ? <Loader className="gencl:stroke-white" /> : "Submit"}
       </Button>
     </>
   );

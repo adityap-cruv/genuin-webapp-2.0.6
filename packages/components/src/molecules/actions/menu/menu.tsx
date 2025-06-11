@@ -1,0 +1,76 @@
+import { useBaseContext } from "@context/base";
+import { PlaybackSpeed } from "@molecules/playback-speed";
+import { Report } from "@molecules/report";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@genuin/ui/components/popover";
+import { cn } from "@genuin/ui/lib/utils";
+import React, { ComponentProps, useEffect } from "react";
+
+type MenuProps = ComponentProps<typeof Popover> & {
+  children?: React.ReactNode;
+  contentId?: string;
+  videoSlug?: string;
+  shareUrl?: string;
+};
+
+const menuItems = (text: string, className?: string): React.ReactNode => {
+  return (
+    <div
+      className={cn(
+        "gencl:text-body-1-medium gencl:text-secondary-500 gencl:p-2 gencl:cursor-pointer",
+        className
+      )}
+    >
+      {text}
+    </div>
+  );
+};
+
+export function Menu({ contentId, shareUrl, children, ...props }: MenuProps) {
+  const { brandDetails } = useBaseContext();
+  const MenuData = [
+    shareUrl && {
+      children: menuItems("Copy Link"),
+    },
+    brandDetails.web_configs.playback_speed_enabled && {
+      children: (
+        <PlaybackSpeed children={menuItems("Playback speed")} />
+      ),
+    },
+    {
+      children: menuItems("Group Details"),
+    },
+    {
+      children: menuItems("Not interested"),
+    },
+    contentId && {
+      children: (
+        <Report
+          reportFor="VIDEO"
+          contentId={contentId}
+          children={menuItems("Report Post", "gencl:text-primary")}
+        />
+      ),
+    },
+  ].filter(
+    (item): item is { children: React.ReactNode } =>
+      !!item && typeof item === "object" && "children" in item
+  );
+
+  return (
+    <Popover {...props}>
+      <PopoverTrigger>{children}</PopoverTrigger>
+      <PopoverContent
+        align="start"
+        className="gencl:w-fit gencl:p-3 gencl:border gencl:border-secondary-100 gencl:rounded-xl gencl:flex gencl:flex-col gencl:gap-0.5 gencl:z-50 gencl:!bg-white gencl:focus-visible:outline-none gencl:focus-visible:ring-0"
+      >
+        {MenuData.map((data, index) => (
+          <>{data.children}</>
+        ))}
+      </PopoverContent>
+    </Popover>
+  );
+}

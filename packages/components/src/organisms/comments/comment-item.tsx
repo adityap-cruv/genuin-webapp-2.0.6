@@ -9,6 +9,7 @@ import { ProfileLink } from "@molecules/profile-link";
 
 import { Audio } from "@organisms/comments/audio";
 import { Video } from "@organisms/comments/video";
+import { CommentMenu } from "./comment-menu";
 
 export type CommentItemProps = {
   comment: CommentListType[number];
@@ -25,16 +26,19 @@ export function CommentItem({ comment }: CommentItemProps) {
         isAvatar={owner.isAvatar}
         size="md"
       />
-      <div className="gencl:space-y-2">
-        <div className="gencl:flex">
-          <ProfileLink
-            url={buildPageUrl({ type: "profile", slug: owner.nickname })}
-          >
-            @{owner.nickname}
-          </ProfileLink>
-          <span className="gencl:text-body-1-medium gencl:text-secondary-500">
-            &nbsp; {comment.createdAt && getTimeAgo(comment.createdAt)}
-          </span>
+      <div className="gencl:space-y-2 gencl:w-full">
+        <div className="gencl:flex gencl:items-center gencl:justify-between">
+          <div className="gencl:flex gencl:items-center">
+            <ProfileLink
+              url={buildPageUrl({ type: "profile", slug: owner.nickname })}
+            >
+              @{owner.nickname}
+            </ProfileLink>
+            <span className="gencl:text-body-1-medium gencl:text-secondary-500">
+              &nbsp; {comment.createdAt && getTimeAgo(comment.createdAt)}
+            </span>
+          </div>
+          <CommentMenu contentId={comment.commentId}/>
         </div>
         <CommentContent comment={comment} />
         <div className="gencl:flex gencl:items-center">
@@ -47,6 +51,8 @@ export function CommentItem({ comment }: CommentItemProps) {
     </div>
   );
 }
+
+
 
 export function CommentContent({ comment }: CommentItemProps) {
   return (

@@ -31,7 +31,7 @@ function Slider({
       min={min}
       max={max}
       className={cn(
-        "relative flex w-full touch-none items-center select-none data-[disabled]:opacity-50 data-[orientation=vertical]:h-full data-[orientation=vertical]:min-h-44 data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col",
+        "gencl:relative gencl:flex gencl:w-full gencl:touch-none gencl:items-center gencl:select-none gencl:data-[disabled]:opacity-50 gencl:data-[orientation=vertical]:h-full gencl:data-[orientation=vertical]:min-h-44 gencl:data-[orientation=vertical]:w-auto gencl:data-[orientation=vertical]:flex-col",
         className
       )}
       {...props}
@@ -39,13 +39,13 @@ function Slider({
       <SliderPrimitive.Track
         data-slot="slider-track"
         className={cn(
-          "bg-muted relative grow overflow-hidden rounded-full data-[orientation=horizontal]:h-1.5 data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-1.5"
+          "gencl:bg-secondary-100 gencl:relative gencl:grow gencl:overflow-hidden gencl:rounded-full gencl:data-[orientation=horizontal]:h-1.5 gencl:data-[orientation=horizontal]:w-full gencl:data-[orientation=vertical]:h-full gencl:data-[orientation=vertical]:w-1.5"
         )}
       >
         <SliderPrimitive.Range
           data-slot="slider-range"
           className={cn(
-            "bg-primary absolute data-[orientation=horizontal]:h-full data-[orientation=vertical]:w-full"
+            "gencl:bg-primary gencl:absolute gencl:data-[orientation=horizontal]:h-full gencl:data-[orientation=vertical]:w-full"
           )}
         />
       </SliderPrimitive.Track>
@@ -53,7 +53,7 @@ function Slider({
         <SliderPrimitive.Thumb
           data-slot="slider-thumb"
           key={index}
-          className="border-primary bg-background ring-ring/50 block size-4 shrink-0 rounded-full border shadow-sm transition-[color,box-shadow] hover:ring-4 focus-visible:ring-4 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50"
+          className="gencl:border-primary gencl:bg-primary gencl:ring-ring/50 gencl:block gencl:size-4 gencl:shrink-0 gencl:rounded-full gencl:border gencl:shadow-sm gencl:transition-[color,box-shadow] gencl:hover:ring-4 gencl:hover:text-primary gencl:focus-visible:ring-4 gencl:focus-visible:outline-hidden gencl:focus:border-primary gencl:disabled:pointer-events-none gencl:disabled:opacity-50"
         />
       ))}
     </SliderPrimitive.Root>

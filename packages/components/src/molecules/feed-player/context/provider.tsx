@@ -4,6 +4,7 @@ import { getVideoPlayerConfigs } from "../utils";
 import {
   ButtonActionType,
   ExpandViewProps,
+  PlaybackSpeedType,
   PlayingStateType,
   VideoTimeStateType,
 } from "./types";
@@ -58,6 +59,11 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
    */
   const [buttonAction, setButtonAction] = useState<ButtonActionType>();
   const [playingState, setPlayingState] = useState<PlayingStateType>("LOADING");
+  const [playbackSpeed, setPlaybackSpeed] = useState<PlaybackSpeedType>({
+  speed: 1.0,
+  isSpeedFromGesture: false
+});
+
   /**
    * Whether to show seeker for player or not.
    * Shows when user performs PAUSE action, hides when user performs PLAY action.
@@ -286,6 +292,10 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
 
     showExpandView,
     toggleExpandView,
+
+    // playbackspeed state
+    playbackSpeed,
+    setPlaybackSpeed
   };
 
   return (
