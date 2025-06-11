@@ -33,6 +33,7 @@
     "./checkbox": "./src/components/checkbox/index.ts",
     "./radio": "./src/components/radio-input/index.ts",
     "./tabs": "./src/components/tabs/index.ts",
+    "./carousel" : "./src/components/carousel/index.ts",
     "./skeleton": "./src/components/skeleton/index.ts"
   },
   "scripts": {
@@ -77,6 +78,7 @@
     "@radix-ui/react-tooltip": "^1.2.7",
     "cmdk": "^1.1.1",
     "dompurify": "^3.2.5",
+    "embla-carousel-react": "^8.6.0",
     "input-otp": "^1.4.2",
     "next-themes": "^0.4.6",
     "openplayerjs": "^2.14.10",

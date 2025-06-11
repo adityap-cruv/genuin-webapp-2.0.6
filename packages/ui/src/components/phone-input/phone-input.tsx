@@ -5,7 +5,7 @@ import flags from "react-phone-number-input/flags";
 
 import { cn } from "@genuin/ui/lib/utils";
 
-import { Button } from "@components/button";
+import { Button } from "../button";
 import {
   Command,
   CommandEmpty,

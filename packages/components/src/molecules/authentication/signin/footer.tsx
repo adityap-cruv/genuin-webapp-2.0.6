@@ -30,15 +30,25 @@ export function Footer({
           &nbsp;
         </div>
       </div>
-      <div className="gencl:mt-4 gencl:flex gencl:w-full gencl:flex-col gencl:gap-4 gencl:text-body-0-semi-bold">
-        <Button className="gencl:flex gencl:justify-center gencl:items-center gencl:gap-2.5">
-          <GoogleIcon className="gencl:h-6 gencl:w-6" />
-          <p>Continue with Google</p>
-        </Button>
-        <Button className="gencl:flex gencl:justify-center gencl:items-center gencl:gap-2.5">
-          <AppleIcon className="gencl:h-6 gencl:w-6" />
-          <p>Continue with Apple</p>
-        </Button>
+      <div className="gencl:mt-4 gencl:flex gencl:w-full gencl:flex-col gencl:gap-4 gencl:text-body-1-medium">
+        {brandDetails.social_login.google && (
+          <Button
+            className="gencl:flex gencl:justify-center gencl:items-center gencl:gap-2.5 gencl:border gencl:border-secondary-600"
+            theme="text"
+          >
+            <GoogleIcon className="gencl:h-6 gencl:w-6" />
+            <p>Continue with Google</p>
+          </Button>
+        )}
+        {brandDetails.social_login.apple && (
+          <Button
+            className="gencl:flex gencl:justify-center gencl:items-center gencl:gap-2.5 gencl:bg-black"
+            theme="text"
+          >
+            <AppleIcon className="gencl:h-6 gencl:w-6" />
+            <p className="gencl:text-white">Continue with Apple</p>
+          </Button>
+        )}
         <Button>Continue with {brandDetails.name}</Button>
       </div>
       <div

@@ -57,10 +57,11 @@ export function GetApp({
       </div>
       <div className="gencl:flex gencl:flex-col gencl:gap-4">
         <PhoneInput
-          value={phoneNumber as any}
+          value={phoneNumber as string & { __tag: 'E164Number' }}
           onChange={setPhoneNumber}
           placeholder="Enter your phone number"
           defaultCountry={defaultCountry}
+          international
         />
         <Input
           type="email"

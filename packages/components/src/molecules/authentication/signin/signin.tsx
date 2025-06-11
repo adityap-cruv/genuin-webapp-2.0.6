@@ -61,8 +61,9 @@ export function SignIn({
           <PhoneInput
             onChange={handleOnChange}
             placeholder="Enter Phone Number"
-            value={authValue as any}
+            value={authValue as string & { __tag: 'E164Number' }}
             defaultCountry={defaultCountry}
+            international
           />
         )}
         <Button
