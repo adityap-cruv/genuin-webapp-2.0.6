@@ -95,7 +95,8 @@
       "react": "^19.1.0",
       "react-dom": "^19.1.0",
       "@tanstack/react-query": "^5.76.1",
-      "react-is": "^18.0.0"
+      "react-is": "^18.0.0",
+      "unrs-resolver": "1.7.13"
     },
     "peerDependencyRules": {
       "allowedVersions": {
