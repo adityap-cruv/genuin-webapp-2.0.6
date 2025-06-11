@@ -6,7 +6,7 @@ const TopBar = dynamic(async () => await import('@components/layouts/mobile/top-
 
 export function RootFeed({ slug }: { slug: string }) {
   const { data, isError, isLoading, fetchNextPage, isFetchingNextPage } = getCommunityFeed(slug)
-  const videos = data?.pages.flatMap((item) => item.videos)
+  const videos = data?.pages.flatMap((item: any) => item.videos)
   return (
     <main className="relative h-full w-full">
       <TopBar variant="transparent" className="absolute" />

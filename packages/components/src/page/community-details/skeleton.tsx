@@ -1,6 +1,6 @@
 import { Skeleton } from "@genuin/ui/skeleton";
 import { TabsSkeleton } from "@genuin/ui/tabs";
-import { GenericDetailsSkeleton } from "src/organisms";
+import { GenericDetailsSkeleton } from "@organisms/generic-details";
 import { CommunityGroupsSkeleton } from "src/templates/community-details-tabs";
 
 export function CommunityDetailsSkeleton() {

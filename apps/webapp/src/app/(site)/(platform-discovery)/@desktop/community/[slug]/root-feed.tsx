@@ -15,7 +15,7 @@ type Props = {
 
 export function RootFeed({ slug }: Props) {
   const { data, fetchNextPage, isFetchingNextPage, isLoading, hasNextPage } = getCommunityFeed(slug)
-  const videos = useMemo(() => data?.pages.flatMap((item) => item.videos) ?? [], [data])
+  const videos = useMemo(() => data?.pages.flatMap((item: any) => item.videos) ?? [], [data])
 
   return (
     <Feed

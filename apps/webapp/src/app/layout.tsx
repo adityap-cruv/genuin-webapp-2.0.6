@@ -1,6 +1,6 @@
 import { Inter } from 'next/font/google'
 import './globals.css'
-import '@genuin/components/globals.css'
+import '@genuin/components/styles'
 import { type Metadata, type Viewport } from 'next'
 
 // Root layout is now split into server and client parts for Next.js 15

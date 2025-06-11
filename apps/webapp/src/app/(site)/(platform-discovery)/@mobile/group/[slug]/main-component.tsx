@@ -57,7 +57,7 @@ export function LoopDetails({ slug }: { slug: string }) {
 export function MainComponent({ loopDetails }: Props) {
   loopDetailsModule = loopDetails
   const detailsDivRef = useRef<HTMLDivElement>(null)
-  const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
+  const detailsInView = useInView(detailsDivRef as React.RefObject<HTMLElement>, { amount: 0.6 })
   const queryClient = useQueryClient()
   const searchParams = Object.fromEntries(useSearchParams())
 
@@ -84,11 +84,11 @@ export function MainComponent({ loopDetails }: Props) {
         chatId={loopDetails.chat_id}
       />
       <div
-        className="hide-scrollbar absolute inset-0 mt-navbar flex w-full flex-col gap-y-2 overflow-auto p-4 md:flex-row md:gap-x-2"
+        className="hide-scrollbar mt-navbar absolute inset-0 flex w-full flex-col gap-y-2 overflow-auto p-4 md:flex-row md:gap-x-2"
         style={{ height: 'calc(100% - 74px)' }}>
         <div className="w-full">
           <div ref={detailsDivRef}>
-            <p className="line-clamp-2 break-words text-title-1-bold text-secondary">{loopDetails.group.group_name}</p>
+            <p className="text-title-1-bold text-secondary line-clamp-2 break-words">{loopDetails.group.group_name}</p>
             <LoopPrivacyInfo
               actionId={loopDetails?.actions?.[0]?.action_id ?? 0}
               accessTypeId={loopDetails?.actions?.[0]?.access_type_id ?? 0}
@@ -96,17 +96,17 @@ export function MainComponent({ loopDetails }: Props) {
             <ReadMore.default
               text={loopDetails.group.group_description}
               maxChars={150}
-              className="my-2 break-words text-title-3-demi text-secondary"
+              className="text-title-3-demi text-secondary my-2 break-words"
             />
           </div>
-          <div className=" my-3 overflow-hidden rounded-lg border border-solid border-tertiary-200 p-4">
+          <div className="border-tertiary-200 my-3 overflow-hidden rounded-lg border border-solid p-4">
             <div className="flex gap-x-2">
               <div className="flex flex-1 flex-col items-start">
                 {/* make this fonts 12px */}
-                <p className="text-xs text-cap-1-demi text-tertiary">Created by</p>
+                <p className="text-cap-1-demi text-tertiary text-xs">Created by</p>
                 <Link href={{ pathname: PATH_NAME.profile(loopDetails.owner.username) }}>
                   <div className="my-2 flex items-center">
-                    <div className="bg-red-400 h-6 w-6 shrink-0">
+                    <div className="h-6 w-6 shrink-0 bg-red-400">
                       <CustomAvatar
                         className="h-full w-full"
                         fallbackString={loopDetails.owner.name ?? ''}
@@ -114,7 +114,7 @@ export function MainComponent({ loopDetails }: Props) {
                         isAvatar={loopDetails.owner.is_avatar}
                       />
                     </div>
-                    <p className="ml-1 mr-1 line-clamp-1 break-all text-cap-1-bold text-secondary">
+                    <p className="text-cap-1-bold text-secondary mr-1 ml-1 line-clamp-1 break-all">
                       @{loopDetails.owner.username}
                     </p>
                     {loopDetails.owner.brand && (
@@ -125,11 +125,11 @@ export function MainComponent({ loopDetails }: Props) {
               </div>
               <div className="flex flex-1 flex-col items-start">
                 {/* make this fonts 12px */}
-                <p className="text-xs text-cap-1-demi text-tertiary">Posted in</p>
+                <p className="text-cap-1-demi text-tertiary text-xs">Posted in</p>
                 {/* todo change to community data */}
                 <Link href={{ pathname: PATH_NAME.community(loopDetails.community.slug) }}>
                   <div className="my-2 flex items-center">
-                    <div className="bg-red-400 h-6 w-6 shrink-0">
+                    <div className="h-6 w-6 shrink-0 bg-red-400">
                       <CustomAvatar
                         className="h-full w-full"
                         imageUrl={loopDetails.community.dp_s ?? loopDetails.community.dp ?? ''}
@@ -137,13 +137,13 @@ export function MainComponent({ loopDetails }: Props) {
                         isAvatar={false}
                       />
                     </div>
-                    <p className="ml-1 line-clamp-1 break-all text-cap-1-bold text-secondary">
+                    <p className="text-cap-1-bold text-secondary ml-1 line-clamp-1 break-all">
                       {loopDetails.community.name}
                     </p>
                     {loopDetails.community.type === 2 && (
                       <>
                         <PrivateModal>
-                          <LockIcon className="ml-1 h-4 w-4 stroke-tertiary" />
+                          <LockIcon className="stroke-tertiary ml-1 h-4 w-4" />
                         </PrivateModal>
                       </>
                     )}
@@ -183,7 +183,7 @@ export function MainComponent({ loopDetails }: Props) {
               <Button
                 size="custom"
                 variant="outline"
-                className="border border-primary"
+                className="border-primary border"
                 onClick={async () => {
                   await joinAsCollaboratorDeepLink({ ldDescription, loopDetails, searchParams }).then(
                     (generatedLink) => {
@@ -191,7 +191,7 @@ export function MainComponent({ loopDetails }: Props) {
                     }
                   )
                 }}>
-                <p className="px-4 py-1 text-title-3-bold text-primary" style={{ fontSize: '15px' }}>
+                <p className="text-title-3-bold text-primary px-4 py-1" style={{ fontSize: '15px' }}>
                   Join as Member
                 </p>
               </Button>
@@ -208,16 +208,16 @@ export function MainComponent({ loopDetails }: Props) {
             <ShareButton url={loopDetails.share_url} />
           </div>
         </div>
-        <hr className="border-t border-tertiary-200" />
+        <hr className="border-tertiary-200 border-t" />
         {!loopDetails.is_view_allowed ? (
           <div
             className="mt-4 flex w-full items-center justify-center overflow-hidden"
             style={{ height: 'calc(100% - 220px)' }}>
             <div className="flex flex-col items-center justify-center">
-              <div className="mb-2 rounded-full bg-tertiary-200 p-6">
+              <div className="bg-tertiary-200 mb-2 rounded-full p-6">
                 <Image src={icLock} alt="share" className="h-16 w-16" />
               </div>
-              <p className="text-center text-title-2-demi">
+              <p className="text-title-2-demi text-center">
                 This Group is visible to its
                 <br /> Members only
               </p>
@@ -245,7 +245,7 @@ function LoopTabs() {
           <p className="text-title-3-bold">Subscribers</p>
         </TabsTrigger> */}
       </TabsList>
-      <hr className="border-t border-tertiary-200" />
+      <hr className="border-tertiary-200 border-t" />
       <TabsContent value="Loops">
         <LoopVideos slug={loopDetailsModule.slug} />
       </TabsContent>
@@ -282,7 +282,7 @@ function LoopCollaborators({ slug }: { slug: string }) {
 
   if (!cohosts || cohosts.length === 0)
     return (
-      <div className="flex h-full w-full items-center justify-center pt-32 text-title-3-bold text-tertiary">
+      <div className="text-title-3-bold text-tertiary flex h-full w-full items-center justify-center pt-32">
         No members yet
       </div>
     )
@@ -382,9 +382,9 @@ function Stats({
       {statsData.map((obj, index) => {
         return (
           <div key={index} className="flex items-center">
-            <p className="mr-1 text-title-2-bold">{obj.value}</p>
+            <p className="text-title-2-bold mr-1">{obj.value}</p>
             {/* make this fonts 12px */}
-            <p className="text-xs mr-4 text-cap-1-demi text-tertiary">{obj.key}</p>
+            <p className="text-cap-1-demi text-tertiary mr-4 text-xs">{obj.key}</p>
           </div>
         )
       })}
@@ -404,14 +404,14 @@ interface CohostTileProps {
 function CohostTile({ image, title, subtitle, userName, isAvatar, brandUserLogo }: CohostTileProps) {
   return (
     <div className="flex items-center gap-x-1 rounded-lg p-2">
-      <CustomAvatar className="h-12 w-12 bg-red-40" fallbackString={title} imageUrl={image} isAvatar={isAvatar} />
+      <CustomAvatar className="bg-red-40 h-12 w-12" fallbackString={title} imageUrl={image} isAvatar={isAvatar} />
       <div className="mx-2">
-        <p className="line-clamp-1 inline-flex items-center gap-x-2 text-body-1-bold">
+        <p className="text-body-1-bold line-clamp-1 inline-flex items-center gap-x-2">
           {title}
           {brandUserLogo && <BrandBadgeIcon userLogoType={brandUserLogo ?? 1} variant="dark" />}
         </p>
-        {userName && <p className="line-clamp-1 text-body-1-demi">{userName}</p>}
-        {subtitle && <p className="line-clamp-1 text-cap-1-demi text-tertiary">{subtitle}</p>}
+        {userName && <p className="text-body-1-demi line-clamp-1">{userName}</p>}
+        {subtitle && <p className="text-cap-1-demi text-tertiary line-clamp-1">{subtitle}</p>}
       </div>
     </div>
   )

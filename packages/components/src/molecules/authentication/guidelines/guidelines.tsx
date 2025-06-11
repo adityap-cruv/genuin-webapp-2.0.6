@@ -6,7 +6,7 @@ import type { ComponentProps } from "react";
 import { useState } from "react";
 
 import { useBaseContext } from "src/context/base";
-import { BrandLogo } from "src/molecules/brand";
+import { BrandLogo } from "@molecules/brand";
 import type { GuideLineSchema } from "src/react-query/api/guidelines";
 import { useGuidelines } from "src/react-query/api/guidelines";
 

@@ -1,4 +1,4 @@
-import { GroupPosts } from "src/organisms/group-posts";
+import { GroupPosts } from "@organisms/group-posts";
 
 import { useGetCommunityFeed } from "src/react-query/api/community/feed";
 import { Suspense, useCallback, useMemo, useState } from "react";

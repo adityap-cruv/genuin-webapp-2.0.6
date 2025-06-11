@@ -7,8 +7,8 @@ import { getTimeAgo } from "@genuin/ui/utils";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { ProfileLink } from "@molecules/profile-link";
 
-import { Audio } from "src/organisms/comments/audio";
-import { Video } from "src/organisms/comments/video";
+import { Audio } from "@organisms/comments/audio";
+import { Video } from "@organisms/comments/video";
 
 export type CommentItemProps = {
   comment: CommentListType[number];

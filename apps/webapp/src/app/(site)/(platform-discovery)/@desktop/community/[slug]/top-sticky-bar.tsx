@@ -25,6 +25,10 @@ type Props = {
   isJoinRequested: boolean
 }
 
+import type { MotionProps } from 'framer-motion'
+
+type TopStickyBarProps = Props & React.HTMLAttributes<HTMLDivElement> & MotionProps
+
 export function TopStickyBar({
   defaultOpen = true,
   isOpen = false,
@@ -38,7 +42,7 @@ export function TopStickyBar({
   isCommunityPrivate,
   isJoinRequested,
   ...props
-}: Props) {
+}: TopStickyBarProps) {
   const navAnimationControl = useAnimationControls()
 
   useEffect(() => {
@@ -63,7 +67,7 @@ export function TopStickyBar({
       initial={{
         translateY: '-100%',
       }}
-      className="sticky top-0 z-10 flex h-14 w-full items-center justify-between border-b border-tertiary-200 bg-monochrome-white px-6"
+      className="border-tertiary-200 bg-monochrome-white sticky top-0 z-10 flex h-14 w-full items-center justify-between border-b px-6"
       {...props}>
       <span className="flex items-center gap-x-2">
         <CustomAvatar

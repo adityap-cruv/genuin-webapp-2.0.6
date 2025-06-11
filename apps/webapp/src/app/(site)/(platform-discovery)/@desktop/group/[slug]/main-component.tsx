@@ -64,7 +64,7 @@ export function LoopDetails({ slug }: { slug: string }) {
 // TODO: Improve this component.
 export function MainComponent({ loopDetails }: Props) {
   const detailsDivRef = useRef<HTMLDivElement>(null)
-  const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
+  const detailsInView = useInView(detailsDivRef as React.RefObject<HTMLElement>, { amount: 0.6 })
   const searchParams = Object.fromEntries(useSearchParams())
   const queryClient = useQueryClient()
 
@@ -115,7 +115,7 @@ export function MainComponent({ loopDetails }: Props) {
               <Button
                 size="custom"
                 variant="outline"
-                className="border border-primary"
+                className="border-primary border"
                 onClick={async () => {
                   await joinAsCollaboratorDeepLink({ ldDescription, loopDetails, searchParams }).then(
                     (generatedLink) => {
@@ -131,7 +131,7 @@ export function MainComponent({ loopDetails }: Props) {
                     }
                   )
                 }}>
-                <p className="px-4 py-1 text-title-3-bold text-primary" style={{ fontSize: '15px' }}>
+                <p className="text-title-3-bold text-primary px-4 py-1" style={{ fontSize: '15px' }}>
                   Join as Member
                 </p>
               </Button>
@@ -157,9 +157,9 @@ export function MainComponent({ loopDetails }: Props) {
             position="outside"
             text={loopDetails.group.group_description ?? ''}
             maxLines={2}
-            className="my-1 w-1/2 break-words text-body-1-med text-secondary"
+            className="text-body-1-med text-secondary my-1 w-1/2 break-words"
           />
-          <div className="my-3 w-1/2 rounded-xl border border-tertiary-200 p-4">
+          <div className="border-tertiary-200 my-3 w-1/2 rounded-xl border p-4">
             <span className="flex gap-x-2" ref={detailsDivRef}>
               <span className="flex-1">
                 <p className="text-cap-1-demi text-tertiary">Created by</p>
@@ -176,7 +176,7 @@ export function MainComponent({ loopDetails }: Props) {
                       isAvatar={loopDetails.owner.is_avatar}
                       className="h-8 w-8"
                     />
-                    <p className="line-clamp-1 break-all text-body-1-bold text-secondary">
+                    <p className="text-body-1-bold text-secondary line-clamp-1 break-all">
                       @{loopDetails.owner.username}
                     </p>
                     {loopDetails.owner.brand && (
@@ -196,7 +196,7 @@ export function MainComponent({ loopDetails }: Props) {
                         isAvatar={false}
                         className="h-8 w-8"
                       />
-                      <p className="ml-1 line-clamp-1 break-all text-body-1-bold text-secondary">
+                      <p className="text-body-1-bold text-secondary ml-1 line-clamp-1 break-all">
                         {loopDetails.community.name}
                       </p>
                     </div>
@@ -206,11 +206,11 @@ export function MainComponent({ loopDetails }: Props) {
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <div>
-                            <LockIcon className="z-10 ml-1 h-4 w-4 stroke-tertiary" />
+                            <LockIcon className="stroke-tertiary z-10 ml-1 h-4 w-4" />
                           </div>
                         </TooltipTrigger>
-                        <TooltipContent className="w-64 bg-monochrome-black">
-                          <p className="text-center text-cap-1-med text-monochrome-white">
+                        <TooltipContent className="bg-monochrome-black w-64">
+                          <p className="text-cap-1-med text-monochrome-white text-center">
                             This community is private. Only people approved by it's moderators can see and participate
                             in this community.
                           </p>
@@ -237,7 +237,7 @@ export function MainComponent({ loopDetails }: Props) {
             style={{ height: 'calc(100% - 320px)', backgroundColor: '#F9F9F9' }}>
             <div className="flex flex-col items-center justify-center">
               <Image src={icLock} alt="share" className="h-16 w-16" />
-              <p className="text-center text-title-2-demi">
+              <p className="text-title-2-demi text-center">
                 This Group is visible to its
                 <br /> Members only
               </p>
@@ -263,7 +263,7 @@ export function MainComponent({ loopDetails }: Props) {
 // TODO: think about pagination
 function LoopCohosts({ slug }: { slug: string }) {
   const { data, isLoading } = getLoopCohosts(slug)
-  const cohosts = data?.pages.flatMap((item) => item.members)
+  const cohosts = data?.pages.flatMap((item: any) => item.members)
 
   if (isLoading)
     return (
@@ -284,7 +284,7 @@ function LoopCohosts({ slug }: { slug: string }) {
   if (cohosts && cohosts.length !== 0)
     return (
       <div>
-        <p className="my-2 text-title-3-bold">Members</p>
+        <p className="text-title-3-bold my-2">Members</p>
         <div className="h-full w-full overflow-auto">
           {cohosts.map((item, index) => {
             if (!item.nickname)

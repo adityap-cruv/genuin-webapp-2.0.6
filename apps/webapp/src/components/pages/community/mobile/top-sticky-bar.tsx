@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { motion, type MotionProps } from 'framer-motion'
 import { CustomAvatar } from '@/components/custom/custom-avatar'
 import { useState, useEffect } from 'react'
 
@@ -6,9 +6,15 @@ type TopStickyBarPropType = {
   communityName: string
   communityProfileImage: string
   elementIdToTrack: string
-}
+} & React.HTMLAttributes<HTMLDivElement> &
+  MotionProps
 
-export function TopStickyBar({ communityName, communityProfileImage, elementIdToTrack }: TopStickyBarPropType) {
+export function TopStickyBar({
+  communityName,
+  communityProfileImage,
+  elementIdToTrack,
+  ...props
+}: TopStickyBarPropType) {
   const [isOpen, setIsOpen] = useState(false)
 
   useEffect(() => {
@@ -39,7 +45,8 @@ export function TopStickyBar({ communityName, communityProfileImage, elementIdTo
         transitionDuration: '0.2',
         transitionTimingFunction: 'linear',
       }}
-      className="sticky top-0 z-30 flex h-14 w-full items-center justify-between border-b border-tertiary-200 bg-monochrome-white px-6">
+      className="border-tertiary-200 bg-monochrome-white sticky top-0 z-30 flex h-14 w-full items-center justify-between border-b px-6"
+      {...props}>
       <span className="flex items-center gap-x-2">
         <CustomAvatar
           imageUrl={communityProfileImage}
@@ -47,7 +54,7 @@ export function TopStickyBar({ communityName, communityProfileImage, elementIdTo
           isAvatar={false}
           className="h-8 w-8"
         />
-        <p className="line-clamp-1 break-all text-title-2-demi">{communityName}</p>
+        <p className="text-title-2-demi line-clamp-1 break-all">{communityName}</p>
       </span>
     </motion.div>
   )

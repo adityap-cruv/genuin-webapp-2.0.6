@@ -1,4 +1,4 @@
-import { motion, useAnimationControls } from 'framer-motion'
+import { motion, useAnimationControls, type MotionProps } from 'framer-motion'
 import { useEffect } from 'react'
 import ShareButton from '@/components/common/actions/share-button'
 import SubscriptionButton from '@/components/common/actions/subscription-button'
@@ -28,6 +28,8 @@ export const TopStickyBar = {
   desktop: Desktop,
 }
 
+type DesktopProps = Props & React.HTMLAttributes<HTMLDivElement> & MotionProps
+
 function Desktop({
   defaultOpen = true,
   isOpen = false,
@@ -39,7 +41,7 @@ function Desktop({
   ldDescription,
   slug,
   ...props
-}: Props) {
+}: DesktopProps) {
   const navAnimationControl = useAnimationControls()
   const queryClient = useQueryClient()
 
@@ -65,7 +67,7 @@ function Desktop({
       initial={{
         translateY: '-100%',
       }}
-      className="sticky top-0 z-10 flex h-14 w-full items-center justify-between border-b border-monochrome-9 bg-monochrome-white px-6"
+      className="border-monochrome-9 bg-monochrome-white sticky top-0 z-10 flex h-14 w-full items-center justify-between border-b px-6"
       {...props}>
       <span className="flex items-center gap-x-2">
         <p className="text-title-2-demi">{loopName}</p>
@@ -100,7 +102,9 @@ function Desktop({
   )
 }
 
-function Mobile({ defaultOpen = true, isOpen = false, loopName, communitySlug, ...props }: Props) {
+type MobileProps = Props & React.HTMLAttributes<HTMLDivElement> & MotionProps
+
+function Mobile({ defaultOpen = true, isOpen = false, loopName, communitySlug, ...props }: MobileProps) {
   const navAnimationControl = useAnimationControls()
 
   useEffect(() => {
@@ -125,10 +129,10 @@ function Mobile({ defaultOpen = true, isOpen = false, loopName, communitySlug, .
       initial={{
         translateY: '-100%',
       }}
-      className="sticky top-0 z-10 flex h-14 w-full items-center justify-between border-b border-monochrome-9 bg-monochrome-white px-6"
+      className="border-monochrome-9 bg-monochrome-white sticky top-0 z-10 flex h-14 w-full items-center justify-between border-b px-6"
       {...props}>
       <span className="flex items-center gap-x-2">
-        <p className="line-clamp-1 break-all text-title-2-demi" title={loopName}>
+        <p className="text-title-2-demi line-clamp-1 break-all" title={loopName}>
           {loopName}
         </p>
       </span>

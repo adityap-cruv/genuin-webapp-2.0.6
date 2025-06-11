@@ -8,7 +8,7 @@ import * as RPNInput from "react-phone-number-input";
 import { QRCode } from "react-qrcode-logo";
 import { useBaseContext } from "src/context/base";
 import { URL_TO_APP_STORE, URL_TO_PLAY_STORE } from "src/lib/constants";
-import { Link } from "src/molecules/link";
+import { Link } from "@molecules/link";
 
 export type GetAppProps = ComponentProps<"div"> & {
   onSubmit: () => void;
@@ -32,11 +32,12 @@ export function GetApp({
       style={{ width: "486px" }}
       {...props}
     >
-      {
-        brandDetails.logo && (
-          <Image src={brandDetails.logo} className="gencl:h-12 gencl:w-12 gencl:rounded-full" />
-        )
-      }
+      {brandDetails.logo && (
+        <Image
+          src={brandDetails.logo}
+          className="gencl:h-12 gencl:w-12 gencl:rounded-full"
+        />
+      )}
       <div className="gencl:flex gencl:flex-col gencl:gap-3">
         <p className="gencl:text-headline-2-semi-bold">
           Get the {brandDetails.name} app
