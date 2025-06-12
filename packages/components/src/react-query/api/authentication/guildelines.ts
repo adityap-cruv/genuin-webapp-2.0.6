@@ -1,4 +1,4 @@
-import { axiosInstance } from "src/react-query/axios-instance";
+import { axiosInstance } from "@react-query/axios-instance";
 import { getQueryKeyForGuidelines } from "@react-query/keys/authentication";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { API_PATHS } from "@react-query/paths";

@@ -1,3 +1,4 @@
+"use client";
 import { Image } from "@genuin/ui/image";
 import { cn } from "@genuin/ui/utils";
 import { useCallback, type ComponentProps } from "react";

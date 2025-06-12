@@ -11,12 +11,12 @@ function CommunitySkeleton({ className }: { className?: string }) {
           <Skeleton className="gencl:w-[50%] gencl:h-6 gencl:rounded-md" />
           <div className="gencl:flex gencl:items-center gencl:gap-2">
             {Array.from({ length: 4 }).map((_, idx, arr) => (
-              <>
+              <div key={idx}>
                 <Skeleton className="gencl:w-18 gencl:h-4 gencl:rounded-md" />
                 {idx < arr.length - 1 && (
                   <Skeleton className="gencl:w-1 gencl:h-1 gencl:rounded-md" />
                 )}
-              </>
+              </div>
             ))}
           </div>
         </div>
@@ -42,8 +42,8 @@ function CommunityListSkeleton() {
 function GroupsSkeleton({ className }: { className?: string }) {
   return (
     <div className={cn("gencl:ps-19", className)}>
-      {Array.from({ length: 3 }).map(() => (
-        <CommunityGroupsSkeleton />
+      {Array.from({ length: 3 }).map((_, idx) => (
+        <CommunityGroupsSkeleton key={idx} />
       ))}
     </div>
   );

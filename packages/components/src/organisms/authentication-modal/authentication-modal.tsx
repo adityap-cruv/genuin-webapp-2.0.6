@@ -1,3 +1,4 @@
+"use client";
 import {
   Dialog,
   DialogContent,
@@ -43,7 +44,9 @@ export function AuthenticationModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogTrigger {...restProps}>{children}</DialogTrigger>
+      <DialogTrigger asChild {...restProps}>
+        {children}
+      </DialogTrigger>
       <DialogContent className="gencl:p-0">
         <AuthenticationModalProvider
           action={action}

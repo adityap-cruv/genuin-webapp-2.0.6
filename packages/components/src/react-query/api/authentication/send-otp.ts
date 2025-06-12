@@ -1,7 +1,7 @@
 import { encryptText } from "@genuin/components/lib/utils/encryption";
 import { axiosInstance } from "@react-query/axios-instance";
 import { API_PATHS } from "@react-query/paths";
-import { getDeviceId } from "@lib/utils/device-id";
+import { getDeviceId } from "@genuin/components/lib/utils/device-id";
 import { useMutation } from "@tanstack/react-query";
 
 type SendOtpProps = Partial<{ email: string; phoneNumber: string }> & {

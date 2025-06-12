@@ -11,7 +11,7 @@ import { PostDetailsType } from "@react-query/api/feed/schema";
 import { useAuthContext } from "@context/auth";
 import { GenericDetailsMetadata } from "@organisms/generic-details/generic-details-metadata";
 import { Tag } from "@molecules/tag";
-import { buildPageUrl } from "@lib/utils/pages";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 
 type GroupHoverCardProps = {
   groupDetails: PostDetailsType["group"];

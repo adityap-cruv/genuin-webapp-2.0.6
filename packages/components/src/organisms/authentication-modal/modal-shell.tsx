@@ -1,7 +1,7 @@
 import { ComponentProps } from "react";
 import { cn } from "@genuin/ui/lib/utils";
 import { useAuthenticationModalContext } from "./context";
-import { usePrevious } from "@hooks/use-previous";
+import { usePrevious } from "@genuin/components/hooks/use-previous";
 import { Button } from "@genuin/ui/components/button";
 import { ChevronLeft } from "lucide-react";
 

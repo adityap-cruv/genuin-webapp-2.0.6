@@ -1,3 +1,4 @@
+"use client";
 import { TabsSkeleton } from "@genuin/ui/tabs";
 
 import { BecomeCreatorButton } from "@molecules/become-creator-button";

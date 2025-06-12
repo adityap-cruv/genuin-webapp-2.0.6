@@ -22,7 +22,7 @@ export function GroupSubscriptionButton({
   const button = <Button {...restProps} />;
 
   if (authenticationStatus === "unauthenticated") {
-    return <AuthenticationModal>{button}</AuthenticationModal>;
+    return <AuthenticationModal asChild>{button}</AuthenticationModal>;
   }
 
   return button;

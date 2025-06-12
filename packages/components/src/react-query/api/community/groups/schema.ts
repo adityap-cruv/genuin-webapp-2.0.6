@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { mapGroupJoinStatus } from "@lib/utils";
+import { mapGroupJoinStatus } from "@genuin/components/lib/utils";
 import { GroupUserStatusSchema } from "@types/roles";
 
 // Define the member schema for members array in the group object

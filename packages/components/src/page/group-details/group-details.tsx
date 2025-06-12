@@ -1,3 +1,4 @@
+"use client";
 import { Skeleton } from "@genuin/ui/skeleton";
 import { TabsSkeleton } from "@genuin/ui/tabs";
 import { convertISOToLocalDateFormate } from "@genuin/ui/utils";

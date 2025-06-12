@@ -12,13 +12,13 @@ import {
 } from "@genuin/ui/components/form";
 import { useState } from "react";
 
-import { useBaseContext } from "src/context/base";
-import { BrandLogo } from "src/molecules/brand";
+import { useBaseContext } from "@genuin/components/context/base";
+import { BrandLogo } from "@molecules/brand";
 import {
   useAcceptGuidelinesMutation,
   useGetGuidelines,
 } from "@react-query/api/authentication";
-import { useAuthContext } from "@context/auth";
+import { useAuthContext } from "@genuin/components/context/auth";
 import { useAuthenticationModalContext } from "../../context";
 import { SubmitButton } from "../../submit-button";
 

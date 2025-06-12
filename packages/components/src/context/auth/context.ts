@@ -1,3 +1,4 @@
+"use client";
 import { createContext, useContext } from "react";
 import type { AuthUser } from "@genuin/components/types/auth";
 

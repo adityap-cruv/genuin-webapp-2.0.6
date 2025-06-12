@@ -18,7 +18,10 @@ export function BaseLayout({
   return (
     <div className="gencl:h-full gencl:w-full gencl:mx-auto">
       <TopBar className="gencl:border-b gencl:border-secondary-150" />
-      <main className="gencl:flex gencl:h-full" style={{ height: 813 }}>
+      <main
+        className="gencl:flex gencl:h-full"
+        style={{ height: height - TOP_BAR_HEIGHT }}
+      >
         <SideBar className="gencl:h-full" />
         <section
           className={cn("gencl:w-full gencl:h-full gencl:mx-auto", className)}

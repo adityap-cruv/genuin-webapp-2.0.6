@@ -1,3 +1,4 @@
+"use client";
 import { DecorativeList } from "@genuin/ui/decorative-list";
 import { InfiniteScroll } from "@genuin/ui/infinite-scroll";
 import { useCallback, useMemo, useState } from "react";

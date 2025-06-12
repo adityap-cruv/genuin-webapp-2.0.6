@@ -40,7 +40,7 @@ export function JoinCommunityButton({
   const button = <Button role={role} {...restProps} />;
 
   if (authenticationStatus === "unauthenticated") {
-    return <AuthenticationModal>{button}</AuthenticationModal>;
+    return <AuthenticationModal asChild>{button}</AuthenticationModal>;
   }
 
   return button;

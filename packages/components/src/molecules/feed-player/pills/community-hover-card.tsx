@@ -6,7 +6,7 @@ import { ShareButton } from "@molecules/share-button";
 import { PostDetailsType } from "@react-query/api/feed/schema";
 import { cn } from "@genuin/ui/lib/utils";
 import { GenericDetailsMetadata } from "@organisms/generic-details/generic-details-metadata";
-import { buildPageUrl } from "@lib/utils/pages";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { Stats } from "@molecules/stats";
 import { Tag } from "@molecules/tag";
 

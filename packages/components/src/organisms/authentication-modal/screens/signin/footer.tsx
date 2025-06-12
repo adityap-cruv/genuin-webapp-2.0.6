@@ -1,5 +1,5 @@
 import { Button } from "@genuin/ui/button";
-import { useBaseContext } from "src/context/base";
+import { useBaseContext } from "@genuin/components/context/base";
 import { GoogleIcon, AppleIcon, MultipleDotsIcon } from "@genuin/ui/icons";
 import { useAuthenticationModalContext } from "../../context";
 

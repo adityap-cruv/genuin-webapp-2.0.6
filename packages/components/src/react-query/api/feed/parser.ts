@@ -1,6 +1,9 @@
 import type z from "zod";
 
-import { mapCommunityUserRole, mapGroupJoinStatus } from "@lib/utils";
+import {
+  mapCommunityUserRole,
+  mapGroupJoinStatus,
+} from "@genuin/components/lib/utils";
 
 import type { PostDetailsSchema } from "./schema";
 import type { FeedResponseFromGoApi } from "./types";

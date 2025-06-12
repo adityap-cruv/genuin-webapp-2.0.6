@@ -1,4 +1,4 @@
-import { mapGroupJoinStatus } from "@lib/utils";
+import { mapGroupJoinStatus } from "@genuin/components/lib/utils";
 import type { ResponseGroupDetailsType } from "./response.types";
 import type { GroupDetailsType } from "./types";
 

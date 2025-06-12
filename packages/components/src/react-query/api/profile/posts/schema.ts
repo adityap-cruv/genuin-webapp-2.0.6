@@ -1,6 +1,9 @@
 import z from "zod";
 
-import { mapCommunityUserRole, mapGroupJoinStatus } from "@lib/utils";
+import {
+  mapCommunityUserRole,
+  mapGroupJoinStatus,
+} from "@genuin/components/lib/utils";
 import type { CommunityUserRole } from "@types/post";
 import type { GroupUserStatusType } from "@types/roles";
 

@@ -3,7 +3,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@genuin/ui/popover";
 
 import { SideBarActionLinks } from "./sidebar-actions-link";
 import { Link } from "@molecules/link";
-import { buildPageUrl } from "@lib/utils/pages";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 
 export function SidebarActions() {
   return (
