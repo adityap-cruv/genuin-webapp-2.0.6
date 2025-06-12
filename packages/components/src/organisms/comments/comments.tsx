@@ -11,7 +11,7 @@ import { CommentInputBox } from "./comment-input";
 
 type CommentPropsType = {
   videoId: string;
-  loopId : string
+  loopId: string;
 } & ComponentProps<"div">;
 
 export function Comments({
@@ -30,7 +30,7 @@ export function Comments({
       {...restProps}
     >
       <CommentsComponent videoId={videoId} />
-      <CommentInputBox videoId={videoId} loopId={loopId}  />
+      <CommentInputBox videoId={videoId} loopId={loopId} />
     </div>
   );
 }

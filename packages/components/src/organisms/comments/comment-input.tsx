@@ -15,6 +15,7 @@ import {
 import { usePostComment } from "@react-query/api/comments";
 import { useCallback } from "react";
 import { cn } from "@genuin/ui/lib/utils";
+import { AuthenticationModal } from "@organisms/authentication-modal";
 
 const commentFormSchema = z.object({
   comment: z.string().min(1, { message: "" }),
@@ -63,7 +64,8 @@ const commentSubmit = useCallback(
 );
 
   return (
-    <Form {...form}>
+ <AuthenticationModal>
+     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(commentSubmit)}
         className="gencl:absolute gencl:bottom-0 gencl:left-0 gencl:right-0 gencl:bg-white gencl:p-4 gencl:border-t gencl:border-secondary-200 gencl:flex gencl:justify-between"
@@ -110,5 +112,6 @@ const commentSubmit = useCallback(
         </Button>
       </form>
     </Form>
+ </AuthenticationModal>
   );
 }

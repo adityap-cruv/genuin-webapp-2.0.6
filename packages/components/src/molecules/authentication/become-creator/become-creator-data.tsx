@@ -21,7 +21,7 @@ export function BecomeCreatorData(brandName: string): BecomeCreatorDataItem[] {
         {
             src : "",
             title: "Moderate your Community",
-            subtitle: `Invite others to join your ${brandName} community, share engaging content, and spark meaningful conversations to make connections and foster intellectual dialogue.`
+            subtitle: "Create a safe space where your members can thrive. Customize your community with guidelines, add admins, and more."
         }
     ];
 }

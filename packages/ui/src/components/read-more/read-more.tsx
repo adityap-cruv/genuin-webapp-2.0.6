@@ -339,8 +339,9 @@ export function ReadMore({
           <button
             type="button"
             className={cn(
+              textClassName,
               "gencl:mt-1 gencl:text-primary gencl:hover:underline",
-              buttonClassName
+              buttonClassName,
             )}
             onClick={(e) => {
               e.stopPropagation();

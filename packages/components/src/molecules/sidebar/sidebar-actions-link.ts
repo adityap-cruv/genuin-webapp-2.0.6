@@ -4,26 +4,35 @@ import {
   ExploreIcon,
   LatestIcon,
 } from "@genuin/ui/icons";
+import { SVGIconsProps } from "@genuin/ui/icons/type";
+import { PageType } from "@lib/utils/pages";
+import React from "react";
 
-export const SideBarActionLinks = [
+type SideBarActionLinksType = {
+  icon: (props: SVGIconsProps) => React.ReactNode,
+  text: string,
+  type: PageType
+}
+
+export const SideBarActionLinks: SideBarActionLinksType[] = [
   {
     icon: HomeIcon,
     text: "Home",
-    href: "",
+    type : "home"
   },
   {
     icon: PopularIcon,
     text: "Popular",
-    href: "",
+    type: "popular",
   },
   {
     icon: LatestIcon,
     text: "Latest",
-    href: "",
+    type: "latest",
   },
   {
     icon: ExploreIcon,
     text: "Explore",
-    href: "",
+    type: "explore",
   }
 ];

@@ -12,7 +12,8 @@ export function BrandLogo({ className, ...props }: BrandLogoProps) {
     <Image
       src={brandDetails.brand_web_logo}
       alt="Brand Logo"
-      className={cn("gencl:w-44", className)}
+      useWebp={false}
+      className={cn("gencl:max-w-44", className)}
       {...props}
     />
   );

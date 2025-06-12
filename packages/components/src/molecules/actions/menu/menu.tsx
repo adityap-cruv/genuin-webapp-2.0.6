@@ -18,14 +18,14 @@ type MenuProps = ComponentProps<typeof Popover> & {
 
 const menuItems = (text: string, className?: string): React.ReactNode => {
   return (
-    <div
+    <p
       className={cn(
-        "gencl:text-body-1-medium gencl:text-secondary-500 gencl:p-2 gencl:cursor-pointer",
+        "gencl:!text-body-1-medium gencl:text-secondary-500 gencl:p-2 gencl:cursor-pointer",
         className
       )}
     >
       {text}
-    </div>
+    </p>
   );
 };
 
@@ -40,12 +40,15 @@ export function Menu({ contentId, shareUrl, children, ...props }: MenuProps) {
         <PlaybackSpeed children={menuItems("Playback speed")} />
       ),
     },
+    // Feature not implemented yet: "Group Details" and "Not interested" menu items are pending design.
+    /*
     {
       children: menuItems("Group Details"),
     },
     {
       children: menuItems("Not interested"),
     },
+    */
     contentId && {
       children: (
         <Report

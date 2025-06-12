@@ -14,6 +14,8 @@ import { ReportType, useReport } from "@react-query/api/report";
 import { Loader } from "@genuin/ui/loader";
 import { UseMutationResult } from "@tanstack/react-query";
 import { Image } from "@genuin/ui/image";
+import { AuthenticationModal } from "@organisms/authentication-modal";
+import { useAuthContext } from "@context/auth";
 
 type ReportProps = ComponentProps<typeof Dialog> & {
   reportFor: "VIDEO" | "COMMENT";
@@ -28,6 +30,7 @@ export function Report({
   ...props
 }: ReportProps) {
   const [selectedReason, setSelectedReason] = useState<string>("");
+  const { user } = useAuthContext();
 
   const handleReasonChange = (value: string) => {
     setSelectedReason(value);
@@ -46,6 +49,8 @@ export function Report({
     };
     reportMutation.mutate(feedbackPayload);
   }, [reportMutation]);
+
+  if(!user) return <AuthenticationModal>{children}</AuthenticationModal>
 
   return (
     <Dialog modal {...props}>
@@ -108,7 +113,11 @@ function ReportContent({
         onClick={handleSubmit}
         className="gencl:w-full gencl:bg-primary"
       >
-        {reportMutation.isPending ? <Loader className="gencl:stroke-white" /> : "Submit"}
+        {reportMutation.isPending ? (
+          <Loader className="gencl:stroke-white" />
+        ) : (
+          "Submit"
+        )}
       </Button>
     </>
   );

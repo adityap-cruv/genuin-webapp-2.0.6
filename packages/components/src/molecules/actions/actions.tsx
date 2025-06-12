@@ -70,10 +70,10 @@ type ActionWrapperContextType = {
 };
 
 type ActionsPropsType = ComponentProps<"div"> & {
-  contentId: string;
   isReacted: boolean;
   reactionCount: number;
   onReactionStateChange?: (isReacted: boolean) => void;
+  contentId : string
   variant?: "light" | "dark";
   /**
    * If you want to override the default action wrappers, you can pass a namedActionWrapper object.
@@ -106,7 +106,7 @@ export const defaultActionWrappers: Record<
   ),
   COMMENT: (node, _context) => node,
   SHARE: (node, _context) => node,
-  MORE: (node, _context) => <Menu children={node} />,
+  MORE: (node, context) => <Menu contentId={context.contentId} children={node} />,
 };
 
 export function Actions({

@@ -1,10 +1,18 @@
 // filepath: /Users/himanshumendapara/Desktop/genuin/genuin-webapp-standalone/packages/components/@genuin/components/lib/utils/pages.ts
 
-export type PageType = "community" | "group" | "profile" | "brand";
+export type PageType =
+  | "community"
+  | "group"
+  | "profile"
+  | "brand"
+  | "home"
+  | "popular"
+  | "latest"
+  | "explore";
 
 type BuildPageUrlOptions = {
   type: PageType;
-  slug: string;
+  slug?: string;
   searchParams?: Record<string, string | string[] | undefined>;
 };
 
@@ -35,6 +43,18 @@ export function buildPageUrl({
       break;
     case "brand":
       basePath = `/brand/${slug}`;
+      break;
+    case "home":
+      basePath = "/";
+      break;
+    case "explore":
+      basePath = "/explore";
+      break;
+    case "latest":
+      basePath = "/latest";
+      break;
+    case "popular":
+      basePath = "/popular";
       break;
     default:
       // Optional: handle unknown type, though TypeScript should prevent this
