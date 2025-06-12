@@ -195,9 +195,15 @@ export function GenericDetailsSkeleton({
             <div className="gencl:flex gencl:items-center gencl:gap-2">
               {Array.from({ length: 4 }).map((_, idx, arr) => (
                 <>
-                  <Skeleton className="gencl:w-18 gencl:h-4 gencl:rounded-md" />
+                  <Skeleton
+                    key={idx}
+                    className="gencl:w-18 gencl:h-4 gencl:rounded-md"
+                  />
                   {idx < arr.length - 1 && (
-                    <Skeleton className="gencl:w-1 gencl:h-1 gencl:rounded-md" />
+                    <Skeleton
+                      key={idx}
+                      className="gencl:w-1 gencl:h-1 gencl:rounded-md"
+                    />
                   )}
                 </>
               ))}
@@ -218,12 +224,12 @@ export function GenericDetailsSkeleton({
         <Skeleton className="gencl:w-full gencl:h-9 gencl:rounded-md" />
         <div className="gencl:flex gencl:items-center gencl:gap-2">
           {Array.from({ length: 5 }).map((_, idx, arr) => (
-            <>
+            <div key={idx}>
               <Skeleton className="gencl:w-18 gencl:h-4 gencl:rounded-md" />
               {idx < arr.length - 1 && (
                 <Skeleton className="gencl:w-1 gencl:h-1 gencl:rounded-md" />
               )}
-            </>
+            </div>
           ))}
         </div>
         <div className="gencl:w-full gencl:flex gencl:flex-col gencl:gap-2">
@@ -232,8 +238,11 @@ export function GenericDetailsSkeleton({
         </div>
         {hasLinks && (
           <div className="gencl:flex gencl:gap-2">
-            {Array.from({ length: 4 }).map(() => (
-              <Skeleton className="gencl:w-6 gencl:h-6 gencl:rounded-md" />
+            {Array.from({ length: 4 }).map((_, idx) => (
+              <Skeleton
+                key={idx}
+                className="gencl:w-6 gencl:h-6 gencl:rounded-md"
+              />
             ))}
           </div>
         )}

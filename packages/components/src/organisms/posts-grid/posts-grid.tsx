@@ -110,8 +110,8 @@ export function PostsGridSkeleton({
 }) {
   return (
     <div className={cn("gencl:flex gencl:flex-wrap gencl:gap-2", className)}>
-      {Array.from({ length: noOfPosts }).map(() => (
-        <PostTileSkeleton size={size} />
+      {Array.from({ length: noOfPosts }).map((_, idx) => (
+        <PostTileSkeleton key={idx} size={size} />
       ))}
     </div>
   );

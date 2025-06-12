@@ -4,7 +4,7 @@ import { useGetProfileFeed } from "@react-query/api/profile/posts";
 import { getQueryKeyForProfileFeed } from "@react-query/keys/profile";
 
 const FeedView = lazy(() =>
-  import("@templates/feed/index.js").then((module) => ({
+  import("@templates/feed").then((module) => ({
     default: module.FeedView,
   }))
 );

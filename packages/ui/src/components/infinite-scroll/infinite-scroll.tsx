@@ -1,3 +1,4 @@
+"use client";
 import React, { useCallback, useEffect, useId } from "react";
 
 import { Loader } from "../loader";

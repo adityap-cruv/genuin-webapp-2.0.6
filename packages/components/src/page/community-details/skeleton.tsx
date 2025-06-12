@@ -1,7 +1,7 @@
 import { Skeleton } from "@genuin/ui/skeleton";
 import { TabsSkeleton } from "@genuin/ui/tabs";
 import { GenericDetailsSkeleton } from "@organisms/generic-details";
-import { CommunityGroupsSkeleton } from "src/templates/community-details-tabs";
+import { CommunityGroupsSkeleton } from "@templates/community-details-tabs";
 
 export function CommunityDetailsSkeleton() {
   return (
@@ -12,8 +12,8 @@ export function CommunityDetailsSkeleton() {
           <GenericDetailsSkeleton variant="default" />
           <TabsSkeleton className="gencl:pt-6" />
           <div className="gencl:pt-6">
-            {Array.from({ length: 5 }).map(() => (
-              <CommunityGroupsSkeleton />
+            {Array.from({ length: 5 }).map((_, idx) => (
+              <CommunityGroupsSkeleton key={idx} />
             ))}
           </div>
         </div>

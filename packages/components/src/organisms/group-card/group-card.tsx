@@ -107,12 +107,12 @@ export function GroupCardSkeleton({
       </div>
       <div className="gencl:flex gencl:items-center gencl:gap-2">
         {Array.from({ length: 4 }).map((_, idx, arr) => (
-          <>
+          <div key={idx}>
             <Skeleton className="gencl:w-18 gencl:h-4 gencl:rounded-md" />
             {idx < arr.length - 1 && (
               <Skeleton className="gencl:w-1 gencl:h-1 gencl:rounded-md" />
             )}
-          </>
+          </div>
         ))}
       </div>
     </div>

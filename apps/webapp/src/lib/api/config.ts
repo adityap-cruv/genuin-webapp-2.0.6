@@ -5,13 +5,15 @@ export async function getEmbedConfig(params: Record<string, string>) {
   Object.keys(params).forEach((key) => {
     url.searchParams.append(key, params[key])
   })
-  return await fetch(url.href, { cache: 'no-store' })
+  return await fetch(url.href, {
+    cache: 'force-cache',
+    next: { revalidate: 300 }, // Revalidate every 5 minutes
+  })
     .then(async (res) => {
       const resData = await res.json()
       return resData.data as ConfigType
     })
     .catch((e) => {
-       
       console.log('error:;', e)
       throw new Error('Something went wrong::')
     })

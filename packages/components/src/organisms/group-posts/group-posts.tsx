@@ -1,3 +1,4 @@
+"use client";
 import type { ComponentProps } from "react";
 import { Suspense, useCallback, useMemo, useState, lazy } from "react";
 
@@ -7,7 +8,7 @@ import { getQueryKeyForGroupFeed } from "@react-query/keys/feed";
 
 // Lazy load the FeedView component
 const FeedView = lazy(() =>
-  import("@templates/feed/index.js").then((module) => ({
+  import("@templates/feed").then((module) => ({
     default: module.FeedView,
   }))
 );

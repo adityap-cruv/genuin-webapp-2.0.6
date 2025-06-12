@@ -1,8 +1,8 @@
-import { API_PATHS } from "src/react-query/paths";
+import { API_PATHS } from "@react-query/paths";
 import { parseFeed } from "../../feed/parser";
-import { axiosInstance } from "src/react-query/axios-instance";
+import { axiosInstance } from "@react-query/axios-instance";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { getQueryKeyForCommunityFeed } from "src/react-query/keys/community";
+import { getQueryKeyForCommunityFeed } from "@react-query/keys/community";
 
 async function fetchLoopVideos(
   slug: string,

@@ -6,7 +6,7 @@ import {
 import { cn } from "@genuin/ui/utils";
 import { type ComponentProps, type ReactNode } from "react";
 
-import { formateDateToLocaleString } from "@lib/utils";
+import { formateDateToLocaleString } from "@genuin/components/lib/utils";
 import { Stats } from "@molecules/stats";
 import { Tag } from "@molecules/tag";
 

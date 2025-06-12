@@ -155,7 +155,7 @@ async function getHeaders() {
             ),
 
             // images
-            `img-src 'self' data: blob: ${HOSTS.media} ${HOSTS.bunnyCDN}`,
+            `img-src 'self' data: blob: ${HOSTS.media} ${HOSTS.bunnyCDN} https://*.picsum.photos https://picsum.photos`,
 
             // media (video/audio)
             `media-src 'self' data: blob: ${HOSTS.media} ${HOSTS.ssai} ${HOSTS.bunnyCDN}`,

@@ -1,8 +1,9 @@
+"use client";
 import { GroupPosts } from "@organisms/group-posts";
 
-import { useGetCommunityFeed } from "src/react-query/api/community/feed";
+import { useGetCommunityFeed } from "@react-query/api/community/feed";
 import { Suspense, useCallback, useMemo, useState } from "react";
-import { FeedView } from "src/templates/feed";
+import { FeedView } from "@templates/feed";
 import { getQueryKeyForCommunityFeed } from "@react-query/keys/community";
 
 export function Posts({
