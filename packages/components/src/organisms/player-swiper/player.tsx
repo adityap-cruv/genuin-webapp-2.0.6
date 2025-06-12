@@ -6,12 +6,27 @@ import type { PostDetailsType } from "@react-query/api/feed/schema";
 import { useFeedContext } from "@templates/feed/context";
 import { useSwiper, useSwiperSlide } from "swiper/react";
 import { useWindowSize } from "usehooks-ts";
+import { ComponentProps } from "react";
 
 type PlayerProps = {
   post: PostDetailsType;
+  onCommunityJoinStatusChange: ComponentProps<
+    typeof ControlLayer
+  >["onCommunityJoinStatusChange"];
+  onGroupJoinStatusChange: ComponentProps<
+    typeof ControlLayer
+  >["onGroupJoinStatusChange"];
+  onGroupSubscriptionChange: ComponentProps<
+    typeof ControlLayer
+  >["onGroupSubscriptionChange"];
 };
 
-export function Player({ post }: PlayerProps) {
+export function Player({
+  post,
+  onCommunityJoinStatusChange,
+  onGroupJoinStatusChange,
+  onGroupSubscriptionChange,
+}: PlayerProps) {
   const { showExpandView, toggleExpandView } = useFeedContext();
   const { height } = useWindowSize();
   const { feedVideoSizeBox } = useBaseContext();
@@ -47,7 +62,12 @@ export function Player({ post }: PlayerProps) {
             width: showExpandView ? (height * 9) / 16 : feedVideoSizeBox.width,
           }}
         />
-        <ControlLayer postDetails={post} />
+        <ControlLayer
+          postDetails={post}
+          onCommunityJoinStatusChange={onCommunityJoinStatusChange}
+          onGroupJoinStatusChange={onGroupJoinStatusChange}
+          onGroupSubscriptionChange={onGroupSubscriptionChange}
+        />
       </div>
     </PlayerProvider>
   );

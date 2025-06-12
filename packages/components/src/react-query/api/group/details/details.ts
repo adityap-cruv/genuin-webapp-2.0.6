@@ -6,6 +6,8 @@ import { getQueryKeyForLoopDetails } from "@react-query/keys/group";
 import { API_PATHS } from "@react-query/paths";
 
 import { parseGroupDetails } from "./parser";
+import { queryClient } from "@react-query/client";
+import { GroupUserStatusType } from "@types/roles";
 
 async function fetchLoopDetails(slug: string) {
   try {
@@ -32,4 +34,53 @@ export function useGetGroupDetails(slug: string) {
     queryKey: getQueryKeyForLoopDetails(slug),
     queryFn: () => fetchLoopDetails(slug),
   });
+}
+
+/**
+ * Sets the query data for joining a group in the group details.
+ * @param slug - The unique identifier for the group.
+ * @param role
+ */
+export function setQueryDataForJoinGroupInGroupDetails(
+  slug: string,
+  role: GroupUserStatusType
+) {
+  type QueryData = ReturnType<typeof useGetGroupDetails>["data"];
+
+  queryClient.setQueryData(
+    getQueryKeyForLoopDetails(slug),
+    (oldData: QueryData): QueryData => {
+      if (!oldData) return oldData;
+
+      return {
+        ...oldData,
+        isSubscriber: role === "JOINED" ? true : oldData.isSubscriber,
+        role,
+      };
+    }
+  );
+}
+
+/**
+ * Sets the query data for subscribing to a group in the group details.
+ * @param slug - The unique identifier for the group.
+ * @param isSubscriber - Whether the user is a subscriber or not.
+ */
+export function setQueryDataForSubscribeGroupInGroupDetails(
+  slug: string,
+  isSubscriber: boolean
+) {
+  type QueryData = ReturnType<typeof useGetGroupDetails>["data"];
+
+  queryClient.setQueryData(
+    getQueryKeyForLoopDetails(slug),
+    (oldData: QueryData): QueryData => {
+      if (!oldData) return oldData;
+
+      return {
+        ...oldData,
+        isSubscriber,
+      };
+    }
+  );
 }

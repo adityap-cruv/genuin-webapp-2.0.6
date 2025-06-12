@@ -13,6 +13,15 @@ import { PlaybackSpeedCapsule } from "@molecules/playback-speed/speed-capsule";
 type ControlLayerPropsType = ComponentProps<"div"> & {
   postDetails: PostDetailsType;
   isInModal?: boolean;
+  onGroupJoinStatusChange?: ComponentProps<
+    typeof ExpandViewDetails
+  >["onGroupJoinStatusChange"];
+  onGroupSubscriptionChange?: ComponentProps<
+    typeof ExpandViewDetails
+  >["onGroupSubscriptionChange"];
+  onCommunityJoinStatusChange?: ComponentProps<
+    typeof ExpandViewDetails
+  >["onCommunityJoinStatusChange"];
 };
 
 /**
@@ -21,6 +30,9 @@ type ControlLayerPropsType = ComponentProps<"div"> & {
 export const ControlLayer = memo(function ControlLayer({
   postDetails,
   className,
+  onCommunityJoinStatusChange,
+  onGroupJoinStatusChange,
+  onGroupSubscriptionChange,
   ...restProps
 }: ControlLayerPropsType) {
   const { showExpandView, togglePlay, toggleMuted, muted } = usePlayerContext();
@@ -28,7 +40,7 @@ export const ControlLayer = memo(function ControlLayer({
 
   const {
     brandDetails: {
-      web_configs: { tap_behavior: tapBehavior , playback_speed_enabled  },
+      web_configs: { tap_behavior: tapBehavior, playback_speed_enabled },
     },
   } = useBaseContext();
 
@@ -105,7 +117,14 @@ export const ControlLayer = memo(function ControlLayer({
          * This is the expand view details.
          * It will show the details of the post. If post is expanded.
          */}
-        {showExpandView && <ExpandViewDetails postDetails={postDetails} />}
+        {showExpandView && (
+          <ExpandViewDetails
+            postDetails={postDetails}
+            onCommunityJoinStatusChange={onCommunityJoinStatusChange}
+            onGroupJoinStatusChange={onGroupJoinStatusChange}
+            onGroupSubscriptionChange={onGroupSubscriptionChange}
+          />
+        )}
 
         {/**
          * This is the player's state whether it is playing or paused or buffering.
@@ -119,7 +138,9 @@ export const ControlLayer = memo(function ControlLayer({
         />
 
         {/* This is the playback speed controls for the desktop. */}
-        { playback_speed_enabled && <PlaybackSpeedCapsule className="gencl:absolute gencl:bottom-7 gencl:z-10 gencl:transition-all"/>}
+        {playback_speed_enabled && (
+          <PlaybackSpeedCapsule className="gencl:absolute gencl:bottom-7 gencl:z-10 gencl:transition-all" />
+        )}
 
         {/**
          * This is basically player scrubber.

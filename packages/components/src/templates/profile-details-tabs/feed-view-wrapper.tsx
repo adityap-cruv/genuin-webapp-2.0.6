@@ -1,6 +1,7 @@
 import { lazy, useMemo, Suspense } from "react";
 
 import { useGetProfileFeed } from "@react-query/api/profile/posts";
+import { getQueryKeyForProfileFeed } from "@react-query/keys/profile";
 
 const FeedView = lazy(() =>
   import("@templates/feed/index.js").then((module) => ({
@@ -16,7 +17,7 @@ export function FeedViewWrapper({
 }: {
   profileId: string;
   forBrand: boolean;
-  videoId?: string;
+  videoId: string;
   onCloseExpandView?: () => void;
 }) {
   const {
@@ -28,7 +29,7 @@ export function FeedViewWrapper({
   } = useGetProfileFeed(profileId, forBrand, videoId);
 
   const videos = useMemo(
-    () => feedData?.pages.flatMap((page) => page.videos) ?? [],
+    () => feedData?.pages.flatMap((page) => page.feed) ?? [],
     [feedData]
   );
 
@@ -43,6 +44,7 @@ export function FeedViewWrapper({
           hasNextPage,
           isFetchingNextPage,
           isLoading,
+          queryKey: getQueryKeyForProfileFeed(profileId, forBrand, videoId),
         }}
       />
     </Suspense>

@@ -11,6 +11,9 @@ import { GenericDetails } from "@organisms/generic-details";
 import { GenericDetailsMetadata } from "@organisms/generic-details/generic-details-metadata";
 import { PostsGrid } from "@organisms/posts-grid";
 import {
+  setQueryDataForGroupJoinStatusInProfileGroups,
+  setQueryDataForGroupSubscribeInProfileGroups,
+  setQueryDataForJoinCommunityInProfileCommunities,
   useGetProfileCommunities,
   useGetProfileGroups,
   useGetProfileVideos,
@@ -24,6 +27,7 @@ import { FeedViewWrapper } from "./feed-view-wrapper";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { CommunityListSkeleton } from "./skeleton";
 import { CommunityGroupsSkeleton } from "../community-details-tabs";
+import { CommunityUserRole } from "@types/post";
 
 export function CommunityList({
   userId,
@@ -44,6 +48,18 @@ export function CommunityList({
   const communities = useMemo(
     () => data?.pages.flatMap((page) => page.communities) ?? [],
     [data]
+  );
+
+  const handleCommunityJoinStatusChange = useCallback(
+    (communityId: string, newRole: CommunityUserRole) => {
+      setQueryDataForJoinCommunityInProfileCommunities(
+        newRole,
+        communityId,
+        userId,
+        forBrand
+      );
+    },
+    [forBrand, userId]
   );
 
   if (isLoading) {
@@ -116,7 +132,17 @@ export function CommunityList({
                         userName={community.brand?.name}
                       />
                     )}
-                    <JoinCommunityButton buttonText="Join" />
+                    {community.isPrivate && (
+                      <JoinCommunityButton
+                        buttonText="Join"
+                        communityId={community.id}
+                        role={community.role}
+                        isPrivate={community.isPrivate}
+                        onCommunityJoinStatusChange={(newRole) =>
+                          handleCommunityJoinStatusChange(community.id, newRole)
+                        }
+                      />
+                    )}
                     <ShareButton showText />
                   </div>
                 }
@@ -180,7 +206,7 @@ function Groups({
   if (isError || !groups) {
     return <div>Error loading groups.</div>;
   }
-
+  console.log("role::", groups);
   return (
     <>
       {groups.map((group) => {
@@ -207,8 +233,37 @@ function Groups({
               }
               ctas={
                 <div className="gencl:flex gencl:gap-2 gencl:items-center">
-                  <JoinGroupButton buttonText="Join" />
-                  <GroupSubscriptionButton showText={false} />
+                  <JoinGroupButton
+                    buttonTexts={{
+                      UNJOINED: "Join",
+                    }}
+                    groupId={group.id}
+                    isPrivate={group.isPrivate}
+                    role={group.role}
+                    onGroupJoinStatusChange={(newRole) => {
+                      setQueryDataForGroupJoinStatusInProfileGroups({
+                        communityId: communityId,
+                        newRole,
+                        forBrand,
+                        loopId: group.id,
+                      });
+                      // console.log("Group join status changed:", newRole);
+                    }}
+                  />
+                  <GroupSubscriptionButton
+                    groupId={group.id}
+                    isSubscriber={group.isSubscriber ?? false}
+                    onSubscriptionChange={(isSubscribed) => {
+                      setQueryDataForGroupSubscribeInProfileGroups({
+                        communityId: communityId,
+                        isSubscribed,
+                        forBrand,
+                        loopId: group.id,
+                      });
+                      // console.log("Group join status changed:", newRole);
+                    }}
+                    showText={false}
+                  />
                   <ShareButton showText={false} />
                 </div>
               }

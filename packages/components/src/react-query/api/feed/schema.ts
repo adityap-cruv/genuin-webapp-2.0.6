@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { CommunityUserRoleSchema } from "@types/post";
+import { GroupUserStatusSchema } from "@types/roles";
 
 const description = z.array(
   z
@@ -38,6 +39,8 @@ const GroupSchema = z.object({
   isSubscribed: z.boolean().optional(),
   description: z.string(),
   shareUrl: z.string().optional(),
+  isPrivate: z.boolean(),
+  role: GroupUserStatusSchema,
 });
 
 const BrandSchema = z.object({
@@ -46,6 +49,7 @@ const BrandSchema = z.object({
   logo: z.string().nullish(),
   webLogo: z.string().nullish(),
   slug: z.string(),
+  userLogo: z.number().nullish(),
 });
 
 // Define the community schema
@@ -59,6 +63,9 @@ const communitySchema = z.object({
   shareUrl: z.string(),
   userRole: CommunityUserRoleSchema,
   brand: BrandSchema.nullish(),
+  membersCount: z.number().nullish().default(0),
+  groupsCount: z.number().nullish().default(0),
+  postsCount: z.number().nullish().default(0),
 });
 
 const BrandUserSchema = z.object({

@@ -1,3 +1,4 @@
+import { mapGroupJoinStatus } from "@lib/utils";
 import type { ResponseGroupDetailsType } from "./response.types";
 import type { GroupDetailsType } from "./types";
 
@@ -5,11 +6,12 @@ export function parseGroupDetails(
   data: ResponseGroupDetailsType
 ): GroupDetailsType {
   return {
-    id: data.group.group_id,
+    id: data.chat_id,
     name: data.group.group_name,
     description: data.group.group_description,
     dp: data.group.dp,
     dpM: data.group.dp_m,
+    role: mapGroupJoinStatus(data.logged_in_user_status),
     noOfViews: data.group.no_of_views ?? 0,
     noOfVideos: data.group.no_of_videos ?? 0,
     noOfMembers: data.group.no_of_members ?? 0,

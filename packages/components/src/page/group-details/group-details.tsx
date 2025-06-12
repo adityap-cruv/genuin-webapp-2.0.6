@@ -12,7 +12,11 @@ import {
 } from "@organisms/generic-details";
 import { GenericDetailsMetadata } from "@organisms/generic-details/generic-details-metadata";
 import { SideInfo } from "@organisms/side-info";
-import { useGetGroupDetails } from "@react-query/api/group/details";
+import {
+  setQueryDataForJoinGroupInGroupDetails,
+  setQueryDataForSubscribeGroupInGroupDetails,
+  useGetGroupDetails,
+} from "@react-query/api/group/details";
 import { GroupDetailsTabs } from "@templates/group-details-tabs";
 import { PostsGridSkeleton } from "@organisms/posts-grid";
 
@@ -26,7 +30,7 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
   if (isError || !groupDetails) {
     return <div>Error loading group details.</div>;
   }
-
+  console.log("Group Details:", groupDetails);
   return (
     <div className="gencl:p-6 gencl:flex gencl:h-full gencl:gap-6 gencl:flex-grow gencl:overflow-auto">
       <div className="gencl:w-full gencl:overflow-auto gencl:flex gencl:flex-col gencl:gap-6">
@@ -45,8 +49,25 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
           description={groupDetails.description ?? ""}
           ctas={
             <div className="gencl:flex gencl:gap-2">
-              <JoinGroupButton />
-              <GroupSubscriptionButton showText />
+              <JoinGroupButton
+                isPrivate={groupDetails.isPrivate}
+                role={groupDetails.role}
+                groupId={groupDetails.id}
+                onGroupJoinStatusChange={(newRole) => {
+                  setQueryDataForJoinGroupInGroupDetails(slug, newRole);
+                }}
+              />
+              <GroupSubscriptionButton
+                groupId={groupDetails.id}
+                isSubscriber={groupDetails.isSubscriber}
+                showText={false}
+                onSubscriptionChange={(isSubscriber) => {
+                  setQueryDataForSubscribeGroupInGroupDetails(
+                    slug,
+                    isSubscriber
+                  );
+                }}
+              />
               <ShareButton />
             </div>
           }

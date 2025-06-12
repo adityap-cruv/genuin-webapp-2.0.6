@@ -173,6 +173,7 @@ export function OtpVerification({
               isPending ||
               updateEmailOrPhoneIsPending
             }
+            isLoading={isPending || updateEmailOrPhoneIsPending}
             error={form.formState.errors.root?.message || ""}
           />
         </form>

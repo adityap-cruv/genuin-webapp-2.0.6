@@ -12,26 +12,37 @@ import { Comments } from "../comments";
 
 import { Player } from "./player";
 import { SwiperImplementation } from "./swiper-implementation";
+import { ComponentProps } from "react";
 
 type PlayerListPropsType = {
   posts: PostDetailsType[];
-  onActiveIndexChange?: (index: number) => void;
   startIndex?: number;
   className?: string;
+  onActiveIndexChange?: (index: number) => void;
   /**
-   * Whether to show the expand view.
+   * @param isReacted - Whether the post is reacted to
+   * @returns void
    */
-  showExpandView?: boolean;
-  /**
-   * Function to toggle the expand view.
-   */
-  toggleExpandView?: () => void;
+  onReactionStateChange?: (videoId: string, isReacted: boolean) => void;
+  onCommunityJoinStatusChange: ComponentProps<
+    typeof Player
+  >["onCommunityJoinStatusChange"];
+  onGroupJoinStatusChange: ComponentProps<
+    typeof Player
+  >["onGroupJoinStatusChange"];
+  onGroupSubscriptionChange: ComponentProps<
+    typeof Player
+  >["onGroupSubscriptionChange"];
 };
 
 export function PlayerList({
   posts,
   startIndex = 0,
   onActiveIndexChange,
+  onReactionStateChange,
+  onCommunityJoinStatusChange,
+  onGroupJoinStatusChange,
+  onGroupSubscriptionChange,
 }: PlayerListPropsType) {
   const { value, toggle } = useBoolean();
   const { showExpandView, activeIndex } = useFeedContext();
@@ -46,14 +57,25 @@ export function PlayerList({
           return (
             <SwiperSlide key={post.video.id}>
               <div className="gencl:flex gencl:gap-2 gencl:h-full">
-                <Player post={post} />
+                <Player
+                  post={post}
+                  onCommunityJoinStatusChange={onCommunityJoinStatusChange}
+                  onGroupJoinStatusChange={onGroupJoinStatusChange}
+                  onGroupSubscriptionChange={onGroupSubscriptionChange}
+                />
                 <Actions
+                  isReacted={post.video.isSparked ?? false}
+                  contentId={post.video.id}
+                  reactionCount={post.video.sparkCount}
                   variant={showExpandView ? "dark" : "light"}
                   className="gencl:shrink-0 gencl:pb-4"
                   actionWrapper={{
                     COMMENT: (defaultNode) => (
                       <span onClick={toggle}>{defaultNode}</span>
                     ),
+                  }}
+                  onReactionStateChange={(isReacted) => {
+                    onReactionStateChange?.(post.video.id, isReacted);
                   }}
                 />
               </div>

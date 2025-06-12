@@ -1,6 +1,6 @@
 import { Image } from "@genuin/ui/image";
 import { cn } from "@genuin/ui/utils";
-import type { ComponentProps } from "react";
+import { useCallback, type ComponentProps } from "react";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 
 import { JoinCommunityButton } from "@molecules/join-community-button";
@@ -9,9 +9,13 @@ import { GenericDetails } from "@organisms/generic-details";
 import { GenericDetailsMetadata } from "@organisms/generic-details/generic-details-metadata";
 import { MemberList } from "@organisms/member-list";
 import { SideInfo } from "@organisms/side-info";
-import { useGetCommunityDetails } from "@react-query/api/community/details/details";
+import {
+  useGetCommunityDetails,
+  setQueryDataForCommunityRoleChange,
+} from "@react-query/api/community/details/details";
 import { CommunityDetailsTabs } from "@templates/community-details-tabs";
 import { CommunityDetailsSkeleton } from "./skeleton";
+import { CommunityUserRole } from "@types/post";
 
 export function CommunityDetails({ slug }: { slug: string }) {
   const {
@@ -19,6 +23,13 @@ export function CommunityDetails({ slug }: { slug: string }) {
     isLoading,
     isError,
   } = useGetCommunityDetails(slug);
+
+  const handleCommunityJoinStatusChange = useCallback(
+    (newRole: CommunityUserRole) => {
+      setQueryDataForCommunityRoleChange(slug, newRole);
+    },
+    [slug]
+  );
 
   if (isLoading) {
     return <CommunityDetailsSkeleton />;
@@ -108,7 +119,12 @@ export function CommunityDetails({ slug }: { slug: string }) {
             }}
             ctas={
               <div className="gencl:flex gencl:gap-2">
-                <JoinCommunityButton />
+                <JoinCommunityButton
+                  role={communityDetails.logged_in_user_role}
+                  communityId={communityDetails.community_id}
+                  isPrivate={communityDetails.type === "PRIVATE"}
+                  onCommunityJoinStatusChange={handleCommunityJoinStatusChange}
+                />
                 <ShareButton />
               </div>
             }

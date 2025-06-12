@@ -1,5 +1,13 @@
 export const API_PATHS = {
   /**
+   * Api path to fetch feed.
+   */
+  FEED_HOME: "/goservices/feed/home",
+  /**
+   * Api to spark a video or comment.
+   */
+  FEED_SPARK: "/api/v3/spark",
+  /**
    * Api path to fetch group details.
    */
   GROUP_DETAILS: "/api/v3/conversation/details",
@@ -11,6 +19,18 @@ export const API_PATHS = {
    * Api path to fetch group members.
    */
   GROUP_MEMBERS: "/api/v3/conversation/members",
+  /**
+   * Api path to join a group.
+   */
+  GROUP_JOIN: "/api/v3/conversation/participation_request",
+  /**
+   * Api path to request to leave a group.
+   */
+  GROUP_LEAVE: "/api/v3/conversation/leave",
+  /**
+   * Api path to subscribe to a group.
+   */
+  GROUP_SUBSCRIBE: "/api/v3/conversation/subscription",
   /**
    * Api path to fetch community details.
    */
@@ -27,6 +47,18 @@ export const API_PATHS = {
    * Api path to fetch community feed.
    */
   COMMUNITY_FEED: "/goservices/feed/community",
+  /**
+   * Api path to request to join a community.
+   */
+  COMMUNITY_JOIN_REQUEST: "/api/v3/community/join_request",
+  /**
+   * Api path to add users to a community.
+   */
+  COMMUNITY_ADD_USERS: "/api/v3/community/add_users",
+  /**
+   * Api path to leave a community.
+   */
+  COMMUNITY_LEAVE: "/api/v3/community/leave",
   /**
    * Api path to fetch user/brand details.
    */

@@ -2,20 +2,31 @@ import { Avatar } from "@genuin/ui/avatar";
 import { ReadMore } from "@genuin/ui/read-more";
 import { cn } from "@genuin/ui/utils";
 import type { ComponentProps } from "react";
-import { CommunityPill } from "@molecules/community-pill";
-import { GroupPill } from "@molecules/group-pill";
 import type { PostDetailsType } from "@react-query/api/feed/schema";
 import { usePlayerContext } from "../../context";
 import { ProfileLink } from "@molecules/profile-link";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { Pills } from "@molecules/feed-player/pills";
 
 type ExpandViewProps = ComponentProps<"div"> & {
   postDetails: PostDetailsType;
+  onGroupJoinStatusChange?: ComponentProps<
+    typeof Pills
+  >["onGroupJoinStatusChange"];
+  onGroupSubscriptionChange?: ComponentProps<
+    typeof Pills
+  >["onGroupSubscriptionChange"];
+  onCommunityJoinStatusChange?: ComponentProps<
+    typeof Pills
+  >["onCommunityJoinStatusChange"];
 };
 
 export function ExpandViewDetails({
   className,
   postDetails,
+  onGroupJoinStatusChange,
+  onGroupSubscriptionChange,
+  onCommunityJoinStatusChange,
   ...restProps
 }: ExpandViewProps) {
   const { showSeeker } = usePlayerContext();
@@ -53,34 +64,13 @@ export function ExpandViewDetails({
         position="overlay"
         className="gencl:text-body-1-medium"
       />
-      <div className="gencl:flex gencl:flex-nowrap gencl:gap-2 gencl:w-full gencl:overflow-x-auto gencl:z-10">
-        {/* TODO ADD REMAINING DETAILS, PENDING FROM BACKEND */}
-        <CommunityPill
-          isHoverable={true}
-          variant="dark"
-          data={{
-            id: postDetails.community.id,
-            slug: postDetails.community.slug,
-            isPrivate: postDetails.community.isPrivate,
-            name: postDetails.community.name ?? "",
-            profileImage: postDetails.community.profileImage ?? "",
-            brand: { slug: postDetails.community.brand?.slug ?? "" },
-          }}
-        />
-        <GroupPill
-          isHoverable={true}
-          variant="dark"
-          data={{
-            isPrivate: false,
-            slug: postDetails.group.slug,
-            name: postDetails.group.name ?? "",
-            community: {
-              name: postDetails.community.name ?? "",
-              profileImage: postDetails.community.profileImage ?? "",
-            },
-          }}
-        />
-      </div>
+      <Pills
+        communityDetails={postDetails.community}
+        groupDetails={postDetails.group}
+        onGroupJoinStatusChange={onGroupJoinStatusChange}
+        onGroupSubscriptionChange={onGroupSubscriptionChange}
+        onCommunityJoinStatusChange={onCommunityJoinStatusChange}
+      />
       <div
         className={cn(
           "gencl:transition-all",

@@ -8,6 +8,7 @@ import {
 } from "../src/context/base";
 import { parseBrandColors } from "../src/lib/utils/brand-color-parser";
 import { ReactQueryClientProvider } from "../src/react-query/react-query-provider";
+import { Toaster } from "@genuin/ui/toaster";
 
 const brandDetails = {
   brand_id: 2260,
@@ -75,32 +76,32 @@ const brandDetails = {
   show_become_creator: true,
   api_key: "e895c22b1281e14ff16405aa54f1d68ac6238de9b709383c",
   reactions: {
-    type: "spark",
+    type: "thumbs_up",
     title: "react",
     suffix: "to",
     keys: {
       comment_selected: {
-        png: "https://media.qa.begenuin.com/webapp_assets/reactions/spark/comment_selected.png",
-        svg: "https://media.qa.begenuin.com/webapp_assets/reactions/spark/comment_selected.svg",
+        png: "https://media.qa.begenuin.com/webapp_assets/reactions/thumbs_up/comment_selected.png",
+        svg: "https://media.qa.begenuin.com/webapp_assets/reactions/thumbs_up/comment_selected.svg",
       },
       comment_unselected: {
-        png: "https://media.qa.begenuin.com/webapp_assets/reactions/spark/comment_unselected.png",
-        svg: "https://media.qa.begenuin.com/webapp_assets/reactions/spark/comment_unselected.svg",
+        png: "https://media.qa.begenuin.com/webapp_assets/reactions/thumbs_up/comment_unselected.png",
+        svg: "https://media.qa.begenuin.com/webapp_assets/reactions/thumbs_up/comment_unselected.svg",
       },
       feed_animate: {
-        png: "https://media.qa.begenuin.com/webapp_assets/reactions/spark/feed_animate.png",
-        svg: "https://media.qa.begenuin.com/webapp_assets/reactions/spark/feed_animate.svg",
+        png: "https://media.qa.begenuin.com/webapp_assets/reactions/thumbs_up/feed_animate.png",
+        svg: "https://media.qa.begenuin.com/webapp_assets/reactions/thumbs_up/feed_animate.svg",
       },
       feed_selected: {
-        png: "https://media.qa.begenuin.com/webapp_assets/reactions/spark/feed_selected.png",
-        svg: "https://media.qa.begenuin.com/webapp_assets/reactions/spark/feed_selected.svg",
+        png: "https://media.qa.begenuin.com/webapp_assets/reactions/thumbs_up/feed_selected.png",
+        svg: "https://media.qa.begenuin.com/webapp_assets/reactions/thumbs_up/feed_selected.svg",
       },
       feed_unselected: {
-        png: "https://media.qa.begenuin.com/webapp_assets/reactions/spark/feed_unselected.png",
-        svg: "https://media.qa.begenuin.com/webapp_assets/reactions/spark/feed_unselected.svg",
+        png: "https://media.qa.begenuin.com/webapp_assets/reactions/thumbs_up/feed_unselected.png",
+        svg: "https://media.qa.begenuin.com/webapp_assets/reactions/thumbs_up/feed_unselected.svg",
       },
     },
-    tooltip: "I find this insightful",
+    tooltip: "I like this!",
   },
   privacy_policy: null,
   industry_type: 4,
@@ -809,6 +810,28 @@ const preview: Preview = {
       return (
         <AuthProvider
         // user={{
+        //   id: "b6aebf66-db37-48bf-8fac-bda06eb81914",
+        //   image:
+        //     "https://media.qa.begenuin.com/uploads/profile_images/1741280553604_croppedImage_1741280519374.png",
+        //   isAvatar: false,
+        //   phoneNumber: "916354665097",
+        //   nickname: "ycombinator",
+        //   email: "himanshu@begenuin.com",
+        //   bio: null,
+        //   name: "ycombinator",
+        //   accessToken:
+        //     "eyJraWQiOiJkLTE3NDkyMDE0MzYxMzYiLCJ0eXAiOiJKV1QiLCJ2ZXJzaW9uIjoiNSIsImFsZyI6IlJTMjU2In0.eyJpYXQiOjE3NDk2MzQ2NTcsImV4cCI6MTc1MDg0NDI1Nywic3ViIjoiOGI5OTBiN2ItYmY0NS00ZDFhLWE1YTctNDkwM2I0MGMxNjg2IiwidElkIjoicHVibGljIiwicnN1YiI6IjhiOTkwYjdiLWJmNDUtNGQxYS1hNWE3LTQ5MDNiNDBjMTY4NiIsInNlc3Npb25IYW5kbGUiOiI5ZjNkMDY4My00ZDIxLTQyNzMtYThkOS1kODhkMzQ3YWNkZWQiLCJyZWZyZXNoVG9rZW5IYXNoMSI6ImY5NjVjZTAzM2YwMzBhODllYTc0OWY1MGM2NGZmNmQ4ZGEwZWE2YjQ5YzJmNThkOGQ2OTMzNTgzYzAxMjAzZDEiLCJwYXJlbnRSZWZyZXNoVG9rZW5IYXNoMSI6bnVsbCwiYW50aUNzcmZUb2tlbiI6bnVsbCwiaXNzIjoiaHR0cHM6Ly9ub2RlanMucWEuYmVnZW51aW4uY29tL2FwaS92NC9hdXRoIiwic3Qtcm9sZSI6eyJ2IjpbXSwidCI6MTc0OTYzNDY1NjkyMn0sInN0LXBlcm0iOnsidiI6W10sInQiOjE3NDk2MzQ2NTY5MjJ9LCJnZW51aW4iOnsidXNlcl9pZCI6ImI2YWViZjY2LWRiMzctNDhiZi04ZmFjLWJkYTA2ZWI4MTkxNCIsImxvZ2luX3NvdXJjZSI6MywiZGV2aWNlX3R5cGUiOiJ3ZWIiLCJicmFuZF9pZCI6MjI2MH19.hF0PuP22hzSFShy9lzp9IvDjZV9faZ3aL48Lc4meGacbDR-eJh9ELOB5Qr3l7dQhPwzf0n3iOE6DyHPFA2C1ai_yPUoCA25zhB-i1RQ4136BCCAdc0MY7EvIsOhLc4G2EwTEbY7oV3YYFaE4q3XThESetaEPfE-D7XxBwbZMMxRF2vi3TqznJeIVK9F49C-yt6g7_MNynZYH7VsMAnxfDOomeBw2Fx32WTTfne1k8LDTt-KFu7jnvA3S1xgZh6wtzzDLMBDH3sG8T62ha6l-xdOHSi7wu2xi5rwAll9E5s1SK4Ia1B9vAP2hhlMVoWBfvO2PKD3ITyCuqMHqJTdxJA",
+        //   ksCbRequestStatus: 1,
+        //   isBrandSystemUser: true,
+        //   brandId: 2260,
+        //   brandSlug: "ycombinator",
+        //   hasTopics: false,
+        //   brandGuidelines: false,
+        //   refreshToken:
+        //     "naAPe07WVWK9zTlDkWUVveUuZGi7+7cv7ZfTjfxUTSs39FtQMrx1txbmY1yDAL4cx1daegiCJOkoxOFgkTr6BDb8Z9EY5qNctth+Y4mY+JBvcVEOzB5xrUHcd9QICDATxI3EAtgWWcbOV6S3URhalEBUiIultT9jYH9MR6/JgemlN8cS7q7oSHLQ3ZtLZ/CF7Ny/8x/IwuO+aIf6wMpBD/EqrLynK9wizkN3+D8GgrKXPvnqgVvYr9055GfNkVlppJSzMcOQwWrAQFqt+FKo.ec7cd69051f39ad571b4012f7c7085751aa3e2a4a4ed27083ce786cb2ad9e3cb.V2",
+        //   usernameSet: true,
+        // }}
+        // user={{
         //   id: "e427978f-44db-4a5f-8fb9-2760458027dd",
         //   image: "pile_of_poo",
         //   isAvatar: true,
@@ -834,6 +857,7 @@ const preview: Preview = {
             <ReactQueryClientProvider>
               <main style={{ ...parsedColor }}>
                 <Story />
+                <Toaster />
               </main>
             </ReactQueryClientProvider>
           </BaseContextProvider>

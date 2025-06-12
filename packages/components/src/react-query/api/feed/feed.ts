@@ -1,12 +1,15 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { QueryKey, useInfiniteQuery } from "@tanstack/react-query";
 
 import { getDeviceId } from "@genuin/components/lib/utils/device-id";
 import { getQueryKeyForFeed } from "@react-query/keys/feed";
-import type { FeedType } from "@types/post";
+import type { CommunityUserRole, FeedType } from "@types/post";
 
 import { axiosInstance } from "../../axios-instance";
 
 import { parseFeed } from "./parser";
+import { queryClient } from "@react-query/client";
+import { API_PATHS } from "@react-query/paths";
+import { GroupUserStatusType } from "@types/roles";
 // Mapper for FeedType to corresponding numbers
 const feedTypeToNumber: Record<FeedType, number> = {
   HOME: 1,
@@ -14,6 +17,8 @@ const feedTypeToNumber: Record<FeedType, number> = {
   POPULAR: 3,
 };
 
+// TODO: Suggestion unify this api with all the apis for feed in profile/group/community. So that
+// mismatch between response types in the feed apis can be avoided.
 /**
  *
  * @param feedType 1 for home, 2 for latest, 3 for popular
@@ -32,7 +37,7 @@ async function fetchFeed(
     : undefined;
 
   return await axiosInstance
-    .post("/goservices/feed/home", {
+    .post(API_PATHS.FEED_HOME, {
       type: feedTypeToNumber[feedType],
       last_video_id: pageParam?.lastVideoId ?? undefined,
       page_session: pageParam?.pageSession ?? undefined,
@@ -77,3 +82,181 @@ export const useFeed = (feedType: FeedType) => {
     },
   });
 };
+
+type QueryData = ReturnType<typeof useFeed>["data"];
+/**
+ *
+ * @param param0 - Parameters for setting query data
+ */
+export function setQueryDataForReactionInFeed({
+  queryKey,
+  videoId,
+  isReacted,
+}: {
+  queryKey: QueryKey;
+  videoId: string;
+  isReacted: boolean;
+}) {
+  queryClient.setQueryData<QueryData>(queryKey, (oldData) => {
+    if (!oldData) return oldData;
+
+    // Create a new array with the updated reaction state
+    const updatedPages = oldData.pages.map((page) => {
+      return {
+        ...page,
+        feed: page.feed.map((video) => {
+          if (video.video.id === videoId) {
+            return {
+              ...video,
+              video: {
+                ...video.video,
+                isSparked: isReacted,
+                sparkCount: isReacted
+                  ? (video.video.sparkCount ?? 0) + 1
+                  : (video.video.sparkCount ?? 0) - 1,
+              },
+            };
+          }
+          return video;
+        }),
+      };
+    });
+
+    // Return the updated data structure
+    return {
+      ...oldData,
+      pages: updatedPages,
+    };
+  });
+}
+
+/**
+ * Set query data for join community status in feed
+ * @param param0 - Parameters for setting query data for join community status in feed
+ */
+export function setQueryDataForJoinCommunityStatusInFeed({
+  queryKey,
+  communityId,
+  newRole,
+}: {
+  queryKey: QueryKey;
+  communityId: string;
+  newRole: CommunityUserRole;
+}) {
+  queryClient.setQueryData<QueryData>(queryKey, (oldData) => {
+    if (!oldData) return oldData;
+
+    // Create a new array with the updated community role
+    const updatedPages = oldData.pages.map((page) => {
+      return {
+        ...page,
+        feed: page.feed.map((video) => {
+          if (video.community.id === communityId) {
+            return {
+              ...video,
+              community: {
+                ...video.community,
+                userRole: newRole,
+              },
+            };
+          }
+          return video;
+        }),
+      };
+    });
+
+    // Return the updated data structure
+    return {
+      ...oldData,
+      pages: updatedPages,
+    };
+  });
+}
+
+/**
+ * Set query data for join group status in feed
+ * @param param0 - Parameters for setting query data for join group status in feed
+ */
+export function setQueryDataForJoinGroupStatusInFeed({
+  queryKey,
+  groupId,
+  newRole,
+}: {
+  queryKey: QueryKey;
+  groupId: string;
+  newRole: GroupUserStatusType;
+}) {
+  queryClient.setQueryData<QueryData>(queryKey, (oldData) => {
+    if (!oldData) return oldData;
+
+    // Create a new array with the updated group role
+    const updatedPages = oldData.pages.map((page) => {
+      return {
+        ...page,
+        feed: page.feed.map((video) => {
+          if (video.group?.id === groupId) {
+            return {
+              ...video,
+              group: {
+                ...video.group,
+                userRole: newRole,
+                isSubscribed:
+                  newRole === "JOINED" ? true : video.group.isSubscribed,
+              },
+            };
+          }
+          return video;
+        }),
+      };
+    });
+
+    // Return the updated data structure
+    return {
+      ...oldData,
+      pages: updatedPages,
+    };
+  });
+}
+
+/**
+ * Set query data for group subscription change in feed
+ * @param param0 - Parameters for setting query data for group subscription change in feed
+ */
+export function setQueryDataForGroupSubscriptionChangeInFeed({
+  queryKey,
+  groupId,
+  isSubscribed,
+}: {
+  queryKey: QueryKey;
+  groupId: string;
+  isSubscribed: boolean;
+}) {
+  queryClient.setQueryData<QueryData>(queryKey, (oldData) => {
+    if (!oldData) return oldData;
+
+    // Create a new array with the updated group subscription status
+    const updatedPages = oldData.pages.map((page) => {
+      return {
+        ...page,
+        feed: page.feed.map((video) => {
+          if (video.group?.id === groupId) {
+            return {
+              ...video,
+              group: {
+                ...video.group,
+                isSubscribed,
+              },
+            };
+          }
+          return video;
+        }),
+      };
+    });
+
+    // Return the updated data structure
+    return {
+      ...oldData,
+      pages: updatedPages,
+    };
+  });
+}

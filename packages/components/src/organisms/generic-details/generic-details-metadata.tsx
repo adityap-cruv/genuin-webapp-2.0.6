@@ -2,6 +2,7 @@ import { PublicIcon, LockIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/utils";
 import type { ComponentProps } from "react";
 
+import { ReactNode } from "react";
 import { ProfileLink } from "@molecules/profile-link";
 import { Stats } from "@molecules/stats/stats";
 
@@ -38,7 +39,12 @@ type GenericDetailsMetadataProps = ComponentProps<"div"> & {
   privacyInfo?: {
     /** Whether the content is private (shows lock icon) or public (shows public icon) */
     isPrivate: boolean;
+    showPrivacyText?: boolean; // Optional, defaults to true
   };
+  /**
+   * Additional comps to render.
+   */
+  others?: ReactNode;
 };
 
 /**
@@ -87,6 +93,7 @@ export function GenericDetailsMetadata({
   stats,
   privacyInfo,
   className,
+  others,
   ...restProps
 }: GenericDetailsMetadataProps) {
   return (
@@ -106,30 +113,40 @@ export function GenericDetailsMetadata({
             ) : (
               <PublicIcon className="gencl:stroke-secondary-600" />
             )}
-            {privacyInfo.isPrivate ? " Private" : " Public"}
+            {(privacyInfo.showPrivacyText === undefined ||
+              privacyInfo.showPrivacyText !== false) &&
+              (privacyInfo.isPrivate ? " Private" : " Public")}
           </div>
-          <p>•</p>
         </>
       )}
       {handle && (
         <>
+          <p>•</p>
           <span className="gencl:flex gencl:items-center">
             <ProfileLink url={handle.url} userLogoType={handle.brandUserLogo}>
               @{handle.userName}
             </ProfileLink>
           </span>
-          <p>•</p>
         </>
       )}
       {stats && (
-        <Stats
-          stats={stats}
-          className="gencl:flex gencl:gap-1"
-          valueFirst={true}
-          valueClassName="gencl:text-black! gencl:mr-1"
-          labelClassName="gencl:mr-1"
-          separator="•"
-        />
+        <>
+          <p>•</p>
+          <Stats
+            stats={stats}
+            className="gencl:flex gencl:gap-1"
+            valueFirst={true}
+            valueClassName="gencl:text-black! gencl:mr-1"
+            labelClassName="gencl:mr-1"
+            separator="•"
+          />
+        </>
+      )}
+      {others && (
+        <>
+          <p>•</p>
+          {others}
+        </>
       )}
     </div>
   );

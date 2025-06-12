@@ -17,3 +17,4 @@ export * from "./phone-input";
 export * from "./chip";
 export * from "./hover-card";
 export * from "./tabs";
+export * from "./toaster";

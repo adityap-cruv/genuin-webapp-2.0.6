@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { mapGroupJoinStatus } from "@lib/utils";
+import { GroupUserStatusSchema } from "@types/roles";
 
 // Define the member schema for members array in the group object
 const memberSchema = z.object({
@@ -64,6 +66,10 @@ const CommunityLoopSchema = z.object({
   is_post_allowed: z.boolean().nullish(),
   is_view_allowed: z.boolean().default(true),
   unread_message_count: z.number(),
+  logged_in_user_status: z.preprocess(
+    (val) => mapGroupJoinStatus(val as number),
+    GroupUserStatusSchema
+  ),
   latest_messages: z.array(latestMessageSchema),
   group: groupSchema,
   settings: settingsSchema,

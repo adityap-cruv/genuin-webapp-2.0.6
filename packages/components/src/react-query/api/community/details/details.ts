@@ -5,7 +5,9 @@ import { axiosInstance } from "@react-query/axios-instance";
 import { getQueryKeyForCommunityDetails } from "@react-query/keys/community";
 import { API_PATHS } from "@react-query/paths";
 
-import { validateCommunityDetails } from "./schema";
+import { CommunityDetailsType, validateCommunityDetails } from "./schema";
+import { queryClient } from "@react-query/client";
+import { CommunityUserRole } from "@types/post";
 
 async function fetchCommunityDetails(slug: string) {
   return await axiosInstance
@@ -26,9 +28,35 @@ async function fetchCommunityDetails(slug: string) {
     });
 }
 
+/**
+ * Custom hook to fetch community details.
+ * @param slug - The slug of the community for which details are being fetched.
+ * @returns A query object containing the community details.
+ */
 export function useGetCommunityDetails(slug: string) {
   return useQuery({
     queryKey: getQueryKeyForCommunityDetails(slug),
     queryFn: async () => await fetchCommunityDetails(slug),
   });
+}
+
+/**
+ * Updates the query data for a community role change.
+ * @param slug - The slug of the community for which the role is being changed.
+ * @param newRole - The new role of the logged-in user in the community.
+ */
+export function setQueryDataForCommunityRoleChange(
+  slug: string,
+  newRole: CommunityUserRole
+) {
+  queryClient.setQueryData<CommunityDetailsType>(
+    getQueryKeyForCommunityDetails(slug),
+    (oldData) => {
+      if (!oldData) return;
+      return {
+        ...oldData,
+        logged_in_user_role: newRole,
+      };
+    }
+  );
 }

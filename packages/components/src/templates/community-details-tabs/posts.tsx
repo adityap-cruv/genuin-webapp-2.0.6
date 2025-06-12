@@ -3,6 +3,7 @@ import { GroupPosts } from "@organisms/group-posts";
 import { useGetCommunityFeed } from "src/react-query/api/community/feed";
 import { Suspense, useCallback, useMemo, useState } from "react";
 import { FeedView } from "src/templates/feed";
+import { getQueryKeyForCommunityFeed } from "@react-query/keys/community";
 
 export function Posts({
   groupSlug,
@@ -52,8 +53,8 @@ export function FeedViewWrapper({
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useGetCommunityFeed(communitySlug, startVideoId);
 
-  const videos = useMemo(
-    () => data?.pages.flatMap((page) => page.videos) ?? [],
+  const feed = useMemo(
+    () => data?.pages.flatMap((page) => page.feed) ?? [],
     [data]
   );
 
@@ -62,11 +63,12 @@ export function FeedViewWrapper({
       startIndex={0}
       defaultExpandView={true}
       feedData={{
-        videos,
+        videos: feed,
         isLoading,
         fetchNextPage,
         hasNextPage,
         isFetchingNextPage,
+        queryKey: getQueryKeyForCommunityFeed(communitySlug, startVideoId),
       }}
       onCloseExpandView={onCloseExpandView}
     />

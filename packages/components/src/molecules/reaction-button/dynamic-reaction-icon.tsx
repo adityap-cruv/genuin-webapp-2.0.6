@@ -1,0 +1,60 @@
+import { useBaseContext } from "@context/base";
+import { Image } from "@genuin/ui/image";
+import { abbreviateNumber } from "@genuin/ui/lib/utils";
+import { getUrlForReaction } from "@lib/utils";
+import { useMemo } from "react";
+
+type DynamicReactionIconProps = {
+  isSparked: boolean;
+  forComment: boolean;
+  sparkCount: number;
+  showSparkCount?: boolean;
+  iconHeight?: number;
+  iconWidth?: number;
+};
+
+export function DynamicReactionIcon({
+  isSparked,
+  forComment,
+  showSparkCount = false,
+  iconHeight = 32,
+  sparkCount = 0,
+  iconWidth = 32,
+}: DynamicReactionIconProps) {
+  const {
+    brandDetails: { reactions },
+  } = useBaseContext();
+  const iconToShow = useMemo(() => {
+    const reaction = reactions;
+
+    // In case there is no reactions in config then we will show the spark icon.
+    if (!reaction) return getUrlForReaction("spark", isSparked, forComment);
+
+    if (forComment) {
+      return isSparked
+        ? reaction?.keys.comment_selected.svg
+        : reaction?.keys.comment_unselected.svg;
+    } else {
+      return isSparked
+        ? reaction?.keys.feed_selected.svg
+        : reaction?.keys.feed_unselected.svg;
+    }
+  }, [reactions, isSparked, forComment]);
+
+  return (
+    <>
+      <Image
+        src={iconToShow}
+        style={{ height: iconHeight, width: iconWidth }}
+        height={iconHeight}
+        width={iconWidth}
+        alt="reaction"
+      />
+      {showSparkCount && (
+        <p className="flex justify-center text-body-1-demi">
+          {abbreviateNumber(sparkCount < 0 ? 0 : sparkCount)}
+        </p>
+      )}
+    </>
+  );
+}

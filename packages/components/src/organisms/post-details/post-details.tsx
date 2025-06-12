@@ -4,11 +4,20 @@ import { type ComponentProps } from "react";
 
 import type { PostDetailsType } from "@react-query/api/feed/schema";
 
-import { CommunityDetails } from "./community-details";
+import { Pills } from "@molecules/feed-player/pills/pills";
 import { OwnerInfo } from "./owner-info";
 
 export type DetailsPropsType = ComponentProps<"div"> & {
   postDetails: PostDetailsType;
+  onGroupJoinStatusChange?: ComponentProps<
+    typeof Pills
+  >["onGroupJoinStatusChange"];
+  onGroupSubscriptionChange?: ComponentProps<
+    typeof Pills
+  >["onGroupSubscriptionChange"];
+  onCommunityJoinStatusChange?: ComponentProps<
+    typeof Pills
+  >["onCommunityJoinStatusChange"];
 };
 
 /**
@@ -22,6 +31,9 @@ export type DetailsPropsType = ComponentProps<"div"> & {
 export function PostDetails({
   postDetails: { community, owner, video, group },
   className,
+  onGroupJoinStatusChange,
+  onGroupSubscriptionChange,
+  onCommunityJoinStatusChange,
   ...restProps
 }: DetailsPropsType) {
   return (
@@ -40,7 +52,13 @@ export function PostDetails({
           className="gencl:pt-3"
         />
       )}
-      <CommunityDetails communityDetails={community} groupDetails={group} />
+      <Pills
+        communityDetails={community}
+        groupDetails={group}
+        onCommunityJoinStatusChange={onCommunityJoinStatusChange}
+        onGroupJoinStatusChange={onGroupJoinStatusChange}
+        onGroupSubscriptionChange={onGroupSubscriptionChange}
+      />
     </div>
   );
 }

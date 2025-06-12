@@ -26,4 +26,9 @@ export type TagProps = {
    * @default false
    */
   userLogoType?: number | null;
+  /**
+   * Size variant for the tag.
+   * @default "md"
+   */
+  size?: "sm" | "md";
 } & ComponentProps<"div">;

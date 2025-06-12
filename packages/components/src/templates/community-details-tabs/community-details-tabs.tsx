@@ -10,7 +10,11 @@ import { GenericDetailsMetadata } from "@organisms/generic-details/generic-detai
 import { MemberList } from "@organisms/member-list";
 import { GroupCardSkeleton } from "@organisms/group-card";
 import { PostsGridSkeleton } from "@organisms/posts-grid";
-import { useGetCommunityGroups } from "@react-query/api/community/groups";
+import {
+  setQueryDataForJoinGroupStatusInCommunityGroups,
+  setQueryDataForSubscriptionStatusInCommunityGroups,
+  useGetCommunityGroups,
+} from "@react-query/api/community/groups";
 import { useGetCommunityMembers } from "@react-query/api/community/members";
 import { Posts } from "./posts";
 
@@ -91,8 +95,32 @@ function CommunityGroups({ slug }: { slug: string }) {
       }
       ctas={
         <div className="gencl:flex gencl:gap-2">
-          <JoinGroupButton buttonText="Join" />
-          <GroupSubscriptionButton showText={false} />
+          <JoinGroupButton
+            buttonTexts={{ UNJOINED: "Join" }}
+            groupId={group.chat_id}
+            isPrivate={group.is_view_allowed}
+            role={group.logged_in_user_status}
+            onGroupJoinStatusChange={(newRole) => {
+              // Handle group join status change if needed
+              setQueryDataForJoinGroupStatusInCommunityGroups(
+                group.chat_id,
+                slug,
+                newRole
+              );
+            }}
+          />
+          <GroupSubscriptionButton
+            groupId={group.chat_id}
+            isSubscriber={group.is_subscriber ?? false}
+            showText={false}
+            onSubscriptionChange={(isSubscribed) => {
+              setQueryDataForSubscriptionStatusInCommunityGroups(
+                group.chat_id,
+                slug,
+                isSubscribed
+              );
+            }}
+          />
           <ShareButton showText={false} />
         </div>
       }

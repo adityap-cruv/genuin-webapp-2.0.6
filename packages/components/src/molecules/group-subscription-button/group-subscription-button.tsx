@@ -1,27 +1,80 @@
-import { Button, type ButtonPropsType } from "@genuin/ui/button";
+import { Button as PrimitiveButton } from "@genuin/ui/button";
 import { NotificationIcon } from "@genuin/ui/icons";
+import { useAuthContext } from "@context/auth";
+import { AuthenticationModal } from "@organisms/authentication-modal";
+import { ComponentProps, useCallback } from "react";
+import { useSubscribeGroupMutation } from "@react-query/api/group/subscribe";
+import { toastError } from "@genuin/ui/components/toaster";
+import { Loader } from "@genuin/ui/components/loader";
 
 type GroupSubscriptionButtonProps = {
-  onNotificationStatusChange?: () => void;
+  groupId: string;
   showText?: boolean;
-} & ButtonPropsType;
+  isSubscriber: boolean;
+  onSubscriptionChange?: (isSubscriber: boolean) => void;
+} & ComponentProps<typeof PrimitiveButton>;
 
 export function GroupSubscriptionButton({
-  showText = false,
-  onNotificationStatusChange,
-  ...rest
+  ...restProps
 }: GroupSubscriptionButtonProps) {
+  const { authenticationStatus } = useAuthContext();
+
+  const button = <Button {...restProps} />;
+
+  if (authenticationStatus === "unauthenticated") {
+    return <AuthenticationModal>{button}</AuthenticationModal>;
+  }
+
+  return button;
+}
+
+// TODO: configure notification on button icon here.
+function Button({
+  showText,
+  groupId,
+  shape,
+  isSubscriber,
+  disabled,
+  onClick,
+  onSubscriptionChange,
+  ...restProps
+}: GroupSubscriptionButtonProps) {
+  const { user } = useAuthContext();
+  const { mutate: subscribeGroup, isPending } = useSubscribeGroupMutation({
+    onSuccess(isSubscriber) {
+      onSubscriptionChange?.(isSubscriber);
+    },
+    onError: (error) => {
+      toastError("Failed to subscribe to group. Please try again later.");
+    },
+  });
+
+  const handleClick = useCallback(
+    (e: any) => {
+      onClick?.(e);
+      if (!user) return;
+      subscribeGroup({ chatId: groupId, subscribe: !isSubscriber });
+    },
+    [groupId, isSubscriber, subscribeGroup, user]
+  );
+
   return (
-    <Button
+    <PrimitiveButton
       size="md"
       theme="secondary"
-      {...rest}
-      onClick={() => onNotificationStatusChange?.()}
+      shape={shape === "pill" ? "pill" : undefined}
+      onClick={handleClick}
+      disabled={isPending || disabled}
+      {...restProps}
     >
-      <NotificationIcon
-        className={rest.shape === "pill" ? "gencl:h-3.5" : ""}
-      />
-      {showText && "Notify Me"}
-    </Button>
+      {isPending ? (
+        <Loader strokeColor="black" size="sm" />
+      ) : isSubscriber ? (
+        "S"
+      ) : (
+        <NotificationIcon />
+      )}
+      {showText && (isPending ? " Loading..." : " Notify Me")}
+    </PrimitiveButton>
   );
 }

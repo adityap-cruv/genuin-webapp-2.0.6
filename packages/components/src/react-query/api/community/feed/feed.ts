@@ -18,7 +18,7 @@ async function fetchLoopVideos(
     .then((res) => {
       const resData = res.data.data;
       const videos = parseFeed(resData.feeds);
-      return { videos, end: resData.end_of_feed };
+      return { feed: videos, end: resData.end_of_feed };
     })
     .catch((e) => {
       throw new Error("Something went wrong with loop videos fetching api.");
@@ -32,11 +32,11 @@ export function useGetCommunityFeed(slug: string, videoId: string) {
     queryKey: getQueryKeyForCommunityFeed(slug, videoId),
     initialPageParam: { lastVideoId: videoId },
     getNextPageParam: (lastPage) => {
-      if (lastPage.end || lastPage.videos.length === 0) {
+      if (lastPage.end || lastPage.feed.length === 0) {
         return undefined;
       }
       return {
-        lastVideoId: lastPage?.videos[lastPage.videos.length - 1]?.video.id,
+        lastVideoId: lastPage?.feed[lastPage.feed.length - 1]?.video.id,
       };
     },
   });

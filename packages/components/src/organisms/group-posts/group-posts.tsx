@@ -3,6 +3,7 @@ import { Suspense, useCallback, useMemo, useState, lazy } from "react";
 
 import { PostsGrid } from "@organisms/posts-grid";
 import { useGetGroupFeed } from "@react-query/api/group/feed";
+import { getQueryKeyForGroupFeed } from "@react-query/keys/feed";
 
 // Lazy load the FeedView component
 const FeedView = lazy(() =>
@@ -110,6 +111,7 @@ export function GroupPosts({
               fetchNextPage,
               hasNextPage,
               isFetchingNextPage,
+              queryKey: getQueryKeyForGroupFeed(slug),
             }}
             onCloseExpandView={handleCloseExpandView}
           />

@@ -1,22 +1,35 @@
 import { cn } from "@genuin/ui/utils";
-import { FeedType } from "@genuin/components/types/post";
-import { useEffect, useMemo, type ComponentProps } from "react";
+import { CommunityUserRole, FeedType } from "@genuin/components/types/post";
+import { useCallback, useEffect, useMemo, type ComponentProps } from "react";
 import "swiper/css";
 import { useWindowSize } from "usehooks-ts";
 
 import { useBaseContext } from "@genuin/components/context/base";
 import { PostSidePanel } from "@organisms/post-side-panel";
 import { PlayerList } from "@organisms/player-swiper";
-import { useFeed } from "@react-query/api/feed";
+import {
+  setQueryDataForReactionInFeed,
+  useFeed,
+  setQueryDataForGroupSubscriptionChangeInFeed,
+  setQueryDataForJoinCommunityStatusInFeed,
+  setQueryDataForJoinGroupStatusInFeed,
+} from "@react-query/api/feed";
 import type { PostDetailsType } from "@react-query/api/feed/schema";
 
 import { FeedContextProvider, useFeedContext } from "./context";
+import { QueryKey } from "@tanstack/react-query";
+import { getQueryKeyForFeed } from "@react-query/keys/feed";
+import { GroupUserStatusType } from "@types/roles";
 
 /**
  * Feed data structure containing videos and pagination state
  * @interface FeedData
  */
 export type FeedData = {
+  /**
+   * Query key for the feed data.
+   */
+  queryKey: QueryKey;
   /** Array of video posts to display */
   videos: PostDetailsType[];
   /** Whether the feed is currently loading */
@@ -99,6 +112,7 @@ export function FeedWithData({
   );
 
   const feedData: FeedData = {
+    queryKey: getQueryKeyForFeed(feedType),
     videos,
     isLoading,
     hasNextPage: hasNextPage ?? false,
@@ -163,8 +177,14 @@ function FeedViewCore({
 }: FeedViewPropsType) {
   const { height } = useWindowSize();
   const { feedVideoSizeBox } = useBaseContext();
-  const { videos, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    feedData;
+  const {
+    videos,
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    queryKey,
+  } = feedData;
   const { setActiveIndex, activeIndex, showExpandView } = useFeedContext();
 
   // this useEffect is used to fetch the next page of videos when the user scrolls to the end of the list.
@@ -182,6 +202,61 @@ function FeedViewCore({
       fetchNextPage();
     }
   }, [hasNextPage, isFetchingNextPage, videos, activeIndex, fetchNextPage]);
+
+  // Extract common callback handlers to follow DRY principle
+  const handleCommunityJoinStatusChange = useCallback(
+    (newRole: CommunityUserRole) => {
+      if (!videos[activeIndex]?.community) return;
+      setQueryDataForJoinCommunityStatusInFeed({
+        queryKey,
+        communityId: videos[activeIndex].community.id,
+        newRole,
+      });
+    },
+    [videos, activeIndex, queryKey]
+  );
+
+  const handleGroupJoinStatusChange = useCallback(
+    (newRole: GroupUserStatusType) => {
+      if (!videos[activeIndex]?.group) return;
+      setQueryDataForJoinGroupStatusInFeed({
+        queryKey,
+        groupId: videos[activeIndex].group.id,
+        newRole,
+      });
+    },
+    [videos, activeIndex, queryKey]
+  );
+
+  const handleGroupSubscriptionChange = useCallback(
+    (isSubscribed: boolean) => {
+      if (!videos[activeIndex]?.group) return;
+      setQueryDataForGroupSubscriptionChangeInFeed({
+        queryKey,
+        groupId: videos[activeIndex].group.id,
+        isSubscribed,
+      });
+    },
+    [videos, activeIndex, queryKey]
+  );
+
+  const handleReactionStateChange = useCallback(
+    (videoId: string, isReacted: boolean) => {
+      setQueryDataForReactionInFeed({
+        queryKey,
+        videoId,
+        isReacted,
+      });
+    },
+    [queryKey]
+  );
+
+  const handleActiveIndexChange = useCallback(
+    (newIndex: number) => {
+      setActiveIndex(newIndex);
+    },
+    [setActiveIndex]
+  );
 
   // TODO: Create a shimmer for feed.
   if (isLoading) {
@@ -209,12 +284,17 @@ function FeedViewCore({
         <PlayerList
           startIndex={startIndex}
           posts={videos}
-          onActiveIndexChange={(newIndex) => {
-            setActiveIndex(newIndex);
-          }}
+          onActiveIndexChange={handleActiveIndexChange}
+          onReactionStateChange={handleReactionStateChange}
+          onCommunityJoinStatusChange={handleCommunityJoinStatusChange}
+          onGroupJoinStatusChange={handleGroupJoinStatusChange}
+          onGroupSubscriptionChange={handleGroupSubscriptionChange}
         />
         {videos[activeIndex] && !showExpandView && (
           <PostSidePanel
+            onGroupJoinStatusChange={handleGroupJoinStatusChange}
+            onGroupSubscriptionChange={handleGroupSubscriptionChange}
+            onCommunityJoinStatusChange={handleCommunityJoinStatusChange}
             postDetails={videos?.[activeIndex]}
             style={{ height: feedVideoSizeBox.height }}
           />

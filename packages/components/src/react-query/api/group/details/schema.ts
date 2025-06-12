@@ -1,3 +1,4 @@
+import { GroupUserStatusSchema } from "@types/roles";
 import { z } from "zod";
 
 const BrandUserSchema = z
@@ -84,6 +85,7 @@ export const GroupDetailsSchema = z.object({
   isSubscriber: z.boolean(),
   isPostAllowed: z.boolean(),
   isViewAllowed: z.boolean(),
+  role: GroupUserStatusSchema,
   actions: actionsSchema,
   settings: settingsSchema,
   owner: ownerSchema,

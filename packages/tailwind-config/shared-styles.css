@@ -3,6 +3,9 @@
 @custom-variant dark (&: is(.dark *));
 
 :root {
+  --white: #ffffff;
+  --black: #131415;
+
   --primary: #0645ff;
   --primary-foreground: 0 0% 100%;
   --primary-100: #e6ecff;
@@ -24,6 +27,14 @@
   --secondary-150: #dfe1e3;
   --secondary-100: #e9ebec;
   --secondary-50: #f4f5f6;
+
+  --red-100: #fbe9e8;
+  --red-200: #f7d2d1;
+  --red-300: #ec8f8c;
+  --red-400: #e4625d;
+  --red: #d91e18;
+  --red-600: #981511;
+  --red-700: #6d0f0c;
 
   font-family:
     "Inter",
@@ -126,8 +137,8 @@
 
   --color-*: initial;
 
-  --color-white: #ffffff;
-  --color-black: #131415;
+  --color-white: var(--white);
+  --color-black: var(--black);
   --color-blue: #0645ff;
 
   --color-primary: var(--primary);
@@ -159,13 +170,13 @@
   --color-tertiary-400: var(--tertiary-400);
   --color-tertiary-50: var(--tertiary-50);
 
-  --color-red-100: #fbe9e8;
-  --color-red-200: #f7d2d1;
-  --color-red-300: #ec8f8c;
-  --color-red-400: #e4625d;
-  --color-red: #d91e18;
-  --color-red-600: #981511;
-  --color-red-700: #6d0f0c;
+  --color-red-100: var(--red-100);
+  --color-red-200: var(--red-200);
+  --color-red-300: var(--red-300);
+  --color-red-400: var(--red-400);
+  --color-red: var(--red);
+  --color-red-600: var(--red-600);
+  --color-red-700: var(--red-700);
 
   --aspect-reel: 9/16;
 

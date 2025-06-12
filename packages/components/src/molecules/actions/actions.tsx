@@ -2,7 +2,6 @@ import {
   CommentIcon,
   RepostIcon,
   ShareIcon,
-  SparkIcon,
   ThreeDotsIcon,
 } from "@genuin/ui/icons";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@genuin/ui/tooltip";
@@ -11,6 +10,8 @@ import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 import { type ComponentProps, type ReactNode } from "react";
 import { Menu } from "./menu";
+import { ReactionButton } from "@molecules/reaction-button";
+import { DynamicReactionIcon } from "@molecules/reaction-button";
 
 const tooltipVariants = cva("", {
   variants: {
@@ -60,7 +61,18 @@ function TooltipAction({
 
 type ActionType = "REPOST" | "REACTION" | "COMMENT" | "SHARE" | "MORE";
 
+// Define a new type for the context object
+type ActionWrapperContextType = {
+  contentId: string;
+  isReacted: boolean;
+  reactionCount: number;
+  onReactionStateChange?: (isReacted: boolean) => void;
+};
+
 type ActionsPropsType = ComponentProps<"div"> & {
+  contentId: string;
+  isReacted: boolean;
+  reactionCount: number;
   onReactionStateChange?: (isReacted: boolean) => void;
   variant?: "light" | "dark";
   /**
@@ -68,26 +80,43 @@ type ActionsPropsType = ComponentProps<"div"> & {
    * Each key in the object should correspond to an action type (e.g., "REPOST", "REACTION", etc.),
    */
   actionWrapper?: Partial<
-    Record<ActionType, (defaultNode: ReactNode) => ReactNode>
+    Record<
+      ActionType,
+      (defaultNode: ReactNode, context: ActionWrapperContextType) => ReactNode
+    >
   >;
 };
 
-// Default wrappers for each action type (identity by default)
+// Default wrappers for each action type
 export const defaultActionWrappers: Record<
   ActionType,
-  (defaultNode: ReactNode) => ReactNode
+  (defaultNode: ReactNode, context: ActionWrapperContextType) => ReactNode
 > = {
-  REPOST: (node) => node,
-  REACTION: (node) => node,
-  COMMENT: (node) => node,
-  SHARE: (node) => node,
-  MORE: (node) => <Menu children={node} />,
+  REPOST: (node, _context) => node,
+  REACTION: (node, context) => (
+    <ReactionButton
+      isReacted={context.isReacted}
+      contentId={context.contentId}
+      reactionCount={context.reactionCount}
+      contentType="VIDEO"
+      onReactionStateChange={context.onReactionStateChange}
+      children={node}
+      withCustomChildren
+    />
+  ),
+  COMMENT: (node, _context) => node,
+  SHARE: (node, _context) => node,
+  MORE: (node, _context) => <Menu children={node} />,
 };
 
 export function Actions({
   className,
   variant = "light",
+  isReacted,
   actionWrapper,
+  reactionCount,
+  contentId, // Added contentId here
+  onReactionStateChange, // Added onReactionStateChange here
   ...restProps
 }: ActionsPropsType) {
   const actions = [
@@ -97,7 +126,13 @@ export function Actions({
       tooltipText: "Repost",
     },
     {
-      icon: <SparkIcon variant={variant} />,
+      icon: (
+        <DynamicReactionIcon
+          isSparked={isReacted}
+          sparkCount={reactionCount}
+          forComment={false}
+        />
+      ),
       actionType: "REACTION",
       tooltipText: "I find this insightful",
     },
@@ -135,11 +170,18 @@ export function Actions({
             variant={variant}
           />
         );
+        // Create context object
+        const context = {
+          contentId,
+          isReacted,
+          onReactionStateChange,
+          reactionCount,
+        };
         // Priority: namedActionWrapper > defaultActionWrappers
         if (actionWrapper?.[action.actionType]) {
-          return actionWrapper[action.actionType]!(defaultNode);
+          return actionWrapper[action.actionType]!(defaultNode, context);
         }
-        return defaultActionWrappers[action.actionType](defaultNode);
+        return defaultActionWrappers[action.actionType](defaultNode, context);
       })}
     </div>
   );

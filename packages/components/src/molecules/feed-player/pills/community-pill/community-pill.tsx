@@ -1,4 +1,6 @@
 import { Avatar } from "@genuin/ui/avatar";
+import { Link } from "@molecules/link";
+import { JoinCommunityButton } from "@molecules/join-community-button";
 import {
   HoverCard,
   HoverCardTrigger,
@@ -6,11 +8,12 @@ import {
 } from "@genuin/ui/hover-card";
 import { cva } from "class-variance-authority";
 
-import { EntityHoverCardContent } from "@organisms/post-details/pill-hover-card-content";
-
-import { JoinCommunityButton } from "../join-community-button";
-import { Link } from "../link";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { useAuthContext } from "@context/auth";
+import { PostDetailsType } from "@react-query/api/feed/schema";
+import { CommunityHoverCard } from "../community-hover-card";
+import { ComponentProps } from "react";
+import { on } from "events";
 
 const communityPillVariants = cva(
   "gencl:flex gencl:w-fit gencl:items-center gencl:gap-1 gencl:p-1 gencl:rounded-full gencl:transition-all gencl:cursor-pointer",
@@ -31,44 +34,48 @@ const communityPillVariants = cva(
 type CommunityPillProps = {
   isHoverable?: boolean;
   variant?: "light" | "dark";
-  data: {
-    id: string;
-    name: string;
-    profileImage: string;
-    isPrivate: boolean;
-    slug: string;
-    brand?: {
-      slug: string;
-    };
-  };
+  communityDetails: PostDetailsType["community"];
+  onCommunityJoinStatusChange?: ComponentProps<
+    typeof JoinCommunityButton
+  >["onCommunityJoinStatusChange"];
 };
 
 export function CommunityPill({
   isHoverable = false,
   variant = "light",
-  data,
+  communityDetails,
+  onCommunityJoinStatusChange,
 }: CommunityPillProps) {
-  const auth = false;
-
+  const { authenticationStatus } = useAuthContext();
   const pill = (
-    <Link href={buildPageUrl({ type: "community", slug: data.slug })}>
+    <Link
+      href={buildPageUrl({ type: "community", slug: communityDetails.slug })}
+    >
       <div className={communityPillVariants({ variant })}>
         <div className="gencl:flex gencl:gap-1 gencl:items-center">
           <Avatar
-            alt={data?.name}
-            imageUrl={data?.profileImage}
+            alt={communityDetails.name ?? ""}
+            imageUrl={communityDetails.profileImage ?? ""}
             isAvatar={false}
             size="xs"
           />
           <span className="gencl:text-body-2-medium gencl:line-clamp-1">
-            {data?.name}
+            {communityDetails.name}
           </span>
         </div>
-        {auth && (
+        {authenticationStatus === "authenticated" && (
           <JoinCommunityButton
-            buttonText="Join"
+            roleTexts={{
+              UNJOINED: "Join",
+            }}
+            communityId={communityDetails.id}
+            isPrivate={communityDetails.isPrivate}
+            role={communityDetails.userRole}
             shape="pill"
             theme={variant === "dark" ? "secondary" : "primary"}
+            onClick={(e) => {
+              e.preventDefault();
+            }}
           />
         )}
       </div>
@@ -82,8 +89,11 @@ export function CommunityPill({
   return (
     <HoverCard openDelay={0} closeDelay={0}>
       <HoverCardTrigger asChild>{pill}</HoverCardTrigger>
-      <HoverCardContent>
-        <EntityHoverCardContent type="community" data={data} />
+      <HoverCardContent className="gencl:max-w-md! gencl:w-full">
+        <CommunityHoverCard
+          communityDetails={communityDetails}
+          onCommunityJoinStatusChange={onCommunityJoinStatusChange}
+        />
       </HoverCardContent>
     </HoverCard>
   );

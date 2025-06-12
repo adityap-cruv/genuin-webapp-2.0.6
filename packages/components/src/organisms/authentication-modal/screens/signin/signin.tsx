@@ -143,14 +143,10 @@ export function SignIn({
                   </FormItem>
                 )}
               />
-              <Button
-                type="submit"
-                disabled={!emailForm.formState.isValid || isPending} // Use isPending for disabled state
-                className="gencl:w-full"
-                theme="primary"
-              >
-                {isPending ? "Loading..." : "Continue"}
-              </Button>
+              <SubmitButton
+                disabled={!emailForm.formState.isValid || isPending}
+                isLoading={isPending}
+              />
             </form>
           </Form>
         ) : (
@@ -184,17 +180,6 @@ export function SignIn({
                 isLoading={isPending}
                 disabled={!isValidPhoneNumber(phoneForm.watch("phone") || "")}
               />
-              {/* <Button
-                type="submit"
-                disabled={
-                  !isValidPhoneNumber(phoneForm.watch("phone") || "") ||
-                  isPending
-                }
-                className="gencl:w-full"
-                theme="primary"
-              >
-                {isPending ? "Loading..." : "Continue"}
-              </Button> */}
             </form>
           </Form>
         )}

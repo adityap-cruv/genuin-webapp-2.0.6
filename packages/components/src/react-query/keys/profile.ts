@@ -84,11 +84,6 @@ export function getQueryKeyForProfileVideos(
 /**
  * Returns a QueryKey for fetching profile groups.
  * It works for both brand and profile.
- *
- * @param {string} profileId - The identifier for the profile.
- * @param {string} communityId - The identifier for the community.
- * @param {boolean} forBrand - Determines if the key is for a brand or profile.
- * @returns {QueryKey} The generated query key.
  */
 export function getQueryKeyForProfileFeed(
   profileId: string,
@@ -99,6 +94,7 @@ export function getQueryKeyForProfileFeed(
     ...baseQueryKey,
     "profile",
     "feed",
+    profileId,
     videoId,
     forBrand ? "brand" : "profile",
   ];

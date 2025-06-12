@@ -26,6 +26,8 @@ import type {
   FetchVideosPageParamType,
   FetchVideosReturnType,
 } from "./types";
+import { queryClient } from "@react-query/client";
+import { GroupUserStatusType } from "@types/roles";
 
 // TODO: Refactor these functions to use API_PATHS
 
@@ -112,6 +114,12 @@ async function fetchProfileCommunities({
   }
 }
 
+/**
+ * Fetches the communities for the profile or brand.
+ * @param profileId - The ID of the profile to fetch communities for.
+ * @param forBrand - A boolean indicating whether to fetch communities for a brand or a user profile.
+ * @returns
+ */
 export function useGetProfileCommunities(profileId: string, forBrand = false) {
   return useInfiniteQuery({
     queryFn: async ({ pageParam }) =>
@@ -127,6 +135,41 @@ export function useGetProfileCommunities(profileId: string, forBrand = false) {
       if (lastPage.end) return null;
       return lastPage.nextPageParam;
     },
+  });
+}
+type OldQueryData = Awaited<
+  ReturnType<typeof useGetProfileCommunities>
+>["data"];
+
+/**
+ * This function updates the query data for joining a community in the profile's communities.
+ * @param newRole - The new role to set for the community.
+ * @param communityId - The ID of the community to update.
+ * @param profileId  - The ID of the profile to update.
+ * @param forBrand - A boolean indicating whether the update is for a brand or a user profile.
+ */
+export function setQueryDataForJoinCommunityInProfileCommunities(
+  newRole: string,
+  communityId: string,
+  profileId: string,
+  forBrand: boolean
+) {
+  const queryKey = getQueryKeyForProfileCommunities(profileId, forBrand);
+
+  queryClient.setQueryData(queryKey, (oldData: OldQueryData | undefined) => {
+    if (!oldData) return oldData;
+
+    return {
+      ...oldData,
+      pages: oldData.pages.map((page) => ({
+        ...page,
+        communities: page.communities.map((community) =>
+          community.id === communityId
+            ? { ...community, role: newRole }
+            : community
+        ),
+      })),
+    };
   });
 }
 
@@ -220,6 +263,85 @@ export function useGetProfileGroups(
     },
     enabled: false,
   });
+}
+
+/**
+ * Sets the query data for the group join status in the profile groups.
+ * @param communityId - The ID of the community to update.
+ * @param forBrand - A boolean indicating whether the update is for a brand or a user profile.
+ * @param newRole - The new role to set for the group.
+ */
+export function setQueryDataForGroupJoinStatusInProfileGroups({
+  communityId,
+  loopId,
+  forBrand,
+  newRole,
+}: {
+  communityId: string;
+  loopId: string;
+  forBrand: boolean;
+  newRole: GroupUserStatusType;
+}) {
+  type QueryData = Awaited<ReturnType<typeof useGetProfileGroups>>["data"];
+  queryClient.setQueryData<QueryData>(
+    getQueryKeyForProfileLoops(communityId, forBrand),
+    (oldData) => {
+      if (!oldData) return oldData;
+
+      // Update the loops in the query data
+      return {
+        ...oldData,
+        pages: oldData.pages.map((page) => ({
+          ...page,
+          loops: page.loops.map((loop) =>
+            loop.id === loopId
+              ? {
+                  ...loop,
+                  logged_in_user_status: newRole, // Set the status to JOINED
+                  isSubscriber: newRole === "JOINED" ? true : loop.isSubscriber, // Set isSubscriber based on the new role
+                }
+              : loop
+          ),
+        })),
+      };
+    }
+  );
+}
+
+/**
+ * Sets the query data for the group subscription status in the profile groups.
+ * @param param0
+ */
+export function setQueryDataForGroupSubscribeInProfileGroups({
+  communityId,
+  loopId,
+  forBrand,
+  isSubscribed,
+}: {
+  communityId: string;
+  loopId: string;
+  forBrand: boolean;
+  isSubscribed: boolean;
+}) {
+  type QueryData = Awaited<ReturnType<typeof useGetProfileGroups>>["data"];
+
+  queryClient.setQueryData<QueryData>(
+    getQueryKeyForProfileLoops(communityId, forBrand),
+    (oldData) => {
+      if (!oldData) return oldData;
+
+      // Update the loops in the query data
+      return {
+        ...oldData,
+        pages: oldData.pages.map((page) => ({
+          ...page,
+          loops: page.loops.map((loop) =>
+            loop.id === loopId ? { ...loop, isSubscriber: isSubscribed } : loop
+          ),
+        })),
+      };
+    }
+  );
 }
 
 /**
@@ -356,7 +478,7 @@ export async function fetchProfileFeed(
     const feeds = parseFeed(data.data.feeds);
 
     return {
-      videos: feeds,
+      feed: feeds,
       end: data.data.end_of_feed as boolean,
     };
   } catch (e) {
@@ -407,7 +529,7 @@ export function useGetProfileFeed(
         return undefined; // Return undefined to indicate no more pages
       }
       // Get the last video ID from the current page
-      const lastVideo = lastPage.videos[lastPage.videos.length - 1];
+      const lastVideo = lastPage.feed[lastPage.feed.length - 1];
       return lastVideo ? { lastMessageId: lastVideo.video.id } : undefined;
     },
   });

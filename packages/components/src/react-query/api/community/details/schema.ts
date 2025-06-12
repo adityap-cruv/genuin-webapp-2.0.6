@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { mapCommunityUserRole } from "@genuin/components/lib/utils";
 
 const BrandUserSchema = z.object({
   brand_id: z.number(),
@@ -94,56 +95,64 @@ const BrandSchema = z
   })
   .nullish();
 
-const CommunityDetailsSchema = z.object({
-  brand: BrandSchema.optional(),
-  banner: z.string().nullish(),
-  community_id: z.string(),
-  handle: z.string(),
-  slug: z.string(),
-  name: z.string().nullish(),
-  type: z.preprocess(
-    (val) => {
-      if (val === 1) return "PUBLIC";
-      if (val === 2) return "PRIVATE";
-      return val; // Pass through other values for further validation by z.enum
-    },
-    z.enum(["PUBLIC", "PRIVATE"])
-  ),
-  description: z.string().nullish(),
-  is_community_join_requested: z.boolean(),
-  is_loop_creation_allowed: z.boolean().nullish(),
-  logged_in_user_role: z.number().nullish(),
-  color_code: z.string().nullish(),
-  text_color_code: z.string().nullish(),
-  welcome_loop_id: z.number().nullish(),
-  dp: z.string().nullish(),
-  dp_s: z.string().nullish(),
-  dp_m: z.string().nullish(),
-  dp_l: z.string().nullish(),
-  share_url: z.string(),
-  no_of_members: z.number(),
-  no_of_loops: z.number(),
-  no_of_videos: z.number(),
-  categories: z
-    .array(
-      z.object({
-        category_id: z.number(),
-        title: z.string(),
-      })
-    )
-    .optional(),
-  social_links: socialLinksSchema,
-  moderators: z.array(moderatorSchema),
-  is_ai_generated: z.boolean(),
-  leader: leaderSchema,
-  guidelines: z.array(guidelineSchema),
-  brand_guidelines: z.array(brandGuidelineSchema),
-  preview_image: z.string().optional(),
-  created_at: z.string().nullish(),
-  no_of_views: z.number().nullish().default(0),
-  no_of_comments: z.number().nullish().default(0),
-  no_of_sparks: z.number().nullish().default(0),
-});
+const CommunityDetailsSchema = z
+  .object({
+    brand: BrandSchema.optional(),
+    banner: z.string().nullish(),
+    community_id: z.string(),
+    handle: z.string(),
+    slug: z.string(),
+    name: z.string().nullish(),
+    type: z.preprocess(
+      (val) => {
+        if (val === 1) return "PUBLIC";
+        if (val === 2) return "PRIVATE";
+        return val; // Pass through other values for further validation by z.enum
+      },
+      z.enum(["PUBLIC", "PRIVATE"])
+    ),
+    description: z.string().nullish(),
+    is_community_join_requested: z.boolean(),
+    is_loop_creation_allowed: z.boolean().nullish(),
+    logged_in_user_role: z.number().nullish(),
+    color_code: z.string().nullish(),
+    text_color_code: z.string().nullish(),
+    welcome_loop_id: z.number().nullish(),
+    dp: z.string().nullish(),
+    dp_s: z.string().nullish(),
+    dp_m: z.string().nullish(),
+    dp_l: z.string().nullish(),
+    share_url: z.string(),
+    no_of_members: z.number(),
+    no_of_loops: z.number(),
+    no_of_videos: z.number(),
+    categories: z
+      .array(
+        z.object({
+          category_id: z.number(),
+          title: z.string(),
+        })
+      )
+      .optional(),
+    social_links: socialLinksSchema,
+    moderators: z.array(moderatorSchema),
+    is_ai_generated: z.boolean(),
+    leader: leaderSchema,
+    guidelines: z.array(guidelineSchema),
+    brand_guidelines: z.array(brandGuidelineSchema),
+    preview_image: z.string().optional(),
+    created_at: z.string().nullish(),
+    no_of_views: z.number().nullish().default(0),
+    no_of_comments: z.number().nullish().default(0),
+    no_of_sparks: z.number().nullish().default(0),
+  })
+  .transform((data) => ({
+    ...data,
+    logged_in_user_role: mapCommunityUserRole(
+      data.logged_in_user_role,
+      data.is_community_join_requested
+    ),
+  }));
 
 export type CommunityDetailsType = z.infer<typeof CommunityDetailsSchema>;
 

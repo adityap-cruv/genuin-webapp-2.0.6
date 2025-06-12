@@ -1,6 +1,6 @@
 import type z from "zod";
 
-import { mapCommunityUserRole } from "@lib/utils";
+import { mapCommunityUserRole, mapGroupJoinStatus } from "@lib/utils";
 
 import type { PostDetailsSchema } from "./schema";
 import type { FeedResponseFromGoApi } from "./types";
@@ -56,6 +56,8 @@ export function parseFeed(
       shareUrl: item.loop.share_url || undefined,
       name: item.loop.group_name || "",
       isSubscribed: item.loop.is_loop_subscribe || false,
+      role: mapGroupJoinStatus(item.loop.logged_in_user_status),
+      isPrivate: !item.loop.is_view_allowed || false,
     },
     community: {
       id: item.community.uuid || "",
@@ -69,12 +71,16 @@ export function parseFeed(
       type: item.community.type || null,
       name: item.community.name || null,
       profileImage: item.community.dp_m || null,
+      membersCount: item.community.members_count || 0,
+      groupsCount: item.community.groups_count || 0,
+      postsCount: item.community.posts_count || 0,
       ...(item.community.brand && {
         brand: {
           id: item.community.brand.brand_id,
           name: item.community.brand.name,
           slug: item.community.brand.brand_slug,
           webLogo: item.community.brand.brand_web_logo || null,
+          userLogo: item.community.brand.brand_user_logo || null,
         },
       }),
     },

@@ -105,6 +105,8 @@ type FeedLoopInfo = {
   share_url?: string;
   member_info?: MemberInfo;
   is_loop_subscribe?: boolean;
+  logged_in_user_status?: number;
+  is_view_allowed?: boolean;
 };
 
 type FeedCommunityInfo = {
@@ -124,6 +126,9 @@ type FeedCommunityInfo = {
   type?: number;
   share_url?: string;
   logged_in_user_role?: number;
+  members_count?: number | null;
+  groups_count?: number | null;
+  posts_count?: number | null;
   brand?: {
     brand_id: number;
     brand_slug: string;

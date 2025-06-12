@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 
 import { useFeedVideoSizeBox } from "@genuin/components/hooks/use-feed-video-size-box";
 import {
@@ -25,10 +25,17 @@ export function BaseContextProvider({
   children,
   brandDetails,
 }: BaseContextProviderProps) {
-  //TODO:  Figure out a way to run this only once. Not in useEffect.
-  if (brandDetails) {
-    setBrandIdInAxiosInstance(2922);
-  }
+  // //TODO:  Figure out a way to run this only once. Not in useEffect.
+  // if (brandDetails) {
+  //   setBrandIdInAxiosInstance(2922);
+  // }
+
+  useLayoutEffect(() => {
+    // Set the brand details in the context.
+    if (brandDetails) {
+      setBrandIdInAxiosInstance(brandDetails.brand_id);
+    }
+  }, [brandDetails]);
 
   const [isInitiating, setIsInitiating] = useState(true);
   const [muted, setMuted] = useState(true);

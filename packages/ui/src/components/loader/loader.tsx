@@ -17,7 +17,7 @@ const loaderVariant = cva(
       strokeColor: {
         primary: "gencl:stroke-primary",
         white: "gencl:stroke-white",
-        muted: "gencl:stroke-muted",
+        black: "gencl:stroke-black",
       },
     },
     defaultVariants: {

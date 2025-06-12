@@ -2,6 +2,7 @@ import type { CommunityUserRole } from "@types/post";
 import DOMPurify from "dompurify";
 
 import { PROTECTED_ROUTES } from "../constants";
+import { GroupUserStatusType } from "@types/roles";
 
 /**
  * This function will check if the url includes any of the protected routes.
@@ -53,6 +54,33 @@ export function mapCommunityUserRole(
 }
 
 /**
+ * Maps the numeric role value to a GroupUserStatusType string
+ * @param role - The numeric role value:
+ *               1 = Not joined/No role
+ *               2 = Requested to join
+ *               3 = Joined member
+ * @returns GroupUserStatusType - One of:
+ *          'UNJOINED' - User has not joined or has invalid role
+ *          'REQUESTED' - User has requested to join
+ *          'JOINED' - User is an active member
+ */
+export function mapGroupJoinStatus(role?: number | null): GroupUserStatusType {
+  if (role === null || role === undefined) return "UNJOINED";
+
+  switch (role) {
+    case 1:
+      return "UNJOINED";
+    case 2:
+      return "REQUESTED";
+    case 3:
+      return "JOINED";
+    // If role is null or anything other than above cases than return 'UNJOINED'.
+    default:
+      return "UNJOINED";
+  }
+}
+
+/**
  * Sanitizes user input to prevent XSS attacks
  * Only allows plain text by escaping dangerous HTML characters
  * @param input - The user input to sanitize
@@ -63,4 +91,20 @@ export function sanitizeInput(input: string | null | undefined): string {
   return DOMPurify.sanitize(input, {
     USE_PROFILES: { html: false },
   });
+}
+
+/**
+ * This func returns the url for the reaction.
+ * @param reaction type of reaction
+ * @param isReacted if user have already reacted.
+ * @returns
+ */
+export function getUrlForReaction(
+  reaction: string,
+  isReacted: boolean,
+  forComment: boolean = false
+) {
+  return `https://media.begenuin.com/webapp_assets/reactions/${reaction}/${forComment ? "comment_" : "feed_"}${
+    isReacted ? "selected" : "unselected"
+  }.svg`;
 }

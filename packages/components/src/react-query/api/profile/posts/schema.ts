@@ -1,7 +1,8 @@
 import z from "zod";
 
-import { mapCommunityUserRole } from "@lib/utils";
+import { mapCommunityUserRole, mapGroupJoinStatus } from "@lib/utils";
 import type { CommunityUserRole } from "@types/post";
+import type { GroupUserStatusType } from "@types/roles";
 
 const messageSchema = z.object({
   media_url: z.string(),
@@ -38,6 +39,8 @@ const loopSchema = z.object({
     no_of_members: z.number().nullish().default(0),
     no_of_views: z.number().default(0).nullish(),
   }),
+  is_subscriber: z.boolean().nullish(),
+  logged_in_user_status: z.number().nullish(),
   messages: z.array(messageSchema),
   actions: actionsSchema,
 });
@@ -107,6 +110,8 @@ export type LoopType = {
   noOfViews: number;
   isPrivate: boolean;
   privacyInfo: Array<{ actionId: number; accessTypeId: number }>;
+  role: GroupUserStatusType;
+  isSubscriber?: boolean;
 };
 
 /***
@@ -180,6 +185,8 @@ export function parseGroupResponse(
         actionId: action.action_id,
         accessTypeId: action.access_type_id,
       })),
+      isSubscriber: loop.is_subscriber ?? false,
+      role: mapGroupJoinStatus(loop.logged_in_user_status),
     };
   });
 }
