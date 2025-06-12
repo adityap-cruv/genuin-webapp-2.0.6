@@ -1,0 +1,77 @@
+{
+  "extends": "@genuin/typescript-config/nextjs.json",
+  "compilerOptions": {
+    "target": "es2022",
+    "downlevelIteration": true,
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "types": [
+      "eslint",
+      "react"
+    ],
+    "baseUrl": ".",
+    // "allowJs": true,
+    // "skipLibCheck": true,
+    // "strict": true,
+    // "noEmit": true,
+    // "esModuleInterop": true,
+    // "module": "NodeNext",
+    // "moduleResolution": "nodenext",
+    // "resolveJsonModule": true,
+    // "isolatedModules": true,
+    // "jsx": "preserve",
+    // "incremental": true,
+    // "noImplicitAny": true,
+    // "verbatimModuleSyntax": true,
+    // "plugins": [
+    //   {
+    //     "name": "next"
+    //   }
+    // ],
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@components/*": [
+        "./src/components/*"
+      ],
+      "@lib/*": [
+        "./src/lib/*"
+      ],
+      "@hooks/*": [
+        "./src/hooks/*"
+      ],
+      "@icons/*": [
+        "./public/icons/*"
+      ],
+      "@images/*": [
+        "./public/images/*"
+      ],
+      "@services/*": [
+        "./src/services/*"
+      ],
+      "@lotties/*": [
+        "./public/lotties/*"
+      ],
+      "@genuin/ui": ["../../packages/ui/src"],
+      "@genuin/ui/*": ["../../packages/ui/src/*"],
+      "@genuin/components": ["../../packages/components/src"],
+      "@genuin/components/*": ["../../packages/components/src/*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "types/next-auth.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "**/*.js",
+  ],
+  "exclude": [
+    "node_modules",
+    "postcss.config.js"
+  ]
+}

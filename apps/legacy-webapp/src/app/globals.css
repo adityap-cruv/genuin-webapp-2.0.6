@@ -1,0 +1,403 @@
+@import "tailwindcss";
+
+@config '../../tailwind.config.ts';
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 7%;
+
+    --primary: #0645ff;
+    --primary-foreground: 0 0% 100%;
+    --primary-100: #e6ecff;
+    --primary-200: #cddaff;
+    --primary-300: #83a2ff;
+    --primary-400: #517dff;
+    --primary: #0645ff;
+    --primary-600: #0430b3;
+    --primary-700: #032380;
+
+    --secondary-300: #707070;
+    --secondary-400: #414141;
+    --secondary: #111111;
+    --secondary-600: #0e0e0e;
+    --secondary-foreground: 0 0% 100%;
+
+    --tertiary-100: #fafafa;
+    --tertiary-200: #f4f4f4;
+    --tertiary-300: #d4d4d4;
+    --tertiary-400: #b4b4b4;
+    --tertiary: #949494;
+
+    --transparent: 0 0% 0% 1;
+
+    --monochrome-4: #707070;
+    /* --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+
+    --radius: 0.5rem; */
+  }
+
+  /* .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  } */
+
+  @font-face {
+    font-family: 'Avenir Next';
+    src:
+      url('/fonts/AvenirNext-Regular.woff') format('woff'),
+      url('/fonts/AvenirNext-Regular.woff2') format('woff2'),
+      url('/fonts/AvenirNext-Regular.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Avenir Next';
+    src:
+      url('/fonts/AvenirNext-Medium.woff2') format('woff2'),
+      url('/fonts/AvenirNext-Medium.woff') format('woff'),
+      url('/fonts/AvenirNext-Medium.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Avenir Next';
+    src:
+      url('/fonts/AvenirNext-MediumItalic.woff2') format('woff2'),
+      url('/fonts/AvenirNext-MediumItalic.woff') format('woff'),
+      url('/fonts/AvenirNext-MediumItalic.ttf') format('truetype');
+    font-weight: 400;
+    font-style: italic;
+  }
+
+  @font-face {
+    font-family: 'Avenir Next';
+    src:
+      url('/fonts/AvenirNext-UltraLight.woff2') format('woff2'),
+      url('/fonts/AvenirNext-UltraLight.woff') format('woff'),
+      url('/fonts/AvenirNext-UltraLight.ttf') format('truetype');
+    font-weight: 100;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Avenir Next';
+    src:
+      url('/fonts/AvenirNext-UltraLightItalic.woff2') format('woff2'),
+      url('/fonts/AvenirNext-UltraLightItalic.woff') format('woff'),
+      url('/fonts/AvenirNext-UltraLightItalic.ttf') format('truetype');
+    font-weight: 100;
+    font-style: italic;
+  }
+
+  @font-face {
+    font-family: 'Avenir Next';
+    src:
+      url('/fonts/AvenirNext-HeavyItalic.woff2') format('woff2'),
+      url('/fonts/AvenirNext-HeavyItalic.woff') format('woff'),
+      url('/fonts/AvenirNext-HeavyItalic.ttf') format('truetype');
+    font-weight: 900;
+    font-style: italic;
+  }
+
+  @font-face {
+    font-family: 'Avenir Next';
+    src:
+      url('/fonts/AvenirNext-Italic.woff2') format('woff2'),
+      url('/fonts/AvenirNext-Italic.woff') format('woff'),
+      url('/fonts/AvenirNext-Italic.ttf') format('truetype');
+    font-weight: 400;
+    font-style: italic;
+  }
+
+  @font-face {
+    font-family: 'Avenir Next';
+    src:
+      url('/fonts/AvenirNext-BoldItalic.woff2') format('woff2'),
+      url('/fonts/AvenirNext-BoldItalic.woff') format('woff'),
+      url('/fonts/AvenirNext-BoldItalic.ttf') format('truetype');
+    font-weight: 700;
+    font-style: italic;
+  }
+
+  @font-face {
+    font-family: 'Avenir Next';
+    src:
+      url('/fonts/AvenirNext-DemiBoldItalic.woff2') format('woff2'),
+      url('/fonts/AvenirNext-DemiBoldItalic.woff') format('woff'),
+      url('/fonts/AvenirNext-DemiBoldItalic.ttf') format('truetype');
+    font-weight: 600;
+    font-style: italic;
+  }
+
+  @font-face {
+    font-family: 'Avenir Next';
+    src:
+      url('/fonts/AvenirNext-Heavy.woff2') format('woff2'),
+      url('/fonts/AvenirNext-Heavy.woff') format('woff'),
+      url('/fonts/AvenirNext-Heavy.ttf') format('truetype');
+    font-weight: 900;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Avenir Next';
+    src:
+      url('/fonts/AvenirNext-DemiBold.woff2') format('woff2'),
+      url('/fonts/AvenirNext-DemiBold.woff') format('woff'),
+      url('/fonts/AvenirNext-DemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Avenir Next';
+    src:
+      url('/fonts/AvenirNext-Bold.woff2') format('woff2'),
+      url('/fonts/AvenirNext-Bold.woff') format('woff'),
+      url('/fonts/AvenirNext-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Manrope';
+    src: url('/fonts/manrope/Manrope-ExtraLight.ttf') format('truetype');
+    font-weight: 200;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Manrope';
+    src: url('/fonts/manrope/Manrope-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Manrope';
+    src: url('/fonts/manrope/Manrope-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Manrope';
+    src: url('/fonts/manrope/Manrope-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Manrope';
+    src: url('/fonts/manrope/Manrope-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Manrope';
+    src: url('/fonts/manrope/Manrope-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Manrope';
+    src: url('/fonts/manrope/Manrope-ExtraBold.ttf') format('truetype');
+    font-weight: 800;
+    font-style: normal;
+  }
+}
+
+.font-manrope {
+  font-family: 'Manrope', sans-serif;
+}
+
+@layer base {
+  body {
+    user-select: none;
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 0px;
+    width: 0px;
+  }
+
+  .show-scrollbar::-webkit-scrollbar {
+    -webkit-appearance: initial;
+    appearance: initial;
+    height: 8px;
+    width: 8px;
+  }
+
+  /*  TODO: find better solution for this */
+  .index-page-background:has(#indexPage) {
+    background-color: #f8f8f8;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 8px;
+    border: 2px solid white;
+    /* should match background, can't be transparent */
+    background-color: #d4d4d4;
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: #fff;
+    border-radius: 8px;
+  }
+}
+
+.no-scroll {
+  overflow: hidden;
+}
+
+.cropper-view-box {
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.cropper-face {
+  border-radius: 50%;
+}
+
+/* As we are utilizing onetrust banner for cookie settings. onetrust's banner's design is clashing with our modal so forcefully changing there style
+ */
+#onetrust-banner-sdk {
+  z-index: 40 !important;
+}
+
+/* .containerHome {
+  width: 100%;
+  padding-right: 1rem;
+  padding-left: 1rem;
+}
+@media (min-width: 992px) {
+  .containerHome {
+    padding-right: 80px;
+    padding-left: 80px;
+  }
+}
+@media (min-width: 1200px) {
+  .containerHome {
+    padding-right: 100px;
+    padding-left: 100px;
+  }
+}
+@media (min-width: 1400px) {
+  .containerHome {
+    padding-right: 200px;
+    padding-left: 200px;
+  }
+} */
+
+/* For iHeart Demo */
+.animated-border {
+  width: 100%;
+  height: 100%;
+  /* border: var(--border-size) solid transparent; */
+
+  /* Smooth red gradient */
+  border-image: conic-gradient(from var(--angle),
+      #c6002b 0deg,
+      #c6002b 45deg,
+      #fc7878 90deg,
+      #eeb2bf 135deg,
+      #eeb2bf 180deg,
+      #eeb2bf 225deg,
+      #fc7878 270deg,
+      #c6002b 315deg,
+      #c6002b 360deg) 1 stretch;
+
+  /* background: rgb(255 255 255 / var(--opacity)); */
+}
+
+@property --opacity {
+  syntax: '<number>';
+  initial-value: 0.5;
+  inherits: false;
+}
+
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes rotateSmooth {
+  to {
+    --angle: 360deg;
+  }
+}
+
+@keyframes opacityFade {
+
+  0%,
+  100% {
+    --opacity: 1;
+  }
+
+  50% {
+    --opacity: 0.7;
+  }
+}
+
+.animated-border {
+  animation:
+    rotateSmooth 3s linear infinite,
+    opacityFade 3s infinite alternate;
+}

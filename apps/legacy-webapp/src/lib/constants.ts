@@ -1,0 +1,220 @@
+import { type WebConfigs } from './stores/genuin-options'
+
+/**
+ * This is mobile app download which will redirect to app store if it is iphone or else android.
+ */
+export const MOBILE_DOWNLOAD_APP_LINK = 'https://install.begenuin.com/86sn/cgs'
+export const BCC_LOGIN_LINK = 'https://brands.begenuin.com/login'
+/**
+ * This is hiring link hiring page is hosted on {@link https://careers.begenuin.com | Careers}
+ */
+export const HIRING_LINK = 'https://careers.begenuin.com'
+export const URL_TO_APP_STORE = 'https://apps.apple.com/US/app/id1511177838?mt=8'
+export const URL_TO_PLAY_STORE = 'https://play.google.com/store/apps/details?id=com.begenuin.begenuin'
+
+export const HEIGHT_OF_HEADER = 76
+
+export const LOGIN_SOURCE = {
+  web_sdk: 1,
+  white_label: 2,
+  web: 3,
+  mobile_app: 4,
+  mobile_sdk: 5,
+  bcc: 6,
+  adreels: 7,
+}
+
+export const VERIFICATION_TYPE = {
+  sms: 1,
+  call: 2,
+}
+
+export const RECENT_SEARCH_CONTENT_TYPE: Record<'text' | 'community' | 'loop' | 'user' | 'video', number> = {
+  community: 3,
+  loop: 4,
+  text: 1,
+  user: 2,
+  video: 5,
+}
+
+export const PROTECTED_ROUTES = ['settings', 'wallet']
+
+export const NOT_FOUND_ERROR_CODES = {
+  user: '5025',
+  brand: '5235',
+  community: '5218',
+  group: '5168',
+  video: '5209',
+}
+
+export const NOT_FOUND_ERROR_MESSAGES = {
+  user: {
+    title: 'User not found',
+    description: "We're sorry, but the user you are looking for no longer exists.",
+    showButton: true,
+  },
+  brand: {
+    title: 'Brand not found',
+    description: "We're sorry, but the brand you are looking for no longer exists.",
+    showButton: true,
+  },
+  community: {
+    title: 'Community not found',
+    description: "We're sorry, but the community you are looking for no longer exists.",
+    showButton: true,
+  },
+  group: {
+    title: 'Group not found',
+    description: "We're sorry, but the group you are looking for no longer exists.",
+    showButton: true,
+  },
+  video: {
+    title: 'Video not found',
+    description: "We're sorry, but this video no longer exists.",
+    showButton: true,
+  },
+}
+
+export const IHEART_BRAND_URL = [1729]
+
+export const WEB_CONFIGS: WebConfigs = {
+  video_autoplay: {
+    type: 1,
+    auto_play_after: 5,
+  },
+  feed_video_play: {
+    type: 1,
+    repeat_video: 0,
+    swipe_after: 0,
+  },
+  linkout_delay: {
+    type: 1,
+    appear_after: 10,
+  },
+  get_app_popup: {
+    enable: true,
+    popup_after: 5,
+  },
+  login_signup_popup: {
+    enable: true,
+    popup_after: 5,
+  },
+  interest_selection_popup: {
+    enable: true,
+    popup_after: 5,
+  },
+  username_popup: {
+    enable: true,
+    popup_after: 5,
+  },
+  complete_profile_popup: {
+    enable: true,
+    popup_after: 5,
+  },
+  idle_time_interruption: {
+    enable: true,
+    popup_after: 60,
+  },
+  video_aspect_ratio: '9:16',
+  tap_behavior: 3,
+  gesture_guidance: true,
+  playback_speed_enabled: true,
+  is_start_with_sound: false,
+}
+
+export const INDUSTRY: Record<IndustryName, number> = {
+  Automotive: 1,
+  'Delivery/E-commerce': 2,
+  Fintech: 3,
+  Food: 4,
+  Healthcare: 5,
+  'Media & Entertainment': 6,
+  Retail: 7,
+  Default: 0,
+}
+
+export type IndustryName =
+  | 'Food'
+  | 'Healthcare'
+  | 'Automotive'
+  | 'Delivery/E-commerce'
+  | 'Fintech'
+  | 'Media & Entertainment'
+  | 'Retail'
+  | 'Default'
+
+export const DEFAULT_EMBED_PROD = {
+  'Home/Search Embed': {
+    embedId: '67ea7d5597d4b55f87c5a8b9',
+    embedType: 'brand_feed',
+    embedApiKey: '0bb6e6e8667a66183edeafa919f4f1b3e725a92021fa5b87',
+  },
+  'Blog Embed': {
+    embedId: '67ea7d5597d4b55f87c5a8ba',
+    embedType: 'brand_feed',
+    embedApiKey: '0bb6e6e8667a66183edeafa919f4f1b3e725a92021fa5b87',
+  },
+  'Home/Search Embed1': {
+    embedId: '67ea7d5597d4b55f87c5a8bb',
+    embedType: 'brand_feed',
+    embedApiKey: '0bb6e6e8667a66183edeafa919f4f1b3e725a92021fa5b87',
+  },
+  'Post-Sales Embed': {
+    embedId: '67ea7d5597d4b55f87c5a8bc',
+    embedType: 'brand_feed',
+    embedApiKey: '0bb6e6e8667a66183edeafa919f4f1b3e725a92021fa5b87',
+  },
+  'PDP Embed': {
+    embedId: '67ea7d5597d4b55f87c5a8bd',
+    embedType: 'brand_feed',
+    embedApiKey: '0bb6e6e8667a66183edeafa919f4f1b3e725a92021fa5b87',
+  },
+  'Home/Blog Embed': {
+    embedId: '67ea7d5597d4b55f87c5a8be',
+    embedType: 'brand_feed',
+    embedApiKey: '0bb6e6e8667a66183edeafa919f4f1b3e725a92021fa5b87',
+  },
+  'Home/Post Sales Embed': {
+    embedId: '67ea7d5597d4b55f87c5a8bf',
+    embedType: 'brand_feed',
+    embedApiKey: '0bb6e6e8667a66183edeafa919f4f1b3e725a92021fa5b87',
+  },
+}
+
+export const DEFAULT_EMBED_QA = {
+  'Home/Search Embed': {
+    embedId: '67c17f9fe0ac202848d7ac5c',
+    embedType: 'brand_feed',
+    embedApiKey: 'e895c22b1281e14ff16405aa54f1d68ac6238de9b709383c',
+  },
+  'Blog Embed': {
+    embedId: '67c17f9fe0ac202848d7ac5d',
+    embedType: 'brand_feed',
+    embedApiKey: 'e895c22b1281e14ff16405aa54f1d68ac6238de9b709383c',
+  },
+  'Home/Search Embed1': {
+    embedId: '67c17f9fe0ac202848d7ac5e',
+    embedType: 'brand_feed',
+    embedApiKey: 'e895c22b1281e14ff16405aa54f1d68ac6238de9b709383c',
+  },
+  'Post-Sales Embed': {
+    embedId: '67c17f9fe0ac202848d7ac5f',
+    embedType: 'brand_feed',
+    embedApiKey: 'e895c22b1281e14ff16405aa54f1d68ac6238de9b709383c',
+  },
+  'PDP Embed': {
+    embedId: '67c17f9fe0ac202848d7ac60',
+    embedType: 'brand_feed',
+    embedApiKey: 'e895c22b1281e14ff16405aa54f1d68ac6238de9b709383c',
+  },
+  'Home/Blog Embed': {
+    embedId: '67c17f9fe0ac202848d7ac61',
+    embedType: 'brand_feed',
+    embedApiKey: 'e895c22b1281e14ff16405aa54f1d68ac6238de9b709383c',
+  },
+  'Home/Post Sales Embed': {
+    embedId: '67c17f9fe0ac202848d7ac62',
+    embedType: 'brand_feed',
+    embedApiKey: 'e895c22b1281e14ff16405aa54f1d68ac6238de9b709383c',
+  },
+}

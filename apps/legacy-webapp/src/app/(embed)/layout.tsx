@@ -1,0 +1,54 @@
+import { type ReactNode } from 'react'
+import { RootHTML, getViewport } from '@components/layouts/root-layout'
+import { SessionProvider } from 'next-auth/react'
+import '../globals.css'
+import { ReactQueryProvider } from '@components/providers/query-client-provider'
+import { cookies } from 'next/headers'
+import { type ConfigType } from '@lib/stores/genuin-options'
+import { getEmbedConfig } from '@lib/api/config'
+import { parseColors } from '@lib/utils'
+import { BrandNotFound } from '@components/common/brand-not-found'
+import { ThirdPartyScriptProvider } from '@components/providers/third-party-script-provider'
+import { EmbedConfigProvider } from '@/components/embed/embed-config-provider'
+import { GenuinOptionsProvider } from '@/components/providers/genuin-options-provider'
+import { RedirectHandler } from '@components/providers/redirect-handler'
+
+export default async function Layout({ children }: { children: ReactNode }) {
+  const deviceType = (await cookies()).get('device_type')?.value ?? ''
+  const os = (await cookies()).get('os')?.value ?? ''
+  const browserType = (await cookies()).get('browser_type')?.value ?? ''
+  const configParamsStr = (await cookies()).get('config_params')?.value ?? ''
+  let configParams = null
+  if (configParamsStr) configParams = JSON.parse(configParamsStr)
+
+  let config: ConfigType | undefined
+  let error = false
+
+  if (configParams) {
+    try {
+      config = await getEmbedConfig(configParams)
+    } catch (e) {
+      error = true
+    }
+  }
+  const brandColors = parseColors(config?.brand_colors)
+
+  if (error) return <BrandNotFound />
+  return (
+    <RootHTML brandColors={brandColors} noIndex>
+      <RedirectHandler config={config} shouldRedirect={Object.hasOwn(configParams ?? {}, 'subdomain')}>
+        <ThirdPartyScriptProvider>
+          <SessionProvider>
+            <ReactQueryProvider>
+              <GenuinOptionsProvider browserType={browserType} deviceType={deviceType} os={os} config={config}>
+                <EmbedConfigProvider config={config}>{children}</EmbedConfigProvider>
+              </GenuinOptionsProvider>
+            </ReactQueryProvider>
+          </SessionProvider>
+        </ThirdPartyScriptProvider>
+      </RedirectHandler>
+    </RootHTML>
+  )
+}
+
+export const viewport = getViewport()

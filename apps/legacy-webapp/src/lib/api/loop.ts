@@ -1,0 +1,163 @@
+import { type CommentListType, validateCommentList } from '@lib/schemas/loop/comment'
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
+import { axiosInstance } from './instance'
+import { validateLoopCohosts } from '@lib/schemas/loop/cohosts'
+import { validateLoopSubscribers } from '@lib/schemas/loop/subscribers'
+import { parseFeedResponseFromGoApi } from './api-response-parser'
+import { NOT_FOUND_ERROR_CODES } from '../constants'
+import { getQueryKeyForVideoComments } from '../utils/keys'
+import { getQueryKeyForLoopDetails } from '../utils/react-query/keys'
+
+export async function fetchLoopDetails(slug: string) {
+  try {
+    const response = await axiosInstance.get('/api/v3/conversation/details', {
+      params: { slug },
+    })
+    return response?.data?.data
+  } catch (error: any) {
+    if (error.response?.data?.code === NOT_FOUND_ERROR_CODES.group) {
+      throw new Error(NOT_FOUND_ERROR_CODES.group)
+    }
+    throw new Error('Something went wrong!!')
+  }
+}
+
+export function getLoopDetails(slug: string) {
+  return useQuery({
+    queryKey: getQueryKeyForLoopDetails(slug),
+    queryFn: async () => await fetchLoopDetails(slug),
+  })
+}
+
+async function fetchLoopVideos(pageParams: any, slug: string) {
+  return await axiosInstance
+    .get('goservices/feed/loop', {
+      params: {
+        slug,
+        is_order_by_pinned: true,
+        last_video_id: pageParams?.lastVideoId,
+      },
+    })
+    .then((res) => {
+      const resData = res.data.data
+      const videos = parseFeedResponseFromGoApi(resData.feeds)
+      return { videos, end: resData.end_of_feed }
+    })
+    .catch((e) => {
+      throw new Error('Something went wrong with loop videos fetching api.')
+    })
+}
+
+export function getLoopVideos(slug: string) {
+  return useInfiniteQuery({
+    queryFn: async ({ pageParam }) => await fetchLoopVideos(pageParam, slug),
+    queryKey: ['loop', 'videos', 'paginated', slug],
+    getNextPageParam: (lastPage) => {
+      if (lastPage.end) {
+        return
+      }
+      return { lastVideoId: lastPage.videos[lastPage.videos.length - 1].video.id }
+    },
+  })
+}
+
+async function fetchLoopCohosts(slug: string, pageParam: string) {
+  return await axiosInstance
+    .get('/api/v3/conversation/members', {
+      params: {
+        slug,
+        last_member_id: pageParam,
+      },
+    })
+    .then((res) => {
+      const resData = res.data.data
+      return { members: validateLoopCohosts(resData?.members), end: resData.end_of_result }
+    })
+    .catch((e) => {
+      throw new Error('Something went wrong in fetching loop cohosts.')
+    })
+}
+
+export function getLoopCohosts(slug: string) {
+  return useInfiniteQuery({
+    queryKey: ['cohosts', slug],
+    queryFn: async ({ pageParam }) => await fetchLoopCohosts(slug, pageParam),
+    getNextPageParam(lastPage, allPages) {
+      if (lastPage.end) return
+      return lastPage.members[lastPage.members.length - 1].member_id
+    },
+  })
+}
+
+async function fetchLoopSubscribers(slug: string, pageParam: string) {
+  return await axiosInstance
+    .get('/api/v3/conversation/subscribers', {
+      params: {
+        slug,
+        last_member_id: pageParam,
+      },
+    })
+    .then((res) => {
+      const resData = res.data.data
+      return { subscribers: validateLoopSubscribers(resData?.subscribers), end: resData.end_of_result }
+    })
+    .catch((e) => {
+      throw new Error('Something went wrong in fetching loop cohosts.')
+    })
+}
+
+export function getLoopSubscribers(slug: string) {
+  return useInfiniteQuery({
+    queryKey: ['users', slug],
+    queryFn: async ({ pageParam }) => await fetchLoopSubscribers(slug, pageParam),
+  })
+}
+
+export function getVideosComments(videoId: string) {
+  let promise: Promise<{ comments: CommentListType; end: boolean }> | null = null
+  return useInfiniteQuery({
+    queryFn: async ({ pageParam }) => {
+      if (!promise) {
+        promise = axiosInstance
+          .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/comments', {
+            params: {
+              conversation_id: videoId,
+              last_comment_id: pageParam,
+            },
+          })
+          .then((res) => {
+            const resData = res.data.data
+            return { comments: validateCommentList(resData.comments), end: resData.end_of_result }
+          })
+          .catch((e) => {
+            throw new Error('Something went wrong with comxxxments api!')
+          })
+          .finally(() => {
+            promise = null
+          })
+      }
+      return await promise
+    },
+    getNextPageParam(lastPage) {
+      if (lastPage.end) {
+        return
+      }
+      return lastPage.comments[lastPage.comments.length - 1].comment_id
+    },
+    queryKey: getQueryKeyForVideoComments(videoId),
+  })
+}
+
+export async function subscribeLoop(uuid: string, subscribe: boolean) {
+  return await axiosInstance
+    .post('/api/v3/conversation/subscription', {
+      chat_id: uuid,
+      subscribe,
+    })
+    .then((res) => {
+      return { code: res.status, data: res.data.data }
+    })
+    .catch((e) => {
+      return { code: Number(e.response.data.code) }
+    })
+}

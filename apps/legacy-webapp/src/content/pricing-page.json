@@ -1,0 +1,159 @@
+{
+  "table": {
+    "title": "Compare all plan features",
+    "tableData": [
+      {
+        "category": "Build, engage and Manage Communities",
+        "free": true,
+        "starter": true,
+        "essential": true,
+        "pro": true,
+        "enterprise": true
+      },
+      {
+        "category": "Manual Moderation",
+        "free": true,
+        "starter": true,
+        "essential": true,
+        "pro": true,
+        "enterprise": true
+      },
+      {
+        "category": "Your Subdomain on Genuin",
+        "free": false,
+        "starter": true,
+        "essential": true,
+        "pro": true,
+        "enterprise": true
+      },
+      {
+        "category": "Brand Control Center",
+        "free": false,
+        "starter": true,
+        "essential": true,
+        "pro": true,
+        "enterprise": true
+      },
+      {
+        "category": "White label with your own domain",
+        "free": false,
+        "starter": true,
+        "essential": true,
+        "pro": true,
+        "enterprise": true
+      },
+      {
+        "category": "All Embedded Features",
+        "free": false,
+        "starter": true,
+        "essential": true,
+        "pro": true,
+        "enterprise": true
+      },
+      {
+        "category": "AI moderation",
+        "free": false,
+        "starter": false,
+        "essential": true,
+        "pro": true,
+        "enterprise": true
+      },
+      {
+        "category": "AI Content Generation",
+        "free": false,
+        "starter": false,
+        "essential": true,
+        "pro": true,
+        "enterprise": true
+      },
+      {
+        "category": "AI Content Push",
+        "free": false,
+        "starter": false,
+        "essential": true,
+        "pro": true,
+        "enterprise": true
+      },
+      {
+        "category": "Remove Powered by Genuin",
+        "free": false,
+        "starter": false,
+        "essential": false,
+        "pro": true,
+        "enterprise": true
+      },
+      {
+        "category": "Full White Label",
+        "free": false,
+        "starter": false,
+        "essential": false,
+        "pro": true,
+        "enterprise": true
+      },
+      {
+        "category": "Advanced Analytics",
+        "free": false,
+        "starter": false,
+        "essential": false,
+        "pro": true,
+        "enterprise": true
+      },
+      {
+        "category": "AdReels at Discounted Prices",
+        "free": false,
+        "starter": false,
+        "essential": false,
+        "pro": true,
+        "enterprise": true
+      },
+      {
+        "category": "AI content generation at scale",
+        "free": false,
+        "starter": false,
+        "essential": false,
+        "pro": true,
+        "enterprise": true
+      },
+      {
+        "category": "Ability to sync data with your CRMs directly",
+        "free": false,
+        "starter": false,
+        "essential": false,
+        "pro": true,
+        "enterprise": true
+      },
+      {
+        "category": "24/7 Human Moderator for Community",
+        "free": false,
+        "starter": false,
+        "essential": false,
+        "pro": true,
+        "enterprise": true
+      },
+      {
+        "category": "Login SSO",
+        "free": false,
+        "starter": false,
+        "essential": false,
+        "pro": false,
+        "enterprise": true
+      },
+      {
+        "category": "DMP/CDP data sync",
+        "free": false,
+        "starter": false,
+        "essential": false,
+        "pro": false,
+        "enterprise": true
+      },
+      {
+        "category": "Restrict Community Builder Requests",
+        "free": false,
+        "starter": false,
+        "essential": false,
+        "pro": false,
+        "enterprise": true
+      }
+    ]
+  }
+}
