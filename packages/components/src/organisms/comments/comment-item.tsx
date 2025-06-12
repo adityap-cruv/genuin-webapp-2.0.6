@@ -24,12 +24,12 @@ export function CommentItem({ comment }: CommentItemProps) {
         alt={owner.nickname}
         imageUrl={owner.profileImage}
         isAvatar={owner.isAvatar}
-        size="md"
       />
       <div className="gencl:space-y-2 gencl:w-full">
         <div className="gencl:flex gencl:items-center gencl:justify-between">
           <div className="gencl:flex gencl:items-center">
             <ProfileLink
+            className="gencl:text-body-1-semi-bold"
               url={buildPageUrl({ type: "profile", slug: owner.nickname })}
             >
               @{owner.nickname}
@@ -61,7 +61,7 @@ export function CommentContent({ comment }: CommentItemProps) {
         <ReadMore
           text={comment.commentText}
           maxLines={2}
-          className="gencl:text-body-1-medium gencl:text-secondary-900 gencl:break-all"
+          textClassName="gencl:text-secondary-900 gencl:break-all gencl:text-body-1-medium"
         />
       )}
       {comment.type === "video" && (

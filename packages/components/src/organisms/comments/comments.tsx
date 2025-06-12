@@ -7,13 +7,16 @@ import { useMemo, type ComponentProps } from "react";
 import { useComments } from "@react-query/api/comments";
 
 import { CommentItem } from "./comment-item";
+import { CommentInputBox } from "./comment-input";
 
 type CommentPropsType = {
   videoId: string;
+  loopId : string
 } & ComponentProps<"div">;
 
 export function Comments({
   videoId,
+  loopId,
   className,
   ...restProps
 }: CommentPropsType) {
@@ -27,7 +30,7 @@ export function Comments({
       {...restProps}
     >
       <CommentsComponent videoId={videoId} />
-      <CommentInputBox />
+      <CommentInputBox videoId={videoId} loopId={loopId}  />
     </div>
   );
 }
@@ -97,12 +100,4 @@ function CommentsComponent({ videoId }: { videoId: string }) {
       </div>
     );
   }
-}
-
-function CommentInputBox() {
-  return (
-    <div className="gencl:absolute gencl:bottom-0 gencl:left-0 gencl:right-0 gencl:bg-white gencl:p-4 gencl:border-t gencl:border-secondary-200">
-      Comment input box design for mention is pending.
-    </div>
-  );
 }

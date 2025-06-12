@@ -161,7 +161,10 @@ export function ReadMore({
   const [truncatedText, setTruncatedText] = useState<string>("");
 
   // Only stringify text when it changes
-  const stringifiedText = useMemo(() => JSON.stringify(text), [text]);
+  const stringifiedText = useMemo(() => {
+    if (typeof text === "string") return text;
+    return JSON.stringify(text);
+  }, [text]);
 
   // Process text content for rich text support
   const processedText = useMemo<React.ReactNode>(() => {
@@ -191,7 +194,11 @@ export function ReadMore({
   useEffect(() => {
     if (typeof stringifiedText === "string" && !isExpanded) {
       const shouldTruncate = stringifiedText.length > maxChars;
-      setTruncatedText(shouldTruncate ? stringifiedText.slice(0, maxChars) + "..." : stringifiedText);
+      setTruncatedText(
+        shouldTruncate
+          ? stringifiedText.slice(0, maxChars) + "..."
+          : stringifiedText
+      );
     } else {
       setTruncatedText("");
     }
@@ -214,7 +221,8 @@ export function ReadMore({
       const height = element.scrollHeight;
       const maxHeight = lineHeight * maxLines;
       const isTextOverflowing =
-        typeof stringifiedText === "string" && stringifiedText.length > maxChars;
+        typeof stringifiedText === "string" &&
+        stringifiedText.length > maxChars;
       setIsOverflowing(height > maxHeight || isTextOverflowing);
     };
 

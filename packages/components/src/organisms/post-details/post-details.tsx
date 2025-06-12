@@ -36,7 +36,8 @@ export function PostDetails({
       {video.description && (
         <ReadMore
           text={video.description ?? null}
-          className={cn("gencl:text-body-1-medium gencl:pt-3")}
+          textClassName={cn("gencl:text-body-1-medium")}
+          className="gencl:pt-3"
         />
       )}
       <CommunityDetails communityDetails={community} groupDetails={group} />

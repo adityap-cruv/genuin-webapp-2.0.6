@@ -26,6 +26,7 @@ export function PostSidePanel({
       <PostDetails postDetails={postDetails} />
       <Comments
         videoId={postDetails.video.id}
+        loopId={postDetails.group.id}
         className="gencl:overflow-auto"
       />
     </div>
