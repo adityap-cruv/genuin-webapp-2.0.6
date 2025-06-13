@@ -12,6 +12,7 @@ import {
   useAuthenticationModalContext,
 } from "./context";
 import { Screens } from "./screens";
+import { useBaseContext } from "@context/base";
 
 type AuthenticationModalProps = ComponentProps<typeof DialogTrigger> & {
   action?: AuthActionType;
@@ -29,7 +30,11 @@ export function AuthenticationModal({
   onOpenChange,
   ...restProps
 }: AuthenticationModalProps) {
+  const {
+    brandDetails: { web_cta },
+  } = useBaseContext();
   const [internalOpen, setInternalOpen] = useState(false);
+  const step = customStep ?? (web_cta === "login" ? "SIGNIN" : "GET_APP");
 
   const isControlled = controlledOpen !== undefined;
   const isOpen = isControlled ? controlledOpen : internalOpen;
@@ -52,7 +57,7 @@ export function AuthenticationModal({
       <DialogContent className="gencl:p-0 gencl:max-w-md">
         <AuthenticationModalProvider
           action={action}
-          customStep={customStep ?? "SIGNIN"}
+          customStep={step}
           onClose={handleClose}
         >
           <Content />

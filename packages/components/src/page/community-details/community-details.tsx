@@ -111,7 +111,7 @@ export function CommunityDetails({ slug }: { slug: string }) {
         isPrivate={communityDetails.type === "PRIVATE"}
         onCommunityJoinStatusChange={handleCommunityJoinStatusChange}
       />
-      <ShareButton />
+      <ShareButton pathName={buildPageUrl({ type: "community", slug })} />
     </>
   );
 

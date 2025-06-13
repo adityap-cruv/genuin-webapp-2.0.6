@@ -74,7 +74,7 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
           setQueryDataForSubscribeGroupInGroupDetails(slug, isSubscriber);
         }}
       />
-      <ShareButton />
+      <ShareButton pathName={buildPageUrl({ type: "group", slug })} />
     </>
   );
 

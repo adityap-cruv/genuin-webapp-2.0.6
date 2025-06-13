@@ -146,7 +146,13 @@ export function CommunityList({
                         }
                       />
                     )}
-                    <ShareButton showText />
+                    <ShareButton
+                      showText
+                      pathName={buildPageUrl({
+                        type: "community",
+                        slug: community.slug,
+                      })}
+                    />
                   </div>
                 }
               />
@@ -289,7 +295,13 @@ function Groups({
                     }}
                     showText={false}
                   />
-                  <ShareButton showText={false} />
+                  <ShareButton
+                    showText={false}
+                    pathName={buildPageUrl({
+                      type: "group",
+                      slug: group.slug,
+                    })}
+                  />
                 </div>
               }
             >

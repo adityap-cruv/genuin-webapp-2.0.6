@@ -86,7 +86,12 @@ export function GroupHoverCard({
             />
           </>
         )}
-        <ShareButton size="sm" />
+        <ShareButton
+          pathName={buildPageUrl({
+            type: "group",
+            slug: groupDetails.slug,
+          })}
+        />
       </div>
     </div>
   );

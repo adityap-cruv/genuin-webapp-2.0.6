@@ -32,6 +32,7 @@ export type StepsType =
   | "BRAND_GUIDELINES"
   | "WITHDRAW_CASH"
   | "REDEEM_CREDITS"
+  | "GET_APP"
   | "BECOME_CREATOR";
 
 export type FormDataType = {

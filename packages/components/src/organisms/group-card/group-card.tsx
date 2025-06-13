@@ -19,6 +19,7 @@ type GroupInfoType = {
   name: string;
   isPrivate: boolean;
   url: string;
+  slug: string;
   stats: {
     members: number;
     posts: number;
@@ -77,7 +78,12 @@ export function GroupCard({
             <Button theme={"secondary"} size={"sm"} className="">
               <NotificationIcon />
             </Button>
-            <ShareButton />
+            {/* <ShareButton
+              pathName={buildPageUrl({
+                type: "group",
+                slug: group.slug,
+              })}
+            /> */}
           </div>
         }
       />

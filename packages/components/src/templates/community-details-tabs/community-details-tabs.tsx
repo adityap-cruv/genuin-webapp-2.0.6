@@ -125,7 +125,10 @@ function CommunityGroups({ slug }: { slug: string }) {
                 );
               }}
             />
-            <ShareButton showText={false} />
+            <ShareButton
+              showText={false}
+              pathName={buildPageUrl({ type: "group", slug: group.slug })}
+            />
           </div>
         }
       >

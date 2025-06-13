@@ -4,6 +4,7 @@ import { CategoryInput } from "./screens/category-input";
 import { EditEmail } from "./screens/edit-email";
 import { EditPhoneNumber } from "./screens/edit-phone-number";
 import { EditUserName } from "./screens/edit-username";
+import { GetApp } from "./screens/get-app";
 import { Guidelines } from "./screens/guidelines";
 import { OtpVerification } from "./screens/otp";
 import { SignIn } from "./screens/signin";
@@ -34,7 +35,9 @@ export function Screens() {
       return <EditPhoneNumber />;
     case "EDIT_USERNAME":
       return <EditUserName />;
+    case "GET_APP":
+      return <GetApp />;
     case "BECOME_CREATOR":
-      return <BecomeCreator/>
+      return <BecomeCreator />;
   }
 }

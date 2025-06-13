@@ -1,6 +1,7 @@
 "use client";
 import { useId } from "react";
 import { TabsSkeleton } from "@genuin/ui/tabs";
+import { buildPageUrl } from "@lib/utils/pages";
 import { NOT_FOUND_ERROR_CODES } from "@lib/constants/errors";
 
 import { BecomeCreatorButton } from "@molecules/become-creator-button";
@@ -37,7 +38,6 @@ export function ProfileDetails({
     return <ProfileDetailsSkeleton />;
   }
 
-  // TODO: Handle error state properly, e.g., show an error message
   if (isError) {
     const errorCode = (error as any)?.code;
 
@@ -52,7 +52,6 @@ export function ProfileDetails({
     return <ErrorState type="ERROR" />;
   }
 
-  // TODO: Handle empty state properly
   if (!profileData) {
     return <ErrorState type="NO_USER" />;
   }
@@ -70,9 +69,15 @@ export function ProfileDetails({
           alt: profileData.name ?? "",
         }}
         ctas={
-          <div className="gencl:flex gencl:gap-2 gencl:justify-end">
+          <div className="gencl:flex gencl:gap-2">
             <BecomeCreatorButton theme="secondary" />
-            <ShareButton />
+            <ShareButton
+              showText
+              pathName={buildPageUrl({
+                type: !!profileData.brand ? "brand" : "profile",
+                slug: profileData.nickname,
+              })}
+            />
           </div>
         }
       />
@@ -110,7 +115,13 @@ export function ProfileDetails({
           ctas={
             <div className="gencl:flex gencl:gap-2">
               <BecomeCreatorButton />
-              <ShareButton showText />
+              <ShareButton
+                showText
+                pathName={buildPageUrl({
+                  type: !!profileData.brand ? "brand" : "profile",
+                  slug: profileData.nickname,
+                })}
+              />
             </div>
           }
         />

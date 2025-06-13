@@ -12,6 +12,7 @@ import { type ComponentProps, type ReactNode } from "react";
 import { Menu } from "./menu";
 import { ReactionButton } from "@molecules/reaction-button";
 import { DynamicReactionIcon } from "@molecules/reaction-button";
+import { ShareButton } from "@molecules/share-button";
 
 const tooltipVariants = cva("", {
   variants: {
@@ -66,6 +67,7 @@ type ActionWrapperContextType = {
   contentId: string;
   isReacted: boolean;
   reactionCount: number;
+  shareUrl: string;
   onReactionStateChange?: (isReacted: boolean) => void;
 };
 
@@ -75,6 +77,7 @@ type ActionsPropsType = ComponentProps<"div"> & {
   onReactionStateChange?: (isReacted: boolean) => void;
   contentId: string;
   variant?: "light" | "dark";
+  shareUrl: string;
   /**
    * If you want to override the default action wrappers, you can pass a namedActionWrapper object.
    * Each key in the object should correspond to an action type (e.g., "REPOST", "REACTION", etc.),
@@ -105,7 +108,11 @@ export const defaultActionWrappers: Record<
     />
   ),
   COMMENT: (node, _context) => node,
-  SHARE: (node, _context) => node,
+  SHARE: (node, _context) => (
+    <ShareButton pathName={_context.shareUrl} withCustomChildren>
+      {node}
+    </ShareButton>
+  ),
   MORE: (node, context) => (
     <Menu contentId={context.contentId} children={node} />
   ),
@@ -118,6 +125,7 @@ export function Actions({
   actionWrapper,
   reactionCount,
   contentId, // Added contentId here
+  shareUrl,
   onReactionStateChange, // Added onReactionStateChange here
   ...restProps
 }: ActionsPropsType) {
@@ -178,6 +186,7 @@ export function Actions({
           isReacted,
           onReactionStateChange,
           reactionCount,
+          shareUrl,
         };
         // Priority: namedActionWrapper > defaultActionWrappers
         if (actionWrapper?.[action.actionType]) {

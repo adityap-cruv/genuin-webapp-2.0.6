@@ -123,8 +123,12 @@ export const API_PATHS = {
    * API path to validate username.
    */
   AUTH_VALIDATE_USERNAME: "/api/v3/users/validate_nickname",
-   /**
+  /**
+   * Api path to send download link for the app.
+   */
+  SEND_DOWNLOAD_APP_LINK: "/api/v3/send_download_link",
+  /**
    * API path to post a comment.
    */
-  POST_COMMENT : "/api/v3/comment/create"
+  POST_COMMENT: "/api/v3/comment/create",
 } as const;

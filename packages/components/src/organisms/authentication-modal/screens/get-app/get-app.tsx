@@ -1,44 +1,27 @@
-import { Button } from "@genuin/ui/button";
 import { Image } from "@genuin/ui/image";
-import { Input } from "@genuin/ui/input";
-import { PhoneInput } from "@genuin/ui/phone-input";
-import { Braces } from "lucide-react";
-import { ComponentProps, useState } from "react";
-import * as RPNInput from "react-phone-number-input";
+import { ComponentProps } from "react";
 import { QRCode } from "react-qrcode-logo";
 import { useBaseContext } from "src/context/base";
-import { URL_TO_APP_STORE, URL_TO_PLAY_STORE } from "src/lib/constants";
-import { Link } from "@molecules/link";
+import { AppDownloadForm, AppDownloadFormData } from "./app-download-form";
 
 export type GetAppProps = ComponentProps<"div"> & {
-  onSubmit: () => void;
-  defaultCountry?: RPNInput.Country;
+  onSubmit?: (data: AppDownloadFormData) => void;
   className?: string;
-  deeplink: string;
 };
 
-export function GetApp({
-  onSubmit,
-  defaultCountry = "US",
-  deeplink,
-  ...props
-}: GetAppProps) {
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [email, setEmail] = useState("");
+// TODO: get app deep link logic is pending.
+export function GetApp({ onSubmit, ...props }: GetAppProps) {
   const { brandDetails } = useBaseContext();
+
   return (
-    <div
-      className="gencl:flex gencl:text-center gencl:flex-col gencl:items-center gencl:gap-6 gencl:p-12 gencl:rounded-2xl"
-      style={{ width: "486px" }}
-      {...props}
-    >
+    <div className="gencl:text-center gencl:space-y-4 gencl:w-full" {...props}>
       {brandDetails.logo && (
         <Image
           src={brandDetails.logo}
-          className="gencl:h-12 gencl:w-12 gencl:rounded-full"
+          className="gencl:h-12 gencl:w-12 gencl:mx-auto gencl:rounded-full"
         />
       )}
-      <div className="gencl:flex gencl:flex-col gencl:gap-3">
+      <div className="gencl:space-y-3">
         <p className="gencl:text-headline-2-semi-bold">
           Get the {brandDetails.name} app
         </p>
@@ -46,58 +29,18 @@ export function GetApp({
           Download app to browse more communities
         </p>
       </div>
-      <div className="gencl:flex gencl:flex-col gencl:justify-center gencl:items-center gencl:gap-4">
+      <div className="gencl:flex gencl:flex-col gencl:items-center gencl:gap-2">
         <QRCode
-          value={deeplink}
+          value={"link"}
           size={160}
           qrStyle="squares"
           logoPaddingStyle="square"
         />
         <p className="gencl:text-body-1-medium">Scan to download app</p>
       </div>
-      <div className="gencl:flex gencl:flex-col gencl:gap-4">
-        <PhoneInput
-          value={phoneNumber as string & { __tag: 'E164Number' }}
-          onChange={setPhoneNumber}
-          placeholder="Enter your phone number"
-          defaultCountry={defaultCountry}
-          international
-        />
-        <Input
-          type="email"
-          value={email}
-          onChange={(e) => {
-            setEmail(e.target.value);
-          }}
-          className="gencl:rounded-lg gencl:border gencl:border-secondary-300 gencl:p-2 gencl:pl-3"
-          placeholder="Enter Email..."
-        />
-        <Button
-          disabled={email === "" && phoneNumber === ""}
-          theme="primary"
-          className="gencl:w-full gencl:mt-2"
-        >
-          Send Link
-        </Button>
-      </div>
-      <p className="gencl:text-center gencl:text-secondary-300 gencl:text-body-2-medium">
-        By clicking Send Link, I acknowledge that I have read the{" "}
-        <Link
-          href={brandDetails?.privacy_policy ?? ""}
-          className="gencl:underline"
-        >
-          Privacy Policy
-        </Link>{" "}
-        and agree to the{" "}
-        <Link
-          href={brandDetails?.terms_and_condition ?? ""}
-          className="gencl:underline"
-        >
-          Terms of Service
-        </Link>
-      </p>
+      <AppDownloadForm />
       {/* TODO : put the src link of the play store and app store  */}
-      <div className="gencl:flex gencl:gap-x-2">
+      {/* <div className="gencl:flex gencl:gap-x-2">
         <Link
           target="_blank"
           rel="noopener noreferrer"
@@ -130,7 +73,7 @@ export function GetApp({
             alt="play store"
           />
         </Link>
-      </div>
+      </div> */}
     </div>
   );
 }

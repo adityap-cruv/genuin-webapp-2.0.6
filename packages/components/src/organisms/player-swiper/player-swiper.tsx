@@ -64,6 +64,7 @@ export function PlayerList({
                   onGroupSubscriptionChange={onGroupSubscriptionChange}
                 />
                 <Actions
+                  shareUrl={post.video.shareUrl}
                   isReacted={post.video.isSparked ?? false}
                   contentId={post.video.id}
                   reactionCount={post.video.sparkCount}

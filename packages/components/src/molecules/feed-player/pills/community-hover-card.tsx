@@ -94,7 +94,12 @@ export function CommunityHoverCard({
           onCommunityJoinStatusChange={onCommunityJoinStatusChange}
           className="gencl:flex-grow"
         />
-        <ShareButton size="sm" />
+        <ShareButton
+          pathName={buildPageUrl({
+            type: "community",
+            slug: communityDetails.slug,
+          })}
+        />
       </div>
     </div>
   );
