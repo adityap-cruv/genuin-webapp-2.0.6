@@ -5,20 +5,20 @@ import {
   LatestIcon,
 } from "@genuin/ui/icons";
 import { SVGIconsProps } from "@genuin/ui/icons/type";
-import { PageType } from "@lib/utils/pages";
+import { PageType } from "@genuin/components/lib/utils/pages";
 import React from "react";
 
 type SideBarActionLinksType = {
-  icon: (props: SVGIconsProps) => React.ReactNode,
-  text: string,
-  type: PageType
-}
+  icon: (props: SVGIconsProps) => React.ReactNode;
+  text: string;
+  type: PageType;
+};
 
 export const SideBarActionLinks: SideBarActionLinksType[] = [
   {
     icon: HomeIcon,
     text: "Home",
-    type : "home"
+    type: "home",
   },
   {
     icon: PopularIcon,
@@ -34,5 +34,5 @@ export const SideBarActionLinks: SideBarActionLinksType[] = [
     icon: ExploreIcon,
     text: "Explore",
     type: "explore",
-  }
+  },
 ];

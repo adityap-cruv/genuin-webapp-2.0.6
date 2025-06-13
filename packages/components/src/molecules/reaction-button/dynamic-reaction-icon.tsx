@@ -1,7 +1,7 @@
 import { useBaseContext } from "@context/base";
 import { Image } from "@genuin/ui/image";
 import { abbreviateNumber } from "@genuin/ui/lib/utils";
-import { getUrlForReaction } from "@lib/utils";
+import { getUrlForReaction } from "@genuin/components/lib/utils";
 import { useMemo } from "react";
 
 type DynamicReactionIconProps = {

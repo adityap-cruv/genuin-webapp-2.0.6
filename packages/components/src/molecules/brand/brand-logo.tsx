@@ -4,14 +4,14 @@ import type { ComponentProps } from "react";
 
 import { useBaseContext } from "@genuin/components/context/base";
 import { Link } from "@molecules/link";
-import { buildPageUrl } from "@lib/utils/pages";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 
 type BrandLogoProps = ComponentProps<typeof Image>;
 
 export function BrandLogo({ className, ...props }: BrandLogoProps) {
   const { brandDetails } = useBaseContext();
   return (
-    <Link href={buildPageUrl({type : "home"})}>
+    <Link href={buildPageUrl({ type: "home" })}>
       <Image
         src={brandDetails.brand_web_logo}
         alt="Brand Logo"

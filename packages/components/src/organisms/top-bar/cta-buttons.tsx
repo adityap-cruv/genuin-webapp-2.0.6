@@ -6,7 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@genuin/ui/popover";
 import { Avatar } from "@genuin/ui/avatar";
 import { LogOutIcon, SettingsIcon } from "lucide-react";
 import { Link } from "@molecules/link";
-import { buildPageUrl } from "@lib/utils/pages";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 
 export function CtaButtons() {
   const { web_cta } = useBaseContext().brandDetails;
