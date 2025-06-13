@@ -21,18 +21,37 @@ import {
 } from "@react-query/api/group/details";
 import { GroupDetailsTabs } from "@templates/group-details-tabs";
 import { PostsGridSkeleton } from "@organisms/posts-grid";
+import { ErrorState } from "@molecules/error-state";
+import { NOT_FOUND_ERROR_CODES } from "@lib/constants/errors";
 import { DetailsPageTopbar } from "@organisms/details-page-topbar";
 
 export function GroupDetailsPage({ slug }: { slug: string }) {
-  const { data: groupDetails, isLoading, isError } = useGetGroupDetails(slug);
   const detailsId = useId();
+  const {
+    data: groupDetails,
+    isLoading,
+    isError,
+    error,
+  } = useGetGroupDetails(slug);
 
   if (isLoading) {
     return <GroupDetailsSkeleton />;
   }
 
-  if (isError || !groupDetails) {
-    return <div>Error loading group details.</div>;
+  // TODO: Handle error state properly, e.g., show an error message
+  if (isError) {
+    const errorCode = (error as any)?.code;
+
+    if (errorCode === NOT_FOUND_ERROR_CODES.group) {
+      return <ErrorState type="NO_GROUP" />;
+    }
+
+    return <ErrorState type="ERROR" />;
+  }
+
+  // TODO: Handle empty state properly
+  if (!groupDetails) {
+    return <ErrorState type="NO_GROUP" />;
   }
 
   const ctas = (

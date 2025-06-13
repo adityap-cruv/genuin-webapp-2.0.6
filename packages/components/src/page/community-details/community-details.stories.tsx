@@ -29,3 +29,9 @@ export const Default: Story = {
     slug: "koda-lovers",
   },
 };
+
+export const ErrorPage: Story = {
+  args: {
+    slug: "invalid-slug-to-trigger-generic-error",
+  },
+};

@@ -35,3 +35,10 @@ export const Default: Story = {
     forBrand: true,
   },
 };
+
+export const ErrorPage: Story = {
+  args: {
+    userName: "invalid-user-name",
+    forBrand: true,
+  },
+};

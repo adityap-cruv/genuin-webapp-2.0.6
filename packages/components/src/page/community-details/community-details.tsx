@@ -17,6 +17,8 @@ import {
 } from "@react-query/api/community/details/details";
 import { CommunityDetailsTabs } from "@templates/community-details-tabs";
 import { CommunityDetailsSkeleton } from "./skeleton";
+import { ErrorState } from "@molecules/error-state";
+import { NOT_FOUND_ERROR_CODES } from "@lib/constants/errors";
 import { CommunityUserRole } from "@types/post";
 
 export function CommunityDetails({ slug }: { slug: string }) {
@@ -24,6 +26,7 @@ export function CommunityDetails({ slug }: { slug: string }) {
     data: communityDetails,
     isLoading,
     isError,
+    error,
   } = useGetCommunityDetails(slug);
   const detailsId = useId();
 
@@ -38,9 +41,20 @@ export function CommunityDetails({ slug }: { slug: string }) {
     return <CommunityDetailsSkeleton />;
   }
 
-  // TODO: Hnadle error statse for this.
-  if (isError || !communityDetails) {
-    return <div>Handle error state for the community</div>;
+  // TODO: Handle error state properly, e.g., show an error message
+  if (isError) {
+    const errorCode = (error as any)?.code;
+
+    if (errorCode === NOT_FOUND_ERROR_CODES.community) {
+      return <ErrorState type="NO_COMMUNITY" />;
+    }
+
+    return <ErrorState type="ERROR" />;
+  }
+
+  // TODO: Handle empty state properly
+  if (!communityDetails) {
+    return <ErrorState type="NO_COMMUNITY" />;
   }
 
   const admins = (
