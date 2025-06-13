@@ -119,4 +119,8 @@ export const API_PATHS = {
    * API path to validate username.
    */
   AUTH_VALIDATE_USERNAME: "/api/v3/users/validate_nickname",
+   /**
+   * API path to post a comment.
+   */
+  POST_COMMENT : "/api/v3/comment/create"
 } as const;

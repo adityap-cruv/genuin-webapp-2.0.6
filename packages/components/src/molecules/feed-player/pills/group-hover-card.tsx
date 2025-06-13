@@ -86,7 +86,7 @@ export function GroupHoverCard({
             />
           </>
         )}
-        <ShareButton />
+        <ShareButton size="sm" />
       </div>
     </div>
   );

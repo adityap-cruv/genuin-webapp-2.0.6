@@ -62,7 +62,7 @@ function CommentsComponent({ videoId }: { videoId: string }) {
   if (isLoading) {
     return (
       <div className="gencl:w-full gencl:h-full gencl:flex gencl:flex-col gencl:p-4">
-        {Array.from({ length: 7 }).map(() => (
+        {Array.from({ length: 10 }).map(() => (
           <CommentsItemSkeleton />
         ))}
       </div>
@@ -87,7 +87,7 @@ function CommentsComponent({ videoId }: { videoId: string }) {
 
   if (comments && comments.length !== 0) {
     return (
-      <div className="gencl:h-full gencl:w-full gencl:overflow-auto gencl:p-4 gencl:space-y-4 gencl:pb-16">
+      <div className="gencl:h-full gencl:w-full gencl:overflow-auto gencl:p-4 gencl:space-y-4 gencl:!pb-16">
         <InfiniteScroll
           isLoadingNextPage={isFetchingNextPage}
           hasNextPage={hasNextPage}

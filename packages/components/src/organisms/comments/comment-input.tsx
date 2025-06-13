@@ -23,9 +23,40 @@ const commentFormSchema = z.object({
 
 type CommentFormValues = z.infer<typeof commentFormSchema>;
 
-export function CommentInputBox({ videoId , loopId }: { videoId: string , loopId : string }) {
-  const { user } = useAuthContext();
+export function CommentInputBox({
+  videoId,
+  loopId,
+}: {
+  videoId: string;
+  loopId: string;
+}) {
+  const {authenticationStatus, user } = useAuthContext();
 
+  if (authenticationStatus === "authenticated" || !user)
+    return (
+      <AuthenticationModal asChild>
+        <CommentInput isUser={false} videoId={videoId} loopId={loopId} />
+      </AuthenticationModal>
+    );
+
+  return <CommentInput isAvatar={user.isAvatar} image={user.image} name={user.name} isUser={true} videoId={videoId} loopId={loopId} />;
+}
+
+function CommentInput({
+  videoId,
+  loopId,
+  isUser,
+  isAvatar,
+  image,
+  name
+}: {
+  videoId: string;
+  loopId: string;
+  isUser : boolean;
+  name? : string | undefined;
+  isAvatar?  :boolean;
+  image? : string
+}) {
   const form = useForm<CommentFormValues>({
     resolver: zodResolver(commentFormSchema),
     mode: "onChange",
@@ -35,7 +66,7 @@ export function CommentInputBox({ videoId , loopId }: { videoId: string , loopId
 
   const { mutate: postComment, isPending } = usePostComment({
     onSuccess: (response) => {
-      if (response.code === 1003) {
+      if (response.code === 1003 || response.code === 1099) {
         form.setError("comment", {
           message: "something went wrong!",
         });
@@ -50,22 +81,21 @@ export function CommentInputBox({ videoId , loopId }: { videoId: string , loopId
     },
   });
 
-const commentSubmit = useCallback(
+  const commentSubmit = useCallback(
     ({ comment }: CommentFormValues) => {
-        postComment({
-            commentText: comment,
-            commentData: [],
-            type: 3,
-            videoId,
-            loopId,
-        });
+      postComment({
+        commentText: comment,
+        commentData: [],
+        type: 3,
+        videoId,
+        loopId,
+      });
     },
     [postComment, videoId, loopId]
-);
+  );
 
   return (
- <AuthenticationModal>
-     <Form {...form}>
+    <Form {...form}>
       <form
         onSubmit={form.handleSubmit(commentSubmit)}
         className="gencl:absolute gencl:bottom-0 gencl:left-0 gencl:right-0 gencl:bg-white gencl:p-4 gencl:border-t gencl:border-secondary-200 gencl:flex gencl:justify-between"
@@ -77,11 +107,11 @@ const commentSubmit = useCallback(
             <FormItem className="gencl:flex-1">
               <FormControl>
                 <div className="gencl:border gencl:border-secondary-150 gencl:rounded-lg gencl:py-2 gencl:px-3 gencl:flex gencl:gap-3 gencl:w-full gencl:h-10">
-                  {user && (
+                  {isUser && (
                     <Avatar
-                      alt={user.name}
-                      isAvatar={user.isAvatar}
-                      imageUrl={user.image}
+                      alt={name || ""}
+                      isAvatar={isAvatar || false}
+                      imageUrl={image || ""}
                       size="xs"
                     />
                   )}
@@ -112,6 +142,5 @@ const commentSubmit = useCallback(
         </Button>
       </form>
     </Form>
- </AuthenticationModal>
   );
 }

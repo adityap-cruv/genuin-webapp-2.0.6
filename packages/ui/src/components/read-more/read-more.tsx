@@ -287,8 +287,8 @@ export function ReadMore({
       ? truncatedText
       : processedText;
 
-  if (!stringifiedText || stringifiedText.length === 0) return null;
-
+  if (text === null || !stringifiedText || stringifiedText.length === 0) return null;
+  
   return (
     <div className="gencl:w-full gencl:overflow-clip" style={{ maxWidth }}>
       <p
@@ -340,9 +340,8 @@ export function ReadMore({
           <button
             type="button"
             className={cn(
-              textClassName,
               "gencl:mt-1 gencl:text-primary gencl:hover:underline",
-              buttonClassName,
+              textClassName
             )}
             onClick={(e) => {
               e.stopPropagation();

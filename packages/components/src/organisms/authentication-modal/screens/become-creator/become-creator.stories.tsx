@@ -7,7 +7,7 @@ import { BecomeCreator } from "./become-creator";
  * with custom navigation dots.
  */
 const meta: Meta<typeof BecomeCreator> = {
-  title: "Molecules/Authentication/BecomeCreator",
+  title: "Organisms/Authentication/BecomeCreator",
   component: BecomeCreator,
   parameters: {
     layout: "centered",

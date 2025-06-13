@@ -18,22 +18,19 @@ type BecomeCreatorProps = ComponentProps<"div">;
 export function BecomeCreator({ ...props }: BecomeCreatorProps) {
   const { brandDetails } = useBaseContext();
   return (
-    <div
-      className="gencl:text-center gencl:p-12 gencl:rounded-2xl gencl:min-w-xl"
-      {...props}
-    >
-      <Carousel opts={{ align: "start", dragFree: true }}>
-        <CarouselContent>
+    <div className="gencl:text-center gencl:w-full" {...props}>
+      <Carousel opts={{ align: "start", slidesToScroll: 1 }}>
+        <CarouselContent className="gencl:w-full">
           {BecomeCreatorData(brandDetails.name).map(
             (data: BecomeCreatorDataItem, index: number) => {
               return (
                 <CarouselItem
                   key={index}
-                  className="gencl:flex gencl:flex-col gencl:gap-4 gencl:items-center"
+                  className="gencl:shrink-0 gencl:flex gencl:flex-col gencl:gap-4 gencl:items-center"
                 >
                   <Image
                     src={data.src}
-                    className="gencl:py-10 gencl:px-5 gencl:h-56 gencl:w-64"
+                    className="gencl:w-full gencl:h-auto gencl:object-contain"
                     alt="Become a creator"
                   />
                   <div className="gencl:flex gencl:gap-4 gencl:flex-col gencl:text-center">

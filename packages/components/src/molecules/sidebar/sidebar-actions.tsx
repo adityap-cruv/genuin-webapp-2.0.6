@@ -7,7 +7,7 @@ import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 
 export function SidebarActions() {
   return (
-    <div className="gencl:px-3 gencl:py-4 gencl:w-full gencl:min-h-48 gencl:border-b gencl:border-secondary-100">
+    <div className="gencl:px-3 gencl:py-4 gencl:!w-full gencl:min-h-48 gencl:border-b gencl:border-secondary-100">
       {SideBarActionLinks.map((links, index) => {
         const Icon = links.icon;
         return (
@@ -17,7 +17,7 @@ export function SidebarActions() {
             className="gencl:flex gencl:rounded-lg gencl:items-center gencl:gap-4 gencl:px-2 gencl:py-2 gencl:xl:py-4 gencl:xl:px-3 gencl:hover:bg-secondary-50 gencl:cursor-pointer"
           >
             <Icon className="gencl:w-6 gencl:h-6" />
-            <p className="gencl:text-body-1-medium gencl:hidden gencl:xl:block">
+            <p className="gencl:text-body-1-medium gencl:hidden gencl:xl:!block">
               {links.text}
             </p>
           </Link>
@@ -27,7 +27,7 @@ export function SidebarActions() {
         <PopoverTrigger asChild>
           <div className="gencl:flex gencl:rounded-lg gencl:items-center gencl:gap-4 gencl:px-3 gencl:py-2 gencl:hover:bg-secondary-50 gencl:cursor-pointer">
             <ThreeDotsIcon className="gencl:h-6 gencl:w-6 gencl:p-0" />
-            <p className="gencl:text-body-1-medium gencl:hidden gencl:xl:block">
+            <p className="gencl:text-body-1-medium gencl:hidden gencl:xl:!block">
               More
             </p>
           </div>

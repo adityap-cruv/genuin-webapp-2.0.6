@@ -40,7 +40,6 @@ export function Pills({
         onCommunityJoinStatusChange={onCommunityJoinStatusChange}
         communityDetails={communityDetails}
       />
-
       <GroupPill
         isHoverable={true}
         variant={variant}

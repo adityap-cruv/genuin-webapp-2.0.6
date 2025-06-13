@@ -14,15 +14,17 @@ import { PostDetailsType } from "@react-query/api/feed/schema";
 import { GroupHoverCard } from "../group-hover-card";
 import { ComponentProps } from "react";
 import { JoinGroupButton } from "@molecules/join-group-button";
+import { useBaseContext } from "@context/base";
 
 const groupPillVariants = cva(
-  "gencl:flex gencl:w-fit gencl:items-center gencl:gap-1 gencl:p-1 gencl:rounded-full gencl:transition-all gencl:cursor-pointer",
+  "gencl:flex gencl:w-fit gencl:items-center gencl:gap-1 gencl:p-1 gencl:pr-2 gencl:rounded-full gencl:transition-all gencl:cursor-pointer",
   {
     variants: {
       variant: {
         light:
-          "gencl:bg-white gencl:text-default gencl:border gencl:border-secondary-150 gencl:hover:bg-secondary-150",
+          "gencl:bg-white gencl:text-default gencl:border gencl:border-secondary-150 gencl:hover:bg-secondary-50 gencl:hover:border-secondary-50",
         dark: "gencl:bg-black/40 gencl:text-white",
+        fullScreen : "gencl:!bg-black/40 gencl:backdrop-blur-lg gencl:text-white gencl:border-none"
       },
     },
     defaultVariants: {
@@ -33,9 +35,10 @@ const groupPillVariants = cva(
 
 type GroupPillProps = {
   isHoverable?: boolean;
-  variant?: "light" | "dark";
+  variant?: "light" | "dark" | "fullScreen";
   groupDetails: PostDetailsType["group"];
   communityDetails: PostDetailsType["community"];
+  className? : string,
   onGroupJoinStatusChange: ComponentProps<
     typeof JoinGroupButton
   >["onGroupJoinStatusChange"];
@@ -51,12 +54,12 @@ export function GroupPill({
   communityDetails,
   onGroupJoinStatusChange,
   onGroupSubscriptionChange,
+  className
 }: GroupPillProps) {
   const { authenticationStatus } = useAuthContext();
-
   const pill = (
     <Link href={buildPageUrl({ type: "group", slug: groupDetails.slug })}>
-      <div className={groupPillVariants({ variant })}>
+      <div className={groupPillVariants({ variant , className })}>
         <div className="gencl:flex gencl:gap-1 gencl:items-center">
           <Avatar
             alt={groupDetails.name ?? ""}
@@ -92,7 +95,7 @@ export function GroupPill({
   return (
     <HoverCard openDelay={0} closeDelay={0}>
       <HoverCardTrigger asChild>{pill}</HoverCardTrigger>
-      <HoverCardContent>
+      <HoverCardContent className="gencl:max-w-md! gencl:min-w-80">
         <GroupHoverCard
           communityDetails={communityDetails}
           groupDetails={groupDetails}

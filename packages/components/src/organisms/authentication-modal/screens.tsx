@@ -1,4 +1,5 @@
 import { useAuthenticationModalContext } from "./context";
+import { BecomeCreator } from "./screens/become-creator";
 import { CategoryInput } from "./screens/category-input";
 import { EditEmail } from "./screens/edit-email";
 import { EditPhoneNumber } from "./screens/edit-phone-number";
@@ -33,5 +34,7 @@ export function Screens() {
       return <EditPhoneNumber />;
     case "EDIT_USERNAME":
       return <EditUserName />;
+    case "BECOME_CREATOR":
+      return <BecomeCreator/>
   }
 }

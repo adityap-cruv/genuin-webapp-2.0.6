@@ -101,7 +101,7 @@ export function Button({
 
   return (
     <PrimitiveButton
-      size="md"
+      size="sm"
       disabled={buttonDisabled}
       onClick={handleClick}
       theme={role === "MEMBER" ? "secondary" : "primary"}

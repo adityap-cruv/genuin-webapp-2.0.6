@@ -55,7 +55,7 @@ export async function sendOtp({ email, phoneNumber, isUpdate }: SendOtpProps) {
 
       return {
         codeSent: false as const,
-        retryTime,
+        retryTime : retryTime as number,
         message,
       };
     });

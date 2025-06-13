@@ -5,30 +5,38 @@ type TimerMessageProps = ComponentProps<"div"> & {
   time: number;
   verificationType: "email" | "phone" | "login";
   isOtpSending?: boolean;
+  resentOtp: () => void;
 };
 
-// TODO: go through the resend flow and add the logic to resend the OTP
 export function TimerMessage({
   time,
   verificationType,
   isOtpSending = false,
+  resentOtp,
   ...props
 }: TimerMessageProps) {
   const [timer, setTimer] = useState(time);
 
   useEffect(() => {
+    if (timer === 0) return;
     const interval = setInterval(() => {
-      if (timer > 0) {
-        setTimer(timer - 1);
-      }
+      setTimer((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
     return () => {
       clearInterval(interval);
     };
   }, [timer]);
 
+  useEffect(() => {
+    if (!isOtpSending) {
+      setTimer(time);
+    }
+    // Only run when isOtpSending changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOtpSending]);
+
   return timer <= 0 ? (
-    <Button theme="text" type="button">
+    <Button onClick={resentOtp} disabled={isOtpSending} theme="text" type="button">
       Resend Code
     </Button>
   ) : (
