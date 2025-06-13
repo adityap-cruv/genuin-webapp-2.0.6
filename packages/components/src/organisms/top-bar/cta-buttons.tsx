@@ -20,7 +20,7 @@ export function CtaButtons() {
   const showUserTick = authenticationStatus === "authenticated";
   return (
     <div className="gencl:flex gencl:gap-2.5 gencl:justify-between gencl:items-center">
-      {true && (
+      {showApp && (
         <AuthenticationModal asChild>
           <Button theme="outline" size="sm">
             Get app

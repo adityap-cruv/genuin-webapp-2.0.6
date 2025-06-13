@@ -70,6 +70,7 @@ export function ExpandViewDetails({
         onGroupJoinStatusChange={onGroupJoinStatusChange}
         onGroupSubscriptionChange={onGroupSubscriptionChange}
         onCommunityJoinStatusChange={onCommunityJoinStatusChange}
+        variant="fullScreen"
       />
       <div
         className={cn(

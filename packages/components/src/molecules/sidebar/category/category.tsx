@@ -25,17 +25,17 @@ export function Category() {
       type="single"
       collapsible={true}
       defaultValue="categories"
-      className="gencl:w-full gencl:py-4 gencl:px-3 gencl:border-b gencl:border-secondary-100"
+      className="gencl:!w-full gencl:py-4 gencl:px-3 gencl:border-b gencl:border-secondary-100"
     >
       <AccordionItem value="categories">
-        <AccordionTrigger className="gencl:px-3 gencl:py-2 gencl:hidden gencl:xl:flex">
+        <AccordionTrigger className="gencl:px-3 gencl:py-2 gencl:hidden gencl:xl:!flex">
           <div className="gencl:text-body-1-bold">Categories</div>
         </AccordionTrigger>
         <AccordionContent className="gencl:pb-0">
           <Accordion type="multiple" className="gencl:w-full">
             {categories.map((cat, index) => (
               <AccordionItem key={index} value={`category-${index}`}>
-                <AccordionTrigger className="gencl:justify-between gencl:items-center gencl:px-3 gencl:py-2 gencl:hidden gencl:xl:flex">
+                <AccordionTrigger className="gencl:justify-between gencl:items-center gencl:px-3 gencl:py-2 gencl:hidden gencl:xl:!flex">
                   <div className="gencl:text-body-1-medium">{cat.category}</div>
                 </AccordionTrigger>
                 <AccordionContent className="gencl:flex gencl:flex-col gencl:pb-0">
@@ -50,7 +50,7 @@ export function Category() {
                         alt={community.community_name}
                         size="xs"
                       />
-                      <p className="gencl:text-body-1-medium gencl:hidden gencl:xl:block">
+                      <p className="gencl:text-body-1-medium gencl:hidden gencl:xl:!block">
                         {community.community_name}
                       </p>
                     </div>

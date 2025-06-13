@@ -31,7 +31,8 @@ export type StepsType =
   | "WALLET_HOW_IT_WORKS"
   | "BRAND_GUIDELINES"
   | "WITHDRAW_CASH"
-  | "REDEEM_CREDITS";
+  | "REDEEM_CREDITS"
+  | "BECOME_CREATOR";
 
 export type FormDataType = {
   email: string;

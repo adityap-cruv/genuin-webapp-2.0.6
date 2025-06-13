@@ -61,7 +61,7 @@ function DialogContent({
           "data-[state=closed]:gencl:fade-out-0 data-[state=open]:gencl:fade-in-0",
           "data-[state=closed]:gencl:zoom-out-95 data-[state=open]:gencl:zoom-in-95",
           "gencl:fixed gencl:bottom-0 gencl:sm:bottom-auto gencl:sm:top-1/2 gencl:left-1/2 gencl:sm:-translate-y-1/2",
-          "gencl:-translate-x-1/2 gencl:z-50 gencl:grid gencl:w-full",
+          "gencl:-translate-x-1/2 gencl:z-50 gencl:w-full",
           "gencl:gap-4 gencl:rounded-lg",
           "gencl:bg-white gencl:p-6 gencl:shadow-lg gencl:duration-200 gencl:sm:max-w-lg",
           className

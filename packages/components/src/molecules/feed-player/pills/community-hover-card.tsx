@@ -37,7 +37,6 @@ export function CommunityHoverCard({
         isAvatar={false}
         size="2xl"
       />
-
       <div className="gencl:space-y-1">
         <p className="gencl:text-body-1-semi-bold gencl:line-clamp-2">{name}</p>
         <GenericDetailsMetadata
@@ -95,7 +94,7 @@ export function CommunityHoverCard({
           onCommunityJoinStatusChange={onCommunityJoinStatusChange}
           className="gencl:flex-grow"
         />
-        <ShareButton />
+        <ShareButton size="sm" />
       </div>
     </div>
   );

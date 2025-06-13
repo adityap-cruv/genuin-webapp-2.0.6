@@ -49,7 +49,7 @@ export function AuthenticationModal({
       <DialogTrigger asChild {...restProps}>
         {children}
       </DialogTrigger>
-      <DialogContent className="gencl:p-0">
+      <DialogContent className="gencl:p-0 gencl:max-w-md">
         <AuthenticationModalProvider
           action={action}
           customStep={customStep ?? "SIGNIN"}

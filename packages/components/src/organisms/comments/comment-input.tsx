@@ -15,7 +15,7 @@ import {
 import { useCallback } from "react";
 import { cn } from "@genuin/ui/lib/utils";
 import { AuthenticationModal } from "@organisms/authentication-modal";
-import { toast, toastError } from "@genuin/ui/components/toaster";
+import { toastError } from "@genuin/ui/components/toaster";
 import { useCreateCommentMutation } from "@react-query/api/comments";
 import { convertCommentTextToArray } from "./utils";
 
@@ -32,8 +32,42 @@ export function CommentInputBox({
   videoId: string;
   loopId: string;
 }) {
-  const { user } = useAuthContext();
+  const { authenticationStatus, user } = useAuthContext();
 
+  if (authenticationStatus === "authenticated" || !user)
+    return (
+      <AuthenticationModal asChild>
+        <CommentInput isUser={false} videoId={videoId} loopId={loopId} />
+      </AuthenticationModal>
+    );
+
+  return (
+    <CommentInput
+      isAvatar={user.isAvatar}
+      image={user.image}
+      name={user.name}
+      isUser={true}
+      videoId={videoId}
+      loopId={loopId}
+    />
+  );
+}
+
+function CommentInput({
+  videoId,
+  loopId,
+  isUser,
+  isAvatar,
+  image,
+  name,
+}: {
+  videoId: string;
+  loopId: string;
+  isUser: boolean;
+  name?: string | undefined;
+  isAvatar?: boolean;
+  image?: string;
+}) {
   const form = useForm<CommentFormValues>({
     resolver: zodResolver(commentFormSchema),
     mode: "onChange",
@@ -42,8 +76,14 @@ export function CommentInputBox({
   });
 
   const { mutate: postComment, isPending } = useCreateCommentMutation({
-    onSuccess: () => {
-      toast("Comment posted successfully!");
+    onSuccess: (response) => {
+      if (response.code === 1003 || response.code === 1099) {
+        form.setError("comment", {
+          message: "something went wrong!",
+        });
+        return;
+      }
+      form.reset();
     },
     onError() {
       toastError("Failed to post comment. Please try again later.");
@@ -63,54 +103,52 @@ export function CommentInputBox({
   );
 
   return (
-    <AuthenticationModal>
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(commentSubmit)}
-          className="gencl:absolute gencl:bottom-0 gencl:left-0 gencl:right-0 gencl:bg-white gencl:p-4 gencl:border-t gencl:border-secondary-200 gencl:flex gencl:justify-between"
-        >
-          <FormField
-            control={form.control}
-            name="comment"
-            render={({ field }) => (
-              <FormItem className="gencl:flex-1">
-                <FormControl>
-                  <div className="gencl:border gencl:border-secondary-150 gencl:rounded-lg gencl:py-2 gencl:px-3 gencl:flex gencl:gap-3 gencl:w-full gencl:h-10">
-                    {user && (
-                      <Avatar
-                        alt={user.name}
-                        isAvatar={user.isAvatar}
-                        imageUrl={user.image}
-                        size="xs"
-                      />
-                    )}
-                    <Input
-                      {...field}
-                      placeholder="Add a comment"
-                      className="gencl:w-full gencl:border-0 gencl:!text-secondary-600 gencl:p-0 gencl:text-body-1-medium gencl:h-fit gencl:focus:border-0 gencl:focus:p-0 gencl:focus:rounded-none"
-                      aria-invalid={!!form.formState.errors.comment}
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(commentSubmit)}
+        className="gencl:absolute gencl:bottom-0 gencl:left-0 gencl:right-0 gencl:bg-white gencl:p-4 gencl:border-t gencl:border-secondary-200 gencl:flex gencl:justify-between"
+      >
+        <FormField
+          control={form.control}
+          name="comment"
+          render={({ field }) => (
+            <FormItem className="gencl:flex-1">
+              <FormControl>
+                <div className="gencl:border gencl:border-secondary-150 gencl:rounded-lg gencl:py-2 gencl:px-3 gencl:flex gencl:gap-3 gencl:w-full gencl:h-10">
+                  {isUser && (
+                    <Avatar
+                      alt={name || ""}
+                      isAvatar={isAvatar || false}
+                      imageUrl={image || ""}
+                      size="xs"
                     />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button
-            type="submit"
-            theme="text"
-            className={cn(
-              "gencl:text-body-1-medium",
-              form.formState.isValid
-                ? "gencl:text-primary"
-                : "gencl:text-secondary-400"
-            )}
-            disabled={!form.formState.isValid || isPending}
-          >
-            {isPending ? "Posting..." : "Post"}
-          </Button>
-        </form>
-      </Form>
-    </AuthenticationModal>
+                  )}
+                  <Input
+                    {...field}
+                    placeholder="Add a comment"
+                    className="gencl:w-full gencl:border-0 gencl:!text-secondary-600 gencl:p-0 gencl:text-body-1-medium gencl:h-fit gencl:focus:border-0 gencl:focus:p-0 gencl:focus:rounded-none"
+                    aria-invalid={!!form.formState.errors.comment}
+                  />
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button
+          type="submit"
+          theme="text"
+          className={cn(
+            "gencl:text-body-1-medium",
+            form.formState.isValid
+              ? "gencl:text-primary"
+              : "gencl:text-secondary-400"
+          )}
+          disabled={!form.formState.isValid || isPending}
+        >
+          {isPending ? "Posting..." : "Post"}
+        </Button>
+      </form>
+    </Form>
   );
 }

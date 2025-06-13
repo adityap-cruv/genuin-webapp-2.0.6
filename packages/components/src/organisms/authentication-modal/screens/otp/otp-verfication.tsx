@@ -15,6 +15,7 @@ import { z } from "zod";
 import { useAuthenticationModalContext } from "../../context";
 import {
   useConsumeOtpMutation,
+  useSendOtpMutation,
   useUpdateEmailOrPhoneMutation,
 } from "@react-query/api/authentication";
 import { useAuthContext } from "@context/auth";
@@ -26,6 +27,11 @@ const OTPSchema = z.object({
 });
 
 type VerificationType = "LOGIN" | "EMAIL" | "PHONE";
+
+type ResentOtpType = {
+  email?: string;
+  phoneNumber?: string;
+};
 
 type OtpVerificationProps = ComponentProps<"div"> & {
   verificationType: VerificationType;
@@ -40,6 +46,7 @@ export function OtpVerification({
   const {
     formData: { flowType, email, phone, preAuthSessionId, responseDeviceId },
     action,
+    step,
     setStep,
     closeModal,
   } = useAuthenticationModalContext();
@@ -96,6 +103,30 @@ export function OtpVerification({
       },
     });
 
+  const {
+    mutate: sendOtp, // Changed back to mutate and aliased as sendOtp
+    isPending: isSendingOtp,
+    data,
+  } = useSendOtpMutation({
+    onSuccess: (response) => {
+      // Ensure the 'response' object and its properties (codeSent, retryTime)
+      // match the actual structure returned by your sendOtp mutation
+      if (!response.codeSent) {
+        form.setError("otp", {
+          message: response.message,
+        });
+      }
+    },
+    onError: (error) => {
+      // Handle any errors from the sendOtp mutation if necessary
+      // For example, set a generic error message on the form
+      form.setError("otp", {
+        message: "An unexpected error occurred. Please try again.",
+      });
+      console.error("Error sending OTP:", error);
+    },
+  });
+
   function onSubmit(data: z.infer<typeof OTPSchema>) {
     // Ensure preAuthSessionId and responseDeviceId are available before calling consumeOtp
     if (!preAuthSessionId || !responseDeviceId) return;
@@ -115,6 +146,23 @@ export function OtpVerification({
         responseDeviceId: responseDeviceId,
       });
     }
+  }
+
+  function resentOtp() {
+    const isLoginFlow = step === "LOGIN_OTP_INPUT";
+    const isEmailFlow = flowType === "EMAIL";
+
+    let otpPayload: ResentOtpType & { isUpdate?: boolean } = {};
+
+    if (isLoginFlow) {
+      otpPayload = { email, phoneNumber: phone };
+    } else if (isEmailFlow) {
+      otpPayload = { email, isUpdate: true };
+    } else {
+      otpPayload = { phoneNumber: phone, isUpdate: true };
+    }
+
+    sendOtp(otpPayload);
   }
 
   return (
@@ -163,8 +211,10 @@ export function OtpVerification({
           />
           <TimerMessage
             className="gencl:mt-4"
-            time={30}
+            time={data?.retryTime ?? 30}
+            isOtpSending={isSendingOtp}
             verificationType="login"
+            resentOtp={resentOtp}
           />
           <SubmitButton
             title="Verify"
