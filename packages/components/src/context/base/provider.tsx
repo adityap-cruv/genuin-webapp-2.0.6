@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useLayoutEffect, useState } from "react";
 
 import { useFeedVideoSizeBox } from "@genuin/components/hooks/use-feed-video-size-box";

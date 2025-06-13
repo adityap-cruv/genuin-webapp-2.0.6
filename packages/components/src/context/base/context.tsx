@@ -1,3 +1,4 @@
+"use client";
 import { getUrlForReaction } from "@genuin/ui/utils";
 import { createContext, useContext } from "react";
 import type { SizeBoxType } from "@types/base";
