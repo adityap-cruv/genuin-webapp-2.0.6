@@ -5,8 +5,10 @@ import {
   CommunitiesIcon,
   ErrorIcon,
   GroupIcon,
+  LockIcon,
   PlayIcon,
 } from "@genuin/ui/icons";
+import { cn } from "@genuin/ui/lib/utils";
 
 const ICONS = {
   play: (
@@ -15,6 +17,11 @@ const ICONS = {
   community: <CommunitiesIcon className="gencl:mb-2 gencl:size-8" />,
   group: <GroupIcon className="gencl:mb-2 gencl:size-8" />,
   warning: <ErrorIcon className="gencl:mb-2 gencl:size-8" />,
+  private: (
+    <div className="gencl:p-3 gencl:rounded-full gencl:bg-white gencl:mb-2">
+      <LockIcon className="gencl:size-8" />
+    </div>
+  ),
 };
 
 const STATES_MESSAGES = {
@@ -31,10 +38,23 @@ const STATES_MESSAGES = {
     subtitle: "No content available",
     showButton: false,
   },
+  PRIVATE_GROUP: {
+    icon: "private",
+    title: "Private Group",
+    subtitle: "Join this group to see and interact with their posts",
+    showButton: false,
+  },
   NO_COMMUNITIES: {
     icon: "community",
     title: "No Communities Yet",
     subtitle: "Communities by this brand will show up here",
+    showButton: false,
+  },
+  PRIVATE_COMMUNITY: {
+    icon: "private",
+    title: "Private Community",
+    subtitle:
+      "Join this community to see and interact with their groups and posts",
     showButton: false,
   },
   NO_POSTS_ITEM: {
@@ -57,11 +77,19 @@ type ComponentErrorStateProps = ComponentProps<"div"> & {
 
 export function ComponentErrorState({
   type = "NO_POSTS",
+  className,
+  ...restProps
 }: ComponentErrorStateProps) {
   const state = STATES_MESSAGES[type];
 
   return (
-    <div className="gencl:flex gencl:flex-col gencl:h-full gencl:items-center gencl:w-full gencl:justify-center gencl:bg-secondary-50">
+    <div
+      className={cn(
+        "gencl:flex gencl:flex-col gencl:h-full gencl:rounded-xl gencl:items-center gencl:w-full gencl:justify-center gencl:bg-secondary-50",
+        className
+      )}
+      {...restProps}
+    >
       <div className="gencl:flex gencl:flex-col gencl:h-100 gencl:items-center gencl:justify-center gencl:w-full">
         {ICONS[state.icon]}
         {state.title && (

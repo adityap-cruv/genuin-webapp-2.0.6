@@ -20,6 +20,7 @@ import { CommunityDetailsSkeleton } from "./skeleton";
 import { ErrorState } from "@molecules/error-state";
 import { NOT_FOUND_ERROR_CODES } from "@lib/constants/errors";
 import { CommunityUserRole } from "@types/post";
+import { ComponentErrorState } from "@organisms/error-state-component";
 
 export function CommunityDetails({ slug }: { slug: string }) {
   const {
@@ -41,7 +42,6 @@ export function CommunityDetails({ slug }: { slug: string }) {
     return <CommunityDetailsSkeleton />;
   }
 
-  // TODO: Handle error state properly, e.g., show an error message
   if (isError) {
     const errorCode = (error as any)?.code;
 
@@ -52,10 +52,14 @@ export function CommunityDetails({ slug }: { slug: string }) {
     return <ErrorState type="ERROR" />;
   }
 
-  // TODO: Handle empty state properly
   if (!communityDetails) {
     return <ErrorState type="NO_COMMUNITY" />;
   }
+
+  const showPrivateCommunityAccess =
+    communityDetails.type === "PRIVATE" &&
+    (communityDetails.logged_in_user_role === "UNJOINED" ||
+      communityDetails.logged_in_user_role === "REQUESTED");
 
   const admins = (
     <MemberList
@@ -169,7 +173,14 @@ export function CommunityDetails({ slug }: { slug: string }) {
               }}
               ctas={<div className="gencl:flex gencl:gap-2">{ctas}</div>}
             />
-            <CommunityDetailsTabs slug={slug} className="gencl:pt-6" />
+            {showPrivateCommunityAccess ? (
+              <ComponentErrorState
+                type="PRIVATE_COMMUNITY"
+                className="gencl:my-4"
+              />
+            ) : (
+              <CommunityDetailsTabs slug={slug} className="gencl:pt-6" />
+            )}
           </div>
           <SideInfo
             className="gencl:h-fit gencl:sticky gencl:top-2 gencl:shrink-0 gencl:pb-6 gencl:max-h-full gencl:overflow-auto"

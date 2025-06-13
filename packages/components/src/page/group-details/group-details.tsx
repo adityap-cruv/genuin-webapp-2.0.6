@@ -24,6 +24,7 @@ import { PostsGridSkeleton } from "@organisms/posts-grid";
 import { ErrorState } from "@molecules/error-state";
 import { NOT_FOUND_ERROR_CODES } from "@lib/constants/errors";
 import { DetailsPageTopbar } from "@organisms/details-page-topbar";
+import { ComponentErrorState } from "@organisms/error-state-component";
 
 export function GroupDetailsPage({ slug }: { slug: string }) {
   const detailsId = useId();
@@ -38,7 +39,6 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
     return <GroupDetailsSkeleton />;
   }
 
-  // TODO: Handle error state properly, e.g., show an error message
   if (isError) {
     const errorCode = (error as any)?.code;
 
@@ -49,10 +49,12 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
     return <ErrorState type="ERROR" />;
   }
 
-  // TODO: Handle empty state properly
   if (!groupDetails) {
     return <ErrorState type="NO_GROUP" />;
   }
+
+  const showPrivateGroupAccess =
+    groupDetails.isPrivate && groupDetails.role !== "JOINED";
 
   const ctas = (
     <>
@@ -106,7 +108,11 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
             description={groupDetails.description ?? ""}
             ctas={<div className="gencl:flex gencl:gap-2">{ctas}</div>}
           />
-          <GroupDetailsTabs className="gencl:pb-6" slug={slug} />
+          {showPrivateGroupAccess ? (
+            <ComponentErrorState type="PRIVATE_GROUP" className="gencl:my-4" />
+          ) : (
+            <GroupDetailsTabs className="gencl:pb-6" slug={slug} />
+          )}
         </div>
         <SideInfo
           className="gencl:h-fit"
