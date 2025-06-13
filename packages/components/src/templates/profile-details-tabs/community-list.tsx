@@ -29,6 +29,7 @@ import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { CommunityListSkeleton } from "./skeleton";
 import { CommunityGroupsSkeleton } from "../community-details-tabs";
 import { CommunityUserRole } from "@types/post";
+import { ComponentErrorState } from "@organisms/error-state-component";
 
 export function CommunityList({
   userId,
@@ -67,14 +68,12 @@ export function CommunityList({
     return <CommunityListSkeleton />;
   }
 
-  // TODO: HANDLE THE ERROR STATE
-  if (isError || !communities) {
-    return <div>Error loading communities.</div>;
+  if (isError) {
+    return <ComponentErrorState type="WARNING" />;
   }
 
-  // TODO: HANDLE THE CASE WHEN THERE ARE NO COMMUNITIES
-  if (communities.length === 0) {
-    return <div>No communities found</div>;
+  if (!communities || communities.length === 0) {
+    return <ComponentErrorState type="NO_COMMUNITIES" />;
   }
 
   // Placeholder for community list component
@@ -86,6 +85,9 @@ export function CommunityList({
         isLoadingNextPage={isFetchingNextPage}
       >
         {communities.map((community) => {
+          const showPrivateCommunityAccess =
+            community.isPrivate &&
+            (community.role === "UNJOINED" || community.role === "REQUESTED");
           return (
             <div className="gencl:w-full" key={community.id}>
               <GenericDetails
@@ -135,7 +137,7 @@ export function CommunityList({
                     )}
                     {community.isPrivate && (
                       <JoinCommunityButton
-                        buttonText="Join"
+                        roleTexts={{ UNJOINED: "Join" }}
                         communityId={community.id}
                         role={community.role}
                         isPrivate={community.isPrivate}
@@ -148,16 +150,24 @@ export function CommunityList({
                   </div>
                 }
               />
-              <DecorativeList className="gencl:ml-7 gencl:[&_li]:mb-6">
-                <div className="gencl:h-6" />
-                <Groups
-                  profileId={userId}
-                  communityId={community.id}
-                  initialLoops={community.loops}
-                  forBrand={forBrand}
-                  totalLoops={community.noOfGroups}
+              {showPrivateCommunityAccess ? (
+                <ComponentErrorState
+                  type="PRIVATE_COMMUNITY"
+                  forList
+                  className="gencl:rounded-xl gencl:mt-4"
                 />
-              </DecorativeList>
+              ) : (
+                <DecorativeList className="gencl:ml-7 gencl:[&_li]:mb-6">
+                  <div className="gencl:h-6" />
+                  <Groups
+                    profileId={userId}
+                    communityId={community.id}
+                    initialLoops={community.loops}
+                    forBrand={forBrand}
+                    totalLoops={community.noOfGroups}
+                  />
+                </DecorativeList>
+              )}
             </div>
           );
         })}
@@ -203,14 +213,28 @@ function Groups({
     return <CommunityGroupsSkeleton />;
   }
 
-  // TODO: handle error state.
-  if (isError || !groups) {
-    return <div>Error loading groups.</div>;
+  if (isError) {
+    return (
+      <li>
+        <ComponentErrorState type="WARNING" />
+      </li>
+    );
   }
-  console.log("role::", groups);
+
+  if (!groups || groups.length === 0) {
+    return (
+      <li>
+        <ComponentErrorState type="NO_GROUPS" />
+      </li>
+    );
+  }
+
   return (
     <>
       {groups.map((group) => {
+        const showPrivateGroupAccess =
+          group.isPrivate && group.role !== "JOINED";
+
         return (
           <li key={group.id}>
             <GenericDetails
@@ -269,14 +293,18 @@ function Groups({
                 </div>
               }
             >
-              <GroupVideos
-                communityId={communityId}
-                initialVideos={group.videos}
-                loopId={group.id}
-                profileId={profileId}
-                forBrand={forBrand}
-                totalVideos={group.noOfVideos}
-              />
+              {showPrivateGroupAccess ? (
+                <ComponentErrorState type="PRIVATE_GROUP" forList />
+              ) : (
+                <GroupVideos
+                  communityId={communityId}
+                  initialVideos={group.videos}
+                  loopId={group.id}
+                  profileId={profileId}
+                  forBrand={forBrand}
+                  totalVideos={group.noOfVideos}
+                />
+              )}
             </GenericDetails>
           </li>
         );

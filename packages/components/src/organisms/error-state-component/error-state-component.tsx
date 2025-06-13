@@ -73,14 +73,38 @@ const STATES_MESSAGES = {
 
 type ComponentErrorStateProps = ComponentProps<"div"> & {
   type: keyof typeof STATES_MESSAGES;
+  forList?: boolean;
 };
 
 export function ComponentErrorState({
   type = "NO_POSTS",
+  forList,
   className,
   ...restProps
 }: ComponentErrorStateProps) {
   const state = STATES_MESSAGES[type];
+
+  if (forList) {
+    return (
+      <div
+        className={cn(
+          "gencl:flex gencl:items-center gencl:gap-4 gencl:bg-secondary-50 gencl:py-6 gencl:px-4",
+          className
+        )}
+        {...restProps}
+      >
+        {ICONS[state.icon]}
+        <div>
+          <p className="gencl:mb-2 gencl:text-body-0-semi-bold">
+            {state.title}
+          </p>
+          <p className="gencl:text-secondary-600 gencl:text-body-1-semi-bold">
+            {state.subtitle}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -98,7 +122,7 @@ export function ComponentErrorState({
           </p>
         )}
         {state.subtitle && (
-          <p className="gencl:text-secondary-600 mb-4 text-body-1-semi-bold gencl:text-center gencl:mb-4">
+          <p className="gencl:text-secondary-600 mb-4  gencl:text-center gencl:mb-4">
             {state.subtitle}
           </p>
         )}
