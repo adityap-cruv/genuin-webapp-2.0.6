@@ -6,10 +6,12 @@ import { useWindowSize } from "usehooks-ts";
 import { TOP_BAR_HEIGHT } from "@genuin/components/lib/constants";
 import { SideBar } from "@organisms/side-bar";
 import { TopBar } from "@organisms/top-bar";
+import React from "react";
 
-type BaseLayoutProps = ComponentProps<"section">;
+type BaseLayoutProps = ComponentProps<"section"> & { search: React.ReactNode };
 
 export function BaseLayout({
+  search,
   children,
   className,
   ...restProps
@@ -21,6 +23,7 @@ export function BaseLayout({
       <TopBar
         className="gencl:border-b gencl:border-secondary-150 gencl:bg-white gencl:relative"
         style={{ zIndex: 9 }}
+        search={search}
       />
       <main
         className="gencl:flex gencl:h-full"
