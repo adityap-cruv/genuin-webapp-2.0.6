@@ -19,6 +19,8 @@ import {
 import type { PostDetailsType } from "@react-query/api/feed/schema";
 
 import { FeedContextProvider, useFeedContext } from "./context";
+import { GestureProvider } from "@molecules/gestures/context";
+import { useGestureOverlayManager } from "@molecules/gestures";
 import { QueryKey } from "@tanstack/react-query";
 import { getQueryKeyForFeed } from "@react-query/keys/feed";
 import { GroupUserStatusType } from "@types/roles";
@@ -127,7 +129,9 @@ export function FeedWithData({
       defaultExpandView={defaultExpandView}
       onCloseExpandView={onCloseExpandView}
     >
-      <FeedViewCore feedData={feedData} {...restProps} />
+      <GestureProvider>
+        <FeedViewCore feedData={feedData} {...restProps} />
+      </GestureProvider>
     </FeedContextProvider>
   );
 }
@@ -158,7 +162,9 @@ export function FeedView({
       defaultExpandView={defaultExpandView}
       onCloseExpandView={onCloseExpandView}
     >
-      <FeedViewCore feedData={feedData} {...restProps} />
+      <GestureProvider>
+        <FeedViewCore feedData={feedData} {...restProps} />
+      </GestureProvider>
     </FeedContextProvider>
   );
 }
@@ -188,6 +194,7 @@ function FeedViewCore({
     queryKey,
   } = feedData;
   const { setActiveIndex, activeIndex, showExpandView } = useFeedContext();
+  const { hideGestureOverlay } = useGestureOverlayManager();
 
   // this useEffect is used to fetch the next page of videos when the user scrolls to the end of the list.
   // it checks if there is a next page and if the user is not already fetching the next page.
@@ -256,8 +263,9 @@ function FeedViewCore({
   const handleActiveIndexChange = useCallback(
     (newIndex: number) => {
       setActiveIndex(newIndex);
+      hideGestureOverlay("SWIPE");
     },
-    [setActiveIndex]
+    [setActiveIndex, hideGestureOverlay]
   );
 
   // TODO: Create a shimmer for feed.

@@ -6,10 +6,12 @@ import type { PostDetailsType } from "@react-query/api/feed/schema";
 import { usePlayerContext } from "../../context";
 import { ProfileLink } from "@molecules/profile-link";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { LinkOutContentRenderer } from "@organisms/linkouts/linkouts-details";
 import { Pills } from "@molecules/feed-player/pills";
 
 type ExpandViewProps = ComponentProps<"div"> & {
   postDetails: PostDetailsType;
+  isActive: boolean;
   onGroupJoinStatusChange?: ComponentProps<
     typeof Pills
   >["onGroupJoinStatusChange"];
@@ -24,6 +26,7 @@ type ExpandViewProps = ComponentProps<"div"> & {
 export function ExpandViewDetails({
   className,
   postDetails,
+  isActive,
   onGroupJoinStatusChange,
   onGroupSubscriptionChange,
   onCommunityJoinStatusChange,
@@ -56,6 +59,14 @@ export function ExpandViewDetails({
           @{postDetails.owner.userName}
         </ProfileLink>
       </div>
+
+      <LinkOutContentRenderer
+        linkouts={postDetails.video.linkouts}
+        linkoutId={postDetails.video.linkoutId}
+        isActive={isActive}
+        className="gencl:my-3"
+      />
+
       <ReadMore
         showExpandText={false}
         text={postDetails.video.description}

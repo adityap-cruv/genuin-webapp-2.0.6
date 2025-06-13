@@ -10,6 +10,7 @@ import { setBrandIdInAxiosInstance } from "@react-query/axios-instance";
 import type { BrandDetailsConfigType } from "@types/brand";
 
 import { BaseContext } from "./context";
+// import { useGestureOverlayManager } from "@molecules/gestures";
 
 type BaseContextProviderProps = {
   children: React.ReactNode;

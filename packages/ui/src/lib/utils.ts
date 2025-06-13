@@ -200,3 +200,27 @@ export function convertISOToLocalDateFormate(isoString: string): string {
 //   // Returning base64 encoded encrypted text
 //   return encrypted.toString("base64");
 // }
+
+/**
+ * Returns the SVG link for the given name.
+ * @param name - The name of the SVG.
+ * @returns The SVG link.
+ */
+export function getIconLink(name: string, type: string = 'svg') {
+  return `https://media.begenuin.com/web-sdk/v1/icons/${name}.${type}`
+}
+
+/**
+ * Returns the GIF link for the given name.
+ * @param name - The name of the GIF.
+ * @returns The GIF link.
+ */
+export function getGifLink(name: string) {
+  return `https://media.begenuin.com/web-sdk/v1/icons/${name}.gif`
+}
+
+export function checkAndAppendHttps(link: string): string {
+  return link?.startsWith('http') || link?.startsWith('https')
+    ? link
+    : (process.env.NEXT_PUBLIC_CURRENT_ENV === 'local' ? 'http://' : 'https://') + link
+}

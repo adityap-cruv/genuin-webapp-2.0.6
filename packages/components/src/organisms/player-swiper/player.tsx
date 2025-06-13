@@ -6,6 +6,8 @@ import type { PostDetailsType } from "@react-query/api/feed/schema";
 import { useFeedContext } from "@templates/feed/context";
 import { useSwiper, useSwiperSlide } from "swiper/react";
 import { useWindowSize } from "usehooks-ts";
+import { useCallback } from "react";
+import { useGestureOverlayManager } from "@molecules/gestures";
 import { ComponentProps } from "react";
 
 type PlayerProps = {
@@ -27,11 +29,26 @@ export function Player({
   onGroupJoinStatusChange,
   onGroupSubscriptionChange,
 }: PlayerProps) {
-  const { showExpandView, toggleExpandView } = useFeedContext();
+  const { showExpandView, toggleExpandView, activeIndex } = useFeedContext();
   const { height } = useWindowSize();
-  const { feedVideoSizeBox } = useBaseContext();
+  const { feedVideoSizeBox, muted } = useBaseContext();
   const { isActive } = useSwiperSlide();
   const swiper = useSwiper();
+  const { showGestureOverlay } = useGestureOverlayManager();
+
+  const handleTimeUpdate = useCallback(
+    (event: React.SyntheticEvent<HTMLVideoElement>) => {
+      const video = event.currentTarget;
+      if (video.duration > 0) {
+        const progress = (video.currentTime / video.duration) * 100;
+
+        if (activeIndex === 1 && progress >= 50) {
+          showGestureOverlay("PLAY_PAUSE", muted);
+        }
+      }
+    },
+    [activeIndex, muted, showGestureOverlay]
+  );
 
   return (
     <PlayerProvider
@@ -61,8 +78,13 @@ export function Player({
           style={{
             width: showExpandView ? (height * 9) / 16 : feedVideoSizeBox.width,
           }}
+          onTimeUpdate={handleTimeUpdate}
+          onEnded={() => {
+            showGestureOverlay("SWIPE");
+          }}
         />
         <ControlLayer
+          isActive={isActive}
           postDetails={post}
           onCommunityJoinStatusChange={onCommunityJoinStatusChange}
           onGroupJoinStatusChange={onGroupJoinStatusChange}

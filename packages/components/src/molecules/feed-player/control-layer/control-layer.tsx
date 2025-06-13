@@ -9,10 +9,13 @@ import { PlayingState } from "./playing-state";
 import { Scrubber } from "./scrubber";
 import { ExpandViewDetails } from "./expand-view";
 import { PlaybackSpeedCapsule } from "@molecules/playback-speed/speed-capsule";
+import { useGestureOverlayManager } from "@molecules/gestures";
+import { LinkOutContentRenderer } from "@organisms/linkouts/linkouts-details";
 
 type ControlLayerPropsType = ComponentProps<"div"> & {
   postDetails: PostDetailsType;
   isInModal?: boolean;
+  isActive: boolean;
   onGroupJoinStatusChange?: ComponentProps<
     typeof ExpandViewDetails
   >["onGroupJoinStatusChange"];
@@ -30,12 +33,15 @@ type ControlLayerPropsType = ComponentProps<"div"> & {
 export const ControlLayer = memo(function ControlLayer({
   postDetails,
   className,
+  isActive,
   onCommunityJoinStatusChange,
   onGroupJoinStatusChange,
   onGroupSubscriptionChange,
   ...restProps
 }: ControlLayerPropsType) {
   const { showExpandView, togglePlay, toggleMuted, muted } = usePlayerContext();
+  const { gestureOverlayUI } = useGestureOverlayManager();
+  const { showSeeker } = usePlayerContext();
   // const { hideGestureOverlay } = useGestureOverlayManager();
 
   const {
@@ -117,13 +123,27 @@ export const ControlLayer = memo(function ControlLayer({
          * This is the expand view details.
          * It will show the details of the post. If post is expanded.
          */}
-        {showExpandView && (
+        {showExpandView ? (
           <ExpandViewDetails
             postDetails={postDetails}
+            isActive={isActive}
             onCommunityJoinStatusChange={onCommunityJoinStatusChange}
             onGroupJoinStatusChange={onGroupJoinStatusChange}
             onGroupSubscriptionChange={onGroupSubscriptionChange}
           />
+        ) : (
+          <div
+            className={cn(
+              "gencl:absolute gencl:bottom-0 gencl:w-full gencl:p-2 gencl:transition-all",
+              showSeeker && "gencl:bottom-4"
+            )}
+          >
+            <LinkOutContentRenderer
+              isActive={isActive}
+              linkouts={postDetails.video.linkouts}
+              linkoutId={postDetails.video.linkoutId}
+            />
+          </div>
         )}
 
         {/**
@@ -152,6 +172,8 @@ export const ControlLayer = memo(function ControlLayer({
             // showSeeker && "gencl:bottom-4"
           )}
         />
+
+        {gestureOverlayUI}
       </div>
     </>
   );

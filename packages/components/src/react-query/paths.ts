@@ -124,6 +124,10 @@ export const API_PATHS = {
    */
   AUTH_VALIDATE_USERNAME: "/api/v3/users/validate_nickname",
   /**
+   * API path to fetch linkouts.
+   */
+  LINKOUTS: "/api/v3/linkouts",
+  /**
    * API path to get redirection URL for authentication.
    */
   AUTH_GET_REDIRECTION_URL: "/api/v4/auth/authorisationurl",
