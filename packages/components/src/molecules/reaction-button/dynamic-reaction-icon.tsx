@@ -6,7 +6,7 @@ import { useMemo } from "react";
 
 type DynamicReactionIconProps = {
   isSparked: boolean;
-  forComment: boolean;
+  variant: "dark" | "light";
   sparkCount: number;
   showSparkCount?: boolean;
   iconHeight?: number;
@@ -15,7 +15,7 @@ type DynamicReactionIconProps = {
 
 export function DynamicReactionIcon({
   isSparked,
-  forComment,
+  variant,
   showSparkCount = false,
   iconHeight = 32,
   sparkCount = 0,
@@ -26,6 +26,7 @@ export function DynamicReactionIcon({
   } = useBaseContext();
   const iconToShow = useMemo(() => {
     const reaction = reactions;
+    const forComment = variant === "light";
 
     // In case there is no reactions in config then we will show the spark icon.
     if (!reaction) return getUrlForReaction("spark", isSparked, forComment);
@@ -39,7 +40,7 @@ export function DynamicReactionIcon({
         ? reaction?.keys.feed_selected.svg
         : reaction?.keys.feed_unselected.svg;
     }
-  }, [reactions, isSparked, forComment]);
+  }, [reactions, isSparked, variant]);
 
   return (
     <>

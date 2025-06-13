@@ -21,6 +21,7 @@ const buttonVariants = cva(
           "gencl:bg-secondary-50 gencl:text-black! gencl:hover:bg-secondary-100",
         outline: "gencl:border gencl:border-secondary-200 gencl:bg-white",
         text: "gencl:text-primary",
+        custom: "",
         navigation:
           "gencl:p-0 gencl:size-12! gencl:rounded-full! gencl:flex-center gencl:bg-secondary-800 gencl:text-white gencl:backdrop-blur-sm gencl:hover:bg-secondary-600 gencl:border-0 gencl:transition-all gencl:duration-200 [&_svg]:gencl:size-5",
       },

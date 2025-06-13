@@ -86,9 +86,8 @@ function Button({
       {...restProps}
     >
       <DynamicReactionIcon
+        variant="dark"
         isSparked={isReacted}
-        forComment={contentType === "COMMENT"}
-        contentId={contentId}
         showSparkCount={true}
         iconHeight={24}
         iconWidth={24}

@@ -11,6 +11,7 @@ import { Skeleton } from "@genuin/ui/components/skeleton";
 import { Audio } from "@organisms/comments/audio";
 import { Video } from "@organisms/comments/video";
 import { CommentMenu } from "./comment-menu";
+import { ReactionButton } from "@molecules/reaction-button";
 
 export type CommentItemProps = {
   comment: CommentListType[number];
@@ -30,7 +31,7 @@ export function CommentItem({ comment }: CommentItemProps) {
         <div className="gencl:flex gencl:items-center gencl:justify-between">
           <div className="gencl:flex gencl:items-center">
             <ProfileLink
-            className="gencl:text-body-1-semi-bold"
+              className="gencl:text-body-1-semi-bold"
               url={buildPageUrl({ type: "profile", slug: owner.nickname })}
             >
               @{owner.nickname}
@@ -43,16 +44,19 @@ export function CommentItem({ comment }: CommentItemProps) {
         </div>
         <CommentContent comment={comment} />
         <div className="gencl:flex gencl:items-center">
-          <SparkIcon className="gencl:size-4" />
-          <p className="gencl:text-body-2-medium gencl:text-secondary-300">
-            {comment.noOfSparks}
-          </p>
+          <ReactionButton
+            contentId={comment.commentId}
+            contentType="COMMENT"
+            isReacted={comment.isSparked}
+            reactionCount={comment.noOfSparks}
+          />
         </div>
       </div>
     </div>
   );
 }
 
+<<<<<<< Updated upstream
 export function CommentsItemSkeleton() {
   return (
     <div className="gencl:w-100 gencl:flex gencl:flex gencl:gap-2 gencl:overflow-hidden gencl:mb-4">
@@ -66,6 +70,8 @@ export function CommentsItemSkeleton() {
   );
 }
 
+=======
+>>>>>>> Stashed changes
 export function CommentContent({ comment }: CommentItemProps) {
   return (
     <>

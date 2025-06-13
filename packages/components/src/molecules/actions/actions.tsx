@@ -73,7 +73,7 @@ type ActionsPropsType = ComponentProps<"div"> & {
   isReacted: boolean;
   reactionCount: number;
   onReactionStateChange?: (isReacted: boolean) => void;
-  contentId : string
+  contentId: string;
   variant?: "light" | "dark";
   /**
    * If you want to override the default action wrappers, you can pass a namedActionWrapper object.
@@ -106,7 +106,9 @@ export const defaultActionWrappers: Record<
   ),
   COMMENT: (node, _context) => node,
   SHARE: (node, _context) => node,
-  MORE: (node, context) => <Menu contentId={context.contentId} children={node} />,
+  MORE: (node, context) => (
+    <Menu contentId={context.contentId} children={node} />
+  ),
 };
 
 export function Actions({
@@ -130,7 +132,7 @@ export function Actions({
         <DynamicReactionIcon
           isSparked={isReacted}
           sparkCount={reactionCount}
-          forComment={false}
+          variant={variant}
         />
       ),
       actionType: "REACTION",

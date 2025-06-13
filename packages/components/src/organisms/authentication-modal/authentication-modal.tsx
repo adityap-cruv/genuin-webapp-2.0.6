@@ -16,6 +16,7 @@ import { Screens } from "./screens";
 type AuthenticationModalProps = ComponentProps<typeof DialogTrigger> & {
   action?: AuthActionType;
   open?: boolean;
+  customStep?: ComponentProps<typeof AuthenticationModalProvider>["customStep"];
   onOpenChange?: (open: boolean) => void;
 };
 
@@ -24,6 +25,7 @@ export function AuthenticationModal({
   asChild,
   action,
   open: controlledOpen,
+  customStep,
   onOpenChange,
   ...restProps
 }: AuthenticationModalProps) {
@@ -50,7 +52,7 @@ export function AuthenticationModal({
       <DialogContent className="gencl:p-0">
         <AuthenticationModalProvider
           action={action}
-          customStep="SIGNIN"
+          customStep={customStep ?? "SIGNIN"}
           onClose={handleClose}
         >
           <Content />

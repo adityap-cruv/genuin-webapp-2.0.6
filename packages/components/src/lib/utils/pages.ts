@@ -8,7 +8,8 @@ export type PageType =
   | "home"
   | "popular"
   | "latest"
-  | "explore";
+  | "explore"
+  | "settings";
 
 type BuildPageUrlOptions = {
   type: PageType;
@@ -55,6 +56,9 @@ export function buildPageUrl({
       break;
     case "popular":
       basePath = "/popular";
+      break;
+    case "settings":
+      basePath = "/settings";
       break;
     default:
       // Optional: handle unknown type, though TypeScript should prevent this
