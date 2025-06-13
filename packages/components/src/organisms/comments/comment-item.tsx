@@ -1,6 +1,5 @@
 import { Avatar } from "@genuin/ui/avatar";
 import { ReadMore } from "@genuin/ui/read-more";
-import { SparkIcon } from "@genuin/ui/icons";
 
 import type { CommentListType } from "src/react-query/api/comments";
 import { getTimeAgo } from "@genuin/ui/utils";
@@ -11,14 +10,24 @@ import { Skeleton } from "@genuin/ui/components/skeleton";
 import { Audio } from "@organisms/comments/audio";
 import { Video } from "@organisms/comments/video";
 import { CommentMenu } from "./comment-menu";
-import { ReactionButton } from "@molecules/reaction-button";
+import {
+  DynamicReactionIcon,
+  ReactionButton,
+} from "@molecules/reaction-button";
+import { ComponentProps } from "react";
 
 export type CommentItemProps = {
   comment: CommentListType[number];
+  onReactionStateChange: ComponentProps<
+    typeof ReactionButton
+  >["onReactionStateChange"];
 };
 
 // TODO: Check why brand is not handled in the comment item
-export function CommentItem({ comment }: CommentItemProps) {
+export function CommentItem({
+  comment,
+  onReactionStateChange,
+}: CommentItemProps) {
   const { owner } = comment;
   return (
     <div className="comment gencl:flex gencl:gap-2" key={comment.commentId}>
@@ -49,7 +58,22 @@ export function CommentItem({ comment }: CommentItemProps) {
             contentType="COMMENT"
             isReacted={comment.isSparked}
             reactionCount={comment.noOfSparks}
-          />
+            onReactionStateChange={onReactionStateChange}
+            withCustomChildren
+          >
+            <div className="gencl:flex gencl:gap-1 gencl:items-center gencl:cursor-pointer">
+              <DynamicReactionIcon
+                isSparked={comment.isSparked}
+                sparkCount={comment.noOfSparks}
+                variant="light"
+                iconHeight={16}
+                iconWidth={16}
+              />
+              <p className="gencl:text-body-2-medium gencl:text-secondary-600">
+                {comment.noOfSparks}
+              </p>
+            </div>
+          </ReactionButton>
         </div>
       </div>
     </div>
@@ -69,7 +93,11 @@ export function CommentsItemSkeleton() {
   );
 }
 
-export function CommentContent({ comment }: CommentItemProps) {
+export function CommentContent({
+  comment,
+}: {
+  comment: CommentListType[number];
+}) {
   return (
     <>
       {comment.type === "text" && (

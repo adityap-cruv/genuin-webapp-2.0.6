@@ -3,7 +3,10 @@ import { CommentIcon, ErrorIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/utils";
 import { useMemo, type ComponentProps } from "react";
 
-import { useComments } from "@react-query/api/comments";
+import {
+  handleReactionStateChangeInComments,
+  useComments,
+} from "@react-query/api/comments";
 import { CommentItem, CommentsItemSkeleton } from "./comment-item";
 import { CommentInputBox } from "./comment-input";
 
@@ -18,7 +21,6 @@ export function Comments({
   className,
   ...restProps
 }: CommentPropsType) {
-  // TODO: Create a comments shimmer
   return (
     <div
       className={cn(
@@ -94,7 +96,17 @@ function CommentsComponent({ videoId }: { videoId: string }) {
           getNextPage={fetchNextPage}
         >
           {comments.map((comment) => (
-            <CommentItem key={comment.commentId} comment={comment} />
+            <CommentItem
+              key={comment.commentId}
+              comment={comment}
+              onReactionStateChange={(isReacted) => {
+                handleReactionStateChangeInComments(
+                  videoId,
+                  comment.commentId,
+                  isReacted
+                );
+              }}
+            />
           ))}
         </InfiniteScroll>
       </div>

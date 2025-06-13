@@ -40,7 +40,7 @@ export function ExpandViewDetails({
       )}
       {...restProps}
     >
-      <div className="gencl:flex gencl:space-y-3 gencl:gap-2 gencl:items-center gencl:text-white gencl:text-body-0-semi-bold">
+      <div className="gencl:flex gencl:gap-2 gencl:items-center gencl:text-white gencl:text-body-0-semi-bold">
         <Avatar
           imageUrl={postDetails.owner.profileImage}
           alt={postDetails.owner.name ?? ""}

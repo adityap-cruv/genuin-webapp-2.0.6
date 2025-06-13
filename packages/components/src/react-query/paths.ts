@@ -8,6 +8,10 @@ export const API_PATHS = {
    */
   FEED_SPARK: "/api/v3/spark",
   /**
+   * Api path to fetch videos.
+   */
+  FEED_GET_COMMENTS: "/api/v3/comments",
+  /**
    * Api path to fetch group details.
    */
   GROUP_DETAILS: "/api/v3/conversation/details",
