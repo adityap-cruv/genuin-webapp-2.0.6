@@ -124,6 +124,10 @@ export const API_PATHS = {
    */
   AUTH_VALIDATE_USERNAME: "/api/v3/users/validate_nickname",
   /**
+   * API path to get redirection URL for authentication.
+   */
+  AUTH_GET_REDIRECTION_URL: "/api/v4/auth/authorisationurl",
+  /**
    * Api path to send download link for the app.
    */
   SEND_DOWNLOAD_APP_LINK: "/api/v3/send_download_link",
