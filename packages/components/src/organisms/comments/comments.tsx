@@ -1,12 +1,10 @@
 import { InfiniteScroll } from "@genuin/ui/infinite-scroll";
-import { Loader } from "@genuin/ui/loader";
 import { CommentIcon, ErrorIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/utils";
 import { useMemo, type ComponentProps } from "react";
 
 import { useComments } from "@react-query/api/comments";
-
-import { CommentItem } from "./comment-item";
+import { CommentItem, CommentsItemSkeleton } from "./comment-item";
 import { CommentInputBox } from "./comment-input";
 
 type CommentPropsType = {
@@ -63,8 +61,10 @@ function CommentsComponent({ videoId }: { videoId: string }) {
 
   if (isLoading) {
     return (
-      <div className="gencl:w-full gencl:h-full gencl:flex gencl:items-center gencl:justify-center">
-        <Loader size="md" />
+      <div className="gencl:w-full gencl:h-full gencl:flex gencl:flex-col gencl:p-4">
+        {Array.from({ length: 7 }).map(() => (
+          <CommentsItemSkeleton />
+        ))}
       </div>
     );
   }

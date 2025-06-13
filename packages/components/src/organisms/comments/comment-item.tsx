@@ -6,6 +6,7 @@ import type { CommentListType } from "src/react-query/api/comments";
 import { getTimeAgo } from "@genuin/ui/utils";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { ProfileLink } from "@molecules/profile-link";
+import { Skeleton } from "@genuin/ui/components/skeleton";
 
 import { Audio } from "@organisms/comments/audio";
 import { Video } from "@organisms/comments/video";
@@ -38,7 +39,7 @@ export function CommentItem({ comment }: CommentItemProps) {
               &nbsp; {comment.createdAt && getTimeAgo(comment.createdAt)}
             </span>
           </div>
-          <CommentMenu contentId={comment.commentId}/>
+          <CommentMenu contentId={comment.commentId} />
         </div>
         <CommentContent comment={comment} />
         <div className="gencl:flex gencl:items-center">
@@ -52,7 +53,18 @@ export function CommentItem({ comment }: CommentItemProps) {
   );
 }
 
-
+export function CommentsItemSkeleton() {
+  return (
+    <div className="gencl:w-100 gencl:flex gencl:flex gencl:gap-2 gencl:overflow-hidden gencl:mb-4">
+      <Skeleton className="gencl:size-10 gencl:rounded-full gencl:shrink-0" />
+      <div className="gencl:w-full gencl:flex gencl:flex-col gencl:justify-center gencl:gap-2">
+        <Skeleton className="gencl:w-full gencl:h-3 gencl:rounded-md gencl:mt-1.5" />
+        <Skeleton className="gencl:w-full gencl:h-3 gencl:rounded-md" />
+        <Skeleton className="gencl:w-4 gencl:h-5  gencl:rounded-md" />
+      </div>
+    </div>
+  );
+}
 
 export function CommentContent({ comment }: CommentItemProps) {
   return (
