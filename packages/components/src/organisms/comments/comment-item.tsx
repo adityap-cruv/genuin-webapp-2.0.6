@@ -56,10 +56,9 @@ export function CommentItem({ comment }: CommentItemProps) {
   );
 }
 
-<<<<<<< Updated upstream
 export function CommentsItemSkeleton() {
   return (
-    <div className="gencl:w-100 gencl:flex gencl:flex gencl:gap-2 gencl:overflow-hidden gencl:mb-4">
+    <div className="gencl:w-100 gencl:flex gencl:gap-2 gencl:overflow-hidden gencl:mb-4">
       <Skeleton className="gencl:size-10 gencl:rounded-full gencl:shrink-0" />
       <div className="gencl:w-full gencl:flex gencl:flex-col gencl:justify-center gencl:gap-2">
         <Skeleton className="gencl:w-full gencl:h-3 gencl:rounded-md gencl:mt-1.5" />
@@ -70,8 +69,6 @@ export function CommentsItemSkeleton() {
   );
 }
 
-=======
->>>>>>> Stashed changes
 export function CommentContent({ comment }: CommentItemProps) {
   return (
     <>

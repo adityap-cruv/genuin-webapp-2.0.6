@@ -809,48 +809,25 @@ const preview: Preview = {
       const parsedColor = parseBrandColors(brandDetails.brand_colors);
       return (
         <AuthProvider
-          // user={{
-          //   id: "b6aebf66-db37-48bf-8fac-bda06eb81914",
-          //   image:
-          //     "https://media.qa.begenuin.com/uploads/profile_images/1741280553604_croppedImage_1741280519374.png",
-          //   isAvatar: false,
-          //   phoneNumber: "916354665097",
-          //   nickname: "ycombinator",
-          //   email: "himanshu@begenuin.com",
-          //   bio: null,
-          //   name: "ycombinator",
-          //   accessToken:
-          //     "eyJraWQiOiJkLTE3NDkyMDE0MzYxMzYiLCJ0eXAiOiJKV1QiLCJ2ZXJzaW9uIjoiNSIsImFsZyI6IlJTMjU2In0.eyJpYXQiOjE3NDk2MzQ2NTcsImV4cCI6MTc1MDg0NDI1Nywic3ViIjoiOGI5OTBiN2ItYmY0NS00ZDFhLWE1YTctNDkwM2I0MGMxNjg2IiwidElkIjoicHVibGljIiwicnN1YiI6IjhiOTkwYjdiLWJmNDUtNGQxYS1hNWE3LTQ5MDNiNDBjMTY4NiIsInNlc3Npb25IYW5kbGUiOiI5ZjNkMDY4My00ZDIxLTQyNzMtYThkOS1kODhkMzQ3YWNkZWQiLCJyZWZyZXNoVG9rZW5IYXNoMSI6ImY5NjVjZTAzM2YwMzBhODllYTc0OWY1MGM2NGZmNmQ4ZGEwZWE2YjQ5YzJmNThkOGQ2OTMzNTgzYzAxMjAzZDEiLCJwYXJlbnRSZWZyZXNoVG9rZW5IYXNoMSI6bnVsbCwiYW50aUNzcmZUb2tlbiI6bnVsbCwiaXNzIjoiaHR0cHM6Ly9ub2RlanMucWEuYmVnZW51aW4uY29tL2FwaS92NC9hdXRoIiwic3Qtcm9sZSI6eyJ2IjpbXSwidCI6MTc0OTYzNDY1NjkyMn0sInN0LXBlcm0iOnsidiI6W10sInQiOjE3NDk2MzQ2NTY5MjJ9LCJnZW51aW4iOnsidXNlcl9pZCI6ImI2YWViZjY2LWRiMzctNDhiZi04ZmFjLWJkYTA2ZWI4MTkxNCIsImxvZ2luX3NvdXJjZSI6MywiZGV2aWNlX3R5cGUiOiJ3ZWIiLCJicmFuZF9pZCI6MjI2MH19.hF0PuP22hzSFShy9lzp9IvDjZV9faZ3aL48Lc4meGacbDR-eJh9ELOB5Qr3l7dQhPwzf0n3iOE6DyHPFA2C1ai_yPUoCA25zhB-i1RQ4136BCCAdc0MY7EvIsOhLc4G2EwTEbY7oV3YYFaE4q3XThESetaEPfE-D7XxBwbZMMxRF2vi3TqznJeIVK9F49C-yt6g7_MNynZYH7VsMAnxfDOomeBw2Fx32WTTfne1k8LDTt-KFu7jnvA3S1xgZh6wtzzDLMBDH3sG8T62ha6l-xdOHSi7wu2xi5rwAll9E5s1SK4Ia1B9vAP2hhlMVoWBfvO2PKD3ITyCuqMHqJTdxJA",
-          //   ksCbRequestStatus: 1,
-          //   isBrandSystemUser: true,
-          //   brandId: 2260,
-          //   brandSlug: "ycombinator",
-          //   hasTopics: false,
-          //   brandGuidelines: false,
-          //   refreshToken:
-          //     "naAPe07WVWK9zTlDkWUVveUuZGi7+7cv7ZfTjfxUTSs39FtQMrx1txbmY1yDAL4cx1daegiCJOkoxOFgkTr6BDb8Z9EY5qNctth+Y4mY+JBvcVEOzB5xrUHcd9QICDATxI3EAtgWWcbOV6S3URhalEBUiIultT9jYH9MR6/JgemlN8cS7q7oSHLQ3ZtLZ/CF7Ny/8x/IwuO+aIf6wMpBD/EqrLynK9wizkN3+D8GgrKXPvnqgVvYr9055GfNkVlppJSzMcOQwWrAQFqt+FKo.ec7cd69051f39ad571b4012f7c7085751aa3e2a4a4ed27083ce786cb2ad9e3cb.V2",
-          //   usernameSet: true,
-          // }}
           user={{
-            id: "e427978f-44db-4a5f-8fb9-2760458027dd",
-            image: "pile_of_poo",
-            isAvatar: true,
-            phoneNumber: null,
-            nickname: "dhanji",
-            email: "dhanji@yopmail.com",
-            bio: null,
-            name: null,
+            isAvatar: false,
+            id: "b6aebf66-db37-48bf-8fac-bda06eb81914",
+            phoneNumber: "916354665097",
+            nickname: "ycombinator",
+            image:
+              "https://media.qa.begenuin.com/uploads/profile_images/1741280553604_croppedImage_1741280519374.png",
+            email: "himanshu@begenuin.com",
+            name: "ycombinator",
             accessToken:
-              "eyJraWQiOiJkLTE3NDkyMDE0MzYxMzYiLCJ0eXAiOiJKV1QiLCJ2ZXJzaW9uIjoiNSIsImFsZyI6IlJTMjU2In0.eyJpYXQiOjE3NDk1NTc3ODMsImV4cCI6MTc1MDc2NzM4Miwic3ViIjoiNjhjMzA4NWUtYTNjMC00ZWViLThhZGUtN2RmOTE2MzViYjhlIiwidElkIjoicHVibGljIiwicnN1YiI6IjY4YzMwODVlLWEzYzAtNGVlYi04YWRlLTdkZjkxNjM1YmI4ZSIsInNlc3Npb25IYW5kbGUiOiI2NWNjYjE5MC1iMWFiLTQwMjQtYmUyNC1hMjUzNGEzMDc3MjQiLCJyZWZyZXNoVG9rZW5IYXNoMSI6ImE3N2JjMmVmMmU4ZWM4NzE1ODdlNjk3MTkwMmY0ZDE4OWQ3YzNhYjQ4NjllNGJkMzE1NjkwODAwZTFkZDQ1NTIiLCJwYXJlbnRSZWZyZXNoVG9rZW5IYXNoMSI6bnVsbCwiYW50aUNzcmZUb2tlbiI6bnVsbCwiaXNzIjoiaHR0cHM6Ly9ub2RlanMucWEuYmVnZW51aW4uY29tL2FwaS92NC9hdXRoIiwic3Qtcm9sZSI6eyJ2IjpbXSwidCI6MTc0OTU1Nzc4MjYzNn0sInN0LXBlcm0iOnsidiI6W10sInQiOjE3NDk1NTc3ODI2MzZ9LCJnZW51aW4iOnsidXNlcl9pZCI6ImU0Mjc5NzhmLTQ0ZGItNGE1Zi04ZmI5LTI3NjA0NTgwMjdkZCIsImxvZ2luX3NvdXJjZSI6MywiZGV2aWNlX3R5cGUiOiJ3ZWIiLCJicmFuZF9pZCI6MjkyMn19.BOIOF-_sUEQVX6ow-vSgxKhwse7TGJWrMHrim32ZLLDi3B9TmImoW20Nq5ld7AFExzNb1Bu1K7Muph_H7bLE4GeqyLAo5z0mzi9YKe4yREf3xGevN3LvLTeE1q3zJHFgfMqH_CDnfYYOH78r82LE-iKTczEketbKknB5rwuoptsFLcduyfDsphT3W5WQblMAkr_c6LVEid9SiNTrq3lXgRbVQRe5rmf7EpI_vJ_A2zFkoHCv9VkEcIeUhgKfoOKXyqxGbWL41aNpJEJ57nTbMjxOPpxWF_tu7a3ohSrBwUhCOpyQ4fxoyNG7XS5fbWNIMkv4JTUmDVGtnFWpHiXPjw",
+              "eyJraWQiOiJkLTE3NDk4MDgyMzY3ODMiLCJ0eXAiOiJKV1QiLCJ2ZXJzaW9uIjoiNSIsImFsZyI6IlJTMjU2In0.eyJpYXQiOjE3NDk4MjQ0MjksImV4cCI6MTc1MTAzNDAyOCwic3ViIjoiYjJmOTcxNTItOGQxYi00ZmM5LTkwNzItMzdiMjI5YWFmYWYxIiwidElkIjoicHVibGljIiwicnN1YiI6ImIyZjk3MTUyLThkMWItNGZjOS05MDcyLTM3YjIyOWFhZmFmMSIsInNlc3Npb25IYW5kbGUiOiJiZmQwZDFjYy03ZmUxLTQzNmUtODI1My01NGQxZDQzMGUzNWMiLCJyZWZyZXNoVG9rZW5IYXNoMSI6IjQwZGI1ZTU2ZjYxMjIxMGVkM2E1NzA3YjlkM2RiYjdkNGM0MDBhMzFjOTU4N2RlMWMwODVkZDc2YWRmNjM3NDgiLCJwYXJlbnRSZWZyZXNoVG9rZW5IYXNoMSI6bnVsbCwiYW50aUNzcmZUb2tlbiI6bnVsbCwiaXNzIjoiaHR0cHM6Ly9ub2RlanMucWEuYmVnZW51aW4uY29tL2FwaS92NC9hdXRoIiwic3Qtcm9sZSI6eyJ2IjpbXSwidCI6MTc0OTgyNDQyODY5NX0sInN0LXBlcm0iOnsidiI6W10sInQiOjE3NDk4MjQ0Mjg2OTZ9LCJnZW51aW4iOnsidXNlcl9pZCI6ImI2YWViZjY2LWRiMzctNDhiZi04ZmFjLWJkYTA2ZWI4MTkxNCIsImxvZ2luX3NvdXJjZSI6MywiZGV2aWNlX3R5cGUiOiJ3ZWIiLCJicmFuZF9pZCI6MjI2MH19.Ae-HpYiG2SK40AfoAQfePmglrxxLA--XYl_anVTVQhnV1nW2WBuz4bD51pJPr2JABds4J4Qna2T3V296gy8PBt8Ose88bzFoccRBRU1S77LKe4_Ojqqbe4cRLc_M5t0UkpCFAnvQKd9egre9XIduT2x3GyCC7Lb8_5gqSLfVNkrpp0wz3eB31QRkvKMKKBE8f5SPBlyUwHwnOFFBFfEMdeRD8T9VRUlEZaWdYUtPiV4vwnGM4kV3lfu56_mP0Qg7b52MZZUVoZdqPyMXNcqzudTHBnkG0cQSe_tcXQ5zUUEfxZZ9h_-VZljX0RYiBTD6aUzpQwenPmiewjF8atSuRg",
             ksCbRequestStatus: 1,
-            isBrandSystemUser: false,
-            brandId: 2922,
-            brandSlug: null,
-            hasTopics: false,
-            brandGuidelines: false,
+            isBrandSystemUser: true,
+            brandId: 2260,
+            brandSlug: "ycombinator",
+            hasTopics: true,
             refreshToken:
-              "H6uCa5yhYXitof+PUxKv6uTc+ccgMJqjlk8f9cRx+doS+qacDeZqPWZgpr3E8S4e67pd1Eqs0L0HH2Amj6XuJwxFCix4aGr5w2aY8b7Qe60oSkr5uSUencEPInuQEqGfQrzTmg9RFtBV1VnVsFedo7xfcwSuQTBdfCW6xT3XDfY455K1IyP96CnO9eJJAs4pyKo+zIQ5po70z3W7p8y3oghNobWPl571lSnFrg5vsavvKFnjAs3CVAQeuQNYl0+CXk952/Ug6LV1sUbvR78U.ec84a0e2f0af57d23c844f3f2f46df05ce96dd342b38f56ab27c02c018ad1741.V2",
-            usernameSet: false,
+              "d/4WndBLTrRcowEqOKGsU7NQwDTIcGjNOHuX6g2rt1AdhMdMDNF6uChX4kI/bZPAyC+7IY7NzSJNNCL92Drk7o1rLhTJtR4INhwKUiwQsXIstlXV9CqtWEQsa7/gQCLHUS0oAo93jVdA9dIbRm6vb25UAZzyKOF6Y5nIOpTykMEgQZUgvCZgRoH0VVbOwBd9vP0EIKfCCJni9vr+Aw8g+Ckz5yLqQBpDmKlFeRxOHMlhBSLuLMlWogf8HaD0F4RcGFWCu1B9eWRAMrGls7/V.7913f90c5bc557d41f084b6733356e6a25ab3bcae9cb56674c58d716dac9ef25.V2",
+            usernameSet: true,
           }}
         >
           <BaseContextProvider brandDetails={brandDetails}>
