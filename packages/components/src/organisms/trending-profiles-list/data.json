@@ -1,0 +1,92 @@
+[
+  {
+    "username": "janedoe",
+    "is_verified": true,
+    "is_avatar": true,
+    "profile_img": "https://randomuser.me/api/portraits/women/44.jpg"
+  },
+  {
+    "username": "johnsmith",
+    "is_verified": false,
+    "is_avatar": false,
+    "profile_img": "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=facearea&w=256&h=256"
+  },
+  {
+    "username": "alicew",
+    "is_verified": true,
+    "is_avatar": false,
+    "profile_img": "https://randomuser.me/api/portraits/women/68.jpg"
+  },
+  {
+    "username": "boblee",
+    "is_verified": false,
+    "is_avatar": true,
+    "profile_img": "https://randomuser.me/api/portraits/men/32.jpg"
+  },
+  {
+    "username": "charliep",
+    "is_verified": true,
+    "is_avatar": true,
+    "profile_img": "https://randomuser.me/api/portraits/men/65.jpg"
+  },
+  {
+    "username": "dianar",
+    "is_verified": false,
+    "is_avatar": false,
+    "profile_img": "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=facearea&w=256&h=256"
+  },
+  {
+    "username": "edwardk",
+    "is_verified": true,
+    "is_avatar": false,
+    "profile_img": "https://randomuser.me/api/portraits/men/77.jpg"
+  },
+  {
+    "username": "fionas",
+    "is_verified": false,
+    "is_avatar": true,
+    "profile_img": "https://randomuser.me/api/portraits/women/33.jpg"
+  },
+  {
+    "username": "georgeh",
+    "is_verified": true,
+    "is_avatar": false,
+    "profile_img": "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=facearea&w=256&h=256"
+  },
+  {
+    "username": "hannahm",
+    "is_verified": false,
+    "is_avatar": true,
+    "profile_img": "https://randomuser.me/api/portraits/women/12.jpg"
+  },
+  {
+    "username": "ianb",
+    "is_verified": true,
+    "is_avatar": true,
+    "profile_img": "https://randomuser.me/api/portraits/men/23.jpg"
+  },
+  {
+    "username": "jessicac",
+    "is_verified": false,
+    "is_avatar": false,
+    "profile_img": "https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=facearea&w=256&h=256"
+  },
+  {
+    "username": "kevinl",
+    "is_verified": true,
+    "is_avatar": false,
+    "profile_img": "https://randomuser.me/api/portraits/men/41.jpg"
+  },
+  {
+    "username": "lisaw",
+    "is_verified": false,
+    "is_avatar": true,
+    "profile_img": "https://randomuser.me/api/portraits/women/55.jpg"
+  },
+  {
+    "username": "michaels",
+    "is_verified": true,
+    "is_avatar": true,
+    "profile_img": "https://randomuser.me/api/portraits/men/54.jpg"
+  }
+]

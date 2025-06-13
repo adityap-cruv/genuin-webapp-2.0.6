@@ -4,8 +4,8 @@ import { abbreviateNumber } from "@genuin/ui/lib/utils";
 
 type TrendingGroupCardProps = {
   groupName: string;
-  memberCount: string;
-  postCount: string;
+  memberCount: number;
+  postCount: number;
   userAvatars: {
     imageUrl: string;
     alt: string;
@@ -13,11 +13,10 @@ type TrendingGroupCardProps = {
     userName: string;
     name: string;
   }[];
-  content: string;
-  thumbnailAvatars: {
+  description: string;
+  postThumbnails: {
     imageUrl: string;
     alt: string;
-    isAvatar: boolean;
   }[];
 };
 
@@ -26,9 +25,22 @@ export const TrendingGroupCard = ({
   memberCount,
   postCount,
   userAvatars,
-  content,
-  thumbnailAvatars,
+  description,
+  postThumbnails,
 }: TrendingGroupCardProps) => {
+  const visiblePostThumbnails = postThumbnails?.slice(0, 3) || [];
+
+  function getOpacity(index: number, totalVisibleItems: number) {
+    const lastIndex = totalVisibleItems - 1;
+    if (totalVisibleItems === 1) return 1;
+    if (index === lastIndex) return 1;
+
+    // Reduce opacity the further an item is from the top
+    const stepsFromTop = lastIndex - index;
+    const reducedOpacity = 1 - stepsFromTop * 0.3;
+    return Math.max(reducedOpacity, 0.1);
+  }
+
   return (
     <div className="gencl:border gencl:rounded-2xl gencl:border-secondary-200 gencl:relative gencl:overflow-hidden gencl:w-full">
       <div className="gencl:px-5 gencl:py-6">
@@ -42,7 +54,7 @@ export const TrendingGroupCard = ({
             {memberCount && (
               <>
                 <strong className="gencl:text-secondary-900">
-                  {memberCount}
+                  {abbreviateNumber(memberCount)}
                 </strong>{" "}
                 <span className="gencl:text-secondary-600">members</span>
               </>
@@ -53,7 +65,7 @@ export const TrendingGroupCard = ({
             {postCount && (
               <>
                 <strong className="gencl:text-secondary-900">
-                  {postCount}
+                  {abbreviateNumber(postCount)}
                 </strong>{" "}
                 <span className="gencl:text-secondary-600">posts</span>
               </>
@@ -96,7 +108,7 @@ export const TrendingGroupCard = ({
             )}
           </div>
           <p className="gencl:text-body-1-semi-bold gencl:text-secondary-600 gencl:line-clamp-3">
-            {content}
+            {description}
           </p>
         </div>
 
@@ -106,10 +118,11 @@ export const TrendingGroupCard = ({
             marginTop: "-100px",
           }}
         >
-          {thumbnailAvatars?.map((item, index) => {
+          {visiblePostThumbnails.slice(0, 3)?.map((item, index) => {
             const offset = index * 10;
             const zIndex = index;
-            const opacity = 0.4 + (index / thumbnailAvatars.length) * 0.6;
+            const opacity = getOpacity(index, visiblePostThumbnails.length);
+
             return (
               <div
                 key={index}

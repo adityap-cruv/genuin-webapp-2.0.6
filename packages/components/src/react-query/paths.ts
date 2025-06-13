@@ -16,6 +16,10 @@ export const API_PATHS = {
    */
   GROUP_FEED: "/goservices/feed/loop",
   /**
+   * Api path to fetch trending groups.
+   */
+  TRENDING_GROUPS: "/api/v3/featured_loops",
+  /**
    * Api path to fetch group members.
    */
   GROUP_MEMBERS: "/api/v3/conversation/members",
@@ -43,6 +47,10 @@ export const API_PATHS = {
    * Api path to fetch community members.
    */
   COMMUNITY_MEMBERS: "/api/v3/community/members",
+  /**
+   * Api path to fetch trending communities.
+   */
+  TRENDING_COMMUNITIES: "/api/v3/featured_communities",
   /**
    * Api path to fetch community feed.
    */

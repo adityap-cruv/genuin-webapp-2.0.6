@@ -19,3 +19,11 @@ export function getQueryKeyForLoopDetails(slug: string): QueryKey {
 export function getQueryKeyForGroupMembers(slug: string): QueryKey {
   return [...baseQueryKey, "group", "members", slug];
 }
+
+/**
+ * This function returns a QueryKey for fetching trending groups.
+ * @returns
+ */
+export function getQueryKeyForTrendingGroups() {
+  return ["featured_loops"];
+}

@@ -91,9 +91,13 @@
   --text-headline-3-semi-bold--line-height: 28px;
   --text-headline-3-semi-bold--font-weight: 600;
 
+  --text-headline-4-bold: 20px;
+  --text-headline-4-bold--line-height: 24px;
+  --text-headline-4-bold--font-weight: 700;
+
   --text-headline-4-semi-bold: 20px;
   --text-headline-4-semi-bold--line-height: 24px;
-  --text-headline-4-semi-bold--font-weight: 700;
+  --text-headline-4-semi-bold--font-weight: 600;
 
   --text-headline-4-medium: 20px;
   --text-headline-4-medium--line-height: 24px;
