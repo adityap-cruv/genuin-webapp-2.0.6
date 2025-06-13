@@ -2,7 +2,7 @@ import { Avatar } from "@genuin/ui/avatar";
 import { ReadMore, type ReadMoreTextType } from "@genuin/ui/read-more";
 import { cn } from "@genuin/ui/utils";
 import { Skeleton } from "@genuin/ui/skeleton";
-import { type ComponentProps, type ReactNode } from "react";
+import React, { type ComponentProps, type ReactNode } from "react";
 
 import { Link } from "@molecules/link";
 import type { LinksType } from "@molecules/social-links";

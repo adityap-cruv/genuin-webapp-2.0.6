@@ -27,6 +27,14 @@ export function getQueryKeyForCommunityMembers(slug: string) {
 }
 
 /**
+ * Generates a query key for fetching trending communities.
+ * @returns
+ */
+export function getQueryKeyForTrendingCommunities() {
+  return ["featured", "communities"];
+}
+
+/**
  * Generates a query key for fetching community feed.
  * @param slug
  * @returns

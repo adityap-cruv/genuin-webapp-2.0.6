@@ -11,10 +11,10 @@ import { cn } from '@lib/utils'
 
 export const SearchBar = {
   mobile: Mobile,
-  desktop: Desktop,
+  desktop: SearchDesktop,
 }
 
-function Desktop() {
+export function SearchDesktop() {
   const { updateFocus, isOpen, close } = useSearchBarStore()
 
   return (
@@ -37,7 +37,7 @@ function Desktop() {
           e.preventDefault()
           setTimeout(() => {
             const searchElement = document.getElementById('search-input') as HTMLInputElement
-             
+
             const focus = document.activeElement == searchElement
             if (!focus) close()
             if (!focus && searchElement) searchElement.value = ''

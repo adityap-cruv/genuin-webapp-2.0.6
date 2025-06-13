@@ -2,10 +2,11 @@ import { CtaButtons } from "./cta-buttons";
 import { BrandLogo } from "@molecules/brand";
 import { BrandSlogan } from "@molecules/brand";
 import { cn } from "@genuin/ui/utils";
+import type { ReactNode } from "react";
 
-type TopBarProps = React.ComponentProps<"div">;
+type TopBarProps = React.ComponentProps<"div"> & { search: ReactNode };
 
-export function TopBar({ className, ...restProps }: TopBarProps) {
+export function TopBar({ className, search, ...restProps }: TopBarProps) {
   return (
     <div
       className={cn(
@@ -17,7 +18,7 @@ export function TopBar({ className, ...restProps }: TopBarProps) {
       <BrandLogo className="gencl:h-full gencl:py-2 gencl:object-cover" />
       <BrandSlogan />
       <div className="gencl:flex gencl:justify-between gencl:gap-2.5">
-        <div className="gencl:w-72 gencl:self-center">Search</div>
+        {search}
         <CtaButtons />
       </div>
     </div>

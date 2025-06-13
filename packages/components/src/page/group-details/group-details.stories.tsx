@@ -28,3 +28,9 @@ export const Default: Story = {
     slug: "heritage-rides",
   },
 };
+
+export const ErrorPage: Story = {
+  args: {
+    slug: "invalid-slug-to-trigger-generic-error",
+  },
+};

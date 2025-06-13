@@ -97,9 +97,11 @@ function Content() {
             </p>
             {!user.isBrandSystemUser && (
               // <AuthenticationModal customStep="COMPLETE_PROFILE">
-              <p className="gencl:text-body-1-semi-bold gencl:cursor-pointer gencl:text-primary gencl:hover:text-primary-700">
-                Complete Profile
-              </p>
+              <Link href={buildPageUrl({ type: "settings" })}>
+                <p className="gencl:text-body-1-semi-bold gencl:cursor-pointer gencl:text-primary gencl:hover:text-primary-700">
+                  Complete Profile
+                </p>
+              </Link>
               // </AuthenticationModal>
             )}
           </div>
