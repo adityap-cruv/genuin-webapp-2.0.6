@@ -6,12 +6,12 @@ import { cn } from "@genuin/ui/lib/utils";
 
 // TODO: think about composite theme for icon as well.
 const buttonVariants = cva(
-  "gencl:inline-flex gencl:items-center gencl:px-4 gencl:text-body-0-semi-bold gencl:justify-center gencl:hover:cursor-pointer gencl:gap-2 gencl:whitespace-nowrap gencl:rounded-md gencl:transition-[color,box-shadow] gencl:disabled:pointer-events-none gencl:disabled:opacity-50 [&_svg]:gencl:pointer-events-none [&_svg:not([class*='size-'])]:gencl:size-4 gencl:shrink-0 [&_svg]:gencl:shrink-0 gencl:outline-none gencl:has-[>svg:first-child]:pl-2",
+  "gencl:inline-flex gencl:items-center gencl:px-4 gencl:text-body-0-semi-bold gencl:justify-center gencl:hover:cursor-pointer gencl:gap-2 gencl:whitespace-nowrap gencl:rounded-md gencl:transition-[color,box-shadow] gencl:disabled:pointer-events-none gencl:disabled:opacity-50 [&_svg]:gencl:pointer-events-none [&_svg:not([class*='size-'])]:gencl:size-4 gencl:shrink-0 [&_svg]:gencl:shrink-0 gencl:outline-none",
   {
     variants: {
       variant: {
         default: "",
-        icon: "",
+        icon: "gencl:has-[>svg:only-child]:px-2 gencl:has-[>svg:only-child]:aspect-square",
         rounded: "gencl:rounded-full",
       },
       theme: {
@@ -26,9 +26,9 @@ const buttonVariants = cva(
           "gencl:p-0 gencl:size-12! gencl:rounded-full! gencl:flex-center gencl:bg-secondary-800 gencl:text-white gencl:backdrop-blur-sm gencl:hover:bg-secondary-600 gencl:border-0 gencl:transition-all gencl:duration-200 [&_svg]:gencl:size-5",
       },
       size: {
-        sm: "gencl:h-9 gencl:rounded-md gencl:gap-1.5 gencl:text-body-1-semi-bold gencl:has-[>svg]:px-2.5",
+        sm: "gencl:h-9 gencl:rounded-md gencl:gap-1.5 gencl:text-body-1-semi-bold",
         md: "gencl:h-10",
-        lg: "gencl:h-12 gencl:has-[>svg]:px-4",
+        lg: "gencl:h-12",
       },
       shape: {
         default: "gencl:rounded-md",
@@ -36,6 +36,21 @@ const buttonVariants = cva(
       },
     },
     compoundVariants: [
+      {
+        variant: "icon",
+        size: "sm",
+        class: "gencl:size-9",
+      },
+      {
+        variant: "icon",
+        size: "md",
+        class: "gencl:size-10",
+      },
+      {
+        variant: "icon",
+        size: "lg",
+        class: "gencl:size-12",
+      },
       {
         shape: "pill",
         size: "sm",

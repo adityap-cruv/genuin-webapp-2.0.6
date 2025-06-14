@@ -79,6 +79,7 @@ export function CommunityPill({
             onClick={(e) => {
               e.preventDefault();
             }}
+            onCommunityJoinStatusChange={onCommunityJoinStatusChange}
           />
         )}
       </div>

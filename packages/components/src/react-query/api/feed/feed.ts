@@ -189,7 +189,7 @@ export function setQueryDataForJoinGroupStatusInFeed({
   groupId: string;
   newRole: GroupUserStatusType;
 }) {
-  queryClient.setQueryData<QueryData>(queryKey, (oldData) => {
+  queryClient.setQueryData<QueryData>(queryKey, (oldData): QueryData => {
     if (!oldData) return oldData;
 
     // Create a new array with the updated group role
@@ -202,7 +202,7 @@ export function setQueryDataForJoinGroupStatusInFeed({
               ...video,
               group: {
                 ...video.group,
-                userRole: newRole,
+                role: newRole,
                 isSubscribed:
                   newRole === "JOINED" ? true : video.group.isSubscribed,
               },

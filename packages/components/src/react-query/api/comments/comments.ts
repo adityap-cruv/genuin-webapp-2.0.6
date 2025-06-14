@@ -88,3 +88,32 @@ export function handleReactionStateChangeInComments(
     }
   );
 }
+
+/**
+ * Set the query data for a new comment.
+ * @param videoId - The ID of the video for which the comment is posted.
+ * @param newComment - The new comment to be added.
+ */
+export function setQueryDataForNewComment(
+  videoId: string,
+  newComment: Awaited<ReturnType<typeof fetchComments>>["comments"]
+) {
+  console.log("Setting new comment data for video:", videoId, newComment);
+  queryClient.setQueryData<QueryData>(
+    getQueryKeyForComments(videoId),
+    (oldData) => {
+      if (!oldData) return oldData;
+      return {
+        ...oldData,
+        pages: oldData.pages.map((page, index) =>
+          index === 0
+            ? {
+                ...page,
+                comments: [...newComment, ...page.comments],
+              }
+            : page
+        ),
+      };
+    }
+  );
+}

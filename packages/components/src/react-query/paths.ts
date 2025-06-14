@@ -12,6 +12,10 @@ export const API_PATHS = {
    */
   FEED_GET_COMMENTS: "/api/v3/comments",
   /**
+   * Api path to create a comment.
+   */
+  FEED_CREATE_COMMENT: "/api/v3/comment/create",
+  /**
    * Api path to fetch group details.
    */
   GROUP_DETAILS: "/api/v3/conversation/details",

@@ -31,3 +31,4 @@ export * from "./group-icon";
 export * from "./communities-icon";
 export * from "./group-icon";
 export * from "./email-icon";
+export * from "./notification-enabled-icon";

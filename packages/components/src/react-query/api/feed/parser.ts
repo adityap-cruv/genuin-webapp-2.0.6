@@ -53,8 +53,8 @@ export function parseFeed(
       thumbnailSprite: item.video.sprite_image_url || null,
     },
     group: {
-      id: item.loop.group_id,
-      slug: item.loop.uuid,
+      id: item.loop.uuid,
+      slug: item.loop.slug || "",
       description: item.loop.group_description || "",
       shareUrl: item.loop.share_url || undefined,
       name: item.loop.group_name || "",

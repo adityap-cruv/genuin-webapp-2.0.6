@@ -1,5 +1,7 @@
 import { axiosInstance } from "@genuin/components/react-query/axios-instance";
 import { useMutation } from "@tanstack/react-query";
+import { parseComments } from "./parser";
+import { API_PATHS } from "../../paths";
 
 type PostCommentProps = {
   videoId: string;
@@ -37,7 +39,7 @@ async function postComment({
   commentData,
 }: PostCommentProps) {
   try {
-    const res = await axiosInstance.post("/api/v3/comment/create", {
+    const res = await axiosInstance.post(API_PATHS.FEED_CREATE_COMMENT, {
       conversation_id: videoId,
       chat_id: loopId,
       type: 3,
@@ -48,7 +50,7 @@ async function postComment({
       throw new Error("Failed to post comment");
     }
 
-    return { code: res.status, commentData: res.data.data };
+    return { commentData: parseComments([res.data.data]) };
   } catch (e: any) {
     console.error("Failed to post comment:", e);
     throw new Error(`Failed to post comment: ${e?.message || e}`);

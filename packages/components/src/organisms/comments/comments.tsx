@@ -5,6 +5,7 @@ import { useMemo, type ComponentProps } from "react";
 
 import {
   handleReactionStateChangeInComments,
+  setQueryDataForNewComment,
   useComments,
 } from "@genuin/components/react-query/api/comments";
 import { CommentItem, CommentsItemSkeleton } from "./comment-item";
@@ -30,7 +31,13 @@ export function Comments({
       {...restProps}
     >
       <CommentsComponent videoId={videoId} />
-      <CommentInputBox videoId={videoId} loopId={loopId} />
+      <CommentInputBox
+        videoId={videoId}
+        loopId={loopId}
+        onCommentPosted={(comments) => {
+          setQueryDataForNewComment(videoId, comments);
+        }}
+      />
     </div>
   );
 }

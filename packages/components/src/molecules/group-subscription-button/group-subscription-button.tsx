@@ -1,5 +1,5 @@
 import { Button as PrimitiveButton } from "@genuin/ui/button";
-import { NotificationIcon } from "@genuin/ui/icons";
+import { NotificationEnabledIcon, NotificationIcon } from "@genuin/ui/icons";
 import { useAuthContext } from "@genuin/components/context/auth";
 import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
 import { ComponentProps, useCallback } from "react";
@@ -62,6 +62,7 @@ function Button({
     <PrimitiveButton
       size="md"
       theme="secondary"
+      variant={showText ? "default" : "icon"}
       shape={shape === "pill" ? "pill" : undefined}
       onClick={handleClick}
       disabled={isPending || disabled}
@@ -70,7 +71,7 @@ function Button({
       {isPending ? (
         <Loader strokeColor="black" size="sm" />
       ) : isSubscriber ? (
-        "S"
+        <NotificationEnabledIcon variant="light" />
       ) : (
         <NotificationIcon />
       )}
