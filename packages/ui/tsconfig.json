@@ -14,12 +14,8 @@
       "node"
     ],
     "paths": {
-      "@components/*": ["./src/components/*"],
-      "@lib/*": ["./src/lib/*"],
       "@genuin/ui": ["./src"],
       "@genuin/ui/*": ["./src/*"],
-      "@hooks/*": ["./src/hooks/*"],
-      "@icons/*": ["./src/icons/*"]
     }
   },
   "include": [

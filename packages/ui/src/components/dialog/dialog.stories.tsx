@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Button } from "@components/button";
+import { Button } from "@genuin/ui/components/button";
 
 import {
   Dialog,

@@ -16,7 +16,7 @@ const config: StorybookConfig = {
     getAbsolutePath("@chromatic-com/storybook"),
     // Added accessibility addon
     getAbsolutePath("@storybook/addon-a11y"),
-    getAbsolutePath("@storybook/addon-docs")
+    getAbsolutePath("@storybook/addon-docs"),
   ],
   framework: {
     name: getAbsolutePath("@storybook/react-vite"),
@@ -30,9 +30,8 @@ const config: StorybookConfig = {
         ...config.resolve,
         alias: {
           ...config.resolve?.alias,
-          "@components": resolve(__dirname, "../src/components"),
+          "@genuin/ui/components": resolve(__dirname, "../src/components"),
           "@hooks": resolve(__dirname, "../src/hooks"),
-          "@lib": resolve(__dirname, "../src/lib"),
         },
       },
     };

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React from "react";
 
-import { Button, type ButtonProps } from "@components/button";
+import { Button, type ButtonProps } from "@genuin/ui/components/button";
 
 import {
   Tooltip,

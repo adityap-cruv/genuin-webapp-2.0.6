@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React from "react";
 
-import { Button } from "@components/button";
+import { Button } from "@genuin/ui/components/button";
 
 import {
   Collapsible,
