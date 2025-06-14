@@ -50,11 +50,11 @@ const communitySchema = z.object({
 });
 
 // Define settings schema
-const settingsSchema = z.object({
+export const settingsSchema = z.object({
   discoverable: z.boolean(),
 });
 
-const actionsSchema = z.array(
+export const actionsSchema = z.array(
   z.object({
     actionId: z.number(),
     accessTypeId: z.number(),

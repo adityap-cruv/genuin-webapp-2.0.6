@@ -11,7 +11,7 @@ const description = z.array(
 );
 
 // Define the video schema
-const videoSchema = z.object({
+export const videoSchema = z.object({
   id: z.string(),
   createdAt: z.number().default(-1).nullish(),
   commentCount: z.number(),
@@ -32,7 +32,7 @@ const videoSchema = z.object({
 });
 
 // Define the loop schema
-const GroupSchema = z.object({
+export const GroupSchema = z.object({
   slug: z.string(),
   name: z.string().nullish(),
   id: z.string(),
@@ -43,7 +43,7 @@ const GroupSchema = z.object({
   role: GroupUserStatusSchema,
 });
 
-const BrandSchema = z.object({
+export const BrandSchema = z.object({
   id: z.number(),
   name: z.string(),
   logo: z.string().nullish(),
@@ -53,7 +53,7 @@ const BrandSchema = z.object({
 });
 
 // Define the community schema
-const communitySchema = z.object({
+export const communitySchema = z.object({
   profileImage: z.string().nullish(),
   name: z.string().nullish(),
   slug: z.string(),
@@ -68,14 +68,14 @@ const communitySchema = z.object({
   postsCount: z.number().nullish().default(0),
 });
 
-const BrandUserSchema = z.object({
+export const BrandUserSchema = z.object({
   id: z.number(),
   slug: z.string(),
   userLogo: z.number().nullish().default(1),
 });
 
 // Define the owner schema
-const ownerSchema = z.object({
+export const ownerSchema = z.object({
   isAvatar: z.boolean(),
   profileImage: z.string(),
   userName: z.string(),

@@ -17,11 +17,11 @@ export default function Error() {
             style={{ fontSize: '48px', lineHeight: '110%', fontWeight: 700, letterSpacing: '-0.96px' }}>
             There seems to be an issue on our end.
           </p>
-          <p className="pt-4 text-center text-title-3-med">Our team is working to resolve it as quickly as possible.</p>
+          <p className="text-title-3-med pt-4 text-center">Our team is working to resolve it as quickly as possible.</p>
         </span>
-        <Image src={imgPuppet} alt="" className="h-auto w-32" />
+        <Image src={imgPuppet} alt="" className="h-auto w-32" height={128} width={128} />
         <Link href={PATH_NAME.home()}>
-          <Button size="custom" className="rounded-lg bg-new-off-black px-4 py-3 hover:bg-new-dark-grey">
+          <Button size="custom" className="bg-new-off-black hover:bg-new-dark-grey rounded-lg px-4 py-3">
             <p className="text-new-para-2">Go to Home</p>
           </Button>
         </Link>

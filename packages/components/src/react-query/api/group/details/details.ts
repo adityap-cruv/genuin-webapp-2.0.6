@@ -9,10 +9,10 @@ import { parseGroupDetails } from "./parser";
 import { queryClient } from "@genuin/components/react-query/client";
 import { GroupUserStatusType } from "@genuin/components/types/roles";
 
-async function fetchLoopDetails(slug: string) {
+export async function fetchLoopDetails(slug?: string, chat_id?: string) {
   try {
     const response = await axiosInstance.get(API_PATHS.GROUP_DETAILS, {
-      params: { slug },
+      params: { slug, chat_id },
     });
     return parseGroupDetails(response?.data?.data);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -151,8 +151,16 @@ export const API_PATHS = {
    * API path to post a comment.
    */
   POST_COMMENT: "/api/v3/comment/create",
-   /*
+  /*
    * API path to create a deeplink.
    */
   GENERATE_DYNAMIC_LINK: "/goservices/links/dynamic_link",
+  /**
+   * Api path to fetch metadata for a video deep link.
+   */
+  VIDEO_META_DATA: "/api/v3/deep_link/meta_data",
+  /**
+   * Api path to fetch loop and video conversation
+ */
+  LOOP_VIDEO : "/api/v3/conversation/messages"
 } as const;

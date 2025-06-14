@@ -137,3 +137,17 @@ export function toTitleCase(word: string) {
 export function getSearchParamsFromWindow(): Record<string, any> {
   return Object.fromEntries(new URLSearchParams(window.location.search));
 }
+
+/**
+ * Attempts to parse a JSON string. If parsing fails, returns the original string.
+ *
+ * @param data - The string to attempt to parse as JSON.
+ * @returns The parsed object if `data` is valid JSON; otherwise, returns the original string.
+ */
+export function tryJsonParse(data: string) {
+  try {
+    return JSON.parse(data)
+  } catch (e) {
+    return data
+  }
+}
