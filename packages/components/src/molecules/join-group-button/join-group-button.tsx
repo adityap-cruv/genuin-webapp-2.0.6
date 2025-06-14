@@ -49,8 +49,8 @@ function Button({
   const { user } = useAuthContext();
   const { mutate: joinGroup, isPending: isPendingJoinGroup } =
     useJoinGroupMutation({
-      onSuccess: () => {
-        onGroupJoinStatusChange?.("JOINED");
+      onSuccess: (status) => {
+        onGroupJoinStatusChange?.(status);
       },
       onError: () => {
         toastError("Failed to join group");

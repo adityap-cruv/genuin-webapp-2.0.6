@@ -136,6 +136,14 @@ export const API_PATHS = {
    */
   SEND_DOWNLOAD_APP_LINK: "/api/v3/send_download_link",
   /**
+   * Api path to fetch repost destinations.
+   */
+  REPOST_DESTINATIONS: "/api/v3/repost_destinations",
+  /**
+   * Api path to repost a video.
+   */
+  REPOST_VIDEO: "/api/v3/repost/create",
+  /*
    * API path to post a comment.
    */
   POST_COMMENT: "/api/v3/comment/create",

@@ -13,6 +13,7 @@ import { Menu } from "./menu";
 import { ReactionButton } from "@molecules/reaction-button";
 import { DynamicReactionIcon } from "@molecules/reaction-button";
 import { ShareButton } from "@molecules/share-button";
+import { RepostModal } from "@organisms/repost-modal/repost-modal";
 
 const tooltipVariants = cva("", {
   variants: {
@@ -95,7 +96,11 @@ export const defaultActionWrappers: Record<
   ActionType,
   (defaultNode: ReactNode, context: ActionWrapperContextType) => ReactNode
 > = {
-  REPOST: (node, _context) => node,
+  REPOST: (node, _context) => (
+    <RepostModal videoId={_context.contentId} asChild>
+      {node}
+    </RepostModal>
+  ),
   REACTION: (node, context) => (
     <ReactionButton
       isReacted={context.isReacted}

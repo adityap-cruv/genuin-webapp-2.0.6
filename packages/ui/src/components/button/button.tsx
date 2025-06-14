@@ -6,7 +6,7 @@ import { cn } from "@genuin/ui/lib/utils";
 
 // TODO: think about composite theme for icon as well.
 const buttonVariants = cva(
-  "gencl:inline-flex gencl:items-center gencl:px-4 gencl:text-body-0-semi-bold gencl:justify-center gencl:hover:cursor-pointer gencl:gap-2 gencl:whitespace-nowrap gencl:rounded-md gencl:transition-[color,box-shadow] gencl:disabled:pointer-events-none gencl:disabled:opacity-50 [&_svg]:gencl:pointer-events-none [&_svg:not([class*='size-'])]:gencl:size-4 gencl:shrink-0 [&_svg]:gencl:shrink-0 gencl:outline-none",
+  "gencl:inline-flex gencl:items-center gencl:px-4 gencl:text-body-0-semi-bold gencl:justify-center gencl:hover:cursor-pointer gencl:gap-2 gencl:whitespace-nowrap gencl:rounded-md gencl:transition-[color,box-shadow] gencl:disabled:pointer-events-none gencl:disabled:opacity-50 [&_svg]:gencl:pointer-events-none [&_svg:not([class*='size-'])]:gencl:size-4 gencl:shrink-0 [&_svg]:gencl:shrink-0 gencl:outline-none gencl:has-[>svg:first-child]:pl-2",
   {
     variants: {
       variant: {
@@ -16,7 +16,7 @@ const buttonVariants = cva(
       },
       theme: {
         primary:
-          "gencl:bg-primary gencl:text-white! gencl:shadow-xs gencl:hover:bg-primary-600",
+          "gencl:bg-primary gencl:text-white! gencl:shadow-xs gencl:hover:bg-primary-600 gencl:[&_svg]:stroke-white",
         secondary:
           "gencl:bg-secondary-50 gencl:text-black! gencl:hover:bg-secondary-100",
         outline: "gencl:border gencl:border-secondary-200 gencl:bg-white",

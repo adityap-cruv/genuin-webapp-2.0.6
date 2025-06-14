@@ -53,12 +53,6 @@ export function AuthProvider({
   // This ensures the token is set/removed before any subsequent network requests.
   useLayoutEffect(() => {
     const token = user?.accessToken ?? authenticatedUser?.accessToken;
-    console.log(
-      "Setting auth token in Axios instance:",
-      token,
-      user,
-      authenticatedUser
-    );
     if (!!token) {
       setAuthTokenInAxiosInstance(token);
     } else {

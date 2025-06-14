@@ -5,6 +5,7 @@ import type { ComponentProps } from "react";
 import { ReactNode } from "react";
 import { ProfileLink } from "@molecules/profile-link";
 import { Stats } from "@molecules/stats/stats";
+import { CommunityPrivacyInfo } from "@molecules/community-privacy-info";
 
 /**
  * Props for the GenericDetailsMetadata component
@@ -106,18 +107,10 @@ export function GenericDetailsMetadata({
     >
       {/** todo: replace it with <PrivacyInfo/> component. */}
       {privacyInfo && (
-        <>
-          <div className="gencl:flex gencl:[&_svg]:size-4  gencl:items-center gencl:gap-1">
-            {privacyInfo.isPrivate ? (
-              <LockIcon className="gencl:stroke-secondary-600" />
-            ) : (
-              <PublicIcon className="gencl:stroke-secondary-600" />
-            )}
-            {(privacyInfo.showPrivacyText === undefined ||
-              privacyInfo.showPrivacyText !== false) &&
-              (privacyInfo.isPrivate ? " Private" : " Public")}
-          </div>
-        </>
+        <CommunityPrivacyInfo
+          isPrivate={privacyInfo.isPrivate}
+          showPrivacyText={privacyInfo.showPrivacyText}
+        />
       )}
       {handle && (
         <>

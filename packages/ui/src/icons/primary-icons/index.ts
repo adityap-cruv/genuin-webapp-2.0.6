@@ -26,6 +26,8 @@ export * from "./pencil-with-line-icon";
 export * from "./bag-icon";
 export * from "./genuin-icon";
 export * from "./forward-icon";
+export * from "./community-icon";
+export * from "./group-icon";
 export * from "./communities-icon";
 export * from "./group-icon";
 export * from "./email-icon";

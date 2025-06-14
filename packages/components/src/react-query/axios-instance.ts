@@ -23,7 +23,6 @@ export function setAuthTokenInAxiosInstance(token?: string) {
   if (token) {
     authTokenInterceptorId = axiosInstance.interceptors.request.use(
       (config) => {
-        console.log("Setting auth token in Axios instance:", token);
         config.headers.Authorization = "Bearer " + token;
         return config;
       }

@@ -12,7 +12,9 @@ async function joinGroup({ groupId }: { groupId: string }) {
       chat_id: groupId,
     })
     .then((res) => {
-      return { code: res.status, data: res.data.data };
+      return res.data.data.status === "requested"
+        ? "REQUESTED"
+        : ("JOINED" as GroupUserStatusType);
     })
     .catch((e) => {
       // return { code: Number(e.response.data.code), data: null };
@@ -27,7 +29,7 @@ export function useJoinGroupMutation({
   onSuccess,
   onError,
 }: {
-  onSuccess?: () => void;
+  onSuccess?: (props: Awaited<ReturnType<typeof joinGroup>>) => void;
   onError?: (error: Error) => void;
 }) {
   return useMutation({

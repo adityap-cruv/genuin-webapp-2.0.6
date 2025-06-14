@@ -46,7 +46,7 @@ export function JoinCommunityButton({
   return button;
 }
 
-export function Button({
+function Button({
   role = "UNJOINED",
   communityId,
   isPrivate,
