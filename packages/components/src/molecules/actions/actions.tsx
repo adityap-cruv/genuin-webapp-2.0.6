@@ -14,6 +14,8 @@ import { ReactionButton } from "@genuin/components/molecules/reaction-button";
 import { DynamicReactionIcon } from "@genuin/components/molecules/reaction-button";
 import { ShareButton } from "@genuin/components/molecules/share-button";
 import { RepostModal } from "@genuin/components/organisms/repost-modal/repost-modal";
+import { useAuthContext } from "@genuin/components/context/auth";
+import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
 
 const tooltipVariants = cva("", {
   variants: {
@@ -69,6 +71,7 @@ type ActionWrapperContextType = {
   isReacted: boolean;
   reactionCount: number;
   shareUrl: string;
+  slug: string;
   onReactionStateChange?: (isReacted: boolean) => void;
 };
 
@@ -79,6 +82,7 @@ type ActionsPropsType = ComponentProps<"div"> & {
   contentId: string;
   variant?: "light" | "dark";
   shareUrl: string;
+  slug: string;
   /**
    * If you want to override the default action wrappers, you can pass a namedActionWrapper object.
    * Each key in the object should correspond to an action type (e.g., "REPOST", "REACTION", etc.),
@@ -96,13 +100,38 @@ export const defaultActionWrappers: Record<
   ActionType,
   (defaultNode: ReactNode, context: ActionWrapperContextType) => ReactNode
 > = {
-  REPOST: (node, _context) => (
-    <RepostModal videoId={_context.contentId} asChild>
-      {node}
-    </RepostModal>
-  ),
+  REPOST: (node, _context) => {
+    const { authenticationStatus } = useAuthContext();
+
+    if (authenticationStatus === "unauthenticated") {
+      return (
+        <AuthenticationModal
+          getAppData={{
+            data: {
+              type: "repost",
+              payload: {
+                shareUrl: _context.shareUrl,
+                videoSlug: _context.slug,
+              },
+            },
+          }}
+          asChild
+        >
+          {node}
+        </AuthenticationModal>
+      );
+    }
+
+    return (
+      <RepostModal videoId={_context.contentId} asChild>
+        {node}
+      </RepostModal>
+    );
+  },
   REACTION: (node, context) => (
     <ReactionButton
+      shareUrl={context.shareUrl}
+      videoSlug={context.slug}
       isReacted={context.isReacted}
       contentId={context.contentId}
       reactionCount={context.reactionCount}
@@ -119,7 +148,12 @@ export const defaultActionWrappers: Record<
     </ShareButton>
   ),
   MORE: (node, context) => (
-    <Menu contentId={context.contentId} children={node} />
+    <Menu
+      contentId={context.contentId}
+      shareUrl={context.shareUrl}
+      videoSlug={context.slug}
+      children={node}
+    />
   ),
 };
 
@@ -129,9 +163,10 @@ export function Actions({
   isReacted,
   actionWrapper,
   reactionCount,
-  contentId, // Added contentId here
+  contentId,
   shareUrl,
-  onReactionStateChange, // Added onReactionStateChange here
+  onReactionStateChange,
+  slug,
   ...restProps
 }: ActionsPropsType) {
   const actions = [
@@ -192,6 +227,7 @@ export function Actions({
           onReactionStateChange,
           reactionCount,
           shareUrl,
+          slug,
         };
         // Priority: namedActionWrapper > defaultActionWrappers
         if (actionWrapper?.[action.actionType]) {

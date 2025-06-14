@@ -20,19 +20,19 @@ const meta: Meta<typeof GetApp> = {
   decorators: [(Story) => <Story />],
   tags: ["autodocs"],
   argTypes: {
-    onSubmit: {
-      description: "Callback fired when form is submitted",
-      control: false,
-    },
-    defaultCountry: {
-      description: "Default country code for phone input",
-      control: { type: "select" },
-      options: ["US", "IN", "GB", "CA"],
-    },
-    className: {
-      description: "Additional CSS classes to apply",
-      control: { type: "text" },
-    },
+    // onSubmit: {
+    //   description: "Callback fired when form is submitted",
+    //   control: false,
+    // },
+    // defaultCountry: {
+    //   description: "Default country code for phone input",
+    //   control: { type: "select" },
+    //   options: ["US", "IN", "GB", "CA"],
+    // },
+    // className: {
+    //   description: "Additional CSS classes to apply",
+    //   control: { type: "text" },
+    // },
   },
 };
 
@@ -44,10 +44,10 @@ type Story = StoryObj<typeof GetApp>;
  */
 export const Default: Story = {
   args: {
-    defaultCountry: "US",
-    onSubmit: () => console.log("Submit clicked"),
-    deeplink:
-      "https://play.google.com/store/apps/details?id=com.begenuin.begenuin&hl=en%3F%5Bobject%20Object%5D%5Bobject%20Object%5D%3D",
+    // defaultCountry: "US",
+    // onSubmit: () => console.log("Submit clicked"),
+    // deepLink:
+    //   "https://play.google.com/store/apps/details?id=com.begenuin.begenuin&hl=en%3F%5Bobject%20Object%5D%5Bobject%20Object%5D%3D",
   },
   parameters: {
     docs: {

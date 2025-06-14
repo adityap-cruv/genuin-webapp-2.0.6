@@ -1,4 +1,11 @@
-import { createContext, useContext, useReducer, useCallback } from "react";
+import {
+  createContext,
+  useContext,
+  useReducer,
+  useCallback,
+  ReactNode,
+} from "react";
+import { DeepLinkPayloadUnion } from "@genuin/components/react-query/api/deeplink/types";
 
 export type AuthActionType =
   | "JOIN_COMMUNITY"
@@ -49,14 +56,25 @@ export type FormDataType = {
   responseDeviceId: string;
 };
 
+export type getAppDataType = {
+  title?: string | ReactNode;
+  description?: string | ReactNode;
+  data?: DeepLinkPayloadUnion;
+};
+
 type State = {
   step: StepsType;
   formData: Partial<FormDataType>;
+  getAppData?: getAppDataType;
 };
 
 type Action =
   | { type: "SET_STEP"; step: StepsType }
   | { type: "SET_FORM_DATA"; data: Partial<FormDataType> }
+  | {
+      type: "SET_GET_APP_DATA";
+      data: Partial<getAppDataType>;
+    }
   | { type: "RESET" };
 
 function reducer(state: State, action: Action): State {
@@ -65,6 +83,8 @@ function reducer(state: State, action: Action): State {
       return { ...state, step: action.step };
     case "SET_FORM_DATA":
       return { ...state, formData: { ...state.formData, ...action.data } };
+    case "SET_GET_APP_DATA":
+      return { ...state, getAppData: action.data };
     case "RESET":
       return { step: "SIGNIN", formData: {} };
     default:
@@ -77,6 +97,7 @@ type ContextType = {
   setStep: (step: StepsType) => void;
   formData: Partial<FormDataType>;
   setFormData: (data: Partial<FormDataType>) => void;
+  getAppData?: getAppDataType;
   closeModal: () => void;
   action?: AuthActionType;
 };
@@ -96,6 +117,7 @@ type AuthenticationModalProviderProps = {
   children: React.ReactNode;
   customStep?: StepsType;
   onClose?: () => void;
+  getAppData?: getAppDataType;
 };
 
 export function AuthenticationModalProvider({
@@ -103,10 +125,12 @@ export function AuthenticationModalProvider({
   customStep = "SIGNIN",
   action,
   onClose,
+  getAppData,
 }: AuthenticationModalProviderProps) {
   const [state, dispatch] = useReducer(reducer, {
     step: customStep,
     formData: { flowType: "EMAIL" },
+    getAppData: getAppData ?? {},
   });
 
   const setStep = useCallback((step: StepsType) => {
@@ -115,6 +139,10 @@ export function AuthenticationModalProvider({
 
   const setFormData = useCallback((data: Partial<FormDataType>) => {
     dispatch({ type: "SET_FORM_DATA", data });
+  }, []);
+
+  const setGetAppData = useCallback((data: Partial<getAppDataType>) => {
+    dispatch({ type: "SET_GET_APP_DATA", data });
   }, []);
 
   const closeModal = useCallback(() => {
@@ -128,6 +156,7 @@ export function AuthenticationModalProvider({
         setStep,
         formData: state.formData,
         setFormData,
+        getAppData: state.getAppData,
         closeModal,
         action,
       }}

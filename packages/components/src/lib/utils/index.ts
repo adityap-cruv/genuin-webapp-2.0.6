@@ -108,3 +108,32 @@ export function getUrlForReaction(
     isReacted ? "selected" : "unselected"
   }.svg`;
 }
+
+/**
+ * Extracts loop and community share parameters from a share URL
+ * @param shareUrl - The URL containing share parameters
+ * @returns Object containing loop and community share strings
+ */
+export function getLoopAndCommunityShareString(shareUrl: string) {
+  const urlObj = new URL(shareUrl);
+  const loopShareString = urlObj.searchParams.get('loop');
+  const communityShareString = urlObj.searchParams.get('community');
+  return { loopShareString, communityShareString };
+}
+
+/**
+ * Converts a string to title case (first letter capitalized, rest lowercase)
+ * @param word - The string to convert to title case
+ * @returns The string in title case format
+ */
+export function toTitleCase(word: string) {
+  return word.charAt(0).toUpperCase() + word.slice(1);
+}
+
+/**
+ * Gets all search parameters from the current window URL
+ * @returns An object containing all URL search parameters as key-value pairs
+ */
+export function getSearchParamsFromWindow(): Record<string, any> {
+  return Object.fromEntries(new URLSearchParams(window.location.search));
+}

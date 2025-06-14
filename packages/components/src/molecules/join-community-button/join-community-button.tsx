@@ -12,8 +12,12 @@ import { toastError } from "@genuin/ui/toaster";
 
 // TODO: lazy load authentication modal.
 type JoinCommunityButtonProps = {
+  buttonText?: string;
   isPrivate: boolean;
   communityId: string;
+  communityHandle: string;
+  communityName: string;
+  slug: string;
   roleTexts?: Partial<Record<CommunityUserRole, string>>;
   role: CommunityUserRole;
   onCommunityJoinStatusChange?: (newRole: CommunityUserRole) => void;
@@ -39,8 +43,32 @@ export function JoinCommunityButton({
 
   const button = <Button role={role} {...restProps} />;
 
-  if (authenticationStatus === "unauthenticated") {
-    return <AuthenticationModal asChild>{button}</AuthenticationModal>;
+  if (authenticationStatus) {
+    return (
+      <AuthenticationModal
+        getAppData={{
+          description: (
+            <>
+              Download app to join the <br />
+              <span className="font-bold">
+                @{restProps.communityHandle}
+              </span>{" "}
+              community.
+            </>
+          ),
+          data: {
+            type: "join_community",
+            payload: {
+              communityName: restProps.communityHandle,
+              slug: restProps.slug,
+            },
+          },
+        }}
+        asChild
+      >
+        {button}
+      </AuthenticationModal>
+    );
   }
 
   return button;
@@ -108,7 +136,7 @@ function Button({
       {...rest}
     >
       {isLoading ? (
-        <Loader size="sm" strokeColor={role === "MEMBER" ? "black" : "white"} />
+        <Loader size="xs" strokeColor={role === "MEMBER" ? "black" : "white"} />
       ) : (
         (roleTexts[role] ?? DEFAULT_ROLE_TEXTS[role])
       )}

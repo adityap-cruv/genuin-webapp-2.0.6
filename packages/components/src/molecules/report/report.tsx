@@ -23,12 +23,16 @@ import { useAuthContext } from "@genuin/components/context/auth";
 type ReportProps = ComponentProps<typeof Dialog> & {
   reportFor: "VIDEO" | "COMMENT";
   contentId: string;
+  shareUrl: string;
+  videoSlug: string;
   children: React.ReactNode;
 };
 
 export function Report({
   reportFor,
   contentId,
+  shareUrl,
+  videoSlug,
   children,
   ...props
 }: ReportProps) {
@@ -53,7 +57,23 @@ export function Report({
     reportMutation.mutate(feedbackPayload);
   }, [reportMutation]);
 
-  if (!user) return <AuthenticationModal>{children}</AuthenticationModal>;
+  if (!user)
+    return (
+      <AuthenticationModal
+        asChild
+        getAppData={{
+          data: {
+            type: "report",
+            payload: {
+              shareUrl: shareUrl,
+              videoSlug: videoSlug,
+            },
+          },
+        }}
+      >
+        {children}
+      </AuthenticationModal>
+    );
 
   return (
     <Dialog modal {...props}>

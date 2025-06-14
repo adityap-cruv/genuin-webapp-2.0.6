@@ -52,11 +52,11 @@ const meta: Meta<typeof DetailsPageTopbar> = {
     metadata: { type: "PUBLIC" },
     ctas: (
       <div className="gencl:flex gencl:gap-2">
-        <ShareButton />
+        <ShareButton pathName={""} />
         <BecomeCreatorButton />
       </div>
     ),
-    defaultOpen: true,
+    // defaultOpen: true,
     isOpen: true,
   },
 };
@@ -77,7 +77,7 @@ export const Default: Story = {
     metadata: { type: "PUBLIC" },
     ctas: (
       <div className="gencl:flex gencl:gap-2">
-        <ShareButton />
+        <ShareButton pathName={""} />
         <BecomeCreatorButton />
       </div>
     ),
@@ -96,8 +96,15 @@ export const PrivateGroup: Story = {
     metadata: { type: "PRIVATE" },
     ctas: (
       <div className="gencl:flex gencl:gap-2">
-        <JoinGroupButton />
-        <ShareButton />
+        <JoinGroupButton
+          groupId={""}
+          role={"UNJOINED"}
+          isPrivate={false}
+          groupName={""}
+          groupDescription={""}
+          shareUrl={""}
+        />
+        <ShareButton pathName={""} />
       </div>
     ),
   },
@@ -125,8 +132,15 @@ export const NoAvatarWithCTAs: Story = {
     metadata: { type: "PUBLIC" },
     ctas: (
       <div className="gencl:flex gencl:gap-2">
-        <JoinCommunityButton />
-        <ShareButton />
+        <JoinCommunityButton
+          isPrivate={false}
+          communityId={""}
+          communityHandle={""}
+          communityName={""}
+          slug={""}
+          role={"LEADER"}
+        />
+        <ShareButton pathName={""} />
       </div>
     ),
   },

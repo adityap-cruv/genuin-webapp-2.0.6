@@ -6,9 +6,13 @@ import { ComponentProps, useCallback } from "react";
 import { useSubscribeGroupMutation } from "@genuin/components/react-query/api/group/subscribe";
 import { toastError } from "@genuin/ui/components/toaster";
 import { Loader } from "@genuin/ui/components/loader";
+import { cn } from "@genuin/ui/lib/utils";
 
 type GroupSubscriptionButtonProps = {
   groupId: string;
+  groupName: string;
+  groupDescription: string;
+  shareUrl: string;
   showText?: boolean;
   isSubscriber: boolean;
   onSubscriptionChange?: (isSubscriber: boolean) => void;
@@ -22,7 +26,23 @@ export function GroupSubscriptionButton({
   const button = <Button {...restProps} />;
 
   if (authenticationStatus === "unauthenticated") {
-    return <AuthenticationModal asChild>{button}</AuthenticationModal>;
+    return (
+      <AuthenticationModal
+        getAppData={{
+          data: {
+            type: "subscribe",
+            payload: {
+              ldDescription: restProps.groupDescription,
+              groupName: restProps.groupName,
+              shareUrl: restProps.shareUrl,
+            },
+          },
+        }}
+        asChild
+      >
+        {button}
+      </AuthenticationModal>
+    );
   }
 
   return button;
@@ -73,7 +93,9 @@ function Button({
       ) : isSubscriber ? (
         <NotificationEnabledIcon variant="light" />
       ) : (
-        <NotificationIcon />
+        <NotificationIcon
+          className={cn(shape === "pill" && "gencl:size-3.5")}
+        />
       )}
       {showText && (isPending ? " Loading..." : " Notify Me")}
     </PrimitiveButton>

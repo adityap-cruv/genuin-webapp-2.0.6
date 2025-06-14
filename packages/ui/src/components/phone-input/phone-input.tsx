@@ -118,7 +118,7 @@ const CountrySelect = ({
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className={cn("gencl:w-[300px] gencl:z-10 gencl:p-0", popoverClassName)}
+        className={cn("gencl:w-[300px] gencl:z-50 gencl:p-0", popoverClassName)}
       >
         <Command>
           <CommandList>

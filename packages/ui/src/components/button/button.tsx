@@ -11,7 +11,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: "",
-        icon: "gencl:has-[>svg:only-child]:px-2 gencl:has-[>svg:only-child]:aspect-square gencl:[&_svg]:shrink-0",
+        icon: "gencl:has-[>svg:only-child]:px-2 gencl:[&_svg]:shrink-0",
         rounded: "gencl:rounded-full",
       },
       theme: {
@@ -59,8 +59,7 @@ const buttonVariants = cva(
       {
         shape: "pill",
         size: "md",
-        class:
-          "gencl:text-body-2-semi-bold gencl:py-1.5 gencl:px-4 gencl:h-auto",
+        class: "gencl:text-body-2-semi-bold gencl:py-1 gencl:px-4 gencl:h-auto",
       },
       {
         shape: "pill",

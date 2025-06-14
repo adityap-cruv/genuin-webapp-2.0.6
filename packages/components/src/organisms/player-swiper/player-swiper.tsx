@@ -67,6 +67,7 @@ export function PlayerList({
                   shareUrl={post.video.shareUrl}
                   isReacted={post.video.isSparked ?? false}
                   contentId={post.video.id}
+                  slug={post.video.slug}
                   reactionCount={post.video.sparkCount}
                   variant={showExpandView ? "dark" : "light"}
                   className="gencl:shrink-0 gencl:pb-4"

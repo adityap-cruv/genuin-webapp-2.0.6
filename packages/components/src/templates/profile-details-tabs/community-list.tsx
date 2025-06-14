@@ -139,6 +139,9 @@ export function CommunityList({
                       <JoinCommunityButton
                         roleTexts={{ UNJOINED: "Join" }}
                         communityId={community.id}
+                        communityHandle={community.handle}
+                        communityName={community.name}
+                        slug={community.slug}
                         role={community.role}
                         isPrivate={community.isPrivate}
                         onCommunityJoinStatusChange={(newRole) =>
@@ -269,6 +272,9 @@ function Groups({
                       UNJOINED: "Join",
                     }}
                     groupId={group.id}
+                    groupName={group.name ?? ""}
+                    groupDescription={""}
+                    shareUrl={group.shareUrl ?? ""}
                     isPrivate={group.isPrivate}
                     role={group.role}
                     onGroupJoinStatusChange={(newRole) => {
@@ -283,6 +289,9 @@ function Groups({
                   />
                   <GroupSubscriptionButton
                     groupId={group.id}
+                    groupName={group.name ?? ""}
+                    groupDescription={""}
+                    shareUrl={group.shareUrl ?? ""}
                     isSubscriber={group.isSubscriber ?? false}
                     onSubscriptionChange={(isSubscribed) => {
                       setQueryDataForGroupSubscribeInProfileGroups({

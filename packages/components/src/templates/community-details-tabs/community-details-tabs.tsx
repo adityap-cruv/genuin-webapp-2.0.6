@@ -102,6 +102,13 @@ function CommunityGroups({ slug }: { slug: string }) {
             <JoinGroupButton
               buttonTexts={{ UNJOINED: "Join" }}
               groupId={group.chat_id}
+              groupName={group.group.group_name ?? ""}
+              groupDescription={`${
+                group.group.group_description
+                  ? group.group.group_description + " | "
+                  : ""
+              } • Join ${group.group.group_name} to talk about it`}
+              shareUrl={group.share_url ?? ""}
               isPrivate={group.is_view_allowed}
               role={group.logged_in_user_status}
               onGroupJoinStatusChange={(newRole) => {
@@ -115,6 +122,13 @@ function CommunityGroups({ slug }: { slug: string }) {
             />
             <GroupSubscriptionButton
               groupId={group.chat_id}
+              groupName={group.group.group_name ?? ""}
+              groupDescription={`${
+                group.group.group_description
+                  ? group.group.group_description + " | "
+                  : ""
+              } • Join ${group.group.group_name} to talk about it`}
+              shareUrl={group.share_url ?? ""}
               isSubscriber={group.is_subscriber ?? false}
               showText={false}
               onSubscriptionChange={(isSubscribed) => {

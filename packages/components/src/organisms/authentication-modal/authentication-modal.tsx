@@ -10,6 +10,7 @@ import {
   AuthActionType,
   AuthenticationModalProvider,
   useAuthenticationModalContext,
+  getAppDataType,
 } from "./context";
 import { Screens } from "./screens";
 import { useBaseContext } from "@genuin/components/context/base";
@@ -19,6 +20,7 @@ type AuthenticationModalProps = ComponentProps<typeof DialogTrigger> & {
   open?: boolean;
   customStep?: ComponentProps<typeof AuthenticationModalProvider>["customStep"];
   onOpenChange?: (open: boolean) => void;
+  getAppData?: getAppDataType;
 };
 
 export function AuthenticationModal({
@@ -28,13 +30,14 @@ export function AuthenticationModal({
   open: controlledOpen,
   customStep,
   onOpenChange,
+  getAppData,
   ...restProps
 }: AuthenticationModalProps) {
   const {
     brandDetails: { web_cta },
   } = useBaseContext();
   const [internalOpen, setInternalOpen] = useState(false);
-  const step = customStep ?? (web_cta === "login" ? "SIGNIN" : "GET_APP");
+  const step = customStep ?? (web_cta !== "app" ? "SIGNIN" : "GET_APP");
 
   const isControlled = controlledOpen !== undefined;
   const isOpen = isControlled ? controlledOpen : internalOpen;
@@ -59,8 +62,11 @@ export function AuthenticationModal({
           action={action}
           customStep={step}
           onClose={handleClose}
+          getAppData={getAppData}
         >
-          <Content />
+          <div className="gencl:max-h-[90vh] gencl:overflow-y-auto">
+            <Content />
+          </div>
         </AuthenticationModalProvider>
       </DialogContent>
     </Dialog>

@@ -15,6 +15,11 @@ export const LOGIN_SOURCE = {
 };
 
 /**
+ * URL to download mobile application.
+ */
+export const MOBILE_DOWNLOAD_APP_LINK = 'https://install.begenuin.com/86sn/cgs'
+
+/**
  * Protected routes that require authentication.
  */
 export const PROTECTED_ROUTES = ["settings", "wallet"];

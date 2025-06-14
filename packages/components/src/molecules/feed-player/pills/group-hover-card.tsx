@@ -36,6 +36,10 @@ export function GroupHoverCard({
   const { name, isPrivate } = groupDetails;
   const { authenticationStatus } = useAuthContext();
 
+  const ldDescription = `${
+    groupDetails?.description ? groupDetails.description + " | " : ""
+  } • Join ${groupDetails.name} to talk about it`;
+
   return (
     <div className="gencl:space-y-2" {...props}>
       <div className="gencl:space-y-1">
@@ -75,12 +79,18 @@ export function GroupHoverCard({
             <JoinGroupButton
               className="gencl:flex-grow"
               groupId={groupDetails.id}
+              groupName={groupDetails.name ?? ""}
+              groupDescription={ldDescription}
+              shareUrl={groupDetails.shareUrl ?? ""}
               isPrivate={groupDetails.isPrivate}
               role={groupDetails.role}
               onGroupJoinStatusChange={onGroupJoinStatusChange}
             />
             <GroupSubscriptionButton
               groupId={groupDetails.id}
+              groupName={groupDetails.name ?? ""}
+              groupDescription={ldDescription}
+              shareUrl={groupDetails.shareUrl ?? ""}
               isSubscriber={groupDetails.isSubscribed ?? false}
               onSubscriptionChange={onGroupSubscriptionChange}
             />

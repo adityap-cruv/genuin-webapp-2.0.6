@@ -58,6 +58,11 @@ export function GroupPill({
   className,
 }: GroupPillProps) {
   const { authenticationStatus } = useAuthContext();
+
+  const ldDescription = `${
+    groupDetails?.description ? groupDetails.description + " | " : ""
+  } • Join ${groupDetails.name} to talk about it`;
+
   const pill = (
     <Link href={buildPageUrl({ type: "group", slug: groupDetails.slug })}>
       <div className={groupPillVariants({ variant, className })}>
@@ -77,6 +82,9 @@ export function GroupPill({
             className="gencl:px-2"
             shape="pill"
             groupId={groupDetails.id}
+            groupName={groupDetails.name ?? ""}
+            groupDescription={ldDescription}
+            shareUrl={groupDetails.shareUrl ?? ""}
             isSubscriber={groupDetails.isSubscribed ?? false}
             onClick={(e) => {
               e.preventDefault();

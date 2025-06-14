@@ -89,6 +89,9 @@ export function CommunityHoverCard({
       <div className="gencl:flex gencl:gap-2 gencl:w-full">
         <JoinCommunityButton
           communityId={id}
+          communityHandle={communityDetails.handle}
+          communityName={communityDetails.name ?? ""}
+          slug={communityDetails.slug}
           isPrivate={isPrivate}
           role={userRole}
           onCommunityJoinStatusChange={onCommunityJoinStatusChange}

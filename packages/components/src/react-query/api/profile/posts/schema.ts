@@ -114,6 +114,7 @@ export type LoopType = {
   isPrivate: boolean;
   privacyInfo: Array<{ actionId: number; accessTypeId: number }>;
   role: GroupUserStatusType;
+  shareUrl: string;
   isSubscriber?: boolean;
 };
 
@@ -189,6 +190,7 @@ export function parseGroupResponse(
         accessTypeId: action.access_type_id,
       })),
       isSubscriber: loop.is_subscriber ?? false,
+      shareUrl: loop.share_url ?? '',
       role: mapGroupJoinStatus(loop.logged_in_user_status),
     };
   });

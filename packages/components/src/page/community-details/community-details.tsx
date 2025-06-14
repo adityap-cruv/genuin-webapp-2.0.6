@@ -108,6 +108,9 @@ export function CommunityDetails({ slug }: { slug: string }) {
       <JoinCommunityButton
         role={communityDetails.logged_in_user_role}
         communityId={communityDetails.community_id}
+        communityHandle={communityDetails.handle}
+        communityName={communityDetails.name ?? ""}
+        slug={communityDetails.slug}
         isPrivate={communityDetails.type === "PRIVATE"}
         onCommunityJoinStatusChange={handleCommunityJoinStatusChange}
       />

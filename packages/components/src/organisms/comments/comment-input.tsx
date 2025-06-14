@@ -31,20 +31,73 @@ type CommentFormValues = z.infer<typeof commentFormSchema>;
 type CommentInputBoxProps = {
   videoId: string;
   loopId: string;
+  communityId: string;
+  videoSlug: string;
   onCommentPosted?: ComponentProps<typeof CommentInput>["onCommentPosted"];
 };
+
+// Dummy input component for unauthenticated users
+function DummyCommentInput({ onClick }: { onClick?: () => void }) {
+  return (
+    <div
+      className="gencl:absolute gencl:bottom-0 gencl:left-0 gencl:right-0 gencl:bg-white gencl:p-4 gencl:border-t gencl:border-secondary-200 gencl:flex gencl:justify-between gencl:cursor-pointer"
+      onClick={onClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick?.();
+        }
+      }}
+    >
+      <div className="gencl:flex-1">
+        <div className="gencl:border gencl:border-secondary-150 gencl:rounded-lg gencl:py-2 gencl:px-3 gencl:flex gencl:gap-3 gencl:w-full gencl:h-10">
+          <Input
+            placeholder="Add a comment"
+            className="gencl:w-full gencl:border-0 gencl:!text-secondary-600 gencl:p-0 gencl:text-body-1-medium gencl:h-fit gencl:focus:border-0 gencl:focus:p-0 gencl:focus:rounded-none"
+            readOnly
+            tabIndex={-1}
+          />
+        </div>
+      </div>
+      <Button
+        type="button"
+        theme="text"
+        className="gencl:text-body-1-medium gencl:text-secondary-400"
+        disabled
+        tabIndex={-1}
+      >
+        Post
+      </Button>
+    </div>
+  );
+}
 
 export function CommentInputBox({
   videoId,
   loopId,
+  communityId,
+  videoSlug,
   onCommentPosted,
 }: CommentInputBoxProps) {
   const { authenticationStatus } = useAuthContext();
 
   if (authenticationStatus === "unauthenticated")
     return (
-      <AuthenticationModal>
-        <CommentInput videoId={videoId} loopId={loopId} />
+      <AuthenticationModal
+        getAppData={{
+          data: {
+            type: "comment",
+            payload: {
+              communityId: communityId,
+              loopId: loopId,
+              videoSlug: videoSlug,
+            },
+          },
+        }}
+      >
+        <DummyCommentInput />
       </AuthenticationModal>
     );
 

@@ -21,7 +21,7 @@ export function CtaButtons() {
   return (
     <div className="gencl:flex gencl:gap-2.5 gencl:justify-between gencl:items-center">
       {showApp && (
-        <AuthenticationModal asChild>
+        <AuthenticationModal asChild customStep="GET_APP">
           <Button theme="outline" size="sm">
             Get app
           </Button>

@@ -72,6 +72,9 @@ export function CommunityPill({
               UNJOINED: "Join",
             }}
             communityId={communityDetails.id}
+            communityHandle={communityDetails.handle}
+            communityName={communityDetails.name ?? ""}
+            slug={communityDetails.slug}
             isPrivate={communityDetails.isPrivate}
             role={communityDetails.userRole}
             shape="pill"

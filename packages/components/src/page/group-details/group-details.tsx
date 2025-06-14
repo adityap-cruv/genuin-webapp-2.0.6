@@ -56,12 +56,19 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
   const showPrivateGroupAccess =
     groupDetails.isPrivate && groupDetails.role !== "JOINED";
 
+  const ldDescription = `${
+    groupDetails?.description ? groupDetails.description + " | " : ""
+  } • Join ${groupDetails.name} to talk about it`;
+
   const ctas = (
     <>
       <JoinGroupButton
         isPrivate={groupDetails.isPrivate}
         role={groupDetails.role}
         groupId={groupDetails.id}
+        groupName={groupDetails.name ?? ""}
+        groupDescription={ldDescription}
+        shareUrl={groupDetails.shareUrl ?? ""}
         onGroupJoinStatusChange={(newRole) => {
           setQueryDataForJoinGroupInGroupDetails(slug, newRole);
         }}
@@ -69,6 +76,9 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
       <GroupSubscriptionButton
         groupId={groupDetails.id}
         isSubscriber={groupDetails.isSubscriber}
+        groupName={groupDetails.name ?? ""}
+        groupDescription={ldDescription}
+        shareUrl={groupDetails.shareUrl ?? ""}
         showText={false}
         onSubscriptionChange={(isSubscriber) => {
           setQueryDataForSubscribeGroupInGroupDetails(slug, isSubscriber);

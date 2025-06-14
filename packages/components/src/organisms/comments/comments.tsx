@@ -14,11 +14,15 @@ import { CommentInputBox } from "./comment-input";
 type CommentPropsType = {
   videoId: string;
   loopId: string;
+  communityId: string;
+  videoSlug: string;
 } & ComponentProps<"div">;
 
 export function Comments({
   videoId,
   loopId,
+  communityId,
+  videoSlug,
   className,
   ...restProps
 }: CommentPropsType) {
@@ -34,6 +38,8 @@ export function Comments({
       <CommentInputBox
         videoId={videoId}
         loopId={loopId}
+        communityId={communityId}
+        videoSlug={videoSlug}
         onCommentPosted={(comments) => {
           setQueryDataForNewComment(videoId, comments);
         }}

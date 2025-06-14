@@ -5,6 +5,7 @@ import { AuthenticationModal } from "@genuin/components/organisms/authentication
 import { useVideoReationMutation } from "@genuin/components/react-query/api/feed/spark";
 import { ComponentProps, useCallback } from "react";
 import { DynamicReactionIcon } from "./dynamic-reaction-icon";
+import { useBaseContext } from "@genuin/components/context/base";
 
 type ReactionButtonProps = ComponentProps<typeof PrimitiveButton> & {
   contentId: string;
@@ -16,6 +17,8 @@ type ReactionButtonProps = ComponentProps<typeof PrimitiveButton> & {
    * The number of reactions the content has received.
    */
   reactionCount: number;
+  shareUrl: string;
+  videoSlug: string;
   contentType: "VIDEO" | "COMMENT";
   /**
    * Whether to render the button children or not.
@@ -26,10 +29,28 @@ type ReactionButtonProps = ComponentProps<typeof PrimitiveButton> & {
 
 export function ReactionButton(props: ReactionButtonProps) {
   const { authenticationStatus } = useAuthContext();
+  const { brandDetails } = useBaseContext();
   const button = <Button {...props} />;
 
   if (authenticationStatus === "unauthenticated") {
-    return <AuthenticationModal asChild>{button}</AuthenticationModal>;
+    return (
+      <AuthenticationModal
+        getAppData={{
+          data: {
+            type: "spark",
+            payload: {
+              reactionSuffix: brandDetails.reactions.suffix,
+              reactionTitle: brandDetails.reactions.title,
+              shareUrl: props.shareUrl,
+              videoSlug: props.videoSlug,
+            },
+          },
+        }}
+        asChild
+      >
+        {button}
+      </AuthenticationModal>
+    );
   }
 
   return button;

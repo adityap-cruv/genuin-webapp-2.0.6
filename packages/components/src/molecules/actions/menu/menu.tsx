@@ -29,7 +29,13 @@ const menuItems = (text: string, className?: string): React.ReactNode => {
   );
 };
 
-export function Menu({ contentId, shareUrl, children, ...props }: MenuProps) {
+export function Menu({
+  contentId,
+  shareUrl,
+  videoSlug,
+  children,
+  ...props
+}: MenuProps) {
   const { brandDetails } = useBaseContext();
   const MenuData = [
     shareUrl && {
@@ -52,6 +58,8 @@ export function Menu({ contentId, shareUrl, children, ...props }: MenuProps) {
         <Report
           reportFor="VIDEO"
           contentId={contentId}
+          shareUrl={shareUrl ?? ""}
+          videoSlug={videoSlug ?? ""}
           children={menuItems("Report Post", "gencl:text-primary")}
         />
       ),

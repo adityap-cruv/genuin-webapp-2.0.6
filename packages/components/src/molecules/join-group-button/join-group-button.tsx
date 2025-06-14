@@ -16,6 +16,9 @@ const DEFAULT_BUTTON_TEXT = {
 
 type JoinGroupButtonProps = {
   groupId: string;
+  groupName: string;
+  groupDescription: string;
+  shareUrl: string;
   role: GroupUserStatusType;
   isPrivate: boolean;
   /**
@@ -31,7 +34,23 @@ export function JoinGroupButton({ ...restProps }: JoinGroupButtonProps) {
   const button = <Button {...restProps} />;
 
   if (authenticationStatus === "unauthenticated") {
-    return <AuthenticationModal asChild>{button}</AuthenticationModal>;
+    return (
+      <AuthenticationModal
+        getAppData={{
+          data: {
+            type: "join_as_collaborator",
+            payload: {
+              ldDescription: restProps.groupDescription,
+              groupName: restProps.groupName,
+              shareUrl: restProps.shareUrl,
+            },
+          },
+        }}
+        asChild
+      >
+        {button}
+      </AuthenticationModal>
+    );
   }
 
   return button;
