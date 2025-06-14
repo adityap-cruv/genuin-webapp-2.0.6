@@ -4,23 +4,23 @@ import { cn } from "@genuin/ui/utils";
 import { useId, useCallback, type ComponentProps } from "react";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 
-import { JoinCommunityButton } from "@molecules/join-community-button";
-import { ShareButton } from "@molecules/share-button";
-import { GenericDetails } from "@organisms/generic-details";
-import { GenericDetailsMetadata } from "@organisms/generic-details/generic-details-metadata";
-import { MemberList } from "@organisms/member-list";
-import { SideInfo } from "@organisms/side-info";
-import { DetailsPageTopbar } from "@organisms/details-page-topbar";
+import { JoinCommunityButton } from "@genuin/components/molecules/join-community-button";
+import { ShareButton } from "@genuin/components/molecules/share-button";
+import { GenericDetails } from "@genuin/components/organisms/generic-details";
+import { GenericDetailsMetadata } from "@genuin/components/organisms/generic-details/generic-details-metadata";
+import { MemberList } from "@genuin/components/organisms/member-list";
+import { SideInfo } from "@genuin/components/organisms/side-info";
+import { DetailsPageTopbar } from "@genuin/components/organisms/details-page-topbar";
 import {
   useGetCommunityDetails,
   setQueryDataForCommunityRoleChange,
-} from "@react-query/api/community/details/details";
-import { CommunityDetailsTabs } from "@templates/community-details-tabs";
+} from "@genuin/components/react-query/api/community/details/details";
+import { CommunityDetailsTabs } from "@genuin/components/templates/community-details-tabs";
 import { CommunityDetailsSkeleton } from "./skeleton";
-import { ErrorState } from "@molecules/error-state";
-import { NOT_FOUND_ERROR_CODES } from "@lib/constants/errors";
-import { CommunityUserRole } from "@types/post";
-import { ComponentErrorState } from "@organisms/error-state-component";
+import { ErrorState } from "@genuin/components/molecules/error-state";
+import { NOT_FOUND_ERROR_CODES } from "@genuin/components/lib/constants/errors";
+import { CommunityUserRole } from "@genuin/components/types/post";
+import { ComponentErrorState } from "@genuin/components/organisms/error-state-component";
 
 export function CommunityDetails({ slug }: { slug: string }) {
   const {

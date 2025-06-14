@@ -1,8 +1,8 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 
-import { axiosInstance } from "@react-query/axios-instance";
-import { getQueryKeyForGroupFeed } from "@react-query/keys/feed";
-import { API_PATHS } from "@react-query/paths";
+import { axiosInstance } from "@genuin/components/react-query/axios-instance";
+import { getQueryKeyForGroupFeed } from "@genuin/components/react-query/keys/feed";
+import { API_PATHS } from "@genuin/components/react-query/paths";
 
 import { parseFeed } from "../../feed/parser";
 

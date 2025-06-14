@@ -1,12 +1,12 @@
 import React, { useCallback } from "react";
-import type { CommunityUserRole } from "@types/post";
-import { useAuthContext } from "@context/auth";
-import { AuthenticationModal } from "@organisms/authentication-modal";
+import type { CommunityUserRole } from "@genuin/components/types/post";
+import { useAuthContext } from "@genuin/components/context/auth";
+import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
 import { Button as PrimitiveButton } from "@genuin/ui/components/button";
 import {
   useJoinCommunityMutation,
   useLeaveCommunityMutation,
-} from "@react-query/api/community/join/join";
+} from "@genuin/components/react-query/api/community/join/join";
 import { Loader } from "@genuin/ui/components/loader";
 import { toastError } from "@genuin/ui/toaster";
 

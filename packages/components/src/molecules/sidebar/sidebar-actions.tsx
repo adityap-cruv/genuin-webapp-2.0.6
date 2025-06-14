@@ -2,7 +2,7 @@ import { ThreeDotsIcon } from "@genuin/ui/icons";
 import { Popover, PopoverContent, PopoverTrigger } from "@genuin/ui/popover";
 
 import { SideBarActionLinks } from "./sidebar-actions-link";
-import { Link } from "@molecules/link";
+import { Link } from "@genuin/components/molecules/link";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 
 export function SidebarActions() {

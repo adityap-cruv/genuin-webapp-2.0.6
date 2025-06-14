@@ -4,26 +4,26 @@ import { useCallback, useEffect, useMemo, type ComponentProps } from "react";
 import "swiper/css";
 import { useWindowSize } from "usehooks-ts";
 
-import { useBaseContext } from "@context/base";
+import { useBaseContext } from "@genuin/components/context/base";
 import { Skeleton } from "@genuin/ui/skeleton";
-import { CommentsItemSkeleton } from "@organisms/comments/comment-item";
-import { PlayerList } from "@organisms/player-swiper";
-import { PostSidePanel } from "@organisms/post-side-panel";
+import { CommentsItemSkeleton } from "@genuin/components/organisms/comments/comment-item";
+import { PlayerList } from "@genuin/components/organisms/player-swiper";
+import { PostSidePanel } from "@genuin/components/organisms/post-side-panel";
 import {
   setQueryDataForReactionInFeed,
   useFeed,
   setQueryDataForGroupSubscriptionChangeInFeed,
   setQueryDataForJoinCommunityStatusInFeed,
   setQueryDataForJoinGroupStatusInFeed,
-} from "@react-query/api/feed";
-import type { PostDetailsType } from "@react-query/api/feed/schema";
+} from "@genuin/components/react-query/api/feed";
+import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 import { FeedContextProvider, useFeedContext } from "./context";
-import { GestureProvider } from "@molecules/gestures/context";
-import { useGestureOverlayManager } from "@molecules/gestures";
+import { GestureProvider } from "@genuin/components/molecules/gestures/context";
+import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
 import { QueryKey } from "@tanstack/react-query";
-import { getQueryKeyForFeed } from "@react-query/keys/feed";
-import { GroupUserStatusType } from "@types/roles";
+import { getQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
+import { GroupUserStatusType } from "@genuin/components/types/roles";
 
 /**
  * Feed data structure containing videos and pagination state

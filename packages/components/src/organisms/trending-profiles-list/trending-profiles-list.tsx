@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { Button } from "@genuin/ui/components/button";
-import { ProfileItem, ProfileItemSkeleton } from "@molecules/profile-item";
+import {
+  ProfileItem,
+  ProfileItemSkeleton,
+} from "@genuin/components/molecules/profile-item";
 import { Skeleton } from "@genuin/ui/components/skeleton";
 
 type ProfileDataType = {

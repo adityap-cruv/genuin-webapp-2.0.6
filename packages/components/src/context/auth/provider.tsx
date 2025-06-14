@@ -3,7 +3,7 @@ import {
   clearAuthTokenInterceptor,
   removeAllAuthToken,
   setAuthTokenInAxiosInstance,
-} from "@react-query/axios-instance";
+} from "@genuin/components/react-query/axios-instance";
 import type { AuthUser } from "../../types/auth";
 
 import { AuthContext, AuthenticationStatusType } from "./context";

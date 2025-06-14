@@ -1,13 +1,13 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 
-import { axiosInstance } from "@react-query/axios-instance";
+import { axiosInstance } from "@genuin/components/react-query/axios-instance";
 import {
   getQueryKeyForProfileCommunities,
   getQueryKeyForProfileFeed,
   getQueryKeyForProfileLoops,
   getQueryKeyForProfileVideos,
-} from "@react-query/keys/profile";
-import { API_PATHS } from "@react-query/paths";
+} from "@genuin/components/react-query/keys/profile";
+import { API_PATHS } from "@genuin/components/react-query/paths";
 
 import { parseFeed } from "../../feed/parser";
 
@@ -26,7 +26,7 @@ import type {
   FetchVideosPageParamType,
   FetchVideosReturnType,
 } from "./types";
-import { queryClient } from "@react-query/client";
+import { queryClient } from "@genuin/components/react-query/client";
 import { GroupUserStatusType } from "@types/roles";
 
 // TODO: Refactor these functions to use API_PATHS

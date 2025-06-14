@@ -1,8 +1,8 @@
-import type { CommunityUserRole } from "@types/post";
+import type { CommunityUserRole } from "@genuin/components/types/post";
 import DOMPurify from "dompurify";
 
 import { PROTECTED_ROUTES } from "../constants";
-import { GroupUserStatusType } from "@types/roles";
+import { GroupUserStatusType } from "@genuin/components/types/roles";
 
 /**
  * This function will check if the url includes any of the protected routes.

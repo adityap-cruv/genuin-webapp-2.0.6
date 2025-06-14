@@ -3,7 +3,7 @@ import { Chip } from "@genuin/ui/chip";
 import { cn } from "@genuin/ui/utils";
 import { Skeleton } from "@genuin/ui/skeleton";
 
-import { Link } from "@molecules/link";
+import { Link } from "@genuin/components/molecules/link";
 
 import { ProfileLink } from "../profile-link";
 

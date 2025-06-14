@@ -1,10 +1,10 @@
 import { lazy, useMemo, Suspense } from "react";
 
-import { useGetProfileFeed } from "@react-query/api/profile/posts";
-import { getQueryKeyForProfileFeed } from "@react-query/keys/profile";
+import { useGetProfileFeed } from "@genuin/components/react-query/api/profile/posts";
+import { getQueryKeyForProfileFeed } from "@genuin/components/react-query/keys/profile";
 
 const FeedView = lazy(() =>
-  import("@templates/feed").then((module) => ({
+  import("@genuin/components/templates/feed").then((module) => ({
     default: module.FeedView,
   }))
 );

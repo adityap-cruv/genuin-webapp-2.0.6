@@ -10,12 +10,15 @@ import { RadioGroup, RadioItem } from "@genuin/ui/radio";
 import React, { ComponentProps, useCallback, useState } from "react";
 import { REPORT_HEADER_DATA, REPORT_REASON_DATA } from "./report-data";
 import { Button } from "@genuin/ui/button";
-import { ReportType, useReport } from "@react-query/api/report";
+import {
+  ReportType,
+  useReport,
+} from "@genuin/components/react-query/api/report";
 import { Loader } from "@genuin/ui/loader";
 import { UseMutationResult } from "@tanstack/react-query";
 import { Image } from "@genuin/ui/image";
-import { AuthenticationModal } from "@organisms/authentication-modal";
-import { useAuthContext } from "@context/auth";
+import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
+import { useAuthContext } from "@genuin/components/context/auth";
 
 type ReportProps = ComponentProps<typeof Dialog> & {
   reportFor: "VIDEO" | "COMMENT";
@@ -50,7 +53,7 @@ export function Report({
     reportMutation.mutate(feedbackPayload);
   }, [reportMutation]);
 
-  if(!user) return <AuthenticationModal>{children}</AuthenticationModal>
+  if (!user) return <AuthenticationModal>{children}</AuthenticationModal>;
 
   return (
     <Dialog modal {...props}>

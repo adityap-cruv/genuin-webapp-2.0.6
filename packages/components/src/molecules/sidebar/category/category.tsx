@@ -7,7 +7,7 @@ import {
 import { Avatar } from "@genuin/ui/avatar";
 import { useMemo } from "react";
 
-import { useCategory } from "@react-query/api/category/category";
+import { useCategory } from "@genuin/components/react-query/api/category/category";
 
 export function Category() {
   const { data } = useCategory();
@@ -18,7 +18,7 @@ export function Category() {
 
   if (!categories.length) {
     return;
-  } 
+  }
 
   return (
     <Accordion

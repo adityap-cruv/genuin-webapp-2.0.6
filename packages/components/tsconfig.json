@@ -5,39 +5,6 @@
     "moduleResolution": "NodeNext",
     "baseUrl": ".",
     "paths": {
-      "@components/*": [
-        "./src/components/*"
-      ],
-      "@templates/*": [
-        "./src/templates/*"
-      ],
-      "@pages/*": [
-        "./src/page/*"
-      ],
-      "@organisms/*": [
-        "./src/organisms/*"
-      ],
-      "@molecules/*": [
-        "./src/molecules/*"
-      ],
-      "@atoms/*": [
-        "./src/atoms/*"
-      ],
-      "@hooks/*": [
-        "./src/hooks/*"
-      ],
-      "@react-query/*": [
-        "./src/react-query/*"
-      ],
-      "@types/*": [
-        "./src/types/*"
-      ],
-      "@context/*": [
-        "./src/context/*"
-      ],
-      "@lib/*": [
-        "./src/lib/*"
-      ],
       "@genuin/ui": [
         "../ui/src"
       ],

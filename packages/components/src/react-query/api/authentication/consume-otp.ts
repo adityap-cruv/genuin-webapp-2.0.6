@@ -1,9 +1,9 @@
 import { getDeviceId } from "@genuin/components/lib/utils/device-id";
 import { encryptText } from "@genuin/components/lib/utils/encryption";
-import { axiosInstance } from "@react-query/axios-instance";
+import { axiosInstance } from "@genuin/components/react-query/axios-instance";
 import { LOGIN_SOURCE } from "./constants";
 import { parseUserData } from "./parser";
-import { API_PATHS } from "@react-query/paths";
+import { API_PATHS } from "@genuin/components/react-query/paths";
 import { useMutation, type UseMutationOptions } from "@tanstack/react-query";
 
 type ConsumeOtpProps = Partial<{ email: string; phoneNumber: string }> & {

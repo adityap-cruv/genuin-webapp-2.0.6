@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { mapGroupJoinStatus } from "@genuin/components/lib/utils";
-import { GroupUserStatusSchema } from "@types/roles";
+import { GroupUserStatusSchema } from "@genuin/components/types/roles";
 
 // Define the member schema for members array in the group object
 const memberSchema = z.object({

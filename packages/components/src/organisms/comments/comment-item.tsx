@@ -4,16 +4,16 @@ import { ReadMore } from "@genuin/ui/read-more";
 import type { CommentListType } from "src/react-query/api/comments";
 import { getTimeAgo } from "@genuin/ui/utils";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
-import { ProfileLink } from "@molecules/profile-link";
+import { ProfileLink } from "@genuin/components/molecules/profile-link";
 import { Skeleton } from "@genuin/ui/components/skeleton";
 
-import { Audio } from "@organisms/comments/audio";
-import { Video } from "@organisms/comments/video";
+import { Audio } from "@genuin/components/organisms/comments/audio";
+import { Video } from "@genuin/components/organisms/comments/video";
 import { CommentMenu } from "./comment-menu";
 import {
   DynamicReactionIcon,
   ReactionButton,
-} from "@molecules/reaction-button";
+} from "@genuin/components/molecules/reaction-button";
 import { ComponentProps } from "react";
 
 export type CommentItemProps = {

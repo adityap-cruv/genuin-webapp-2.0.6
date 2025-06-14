@@ -4,8 +4,8 @@ import {
   mapCommunityUserRole,
   mapGroupJoinStatus,
 } from "@genuin/components/lib/utils";
-import type { CommunityUserRole } from "@types/post";
-import type { GroupUserStatusType } from "@types/roles";
+import type { CommunityUserRole } from "@genuin/components/types/post";
+import type { GroupUserStatusType } from "@genuin/components/types/roles";
 
 const messageSchema = z.object({
   media_url: z.string(),

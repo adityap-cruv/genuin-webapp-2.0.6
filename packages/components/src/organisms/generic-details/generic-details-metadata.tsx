@@ -3,9 +3,9 @@ import { cn } from "@genuin/ui/utils";
 import type { ComponentProps } from "react";
 
 import { ReactNode } from "react";
-import { ProfileLink } from "@molecules/profile-link";
-import { Stats } from "@molecules/stats/stats";
-import { CommunityPrivacyInfo } from "@molecules/community-privacy-info";
+import { ProfileLink } from "@genuin/components/molecules/profile-link";
+import { Stats } from "@genuin/components/molecules/stats/stats";
+import { CommunityPrivacyInfo } from "@genuin/components/molecules/community-privacy-info";
 
 /**
  * Props for the GenericDetailsMetadata component

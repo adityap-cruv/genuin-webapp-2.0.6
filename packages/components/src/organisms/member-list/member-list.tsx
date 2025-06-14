@@ -6,7 +6,7 @@ import {
   MemberItem,
   MemberItemSkeleton,
   type MemberDataType,
-} from "@molecules/member-item";
+} from "@genuin/components/molecules/member-item";
 
 type MemberListProps = {
   title?: string;

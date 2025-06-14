@@ -1,10 +1,10 @@
 import { VideoPlayer } from "@genuin/ui/video-player";
 import { memo, useCallback, type ComponentProps } from "react";
 import { useBaseContext } from "@genuin/components/context/base";
-import type { PostDetailsType } from "@react-query/api/feed/schema";
+import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 import { usePlayerContext } from "./context/context";
-import { useFeedContext } from "@templates/feed/context";
+import { useFeedContext } from "@genuin/components/templates/feed/context";
 // import { useSwiper } from "swiper/react";
 
 // import { usePlayerContext } from "./context";
@@ -48,7 +48,7 @@ export const FeedPlayer = memo(function FeedPlayer({
     setPlayerRef,
     handleEnded: stateHandleEnded,
   } = usePlayerContext();
-  const {playbackSpeed} = useFeedContext()
+  const { playbackSpeed } = useFeedContext();
 
   // const { brandId } = useGenuinOptions(
   //   useShallow((state) => ({

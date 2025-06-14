@@ -1,6 +1,6 @@
 import { Button } from "@genuin/ui/components/button";
 import type { ComponentProps } from "react";
-import { Link } from "@molecules/link";
+import { Link } from "@genuin/components/molecules/link";
 import {
   CommunitiesIcon,
   ErrorIcon,

@@ -1,7 +1,7 @@
 import { cn } from "@genuin/ui/utils";
 import type { ComponentProps } from "react";
-import type { NextJSLinkProps } from "@context/link/type";
-import { useLinkContext } from "@context/link";
+import type { NextJSLinkProps } from "@genuin/components/context/link/type";
+import { useLinkContext } from "@genuin/components/context/link";
 
 type BaseLinkProps = ComponentProps<"a">;
 

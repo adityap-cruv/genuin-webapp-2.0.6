@@ -1,8 +1,8 @@
 "use client";
 import { getUrlForReaction } from "@genuin/ui/utils";
 import { createContext, useContext } from "react";
-import type { SizeBoxType } from "@types/base";
-import type { BrandDetailsConfigType } from "@types/brand";
+import type { SizeBoxType } from "@genuin/components/types/base";
+import type { BrandDetailsConfigType } from "@genuin/components/types/brand";
 
 const DEFAULT_WEB_CONFIGS: BrandDetailsConfigType["web_configs"] = {
   video_autoplay: {

@@ -1,7 +1,7 @@
 import { getDeviceId } from "@genuin/components/lib/utils/device-id";
 import { encryptText } from "@genuin/components/lib/utils/encryption";
-import { axiosInstance } from "@react-query/axios-instance";
-import { API_PATHS } from "@react-query/paths";
+import { axiosInstance } from "@genuin/components/react-query/axios-instance";
+import { API_PATHS } from "@genuin/components/react-query/paths";
 import { useMutation } from "@tanstack/react-query";
 
 type UpdateEmailOrPhoneProps = {

@@ -1,9 +1,9 @@
 import { Button as PrimitiveButton } from "@genuin/ui/button";
 import { NotificationIcon } from "@genuin/ui/icons";
-import { useAuthContext } from "@context/auth";
-import { AuthenticationModal } from "@organisms/authentication-modal";
+import { useAuthContext } from "@genuin/components/context/auth";
+import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
 import { ComponentProps, useCallback } from "react";
-import { useSubscribeGroupMutation } from "@react-query/api/group/subscribe";
+import { useSubscribeGroupMutation } from "@genuin/components/react-query/api/group/subscribe";
 import { toastError } from "@genuin/ui/components/toaster";
 import { Loader } from "@genuin/ui/components/loader";
 

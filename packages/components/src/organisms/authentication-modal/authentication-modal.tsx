@@ -12,7 +12,7 @@ import {
   useAuthenticationModalContext,
 } from "./context";
 import { Screens } from "./screens";
-import { useBaseContext } from "@context/base";
+import { useBaseContext } from "@genuin/components/context/base";
 
 type AuthenticationModalProps = ComponentProps<typeof DialogTrigger> & {
   action?: AuthActionType;

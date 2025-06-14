@@ -1,8 +1,8 @@
-import { useAuthContext } from "@context/auth";
+import { useAuthContext } from "@genuin/components/context/auth";
 import { Button as PrimitiveButton } from "@genuin/ui/button";
 import { toastError } from "@genuin/ui/components/toaster";
-import { AuthenticationModal } from "@organisms/authentication-modal";
-import { useVideoReationMutation } from "@react-query/api/feed/spark";
+import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
+import { useVideoReationMutation } from "@genuin/components/react-query/api/feed/spark";
 import { ComponentProps, useCallback } from "react";
 import { DynamicReactionIcon } from "./dynamic-reaction-icon";
 

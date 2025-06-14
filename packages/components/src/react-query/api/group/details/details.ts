@@ -1,13 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { NOT_FOUND_ERROR_CODES } from "@genuin/components/lib/constants/errors";
-import { axiosInstance } from "@react-query/axios-instance";
-import { getQueryKeyForLoopDetails } from "@react-query/keys/group";
-import { API_PATHS } from "@react-query/paths";
+import { axiosInstance } from "@genuin/components/react-query/axios-instance";
+import { getQueryKeyForLoopDetails } from "@genuin/components/react-query/keys/group";
+import { API_PATHS } from "@genuin/components/react-query/paths";
 
 import { parseGroupDetails } from "./parser";
-import { queryClient } from "@react-query/client";
-import { GroupUserStatusType } from "@types/roles";
+import { queryClient } from "@genuin/components/react-query/client";
+import { GroupUserStatusType } from "@genuin/components/types/roles";
 
 async function fetchLoopDetails(slug: string) {
   try {

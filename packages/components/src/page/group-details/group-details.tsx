@@ -5,26 +5,26 @@ import { TabsSkeleton } from "@genuin/ui/tabs";
 import { convertISOToLocalDateFormate } from "@genuin/ui/utils";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 
-import { GroupSubscriptionButton } from "@molecules/group-subscription-button";
-import { JoinGroupButton } from "@molecules/join-group-button";
-import { ShareButton } from "@molecules/share-button";
+import { GroupSubscriptionButton } from "@genuin/components/molecules/group-subscription-button";
+import { JoinGroupButton } from "@genuin/components/molecules/join-group-button";
+import { ShareButton } from "@genuin/components/molecules/share-button";
 import {
   GenericDetails,
   GenericDetailsSkeleton,
-} from "@organisms/generic-details";
-import { GenericDetailsMetadata } from "@organisms/generic-details/generic-details-metadata";
-import { SideInfo } from "@organisms/side-info";
+} from "@genuin/components/organisms/generic-details";
+import { GenericDetailsMetadata } from "@genuin/components/organisms/generic-details/generic-details-metadata";
+import { SideInfo } from "@genuin/components/organisms/side-info";
 import {
   setQueryDataForJoinGroupInGroupDetails,
   setQueryDataForSubscribeGroupInGroupDetails,
   useGetGroupDetails,
-} from "@react-query/api/group/details";
-import { GroupDetailsTabs } from "@templates/group-details-tabs";
-import { PostsGridSkeleton } from "@organisms/posts-grid";
-import { ErrorState } from "@molecules/error-state";
-import { NOT_FOUND_ERROR_CODES } from "@lib/constants/errors";
-import { DetailsPageTopbar } from "@organisms/details-page-topbar";
-import { ComponentErrorState } from "@organisms/error-state-component";
+} from "@genuin/components/react-query/api/group/details";
+import { GroupDetailsTabs } from "@genuin/components/templates/group-details-tabs";
+import { PostsGridSkeleton } from "@genuin/components/organisms/posts-grid";
+import { ErrorState } from "@genuin/components/molecules/error-state";
+import { NOT_FOUND_ERROR_CODES } from "@genuin/components/lib/constants/errors";
+import { DetailsPageTopbar } from "@genuin/components/organisms/details-page-topbar";
+import { ComponentErrorState } from "@genuin/components/organisms/error-state-component";
 
 export function GroupDetailsPage({ slug }: { slug: string }) {
   const detailsId = useId();

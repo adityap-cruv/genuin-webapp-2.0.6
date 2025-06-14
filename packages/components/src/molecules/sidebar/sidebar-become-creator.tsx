@@ -1,7 +1,7 @@
 import { useEffect, type ComponentProps } from "react";
 import { cn } from "@genuin/ui/utils";
-import { useAuthenticationModalContext } from "@organisms/authentication-modal/context";
-import { AuthenticationModal } from "@organisms/authentication-modal";
+import { useAuthenticationModalContext } from "@genuin/components/organisms/authentication-modal/context";
+import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
 
 export type SideBarBecomeCreatorProps = ComponentProps<"div">;
 
@@ -9,7 +9,6 @@ export function SideBarBecomeCreator({
   className,
   ...restProps
 }: SideBarBecomeCreatorProps) {
-
   return (
     <AuthenticationModal asChild customStep="BECOME_CREATOR">
       <div

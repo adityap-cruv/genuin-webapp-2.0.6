@@ -1,10 +1,10 @@
-import { useAuthContext } from "@context/auth";
-import { AuthenticationModal } from "@organisms/authentication-modal";
-import { useJoinGroupMutation } from "@react-query/api/group/join";
-import { GroupUserStatusType } from "@types/roles";
+import { useAuthContext } from "@genuin/components/context/auth";
+import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
+import { useJoinGroupMutation } from "@genuin/components/react-query/api/group/join";
+import { GroupUserStatusType } from "@genuin/components/types/roles";
 import { Button as PrimitiveButton } from "@genuin/ui/button";
 import { toastError } from "@genuin/ui/components/toaster";
-import { useLeaveGroupMutation } from "@react-query/api/group/join";
+import { useLeaveGroupMutation } from "@genuin/components/react-query/api/group/join";
 import { ComponentProps, useCallback } from "react";
 import { Loader } from "@genuin/ui/components/loader";
 

@@ -1,11 +1,11 @@
 import { Button } from "@genuin/ui/button";
 import { useBaseContext } from "@genuin/components/context/base";
-import { AuthenticationModal } from "@organisms/authentication-modal";
-import { useAuthContext } from "@context/auth";
+import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
+import { useAuthContext } from "@genuin/components/context/auth";
 import { Popover, PopoverContent, PopoverTrigger } from "@genuin/ui/popover";
 import { Avatar } from "@genuin/ui/avatar";
 import { LogOutIcon, SettingsIcon } from "lucide-react";
-import { Link } from "@molecules/link";
+import { Link } from "@genuin/components/molecules/link";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 
 export function CtaButtons() {

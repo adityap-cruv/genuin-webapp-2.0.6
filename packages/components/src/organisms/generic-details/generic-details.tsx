@@ -4,9 +4,9 @@ import { cn } from "@genuin/ui/utils";
 import { Skeleton } from "@genuin/ui/skeleton";
 import React, { type ComponentProps, type ReactNode } from "react";
 
-import { Link } from "@molecules/link";
-import type { LinksType } from "@molecules/social-links";
-import { SocialLinks } from "@molecules/social-links";
+import { Link } from "@genuin/components/molecules/link";
+import type { LinksType } from "@genuin/components/molecules/social-links";
+import { SocialLinks } from "@genuin/components/molecules/social-links";
 
 /**
  * Configuration for the profile image displayed in the generic details component.

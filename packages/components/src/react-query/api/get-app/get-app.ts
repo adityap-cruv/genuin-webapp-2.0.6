@@ -1,5 +1,5 @@
-import { axiosInstance } from "@react-query/axios-instance";
-import { API_PATHS } from "@react-query/paths";
+import { axiosInstance } from "@genuin/components/react-query/axios-instance";
+import { API_PATHS } from "@genuin/components/react-query/paths";
 import { useMutation } from "@tanstack/react-query";
 
 export const sendGetAppLink = async (payload: {

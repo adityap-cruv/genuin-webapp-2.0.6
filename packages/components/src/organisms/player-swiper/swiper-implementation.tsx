@@ -3,7 +3,7 @@ import { Swiper } from "swiper/react";
 
 import { useBaseContext } from "@genuin/components/context/base";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
-import { useFeedContext } from "@templates/feed/context";
+import { useFeedContext } from "@genuin/components/templates/feed/context";
 
 const CONFIG = {
   SCROLL_DELAY: 500,

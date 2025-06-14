@@ -1,6 +1,6 @@
-import { axiosInstance } from "@react-query/axios-instance";
-import { getQueryKeyForTrendingCommunities } from "@react-query/keys/community";
-import { API_PATHS } from "@react-query/paths";
+import { axiosInstance } from "@genuin/components/react-query/axios-instance";
+import { getQueryKeyForTrendingCommunities } from "@genuin/components/react-query/keys/community";
+import { API_PATHS } from "@genuin/components/react-query/paths";
 import { useQuery } from "@tanstack/react-query";
 
 async function fetchTrendingCommunities() {

@@ -1,16 +1,16 @@
 import { cn } from "@genuin/ui/utils";
 import React, { memo, useCallback, type ComponentProps } from "react";
 import { useBaseContext } from "@genuin/components/context/base";
-import type { PostDetailsType } from "@react-query/api/feed/schema";
+import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 import { usePlayerContext } from "../context/context";
 import { Controls } from "./controls";
 import { PlayingState } from "./playing-state";
 import { Scrubber } from "./scrubber";
 import { ExpandViewDetails } from "./expand-view";
-import { PlaybackSpeedCapsule } from "@molecules/playback-speed/speed-capsule";
-import { useGestureOverlayManager } from "@molecules/gestures";
-import { LinkOutContentRenderer } from "@organisms/linkouts/linkouts-details";
+import { PlaybackSpeedCapsule } from "@genuin/components/molecules/playback-speed/speed-capsule";
+import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
+import { LinkOutContentRenderer } from "@genuin/components/organisms/linkouts/linkouts-details";
 
 type ControlLayerPropsType = ComponentProps<"div"> & {
   postDetails: PostDetailsType;

@@ -2,9 +2,9 @@ import { useCallback, useMemo } from "react";
 import {
   GestureOverlayKeysType,
   useGestureContext,
-} from "@molecules/gestures/context";
-import { LazyGestureGuideOverlay } from "@molecules/gestures/gesture-guide-overlay";
-import { useBaseContext } from "@context/base";
+} from "@genuin/components/molecules/gestures/context";
+import { LazyGestureGuideOverlay } from "@genuin/components/molecules/gestures/gesture-guide-overlay";
+import { useBaseContext } from "@genuin/components/context/base";
 
 function useGestureOverlayMethods({ tapBehavior }: { tapBehavior: number }) {
   const {

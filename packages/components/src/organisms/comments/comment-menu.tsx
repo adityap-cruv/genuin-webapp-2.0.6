@@ -1,12 +1,12 @@
-import { Report } from "@molecules/report";
+import { Report } from "@genuin/components/molecules/report";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@genuin/ui/components/popover";
 import { ThreeDotsIcon } from "@genuin/ui/icons";
-import {Button} from "@genuin/ui/button"
-export function CommentMenu({contentId} : {contentId : string}) {
+import { Button } from "@genuin/ui/button";
+export function CommentMenu({ contentId }: { contentId: string }) {
   return (
     <Popover>
       <PopoverTrigger className="gencl:p-1 gencl:rounded-lg gencl:hover:bg-secondary-100">
@@ -15,7 +15,12 @@ export function CommentMenu({contentId} : {contentId : string}) {
       <PopoverContent className="gencl:p-0" align="end">
         <Report reportFor="COMMENT" contentId={contentId}>
           <div className="gencl:p-3 gencl:rounded-xl gencl:border gencl:border-secondary-100 gencl:bg-white gencl:cursor-pointer gencl:text-primary">
-            <Button theme="text" className="gencl:text-primary gencl:text-body-1-medium gencl:hover:gencl:border-secondary-100 gencl:p-2">Report Comment</Button>
+            <Button
+              theme="text"
+              className="gencl:text-primary gencl:text-body-1-medium gencl:hover:gencl:border-secondary-100 gencl:p-2"
+            >
+              Report Comment
+            </Button>
           </div>
         </Report>
       </PopoverContent>

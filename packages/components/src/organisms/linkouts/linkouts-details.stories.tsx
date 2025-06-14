@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { LinkOutContentRenderer } from "./linkouts-details";
-import { LinkoutsType } from "@react-query/api/linkouts/schema";
+import { LinkoutsType } from "@genuin/components/react-query/api/linkouts/schema";
 
 const meta: Meta<typeof LinkOutContentRenderer> = {
   title: "Organisms/LinkOut",

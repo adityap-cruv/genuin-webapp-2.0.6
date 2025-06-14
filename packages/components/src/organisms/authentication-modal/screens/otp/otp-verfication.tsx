@@ -17,8 +17,8 @@ import {
   useConsumeOtpMutation,
   useSendOtpMutation,
   useUpdateEmailOrPhoneMutation,
-} from "@react-query/api/authentication";
-import { useAuthContext } from "@context/auth";
+} from "@genuin/components/react-query/api/authentication";
+import { useAuthContext } from "@genuin/components/context/auth";
 import { formatPhoneNumberIntl } from "react-phone-number-input";
 import { SubmitButton } from "../../submit-button";
 

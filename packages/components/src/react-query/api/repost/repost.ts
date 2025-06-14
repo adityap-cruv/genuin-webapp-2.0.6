@@ -1,8 +1,8 @@
-import { axiosInstance } from "@react-query/axios-instance";
+import { axiosInstance } from "@genuin/components/react-query/axios-instance";
 import { validateRepostCommunityListData } from "./schema";
-import { API_PATHS } from "@react-query/paths";
+import { API_PATHS } from "@genuin/components/react-query/paths";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { getQueryKeyForRepostDestinations } from "@react-query/keys/repost";
+import { getQueryKeyForRepostDestinations } from "@genuin/components/react-query/keys/repost";
 
 /**
  * Fetch repost destinations for a given video ID.

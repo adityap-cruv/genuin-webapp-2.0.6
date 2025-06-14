@@ -4,8 +4,8 @@ import { cn } from "@genuin/ui/utils";
 import { Skeleton } from "@genuin/ui/skeleton";
 import type { ComponentProps } from "react";
 
-import { Link } from "@molecules/link";
-import { ShareButton } from "@molecules/share-button";
+import { Link } from "@genuin/components/molecules/link";
+import { ShareButton } from "@genuin/components/molecules/share-button";
 
 import { GenericDetails } from "../generic-details";
 import { GenericDetailsMetadata } from "../generic-details/generic-details-metadata";

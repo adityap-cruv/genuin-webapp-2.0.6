@@ -1,4 +1,4 @@
-import { GroupUserStatusSchema } from "@types/roles";
+import { GroupUserStatusSchema } from "@genuin/components/types/roles";
 import { z } from "zod";
 
 const BrandUserSchema = z

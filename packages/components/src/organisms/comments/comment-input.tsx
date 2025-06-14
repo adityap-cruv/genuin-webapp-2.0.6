@@ -1,4 +1,4 @@
-import { useAuthContext } from "@context/auth";
+import { useAuthContext } from "@genuin/components/context/auth";
 import { Avatar } from "@genuin/ui/components/avatar";
 import { Input } from "@genuin/ui/components/input";
 import { Button } from "@genuin/ui/components/button";
@@ -14,9 +14,9 @@ import {
 } from "@genuin/ui/components/form";
 import { useCallback } from "react";
 import { cn } from "@genuin/ui/lib/utils";
-import { AuthenticationModal } from "@organisms/authentication-modal";
+import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
 import { toastError } from "@genuin/ui/components/toaster";
-import { useCreateCommentMutation } from "@react-query/api/comments";
+import { useCreateCommentMutation } from "@genuin/components/react-query/api/comments";
 import { convertCommentTextToArray } from "./utils";
 
 const commentFormSchema = z.object({

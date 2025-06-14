@@ -1,8 +1,8 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 
-import { axiosInstance } from "@react-query/axios-instance";
-import { getQueryKeyForGroupMembers } from "@react-query/keys/group";
-import { API_PATHS } from "@react-query/paths";
+import { axiosInstance } from "@genuin/components/react-query/axios-instance";
+import { getQueryKeyForGroupMembers } from "@genuin/components/react-query/keys/group";
+import { API_PATHS } from "@genuin/components/react-query/paths";
 
 import { validateGroupMembers } from "./schema";
 

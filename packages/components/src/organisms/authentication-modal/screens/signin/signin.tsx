@@ -17,10 +17,10 @@ import {
   FormControl,
   FormMessage,
 } from "@genuin/ui/form";
-import { useSendOtpMutation } from "@react-query/api/authentication";
+import { useSendOtpMutation } from "@genuin/components/react-query/api/authentication";
 import { sanitizeInput } from "@genuin/components/lib/utils";
 import { useAuthenticationModalContext } from "../../context";
-import { useAuthContext } from "@context/auth";
+import { useAuthContext } from "@genuin/components/context/auth";
 import { SubmitButton } from "../../submit-button";
 
 type SignInProps = React.ComponentProps<"div"> & {

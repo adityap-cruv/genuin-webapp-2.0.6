@@ -1,7 +1,7 @@
-import { axiosInstance } from "@react-query/axios-instance";
-import { getQueryKeyForGuidelines } from "@react-query/keys/authentication";
+import { axiosInstance } from "@genuin/components/react-query/axios-instance";
+import { getQueryKeyForGuidelines } from "@genuin/components/react-query/keys/authentication";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { API_PATHS } from "@react-query/paths";
+import { API_PATHS } from "@genuin/components/react-query/paths";
 
 // Type definitions
 export type GuideLineType = {

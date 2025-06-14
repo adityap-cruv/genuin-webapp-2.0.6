@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-import { CommunityUserRoleSchema } from "@types/post";
-import { GroupUserStatusSchema } from "@types/roles";
+import { CommunityUserRoleSchema } from "@genuin/components/types/post";
+import { GroupUserStatusSchema } from "@genuin/components/types/roles";
 
 const description = z.array(
   z

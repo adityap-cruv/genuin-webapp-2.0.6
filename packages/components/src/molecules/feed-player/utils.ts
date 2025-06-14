@@ -1,4 +1,4 @@
-import { BrandDetailsConfigType } from "@types/brand";
+import { BrandDetailsConfigType } from "@genuin/components/types/brand";
 
 /**
  * Determines video playback configuration based on web configs

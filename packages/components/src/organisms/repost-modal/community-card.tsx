@@ -1,17 +1,17 @@
 import { DecorativeList } from "@genuin/ui/components/decorative-list";
-import { CommunityPrivacyInfo } from "@molecules/community-privacy-info";
-import { GroupPrivacyInfo } from "@molecules/group-privacy-info";
+import { CommunityPrivacyInfo } from "@genuin/components/molecules/community-privacy-info";
+import { GroupPrivacyInfo } from "@genuin/components/molecules/group-privacy-info";
 import { Avatar } from "@genuin/ui/components/avatar";
-import { RepostCommunityType } from "@react-query/api/repost/schema";
+import { RepostCommunityType } from "@genuin/components/react-query/api/repost/schema";
 
 import { Button } from "@genuin/ui/button";
 import { RepostIcon } from "@genuin/ui/icons";
-import { useRepostVideoMutation } from "@react-query/api/repost";
+import { useRepostVideoMutation } from "@genuin/components/react-query/api/repost";
 import { useCallback } from "react";
 import { toast, toastError } from "@genuin/ui/components/toaster";
 import { cn } from "@genuin/ui/lib/utils";
-import { Link } from "@molecules/link";
-import { buildPageUrl } from "@lib/utils/pages";
+import { Link } from "@genuin/components/molecules/link";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 
 export function CommunityCard({
   communityInfo,

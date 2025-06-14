@@ -1,6 +1,6 @@
-import { axiosInstance } from "@react-query/axios-instance";
-import { getQueryKeyForCategories } from "@react-query/keys/authentication";
-import { API_PATHS } from "@react-query/paths";
+import { axiosInstance } from "@genuin/components/react-query/axios-instance";
+import { getQueryKeyForCategories } from "@genuin/components/react-query/keys/authentication";
+import { API_PATHS } from "@genuin/components/react-query/paths";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import z from "zod";
 

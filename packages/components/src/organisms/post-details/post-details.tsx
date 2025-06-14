@@ -2,9 +2,9 @@ import { ReadMore } from "@genuin/ui/read-more";
 import { cn } from "@genuin/ui/utils";
 import { type ComponentProps } from "react";
 
-import type { PostDetailsType } from "@react-query/api/feed/schema";
+import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
-import { Pills } from "@molecules/feed-player/pills/pills";
+import { Pills } from "@genuin/components/molecules/feed-player/pills/pills";
 import { OwnerInfo } from "./owner-info";
 
 export type DetailsPropsType = ComponentProps<"div"> & {

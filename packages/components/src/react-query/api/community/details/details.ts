@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { NOT_FOUND_ERROR_CODES } from "@genuin/components/lib/constants/errors";
-import { axiosInstance } from "@react-query/axios-instance";
-import { getQueryKeyForCommunityDetails } from "@react-query/keys/community";
-import { API_PATHS } from "@react-query/paths";
+import { axiosInstance } from "@genuin/components/react-query/axios-instance";
+import { getQueryKeyForCommunityDetails } from "@genuin/components/react-query/keys/community";
+import { API_PATHS } from "@genuin/components/react-query/paths";
 
 import { CommunityDetailsType, validateCommunityDetails } from "./schema";
-import { queryClient } from "@react-query/client";
+import { queryClient } from "@genuin/components/react-query/client";
 import { CommunityUserRole } from "@types/post";
 
 async function fetchCommunityDetails(slug: string) {

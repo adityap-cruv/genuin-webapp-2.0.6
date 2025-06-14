@@ -1,6 +1,6 @@
-import { axiosInstance } from "@react-query/axios-instance";
+import { axiosInstance } from "@genuin/components/react-query/axios-instance";
 import { useMutation } from "@tanstack/react-query";
-import { getQueryKeyForReport } from "@react-query/keys/report";
+import { getQueryKeyForReport } from "@genuin/components/react-query/keys/report";
 
 /**
  * Submits a report for a video or comment to the server.

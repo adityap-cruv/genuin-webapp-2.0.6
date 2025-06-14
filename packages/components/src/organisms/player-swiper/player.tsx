@@ -1,13 +1,16 @@
 import { cn } from "@genuin/ui/utils";
 import { useBaseContext } from "@genuin/components/context/base";
-import { ControlLayer, FeedPlayer } from "@molecules/feed-player";
-import { PlayerProvider } from "@molecules/feed-player/context";
-import type { PostDetailsType } from "@react-query/api/feed/schema";
-import { useFeedContext } from "@templates/feed/context";
+import {
+  ControlLayer,
+  FeedPlayer,
+} from "@genuin/components/molecules/feed-player";
+import { PlayerProvider } from "@genuin/components/molecules/feed-player/context";
+import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+import { useFeedContext } from "@genuin/components/templates/feed/context";
 import { useSwiper, useSwiperSlide } from "swiper/react";
 import { useWindowSize } from "usehooks-ts";
 import { useCallback } from "react";
-import { useGestureOverlayManager } from "@molecules/gestures";
+import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
 import { ComponentProps } from "react";
 
 type PlayerProps = {

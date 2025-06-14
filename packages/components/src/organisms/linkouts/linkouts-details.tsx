@@ -1,11 +1,11 @@
 import React from "react";
-import { LinkCard } from "@molecules/linkouts/single-link-card";
-import { MultiLinkCard } from "@molecules/linkouts/multi-link-card";
-import { useGetLinkouts } from "@react-query/api/linkouts/get-linkouts";
-import { LinkoutsType } from "@react-query/api/linkouts/schema";
+import { LinkCard } from "@genuin/components/molecules/linkouts/single-link-card";
+import { MultiLinkCard } from "@genuin/components/molecules/linkouts/multi-link-card";
+import { useGetLinkouts } from "@genuin/components/react-query/api/linkouts/get-linkouts";
+import { LinkoutsType } from "@genuin/components/react-query/api/linkouts/schema";
 import { cn } from "@genuin/ui/lib/utils";
 import { motion, AnimatePresence, HTMLMotionProps } from "framer-motion";
-import useShowLinkouts from "@hooks/use-show-linkouts";
+import useShowLinkouts from "@genuin/components/hooks/use-show-linkouts";
 
 interface LinkOutContentRendererProps {
   linkouts: LinkoutsType;

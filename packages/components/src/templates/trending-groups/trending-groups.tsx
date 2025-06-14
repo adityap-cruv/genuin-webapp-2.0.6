@@ -2,10 +2,10 @@ import { useState } from "react";
 import {
   TrendingGroupCard,
   TrendingGroupCardSkeleton,
-} from "@organisms/trending-groups-card";
+} from "@genuin/components/organisms/trending-groups-card";
 import { Button } from "@genuin/ui/components/button";
 import { Skeleton } from "@genuin/ui/components/skeleton";
-import { getTrendingGroups } from "@react-query/api/group/trending";
+import { getTrendingGroups } from "@genuin/components/react-query/api/group/trending";
 
 type GroupMemberInfoType = {
   member_id: string;

@@ -1,4 +1,4 @@
-import { AuthUser } from "@types/auth";
+import { AuthUser } from "@genuin/components/types/auth";
 
 /**
  * This function parses the user data returned from the API.

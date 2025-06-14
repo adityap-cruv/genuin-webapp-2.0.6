@@ -1,12 +1,12 @@
 import {
   useAddCategoriesMutation,
   useGetCategoriesQuery,
-} from "@react-query/api/authentication/categories";
+} from "@genuin/components/react-query/api/authentication/categories";
 import { Button } from "@genuin/ui/button";
 import { cn } from "@genuin/ui/utils";
 import React, { ComponentProps, useState } from "react";
 import { SubmitButton } from "../../submit-button";
-import { useAuthContext } from "@context/auth";
+import { useAuthContext } from "@genuin/components/context/auth";
 import { Loader } from "@genuin/ui/components/loader";
 import { useAuthenticationModalContext } from "../../context";
 

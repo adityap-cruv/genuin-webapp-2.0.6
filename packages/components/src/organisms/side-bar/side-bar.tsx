@@ -1,9 +1,12 @@
 import { cn } from "@genuin/ui/utils";
 import type { ComponentProps } from "react";
 
-import { SidebarActions, SideBarBecomeCreator } from "@molecules/sidebar";
-import { Category } from "@molecules/sidebar/category";
-import { Recent } from "@molecules/sidebar/recent";
+import {
+  SidebarActions,
+  SideBarBecomeCreator,
+} from "@genuin/components/molecules/sidebar";
+import { Category } from "@genuin/components/molecules/sidebar/category";
+import { Recent } from "@genuin/components/molecules/sidebar/recent";
 
 type SideBarProps = ComponentProps<"aside">;
 

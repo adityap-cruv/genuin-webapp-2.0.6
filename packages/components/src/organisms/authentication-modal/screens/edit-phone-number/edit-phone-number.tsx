@@ -11,9 +11,9 @@ import { z } from "zod";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useAuthContext } from "@context/auth";
+import { useAuthContext } from "@genuin/components/context/auth";
 import { ComponentProps, useCallback } from "react";
-import { useSendOtpMutation } from "@react-query/api/authentication";
+import { useSendOtpMutation } from "@genuin/components/react-query/api/authentication";
 import { useAuthenticationModalContext } from "../../context";
 import { sanitizeInput } from "@genuin/components/lib/utils";
 

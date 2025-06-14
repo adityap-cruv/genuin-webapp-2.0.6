@@ -8,7 +8,7 @@ import {
 } from "@genuin/ui/dialog";
 import React, { ComponentProps } from "react";
 import PlaybackSpeedControlSlider from "./speed-control-buttons";
-import { useFeedContext } from "@templates/feed/context";
+import { useFeedContext } from "@genuin/components/templates/feed/context";
 
 type PlaybackSpeedProps = ComponentProps<typeof Dialog> & {
   children: React.ReactNode;

@@ -6,7 +6,7 @@ import { useMemo, type ComponentProps } from "react";
 import {
   handleReactionStateChangeInComments,
   useComments,
-} from "@react-query/api/comments";
+} from "@genuin/components/react-query/api/comments";
 import { CommentItem, CommentsItemSkeleton } from "./comment-item";
 import { CommentInputBox } from "./comment-input";
 

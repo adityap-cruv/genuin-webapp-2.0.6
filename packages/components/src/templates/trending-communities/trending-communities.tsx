@@ -2,10 +2,10 @@ import { useState } from "react";
 import {
   CommunityCard,
   CommunityCardSkeleton,
-} from "@organisms/community-card";
+} from "@genuin/components/organisms/community-card";
 import { Button } from "@genuin/ui/components/button";
 import { Skeleton } from "@genuin/ui/components/skeleton";
-import { getTrendingCommunities } from "@react-query/api/community/trending";
+import { getTrendingCommunities } from "@genuin/components/react-query/api/community/trending";
 
 type CommunityInfoType = {
   community_id: string;

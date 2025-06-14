@@ -1,8 +1,8 @@
-import { axiosInstance } from "@react-query/axios-instance";
+import { axiosInstance } from "@genuin/components/react-query/axios-instance";
 import { useQuery } from "@tanstack/react-query";
 import { validateLinkouts } from "./schema";
-import { getQueryKeyForLinkouts } from "@react-query/keys/linkouts";
-import { API_PATHS } from "@react-query/paths";
+import { getQueryKeyForLinkouts } from "@genuin/components/react-query/keys/linkouts";
+import { API_PATHS } from "@genuin/components/react-query/paths";
 
 export async function fetchLinkouts(id: number) {
   return await axiosInstance

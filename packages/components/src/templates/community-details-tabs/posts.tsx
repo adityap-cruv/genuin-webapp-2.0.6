@@ -1,10 +1,10 @@
 "use client";
-import { GroupPosts } from "@organisms/group-posts";
+import { GroupPosts } from "@genuin/components/organisms/group-posts";
 
-import { useGetCommunityFeed } from "@react-query/api/community/feed";
+import { useGetCommunityFeed } from "@genuin/components/react-query/api/community/feed";
 import { Suspense, useCallback, useMemo, useState } from "react";
-import { FeedView } from "@templates/feed";
-import { getQueryKeyForCommunityFeed } from "@react-query/keys/community";
+import { FeedView } from "@genuin/components/templates/feed";
+import { getQueryKeyForCommunityFeed } from "@genuin/components/react-query/keys/community";
 
 export function Posts({
   groupSlug,

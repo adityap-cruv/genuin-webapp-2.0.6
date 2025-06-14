@@ -3,7 +3,7 @@ import { cn } from "@genuin/ui/utils";
 import type { ComponentProps } from "react";
 
 import { useBaseContext } from "@genuin/components/context/base";
-import { Link } from "@molecules/link";
+import { Link } from "@genuin/components/molecules/link";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 
 type BrandLogoProps = ComponentProps<typeof Image>;

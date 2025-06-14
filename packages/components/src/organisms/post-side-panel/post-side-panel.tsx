@@ -1,7 +1,7 @@
 import { cn } from "@genuin/ui/utils";
 import type { ComponentProps } from "react";
 
-import type { PostDetailsType } from "@react-query/api/feed/schema";
+import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 import { Comments } from "../comments";
 import { PostDetails } from "../post-details";

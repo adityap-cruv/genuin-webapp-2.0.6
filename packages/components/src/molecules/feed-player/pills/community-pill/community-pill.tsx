@@ -1,6 +1,6 @@
 import { Avatar } from "@genuin/ui/avatar";
-import { Link } from "@molecules/link";
-import { JoinCommunityButton } from "@molecules/join-community-button";
+import { Link } from "@genuin/components/molecules/link";
+import { JoinCommunityButton } from "@genuin/components/molecules/join-community-button";
 import {
   HoverCard,
   HoverCardTrigger,
@@ -9,8 +9,8 @@ import {
 import { cva } from "class-variance-authority";
 
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
-import { useAuthContext } from "@context/auth";
-import { PostDetailsType } from "@react-query/api/feed/schema";
+import { useAuthContext } from "@genuin/components/context/auth";
+import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { CommunityHoverCard } from "../community-hover-card";
 import { ComponentProps } from "react";
 
@@ -22,7 +22,8 @@ const communityPillVariants = cva(
         light:
           "gencl:bg-white gencl:text-default gencl:border gencl:border-secondary-150 gencl:hover:bg-secondary-50 gencl:hover:border-secondary-50",
         dark: "gencl:bg-black/40 gencl:text-white",
-        fullScreen :"gencl:bg-black/40 gencl:backdrop-blur-lg gencl:text-white gencl:border-none"
+        fullScreen:
+          "gencl:bg-black/40 gencl:backdrop-blur-lg gencl:text-white gencl:border-none",
       },
     },
     defaultVariants: {
@@ -35,7 +36,7 @@ type CommunityPillProps = {
   isHoverable?: boolean;
   variant?: "light" | "dark" | "fullScreen";
   communityDetails: PostDetailsType["community"];
-  className? : string,
+  className?: string;
   onCommunityJoinStatusChange?: ComponentProps<
     typeof JoinCommunityButton
   >["onCommunityJoinStatusChange"];
@@ -46,14 +47,14 @@ export function CommunityPill({
   variant = "light",
   communityDetails,
   onCommunityJoinStatusChange,
-  className
+  className,
 }: CommunityPillProps) {
   const { authenticationStatus } = useAuthContext();
   const pill = (
     <Link
       href={buildPageUrl({ type: "community", slug: communityDetails.slug })}
     >
-      <div className={communityPillVariants({ variant , className })}>
+      <div className={communityPillVariants({ variant, className })}>
         <div className="gencl:flex gencl:gap-1 gencl:items-center">
           <Avatar
             alt={communityDetails.name ?? ""}

@@ -3,10 +3,10 @@ import {
   DetailsPageTopbar,
   DetailsPageTopbarSkeleton,
 } from "./details-page-topbar";
-import { ShareButton } from "@molecules/share-button";
-import { BecomeCreatorButton } from "@molecules/become-creator-button";
-import { JoinCommunityButton } from "@molecules/join-community-button";
-import { JoinGroupButton } from "@molecules/join-group-button";
+import { ShareButton } from "@genuin/components/molecules/share-button";
+import { BecomeCreatorButton } from "@genuin/components/molecules/become-creator-button";
+import { JoinCommunityButton } from "@genuin/components/molecules/join-community-button";
+import { JoinGroupButton } from "@genuin/components/molecules/join-group-button";
 
 const meta: Meta<typeof DetailsPageTopbar> = {
   title: "Organisms/DetailsPageTopbar",

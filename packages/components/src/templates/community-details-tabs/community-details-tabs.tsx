@@ -2,22 +2,22 @@ import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@genuin/ui/tabs";
 import { cn } from "@genuin/ui/utils";
 
-import { GroupSubscriptionButton } from "@molecules/group-subscription-button";
-import { JoinGroupButton } from "@molecules/join-group-button";
-import { ShareButton } from "@molecules/share-button";
-import { GenericDetails } from "@organisms/generic-details";
-import { GenericDetailsMetadata } from "@organisms/generic-details/generic-details-metadata";
-import { MemberList } from "@organisms/member-list";
-import { GroupCardSkeleton } from "@organisms/group-card";
-import { PostsGridSkeleton } from "@organisms/posts-grid";
+import { GroupSubscriptionButton } from "@genuin/components/molecules/group-subscription-button";
+import { JoinGroupButton } from "@genuin/components/molecules/join-group-button";
+import { ShareButton } from "@genuin/components/molecules/share-button";
+import { GenericDetails } from "@genuin/components/organisms/generic-details";
+import { GenericDetailsMetadata } from "@genuin/components/organisms/generic-details/generic-details-metadata";
+import { MemberList } from "@genuin/components/organisms/member-list";
+import { GroupCardSkeleton } from "@genuin/components/organisms/group-card";
+import { PostsGridSkeleton } from "@genuin/components/organisms/posts-grid";
 import {
   setQueryDataForJoinGroupStatusInCommunityGroups,
   setQueryDataForSubscriptionStatusInCommunityGroups,
   useGetCommunityGroups,
-} from "@react-query/api/community/groups";
-import { useGetCommunityMembers } from "@react-query/api/community/members";
+} from "@genuin/components/react-query/api/community/groups";
+import { useGetCommunityMembers } from "@genuin/components/react-query/api/community/members";
 import { Posts } from "./posts";
-import { ComponentErrorState } from "@organisms/error-state-component";
+import { ComponentErrorState } from "@genuin/components/organisms/error-state-component";
 
 type CommunityDetailsTabsPropsType = Omit<
   {

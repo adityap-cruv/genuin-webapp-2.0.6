@@ -1,4 +1,4 @@
-import { useBaseContext } from "@context/base";
+import { useBaseContext } from "@genuin/components/context/base";
 import { Image } from "@genuin/ui/image";
 import { abbreviateNumber } from "@genuin/ui/lib/utils";
 import { getUrlForReaction } from "@genuin/components/lib/utils";

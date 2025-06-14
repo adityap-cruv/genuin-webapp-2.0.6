@@ -4,8 +4,8 @@ import type { ComponentProps } from "react";
 import { useWindowSize } from "usehooks-ts";
 
 import { TOP_BAR_HEIGHT } from "@genuin/components/lib/constants";
-import { SideBar } from "@organisms/side-bar";
-import { TopBar } from "@organisms/top-bar";
+import { SideBar } from "@genuin/components/organisms/side-bar";
+import { TopBar } from "@genuin/components/organisms/top-bar";
 import React from "react";
 
 type BaseLayoutProps = ComponentProps<"section"> & { search: React.ReactNode };

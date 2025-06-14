@@ -6,11 +6,11 @@ import {
   getNewDeviceId,
   useGetDeviceId,
 } from "@genuin/components/lib/utils/device-id";
-import { setBrandIdInAxiosInstance } from "@react-query/axios-instance";
-import type { BrandDetailsConfigType } from "@types/brand";
+import { setBrandIdInAxiosInstance } from "@genuin/components/react-query/axios-instance";
+import type { BrandDetailsConfigType } from "@genuin/components/types/brand";
 
 import { BaseContext } from "./context";
-// import { useGestureOverlayManager } from "@molecules/gestures";
+// import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
 
 type BaseContextProviderProps = {
   children: React.ReactNode;

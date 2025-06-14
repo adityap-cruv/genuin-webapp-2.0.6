@@ -2,12 +2,12 @@ import { Avatar } from "@genuin/ui/avatar";
 import { ReadMore } from "@genuin/ui/read-more";
 import { cn } from "@genuin/ui/utils";
 import type { ComponentProps } from "react";
-import type { PostDetailsType } from "@react-query/api/feed/schema";
+import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { usePlayerContext } from "../../context";
-import { ProfileLink } from "@molecules/profile-link";
+import { ProfileLink } from "@genuin/components/molecules/profile-link";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
-import { LinkOutContentRenderer } from "@organisms/linkouts/linkouts-details";
-import { Pills } from "@molecules/feed-player/pills";
+import { LinkOutContentRenderer } from "@genuin/components/organisms/linkouts/linkouts-details";
+import { Pills } from "@genuin/components/molecules/feed-player/pills";
 
 type ExpandViewProps = ComponentProps<"div"> & {
   postDetails: PostDetailsType;

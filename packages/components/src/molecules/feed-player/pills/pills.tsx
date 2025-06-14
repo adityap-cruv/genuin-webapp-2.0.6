@@ -1,7 +1,7 @@
 import { cn } from "@genuin/ui/lib/utils";
-import { CommunityPill } from "@molecules/feed-player/pills/community-pill";
-import { GroupPill } from "@molecules/feed-player/pills/group-pill";
-import type { PostDetailsType } from "@react-query/api/feed/schema";
+import { CommunityPill } from "@genuin/components/molecules/feed-player/pills/community-pill";
+import { GroupPill } from "@genuin/components/molecules/feed-player/pills/group-pill";
+import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { ComponentProps } from "react";
 
 type PillsPropsType = {

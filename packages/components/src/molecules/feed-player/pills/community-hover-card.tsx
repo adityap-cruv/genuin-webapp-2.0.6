@@ -1,14 +1,14 @@
 import { Avatar } from "@genuin/ui/avatar";
 import { type ComponentProps } from "react";
 
-import { JoinCommunityButton } from "@molecules/join-community-button";
-import { ShareButton } from "@molecules/share-button";
-import { PostDetailsType } from "@react-query/api/feed/schema";
+import { JoinCommunityButton } from "@genuin/components/molecules/join-community-button";
+import { ShareButton } from "@genuin/components/molecules/share-button";
+import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { cn } from "@genuin/ui/lib/utils";
-import { GenericDetailsMetadata } from "@organisms/generic-details/generic-details-metadata";
+import { GenericDetailsMetadata } from "@genuin/components/organisms/generic-details/generic-details-metadata";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
-import { Stats } from "@molecules/stats";
-import { Tag } from "@molecules/tag";
+import { Stats } from "@genuin/components/molecules/stats";
+import { Tag } from "@genuin/components/molecules/tag";
 
 type CommunityHoverCardProps = {
   communityDetails: PostDetailsType["community"];

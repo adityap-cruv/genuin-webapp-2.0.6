@@ -1,6 +1,6 @@
 import { Button } from "@genuin/ui/components/button";
 import type { ComponentProps } from "react";
-import { Link } from "@molecules/link";
+import { Link } from "@genuin/components/molecules/link";
 import BG_404 from "../../../public/images/404.webp";
 import BG_OPPS from "../../../public/images/opps.webp";
 

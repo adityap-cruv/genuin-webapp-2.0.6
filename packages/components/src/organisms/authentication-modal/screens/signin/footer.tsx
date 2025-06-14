@@ -8,7 +8,7 @@ import {
 } from "@genuin/ui/icons";
 import { useAuthenticationModalContext } from "../../context";
 import { useCallback } from "react";
-import { useGetRedirectionUrlForSSOMutation } from "@react-query/api/authentication/auto-login";
+import { useGetRedirectionUrlForSSOMutation } from "@genuin/components/react-query/api/authentication/auto-login";
 import { toastError } from "@genuin/ui/components/toaster";
 import { Loader } from "@genuin/ui/components/loader";
 

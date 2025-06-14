@@ -1,4 +1,4 @@
-import { useBaseContext } from "@context/base";
+import { useBaseContext } from "@genuin/components/context/base";
 import { useState, useEffect, useMemo } from "react";
 
 function useShowLinkouts({

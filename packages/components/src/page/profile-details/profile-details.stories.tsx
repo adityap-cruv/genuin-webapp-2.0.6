@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { BaseLayout } from "@templates/base-layout";
+import { BaseLayout } from "@genuin/components/templates/base-layout";
 
 import { ProfileDetails } from "./profile-details";
 

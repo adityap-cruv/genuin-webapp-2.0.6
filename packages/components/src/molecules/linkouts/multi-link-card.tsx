@@ -1,5 +1,5 @@
 import { checkAndAppendHttps } from "@genuin/ui/lib/utils";
-import { LinkData } from "@react-query/api/linkouts/schema";
+import { LinkData } from "@genuin/components/react-query/api/linkouts/schema";
 import { LinkIcon } from "lucide-react";
 
 interface MultiLinkCardProps {

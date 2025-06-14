@@ -1,6 +1,6 @@
 import { CtaButtons } from "./cta-buttons";
-import { BrandLogo } from "@molecules/brand";
-import { BrandSlogan } from "@molecules/brand";
+import { BrandLogo } from "@genuin/components/molecules/brand";
+import { BrandSlogan } from "@genuin/components/molecules/brand";
 import { cn } from "@genuin/ui/utils";
 import type { ReactNode } from "react";
 

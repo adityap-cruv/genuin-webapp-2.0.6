@@ -1,6 +1,6 @@
-import { axiosInstance } from "@react-query/axios-instance";
+import { axiosInstance } from "@genuin/components/react-query/axios-instance";
 import { useQuery } from "@tanstack/react-query";
-import { getQueryKeyForCategories } from "@react-query/keys/authentication";
+import { getQueryKeyForCategories } from "@genuin/components/react-query/keys/authentication";
 import { parseCategory } from "./index";
 
 async function fetchCategories() {

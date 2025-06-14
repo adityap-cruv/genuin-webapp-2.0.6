@@ -1,15 +1,18 @@
 import { QueryKey, useInfiniteQuery } from "@tanstack/react-query";
 
 import { getDeviceId } from "@genuin/components/lib/utils/device-id";
-import { getQueryKeyForFeed } from "@react-query/keys/feed";
-import type { CommunityUserRole, FeedType } from "@types/post";
+import { getQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
+import type {
+  CommunityUserRole,
+  FeedType,
+} from "@genuin/components/types/post";
 
 import { axiosInstance } from "../../axios-instance";
 
 import { parseFeed } from "./parser";
-import { queryClient } from "@react-query/client";
-import { API_PATHS } from "@react-query/paths";
-import { GroupUserStatusType } from "@types/roles";
+import { queryClient } from "@genuin/components/react-query/client";
+import { API_PATHS } from "@genuin/components/react-query/paths";
+import { GroupUserStatusType } from "@genuin/components/types/roles";
 // Mapper for FeedType to corresponding numbers
 const feedTypeToNumber: Record<FeedType, number> = {
   HOME: 1,

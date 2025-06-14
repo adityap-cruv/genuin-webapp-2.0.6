@@ -1,11 +1,11 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 
-import { axiosInstance } from "@react-query/axios-instance";
-import { getQueryKeyForComments } from "@react-query/keys/comment";
+import { axiosInstance } from "@genuin/components/react-query/axios-instance";
+import { getQueryKeyForComments } from "@genuin/components/react-query/keys/comment";
 
 import { parseComments } from "./parser";
-import { API_PATHS } from "@react-query/paths";
-import { queryClient } from "@react-query/client";
+import { API_PATHS } from "@genuin/components/react-query/paths";
+import { queryClient } from "@genuin/components/react-query/client";
 
 /**
  * Fetch comments for a video.

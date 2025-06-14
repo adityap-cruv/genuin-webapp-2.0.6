@@ -3,14 +3,14 @@ import { DecorativeList } from "@genuin/ui/decorative-list";
 import { InfiniteScroll } from "@genuin/ui/infinite-scroll";
 import { useCallback, useMemo, useState } from "react";
 
-import { GroupSubscriptionButton } from "@molecules/group-subscription-button";
-import { JoinCommunityButton } from "@molecules/join-community-button";
-import { JoinGroupButton } from "@molecules/join-group-button";
-import { ShareButton } from "@molecules/share-button";
-import { Tag } from "@molecules/tag";
-import { GenericDetails } from "@organisms/generic-details";
-import { GenericDetailsMetadata } from "@organisms/generic-details/generic-details-metadata";
-import { PostsGrid } from "@organisms/posts-grid";
+import { GroupSubscriptionButton } from "@genuin/components/molecules/group-subscription-button";
+import { JoinCommunityButton } from "@genuin/components/molecules/join-community-button";
+import { JoinGroupButton } from "@genuin/components/molecules/join-group-button";
+import { ShareButton } from "@genuin/components/molecules/share-button";
+import { Tag } from "@genuin/components/molecules/tag";
+import { GenericDetails } from "@genuin/components/organisms/generic-details";
+import { GenericDetailsMetadata } from "@genuin/components/organisms/generic-details/generic-details-metadata";
+import { PostsGrid } from "@genuin/components/organisms/posts-grid";
 import {
   setQueryDataForGroupJoinStatusInProfileGroups,
   setQueryDataForGroupSubscribeInProfileGroups,
@@ -18,18 +18,18 @@ import {
   useGetProfileCommunities,
   useGetProfileGroups,
   useGetProfileVideos,
-} from "@react-query/api/profile/posts";
+} from "@genuin/components/react-query/api/profile/posts";
 import type {
   LoopType,
   VideoType,
-} from "@react-query/api/profile/posts/schema";
+} from "@genuin/components/react-query/api/profile/posts/schema";
 
 import { FeedViewWrapper } from "./feed-view-wrapper";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { CommunityListSkeleton } from "./skeleton";
 import { CommunityGroupsSkeleton } from "../community-details-tabs";
-import { CommunityUserRole } from "@types/post";
-import { ComponentErrorState } from "@organisms/error-state-component";
+import { CommunityUserRole } from "@genuin/components/types/post";
+import { ComponentErrorState } from "@genuin/components/organisms/error-state-component";
 
 export function CommunityList({
   userId,

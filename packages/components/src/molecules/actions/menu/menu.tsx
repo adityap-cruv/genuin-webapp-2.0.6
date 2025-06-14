@@ -1,6 +1,6 @@
-import { useBaseContext } from "@context/base";
-import { PlaybackSpeed } from "@molecules/playback-speed";
-import { Report } from "@molecules/report";
+import { useBaseContext } from "@genuin/components/context/base";
+import { PlaybackSpeed } from "@genuin/components/molecules/playback-speed";
+import { Report } from "@genuin/components/molecules/report";
 import {
   Popover,
   PopoverTrigger,
@@ -36,9 +36,7 @@ export function Menu({ contentId, shareUrl, children, ...props }: MenuProps) {
       children: menuItems("Copy Link"),
     },
     brandDetails.web_configs.playback_speed_enabled && {
-      children: (
-        <PlaybackSpeed children={menuItems("Playback speed")} />
-      ),
+      children: <PlaybackSpeed children={menuItems("Playback speed")} />,
     },
     // Feature not implemented yet: "Group Details" and "Not interested" menu items are pending design.
     /*

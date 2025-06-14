@@ -1,6 +1,6 @@
 import { encryptText } from "@genuin/components/lib/utils/encryption";
-import { axiosInstance } from "@react-query/axios-instance";
-import { API_PATHS } from "@react-query/paths";
+import { axiosInstance } from "@genuin/components/react-query/axios-instance";
+import { API_PATHS } from "@genuin/components/react-query/paths";
 import { getDeviceId } from "@genuin/components/lib/utils/device-id";
 import { useMutation } from "@tanstack/react-query";
 
@@ -55,7 +55,7 @@ export async function sendOtp({ email, phoneNumber, isUpdate }: SendOtpProps) {
 
       return {
         codeSent: false as const,
-        retryTime : retryTime as number,
+        retryTime: retryTime as number,
         message,
       };
     });

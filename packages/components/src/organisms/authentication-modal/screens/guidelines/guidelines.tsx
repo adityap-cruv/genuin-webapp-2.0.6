@@ -13,11 +13,11 @@ import {
 import { useState } from "react";
 
 import { useBaseContext } from "@genuin/components/context/base";
-import { BrandLogo } from "@molecules/brand";
+import { BrandLogo } from "@genuin/components/molecules/brand";
 import {
   useAcceptGuidelinesMutation,
   useGetGuidelines,
-} from "@react-query/api/authentication";
+} from "@genuin/components/react-query/api/authentication";
 import { useAuthContext } from "@genuin/components/context/auth";
 import { useAuthenticationModalContext } from "../../context";
 import { SubmitButton } from "../../submit-button";

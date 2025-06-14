@@ -10,9 +10,9 @@ import { SubmitButton } from "../../submit-button";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useAuthContext } from "@context/auth";
+import { useAuthContext } from "@genuin/components/context/auth";
 import { ComponentProps, useCallback, useEffect } from "react";
-import { useSendOtpMutation } from "@react-query/api/authentication";
+import { useSendOtpMutation } from "@genuin/components/react-query/api/authentication";
 import { useAuthenticationModalContext } from "../../context";
 import { sanitizeInput } from "@genuin/components/lib/utils";
 

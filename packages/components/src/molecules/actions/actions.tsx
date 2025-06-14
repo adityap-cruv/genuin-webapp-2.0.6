@@ -10,10 +10,10 @@ import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 import { type ComponentProps, type ReactNode } from "react";
 import { Menu } from "./menu";
-import { ReactionButton } from "@molecules/reaction-button";
-import { DynamicReactionIcon } from "@molecules/reaction-button";
-import { ShareButton } from "@molecules/share-button";
-import { RepostModal } from "@organisms/repost-modal/repost-modal";
+import { ReactionButton } from "@genuin/components/molecules/reaction-button";
+import { DynamicReactionIcon } from "@genuin/components/molecules/reaction-button";
+import { ShareButton } from "@genuin/components/molecules/share-button";
+import { RepostModal } from "@genuin/components/organisms/repost-modal/repost-modal";
 
 const tooltipVariants = cva("", {
   variants: {

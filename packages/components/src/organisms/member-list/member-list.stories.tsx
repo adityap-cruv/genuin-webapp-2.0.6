@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import type { MemberDataType } from "@molecules/member-item";
+import type { MemberDataType } from "@genuin/components/molecules/member-item";
 
 import { MemberList } from "./member-list";
 

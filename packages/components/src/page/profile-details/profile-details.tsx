@@ -1,23 +1,23 @@
 "use client";
 import { useId } from "react";
 import { TabsSkeleton } from "@genuin/ui/tabs";
-import { buildPageUrl } from "@lib/utils/pages";
-import { NOT_FOUND_ERROR_CODES } from "@lib/constants/errors";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { NOT_FOUND_ERROR_CODES } from "@genuin/components/lib/constants/errors";
 
-import { BecomeCreatorButton } from "@molecules/become-creator-button";
-import { ErrorState } from "@molecules/error-state";
-import { ShareButton } from "@molecules/share-button";
+import { BecomeCreatorButton } from "@genuin/components/molecules/become-creator-button";
+import { ErrorState } from "@genuin/components/molecules/error-state";
+import { ShareButton } from "@genuin/components/molecules/share-button";
 import {
   GenericDetails,
   GenericDetailsSkeleton,
-} from "@organisms/generic-details";
-import { GenericDetailsMetadata } from "@organisms/generic-details/generic-details-metadata";
-import { useGetProfileDetails } from "@react-query/api/profile/details";
+} from "@genuin/components/organisms/generic-details";
+import { GenericDetailsMetadata } from "@genuin/components/organisms/generic-details/generic-details-metadata";
+import { useGetProfileDetails } from "@genuin/components/react-query/api/profile/details";
 import {
   CommunityListSkeleton,
   ProfileDetailsTabs,
-} from "@templates/profile-details-tabs";
-import { DetailsPageTopbar } from "@organisms/details-page-topbar";
+} from "@genuin/components/templates/profile-details-tabs";
+import { DetailsPageTopbar } from "@genuin/components/organisms/details-page-topbar";
 
 export function ProfileDetails({
   userName,

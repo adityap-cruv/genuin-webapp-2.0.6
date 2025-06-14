@@ -1,6 +1,6 @@
 import { Button } from "@genuin/ui/components/button";
 import { checkAndAppendHttps } from "@genuin/ui/lib/utils";
-import { LinkData } from "@react-query/api/linkouts/schema";
+import { LinkData } from "@genuin/components/react-query/api/linkouts/schema";
 import { LinkIcon, ChevronRight } from "lucide-react";
 
 interface LinkCardProps {

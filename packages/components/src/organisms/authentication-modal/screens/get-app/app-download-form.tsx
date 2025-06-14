@@ -12,12 +12,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useBaseContext } from "src/context/base";
-import { Link } from "@molecules/link";
-import { SubmitButton } from "@organisms/authentication-modal/submit-button";
+import { Link } from "@genuin/components/molecules/link";
+import { SubmitButton } from "@genuin/components/organisms/authentication-modal/submit-button";
 import { cn } from "@genuin/ui/lib/utils";
-import { useSendGetAppLinkMutation } from "@react-query/api/get-app";
+import { useSendGetAppLinkMutation } from "@genuin/components/react-query/api/get-app";
 import { toast, toastError } from "@genuin/ui/components/toaster";
-import { useSearchParams } from "@hooks/use-search-params";
+import { useSearchParams } from "@genuin/components/hooks/use-search-params";
 
 // Form validation schema
 const formSchema = z

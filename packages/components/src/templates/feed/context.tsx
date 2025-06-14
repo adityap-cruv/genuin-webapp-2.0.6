@@ -1,4 +1,4 @@
-import { PlaybackSpeedType } from "@molecules/feed-player/context/types";
+import { PlaybackSpeedType } from "@genuin/components/molecules/feed-player/context/types";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useBoolean } from "usehooks-ts";
 
@@ -25,9 +25,9 @@ type FeedContextType = {
    */
   showExpandView: boolean;
 
-    playbackSpeed: PlaybackSpeedType
+  playbackSpeed: PlaybackSpeedType;
 
-  setPlaybackSpeed: React.Dispatch<React.SetStateAction<PlaybackSpeedType>>
+  setPlaybackSpeed: React.Dispatch<React.SetStateAction<PlaybackSpeedType>>;
 };
 
 const FeedContext = createContext<FeedContextType>({
@@ -37,11 +37,11 @@ const FeedContext = createContext<FeedContextType>({
   openExpandView: () => {},
   closeExpandView: () => {},
   toggleExpandView: () => {},
-  playbackSpeed : {
+  playbackSpeed: {
     speed: 1.0,
-    isSpeedFromGesture: false
+    isSpeedFromGesture: false,
   },
-  setPlaybackSpeed : () => {}
+  setPlaybackSpeed: () => {},
 });
 
 const useFeedContext = () => {
@@ -82,7 +82,7 @@ export function FeedContextProvider({
 
   const [playbackSpeed, setPlaybackSpeed] = useState<PlaybackSpeedType>({
     speed: 1.0,
-    isSpeedFromGesture: false
+    isSpeedFromGesture: false,
   });
 
   useEffect(() => {
@@ -121,7 +121,7 @@ export function FeedContextProvider({
         closeExpandView,
         toggleExpandView,
         playbackSpeed,
-        setPlaybackSpeed
+        setPlaybackSpeed,
       }}
     >
       {children}

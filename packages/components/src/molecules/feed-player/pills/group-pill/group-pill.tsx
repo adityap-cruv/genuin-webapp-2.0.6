@@ -6,15 +6,15 @@ import {
 } from "@genuin/ui/hover-card";
 import { cva } from "class-variance-authority";
 
-import { GroupSubscriptionButton } from "@molecules/group-subscription-button";
-import { Link } from "@molecules/link";
+import { GroupSubscriptionButton } from "@genuin/components/molecules/group-subscription-button";
+import { Link } from "@genuin/components/molecules/link";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
-import { useAuthContext } from "@context/auth";
-import { PostDetailsType } from "@react-query/api/feed/schema";
+import { useAuthContext } from "@genuin/components/context/auth";
+import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { GroupHoverCard } from "../group-hover-card";
 import { ComponentProps } from "react";
-import { JoinGroupButton } from "@molecules/join-group-button";
-import { useBaseContext } from "@context/base";
+import { JoinGroupButton } from "@genuin/components/molecules/join-group-button";
+import { useBaseContext } from "@genuin/components/context/base";
 
 const groupPillVariants = cva(
   "gencl:flex gencl:w-fit gencl:items-center gencl:gap-1 gencl:p-1 gencl:pr-2 gencl:rounded-full gencl:transition-all gencl:cursor-pointer",
@@ -24,7 +24,8 @@ const groupPillVariants = cva(
         light:
           "gencl:bg-white gencl:text-default gencl:border gencl:border-secondary-150 gencl:hover:bg-secondary-50 gencl:hover:border-secondary-50",
         dark: "gencl:bg-black/40 gencl:text-white",
-        fullScreen : "gencl:!bg-black/40 gencl:backdrop-blur-lg gencl:text-white gencl:border-none"
+        fullScreen:
+          "gencl:!bg-black/40 gencl:backdrop-blur-lg gencl:text-white gencl:border-none",
       },
     },
     defaultVariants: {
@@ -38,7 +39,7 @@ type GroupPillProps = {
   variant?: "light" | "dark" | "fullScreen";
   groupDetails: PostDetailsType["group"];
   communityDetails: PostDetailsType["community"];
-  className? : string,
+  className?: string;
   onGroupJoinStatusChange: ComponentProps<
     typeof JoinGroupButton
   >["onGroupJoinStatusChange"];
@@ -54,12 +55,12 @@ export function GroupPill({
   communityDetails,
   onGroupJoinStatusChange,
   onGroupSubscriptionChange,
-  className
+  className,
 }: GroupPillProps) {
   const { authenticationStatus } = useAuthContext();
   const pill = (
     <Link href={buildPageUrl({ type: "group", slug: groupDetails.slug })}>
-      <div className={groupPillVariants({ variant , className })}>
+      <div className={groupPillVariants({ variant, className })}>
         <div className="gencl:flex gencl:gap-1 gencl:items-center">
           <Avatar
             alt={groupDetails.name ?? ""}

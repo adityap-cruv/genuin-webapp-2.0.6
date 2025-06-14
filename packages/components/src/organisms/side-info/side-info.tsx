@@ -7,8 +7,8 @@ import { cn } from "@genuin/ui/utils";
 import { type ComponentProps, type ReactNode } from "react";
 
 import { formateDateToLocaleString } from "@genuin/components/lib/utils";
-import { Stats } from "@molecules/stats";
-import { Tag } from "@molecules/tag";
+import { Stats } from "@genuin/components/molecules/stats";
+import { Tag } from "@genuin/components/molecules/tag";
 
 import { Guidelines } from "./guide-lines";
 

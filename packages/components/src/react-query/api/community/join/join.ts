@@ -1,6 +1,6 @@
-import { axiosInstance } from "@react-query/axios-instance";
-import { API_PATHS } from "@react-query/paths";
-import { CommunityUserRole } from "@types/post";
+import { axiosInstance } from "@genuin/components/react-query/axios-instance";
+import { API_PATHS } from "@genuin/components/react-query/paths";
+import { CommunityUserRole } from "@genuin/components/types/post";
 import { useMutation } from "@tanstack/react-query";
 
 /**

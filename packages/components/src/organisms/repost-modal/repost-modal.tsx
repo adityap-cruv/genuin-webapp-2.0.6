@@ -1,6 +1,6 @@
 import { Dialog, DialogTrigger, DialogContent } from "@genuin/ui/dialog";
-import { useGetRepostDestinations } from "@react-query/api/repost";
-import type { RepostCommunityType } from "@react-query/api/repost/schema";
+import { useGetRepostDestinations } from "@genuin/components/react-query/api/repost";
+import type { RepostCommunityType } from "@genuin/components/react-query/api/repost/schema";
 import { ComponentProps } from "react";
 import { CommunityCard } from "./community-card";
 import { Loader } from "@genuin/ui/components/loader";

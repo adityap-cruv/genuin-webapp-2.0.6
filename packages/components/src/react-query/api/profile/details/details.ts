@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { NOT_FOUND_ERROR_CODES } from "@genuin/components/lib/constants/errors";
-import { axiosInstance } from "@react-query/axios-instance";
-import { getQueryKeyForProfileDetails } from "@react-query/keys/profile";
-import { API_PATHS } from "@react-query/paths";
+import { axiosInstance } from "@genuin/components/react-query/axios-instance";
+import { getQueryKeyForProfileDetails } from "@genuin/components/react-query/keys/profile";
+import { API_PATHS } from "@genuin/components/react-query/paths";
 
 import { validateProfileDetails } from "./schema";
 
