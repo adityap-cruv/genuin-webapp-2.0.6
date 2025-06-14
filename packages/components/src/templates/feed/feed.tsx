@@ -24,6 +24,7 @@ import { QueryKey } from "@tanstack/react-query";
 import { getQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
 import { GroupUserStatusType } from "@genuin/components/types/roles";
 import { FeedSkeleton } from "./feed-skeleton";
+import { useInterruptionManager } from "@genuin/components/hooks/use-interruption-manager";
 
 /**
  * Feed data structure containing videos and pagination state
@@ -195,6 +196,7 @@ function FeedViewCore({
   } = feedData;
   const { setActiveIndex, activeIndex, showExpandView } = useFeedContext();
   const { hideGestureOverlay } = useGestureOverlayManager();
+  const { handleSwipeCount } = useInterruptionManager();
 
   // this useEffect is used to fetch the next page of videos when the user scrolls to the end of the list.
   // it checks if there is a next page and if the user is not already fetching the next page.
@@ -264,6 +266,7 @@ function FeedViewCore({
     (newIndex: number) => {
       setActiveIndex(newIndex);
       hideGestureOverlay("SWIPE");
+      handleSwipeCount(newIndex);
     },
     [setActiveIndex, hideGestureOverlay]
   );

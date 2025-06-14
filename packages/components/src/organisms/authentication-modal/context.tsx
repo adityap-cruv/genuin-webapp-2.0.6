@@ -4,6 +4,7 @@ import {
   useReducer,
   useCallback,
   ReactNode,
+  useEffect,
 } from "react";
 import { DeepLinkPayloadUnion } from "@genuin/components/react-query/api/deeplink/types";
 
@@ -99,6 +100,7 @@ type ContextType = {
   setFormData: (data: Partial<FormDataType>) => void;
   getAppData?: getAppDataType;
   closeModal: () => void;
+  openModal: (step?: StepsType, appData?: getAppDataType) => void;
   action?: AuthActionType;
 };
 
@@ -110,13 +112,31 @@ const AuthenticationModalContext = createContext<ContextType>({
   },
   setFormData: () => {},
   closeModal: () => {},
+  openModal: () => {},
 });
+
+// Add global modal state
+let globalModalState = {
+  isOpen: false,
+  onOpenChange: (
+    open: boolean,
+    step?: StepsType,
+    appData?: getAppDataType
+  ) => {},
+};
+
+export const setGlobalModalState = (state: typeof globalModalState) => {
+  globalModalState = state;
+};
+
+export const getGlobalModalState = () => globalModalState;
 
 type AuthenticationModalProviderProps = {
   action?: AuthActionType;
   children: React.ReactNode;
   customStep?: StepsType;
   onClose?: () => void;
+  onOpen?: () => void;
   getAppData?: getAppDataType;
 };
 
@@ -125,6 +145,7 @@ export function AuthenticationModalProvider({
   customStep = "SIGNIN",
   action,
   onClose,
+  onOpen,
   getAppData,
 }: AuthenticationModalProviderProps) {
   const [state, dispatch] = useReducer(reducer, {
@@ -149,6 +170,37 @@ export function AuthenticationModalProvider({
     onClose?.();
   }, [onClose]);
 
+  const openModal = useCallback(
+    (step?: StepsType, appData?: getAppDataType) => {
+      if (step) {
+        setStep(step);
+      }
+      if (appData) {
+        setGetAppData(appData);
+      }
+      onOpen?.();
+    },
+    [onOpen, setStep, setGetAppData]
+  );
+
+  // Update global modal state
+  useEffect(() => {
+    setGlobalModalState({
+      isOpen: false,
+      onOpenChange: (
+        open: boolean,
+        step?: StepsType,
+        appData?: getAppDataType
+      ) => {
+        if (open) {
+          openModal(step, appData);
+        } else {
+          closeModal();
+        }
+      },
+    });
+  }, [onOpen, openModal, closeModal]);
+
   return (
     <AuthenticationModalContext.Provider
       value={{
@@ -158,6 +210,7 @@ export function AuthenticationModalProvider({
         setFormData,
         getAppData: state.getAppData,
         closeModal,
+        openModal,
         action,
       }}
     >
