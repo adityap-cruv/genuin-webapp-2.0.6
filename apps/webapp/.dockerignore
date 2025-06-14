@@ -1,0 +1,42 @@
+# Ignore node_modules everywhere
+node_modules
+**/node_modules
+
+# Ignore build output
+dist
+.next
+out
+coverage
+
+# Ignore logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Ignore OS and editor files
+.DS_Store
+*.swp
+*.swo
+.idea
+.vscode
+
+# Ignore test output
+*.lcov
+
+# Ignore misc
+*.tgz
+*.gz
+*.zip
+
+# Ignore storybook static output
+storybook-static
+
+# Ignore local scripts and caches
+.cache
+.pnpm-store
+
+# Ignore lockfiles from other package managers
+yarn.lock
+package-lock.json

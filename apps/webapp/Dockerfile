@@ -1,20 +1,84 @@
-## Only use this dockerfile after npm run build command.
+# Dockerfile for Genuin Webapp
 
-FROM node:18.17.0
+## Stage 1: Base image with Node.js 20 and pnpm
+FROM node:20.12.0-alpine AS base
+WORKDIR /app
 
-WORKDIR /genuin-webapp-qa
+# Install dependencies required for builds
+RUN apk add --no-cache libc6-compat python3 make g++
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable && corepack prepare pnpm@8.15.3 --activate
 
-# Copy only the webapp directory from the monorepo
-COPY apps/webapp ./
+## Stage 2: Install dependencies with caching
+FROM base AS dependencies
+WORKDIR /app
 
-# Install project dependencies
-RUN npm install
-RUN npm i sharp
+# Copy package files and full local dependency sources for caching
+COPY pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY package.json ./
+COPY apps/webapp/package.json ./apps/webapp/
 
-RUN npm run build
+# Copy the entire ui and components packages
+COPY packages/ui/ ./packages/ui/
+COPY packages/components/ ./packages/components/
+
+COPY packages/eslint-config/ ./packages/eslint-config/
+COPY packages/tailwind-config/ ./packages/tailwind-config/
+COPY packages/typescript-config/ ./packages/typescript-config/
+# Note: If 'packages/utils' exists and is a dependency, uncomment the next line
+# COPY packages/utils/ ./packages/utils/
+
+# Install ALL dependencies for the entire monorepo to ensure build steps in packages work
+# We will prune them later for the runner stage.
+RUN pnpm install --frozen-lockfile
+
+## Stage 3: Builder
+FROM dependencies AS builder
+WORKDIR /app
+
+# Copy all source files
+# Ensure .dockerignore is properly configured to exclude unnecessary files
+COPY . .
+
+# Build the application
+# The output: 'standalone' option in next.config.js will create a .next/standalone directory
+RUN pnpm --filter @genuin/webapp run build
+
+## Stage 4: Runner
+FROM node:20.12.0-alpine AS runner
+WORKDIR /app
+
+# No need to install pnpm here for standalone output, server.js is used.
+
+# Set to production environment
+ENV NODE_ENV=production
+# Default port, can be overridden by NEXT_PUBLIC_PORT or PORT env var
+ENV PORT=4000
+
+# Create non-root user for security
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
+
+# Copy the standalone output. This includes server.js, node_modules,
+# and app-specific files, but NOT static assets or public files.
+COPY --from=builder --chown=nextjs:nodejs /app/apps/webapp/.next/standalone ./apps/webapp/
+
+# Copy static assets from .next/static to the correct location
+# This is critical for serving CSS, JS bundles, and other static assets
+COPY --from=builder --chown=nextjs:nodejs /app/apps/webapp/.next/static ./apps/webapp/apps/webapp/.next/static
+
+# Copy public folder for static files (images, fonts, etc.)
+COPY --from=builder --chown=nextjs:nodejs /app/apps/webapp/public ./apps/webapp/apps/webapp/public
+
+# The .env file needs to be in the directory where server.js expects it.
+COPY --chown=nextjs:nodejs apps/webapp/.env ./apps/webapp/apps/webapp/.env
+
+# Set proper permissions
+USER nextjs
 
 EXPOSE 4000
 
-ENV PORT=4000
-
-CMD [ "npm", "start" ]
+# Start the Next.js application using the server.js from standalone output
+# Adjusted path assuming server.js is within an 'apps/webapp' subdirectory inside the standalone output.
+CMD ["node", "apps/webapp/apps/webapp/server.js"]

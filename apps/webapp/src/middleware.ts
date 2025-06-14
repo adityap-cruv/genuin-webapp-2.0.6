@@ -190,7 +190,7 @@ async function handleSubdomainRouting(request: NextRequest, host: string): Promi
 export function getConfig(host: string): { domain?: string; subdomain?: string } | null {
   // Special cases for localhost and other development environments
   const firstSegment = host.split('.')[0]
-  if (['localhost:4005', 'www', '192'].includes(firstSegment)) {
+  if (['localhost:4005', 'localhost:4000', 'www', '192'].includes(firstSegment)) {
     return { subdomain: 'app' }
   }
 
@@ -202,7 +202,9 @@ export function getConfig(host: string): { domain?: string; subdomain?: string }
   // Handle begenuin subdomains based on environment
   const isDevEnvironment =
     process.env.NEXT_PUBLIC_CURRENT_ENV === 'local' || process.env.NEXT_PUBLIC_CURRENT_ENV === 'qa'
-  const subdomain = isDevEnvironment ? host.replace('.qa.begenuin.com', '') : host.replace('.begenuin.com', '')
+  const subdomain = isDevEnvironment
+    ? host.replace('.qa.begenuin.com', '').replace('.uat.begenuin.com', '')
+    : host.replace('.begenuin.com', '')
 
   // Special case for root domain
   if (subdomain === 'begenuin.com') {

@@ -1,6 +1,6 @@
 import { Button } from '@components/ui/button'
-import { ModalShell } from '../../../../components/common/modals/authentication/modal-shell'
-import { addTopics } from '../../../../components/common/modals/authentication/screens/category-input/api'
+import { ModalShell } from '@components/common/modals/authentication/modal-shell'
+import { addTopics } from '@components/common/modals/authentication/screens/category-input/api'
 import { useState, type MutableRefObject } from 'react'
 import { cn } from '@lib/utils'
 import { Loader } from '@components/ui/loader'
@@ -81,8 +81,8 @@ export function CategoryInputSettings({
       ) : (
         <div className="my-2 h-full w-full overflow-x-clip overflow-y-scroll">
           {CategoryData?.map((item: any) => (
-            <div className="border-b border-b-monochrome-9 py-4 first:pt-0" key={item.entity_id}>
-              <p className="pb-2 text-title-3-demi">{item.title}</p>
+            <div className="border-b-monochrome-9 border-b py-4 first:pt-0" key={item.entity_id}>
+              <p className="text-title-3-demi pb-2">{item.title}</p>
               <div className="flex w-full max-w-full flex-wrap overflow-clip">
                 {item.topics.map((topic: any) => (
                   <p
@@ -90,7 +90,7 @@ export function CategoryInputSettings({
                       toggleTopicSelection(topic.topic_id)
                     }}
                     className={cn(
-                      'my-1 mr-2 line-clamp-1 w-fit cursor-pointer overflow-hidden break-all rounded-full border border-monochrome-9 px-3 py-1 text-body-1-demi leading-loose',
+                      'border-monochrome-9 text-body-1-demi my-1 mr-2 line-clamp-1 w-fit cursor-pointer overflow-hidden rounded-full border px-3 py-1 leading-loose break-all',
                       selectedItems.has(topic.topic_id) && 'border-primary bg-primary-100'
                     )}
                     key={topic.topic_id}>
@@ -110,7 +110,7 @@ export function CategoryInputSettings({
         )}
       </Button>
       {error && (
-        <p className="text-text-new-para-2-mobile flex items-center justify-center text-center text-supplementary-red">
+        <p className="text-text-new-para-2-mobile text-supplementary-red flex items-center justify-center text-center">
           {error}
         </p>
       )}

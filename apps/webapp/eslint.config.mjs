@@ -1,6 +1,7 @@
 // ESLint config for the webapp, extending the shared monorepo config (ESM)
 
 import sharedConfig from '../../packages/eslint-config/index.js'
+import pluginNext from '@next/eslint-plugin-next'
 import prettierPlugin from 'eslint-plugin-prettier'
 import globals from 'globals'
 // ESM-safe __dirname replacement
@@ -14,8 +15,34 @@ const tsconfigRootDir = new URL('.', import.meta.url).pathname
  */
 // TODO [eslint-migration]: Temporarily suppress most warnings for smoother transition.
 // See LINTING.md for details and plan to re-enable rules after code cleanup.
+// Create a Next.js config object for ESLint
+const nextJsConfig = {
+  plugins: {
+    next: pluginNext,
+  },
+  files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
+  rules: {
+    ...(pluginNext.configs.recommended?.rules || {}),
+    'next/no-html-link-for-pages': 'warn',
+    'next/no-img-element': 'warn',
+    'next/no-sync-scripts': 'warn',
+    'next/no-unwanted-polyfillio': 'warn',
+  },
+}
+
+// Ignore config for specific paths that don't need linting or cause issues
+const ignoreConfig = {
+  ignores: [
+    'src/app/.well-known/**', // Ignore .well-known directory files
+  ],
+}
+
 export default [
   ...sharedConfig,
+  // Include the Next.js plugin config
+  nextJsConfig,
+  // Add ignore configuration
+  ignoreConfig,
   {
     languageOptions: {
       parserOptions: {
@@ -31,6 +58,7 @@ export default [
     },
     plugins: {
       prettier: prettierPlugin,
+      next: pluginNext,
     },
     rules: {
       // Suppress parserOptions.project errors for .well-known routes (not in TS project)

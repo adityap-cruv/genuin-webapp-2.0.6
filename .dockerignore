@@ -1,0 +1,68 @@
+# Docker ignore for Genuin Monorepo
+
+# Node modules
+**/node_modules
+node_modules
+
+# PNPM store
+.pnpm-store
+
+# Build artifacts
+**/.next
+**/out
+**/dist
+**/build
+**/coverage
+**/storybook-static
+
+# Logs
+*.log
+**/*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Local env files
+# .env
+# **/.env
+.env.*
+**/.env.*
+
+# OS and editor files
+.DS_Store
+**/.DS_Store
+*.swp
+*.swo
+.idea/
+**/.idea/
+.vscode/
+**/.vscode/
+
+# Test output
+*.lcov
+**/*.lcov
+
+# Misc
+*.tgz
+*.gz
+*.zip
+
+# Local scripts and caches
+.cache
+**/.cache
+
+# Lockfiles from other package managers
+yarn.lock
+**/yarn.lock
+package-lock.json
+**/package-lock.json
+
+# Docker specific (optional, Dockerfile itself is usually excluded by default if in context root)
+# Dockerfile
+# **/Dockerfile
+# .dockerignore
+# **/.dockerignore
+
+# Turborepo cache
+.turbo
