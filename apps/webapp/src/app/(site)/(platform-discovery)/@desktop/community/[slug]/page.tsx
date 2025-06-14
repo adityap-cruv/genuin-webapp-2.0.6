@@ -4,8 +4,8 @@ import { fetchMetadata } from '@lib/api/meta-data'
 import { PATH_NAME } from '@lib/utils/constants/path'
 
 interface Props {
-  params: { slug: string }
-  searchParams: { feed?: string }
+  params: Promise<{ slug: string }>
+  searchParams: Promise<{ feed?: string }>
 }
 
 export default async function CommunityPage({ params, searchParams }: Props) {

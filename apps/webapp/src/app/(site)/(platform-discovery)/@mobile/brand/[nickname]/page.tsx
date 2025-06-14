@@ -9,16 +9,17 @@ import type { IntegrationSettingsType } from '@/lib/stores/genuin-options'
 import { checkWhiteLabelEnabled } from '@/lib/utils'
 
 interface CompProps {
-  params: {
+  params: Promise<{
     nickname: string
-  }
-  searchParams: Record<string, unknown>
+  }>
+  searchParams: Promise<Record<string, unknown>>
 }
 
 export default async function Component({ params }: CompProps) {
   const configs = (await cookies()).get('config_params')?.value
+  const { nickname } = await params
   try {
-    const brandDetails = await fetchUserData(params.nickname, configs ? JSON.parse(configs) : undefined, true)
+    const brandDetails = await fetchUserData(nickname, configs ? JSON.parse(configs) : undefined, true)
     return <BrandPage brandDetails={brandDetails} />
   } catch (error: any) {
     // Check the type of error
@@ -39,7 +40,8 @@ type ProfileDataType = {
 }
 
 export async function generateMetadata({ params }: CompProps): Promise<Metadata> {
-  const data: ProfileDataType = await fetchMetadata({ type: 6, slug: params.nickname })
+  const { nickname } = await params
+  const data: ProfileDataType = await fetchMetadata({ type: 6, slug: nickname })
 
   const metaUrl = checkWhiteLabelEnabled(data.integrations)
   return {
@@ -50,8 +52,8 @@ export async function generateMetadata({ params }: CompProps): Promise<Metadata>
       title: data?.title,
       description: data?.description,
       url: metaUrl
-        ? metaUrl + PATH_NAME.brand(params.nickname)
-        : `${process.env.NEXT_PUBLIC_HOST_URL}${PATH_NAME.brand(params.nickname)}`,
+        ? metaUrl + PATH_NAME.brand(nickname)
+        : `${process.env.NEXT_PUBLIC_HOST_URL}${PATH_NAME.brand(nickname)}`,
       images: [
         {
           url: data?.preview_image,

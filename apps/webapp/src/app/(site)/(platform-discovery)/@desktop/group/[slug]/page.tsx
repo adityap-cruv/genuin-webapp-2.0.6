@@ -4,11 +4,11 @@ import { fetchMetadata } from '@lib/api/meta-data'
 import { PATH_NAME } from '@lib/utils/constants/path'
 
 interface Props {
-  params: { slug: string }
-  searchParams: Record<string, unknown>
+  params: Promise<{ slug: string }>
+  searchParams: Promise<Record<string, unknown>>
 }
 
-export default async function GroupPage({ params }: Props) {
+export default async function GroupPage({ params, searchParams }: Props) {
   const resolvedParams = await params
   return <GroupClientPage slug={resolvedParams.slug} />
 }

@@ -1,26 +1,22 @@
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { fetchMetadata } from '@lib/api/meta-data'
 import { type Metadata } from 'next'
-import { redirect } from 'next/navigation'
-import { cookies, headers } from 'next/headers'
-import EmptyView from '@/components/common/empty-view'
-import { NOT_FOUND_ERROR_CODES } from '@/lib/constants'
-import { fetchUserData } from '@/lib/api/profile'
-import { getConfig } from '@/middleware'
+import { headers } from 'next/headers'
 import type { IntegrationSettingsType } from '@/lib/stores/genuin-options'
 import { checkWhiteLabelEnabled } from '@/lib/utils'
 import { ProfileDetails } from '@genuin/components/page/profile-details'
+import { getConfig } from '@/middleware'
 
 interface CompProps {
-  params: {
+  params: Promise<{
     nickname: string
-  }
+  }>
   searchParams: Record<string, unknown>
 }
 
 export default async function Component({ params }: CompProps) {
-  const configs = (await cookies()).get('config_params')?.value
-  return <ProfileDetails userName={params.nickname} forBrand={false} />
+  const { nickname } = await params
+  return <ProfileDetails userName={nickname} forBrand={false} />
 }
 
 type ProfileMetaDataType = {
@@ -32,11 +28,12 @@ type ProfileMetaDataType = {
 }
 
 export async function generateMetadata({ params }: CompProps): Promise<Metadata> {
+  const { nickname } = await params
   const host = (await headers()).get('host') ?? ''
   const config = getConfig(host)
-  let metadataParams = { type: 1, username: params.nickname }
+  let metadataParams = { type: 1, username: nickname }
   if (config) {
-    metadataParams = { type: 1, username: params.nickname, ...config }
+    metadataParams = { type: 1, username: nickname, ...config }
   }
   const profileMetadata: ProfileMetaDataType = await fetchMetadata(metadataParams)
 
@@ -58,8 +55,8 @@ export async function generateMetadata({ params }: CompProps): Promise<Metadata>
       title: profileMetadata?.title,
       description: profileMetadata?.description,
       url: metaUrl
-        ? metaUrl + PATH_NAME.profile(params.nickname)
-        : `${process.env.NEXT_PUBLIC_HOST_URL}${PATH_NAME.profile(params.nickname)}`,
+        ? metaUrl + PATH_NAME.profile(nickname)
+        : `${process.env.NEXT_PUBLIC_HOST_URL}${PATH_NAME.profile(nickname)}`,
       images: [
         {
           url: profileMetadata?.preview_image,

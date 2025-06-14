@@ -12,18 +12,19 @@ import type { IntegrationSettingsType } from '@/lib/stores/genuin-options'
 import { checkWhiteLabelEnabled } from '@/lib/utils'
 
 interface CompProps {
-  params: {
+  params: Promise<{
     nickname: string
-  }
-  searchParams: Record<string, unknown>
+  }>
+  searchParams: Promise<Record<string, unknown>>
 }
 
 export default async function Component({ params }: CompProps) {
+  const { nickname } = await params
   const configs = (await cookies()).get('config_params')?.value
   let profileData
 
   try {
-    profileData = await fetchUserData(params.nickname, configs ? JSON.parse(configs) : undefined, false)
+    profileData = await fetchUserData(nickname, configs ? JSON.parse(configs) : undefined, false)
   } catch (error: any) {
     // Check the type of error
     if (error.message === NOT_FOUND_ERROR_CODES.user) {
@@ -48,11 +49,12 @@ type ProfileMetaDataType = {
 }
 
 export async function generateMetadata({ params }: CompProps): Promise<Metadata> {
+  const { nickname } = await params
   const host = (await headers()).get('host') ?? ''
   const config = getConfig(host)
-  let metadataParams = { type: 1, username: params.nickname }
+  let metadataParams = { type: 1, username: nickname }
   if (config) {
-    metadataParams = { type: 1, username: params.nickname, ...config }
+    metadataParams = { type: 1, username: nickname, ...config }
   }
   const profileMetadata: ProfileMetaDataType = await fetchMetadata(metadataParams)
 
@@ -74,8 +76,8 @@ export async function generateMetadata({ params }: CompProps): Promise<Metadata>
       title: profileMetadata?.title,
       description: profileMetadata?.description,
       url: metaUrl
-        ? metaUrl + PATH_NAME.profile(params.nickname)
-        : `${process.env.NEXT_PUBLIC_HOST_URL}${PATH_NAME.profile(params.nickname)}`,
+        ? metaUrl + PATH_NAME.profile(nickname)
+        : `${process.env.NEXT_PUBLIC_HOST_URL}${PATH_NAME.profile(nickname)}`,
       images: [
         {
           url: profileMetadata?.preview_image,
