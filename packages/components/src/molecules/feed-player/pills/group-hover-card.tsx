@@ -35,7 +35,7 @@ export function GroupHoverCard({
 }: GroupHoverCardProps) {
   const { name, isPrivate } = groupDetails;
   const { authenticationStatus } = useAuthContext();
-  console.log("GroupHoverCard", groupDetails, communityDetails);
+
   return (
     <div className="gencl:space-y-2" {...props}>
       <div className="gencl:space-y-1">

@@ -59,8 +59,12 @@ export function parseFeed(
       shareUrl: item.loop.share_url || undefined,
       name: item.loop.group_name || "",
       isSubscribed: item.loop.is_loop_subscribe || false,
-      role: mapGroupJoinStatus(item.loop.logged_in_user_status),
-      isPrivate: !item.loop.is_view_allowed || false,
+      role: mapGroupJoinStatus(item.loop.request_status),
+      isPrivate: isGroupPrivate(
+        item.loop.actions,
+        item.community.logged_in_user_role,
+        item.loop.member_info
+      ),
     },
     community: {
       id: item.community.uuid || "",
@@ -101,4 +105,66 @@ export function parseFeed(
         : null,
     },
   }));
+}
+
+/**
+ * Determines if a user can see group posts based on actions, community role, and membership.
+ * Converted from Kotlin implementation.
+ *
+ * @param actionList - List of actions associated with the group
+ * @param communityRole - The user's role in the community (0: none, 1: leader, 2: moderator)
+ * @param memberInfo - User's membership information for the group
+ * @returns Boolean indicating whether the user can see group posts
+ */
+function isGroupPrivate(
+  actionList:
+    | Array<{ actionId: number; accessTypeId: number }>
+    | null
+    | undefined,
+  communityRole: number | undefined,
+  memberInfo: unknown | null | undefined
+): boolean {
+  // Community role enum values
+  const CommunityMemberRole = {
+    NONE: 0,
+    LEADER: 1,
+    MODERATOR: 2,
+  };
+
+  const actionModel = actionList?.find(
+    (action) => action.actionId === 3 || action.actionId === 4
+  );
+
+  switch (actionModel?.actionId) {
+    case 3:
+      // Community is public
+      if (actionModel.accessTypeId === 5) {
+        // Everyone can see
+        return true;
+      } else {
+        // Only Group Members or Community Admins
+        return (
+          memberInfo != null ||
+          communityRole === CommunityMemberRole.LEADER ||
+          communityRole === CommunityMemberRole.MODERATOR
+        );
+      }
+
+    case 4:
+      // Community is private
+      if (actionModel.accessTypeId === 7) {
+        // All Community members
+        return communityRole !== CommunityMemberRole.NONE;
+      } else {
+        // Only Group Members or Community Admins
+        return (
+          memberInfo != null ||
+          communityRole === CommunityMemberRole.LEADER ||
+          communityRole === CommunityMemberRole.MODERATOR
+        );
+      }
+
+    default:
+      return false;
+  }
 }

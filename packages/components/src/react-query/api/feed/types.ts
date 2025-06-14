@@ -107,6 +107,8 @@ type FeedLoopInfo = {
   is_loop_subscribe?: boolean;
   logged_in_user_status?: number;
   is_view_allowed?: boolean;
+  request_status?: number | null;
+  actions: any;
 };
 
 type FeedCommunityInfo = {
