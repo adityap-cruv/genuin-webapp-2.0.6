@@ -28,7 +28,7 @@ export function CtaButtons() {
         </AuthenticationModal>
       )}
       {showLogin && (
-        <AuthenticationModal asChild>
+        <AuthenticationModal customStep="SIGNIN" asChild>
           <Button theme="primary" size="sm">
             Log in
           </Button>

@@ -15,13 +15,9 @@ type AuthContextType = {
   updateUser: (user: Partial<AuthUser>) => void;
 };
 
-export const AuthContext = createContext<AuthContextType>({
-  user: null,
-  authenticationStatus: "unauthenticated",
-  signIn: () => {},
-  signOut: () => {},
-  updateUser: () => {},
-});
+export const AuthContext = createContext<AuthContextType | undefined>(
+  undefined
+);
 
 /**
  * Hook to access the auth context.

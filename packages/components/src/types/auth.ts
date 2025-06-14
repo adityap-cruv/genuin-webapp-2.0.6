@@ -2,7 +2,7 @@
  * Authenticated user object.
  */
 export type AuthUser = {
-  id: string;
+  id?: string;
   bio?: string;
   email?: string;
   phoneNumber?: string;

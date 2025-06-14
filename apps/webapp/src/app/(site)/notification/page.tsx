@@ -1,5 +1,4 @@
 import { NotificationLayout } from './notification-layout'
-import { Layout } from '@components/layouts/desktop/layout'
 import { type Metadata } from 'next'
 import { cookies } from 'next/headers'
 import { auth } from '../../../../auth'
@@ -13,11 +12,7 @@ export default async function Page() {
     redirect(PATH_NAME.home())
   }
   if (isMobile) return <NotificationLayout />
-  return (
-    <Layout>
-      <NotificationLayout />
-    </Layout>
-  )
+  return <NotificationLayout />
 }
 
 export function generateMetadata(): Metadata {

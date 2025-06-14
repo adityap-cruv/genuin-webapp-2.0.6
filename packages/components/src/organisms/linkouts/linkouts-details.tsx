@@ -4,7 +4,7 @@ import { MultiLinkCard } from "@genuin/components/molecules/linkouts/multi-link-
 import { useGetLinkouts } from "@genuin/components/react-query/api/linkouts/get-linkouts";
 import { LinkoutsType } from "@genuin/components/react-query/api/linkouts/schema";
 import { cn } from "@genuin/ui/lib/utils";
-import { motion, AnimatePresence, HTMLMotionProps } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import useShowLinkouts from "@genuin/components/hooks/use-show-linkouts";
 
 interface LinkOutContentRendererProps {

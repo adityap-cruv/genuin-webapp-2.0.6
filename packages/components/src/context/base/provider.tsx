@@ -39,7 +39,6 @@ export function BaseContextProvider({
     }
   }, [brandDetails]);
 
-  const [isInitiating, setIsInitiating] = useState(true);
   const [muted, setMuted] = useState(true);
   const [volume, setVolume] = useState(100);
   const [deviceId, setDeviceId] = useGetDeviceId();
@@ -52,20 +51,9 @@ export function BaseContextProvider({
     if (!deviceId) {
       getNewDeviceId((deviceId) => {
         setDeviceId(deviceId);
-        setIsInitiating(false);
       });
-    } else {
-      // If deviceId is available, set isInitiating to false.
-      setIsInitiating(false);
     }
   }, [deviceId]);
-
-  if (
-    // If deviceId is not available, set isInitiating to true.
-    isInitiating
-  ) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <BaseContext.Provider

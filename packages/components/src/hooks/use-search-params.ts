@@ -1,9 +1,10 @@
 "use client";
+
 import { useState, useEffect } from "react";
 
 /**
- * Simple hook that returns the current URL search parameters as a string
- * Works directly with browser APIs without Next.js dependencies
+ * Custom hook for managing URL search parameters
+ * Returns the current search parameters as a string
  */
 export function useSearchParams(): string {
   const [searchParamsString, setSearchParamsString] = useState<string>(() => {
@@ -13,19 +14,19 @@ export function useSearchParams(): string {
     return "";
   });
 
-  // Update search params when URL changes
+  // Update search params string when URL changes
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    const updateSearchParams = () => {
+    const updateSearchParamsString = () => {
       setSearchParamsString(window.location.search);
     };
 
     // Listen for popstate events (back/forward navigation)
-    window.addEventListener("popstate", updateSearchParams);
+    window.addEventListener("popstate", updateSearchParamsString);
 
     return () => {
-      window.removeEventListener("popstate", updateSearchParams);
+      window.removeEventListener("popstate", updateSearchParamsString);
     };
   }, []);
 

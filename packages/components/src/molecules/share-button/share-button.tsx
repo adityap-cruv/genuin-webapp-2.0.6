@@ -63,7 +63,7 @@ export function ShareButton({
       onClick={handleClick}
       {...restProps}
     >
-      <ShareIcon className="gencl:size-6" />
+      <ShareIcon className="gencl:size-6 gencl:shrink-0" />
       {showText && "Share"}
     </Button>
   );

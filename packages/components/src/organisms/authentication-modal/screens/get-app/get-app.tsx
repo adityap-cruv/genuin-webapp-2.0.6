@@ -1,7 +1,7 @@
 import { Image } from "@genuin/ui/image";
 import { ComponentProps } from "react";
 import { QRCode } from "react-qrcode-logo";
-import { useBaseContext } from "src/context/base";
+import { useBaseContext } from "@genuin/components/context/base";
 import { AppDownloadForm, AppDownloadFormData } from "./app-download-form";
 
 export type GetAppProps = ComponentProps<"div"> & {

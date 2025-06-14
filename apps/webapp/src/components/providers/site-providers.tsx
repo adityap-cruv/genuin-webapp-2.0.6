@@ -7,6 +7,7 @@ import { ReactQueryClientProvider } from '@genuin/components/react-query/react-q
 import { BaseLayout } from '@genuin/components/templates/base-layout/base-layout'
 import { parseBrandColors } from '@genuin/components/lib/utils/brand-color-parser'
 import { OldSearch } from './old-search'
+import { AuthBridge } from './auth-bridge'
 
 interface SiteProvidersProps {
   children: React.ReactNode
@@ -19,17 +20,19 @@ export default function SiteProviders({ children, config, session }: SiteProvide
   return (
     <main style={{ ...parsedColors }}>
       <ReactQueryClientProvider>
-        <SessionProvider refetchOnWindowFocus={false} refetchInterval={3600} session={session}>
-          <BaseLayout search={<OldSearch />}>
-            <BrandDetailsProviderClient brandDetails={config}>
-              <RedirectHandler config={config} shouldRedirect={Object.hasOwn(config || {}, 'subdomain')}>
-                <ThirdPartyScriptProvider>
-                  <UrlParamProvider>{children}</UrlParamProvider>
-                </ThirdPartyScriptProvider>
-              </RedirectHandler>
-            </BrandDetailsProviderClient>
-          </BaseLayout>
-        </SessionProvider>
+        <BrandDetailsProviderClient brandDetails={config}>
+          <SessionProvider refetchOnWindowFocus={false} refetchInterval={3600} session={session}>
+            <AuthBridge>
+              <BaseLayout search={<OldSearch />}>
+                <RedirectHandler config={config} shouldRedirect={Object.hasOwn(config || {}, 'subdomain')}>
+                  <ThirdPartyScriptProvider>
+                    <UrlParamProvider>{children}</UrlParamProvider>
+                  </ThirdPartyScriptProvider>
+                </RedirectHandler>
+              </BaseLayout>
+            </AuthBridge>
+          </SessionProvider>
+        </BrandDetailsProviderClient>
       </ReactQueryClientProvider>
     </main>
   )

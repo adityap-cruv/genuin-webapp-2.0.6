@@ -12,11 +12,10 @@ export function SettingsLayout(props: any) {
   const router = useRouter()
   return (
     <>
-      <main className="absolute inset-0 flex h-full min-h-max w-full flex-col items-center overflow-clip bg-monochrome-11">
-        <TopBar />
-        <section className="container flex h-body max-w-4xl gap-4 overflow-clip p-4">
+      <main className="bg-monochrome-11 absolute inset-0 flex h-full min-h-max w-full flex-col items-center overflow-clip">
+        <section className="h-body container flex max-w-4xl gap-4 overflow-clip p-4">
           <div
-            className="mt-2 flex h-12 w-12 items-center justify-center rounded-full bg-monochrome-8 hover:cursor-pointer"
+            className="bg-monochrome-8 mt-2 flex h-12 w-12 items-center justify-center rounded-full hover:cursor-pointer"
             onClick={() => {
               const path = localStorage.getItem('previous_path')
               router.push(path ?? PATH_NAME.home())
@@ -25,12 +24,12 @@ export function SettingsLayout(props: any) {
                 properties: {},
               })
             }}>
-            <Image src={icBack} alt="back" />
+            <Image src={icBack} alt="back" height={24} width={24} />
           </div>
-          <section className="flex-[1] rounded-2xl border border-monochrome-9 bg-monochrome-white p-4 md:flex-[4]">
+          <section className="border-monochrome-9 bg-monochrome-white flex-[1] rounded-2xl border p-4 md:flex-[4]">
             <SideBar />
           </section>
-          <section className="relative flex-[11] overflow-auto rounded-2xl border border-monochrome-9 bg-monochrome-white md:flex-[8]">
+          <section className="border-monochrome-9 bg-monochrome-white relative flex-[11] overflow-auto rounded-2xl border md:flex-[8]">
             {props.children}
           </section>
         </section>

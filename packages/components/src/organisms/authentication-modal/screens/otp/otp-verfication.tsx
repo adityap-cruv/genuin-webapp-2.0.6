@@ -62,6 +62,7 @@ export function OtpVerification({
 
   const { mutate: consumeOtp, isPending } = useConsumeOtpMutation({
     onSuccess: async (data) => {
+      console.log("OTP verification successful:", data);
       if (data.otpVerified) {
         // If user is verified, sign in the user
         if (data.user) signIn({ ...data.user });

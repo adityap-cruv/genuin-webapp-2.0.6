@@ -12,7 +12,7 @@ import { useCallback, useLayoutEffect, useState } from "react";
 // Define the props type for the AuthProvider component.
 type AuthProviderPropsType = {
   children: React.ReactNode;
-  user: AuthUser | null;
+  user?: AuthUser | null;
   /**
    * Callback function to be called when the user signs in.
    * @param user - The authenticated user object.
@@ -41,9 +41,9 @@ export function AuthProvider({
   onSignOut,
   onUpdateUser,
 }: AuthProviderPropsType) {
-  const [authenticatedUser, setAuthenticatedUser] = useState<AuthUser | null>(
-    user
-  );
+  const [authenticatedUser, setAuthenticatedUser] = useState<
+    AuthUser | null | undefined
+  >(user);
   const [authenticationStatus, setAuthenticationStatus] =
     useState<AuthenticationStatusType>(
       !!user ? "authenticated" : "unauthenticated"
