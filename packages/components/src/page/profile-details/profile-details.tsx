@@ -33,7 +33,7 @@ export function ProfileDetails({
     data: profileData,
   } = useGetProfileDetails(userName, forBrand);
   const detailsId = useId();
-
+  console.log("ProfileDetails", profileData);
   if (isLoading) {
     return <ProfileDetailsSkeleton />;
   }

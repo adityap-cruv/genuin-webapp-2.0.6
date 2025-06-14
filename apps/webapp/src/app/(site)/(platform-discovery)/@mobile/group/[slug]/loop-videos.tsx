@@ -103,7 +103,7 @@ export function LoopVideos({ slug }: Props) {
                     )}
                   </div>
                   <div className="bg-monochrome-black/40 absolute inset-0 hidden h-full w-full items-center justify-center rounded-lg group-hover/video:flex">
-                    <Image src={icPlay} alt="" />
+                    <Image src={icPlay} alt="" height={24} width={24} />
                   </div>
                 </div>
               ))

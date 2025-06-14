@@ -18,7 +18,7 @@ export async function fetchProfileDetails(
 ) {
   return await axiosInstance
     .post(API_PATHS.USER_DETAILS, {
-      [forBrand ? "brand_slug" : "user_name"]: nickname,
+      [forBrand ? "brand_slug" : "nickname"]: nickname,
     })
     .then((res) => {
       return validateProfileDetails(res.data.data);

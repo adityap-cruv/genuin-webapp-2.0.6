@@ -6,10 +6,10 @@ import { cookies, headers } from 'next/headers'
 import EmptyView from '@/components/common/empty-view'
 import { NOT_FOUND_ERROR_CODES } from '@/lib/constants'
 import { fetchUserData } from '@/lib/api/profile'
-import { ProfilePage } from './main-component'
 import { getConfig } from '@/middleware'
 import type { IntegrationSettingsType } from '@/lib/stores/genuin-options'
 import { checkWhiteLabelEnabled } from '@/lib/utils'
+import { ProfileDetails } from '@genuin/components/page/profile-details'
 
 interface CompProps {
   params: {
@@ -20,23 +20,7 @@ interface CompProps {
 
 export default async function Component({ params }: CompProps) {
   const configs = (await cookies()).get('config_params')?.value
-  let profileData
-
-  try {
-    profileData = await fetchUserData(params.nickname, configs ? JSON.parse(configs) : undefined, false)
-  } catch (error: any) {
-    // Check the type of error
-    if (error.message === NOT_FOUND_ERROR_CODES.user) {
-      return <EmptyView type="user" />
-    }
-    throw new Error(error.message)
-  }
-
-  if (profileData.brand) {
-    redirect(PATH_NAME.brand(profileData.brand.brand_slug))
-  }
-
-  return <ProfilePage profileDetails={profileData} />
+  return <ProfileDetails userName={params.nickname} forBrand={false} />
 }
 
 type ProfileMetaDataType = {

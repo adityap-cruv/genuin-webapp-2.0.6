@@ -29,10 +29,10 @@ export default function EmptyView({ type }: Props) {
             className="flex h-full w-full flex-col items-center justify-center gap-4 rounded-2xl bg-cover bg-center bg-no-repeat xl:py-10"
             style={{ background: '#FAFAFA' }}>
             <NoContentIcon className="fill-primary" />
-            <p className="text-title-2-demi font-medium text-secondary-300">No Content Available</p>
+            <p className="text-title-2-demi text-secondary-300 font-medium">No Content Available</p>
             {showCreateCommunityButton && (
               <Link href={process.env.NEXT_PUBLIC_BCC_URL + '/manage/communities'}>
-                <Button size="custom" className="rounded-lg bg-new-off-black px-4 py-3 hover:bg-new-dark-grey">
+                <Button size="custom" className="bg-new-off-black hover:bg-new-dark-grey rounded-lg px-4 py-3">
                   <p className="text-new-para-2">Create Community</p>
                 </Button>
               </Link>
@@ -55,17 +55,17 @@ export default function EmptyView({ type }: Props) {
           className="flex h-full w-full flex-col items-center justify-center gap-14 rounded-2xl bg-cover bg-center bg-no-repeat xl:py-10"
           style={{ background: '#FAFAFA' }}>
           <span>
-            <p className="text-center text-heading-3 font-bold text-secondary sm:text-title-1-bold-home-m">
+            <p className="text-heading-3 text-secondary sm:text-title-1-bold-home-m text-center font-bold">
               {NOT_FOUND_ERROR_MESSAGES[type].title}
             </p>
-            <p className="pt-4 text-center text-body-1-med text-secondary-300 sm:text-title-3-med">
+            <p className="text-body-1-med text-secondary-300 sm:text-title-3-med pt-4 text-center">
               {NOT_FOUND_ERROR_MESSAGES[type].description}
             </p>
           </span>
-          <Image src={imgPuppet} alt="" className="h-auto w-32" />
+          <Image src={imgPuppet} alt="" className="h-auto w-32" width={128} height={128} />
           {NOT_FOUND_ERROR_MESSAGES[type].showButton && (
             <Link href={PATH_NAME.home()}>
-              <Button size="custom" className="rounded-lg bg-new-off-black px-4 py-3 hover:bg-new-dark-grey">
+              <Button size="custom" className="bg-new-off-black hover:bg-new-dark-grey rounded-lg px-4 py-3">
                 <p className="text-new-para-2">Go to Home</p>
               </Button>
             </Link>
