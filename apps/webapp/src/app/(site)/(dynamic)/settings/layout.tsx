@@ -1,6 +1,6 @@
 import { SettingsLayout } from '@components/layouts/settings/desktop/layout'
 import { cookies } from 'next/headers'
-import { auth } from '../../../../auth'
+import { auth } from '../../../../../auth'
 import { redirect } from 'next/navigation'
 import { PATH_NAME } from '@/lib/utils/constants/path'
 

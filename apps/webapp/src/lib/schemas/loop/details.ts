@@ -99,6 +99,7 @@ const LoopDetailsSchema = z.object({
   is_post_allowed: z.boolean(),
   community: communitySchema,
   is_subscriber: z.boolean(),
+  logged_in_user_status: z.number().nullish(),
 })
 
 export type LoopDetailsType = z.infer<typeof LoopDetailsSchema>

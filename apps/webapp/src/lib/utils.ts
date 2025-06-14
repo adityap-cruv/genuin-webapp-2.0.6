@@ -3,7 +3,7 @@ import { axiosInstance } from '@/lib/api/instance'
 import { type ClassValue, clsx } from 'clsx'
 import { createCipheriv } from 'crypto'
 import { twMerge } from 'tailwind-merge'
-import { type ConfigType, useGenuinOptions } from './stores/genuin-options'
+import { type ConfigType, IntegrationSettingsType, useGenuinOptions } from './stores/genuin-options'
 import { AuthenticationModal } from '@components/common/modals/authentication'
 import { type ReactNode } from 'react'
 import { INDUSTRY, type IndustryName, PROTECTED_ROUTES, MOBILE_DOWNLOAD_APP_LINK } from './constants'
@@ -418,7 +418,6 @@ export function encodeVideoSourceUrl(videoSource: string) {
     const paramString = params.toString()
     return `${url.origin}${url.pathname}${paramString ? '?' + paramString : ''}`
   } catch (error) {
-     
     console.error('Invalid URL:', error)
     return videoSource
   }
@@ -663,5 +662,39 @@ export function syncTapBehavior(tapBehavior: number | undefined) {
   if (localTapBehavior !== tapBehavior.toString()) {
     localStorage.setItem('_tap_behavior_', tapBehavior.toString())
     resetGestureOverlay('PLAY_PAUSE')
+  }
+}
+
+export function checkWhiteLabelEnabled(integrations: IntegrationSettingsType): string | null {
+  const allowedDomains = integrations?.white_label?.allowed_domains
+  const isWhiteLabelEnabled = integrations?.white_label?.enable
+
+  return isWhiteLabelEnabled && Array.isArray(allowedDomains) && allowedDomains.length > 0
+    ? (allowedDomains[0] ?? null)
+    : null
+}
+
+/**
+ * Maps the numeric role value to a GroupUserStatusType string
+ * @param role - The numeric role value:
+ *               1 = Not joined/No role
+ *               2 = Requested to join
+ *               3 = Joined member
+ * @returns GroupUserStatusType - One of:
+ *          'UNJOINED' - User has not joined or has invalid role
+ *          'REQUESTED' - User has requested to join
+ *          'JOINED' - User is an active member
+ */
+export function mapMemberJoinStatus(role?: number | null): GroupUserStatusType {
+  switch (role) {
+    case 1:
+      return 'UNJOINED'
+    case 2:
+      return 'REQUESTED'
+    case 3:
+      return 'JOINED'
+    // If role is null or anything other than above cases than return 'UNJOINED'.
+    default:
+      return 'UNJOINED'
   }
 }

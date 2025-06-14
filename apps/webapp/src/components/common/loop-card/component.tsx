@@ -89,38 +89,38 @@ export function Component({
         <Link className="relative h-full w-full" href={{ pathname: PATH_NAME.loop(loopSlug) }}>
           <div
             className={cn(
-              'relative my-4 h-auto w-full rounded-lg border border-tertiary-200 bg-monochrome-white',
-              hasUnreadMessages && 'border-primary-200 bg-primary-100 '
+              'border-tertiary-200 bg-monochrome-white relative my-4 h-auto w-full rounded-lg border',
+              hasUnreadMessages && 'border-primary-200 bg-primary-100'
             )}>
             <div className="h-[30%] w-[70%] items-center p-4">
               {position && (
                 <div className="mb-1.5 flex items-center gap-1">
                   <PinIcon className="fill-tertiary" />
-                  <span className="line-clamp-1 break-words text-cap-1-demi text-tertiary">Pinned by admin</span>
+                  <span className="text-cap-1-demi text-tertiary line-clamp-1 break-words">Pinned by admin</span>
                 </div>
               )}
-              <p className="line-clamp-2 break-words text-body-1-demi sm:text-title-3-demi">{name}</p>
+              <p className="text-body-1-demi sm:text-title-3-demi line-clamp-2 break-words">{name}</p>
               {!isViewAllowed && <p className="text-cap-1-med text-tertiary">Visible to members only</p>}
               {latestMessages.length === 0 ? (
-                <p className="line-clamp-1 break-all text-body-1-demi text-secondary-300">
-                  @{members[0].userName} created ∙ {getTimeAgo(latestMessageAt)}
+                <p className="text-body-1-demi text-secondary-300 line-clamp-1 break-all">
+                  @{members[0]?.userName} created ∙ {getTimeAgo(latestMessageAt)}
                 </p>
               ) : hasUnreadMessages ? (
-                <p className="line-clamp-1 break-all text-body-1-bold text-primary">{`${unreadMessageCount} new videos ∙ ${getTimeAgo(
-                  latestMessages[0].createdAt
+                <p className="text-body-1-bold text-primary line-clamp-1 break-all">{`${unreadMessageCount} new videos ∙ ${getTimeAgo(
+                  latestMessages[0]?.createdAt ?? latestMessageAt
                 )}`}</p>
               ) : (
                 !hasUnreadMessages &&
                 isViewAllowed && (
-                  <p className="line-clamp-1 break-all text-body-1-demi text-secondary-300">
-                    @{members[0].userName} posted ∙ {getTimeAgo(latestMessages[0].createdAt)}
+                  <p className="text-body-1-demi text-secondary-300 line-clamp-1 break-all">
+                    @{members[0]?.userName} posted ∙ {getTimeAgo(latestMessages[0]?.createdAt)}
                   </p>
                 )
               )}
             </div>
             <div
               className={cn(
-                'h-[60%] rounded-b-lg border border-tertiary-200 p-4',
+                'border-tertiary-200 h-[60%] rounded-b-lg border p-4',
                 hasUnreadMessages ? 'bg-primary-200' : 'bg-tertiary-200'
               )}>
               <div className="w-[70%]">
@@ -129,7 +129,7 @@ export function Component({
                     {members.map((item, index) => (
                       <CustomAvatar
                         key={index}
-                        className={`z-[${index * 5}] h-6 w-6 border-2 border-tertiary-100 bg-red-50`}
+                        className={`z-[${index * 5}] border-tertiary-100 h-6 w-6 border-2 bg-red-50`}
                         imageUrl={item.profileImage}
                         isAvatar={item.isAvatar}
                         fallbackString={item.name}
@@ -137,8 +137,8 @@ export function Component({
                     ))}
                   </div>
                   {members.length > 0 && (
-                    <p className={`ml-1 line-clamp-1 text-body-1-med text-secondary-300`}>
-                      {`${members[0].userName} ${
+                    <p className={`text-body-1-med text-secondary-300 ml-1 line-clamp-1`}>
+                      {`${members[0]?.userName} ${
                         members.length - 1 !== 0
                           ? members.length - 1 === 1
                             ? '+1 Other'
@@ -148,7 +148,7 @@ export function Component({
                     </p>
                   )}
                 </div>
-                <p className="my-2 line-clamp-2 h-10 text-body-1-demi text-secondary-300">{description}</p>
+                <p className="text-body-1-demi text-secondary-300 my-2 line-clamp-2 h-10">{description}</p>
                 <p className="text-body-1-med text-secondary-300">
                   {abbreviateNumber(noOfVideos)} posts ∙{abbreviateNumber(viewCount)} views
                 </p>
@@ -157,9 +157,9 @@ export function Component({
           </div>
         </Link>
         {!isViewAllowed && (
-          <div className="group/video absolute right-7 top-[50%] flex aspect-reel h-[80%] -translate-y-1/2 items-center justify-center rounded border border-secondary-300 bg-monochrome-white hover:cursor-pointer">
+          <div className="group/video aspect-reel border-secondary-300 bg-monochrome-white absolute top-[50%] right-7 flex h-[80%] -translate-y-1/2 items-center justify-center rounded border hover:cursor-pointer">
             <div className="bg-secondary-200 rounded-full p-2">
-              <Image src={icLock} alt="share" className="h-4 w-4" />
+              <Image src={icLock} alt="share" className="h-4 w-4" height={16} width={16} />
             </div>
           </div>
         )}
@@ -175,24 +175,24 @@ export function Component({
                     onClickOnImage(id)
                   }
                 }}
-                className="group/video absolute top-1/2 flex aspect-reel h-[80%] items-center justify-center rounded hover:cursor-pointer"
+                className="group/video aspect-reel absolute top-1/2 flex h-[80%] items-center justify-center rounded hover:cursor-pointer"
                 style={{
-                  right: `${RIGHT_VALUES[latestMessages.length - 1][index]}px`,
-                  transform: `translateY(-${TRANSFORM_VALUES[latestMessages.length - 1][index]}%)`,
+                  right: `${RIGHT_VALUES[latestMessages.length - 1]?.[index] ?? 20}px`,
+                  transform: `translateY(-${TRANSFORM_VALUES[latestMessages.length - 1]?.[index] ?? 50}%)`,
                   zIndex: latestMessages.length - index + 1,
-                  opacity: `${OPACITY_VALUES[latestMessages.length - 1][index]}`,
+                  opacity: `${OPACITY_VALUES[latestMessages.length - 1]?.[index] ?? 1}`,
                 }}>
                 <CustomImage fill className="aspect-reel rounded" src={item.thumbnail} alt="video image" />
-                <div className="absolute inset-0 hidden h-full w-full items-center justify-center bg-monochrome-black/30 group-hover/video:flex">
-                  <Image src={icPlay} alt="play" className="absolute" />
+                <div className="bg-monochrome-black/30 absolute inset-0 hidden h-full w-full items-center justify-center group-hover/video:flex">
+                  <Image src={icPlay} alt="play" className="absolute" height={24} width={24} />
                 </div>
               </Link>
             )
           })}
         {isViewAllowed && latestMessages.length === 0 && (
-          <div className="group/video absolute right-5 top-[50%] flex aspect-reel h-[80%] -translate-y-1/2 items-center justify-center rounded border border-monochrome-black/20 bg-monochrome-white hover:cursor-pointer">
-            <div className="bg-secondary-200 rounded-full p-2 ">
-              <p className="ml-1 line-clamp-1  text-cap-2-demi text-tertiary-400 "> No posts yet</p>
+          <div className="group/video aspect-reel border-monochrome-black/20 bg-monochrome-white absolute top-[50%] right-5 flex h-[80%] -translate-y-1/2 items-center justify-center rounded border hover:cursor-pointer">
+            <div className="bg-secondary-200 rounded-full p-2">
+              <p className="text-cap-2-demi text-tertiary-400 ml-1 line-clamp-1"> No posts yet</p>
             </div>
           </div>
         )}

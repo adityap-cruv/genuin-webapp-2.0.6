@@ -187,7 +187,6 @@ export const resolveDeepLink = async (linkIdentifier: string): Promise<DeepLinkD
     const res = await axiosInstance.get(`${process.env.NEXT_PUBLIC_API_URL}/goservices/links/${linkIdentifier}`)
     return res?.data?.data || null
   } catch (error) {
-     
     console.error('Error resolving deep link:', error)
     return null
   }
@@ -198,8 +197,28 @@ export const sendGetAppLink = async (payload: { email?: string; mobile?: string;
     const res = await axiosInstance.post('/api/v3/send_download_link', payload)
     return res?.data || null
   } catch (error) {
-     
     console.error('Error resolving deep link:', error)
     return null
   }
+}
+
+// join_as_collaborator action
+export async function joinGroupDeepLink({
+  ldDescription,
+  groupName,
+  shareUrl,
+  searchParams,
+}: {
+  ldDescription: string
+  groupName: string
+  shareUrl: string
+  searchParams: Record<string, any>
+}): Promise<string> {
+  return await getDeepLink('join-group', {
+    contentType: 'loop',
+    description: ldDescription,
+    title: groupName,
+    community: getLoopAndCommunityShareString(shareUrl).communityShareString ?? '',
+    searchParams,
+  })
 }

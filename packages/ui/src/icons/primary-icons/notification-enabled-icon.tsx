@@ -2,7 +2,7 @@ import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 import type { SVGIconsProps } from "../type";
 
-const variants = cva("gencl:w-5 gencl:h-5", {
+const variants = cva("gencl:w-5 gencl:shrink-0 gencl:h-5", {
   variants: {
     variant: {
       light: "gencl:stroke-black",

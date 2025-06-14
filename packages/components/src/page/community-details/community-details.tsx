@@ -138,7 +138,7 @@ export function CommunityDetails({ slug }: { slug: string }) {
           className="gencl:shrink-0"
         />
         <div className="gencl:flex gencl:pt-6 gencl:gap-6">
-          <div>
+          <div className="gencl:w-full">
             <GenericDetails
               id={detailsId}
               title={communityDetails?.name ?? ""}

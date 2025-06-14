@@ -5,7 +5,7 @@ import { type Metadata, type Viewport } from 'next'
 
 // Root layout is now split into server and client parts for Next.js 15
 // Client components are wrapped in ClientProviders
-import SiteProviders from '../../../../components/providers/site-providers'
+import SiteProviders from '@components/providers/site-providers'
 import { cookies } from 'next/headers'
 import { getEmbedConfig } from '@lib/api/config'
 import { type ConfigType } from '@lib/stores/genuin-options'

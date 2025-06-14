@@ -2,10 +2,7 @@ import type { Preview } from "@storybook/react-vite";
 
 import "../src/globals.css";
 import { AuthProvider } from "../src/context/auth";
-import {
-  BaseContextProvider,
-  DEFAULT_BRAND_DETAILS,
-} from "../@genuin/components/context/base";
+import { BaseContextProvider } from "../src/context/base";
 import { parseBrandColors } from "../src/lib/utils/brand-color-parser";
 import { ReactQueryClientProvider } from "../src/react-query/react-query-provider";
 import { Toaster } from "@genuin/ui/toaster";

@@ -6,13 +6,10 @@ import { type ReactNode } from 'react'
 export default async function PageLayout({ children }: { children: ReactNode }) {
   const isMobile = (await cookies()).get('device_type')?.value === 'mobile'
 
-  if (isMobile) {
-    return (
-      <main className="h-screen overflow-auto">
-        <TopBar />
-        <div className="h-full">{children}</div>
-      </main>
-    )
-  }
-  return <Layout>{children}</Layout>
+  return (
+    <main className="h-screen overflow-auto">
+      <TopBar />
+      <div className="h-full">{children}</div>
+    </main>
+  )
 }

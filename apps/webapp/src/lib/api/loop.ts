@@ -52,11 +52,12 @@ export function getLoopVideos(slug: string) {
   return useInfiniteQuery({
     queryFn: async ({ pageParam }) => await fetchLoopVideos(pageParam, slug),
     queryKey: ['loop', 'videos', 'paginated', slug],
+    initialPageParam: {},
     getNextPageParam: (lastPage) => {
       if (lastPage.end) {
         return
       }
-      return { lastVideoId: lastPage.videos[lastPage.videos.length - 1].video.id }
+      return { lastVideoId: lastPage.videos[lastPage.videos.length - 1]?.video.id }
     },
   })
 }
@@ -82,9 +83,10 @@ export function getLoopCohosts(slug: string) {
   return useInfiniteQuery({
     queryKey: ['cohosts', slug],
     queryFn: async ({ pageParam }) => await fetchLoopCohosts(slug, pageParam),
+    initialPageParam: '',
     getNextPageParam(lastPage, allPages) {
       if (lastPage.end) return
-      return lastPage.members[lastPage.members.length - 1].member_id
+      return lastPage.members[lastPage.members.length - 1]?.member_id
     },
   })
 }
@@ -138,11 +140,12 @@ export function getVideosComments(videoId: string) {
       }
       return await promise
     },
+    initialPageParam: '',
     getNextPageParam(lastPage) {
       if (lastPage.end) {
         return
       }
-      return lastPage.comments[lastPage.comments.length - 1].comment_id
+      return lastPage.comments[lastPage.comments.length - 1]?.comment_id
     },
     queryKey: getQueryKeyForVideoComments(videoId),
   })
@@ -159,5 +162,33 @@ export async function subscribeLoop(uuid: string, subscribe: boolean) {
     })
     .catch((e) => {
       return { code: Number(e.response.data.code) }
+    })
+}
+
+export async function joinGroupAsMember(uuid: string) {
+  return await axiosInstance
+    .post('/api/v3/conversation/participation_request', {
+      chat_id: uuid,
+    })
+    .then((res) => {
+      return { code: res.status, data: res.data.data }
+    })
+    .catch((e) => {
+      return { code: Number(e.response.data.code), data: null }
+    })
+}
+
+export async function leaveGroupAsMember(uuid: string) {
+  return await axiosInstance
+    .delete('/api/v3/conversation/leave', {
+      params: {
+        chat_id: uuid,
+      },
+    })
+    .then((res) => {
+      return { code: res.status, data: res.data.data }
+    })
+    .catch((e) => {
+      return { code: Number(e.response.data.code), data: null }
     })
 }

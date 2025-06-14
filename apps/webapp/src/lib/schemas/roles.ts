@@ -9,3 +9,7 @@ export const CommunityUserRoleSchema = z.union([
 ])
 
 export type CommunityUserRoleType = z.infer<typeof CommunityUserRoleSchema>
+
+export const GroupUserStatusSchema = z.union([z.literal('UNJOINED'), z.literal('REQUESTED'), z.literal('JOINED')])
+
+export type GroupUserStatusType = z.infer<typeof GroupUserStatusSchema>

@@ -1,35 +1,62 @@
-import { type Metadata } from 'next'
-import { ProfileClientPage } from './client-page'
-import { fetchMetadata } from '@lib/api/meta-data'
 import { PATH_NAME } from '@lib/utils/constants/path'
+import { fetchMetadata } from '@lib/api/meta-data'
+import { type Metadata } from 'next'
+import { cookies } from 'next/headers'
+import EmptyView from '@/components/common/empty-view'
+import { BrandPage } from './main-component'
+import { fetchUserData } from '@/lib/api/profile'
+import type { IntegrationSettingsType } from '@/lib/stores/genuin-options'
+import { checkWhiteLabelEnabled } from '@/lib/utils'
 
-interface Props {
-  params: { nickname: string }
+interface CompProps {
+  params: {
+    nickname: string
+  }
   searchParams: Record<string, unknown>
 }
 
-export default async function BrandPage({ params }: Props) {
-  const resolvedParams = await params
-  return <ProfileClientPage nickname={resolvedParams.nickname} forBrand />
+export default async function Component({ params }: CompProps) {
+  const configs = (await cookies()).get('config_params')?.value
+  try {
+    const brandDetails = await fetchUserData(params.nickname, configs ? JSON.parse(configs) : undefined, true)
+    return <BrandPage brandDetails={brandDetails} />
+  } catch (error: any) {
+    // Check the type of error
+    if (error.message === '5235') {
+      return <EmptyView type="brand" />
+    } else {
+      throw new Error(error.message)
+    }
+  }
 }
 
-interface BrandDataType {
+type ProfileDataType = {
+  member_id: string
   title: string
   description: string
   preview_image: string
+  integrations: IntegrationSettingsType
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const resolvedParams = await params
-  const brandData: BrandDataType = await fetchMetadata({ type: 6, slug: resolvedParams.nickname })
+export async function generateMetadata({ params }: CompProps): Promise<Metadata> {
+  const data: ProfileDataType = await fetchMetadata({ type: 6, slug: params.nickname })
+
+  const metaUrl = checkWhiteLabelEnabled(data.integrations)
   return {
-    title: brandData?.title,
-    description: brandData?.description,
+    title: data?.title,
+    // applicationName: 'Genuin',
+    description: data?.description,
     openGraph: {
-      title: brandData?.title,
-      description: brandData?.description,
-      url: `${process.env.NEXT_PUBLIC_HOST_URL}` + PATH_NAME.brand(resolvedParams.nickname),
-      images: [{ url: brandData?.preview_image }],
+      title: data?.title,
+      description: data?.description,
+      url: metaUrl
+        ? metaUrl + PATH_NAME.brand(params.nickname)
+        : `${process.env.NEXT_PUBLIC_HOST_URL}${PATH_NAME.brand(params.nickname)}`,
+      images: [
+        {
+          url: data?.preview_image,
+        },
+      ],
     },
   }
 }

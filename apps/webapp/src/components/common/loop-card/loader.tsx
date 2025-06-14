@@ -11,7 +11,7 @@ const OPACITY_VALUES = [[1], [1, 0.5], [1, 0.66, 0.4]]
 export function Loader({ className, ...restProps }: ComponentProps<'div'>) {
   const items = [0, 1, 2]
   return (
-    <div className={cn('relative h-60 w-full rounded-lg border border-tertiary-200', className)} {...restProps}>
+    <div className={cn('border-tertiary-200 relative h-60 w-full rounded-lg border', className)} {...restProps}>
       <div className="w-[70%] items-center p-[3%]">
         <Shimmer className="h-4 w-2/3" />
         <div className="my-1 flex gap-2">
@@ -38,12 +38,12 @@ export function Loader({ className, ...restProps }: ComponentProps<'div'>) {
       {items.map((_, index) => (
         <Shimmer
           key={index}
-          className="group/video absolute top-[50%] flex aspect-reel h-[80%] items-center justify-center rounded hover:cursor-pointer"
+          className="group/video aspect-reel absolute top-[50%] flex h-[80%] items-center justify-center rounded hover:cursor-pointer"
           style={{
-            right: `${RIGHT_VALUES[items.length - 1][index]}px`,
-            transform: `translateY(-${TRANSFORM_VALUES[items.length - 1][index]}%)`,
+            right: `${RIGHT_VALUES[items.length - 1]?.[index] ?? 20}px`,
+            transform: `translateY(-${TRANSFORM_VALUES[items.length - 1]?.[index] ?? 50}%)`,
             zIndex: items.length - index + 1,
-            opacity: `${OPACITY_VALUES[items.length - 1][index]}`,
+            opacity: `${OPACITY_VALUES[items.length - 1]?.[index] ?? 1}`,
           }}
         />
       ))}

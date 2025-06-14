@@ -194,3 +194,12 @@ export function getQueryKeyForCategoryList() {
 export function getQueryKeyForksCbStatus() {
   return ['ksCbStatus']
 }
+
+/**
+ * This func returns a QueryKey for fetching group members.
+ * There is not need to pass dynamic values as it is a static data and will be same for one user.
+ * @returns
+ */
+export function getQueryKeyForGroupMembers(slug: string) {
+  return ['cohosts', slug]
+}

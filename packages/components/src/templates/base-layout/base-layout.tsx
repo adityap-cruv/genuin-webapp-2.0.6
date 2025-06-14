@@ -7,6 +7,7 @@ import { TOP_BAR_HEIGHT } from "@genuin/components/lib/constants";
 import { SideBar } from "@genuin/components/organisms/side-bar";
 import { TopBar } from "@genuin/components/organisms/top-bar";
 import React from "react";
+import { Toaster } from "@genuin/ui/toaster";
 
 type BaseLayoutProps = ComponentProps<"section"> & { search: React.ReactNode };
 
@@ -40,6 +41,7 @@ export function BaseLayout({
         >
           {children}
         </section>
+        <Toaster />
       </main>
     </div>
   );

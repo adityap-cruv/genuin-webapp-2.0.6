@@ -1,4 +1,4 @@
-import { auth } from '../../../../auth'
+import { auth } from '../../../../../auth'
 import { type Session } from 'next-auth'
 import MainWalletComponent from './main-component'
 import { redirect } from 'next/navigation'

@@ -11,7 +11,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: "",
-        icon: "gencl:has-[>svg:only-child]:px-2 gencl:has-[>svg:only-child]:aspect-square",
+        icon: "gencl:has-[>svg:only-child]:px-2 gencl:has-[>svg:only-child]:aspect-square gencl:[&_svg]:shrink-0",
         rounded: "gencl:rounded-full",
       },
       theme: {

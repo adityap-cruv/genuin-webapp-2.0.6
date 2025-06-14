@@ -1,9 +1,10 @@
 import { NotificationLayout } from './notification-layout'
 import { type Metadata } from 'next'
 import { cookies } from 'next/headers'
-import { auth } from '../../../../auth'
+import { auth } from '../../../../../auth'
 import { PATH_NAME } from '@/lib/utils/constants/path'
 import { redirect } from 'next/navigation'
+import { Layout } from '@/components/layouts/desktop/layout'
 
 export default async function Page() {
   const isMobile = (await cookies()).get('device_type')?.value === 'mobile'
@@ -12,7 +13,11 @@ export default async function Page() {
     redirect(PATH_NAME.home())
   }
   if (isMobile) return <NotificationLayout />
-  return <NotificationLayout />
+  return (
+    <Layout>
+      <NotificationLayout />
+    </Layout>
+  )
 }
 
 export function generateMetadata(): Metadata {

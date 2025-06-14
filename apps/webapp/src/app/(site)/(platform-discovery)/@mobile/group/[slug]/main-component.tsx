@@ -1,7 +1,7 @@
 'use client'
 import { Button } from '@components/ui/button'
 import type { LoopDetailsType } from '@lib/schemas/loop/details'
-import { openGeneratedLink } from '@lib/utils'
+import { mapMemberJoinStatus, openGeneratedLink } from '@lib/utils'
 import Image from 'next/image'
 import icLock from '@icons/icLock.svg'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
@@ -12,7 +12,8 @@ import { CustomAvatar } from '@components/custom/custom-avatar'
 import { TopBar } from '@components/layouts/mobile/top-bar'
 import { useRef } from 'react'
 import { useInView } from 'framer-motion'
-import { TopStickyBar } from '../../../@desktop/group/[slug]/top-bar'
+// import { TopStickyBar } from '../../../../@desktop/group/[slug]/top-bar'
+import { TopStickyBar } from '@/components/common/top-sticky-bar'
 import { LoopVideos } from './loop-videos'
 import { useSearchParams } from 'next/navigation'
 import Loading from './loading'
@@ -82,6 +83,7 @@ export function MainComponent({ loopDetails }: Props) {
         ldDescription={ldDescription}
         slug={loopDetails.slug}
         chatId={loopDetails.chat_id}
+        loggedInUserStatus={loopDetails.logged_in_user_status ?? 1}
       />
       <div
         className="hide-scrollbar mt-navbar absolute inset-0 flex w-full flex-col gap-y-2 overflow-auto p-4 md:flex-row md:gap-x-2"

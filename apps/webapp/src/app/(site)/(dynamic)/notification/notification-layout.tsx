@@ -99,7 +99,7 @@ function Notifications({
     <div className={`w-full ${isMobile ? 'h-body' : 'h-full p-6'} sm:w-1/2`}>
       {isMobile ? (
         <div className="sticky">
-          <div className={`relative flex w-full items-center justify-center border-b border-tertiary p-4`}>
+          <div className={`border-tertiary relative flex w-full items-center justify-center border-b p-4`}>
             <Image
               src={icBack}
               alt="back"
@@ -107,20 +107,22 @@ function Notifications({
                 router.back()
               }}
               className="absolute left-2"
+              height={24}
+              width={24}
             />
             <p className="text-title-2-bold">Notifications</p>
           </div>
         </div>
       ) : (
-        <p className="mb-2 text-title-1-bold">Latest Activity</p>
+        <p className="text-title-1-bold mb-2">Latest Activity</p>
       )}
       {notificationDetails?.length === 0 && (
         <div className="flex h-full w-full flex-col items-center justify-center py-2">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-tertiary-200">
+          <div className="bg-tertiary-200 flex h-16 w-16 items-center justify-center rounded-full">
             <BellIcon />
           </div>
           <p className="text-title-2-bold">Nothing here - yet</p>
-          <p className="w-2/3 text-center text-body-1-demi">
+          <p className="text-body-1-demi w-2/3 text-center">
             Try exploring and participating in the existing communities or create one of your own. Their updates will be
             shown here!
           </p>
@@ -137,7 +139,7 @@ function Notifications({
                 }}>
                 <div
                   key={index}
-                  className={`flex items-center justify-between gap-2 border-b border-tertiary-300 ${
+                  className={`border-tertiary-300 flex items-center justify-between gap-2 border-b ${
                     !item.is_read && 'bg-primary-100'
                   } p-4`}>
                   <div className="flex items-center gap-2">
@@ -146,7 +148,7 @@ function Notifications({
                         pathname: PATH_NAME.profile(item?.user?.nickname),
                       }}>
                       <CustomAvatar
-                        className="h-14 w-14 bg-red-40"
+                        className="bg-red-40 h-14 w-14"
                         imageUrl={item?.user?.profile_image_m ?? item.user.profile_image}
                         fallbackString={item?.user?.name ?? ''}
                         isAvatar={item?.user?.is_avatar}
@@ -171,7 +173,7 @@ function Notifications({
                           pathname: PATH_NAME.community(item?.community?.slug),
                         }}>
                         <CustomAvatar
-                          className="h-12 w-12 rounded-none bg-red-40"
+                          className="bg-red-40 h-12 w-12 rounded-none"
                           imageUrl={item?.community?.dp ?? ''}
                           fallbackString={item?.community?.name ?? ''}
                           isAvatar={false}

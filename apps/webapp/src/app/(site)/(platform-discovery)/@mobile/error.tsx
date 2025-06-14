@@ -22,13 +22,13 @@ export default function Error() {
               style={{ fontSize: '32px', fontWeight: 700, letterSpacing: '-0.96px', lineHeight: '110%' }}>
               There seems to be an issue on our end.
             </p>
-            <p className="pt-3 text-center text-body-1-med">
+            <p className="text-body-1-med pt-3 text-center">
               Our team is working to resolve it as quickly as possible.
             </p>
           </span>
-          <Image src={imgPuppet} className="mb-2 h-auto w-32" alt="" />
+          <Image src={imgPuppet} className="mb-2 h-auto w-32" alt="" width={128} height={150} />
           <Link href={PATH_NAME.home()}>
-            <Button size="custom" className="rounded-lg bg-new-off-black px-4 py-3">
+            <Button size="custom" className="bg-new-off-black rounded-lg px-4 py-3">
               <p className="text-new-para-2">Go to Home</p>
             </Button>
           </Link>

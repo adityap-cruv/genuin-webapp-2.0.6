@@ -9,7 +9,6 @@ import Link from 'next/link'
 import { CommunityCardShimmer } from './shimmer'
 import { type CommunityUserRoleType } from '@/lib/schemas/roles'
 import { useCallback, useState } from 'react'
-import { useGenuinOptions } from '@/lib/stores/genuin-options'
 
 export function Communities() {
   const { isLoading, data: communities, isError } = getFeaturedCommunity()
@@ -40,9 +39,10 @@ export function Communities() {
       {isLoading ? (
         <CommunitiesShimmer />
       ) : (
+        communities &&
         communities.length !== 0 && (
           <div className="hidden sm:block">
-            <p className="pb-2 pt-6 text-title-1-bold">Featured Communities</p>
+            <p className="text-title-1-bold pt-6 pb-2">Featured Communities</p>
             <div className="md:grid-rows-auto grid h-auto w-full min-w-fit grid-cols-1 gap-4 md:grid-cols-2">
               {communities?.map((community) => {
                 return (
@@ -69,9 +69,10 @@ export function Communities() {
       {isLoading ? (
         <CommunitiesShimmer />
       ) : (
+        communities &&
         communities.length !== 0 && (
           <div className="block w-full sm:hidden">
-            <p className="pb-2 pt-6 text-title-1-bold">Featured Communities</p>
+            <p className="text-title-1-bold pt-6 pb-2">Featured Communities</p>
             <Swiper direction="horizontal" loop spaceBetween={16} centeredSlides slidesPerView={1.2}>
               {communities?.map((community) => (
                 <SwiperSlide key={community.community_id}>
@@ -131,15 +132,14 @@ function CommunityItem({
   role,
   onCommunityStatusChange,
 }: CommunityItemProps) {
-  const isMobile = useGenuinOptions().isMobile
   return (
-    <div className="min-w[320px] max-w-full rounded-lg border border-tertiary-300 p-4">
+    <div className="min-w[320px] border-tertiary-300 max-w-full rounded-lg border p-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-x-2">
           <CustomAvatar fallbackString={name ?? ''} imageUrl={profileImage} isAvatar={false} className="h-12 w-12" />
           <div>
             <Link href={PATH_NAME.community(slug)}>
-              <p className="line-clamp-2 break-words text-body-1-bold">{name}</p>
+              <p className="text-body-1-bold line-clamp-2 break-words">{name}</p>
             </Link>
             <p className="text-body-1-demi text-tertiary">{`${abbreviateNumber(memberCount)} ${
               memberCount === 1 ? 'member' : 'members'
@@ -156,11 +156,10 @@ function CommunityItem({
           role={role}
           communityName={name ?? ''}
           onStatusChange={onCommunityStatusChange}
-          isMobile={isMobile}
+          isMobile={true}
         />
-        {/* <JoinCommunityButton buttonText="Join" handle={handle} id={id} isCommunityPrivate={false} /> */}
       </div>
-      <p className="line-clamp-2 h-12 break-all pt-2 text-body-1-demi">{description}</p>
+      <p className="text-body-1-demi line-clamp-2 h-12 pt-2 break-all">{description}</p>
     </div>
   )
 }

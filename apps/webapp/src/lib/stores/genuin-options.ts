@@ -15,7 +15,7 @@ export type SizeBoxesType = {
   default: VideoSizeBoxType
 }
 
-type IntegrationSettingsType = {
+export type IntegrationSettingsType = {
   sdk: {
     web: {
       enable: boolean
