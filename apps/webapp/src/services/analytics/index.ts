@@ -51,6 +51,12 @@ export const Analytics = {
       type: 2,
     })
   },
+  /**
+   * Track a pageview event with full URL, path, referrer, and title
+   */
+  pageview: () => {
+    void Analytics.track({ eventName: 'Page Viewed', properties: {} })
+  },
   triggerAnalyticsForVideoComplete(
     videoId: string,
     duration: number,
@@ -133,3 +139,4 @@ export const Analytics = {
   },
 }
 export default Analytics
+export { usePageViewTracking } from './usePageViewTracking'

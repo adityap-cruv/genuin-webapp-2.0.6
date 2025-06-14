@@ -17,7 +17,7 @@ export function Posts({ videos }: { videos?: VideoType[] }) {
             href={PATH_NAME.video(item.slug)}
             key={index}
             onClick={close}
-            className="group/video relative flex aspect-reel w-full items-center justify-center duration-300 hover:cursor-pointer">
+            className="group/video aspect-reel relative flex w-full items-center justify-center duration-300 hover:cursor-pointer">
             <CustomImage
               alt={item.description ?? 'video thumbnail'}
               src={item.thumbnail ?? ''}
@@ -28,18 +28,18 @@ export function Posts({ videos }: { videos?: VideoType[] }) {
               <Link href={{ pathname: PATH_NAME.profile(item.owner.userName) }}>
                 <div className="flex h-6 w-6 items-center">
                   <CustomAvatar
-                    className="h-full w-full bg-red-40"
+                    className="bg-red-40 h-full w-full"
                     imageUrl={item.owner.profileImage}
                     isAvatar={item.owner.isAvatar}
                     fallbackString={item.owner.userName}
                   />
-                  <p className="ml-1 text-body-1-bold text-monochrome-white">@{item.owner.userName}</p>
+                  <p className="text-body-1-bold text-monochrome-white ml-1">@{item.owner.userName}</p>
                 </div>
               </Link>
               {/* TODO: discuss with design team about description. */}
               {/* <p className="ml-1 line-clamp-2 text-body-1-demi text-monochrome-white">{item.video.description}</p> */}
             </div>
-            <div className="absolute inset-0  hidden h-full w-full items-center justify-center rounded-lg bg-monochrome-black/40 group-hover/video:flex">
+            <div className="bg-monochrome-black/40 absolute inset-0 hidden h-full w-full items-center justify-center rounded-lg group-hover/video:flex">
               <CustomImage src={icPlay} alt="" />
             </div>
           </Link>

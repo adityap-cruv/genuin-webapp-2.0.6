@@ -43,12 +43,13 @@ export function getFeed(feedType: 1 | 2 | 3) {
       return await fetchFeed(feedType, pageParam)
     },
     refetchOnWindowFocus: false,
+    initialPageParam: {},
     getNextPageParam(lastPage, allPages) {
       if (lastPage.end) return
       return {
         pageSession: lastPage.pageSession,
-        lastVideoId: lastPage.reels[lastPage.reels.length - 1].video.id,
-        lastVideoParentId: lastPage.reels[lastPage.reels.length - 1].loop.id,
+        lastVideoId: lastPage.reels[lastPage.reels.length - 1]?.video.id,
+        lastVideoParentId: lastPage.reels[lastPage.reels.length - 1]?.loop.id,
       }
     },
   })

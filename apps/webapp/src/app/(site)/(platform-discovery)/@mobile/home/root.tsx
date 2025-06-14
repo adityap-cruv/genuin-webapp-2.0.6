@@ -8,7 +8,7 @@ import { TopBar } from '@components/layouts/mobile/top-bar'
 export function Root() {
   const { data: videoPages, isError, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } = getFeed(1)
   const videos = useMemo(() => videoPages?.pages.flatMap((item) => item.reels), [videoPages])
-
+  console.log('videos', videos)
   if (!isLoading && videos?.length === 0) return <EmptyView type="feed" />
 
   return (

@@ -49,7 +49,7 @@ export function Mobile({
   const { defaultSizeBox } = useGenuinOptions((state) => ({
     defaultSizeBox: state.sizeBoxes.default,
   }))
-   
+
   const videoSizeBox = customSizeBox || defaultSizeBox
 
   if (isLoading || !videos) {
@@ -58,7 +58,7 @@ export function Mobile({
 
   if (videos.length === 0)
     return (
-      <div className="flex h-full w-full items-center justify-center bg-tertiary-200">
+      <div className="bg-tertiary-200 flex h-full w-full items-center justify-center">
         <p className="text-title-3-demi text-tertiary">No activity yet</p>
       </div>
     )
@@ -124,23 +124,22 @@ function SwiperRenderer({ videoSizeBox }: { videoSizeBox: VideoSizeBoxType }) {
           style={videoSizeBox}>
           {videos.map((videoDetails, index) => (
             <SwiperSlide key={index}>
-              {({ isActive, isPrev, isNext, isVisible }) => {
-                if (isActive || isPrev || isNext || isVisible)
-                  return (
-                    <NewPlayer
-                      currentIndex={currentIndex}
-                      videoDetails={videoDetails}
-                      isActive={isActive}
-                      onEnded={(event) => {
-                        const { duration, currentTime } = usePlayerControlStore.getState()
-                        Analytics.triggerAnalyticsForVideoComplete(videoDetails.video.id, duration, currentTime)
+              {({ isActive }) => {
+                return (
+                  <NewPlayer
+                    currentIndex={currentIndex}
+                    videoDetails={videoDetails}
+                    isActive={isActive}
+                    onEnded={(event) => {
+                      const { duration, currentTime } = usePlayerControlStore.getState()
+                      Analytics.triggerAnalyticsForVideoComplete(videoDetails.video.id, duration, currentTime)
 
-                        if (videos.length > 1) {
-                          showGestureOverlay('SWIPE')
-                        }
-                      }}
-                    />
-                  )
+                      if (videos.length > 1) {
+                        showGestureOverlay('SWIPE')
+                      }
+                    }}
+                  />
+                )
               }}
             </SwiperSlide>
           ))}

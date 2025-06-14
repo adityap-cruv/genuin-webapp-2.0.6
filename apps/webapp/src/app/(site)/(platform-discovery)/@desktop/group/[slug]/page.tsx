@@ -1,22 +1,19 @@
-import { LoopDetails } from './main-component'
 import { type Metadata } from 'next'
-import { PATH_NAME } from '@lib/utils/constants/path'
+import { GroupClientPage } from './client-page'
 import { fetchMetadata } from '@lib/api/meta-data'
+import { PATH_NAME } from '@lib/utils/constants/path'
 
 interface Props {
-  params: Promise<{
-    slug: string
-  }>
-  searchParams: Promise<Record<string, unknown>>
+  params: { slug: string }
+  searchParams: Record<string, unknown>
 }
 
-// TODO: change the implementation of MainComponent.
-export default async function Component({ params }: Props) {
+export default async function GroupPage({ params }: Props) {
   const resolvedParams = await params
-  return <LoopDetails slug={resolvedParams.slug} />
+  return <GroupClientPage slug={resolvedParams.slug} />
 }
 
-interface LoopDataType {
+interface GroupDataType {
   title: string
   description: string
   preview_image: string
@@ -24,20 +21,15 @@ interface LoopDataType {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const resolvedParams = await params
-  const loopDetails: LoopDataType = await fetchMetadata({ type: 3, slug: resolvedParams.slug })
+  const groupData: GroupDataType = await fetchMetadata({ type: 3, slug: resolvedParams.slug })
   return {
-    title: loopDetails?.title,
-    // applicationName: 'Genuin',
-    description: loopDetails?.description,
+    title: groupData?.title,
+    description: groupData?.description,
     openGraph: {
-      title: loopDetails?.title,
-      description: loopDetails?.description,
-      url: process.env.NEXT_PUBLIC_HOST_URL + PATH_NAME.loop(resolvedParams.slug),
-      images: [
-        {
-          url: loopDetails?.preview_image,
-        },
-      ],
+      title: groupData?.title,
+      description: groupData?.description,
+      url: `${process.env.NEXT_PUBLIC_HOST_URL}` + PATH_NAME.loop(resolvedParams.slug),
+      images: [{ url: groupData?.preview_image }],
     },
   }
 }
