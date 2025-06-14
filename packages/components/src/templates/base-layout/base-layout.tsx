@@ -33,7 +33,7 @@ export function BaseLayout({
         <SideBar className="gencl:h-full" />
         <section
           className={cn(
-            "gencl:w-full gencl:h-full gencl:mx-auto gencl:relative",
+            "gencl:w-full gencl:!h-full gencl:mx-auto gencl:relative",
             className
           )}
           style={{ maxWidth: "1300px" }}

@@ -1,3 +1,5 @@
+"use client"
+
 import { useState } from "react";
 import {
   CommunityCard,
@@ -37,15 +39,13 @@ export function TrendingCommunities() {
   }
 
   // TODO: Handle error state properly, e.g., show an error message
-  if (isError) {
-    return <div>Error loading trending communities.</div>;
-  }
+  // if (isError) {
+  //   return <div>Error loading trending communities.</div>;
+  // }
 
   // TODO: Handle empty state properly
   if (!data || data?.communities.length === 0) {
-    return (
-      <div className="gencl:text-center">No trending communities found.</div>
-    );
+    return null
   }
 
   const communitiesToDisplay = isExpanded
@@ -53,8 +53,8 @@ export function TrendingCommunities() {
     : data.communities.slice(0, 3);
 
   return (
-    <div className="gencl:w-full gencl:flex gencl:flex-col">
-      <div className="gencl:flex gencl:justify-between gencl:items-center gencl:self-stretch gencl:mb-4">
+    <div className="gencl:w-full gencl:flex gencl:flex-col gencl:gap-4">
+      <div className="gencl:flex gencl:justify-between gencl:items-center gencl:self-stretch">
         <p className="gencl:text-headline-4-semi-bold">Trending Communities</p>
         {data.communities.length > 3 && (
           <Button theme="text" onClick={handleToggle}>
@@ -68,6 +68,7 @@ export function TrendingCommunities() {
           <CommunityCard
             key={community.community_id}
             community={{
+              id : community.community_id,
               banner: community.banner,
               description: community.description,
               dp: community.dp,
@@ -85,7 +86,7 @@ export function TrendingCommunities() {
   );
 }
 
-function TrendingCommunitiesSkeleton() {
+export function TrendingCommunitiesSkeleton() {
   return (
     <div className="gencl:w-full gencl:flex gencl:flex-col">
       <div className="gencl:flex gencl:justify-between gencl:items-center gencl:self-stretch gencl:mb-4">
@@ -93,7 +94,7 @@ function TrendingCommunitiesSkeleton() {
         <Skeleton className="gencl:w-32 gencl:h-6" />
       </div>
       <div className="gencl:grid gencl:grid-cols-1 gencl:sm:grid-cols-2 gencl:lg:grid-cols-3 gencl:gap-x-2 gencl:gap-y-4">
-        <CommunitiesSkeleton noOfCommunities={4} />
+        <CommunitiesSkeleton noOfCommunities={3} />
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import type { ComponentProps } from "react";
 
 export type CommunityInfoType = {
+  id : string,
   name: string;
   dp: string;
   banner: string;

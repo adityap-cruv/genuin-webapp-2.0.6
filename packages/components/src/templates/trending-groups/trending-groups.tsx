@@ -1,3 +1,5 @@
+"use client"
+
 import { useState } from "react";
 import {
   TrendingGroupCard,
@@ -44,21 +46,21 @@ export function TrendingGroups() {
   }
 
   // TODO: Handle error state properly, e.g., show an error message
-  if (isError) {
-    return <div>Error loading trending groups.</div>;
-  }
+  // if (isError) {
+  //   return <div>Error loading trending groups.</div>;
+  // }
 
   // TODO: Handle empty state properly
   if (!data || data?.groups?.length === 0) {
-    return <div className="gencl:text-center">No trending groups found.</div>;
+    return null;
   }
 
   const groupsToDisplay = isExpanded ? data.groups : data.groups.slice(0, 3);
 
   return (
-    <div className="gencl:w-full gencl:flex gencl:flex-col">
+    <div className="gencl:w-full gencl:flex gencl:flex-col gencl:gap-4">
       <div className="gencl:flex gencl:justify-between gencl:items-center gencl:self-stretch">
-        <p className="pb-2 pt-6 text-title-1-bold gencl:text-headline-3-semi-bold">
+        <p className="gencl:text-headline-4-semi-bold">
           Trending Groups
         </p>
         {data?.groups.length > 3 && (
@@ -68,7 +70,7 @@ export function TrendingGroups() {
         )}
       </div>
 
-      <div className="gencl:grid gencl:grid-cols-1 gencl:sm:grid-cols-2 gencl:lg:grid-cols-3 gencl:gap-3 gencl:mt-4">
+      <div className="gencl:grid gencl:grid-cols-1 gencl:sm:grid-cols-2 gencl:lg:grid-cols-3 gencl:gap-3">
         {groupsToDisplay.map(
           ({ chat_id, group, latest_messages }: GroupInfoType) => {
             const formattedPostThumbnails = latest_messages?.map(
@@ -103,22 +105,22 @@ export function TrendingGroups() {
   );
 }
 
-function TrendingGroupsSkeleton() {
+export function TrendingGroupsSkeleton() {
   return (
-    <div className="gencl:w-full gencl:flex gencl:flex-col">
-      <div className="gencl:flex gencl:justify-between gencl:items-center gencl:self-stretch gencl:mb-4">
-        <Skeleton className="gencl:w-[25%] gencl:h-8" />
-        <Skeleton className="gencl:w-32 gencl:h-6" />
+    <div className="gencl:w-full gencl:flex gencl:flex-col gencl:gap-4">
+      <div className="gencl:flex gencl:justify-between gencl:items-center gencl:self-stretch">
+        <Skeleton className="gencl:w-40 gencl:h-6" />
+        <Skeleton className="gencl:w-20 gencl:h-6" />
       </div>
-      <div className="gencl:grid gencl:grid-cols-1 gencl:sm:grid-cols-2 gencl:lg:grid-cols-3 gencl:gap-x-2 gencl:gap-y-4">
-        <GroupsSkeleton noOfGroups={4} />
+      <div className="gencl:grid gencl:grid-cols-1 gencl:sm:grid-cols-2 gencl:lg:grid-cols-3 gencl:gap-3">
+        <GroupsSkeleton noOfGroups={3} />
       </div>
     </div>
   );
 }
 
 function GroupsSkeleton({ noOfGroups = 1 }: { noOfGroups: number }) {
-  return Array.from({ length: noOfGroups }).map(() => (
-    <TrendingGroupCardSkeleton />
+  return Array.from({ length: noOfGroups }).map((_,index) => (
+    <TrendingGroupCardSkeleton key={index} />
   ));
 }

@@ -1,6 +1,12 @@
 import { Avatar } from "@genuin/ui/components/avatar";
+import { Image } from "@genuin/ui/components/image";
+import { ReadMore } from "@genuin/ui/components/read-more";
 import { Skeleton } from "@genuin/ui/components/skeleton";
-import { abbreviateNumber } from "@genuin/ui/lib/utils";
+import { abbreviateNumber, cn } from "@genuin/ui/lib/utils";
+import React from "react";
+import { getOpacity } from "./utils";
+import { Link } from "@genuin/components/molecules/link";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 
 type TrendingGroupCardProps = {
   groupName: string;
@@ -30,32 +36,24 @@ export const TrendingGroupCard = ({
 }: TrendingGroupCardProps) => {
   const visiblePostThumbnails = postThumbnails?.slice(0, 3) || [];
 
-  function getOpacity(index: number, totalVisibleItems: number) {
-    const lastIndex = totalVisibleItems - 1;
-    if (totalVisibleItems === 1) return 1;
-    if (index === lastIndex) return 1;
-
-    // Reduce opacity the further an item is from the top
-    const stepsFromTop = lastIndex - index;
-    const reducedOpacity = 1 - stepsFromTop * 0.3;
-    return Math.max(reducedOpacity, 0.1);
-  }
-
   return (
-    <div className="gencl:border gencl:rounded-2xl gencl:border-secondary-200 gencl:relative gencl:overflow-hidden gencl:w-full">
-      <div className="gencl:px-5 gencl:py-6">
-        <div>
+   <Link href={buildPageUrl({type : "group" , slug : groupName})} className="gencl:h-full">
+    <div className="gencl:border gencl:rounded-lg gencl:border-secondary-150 gencl:relative gencl:overflow-hidden gencl:w-full gencl:h-full">
+      <div className="gencl:p-4">
+        <div className="gencl:flex gencl:flex-col gencl:gap-2">
           {groupName && (
-            <h2 className="gencl:line-clamp-2 gencl:mb-2 gencl:text-headline-4-semi-bold gencl:w-[350px] gencl:pe-2">
-              {groupName}
-            </h2>
+            <ReadMore
+              maxChars={40}
+              textClassName="gencl:!text-body-1-semi-bold"
+              text={groupName}
+            />
           )}
-          <span className="text-sm text-gray-500">
+          <span className="gencl:text-gray-500 gencl:text-body-2-bold">
             {memberCount && (
               <>
-                <strong className="gencl:text-secondary-900">
+                <span className="gencl:text-secondary-900">
                   {abbreviateNumber(memberCount)}
-                </strong>{" "}
+                </span>{" "}
                 <span className="gencl:text-secondary-600">members</span>
               </>
             )}
@@ -64,16 +62,16 @@ export const TrendingGroupCard = ({
             )}
             {postCount && (
               <>
-                <strong className="gencl:text-secondary-900">
+                <span className="gencl:text-secondary-900">
                   {abbreviateNumber(postCount)}
-                </strong>{" "}
+                </span>{" "}
                 <span className="gencl:text-secondary-600">posts</span>
               </>
             )}
           </span>
         </div>
       </div>
-      <div className="gencl:flex gencl:justify-between gencl:p-5 gencl:bg-secondary-50 gencl:items-start gencl:h-full">
+      <div className="gencl:flex gencl:justify-between gencl:p-5 gencl:bg-secondary-50 gencl:items-start gencl:h-full gencl:mb-4">
         <div
           className="gencl:flex gencl:flex-col"
           style={{
@@ -86,40 +84,39 @@ export const TrendingGroupCard = ({
             >
               {userAvatars.map((item, index) => (
                 <Avatar
+                  key={index}
                   isAvatar={item?.isAvatar}
                   imageUrl={item?.imageUrl}
                   alt={item?.alt}
-                  size="md"
+                  size="xs"
                   className={`z-[${index * 5}] h-6 w-6 gencl:border-2 gencl:border-white`}
                 />
               ))}
             </div>
             {userAvatars.length > 0 && (
-              <p>
+              <p className="gencl:text-body-2-bold">
                 <b>@{userAvatars[0]!.userName}</b>
                 <span className="gencl:text-secondary-700 gencl:font-medium">
                   {userAvatars.length - 1 !== 0
                     ? userAvatars.length - 1 === 1
-                      ? "+1 Other"
-                      : `+${abbreviateNumber(userAvatars.length - 1)} Others`
+                      ? " +1 Other"
+                      : ` +${abbreviateNumber(userAvatars.length - 1)} Others`
                     : ""}
                 </span>
               </p>
             )}
           </div>
-          <p className="gencl:text-body-1-semi-bold gencl:text-secondary-600 gencl:line-clamp-3">
-            {description}
-          </p>
+          <ReadMore
+            text={description}
+            maxLines={3}
+            showExpandText={false}
+            textClassName="gencl:!text-body-2-medium gencl:text-secondary-600"
+          />
         </div>
 
-        <div
-          className="gencl:relative gencl:h-[200px]"
-          style={{
-            marginTop: "-100px",
-          }}
-        >
+        <div className="gencl:relative gencl:max-h-32 gencl:-mt-20">
           {visiblePostThumbnails.slice(0, 3)?.map((item, index) => {
-            const offset = index * 10;
+            const offset = index * 5;
             const zIndex = index;
             const opacity = getOpacity(index, visiblePostThumbnails.length);
 
@@ -133,12 +130,14 @@ export const TrendingGroupCard = ({
                   zIndex,
                   opacity,
                 }}
-                className="gencl:h-[180px] gencl:w-[100px] transition-transform duration-300"
+                className="gencl:h-32 gencl:w-24 gencl:transition-transform gencl:duration-300"
               >
-                <img
+                <Image
                   src={item.imageUrl}
                   alt={item.alt}
-                  className="gencl:aspect-reel gencl:rounded-lg gencl:object-cover gencl:h-full gencl:w-full shadow-md"
+                  radius="lg"
+                  aspectRatio="reel"
+                  className="gencl:w-full gencl:shadow-md gencl:object-cover gencl:h-full"
                 />
               </div>
             );
@@ -146,23 +145,24 @@ export const TrendingGroupCard = ({
         </div>
       </div>
     </div>
+   </Link>
   );
 };
 
 export function TrendingGroupCardSkeleton() {
   return (
-    <div className="gencl:border gencl:rounded-2xl gencl:border-secondary-200 gencl:relative gencl:overflow-hidden">
-      <div className="gencl:px-5 gencl:py-6">
-        <div>
+    <div className="gencl:border gencl:rounded-lg gencl:border-secondary-150 gencl:relative gencl:overflow-hidden">
+      <div className="gencl:p-4">
+        <div className="gencl:flex gencl:flex-col gencl:gap-2">
           <Skeleton className="gencl:w-50 gencl:h-5 gencl:rounded-md gencl:mt-1.5 gencl:mb-4" />
           <div className="gencl:flex gencl:items-center gencl:gap-2">
             {Array.from({ length: 2 }).map((_, idx, arr) => (
-              <>
-                <Skeleton className="gencl:w-25 gencl:h-4 gencl:rounded-md" />
+              <React.Fragment key={idx}>
+                <Skeleton className="gencl:w-20 gencl:h-4 gencl:rounded-md" />
                 {idx < arr.length - 1 && (
                   <Skeleton className="gencl:w-1 gencl:h-1 gencl:rounded-md" />
                 )}
-              </>
+              </React.Fragment>
             ))}
           </div>
         </div>
@@ -178,29 +178,27 @@ export function TrendingGroupCardSkeleton() {
             <div
               className={`gencl:mr-1 gencl:relative gencl:flex gencl:space-x-[-10px]`}
             >
-              {Array.from({ length: 4 }).map(() => (
-                <Skeleton className="gencl:size-10 gencl:rounded-full gencl:shrink-0" />
+              {Array.from({ length: 4 }).map((_, index) => (
+                <Skeleton
+                  key={index}
+                  className="gencl:size-6 gencl:rounded-full gencl:shrink-0"
+                />
               ))}
             </div>
             <Skeleton className="gencl:w-30 gencl:h-3 gencl:rounded-md gencl:mt-1.5 gencl:mb-2" />
           </div>
-          <p className="gencl:text-body-1-semi-bold gencl:text-secondary-600 gencl:line-clamp-3">
-            <Skeleton className="gencl:w-full gencl:h-3 gencl:rounded-md gencl:mt-1.5 gencl:mb-2" />
-            <Skeleton className="gencl:w-full gencl:h-3 gencl:rounded-md gencl:mb-2" />
-            <Skeleton className="gencl:w-full gencl:h-3 gencl:rounded-md gencl:mb-2" />
-          </p>
+          <div className="gencl:flex gencl:flex-col gencl:gap-1">
+            <Skeleton className="gencl:w-full gencl:h-3 gencl:rounded-md" />
+            <Skeleton className="gencl:w-full gencl:h-3 gencl:rounded-md" />
+            <Skeleton className="gencl:w-full gencl:h-3 gencl:rounded-md" />
+          </div>
         </div>
 
-        <div
-          className="gencl:relative gencl:h-[200px]"
-          style={{
-            marginTop: "-100px",
-          }}
-        >
+        <div className="gencl:relative gencl:max-h-32 gencl:-mt-20">
           {Array.from({ length: 3 }).map((_, index) => {
-            const offset = index * 10;
+            const offset = index * 5;
             const zIndex = index;
-            const opacity = 0.4 + (index / 4) * 0.7;
+            const opacity = getOpacity(index, 3);
 
             return (
               <div
@@ -212,9 +210,9 @@ export function TrendingGroupCardSkeleton() {
                   zIndex,
                   opacity,
                 }}
-                className="gencl:h-[180px] gencl:w-[100px] transition-transform duration-300"
+                className="gencl:h-32 gencl:w-24 gencl:transition-transform gencl:duration-300"
               >
-                <Skeleton className="gencl:h-[180px] gencl:w-[100px]" />
+                <Skeleton className="gencl:h-full gencl:w-full" />
               </div>
             );
           })}

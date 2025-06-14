@@ -8,8 +8,8 @@ export function FeedSkeleton() {
       <div className="gencl:flex gencl:justify-center gencl:h-full gencl:w-full gencl:gap-2 gencl:pe-4">
         <Skeleton className="gencl:w-100" />
         <div className="gencl:flex gencl:gap-4 gencl:flex-col-reverse gencl:w-13 gencl:mb-12">
-          {Array.from({ length: 5 }).map(() => (
-            <Skeleton className="gencl:size-12 gencl:rounded-full gencl:shrink-0" />
+          {Array.from({ length: 5 }).map((_,index) => (
+            <Skeleton key={index} className="gencl:size-12 gencl:rounded-full gencl:shrink-0" />
           ))}
         </div>
       </div>
@@ -28,8 +28,8 @@ export function FeedSkeleton() {
           </div>
         </div>
         <div className="gencl:relative gencl:border gencl:border-secondary-200 gencl:p-4 gencl:rounded-2xl">
-          {Array.from({ length: 8 }).map(() => (
-            <CommentsItemSkeleton />
+          {Array.from({ length: 8 }).map((_,index) => (
+            <CommentsItemSkeleton key={index} />
           ))}
           <div className="gencl:absolute gencl:bg-white gencl:bottom-0 gencl:right-0 gencl:flex gencl:w-full gencl:items-center gencl:justify-between gencl:gap-x-4 gencl:border-t gencl:border-secondary-200 gencl:p-4">
             <div className="gencl:w-full gencl:rounded-lg gencl:h-10 gencl:border gencl:border-secondary-150 gencl:p-2 gencl:flex gencl:justify-center gencl:items-center">

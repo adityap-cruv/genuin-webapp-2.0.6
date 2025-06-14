@@ -6,6 +6,7 @@ import { getWebpUrlForImage } from "@genuin/ui/lib/utils";
 const imageVariants = cva("gencl:transition-all", {
   variants: {
     aspectRatio: {
+      reel : "gencl:aspect-reel",
       auto: "gencl:aspect-auto",
       square: "gencl:aspect-square",
       video: "gencl:aspect-video",

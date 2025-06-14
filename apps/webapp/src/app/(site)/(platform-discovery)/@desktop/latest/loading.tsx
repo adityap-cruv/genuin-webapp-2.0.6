@@ -1,5 +1,5 @@
-import { FeedShimmer } from '@components/common/shimmers/feed-shimmer'
+import { FeedSkeleton } from '@genuin/components/templates/feed'
 
 export default function Loading() {
-  return <FeedShimmer.desktop />
+  return <FeedSkeleton />
 }
