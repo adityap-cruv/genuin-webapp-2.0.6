@@ -1,4 +1,4 @@
-import { motion, type MotionProps } from 'framer-motion'
+import { motion, type MotionProps } from 'motion/react'
 import { CustomAvatar } from '@/components/custom/custom-avatar'
 import { useState, useEffect } from 'react'
 
@@ -22,7 +22,7 @@ export function TopStickyBar({
     if (!element) return
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
+        if (entry?.isIntersecting) {
           setIsOpen(false)
         } else {
           setIsOpen(true)
@@ -39,9 +39,9 @@ export function TopStickyBar({
 
   return (
     <motion.div
-      initial={{ translateY: '-100%' }}
+      initial={{ y: '-100%' }}
       animate={{
-        translateY: isOpen ? '0' : '-100%',
+        y: isOpen ? '0' : '-100%',
         transitionDuration: '0.2',
         transitionTimingFunction: 'linear',
       }}

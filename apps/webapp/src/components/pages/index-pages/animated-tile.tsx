@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils'
-import { AnimatePresence, motion, type MotionProps } from 'framer-motion'
+import { AnimatePresence, motion, type MotionProps } from 'motion/react'
 import { type ReactNode, type ComponentPropsWithRef, useState } from 'react'
 import { VanillaPlayer } from '@/components/common/vanilla-player'
 import { Dialog, DialogTrigger, DialogContent } from '@/components/ui/dialog'
@@ -19,8 +19,8 @@ export function AnimatedTile({ className, children, initial, whileInView, ...res
           className
         )}
         style={{ maxWidth: 1200 }}
-        initial={initial ?? { opacity: 0, translateY: '-10%' }}
-        whileInView={whileInView ?? { opacity: 1, translateY: '0%', transition: { duration: 1 } }}
+        initial={initial ?? { opacity: 0, y: '-10%' }}
+        whileInView={whileInView ?? { opacity: 1, y: '0%', transition: { duration: 1 } }}
         viewport={{
           amount: 0.5,
           once: true,
@@ -38,8 +38,8 @@ export function GeneralShell({ titleNode, subtitle, animationUrl }: GeneralShell
   return (
     <AnimatedTile className="py-9 md:py-20">
       <div className="flex flex-col gap-4 md:flex-1 md:gap-6">
-        <p className="text-[36px] font-bold leading-none md:w-4/5 md:text-[56px]">{titleNode}</p>
-        <p className="w-full text-cap-1-bold-home font-medium leading-normal sm:w-3/4 md:w-2/3 md:text-title-1-med">
+        <p className="text-[36px] leading-none font-bold md:w-4/5 md:text-[56px]">{titleNode}</p>
+        <p className="text-cap-1-bold-home md:text-title-1-med w-full leading-normal font-medium sm:w-3/4 md:w-2/3">
           {subtitle}
         </p>
       </div>
@@ -83,7 +83,7 @@ export function GeneralShellForInitialComponent({
         <p className="text-center text-[44px] font-bold md:text-start md:text-[84px]" style={{ lineHeight: '100%' }}>
           {titleNode}
         </p>
-        <p className="text-center text-title-2-demi md:w-3/4 md:text-start md:text-body-2-home">{subtitle}</p>
+        <p className="text-title-2-demi md:text-body-2-home text-center md:w-3/4 md:text-start">{subtitle}</p>
         <span className="hidden md:block">{cta}</span>
       </div>
       {videoSrc && (
@@ -108,7 +108,7 @@ function VideoPlayerDialog({ videoSrc, muted, setMuted }: VideoPlayerControlsPro
       {/* For Desktop */}
       <Dialog>
         <DialogTrigger
-          className="hidden aspect-reel w-44 cursor-pointer items-center outline-none transition-all sm:flex sm:w-2/3 sm:justify-center md:w-1/4 lg:w-[30%]"
+          className="aspect-reel hidden w-44 cursor-pointer items-center transition-all outline-none sm:flex sm:w-2/3 sm:justify-center md:w-1/4 lg:w-[30%]"
           onClick={() => {
             setMuted(true)
           }}>
@@ -127,7 +127,7 @@ function VideoPlayerDialog({ videoSrc, muted, setMuted }: VideoPlayerControlsPro
       {/* For Mobile */}
       <CustomDialog>
         <CustomDialogTrigger
-          className="aspect-reel w-44 cursor-pointer items-center outline-none transition-all sm:hidden sm:w-2/3 md:w-1/4 lg:w-[30%]"
+          className="aspect-reel w-44 cursor-pointer items-center transition-all outline-none sm:hidden sm:w-2/3 md:w-1/4 lg:w-[30%]"
           onClick={() => {
             setMuted(true)
           }}>
@@ -149,11 +149,11 @@ function VideoPlayerDialog({ videoSrc, muted, setMuted }: VideoPlayerControlsPro
 function VideoPlayerControls({ muted, setMuted, videoSrc }: VideoPlayerControlsProps) {
   return (
     <div className="relative lg:h-5/6">
-      <div className="absolute right-2 top-3 z-10 rounded-full bg-[hsla(0,0%,30%,.6)] p-1 sm:right-4 sm:top-5">
+      <div className="absolute top-3 right-2 z-10 rounded-full bg-[hsla(0,0%,30%,.6)] p-1 sm:top-5 sm:right-4">
         <CustomFullscreenIcon className="fill-monochrome-white" />
       </div>
       <div
-        className="absolute right-10 top-3 z-10 cursor-pointer rounded-full bg-[hsla(0,0%,30%,.6)] p-1 sm:right-12 sm:top-5"
+        className="absolute top-3 right-10 z-10 cursor-pointer rounded-full bg-[hsla(0,0%,30%,.6)] p-1 sm:top-5 sm:right-12"
         onClick={(e) => {
           e.stopPropagation()
           setMuted(!muted)

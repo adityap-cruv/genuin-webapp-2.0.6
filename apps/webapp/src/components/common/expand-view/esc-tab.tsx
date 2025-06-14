@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 import Analytics from '@/services/analytics'
 import { usePlayerControlStore } from '../player/player-control-store'
 import { useShallow } from 'zustand/react/shallow'
@@ -54,8 +54,8 @@ const ExpandViewEsc = ({ videoId }: { videoId: string }) => {
           exit={{ opacity: 0, scale: 0.8 }}
           transition={{ duration: 0.3 }}
           className="absolute top-20 z-20 flex w-full justify-center">
-          <span className="rounded bg-monochrome-black/90 px-10 py-4 text-monochrome-white">
-            To exit full screen, press <span className="rounded border border-monochrome-white p-1.5">esc</span>
+          <span className="bg-monochrome-black/90 text-monochrome-white rounded px-10 py-4">
+            To exit full screen, press <span className="border-monochrome-white rounded border p-1.5">esc</span>
           </span>
         </motion.div>
       )}

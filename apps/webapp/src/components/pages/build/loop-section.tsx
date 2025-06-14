@@ -2,7 +2,7 @@ import { Button } from '@components/ui/button'
 import { LeftScrollButtonIcon, RightScrollButtonIcon } from './horizontal-scroll-icons'
 import React, { useRef } from 'react'
 import Link from 'next/link'
-import { useInView } from 'framer-motion'
+import { useInView } from 'motion/react'
 import c1 from '@images/home-page/loop/loop-link-share-1.webp'
 import c2 from '@images/home-page/loop/loop-link-share-2.webp'
 import c3 from '@images/home-page/loop/loop-link-share-3.webp'
@@ -45,7 +45,7 @@ export function LoopSection() {
         <div className="flex w-full flex-col gap-y-10">
           <div
             ref={divRef}
-            className="hide-scrollbar scroll-snap-always flex snap-x overflow-x-auto px-4 sm:px-0 sm:pl-5 ">
+            className="hide-scrollbar scroll-snap-always flex snap-x overflow-x-auto px-4 sm:px-0 sm:pl-5">
             <div ref={firstDivRef} className="w-0.5">
               &nbsp;
             </div>
@@ -53,7 +53,7 @@ export function LoopSection() {
               return (
                 <React.Fragment key={index}>
                   <div
-                    className={`m-4 box-border flex min-w-full snap-center flex-col gap-y-1 rounded-3xl shadow-md hover:cursor-pointer sm:min-w-max sm:max-w-md`}>
+                    className={`m-4 box-border flex min-w-full snap-center flex-col gap-y-1 rounded-3xl shadow-md hover:cursor-pointer sm:max-w-md sm:min-w-max`}>
                     <Link href={item.link}>
                       <img src={item.image.src} className="lg:h-[25vh]" alt="genuin" />
                     </Link>
@@ -107,7 +107,7 @@ export function LoopSection() {
               )
             })}
           </CarouselContent>
-          <div className="absolute -bottom-14 right-14">
+          <div className="absolute right-14 -bottom-14">
             <CarouselNext />
           </div>
           <div className="absolute -bottom-14 left-14">

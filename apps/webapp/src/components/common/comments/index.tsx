@@ -1,4 +1,4 @@
-import { useMotionValueEvent, useScroll } from 'framer-motion'
+import { useMotionValueEvent, useScroll } from 'motion/react'
 import { getVideosComments } from '@lib/api/loop'
 import { Loader } from '@components/ui/loader'
 import { type CommentListType, type CommentType } from '@lib/schemas/loop/comment'
@@ -168,7 +168,7 @@ export function NoComments() {
   return (
     <div className="flex h-full w-full flex-col items-center justify-center py-10">
       <CommentIcon className="fill-tertiary" />
-      <p className="mt-2 text-title-2-bold">No comments yet</p>
+      <p className="text-title-2-bold mt-2">No comments yet</p>
       <p className="text-body-1-demi">Be the first one to comment</p>
     </div>
   )

@@ -4,7 +4,7 @@ import { Dialog, DialogClose, DialogContent } from '@/components/ui/dialog'
 import { CloseIcon } from '@icons/close-icon'
 import { usePlayerControlStore } from '../player/player-control-store'
 import { useShallow } from 'zustand/react/shallow'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'motion/react'
 import CommentsLayout from '../comments/comments-layout'
 
 interface ExpandViewCommentBoxProps {
@@ -77,7 +77,7 @@ const FullScreenCommentBox = ({ videos, currentIndex, isMobileCommentView }: Exp
         (isMobileCommentView ? (
           <Dialog open={isCommentBoxOpen}>
             <DialogContent showClose={false} className="mb-4 w-full min-w-[500px] p-0 sm:h-3/4 sm:p-0">
-              <DialogClose className="absolute right-4 top-4 z-20 outline-none">
+              <DialogClose className="absolute top-4 right-4 z-20 outline-none">
                 <CloseIcon onClick={toggleCommentBox} />
               </DialogClose>
               {commentBoxContent}
@@ -93,7 +93,7 @@ const FullScreenCommentBox = ({ videos, currentIndex, isMobileCommentView }: Exp
             transition={{ duration: 0.4, ease: 'easeOut' }}>
             <div
               style={{ height: 'calc(100% - 32px)' }}
-              className="relative my-4 rounded-2xl bg-monochrome-white pb-16 pl-2">
+              className="bg-monochrome-white relative my-4 rounded-2xl pb-16 pl-2">
               {commentBoxContent}
             </div>
           </motion.div>

@@ -2,7 +2,7 @@ import Image from 'next/image'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import audioCommentPlay from '@icons/audio/play.svg'
 import audioCommentPause from '@icons/audio/pause.svg'
-import { useInView } from 'framer-motion'
+import { useInView } from 'motion/react'
 import { useCommentStore } from './store'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 
@@ -59,7 +59,7 @@ export function AudioPlayer({ url, commentShareString, onClick }: Props) {
 
   return (
     <div className="w-full pr-6">
-      <div ref={elementRef} className="flex w-full rounded-xl border-2 border-monochrome-9 p-2">
+      <div ref={elementRef} className="border-monochrome-9 flex w-full rounded-xl border-2 p-2">
         <button ref={btnRef} style={{ marginRight: '16px' }} onClick={onClick}>
           <Image
             style={{ minHeight: '15px', minWidth: '15px' }}
@@ -96,14 +96,14 @@ export function AudioPlayer({ url, commentShareString, onClick }: Props) {
             return (
               <div key={i}>
                 <div
-                  className="relative overflow-hidden bg-monochrome-9"
+                  className="bg-monochrome-9 relative overflow-hidden"
                   style={{
                     height: `${pipeHeight}px`,
                     width: `${pipeWidth}px`,
                     borderRadius: `${pipeWidth}px`,
                   }}>
                   <div
-                    className="absolute left-0 top-0 bg-monochrome-black"
+                    className="bg-monochrome-black absolute top-0 left-0"
                     style={{
                       height: `${pipeHeight}px`,
                       width: `${progressWidth}px`,

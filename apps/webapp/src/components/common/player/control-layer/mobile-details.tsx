@@ -4,7 +4,7 @@ import { CustomAvatar } from '@components/custom/custom-avatar'
 import { ReadMore } from '@components/common/read-more'
 import { type ComponentProps } from 'react'
 import { Linkout } from '../../linkout'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import BrandBadgeIcon from '@components/common/brand-badge-icon'
 import { type VideoPlayerModalType } from '@/lib/schemas/player/video'
 import { cn } from '@/lib/utils'
@@ -68,12 +68,12 @@ export function MobileDetails({
               pathname: owner.brand ? PATH_NAME.brand(owner.brand.brand_slug) : PATH_NAME.profile(owner.userName),
             }}>
             <CustomAvatar
-              className="h-9 w-9 bg-red-40"
+              className="bg-red-40 h-9 w-9"
               imageUrl={owner.profileImage}
               fallbackString={owner.name ?? 'U'}
               isAvatar={owner.isAvatar}
             />
-            <p className="line-clamp-1 break-all px-1 text-title-3-bold text-monochrome-white">@{owner.userName}</p>
+            <p className="text-title-3-bold text-monochrome-white line-clamp-1 px-1 break-all">@{owner.userName}</p>
           </Link>
           {owner.brand && <BrandBadgeIcon userLogoType={owner.brand?.brand_user_logo ?? undefined} variant={'light'} />}
         </div>
@@ -88,7 +88,7 @@ export function MobileDetails({
           <ReadMore.dynamic
             position="overlay"
             text={descriptionArr}
-            className="w-full !break-words text-body-1-demi text-monochrome-white"
+            className="text-body-1-demi text-monochrome-white w-full !break-words"
             maxLines={linkoutId ? 1 : 2}
             shouldAnimate
             showViewMore={false}

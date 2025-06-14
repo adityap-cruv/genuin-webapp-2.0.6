@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { motion, useAnimationControls } from 'framer-motion'
+import { motion, useAnimationControls } from 'motion/react'
 import ShareButton from '@/components/common/actions/share-button'
 import SubscriptionButton from '@/components/common/actions/subscription-button'
 import { getQueryKeyForLoopDetails } from '@/lib/utils/react-query/keys'
@@ -57,59 +57,58 @@ function Desktop({
   }, [defaultOpen, isOpen])
 
   function open() {
-    void navAnimationControl.start({ translateY: 0, transition: { duration: 0.2, ease: 'linear' } })
+    void navAnimationControl.start({ y: 0, transition: { duration: 0.2, ease: 'linear' } })
   }
 
   function close() {
-    void navAnimationControl.start({ translateY: '-100%', transition: { duration: 0.2, ease: 'linear' } })
+    void navAnimationControl.start({ y: '-100%', transition: { duration: 0.2, ease: 'linear' } })
   }
   return (
     <motion.div
       animate={navAnimationControl}
+      className="border-monochrome-9 bg-monochrome-white sticky top-0 z-10 flex h-14 w-full items-center justify-between border-b px-6"
       initial={{
-        translateY: '-100%',
+        y: '-100%',
       }}
       {...props}>
-      <div className="border-monochrome-9 bg-monochrome-white sticky top-0 z-10 flex h-14 w-full items-center justify-between border-b px-6">
-        <span className="flex items-center gap-x-2">
-          <p className="text-title-2-demi">{loopName}</p>
-        </span>
-        <span className="my-2 flex items-center gap-x-3">
-          <SubscriptionButton
-            isSubscribed={isSubscribed}
-            chatId={chatId}
-            groupName={loopName}
-            ldDescription={ldDescription}
-            shareUrl={shareUrl}
-            slug={slug}
-            onSuccess={async () => {
-              await queryClient.invalidateQueries({
-                queryKey: getQueryKeyForLoopDetails(slug),
-                type: 'all',
-              })
-            }}
-          />
+      <span className="flex items-center gap-x-2">
+        <p className="text-title-2-demi">{loopName}</p>
+      </span>
+      <span className="my-2 flex items-center gap-x-3">
+        <SubscriptionButton
+          isSubscribed={isSubscribed}
+          chatId={chatId}
+          groupName={loopName}
+          ldDescription={ldDescription}
+          shareUrl={shareUrl}
+          slug={slug}
+          onSuccess={async () => {
+            await queryClient.invalidateQueries({
+              queryKey: getQueryKeyForLoopDetails(slug),
+              type: 'all',
+            })
+          }}
+        />
 
-          <JoinAsMemberButton
-            joinStatus={mapMemberJoinStatus(loggedInUserStatus)}
-            chatId={chatId}
-            groupName={loopName ?? ''}
-            ldDescription={ldDescription}
-            shareUrl={shareUrl}
-            slug={slug}
-          />
+        <JoinAsMemberButton
+          joinStatus={mapMemberJoinStatus(loggedInUserStatus)}
+          chatId={chatId}
+          groupName={loopName ?? ''}
+          ldDescription={ldDescription}
+          shareUrl={shareUrl}
+          slug={slug}
+        />
 
-          {/* Hidden by requirement. */}
-          {/* <Button size="custom" variant="outline" className="border-primary px-4">
+        {/* Hidden by requirement. */}
+        {/* <Button size="custom" variant="outline" className="border-primary px-4">
                 <span className="flex items-center">
                   <Image src={icQuestion} alt="question" />
                   <p className="py-2 text-body-1-demi text-primary">Q&A</p>
                 </span>
               </Button> */}
 
-          <ShareButton url={shareUrl} />
-        </span>
-      </div>
+        <ShareButton url={shareUrl} />
+      </span>
     </motion.div>
   )
 }
@@ -127,26 +126,25 @@ function Mobile({ defaultOpen = true, isOpen = false, loopName, communitySlug, .
   }, [defaultOpen, isOpen])
 
   function open() {
-    void navAnimationControl.start({ translateY: 0, transition: { duration: 0.2, ease: 'linear' } })
+    void navAnimationControl.start({ y: 0, transition: { duration: 0.2, ease: 'linear' } })
   }
 
   function close() {
-    void navAnimationControl.start({ translateY: '-100%', transition: { duration: 0.2, ease: 'linear' } })
+    void navAnimationControl.start({ y: '-100%', transition: { duration: 0.2, ease: 'linear' } })
   }
   return (
     <motion.div
       animate={navAnimationControl}
+      className="border-monochrome-9 bg-monochrome-white sticky top-0 z-10 flex h-14 w-full items-center justify-between border-b px-6"
       initial={{
-        translateY: '-100%',
+        y: '-100%',
       }}
       {...props}>
-      <div className="border-monochrome-9 bg-monochrome-white sticky top-0 z-10 flex h-14 w-full items-center justify-between border-b px-6">
-        <span className="flex items-center gap-x-2">
-          <p className="text-title-2-demi line-clamp-1 break-all" title={loopName}>
-            {loopName}
-          </p>
-        </span>
-      </div>
+      <span className="flex items-center gap-x-2">
+        <p className="text-title-2-demi line-clamp-1 break-all" title={loopName}>
+          {loopName}
+        </p>
+      </span>
     </motion.div>
   )
 }

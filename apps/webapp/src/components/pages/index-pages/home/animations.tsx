@@ -1,4 +1,4 @@
-import { useInView } from 'framer-motion'
+import { useInView } from 'motion/react'
 import { useRef } from 'react'
 
 interface CustomAnimatedSectionProps {

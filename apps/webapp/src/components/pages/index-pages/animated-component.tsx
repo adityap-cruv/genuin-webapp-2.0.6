@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils'
-import { motion, type MotionProps } from 'framer-motion'
+import { motion, type MotionProps } from 'motion/react'
 import { type ComponentPropsWithRef, type ComponentProps } from 'react'
 
 export function AnimatedComponent({ children, className, ...restProps }: ComponentPropsWithRef<'div'> & MotionProps) {
@@ -32,7 +32,7 @@ export function AnimatedButton({ className, shadowColor, children }: AnimatedBut
         e.currentTarget.style.boxShadow = `8px 8px ${shadowColor}` // Reset the shadow to the original position
       }}
       className={cn(
-        `flex h-12 w-min items-center rounded-full px-6 py-3 text-cap-1-bold-home font-extrabold`,
+        `text-cap-1-bold-home flex h-12 w-min items-center rounded-full px-6 py-3 font-extrabold`,
         className
       )}>
       {children}

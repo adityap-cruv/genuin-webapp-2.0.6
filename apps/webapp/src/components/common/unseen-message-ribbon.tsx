@@ -1,5 +1,5 @@
 import { IcArrowDown } from '@icons/ic-arrow-down'
-import { motion, useAnimationControls } from 'framer-motion'
+import { motion, useAnimationControls } from 'motion/react'
 import { useEffect, useState } from 'react'
 import { CloseIcon } from '@icons/close-icon'
 
@@ -22,7 +22,7 @@ export function UnseenMessageRibbon({ messageCount }: { messageCount: number }) 
     <motion.div
       initial={{ y: -100 }}
       animate={animation}
-      className="flex h-fit w-fit items-center gap-x-2 rounded-full bg-primary px-2 py-1">
+      className="bg-primary flex h-fit w-fit items-center gap-x-2 rounded-full px-2 py-1">
       <IcArrowDown className="h-4 w-4" />
       <p className="text-body-1-demi text-monochrome-white">{`${messageCount} Unseen ${
         messageCount === 1 ? 'post' : 'posts'

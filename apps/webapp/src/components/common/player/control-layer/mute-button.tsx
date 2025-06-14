@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { MuteIcon } from '@icons/player-controls/mute-icon'
 import { UnmuteIcon } from '@icons/player-controls/unmute-icon'
 import { usePlayerControlStore } from '../player-control-store'
-import { motion, useAnimationControls } from 'framer-motion'
+import { motion, useAnimationControls } from 'motion/react'
 import { useGenuinOptions } from '@/lib/stores/genuin-options'
 import { ControlAnimation } from './control-animations'
 
@@ -68,7 +68,7 @@ export const AnimatedMuteButton = ({ videoId, shouldAnimate = true }: AnimatedMu
     <div
       onClick={handleClick}
       className={`group flex h-12 items-center justify-start overflow-hidden rounded-full ${
-        showVolumeSlider && !isMobile ? 'w-full bg-monochrome-black/50' : 'w-fit bg-monochrome-black/40'
+        showVolumeSlider && !isMobile ? 'bg-monochrome-black/50 w-full' : 'bg-monochrome-black/40 w-fit'
       }`}
       onMouseEnter={() => {
         setShowVolumeSlider(true)
@@ -111,7 +111,7 @@ export const AnimatedMuteButton = ({ videoId, shouldAnimate = true }: AnimatedMu
       )}
 
       {/* Custom thumb and track progress styling */}
-      { }
+      {}
       <style jsx>{`
         input[type='range'] {
           -webkit-appearance: none;

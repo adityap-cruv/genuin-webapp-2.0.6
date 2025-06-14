@@ -3,7 +3,7 @@ import bg from '@images/home/backgrounds/bgLines.svg'
 import icCommunity from '@images/home/icon-community.svg'
 import icGraph from '@images/home/icon-graph.svg'
 import icVideo from '@images/home/icon-video.svg'
-import { motion, useInView } from 'framer-motion'
+import { motion, useInView } from 'motion/react'
 import { useRef } from 'react'
 import Image, { type StaticImageData } from 'next/image'
 
@@ -34,14 +34,14 @@ export function RootShell({ children, bgGrad, genuinLogo, initialComponent, ctaF
         <motion.div
           initial={{ rotate: 270, opacity: 0 }}
           animate={{ rotate: 360, opacity: 1, transition: { duration: 1 } }}
-          className="absolute bottom-0 right-0 aspect-square bg-cover bg-right bg-no-repeat">
+          className="absolute right-0 bottom-0 aspect-square bg-cover bg-right bg-no-repeat">
           <Image src={genuinLogo} height={800} width={800} alt="genuin-logo" />
         </motion.div>
-        <CustomAnimatedLogos className="absolute left-[32vw] top-[6vh] z-0 hidden -translate-y-20 translate-x-10 duration-3000 md:block">
+        <CustomAnimatedLogos className="absolute top-[6vh] left-[32vw] z-0 hidden translate-x-10 -translate-y-20 duration-3000 md:block">
           <img src={icCommunity.src} alt="community" className="h-14" />
         </CustomAnimatedLogos>
 
-        <CustomAnimatedLogos className="absolute left-[7vw] top-[44vh] z-0 hidden  -translate-x-28 translate-y-16 duration-3000 md:block">
+        <CustomAnimatedLogos className="absolute top-[44vh] left-[7vw] z-0 hidden -translate-x-28 translate-y-16 duration-3000 md:block">
           <img src={icGraph.src} alt="graph" className="h-9" />
         </CustomAnimatedLogos>
 

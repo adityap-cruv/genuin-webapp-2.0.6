@@ -1,6 +1,6 @@
 import { useRef, useEffect } from 'react'
 import OpenPlayerJS from 'openplayerjs'
-import { useInView } from 'framer-motion'
+import { useInView } from 'motion/react'
 import { useCommentStore } from './store'
 import Image from 'next/image'
 import icPlay from '@icons/player-controls/icPlay.svg'
@@ -91,8 +91,8 @@ export function CommentPlayer({ videoSource, poster, commentShareString, onClick
       />
       <div className="absolute inset-0 flex h-full w-full items-center justify-center rounded-2xl">
         {!shouldPlay && (
-          <span className="rounded-full bg-monochrome-black/60 p-3">
-            <Image src={icPlay} alt="play" className=" h-5 w-5 " />
+          <span className="bg-monochrome-black/60 rounded-full p-3">
+            <Image src={icPlay} alt="play" className="h-5 w-5" />
           </span>
         )}
       </div>

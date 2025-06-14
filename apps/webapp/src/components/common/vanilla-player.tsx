@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils'
-import { useInView } from 'framer-motion'
+import { useInView } from 'motion/react'
 import OpenPlayerJS from 'openplayerjs'
 import { type DetailedHTMLProps, type VideoHTMLAttributes, memo, useEffect, useRef } from 'react'
 import { useState } from 'react'

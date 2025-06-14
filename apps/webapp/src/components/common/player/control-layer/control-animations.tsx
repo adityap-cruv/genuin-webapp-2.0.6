@@ -1,9 +1,9 @@
-import { motion, type AnimationControls } from 'framer-motion'
+import { motion, LegacyAnimationControls } from 'motion/react'
 import { memo } from 'react'
 
 interface ControlAnimationProps {
   text: string
-  animationController: AnimationControls
+  animationController: LegacyAnimationControls
   show: boolean
 }
 

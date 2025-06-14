@@ -2,7 +2,7 @@ import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 
 import { Actions } from '../player/control-layer/actions'
 
-import { AnimatePresence } from 'framer-motion'
+import { AnimatePresence } from 'motion/react'
 import { type Swiper as SwiperType } from 'swiper/types'
 import NavigationButtons from '../expand-view/navigation-buttons'
 import ExpandViewCommentBoxLayout from '../expand-view/comment-box'
@@ -31,7 +31,7 @@ export function FullScreenLayout({ currentIndex, videos, isCommentBoxOpen, swipe
         />
       </div>
 
-      <div className="absolute right-2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col gap-4">
+      <div className="absolute top-1/2 right-2 flex -translate-x-1/2 -translate-y-1/2 flex-col gap-4">
         <NavigationButtons videos={videos} currentIndex={currentIndex} swiperInstance={swiperInstance ?? null} />
       </div>
 

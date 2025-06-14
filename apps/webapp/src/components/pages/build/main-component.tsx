@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
-import { useMotionValueEvent, useScroll } from 'framer-motion'
+import { useMotionValueEvent, useScroll } from 'motion/react'
 import { CommunitySection } from './community-section'
 import { Button } from '@components/ui/button'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
@@ -75,23 +75,23 @@ function Component1() {
     <>
       <div
         id="initial-component"
-        className="hidden min-h-full items-center justify-center pt-navbar lg:flex"
+        className="pt-navbar hidden min-h-full items-center justify-center lg:flex"
         style={{ background: 'radial-gradient(123.19% 48.8% at 76.02% 69.05%, #E9CAF4 0%, #ADD8FB 100%)' }}>
         <div className="container">
           <div className="flex h-[80vh] flex-col justify-between">
             <div className="flex items-center">
               <div className="w-1/2">
-                <p className="my-4 text-new-h1" style={{ fontSize: '56px' }}>
+                <p className="text-new-h1 my-4" style={{ fontSize: '56px' }}>
                   Social Video Communities for Leading Brands.
                 </p>
-                <p className="my-4 text-new-para-1">
+                <p className="text-new-para-1 my-4">
                   On your website, in your app, under your brand and
                   <br /> distributed on the open web.
                 </p>
                 <ContactUs>
                   <Button
                     size="custom"
-                    className="bg-new-off-black px-4 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
+                    className="bg-new-off-black after:bg-new-dark-grey hover:bg-new-dark-grey px-4 py-3">
                     <p className="text-new-sm text-monochrome-white">Contact Us</p>
                   </Button>
                 </ContactUs>
@@ -107,10 +107,10 @@ function Component1() {
                 />
               </div>
             </div>
-            <div className=" flex w-full justify-center gap-6">
+            <div className="flex w-full justify-center gap-6">
               {brandImages?.map(({ img, logoHeight }: any, index: any) => (
                 <div
-                  className={`flex h-12 w-44 items-center justify-center rounded-lg p-3 `}
+                  className={`flex h-12 w-44 items-center justify-center rounded-lg p-3`}
                   style={{
                     backgroundColor: index === currentIndex ? 'rgba(249, 254, 255, 0.60)' : 'rgba(255, 255, 255, 0.10)',
                   }}
@@ -133,23 +133,23 @@ function Component1() {
         </div>
       </div>
       <div
-        className="flex flex-col items-center justify-center gap-y-4 px-5 pb-40 pt-40 lg:hidden"
+        className="flex flex-col items-center justify-center gap-y-4 px-5 pt-40 pb-40 lg:hidden"
         style={{ background: 'radial-gradient(123.19% 48.8% at 76.02% 69.05%, #E9CAF4 0%, #ADD8FB 100%)' }}>
-        <h1 className="flex justify-center text-center text-new-h2-mobile sm:text-new-h1 ">
+        <h1 className="text-new-h2-mobile sm:text-new-h1 flex justify-center text-center">
           Social Video Communities for
           <br /> Leading Brands.
         </h1>
-        <p className="mx-3 max-w-sm py-2 text-center text-new-para-2 sm:w-4/5">
+        <p className="text-new-para-2 mx-3 max-w-sm py-2 text-center sm:w-4/5">
           On your website, in your app, under your brand and distributed on the open web.
         </p>
         <div className="flex flex-col gap-y-4">
           <ContactUs>
-            <Button size="custom" className="bg-new-off-black px-4 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
+            <Button size="custom" className="bg-new-off-black after:bg-new-dark-grey hover:bg-new-dark-grey px-4 py-3">
               <p className="text-new-sm">Contact Us</p>
             </Button>
           </ContactUs>
         </div>
-        <div className=" my-4 flex min-h-[300px] items-center justify-center">
+        <div className="my-4 flex min-h-[300px] items-center justify-center">
           <img loading="lazy" fetchPriority="low" decoding="async" className="" src={toyotaBanne2.src} />
         </div>
       </div>
@@ -160,15 +160,15 @@ function Component1() {
 function Component2() {
   return (
     <>
-      <div className="my-20 hidden w-full flex-col items-center justify-center gap-y-5  lg:flex ">
-        <h2 className="-tracking-new text-center text-new-h2">
+      <div className="my-20 hidden w-full flex-col items-center justify-center gap-y-5 lg:flex">
+        <h2 className="-tracking-new text-new-h2 text-center">
           Move Beyond Traditional Text Based <br /> Communities to Video Based Communities
         </h2>
         <div className="flex w-10/12 justify-center">
           <img loading="lazy" fetchPriority="low" className="h-[90vh]" decoding="async" src={imgC2_desktop.src} />
         </div>
 
-        <h2 className="-tracking-new mb-6 mt-12 text-center text-new-h2">
+        <h2 className="-tracking-new text-new-h2 mt-12 mb-6 text-center">
           Communities You Control Instead of Ones They Control
         </h2>
         <div className="flex w-3/4 justify-center gap-8">
@@ -182,13 +182,13 @@ function Component2() {
         {/* <img loading="lazy" fetchPriority="low" decoding="async" src={imgC2_2.src} /> */}
       </div>
       <div className="container flex flex-col items-center justify-center py-10 lg:hidden">
-        <h2 className="w-full max-w-sm py-4 text-center text-new-h2-mobile sm:text-new-h2">
+        <h2 className="text-new-h2-mobile sm:text-new-h2 w-full max-w-sm py-4 text-center">
           Move Beyond
           <br /> Traditional Editorial <br /> Communities to Video-Based Communities
         </h2>
         <img loading="lazy" fetchPriority="low" decoding="async" src={imgC2_s1.src} />
 
-        <h2 className="mt-10 w-full max-w-sm py-4 text-center text-new-h2-mobile sm:text-new-h2">
+        <h2 className="text-new-h2-mobile sm:text-new-h2 mt-10 w-full max-w-sm py-4 text-center">
           Communities You Control
           <br /> Instead of
           <br />
@@ -204,7 +204,7 @@ function Component2() {
 function Component3() {
   return (
     <>
-      <div className="relative my-40 hidden max-h-full items-center justify-around px-6 xl:container lg:flex xl:px-0">
+      <div className="relative my-40 hidden max-h-full items-center justify-around px-6 lg:flex xl:container xl:px-0">
         <img loading="lazy" fetchPriority="low" decoding="async" className="h-[80vh]" src={imgC3.src} />
         <div className="flex w-2/3 max-w-md flex-col gap-y-8">
           <h2 className="text-new-h2">Captivate Your Community the Way They Like to Communicate With Video Loops</h2>
@@ -215,10 +215,10 @@ function Component3() {
         </div>
       </div>
       <div className="container my-10 flex flex-col items-center gap-y-8 px-5 lg:hidden">
-        <h2 className=" text-center text-new-h2-mobile sm:text-new-h2">
+        <h2 className="text-new-h2-mobile sm:text-new-h2 text-center">
           Captivate Your Community the Way They Like to Communicate With Video Loops
         </h2>
-        <h5 className="flex w-11/12 text-center text-new-para-1-mobile">
+        <h5 className="text-new-para-1-mobile flex w-11/12 text-center">
           Engage with your fans, customers, partners, employees and stakeholders via a video based social feed organized
           by topics that you control.
         </h5>
@@ -264,7 +264,7 @@ function Component4() {
         <div id="carousel" className="sticky top-0 h-1/3">
           <div className="h-full w-full">
             <div className="flex h-1/5 items-center justify-center">
-              <h2 className="text-center text-new-h2">
+              <h2 className="text-new-h2 text-center">
                 All the Community-Building Functionality of
                 <br /> Top Social Networks
               </h2>
@@ -297,24 +297,24 @@ function Component4() {
               </div>
               <div
                 ref={textRef}
-                className="flex h-full w-1/2 flex-col justify-center gap-y-8 px-14 [&>div]:opacity-30 [&>div]:transition-opacity [&>div]:duration-300 [&>div]:ease-in ">
+                className="flex h-full w-1/2 flex-col justify-center gap-y-8 px-14 [&>div]:opacity-30 [&>div]:transition-opacity [&>div]:duration-300 [&>div]:ease-in">
                 <div className="!opacity-100">
                   <h3 className="text-new-h3">Connect</h3>
-                  <h5 className="mt-4 text-new-h5">
+                  <h5 className="text-new-h5 mt-4">
                     Interact through short video, audio, text, reactions and more. Seamlessly link out to your e-store,
                     website, social channels, or anywhere.
                   </h5>
                 </div>
                 <div>
                   <h3 className="text-new-h3">Discover</h3>
-                  <h5 className="mt-4 text-new-h5">
+                  <h5 className="text-new-h5 mt-4">
                     Enable your fans to join communities on topics you and they can define, and cross-promote new loops
                     in the feed. Make your community discoverable on the open web ( see Market Your Community )
                   </h5>
                 </div>
                 <div>
                   <h3 className="text-new-h3">Learn</h3>
-                  <h5 className="mt-4 text-new-h5">
+                  <h5 className="text-new-h5 mt-4">
                     Start conversations and invite your audience to participate -- gain insights directly from your
                     stakeholders.
                   </h5>
@@ -325,16 +325,16 @@ function Component4() {
         </div>
       </div>
       <div className="my-20 mt-20 flex flex-col items-center px-5 lg:hidden">
-        <h2 className="mb-10 text-center text-new-h2-mobile sm:max-w-lg sm:text-new-h2">
+        <h2 className="text-new-h2-mobile sm:text-new-h2 mb-10 text-center sm:max-w-lg">
           All the Community- Building Functionality of Top Social Networks
         </h2>
         <div className="flex w-full justify-center">
           <Accordion type="single" defaultValue="connect" collapsible className="px-3 sm:w-4/5">
-            <AccordionItem value="connect" className="border-none ">
+            <AccordionItem value="connect" className="border-none">
               <AccordionTrigger className="items-baseline">
                 <div className="flex flex-col items-start">
-                  <h3 className="mb-2 text-new-h3-mobile">Connect</h3>
-                  <p className="text-start text-new-para-1-mobile">
+                  <h3 className="text-new-h3-mobile mb-2">Connect</h3>
+                  <p className="text-new-para-1-mobile text-start">
                     Interact through short video, audio, text, reactions and more. Seamlessly link out to your e-store,
                     website, social channels, or anywhere.
                   </p>
@@ -351,11 +351,11 @@ function Component4() {
                 />
               </AccordionContent>
             </AccordionItem>
-            <AccordionItem value="discover" className="border-none ">
+            <AccordionItem value="discover" className="border-none">
               <AccordionTrigger className="items-baseline">
                 <div className="flex flex-col items-start">
-                  <h3 className="mb-2 text-new-h3-mobile">Discover</h3>
-                  <p className="text-start text-new-para-1-mobile">
+                  <h3 className="text-new-h3-mobile mb-2">Discover</h3>
+                  <p className="text-new-para-1-mobile text-start">
                     Enable your fans to join communities on topics you and they can define, and cross-promote new loops
                     in the feed. Make your community discoverable on the open web ( see Market Your Community )
                   </p>
@@ -372,11 +372,11 @@ function Component4() {
                 />
               </AccordionContent>
             </AccordionItem>
-            <AccordionItem value="learn" className="border-none ">
+            <AccordionItem value="learn" className="border-none">
               <AccordionTrigger className="items-baseline">
                 <div className="flex flex-col items-start">
-                  <h3 className="mb-2 text-new-h3-mobile">Learn</h3>
-                  <p className="text-start text-new-para-1-mobile">
+                  <h3 className="text-new-h3-mobile mb-2">Learn</h3>
+                  <p className="text-new-para-1-mobile text-start">
                     Start conversations and invite your audience to participate -- gain insights directly from your
                     stakeholders.
                   </p>
@@ -403,11 +403,11 @@ function Component4() {
 function Component5() {
   return (
     <>
-      <div className="my-40 hidden w-full flex-col items-center px-6 xl:container lg:flex xl:px-0">
-        <h2 className="text-center text-new-h2">What our Community Builders say</h2>
+      <div className="my-40 hidden w-full flex-col items-center px-6 lg:flex xl:container xl:px-0">
+        <h2 className="text-new-h2 text-center">What our Community Builders say</h2>
         <div className="my-10 mt-15 flex w-full justify-between gap-10">
           <div className="flex w-3/5 flex-col gap-y-10">
-            <div className="-border-spacing-10 flex h-1/2 flex-col justify-around rounded-[10px] border-[18px] border-[#E9CAF4] bg-new-off-black p-8">
+            <div className="-border-spacing-10 bg-new-off-black flex h-1/2 flex-col justify-around rounded-[10px] border-[18px] border-[#E9CAF4] p-8">
               <h3 className="text-new-h3 text-monochrome-white">
                 “I love that new community members can see the history of discussion in the video feed”
               </h3>
@@ -422,11 +422,11 @@ function Component5() {
                 <p className="text-monochrome-white">Lauren Hall, Community Builder</p>
               </div>
             </div>
-            <div className="flex h-1/2 flex-col justify-between rounded-[15px] border-[1px] border-new-light-grey p-10">
+            <div className="border-new-light-grey flex h-1/2 flex-col justify-between rounded-[15px] border-[1px] p-10">
               <h5 className="text-new-h5">
                 “It was so easy to repurpose my social media content & jumpstart my community.”
               </h5>
-              <p className="mt-10 text-new-para-1">Esmé, Seattle, Content Creator</p>
+              <p className="text-new-para-1 mt-10">Esmé, Seattle, Content Creator</p>
             </div>
           </div>
           <img
@@ -439,7 +439,7 @@ function Component5() {
         </div>
         <div className="flex w-full justify-between gap-x-10">
           <img loading="lazy" fetchPriority="low" className="w-1/4" decoding="async" src={imgC5_2.src} />
-          <div className="flex flex-col justify-between rounded-2xl bg-primary p-10 text-monochrome-white">
+          <div className="bg-primary text-monochrome-white flex flex-col justify-between rounded-2xl p-10">
             <h5 className="text-new-h5">
               “Link-outs are so hard on the big social platforms and the rules always change. I loved being able to link
               to my store sell more merch!”
@@ -451,9 +451,9 @@ function Component5() {
         </div>
       </div>
       <div className="my-20 flex min-h-full flex-col items-center gap-y-10 px-5 lg:hidden">
-        <h2 className="text-center text-new-h2-mobile sm:text-new-h2">What our Community Builders say</h2>
-        <div className=" flex flex-col rounded-[10px] border-[18px] border-[#E9CAF4] bg-new-off-black p-4 sm:w-4/5">
-          <p className="font-bold text-monochrome-white" style={{ fontSize: '28px' }}>
+        <h2 className="text-new-h2-mobile sm:text-new-h2 text-center">What our Community Builders say</h2>
+        <div className="bg-new-off-black flex flex-col rounded-[10px] border-[18px] border-[#E9CAF4] p-4 sm:w-4/5">
+          <p className="text-monochrome-white font-bold" style={{ fontSize: '28px' }}>
             “I love that new community members can see the history of discussion in the video feed”
           </p>
           <div className="mt-5 flex w-full">
@@ -471,12 +471,12 @@ function Component5() {
           </div>
         </div>
         <img loading="lazy" fetchPriority="low" decoding="async" src={imgC5.src} className="sm:w-1/2" />
-        <div className="flex flex-col justify-between rounded-2xl bg-primary p-4 text-monochrome-white sm:w-4/5">
+        <div className="bg-primary text-monochrome-white flex flex-col justify-between rounded-2xl p-4 sm:w-4/5">
           <p className="text-new-para-1">
             “Link-outs are so hard on the big social platforms and the rules always change. I loved being able to link
             to my store sell more merch!”
           </p>
-          <p className="mt-10 text-new-para-1">
+          <p className="text-new-para-1 mt-10">
             Sarah Jones, <span className="font-normal">Marketing Manager</span>
           </p>
         </div>
@@ -489,10 +489,10 @@ function Component5() {
 function Component6() {
   return (
     <div className="my-5 flex flex-col items-center lg:my-10">
-      <h2 className="my-6 max-w-[200px] text-center text-new-h2-mobile sm:max-w-[300px] sm:text-new-h2 lg:max-w-none">
+      <h2 className="text-new-h2-mobile sm:text-new-h2 my-6 max-w-[200px] text-center sm:max-w-[300px] lg:max-w-none">
         Community sneak peak
       </h2>
-      <h5 className="mb-10 max-w-[320px] text-center text-new-h5-mobile sm:max-w-xs sm:text-new-h5 lg:max-w-xl ">
+      <h5 className="text-new-h5-mobile sm:text-new-h5 mb-10 max-w-[320px] text-center sm:max-w-xs lg:max-w-xl">
         Take a look inside some of the communities, get inspired to start your own.{' '}
       </h5>
       <CommunitySection />
@@ -503,10 +503,10 @@ function Component6() {
 function Component7() {
   return (
     <div className="my-5 flex flex-col items-center lg:my-10">
-      <h2 className="my-6 max-w-[200px] text-center text-new-h2-mobile sm:max-w-[300px] sm:text-new-h2 lg:max-w-none">
+      <h2 className="text-new-h2-mobile sm:text-new-h2 my-6 max-w-[200px] text-center sm:max-w-[300px] lg:max-w-none">
         Loop sneak peak
       </h2>
-      <h5 className="mb-10 max-w-[320px] text-center text-new-h5-mobile sm:max-w-xs sm:text-new-h5 lg:max-w-xl ">
+      <h5 className="text-new-h5-mobile sm:text-new-h5 mb-10 max-w-[320px] text-center sm:max-w-xs lg:max-w-xl">
         Take a look inside some of the loops, get inspired to start your own.{' '}
       </h5>
       <LoopSection />
@@ -517,16 +517,16 @@ function Component7() {
 function Component8() {
   return (
     <>
-      <div className=" hidden h-32 bg-monochrome-9 lg:flex xl:px-0">
+      <div className="bg-monochrome-9 hidden h-32 lg:flex xl:px-0">
         <div className="container flex items-center justify-between">
           <p className="text-new-h2">As Seen In</p>
           <div className="flex gap-10">
-            <div className="flex items-center justify-center rounded-lg bg-monochrome-white px-8 py-2 ">
+            <div className="bg-monochrome-white flex items-center justify-center rounded-lg px-8 py-2">
               <Link href={{ pathname: PATH_NAME.businessinsider() }}>
                 <img loading="lazy" fetchPriority="low" decoding="async" src={businessInsider.src} alt="genuin" />
               </Link>
             </div>
-            <div className="flex items-center justify-center rounded-lg bg-monochrome-white px-8 py-2 ">
+            <div className="bg-monochrome-white flex items-center justify-center rounded-lg px-8 py-2">
               <Link href={{ pathname: PATH_NAME.yahoo() }}>
                 <img loading="lazy" fetchPriority="low" decoding="async" src={yahoo.src} alt="genuin" />
               </Link>
@@ -534,10 +534,10 @@ function Component8() {
           </div>
         </div>
       </div>
-      <div className="flex h-40 flex-col items-center justify-center gap-4 bg-monochrome-9 lg:hidden">
+      <div className="bg-monochrome-9 flex h-40 flex-col items-center justify-center gap-4 lg:hidden">
         <p className="text-new-h3">As Seen In</p>
         <div className="flex gap-8">
-          <div className="flex items-center justify-center rounded-lg bg-monochrome-white px-6 py-2 ">
+          <div className="bg-monochrome-white flex items-center justify-center rounded-lg px-6 py-2">
             <Link href={{ pathname: PATH_NAME.businessinsider() }}>
               <img
                 loading="lazy"
@@ -549,7 +549,7 @@ function Component8() {
               />
             </Link>
           </div>
-          <div className="flex items-center justify-center rounded-lg bg-monochrome-white px-6 py-2 ">
+          <div className="bg-monochrome-white flex items-center justify-center rounded-lg px-6 py-2">
             <Link href={{ pathname: PATH_NAME.yahoo() }}>
               <img loading="lazy" fetchPriority="low" className="h-8" decoding="async" src={yahoo.src} alt="genuin" />
             </Link>

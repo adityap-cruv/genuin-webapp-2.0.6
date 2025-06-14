@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState, useMemo } from 'react'
-import { useAnimationControls } from 'framer-motion'
+import { useAnimationControls } from 'motion/react'
 import Analytics from '@/services/analytics'
 import { PlayIcon } from '@icons/player-controls/play-icon'
 import { PauseIcon } from '@icons/player-controls/pause-icon'

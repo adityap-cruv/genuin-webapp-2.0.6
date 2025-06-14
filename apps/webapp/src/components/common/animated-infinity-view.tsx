@@ -1,7 +1,7 @@
 'use client'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { useEffect, useState } from 'react'
-import { useAnimationControls, motion } from 'framer-motion'
+import { useAnimationControls, motion } from 'motion/react'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import leftImg from '@images/infinity-splits/infinity-left.svg'
@@ -105,21 +105,21 @@ export function AnimatedInfinityView({ community, loop }: Props) {
             />
             <span className="pr-5">
               <div className="flex items-center">
-                <p className="line-clamp-1 w-full break-all text-body-1-med text-monochrome-white">
+                <p className="text-body-1-med text-monochrome-white line-clamp-1 w-full break-all">
                   {localState.communityName}
                 </p>
                 {community.type === 2 && (
                   <PrivateModal>
-                    <LockIcon className="h-5 w-5 stroke-tertiary" />
+                    <LockIcon className="stroke-tertiary h-5 w-5" />
                   </PrivateModal>
                 )}
               </div>
               {community.brand ? (
-                <p className="line-clamp-1 w-full break-all text-cap-1-med text-monochrome-white/60">
+                <p className="text-cap-1-med text-monochrome-white/60 line-clamp-1 w-full break-all">
                   on {community.brand.name}
                 </p>
               ) : (
-                <p className="line-clamp-1 w-full break-all text-cap-1-med text-monochrome-white/60">
+                <p className="text-cap-1-med text-monochrome-white/60 line-clamp-1 w-full break-all">
                   Browse Community
                 </p>
               )}
@@ -139,13 +139,13 @@ export function AnimatedInfinityView({ community, loop }: Props) {
         }}
         initial={{ rotateX: '90deg' }}
         animate={rightControls}
-        className="relative flex-1 bg-blue">
+        className="bg-blue relative flex-1">
         <Link className="h-full w-full" href={PATH_NAME.loop(loop.slug)}>
           <span className="absolute inset-0 block w-full flex-1 justify-end">
             <span className="flex h-full items-center justify-end">
               <div className="w-[85%]">
-                <p className="line-clamp-1 break-all text-body-1-med text-monochrome-white">{localState.loopName}</p>
-                <p className="line-clamp-1 text-cap-1-med text-monochrome-white/60">View Group</p>
+                <p className="text-body-1-med text-monochrome-white line-clamp-1 break-all">{localState.loopName}</p>
+                <p className="text-cap-1-med text-monochrome-white/60 line-clamp-1">View Group</p>
               </div>
             </span>
           </span>

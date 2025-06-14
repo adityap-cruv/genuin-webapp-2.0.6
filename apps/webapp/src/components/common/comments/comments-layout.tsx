@@ -2,7 +2,7 @@ import React, { type RefObject, useMemo } from 'react'
 import MentionInput from './mention-input'
 import { type VideoPlayerModalType } from '@/lib/schemas/player/video'
 import { getVideosComments } from '@/lib/api/loop'
-import { useMotionValueEvent, useScroll } from 'framer-motion'
+import { useMotionValueEvent, useScroll } from 'motion/react'
 import { FeedShimmer } from '../shimmers/feed-shimmer'
 import { Comments, NoComments, updateCommentReactionData } from '.'
 
@@ -12,7 +12,7 @@ const CommentsLayout = ({ video, loop, community, owner, scrollDivRef }: Desktop
   return (
     <>
       <div className="sticky top-0 z-10">
-        <p className="border-b border-t border-tertiary-200 bg-monochrome-white px-4 py-3 text-title-3-demi">
+        <p className="border-tertiary-200 bg-monochrome-white text-title-3-demi border-t border-b px-4 py-3">
           Comments {video.commentCount !== 0 ? `(${video.commentCount})` : ''}
         </p>
       </div>
