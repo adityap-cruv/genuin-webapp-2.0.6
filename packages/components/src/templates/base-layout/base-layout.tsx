@@ -9,7 +9,7 @@ import { TopBar } from "@genuin/components/organisms/top-bar";
 import React from "react";
 import { Toaster } from "@genuin/ui/toaster";
 
-type BaseLayoutProps = ComponentProps<"section"> & { search: React.ReactNode };
+type BaseLayoutProps = ComponentProps<"section"> & { search?: React.ReactNode };
 
 export function BaseLayout({
   search,

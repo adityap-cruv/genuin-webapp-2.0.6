@@ -1,5 +1,5 @@
 import type { Meta, StoryFn } from "@storybook/react-vite";
-import { BaseLayout } from "@templates/base-layout";
+import { BaseLayout } from "@genuin/components/templates/base-layout";
 import { Explore } from "./explore";
 
 /**
@@ -11,9 +11,9 @@ export default {
   component: Explore,
   decorators: [
     (Story) => (
-       <BaseLayout>
+      <BaseLayout>
         <Story />
-       </BaseLayout> 
+      </BaseLayout>
     ),
   ],
   parameters: {
