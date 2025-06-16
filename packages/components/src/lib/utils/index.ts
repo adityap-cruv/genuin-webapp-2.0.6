@@ -151,3 +151,16 @@ export function tryJsonParse(data: string) {
     return data
   }
 }
+
+/**
+ * Compresses a string to a maximum number of characters.
+ * If the text exceeds maxChars, it truncates and appends '...'.
+ * @param text - The input string to compress
+ * @param maxChars - The maximum allowed characters
+ * @returns The compressed string with ellipsis if truncated
+ */
+export function compressText(text: string, maxChars: number): string {
+  if (typeof text !== "string" || maxChars <= 0) return "";
+  if (text.length <= maxChars) return text;
+  return text.slice(0, maxChars) + "...";
+}

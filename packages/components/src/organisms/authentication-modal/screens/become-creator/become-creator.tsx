@@ -23,16 +23,13 @@ export function BecomeCreator({ ...props }: BecomeCreatorProps) {
         <CarouselContent className="gencl:w-full">
           {BecomeCreatorData(brandDetails.name).map(
             (data: BecomeCreatorDataItem, index: number) => {
+              const Icon = data.src
               return (
                 <CarouselItem
                   key={index}
                   className="gencl:shrink-0 gencl:flex gencl:flex-col gencl:gap-4 gencl:items-center"
                 >
-                  <Image
-                    src={data.src}
-                    className="gencl:w-full gencl:h-auto gencl:object-contain"
-                    alt="Become a creator"
-                  />
+                  <Icon key={index} className="gencl:w-full gencl:h-auto gencl:object-contain gencl:fill-primary" />
                   <div className="gencl:flex gencl:gap-4 gencl:flex-col gencl:text-center">
                     <p className="gencl:text-headline-2-semi-bold">
                       {data.title}

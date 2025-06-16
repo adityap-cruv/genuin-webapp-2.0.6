@@ -76,8 +76,8 @@ function CommentsComponent({ videoId }: { videoId: string }) {
 
   if (isLoading) {
     return (
-      <div className="gencl:w-full gencl:h-full gencl:flex gencl:flex-col gencl:p-4">
-        {Array.from({ length: 10 }).map(() => (
+      <div className="gencl:w-full gencl:h-full gencl:flex gencl:flex-col gencl:shrink-0 gencl:p-4">
+        {Array.from({ length: 7 }).map(() => (
           <CommentsItemSkeleton />
         ))}
       </div>

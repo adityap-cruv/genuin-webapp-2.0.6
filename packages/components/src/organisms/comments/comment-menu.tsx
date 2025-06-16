@@ -12,7 +12,7 @@ export function CommentMenu({ contentId }: { contentId: string }) {
       <PopoverTrigger className="gencl:p-1 gencl:rounded-lg gencl:hover:bg-secondary-100">
         <ThreeDotsIcon className="gencl:h-4 gencl:w-4" />
       </PopoverTrigger>
-      <PopoverContent className="gencl:p-0" align="end">
+      <PopoverContent className="gencl:p-0 gencl:border-none" align="end">
         <Report reportFor="COMMENT" contentId={contentId}>
           <div className="gencl:p-3 gencl:rounded-xl gencl:border gencl:border-secondary-100 gencl:bg-white gencl:cursor-pointer gencl:text-primary">
             <Button

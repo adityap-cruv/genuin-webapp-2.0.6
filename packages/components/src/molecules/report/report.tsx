@@ -150,7 +150,7 @@ function ReportContent({
 function ReportSuccess() {
   return (
     <div className="gencl:flex gencl:flex-col gencl:items-center gencl:justify-center gencl:text-center gencl:gap-5">
-      <Image alt="Success" src="put-path" className="gencl:h-40" />
+      <Image alt="Success" src="https://media.begenuin.com/web-sdk/v1/icons/success.gif" className="gencl:h-36" />
       <div className="gencl:flex gencl:flex-col gencl:gap-2">
         <p className="gencl:text-headline-4-semi-bold">
           Thanks for your Feedback

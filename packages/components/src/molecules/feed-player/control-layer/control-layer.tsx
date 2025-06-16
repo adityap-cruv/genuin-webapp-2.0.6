@@ -1,4 +1,4 @@
-import { cn } from "@genuin/ui/utils";
+import { cn } from "@genuin/ui/lib/utils";
 import React, { memo, useCallback, type ComponentProps } from "react";
 import { useBaseContext } from "@genuin/components/context/base";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
@@ -159,7 +159,12 @@ export const ControlLayer = memo(function ControlLayer({
 
         {/* This is the playback speed controls for the desktop. */}
         {playback_speed_enabled && (
-          <PlaybackSpeedCapsule className="gencl:absolute gencl:bottom-7 gencl:z-10 gencl:transition-all" />
+          <PlaybackSpeedCapsule
+            className={cn(
+              "gencl:absolute gencl:z-10 gencl:transition-all",
+              showExpandView ? "gencl:bottom-32" : "gencl:bottom-12"
+            )}
+          />
         )}
 
         {/**

@@ -32,10 +32,13 @@ export function ShareButton({
   const [, copy] = useCopyToClipboard();
 
   const handleClick = useCallback(async () => {
-    const url = new URL(window.location.href);
-    url.pathname = pathName;
-    const success = await copy(url.href);
+    const videoPathName = pathName.split("/video")[1];
+    // Build the URL string directly
+    const baseUrl = window.location.origin;
+    const fullPath = videoPathName ? "/video" + videoPathName : pathName;
+    const fullUrl = baseUrl + fullPath;
 
+    const success = await copy(fullUrl);
     if (success) {
       toast("Link copied to clipboard!");
     } else {

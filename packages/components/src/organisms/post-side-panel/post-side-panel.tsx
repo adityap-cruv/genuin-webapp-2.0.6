@@ -30,7 +30,7 @@ export function PostSidePanel({
   return (
     <div
       className={cn(
-        "gencl:w-full gencl:grid gencl:overflow-auto gencl:gap-4 gencl:grid-rows-[auto_minmax(300px,1fr)]",
+        "gencl:w-full gencl:grid gencl:overflow-auto gencl:gap-4 gencl:grid-rows-[auto_minmax(300px,1fr)] gencl:pb-4",
         className
       )}
       {...restProps}

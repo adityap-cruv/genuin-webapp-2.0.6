@@ -11,12 +11,12 @@ type BrandLogoProps = ComponentProps<typeof Image>;
 export function BrandLogo({ className, ...props }: BrandLogoProps) {
   const { brandDetails } = useBaseContext();
   return (
-    <Link href={buildPageUrl({ type: "home" })}>
+    <Link href={buildPageUrl({ type: "home" })} className="gencl:h-full">
       <Image
         src={brandDetails.brand_web_logo}
         alt="Brand Logo"
         useWebp={false}
-        className={cn("gencl:max-w-44", className)}
+        className={cn("gencl:max-w-40", className)}
         {...props}
       />
     </Link>

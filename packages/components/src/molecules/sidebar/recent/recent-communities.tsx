@@ -7,19 +7,12 @@ import {
 import { Avatar } from "@genuin/ui/avatar";
 import { RECENT_COMMUNITIES_KEY } from "@genuin/components/lib/constants";
 import { useLocalStorage } from "usehooks-ts";
-
-type Community = {
-  dp: string;
-  community_name: string;
-};
-
-const dummyCommunities: Community[] = [
-];
+import { RecentCommunity } from "@genuin/components/types/community";
 
 export function Recent() {
-  const [communities] = useLocalStorage<Community[]>(
+  const [communities] = useLocalStorage<RecentCommunity[]>(
     RECENT_COMMUNITIES_KEY,
-    dummyCommunities
+    []
   );
 
   if (communities.length > 0) {

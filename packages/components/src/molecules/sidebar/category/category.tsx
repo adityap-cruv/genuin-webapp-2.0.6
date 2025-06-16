@@ -32,7 +32,7 @@ export function Category() {
           <div className="gencl:text-body-1-bold">Categories</div>
         </AccordionTrigger>
         <AccordionContent className="gencl:pb-0">
-          <Accordion type="multiple" className="gencl:w-full">
+          <Accordion type="single" className="gencl:w-full">
             {categories.map((cat, index) => (
               <AccordionItem key={index} value={`category-${index}`}>
                 <AccordionTrigger className="gencl:justify-between gencl:items-center gencl:px-3 gencl:py-2 gencl:hidden gencl:xl:!flex">
@@ -50,7 +50,7 @@ export function Category() {
                         alt={community.community_name}
                         size="xs"
                       />
-                      <p className="gencl:text-body-1-medium gencl:hidden gencl:xl:!block">
+                      <p className="gencl:text-body-1-medium gencl:text-nowrap gencl:hidden gencl:xl:!block">
                         {community.community_name}
                       </p>
                     </div>

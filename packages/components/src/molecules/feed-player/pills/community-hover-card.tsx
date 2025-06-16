@@ -9,6 +9,7 @@ import { GenericDetailsMetadata } from "@genuin/components/organisms/generic-det
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { Stats } from "@genuin/components/molecules/stats";
 import { Tag } from "@genuin/components/molecules/tag";
+import {compressText} from "@genuin/components/lib/utils"
 
 type CommunityHoverCardProps = {
   communityDetails: PostDetailsType["community"];
@@ -47,7 +48,7 @@ export function CommunityHoverCard({
               type: "community",
               slug: communityDetails.slug,
             }),
-            userName: communityDetails.handle,
+            userName: compressText(communityDetails.handle,12),
           }}
           others={
             brand && (

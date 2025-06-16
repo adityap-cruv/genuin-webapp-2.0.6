@@ -30,7 +30,7 @@ export function BaseLayout({
         className="gencl:flex gencl:h-full"
         style={{ height: height - TOP_BAR_HEIGHT }}
       >
-        <SideBar />
+        <SideBar/>
         <section
           className={cn(
             "gencl:w-full gencl:!h-full gencl:mx-auto gencl:relative",

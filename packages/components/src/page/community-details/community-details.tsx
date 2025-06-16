@@ -1,7 +1,7 @@
 "use client";
 import { Image } from "@genuin/ui/image";
 import { cn } from "@genuin/ui/utils";
-import { useId, useCallback, type ComponentProps } from "react";
+import { useId, useCallback, type ComponentProps, useEffect } from "react";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 
 import { JoinCommunityButton } from "@genuin/components/molecules/join-community-button";
@@ -21,6 +21,26 @@ import { ErrorState } from "@genuin/components/molecules/error-state";
 import { NOT_FOUND_ERROR_CODES } from "@genuin/components/lib/constants/errors";
 import { CommunityUserRole } from "@genuin/components/types/post";
 import { ComponentErrorState } from "@genuin/components/organisms/error-state-component";
+import { useLocalStorage } from "usehooks-ts";
+import { RECENT_COMMUNITIES_KEY } from "@genuin/components/lib/constants";
+import { type RecentCommunity } from "@genuin/components/types/community";
+
+function updateRecentCommunities(
+  newCommunity: RecentCommunity,
+  prevCommunities: RecentCommunity[] = []
+): RecentCommunity[] {
+  // Check if community already exists
+  const exists = prevCommunities.some((c) => c.slug === newCommunity.slug);
+  if (exists) {
+    // Move existing community to the start
+    return [
+      newCommunity,
+      ...prevCommunities.filter((c) => c.slug !== newCommunity.slug),
+    ];
+  }
+  // Add new community to the start, keep max 10 recent
+  return [newCommunity, ...prevCommunities].slice(0, 10);
+}
 
 export function CommunityDetails({ slug }: { slug: string }) {
   const {
@@ -30,6 +50,9 @@ export function CommunityDetails({ slug }: { slug: string }) {
     error,
   } = useGetCommunityDetails(slug);
   const detailsId = useId();
+  const [storedCommunities, setStoredCommunities] = useLocalStorage<
+    RecentCommunity[]
+  >(RECENT_COMMUNITIES_KEY, []);
 
   const handleCommunityJoinStatusChange = useCallback(
     (newRole: CommunityUserRole) => {
@@ -37,6 +60,18 @@ export function CommunityDetails({ slug }: { slug: string }) {
     },
     [slug]
   );
+
+  useEffect(() => {
+    if (!communityDetails) return;
+
+    const newCommunity: RecentCommunity = {
+      dp: communityDetails.dp ?? communityDetails.dp_s ?? "",
+      community_name: communityDetails.name ?? "",
+      slug: communityDetails.slug,
+    };
+
+    setStoredCommunities((prev) => updateRecentCommunities(newCommunity, prev));
+  }, [communityDetails, setStoredCommunities]);
 
   if (isLoading) {
     return <CommunityDetailsSkeleton />;

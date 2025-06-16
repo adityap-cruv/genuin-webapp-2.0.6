@@ -131,6 +131,7 @@ function CommentInput({ videoId, loopId, onCommentPosted }: CommentInputProps) {
       if (response.commentData) {
         onCommentPosted?.(response.commentData);
       }
+      form.reset()
     },
     onError() {
       toastError("Failed to post comment. Please try again later.");
