@@ -16,6 +16,7 @@ import {
 } from "./context";
 import { Screens } from "./screens";
 import { useBaseContext } from "@genuin/components/context/base";
+import { useSearchParams } from "@genuin/components/hooks/use-search-params";
 
 type AuthenticationModalProps = ComponentProps<typeof DialogTrigger> & {
   action?: AuthActionType;
@@ -104,7 +105,6 @@ export function AuthenticationModal({
 
 function Content() {
   const { step } = useAuthenticationModalContext();
-
   // Determine if the back button should be shown based on the current step
   const showBackButton =
     step === "VERIFY_PHONE_OTP" ||

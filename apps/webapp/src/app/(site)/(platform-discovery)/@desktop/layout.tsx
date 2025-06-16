@@ -9,7 +9,7 @@ import SiteProviders from '@components/providers/site-providers'
 import { cookies } from 'next/headers'
 import { getEmbedConfig } from '@lib/api/config'
 import { type ConfigType } from '@lib/stores/genuin-options'
-import { parseColors } from '@lib/utils'
+import { parseBrandColors } from '@lib/utils'
 import { auth } from '../../../../../auth'
 import { type Session } from 'next-auth'
 
@@ -66,8 +66,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       )
     }
   }
-  const brandColors = parseColors(config?.brand_colors)
   const favicon = config?.favicon
+  const brandColors = parseBrandColors(config?.brand_colors || {})
 
   return (
     <html lang="en">

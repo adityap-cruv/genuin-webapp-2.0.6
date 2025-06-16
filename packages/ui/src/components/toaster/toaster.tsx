@@ -1,7 +1,8 @@
 "use client";
 
 import { useTheme } from "next-themes";
-import { Toaster as Sonner, ToasterProps, toast } from "sonner";
+import type { ToasterProps } from "sonner";
+import { Toaster as Sonner, toast } from "sonner";
 
 const Toaster = ({ ...props }: ToasterProps) => {
   const { theme = "system" } = useTheme();
@@ -28,7 +29,6 @@ const toastError = (message: string, options?: Parameters<typeof toast>[1]) =>
     className:
       "gencl:bg-red-100! gencl:text-red! gencl:border-red! gencl:border!",
     description: options?.description,
-    duration: 10000000,
   });
 
 export { Toaster, toast, toastError };

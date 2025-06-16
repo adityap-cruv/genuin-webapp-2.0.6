@@ -297,7 +297,7 @@ export function setQueryDataForGroupJoinStatusInProfileGroups({
             loop.id === loopId
               ? {
                   ...loop,
-                  logged_in_user_status: newRole, // Set the status to JOINED
+                  role: newRole, // Set the status to JOINED
                   isSubscriber: newRole === "JOINED" ? true : loop.isSubscriber, // Set isSubscriber based on the new role
                 }
               : loop

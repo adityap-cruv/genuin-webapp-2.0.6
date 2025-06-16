@@ -7,7 +7,11 @@ import {
 import type { AuthUser } from "../../types/auth";
 
 import { AuthContext, AuthenticationStatusType } from "./context";
-import { useCallback, useLayoutEffect, useState } from "react";
+import { useCallback, useLayoutEffect, useEffect, useState } from "react";
+import { useSearchParams } from "@genuin/components/hooks/use-search-params";
+import { useGetUserDataForSSOMutation } from "@genuin/components/react-query/api/authentication/auto-login";
+import { toastError } from "@genuin/ui/components/toaster";
+import { invalidateAllQueries } from "@genuin/components/react-query/client";
 
 // Define the props type for the AuthProvider component.
 type AuthProviderPropsType = {
@@ -44,6 +48,22 @@ export function AuthProvider({
   const [authenticatedUser, setAuthenticatedUser] = useState<
     AuthUser | null | undefined
   >(user);
+  const { removeSearchParams, getSearchParams, searchParams } =
+    useSearchParams();
+
+  const { mutate: getUserDataForSSO } = useGetUserDataForSSOMutation({
+    onSuccess: async ({ user }) => {
+      if (!user) throw new Error("User data not found in SSO response");
+
+      await signIn(user);
+      // Remove the 'code' and 'provider' search params after successful login
+      removeSearchParams(["code", "provider"]);
+    },
+    onError: (e) => {
+      toastError("Not able to login. Please try again.");
+    },
+  });
+
   const [authenticationStatus, setAuthenticationStatus] =
     useState<AuthenticationStatusType>(
       !!user ? "authenticated" : "unauthenticated"
@@ -55,15 +75,26 @@ export function AuthProvider({
     const token = user?.accessToken ?? authenticatedUser?.accessToken;
     if (!!token) {
       setAuthTokenInAxiosInstance(token);
+      invalidateAllQueries();
     } else {
       clearAuthTokenInterceptor();
+      invalidateAllQueries();
     }
   }, [user, authenticatedUser]);
+
+  useEffect(() => {
+    const code = getSearchParams("code") as string;
+    const provider = getSearchParams("provider") as string;
+    if (!code || !provider || !!authenticatedUser) {
+      return;
+    }
+
+    getUserDataForSSO({ code, provider });
+  }, [searchParams, removeSearchParams, getSearchParams, authenticatedUser]);
 
   const signIn = useCallback(
     async (newUser: AuthUser) => {
       try {
-        console.log("signIn called with user:", newUser);
         setAuthenticatedUser(newUser);
         setAuthenticationStatus("loading");
         if (!!newUser) {
@@ -73,7 +104,6 @@ export function AuthProvider({
       } catch (error) {
         setAuthenticationStatus("unauthenticated");
         setAuthenticatedUser(null);
-        console.error("Error during sign in:", error);
       }
     },
     [onSignIn]

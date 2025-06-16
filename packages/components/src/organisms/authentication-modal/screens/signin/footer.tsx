@@ -49,7 +49,7 @@ export function Footer() {
         {flowType === "EMAIL" ? (
           <MultipleDotsIcon className="gencl:fill-primary" />
         ) : (
-          <EmailIcon className="gencl:stroke-primary" />
+          <EmailIcon className="gencl:text-primary" />
         )}
         <p className="gencl:text-primary gencl:text-body-0-semi-bold">
           Use {flowType === "EMAIL" ? "phone number" : "email"} instead
@@ -77,8 +77,8 @@ function SignInWithGoogle() {
       onSuccess: (url) => {
         const responseUrl = new URL(url);
         responseUrl.searchParams.set("prompt", "consent");
-        responseUrl.searchParams.set("state", getUrlToRedirect("apple"));
-        // window.navigator.push(responseUrl.href);
+        responseUrl.searchParams.set("state", getUrlToRedirect("google"));
+        window.open(responseUrl.href, "_self");
       },
       onError: (error) => {
         toastError("Something went wrong, please try again later");
@@ -115,8 +115,8 @@ function SignInWithApple() {
       onSuccess: (url) => {
         const responseUrl = new URL(url);
         responseUrl.searchParams.set("prompt", "consent");
-        responseUrl.searchParams.set("state", getUrlToRedirect("google"));
-        // window.navigator.push(responseUrl.href);
+        responseUrl.searchParams.set("state", getUrlToRedirect("apple"));
+        window.open(responseUrl.href, "_self");
       },
       onError: () => {
         toastError("Something went wrong, please try again later");
@@ -158,6 +158,7 @@ function SignInWithBrand({ brandName }: { brandName: string }) {
           "state",
           getUrlToRedirect(brandDetails.social_login.brand_sso_id)
         );
+        window.open(responseUrl.href, "_self");
       },
       onError: () => {
         toastError("Something went wrong, please try again later");

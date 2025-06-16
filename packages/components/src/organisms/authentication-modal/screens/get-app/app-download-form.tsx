@@ -40,7 +40,7 @@ export function AppDownloadForm({
   ...props
 }: AppDownloadFormProps) {
   const { brandDetails } = useBaseContext();
-  const searchParams = useSearchParams();
+  const { searchParams } = useSearchParams();
   const [error, setError] = useState("");
 
   const form = useForm<FormData>({

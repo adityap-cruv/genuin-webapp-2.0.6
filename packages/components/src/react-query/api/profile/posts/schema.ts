@@ -190,7 +190,7 @@ export function parseGroupResponse(
         accessTypeId: action.access_type_id,
       })),
       isSubscriber: loop.is_subscriber ?? false,
-      shareUrl: loop.share_url ?? '',
+      shareUrl: loop.share_url ?? "",
       role: mapGroupJoinStatus(loop.logged_in_user_status),
     };
   });

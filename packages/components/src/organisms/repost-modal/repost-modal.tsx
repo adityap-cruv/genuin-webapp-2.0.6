@@ -62,11 +62,11 @@ function Content({ videoId }: { videoId: string }) {
   };
 
   return (
-    <div className="gencl:space-y-6 gencl:h-[45vh]">
+    <div className="gencl:space-y-6 gencl:h-[45vh] gencl:flex gencl:flex-col">
       <h2 className="gencl:text-headline-2-semi-bold gencl:text-center">
         Repost
       </h2>
-      <div className="gencl:space-y-4 gencl:h-full gencl:w-full gencl:flex-center">
+      <div className="gencl:space-y-4 gencl:h-full gencl:overflow-auto gencl:flex-grow gencl:w-full">
         {renderContent()}
       </div>
     </div>

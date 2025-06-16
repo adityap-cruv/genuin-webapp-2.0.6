@@ -124,6 +124,10 @@ export const API_PATHS = {
    */
   AUTH_ADD_TOPICS: "/api/v3/users/topics",
   /**
+   *
+   */
+  AUTH_AUTO_LOGIN: "/api/v4/auth/signinup",
+  /**
    * API path to validate username.
    */
   AUTH_VALIDATE_USERNAME: "/api/v3/users/validate_nickname",
@@ -161,6 +165,6 @@ export const API_PATHS = {
   VIDEO_META_DATA: "/api/v3/deep_link/meta_data",
   /**
    * Api path to fetch loop and video conversation
- */
-  LOOP_VIDEO : "/api/v3/conversation/messages"
+   */
+  LOOP_VIDEO: "/api/v3/conversation/messages",
 } as const;
