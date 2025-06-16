@@ -1,10 +1,18 @@
-import { InstagramIcon, TwitterIcon, TiktokIcon } from "@genuin/ui/icons";
+import {
+  InstagramIcon,
+  TwitterIcon,
+  TiktokIcon,
+  LinkedInIcon,
+} from "@genuin/ui/icons";
 import { LinkIcon } from "lucide-react";
 
 import { Link } from "../link";
 
 export type LinksType = Partial<
-  Record<"x" | "instagram" | "tiktok" | "custom", string | undefined>
+  Record<
+    "x" | "instagram" | "tiktok" | "custom" | "linkedin",
+    string | undefined
+  >
 >;
 
 type LinkProps = {
@@ -38,6 +46,11 @@ export function SocialLinks({ links }: LinkProps) {
       {links.tiktok && (
         <Link href={links.tiktok} target="_blank">
           <TiktokIcon className="gencl:fill-secondary-600" />
+        </Link>
+      )}
+      {links.linkedin && (
+        <Link href={links.linkedin} target="_blank">
+          <LinkedInIcon className="gencl:fill-secondary-600" />
         </Link>
       )}
     </div>

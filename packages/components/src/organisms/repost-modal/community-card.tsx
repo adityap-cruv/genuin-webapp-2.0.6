@@ -51,7 +51,7 @@ export function CommunityCard({
           </span>
         </div>
       </div>
-      <DecorativeList className="gencl:ml-4 gencl:space-y-4">
+      <DecorativeList className="gencl:ml-4 gencl:space-y-2">
         <div className="gencl:h-0.5" />
         {communityInfo.chats.map((item, index) => {
           return (

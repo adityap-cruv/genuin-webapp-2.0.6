@@ -115,22 +115,6 @@ const AuthenticationModalContext = createContext<ContextType>({
   openModal: () => {},
 });
 
-// Add global modal state
-let globalModalState = {
-  isOpen: false,
-  onOpenChange: (
-    open: boolean,
-    step?: StepsType,
-    appData?: getAppDataType
-  ) => {},
-};
-
-export const setGlobalModalState = (state: typeof globalModalState) => {
-  globalModalState = state;
-};
-
-export const getGlobalModalState = () => globalModalState;
-
 type AuthenticationModalProviderProps = {
   action?: AuthActionType;
   children: React.ReactNode;
@@ -162,44 +146,13 @@ export function AuthenticationModalProvider({
     dispatch({ type: "SET_FORM_DATA", data });
   }, []);
 
-  const setGetAppData = useCallback((data: Partial<getAppDataType>) => {
-    dispatch({ type: "SET_GET_APP_DATA", data });
-  }, []);
-
   const closeModal = useCallback(() => {
     onClose?.();
   }, [onClose]);
 
-  const openModal = useCallback(
-    (step?: StepsType, appData?: getAppDataType) => {
-      if (step) {
-        setStep(step);
-      }
-      if (appData) {
-        setGetAppData(appData);
-      }
-      onOpen?.();
-    },
-    [onOpen, setStep, setGetAppData]
-  );
-
-  // Update global modal state
-  useEffect(() => {
-    setGlobalModalState({
-      isOpen: false,
-      onOpenChange: (
-        open: boolean,
-        step?: StepsType,
-        appData?: getAppDataType
-      ) => {
-        if (open) {
-          openModal(step, appData);
-        } else {
-          closeModal();
-        }
-      },
-    });
-  }, [onOpen, openModal, closeModal]);
+  const openModal = useCallback(() => {
+    onOpen?.();
+  }, [onOpen]);
 
   return (
     <AuthenticationModalContext.Provider

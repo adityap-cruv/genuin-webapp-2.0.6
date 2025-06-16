@@ -1,3 +1,5 @@
+import { useAuthContext } from "@genuin/components/context/auth";
+import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
 import { Button } from "@genuin/ui/button";
 import type { ComponentPropsWithoutRef } from "react";
 
@@ -13,9 +15,18 @@ export function BecomeCreatorButton({
   size,
   ...restProps
 }: BecomeCreatorButtonPropsType) {
+  const { authenticationStatus } = useAuthContext();
+
   return (
-    <Button size={size ?? "md"} {...restProps}>
-      {buttonText ?? "Become a Creator"}
-    </Button>
+    <AuthenticationModal
+      asChild
+      customStep={
+        authenticationStatus === "unauthenticated" ? "SIGNIN" : "BECOME_CREATOR"
+      }
+    >
+      <Button size={size ?? "md"} {...restProps}>
+        {buttonText ?? "Become a Creator"}
+      </Button>
+    </AuthenticationModal>
   );
 }

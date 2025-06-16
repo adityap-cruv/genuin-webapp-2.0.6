@@ -11,8 +11,6 @@ import {
   AuthenticationModalProvider,
   useAuthenticationModalContext,
   getAppDataType,
-  setGlobalModalState,
-  StepsType,
 } from "./context";
 import { Screens } from "./screens";
 import { useBaseContext } from "@genuin/components/context/base";
@@ -58,28 +56,6 @@ export function AuthenticationModal({
   const handleOpen = () => {
     handleOpenChange(true);
   };
-
-  // Update global modal state when component mounts or handleOpenChange changes
-  useEffect(() => {
-    setGlobalModalState({
-      isOpen,
-      onOpenChange: (
-        open: boolean,
-        step?: StepsType,
-        appData?: getAppDataType
-      ) => {
-        if (step) {
-          // If a specific step is provided, update the customStep
-          customStep = step;
-        }
-        if (appData) {
-          // If app data is provided, update getAppData
-          getAppData = appData;
-        }
-        handleOpenChange(open);
-      },
-    });
-  }, [isOpen, handleOpenChange, customStep, getAppData]);
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>

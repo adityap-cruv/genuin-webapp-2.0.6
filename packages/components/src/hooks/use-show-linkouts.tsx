@@ -31,7 +31,7 @@ function useShowLinkouts({
 
     const timeoutId = setTimeout(() => {
       setShowLinkouts(true);
-    }, 1000);
+    }, linkoutDelayConfig.appearAfter * 1000);
 
     return () => {
       clearTimeout(timeoutId);

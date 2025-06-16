@@ -107,24 +107,26 @@ export function GenericDetailsMetadata({
     >
       {/** todo: replace it with <PrivacyInfo/> component. */}
       {privacyInfo && (
-        <CommunityPrivacyInfo
-          isPrivate={privacyInfo.isPrivate}
-          showPrivacyText={privacyInfo.showPrivacyText}
-        />
+        <>
+          <CommunityPrivacyInfo
+            isPrivate={privacyInfo.isPrivate}
+            showPrivacyText={privacyInfo.showPrivacyText}
+          />
+          <p>•</p>
+        </>
       )}
       {handle && (
         <>
-          <p>•</p>
-          <span className="gencl:flex gencl:items-center">
+          <span className="gencl:flex gencl:items-center gencl:truncate gencl:line-clamp-1">
             <ProfileLink url={handle.url} userLogoType={handle.brandUserLogo}>
               @{handle.userName}
             </ProfileLink>
           </span>
+          <p>•</p>
         </>
       )}
       {stats && (
         <>
-          <p>•</p>
           <Stats
             stats={stats}
             className="gencl:flex gencl:gap-1"
@@ -133,14 +135,10 @@ export function GenericDetailsMetadata({
             labelClassName="gencl:mr-1"
             separator="•"
           />
-        </>
-      )}
-      {others && (
-        <>
           <p>•</p>
-          {others}
         </>
       )}
+      {others && <>{others}</>}
     </div>
   );
 }

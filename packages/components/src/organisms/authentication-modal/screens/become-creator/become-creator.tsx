@@ -12,6 +12,7 @@ import {
 import { Image } from "@genuin/ui/components/image";
 import { ComponentProps } from "react";
 import { Button } from "@genuin/ui/components/button";
+import { DialogClose } from "@genuin/ui/components/dialog";
 
 type BecomeCreatorProps = ComponentProps<"div">;
 
@@ -23,13 +24,16 @@ export function BecomeCreator({ ...props }: BecomeCreatorProps) {
         <CarouselContent className="gencl:w-full">
           {BecomeCreatorData(brandDetails.name).map(
             (data: BecomeCreatorDataItem, index: number) => {
-              const Icon = data.src
+              const Icon = data.src;
               return (
                 <CarouselItem
                   key={index}
                   className="gencl:shrink-0 gencl:flex gencl:flex-col gencl:gap-4 gencl:items-center"
                 >
-                  <Icon key={index} className="gencl:w-full gencl:h-auto gencl:object-contain gencl:fill-primary" />
+                  <Icon
+                    key={index}
+                    className="gencl:w-full gencl:h-auto gencl:object-contain gencl:fill-primary"
+                  />
                   <div className="gencl:flex gencl:gap-4 gencl:flex-col gencl:text-center">
                     <p className="gencl:text-headline-2-semi-bold">
                       {data.title}
@@ -52,12 +56,14 @@ export function BecomeCreator({ ...props }: BecomeCreatorProps) {
         >
           Become a creator{" "}
         </Button>
-        <Button
-          className="gencl:w-full gencl:text-body-0-semi-bold"
-          theme="secondary"
-        >
-          Not now
-        </Button>
+        <DialogClose asChild>
+          <Button
+            className="gencl:w-full gencl:text-body-0-semi-bold"
+            theme="secondary"
+          >
+            Not now
+          </Button>
+        </DialogClose>
       </div>
     </div>
   );

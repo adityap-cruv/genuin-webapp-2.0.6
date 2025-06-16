@@ -43,7 +43,7 @@ export function JoinCommunityButton({
 
   const button = <Button role={role} {...restProps} />;
 
-  if (authenticationStatus) {
+  if (authenticationStatus === "unauthenticated") {
     return (
       <AuthenticationModal
         getAppData={{
@@ -113,7 +113,7 @@ function Button({
         joinCommunity({
           communities: [communityId],
           isPrivate,
-          users: [{ user_id: user?.id }],
+          users: [{ user_id: user?.id ?? "" }],
         });
       } else if (role === "MEMBER" || role === "REQUESTED") {
         leaveCommunity(communityId);

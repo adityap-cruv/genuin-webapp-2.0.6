@@ -18,6 +18,8 @@ import {
   ProfileDetailsTabs,
 } from "@genuin/components/templates/profile-details-tabs";
 import { DetailsPageTopbar } from "@genuin/components/organisms/details-page-topbar";
+import { useBaseContext } from "@genuin/components/context/base";
+import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
 
 export function ProfileDetails({
   userName,
@@ -33,6 +35,7 @@ export function ProfileDetails({
     data: profileData,
   } = useGetProfileDetails(userName, forBrand);
   const detailsId = useId();
+  const { brandDetails } = useBaseContext();
   console.log("ProfileDetails", profileData);
   if (isLoading) {
     return <ProfileDetailsSkeleton />;
@@ -108,9 +111,22 @@ export function ProfileDetails({
           }
           description={profileData.bio}
           links={{
-            x: profileData.twitter_url,
-            instagram: profileData.insta_url,
-            tiktok: profileData.tiktok_url,
+            linkedin: profileData.linkedin_id
+              ? profileData.linkedin_url + profileData.linkedin_id
+              : undefined,
+            instagram: profileData.insta_id
+              ? profileData.insta_url + profileData.insta_id
+              : undefined,
+            x: profileData.twitter_id
+              ? profileData.twitter_url + profileData.twitter_id
+              : undefined,
+            tiktok: profileData.tiktok_id
+              ? profileData.tiktok_url + profileData.tiktok_id
+              : undefined,
+            ...(Number(brandDetails?.brand_id) !==
+              profileData?.brand?.brand_id && {
+              custom: profileData.brand?.brand_url,
+            }),
           }}
           ctas={
             <div className="gencl:flex gencl:gap-2">

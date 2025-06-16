@@ -1,12 +1,9 @@
 "use client";
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import { useBaseContext } from "../context/base";
 import { useAuthContext } from "../context/auth";
 import type { AuthUser } from "@genuin/components/types/auth";
-import {
-  StepsType,
-  getGlobalModalState,
-} from "../organisms/authentication-modal/context";
+import { StepsType } from "../organisms/authentication-modal/context";
 
 const INTERRUPTION_STEPS = [
   {
@@ -36,7 +33,10 @@ export function useInterruptionManager() {
   const { brandDetails } = useBaseContext();
   const { user } = useAuthContext();
   const interactionRef = useRef({ lastIndex: 0, swipeCount: 0 });
-  const { onOpenChange } = getGlobalModalState();
+  const [shouldShowDialog, setShouldShowDialog] = useState(false);
+  const [dialogType, setDialogType] = useState<StepsType | undefined>(
+    undefined
+  );
 
   // First check if get_app_popup is enabled
   const getAppConfig = brandDetails?.web_configs?.get_app_popup;
@@ -55,22 +55,22 @@ export function useInterruptionManager() {
   // Trigger authentication or download modal based on configuration
   const triggerAuthenticationModal = useCallback(async () => {
     if (shouldShowAppDownload) {
-      onOpenChange(true, "GET_APP", {
-        title: "Download the app",
-        description: "Download app to browse more communities",
-      });
+      setShouldShowDialog(true);
+      setDialogType("GET_APP");
       return;
     }
 
     if (interruptionToShow) {
-      onOpenChange(true, interruptionToShow.key);
+      setShouldShowDialog(true);
+      setDialogType(interruptionToShow.key);
     }
-  }, [
-    interruptionToShow,
-    shouldShowAppDownload,
-    brandDetails.web_cta,
-    onOpenChange,
-  ]);
+  }, [interruptionToShow, shouldShowAppDownload, brandDetails.web_cta]);
+
+  // Function to close dialog and reset state
+  const closeDialog = useCallback(() => {
+    setShouldShowDialog(false);
+    setDialogType(undefined);
+  }, []);
 
   // Handle swipe interactions to trigger modal after a set count
   const handleSwipeCount = useCallback(
@@ -134,5 +134,10 @@ export function useInterruptionManager() {
     brandDetails?.web_configs?.idle_time_interruption,
   ]);
 
-  return { handleSwipeCount, interruptionToShow };
+  return {
+    handleSwipeCount,
+    shouldShowDialog,
+    dialogType,
+    closeDialog,
+  };
 }

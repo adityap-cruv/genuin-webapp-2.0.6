@@ -10,7 +10,9 @@ export type PageType =
   | "latest"
   | "explore"
   | "settings"
-  | "video";
+  | "video"
+  | "terms"
+  | "privacy"
 
 type BuildPageUrlOptions = {
   type: PageType;
@@ -63,6 +65,12 @@ export function buildPageUrl({
       break;
     case "video":
       basePath = `/video/${slug}`;
+      break;
+    case "terms":
+      basePath = `/terms`;
+      break;
+    case "privacy":
+      basePath = `/privacy`;
       break;
     default:
       // Optional: handle unknown type, though TypeScript should prevent this
