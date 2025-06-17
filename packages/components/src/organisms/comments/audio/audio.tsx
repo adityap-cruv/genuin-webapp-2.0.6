@@ -7,14 +7,15 @@ import React, {
   ComponentProps,
 } from "react";
 import { PlayIcon } from "@genuin/ui/icons";
+import { useInView } from "@genuin/components/hooks/use-in-view";
 import { PauseIcon } from "@genuin/ui/icons";
 import { AudioPlayer } from "@genuin/ui/audio-player";
-import { useInView } from "framer-motion";
 import { BarWaveform } from "@genuin/ui/audio-player";
 import { formatTime } from "./utils";
 import { cn } from "@genuin/ui/utils";
+import { audioManager } from "@genuin/components/lib/audio-manager";
 
-type AudioWaveformPlayerProps = ComponentProps<'div'> & {
+type AudioWaveformPlayerProps = ComponentProps<"div"> & {
   audioUrl: string;
   commentShareString?: string;
   autoAnalyze?: boolean;
@@ -28,10 +29,13 @@ type AudioWaveformPlayerProps = ComponentProps<'div'> & {
   onPlay?: () => void;
   onPause?: () => void;
   onEnded?: () => void;
-  onProgress?: (progress: number, currentTime: number, duration: number) => void;
+  onProgress?: (
+    progress: number,
+    currentTime: number,
+    duration: number
+  ) => void;
   className?: string;
-}
-
+};
 
 const sampleData = [
   0.2, 0.3, 0.5, 0.7, 0.2, 0.4, 0.9, 0.9, 0.2, 0.1, 0.4, 0.9, 0.8, 0.5, 0.9,
@@ -56,15 +60,14 @@ export const Audio = ({
   const canvasId = useId();
   const progressCanvasId = useId();
   const upperProgressCanvasId = useId();
+  const id = useId();
 
   const btnRef = useRef<HTMLButtonElement>(null);
   const elementRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   // In view logic
-  const elementIsInView = useInView(elementRef as React.RefObject<Element>, {
-    amount: 0.5,
-  });
+  const elementIsInView = useInView(elementRef);
   const shouldPlay = isPlaying && elementIsInView;
 
   // Audio progress
@@ -115,6 +118,23 @@ export const Audio = ({
   const getAudioRef = useCallback((node: HTMLAudioElement) => {
     audioRef.current = node;
   }, []);
+
+  useEffect(() => {
+    audioManager.register(id, () => {
+      audioRef.current?.pause();
+      setIsPlaying(false);
+    });
+
+    return () => {
+      audioManager.unregister(id);
+    };
+  }, [id]);
+
+  useEffect(() => {
+    if (isPlaying) {
+      audioManager.notifyPlaying(id);
+    }
+  }, [isPlaying]);
 
   useEffect(() => {
     const canvas = document.getElementById(canvasId) as HTMLCanvasElement;

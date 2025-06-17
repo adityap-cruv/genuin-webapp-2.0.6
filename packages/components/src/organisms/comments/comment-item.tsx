@@ -100,6 +100,11 @@ export function CommentContent({
 }) {
   return (
     <>
+      <Audio audioUrl={comment.audioUrl || "https://media.qa.begenuin.com/audio/1577d253-18c9-4827-b32d-a7b920325bc4_1740760264362.wav"} />
+       <Video
+          videoUrl={comment.videoUrlM3u8 || "https://media.qa.begenuin.com/temp_video/1743083799373.mp4"}
+          thumbnail={comment.thumbnail || "https://media.qa.begenuin.com/uploads/thumbnails/1743083799373.png"}
+        />
       {comment.type === "text" && (
         <ReadMore
           text={comment.commentText}
@@ -109,8 +114,8 @@ export function CommentContent({
       )}
       {comment.type === "video" && (
         <Video
-          videoUrl={comment.videoUrlM3u8 || ""}
-          thumbnail={comment.thumbnail || ""}
+          videoUrl={comment.videoUrlM3u8 || "https://media.qa.begenuin.com/temp_video/1743083799373.mp4"}
+          thumbnail={comment.thumbnail || "https://media.qa.begenuin.com/uploads/thumbnails/1743083799373.png"}
         />
       )}
       {comment.type === "audio" && <Audio audioUrl={comment.audioUrl || ""} />}

@@ -1,10 +1,17 @@
 import { VideoPlayer } from "@genuin/ui/video-player";
-import { memo, useCallback, type ComponentProps } from "react";
+import {
+  memo,
+  useCallback,
+  useEffect,
+  useId,
+  type ComponentProps,
+} from "react";
 import { useBaseContext } from "@genuin/components/context/base";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 import { usePlayerContext } from "./context/context";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
+import { audioManager } from "@genuin/components/lib/audio-manager";
 // import { useSwiper } from "swiper/react";
 
 // import { usePlayerContext } from "./context";
@@ -47,8 +54,11 @@ export const FeedPlayer = memo(function FeedPlayer({
     setPlayingState,
     setPlayerRef,
     handleEnded: stateHandleEnded,
+    mute,
+    unmute,
   } = usePlayerContext();
   const { playbackSpeed } = useFeedContext();
+  const id = useId();
 
   // const { brandId } = useGenuinOptions(
   //   useShallow((state) => ({
@@ -258,6 +268,25 @@ export const FeedPlayer = memo(function FeedPlayer({
   //   [onLoadStart]
   // );
 
+  useEffect(() => {
+    audioManager.register(id, () => {
+      mute(true);
+    });
+    return () => {
+      audioManager.unregister(id);
+    };
+  }, [id]);
+
+  useEffect(() => {
+    // this is the key line — fire unmute when this player unmutes
+    if (!muted) {
+      audioManager.notifyPlaying(id);
+      unmute(true);
+    } else {
+      mute(true);
+    }
+  }, [muted]);
+
   const handleTimeUpdate = useCallback((event: any) => {
     onTimeUpdate?.(event);
     const target = event.target as HTMLVideoElement;
@@ -276,6 +305,7 @@ export const FeedPlayer = memo(function FeedPlayer({
   const handlePlayerLoad = useCallback(
     (player: any) => {
       if (feedPlayerShouldPlay) {
+        audioManager.notifyPlaying(id);
         player.play();
       }
     },
