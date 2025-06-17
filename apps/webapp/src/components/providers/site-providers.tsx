@@ -7,6 +7,7 @@ import { ReactQueryClientProvider } from '@genuin/components/react-query/react-q
 import { BaseLayout } from '@genuin/components/templates/base-layout/base-layout'
 import { OldSearch } from './old-search'
 import { AuthBridge } from './auth-bridge'
+import { AnalyticsProvider } from '@genuin/components/context/analytics'
 
 interface SiteProvidersProps {
   children: React.ReactNode
@@ -23,7 +24,9 @@ export default function SiteProviders({ children, config, session }: SiteProvide
             <BaseLayout search={<OldSearch />}>
               <RedirectHandler config={config} shouldRedirect={Object.hasOwn(config || {}, 'subdomain')}>
                 <ThirdPartyScriptProvider>
-                  <UrlParamProvider>{children}</UrlParamProvider>
+                  <AnalyticsProvider isWebSDK={false}>
+                    <UrlParamProvider>{children}</UrlParamProvider>
+                  </AnalyticsProvider>
                 </ThirdPartyScriptProvider>
               </RedirectHandler>
             </BaseLayout>

@@ -144,7 +144,7 @@ const CommunityDetailsSchema = z
     created_at: z.string().nullish(),
     no_of_views: z.number().nullish().default(0),
     no_of_comments: z.number().nullish().default(0),
-    no_of_sparks: z.number().nullish().default(0),
+    no_of_reactions: z.number().nullish().default(0),
   })
   .transform((data) => ({
     ...data,

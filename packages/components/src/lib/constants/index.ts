@@ -17,7 +17,7 @@ export const LOGIN_SOURCE = {
 /**
  * URL to download mobile application.
  */
-export const MOBILE_DOWNLOAD_APP_LINK = 'https://install.begenuin.com/86sn/cgs'
+export const MOBILE_DOWNLOAD_APP_LINK = "https://install.begenuin.com/86sn/cgs";
 
 /**
  * Protected routes that require authentication.
@@ -46,3 +46,9 @@ export const RECENT_COMMUNITIES_KEY = "recentCommunities";
  * Height of the top bar in pixels.
  */
 export const TOP_BAR_HEIGHT = 64;
+
+// Genuin brand ID constant for white label branding
+/**
+ * Constant representing the Genuin brand ID.
+ */
+export const GENUIN_BRAND_ID = 99 as const;

@@ -65,6 +65,18 @@ export type PlayerProps = ComponentProps<"video"> & {
   play?: boolean;
   onOpenPlayerReady?: (player: OpenPlayerJS) => void;
   onPlayerLoad?: (player: OpenPlayerJS | null) => void; // Add custom event prop
+  onVideoFirstQuartile?: () => void;
+  onVideoMidpoint?: () => void;
+  onVideoThirdQuartile?: () => void;
+  onVideoWatched?: () => void;
+  onVideoStart?: () => void; // Add onVideoStart prop
+};
+
+type VideoPlayerStateRef = {
+  firstQuartileFired: boolean;
+  midpointFired: boolean;
+  thirdQuartileFired: boolean;
+  videoWatchedFired: boolean;
 };
 
 export const VideoPlayer = memo(function VideoPlayer({
@@ -79,11 +91,27 @@ export const VideoPlayer = memo(function VideoPlayer({
   playbackSpeed = 1,
   play = true,
   loop = false, // loop prop is now destructured
+  onVideoFirstQuartile,
+  onVideoMidpoint,
+  onVideoThirdQuartile,
+  onVideoWatched,
+  onVideoStart, // Destructure onVideoStart prop
   ...props
 }: PlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const playerRef = useRef<OpenPlayerJS | null>(null);
   const playRef = useRef(play);
+  const videoStartRef = useRef(false);
+
+  const playerStateRef = useRef<
+    VideoPlayerStateRef & { videoStartFired: boolean }
+  >({
+    firstQuartileFired: false,
+    midpointFired: false,
+    thirdQuartileFired: false,
+    videoWatchedFired: false,
+    videoStartFired: false,
+  });
 
   useEffect(() => {
     if (typeof volume === "undefined") return;
@@ -150,13 +178,118 @@ export const VideoPlayer = memo(function VideoPlayer({
       hls: hlsConfigs,
     });
 
+    // if (videoRef.current) {
+    //   videoRef.current.load();
+    // }
+
     // Set initial playback speed for the new video
     videoRef.current.playbackRate = playbackSpeed;
 
     void initializePlayer(player, play);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {
+      playerStateRef.current = {
+        firstQuartileFired: false,
+        midpointFired: false,
+        thirdQuartileFired: false,
+        videoWatchedFired: false,
+        videoStartFired: false,
+      };
+    };
   }, [src]);
+
+  useEffect(() => {
+    const videoElement = videoRef.current;
+    if (!videoElement) return;
+
+    const handlePlay = () => {
+      if (!playerStateRef.current.videoStartFired) {
+        playerStateRef.current.videoStartFired = true;
+        onVideoStart?.();
+      }
+    };
+
+    const handleEnded = () => {
+      playerStateRef.current.videoStartFired = false;
+      playerStateRef.current.firstQuartileFired = false;
+      playerStateRef.current.midpointFired = false;
+      playerStateRef.current.thirdQuartileFired = false;
+      playerStateRef.current.videoWatchedFired = false;
+    };
+
+    videoElement.addEventListener("play", handlePlay);
+    videoElement.addEventListener("ended", handleEnded);
+
+    return () => {
+      videoElement.removeEventListener("play", handlePlay);
+      videoElement.removeEventListener("ended", handleEnded);
+    };
+  }, [onVideoStart]);
+
+  useEffect(() => {
+    const videoElement = videoRef.current;
+    if (!videoElement) return;
+
+    const handleEnded = () => {
+      playerStateRef.current.firstQuartileFired = false;
+      playerStateRef.current.midpointFired = false;
+      playerStateRef.current.thirdQuartileFired = false;
+      playerStateRef.current.videoWatchedFired = false;
+    };
+
+    const handleTimeUpdate = () => {
+      const videlElement = videoRef.current;
+      const duration = videoElement.duration;
+      if (!videlElement || duration === 0 || !duration || duration === Infinity)
+        return;
+      const {
+        firstQuartileFired,
+        midpointFired,
+        thirdQuartileFired,
+        videoWatchedFired,
+      } = playerStateRef.current;
+
+      const { currentTime } = videoElement;
+
+      if (!videoWatchedFired && currentTime >= 3) {
+        onVideoWatched?.();
+        playerStateRef.current.videoWatchedFired = true;
+      }
+
+      const firstQuartileTime = duration / 4;
+      const midpointTime = duration / 2;
+      const thirdQuartileTime = (duration * 3) / 4;
+
+      if (!firstQuartileFired && currentTime >= firstQuartileTime) {
+        onVideoFirstQuartile?.();
+        playerStateRef.current.firstQuartileFired = true;
+      }
+
+      if (!midpointFired && currentTime >= midpointTime) {
+        onVideoMidpoint?.();
+        playerStateRef.current.midpointFired = true;
+      }
+
+      if (!thirdQuartileFired && currentTime >= thirdQuartileTime) {
+        onVideoThirdQuartile?.();
+        playerStateRef.current.thirdQuartileFired = true;
+      }
+    };
+
+    videoElement.addEventListener("ended", handleEnded);
+    videoElement.addEventListener("timeupdate", handleTimeUpdate);
+
+    return () => {
+      videoElement.removeEventListener("ended", handleEnded);
+      videoElement.removeEventListener("timeupdate", handleTimeUpdate);
+    };
+  }, [
+    src,
+    onVideoFirstQuartile,
+    onVideoMidpoint,
+    onVideoThirdQuartile,
+    onVideoWatched,
+  ]);
 
   return (
     <video
@@ -169,7 +302,7 @@ export const VideoPlayer = memo(function VideoPlayer({
       ref={videoRef}
       src={src}
       playsInline={playsInline}
-      loop={loop} // Pass loop prop to video element
+      loop={loop}
       {...props}
     />
   );

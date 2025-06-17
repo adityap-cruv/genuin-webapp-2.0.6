@@ -31,7 +31,7 @@ export type GuidelineType = {
 };
 
 type SideInfoDataType = {
-  stats: Record<"Views" | "Comments" | "Sparks", number>;
+  stats: Record<"Views" | "Comments" | "Reactions", number>;
   createdAt: string;
   createdBy: EntityDataType;
   createdIn: EntityDataType;

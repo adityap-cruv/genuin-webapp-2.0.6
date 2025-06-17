@@ -148,7 +148,7 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
             stats: {
               Views: groupDetails.noOfViews,
               Comments: groupDetails.noOfComments,
-              Sparks: groupDetails.noOfSparks,
+              Reactions: groupDetails.noOfSparks,
             },
             createdIn: {
               profileImage: {

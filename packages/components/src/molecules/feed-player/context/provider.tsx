@@ -10,8 +10,8 @@ import {
 } from "./types";
 import { PlayerContext, PlayerContextType } from "./context";
 import mitt from "mitt";
-import type { MittEmitter } from "./mitt";
 import { useBaseContext } from "@genuin/components/context/base";
+import { useAnalytics } from "@genuin/components/context/analytics";
 
 type VideoProviderProps = {
   children: React.ReactNode;
@@ -60,9 +60,9 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   const [buttonAction, setButtonAction] = useState<ButtonActionType>();
   const [playingState, setPlayingState] = useState<PlayingStateType>("LOADING");
   const [playbackSpeed, setPlaybackSpeed] = useState<PlaybackSpeedType>({
-  speed: 1.0,
-  isSpeedFromGesture: false
-});
+    speed: 1.0,
+    isSpeedFromGesture: false,
+  });
 
   /**
    * Whether to show seeker for player or not.
@@ -80,6 +80,8 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   const timeUpdateEventEmitterRef = useRef(mitt());
 
   const { muted, setMuted } = useBaseContext();
+
+  const Analytics = useAnalytics();
 
   const videoStateRef = useRef<VideoTimeStateType>({
     currentTime: 0,
@@ -169,6 +171,15 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
           } else {
             setButtonAction("PLAY");
           }
+          // Track play/pause events with Analytics only if the video play pause is triggered by user.
+          Analytics.track(
+            prev
+              ? Analytics.EventName.VIDEO_PAUSED
+              : Analytics.EventName.VIDEO_PLAY,
+            {
+              content_id: videoId,
+            }
+          );
         }
         return !prev;
       });
@@ -189,6 +200,10 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     setFeedPlayerShouldPlay(true);
     if (byUser) {
       setButtonAction("PLAY");
+      // Track play event with Analytics only if the video play is triggered by user.
+      Analytics.track(Analytics.EventName.VIDEO_PLAY, {
+        content_id: videoId,
+      });
     }
   }, []);
 
@@ -197,6 +212,10 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     setFeedPlayerShouldPlay(false);
     if (byUser) {
       setButtonAction("PAUSE");
+      // Track pause event with Analytics only if the video pause is triggered by user.
+      Analytics.track(Analytics.EventName.VIDEO_PAUSED, {
+        content_id: videoId,
+      });
     }
   }, []);
 
@@ -210,6 +229,15 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
           } else {
             setButtonAction("MUTE");
           }
+          // Track mute/unmute events with Analytics only if the video mute/unmute is triggered by user.
+          Analytics.track(
+            prev
+              ? Analytics.EventName.VIDEO_UNMUTED
+              : Analytics.EventName.VIDEO_MUTED,
+            {
+              content_id: videoId,
+            }
+          );
         }
         return !prev;
       });
@@ -295,7 +323,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
 
     // playbackspeed state
     playbackSpeed,
-    setPlaybackSpeed
+    setPlaybackSpeed,
   };
 
   return (

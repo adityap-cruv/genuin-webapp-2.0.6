@@ -47,7 +47,7 @@ genuin-webapp-standalone/
 
 1. Follow TypeScript best practices with strict typing
    - Use explicit return types for functions with complex logic
-   - Prefer interfaces for API contracts and types for internal structures
+   - Prefer types
    - Use proper generics to create reusable components and utilities
    - Define strict prop types for all components
 2. File organization

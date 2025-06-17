@@ -42,7 +42,7 @@ const groupSchema = z.object({
   no_of_members: z.number().nullish(),
   no_of_subscribers: z.number().nullish(),
   no_of_comments: z.number().nullish(),
-  no_of_sparks: z.number().nullish(),
+  no_of_reactions: z.number().nullish(),
   created_at: z.string().nullish(),
 });
 

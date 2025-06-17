@@ -254,7 +254,7 @@ export function CommunityDetails({ slug }: { slug: string }) {
               stats: {
                 Views: communityDetails.no_of_views ?? 0,
                 Comments: communityDetails.no_of_comments ?? 0,
-                Sparks: communityDetails.no_of_sparks ?? 0,
+                Reactions: communityDetails.no_of_reactions ?? 0,
               },
               guidelines: communityDetails.guidelines,
             }}

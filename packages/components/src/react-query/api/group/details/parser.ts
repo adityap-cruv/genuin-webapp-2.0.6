@@ -16,15 +16,12 @@ export function parseGroupDetails(
     noOfVideos: data.group.no_of_videos ?? 0,
     noOfMembers: data.group.no_of_members ?? 0,
     noOfSubscribers: data.group.no_of_subscribers ?? 0,
-    // Todo: handle noOfComments when available
     noOfComments: data.group.no_of_comments ?? 0, // Placeholder, as no_of_comments is not in ResponseGroupDetailsType
-    // TODO: handle noOfSparks when available
-    noOfSparks: data.group.no_of_sparks ?? 0, // Placeholder, as no_of_sparks is not in ResponseGroupDetailsType
+    noOfSparks: data.group.no_of_reactions ?? 0, // Placeholder, as no_of_sparks is not in ResponseGroupDetailsType
     isWelcomeLoop: data.is_welcome_loop ?? false,
     isPrivate: !data.is_view_allowed, //type 2 means private
     shareUrl: data.share_url,
     slug: data.slug,
-    // TODO: handle createdAt when available
     createdAt: data.group.created_at ?? "", // Placeholder, as createdAt is not in ResponseGroupDetailsType
     isAiGenerated: data.is_ai_generated,
     isSubscriber: data.is_subscriber,
