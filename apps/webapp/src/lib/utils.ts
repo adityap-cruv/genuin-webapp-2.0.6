@@ -384,6 +384,26 @@ export function parseBrandColors(colors: any) {
   return parsedColors
 }
 
+/**
+ *
+ * @param colors - An object containing color categories and their shades.
+ */
+export function parseColors(colors: any) {
+  const parsedColors: any = {}
+  if (colors.primary) {
+    const categoryColors = colors.primary
+    for (const shade in categoryColors) {
+      const colorCode = categoryColors[shade]
+      const parsedShade = shade.split('_')[1]
+      if (parsedShade) {
+        parsedColors[`--primary-${parsedShade}`] = colorCode
+      } else {
+        parsedColors[`--primary`] = colorCode
+      }
+    }
+  }
+}
+
 export function tryJsonParse(data: string) {
   try {
     return JSON.parse(data)

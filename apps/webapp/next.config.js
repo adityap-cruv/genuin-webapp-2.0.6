@@ -46,7 +46,9 @@ const nextConfig = {
     minimumCacheTTL: 60,
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    path: process.env.NEXT_PUBLIC_CURRENT_ENV === 'local' ? undefined : '/next2/_next/image', // Serve images from /next2/_next/image
   },
+  assetPrefix: process.env.NEXT_PUBLIC_CURRENT_ENV === 'local' ? undefined : '/next2', // keeping next2 to avoid conflict with older website assets
 
   // === Redirects ===
   async redirects() {
@@ -74,6 +76,23 @@ const nextConfig = {
     // Import headers configuration from separate file using dynamic import
     const getHeaders = require('./config/headers.js')
     return getHeaders()
+  },
+
+  async rewrites() {
+    return {
+      beforeFiles: [
+        // Rewrite requests to /next2/_next/* to serve assets properly
+        {
+          source: '/next2/_next/:path*',
+          destination: '/_next/:path*',
+        },
+        // Rewrite for image paths
+        {
+          source: '/next2/_next/image/:path*',
+          destination: '/_next/image/:path*',
+        },
+      ],
+    }
   },
 
   // === Webpack config for SVGs (for Next.js 15, not Turbopack) ===
