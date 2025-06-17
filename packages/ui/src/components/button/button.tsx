@@ -95,7 +95,7 @@ function Button({
   return (
     <Comp
       data-slot="button"
-      className={cn(buttonVariants({ theme, size, shape, variant }), className)}
+      className={cn(buttonVariants({ theme, size, variant, shape}), className)}
       {...props}
     />
   );

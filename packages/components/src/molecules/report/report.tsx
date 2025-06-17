@@ -77,8 +77,8 @@ export function Report({
 
   return (
     <Dialog modal {...props}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="gencl:max-w-xl gencl:rounded-2xl">
+      <DialogTrigger asChild className="gencl:!border-none">{children}</DialogTrigger>
+      <DialogContent className="gencl:max-w-xl gencl:rounded-2xl gencl:space-y-4">
         {reportMutation.isSuccess ? (
           <ReportSuccess />
         ) : (

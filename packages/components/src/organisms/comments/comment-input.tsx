@@ -64,7 +64,7 @@ function DummyCommentInput({ onClick }: { onClick?: () => void }) {
       <Button
         type="button"
         theme="text"
-        className="gencl:text-body-1-medium gencl:text-secondary-400"
+        className="gencl:!text-body-1-medium gencl:text-secondary-400"
         disabled
         tabIndex={-1}
       >
@@ -187,7 +187,7 @@ function CommentInput({ videoId, loopId, onCommentPosted }: CommentInputProps) {
           type="submit"
           theme="text"
           className={cn(
-            "gencl:text-body-1-medium",
+            "gencl:!text-body-1-medium",
             form.formState.isValid
               ? "gencl:text-primary"
               : "gencl:text-secondary-400"

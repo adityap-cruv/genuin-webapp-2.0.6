@@ -14,7 +14,6 @@ import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema"
 import { GroupHoverCard } from "../group-hover-card";
 import { ComponentProps } from "react";
 import { JoinGroupButton } from "@genuin/components/molecules/join-group-button";
-import { useBaseContext } from "@genuin/components/context/base";
 
 const groupPillVariants = cva(
   "gencl:flex gencl:w-fit gencl:items-center gencl:gap-1 gencl:p-1 gencl:pr-2 gencl:rounded-full gencl:transition-all gencl:cursor-pointer",
@@ -80,11 +79,13 @@ export function GroupPill({
         {authenticationStatus === "authenticated" && (
           <GroupSubscriptionButton
             className="gencl:px-2"
+            variant="icon"
             shape="pill"
+            size="sm"
             groupId={groupDetails.id}
             groupName={groupDetails.name ?? ""}
             groupDescription={ldDescription}
-            shareUrl={groupDetails.shareUrl ?? ""}
+            shareUrl={groupDetails.shareUrl ?? ""}  
             isSubscriber={groupDetails.isSubscribed ?? false}
             onClick={(e) => {
               e.preventDefault();

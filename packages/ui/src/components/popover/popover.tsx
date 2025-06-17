@@ -32,7 +32,7 @@ function PopoverContent({
         className={cn(
           [
             // Base styles
-            "gencl:z-50 gencl:w-60 gencl:bg-white gencl:rounded-md gencl:p-4 gencl:shadow-mdc gencl:outline-hidden",
+            "gencl:z-50 gencl:w-60 gencl:bg-white gencl:rounded-md gencl:p-4 gencl:shadow-md gencl:outline-hidden",
             // Transform origin
             "gencl:origin-(--radix-popover-content-transform-origin) gencl:border-secondary-150 gencl:border",
             // Animation states

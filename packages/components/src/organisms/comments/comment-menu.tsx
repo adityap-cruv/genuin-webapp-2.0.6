@@ -14,7 +14,7 @@ export function CommentMenu({ contentId }: { contentId: string }) {
       </PopoverTrigger>
       <PopoverContent className="gencl:p-0 gencl:border-none" align="end">
         <Report reportFor="COMMENT" contentId={contentId}>
-          <div className="gencl:p-3 gencl:rounded-xl gencl:border gencl:border-secondary-100 gencl:bg-white gencl:cursor-pointer gencl:text-primary">
+          <div className="gencl:p-3 gencl:rounded-xl gencl:border-secondary-100 gencl:bg-white gencl:cursor-pointer gencl:text-primary">
             <Button
               theme="text"
               className="gencl:text-primary gencl:text-body-1-medium gencl:hover:gencl:border-secondary-100 gencl:p-2"
