@@ -26,6 +26,7 @@ import { GroupUserStatusType } from "@genuin/components/types/roles";
 import { FeedSkeleton } from "./feed-skeleton";
 import { useInterruptionManager } from "@genuin/components/hooks/use-interruption-manager";
 import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
+import { ErrorState } from "@genuin/components/molecules/error-state";
 
 /**
  * Feed data structure containing videos and pagination state
@@ -109,8 +110,15 @@ export function FeedWithData({
   onCloseExpandView,
   ...restProps
 }: FeedWithDataPropsType) {
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useFeed(feedType);
+  const {
+    data,
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isError,
+    error,
+  } = useFeed(feedType);
 
   const videos = useMemo(
     () => data?.pages.flatMap((page) => page.feed) ?? [],
@@ -125,6 +133,15 @@ export function FeedWithData({
     isFetchingNextPage,
     fetchNextPage,
   };
+
+  if (isError) {
+    // const errorCode = (error as any)?.code;
+    return <ErrorState type="ERROR" />;
+  }
+
+  if (videos.length === 0 && !isLoading && !isFetchingNextPage) {
+    return <ErrorState type="NO_CONTENT" />;
+  }
 
   return (
     <FeedContextProvider

@@ -54,37 +54,43 @@ export function CategoryInput({ ...props }: CategoryInputProps) {
       </div>
       <div className="gencl:max-h-[40vh] gencl:overflow-y-auto gencl:my-6">
         {isLoading && <Loader />}
-        {categories?.map((category, index) => {
-          return (
-            <div
-              key={index}
-              className="gencl:not-last:border-b gencl:border-b-secondary-200 gencl:not-first:py-4 gencl:first:pb-4"
-            >
-              <div className="gencl:flex gencl:gap-2">
-                <p className="gencl:text-body-1-semi-bold gencl:mb-2">
-                  {category.title}
-                </p>
+        {!isLoading && !Array.isArray(categories) && (
+          <p className="gencl:text-body-1-medium gencl:text-error-600">
+            Failed to load categories. Please try again.
+          </p>
+        )}
+        {Array.isArray(categories) &&
+          categories.map((category, index) => {
+            return (
+              <div
+                key={index}
+                className="gencl:not-last:border-b gencl:border-b-secondary-200 gencl:not-first:py-4 gencl:first:pb-4"
+              >
+                <div className="gencl:flex gencl:gap-2">
+                  <p className="gencl:text-body-1-semi-bold gencl:mb-2">
+                    {category.title}
+                  </p>
+                </div>
+                <div className="gencl:flex gencl:flex-wrap gencl:gap-2">
+                  {category.topics.map((item, idx) => (
+                    <Button
+                      key={idx}
+                      theme="outline"
+                      className={cn(
+                        "gencl:rounded-3xl gencl:px-3 gencl:py-2 gencl:text-body-1-medium",
+                        selectedCategory.includes(item.topic_id)
+                          ? "gencl:border gencl:border-primary gencl:bg-primary-100"
+                          : ""
+                      )}
+                      onClick={() => handleCategorySelection(item.topic_id)}
+                    >
+                      {item.topic}
+                    </Button>
+                  ))}
+                </div>
               </div>
-              <div className="gencl:flex gencl:flex-wrap gencl:gap-2">
-                {category.topics.map((item, idx) => (
-                  <Button
-                    key={idx}
-                    theme="outline"
-                    className={cn(
-                      "gencl:rounded-3xl gencl:px-3 gencl:py-2 gencl:text-body-1-medium",
-                      selectedCategory.includes(item.topic_id)
-                        ? "gencl:border gencl:border-primary gencl:bg-primary-100"
-                        : ""
-                    )}
-                    onClick={() => handleCategorySelection(item.topic_id)}
-                  >
-                    {item.topic}
-                  </Button>
-                ))}
-              </div>
-            </div>
-          );
-        })}
+            );
+          })}
       </div>
       <SubmitButton
         isLoading={isPending}

@@ -1,30 +1,31 @@
 import { Button } from "@genuin/ui/components/button";
 import type { ComponentProps } from "react";
 import { Link } from "@genuin/components/molecules/link";
-import BG_404 from "../../../public/images/404.webp";
-import BG_OPPS from "../../../public/images/opps.webp";
+import BG_404 from "@genuin/components/assets/images/404.webp";
+import BG_OPPS from "@genuin/components/assets/images/opps.webp";
+import { cn } from "@genuin/ui/lib/utils";
 
 const STATES_MESSAGES = {
   ERROR: {
     img: BG_OPPS,
     title: "Something went wrong.",
     message:
-      "We’re unable to load posts.Try refreshing or \nreload page to explore more content.",
+      "We're unable to load posts.Try refreshing or \nreload page to explore more content.",
     showButton: true,
     button: {
       text: "Reload",
-      url: "/",
+      url: "/home",
     },
   },
   PAGE_NOT_FOUND: {
     img: BG_404,
     title: "Page not found",
     message:
-      "The link you’re looking for doesn’t exist or may have been moved. \nTry checking the URL or head to the home page to explore more content",
+      "The link you're looking for doesn't exist or may have been moved. \nTry checking the URL or head to the home page to explore more content",
     showButton: true,
     button: {
       text: "Go to Home",
-      url: "/",
+      url: "/home",
     },
   },
   NO_CONTENT: {
@@ -35,7 +36,7 @@ const STATES_MESSAGES = {
     showButton: false,
     button: {
       text: "",
-      url: "/",
+      url: "/home",
     },
   },
   NO_BRAND_USER: {
@@ -46,7 +47,7 @@ const STATES_MESSAGES = {
     showButton: false,
     button: {
       text: "Create Community",
-      url: "/",
+      url: "/home",
     },
   },
   NO_COMMUNITY: {
@@ -54,10 +55,10 @@ const STATES_MESSAGES = {
     title: "Community not found",
     message:
       "We're sorry, but the community you are looking for no longer exists.",
-    showButton: false,
+    showButton: true,
     button: {
       text: "Go to Home",
-      url: "/",
+      url: "/home",
     },
   },
   NO_GROUP: {
@@ -67,7 +68,7 @@ const STATES_MESSAGES = {
     showButton: true,
     button: {
       text: "Go to Home",
-      url: "/",
+      url: "/home",
     },
   },
   NO_USER: {
@@ -77,7 +78,7 @@ const STATES_MESSAGES = {
     showButton: true,
     button: {
       text: "Go to Home",
-      url: "/",
+      url: "/home",
     },
   },
   NO_VIDEO: {
@@ -87,7 +88,7 @@ const STATES_MESSAGES = {
     showButton: true,
     button: {
       text: "Go to Home",
-      url: "/",
+      url: "/home",
     },
   },
   NO_PRIVATE_VIDEO: {
@@ -98,7 +99,7 @@ const STATES_MESSAGES = {
     showButton: true,
     button: {
       text: "Go to Home",
-      url: "/",
+      url: "/home",
     },
   },
 };
@@ -111,7 +112,12 @@ export function ErrorState({ className, type = "ERROR" }: ErrorStateProps) {
   const state = STATES_MESSAGES[type];
 
   return (
-    <div className="gencl:flex gencl:flex-col gencl:h-full gencl:items-center gencl:w-full gencl:justify-center">
+    <div
+      className={cn(
+        "gencl:flex gencl:flex-col gencl:h-full gencl:items-center gencl:w-full gencl:justify-center",
+        className
+      )}
+    >
       <div
         className="gencl:flex gencl:flex-col gencl:h-100 gencl:items-center gencl:justify-center gencl:w-full gencl:max-h-[300px]"
         style={{

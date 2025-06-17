@@ -4,11 +4,14 @@ import { Popover, PopoverContent, PopoverTrigger } from "@genuin/ui/popover";
 import { SideBarActionLinks } from "./sidebar-actions-link";
 import { Link } from "@genuin/components/molecules/link";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
-import { useBaseContext } from "@genuin/components/context/base";
 
-export function SidebarActions() {
-  const { brandDetails } = useBaseContext();
-
+export function SidebarActions({
+  brandConfiguredTerms,
+  brandConfiguredPrivacy,
+}: {
+  brandConfiguredTerms: string;
+  brandConfiguredPrivacy: string;
+}) {
   return (
     <div className="gencl:px-3 gencl:py-4 gencl:!w-full gencl:min-h-48 gencl:border-b gencl:border-secondary-100">
       {SideBarActionLinks.map((links, index) => {
@@ -39,20 +42,13 @@ export function SidebarActions() {
           align="start"
           className="gencl:shadow-none gencl:focus-visible:outline-none gencl:focus-visible:ring-0 gencl:bg-white gencl:rounded-lg gencl:p-3 gencl:w-fit gencl:border gencl:border-secondary-100"
         >
-          <Link
-            href={
-              brandDetails.terms_and_condition ??
-              buildPageUrl({ type: "terms" })
-            }
-          >
+          <Link href={brandConfiguredTerms ?? buildPageUrl({ type: "terms" })}>
             <p className="gencl:text-body-1-medium gencl:p-2 gencl:hover:bg-secondary-50 gencl:cursor-pointer gencl:rounded-md">
               Terms and Condition
             </p>
           </Link>
           <Link
-            href={
-              brandDetails.privacy_policy ?? buildPageUrl({ type: "privacy" })
-            }
+            href={brandConfiguredPrivacy ?? buildPageUrl({ type: "privacy" })}
           >
             <p className="gencl:text-body-1-medium gencl:p-2 gencl:hover:bg-secondary-50 gencl:cursor-pointer gencl:rounded-md">
               Privacy Policy

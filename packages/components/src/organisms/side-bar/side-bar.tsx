@@ -7,10 +7,14 @@ import {
 } from "@genuin/components/molecules/sidebar";
 import { Category } from "@genuin/components/molecules/sidebar/category";
 import { Recent } from "@genuin/components/molecules/sidebar/recent";
+import { useBaseContext } from "@genuin/components/context/base";
 
 type SideBarProps = ComponentProps<"aside">;
 
 export function SideBar({ className, ...restProps }: SideBarProps) {
+  const { brandDetails } = useBaseContext();
+  const showBecomeACreator = brandDetails.show_become_creator ?? true;
+
   return (
     <aside
       className={cn(
@@ -19,8 +23,13 @@ export function SideBar({ className, ...restProps }: SideBarProps) {
       )}
       {...restProps}
     >
-      <SidebarActions />
-      <SideBarBecomeCreator className="gencl:hidden gencl:xl:!block" />
+      <SidebarActions
+        brandConfiguredTerms={brandDetails.terms_and_condition ?? ""}
+        brandConfiguredPrivacy={brandDetails.privacy_policy ?? ""}
+      />
+      {showBecomeACreator && (
+        <SideBarBecomeCreator className="gencl:hidden gencl:xl:!block" />
+      )}
       <Category />
       <Recent />
     </aside>

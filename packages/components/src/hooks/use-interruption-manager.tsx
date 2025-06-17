@@ -17,16 +17,16 @@ const INTERRUPTION_STEPS = [
     isComplete: (user?: AuthUser | null) => user?.hasTopics,
   },
   {
-    key: "USERNAME_INPUT" as StepsType,
+    key: "EDIT_USERNAME" as StepsType,
     configKey: "username_popup",
     isComplete: (user?: AuthUser | null) => user?.usernameSet,
   },
-  {
-    key: "COMPLETE_PROFILE" as StepsType,
-    configKey: "complete_profile_popup",
-    isComplete: (user?: AuthUser | null) =>
-      user?.name && user?.bio && user?.image,
-  },
+  // {
+  //   key: "COMPLETE_PROFILE" as StepsType,
+  //   configKey: "complete_profile_popup",
+  //   isComplete: (user?: AuthUser | null) =>
+  //     user?.name && user?.bio && user?.image,
+  // },
 ] as const;
 
 export function useInterruptionManager() {
