@@ -2,8 +2,8 @@ import { VideoPlayer } from "@genuin/ui/video-player";
 import { PlayIcon } from "@genuin/ui/icons";
 import { useEffect, useId, useRef, useState } from "react";
 import { Button } from "@genuin/ui/button";
-import { useInView } from "framer-motion";
-import { audioManager } from "@genuin/ui/audio-manager";
+import { useInView } from "@genuin/components/hooks/use-in-view";
+import { audioManager } from "@genuin/components/lib/audio-manager";
 /**
  * Video component that displays a video player with a custom play button overlay and thumbnail.
  * Handles play/pause state and resets when the video ends.
@@ -31,9 +31,7 @@ export const Video = ({
     setIsPlaying((prev) => !prev);
   };
   const videoRef = useRef<HTMLVideoElement>(null);
-  const elementIsInView = useInView(videoRef as React.RefObject<Element>, {
-    amount: 0.5,
-  });
+  const elementIsInView = useInView(videoRef);
 
   useEffect(() => {
     audioManager.register(id, () => {
