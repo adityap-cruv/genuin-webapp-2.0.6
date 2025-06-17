@@ -36,6 +36,8 @@
   --red-600: #981511;
   --red-700: #6d0f0c;
 
+  --error-status: #F35421;
+
   font-family:
     "Inter",
     ui-sans-serif,
@@ -181,6 +183,8 @@
   --color-red: var(--red);
   --color-red-600: var(--red-600);
   --color-red-700: var(--red-700);
+
+  --color-error-status: var(--error-status);
 
   --aspect-reel: 9/16;
 

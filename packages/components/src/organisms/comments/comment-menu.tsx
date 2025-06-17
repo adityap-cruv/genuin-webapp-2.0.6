@@ -17,7 +17,7 @@ export function CommentMenu({ contentId }: { contentId: string }) {
           <div className="gencl:p-3 gencl:rounded-xl gencl:border-secondary-100 gencl:bg-white gencl:cursor-pointer gencl:text-primary">
             <Button
               theme="text"
-              className="gencl:text-primary gencl:text-body-1-medium gencl:hover:gencl:border-secondary-100 gencl:p-2"
+              className="gencl:text-error-status gencl:text-body-1-medium gencl:hover:gencl:border-secondary-100 gencl:p-2"
             >
               Report Comment
             </Button>

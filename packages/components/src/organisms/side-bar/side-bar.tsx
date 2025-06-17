@@ -7,6 +7,7 @@ import {
 } from "@genuin/components/molecules/sidebar";
 import { Category } from "@genuin/components/molecules/sidebar/category";
 import { Recent } from "@genuin/components/molecules/sidebar/recent";
+import { PoweredByGenuin } from "@genuin/components/molecules/sidebar";
 import { useBaseContext } from "@genuin/components/context/base";
 
 type SideBarProps = ComponentProps<"aside">;
@@ -18,7 +19,7 @@ export function SideBar({ className, ...restProps }: SideBarProps) {
   return (
     <aside
       className={cn(
-        "gencl:border-r gencl:xl:!w-60 gencl:border-secondary-150 gencl:w-16 gencl:shrink-0 ",
+        "gencl:border-r gencl:xl:!w-60 gencl:border-secondary-150 gencl:w-16 gencl:shrink-0 gencl:flex gencl:flex-col",
         className
       )}
       {...restProps}
@@ -32,6 +33,7 @@ export function SideBar({ className, ...restProps }: SideBarProps) {
       )}
       <Category />
       <Recent />
+      <PoweredByGenuin />
     </aside>
   );
 }

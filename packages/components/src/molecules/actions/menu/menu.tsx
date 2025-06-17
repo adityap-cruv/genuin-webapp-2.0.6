@@ -61,7 +61,7 @@ export function Menu({
           contentId={contentId}
           shareUrl={shareUrl ?? ""}
           videoSlug={videoSlug ?? ""}
-          children={menuItems("Report Post", "gencl:text-primary")}
+          children={menuItems("Report Post", "gencl:text-error-status")}
         />
       ),
     },

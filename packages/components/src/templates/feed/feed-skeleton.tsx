@@ -1,13 +1,16 @@
 "use client";
 import { Skeleton } from "@genuin/ui/skeleton";
 import { CommentsItemSkeleton } from "@genuin/components/organisms/comments/comment-item";
+import { useBaseContext } from "@genuin/components/context/base";
 
 export function FeedSkeleton() {
+  const {feedVideoSizeBox} = useBaseContext()
+
   return (
-    <div className="gencl:grid gencl:mt-7 gencl:w-full gencl:h-full gencl:grid-cols-2 gencl:pb-7 ">
-      <div className="gencl:flex gencl:justify-center gencl:h-full gencl:w-full gencl:gap-2 gencl:pe-4">
-        <Skeleton className="gencl:w-100" />
-        <div className="gencl:flex gencl:gap-4 gencl:flex-col-reverse gencl:w-13 gencl:mb-12">
+    <div className="gencl:grid gencl:py-4 gencl:w-full gencl:h-full gencl:grid-cols-2 gencl:ml-6">
+      <div className="gencl:flex gencl:justify-center gencl:h-full gencl:w-full gencl:gap-2 gencl:pr-4">
+        <Skeleton style={{width : feedVideoSizeBox.width}} />
+        <div className="gencl:flex gencl:gap-4 gencl:flex-col gencl:justify-end gencl:w-13 gencl:pb-4">
           {Array.from({ length: 5 }).map((_,index) => (
             <Skeleton key={index} className="gencl:size-12 gencl:rounded-full gencl:shrink-0" />
           ))}
