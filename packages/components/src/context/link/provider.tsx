@@ -1,9 +1,5 @@
-import React, {
-  createContext,
-  useContext,
-  ReactNode,
-  ComponentType,
-} from "react";
+"use client";
+import React, { useContext, ReactNode, ComponentType } from "react";
 import { LinkContextValue } from "./type";
 import { LinkContext } from "./context";
 

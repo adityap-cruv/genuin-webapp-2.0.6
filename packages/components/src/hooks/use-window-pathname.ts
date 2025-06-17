@@ -1,17 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useLayoutEffect } from "react";
 
 /**
  * Custom hook to get the current window pathname.
  * @returns {string} The current pathname of the window.
  */
 export const useWindowPathname = (): string => {
-  const [pathname, setPathname] = useState<string>(
-    window !== undefined ? window.location.pathname : "/"
-  );
+  const [pathname, setPathname] = useState<string>("/");
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    setPathname(window.location.pathname);
     const handlePathnameChange = () => {
       setPathname(window.location.pathname);
     };

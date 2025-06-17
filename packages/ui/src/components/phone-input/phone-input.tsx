@@ -10,6 +10,7 @@ import {
   Command,
   CommandEmpty,
   CommandGroup,
+  CommandInput,
   CommandItem,
   CommandList,
 } from "../command";
@@ -120,10 +121,9 @@ const CountrySelect = ({
       <PopoverContent
         className={cn("gencl:w-[300px] gencl:z-50 gencl:p-0", popoverClassName)}
       >
-        <Command>
-          <CommandList>
-            {/* <CommandInput placeholder="Search country..." /> */}
-            <CommandEmpty>No country found.</CommandEmpty>
+        <Command className="gencl:overflow-auto">
+          <CommandList className="gencl:overflow-auto">
+            <CommandInput placeholder="Search country..." />
             <CommandGroup>
               {options
                 .filter((x) => x.value)
@@ -139,11 +139,11 @@ const CountrySelect = ({
                       country={option.value}
                       countryName={option.label}
                     />
-                    <span className="gencl:text-sm gencl:flex-1 gencl:text-left">
+                    <span className="gencl:text-body-1-semi-bold gencl:flex-1 gencl:text-left">
                       {option.label}
                     </span>
                     {option.value && (
-                      <span className="gencl:text-sm gencl:text-foreground/50">
+                      <span className="gencl:text-secondary-600 gencl:text-body-1-semi-bold">
                         {`+${RPNInput.getCountryCallingCode(option.value)}`}
                       </span>
                     )}
