@@ -7,8 +7,10 @@
 - Each app/package has an `eslint.config.mjs` that re-exports the shared config:
 
   ```js
-  export { default } from '../../packages/eslint-config/index.js';
-```
+  export { default } from "../../packages/eslint-config/index.js";
+  ```
+
+````
 
 ---
 
@@ -39,7 +41,8 @@
 
 ### Plugin Compatibility
 
-- **All `@tanstack/eslint-plugin-query` rules are temporarily disabled** due to incompatibility with ESLint v9. Re-enable when upstream support is restored.
+- **TanStack Query ESLint plugin v5.78.0** is now compatible with ESLint v9 and fully enabled.
+- All query-related rules are active and will help catch common React Query usage mistakes.
 
 ### Adding Package-Specific Overrides
 
@@ -51,14 +54,12 @@
     ...sharedConfig,
     // your overrides here
   ];
-  ```
+````
 
 ### Editor & CI Integration
 
 - Use the VS Code ESLint extension for real-time feedback.
 - Linting is included in the Turborepo pipeline and should be run before all commits/PRs.
-
-
 
 ### Temporary Suppression of Lint Warnings (2025)
 
@@ -78,12 +79,13 @@
 - [Prettier Plugin Docs](https://github.com/prettier/eslint-plugin-prettier)
 
 ---
-  (Adjust the path as needed for each package.)
+
+(Adjust the path as needed for each package.)
 
 - To add package-specific overrides, import and spread the shared config, then add your overrides:
 
   ```js
-  import sharedConfig from '../../packages/eslint-config/index.js';
+  import sharedConfig from "../../packages/eslint-config/index.js";
   export default [
     ...sharedConfig,
     // your overrides here
