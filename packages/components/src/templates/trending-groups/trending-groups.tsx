@@ -29,6 +29,7 @@ type GroupInfoType = {
   };
   latest_messages: {
     thumbnail_url: string;
+    slug : string
   }[];
 };
 
@@ -74,9 +75,10 @@ export function TrendingGroups() {
         {groupsToDisplay.map(
           ({ chat_id, group, latest_messages }: GroupInfoType) => {
             const formattedPostThumbnails = latest_messages?.map(
-              ({ thumbnail_url }) => ({
+              ({ thumbnail_url , slug }) => ({
                 imageUrl: thumbnail_url,
                 alt: "Post Thumbnail",
+                slug : slug , 
               })
             );
 
@@ -95,7 +97,7 @@ export function TrendingGroups() {
                 memberCount={group.no_of_members}
                 postCount={group.no_of_videos}
                 userAvatars={formattedMembersAvatars ?? []}
-                postThumbnails={formattedPostThumbnails ?? []}
+                postData={formattedPostThumbnails ?? []}
               />
             );
           }

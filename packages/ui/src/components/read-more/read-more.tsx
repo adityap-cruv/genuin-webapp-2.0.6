@@ -316,7 +316,7 @@ export function ReadMore({
         <span
           ref={textRef}
           className={cn(
-            "gencl:w-full gencl:break-words gencl:text-secondary-900",
+            "gencl:w-full gencl:break-words gencl:!text-secondary-900",
             position !== "outside" && "gencl:text-white",
             textClassName
           )}
@@ -340,7 +340,7 @@ export function ReadMore({
           <button
             type="button"
             className={cn(
-              "gencl:mt-1 gencl:text-secondary-600 gencl:hover:underline",
+              "gencl:mt-1 gencl:!text-secondary-600 gencl:hover:underline",
               textClassName
             )}
             onClick={(e) => {

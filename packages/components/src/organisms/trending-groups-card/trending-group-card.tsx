@@ -20,9 +20,10 @@ type TrendingGroupCardProps = {
     name: string;
   }[];
   description: string;
-  postThumbnails: {
+  postData: {
     imageUrl: string;
     alt: string;
+    slug: string
   }[];
 };
 
@@ -32,9 +33,9 @@ export const TrendingGroupCard = ({
   postCount,
   userAvatars,
   description,
-  postThumbnails,
+  postData,
 }: TrendingGroupCardProps) => {
-  const visiblePostThumbnails = postThumbnails?.slice(0, 3) || [];
+  const visiblePostThumbnails = postData?.slice(0, 3) || [];
 
   return (
    <Link href={buildPageUrl({type : "group" , slug : groupName})} className="gencl:h-full">
@@ -121,7 +122,8 @@ export const TrendingGroupCard = ({
             const opacity = getOpacity(index, visiblePostThumbnails.length);
 
             return (
-              <div
+              <Link
+              href={buildPageUrl({type : "video" , slug : item.slug})}
                 key={index}
                 style={{
                   position: "absolute",
@@ -139,7 +141,7 @@ export const TrendingGroupCard = ({
                   aspectRatio="reel"
                   className="gencl:w-full gencl:shadow-md gencl:object-cover gencl:h-full"
                 />
-              </div>
+              </Link>
             );
           })}
         </div>

@@ -15,7 +15,7 @@ export function TopBar({ className, search, ...restProps }: TopBarProps) {
       )}
       {...restProps}
     >
-      <BrandLogo className="gencl:py-2 gencl:object-cover gencl:h-full" />
+      <BrandLogo className="gencl:py-2 gencl:object-contain gencl:h-full" />
       <BrandSlogan />
       <div className="gencl:flex gencl:justify-between gencl:gap-2.5">
         {search}

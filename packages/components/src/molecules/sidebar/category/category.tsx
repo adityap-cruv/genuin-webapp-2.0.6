@@ -8,6 +8,8 @@ import { Avatar } from "@genuin/ui/avatar";
 import { useMemo } from "react";
 
 import { useCategory } from "@genuin/components/react-query/api/category/category";
+import { Link } from "@genuin/components/molecules/link";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 
 export function Category() {
   const { data } = useCategory();
@@ -32,17 +34,18 @@ export function Category() {
           <div className="gencl:text-body-1-bold">Categories</div>
         </AccordionTrigger>
         <AccordionContent className="gencl:pb-0">
-          <Accordion type="single" className="gencl:w-full">
+          <Accordion collapsible type="single" className="gencl:w-full">
             {categories.map((cat, index) => (
               <AccordionItem key={index} value={`category-${index}`}>
                 <AccordionTrigger className="gencl:justify-between gencl:items-center gencl:px-3 gencl:py-2 gencl:hidden gencl:xl:!flex">
-                  <div className="gencl:text-body-1-medium">{cat.category}</div>
+                  <div className="gencl:text-body-1-medium gencl:text-nowrap">{cat.category}</div>
                 </AccordionTrigger>
                 <AccordionContent className="gencl:flex gencl:flex-col gencl:pb-0">
                   {cat.communities.map((community, commIndex) => (
-                    <div
+                    <Link
                       key={commIndex}
-                      className="gencl:flex gencl:items-center gencl:gap-2 gencl:py-2 gencl:px-2 gencl:xl:px-3"
+                      href={buildPageUrl({type : "community" , slug : community.slug , searchParams : {feed : "1"}})}
+                      className="gencl:flex gencl:items-center gencl:gap-2 gencl:py-2 gencl:px-2 gencl:xl:px-3 gencl:hover:bg-secondary-50 gencl:cursor-pointer gencl:rounded-lg"
                     >
                       <Avatar
                         isAvatar={false}
@@ -53,7 +56,7 @@ export function Category() {
                       <p className="gencl:text-body-1-medium gencl:text-nowrap gencl:hidden gencl:xl:!block">
                         {community.community_name}
                       </p>
-                    </div>
+                    </Link>
                   ))}
                 </AccordionContent>
               </AccordionItem>

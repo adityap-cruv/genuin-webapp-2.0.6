@@ -2,7 +2,7 @@ import { Avatar } from "@genuin/ui/avatar";
 import { ReadMore } from "@genuin/ui/read-more";
 
 import type { CommentListType } from "src/react-query/api/comments";
-import { getTimeAgo } from "@genuin/ui/utils";
+import { cn, getTimeAgo } from "@genuin/ui/utils";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { ProfileLink } from "@genuin/components/molecules/profile-link";
 import { Skeleton } from "@genuin/ui/components/skeleton";
@@ -30,7 +30,10 @@ export function CommentItem({
 }: CommentItemProps) {
   const { owner } = comment;
   return (
-    <div className="comment gencl:flex gencl:gap-2" key={comment.commentId}>
+    <div
+      className="comment gencl:flex gencl:gap-2"
+      key={comment.commentId}
+    >
       <Avatar
         alt={owner.nickname}
         imageUrl={owner.profileImage}
@@ -49,7 +52,7 @@ export function CommentItem({
               &nbsp; {comment.createdAt && getTimeAgo(comment.createdAt)}
             </span>
           </div>
-          <CommentMenu contentId={comment.commentId} />
+         <CommentMenu contentId={comment.commentId} />
         </div>
         <CommentContent comment={comment} />
         <div className="gencl:flex gencl:items-center">

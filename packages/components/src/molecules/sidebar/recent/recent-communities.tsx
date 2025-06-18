@@ -8,6 +8,8 @@ import { Avatar } from "@genuin/ui/avatar";
 import { RECENT_COMMUNITIES_KEY } from "@genuin/components/lib/constants";
 import { useLocalStorage } from "usehooks-ts";
 import { RecentCommunity } from "@genuin/components/types/community";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import {Link} from "@genuin/components/molecules/link"
 
 export function Recent() {
   const [communities] = useLocalStorage<RecentCommunity[]>(
@@ -29,9 +31,10 @@ export function Recent() {
           </AccordionTrigger>
           <AccordionContent className="gencl:pb-0">
             {communities.map((community, commIndex) => (
-              <div
+              <Link
                 key={commIndex}
-                className="gencl:flex gencl:items-center gencl:gap-2 gencl:py-2 gencl:px-2 gencl:xl:px-3"
+                href={buildPageUrl({type : "community" , slug : community.slug , searchParams : {feed : "1"}})}
+                className="gencl:flex gencl:items-center gencl:gap-2 gencl:py-2 gencl:px-2 gencl:xl:px-3 gencl:hover:bg-secondary-50 gencl:cursor-pointer gencl:rounded-lg"
               >
                 <Avatar
                   isAvatar={false}
@@ -42,7 +45,7 @@ export function Recent() {
                 <p className="gencl:text-body-1-medium gencl:hidden gencl:xl:!block">
                   {community.community_name}
                 </p>
-              </div>
+              </Link>
             ))}
           </AccordionContent>
         </AccordionItem>

@@ -1,18 +1,20 @@
 "use client";
 import { Skeleton } from "@genuin/ui/skeleton";
 import { CommentsItemSkeleton } from "@genuin/components/organisms/comments/comment-item";
-import { useBaseContext } from "@genuin/components/context/base";
 
 export function FeedSkeleton() {
-  const {feedVideoSizeBox} = useBaseContext()
-
   return (
-    <div className="gencl:grid gencl:py-4 gencl:w-full gencl:h-full gencl:grid-cols-2 gencl:ml-6">
-      <div className="gencl:flex gencl:justify-center gencl:h-full gencl:w-full gencl:gap-2 gencl:pr-4">
-        <Skeleton style={{width : feedVideoSizeBox.width}} />
+    <div className="gencl:grid gencl:py-4 gencl:w-full gencl:h-full gencl:grid-cols-2 gencl:ml-6 gencl:gap-6">
+      <div className="gencl:flex gencl:justify-center gencl:h-full gencl:w-10/12 gencl:gap-2 gencl:overflow-auto">
+        <Skeleton
+          className="gencl:aspect-reel"
+        />  
         <div className="gencl:flex gencl:gap-4 gencl:flex-col gencl:justify-end gencl:w-13 gencl:pb-4">
-          {Array.from({ length: 5 }).map((_,index) => (
-            <Skeleton key={index} className="gencl:size-12 gencl:rounded-full gencl:shrink-0" />
+          {Array.from({ length: 5 }).map((_, index) => (
+            <Skeleton
+              key={index}
+              className="gencl:size-12 gencl:rounded-full gencl:shrink-0"
+            />
           ))}
         </div>
       </div>
@@ -31,7 +33,7 @@ export function FeedSkeleton() {
           </div>
         </div>
         <div className="gencl:relative gencl:border gencl:border-secondary-200 gencl:p-4 gencl:rounded-2xl">
-          {Array.from({ length: 8 }).map((_,index) => (
+          {Array.from({ length: 8 }).map((_, index) => (
             <CommentsItemSkeleton key={index} />
           ))}
           <div className="gencl:absolute gencl:bg-white gencl:bottom-0 gencl:right-0 gencl:flex gencl:w-full gencl:items-center gencl:justify-between gencl:gap-x-4 gencl:border-t gencl:border-secondary-200 gencl:p-4">

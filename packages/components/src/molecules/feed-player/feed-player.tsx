@@ -1,11 +1,5 @@
 import { VideoPlayer } from "@genuin/ui/video-player";
-import {
-  memo,
-  useCallback,
-  useEffect,
-  useId,
-  type ComponentProps,
-} from "react";
+import { memo, useCallback, useEffect, useId, type ComponentProps } from "react";
 import { useBaseContext } from "@genuin/components/context/base";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { audioManager } from "@genuin/components/lib/audio-manager";
@@ -44,9 +38,9 @@ export const FeedPlayer = memo(function FeedPlayer({
   } = usePlayerContext();
   const Analytics = useAnalytics();
   const { playbackSpeed } = useFeedContext();
-  const id = useId();
+    const id = useId();
 
-  useEffect(() => {
+    useEffect(() => {
     audioManager.register(id, () => {
       mute(true);
     });
@@ -54,7 +48,7 @@ export const FeedPlayer = memo(function FeedPlayer({
       audioManager.unregister(id);
     };
   }, [id]);
-
+  
   useEffect(() => {
     // this is the key line — fire unmute when this player unmutes
     if (!muted) {

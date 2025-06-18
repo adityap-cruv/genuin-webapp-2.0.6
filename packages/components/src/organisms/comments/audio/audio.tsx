@@ -12,8 +12,8 @@ import { PauseIcon } from "@genuin/ui/icons";
 import { AudioPlayer } from "@genuin/ui/audio-player";
 import { BarWaveform } from "@genuin/ui/audio-player";
 import { formatTime } from "./utils";
-import { cn } from "@genuin/ui/utils";
 import { audioManager } from "@genuin/components/lib/audio-manager";
+import { cn } from "@genuin/ui/lib/utils";
 
 type AudioWaveformPlayerProps = ComponentProps<"div"> & {
   audioUrl: string;
@@ -199,7 +199,7 @@ export const Audio = ({
           onClick={togglePlayPause}
           className="gencl:focus:outline-none"
         >
-          {shouldPlay ? <PauseIcon /> : <PlayIcon variant="dark" />}
+          {shouldPlay ? <PauseIcon variant="dark" /> : <PlayIcon variant="dark" />}
         </button>
         {/* Waveform replaces pipeHeights */}
         <div
@@ -228,7 +228,7 @@ export const Audio = ({
             ></canvas>
           </div>
         </div>
-        <div className="gencl:ml-3 gencl:h-full gencl:flex gencl:items-center">
+        <div className="gencl:ml-3 gencl:h-full gencl:flex gencl:items-center gencl:text-secondary-500">
           {isPlaying
             ? formatTime(currentTime)
             : formatTime(currentTime === 0 ? duration : currentTime)}
