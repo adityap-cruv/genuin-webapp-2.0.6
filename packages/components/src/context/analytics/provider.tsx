@@ -12,8 +12,8 @@ import { EventNameType, EventPayload } from "./types";
 import { useBaseContext } from "../base";
 import { useAuthContext } from "../auth";
 import { getDeviceId } from "@genuin/components/lib/utils/device-id";
-import { useWindowPathname } from "@genuin/components/hooks/use-window-pathname";
 import { GENUIN_BRAND_ID } from "@genuin/components/lib/constants";
+import { usePathname } from "@genuin/components/hooks/use-pathname";
 
 type AnalyticsProviderProps = {
   children: ReactNode;
@@ -41,7 +41,7 @@ export function AnalyticsProvider({
 }: AnalyticsProviderProps) {
   const { brandDetails } = useBaseContext();
   const { user } = useAuthContext();
-  const pathname = useWindowPathname();
+  const pathname = usePathname();
   useEffect(() => {
     AnalyticsService.track(EventName.PAGE_VIEW);
   }, [pathname]);

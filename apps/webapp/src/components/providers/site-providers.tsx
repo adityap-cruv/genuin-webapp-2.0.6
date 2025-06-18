@@ -8,8 +8,7 @@ import { BaseLayout } from '@genuin/components/templates/base-layout/base-layout
 import { OldSearch } from './old-search'
 import { AuthBridge } from './auth-bridge'
 import { AnalyticsProvider } from '@genuin/components/context/analytics'
-import { LinkProvider } from '@genuin/components/context/link'
-import Link from 'next/link'
+import { LinkBridge } from './link-bridge'
 
 interface SiteProvidersProps {
   children: React.ReactNode
@@ -23,7 +22,7 @@ export default function SiteProviders({ children, config, session }: SiteProvide
       <BrandDetailsProviderClient brandDetails={config}>
         <SessionProvider refetchOnWindowFocus={false} refetchInterval={3600} session={session}>
           <AuthBridge>
-            <LinkProvider LinkComponent={Link} isNextJS>
+            <LinkBridge>
               <BaseLayout search={<OldSearch />}>
                 <RedirectHandler config={config} shouldRedirect={Object.hasOwn(config || {}, 'subdomain')}>
                   <ThirdPartyScriptProvider>
@@ -33,7 +32,7 @@ export default function SiteProviders({ children, config, session }: SiteProvide
                   </ThirdPartyScriptProvider>
                 </RedirectHandler>
               </BaseLayout>
-            </LinkProvider>
+            </LinkBridge>
           </AuthBridge>
         </SessionProvider>
       </BrandDetailsProviderClient>

@@ -88,4 +88,5 @@ export type NextJSLinkProps = {
 export type LinkContextValue = {
   LinkComponent?: ComponentType<any>;
   isNextJS?: boolean;
+  usePathname?: () => string;
 };

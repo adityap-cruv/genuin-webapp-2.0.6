@@ -4,6 +4,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@genuin/ui/popover";
 import { SideBarActionLinks } from "./sidebar-actions-link";
 import { Link } from "@genuin/components/molecules/link";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { usePathname } from "@genuin/components/hooks/use-pathname";
 
 export function SidebarActions({
   brandConfiguredTerms,
@@ -12,6 +13,8 @@ export function SidebarActions({
   brandConfiguredTerms: string;
   brandConfiguredPrivacy: string;
 }) {
+  const pathName = usePathname();
+  console.log("SidebarActions pathName", pathName);
   return (
     <div className="gencl:px-3 gencl:py-4 gencl:!w-full gencl:min-h-48 gencl:border-b gencl:border-secondary-100">
       {SideBarActionLinks.map((links, index) => {
@@ -22,7 +25,14 @@ export function SidebarActions({
             href={buildPageUrl({ type: links.type })}
             className="gencl:flex gencl:rounded-lg gencl:items-center gencl:gap-4 gencl:px-2 gencl:py-2 gencl:xl:py-4 gencl:xl:px-3 gencl:hover:bg-secondary-50 gencl:cursor-pointer"
           >
-            <Icon className="gencl:w-6 gencl:h-6" />
+            <Icon
+              className="gencl:w-6 gencl:h-6"
+              variant={
+                pathName === buildPageUrl({ type: links.type })
+                  ? "active"
+                  : "default"
+              }
+            />
             <p className="gencl:text-body-1-medium gencl:hidden gencl:xl:!block">
               {links.text}
             </p>

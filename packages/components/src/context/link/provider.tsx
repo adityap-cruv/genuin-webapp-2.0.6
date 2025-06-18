@@ -7,16 +7,23 @@ export interface LinkProviderProps {
   children: ReactNode;
   LinkComponent?: ComponentType<any>;
   isNextJS?: boolean;
+  /**
+   * Optional hook for Next.js compatibility.
+   * @returns {string} The current pathname.
+   */
+  usePathname?: () => string; // Optional, for Next.js compatibility
 }
 
 export const LinkProvider: React.FC<LinkProviderProps> = ({
   children,
   LinkComponent,
   isNextJS = false,
+  usePathname,
 }) => {
   const contextValue: LinkContextValue = {
     LinkComponent,
     isNextJS,
+    usePathname,
   };
 
   return (

@@ -12,7 +12,7 @@ export type PageType =
   | "settings"
   | "video"
   | "terms"
-  | "privacy"
+  | "privacy";
 
 type BuildPageUrlOptions = {
   type: PageType;
@@ -49,7 +49,7 @@ export function buildPageUrl({
       basePath = `/brand/${slug}`;
       break;
     case "home":
-      basePath = "/";
+      basePath = "/home";
       break;
     case "explore":
       basePath = "/explore";

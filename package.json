@@ -14,7 +14,7 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "components": "npx concurrently \"pnpm --filter @genuin/ui storybook\" \"pnpm --filter @genuin/components storybook\" \"pnpm  --filter @genuin/ui dev:styles\"",
+    "components": "npx concurrently \"pnpm --filter @genuin/ui storybook\" \"pnpm --filter @genuin/components storybook\" \"pnpm  --filter @genuin/ui dev:styles\" \"pnpm --filter @genuin/components dev:styles\"",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "prepare": "husky install",
     "use-correct-node": "nvm install && nvm use",

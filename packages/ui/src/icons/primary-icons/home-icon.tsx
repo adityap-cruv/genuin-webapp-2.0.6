@@ -1,23 +1,46 @@
 import { cn } from "@genuin/ui/lib/utils";
 
 import type { SVGIconsProps } from "../type";
+import { cva, type VariantProps } from "class-variance-authority";
 
-export function HomeIcon({ className, ...restProps }: SVGIconsProps) {
+const iconVariants = cva("", {
+  variants: {
+    variant: {
+      default: "gencl:stroke-black",
+      active: "gencl:fill-black gencl:stroke-black",
+    },
+  },
+  defaultVariants: {
+    variant: "default",
+  },
+});
+
+export function HomeIcon({
+  className,
+  variant,
+  ...restProps
+}: SVGIconsProps & VariantProps<typeof iconVariants>) {
   return (
     <svg
+      xmlns="http://www.w3.org/2000/svg"
       width="24"
       height="24"
       viewBox="0 0 24 24"
       fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className={cn(className)}
+      className={cn(className, iconVariants({ variant }))}
       {...restProps}
     >
       <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M11.0569 3.37231L2 12H4.99878V21H9.99878V15.7369C9.99878 15.3511 10.135 14.9833 10.3737 14.7105C10.6123 14.4377 10.934 14.2824 11.2715 14.2824H12.7261C13.0636 14.2824 13.3873 14.4356 13.626 14.7084C13.8647 14.9812 13.9988 15.3511 13.9988 15.7369V21H18.9988V12H22L12.9431 3.37231C12.8193 3.25428 12.6723 3.16064 12.5104 3.09676C12.3486 3.03288 12.1752 3 12 3C11.8248 3 11.6514 3.03288 11.4896 3.09676C11.3277 3.16064 11.1807 3.25428 11.0569 3.37231Z"
-        fill="currentColor"
+        d="M5.53613 9.69189V20.3073H10.1515V15.449C10.1515 15.0929 10.2772 14.7534 10.4976 14.5016C10.7179 14.2498 11.0148 14.1064 11.3263 14.1064H12.669C12.9806 14.1064 13.2794 14.2478 13.4997 14.4996C13.72 14.7514 13.8438 15.0929 13.8438 15.449V20.3073H18.4592V9.69189"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M2.76758 11.9996L11.1278 4.03556C11.2421 3.92661 11.3778 3.84018 11.5272 3.78121C11.6765 3.72225 11.8367 3.69189 11.9983 3.69189C12.16 3.69189 12.3201 3.72225 12.4695 3.78121C12.6189 3.84018 12.7546 3.92661 12.8689 4.03556L21.2291 11.9996"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
