@@ -1,6 +1,7 @@
 /**
  * @type {import('next').NextConfig}
  */
+console.log('Next.js configuration loaded for webapp', process.env.NEXT_PUBLIC_CURRENT_ENV)
 const nextConfig = {
   // === Stable Next.js 15 root-level options ===
   eslint: {

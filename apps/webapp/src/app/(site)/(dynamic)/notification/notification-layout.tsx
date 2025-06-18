@@ -6,7 +6,7 @@ import { getNotifications, notificationsCount, readNotifications } from '@lib/ap
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { generatePathname } from '@lib/generate-notification-pathparam'
-import { useMotionValueEvent, useScroll } from 'framer-motion'
+import { useMotionValueEvent, useScroll } from 'motion/react'
 import { useEffect, useRef } from 'react'
 import { Loader } from '@components/ui/loader'
 import { useGenuinOptions } from '@lib/stores/genuin-options'

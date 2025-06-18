@@ -190,7 +190,7 @@ async function handleSubdomainRouting(request: NextRequest, host: string): Promi
 export function getConfig(host: string): { domain?: string; subdomain?: string } | null {
   // Special cases for localhost and other development environments
   const firstSegment = host.split('.')[0]
-  if (['localhost:4005', 'localhost:4000', 'www', '192'].includes(firstSegment)) {
+  if (['localhost:4005', 'localhost:4000', 'localhost:3000', 'www', '192'].includes(firstSegment)) {
     return { subdomain: 'app' }
   }
 

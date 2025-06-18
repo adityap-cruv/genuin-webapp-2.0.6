@@ -10,10 +10,6 @@ ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable && corepack prepare pnpm@8.15.3 --activate
 
-## Stage 2: Install dependencies with caching
-FROM base AS dependencies
-WORKDIR /app
-
 # Copy package files and full local dependency sources for caching
 COPY pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY package.json ./
@@ -33,21 +29,15 @@ COPY packages/typescript-config/ ./packages/typescript-config/
 # We will prune them later for the runner stage.
 RUN pnpm install --frozen-lockfile
 
-## Stage 3: Builder
-FROM dependencies AS builder
-WORKDIR /app
-
 # Copy all source files
 # Ensure .dockerignore is properly configured to exclude unnecessary files
 COPY . .
-
 # Build the application
 # The output: 'standalone' option in next.config.js will create a .next/standalone directory
 RUN pnpm --filter @genuin/webapp run build
 
-## Stage 4: Runner
+## Stage 2: Runner
 FROM node:20.12.0-alpine AS runner
-WORKDIR /app
 
 # No need to install pnpm here for standalone output, server.js is used.
 
@@ -62,23 +52,18 @@ RUN addgroup --system --gid 1001 nodejs && \
 
 # Copy the standalone output. This includes server.js, node_modules,
 # and app-specific files, but NOT static assets or public files.
-COPY --from=builder --chown=nextjs:nodejs /app/apps/webapp/.next/standalone ./apps/webapp/
+COPY --from=base --chown=nextjs:nodejs /app/apps/webapp/.next/standalone /apps/standalone
 
 # Copy static assets from .next/static to the correct location
 # This is critical for serving CSS, JS bundles, and other static assets
-COPY --from=builder --chown=nextjs:nodejs /app/apps/webapp/.next/static ./apps/webapp/apps/webapp/.next/static
+COPY --from=base --chown=nextjs:nodejs /app/apps/webapp/.next/static/ /apps/standalone/apps/webapp/.next/static/
 
 # Copy public folder for static files (images, fonts, etc.)
-COPY --from=builder --chown=nextjs:nodejs /app/apps/webapp/public ./apps/webapp/apps/webapp/public
-
-# The .env file needs to be in the directory where server.js expects it.
-COPY --chown=nextjs:nodejs apps/webapp/.env ./apps/webapp/apps/webapp/.env
-
+COPY --from=base --chown=nextjs:nodejs /app/apps/webapp/public/ /apps/standalone/apps/webapp/public/
 # Set proper permissions
 USER nextjs
 
 EXPOSE 4000
-
 # Start the Next.js application using the server.js from standalone output
 # Adjusted path assuming server.js is within an 'apps/webapp' subdirectory inside the standalone output.
-CMD ["node", "apps/webapp/apps/webapp/server.js"]
+CMD ["node", "/apps/standalone/apps/webapp/server.js"]

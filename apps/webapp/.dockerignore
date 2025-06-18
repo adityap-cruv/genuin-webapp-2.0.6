@@ -15,6 +15,10 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# Local env files
+.env
+**/.env
+
 # Ignore OS and editor files
 .DS_Store
 *.swp

@@ -13,7 +13,7 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "lint:fix": "lint . --fix",
-    "br": "next build && next start",
+    "br": "next build && node .next/standalone/apps/webapp/server.js",
     "check-node": "node ../../scripts/check-node-version.js",
     "predev": "ALLOW_NODE_VERSION_WARNING=true npm run check-node",
     "predev:turbo": "ALLOW_NODE_VERSION_WARNING=true npm run check-node"
