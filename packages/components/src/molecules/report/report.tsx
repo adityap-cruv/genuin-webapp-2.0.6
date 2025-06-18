@@ -23,8 +23,8 @@ import { useAuthContext } from "@genuin/components/context/auth";
 type ReportProps = ComponentProps<typeof Dialog> & {
   reportFor: "VIDEO" | "COMMENT";
   contentId: string;
-  shareUrl: string;
-  videoSlug: string;
+  shareUrl?: string;
+  videoSlug?: string;
   children: React.ReactNode;
 };
 
@@ -65,8 +65,8 @@ export function Report({
           data: {
             type: "report",
             payload: {
-              shareUrl: shareUrl,
-              videoSlug: videoSlug,
+              shareUrl: shareUrl ?? "",
+              videoSlug: videoSlug ?? "",
             },
           },
         }}
@@ -77,7 +77,9 @@ export function Report({
 
   return (
     <Dialog modal {...props}>
-      <DialogTrigger asChild className="gencl:!border-none">{children}</DialogTrigger>
+      <DialogTrigger asChild className="gencl:!border-none">
+        {children}
+      </DialogTrigger>
       <DialogContent className="gencl:max-w-xl gencl:rounded-2xl gencl:space-y-4">
         {reportMutation.isSuccess ? (
           <ReportSuccess />
@@ -150,7 +152,11 @@ function ReportContent({
 function ReportSuccess() {
   return (
     <div className="gencl:flex gencl:flex-col gencl:items-center gencl:justify-center gencl:text-center gencl:gap-5">
-      <Image alt="Success" src="https://media.begenuin.com/web-sdk/v1/icons/success.gif" className="gencl:h-36" />
+      <Image
+        alt="Success"
+        src="https://media.begenuin.com/web-sdk/v1/icons/success.gif"
+        className="gencl:h-36"
+      />
       <div className="gencl:flex gencl:flex-col gencl:gap-2">
         <p className="gencl:text-headline-4-semi-bold">
           Thanks for your Feedback

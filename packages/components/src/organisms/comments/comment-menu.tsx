@@ -6,10 +6,27 @@ import {
 } from "@genuin/ui/components/popover";
 import { ThreeDotsIcon } from "@genuin/ui/icons";
 import { Button } from "@genuin/ui/button";
-export function CommentMenu({ contentId }: { contentId: string }) {
+import { ComponentProps } from "react";
+import { cn } from "@genuin/ui/lib/utils";
+
+type CommentMenuPropsType = ComponentProps<typeof PopoverTrigger> & {
+  contentId: string;
+};
+
+export function CommentMenu({
+  contentId,
+  className,
+  ...restProps
+}: CommentMenuPropsType) {
   return (
     <Popover>
-      <PopoverTrigger className="gencl:p-1 gencl:rounded-lg gencl:hover:bg-secondary-100">
+      <PopoverTrigger
+        className={cn(
+          "gencl:p-1 gencl:rounded-lg gencl:hover:bg-secondary-100",
+          className
+        )}
+        {...restProps}
+      >
         <ThreeDotsIcon className="gencl:h-4 gencl:w-4" />
       </PopoverTrigger>
       <PopoverContent className="gencl:p-0 gencl:border-none gencl:w-fit" align="end">

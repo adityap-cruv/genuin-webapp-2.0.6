@@ -1,7 +1,7 @@
 "use client";
 
-import * as PopoverPrimitive from "@radix-ui/react-popover";
 import * as React from "react";
+import * as PopoverPrimitive from "@radix-ui/react-popover";
 
 import { cn } from "@genuin/ui/lib/utils";
 
@@ -30,21 +30,18 @@ function PopoverContent({
         align={align}
         sideOffset={sideOffset}
         className={cn(
-          [
-            // Base styles
-            "gencl:z-50 gencl:w-60 gencl:bg-white gencl:rounded-md gencl:p-4 gencl:shadow-md gencl:outline-hidden",
-            // Transform origin
-            "gencl:origin-(--radix-popover-content-transform-origin) gencl:border-secondary-150 gencl:border",
-            // Animation states
-            "data-[state=open]:gencl:animate-in data-[state=closed]:gencl:animate-out",
-            "data-[state=open]:gencl:fade-in-0 data-[state=closed]:gencl:fade-out-0",
-            "data-[state=open]:gencl:zoom-in-95 data-[state=closed]:gencl:zoom-out-95",
-            // Side-specific slide animations
-            "data-[side=bottom]:gencl:slide-in-from-top-2",
-            "data-[side=left]:gencl:slide-in-from-right-2",
-            "data-[side=right]:gencl:slide-in-from-left-2",
-            "data-[side=top]:gencl:slide-in-from-bottom-2",
-          ],
+          // Animation classes
+          "gencl:data-[state=open]:animate-in gencl:data-[state=closed]:animate-out",
+          "gencl:data-[state=closed]:fade-out-0 gencl:data-[state=open]:fade-in-0",
+          "gencl:data-[state=closed]:zoom-out-95 gencl:data-[state=open]:zoom-in-95",
+          // Slide animations
+          "gencl:data-[side=bottom]:slide-in-from-top-2",
+          "gencl:data-[side=left]:slide-in-from-right-2",
+          "gencl:data-[side=right]:slide-in-from-left-2",
+          "gencl:data-[side=top]:slide-in-from-bottom-2",
+          // Layout and styling
+          "gencl:z-50 gencl:w-72 gencl:origin-(--radix-popover-content-transform-origin)",
+          "gencl:rounded-md gencl:border gencl:p-4 gencl:shadow-md gencl:outline-hidden",
           className
         )}
         {...props}

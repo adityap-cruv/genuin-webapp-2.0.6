@@ -41,22 +41,22 @@ class AnalyticsServiceSingleton {
 
     if (defaultPayload) {
       this.defaultPayload = defaultPayload;
-      console.log(
-        "[AnalyticsService] Default payload set:",
-        this.defaultPayload
-      );
+      // console.log(
+      //   "[AnalyticsService] Default payload set:",
+      //   this.defaultPayload
+      // );
     }
 
     this.initializationPromise = new Promise<void>((resolve, reject) => {
       if (this.isInitialized) {
-        console.log("[AnalyticsService] Already initialized.");
+        // console.log("[AnalyticsService] Already initialized.");
         resolve();
         return;
       }
 
-      console.log(
-        "[AnalyticsService] Attempting low-priority initialization with imported SDK..."
-      );
+      // console.log(
+      //   "[AnalyticsService] Attempting low-priority initialization with imported SDK..."
+      // );
 
       const doInitialize = () => {
         try {
@@ -91,35 +91,35 @@ class AnalyticsServiceSingleton {
             );
 
             this.rudderAnalyticsInstance.ready(() => {
-              console.log(
-                "[AnalyticsService] RudderStack SDK initialized via import."
-              );
+              // console.log(
+              //   "[AnalyticsService] RudderStack SDK initialized via import."
+              // );
               this.isInitialized = true;
               this.processEventQueue();
               resolve();
             });
           } else {
             // Non-browser environment
-            console.warn(
-              "[AnalyticsService] Non-browser environment, skipping client-side initialization."
-            );
+            // console.warn(
+            //   "[AnalyticsService] Non-browser environment, skipping client-side initialization."
+            // );
             resolve(); // Resolve to not block, but it won't be truly initialized for client events
           }
         } catch (error) {
-          console.error(
-            "[AnalyticsService] Error during RudderAnalytics initialization via import:",
-            error
-          );
+          // console.error(
+          //   "[AnalyticsService] Error during RudderAnalytics initialization via import:",
+          //   error
+          // );
           // Fallback to simulated initialization if the imported SDK fails in a browser environment
           if (typeof window !== "undefined") {
-            console.warn(
-              "[AnalyticsService] RudderAnalytics initialization via import failed. Simulating initialization as fallback."
-            );
+            // console.warn(
+            //   "[AnalyticsService] RudderAnalytics initialization via import failed. Simulating initialization as fallback."
+            // );
             // Simulate initialization for environments where the SDK failed
             setTimeout(() => {
-              console.log(
-                "[AnalyticsService] Simulated SDK initialization complete (fallback)."
-              );
+              // console.log(
+              //   "[AnalyticsService] Simulated SDK initialization complete (fallback)."
+              // );
               this.isInitialized = true; // Mark as initialized for simulation
               this.processEventQueue(); // Process queue with simulated tracking
               resolve();
@@ -138,9 +138,9 @@ class AnalyticsServiceSingleton {
         setTimeout(doInitialize, 500); // Fallback for environments without requestIdleCallback, mostly iOS.
       } else {
         // Non-browser environment, resolve immediately as uninitialized or handle as error
-        console.warn(
-          "[AnalyticsService] Non-browser environment, skipping client-side initialization."
-        );
+        // console.warn(
+        //   "[AnalyticsService] Non-browser environment, skipping client-side initialization."
+        // );
         // this.isInitialized = false; // Or true if server-side tracking is set up differently
         resolve(); // Resolve to not block, but it won't be truly initialized for client events
       }
@@ -162,44 +162,49 @@ class AnalyticsServiceSingleton {
       payload: mergedPayload,
       timestamp: Date.now(),
     };
-
+    // console.log(
+    //   `[AnalyticsService Track] Event: ${eventName}`,
+    //   mergedPayload
+    // );
     if (
       this.isInitialized &&
       this.rudderAnalyticsInstance // Use the instance here
     ) {
-      console.log(
-        `[AnalyticsService Track] Event: ${eventName}`,
-        mergedPayload
-      );
+      // console.log(
+      //   `[AnalyticsService Track] Event: ${eventName}`,
+      //   mergedPayload
+      // );
       this.rudderAnalyticsInstance.track(eventName, mergedPayload);
     } else if (this.isInitialized) {
       // SDK initialized (possibly simulated after error) but rudderAnalyticsInstance is not available
-      console.log(
-        `[AnalyticsService Track (Simulated or SDK instance error)] Event: ${eventName}`,
-        mergedPayload
-      );
+      // console.log(
+      //   `[AnalyticsService Track (Simulated or SDK instance error)] Event: ${eventName}`,
+      //   mergedPayload
+      // );
     } else {
-      console.log(
-        `[AnalyticsService Queued] Event: ${eventName}. Waiting for initialization.`,
-        mergedPayload
-      );
+      // console.log(
+      //   `[AnalyticsService Queued] Event: ${eventName}. Waiting for initialization.`,
+      //   mergedPayload
+      // );
       this.eventQueue.push(eventData);
       // Ensure initialization is triggered if not already in progress
       if (!this.initializationPromise) {
-        this.initialize(); // Attempt to initialize if not already started
+        this.initialize().catch((error) => {
+          // console.error(
+          //   "[AnalyticsService] Error during initialization after event track:",
+          //   error
+          // );
+        });
       }
-      // Optionally, wait for initialization before resolving the track call, or resolve immediately
-      // await this.initializationPromise; // Uncomment to make track calls wait
-      // if (this.isInitialized) this.track(eventName, payload); // Re-process if it initialized quickly
     }
   }
 
   private processEventQueue(): void {
     if (!this.isInitialized) return;
 
-    console.log(
-      `[AnalyticsService] Processing event queue (${this.eventQueue.length} events)...`
-    );
+    // console.log(
+    //   `[AnalyticsService] Processing event queue (${this.eventQueue.length} events)...`
+    // );
     while (this.eventQueue.length > 0) {
       const event = this.eventQueue.shift();
       if (event) {
@@ -207,7 +212,7 @@ class AnalyticsServiceSingleton {
         this.track(event.eventName, event.payload);
       }
     }
-    console.log("[AnalyticsService] Event queue processed.");
+    // console.log("[AnalyticsService] Event queue processed.");
   }
 
   public getIsInitialized(): boolean {
@@ -216,10 +221,10 @@ class AnalyticsServiceSingleton {
 
   public setDefaultPayload(payload: DefaultAnalyticsPayload): void {
     this.defaultPayload = payload;
-    console.log(
-      "[AnalyticsService] Default payload updated:",
-      this.defaultPayload
-    );
+    // console.log(
+    //   "[AnalyticsService] Default payload updated:",
+    //   this.defaultPayload
+    // );
   }
 }
 

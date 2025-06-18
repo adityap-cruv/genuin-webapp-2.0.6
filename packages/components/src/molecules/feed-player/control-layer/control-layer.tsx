@@ -97,14 +97,14 @@ export const ControlLayer = memo(function ControlLayer({
       <div
         onClick={handleVideoClick}
         className={cn(
-          "gencl:absolute gencl:inset-0 gencl:z-10 gencl:h-full gencl:w-full gencl:overflow-clip gencl:transition-all gencl:flex gencl:justify-center",
+          "gencl:absolute group gencl:inset-0 gencl:z-10 gencl:h-full gencl:w-full gencl:overflow-clip gencl:transition-all gencl:flex gencl:justify-center",
           // showSeeker && "gencl:-translate-y-4",
           // showScrubber ? "gencl:hidden" : "gencl:block",
           className
         )}
         {...restProps}
       >
-        <Controls />
+        <Controls className="gencl:group-hover:flex gencl:hidden" />
         {/* this is wallet badge for wallet. */}
         {/* {isInModal && (
           <div

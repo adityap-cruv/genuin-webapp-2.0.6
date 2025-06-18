@@ -93,6 +93,8 @@ export function PlayerList({
           <Comments
             videoId={posts[activeIndex].video.id}
             loopId={posts[activeIndex].group.id}
+            communityId={posts[activeIndex].community?.id}
+            videoSlug={posts[activeIndex].video.slug}
             className="gencl:h-full"
           />
         </div>

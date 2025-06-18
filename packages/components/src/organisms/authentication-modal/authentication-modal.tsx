@@ -14,14 +14,13 @@ import {
 } from "./context";
 import { Screens } from "./screens";
 import { useBaseContext } from "@genuin/components/context/base";
-import { useSearchParams } from "@genuin/components/hooks/use-search-params";
 
 type AuthenticationModalProps = ComponentProps<typeof DialogTrigger> & {
   action?: AuthActionType;
   open?: boolean;
   customStep?: ComponentProps<typeof AuthenticationModalProvider>["customStep"];
   onOpenChange?: (open: boolean) => void;
-  getAppData?: getAppDataType;
+  getAppData?: Partial<getAppDataType>;
 };
 
 export function AuthenticationModal({

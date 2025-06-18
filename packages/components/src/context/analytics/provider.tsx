@@ -5,7 +5,6 @@ import {
   // useState, // No longer needed for isInitialized
   useCallback,
   ReactNode,
-  useDeferredValue,
 } from "react";
 import { AnalyticsService } from "./service"; // Import the singleton service
 import { AnalyticsContext, EventName } from "./context";

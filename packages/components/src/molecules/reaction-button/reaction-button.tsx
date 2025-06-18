@@ -17,8 +17,8 @@ type ReactionButtonProps = ComponentProps<typeof PrimitiveButton> & {
    * The number of reactions the content has received.
    */
   reactionCount: number;
-  shareUrl: string;
-  videoSlug: string;
+  shareUrl?: string;
+  videoSlug?: string;
   contentType: "VIDEO" | "COMMENT";
   /**
    * Whether to render the button children or not.
@@ -41,8 +41,8 @@ export function ReactionButton(props: ReactionButtonProps) {
             payload: {
               reactionSuffix: brandDetails.reactions.suffix,
               reactionTitle: brandDetails.reactions.title,
-              shareUrl: props.shareUrl,
-              videoSlug: props.videoSlug,
+              shareUrl: props.shareUrl ?? "",
+              videoSlug: props.videoSlug ?? "",
             },
           },
         }}

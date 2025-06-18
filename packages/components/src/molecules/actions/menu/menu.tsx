@@ -7,10 +7,10 @@ import {
   PopoverContent,
 } from "@genuin/ui/components/popover";
 import { cn } from "@genuin/ui/lib/utils";
-import React, { ComponentProps } from "react";
+import React from "react";
 import { ShareButton } from "@genuin/components/molecules/share-button";
 
-type MenuProps = ComponentProps<typeof Popover> & {
+type MenuProps = {
   children?: React.ReactNode;
   contentId?: string;
   videoSlug?: string;
@@ -40,7 +40,11 @@ export function Menu({
   const { brandDetails } = useBaseContext();
   const MenuData = [
     shareUrl && {
-      children: <ShareButton pathName={shareUrl} withCustomChildren>{menuItems("Copy Link")}</ShareButton> ,
+      children: (
+        <ShareButton pathName={shareUrl} withCustomChildren>
+          {menuItems("Copy Link")}
+        </ShareButton>
+      ),
     },
     brandDetails.web_configs.playback_speed_enabled && {
       children: <PlaybackSpeed children={menuItems("Playback speed")} />,
@@ -67,7 +71,10 @@ export function Menu({
     },
   ].filter(
     (item): item is { children: React.ReactElement } =>
-      !!item && typeof item === "object" && "children" in item && React.isValidElement(item.children)
+      !!item &&
+      typeof item === "object" &&
+      "children" in item &&
+      React.isValidElement(item.children)
   );
 
   return (

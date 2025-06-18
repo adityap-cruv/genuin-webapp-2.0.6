@@ -31,7 +31,7 @@ export function CommentItem({
   const { owner } = comment;
   return (
     <div
-      className="comment gencl:flex gencl:gap-2"
+      className="comment gencl:flex gencl:gap-2 gencl:group"
       key={comment.commentId}
     >
       <Avatar
@@ -40,7 +40,7 @@ export function CommentItem({
         isAvatar={owner.isAvatar}
       />
       <div className="gencl:space-y-2 gencl:w-full">
-        <div className="gencl:flex gencl:items-center gencl:justify-between">
+        <div className="gencl:flex gencl:items-center gencl:h-4 gencl:justify-between">
           <div className="gencl:flex gencl:items-center">
             <ProfileLink
               className="gencl:text-body-1-semi-bold"
@@ -52,7 +52,10 @@ export function CommentItem({
               &nbsp; {comment.createdAt && getTimeAgo(comment.createdAt)}
             </span>
           </div>
-         <CommentMenu contentId={comment.commentId} />
+          <CommentMenu
+            contentId={comment.commentId}
+            className="gencl:group-hover:block gencl:data-[state=open]:block  gencl:hidden"
+          />
         </div>
         <CommentContent comment={comment} />
         <div className="gencl:flex gencl:items-center">

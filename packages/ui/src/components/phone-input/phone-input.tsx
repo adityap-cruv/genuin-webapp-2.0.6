@@ -15,7 +15,7 @@ import {
   CommandList,
 } from "../command";
 import { Input, type InputProps } from "../input";
-import { Popover, PopoverContent, PopoverTrigger } from "../popover/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "../popover";
 
 type PhoneInputProps = Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
