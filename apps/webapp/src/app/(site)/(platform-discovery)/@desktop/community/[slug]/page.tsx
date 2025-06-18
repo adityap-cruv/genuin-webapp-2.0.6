@@ -11,12 +11,8 @@ interface Props {
 export default async function CommunityPage({ params, searchParams }: Props) {
   const resolvedParams = await params
   const resolvedSearchParams = await searchParams
-  if (resolvedSearchParams?.feed === '1') {
-    // TODO: implement feed view if needed
-    // return <RootFeed slug={params.slug} />
-    return <div>Feed view not implemented</div>
-  }
-  return <CommunityClientPage slug={resolvedParams.slug} />
+  const isFeed = resolvedSearchParams.feed === '1'
+  return <CommunityClientPage slug={resolvedParams.slug} isFeed={isFeed} />
 }
 
 interface CommunityDataType {

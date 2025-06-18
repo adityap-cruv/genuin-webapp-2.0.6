@@ -1,9 +1,10 @@
 import { CommunityDetails } from '@genuin/components/page/community-details/community-details'
 
 interface Props {
-  slug: string
+  slug: string,
+  isFeed: boolean
 }
 
-export function CommunityClientPage({ slug }: Props) {
-  return <CommunityDetails slug={slug} />
+export function CommunityClientPage({ slug, isFeed }: Props) {
+  return <CommunityDetails slug={slug} isFeed={isFeed} />
 }

@@ -27,11 +27,27 @@ export const Default: Story = {
   args: {
     // slug: "dhruv-2-new",
     slug: "koda-lovers",
+    isFeed: false,
+  },
+};
+
+export const FeedView: Story = {
+  args: {
+    slug: "koda-lovers",
+    isFeed: true,
   },
 };
 
 export const ErrorPage: Story = {
   args: {
     slug: "invalid-slug-to-trigger-generic-error",
+    isFeed: false,
+  },
+};
+
+export const FeedViewError: Story = {
+  args: {
+    slug: "invalid-slug-to-trigger-generic-error",
+    isFeed: true,
   },
 };

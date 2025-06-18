@@ -1,8 +1,17 @@
 "use client";
 import { Image } from "@genuin/ui/image";
 import { cn } from "@genuin/ui/utils";
-import { useId, useCallback, type ComponentProps, useEffect } from "react";
+import {
+  useId,
+  useCallback,
+  type ComponentProps,
+  useEffect,
+  useMemo,
+} from "react";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { FeedView } from "@genuin/components/templates/feed";
+import { useGetCommunityFeed } from "@genuin/components/react-query/api/community/feed";
+import { getQueryKeyForCommunityFeed } from "@genuin/components/react-query/keys/community";
 
 import { JoinCommunityButton } from "@genuin/components/molecules/join-community-button";
 import { ShareButton } from "@genuin/components/molecules/share-button";
@@ -25,6 +34,23 @@ import { useLocalStorage } from "usehooks-ts";
 import { RECENT_COMMUNITIES_KEY } from "@genuin/components/lib/constants";
 import { type RecentCommunity } from "@genuin/components/types/community";
 
+export function CommunityDetails({
+  slug,
+  isFeed = false,
+}: {
+  slug: string;
+  isFeed?: boolean;
+}) {
+  // If isFeed is true, render the community feed
+  if (isFeed) {
+    return <CommunityFeedView communitySlug={slug} />;
+  }
+
+  // Otherwise, render the full community details view
+  return <CommunityDetailsView slug={slug} />;
+}
+
+// TODO: Move this to a utility file
 function updateRecentCommunities(
   newCommunity: RecentCommunity,
   prevCommunities: RecentCommunity[] = []
@@ -42,7 +68,7 @@ function updateRecentCommunities(
   return [newCommunity, ...prevCommunities].slice(0, 10);
 }
 
-export function CommunityDetails({ slug }: { slug: string }) {
+function CommunityDetailsView({ slug }: { slug: string }) {
   const {
     data: communityDetails,
     isLoading,
@@ -282,6 +308,30 @@ function CommunityBanner({
         className
       )}
       {...restProps}
+    />
+  );
+}
+
+function CommunityFeedView({ communitySlug }: { communitySlug: string }) {
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useGetCommunityFeed(communitySlug, "");
+
+  const feed = useMemo(
+    () => data?.pages.flatMap((page) => page.feed) ?? [],
+    [data]
+  );
+
+  return (
+    <FeedView
+      startIndex={0}
+      feedData={{
+        videos: feed,
+        isLoading,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+        queryKey: getQueryKeyForCommunityFeed(communitySlug, ""),
+      }}
     />
   );
 }
