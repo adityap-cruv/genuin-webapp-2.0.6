@@ -1,7 +1,6 @@
 import { Loader } from "@genuin/ui/loader";
 import { MuteIcon } from "@genuin/ui/icons";
 import { UnmuteIcon } from "@genuin/ui/icons";
-
 import { cn } from "@genuin/ui/utils";
 import { PlayIcon } from "@genuin/ui/icons";
 import { PauseIcon } from "@genuin/ui/icons";
@@ -28,7 +27,7 @@ export function PlayingState({
       </div>
     );
 
-  if (buttonAction === "PAUSE")
+  if (buttonAction === "PAUSE" && playingState === "PAUSED") {
     return (
       <div
         key={buttonAction}
@@ -41,30 +40,40 @@ export function PlayingState({
         <PauseIcon variant="light" className="gencl:h-8 gencl:w-8" />
       </div>
     );
+  }
 
-  if (buttonAction)
-    return (
-      <div
-        key={buttonAction}
-        className={cn(
-          "gencl:rounded-full gencl:bg-black/40 gencl:align-middle gencl:backdrop-blur-sm",
-          "gencl:delay-500 gencl:animate-fade-out",
-          className
-        )}
-        {...restProps}
-      >
-        {buttonAction === "PLAY" && (
-          <PlayIcon variant="light" className="gencl:h-8 gencl:w-8" />
-        )}
-        {/* {buttonAction === "PAUSE" && (
-          <PauseIcon variant="light" className="gencl:h-8 gencl:w-8" />
-        )} */}
-        {buttonAction === "MUTE" && (
-          <MuteIcon variant="light" className="gencl:h-8 gencl:w-8" />
-        )}
-        {buttonAction === "UNMUTE" && (
-          <UnmuteIcon variant="light" className="gencl:h-8 gencl:w-8" />
-        )}
-      </div>
-    );
+  // Render icon based on buttonAction (only if it's a valid action)
+  const renderIcon = () => {
+    switch (buttonAction) {
+      case "PLAY":
+        return <PlayIcon variant="light" className="gencl:h-8 gencl:w-8" />;
+      case "MUTE":
+        return <MuteIcon variant="light" className="gencl:h-8 gencl:w-8" />;
+      case "UNMUTE":
+        return <UnmuteIcon variant="light" className="gencl:h-8 gencl:w-8" />;
+      default:
+        return null;
+    }
+  };
+
+  const icon = renderIcon();
+
+  // Only render if we have a valid icon to show
+  if (!icon) {
+    return null;
+  }
+
+  return (
+    <div
+      key={buttonAction}
+      className={cn(
+        "gencl:rounded-full gencl:bg-black/40 gencl:align-middle gencl:backdrop-blur-sm",
+        "gencl:delay-500 gencl:animate-fade-out",
+        className
+      )}
+      {...restProps}
+    >
+      {icon}
+    </div>
+  );
 }

@@ -32,7 +32,7 @@ export const MultiLinkCard: React.FC<MultiLinkCardProps> = ({
 
   return (
     <div className="gencl:bg-black/50 gencl:gap-2 gencl:flex gencl:items-center gencl:justify-between gencl:backdrop-blur-md gencl:rounded-lg gencl:text-sm gencl:font-medium gencl:text-white gencl:p-2 gencl:w-full">
-      <div className="gencl:flex-1 gencl:text-start gencl:flex gencl:items-center gencl:gap-2 gencl:line-clamp-1">
+      <div className="gencl:flex-1 gencl:text-start gencl:flex gencl:items-center gencl:gap-2 gencl:line-clamp-1 gencl:overflow-x-auto gencl:flex-nowrap gencl:scrollbar-hide">
         {visibleLinks.map((link, index) => (
           <div
             key={`${link.link}-${index}`}

@@ -85,7 +85,7 @@ export const LinkOutContentRenderer: React.FC<LinkOutContentRendererProps> = ({
                   <MultiLinkCard
                     key={`multi-${index}`}
                     links={sortedLinks}
-                    maxVisible={3}
+                    maxVisible={100}
                   />
                 );
               }
