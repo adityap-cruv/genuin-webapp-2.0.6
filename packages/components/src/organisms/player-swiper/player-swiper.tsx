@@ -73,7 +73,13 @@ export function PlayerList({
                   className="gencl:shrink-0 gencl:pb-4"
                   actionWrapper={{
                     COMMENT: (defaultNode) => (
-                      <span onClick={toggle}>{defaultNode}</span>
+                      <span
+                        onClick={() => {
+                          if (showExpandView) toggle();
+                        }}
+                      >
+                        {defaultNode}
+                      </span>
                     ),
                   }}
                   onReactionStateChange={(isReacted) => {

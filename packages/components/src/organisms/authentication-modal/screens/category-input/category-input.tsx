@@ -34,11 +34,28 @@ export function CategoryInput({ ...props }: CategoryInputProps) {
   });
 
   const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
+  const [isSurpriseMe, setIsSurpriseMe] = useState(false);
 
   const handleCategorySelection = (cat: string) => {
     setSelectedCategory((prev) =>
       prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
     );
+  };
+
+  const getAllTopicIds = () => {
+    if (!Array.isArray(categories)) return [];
+    return categories.flatMap((category) =>
+      category.topics.map((item: any) => item.topic_id)
+    );
+  };
+
+  const handleSurpriseMe = () => {
+    setIsSurpriseMe(true);
+    const allTopicIds = getAllTopicIds();
+    setSelectedCategory(allTopicIds);
+    addCategories(allTopicIds, {
+      onSettled: () => setIsSurpriseMe(false),
+    });
   };
 
   return (
@@ -93,14 +110,33 @@ export function CategoryInput({ ...props }: CategoryInputProps) {
           })}
       </div>
       <SubmitButton
-        isLoading={isPending}
+        isLoading={isPending && !isSurpriseMe}
         title="Choose 3+"
         error={error ?? ""}
-        disabled={selectedCategory.length < 3 || isPending}
+        disabled={selectedCategory.length < 3 || isPending || isSurpriseMe}
         onClick={() => {
           addCategories(selectedCategory);
         }}
       />
+      <Button
+        onClick={handleSurpriseMe}
+        theme="outline"
+        className="gencl:h-9 gencl:w-full gencl:mt-2 gencl:border-primary"
+        disabled={
+          isPending ||
+          isSurpriseMe ||
+          !Array.isArray(categories) ||
+          categories.length === 0
+        }
+      >
+        {isSurpriseMe ? (
+          <Loader className="gencl:stroke-white gencl:fill-white" />
+        ) : (
+          <p className="gencl:text-title-3-demi gencl:text-primary">
+            Surprise Me
+          </p>
+        )}
+      </Button>
     </div>
   );
 }

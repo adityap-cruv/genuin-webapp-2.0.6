@@ -52,13 +52,23 @@ export function SidebarActions({
           align="start"
           className="gencl:shadow-none gencl:focus-visible:outline-none gencl:focus-visible:ring-0 gencl:bg-white gencl:rounded-lg gencl:p-3 gencl:w-fit gencl:border gencl:border-secondary-100"
         >
-          <Link href={brandConfiguredTerms ?? buildPageUrl({ type: "terms" })}>
+          <Link
+            href={
+              brandConfiguredTerms.length !== 0
+                ? brandConfiguredTerms
+                : buildPageUrl({ type: "terms" })
+            }
+          >
             <p className="gencl:text-body-1-medium gencl:p-2 gencl:hover:bg-secondary-50 gencl:cursor-pointer gencl:rounded-lg">
               Terms and Condition
             </p>
           </Link>
           <Link
-            href={brandConfiguredPrivacy ?? buildPageUrl({ type: "privacy" })}
+            href={
+              brandConfiguredPrivacy.length !== 0
+                ? brandConfiguredPrivacy
+                : buildPageUrl({ type: "privacy" })
+            }
           >
             <p className="gencl:text-body-1-medium gencl:p-2 gencl:hover:bg-secondary-50 gencl:cursor-pointer gencl:rounded-lg">
               Privacy Policy

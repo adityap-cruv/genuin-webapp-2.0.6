@@ -1,7 +1,7 @@
 import { type ComponentProps, type ReactNode } from "react";
 import { type GestureOverlayKeysType } from "./context";
 import { cn, getGifLink, getIconLink } from "@genuin/ui/lib/utils";
-import { Image } from "@genuin/ui/components/image";
+// import { Image } from "@genuin/ui/components/image";
 
 type GestureConfig = {
   mobileImage: string;
@@ -78,19 +78,19 @@ export function LazyGestureGuideOverlay({
           className
         )}
       >
-        <Image
-          src={gestureData.mobileImage}
-          alt="gesture"
-          height={80}
-          width={80}
-          className="sm:gencl:hidden"
-        />
-        <Image
+        <img
           src={gestureData.desktopImage}
           alt="gesture"
-          height={80}
-          width={80}
-          className="gencl:hidden sm:gencl:block"
+          // height={80}
+          // width={80}
+          className="sm:gencl:hidden gencl:h-20 gencl:shrink-0"
+        />
+        <img
+          src={gestureData.mobileImage}
+          alt="gesture"
+          // height={80}
+          // width={80}
+          className="gencl:hidden sm:gencl:block gencl:shrink-0 gencl:h-20"
         />
         <p className="gencl:text-center gencl:text-body-1-bold gencl:text-white">
           {gestureText}
