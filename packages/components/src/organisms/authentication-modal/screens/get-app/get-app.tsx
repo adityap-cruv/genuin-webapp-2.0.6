@@ -98,16 +98,13 @@ export function GetApp({ onSubmit, ...props }: GetAppProps) {
         </p>
       </div>
       <div className="gencl:flex gencl:flex-col gencl:items-center gencl:gap-2">
-        {isLoading ? (
-          <Loader />
-        ) : (
-          <QRCode
-            value={deeplinkUrl}
-            size={160}
-            qrStyle="squares"
-            logoPaddingStyle="square"
-          />
-        )}
+        <QRCode
+          value={isLoading ? "placeholder" : deeplinkUrl}
+          size={160}
+          qrStyle="squares"
+          logoPaddingStyle="square"
+          style={isLoading ? { filter: "blur(6px)" } : undefined}
+        />
         <p className="gencl:text-body-1-medium">Scan to download app</p>
       </div>
       <AppDownloadForm />

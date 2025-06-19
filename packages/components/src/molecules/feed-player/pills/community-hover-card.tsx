@@ -10,7 +10,6 @@ import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { Stats } from "@genuin/components/molecules/stats";
 import { Tag } from "@genuin/components/molecules/tag";
 import { compressText } from "@genuin/components/lib/utils";
-import { useAuthContext } from "@genuin/components/context/auth";
 
 type CommunityHoverCardProps = {
   communityDetails: PostDetailsType["community"];
@@ -27,7 +26,6 @@ export function CommunityHoverCard({
 }: CommunityHoverCardProps) {
   const { name, profileImage, isPrivate, brand, id, userRole } =
     communityDetails;
-  const { authenticationStatus } = useAuthContext();
 
   return (
     <div
@@ -89,20 +87,19 @@ export function CommunityHoverCard({
         />
       </div>
 
-      <div className="gencl:flex gencl:gap-2 gencl:w-full">
-        {authenticationStatus === "authenticated" && (
-          <JoinCommunityButton
-            communityId={id}
-            communityHandle={communityDetails.handle}
-            communityName={communityDetails.name ?? ""}
-            slug={communityDetails.slug}
-            isPrivate={isPrivate}
-            role={userRole}
-            onCommunityJoinStatusChange={onCommunityJoinStatusChange}
-            className="gencl:flex-grow"
-          />
-        )}
+      <div className="gencl:flex gencl:items-center gencl:gap-2 gencl:w-full">
+        <JoinCommunityButton
+          communityId={id}
+          communityHandle={communityDetails.handle}
+          communityName={communityDetails.name ?? ""}
+          slug={communityDetails.slug}
+          isPrivate={isPrivate}
+          role={userRole}
+          onCommunityJoinStatusChange={onCommunityJoinStatusChange}
+          className="gencl:flex-grow"
+        />
         <ShareButton
+          size="sm"
           pathName={buildPageUrl({
             type: "community",
             slug: communityDetails.slug,

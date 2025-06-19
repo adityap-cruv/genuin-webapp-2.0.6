@@ -35,24 +35,29 @@ type TooltipActionProps = {
   icon: ReactNode;
   tooltipText: string;
   onClick?: () => void;
-} & VariantProps<typeof tooltipVariants>;
+} & VariantProps<typeof tooltipVariants> &
+  ComponentProps<typeof TooltipTrigger>;
 
 function TooltipAction({
   icon,
   tooltipText,
   variant,
   onClick,
+  className,
+  ...restProps
 }: TooltipActionProps) {
   return (
     <Tooltip>
       <TooltipTrigger
         className={cn(
           tooltipVariants({ variant }),
-          "gencl:hover:cursor-pointer ",
+          "gencl:hover:cursor-pointer",
           "gencl:h-12 gencl:w-12 gencl:flex gencl:items-center gencl:justify-center  gencl:rounded-full",
-          "gencl:[&_svg]:w-8 gencl:[&_svg]:h-8"
+          "gencl:[&_svg]:w-8 gencl:[&_svg]:h-8",
+          className
         )}
         onClick={onClick}
+        {...restProps}
       >
         {icon}
       </TooltipTrigger>
@@ -83,6 +88,7 @@ type ActionsPropsType = ComponentProps<"div"> & {
   variant?: "light" | "dark";
   shareUrl: string;
   slug: string;
+  isCommentBoxOpen?: boolean;
   /**
    * If you want to override the default action wrappers, you can pass a namedActionWrapper object.
    * Each key in the object should correspond to an action type (e.g., "REPOST", "REACTION", etc.),
@@ -167,6 +173,7 @@ export function Actions({
   shareUrl,
   onReactionStateChange,
   slug,
+  isCommentBoxOpen = false,
   ...restProps
 }: ActionsPropsType) {
   const actions = [
@@ -218,6 +225,13 @@ export function Actions({
             icon={action.icon}
             tooltipText={action.tooltipText}
             variant={variant}
+            className={
+              action.actionType === "COMMENT" && isCommentBoxOpen
+                ? variant === "dark"
+                  ? "gencl:bg-secondary-800"
+                  : "gencl:bg-secondary-200"
+                : ""
+            }
           />
         );
         // Create context object

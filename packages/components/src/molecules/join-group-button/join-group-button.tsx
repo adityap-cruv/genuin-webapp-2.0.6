@@ -110,6 +110,7 @@ function Button({
 
   return (
     <PrimitiveButton
+      // size="sm"
       onClick={handleGroupJoin}
       disabled={disabled}
       {...restProps}

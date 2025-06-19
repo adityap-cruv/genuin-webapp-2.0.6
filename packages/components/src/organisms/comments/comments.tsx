@@ -10,12 +10,15 @@ import {
 } from "@genuin/components/react-query/api/comments";
 import { CommentItem, CommentsItemSkeleton } from "./comment-item";
 import { CommentInputBox } from "./comment-input";
+import { X } from "lucide-react";
 
 type CommentPropsType = {
   videoId: string;
   loopId: string;
   communityId: string;
   videoSlug: string;
+  showCloseButton?: boolean;
+  onClose?: () => void;
 } & ComponentProps<"div">;
 
 export function Comments({
@@ -24,6 +27,8 @@ export function Comments({
   communityId,
   videoSlug,
   className,
+  showCloseButton = false,
+  onClose,
   ...restProps
 }: CommentPropsType) {
   return (
@@ -34,7 +39,15 @@ export function Comments({
       )}
       {...restProps}
     >
-      <CommentsComponent videoId={videoId} />
+      {showCloseButton && (
+        <X
+          className="gencl:absolute gencl:top-2 gencl:right-2 gencl:cursor-pointer"
+          onClick={() => {
+            onClose?.();
+          }}
+        />
+      )}
+      <CommentsComponent videoId={videoId} showCloseButton={showCloseButton} />
       <CommentInputBox
         videoId={videoId}
         loopId={loopId}
@@ -48,7 +61,13 @@ export function Comments({
   );
 }
 
-function CommentsComponent({ videoId }: { videoId: string }) {
+function CommentsComponent({
+  videoId,
+  showCloseButton,
+}: {
+  videoId: string;
+  showCloseButton: boolean;
+}) {
   const {
     data,
     isLoading,
@@ -102,7 +121,12 @@ function CommentsComponent({ videoId }: { videoId: string }) {
 
   if (comments && comments.length !== 0) {
     return (
-      <div className="gencl:h-full gencl:w-full gencl:overflow-auto gencl:p-4 gencl:space-y-4 gencl:!pb-16">
+      <div
+        className={cn(
+          "gencl:h-full gencl:w-full gencl:overflow-auto gencl:p-4 gencl:space-y-4 gencl:!pb-16",
+          showCloseButton && "gencl:mt-6"
+        )}
+      >
         <InfiniteScroll
           isLoadingNextPage={isFetchingNextPage}
           hasNextPage={hasNextPage}

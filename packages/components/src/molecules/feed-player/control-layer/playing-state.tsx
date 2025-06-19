@@ -28,6 +28,20 @@ export function PlayingState({
       </div>
     );
 
+  if (buttonAction === "PAUSE")
+    return (
+      <div
+        key={buttonAction}
+        className={cn(
+          "gencl:rounded-full gencl:bg-black/40 gencl:align-middle gencl:backdrop-blur-sm",
+          className
+        )}
+        {...restProps}
+      >
+        <PauseIcon variant="light" className="gencl:h-8 gencl:w-8" />
+      </div>
+    );
+
   if (buttonAction)
     return (
       <div
@@ -42,9 +56,9 @@ export function PlayingState({
         {buttonAction === "PLAY" && (
           <PlayIcon variant="light" className="gencl:h-8 gencl:w-8" />
         )}
-        {buttonAction === "PAUSE" && (
+        {/* {buttonAction === "PAUSE" && (
           <PauseIcon variant="light" className="gencl:h-8 gencl:w-8" />
-        )}
+        )} */}
         {buttonAction === "MUTE" && (
           <MuteIcon variant="light" className="gencl:h-8 gencl:w-8" />
         )}

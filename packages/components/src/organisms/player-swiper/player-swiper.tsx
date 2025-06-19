@@ -71,6 +71,7 @@ export function PlayerList({
                   reactionCount={post.video.sparkCount}
                   variant={showExpandView ? "dark" : "light"}
                   className="gencl:shrink-0 gencl:pb-4"
+                  isCommentBoxOpen={value}
                   actionWrapper={{
                     COMMENT: (defaultNode) => (
                       <span
@@ -102,6 +103,8 @@ export function PlayerList({
             communityId={posts[activeIndex].community?.id}
             videoSlug={posts[activeIndex].video.slug}
             className="gencl:h-full"
+            showCloseButton={value}
+            onClose={toggle}
           />
         </div>
       )}
