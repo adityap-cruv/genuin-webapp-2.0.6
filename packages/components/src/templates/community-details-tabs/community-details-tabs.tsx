@@ -16,8 +16,8 @@ import {
   useGetCommunityGroups,
 } from "@genuin/components/react-query/api/community/groups";
 import { useGetCommunityMembers } from "@genuin/components/react-query/api/community/members";
-import { Posts } from "./posts";
 import { ComponentErrorState } from "@genuin/components/organisms/error-state-component";
+import { GroupPosts } from "@genuin/components/organisms/group-posts";
 
 type CommunityDetailsTabsPropsType = Omit<
   {
@@ -149,7 +149,12 @@ function CommunityGroups({ slug }: { slug: string }) {
         {showPrivateGroupAccess ? (
           <ComponentErrorState forList type="PRIVATE_GROUP" />
         ) : (
-          <Posts groupSlug={group.slug} communitySlug={slug} />
+          <GroupPosts
+            slug={group.slug}
+            className="gencl:bg-secondary-50 gencl:p-4"
+            lazyLoad="manual"
+            enableFeedView
+          />
         )}
       </GenericDetails>
     );
