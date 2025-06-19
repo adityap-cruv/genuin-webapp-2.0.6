@@ -6,9 +6,10 @@ import { PostsGrid } from "@genuin/components/organisms/posts-grid";
 import { useGetGroupFeed } from "@genuin/components/react-query/api/group/feed";
 import { getQueryKeyForGroupFeed } from "@genuin/components/react-query/keys/feed";
 
+// TODO: Not able to use dynamic import with type import
 const FeedView = lazy(
   async () =>
-    await import("@genuin/components/templates/feed/index.js").then((mod) => ({
+    await import("@genuin/components/templates/feed").then((mod) => ({
       default: mod.FeedView,
     }))
 );
