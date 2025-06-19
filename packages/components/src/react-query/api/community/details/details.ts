@@ -7,7 +7,7 @@ import { API_PATHS } from "@genuin/components/react-query/paths";
 
 import { CommunityDetailsType, validateCommunityDetails } from "./schema";
 import { queryClient } from "@genuin/components/react-query/client";
-import { CommunityUserRole } from "@types/post";
+import { CommunityUserRole } from "@genuin/components/types/post";
 
 async function fetchCommunityDetails(slug: string) {
   return await axiosInstance

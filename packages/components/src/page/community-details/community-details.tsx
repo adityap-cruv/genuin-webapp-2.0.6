@@ -104,9 +104,7 @@ function CommunityDetailsView({ slug }: { slug: string }) {
   }
 
   if (isError) {
-    const errorCode = (error as any)?.code;
-
-    if (errorCode === NOT_FOUND_ERROR_CODES.community) {
+    if (error.message === NOT_FOUND_ERROR_CODES.community) {
       return <ErrorState type="NO_COMMUNITY" />;
     }
 

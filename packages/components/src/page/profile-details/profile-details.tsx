@@ -42,13 +42,11 @@ export function ProfileDetails({
   }
 
   if (isError) {
-    const errorCode = (error as any)?.code;
-
-    if (errorCode === NOT_FOUND_ERROR_CODES.user) {
+    if (error.message === NOT_FOUND_ERROR_CODES.user) {
       return <ErrorState type="NO_USER" />;
     }
 
-    if (errorCode === NOT_FOUND_ERROR_CODES.brand) {
+    if (error.message === NOT_FOUND_ERROR_CODES.brand) {
       return <ErrorState type="NO_BRAND_USER" />;
     }
 

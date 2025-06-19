@@ -41,12 +41,11 @@ const STATES_MESSAGES = {
   },
   NO_BRAND_USER: {
     img: BG_OPPS,
-    title: "No content available",
-    message:
-      "We're unable to load posts, try refreshing or \nreload page to explore more content.",
-    showButton: false,
+    title: "Brand not found",
+    message: "We're sorry, but the brand you are looking for no longer exists.",
+    showButton: true,
     button: {
-      text: "Create Community",
+      text: "Go to Home",
       url: "/home",
     },
   },
@@ -102,7 +101,7 @@ const STATES_MESSAGES = {
       url: "/home",
     },
   },
-};
+} as const;
 
 type ErrorStateProps = ComponentProps<"div"> & {
   type: keyof typeof STATES_MESSAGES;

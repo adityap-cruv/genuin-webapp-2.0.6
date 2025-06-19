@@ -4,7 +4,7 @@ export const NOT_FOUND_ERROR_CODES = {
   community: "5218",
   group: "5168",
   video: "5209",
-};
+} as const;
 
 export const NOT_FOUND_ERROR_MESSAGES = {
   user: {
@@ -36,4 +36,4 @@ export const NOT_FOUND_ERROR_MESSAGES = {
     description: "We're sorry, but this video no longer exists.",
     showButton: true,
   },
-};
+} as const;

@@ -27,7 +27,7 @@ import type {
   FetchVideosReturnType,
 } from "./types";
 import { queryClient } from "@genuin/components/react-query/client";
-import { GroupUserStatusType } from "@types/roles";
+import type { GroupUserStatusType } from "@genuin/components/types/roles";
 
 // TODO: Refactor these functions to use API_PATHS
 

@@ -40,9 +40,7 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
   }
 
   if (isError) {
-    const errorCode = (error as any)?.code;
-
-    if (errorCode === NOT_FOUND_ERROR_CODES.group) {
+    if (error.message === NOT_FOUND_ERROR_CODES.group) {
       return <ErrorState type="NO_GROUP" />;
     }
 
