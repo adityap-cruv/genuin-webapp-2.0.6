@@ -54,6 +54,7 @@ function UserTick() {
         />
       </PopoverTrigger>
       <PopoverContent
+      className="gencl:border-none gencl:bg-white"
         avoidCollisions
         sideOffset={8}
         collisionPadding={{ right: 16 }}

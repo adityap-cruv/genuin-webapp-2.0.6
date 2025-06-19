@@ -132,7 +132,7 @@ function Button({
       size="sm"
       disabled={buttonDisabled}
       onClick={handleClick}
-      theme={role === "MEMBER" ? "secondary" : "primary"}
+      theme={role === "MEMBER" || role === "REQUESTED" ? "secondary" : "primary"}
       {...rest}
     >
       {isLoading ? (
