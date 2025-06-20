@@ -1,3 +1,5 @@
+import { ksCbRequestStatusType } from "./roles";
+
 /**
  * Authenticated user object.
  */
@@ -21,7 +23,7 @@ export type AuthUser = {
    * - 2: Requested. -> If request is rejected or approved then the status will be updated to 3 (in case of appr.) or 1 (in case of rejected).
    * - 3: Accepted.
    */
-  ksCbRequestStatus: number;
+  ksCbRequestStatus: ksCbRequestStatusType ;
   /**
    * if user is brand user.
    */

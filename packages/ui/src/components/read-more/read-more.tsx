@@ -316,7 +316,7 @@ export function ReadMore({
         <span
           ref={textRef}
           className={cn(
-            "gencl:w-full gencl:break-words gencl:!text-secondary-900",
+            "gencl:w-full gencl:break-words gencl:text-secondary-900",
             position !== "outside" && "gencl:text-white",
             textClassName
           )}

@@ -167,4 +167,14 @@ export const API_PATHS = {
    * Api path to fetch loop and video conversation
    */
   LOOP_VIDEO: "/api/v3/conversation/messages",
+
+  /**
+   * Api path to Checks the status of the become creator request.
+   * */
+  BECOME_CREATOR_REQUEST_STATUS: "/api/v3/brand/cb_request_status",
+
+  /**
+   * Api path to Submits a request to become a creator.
+   * */
+  BECOME_CREATOR_REQUEST: "api/v3/users/ks_cb_request",
 } as const;
