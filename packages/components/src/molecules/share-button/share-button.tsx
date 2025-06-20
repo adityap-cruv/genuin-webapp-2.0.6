@@ -2,6 +2,7 @@ import { Button } from "@genuin/ui/button";
 import { toast, toastError } from "@genuin/ui/components/toaster";
 import { ShareIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
+import { CircleCheck } from "lucide-react";
 import { useCallback } from "react";
 import { useCopyToClipboard } from "usehooks-ts";
 
@@ -40,7 +41,12 @@ export function ShareButton({
 
     const success = await copy(fullUrl);
     if (success) {
-      toast("Link copied to clipboard!");
+      toast(
+        <span className="gencl:flex gencl:items-center gencl:gap-2">
+          <CircleCheck className="gencl:size-5 gencl:fill-primary gencl:text-white" />
+          Link copied to clipboard!
+        </span>
+      );
     } else {
       toastError("Failed to copy link. Please try again.");
     }

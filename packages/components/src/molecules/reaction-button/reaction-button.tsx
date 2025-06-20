@@ -6,6 +6,7 @@ import { useVideoReationMutation } from "@genuin/components/react-query/api/feed
 import { ComponentProps, useCallback } from "react";
 import { DynamicReactionIcon } from "./dynamic-reaction-icon";
 import { useBaseContext } from "@genuin/components/context/base";
+import { cn } from "@genuin/ui/lib/utils";
 
 type ReactionButtonProps = ComponentProps<typeof PrimitiveButton> & {
   contentId: string;
@@ -20,6 +21,8 @@ type ReactionButtonProps = ComponentProps<typeof PrimitiveButton> & {
   shareUrl?: string;
   videoSlug?: string;
   contentType: "VIDEO" | "COMMENT";
+  actionButtonVariant?: "light" | "dark";
+  showReactionCount: boolean;
   /**
    * Whether to render the button children or not.
    */
@@ -31,6 +34,17 @@ export function ReactionButton(props: ReactionButtonProps) {
   const { authenticationStatus } = useAuthContext();
   const { brandDetails } = useBaseContext();
   const button = <Button {...props} />;
+  const count = (
+    <p
+      className={cn(
+        "gencl:p-0 gencl:text-center gencl:text-body-2-medium",
+        props.actionButtonVariant === "dark" && "gencl:text-white",
+        !props.showReactionCount && "gencl:hidden"
+      )}
+    >
+      {props.reactionCount}
+    </p>
+  );
 
   if (authenticationStatus === "unauthenticated") {
     return (
@@ -48,12 +62,20 @@ export function ReactionButton(props: ReactionButtonProps) {
         }}
         asChild
       >
-        {button}
+        <div>
+          {button}
+          {count}
+        </div>
       </AuthenticationModal>
     );
   }
 
-  return button;
+  return (
+    <div>
+      {button}
+      {count}
+    </div>
+  );
 }
 
 function Button({

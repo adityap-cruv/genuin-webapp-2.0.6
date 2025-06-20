@@ -4,7 +4,7 @@ import {
 } from "@genuin/components/react-query/api/authentication/categories";
 import { Button } from "@genuin/ui/button";
 import { cn } from "@genuin/ui/utils";
-import React, { ComponentProps, useState } from "react";
+import { ComponentProps, useState } from "react";
 import { SubmitButton } from "../../submit-button";
 import { useAuthContext } from "@genuin/components/context/auth";
 import { Loader } from "@genuin/ui/components/loader";
@@ -130,7 +130,7 @@ export function CategoryInput({ ...props }: CategoryInputProps) {
         }
       >
         {isSurpriseMe ? (
-          <Loader className="gencl:stroke-white gencl:fill-white" />
+          <Loader className="gencl:stroke-primary gencl:fill-primary" />
         ) : (
           <p className="gencl:text-title-3-demi gencl:text-primary">
             Surprise Me

@@ -7,6 +7,7 @@ import { useBoolean } from "usehooks-ts";
 import { Actions } from "@genuin/components/molecules/actions";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
+import { CommentButton } from "@genuin/components/molecules/comment-button";
 
 import { Comments } from "../comments";
 
@@ -74,13 +75,17 @@ export function PlayerList({
                   isCommentBoxOpen={value}
                   actionWrapper={{
                     COMMENT: (defaultNode) => (
-                      <span
+                      <CommentButton
+                        defaultNode={defaultNode}
+                        count={post.video.commentCount}
+                        showCount={true}
                         onClick={() => {
                           if (showExpandView) toggle();
                         }}
-                      >
-                        {defaultNode}
-                      </span>
+                        countClassName={
+                          showExpandView ? "gencl:text-white" : undefined
+                        }
+                      />
                     ),
                   }}
                   onReactionStateChange={(isReacted) => {

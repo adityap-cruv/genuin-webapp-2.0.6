@@ -1,6 +1,7 @@
 import { type ComponentProps, type ReactNode } from "react";
 import { type GestureOverlayKeysType } from "./context";
-import { cn, getGifLink, getIconLink } from "@genuin/ui/lib/utils";
+import { cn } from "@genuin/ui/lib/utils";
+import { getGifLink, getIconLink } from "@genuin/components/lib/utils";
 // import { Image } from "@genuin/ui/components/image";
 
 type GestureConfig = {

@@ -5,7 +5,13 @@ import { ProfileLink } from "@genuin/components/molecules/profile-link";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 // TODO: Figure out how to use links.
-export function OwnerInfo({ owner }: { owner: PostDetailsType["owner"] }) {
+export function OwnerInfo({
+  owner,
+  createdAt,
+}: {
+  owner: PostDetailsType["owner"];
+  createdAt: string;
+}) {
   return (
     <div className="gencl:flex gencl:gap-2 gencl:items-center">
       <Avatar
@@ -24,6 +30,9 @@ export function OwnerInfo({ owner }: { owner: PostDetailsType["owner"] }) {
       >
         @{owner.userName}
       </ProfileLink>
+      <span className="gencl:text-body-1-medium gencl:text-secondary-600">
+        {createdAt}
+      </span>
     </div>
   );
 }

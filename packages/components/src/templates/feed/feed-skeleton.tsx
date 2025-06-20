@@ -6,9 +6,7 @@ export function FeedSkeleton() {
   return (
     <div className="gencl:grid gencl:py-4 gencl:w-full gencl:h-full gencl:grid-cols-2 gencl:ml-6 gencl:gap-6">
       <div className="gencl:flex gencl:justify-center gencl:h-full gencl:w-10/12 gencl:gap-2 gencl:overflow-auto">
-        <Skeleton
-          className="gencl:aspect-reel"
-        />  
+        <Skeleton className="gencl:aspect-reel" />
         <div className="gencl:flex gencl:gap-4 gencl:flex-col gencl:justify-end gencl:w-13 gencl:pb-4">
           {Array.from({ length: 5 }).map((_, index) => (
             <Skeleton

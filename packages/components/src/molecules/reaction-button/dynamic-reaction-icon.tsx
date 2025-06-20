@@ -51,11 +51,6 @@ export function DynamicReactionIcon({
         width={iconWidth}
         alt="reaction"
       />
-      {showSparkCount && (
-        <p className="flex justify-center text-body-1-demi">
-          {abbreviateNumber(sparkCount < 0 ? 0 : sparkCount)}
-        </p>
-      )}
     </>
   );
 }

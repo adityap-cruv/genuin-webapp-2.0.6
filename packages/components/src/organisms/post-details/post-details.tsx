@@ -1,5 +1,5 @@
 import { ReadMore } from "@genuin/ui/read-more";
-import { cn } from "@genuin/ui/utils";
+import { cn, getTimeAgo } from "@genuin/ui/utils";
 import { type ComponentProps } from "react";
 
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
@@ -44,10 +44,13 @@ export function PostDetails({
       )}
       {...restProps}
     >
-      <OwnerInfo owner={owner} />
+      <OwnerInfo
+        owner={owner}
+        createdAt={video.createdAt != null ? getTimeAgo(video.createdAt) : ""}
+      />
       {video.description && (
         <ReadMore
-          text={video.description ?? null}
+          text={video.description}
           textClassName={cn("gencl:text-body-1-medium")}
           className="gencl:pt-3"
         />

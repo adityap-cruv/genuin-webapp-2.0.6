@@ -77,6 +77,7 @@ type ActionWrapperContextType = {
   reactionCount: number;
   shareUrl: string;
   slug: string;
+  variant?: "light" | "dark";
   onReactionStateChange?: (isReacted: boolean) => void;
 };
 
@@ -144,6 +145,8 @@ export const defaultActionWrappers: Record<
       contentType="VIDEO"
       onReactionStateChange={context.onReactionStateChange}
       children={node}
+      actionButtonVariant={context.variant}
+      showReactionCount
       withCustomChildren
     />
   ),
@@ -242,6 +245,7 @@ export function Actions({
           reactionCount,
           shareUrl,
           slug,
+          variant,
         };
         // Priority: namedActionWrapper > defaultActionWrappers
         if (actionWrapper?.[action.actionType]) {

@@ -21,6 +21,7 @@ import { sanitizeInput } from "@genuin/components/lib/utils";
 import { useAuthenticationModalContext } from "../../context";
 import { useAuthContext } from "@genuin/components/context/auth";
 import { SubmitButton } from "../../submit-button";
+import { DeepLinkActionType } from "@genuin/components/react-query/api/deeplink";
 
 type SignInProps = React.ComponentProps<"div"> & {
   onSubmit?: (value: string, type: "email" | "phone") => void;
@@ -39,6 +40,22 @@ const phoneFormSchema = z.object({
   }),
 });
 
+function getActionText(action: DeepLinkActionType | undefined) {
+  if (!action) return "We`ll send you a code to sign in or create an account.";
+
+  const actionObjectMap: Record<DeepLinkActionType, string> = {
+    subscribe: "Log in or create an account to subscribe a group.",
+    join_as_collaborator: "Log in or create an account to become a member.",
+    join_community: "Log in or create an account join a community",
+    comment: "Log in or create an account to add a comment to a post.",
+    repost: "Log in or create an account to repost the post.",
+    spark: "Log in or create an account to react to the post.",
+    report: "Log in or create an account to report the post.",
+    get_app: "the app",
+  };
+  return actionObjectMap[action];
+}
+
 export function SignIn({
   onSubmit,
   onNext = () => {},
@@ -49,7 +66,9 @@ export function SignIn({
   const {
     setFormData,
     formData: { flowType },
+    getAppData,
   } = useAuthenticationModalContext();
+  const clickAction = getAppData?.data?.type;
 
   const {
     mutate: sendOtp, // Changed back to mutate and aliased as sendOtp
@@ -120,7 +139,7 @@ export function SignIn({
       <div className="gencl:flex gencl:flex-col gencl:gap-3">
         <h2 className="gencl:text-headline-2-semi-bold">Sign in</h2>
         <p className="gencl:text-body-1-medium gencl:text-secondary-600">
-          We'll send you a code to sign in or create an account.
+          {getActionText(clickAction)}
         </p>
       </div>
       <div className="gencl:flex gencl:flex-col gencl:gap-4 gencl:mt-6">

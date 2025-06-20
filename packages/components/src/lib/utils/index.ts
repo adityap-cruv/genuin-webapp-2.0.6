@@ -3,6 +3,7 @@ import DOMPurify from "dompurify";
 
 import { PROTECTED_ROUTES } from "../constants";
 import { GroupUserStatusType } from "@genuin/components/types/roles";
+import { MEDIA_BASE_URL } from "./env";
 
 /**
  * This function will check if the url includes any of the protected routes.
@@ -163,4 +164,22 @@ export function compressText(text: string, maxChars: number): string {
   if (typeof text !== "string" || maxChars <= 0) return "";
   if (text.length <= maxChars) return text;
   return text.slice(0, maxChars) + "...";
+}
+
+/**
+ * Returns the SVG link for the given name.
+ * @param name - The name of the SVG.
+ * @returns The SVG link.
+ */
+export function getIconLink(name: string, type: string = 'svg') {
+  return `${MEDIA_BASE_URL}/web-sdk/v1/icons/${name}.${type}`
+}
+
+/**
+ * Returns the GIF link for the given name.
+ * @param name - The name of the GIF.
+ * @returns The GIF link.
+ */
+export function getGifLink(name: string) {
+  return `${MEDIA_BASE_URL}/web-sdk/v1/icons/${name}.gif`
 }

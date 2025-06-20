@@ -46,8 +46,27 @@ export function AnalyticsProvider({
     AnalyticsService.track(EventName.PAGE_VIEW);
   }, [pathname]);
 
+  // Updated polyfill for requestIdleCallback
+  const requestIdleCallbackPolyfill =
+    typeof requestIdleCallback !== "undefined"
+      ? requestIdleCallback
+      : (callback: IdleRequestCallback): number => {
+          const start = Date.now();
+          return window.setTimeout(() => {
+            callback({
+              didTimeout: false,
+              timeRemaining: () => Math.max(0, 50 - (Date.now() - start)),
+            });
+          }, 1);
+        };
+
+  const cancelIdleCallbackPolyfill =
+    typeof cancelIdleCallback !== "undefined"
+      ? cancelIdleCallback
+      : (id: number) => window.clearTimeout(id);
+
   useEffect(() => {
-    const idleCallbackHandle = requestIdleCallback(() => {
+    const idleCallbackHandle = requestIdleCallbackPolyfill(() => {
       const deviceId = getDeviceId();
       const userIdToPass = user?.id ?? deviceId;
       const channel = isWebSDK
@@ -79,10 +98,9 @@ export function AnalyticsProvider({
     });
 
     return () => {
-      cancelIdleCallback(idleCallbackHandle);
+      cancelIdleCallbackPolyfill(idleCallbackHandle);
     };
   }, [brandDetails, user, isWebSDK]); // Re-run if config changes, AnalyticsService.initialize is idempotent
-
   const track = useCallback(
     async (eventName: EventNameType, payload?: EventPayload) => {
       await AnalyticsService.track(eventName, payload);
