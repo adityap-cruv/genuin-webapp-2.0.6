@@ -23,15 +23,15 @@ export default function SiteProviders({ children, config, session }: SiteProvide
         <SessionProvider refetchOnWindowFocus={false} refetchInterval={3600} session={session}>
           <AuthBridge>
             <LinkBridge>
+             <AnalyticsProvider isWebSDK={false}>
               <BaseLayout search={<OldSearch />}>
                 <RedirectHandler config={config} shouldRedirect={Object.hasOwn(config || {}, 'subdomain')}>
                   <ThirdPartyScriptProvider>
-                    <AnalyticsProvider isWebSDK={false}>
                       <UrlParamProvider>{children}</UrlParamProvider>
-                    </AnalyticsProvider>
                   </ThirdPartyScriptProvider>
                 </RedirectHandler>
               </BaseLayout>
+              </AnalyticsProvider>
             </LinkBridge>
           </AuthBridge>
         </SessionProvider>

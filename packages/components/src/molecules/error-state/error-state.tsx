@@ -4,8 +4,19 @@ import { Link } from "@genuin/components/molecules/link";
 import BG_404 from "@genuin/components/assets/images/404.webp";
 import BG_OPPS from "@genuin/components/assets/images/opps.webp";
 import { cn } from "@genuin/ui/lib/utils";
+import React from "react";
 
 const STATES_MESSAGES = {
+  GLOBAL_ERROR : {
+    img : "",
+    title : "Something went wrong.",
+    message : "We’re experiencing an issue loading the page. Please refresh or try again shortly.",
+    showButton : false, 
+    button : {
+      text : "",
+      url : "/home"
+    }
+  },
   ERROR: {
     img: BG_OPPS,
     title: "Something went wrong.",
@@ -107,7 +118,10 @@ type ErrorStateProps = ComponentProps<"div"> & {
   type: keyof typeof STATES_MESSAGES;
 };
 
-export function ErrorState({ className, type = "ERROR" }: ErrorStateProps) {
+export function ErrorState({
+  className,
+  type = "ERROR",
+}: ErrorStateProps) {
   const state = STATES_MESSAGES[type];
 
   return (
@@ -118,20 +132,20 @@ export function ErrorState({ className, type = "ERROR" }: ErrorStateProps) {
       )}
     >
       <div
-        className="gencl:flex gencl:flex-col gencl:h-100 gencl:items-center gencl:justify-center gencl:w-full gencl:max-h-[300px]"
+        className={cn("gencl:flex gencl:flex-col gencl:items-center gencl:justify-center gencl:w-full gencl:max-h-[300px]", state.img.length !== 0 ? "gencl:h-100" : "gencl:h-fit" )}
         style={{
           background: `url('${state?.img}') center  no-repeat`,
         }}
       >
-        <p className="gencl:text-headline-1-semi-bold mb-4 gencl:text-center gencl:mb-2">
+        <p className="gencl:text-headline-1-semi-bold gencl:text-center gencl:mb-2">
           {state?.title}
         </p>
         <p className="gencl:text-secondary-600 text-body-1-semi-bold gencl:text-center gencl:mb-4">
-          {state.message.split("\n").map((line) => (
-            <>
+          {state.message.split("\n").map((line,index) => (
+            <React.Fragment key={index}>
               {line}
               <br />
-            </>
+            </React.Fragment>
           ))}
         </p>
         {state?.showButton && (

@@ -27,7 +27,7 @@ export function Recent() {
       >
         <AccordionItem value="recent-communities">
           <AccordionTrigger className="gencl:px-3 gencl:py-2 gencl:hidden gencl:xl:!flex">
-            <div className="gencl:text-body-1-bold">Recent</div>
+            <p className="gencl:text-body-1-bold">Recent</p>
           </AccordionTrigger>
           <AccordionContent className="gencl:pb-0">
             {communities.map((community, commIndex) => (

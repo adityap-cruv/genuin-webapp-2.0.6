@@ -38,7 +38,7 @@ export function Category() {
             {categories.map((cat, index) => (
               <AccordionItem key={index} value={`category-${index}`}>
                 <AccordionTrigger className="gencl:justify-between gencl:items-center gencl:px-3 gencl:py-2 gencl:hidden gencl:xl:!flex">
-                  <div className="gencl:text-body-1-medium gencl:text-nowrap">{cat.category}</div>
+                  <p className="gencl:text-body-1-medium gencl:text-nowrap">{cat.category}</p>
                 </AccordionTrigger>
                 <AccordionContent className="gencl:flex gencl:flex-col gencl:pb-0">
                   {cat.communities.map((community, commIndex) => (

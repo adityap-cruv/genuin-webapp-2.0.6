@@ -2,6 +2,7 @@ import { useEffect, type ComponentProps } from "react";
 import { cn } from "@genuin/ui/utils";
 import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
 import { useAuthContext } from "@genuin/components/context/auth";
+import { useBaseContext } from "@genuin/components/context/base";
 
 export type SideBarBecomeCreatorProps = ComponentProps<"div">;
 
@@ -10,6 +11,7 @@ export function SideBarBecomeCreator({
   ...restProps
 }: SideBarBecomeCreatorProps) {
   const {authenticationStatus} = useAuthContext()
+  const {name} = useBaseContext().brandDetails
   return (
     <AuthenticationModal asChild customStep={authenticationStatus === "authenticated" ?  "BECOME_CREATOR" : "SIGNIN"}>
       <div
@@ -20,7 +22,7 @@ export function SideBarBecomeCreator({
         {...restProps}
       >
         <div className="gencl:bg-primary gencl:text-white gencl:break-words gencl:rounded-lg gencl:px-2.5 gencl:py-2 gencl:text-body-1-semi-bold">
-          Become a Creator for Genuin, get rewards 🚀
+          Become a Creator for {name}, get rewards 🚀
         </div>
       </div>
     </AuthenticationModal>
