@@ -94,7 +94,7 @@ export function CommunityPill({
   }
 
   return (
-    <HoverCard openDelay={0} closeDelay={0}>
+    <HoverCard openDelay={300} closeDelay={0}>
       <HoverCardTrigger asChild>{pill}</HoverCardTrigger>
       <HoverCardContent className="gencl:max-w-md! gencl:min-w-80">
         <CommunityHoverCard

@@ -1,5 +1,5 @@
 @import "tailwindcss" prefix(gencl);
-@import "tailwind-animate" prefix(gencl);
+@import "tw-animate-css" prefix(gencl);
 @custom-variant dark (&: is(.dark *));
 
 :root {
@@ -194,6 +194,7 @@
     0% {
       opacity: 1;
     }
+
     100% {
       opacity: 0;
     }
@@ -204,9 +205,11 @@
   0% {
     opacity: 1;
   }
+
   50% {
     opacity: 1;
   }
+
   100% {
     opacity: 0;
   }

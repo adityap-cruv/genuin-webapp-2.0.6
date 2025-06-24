@@ -166,6 +166,9 @@ importers:
       npm-check-updates:
         specifier: ^17.1.18
         version: 17.1.18
+      postcss:
+        specifier: ^8.5.3
+        version: 8.5.4
       prettier:
         specifier: ^3.5.3
         version: 3.6.0
@@ -175,6 +178,9 @@ importers:
       turbo:
         specifier: ^2.5.4
         version: 2.5.4
+      tw-animate-css:
+        specifier: ^1.3.0
+        version: 1.3.4
       typescript-eslint:
         specifier: ^8.33.1
         version: 8.35.0(eslint@9.29.0)(typescript@5.8.3)
@@ -654,6 +660,9 @@ importers:
       swiper:
         specifier: ^11.2.7
         version: 11.2.8
+      tailwindcss:
+        specifier: ^4.1.8
+        version: 4.1.8
       ua-parser-js:
         specifier: ^2.0.3
         version: 2.0.4
@@ -737,10 +746,6 @@ importers:
 
   packages/tailwind-config:
     dependencies:
-      tailwind-animate:
-        specifier: ^0.2.10
-        version: 0.2.10
-    devDependencies:
       postcss:
         specifier: ^8.5.3
         version: 8.5.6
@@ -855,9 +860,6 @@ importers:
       sonner:
         specifier: ^2.0.5
         version: 2.0.5(react-dom@19.1.0)(react@19.1.0)
-      tailwind-animate:
-        specifier: ^0.2.10
-        version: 0.2.10
       tailwind-merge:
         specifier: ^3.3.0
         version: 3.3.1
@@ -15633,7 +15635,6 @@ packages:
       nanoid: 3.3.11
       picocolors: 1.1.1
       source-map-js: 1.2.1
-    dev: true
 
   /postgres-array@2.0.0:
     resolution: {integrity: sha512-VpZrUqU5A69eQyW2c5CA1jtLecCsN2U/bD6VilrFDWq5+5UIEVO7nazS3TEcHf1zuPYO/sqGvUvW62g86RXZuA==}
@@ -17629,7 +17630,6 @@ packages:
 
   /tw-animate-css@1.3.4:
     resolution: {integrity: sha512-dd1Ht6/YQHcNbq0znIT6dG8uhO7Ce+VIIhZUhjsryXsMPJQz3bZg7Q2eNzLwipb25bRZslGb2myio5mScd1TFg==}
-    dev: true
 
   /type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}

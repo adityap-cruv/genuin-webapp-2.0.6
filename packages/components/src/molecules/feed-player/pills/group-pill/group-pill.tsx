@@ -85,7 +85,7 @@ export function GroupPill({
             groupId={groupDetails.id}
             groupName={groupDetails.name ?? ""}
             groupDescription={ldDescription}
-            shareUrl={groupDetails.shareUrl ?? ""}  
+            shareUrl={groupDetails.shareUrl ?? ""}
             isSubscriber={groupDetails.isSubscribed ?? false}
             onClick={(e) => {
               e.preventDefault();
@@ -103,7 +103,7 @@ export function GroupPill({
   }
 
   return (
-    <HoverCard openDelay={0} closeDelay={0}>
+    <HoverCard openDelay={300} closeDelay={0}>
       <HoverCardTrigger asChild>{pill}</HoverCardTrigger>
       <HoverCardContent className="gencl:max-w-md! gencl:min-w-80">
         <GroupHoverCard
