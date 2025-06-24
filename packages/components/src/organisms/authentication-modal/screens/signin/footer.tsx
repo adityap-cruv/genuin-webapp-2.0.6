@@ -9,7 +9,7 @@ import {
 import { useAuthenticationModalContext } from "../../context";
 import { useCallback } from "react";
 import { useGetRedirectionUrlForSSOMutation } from "@genuin/components/react-query/api/authentication/auto-login";
-import { toastError } from "@genuin/ui/components/toaster";
+import { Toast } from "@genuin/ui/components/toaster";
 import { Loader } from "@genuin/ui/components/loader";
 
 // TODO: handle signin with Goggle and Apple
@@ -81,7 +81,7 @@ function SignInWithGoogle() {
         window.open(responseUrl.href, "_self");
       },
       onError: (error) => {
-        toastError("Something went wrong, please try again later");
+       Toast.Error({message : "Something went wrong, please try again later"})
       },
     });
 
@@ -119,7 +119,7 @@ function SignInWithApple() {
         window.open(responseUrl.href, "_self");
       },
       onError: () => {
-        toastError("Something went wrong, please try again later");
+        Toast.Error({message : "Something went wrong, please try again later"})
       },
     });
 
@@ -161,13 +161,13 @@ function SignInWithBrand({ brandName }: { brandName: string }) {
         window.open(responseUrl.href, "_self");
       },
       onError: () => {
-        toastError("Something went wrong, please try again later");
+        Toast.Error({message : "Something went wrong, please try again later"})
       },
     });
 
   const handleClick = useCallback(() => {
     if (!brandDetails.social_login.brand) {
-      toastError("Brand does not support SSO login");
+      Toast.Error({message : "Brand does not support SSO login"})
       return;
     }
     getUrlToRedirectForSSO({

@@ -37,6 +37,7 @@
   --red-700: #6d0f0c;
 
   --error-status: #F35421;
+  --success-status : #77CE1A;
 
   font-family:
     "Inter",
@@ -185,6 +186,7 @@
   --color-red-700: var(--red-700);
 
   --color-error-status: var(--error-status);
+  --color-success-status: var(--success-status);
 
   --aspect-reel: 9/16;
 

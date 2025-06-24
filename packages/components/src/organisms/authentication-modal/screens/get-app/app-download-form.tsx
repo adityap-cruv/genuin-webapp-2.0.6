@@ -16,7 +16,7 @@ import { Link } from "@genuin/components/molecules/link";
 import { SubmitButton } from "../../submit-button";
 import { cn } from "@genuin/ui/lib/utils";
 import { useSendGetAppLinkMutation } from "@genuin/components/react-query/api/get-app";
-import { toast, toastError } from "@genuin/ui/components/toaster";
+import { Toast } from "@genuin/ui/components/toaster";
 import { useSearchParams } from "@genuin/components/hooks/use-search-params";
 
 // Form validation schema
@@ -54,10 +54,10 @@ export function AppDownloadForm({
   const { mutate: sendAppLink, isPending } = useSendGetAppLinkMutation({
     onError(error) {
       setError("Failed to send link. Please try again.");
-      toastError("Failed to send link. Please try again.");
+      Toast.Error({ message: "Failed to send link. Please try again." });
     },
     onSuccess() {
-      toast("Link sent successfully!");
+      Toast.Success({ message: "Link sent successfully!" });
     },
   });
 

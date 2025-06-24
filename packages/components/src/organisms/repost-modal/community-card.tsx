@@ -8,7 +8,7 @@ import { Button } from "@genuin/ui/button";
 import { RepostIcon } from "@genuin/ui/icons";
 import { useRepostVideoMutation } from "@genuin/components/react-query/api/repost";
 import { useCallback } from "react";
-import { toast, toastError } from "@genuin/ui/components/toaster";
+import { Toast } from "@genuin/ui/components/toaster";
 import { cn } from "@genuin/ui/lib/utils";
 import { Link } from "@genuin/components/molecules/link";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
@@ -93,10 +93,12 @@ function RepostButton({
     isSuccess,
   } = useRepostVideoMutation({
     onSuccess: () => {
-      toast("Video reposted successfully!");
+      Toast.Success({ message: "Video reposted successfully!" });
     },
     onError: () => {
-      toastError("Failed to repost video. Please try again later.");
+      Toast.Error({
+        message: "Failed to repost video. Please try again later.",
+      });
     },
   });
 

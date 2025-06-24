@@ -20,14 +20,16 @@ import {
 import { Loader } from "@genuin/ui/components/loader";
 import { useAnalytics } from "@genuin/components/context/analytics";
 import { useAuthContext } from "@genuin/components/context/auth";
-import { toastError } from "@genuin/ui/components/toaster";
+import { Toast } from "@genuin/ui/components/toaster";
 
 type BecomeCreatorProps = ComponentProps<"div">;
 
 export function BecomeCreator({ ...props }: BecomeCreatorProps) {
   const { brandDetails } = useBaseContext();
   const { user, updateUser } = useAuthContext();
-  const { data: cbStatus, isLoading: isCbStatusLoading } = useKsCbStatus({id : user?.id || ""});
+  const { data: cbStatus, isLoading: isCbStatusLoading } = useKsCbStatus({
+    id: user?.id || "",
+  });
   const isRequested = cbStatus?.status === "Requested";
   const Analytics = useAnalytics();
   const { mutate: requestCbMutate, isPending: isRequestMutating } =
@@ -38,18 +40,18 @@ export function BecomeCreator({ ...props }: BecomeCreatorProps) {
             ...user,
             ksCbRequestStatus: "Requested",
           });
-          setQueryDataBecomeCreator(user?.id || "")
+          setQueryDataBecomeCreator(user?.id || "");
           Analytics.track(Analytics.EventName.BECOME_CREATOR);
         }
       },
       onError: () => {
-        toastError("Something went wrong!")
+        Toast.Error({ message: "Something went wrong!" });
       },
     });
 
   const handleClick = useCallback(() => {
     requestCbMutate();
-  },[])
+  }, []);
 
   return (
     <div className="gencl:text-center gencl:w-full" {...props}>
@@ -82,31 +84,30 @@ export function BecomeCreator({ ...props }: BecomeCreatorProps) {
         </CarouselContent>
         <CarouselDots />
       </Carousel>
-        <div className="gencl:flex gencl:flex-col gencl:gap-4 gencl:mt-6">
+      <div className="gencl:flex gencl:flex-col gencl:gap-4 gencl:mt-6">
+        <Button
+          className="gencl:w-full gencl:text-body-0-semi-bold"
+          theme="primary"
+          onClick={handleClick}
+          disabled={isRequestMutating || isCbStatusLoading || isRequested}
+        >
+          {isCbStatusLoading || isRequestMutating ? (
+            <Loader size="sm" />
+          ) : isRequested ? (
+            "Requested"
+          ) : (
+            "Become a Creator"
+          )}
+        </Button>
+        <DialogClose asChild>
           <Button
             className="gencl:w-full gencl:text-body-0-semi-bold"
-            theme="primary"
-            onClick={handleClick}
-            disabled={isRequestMutating || isCbStatusLoading || isRequested}
+            theme="secondary"
           >
-            {isCbStatusLoading || isRequestMutating ? (
-              <Loader size="sm" />
-            ) : isRequested ? (
-              "Requested"
-            ) : (
-              "Become a Creator"
-            )}
+            Not now
           </Button>
-          <DialogClose asChild>
-            <Button
-              className="gencl:w-full gencl:text-body-0-semi-bold"
-              theme="secondary"
-            >
-              Not now
-            </Button>
-          </DialogClose>
-        </div>
-      
+        </DialogClose>
+      </div>
     </div>
   );
 }

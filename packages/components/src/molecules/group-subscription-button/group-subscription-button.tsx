@@ -4,7 +4,7 @@ import { useAuthContext } from "@genuin/components/context/auth";
 import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
 import { ComponentProps, useCallback } from "react";
 import { useSubscribeGroupMutation } from "@genuin/components/react-query/api/group/subscribe";
-import { toastError } from "@genuin/ui/components/toaster";
+import { Toast } from "@genuin/ui/components/toaster";
 import { Loader } from "@genuin/ui/components/loader";
 import { cn } from "@genuin/ui/lib/utils";
 
@@ -65,7 +65,7 @@ function Button({
       onSubscriptionChange?.(isSubscriber);
     },
     onError: (error) => {
-      toastError("Failed to subscribe to group. Please try again later.");
+      Toast.Error({message : "Failed to subscribe to group. Please try again later."})
     },
   });
 

@@ -10,7 +10,7 @@ import { AuthContext, AuthenticationStatusType } from "./context";
 import { useCallback, useLayoutEffect, useEffect, useState } from "react";
 import { useSearchParams } from "@genuin/components/hooks/use-search-params";
 import { useGetUserDataForSSOMutation } from "@genuin/components/react-query/api/authentication/auto-login";
-import { toastError } from "@genuin/ui/components/toaster";
+import { Toast } from "@genuin/ui/components/toaster";
 import { invalidateAllQueries } from "@genuin/components/react-query/client";
 
 // Define the props type for the AuthProvider component.
@@ -60,7 +60,7 @@ export function AuthProvider({
       removeSearchParams(["code", "provider"]);
     },
     onError: (e) => {
-      toastError("Not able to login. Please try again.");
+      Toast.Error({message : "Not able to login. Please try again."})
     },
   });
 

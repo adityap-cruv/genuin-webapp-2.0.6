@@ -15,7 +15,7 @@ import {
 import { ComponentProps, useCallback } from "react";
 import { cn } from "@genuin/ui/lib/utils";
 import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
-import { toastError } from "@genuin/ui/components/toaster";
+import { Toast } from "@genuin/ui/components/toaster";
 import {
   type CommentListType,
   useCreateCommentMutation,
@@ -131,10 +131,10 @@ function CommentInput({ videoId, loopId, onCommentPosted }: CommentInputProps) {
       if (response.commentData) {
         onCommentPosted?.(response.commentData);
       }
-      form.reset()
+      form.reset();
     },
     onError() {
-      toastError("Failed to post comment. Please try again later.");
+      Toast.Error({message : "Failed to post comment. Please try again later."})
     },
   });
 

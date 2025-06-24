@@ -1,8 +1,7 @@
 import { Button } from "@genuin/ui/button";
-import { toast, toastError } from "@genuin/ui/components/toaster";
+import { Toast } from "@genuin/ui/components/toaster";
 import { ShareIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
-import { CircleCheck } from "lucide-react";
 import { useCallback } from "react";
 import { useCopyToClipboard } from "usehooks-ts";
 
@@ -41,14 +40,9 @@ export function ShareButton({
 
     const success = await copy(fullUrl);
     if (success) {
-      toast(
-        <span className="gencl:flex gencl:items-center gencl:gap-2">
-          <CircleCheck className="gencl:size-5 gencl:fill-primary gencl:text-white" />
-          Link Copied
-        </span>
-      );
+      Toast.Success({message : "Link Copied"})
     } else {
-      toastError("Failed to copy link. Please try again.");
+      Toast.Error({message : "Failed to copy link. Please try again."})
     }
   }, [copy, pathName]);
 

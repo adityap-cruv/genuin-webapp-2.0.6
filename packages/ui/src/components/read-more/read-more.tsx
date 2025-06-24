@@ -340,7 +340,7 @@ export function ReadMore({
           <button
             type="button"
             className={cn(
-              "gencl:mt-1 gencl:!text-secondary-600 gencl:hover:underline",
+              "gencl:mt-1 gencl:!text-secondary-600 gencl:hover:underline gencl:cursor-pointer",
               textClassName
             )}
             onClick={(e) => {

@@ -1,6 +1,6 @@
 import { useAuthContext } from "@genuin/components/context/auth";
 import { Button as PrimitiveButton } from "@genuin/ui/button";
-import { toastError } from "@genuin/ui/components/toaster";
+import { Toast} from "@genuin/ui/components/toaster";
 import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
 import { useVideoReationMutation } from "@genuin/components/react-query/api/feed/spark";
 import { ComponentProps, useCallback } from "react";
@@ -96,20 +96,19 @@ function Button({
       onReactionStateChange?.(isReacted);
     },
     onError: (error) => {
-      toastError("Failed to react to video. Please try again later.");
-      console.error("Failed to react to video:", error);
+       Toast.Error({message : "Failed to react to video. Please try again later."})
     },
   });
 
   const handleOnClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
-      onClick?.(e);
-      if (!user) {
+      onClick?.(e); 
+      if (!user || isPending) {
         return; // If user is not authenticated, do nothing
       }
       reactToVideo({ contentId, type: contentType, reaction: !isReacted });
     },
-    [onClick, reactToVideo, contentId, contentType, isReacted, user]
+    [onClick, reactToVideo, contentId, contentType, isReacted, user,isPending]
   );
 
   // If withCustomChildren is true, just return the children with logic attached

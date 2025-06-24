@@ -3,7 +3,7 @@ import { AuthenticationModal } from "@genuin/components/organisms/authentication
 import { useJoinGroupMutation } from "@genuin/components/react-query/api/group/join";
 import { GroupUserStatusType } from "@genuin/components/types/roles";
 import { Button as PrimitiveButton } from "@genuin/ui/button";
-import { toastError } from "@genuin/ui/components/toaster";
+import {Toast } from "@genuin/ui/components/toaster";
 import { useLeaveGroupMutation } from "@genuin/components/react-query/api/group/join";
 import { ComponentProps, useCallback } from "react";
 import { Loader } from "@genuin/ui/components/loader";
@@ -72,7 +72,7 @@ function Button({
         onGroupJoinStatusChange?.(status);
       },
       onError: () => {
-        toastError("Failed to join group");
+       Toast.Error({message : "Failed to join group"})
       },
     });
 
@@ -82,7 +82,7 @@ function Button({
         onGroupJoinStatusChange?.("UNJOINED");
       },
       onError: () => {
-        toastError("Failed to leave group");
+       Toast.Error({message : "Failed to leave group"})
       },
     });
 

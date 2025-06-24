@@ -39,7 +39,7 @@ export const ControlLayer = memo(function ControlLayer({
   onGroupSubscriptionChange,
   ...restProps
 }: ControlLayerPropsType) {
-  const { showExpandView, togglePlay, toggleMuted, muted } = usePlayerContext();
+  const { showExpandView, togglePlay, toggleMuted, muted , playingState } = usePlayerContext();
   const { gestureOverlayUI } = useGestureOverlayManager();
   const { showSeeker } = usePlayerContext();
   // const { hideGestureOverlay } = useGestureOverlayManager();
@@ -104,7 +104,7 @@ export const ControlLayer = memo(function ControlLayer({
         )}
         {...restProps}
       >
-        <Controls className="gencl:group-hover:flex gencl:hidden" />
+       <Controls className="gencl:group-hover:flex gencl:hidden" />
         {/* this is wallet badge for wallet. */}
         {/* {isInModal && (
           <div
