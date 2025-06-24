@@ -173,10 +173,10 @@ async function handleSubdomainRouting(request: NextRequest, host: string): Promi
     const urlObj = new URL(request.url)
 
     // Redirect non-app subdomains from static paths to /home
-    if (config.subdomain !== 'app' && STATIC_PATHNAMES.includes(urlObj.pathname)) {
-      urlObj.pathname = '/home'
-      return NextResponse.redirect(urlObj.href)
-    }
+    // if (config.subdomain !== 'app' && STATIC_PATHNAMES.includes(urlObj.pathname)) {
+    //   urlObj.pathname = '/home'
+    //   return NextResponse.redirect(urlObj.href)
+    // }
   }
 
   return null
