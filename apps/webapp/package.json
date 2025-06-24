@@ -54,7 +54,7 @@
     "input-otp": "^1.4.2",
     "mobile-detect": "^1.4.5",
     "motion": "^12.18.1",
-    "next": "^15.3.2",
+    "next": "15.2.0",
     "next-auth": "^5.0.0-beta.28",
     "openplayerjs": "^2.14.10",
     "react-cropper": "^2.3.3",

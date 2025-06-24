@@ -43,11 +43,9 @@ export async function fetchMetadata({
       ...(subdomain !== undefined && { subdomain }),
       ...(shareImageId !== undefined && { share_image_id: shareImageId }),
     }
-
     const response = await axios.get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/web/meta_data', { params })
     return response.data.data
   } catch (error) {
-     
     console.log('error in metadata api::', error)
     // throw new Error('Something went wrong with meta_data api.')
   }
