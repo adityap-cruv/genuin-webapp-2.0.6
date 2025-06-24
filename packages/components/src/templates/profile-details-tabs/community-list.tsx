@@ -150,7 +150,6 @@ export function CommunityList({
                       />
                     )}
                     <ShareButton
-                      showText
                       pathName={buildPageUrl({
                         type: "community",
                         slug: community.slug,

@@ -63,6 +63,12 @@ const STATES_MESSAGES = {
     subtitle: "Be the first one to post!",
     showButton: false,
   },
+  NO_MEMBERS : {
+    icon : "group",
+    title : "No Members Yet",
+    subtitle : "",
+    showButton : false
+  },
   WARNING: {
     icon: "warning",
     title: "",
@@ -74,11 +80,15 @@ const STATES_MESSAGES = {
 type ComponentErrorStateProps = ComponentProps<"div"> & {
   type: keyof typeof STATES_MESSAGES;
   forList?: boolean;
+  subtitle?: string;
+  title?: string;
 };
 
 export function ComponentErrorState({
   type = "NO_POSTS",
   forList,
+  title,
+  subtitle,
   className,
   ...restProps
 }: ComponentErrorStateProps) {
@@ -96,10 +106,10 @@ export function ComponentErrorState({
         {ICONS[state.icon]}
         <div>
           <p className="gencl:mb-2 gencl:text-body-0-semi-bold">
-            {state.title}
+            {title ? title : state.title}
           </p>
           <p className="gencl:text-secondary-600 gencl:text-body-1-semi-bold">
-            {state.subtitle}
+            {subtitle ? subtitle : state.subtitle}
           </p>
         </div>
       </div>
@@ -116,14 +126,14 @@ export function ComponentErrorState({
     >
       <div className="gencl:flex gencl:flex-col gencl:h-100 gencl:items-center gencl:justify-center gencl:w-full">
         {ICONS[state.icon]}
-        {state.title && (
+        {(state.title || title) && (
           <p className="gencl:mb-2 gencl:text-center gencl:text-headline-4-semi-bold mb-3">
-            {state.title}
+            {title ? title : state.title}
           </p>
         )}
-        {state.subtitle && (
+        {(state.subtitle || subtitle) && (
           <p className="gencl:text-secondary-600 mb-4  gencl:text-center gencl:mb-4">
-            {state.subtitle}
+            {subtitle ? subtitle : state.subtitle}
           </p>
         )}
         {state.showButton && "buttonLabel" in state && state.buttonLabel && (

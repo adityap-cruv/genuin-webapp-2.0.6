@@ -1,5 +1,4 @@
 import { InfiniteScroll } from "@genuin/ui/infinite-scroll";
-import { cn } from "@genuin/ui/utils";
 import type { ComponentProps } from "react";
 
 import {
@@ -7,6 +6,8 @@ import {
   MemberItemSkeleton,
   type MemberDataType,
 } from "@genuin/components/molecules/member-item";
+import { ComponentErrorState } from "../error-state-component";
+import { cn } from "@genuin/ui/lib/utils";
 
 type MemberListProps = {
   title?: string;
@@ -33,14 +34,12 @@ export function MemberList({
     return <MemberListSkeleton />;
   }
 
-  // TODO: Handle error state properly, e.g., show an error message
   if (isError) {
-    return <div>Error loading members.</div>;
+    return <ComponentErrorState type="WARNING" subtitle="We're unable to load members."/>
   }
 
-  // TODO: Handle empty state properly
   if (!members || members.length === 0) {
-    return <div>No members found.</div>;
+    return <ComponentErrorState type="NO_MEMBERS" />;
   }
 
   return (
@@ -53,8 +52,7 @@ export function MemberList({
         hasNextPage={hasNextPage}
         getNextPage={fetchNextPage}
         isLoadingNextPage={isFetchingNextPage}
-        //TODO: Add a loader component or skeleton
-        loader={<div></div>}
+        loader={<MemberListSkeleton/>}
       >
         {members.map((member) => (
           <MemberItem

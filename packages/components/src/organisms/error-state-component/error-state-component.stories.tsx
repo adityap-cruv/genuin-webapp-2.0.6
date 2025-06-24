@@ -14,7 +14,7 @@ const TYPES = [
 type ComponentErrorStateStories = StoryObj<typeof ComponentErrorState>;
 
 const meta: Meta<typeof ComponentErrorState> = {
-  title: "Organisms/ComponentErrorState",
+  title: "Organisms/ErrorState",
   component: ComponentErrorState,
   tags: ["autodocs"],
   argTypes: {

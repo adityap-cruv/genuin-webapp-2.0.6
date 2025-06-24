@@ -33,15 +33,15 @@ export function CommunityDetailsTabs({
 }: CommunityDetailsTabsPropsType) {
   return (
     <Tabs
-      defaultValue="posts"
+      defaultValue="groups"
       className={cn("gencl:w-full gencl:h-full", className)}
       {...restProps}
     >
       <TabsList className="">
-        <TabsTrigger value="posts">Posts</TabsTrigger>
+        <TabsTrigger value="groups">Groups</TabsTrigger>
         <TabsTrigger value="members">Members</TabsTrigger>
       </TabsList>
-      <TabsContent value="posts">
+      <TabsContent value="groups">
         <CommunityGroups slug={slug} />
       </TabsContent>
       <TabsContent value="members">

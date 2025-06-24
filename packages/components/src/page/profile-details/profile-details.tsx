@@ -73,7 +73,6 @@ export function ProfileDetails({
           <div className="gencl:flex gencl:gap-2">
             <BecomeCreatorButton theme="secondary" />
             <ShareButton
-              showText
               pathName={buildPageUrl({
                 type: !!profileData.brand ? "brand" : "profile",
                 slug: profileData.nickname,
@@ -130,7 +129,6 @@ export function ProfileDetails({
             <div className="gencl:flex gencl:gap-2">
               <BecomeCreatorButton />
               <ShareButton
-                showText
                 pathName={buildPageUrl({
                   type: !!profileData.brand ? "brand" : "profile",
                   slug: profileData.nickname,
