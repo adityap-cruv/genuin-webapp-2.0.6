@@ -102,7 +102,7 @@ function SignInWithGoogle() {
       ) : (
         <>
           <GoogleIcon className="gencl:h-6 gencl:w-6" />
-          <p>Continue with Google</p>
+          <p className="gencl:text-secondary-900">Continue with Google</p>
         </>
       )}
     </Button>

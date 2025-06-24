@@ -17,11 +17,10 @@ import {
   FormMessage,
 } from "@genuin/ui/form";
 import { useSendOtpMutation } from "@genuin/components/react-query/api/authentication";
-import { sanitizeInput } from "@genuin/components/lib/utils";
+import { getActionText, sanitizeInput } from "@genuin/components/lib/utils";
 import { useAuthenticationModalContext } from "../../context";
 import { useAuthContext } from "@genuin/components/context/auth";
 import { SubmitButton } from "../../submit-button";
-import { DeepLinkActionType } from "@genuin/components/react-query/api/deeplink";
 
 type SignInProps = React.ComponentProps<"div"> & {
   onSubmit?: (value: string, type: "email" | "phone") => void;
@@ -39,22 +38,6 @@ const phoneFormSchema = z.object({
     message: "Please enter a valid phone number.",
   }),
 });
-
-function getActionText(action: DeepLinkActionType | undefined) {
-  if (!action) return "We`ll send you a code to sign in or create an account.";
-
-  const actionObjectMap: Record<DeepLinkActionType, string> = {
-    subscribe: "Log in or create an account to subscribe a group.",
-    join_as_collaborator: "Log in or create an account to become a member.",
-    join_community: "Log in or create an account join a community",
-    comment: "Log in or create an account to add a comment to a post.",
-    repost: "Log in or create an account to repost the post.",
-    spark: "Log in or create an account to react to the post.",
-    report: "Log in or create an account to report the post.",
-    get_app: "the app",
-  };
-  return actionObjectMap[action];
-}
 
 export function SignIn({
   onSubmit,
@@ -139,7 +122,7 @@ export function SignIn({
       <div className="gencl:flex gencl:flex-col gencl:gap-3">
         <h2 className="gencl:text-headline-2-semi-bold">Sign in</h2>
         <p className="gencl:text-body-1-medium gencl:text-secondary-600">
-          {getActionText(clickAction)}
+          {getActionText("We`ll send you a code to sign in or create an account.",clickAction , "Log in or create an account")}
         </p>
       </div>
       <div className="gencl:flex gencl:flex-col gencl:gap-4 gencl:mt-6">
@@ -155,7 +138,7 @@ export function SignIn({
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input placeholder="Enter Email..." {...field} />
+                      <Input placeholder="Enter Email" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -164,6 +147,8 @@ export function SignIn({
               <SubmitButton
                 disabled={!emailForm.formState.isValid || isPending}
                 isLoading={isPending}
+                type="submit"
+                title="Continue"
               />
             </form>
           </Form>

@@ -4,6 +4,7 @@ import DOMPurify from "dompurify";
 import { PROTECTED_ROUTES } from "../constants";
 import { GroupUserStatusType } from "@genuin/components/types/roles";
 import { MEDIA_BASE_URL } from "./env";
+import { DeepLinkActionType } from "@genuin/components/react-query/api/deeplink";
 
 /**
  * This function will check if the url includes any of the protected routes.
@@ -182,4 +183,21 @@ export function getIconLink(name: string, type: string = 'svg') {
  */
 export function getGifLink(name: string) {
   return `${MEDIA_BASE_URL}/web-sdk/v1/icons/${name}.gif`
+}
+
+
+export function getActionText(defaultText : string , action: DeepLinkActionType | undefined , preText : string) {
+  if (!action) return defaultText;
+
+  const actionObjectMap: Record<DeepLinkActionType, string> = {
+    subscribe: `${preText} to subscribe a group.`,
+    join_as_collaborator: `${preText} to become a member.`,
+    join_community: `${preText} join a community`,
+    comment: `${preText} to add a comment to a post.`,
+    repost: `${preText} to repost the post.`,
+    spark: `${preText} to react to the post.`,
+    report: `${preText} to report the post.`,
+    get_app: "the app",
+  };
+  return actionObjectMap[action];
 }

@@ -4,7 +4,6 @@ import {
   useReducer,
   useCallback,
   ReactNode,
-  useEffect,
 } from "react";
 import { DeepLinkPayloadUnion } from "@genuin/components/react-query/api/deeplink/types";
 

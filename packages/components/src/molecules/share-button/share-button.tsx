@@ -44,7 +44,7 @@ export function ShareButton({
       toast(
         <span className="gencl:flex gencl:items-center gencl:gap-2">
           <CircleCheck className="gencl:size-5 gencl:fill-primary gencl:text-white" />
-          Link copied to clipboard!
+          Link Copied
         </span>
       );
     } else {

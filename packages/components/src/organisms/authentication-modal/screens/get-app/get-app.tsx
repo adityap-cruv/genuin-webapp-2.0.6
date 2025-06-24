@@ -13,6 +13,7 @@ import {
 import { useAuthenticationModalContext } from "@genuin/components/organisms/authentication-modal/context";
 import { deepLinkActions } from "@genuin/components/react-query/api/deeplink/get-deeplink";
 import { Loader } from "@genuin/ui/components/loader";
+import { getActionText } from "@genuin/components/lib/utils";
 
 export type GetAppProps = ComponentProps<"div"> & {
   onSubmit?: (data: AppDownloadFormData) => void;
@@ -24,6 +25,7 @@ export function GetApp({ onSubmit, ...props }: GetAppProps) {
   const { getAppData } = useAuthenticationModalContext();
   const [deeplinkUrl, setDeeplinkUrl] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
+  const clickAction = getAppData?.data?.type;
 
   useEffect(() => {
     const generateDeeplink = async () => {
@@ -94,7 +96,7 @@ export function GetApp({ onSubmit, ...props }: GetAppProps) {
           {getAppData?.title ?? `Get the ${brandDetails.name} app`}
         </p>
         <p className="gencl:text-body-1-medium gencl:text-secondary-600">
-          {getAppData?.description ?? "Download app to browse more communities"}
+          {getAppData?.description ?? getActionText("Download app to browse more communities",clickAction, "Download app")}
         </p>
       </div>
       <div className="gencl:flex gencl:flex-col gencl:items-center gencl:gap-2">
