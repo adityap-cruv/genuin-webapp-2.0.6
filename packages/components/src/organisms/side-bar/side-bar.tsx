@@ -25,8 +25,8 @@ export function SideBar({ className, ...restProps }: SideBarProps) {
       {...restProps}
     >
       <SidebarActions
-        brandConfiguredTerms={brandDetails.terms_and_condition ?? ""}
-        brandConfiguredPrivacy={brandDetails.privacy_policy ?? ""}
+        brandConfiguredTerms={brandDetails.terms_and_condition?.trim() || null}
+        brandConfiguredPrivacy={brandDetails.privacy_policy?.trim() || null}
       />
       {showBecomeACreator && (
         <SideBarBecomeCreator className="gencl:hidden gencl:xl:!block" />

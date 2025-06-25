@@ -5,13 +5,14 @@ import { SideBarActionLinks } from "./sidebar-actions-link";
 import { Link } from "@genuin/components/molecules/link";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { usePathname } from "@genuin/components/hooks/use-pathname";
+import { NEXT_PUBLIC_HOST_URL } from "@genuin/components/lib/utils/env";
 
 export function SidebarActions({
   brandConfiguredTerms,
   brandConfiguredPrivacy,
 }: {
-  brandConfiguredTerms: string;
-  brandConfiguredPrivacy: string;
+  brandConfiguredTerms: string | null;
+  brandConfiguredPrivacy: string | null;
 }) {
   const pathName = usePathname();
   console.log("SidebarActions pathName", pathName);
@@ -54,9 +55,9 @@ export function SidebarActions({
         >
           <Link
             href={
-              brandConfiguredTerms.length !== 0
+              brandConfiguredTerms
                 ? brandConfiguredTerms
-                : buildPageUrl({ type: "terms" })
+                : NEXT_PUBLIC_HOST_URL + "/terms"
             }
           >
             <p className="gencl:text-body-1-medium gencl:p-2 gencl:hover:bg-secondary-50 gencl:cursor-pointer gencl:rounded-lg">
@@ -65,9 +66,9 @@ export function SidebarActions({
           </Link>
           <Link
             href={
-              brandConfiguredPrivacy.length !== 0
+              brandConfiguredPrivacy
                 ? brandConfiguredPrivacy
-                : buildPageUrl({ type: "privacy" })
+                : NEXT_PUBLIC_HOST_URL + "/privacy"
             }
           >
             <p className="gencl:text-body-1-medium gencl:p-2 gencl:hover:bg-secondary-50 gencl:cursor-pointer gencl:rounded-lg">

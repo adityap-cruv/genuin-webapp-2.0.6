@@ -8,7 +8,7 @@ import {
   useLeaveCommunityMutation,
 } from "@genuin/components/react-query/api/community/join/join";
 import { Loader } from "@genuin/ui/components/loader";
-import { toastError } from "@genuin/ui/toaster";
+import { Toast } from "@genuin/ui/toaster";
 
 // TODO: lazy load authentication modal.
 type JoinCommunityButtonProps = {
@@ -91,7 +91,7 @@ function Button({
       onCommunityJoinStatusChange?.(newStatus);
     },
     onError: (error) => {
-      toastError("Failed to join community");
+      Toast.Error({ message: "Failed to join community" });
     },
   });
 
@@ -101,7 +101,7 @@ function Button({
         onCommunityJoinStatusChange?.(newStatus);
       },
       onError: (error) => {
-        toastError("Failed to leave community");
+        Toast.Error({ message: "Failed to leave community" });
       },
     });
 
@@ -132,7 +132,9 @@ function Button({
       size="sm"
       disabled={buttonDisabled}
       onClick={handleClick}
-      theme={role === "MEMBER" || role === "REQUESTED" ? "secondary" : "primary"}
+      theme={
+        role === "MEMBER" || role === "REQUESTED" ? "secondary" : "primary"
+      }
       {...rest}
     >
       {isLoading ? (
