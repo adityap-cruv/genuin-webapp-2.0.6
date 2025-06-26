@@ -6,8 +6,8 @@
     "node": ">=20.0.0"
   },
   "scripts": {
-    "dev": "next dev -p 4005",
-    "dev:turbo": "NEXT_TURBO=true next dev --turbo -p 4005",
+    "dev": "env-cmd -f ../../.env next dev -p 4005",
+    "dev:turbo": "env-cmd -f ../../.env NEXT_TURBO=true next dev --turbo -p 4005",
     "build": "next build",
     "start": "next start -p 4000",
     "lint": "eslint .",

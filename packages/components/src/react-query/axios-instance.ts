@@ -1,4 +1,5 @@
 import axios from "axios";
+import { NEXT_PUBLIC_API_URL } from "../lib/utils/env";
 
 let authTokenInterceptorId: number | null = null;
 
@@ -6,7 +7,7 @@ let authTokenInterceptorId: number | null = null;
  * This is the axios instance that will be used for all requests.
  */
 export const axiosInstance = axios.create({
-  baseURL: "https://api.qa.begenuin.com",
+  baseURL: NEXT_PUBLIC_API_URL,
 });
 
 /**

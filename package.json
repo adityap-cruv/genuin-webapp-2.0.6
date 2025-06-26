@@ -66,6 +66,7 @@
     "chalk": "^5.4.1",
     "concurrently": "^8.2.2",
     "depcheck": "^1.4.7",
+    "env-cmd": "^10.1.0",
     "eslint": "^9.28.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-import-resolver-typescript": "^4.4.2",

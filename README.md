@@ -64,6 +64,7 @@ Each project has its own set of commands. See their respective README files for 
 - [Webapp Commands](./apps/webapp/README.md)
 - [Web SDK Commands](./packages/web-sdk/README.md)
 
+
 ## Shared Configuration
 
 The monorepo uses shared configurations for:
@@ -72,6 +73,60 @@ The monorepo uses shared configurations for:
 - Prettier (`.prettierrc`)
 - TypeScript (base config)
 - Git Hooks (Husky)
+
+## Environment Variable Management: Apps & Packages
+
+### Centralized Env Management
+- Shared env variables are defined in the root `.env` file.
+- App- and package-specific overrides can be placed in their respective `.env` files (e.g., `apps/webapp/.env`).
+- Only variables prefixed with `NEXT_PUBLIC_` are exposed to the browser.
+
+### Injecting Env Vars in Apps with `env-cmd`
+- Apps use [`env-cmd`](https://www.npmjs.com/package/env-cmd) to inject environment variables from the root `.env` into their runtime.
+- Example (`apps/webapp/package.json`):
+  ```json
+  "scripts": {
+    "dev": "env-cmd -f ../../.env next dev -p 4005"
+  }
+  ```
+- This ensures all apps receive the same env context, avoiding duplication and drift.
+
+### Injecting Env Vars in Packages (Vite/Storybook)
+- Shared packages (like `@genuin/components`, `@genuin/ui`) use Vite and Storybook for development and documentation.
+- These packages inject env variables for Storybook via the `define` property in the `viteFinal` config in `.storybook/main.ts`:
+  ```ts
+  viteFinal: (config) => {
+    return {
+      ...config,
+      define: {
+        ...config.define,
+        "import.meta.env.NEXT_PUBLIC_RUDDERSTACK_KEY": JSON.stringify(process.env.NEXT_PUBLIC_RUDDERSTACK_KEY),
+        "import.meta.env.NEXT_PUBLIC_RUDDERSTACK_URL": JSON.stringify(process.env.NEXT_PUBLIC_RUDDERSTACK_URL),
+        "import.meta.env.NEXT_PUBLIC_MEDIA_BASE_URL": JSON.stringify(process.env.NEXT_PUBLIC_MEDIA_BASE_URL),
+        "import.meta.env.NEXT_PUBLIC_HOST_URL": JSON.stringify(process.env.NEXT_PUBLIC_HOST_URL),
+      },
+    };
+  }
+  ```
+- This allows Storybook stories and Vite builds in packages to access the same env variables as the main app, ensuring consistency across the monorepo.
+
+### Best Practices
+- Add new shared envs to the root `.env` and document them in `.env.example`.
+- Use `env-cmd` in all scripts that start apps to ensure env consistency.
+- For Storybook, update the `define` block in `.storybook/main.ts` to expose any new public envs needed for stories.
+- Never commit secrets; use `.env.local` for local overrides.
+
+### Example: Adding a New Public Env Variable
+1. Add to root `.env` and `.env.example`:
+   ```
+   NEXT_PUBLIC_NEW_FEATURE_FLAG=true
+   ```
+2. Reference in your code as `process.env.NEXT_PUBLIC_NEW_FEATURE_FLAG` (Node) or `import.meta.env.NEXT_PUBLIC_NEW_FEATURE_FLAG` (Vite/Storybook).
+3. If needed in Storybook, add to the `define` block in `.storybook/main.ts`.
+
+---
+
+This approach ensures all apps and packages in the monorepo have a consistent, secure, and maintainable environment variable setup, both in development and in Storybook.
 
 ## Dependency Management
 
@@ -171,3 +226,4 @@ For more detailed information on the dependency management strategy and its impl
 ## License
 
 ISC
+

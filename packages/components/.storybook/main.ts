@@ -47,6 +47,24 @@ const config: StorybookConfig = {
           "@hooks": join(__dirname, "../src/hooks"),
         },
       },
+      define: {
+        ...config.define,
+        "import.meta.env.NEXT_PUBLIC_RUDDERSTACK_KEY": JSON.stringify(
+          process.env.NEXT_PUBLIC_RUDDERSTACK_KEY
+        ),
+        "import.meta.env.NEXT_PUBLIC_RUDDERSTACK_URL": JSON.stringify(
+          process.env.NEXT_PUBLIC_RUDDERSTACK_URL
+        ),
+        "import.meta.env.NEXT_PUBLIC_MEDIA_BASE_URL": JSON.stringify(
+          process.env.NEXT_PUBLIC_MEDIA_BASE_URL
+        ),
+        "import.meta.env.NEXT_PUBLIC_HOST_URL": JSON.stringify(
+          process.env.NEXT_PUBLIC_HOST_URL
+        ),
+        "import.meta.env.NEXT_PUBLIC_API_URL": JSON.stringify(
+          process.env.NEXT_PUBLIC_API_URL
+        ),
+      },
     };
   },
 };

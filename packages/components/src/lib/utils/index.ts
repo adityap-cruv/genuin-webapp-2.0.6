@@ -118,8 +118,8 @@ export function getUrlForReaction(
  */
 export function getLoopAndCommunityShareString(shareUrl: string) {
   const urlObj = new URL(shareUrl);
-  const loopShareString = urlObj.searchParams.get('loop');
-  const communityShareString = urlObj.searchParams.get('community');
+  const loopShareString = urlObj.searchParams.get("loop");
+  const communityShareString = urlObj.searchParams.get("community");
   return { loopShareString, communityShareString };
 }
 
@@ -148,9 +148,9 @@ export function getSearchParamsFromWindow(): Record<string, any> {
  */
 export function tryJsonParse(data: string) {
   try {
-    return JSON.parse(data)
+    return JSON.parse(data);
   } catch (e) {
-    return data
+    return data;
   }
 }
 
@@ -172,8 +172,8 @@ export function compressText(text: string, maxChars: number): string {
  * @param name - The name of the SVG.
  * @returns The SVG link.
  */
-export function getIconLink(name: string, type: string = 'svg') {
-  return `${MEDIA_BASE_URL}/web-sdk/v1/icons/${name}.${type}`
+export function getIconLink(name: string, type: string = "svg") {
+  return `${MEDIA_BASE_URL}/web-sdk/v1/icons/${name}.${type}`;
 }
 
 /**
@@ -182,11 +182,14 @@ export function getIconLink(name: string, type: string = 'svg') {
  * @returns The GIF link.
  */
 export function getGifLink(name: string) {
-  return `${MEDIA_BASE_URL}/web-sdk/v1/icons/${name}.gif`
+  return `${MEDIA_BASE_URL}/web-sdk/v1/icons/${name}.gif`;
 }
 
-
-export function getActionText(defaultText : string , action: DeepLinkActionType | undefined , preText : string) {
+export function getActionText(
+  defaultText: string,
+  action: DeepLinkActionType | undefined,
+  preText: string
+) {
   if (!action) return defaultText;
 
   const actionObjectMap: Record<DeepLinkActionType, string> = {

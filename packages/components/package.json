@@ -59,7 +59,7 @@
     "vite-tsconfig-paths": "^5.1.4"
   },
   "scripts": {
-    "storybook": "storybook dev -p 6005",
+    "storybook": "env-cmd -f ../../.env storybook dev -p 6005",
     "build-storybook": "storybook build",
     "preinstall": "pnpm run build:styles",
     "build:styles": "npx @tailwindcss/cli -i ./src/globals.css -o ./dist/index.css",
