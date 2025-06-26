@@ -135,7 +135,6 @@ export function GenericDetailsMetadata({
             labelClassName="gencl:mr-1"
             separator="•"
           />
-          <p>•</p>
         </>
       )}
       {others && <>{others}</>}

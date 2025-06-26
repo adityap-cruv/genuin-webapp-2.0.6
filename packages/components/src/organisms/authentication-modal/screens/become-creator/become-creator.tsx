@@ -85,20 +85,22 @@ export function BecomeCreator({ ...props }: BecomeCreatorProps) {
         <CarouselDots />
       </Carousel>
       <div className="gencl:flex gencl:flex-col gencl:gap-4 gencl:mt-6">
-        <Button
-          className="gencl:w-full gencl:text-body-0-semi-bold"
-          theme="primary"
-          onClick={handleClick}
-          disabled={isRequestMutating || isCbStatusLoading || isRequested}
-        >
-          {isCbStatusLoading || isRequestMutating ? (
-            <Loader size="sm" />
-          ) : isRequested ? (
-            "Requested"
-          ) : (
-            "Become a Creator"
-          )}
-        </Button>
+        {cbStatus?.status !== "Accepted" && (
+          <Button
+            className="gencl:w-full gencl:text-body-0-semi-bold"
+            theme="primary"
+            onClick={handleClick}
+            disabled={isRequestMutating || isCbStatusLoading || isRequested}
+          >
+            {isCbStatusLoading || isRequestMutating ? (
+              <Loader size="sm" />
+            ) : isRequested ? (
+              "Requested"
+            ) : (
+              "Become a Creator"
+            )}
+          </Button>
+        )}
         <DialogClose asChild>
           <Button
             className="gencl:w-full gencl:text-body-0-semi-bold"

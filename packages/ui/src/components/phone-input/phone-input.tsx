@@ -121,7 +121,7 @@ const CountrySelect = ({
       <PopoverContent
         className={cn("gencl:w-[300px] gencl:z-50 gencl:p-0", popoverClassName)}
       >
-        <Command className="gencl:overflow-auto">
+        <Command className="gencl:overflow-auto gencl:bg-white">
           <CommandList className="gencl:overflow-auto">
             <CommandInput placeholder="Search country..." />
             <CommandGroup>

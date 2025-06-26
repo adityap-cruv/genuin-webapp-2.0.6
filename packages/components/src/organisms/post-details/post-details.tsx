@@ -51,6 +51,7 @@ export function PostDetails({
       {video.description && (
         <ReadMore
           text={video.description}
+          maxLines={2}
           textClassName={cn("gencl:text-body-1-medium")}
           className="gencl:pt-3"
         />

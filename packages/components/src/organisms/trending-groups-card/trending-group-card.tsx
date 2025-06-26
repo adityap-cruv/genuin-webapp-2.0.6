@@ -9,6 +9,7 @@ import { Link } from "@genuin/components/molecules/link";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 
 type TrendingGroupCardProps = {
+  slug : string;
   groupName: string;
   memberCount: number;
   postCount: number;
@@ -28,6 +29,7 @@ type TrendingGroupCardProps = {
 };
 
 export const TrendingGroupCard = ({
+  slug,
   groupName,
   memberCount,
   postCount,
@@ -38,7 +40,7 @@ export const TrendingGroupCard = ({
   const visiblePostThumbnails = postData?.slice(0, 3) || [];
 
   return (
-   <Link href={buildPageUrl({type : "group" , slug : groupName})} className="gencl:h-full">
+   <Link href={buildPageUrl({type : "group" , slug : slug})} className="gencl:h-full">
     <div className="gencl:border gencl:rounded-lg gencl:border-secondary-150 gencl:relative gencl:overflow-hidden gencl:w-full gencl:h-full">
       <div className="gencl:p-4">
         <div className="gencl:flex gencl:flex-col gencl:gap-2">
@@ -115,7 +117,7 @@ export const TrendingGroupCard = ({
           />
         </div>
 
-        <div className="gencl:relative gencl:max-h-32 gencl:-mt-20">
+        <div className="gencl:relative gencl:max-h-48 gencl:-mt-20">
           {visiblePostThumbnails.slice(0, 3)?.map((item, index) => {
             const offset = index * 5;
             const zIndex = index;
@@ -132,7 +134,7 @@ export const TrendingGroupCard = ({
                   zIndex,
                   opacity,
                 }}
-                className="gencl:h-32 gencl:w-24 gencl:transition-transform gencl:duration-300"
+                className="gencl:h-48 gencl:w-24 gencl:transition-transform gencl:duration-300"
               >
                 <Image
                   src={item.imageUrl}
@@ -196,7 +198,7 @@ export function TrendingGroupCardSkeleton() {
           </div>
         </div>
 
-        <div className="gencl:relative gencl:max-h-32 gencl:-mt-20">
+        <div className="gencl:relative gencl:max-h-44 gencl:-mt-24">
           {Array.from({ length: 3 }).map((_, index) => {
             const offset = index * 5;
             const zIndex = index;
@@ -212,7 +214,7 @@ export function TrendingGroupCardSkeleton() {
                   zIndex,
                   opacity,
                 }}
-                className="gencl:h-32 gencl:w-24 gencl:transition-transform gencl:duration-300"
+                className="gencl:h-44 gencl:w-24 gencl:transition-transform gencl:duration-300"
               >
                 <Skeleton className="gencl:h-full gencl:w-full" />
               </div>

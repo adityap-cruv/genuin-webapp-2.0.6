@@ -36,7 +36,7 @@ export function CommentMenu({
               theme="text"
               className="gencl:text-error-status gencl:text-body-1-medium gencl:hover:gencl:border-secondary-100 gencl:h-fit gencl:px-0"
             >
-              Report Comment
+              Report
             </Button>
           </div>
         </Report>

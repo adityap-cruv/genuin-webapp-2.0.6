@@ -77,7 +77,7 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
         groupName={groupDetails.name ?? ""}
         groupDescription={ldDescription}
         shareUrl={groupDetails.shareUrl ?? ""}
-        showText={false}
+        showText={true}
         onSubscriptionChange={(isSubscriber) => {
           setQueryDataForSubscribeGroupInGroupDetails(slug, isSubscriber);
         }}

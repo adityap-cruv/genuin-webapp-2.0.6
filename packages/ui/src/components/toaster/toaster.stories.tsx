@@ -7,7 +7,7 @@ import { Button } from "@genuin/ui/components/button"; // Use any button or nati
 
 const meta: Meta = {
   title: "Components/Toast",
-  component: Toast.Success || Toast.Error,
+  component: Toaster,
   tags: ["autodocs"],
   parameters: {
     layout: "centered",
@@ -35,6 +35,17 @@ export const Error: Story = {
       <Toaster />
       <Button onClick={() => Toast.Error({ message: "Something went wrong" })}>
         Show Error Toast
+      </Button>
+    </>
+  ),
+};
+
+export const Descriptive: Story = {
+  render: () => (
+    <>
+      <Toaster />
+      <Button onClick={() => Toast.Success({ message: "Something went wrong" , description : "Long Text Description" })}>
+        Show Toast
       </Button>
     </>
   ),

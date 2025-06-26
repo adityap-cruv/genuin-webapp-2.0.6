@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useState } from "react";
 import {
@@ -19,6 +19,7 @@ type GroupMemberInfoType = {
 
 type GroupInfoType = {
   chat_id: string;
+  slug: string;
   group: {
     group_name: string;
     dp: string;
@@ -29,7 +30,7 @@ type GroupInfoType = {
   };
   latest_messages: {
     thumbnail_url: string;
-    slug : string
+    slug: string;
   }[];
 };
 
@@ -57,13 +58,10 @@ export function TrendingGroups() {
   }
 
   const groupsToDisplay = isExpanded ? data.groups : data.groups.slice(0, 3);
-
   return (
     <div className="gencl:w-full gencl:flex gencl:flex-col gencl:gap-4">
       <div className="gencl:flex gencl:justify-between gencl:items-center gencl:self-stretch">
-        <p className="gencl:text-headline-4-semi-bold">
-          Trending Groups
-        </p>
+        <p className="gencl:text-headline-4-semi-bold">Trending Groups</p>
         {data?.groups.length > 3 && (
           <Button theme="text" onClick={handleToggle}>
             {isExpanded ? "See less" : "See more"}
@@ -73,12 +71,12 @@ export function TrendingGroups() {
 
       <div className="gencl:grid gencl:grid-cols-1 gencl:sm:grid-cols-2 gencl:lg:grid-cols-3 gencl:gap-3">
         {groupsToDisplay.map(
-          ({ chat_id, group, latest_messages }: GroupInfoType) => {
+          ({ chat_id, group, slug, latest_messages }: GroupInfoType) => {
             const formattedPostThumbnails = latest_messages?.map(
-              ({ thumbnail_url , slug }) => ({
+              ({ thumbnail_url, slug }) => ({
                 imageUrl: thumbnail_url,
                 alt: "Post Thumbnail",
-                slug : slug , 
+                slug: slug,
               })
             );
 
@@ -92,10 +90,11 @@ export function TrendingGroups() {
             return (
               <TrendingGroupCard
                 key={chat_id}
-                groupName={group.group_name}
+                slug={slug}
                 description={group.group_description}
                 memberCount={group.no_of_members}
                 postCount={group.no_of_videos}
+                groupName={group.group_name}
                 userAvatars={formattedMembersAvatars ?? []}
                 postData={formattedPostThumbnails ?? []}
               />
@@ -122,7 +121,7 @@ export function TrendingGroupsSkeleton() {
 }
 
 function GroupsSkeleton({ noOfGroups = 1 }: { noOfGroups: number }) {
-  return Array.from({ length: noOfGroups }).map((_,index) => (
+  return Array.from({ length: noOfGroups }).map((_, index) => (
     <TrendingGroupCardSkeleton key={index} />
   ));
 }

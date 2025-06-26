@@ -23,7 +23,7 @@ export function Recent() {
         type="single"
         collapsible={true}
         defaultValue="recent-communities"
-        className="gencl:w-full gencl:py-4 gencl:px-3 gencl:border-secondary-100"
+        className="gencl:w-full gencl:py-4 gencl:px-3 gencl:border-secondary-100 gencl:overflow-y-auto"
       >
         <AccordionItem value="recent-communities">
           <AccordionTrigger className="gencl:px-3 gencl:py-2 gencl:hidden gencl:xl:!flex">
