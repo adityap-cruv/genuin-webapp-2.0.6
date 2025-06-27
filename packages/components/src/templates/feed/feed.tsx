@@ -4,6 +4,7 @@ import { CommunityUserRole, FeedType } from "@genuin/components/types/post";
 import { useCallback, useEffect, useMemo, type ComponentProps } from "react";
 import "swiper/css";
 import { useWindowSize } from "usehooks-ts";
+import dynamic from "next/dynamic";
 
 import { useBaseContext } from "@genuin/components/context/base";
 import { PlayerList } from "@genuin/components/organisms/player-swiper";
@@ -25,8 +26,16 @@ import { getQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
 import { GroupUserStatusType } from "@genuin/components/types/roles";
 import { FeedSkeleton } from "./feed-skeleton";
 import { useInterruptionManager } from "@genuin/components/hooks/use-interruption-manager";
-import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
+import type { AuthenticationModalProps } from "@genuin/components/organisms/authentication-modal/authentication-modal";
 import { ErrorState } from "@genuin/components/molecules/error-state";
+
+const AuthenticationModal = dynamic<AuthenticationModalProps>(
+  () =>
+    import("@genuin/components/organisms/authentication-modal").then(
+      (mod) => mod.AuthenticationModal
+    ),
+  { ssr: false, loading: () => null }
+);
 
 /**
  * Feed data structure containing videos and pagination state
@@ -332,13 +341,15 @@ function FeedViewCore({
           />
         )}
         {/* For Interruption */}
-        <AuthenticationModal
-          open={shouldShowDialog}
-          onOpenChange={() => {
-            closeDialog();
-          }}
-          customStep={dialogType}
-        />
+        {shouldShowDialog && (
+          <AuthenticationModal
+            open={shouldShowDialog}
+            onOpenChange={() => {
+              closeDialog();
+            }}
+            customStep={dialogType}
+          />
+        )}
       </div>
     );
   }

@@ -16,6 +16,7 @@ import { ShareButton } from "@genuin/components/molecules/share-button";
 import { RepostModal } from "@genuin/components/organisms/repost-modal/repost-modal";
 import { useAuthContext } from "@genuin/components/context/auth";
 import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
+import { Button } from "@genuin/ui/components/button";
 
 const tooltipVariants = cva("", {
   variants: {
@@ -35,6 +36,7 @@ type TooltipActionProps = {
   icon: ReactNode;
   tooltipText: string;
   onClick?: () => void;
+  disableTooltip?: boolean;
 } & VariantProps<typeof tooltipVariants> &
   ComponentProps<typeof TooltipTrigger>;
 
@@ -44,8 +46,27 @@ function TooltipAction({
   variant,
   onClick,
   className,
+  disableTooltip = false,
   ...restProps
 }: TooltipActionProps) {
+  if (disableTooltip) {
+    return (
+      <Button
+        theme={"custom"}
+        className={cn(
+          tooltipVariants({ variant }),
+          "gencl:hover:cursor-pointer ",
+          "gencl:h-12 gencl:p-0 gencl:w-12 gencl:flex gencl:items-center gencl:justify-center  gencl:rounded-full",
+          "gencl:[&_svg]:w-8 gencl:[&_svg]:h-8",
+          className
+        )}
+        onClick={onClick}
+        {...restProps}
+      >
+        {icon}
+      </Button>
+    );
+  }
   return (
     <Tooltip>
       <TooltipTrigger
@@ -235,6 +256,7 @@ export function Actions({
                   : "gencl:bg-secondary-200"
                 : ""
             }
+            disableTooltip={action.actionType === "COMMENT" && isCommentBoxOpen}
           />
         );
         // Create context object

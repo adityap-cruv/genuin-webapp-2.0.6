@@ -72,7 +72,7 @@ export function PlayerList({
                   reactionCount={post.video.sparkCount}
                   variant={showExpandView ? "dark" : "light"}
                   className="gencl:shrink-0 gencl:pb-4"
-                  isCommentBoxOpen={value}
+                  isCommentBoxOpen={!showExpandView || value}
                   actionWrapper={{
                     COMMENT: (defaultNode) => (
                       <CommentButton

@@ -5,11 +5,71 @@ import { XIcon } from "lucide-react";
 import * as React from "react";
 
 import { cn } from "@genuin/ui/lib/utils";
+import { modalManager } from "@genuin/ui/lib/dialog-manager";
 
+/**
+ * Dialog component with modal management.
+ *
+ * @param {string} type - Required type for the dialog instance.
+ *   This type is used for modal management (registration, open/close control).
+ *   Pass a type if you need to coordinate multiple dialogs or control them programmatically.
+ */
 function Dialog({
+  type,
+  open,
+  defaultOpen,
+  onOpenChange,
   ...props
-}: React.ComponentProps<typeof DialogPrimitive.Root>) {
-  return <DialogPrimitive.Root data-slot="dialog" {...props} />;
+}: React.ComponentProps<typeof DialogPrimitive.Root> & {
+  type: string;
+}) {
+  const id = type;
+  const isControlled = open !== undefined;
+  const [internalOpen, setInternalOpen] = React.useState(defaultOpen ?? false);
+
+  // Determine the actual open state
+  const isOpen = isControlled ? open! : internalOpen;
+
+  // Register/unregister modal on mount/unmount
+  React.useEffect(() => {
+    modalManager.registerModal(id);
+    return () => modalManager.unregisterModal(id);
+  }, [id]);
+
+  // Notify manager when open state changes
+  React.useEffect(() => {
+    if (isOpen) {
+      if (!modalManager.notifyModalOpen(id)) {
+        // If not allowed, close the modal
+        if (!isControlled) setInternalOpen(false);
+        onOpenChange?.(false);
+      }
+    } else {
+      modalManager.notifyModalClose(id);
+    }
+    // Only run when isOpen or id changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, id]);
+
+  // Handle open state changes from user interaction
+  const handleOpenChange = (next: boolean) => {
+    if (next && !modalManager.canOpenModal(id)) {
+      if (!isControlled) setInternalOpen(false);
+      onOpenChange?.(false);
+      return;
+    }
+    if (!isControlled) setInternalOpen(next);
+    onOpenChange?.(next);
+  };
+
+  return (
+    <DialogPrimitive.Root
+      data-slot="dialog"
+      open={isOpen}
+      onOpenChange={handleOpenChange}
+      {...props}
+    />
+  );
 }
 
 function DialogTrigger({

@@ -4,6 +4,7 @@ import { useBaseContext } from "../context/base";
 import { useAuthContext } from "../context/auth";
 import type { AuthUser } from "@genuin/components/types/auth";
 import { StepsType } from "../organisms/authentication-modal/context";
+import { modalManager } from "@genuin/ui/lib/dialog-manager";
 
 const INTERRUPTION_STEPS = [
   {
@@ -43,23 +44,32 @@ export function useInterruptionManager() {
   const shouldShowAppDownload =
     getAppConfig?.enable && brandDetails.web_cta === "app";
 
-  // Only check interruption steps if get_app_popup is not enabled
-  const interruptionToShow = shouldShowAppDownload
-    ? null
-    : INTERRUPTION_STEPS.find(
+  // Find the next interruption step to show
+  const interruptionToShow = !shouldShowAppDownload
+    ? INTERRUPTION_STEPS.find(
         (step) =>
           brandDetails?.web_configs?.[step.configKey]?.enable &&
           !step.isComplete(user)
-      );
+      )
+    : null;
+
+  // Whether all interruption steps are completed
+  const allInterruptionsCompleted =
+    !shouldShowAppDownload && !interruptionToShow;
 
   // Trigger authentication or download modal based on configuration
   const triggerAuthenticationModal = useCallback(async () => {
+    // Check if any other modal is open
+    if (!modalManager.canOpenModal("INTERRUPTION_MANAGER")) {
+      setShouldShowDialog(false);
+      setDialogType(undefined);
+      return;
+    }
     if (shouldShowAppDownload) {
       setShouldShowDialog(true);
       setDialogType("GET_APP");
       return;
     }
-
     if (interruptionToShow) {
       setShouldShowDialog(true);
       setDialogType(interruptionToShow.key);
@@ -75,6 +85,9 @@ export function useInterruptionManager() {
   // Handle swipe interactions to trigger modal after a set count
   const handleSwipeCount = useCallback(
     (index: number) => {
+      // If all interruptions are completed, do nothing
+      if (allInterruptionsCompleted) return;
+
       const { swipeCount, lastIndex } = interactionRef.current;
       const popupAfter = shouldShowAppDownload
         ? (getAppConfig?.popup_after ?? 0)
@@ -88,12 +101,6 @@ export function useInterruptionManager() {
         interactionRef.current.lastIndex = index;
       }
 
-      // console.log(
-      //   "popupAfter, interruptionToShow",
-      //   popupAfter,
-      //   interruptionToShow
-      // );
-
       if (interactionRef.current.swipeCount >= popupAfter) {
         interactionRef.current.swipeCount = 0;
         void triggerAuthenticationModal();
@@ -105,6 +112,7 @@ export function useInterruptionManager() {
       shouldShowAppDownload,
       getAppConfig,
       triggerAuthenticationModal,
+      allInterruptionsCompleted,
     ]
   );
 

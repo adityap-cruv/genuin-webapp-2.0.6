@@ -16,7 +16,7 @@ export function RepostModal({
   ...restProps
 }: RepostModalProps) {
   return (
-    <Dialog>
+    <Dialog type="repost-dialog">
       <DialogTrigger {...restProps}>{children}</DialogTrigger>
       <DialogContent className="gencl:max-w-2xl gencl:w-full">
         <Content videoId={videoId} />

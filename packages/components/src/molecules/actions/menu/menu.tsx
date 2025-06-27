@@ -47,7 +47,12 @@ export function Menu({
       ),
     },
     brandDetails.web_configs.playback_speed_enabled && {
-      children: <PlaybackSpeed children={menuItems("Playback speed")} />,
+      children: (
+        <PlaybackSpeed
+          type="playback-dialog"
+          children={menuItems("Playback speed")}
+        />
+      ),
     },
     // Feature not implemented yet: "Group Details" and "Not interested" menu items are pending design.
     /*
@@ -61,6 +66,7 @@ export function Menu({
     contentId && {
       children: (
         <Report
+          type="report-dialog"
           reportFor="VIDEO"
           contentId={contentId}
           shareUrl={shareUrl ?? ""}

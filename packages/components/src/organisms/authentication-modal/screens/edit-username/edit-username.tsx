@@ -49,14 +49,14 @@ export function EditUserName({
         } else {
           form.setError("username", {
             message:
-              "This username isn’t available. Choose a different username.",
+              "This username isn't available. Choose a different username.",
           });
         }
       },
       onError: () => {
         form.setError("username", {
           message:
-            "This username isn’t available. Choose a different username.",
+            "This username isn't available. Choose a different username.",
         });
       },
     });
@@ -65,7 +65,7 @@ export function EditUserName({
     useUpdateUserMutation({
       onSuccess: ({ status }) => {
         if (status) {
-          updateUser({ ...user, nickname: form.getValues("username") });
+          updateUser({ ...user, nickname: form.getValues("username"), usernameSet: true });
         }
         closeModal();
       },

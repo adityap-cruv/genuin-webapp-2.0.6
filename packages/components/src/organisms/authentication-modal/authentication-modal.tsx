@@ -15,7 +15,7 @@ import {
 import { Screens } from "./screens";
 import { useBaseContext } from "@genuin/components/context/base";
 
-type AuthenticationModalProps = ComponentProps<typeof DialogTrigger> & {
+export type AuthenticationModalProps = ComponentProps<typeof DialogTrigger> & {
   action?: AuthActionType;
   open?: boolean;
   customStep?: ComponentProps<typeof AuthenticationModalProvider>["customStep"];
@@ -57,7 +57,11 @@ export function AuthenticationModal({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+    <Dialog
+      type={`${getAppData?.data?.type}-dialog`}
+      open={isOpen}
+      onOpenChange={handleOpenChange}
+    >
       <DialogTrigger asChild {...restProps}>
         {children}
       </DialogTrigger>

@@ -96,7 +96,12 @@ export function GetApp({ onSubmit, ...props }: GetAppProps) {
           {getAppData?.title ?? `Get the ${brandDetails.name} app`}
         </p>
         <p className="gencl:text-body-1-medium gencl:text-secondary-600">
-          {getAppData?.description ?? getActionText("Download app to browse more communities",clickAction, "Download app")}
+          {getAppData?.description ??
+            getActionText(
+              "Download app to browse more communities",
+              clickAction,
+              "Download app"
+            )}
         </p>
       </div>
       <div className="gencl:flex gencl:flex-col gencl:items-center gencl:gap-2">

@@ -54,7 +54,10 @@ export function CategoryInput({ ...props }: CategoryInputProps) {
     const allTopicIds = getAllTopicIds();
     setSelectedCategory(allTopicIds);
     addCategories(allTopicIds, {
-      onSettled: () => setIsSurpriseMe(false),
+      onSettled: () => {
+        updateUser({ hasTopics: true });
+        setIsSurpriseMe(false)
+      },
     });
   };
 

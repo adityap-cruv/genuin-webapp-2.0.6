@@ -83,7 +83,7 @@ export const CommandDialogExample: Story = {
         <Button theme="outline" onClick={() => setOpen(true)}>
           Open Command Dialog
         </Button>
-        <CommandDialog open={open} onOpenChange={setOpen}>
+        <CommandDialog type="command-dialog" open={open} onOpenChange={setOpen}>
           <CommandInput placeholder="Type a command or search..." />
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
