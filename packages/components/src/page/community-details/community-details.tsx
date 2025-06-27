@@ -241,7 +241,7 @@ function CommunityDetailsView({ slug }: { slug: string }) {
                 className="gencl:my-4"
               />
             ) : (
-              <CommunityDetailsTabs slug={slug} className="gencl:pt-6" />
+              <CommunityDetailsTabs communityOwnerId={communityDetails.leader.member_id} slug={slug} className="gencl:pt-6" />
             )}
           </div>
           <SideInfo

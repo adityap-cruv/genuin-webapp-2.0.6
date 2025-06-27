@@ -75,7 +75,7 @@ export function GroupPosts({
             postId: post.video.id,
             isPinned: post.video.isPinned,
             linkouts: null,
-            stats: { comments: post.video.commentCount, shares: 0, views: 0 },
+            stats: { comments: post.video.commentCount, reactions : 0, views: 0  },
           })) ?? []
         }
         fetchNextPage={fetchNextPage}

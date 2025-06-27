@@ -23,7 +23,7 @@ export function OwnerInfo({
       <ProfileLink
         url={buildPageUrl({
           type: !!owner.brand ? "brand" : "profile",
-          slug: owner.userName,
+          slug: !!owner.brand ? owner.brand.slug : owner.userName,
         })}
         userLogoType={owner.brand?.userLogo}
         className="gencl:text-body-1-medium"

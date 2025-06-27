@@ -13,6 +13,7 @@ import { cva } from "class-variance-authority";
 import { Stats } from "../stats";
 
 import type { PostTileProps } from "./post-tile.type";
+import { DynamicReactionIcon } from "../reaction-button";
 
 export const postTileVariants = cva(
   "gencl:group gencl:relative gencl:rounded-md gencl:overflow-hidden gencl:aspect-reel",
@@ -57,18 +58,19 @@ export function PostTile({
                 <PlayIcon className="gencl:stroke-white gencl:mr-1 gencl:stroke-2 gencl:size-3 gencl:fill-none" />
               ),
             },
+             reaction: {
+              value: stats.reactions,
+              icon: (
+                <DynamicReactionIcon sparkCount={0} className="gencl:mr-1" isSparked={false} iconHeight={16} iconWidth={16} variant="dark"/>
+              ),
+            },
             comments: {
               value: stats.comments,
               icon: (
                 <CommentIcon className="gencl:stroke-white! gencl:stroke-2 gencl:mr-1 gencl:size-4" />
               ),
             },
-            shares: {
-              value: stats.shares,
-              icon: (
-                <ShareIcon className="gencl:stroke-white! gencl:mr-1 gencl:size-4" />
-              ),
-            },
+           
           }}
         />
       )}

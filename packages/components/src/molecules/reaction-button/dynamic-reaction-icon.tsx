@@ -11,6 +11,7 @@ type DynamicReactionIconProps = {
   showSparkCount?: boolean;
   iconHeight?: number;
   iconWidth?: number;
+  className?: string;
 };
 
 export function DynamicReactionIcon({
@@ -20,6 +21,7 @@ export function DynamicReactionIcon({
   iconHeight = 32,
   sparkCount = 0,
   iconWidth = 32,
+  className
 }: DynamicReactionIconProps) {
   const {
     brandDetails: { reactions },
@@ -50,6 +52,7 @@ export function DynamicReactionIcon({
         height={iconHeight}
         width={iconWidth}
         alt="reaction"
+        className={className}
       />
     </>
   );

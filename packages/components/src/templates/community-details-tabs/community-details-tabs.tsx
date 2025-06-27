@@ -22,6 +22,7 @@ import { GroupPosts } from "@genuin/components/organisms/group-posts";
 type CommunityDetailsTabsPropsType = Omit<
   {
     slug: string;
+    communityOwnerId : string;
   } & React.ComponentProps<typeof Tabs>,
   "defaultValue" | "defaultChecked" | "children"
 >;
@@ -29,6 +30,7 @@ type CommunityDetailsTabsPropsType = Omit<
 export function CommunityDetailsTabs({
   slug,
   className,
+  communityOwnerId,
   ...restProps
 }: CommunityDetailsTabsPropsType) {
   return (
@@ -45,7 +47,7 @@ export function CommunityDetailsTabs({
         <CommunityGroups slug={slug} />
       </TabsContent>
       <TabsContent value="members">
-        <CommunityMembers slug={slug} />
+        <CommunityMembers communityOwnerId={communityOwnerId} slug={slug} />
       </TabsContent>
     </Tabs>
   );
@@ -161,8 +163,7 @@ function CommunityGroups({ slug }: { slug: string }) {
   });
 }
 
-// TODO: owner is missing here.
-function CommunityMembers({ slug }: { slug: string }) {
+function CommunityMembers({ slug , communityOwnerId }: { slug: string , communityOwnerId : string }) {
   const {
     data: communityMembers,
     isError,
@@ -175,7 +176,7 @@ function CommunityMembers({ slug }: { slug: string }) {
       isError={isError}
       isLoading={isLoading}
       members={communityMembers?.members.map((member) => ({
-        isOwner: false,
+        isOwner: member.member_id === communityOwnerId,
         bio: member.bio ?? "",
         memberId: member.member_id,
         name: member.name ?? "",

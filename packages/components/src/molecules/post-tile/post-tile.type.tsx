@@ -26,7 +26,7 @@ export type PostTileDataType = {
   /**
    * Stats to show in the post tile. Leave empty if you don't want to show any stats.
    */
-  stats?: Record<"views" | "comments" | "shares", number>;
+  stats?: Record<"views" | "comments" | "reactions" , number>;
 };
 
 export type PostTileProps = {
