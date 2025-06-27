@@ -9,6 +9,7 @@ const nextAuth = NextAuth({
       name: 'credentials',
       type: 'credentials',
       credentials: {
+        id: { type: 'text' },
         isAvatar: { type: 'text' },
         userId: { type: 'text' },
         phoneNumber: { type: 'text' },
@@ -56,7 +57,7 @@ const nextAuth = NextAuth({
         // Return user data with empty strings instead of undefined for string fields
         return {
           isAvatar: credentials.isAvatar === 'true',
-          id: String(credentials.userId),
+          id: String(credentials.id),
           phoneNumber,
           nickname: String(credentials.nickname),
           image,

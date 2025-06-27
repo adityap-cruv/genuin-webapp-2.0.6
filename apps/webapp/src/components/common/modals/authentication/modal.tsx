@@ -137,7 +137,7 @@ export function Modal({ children, showClose, ...props }: Props) {
         }}
         className="rounded-t-lg !py-10">
         {shouldShowClose && (
-          <DialogClose className="absolute right-4 top-4 outline-none">
+          <DialogClose className="absolute top-4 right-4 outline-none">
             <CloseIcon
               onClick={() => {
                 setFormData({ flowType: 'email', phoneNumber: '', email: '' })

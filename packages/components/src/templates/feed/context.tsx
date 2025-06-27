@@ -105,6 +105,15 @@ export function FeedContextProvider({
     };
   }, [showExpandView]);
 
+  useEffect(() => { 
+    return () => {
+      // Ensure to exit fullscreen when the component unmounts
+      if (document.fullscreenElement) {
+        document?.exitFullscreen?.();
+      }
+    }
+  }, [])
+
   useEffect(() => {
     if (!showExpandView) {
       onCloseExpandView?.();
