@@ -1,5 +1,6 @@
 import { type Metadata } from 'next'
 import '../../globals.css'
+import '@genuin/components/styles'
 import { cookies } from 'next/headers'
 import { ThirdPartyScriptProvider } from '@components/providers/third-party-script-provider'
 import { GenuinOptionsProvider } from '@components/providers/genuin-options-provider'
@@ -16,6 +17,7 @@ import { type Session } from 'next-auth'
 import { auth } from '../../../../auth'
 import { IHeartDemoProvider } from '@/components/providers/iheart-demo-provider'
 import { IHEART_BRAND_URL } from '@/lib/constants'
+import { SiteProvidersWithoutLayout } from '@/components/providers/site-providers'
 
 export default async function RootLayout(props: any) {
   const cookieStore = await cookies()
@@ -63,7 +65,11 @@ export default async function RootLayout(props: any) {
                   os={os}
                   config={config}
                   user={userSession?.user ?? null}>
-                  <UrlParamProvider>{props.children}</UrlParamProvider>
+                  <UrlParamProvider>
+                    <SiteProvidersWithoutLayout config={config} session={userSession}>
+                      {props.children}
+                    </SiteProvidersWithoutLayout>
+                  </UrlParamProvider>
                 </GenuinOptionsProvider>
               </ReactQueryProvider>
             </SessionProvider>

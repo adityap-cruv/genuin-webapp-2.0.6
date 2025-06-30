@@ -1,11 +1,12 @@
 'use client'
-import { TopBar } from '@components/layouts/desktop/top-bar'
 import { SideBar } from './settings-side-bar'
 import icBack from '@icons/icBack.svg'
 import Image from 'next/image'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import Analytics from '@services/analytics'
 import { useRouter } from 'next/navigation'
+import { TopBar } from '@genuin/components/organisms/top-bar'
+import { OldSearch } from '@/components/providers/old-search'
 
 // TODO: make it server component.
 export function SettingsLayout(props: any) {
@@ -13,7 +14,7 @@ export function SettingsLayout(props: any) {
   return (
     <>
       <main className="bg-monochrome-11 absolute inset-0 flex h-full min-h-max w-full flex-col items-center overflow-clip">
-        <TopBar />
+        <TopBar search={<OldSearch />} />
         <section className="h-body container flex max-w-4xl gap-4 overflow-clip p-4">
           <div
             className="bg-monochrome-8 mt-2 flex h-12 w-12 items-center justify-center rounded-full hover:cursor-pointer"

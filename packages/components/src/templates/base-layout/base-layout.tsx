@@ -28,7 +28,14 @@ export function BaseLayout({
       />
       <main
         className="gencl:flex gencl:h-full"
-        style={{ height: height - TOP_BAR_HEIGHT }}
+        style={
+          isNaN(height) && height !== undefined
+            ? {
+                height: height - TOP_BAR_HEIGHT + "px",
+              }
+            : undefined
+        }
+        // suppressHydrationWarning={true}
       >
         <SideBar />
         <section

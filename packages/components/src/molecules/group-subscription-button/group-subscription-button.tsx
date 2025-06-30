@@ -55,8 +55,10 @@ function Button({
   shape,
   isSubscriber,
   disabled,
-  onClick,
   groupName,
+  groupDescription,
+  shareUrl,
+  onClick,
   onSubscriptionChange,
   ...restProps
 }: GroupSubscriptionButtonProps) {
@@ -64,11 +66,16 @@ function Button({
   const { mutate: subscribeGroup, isPending } = useSubscribeGroupMutation({
     onSuccess(isSubscriber) {
       onSubscriptionChange?.(isSubscriber);
-      if(isSubscriber)
-        Toast.Success({message : "Notifications have been turned on" , description :`You will be notified of all updates for the group ${groupName}`});
+      if (isSubscriber)
+        Toast.Success({
+          message: "Notifications have been turned on",
+          description: `You will be notified of all updates for the group ${groupName}`,
+        });
     },
     onError: (error) => {
-      Toast.Error({message : "Failed to subscribe to group. Please try again later."})
+      Toast.Error({
+        message: "Failed to subscribe to group. Please try again later.",
+      });
     },
   });
 

@@ -134,6 +134,7 @@ export const defaultActionWrappers: Record<
     if (authenticationStatus === "unauthenticated") {
       return (
         <AuthenticationModal
+          key="authentication-modal"
           getAppData={{
             data: {
               type: "repost",
@@ -151,13 +152,14 @@ export const defaultActionWrappers: Record<
     }
 
     return (
-      <RepostModal videoId={_context.contentId} asChild>
+      <RepostModal key="repost-modal" videoId={_context.contentId} asChild>
         {node}
       </RepostModal>
     );
   },
   REACTION: (node, context) => (
     <ReactionButton
+      key="reaction-button"
       shareUrl={context.shareUrl}
       videoSlug={context.slug}
       isReacted={context.isReacted}
@@ -169,16 +171,22 @@ export const defaultActionWrappers: Record<
       actionButtonVariant={context.variant}
       showReactionCount
       withCustomChildren
+      asChild
     />
   ),
   COMMENT: (node, _context) => node,
   SHARE: (node, _context) => (
-    <ShareButton pathName={_context.shareUrl} withCustomChildren>
+    <ShareButton
+      key="share-button"
+      pathName={_context.shareUrl}
+      withCustomChildren
+    >
       {node}
     </ShareButton>
   ),
   MORE: (node, context) => (
     <Menu
+      key="actions-more-menu"
       contentId={context.contentId}
       shareUrl={context.shareUrl}
       videoSlug={context.slug}

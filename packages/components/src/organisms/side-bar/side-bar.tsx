@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "@genuin/ui/utils";
 import type { ComponentProps } from "react";
 

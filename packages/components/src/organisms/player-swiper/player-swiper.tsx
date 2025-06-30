@@ -76,6 +76,7 @@ export function PlayerList({
                   actionWrapper={{
                     COMMENT: (defaultNode) => (
                       <CommentButton
+                        key="comment-button"
                         defaultNode={defaultNode}
                         count={post.video.commentCount}
                         showCount={true}

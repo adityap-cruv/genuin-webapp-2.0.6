@@ -96,8 +96,8 @@ function CommentsComponent({
   if (isLoading) {
     return (
       <div className="gencl:w-full gencl:h-full gencl:flex gencl:flex-col gencl:shrink-0 gencl:p-4">
-        {Array.from({ length: 7 }).map(() => (
-          <CommentsItemSkeleton />
+        {Array.from({ length: 7 }).map((_, index) => (
+          <CommentsItemSkeleton key={index} />
         ))}
       </div>
     );

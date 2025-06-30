@@ -123,8 +123,8 @@ export function OtpInput({ title, verificationType, onNext, onBack }: OtpInputPr
   return (
     <ModalShell onBack={onBack}>
       <div className="flex flex-col items-center">
-        <p className="mb-6 text-center text-title-1-demi sm:text-heading-3">{title ?? 'Enter code'}</p>
-        <p className="w-full text-center text-title-3-med text-secondary-300">
+        <p className="text-title-1-demi sm:text-heading-3 mb-6 text-center">{title ?? 'Enter code'}</p>
+        <p className="text-title-3-med text-secondary-300 w-full text-center">
           Please Enter the 6-digit code sent to your{`${isFlowEmail ? ' email address' : ' phone number'}`}
           <span className="text-title-3-demi text-secondary">{`: ${
             isFlowEmail ? email : formatPhoneNumberIntl(phone ?? '')
@@ -150,7 +150,7 @@ export function OtpInput({ title, verificationType, onNext, onBack }: OtpInputPr
                                 <InputOTPSlot
                                   key={index}
                                   {...slot}
-                                  className="rounded-lg border border-tertiary-200 bg-tertiary-100 focus:border-tertiary-300"
+                                  className="border-tertiary-200 bg-tertiary-100 focus:border-tertiary-300 rounded-lg border"
                                 />
                               ))}
                             </InputOTPGroup>
@@ -176,7 +176,7 @@ export function OtpInput({ title, verificationType, onNext, onBack }: OtpInputPr
         </div>
       </div>
       {form.formState.errors.root && (
-        <p className="text-text-new-para-2-mobile flex items-center justify-center text-center text-supplementary-red">
+        <p className="text-text-new-para-2-mobile text-supplementary-red flex items-center justify-center text-center">
           {form.formState.errors.root.message}
         </p>
       )}
@@ -231,12 +231,12 @@ function TimerMessage({ time, verificationType }: { verificationType: Verificati
       variant="custom"
       type="button"
       disabled={isSendingOtp}
-      className="w-full cursor-pointer text-center text-body-1-med text-primary"
+      className="text-body-1-med text-primary w-full cursor-pointer text-center"
       onClick={handleResendOtp}>
       Resend code
     </Button>
   ) : (
-    <p className="text-center text-body-1-med text-monochrome">
+    <p className="text-body-1-med text-monochrome text-center">
       Resend code in <span className="text-monochrome-black">{`00:${timer.toString().padStart(2, '0')}`}</span>
     </p>
   )

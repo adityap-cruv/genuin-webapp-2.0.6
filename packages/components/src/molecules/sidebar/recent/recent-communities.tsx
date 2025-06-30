@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Accordion,
   AccordionContent,
@@ -9,7 +11,7 @@ import { RECENT_COMMUNITIES_KEY } from "@genuin/components/lib/constants";
 import { useLocalStorage } from "usehooks-ts";
 import { RecentCommunity } from "@genuin/components/types/community";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
-import {Link} from "@genuin/components/molecules/link"
+import { Link } from "@genuin/components/molecules/link";
 
 export function Recent() {
   const [communities] = useLocalStorage<RecentCommunity[]>(
@@ -24,16 +26,21 @@ export function Recent() {
         collapsible={true}
         defaultValue="recent-communities"
         className="gencl:w-full gencl:py-4 gencl:px-3 gencl:border-secondary-100 gencl:overflow-y-auto"
+        data-orientation="vertical"
       >
         <AccordionItem value="recent-communities">
           <AccordionTrigger className="gencl:px-3 gencl:py-2 gencl:hidden gencl:xl:!flex">
-            <p className="gencl:text-body-1-bold">Recent</p>
+            <span className="gencl:text-body-1-bold">Recent</span>
           </AccordionTrigger>
           <AccordionContent className="gencl:pb-0">
             {communities.map((community, commIndex) => (
               <Link
                 key={commIndex}
-                href={buildPageUrl({type : "community" , slug : community.slug , searchParams : {feed : "1"}})}
+                href={buildPageUrl({
+                  type: "community",
+                  slug: community.slug,
+                  searchParams: { feed: "1" },
+                })}
                 className="gencl:flex gencl:items-center gencl:gap-2 gencl:py-2 gencl:px-2 gencl:xl:px-3 gencl:hover:bg-secondary-50 gencl:cursor-pointer gencl:rounded-lg"
               >
                 <Avatar
@@ -42,9 +49,9 @@ export function Recent() {
                   alt={community.community_name}
                   size="xs"
                 />
-                <p className="gencl:text-body-1-medium gencl:hidden gencl:xl:!block">
+                <span className="gencl:text-body-1-medium gencl:hidden gencl:xl:!block">
                   {community.community_name}
-                </p>
+                </span>
               </Link>
             ))}
           </AccordionContent>

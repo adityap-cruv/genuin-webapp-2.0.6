@@ -34,6 +34,10 @@ const DEFAULT_ROLE_TEXTS: Record<CommunityUserRole, string> = {
 
 export function JoinCommunityButton({
   role,
+  communityHandle,
+  communityId,
+  isPrivate,
+  slug,
   ...restProps
 }: JoinCommunityButtonProps) {
   const { authenticationStatus } = useAuthContext();
@@ -41,7 +45,16 @@ export function JoinCommunityButton({
   // If user is leader or moderator of the community, then don't show the join button.
   if (role === "LEADER" || role === "MODERATOR") return;
 
-  const button = <Button role={role} {...restProps} />;
+  const button = (
+    <Button
+      communityHandle={communityHandle}
+      communityId={communityId}
+      isPrivate={isPrivate}
+      slug={slug}
+      role={role}
+      {...restProps}
+    />
+  );
 
   if (authenticationStatus === "unauthenticated") {
     return (
@@ -50,17 +63,14 @@ export function JoinCommunityButton({
           description: (
             <>
               Download app to join the <br />
-              <span className="font-bold">
-                @{restProps.communityHandle}
-              </span>{" "}
-              community.
+              <span className="font-bold">@{communityHandle}</span> community.
             </>
           ),
           data: {
             type: "join_community",
             payload: {
-              communityName: restProps.communityHandle,
-              slug: restProps.slug,
+              communityName: communityHandle,
+              slug: slug,
             },
           },
         }}
@@ -76,6 +86,8 @@ export function JoinCommunityButton({
 
 function Button({
   role = "UNJOINED",
+  communityHandle,
+  communityName,
   communityId,
   isPrivate,
   disabled,

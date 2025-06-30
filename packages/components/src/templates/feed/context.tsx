@@ -86,11 +86,37 @@ export function FeedContextProvider({
   });
 
   useEffect(() => {
+    // Only run this effect in browser environments
+    if (typeof document === "undefined") return;
+
     const element = document.getElementsByTagName("body")[0];
+
+    // Try-catch to handle potential errors with fullscreen API
+    const enterFullscreen = async () => {
+      if (showExpandView && element && document.fullscreenEnabled) {
+        try {
+          await element.requestFullscreen({ navigationUI: "hide" });
+        } catch (error) {
+          console.error("Failed to enter fullscreen mode:", error);
+        }
+      }
+    };
+
+    const exitFullscreen = async () => {
+      if (!showExpandView && document.fullscreenElement) {
+        try {
+          await document.exitFullscreen();
+        } catch (error) {
+          console.error("Failed to exit fullscreen mode:", error);
+        }
+      }
+    };
+
+    // Execute the appropriate function
     if (showExpandView) {
-      element?.requestFullscreen({ navigationUI: "hide" });
+      enterFullscreen();
     } else {
-      document.exitFullscreen();
+      exitFullscreen();
     }
 
     function handleFullScreenChange() {
@@ -98,21 +124,32 @@ export function FeedContextProvider({
         closeExpandView();
       }
     }
+
     document.addEventListener("fullscreenchange", handleFullScreenChange);
+
     // Cleanup the event listener on component unmount
     return () => {
       document.removeEventListener("fullscreenchange", handleFullScreenChange);
     };
-  }, [showExpandView]);
+  }, [showExpandView, closeExpandView]);
 
-  useEffect(() => { 
+  useEffect(() => {
+    // Only run cleanup in browser environments
+    if (typeof document === "undefined") return undefined;
+
     return () => {
       // Ensure to exit fullscreen when the component unmounts
       if (document.fullscreenElement) {
-        document?.exitFullscreen?.();
+        try {
+          document.exitFullscreen().catch((error) => {
+            console.error("Failed to exit fullscreen on unmount:", error);
+          });
+        } catch (error) {
+          console.error("Error while exiting fullscreen:", error);
+        }
       }
-    }
-  }, [])
+    };
+  }, []);
 
   useEffect(() => {
     if (!showExpandView) {

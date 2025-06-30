@@ -17,11 +17,11 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = ({ children, isCollaps
       {showNavbar && <TopBar />}
       <section
         className={cn(
-          'flex w-full overflow-clip px-0 2xl:container xl:px-10 2xl:px-0',
+          'flex w-full overflow-clip px-0 xl:px-10 2xl:container 2xl:px-0',
           showNavbar ? 'h-body' : 'h-full'
         )}>
-        <SideBar isCollapsed={!!isCollapsed} />
-        <section id="root-element" className="relative flex w-full min-w-0 flex-1 flex-col ">
+        {/* <SideBar isCollapsed={!!isCollapsed} /> */}
+        <section id="root-element" className="relative flex w-full min-w-0 flex-1 flex-col">
           {children}
         </section>
       </section>
