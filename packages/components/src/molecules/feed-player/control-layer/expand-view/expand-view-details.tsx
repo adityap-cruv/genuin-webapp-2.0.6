@@ -52,7 +52,7 @@ export function ExpandViewDetails({
         <ProfileLink
           url={buildPageUrl({
             type: !!postDetails.owner.brand ? "brand" : "profile",
-            slug: postDetails.owner.userName,
+            slug: !!postDetails.owner.brand ?  postDetails.owner.brand.slug : postDetails.owner.userName,
           })}
           userLogoType={postDetails.owner.brand?.userLogo}
         >

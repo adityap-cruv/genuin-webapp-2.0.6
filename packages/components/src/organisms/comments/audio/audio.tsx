@@ -149,14 +149,14 @@ export const Audio = ({
       return;
     progressCanvas.style.setProperty("width", canvas.clientWidth + "px");
 
-    const waveform = new BarWaveform(canvas, 3, 3, "#e5e7eb", "center");
+    const waveform = new BarWaveform(canvas, 6, 8, "#D4D7D9", "center");
     waveform.drawWaveform(sampleData);
 
     const progressWave = new BarWaveform(
       progressCanvas,
-      3,
-      3,
-      "#3b82f6",
+      6,
+      8,
+      "#939aa1",
       "center"
     );
 
@@ -192,14 +192,18 @@ export const Audio = ({
     >
       <div
         ref={elementRef}
-        className="gencl:flex gencl:w-full gencl:items-center gencl:rounded-lg gencl:border gencl:gap-4 gencl:border-secondary-200 gencl:p-2"
+        className="gencl:flex gencl:w-3/5 gencl:items-center gencl:rounded-lg gencl:border gencl:gap-4 gencl:border-secondary-200 gencl:p-2"
       >
         <button
           ref={btnRef}
           onClick={togglePlayPause}
           className="gencl:focus:outline-none"
         >
-          {shouldPlay ? <PauseIcon variant="dark" /> : <PlayIcon variant="dark" />}
+          {shouldPlay ? (
+            <PauseIcon variant="dark" />
+          ) : (
+            <PlayIcon variant="dark" />
+          )}
         </button>
         {/* Waveform replaces pipeHeights */}
         <div
