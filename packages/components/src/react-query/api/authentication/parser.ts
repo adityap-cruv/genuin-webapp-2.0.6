@@ -8,6 +8,9 @@ import { AuthUser } from "@genuin/components/types/auth";
  * @param refreshToken - The refresh token for the user.
  * @returns The parsed user object.
  */
+
+const KsCbStatus = ["Pending", "Accepted", "Requested"] as const;
+
 export function parseUserData(
   data: any,
   accessToken: string,
@@ -25,7 +28,8 @@ export function parseUserData(
     bio: data.bio,
     name: data.name,
     accessToken,
-    ksCbRequestStatus: data.ks_cb_request_status,
+    ksCbRequestStatus:
+      KsCbStatus[data.ks_cb_request_status as number] ?? "Pending",
     isBrandSystemUser: data.is_brand_system_user,
     brandId: data.brand_id,
     brandSlug: data?.brand?.brand_slug ? data?.brand?.brand_slug : null,

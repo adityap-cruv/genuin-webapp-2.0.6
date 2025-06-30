@@ -19,45 +19,49 @@ export function Recent() {
     []
   );
 
-  if (communities.length > 0) {
-    return (
-      <Accordion
-        type="single"
-        collapsible={true}
-        defaultValue="recent-communities"
-        className="gencl:w-full gencl:py-4 gencl:px-3 gencl:border-secondary-100 gencl:overflow-y-auto"
-        data-orientation="vertical"
-      >
-        <AccordionItem value="recent-communities">
-          <AccordionTrigger className="gencl:px-3 gencl:py-2 gencl:hidden gencl:xl:!flex">
-            <span className="gencl:text-body-1-bold">Recent</span>
-          </AccordionTrigger>
-          <AccordionContent className="gencl:pb-0">
-            {communities.map((community, commIndex) => (
-              <Link
-                key={commIndex}
-                href={buildPageUrl({
-                  type: "community",
-                  slug: community.slug,
-                  searchParams: { feed: "1" },
-                })}
-                className="gencl:flex gencl:items-center gencl:gap-2 gencl:py-2 gencl:px-2 gencl:xl:px-3 gencl:hover:bg-secondary-50 gencl:cursor-pointer gencl:rounded-lg"
-              >
-                <Avatar
-                  isAvatar={false}
-                  imageUrl={community.dp}
-                  alt={community.community_name}
-                  size="xs"
-                />
-                <span className="gencl:text-body-1-medium gencl:hidden gencl:xl:!block">
-                  {community.community_name}
-                </span>
-              </Link>
-            ))}
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
-    );
+  const recentCommunities = Array.isArray(communities)
+    ? communities.filter(Boolean).slice(0, 3)
+    : [];
+
+  if (recentCommunities.length === 0) {
+    return null;
   }
-  return null;
+
+  return (
+    <Accordion
+      type="single"
+      collapsible={true}
+      defaultValue="recent-communities"
+      className="gencl:w-full gencl:py-4 gencl:px-3 gencl:border-secondary-100"
+    >
+      <AccordionItem value="recent-communities">
+        <AccordionTrigger className="gencl:px-3 gencl:py-2 gencl:hidden gencl:xl:!flex">
+          <p className="gencl:text-body-1-bold">Recent</p>
+        </AccordionTrigger>
+        <AccordionContent className="gencl:pb-0">
+          {recentCommunities.map((community, commIndex) => (
+            <Link
+              key={commIndex}
+              href={buildPageUrl({
+                type: "community",
+                slug: community.slug,
+                searchParams: { feed: "1" },
+              })}
+              className="gencl:flex gencl:items-center gencl:gap-2 gencl:py-2 gencl:px-2 gencl:xl:px-3 gencl:hover:bg-secondary-50 gencl:cursor-pointer gencl:rounded-lg"
+            >
+              <Avatar
+                isAvatar={false}
+                imageUrl={community.dp}
+                alt={community.community_name}
+                size="xs"
+              />
+              <p className="gencl:text-body-1-medium gencl:hidden gencl:xl:!block gencl:!line-clamp-1">
+                {community.community_name}
+              </p>
+            </Link>
+          ))}
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  );
 }

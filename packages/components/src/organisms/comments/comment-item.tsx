@@ -15,6 +15,7 @@ import {
   ReactionButton,
 } from "@genuin/components/molecules/reaction-button";
 import { ComponentProps } from "react";
+import { useAuthContext } from "@genuin/components/context/auth";
 
 export type CommentItemProps = {
   comment: CommentListType[number];
@@ -29,6 +30,7 @@ export function CommentItem({
   onReactionStateChange,
 }: CommentItemProps) {
   const { owner } = comment;
+  const { user } = useAuthContext();
   return (
     <div
       className="comment gencl:flex gencl:gap-2 gencl:group"
@@ -52,10 +54,12 @@ export function CommentItem({
               &nbsp; {comment.createdAt && getTimeAgo(comment.createdAt)}
             </span>
           </div>
-          <CommentMenu
-            contentId={comment.commentId}
-            className="gencl:group-hover:block gencl:data-[state=open]:block  gencl:hidden"
-          />
+          {owner.memberId !== user?.id && (
+            <CommentMenu
+              contentId={comment.commentId}
+              className="gencl:group-hover:block gencl:data-[state=open]:block  gencl:hidden"
+            />
+          )}
         </div>
         <CommentContent comment={comment} />
         <div className="gencl:flex gencl:items-center">

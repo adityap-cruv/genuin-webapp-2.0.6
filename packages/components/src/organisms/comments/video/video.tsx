@@ -72,6 +72,8 @@ export const Video = ({
         src={videoUrl}
         poster={thumbnail}
         ref={videoRef}
+        playsInline
+        loop
       />
     </div>
   );

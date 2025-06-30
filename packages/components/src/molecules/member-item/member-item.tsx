@@ -23,14 +23,14 @@ export function MemberItem({
         )}
         {...restProps}
       >
-        {profileImage.url && (
+        {/* {profileImage.url && ( */}
           <Avatar
             isAvatar={profileImage.isAvatar}
             imageUrl={profileImage.url}
             alt={name}
             size="md"
           />
-        )}
+    {/* }} */}
         <div>
           <div className="gencl:flex gencl:items-center gencl:gap-1">
             <ProfileLink

@@ -10,8 +10,11 @@ export function SideBarBecomeCreator({
   className,
   ...restProps
 }: SideBarBecomeCreatorProps) {
-  const {authenticationStatus} = useAuthContext()
+  const {authenticationStatus, user} = useAuthContext()
   const {name} = useBaseContext().brandDetails
+
+  if(user?.ksCbRequestStatus === "Accepted") return null;
+  
   return (
     <AuthenticationModal asChild customStep={authenticationStatus === "authenticated" ?  "BECOME_CREATOR" : "SIGNIN"}>
       <div

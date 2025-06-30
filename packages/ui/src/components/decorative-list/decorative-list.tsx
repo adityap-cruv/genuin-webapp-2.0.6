@@ -66,7 +66,6 @@ export function DecorativeList({
         "gencl:[&>li]:before:rounded-bl-[12px] gencl:[&>li]:before:border-secondary-150",
         "gencl:[&>li]:before:border-b gencl:[&>li]:before:border-l gencl:[&>li]:before:border-solid",
         "gencl:[&>li]:before:absolute gencl:[&>li]:before:left-[-1em] gencl:[&>li]:before:top-1/2",
-        "gencl:[&>li]:before:-translate-y-full",
         // Hide pseudo-element for items with has-child class
         "gencl:[&>li.has-child]:before:hidden",
         className
@@ -74,7 +73,7 @@ export function DecorativeList({
       ref={ul}
       role="list"
       style={{
-        paddingLeft: "0.9em",
+        paddingLeft: "0.95em",
         borderImage: `linear-gradient(to bottom, var(--secondary-200) calc(100% - ${lastLiHeight / 2}px - ${
           window.devicePixelRatio > 1
             ? (4 * window.devicePixelRatio).toFixed(1) + "px"

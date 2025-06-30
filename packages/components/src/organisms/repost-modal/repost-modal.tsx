@@ -34,7 +34,11 @@ function Content({ videoId }: { videoId: string }) {
 
   const renderContent = () => {
     if (isLoading) {
-      return <Loader />;
+      return (
+      <div className="gencl:flex gencl:items-center gencl:justify-center gencl:h-full">
+        <Loader />
+      </div>
+      );
     }
 
     if (isError) {

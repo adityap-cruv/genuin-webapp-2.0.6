@@ -1,6 +1,6 @@
 import OpenPlayerJS from "openplayerjs";
 import type { ComponentProps } from "react";
-import { memo, useCallback, useEffect, useRef } from "react";
+import { memo, useCallback, useEffect, useImperativeHandle, useRef } from "react";
 
 import { cn } from "@genuin/ui/lib/utils";
 
@@ -94,11 +94,14 @@ export const VideoPlayer = memo(function VideoPlayer({
   onVideoFirstQuartile,
   onVideoMidpoint,
   onVideoThirdQuartile,
+  ref,
   onVideoWatched,
   onVideoStart, // Destructure onVideoStart prop
   ...props
 }: PlayerProps) {
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const internalVideoRef = useRef<HTMLAudioElement>(null);
+   useImperativeHandle(ref, () => internalVideoRef.current as HTMLVideoElement, [internalVideoRef.current]);
+  const videoRef = internalVideoRef;
   const playerRef = useRef<OpenPlayerJS | null>(null);
   const playRef = useRef(play);
   const videoStartRef = useRef(false);

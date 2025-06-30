@@ -25,7 +25,7 @@ export function Guidelines({ guidelines }: { guidelines?: GuidelineType[] }) {
   return (
     <div className="gencl:border-t gencl:pt-4 gencl:border-secondary-300">
       <p className="gencl:text-body-1-semi-bold gencl:mb-4">Guidelines</p>
-      <Accordion type="single" className="">
+      <Accordion collapsible type="single" className="">
         {displayedGuidelines.map((guideline, index) => (
           <AccordionItem
             key={guideline.id}
