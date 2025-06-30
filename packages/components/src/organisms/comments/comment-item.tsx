@@ -66,6 +66,7 @@ export function CommentItem({
             reactionCount={comment.noOfSparks}
             onReactionStateChange={onReactionStateChange}
             withCustomChildren
+            showReactionCount={false}
           >
             <div className="gencl:flex gencl:gap-1 gencl:items-center gencl:cursor-pointer">
               <DynamicReactionIcon
@@ -108,7 +109,11 @@ export function CommentContent({
     <>
       {comment.type === "text" && (
         <ReadMore
-          text={comment.commentText}
+          text={
+            comment.commentData?.length !== 0
+              ? comment.commentData
+              : comment.commentText
+          }
           maxLines={2}
           textClassName="gencl:text-secondary-900 gencl:break-all gencl:text-body-1-medium"
         />

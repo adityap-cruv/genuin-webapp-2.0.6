@@ -60,7 +60,7 @@ export function AuthProvider({
       removeSearchParams(["code", "provider"]);
     },
     onError: (e) => {
-      Toast.Error({message : "Not able to login. Please try again."})
+      Toast.Error({ message: "Not able to login. Please try again." });
     },
   });
 

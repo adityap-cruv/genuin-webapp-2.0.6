@@ -9,8 +9,8 @@ import {
   useComments,
 } from "@genuin/components/react-query/api/comments";
 import { CommentItem, CommentsItemSkeleton } from "./comment-item";
-import { CommentInputBox } from "./comment-input";
 import { X } from "lucide-react";
+import { CommentInputBox } from "./comment-box";
 
 type CommentPropsType = {
   videoId: string;

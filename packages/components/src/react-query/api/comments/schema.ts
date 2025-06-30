@@ -49,7 +49,49 @@ const CommentSchema = z.object({
   isSparked: z.boolean(),
 });
 
+// Define Community and User schemas
+const CommunitySchema = z.object({
+  community_id: z.string(),
+  handle: z.string(),
+  name: z.string(),
+  description: z.string().nullable(),
+  color_code: z.string(),
+  slug: z.string(),
+  text_color_code: z.string(),
+  dp: z.string().nullable(),
+  dp_s: z.string().nullable(),
+  dp_m: z.string().nullable(),
+  dp_l: z.string().nullable(),
+});
+
+const UserSchema = z.object({
+  name: z.string(),
+  nickname: z.string(),
+  is_avatar: z.boolean(),
+  bio: z.string().nullable(),
+  is_brand_system_user: z.boolean().optional(),
+  brand: z
+    .object({
+      brand_id: z.number(),
+      brand_slug: z.string(),
+    })
+    .optional(),
+  member_id: z.string(),
+  profile_image: z.string().nullable(),
+  profile_image_s: z.string().nullable(),
+  profile_image_m: z.string().nullable(),
+  profile_image_l: z.string().nullable(),
+});
+
+// Define CommentMention schema (without type)
+export const CommentMentionSchema = z.object({
+  community: CommunitySchema.optional(),
+  user: UserSchema.optional(),
+  match_score: z.number(),
+});
+
 const CommentListSchema = z.array(CommentSchema);
 
 // data in which format we want
 export type CommentListType = z.infer<typeof CommentListSchema>;
+export type CommentMention = z.infer<typeof CommentMentionSchema>;

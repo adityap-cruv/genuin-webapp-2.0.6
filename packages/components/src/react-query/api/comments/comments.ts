@@ -1,7 +1,10 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 
 import { axiosInstance } from "@genuin/components/react-query/axios-instance";
-import { getQueryKeyForComments } from "@genuin/components/react-query/keys/comment";
+import {
+  getQueryKeyForComments,
+  getQueryKeyForMentions,
+} from "@genuin/components/react-query/keys/comment";
 
 import { parseComments } from "./parser";
 import { API_PATHS } from "@genuin/components/react-query/paths";
@@ -116,4 +119,45 @@ export function setQueryDataForNewComment(
       };
     }
   );
+}
+
+async function fetchMentionUser(
+  chatId: string,
+  queryString: string,
+  signal?: AbortSignal
+) {
+  const searchParams = new URLSearchParams({
+    query_string: queryString,
+    chat_id: chatId,
+  });
+
+  try {
+    const response = await axiosInstance.get(
+      API_PATHS.FEED_GET_MENTIONS_COMMENTS,
+      {
+        params: searchParams,
+        signal,
+      }
+    );
+
+    const resData = response.data.data ?? null;
+    return { data: resData };
+  } catch (e: any) {
+    throw new Error("Something went wrong with mentions API!");
+  }
+}
+
+// React Query hook for mentions
+export function useMentionUser(
+  chatId: string,
+  queryString: string,
+  enabled = true,
+  mentionSignal: AbortSignal | undefined
+) {
+  return useQuery({
+    queryKey: getQueryKeyForMentions(chatId, queryString),
+    queryFn: ({ signal }) => fetchMentionUser(chatId, queryString, signal),
+    enabled: !!chatId && !!queryString && enabled,
+    // staleTime: 60 * 1000, // adjust as needed
+  });
 }
