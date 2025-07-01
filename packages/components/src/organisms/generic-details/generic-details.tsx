@@ -7,6 +7,7 @@ import React, { type ComponentProps, type ReactNode } from "react";
 import { Link } from "@genuin/components/molecules/link";
 import type { LinksType } from "@genuin/components/molecules/social-links";
 import { SocialLinks } from "@genuin/components/molecules/social-links";
+import { PinIcon } from "@genuin/ui/icons";
 
 /**
  * Configuration for the profile image displayed in the generic details component.
@@ -64,6 +65,13 @@ type GenericDetailsProps = {
    * Optional call-to-action buttons or components to display alongside the details.
    */
   ctas?: ReactNode;
+  /**
+   * Optional based on pinned status show the pin icon
+   */
+  showPinned?: boolean;
+  ownerInfo?: {
+    userName: string;
+  };
 } & ComponentProps<"div">;
 
 /**
@@ -86,6 +94,8 @@ export function GenericDetails({
   ctas,
   className,
   children,
+  showPinned = false,
+  ownerInfo,
   ...restProps
 }: GenericDetailsProps) {
   return (
@@ -98,6 +108,16 @@ export function GenericDetails({
       )}
       {...restProps}
     >
+      {showPinned && (
+        <div
+          className={cn(
+            "gencl:flex gencl:text-body-1-medium gencl:text-secondary-600 gencl:gap-2 gencl:w-full gencl:items-center gencl:px-4 gencl:pt-4"
+          )}
+        >
+          <PinIcon className="gencl:fill-secondary-600" /> Pinned by @
+          {ownerInfo?.userName}
+        </div>
+      )}
       <div
         className={cn(
           "gencl:flex gencl:gap-6 gencl:w-full gencl:items-center",

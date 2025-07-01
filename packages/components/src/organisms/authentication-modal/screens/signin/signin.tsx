@@ -122,7 +122,11 @@ export function SignIn({
       <div className="gencl:flex gencl:flex-col gencl:gap-3">
         <h2 className="gencl:text-headline-2-semi-bold">Sign in</h2>
         <p className="gencl:text-body-1-medium gencl:text-secondary-600">
-          {getActionText("We`ll send you a code to sign in or create an account.",clickAction , "Log in or create an account")}
+          {getActionText(
+            "We`ll send you a code to sign in or create an account.",
+            clickAction,
+            "Log in or create an account"
+          )}
         </p>
       </div>
       <div className="gencl:flex gencl:flex-col gencl:gap-4 gencl:mt-6">

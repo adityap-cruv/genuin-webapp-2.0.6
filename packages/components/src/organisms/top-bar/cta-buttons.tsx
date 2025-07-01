@@ -7,15 +7,14 @@ import { Avatar } from "@genuin/ui/avatar";
 import { LogOutIcon, SettingsIcon } from "lucide-react";
 import { Link } from "@genuin/components/molecules/link";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { cn } from "@genuin/ui/lib/utils";
 
 export function CtaButtons() {
   const { web_cta } = useBaseContext().brandDetails;
   const { authenticationStatus } = useAuthContext();
 
   const showApp = web_cta === "app" || web_cta === "both";
-  const showLogin =
-    (web_cta === "login" || web_cta === "both") &&
-    authenticationStatus === "unauthenticated";
+  const showLogin = web_cta === "login" || web_cta === "both";
 
   const showUserTick = authenticationStatus === "authenticated";
   return (
@@ -29,7 +28,11 @@ export function CtaButtons() {
       )}
       {showLogin && (
         <AuthenticationModal customStep="SIGNIN" asChild>
-          <Button theme="primary" size="sm">
+          <Button
+            theme="primary"
+            className={cn(showUserTick && "gencl:hidden")}
+            size="sm"
+          >
             Log in
           </Button>
         </AuthenticationModal>
@@ -54,7 +57,7 @@ function UserTick() {
         />
       </PopoverTrigger>
       <PopoverContent
-      className="gencl:border-none gencl:bg-white"
+        className="gencl:border-none gencl:bg-white"
         avoidCollisions
         sideOffset={8}
         collisionPadding={{ right: 16 }}

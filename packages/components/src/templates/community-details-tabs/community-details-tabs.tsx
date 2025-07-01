@@ -22,7 +22,10 @@ import { GroupPosts } from "@genuin/components/organisms/group-posts";
 type CommunityDetailsTabsPropsType = Omit<
   {
     slug: string;
-    communityOwnerId : string;
+    communityOwnerId: string;
+    ownerInfo: {
+      userName: string;
+    };
   } & React.ComponentProps<typeof Tabs>,
   "defaultValue" | "defaultChecked" | "children"
 >;
@@ -31,6 +34,7 @@ export function CommunityDetailsTabs({
   slug,
   className,
   communityOwnerId,
+  ownerInfo,
   ...restProps
 }: CommunityDetailsTabsPropsType) {
   return (
@@ -44,7 +48,7 @@ export function CommunityDetailsTabs({
         <TabsTrigger value="members">Members</TabsTrigger>
       </TabsList>
       <TabsContent value="groups">
-        <CommunityGroups slug={slug} />
+        <CommunityGroups slug={slug} ownerInfo={ownerInfo} />
       </TabsContent>
       <TabsContent value="members">
         <CommunityMembers communityOwnerId={communityOwnerId} slug={slug} />
@@ -54,7 +58,15 @@ export function CommunityDetailsTabs({
 }
 
 // TODO: USE <GroupCard/> component here.
-function CommunityGroups({ slug }: { slug: string }) {
+function CommunityGroups({
+  slug,
+  ownerInfo,
+}: {
+  slug: string;
+  ownerInfo: {
+    userName: string;
+  };
+}) {
   const {
     data: communityGroups,
     isLoading,
@@ -74,6 +86,7 @@ function CommunityGroups({ slug }: { slug: string }) {
   }
 
   const groups = communityGroups.groups;
+  console.log("groups", groups);
 
   return groups.map((group) => {
     const showPrivateGroupAccess =
@@ -89,6 +102,8 @@ function CommunityGroups({ slug }: { slug: string }) {
           type: "group",
           slug: group.slug,
         })}
+        ownerInfo={ownerInfo}
+        showPinned={typeof group.position === "number"}
         metadata={
           <GenericDetailsMetadata
             privacyInfo={{ isPrivate: !group.is_view_allowed }}
@@ -163,7 +178,13 @@ function CommunityGroups({ slug }: { slug: string }) {
   });
 }
 
-function CommunityMembers({ slug , communityOwnerId }: { slug: string , communityOwnerId : string }) {
+function CommunityMembers({
+  slug,
+  communityOwnerId,
+}: {
+  slug: string;
+  communityOwnerId: string;
+}) {
   const {
     data: communityMembers,
     isError,

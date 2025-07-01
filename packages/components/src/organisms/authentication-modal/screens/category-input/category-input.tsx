@@ -14,7 +14,7 @@ export type CategoryInputProps = ComponentProps<"div">;
 
 export function CategoryInput({ ...props }: CategoryInputProps) {
   const { updateUser } = useAuthContext();
-  const { isLoading, data: categories } = useGetCategoriesQuery();
+  const { isFetching, data: categories } = useGetCategoriesQuery();
   const [error, setError] = useState<string | null>(null);
   const { setStep } = useAuthenticationModalContext();
 
@@ -56,7 +56,7 @@ export function CategoryInput({ ...props }: CategoryInputProps) {
     addCategories(allTopicIds, {
       onSettled: () => {
         updateUser({ hasTopics: true });
-        setIsSurpriseMe(false)
+        setIsSurpriseMe(false);
       },
     });
   };
@@ -73,8 +73,12 @@ export function CategoryInput({ ...props }: CategoryInputProps) {
         </p>
       </div>
       <div className="gencl:max-h-[40vh] gencl:overflow-y-auto gencl:my-6">
-        {isLoading && <Loader />}
-        {!isLoading && !Array.isArray(categories) && (
+        {isFetching && (
+          <div className="gencl:w-full gencl:flex gencl:justify-center gencl:items-center">
+            <Loader />
+          </div>
+        )}
+        {!isFetching && !Array.isArray(categories) && (
           <p className="gencl:text-body-1-medium gencl:text-error-600">
             Failed to load categories. Please try again.
           </p>

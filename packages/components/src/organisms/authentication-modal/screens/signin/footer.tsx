@@ -11,6 +11,8 @@ import { useCallback } from "react";
 import { useGetRedirectionUrlForSSOMutation } from "@genuin/components/react-query/api/authentication/auto-login";
 import { Toast } from "@genuin/ui/components/toaster";
 import { Loader } from "@genuin/ui/components/loader";
+import { Link } from "@genuin/components/molecules/link";
+import { NEXT_PUBLIC_HOST_URL } from "@genuin/components/lib/utils/env";
 
 // TODO: handle signin with Goggle and Apple
 export function Footer() {
@@ -57,9 +59,25 @@ export function Footer() {
       </div>
       <p className="gencl:mt-4 gencl:text-secondary-300 gencl:text-body-1-semi-bold gencl:text-center">
         By continuing, you agree to
-        <span className="gencl:text-primary"> Terms of Service </span>
+        <Link
+          href={
+            brandDetails.terms_and_condition?.trim()
+              ? brandDetails.terms_and_condition
+              : NEXT_PUBLIC_HOST_URL + "/terms"
+          }
+        >
+          <span className="gencl:text-primary"> Terms of Service </span>
+        </Link>
         and
-        <span className="gencl:text-primary"> Privacy Policy</span>
+        <Link
+          href={
+            brandDetails.privacy_policy?.trim()
+              ? brandDetails.privacy_policy
+              : NEXT_PUBLIC_HOST_URL + "/privacy"
+          }
+        >
+          <span className="gencl:text-primary"> Privacy Policy</span>
+        </Link>
       </p>
     </>
   );
@@ -81,7 +99,9 @@ function SignInWithGoogle() {
         window.open(responseUrl.href, "_self");
       },
       onError: (error) => {
-       Toast.Error({message : "Something went wrong, please try again later"})
+        Toast.Error({
+          message: "Something went wrong, please try again later",
+        });
       },
     });
 
@@ -119,7 +139,9 @@ function SignInWithApple() {
         window.open(responseUrl.href, "_self");
       },
       onError: () => {
-        Toast.Error({message : "Something went wrong, please try again later"})
+        Toast.Error({
+          message: "Something went wrong, please try again later",
+        });
       },
     });
 
@@ -161,13 +183,15 @@ function SignInWithBrand({ brandName }: { brandName: string }) {
         window.open(responseUrl.href, "_self");
       },
       onError: () => {
-        Toast.Error({message : "Something went wrong, please try again later"})
+        Toast.Error({
+          message: "Something went wrong, please try again later",
+        });
       },
     });
 
   const handleClick = useCallback(() => {
     if (!brandDetails.social_login.brand) {
-      Toast.Error({message : "Brand does not support SSO login"})
+      Toast.Error({ message: "Brand does not support SSO login" });
       return;
     }
     getUrlToRedirectForSSO({
