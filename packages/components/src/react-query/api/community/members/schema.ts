@@ -21,6 +21,8 @@ const MembersSchema = z.array(
   })
 );
 
+export type MembersSchemaType = z.infer<typeof MembersSchema>;
+
 export function validateCommunityMembers(data: unknown) {
   return MembersSchema.parse(data);
 }

@@ -16,6 +16,7 @@ import {
   useGetCommunityGroups,
 } from "@genuin/components/react-query/api/community/groups";
 import { useGetCommunityMembers } from "@genuin/components/react-query/api/community/members";
+import type { MembersSchemaType } from "@genuin/components/react-query/api/community/members/schema";
 import { ComponentErrorState } from "@genuin/components/organisms/error-state-component";
 import { GroupPosts } from "@genuin/components/organisms/group-posts";
 
@@ -191,27 +192,56 @@ function CommunityMembers({
     isLoading,
   } = useGetCommunityMembers(slug);
 
+  // Type the communityMembers variable as an array of members
+  const membersData = communityMembers as MembersSchemaType | undefined;
+
+  // Helper function to transform member data
+  const transformMember = (member: MembersSchemaType[number]) => ({
+    isOwner: member.member_id === communityOwnerId,
+    bio: member.bio ?? "",
+    memberId: member.member_id,
+    name: member.name ?? "",
+    profileImage: {
+      isAvatar: member.is_avatar,
+      url: member.profile_image,
+    },
+    url: `/test/${member.member_id}`,
+    userName: member.nickname,
+    brand: {
+      userLogoType: member.brand?.brand_user_logo,
+    },
+  });
+
+  // Filter admins (role 1: leader, role 3: moderator)
+  const admins =
+    membersData?.filter((member) => member.role === 1 || member.role === 3) ??
+    [];
+
+  // Filter members (role 2: member)
+  const members = membersData?.filter((member) => member.role === 2) ?? [];
+
   return (
-    <MemberList
-      className="gencl:max-w-sm"
-      isError={isError}
-      isLoading={isLoading}
-      members={communityMembers?.members.map((member) => ({
-        isOwner: member.member_id === communityOwnerId,
-        bio: member.bio ?? "",
-        memberId: member.member_id,
-        name: member.name ?? "",
-        profileImage: {
-          isAvatar: member.is_avatar,
-          url: member.profile_image,
-        },
-        url: `/test/${member.member_id}`,
-        userName: member.nickname,
-        brand: {
-          userLogoType: member.brand?.brand_user_logo,
-        },
-      }))}
-    />
+    <div>
+      <div>
+        <p className="gencl:text-body-1-semi-bold gencl:mb-3">Admins</p>
+        <MemberList
+          className="gencl:max-w-sm"
+          isError={isError}
+          isLoading={isLoading}
+          members={admins.map(transformMember)}
+        />
+      </div>
+      <hr className="gencl:my-6 gencl:mt-2 gencl:border-secondary-150" />
+      <div>
+        <p className="gencl:text-body-1-semi-bold gencl:mb-3">Members</p>
+        <MemberList
+          className="gencl:max-w-sm"
+          isError={isError}
+          isLoading={isLoading}
+          members={members.map(transformMember)}
+        />
+      </div>
+    </div>
   );
 }
 
