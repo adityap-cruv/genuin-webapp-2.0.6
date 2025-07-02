@@ -287,8 +287,9 @@ export function ReadMore({
       ? truncatedText
       : processedText;
 
-  if (text === null || !stringifiedText || stringifiedText.length === 0) return null;
-  
+  if (text === null || !stringifiedText || stringifiedText.length === 0)
+    return null;
+
   return (
     <div className="gencl:w-full gencl:overflow-clip" style={{ maxWidth }}>
       <p
@@ -318,7 +319,8 @@ export function ReadMore({
           className={cn(
             "gencl:w-full gencl:break-words gencl:text-secondary-900",
             position !== "outside" && "gencl:text-white",
-            textClassName
+            textClassName,
+            className
           )}
           style={
             !shouldAnimate && !isExpanded

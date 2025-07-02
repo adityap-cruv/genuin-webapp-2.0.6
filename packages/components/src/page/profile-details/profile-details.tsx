@@ -36,7 +36,6 @@ export function ProfileDetails({
   } = useGetProfileDetails(userName, forBrand);
   const detailsId = useId();
   const { brandDetails } = useBaseContext();
-  console.log("ProfileDetails", profileData);
   if (isLoading) {
     return <ProfileDetailsSkeleton />;
   }
@@ -96,7 +95,6 @@ export function ProfileDetails({
             <GenericDetailsMetadata
               handle={{
                 brandUserLogo: profileData.brand?.brand_user_logo,
-                url: profileData.brand?.brand_url ?? "",
                 userName: profileData.brand?.brand_slug ?? "",
               }}
               stats={{

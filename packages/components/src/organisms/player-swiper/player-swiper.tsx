@@ -57,7 +57,7 @@ export function PlayerList({
         {posts.map((post) => {
           return (
             <SwiperSlide key={post.video.id}>
-              <div className="gencl:flex gencl:gap-2 gencl:h-full">
+              <div className="gencl:flex gencl:gap-3 gencl:h-full">
                 <Player
                   post={post}
                   onCommunityJoinStatusChange={onCommunityJoinStatusChange}

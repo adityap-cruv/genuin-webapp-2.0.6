@@ -13,7 +13,7 @@ import { CommunityPrivacyInfo } from "@genuin/components/molecules/community-pri
 type GenericDetailsMetadataProps = ComponentProps<"div"> & {
   handle?: {
     userName: string;
-    url: string;
+    url?: string | null;
     brandUserLogo?: number | null;
   };
   /**
@@ -118,7 +118,10 @@ export function GenericDetailsMetadata({
       {handle && (
         <>
           <span className="gencl:flex gencl:items-center">
-            <ProfileLink url={handle.url} userLogoType={handle.brandUserLogo}>
+            <ProfileLink
+              url={handle.url ?? undefined}
+              userLogoType={handle.brandUserLogo}
+            >
               @{handle.userName}
             </ProfileLink>
           </span>

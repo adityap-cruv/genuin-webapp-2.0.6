@@ -82,7 +82,7 @@ export function SideInfo({
   return (
     <div
       className={cn(
-        "gencl:bg-secondary-50 gencl:overflow-auto gencl:max-w-xs gencl:w-full gencl:p-4 gencl:rounded-lg gencl:gap-2 gencl:space-y-4",
+        "gencl:bg-secondary-50 gencl:overflow-auto gencl:max-w-sm gencl:w-full gencl:p-4 gencl:rounded-lg gencl:gap-2 gencl:space-y-4",
         className
       )}
       {...restProps}
@@ -93,7 +93,7 @@ export function SideInfo({
           pairClassName="gencl:flex-col gencl:items-start"
           labelClassName="gencl:text-body-2-medium! gencl:text-secondary-600"
           valueFirst
-          className="gencl:flex gencl:justify-between gencl:max-w-3xs"
+          className="gencl:flex gencl:justify-between gencl:max-w-xs"
           stats={stats}
         />
       )}

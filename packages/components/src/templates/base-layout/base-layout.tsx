@@ -20,30 +20,22 @@ export function BaseLayout({
   const { height } = useWindowSize();
 
   return (
-    <div className="gencl:h-full gencl:w-full gencl:mx-auto">
+    <div className="gencl:h-full gencl:w-full gencl:flex gencl:flex-col gencl:mx-auto">
       <TopBar
         className="gencl:border-b gencl:border-secondary-150 gencl:bg-white gencl:relative"
         style={{ zIndex: 9 }}
         search={search}
       />
       <main
-        className="gencl:flex gencl:h-full"
-        style={
-          isNaN(height) && height !== undefined
-            ? {
-                height: height - TOP_BAR_HEIGHT + "px",
-              }
-            : undefined
-        }
-        // suppressHydrationWarning={true}
+        className="gencl:flex gencl:flex-grow gencl:h-full"
+        style={{
+          height: height - TOP_BAR_HEIGHT + "px",
+        }}
+        suppressHydrationWarning
       >
         <SideBar />
         <section
-          className={cn(
-            "gencl:w-full gencl:!h-full gencl:mx-auto gencl:relative",
-            className
-          )}
-          style={{ maxWidth: "1300px" }}
+          className={cn("gencl:w-full gencl:!h-full gencl:relative", className)}
           {...restProps}
         >
           {children}

@@ -309,7 +309,7 @@ function FeedViewCore({
       <div
         id="gencl-feed-view"
         className={cn(
-          "gencl:grid gencl:mt-4 gencl:w-full gencl:pr-4 gencl:h-full gencl:grid-cols-2 gencl:gap-4",
+          "gencl:flex gencl:mt-4 gencl:w-full gencl:pr-4 gencl:h-full gencl:gap-4 ",
           {
             "gencl:fixed gencl:top-0 gencl:flex gencl:items-center gencl:mt-0 gencl:z-50 gencl:left-0 gencl:h-full gencl:w-full gencl:bg-black":
               showExpandView,
@@ -323,6 +323,7 @@ function FeedViewCore({
         {...restProps}
       >
         <PlayerList
+          className="gencl:flex-grow"
           startIndex={startIndex}
           posts={videos}
           onActiveIndexChange={handleActiveIndexChange}
