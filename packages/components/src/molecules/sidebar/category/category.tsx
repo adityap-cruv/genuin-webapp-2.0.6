@@ -27,7 +27,7 @@ export function Category() {
       type="single"
       collapsible={true}
       defaultValue="categories"
-      className="gencl:!w-full gencl:py-4 gencl:px-3 gencl:border-b gencl:border-secondary-100"
+      className="gencl:!w-full gencl:py-4 gencl:px-3 gencl:border-b-0 gencl:xl:border-b gencl:border-secondary-100"
     >
       <AccordionItem value="categories">
         <AccordionTrigger className="gencl:px-3 gencl:py-2 gencl:hidden gencl:xl:!flex">

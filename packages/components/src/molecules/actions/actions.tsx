@@ -22,7 +22,7 @@ const tooltipVariants = cva("", {
   variants: {
     variant: {
       light:
-        "gencl:border-secondary-200 gencl:border gencl:hover:bg-secondary-50 ",
+        "gencl:border-secondary-200 gencl:border gencl:hover:border-secondary-50 gencl:transition-all gencl:hover:bg-secondary-50",
       dark: "gencl:bg-secondary-900 gencl:hover:bg-secondary-700",
     },
   },
@@ -261,7 +261,7 @@ export function Actions({
               action.actionType === "COMMENT" && isCommentBoxOpen
                 ? variant === "dark"
                   ? "gencl:bg-secondary-800"
-                  : "gencl:bg-secondary-50"
+                  : "gencl:bg-secondary-50 gencl:border-secondary-50"
                 : ""
             }
             disableTooltip={action.actionType === "COMMENT" && isCommentBoxOpen}

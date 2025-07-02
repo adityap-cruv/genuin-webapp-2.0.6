@@ -45,12 +45,18 @@ export function useInterruptionManager() {
     getAppConfig?.enable && brandDetails.web_cta === "app";
 
   // Find the next interruption step to show
+  const loginSignupConfig = brandDetails?.web_configs?.login_signup_popup;
+  const isLoginSignupEnabled = !!loginSignupConfig?.enable;
+
   const interruptionToShow = !shouldShowAppDownload
-    ? INTERRUPTION_STEPS.find(
-        (step) =>
-          brandDetails?.web_configs?.[step.configKey]?.enable &&
-          !step.isComplete(user)
-      )
+    ? // If user is not logged in and login_signup_popup is not enabled, don't show any interruption
+      !user && !isLoginSignupEnabled
+      ? null
+      : INTERRUPTION_STEPS.find(
+          (step) =>
+            brandDetails?.web_configs?.[step.configKey]?.enable &&
+            !step.isComplete(user)
+        )
     : null;
 
   // Whether all interruption steps are completed
