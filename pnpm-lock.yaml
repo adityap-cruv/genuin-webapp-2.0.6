@@ -657,9 +657,9 @@ importers:
       react-phone-number-input:
         specifier: ^3.4.12
         version: 3.4.12(react-dom@19.1.0)(react@19.1.0)
-      react-qrcode-logo:
-        specifier: ^3.0.0
-        version: 3.0.0(react-dom@19.1.0)(react@19.1.0)
+      react-qr-code:
+        specifier: ^2.0.16
+        version: 2.0.16(react@19.1.0)
       swiper:
         specifier: ^11.2.7
         version: 11.2.8
@@ -15860,6 +15860,10 @@ packages:
     resolution: {integrity: sha512-bVWawvoZoBYpp6yIoQtQXHZjmz35RSVHnUOTefl8Vcjr8snTPY1wnpSPMWekcFwbxI6gtmT7rSYPFvz71ldiOA==}
     dev: true
 
+  /qr.js@0.0.0:
+    resolution: {integrity: sha512-c4iYnWb+k2E+vYpRimHqSu575b1/wKl4XFeJGpFmrJQz5I88v9aY2czh7s0w36srfCM1sXgC/xpoJz5dJfq+OQ==}
+    dev: false
+
   /qrcode-generator@1.5.1:
     resolution: {integrity: sha512-u0zerMlMtKBgkDlDzWXG/7F7jo2En1d7bivC7V33HGqP62XxGiHGnbCJNkSCMxGfNlhXGBGEIamNMHbZ4P4mLg==}
     dev: false
@@ -15969,6 +15973,16 @@ packages:
       prop-types: 15.8.1
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
+    dev: false
+
+  /react-qr-code@2.0.16(react@19.1.0):
+    resolution: {integrity: sha512-8f54aTOo7DxYr1LB47pMeclV5SL/zSbJxkXHIS2a+QnAIa4XDVIdmzYRC+CBCJeDLSCeFHn8gHtltwvwZGJD/w==}
+    peerDependencies:
+      react: ^19.1.0 || 19
+    dependencies:
+      prop-types: 15.8.1
+      qr.js: 0.0.0
+      react: 19.1.0
     dev: false
 
   /react-qrcode-logo@3.0.0(react-dom@19.1.0)(react@19.1.0):

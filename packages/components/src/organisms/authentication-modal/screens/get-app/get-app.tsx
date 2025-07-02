@@ -1,5 +1,5 @@
 import { ComponentProps, useEffect, useState } from "react";
-import { QRCode } from "react-qrcode-logo";
+import QRCode from "react-qr-code";
 import appStoreImage from "@genuin/components/assets/images/appStore.svg";
 import playStoreImage from "@genuin/components/assets/images/playStore.svg";
 import { Image } from "@genuin/ui/image";
@@ -108,8 +108,6 @@ export function GetApp({ onSubmit, ...props }: GetAppProps) {
         <QRCode
           value={isLoading ? "placeholder" : deeplinkUrl}
           size={160}
-          qrStyle="squares"
-          logoPaddingStyle="square"
           style={isLoading ? { filter: "blur(6px)" } : undefined}
         />
         <p className="gencl:text-body-1-medium">Scan to download app</p>
