@@ -76,8 +76,7 @@ export function CommunityHoverCard({
         <Stats
           className="gencl:flex gencl:gap-1 gencl:text-body-1-medium! gencl:text-secondary-600"
           valueFirst={true}
-          valueClassName="gencl:text-black! gencl:mr-1"
-          labelClassName="gencl:mr-1"
+          valueClassName="gencl:text-black!"
           separator="•"
           stats={{
             Members: communityDetails.membersCount ?? 0,

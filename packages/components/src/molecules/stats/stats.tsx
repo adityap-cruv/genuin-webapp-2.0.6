@@ -48,7 +48,7 @@ export function Stats({
 }: StatsPropsType) {
   const statEntries = Object.entries(stats);
   return (
-    <div className={cn(className)} {...restProps}>
+    <div className={cn("gencl:flex gencl:!gap-2", className)} {...restProps}>
       {statEntries.map(([key, value], index) => {
         const isObjectWithValue = typeof value === "object" && value !== null;
         const val = isObjectWithValue ? value.value : value;
@@ -77,7 +77,10 @@ export function Stats({
         return (
           <div
             key={key}
-            className={cn("gencl:flex gencl:items-center", pairClassName)}
+            className={cn(
+              "gencl:flex gencl:gap-2 gencl:items-center",
+              pairClassName
+            )}
           >
             {valueFirst ? (
               <>

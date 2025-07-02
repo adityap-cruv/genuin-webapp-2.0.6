@@ -19,7 +19,8 @@ const buttonVariants = cva(
           "gencl:bg-primary gencl:text-white! gencl:shadow-xs gencl:hover:bg-primary-600 gencl:[&_svg]:stroke-white",
         secondary:
           "gencl:bg-secondary-50 gencl:text-black! gencl:hover:bg-secondary-100",
-        outline: "gencl:border gencl:border-secondary-150 gencl:bg-white",
+        outline:
+          "gencl:border gencl:border-secondary-150 gencl:hover:bg-secondary-50 gencl:bg-white",
         text: "gencl:text-primary",
         custom: "",
         navigation:

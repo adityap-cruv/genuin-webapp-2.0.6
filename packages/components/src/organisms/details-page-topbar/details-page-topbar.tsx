@@ -80,7 +80,7 @@ export function DetailsPageTopbar({
   return (
     <div
       className={cn(
-        "gencl:absolute gencl:top-0 gencl:h-14 gencl:transition-transform gencl:duration-200 gencl:ease-linear",
+        "gencl:absolute gencl:top-0 gencl:transition-transform gencl:duration-200 gencl:ease-linear",
         "gencl:flex gencl:items-center gencl:justify-between gencl:border-b gencl:border-b-secondary-150 gencl:bg-white",
         className
       )}

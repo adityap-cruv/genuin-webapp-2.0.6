@@ -65,12 +65,12 @@ export function CommunityCard({ community }: CommunityCardProps) {
           />
         )}
       </div>
-      <div className="gencl:p-4 gencl:bg-secondary-50">
+      <div className="gencl:px-4 gencl:py-3 gencl:bg-secondary-50">
         <Stats
           className="gencl:flex gencl:justify-between"
           valueClassName="gencl:text-body-2-bold"
           labelClassName="gencl:text-body-2-medium! gencl:text-secondary-700"
-          pairClassName="gencl:flex-col gencl:items-start"
+          pairClassName="gencl:flex-col gencl:!gap-0 gencl:items-start"
           stats={{
             Members: community.stats.members,
             Groups: community.stats.groups,

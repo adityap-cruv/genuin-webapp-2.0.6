@@ -95,13 +95,17 @@ function Button({
       variant={showText ? "default" : "icon"}
       shape={shape === "pill" ? "pill" : undefined}
       onClick={handleClick}
+      className={cn(shape === "pill" && 'gencl:p-0')}
       disabled={isPending || disabled}
       {...restProps}
     >
       {isPending ? (
-        <Loader strokeColor="black" size="sm" />
+        <Loader strokeColor="black" size={shape === "pill" ? "xs" : "sm"} />
       ) : isSubscriber ? (
-        <NotificationEnabledIcon variant="light" />
+        <NotificationEnabledIcon
+          className={cn(shape === "pill" && "gencl:size-3.5")}
+          variant="light"
+        />
       ) : (
         <NotificationIcon
           className={cn(shape === "pill" && "gencl:size-3.5")}

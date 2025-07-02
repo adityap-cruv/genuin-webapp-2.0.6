@@ -65,7 +65,7 @@ export function AuthenticationModal({
       <DialogTrigger asChild {...restProps}>
         {children}
       </DialogTrigger>
-      <DialogContent className="gencl:p-0 gencl:max-w-md gencl:rounded-2xl">
+      <DialogContent className="gencl:p-0 gencl:!max-w-xl gencl:rounded-2xl">
         <AuthenticationModalProvider
           action={action}
           customStep={step}

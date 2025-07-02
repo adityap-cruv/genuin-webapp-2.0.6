@@ -1,5 +1,5 @@
 import { InfiniteScroll } from "@genuin/ui/infinite-scroll";
-import { CommentIcon, ErrorIcon } from "@genuin/ui/icons";
+import { CommentIcon, ErrorIcon, XIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/utils";
 import { useMemo, type ComponentProps } from "react";
 
@@ -9,7 +9,6 @@ import {
   useComments,
 } from "@genuin/components/react-query/api/comments";
 import { CommentItem, CommentsItemSkeleton } from "./comment-item";
-import { X } from "lucide-react";
 import { CommentInputBox } from "./comment-box";
 
 type CommentPropsType = {
@@ -40,13 +39,17 @@ export function Comments({
       {...restProps}
     >
       {showCloseButton && (
-        <X
-          className="gencl:absolute gencl:top-2 gencl:right-2 gencl:cursor-pointer"
-          onClick={() => {
-            onClose?.();
-          }}
-        />
+        <div className="gencl:p-4 gencl:flex gencl:text-headline-4-semi-bold gencl:text-secondary-900  gencl:border-b gencl:border-secondary-150 gencl:items-center gencl:justify-between">
+          Comments
+          <XIcon
+            className="gencl:size-5 gencl:cursor-pointer gencl:opacity-70 gencl:transition-opacity gencl:hover:opacity-100"
+            onClick={() => {
+              onClose?.();
+            }}
+          />
+        </div>
       )}
+
       <CommentsComponent videoId={videoId} showCloseButton={showCloseButton} />
       <CommentInputBox
         videoId={videoId}

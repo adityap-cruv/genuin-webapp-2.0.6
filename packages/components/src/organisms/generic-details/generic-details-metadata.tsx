@@ -134,8 +134,7 @@ export function GenericDetailsMetadata({
             stats={stats}
             className="gencl:flex gencl:gap-1"
             valueFirst={true}
-            valueClassName="gencl:text-black! gencl:mr-1"
-            labelClassName="gencl:mr-1"
+            valueClassName="gencl:text-black!"
             separator="•"
           />
         </>

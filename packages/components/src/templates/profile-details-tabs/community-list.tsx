@@ -99,6 +99,7 @@ export function CommunityList({
                 })}
                 metadata={
                   <GenericDetailsMetadata
+                    className="gencl:pt-2"
                     stats={{
                       Members: community.noOfMembers,
                       Groups: community.noOfGroups,
@@ -257,6 +258,7 @@ function Groups({
               key={group.id}
               metadata={
                 <GenericDetailsMetadata
+                  className="gencl:pt-2"
                   privacyInfo={{ isPrivate: group.isPrivate }}
                   stats={{
                     Members: group.noOfMembers,

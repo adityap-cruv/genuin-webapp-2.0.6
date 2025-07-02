@@ -141,7 +141,6 @@ function Button({
 
   return (
     <PrimitiveButton
-      size="sm"
       disabled={buttonDisabled}
       onClick={handleClick}
       theme={
@@ -150,7 +149,10 @@ function Button({
       {...rest}
     >
       {isLoading ? (
-        <Loader size="xs" strokeColor={role === "MEMBER" ? "black" : "white"} />
+        <Loader
+          size={rest.shape === "pill" ? "xs" : "sm"}
+          strokeColor={role === "MEMBER" ? "black" : "white"}
+        />
       ) : (
         (roleTexts[role] ?? DEFAULT_ROLE_TEXTS[role])
       )}

@@ -107,6 +107,7 @@ function CommunityGroups({
         showPinned={typeof group.position === "number"}
         metadata={
           <GenericDetailsMetadata
+            className="gencl:pt-2"
             privacyInfo={{ isPrivate: !group.is_view_allowed }}
             stats={{
               Members: group.group.no_of_members,
@@ -118,6 +119,7 @@ function CommunityGroups({
         ctas={
           <div className="gencl:flex gencl:gap-2">
             <JoinGroupButton
+              size="sm"
               buttonTexts={{ UNJOINED: "Join" }}
               groupId={group.chat_id}
               groupName={group.group.group_name ?? ""}
@@ -139,6 +141,7 @@ function CommunityGroups({
               }}
             />
             <GroupSubscriptionButton
+              size="sm"
               groupId={group.chat_id}
               groupName={group.group.group_name ?? ""}
               groupDescription={`${
@@ -158,6 +161,7 @@ function CommunityGroups({
               }}
             />
             <ShareButton
+              size="sm"
               showText={false}
               pathName={buildPageUrl({ type: "group", slug: group.slug })}
             />

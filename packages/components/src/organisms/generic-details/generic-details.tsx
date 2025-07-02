@@ -120,7 +120,7 @@ export function GenericDetails({
       )}
       <div
         className={cn(
-          "gencl:flex gencl:gap-6 gencl:w-full gencl:items-center",
+          "gencl:flex gencl:gap-6 gencl:w-full",
           variant === "list" && "gencl:p-4"
         )}
       >
@@ -154,7 +154,7 @@ export function GenericDetails({
                 <ReadMore
                   className="gencl:text-secondary-600! gencl:text-body-1-medium"
                   text={description}
-                  maxLines={2}
+                  maxLines={1}
                 />
               )}
               {links && <SocialLinks links={links} />}

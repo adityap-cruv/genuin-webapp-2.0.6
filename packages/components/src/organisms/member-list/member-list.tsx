@@ -59,11 +59,14 @@ export function MemberList({
         isLoadingNextPage={isFetchingNextPage}
         loader={<MemberListSkeleton />}
       >
-        {members.map((member) => (
+        {members.map((member, idx) => (
           <MemberItem
             key={member.memberId}
             memberData={member}
-            className="gencl:py-2 gencl:mb-2 gencl:rounded-lg gencl:hover:bg-secondary-50 gencl:pl-2 gencl:pr-4"
+            className={cn(
+              "gencl:py-2 gencl:rounded-lg gencl:hover:bg-secondary-50 gencl:pl-2 gencl:pr-4",
+              members.length > 1 && idx !== members.length - 1 && "gencl:mb-2"
+            )}
           />
         ))}
       </InfiniteScroll>

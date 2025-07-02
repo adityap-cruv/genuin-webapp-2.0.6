@@ -182,7 +182,7 @@ function CommunityDetailsView({ slug }: { slug: string }) {
       {/* Sticky Topbar */}
       <DetailsPageTopbar
         idToTrack={detailsId}
-        className="gencl:pl-4 gencl:pr-6 gencl:py-3"
+        className="gencl:pl-4 gencl:pr-6 gencl:py-4"
         title={communityDetails?.name ?? ""}
         profileImageDetails={{
           imageUrl: communityDetails?.dp_m ?? communityDetails.dp ?? "",

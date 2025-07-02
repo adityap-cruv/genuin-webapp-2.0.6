@@ -67,15 +67,15 @@ export function PostsGrid({
     return (
       <div
         className={cn(
-          "gencl:w-full gencl:flex gencl:flex-col gencl:gap-4 gencl:justify-center gencl:items-center gencl:h-60",
+          "gencl:w-full gencl:flex gencl:flex-col gencl:gap-4 gencl:justify-center gencl:items-center gencl:bg-secondary-50 gencl:h-72 gencl:rounded-lg",
           className
         )}
       >
-        <PlayIcon variant="stroke-dark" />
+        <PlayIcon variant="stroke-dark" className="gencl:size-8" />
         <div className="gencl:space-y-1 gencl:flex-center gencl:flex-col">
           <p className="gencl:text-body-0-semi-bold">No Posts Yet</p>
-          <p className="gencl:text-body-2-medium gencl:text-secondary-600">
-            Be the first to share your thoughts!
+          <p className="gencl:text-body-1-medium gencl:text-secondary-600">
+            No content available
           </p>
         </div>
       </div>
