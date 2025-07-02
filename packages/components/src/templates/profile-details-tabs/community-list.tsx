@@ -123,7 +123,7 @@ export function CommunityList({
                   alt: community.name ?? "",
                 }}
                 ctas={
-                  <div className="gencl:flex gencl:gap-2">
+                  <div className="gencl:flex gencl:gap-2 gencl:items-center">
                     {community.brand && (
                       <Tag
                         alt={community.brand?.name}
@@ -150,6 +150,7 @@ export function CommunityList({
                       />
                     )}
                     <ShareButton
+                      size="sm"
                       pathName={buildPageUrl({
                         type: "community",
                         slug: community.slug,
@@ -403,8 +404,8 @@ function GroupVideos({
           postId: video.id,
           stats: {
             comments: 0,
-            shares: 0,
             views: 0,
+            reactions: 0,
           },
         }))}
         hasNextPage={hasNextPage}

@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { 
-  Carousel, 
-  CarouselContent, 
-  CarouselDots, 
-  CarouselItem, 
-  CarouselNext, 
-  CarouselPrevious 
+import {
+  Carousel,
+  CarouselContent,
+  CarouselDots,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
 } from "./carousel";
 
 /**
@@ -20,7 +20,8 @@ const meta: Meta<typeof Carousel> = {
     layout: "centered",
     docs: {
       description: {
-        component: "A flexible carousel component with customizable navigation and orientation.",
+        component:
+          "A flexible carousel component with customizable navigation and orientation.",
       },
     },
   },
@@ -54,7 +55,7 @@ export const Default: Story = {
         {Array.from({ length: 5 }).map((_, index) => (
           <CarouselItem key={index}>
             <div className="gencl:p-1">
-              <div className="gencl:flex gencl:aspect-square gencl:items-center gencl:justify-center gencl:rounded-md gencl:border gencl:border-secondary-200 gencl:bg-secondary-100 gencl:p-6">
+              <div className="gencl:flex gencl:aspect-square gencl:items-center gencl:justify-center gencl:rounded-md gencl:border gencl:border-secondary-150 gencl:bg-secondary-100 gencl:p-6">
                 <span className="gencl:text-3xl gencl:font-semibold">
                   {index + 1}
                 </span>
@@ -86,7 +87,7 @@ export const Vertical: Story = {
         {Array.from({ length: 5 }).map((_, index) => (
           <CarouselItem key={index}>
             <div className="gencl:p-1">
-              <div className="gencl:flex gencl:h-40 gencl:items-center gencl:justify-center gencl:rounded-md gencl:border gencl:border-secondary-200 gencl:bg-secondary-100">
+              <div className="gencl:flex gencl:h-40 gencl:items-center gencl:justify-center gencl:rounded-md gencl:border gencl:border-secondary-150 gencl:bg-secondary-100">
                 <span className="gencl:text-3xl gencl:font-semibold">
                   {index + 1}
                 </span>
@@ -102,7 +103,8 @@ export const Vertical: Story = {
   parameters: {
     docs: {
       description: {
-        story: "Vertical orientation with custom height and navigation placement.",
+        story:
+          "Vertical orientation with custom height and navigation placement.",
       },
     },
   },
@@ -121,8 +123,11 @@ export const MultipleItems: Story = {
     >
       <CarouselContent className="-ml-2 md:-ml-4">
         {Array.from({ length: 10 }).map((_, index) => (
-          <CarouselItem key={index} className="pl-2 md:pl-4 basis-1/2 md:basis-1/3">
-            <div className="gencl:flex gencl:aspect-square gencl:items-center gencl:justify-center gencl:rounded-md gencl:border gencl:border-secondary-200 gencl:bg-secondary-100">
+          <CarouselItem
+            key={index}
+            className="pl-2 md:pl-4 basis-1/2 md:basis-1/3"
+          >
+            <div className="gencl:flex gencl:aspect-square gencl:items-center gencl:justify-center gencl:rounded-md gencl:border gencl:border-secondary-150 gencl:bg-secondary-100">
               <span className="gencl:text-3xl gencl:font-semibold">
                 {index + 1}
               </span>
@@ -153,7 +158,7 @@ export const CustomNavigation: Story = {
         {Array.from({ length: 5 }).map((_, index) => (
           <CarouselItem key={index}>
             <div className="gencl:p-1">
-              <div className="gencl:flex gencl:aspect-square gencl:items-center gencl:justify-center gencl:rounded-md gencl:border gencl:border-secondary-200 gencl:bg-secondary-100">
+              <div className="gencl:flex gencl:aspect-square gencl:items-center gencl:justify-center gencl:rounded-md gencl:border gencl:border-secondary-150 gencl:bg-secondary-100">
                 <span className="gencl:text-3xl gencl:font-semibold">
                   {index + 1}
                 </span>
@@ -162,11 +167,11 @@ export const CustomNavigation: Story = {
           </CarouselItem>
         ))}
       </CarouselContent>
-      <CarouselPrevious 
+      <CarouselPrevious
         theme="primary"
         className="gencl:bg-primary gencl:text-white hover:gencl:bg-primary/90"
       />
-      <CarouselNext 
+      <CarouselNext
         theme="primary"
         className="gencl:bg-primary gencl:text-white hover:gencl:bg-primary/90"
       />
@@ -198,7 +203,7 @@ export const WithDotsAndSwipe: Story = {
           {Array.from({ length: 6 }).map((_, index) => (
             <CarouselItem key={index}>
               <div className="gencl:p-1">
-                <div className="gencl:aspect-video gencl:flex gencl:items-center gencl:justify-center gencl:rounded-xl gencl:border gencl:border-secondary-200 gencl:bg-gradient-to-br gencl:from-primary/5 gencl:to-secondary-100">
+                <div className="gencl:aspect-video gencl:flex gencl:items-center gencl:justify-center gencl:rounded-xl gencl:border gencl:border-secondary-150 gencl:bg-gradient-to-br gencl:from-primary/5 gencl:to-secondary-100">
                   <div className="gencl:text-center">
                     <span className="gencl:text-4xl gencl:font-semibold gencl:text-primary">
                       {index + 1}
@@ -212,13 +217,9 @@ export const WithDotsAndSwipe: Story = {
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious 
-          className="gencl:-left-4 gencl:size-8 gencl:opacity-50 hover:gencl:opacity-100" 
-        />
-        <CarouselNext 
-          className="gencl:-right-4 gencl:size-8 gencl:opacity-50 hover:gencl:opacity-100" 
-        />
-        <CarouselDots 
+        <CarouselPrevious className="gencl:-left-4 gencl:size-8 gencl:opacity-50 hover:gencl:opacity-100" />
+        <CarouselNext className="gencl:-right-4 gencl:size-8 gencl:opacity-50 hover:gencl:opacity-100" />
+        <CarouselDots
           className="gencl:mt-4"
           dotClassName="gencl:size-2 gencl:opacity-50"
           activeDotClassName="gencl:size-2.5 gencl:opacity-100"
@@ -226,7 +227,9 @@ export const WithDotsAndSwipe: Story = {
       </Carousel>
       <div className="gencl:text-center gencl:text-sm gencl:text-secondary-600">
         <p>Try swiping left/right or using the dot navigation</p>
-        <p className="gencl:mt-1 gencl:text-xs">Supports touch, mouse drag, and keyboard navigation</p>
+        <p className="gencl:mt-1 gencl:text-xs">
+          Supports touch, mouse drag, and keyboard navigation
+        </p>
       </div>
     </div>
   ),

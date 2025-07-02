@@ -37,7 +37,7 @@ export const Controls = memo(function Controls({
   return (
     <div
       className={cn(
-        "gencl:absolute gencl:transition-all gencl:z-10 gencl:flex gencl:w-full gencl:bg-gradient-to-b gencl:from-black/50 gencl:to-transparent gencl:top-16 gencl:sm:top-0 gencl:justify-between gencl:items-center gencl:gap-3 gencl:p-2 gencl:px-4",
+        "gencl:absolute gencl:transition-all gencl:z-10 gencl:flex gencl:w-full gencl:bg-gradient-to-b gencl:from-black/50 gencl:to-transparent gencl:top-16 gencl:sm:top-0 gencl:justify-between gencl:items-center gencl:gap-3 gencl:p-4",
         className
       )}
       onClick={(e) => {
@@ -47,7 +47,7 @@ export const Controls = memo(function Controls({
       }}
       {...restProps}
     >
-      <div className="gencl:flex gencl:items-center gencl:gap-2 gencl:w-full">
+      <div className="gencl:flex gencl:items-center gencl:gap-4 gencl:w-full">
         {showPlayButton && (
           <AnimatedPlayButton shouldAnimate={shouldAnimatePlayPause} />
         )}

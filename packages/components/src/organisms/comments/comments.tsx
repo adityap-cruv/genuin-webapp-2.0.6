@@ -34,7 +34,7 @@ export function Comments({
   return (
     <div
       className={cn(
-        "gencl:relative gencl:bg-white gencl:overflow-clip gencl:border gencl:border-secondary-200 gencl:rounded-2xl",
+        "gencl:relative gencl:bg-white gencl:overflow-clip gencl:border gencl:border-secondary-150 gencl:rounded-2xl",
         className
       )}
       {...restProps}

@@ -122,7 +122,7 @@ function CommunityDetailsView({ slug }: { slug: string }) {
 
   const admins = (
     <MemberList
-      className="gencl:border-t gencl:pt-4 gencl:border-secondary-200"
+      className="gencl:border-t gencl:pt-4 gencl:border-secondary-150"
       title="Admins"
       members={[
         {

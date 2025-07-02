@@ -6,8 +6,6 @@ import { cn } from "@genuin/ui/lib/utils";
 import { Skeleton } from "@genuin/ui/components/skeleton";
 import { CommunityCardProps } from "./community-card.types";
 import { ReadMore } from "@genuin/ui/components/read-more";
-import { Link } from "@genuin/components/molecules/link";
-import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { JoinCommunityButton } from "@genuin/components/molecules/join-community-button";
 import { useState } from "react";
 import { CommunityUserRole } from "@genuin/components/types/post";
@@ -15,7 +13,7 @@ import { CommunityUserRole } from "@genuin/components/types/post";
 export function CommunityCard({ community }: CommunityCardProps) {
   const [role, setRole] = useState<CommunityUserRole>("UNJOINED");
   return (
-    <div className="gencl:flex gencl:flex-col gencl:rounded-lg gencl:border gencl:border-secondary-200 gencl:overflow-clip gencl:w-full gencl:h-full">
+    <div className="gencl:flex gencl:flex-col gencl:rounded-lg gencl:border gencl:border-secondary-150 gencl:overflow-clip gencl:w-full gencl:h-full">
       <div className="gencl:w-full gencl:h-15 gencl:bg-secondary-500">
         {community.banner ? (
           <Image
@@ -34,7 +32,7 @@ export function CommunityCard({ community }: CommunityCardProps) {
               alt={community.name}
               isAvatar={false}
               size="lg"
-              className="gencl:shrink-0 gencl:border gencl:border-secondary-200"
+              className="gencl:shrink-0 gencl:border gencl:border-secondary-150"
             />
             <ReadMore
               maxChars={40}
@@ -51,6 +49,9 @@ export function CommunityCard({ community }: CommunityCardProps) {
             onCommunityJoinStatusChange={(newRole) => {
               setRole(newRole);
             }}
+            communityHandle={""}
+            communityName={""}
+            slug={""}
           >
             Join
           </JoinCommunityButton>
@@ -86,7 +87,7 @@ export function CommunityCardSkeleton({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "gencl:flex gencl:flex-col gencl:rounded-[10px] gencl:border gencl:border-secondary-200 gencl:overflow-clip",
+        "gencl:flex gencl:flex-col gencl:rounded-[10px] gencl:border gencl:border-secondary-150 gencl:overflow-clip",
         className
       )}
     >

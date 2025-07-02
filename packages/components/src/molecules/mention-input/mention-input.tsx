@@ -88,13 +88,11 @@ export function MentionInput({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(commentSubmit)}
-        className="gencl:absolute gencl:bottom-0 gencl:left-0 gencl:right-0 gencl:bg-white gencl:p-4 gencl:border-t gencl:border-secondary-200 gencl:flex gencl:justify-between"
+        className="gencl:absolute gencl:bottom-0 gencl:left-0 gencl:right-0 gencl:bg-white gencl:p-4 gencl:border-t gencl:border-secondary-150 gencl:flex gencl:justify-between"
       >
         {isMentioning && (
           <div className="gencl:absolute gencl:left-0 gencl:w-full gencl:z-50 gencl:bottom-18.25">
-            <Command
-              className="gencl:bg-white gencl:rounded-t-2xl gencl:max-h-60 gencl:overflow-y-auto gencl:shadow-[0px_-4px_15px_0px_#3F3F3F0D]"
-            >
+            <Command className="gencl:bg-white gencl:rounded-t-2xl gencl:max-h-60 gencl:overflow-y-auto gencl:shadow-[0px_-4px_15px_0px_#3F3F3F0D]">
               <CommandList>
                 {filteredMentions.map((mention: any, idx: number) => {
                   const isCommunity = !!mention.community;

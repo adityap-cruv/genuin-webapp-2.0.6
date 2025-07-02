@@ -75,7 +75,11 @@ export function GroupPosts({
             postId: post.video.id,
             isPinned: post.video.isPinned,
             linkouts: null,
-            stats: { comments: post.video.commentCount, reactions : 0, views: 0  },
+            stats: {
+              comments: post.video.commentCount,
+              reactions: 0,
+              views: 0,
+            },
           })) ?? []
         }
         fetchNextPage={fetchNextPage}
@@ -91,7 +95,7 @@ export function GroupPosts({
           <>
             {hasNextPage && !isFetchingNextPage && (
               <div
-                className="gencl:flex-center gencl:pt-4 gencl:text-body-2-bold gencl:text-secondary-600 gencl:cursor-pointer"
+                className="gencl:flex-center gencl:pt-4 gencl:text-body-1-semi-bold gencl:text-secondary-600 gencl:cursor-pointer"
                 onClick={() => fetchNextPage()}
               >
                 View more

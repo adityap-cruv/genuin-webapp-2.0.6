@@ -107,7 +107,7 @@ const HighlightedInput = forwardRef<HTMLInputElement, HighlightedInputProps>(
       if (!inputValue) {
         // Show placeholder in highlight layer if input is empty
         if (placeholder) {
-          return `<span class=\"gencl:text-secondary-600 gencl:opacity-100\">${preserveSpaces(placeholder)}</span>`;
+          return `<span class=\"gencl:text-secondary-600 gencl:text-body-1-medium gencl:opacity-100\">${preserveSpaces(placeholder)}</span>`;
         }
         return "";
       }

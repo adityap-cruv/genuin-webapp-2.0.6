@@ -25,13 +25,13 @@ export function Footer() {
   return (
     <>
       <div className="gencl:flex gencl:w-full gencl:items-center gencl:gap-4 gencl:mt-4">
-        <div className="gencl:w-full gencl:h-px gencl:bg-secondary-200">
+        <div className="gencl:w-full gencl:h-px gencl:bg-secondary-50">
           &nbsp;
         </div>
         <p className="gencl:whitespace-nowrap gencl:text-body-1-med gencl:text-secondary-500">
           OR
         </p>
-        <div className="gencl:w-full gencl:h-px gencl:bg-secondary-200">
+        <div className="gencl:w-full gencl:h-px gencl:bg-secondary-50">
           &nbsp;
         </div>
       </div>
@@ -53,11 +53,11 @@ export function Footer() {
         ) : (
           <EmailIcon className="gencl:text-primary" />
         )}
-        <p className="gencl:text-primary gencl:text-body-0-semi-bold">
+        <p className="gencl:text-primary gencl:text-body-1-semi-bold">
           Use {flowType === "EMAIL" ? "phone number" : "email"} instead
         </p>
       </div>
-      <p className="gencl:mt-4 gencl:text-secondary-300 gencl:text-body-1-semi-bold gencl:text-center">
+      <p className="gencl:mt-4 gencl:text-secondary-300 gencl:text-body-2-medium gencl:text-center">
         By continuing, you agree to
         <Link
           href={
@@ -122,7 +122,9 @@ function SignInWithGoogle() {
       ) : (
         <>
           <GoogleIcon className="gencl:h-6 gencl:w-6" />
-          <p className="gencl:text-secondary-900">Continue with Google</p>
+          <p className="gencl:text-secondary-900 gencl:text-body-1-medium">
+            Continue with Google
+          </p>
         </>
       )}
     </Button>
@@ -162,7 +164,9 @@ function SignInWithApple() {
       ) : (
         <>
           <AppleIcon className="gencl:h-6 gencl:w-6" />
-          <p className="gencl:text-white">Continue with Apple</p>
+          <p className="gencl:text-white gencl:text-body-1-medium">
+            Continue with Apple
+          </p>
         </>
       )}
     </Button>

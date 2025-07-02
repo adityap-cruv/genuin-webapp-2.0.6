@@ -58,7 +58,7 @@ export function Stats({
         const valueElement = (
           <span
             className={cn(
-              "gencl:text-black gencl:text-body-1-medium",
+              "gencl:text-black gencl:text-body-1-semi-bold",
               valueClassName
             )}
           >
@@ -69,7 +69,9 @@ export function Stats({
         const labelElement = icon ? (
           <>{icon}</>
         ) : (
-          <span className={cn("", labelClassName)}>{label}</span>
+          <span className={cn("gencl:text-body-1-medium", labelClassName)}>
+            {label}
+          </span>
         );
 
         return (

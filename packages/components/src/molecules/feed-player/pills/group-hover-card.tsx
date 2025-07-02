@@ -62,6 +62,7 @@ export function GroupHoverCard({
                   })}
                   userName={communityDetails.name ?? ""}
                   title={communityDetails.name ?? ""}
+                  className="gencl:pr-2"
                 />
               </>
             )

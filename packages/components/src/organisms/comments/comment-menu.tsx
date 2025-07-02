@@ -29,12 +29,15 @@ export function CommentMenu({
       >
         <ThreeDotsIcon className="gencl:h-4 gencl:w-4" />
       </PopoverTrigger>
-      <PopoverContent className="gencl:p-0 gencl:border-none gencl:w-fit" align="end">
-        <Report reportFor="COMMENT" contentId={contentId}>
+      <PopoverContent
+        className="gencl:p-0 gencl:border-secondary-150 gencl:w-fit gencl:rounded-xl"
+        align="end"
+      >
+        <Report reportFor="COMMENT" contentId={contentId} type={""}>
           <div className="gencl:p-3 gencl:rounded-xl gencl:border-secondary-100 gencl:bg-white gencl:cursor-pointer gencl:text-primary">
             <Button
               theme="text"
-              className="gencl:text-error-status gencl:text-body-1-medium gencl:hover:gencl:border-secondary-100 gencl:h-fit gencl:px-0"
+              className="gencl:text-error-status gencl:text-body-1-medium gencl:p-2 gencl:hover:bg-secondary-100 gencl:h-fit gencl:px-0"
             >
               Report
             </Button>

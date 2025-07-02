@@ -54,12 +54,12 @@ export const LinkCard: React.FC<LinkCardProps> = ({
   if (hasCTA) {
     return (
       <div
-        className="gencl:bg-black/50 gencl:cursor-pointer gencl:gap-2 gencl:flex gencl:flex-col gencl:backdrop-blur-md gencl:rounded-lg gencl:text-sm gencl:font-medium gencl:text-white gencl:p-2 gencl:w-full"
+        className="gencl:bg-black/50 gencl:cursor-pointer gencl:gap-2 gencl:flex gencl:flex-col gencl:backdrop-blur-md gencl:rounded-xl gencl:text-sm gencl:font-medium gencl:text-white gencl:p-2 gencl:w-full"
         onClick={handleCardClick}
       >
         <div className="gencl:flex-1 gencl:text-start gencl:flex gencl:items-center gencl:gap-2 gencl:line-clamp-1">
           {hasImage && showThumbnail && (
-            <div className="gencl:h-16 gencl:w-16 gencl:rounded-lg gencl:bg-gray-200 gencl:shrink-0 gencl:overflow-hidden">
+            <div className="gencl:h-16 gencl:w-16 gencl:rounded-xl gencl:bg-gray-200 gencl:shrink-0 gencl:overflow-hidden">
               <img
                 src={link.image ?? ""}
                 alt=""
@@ -82,11 +82,11 @@ export const LinkCard: React.FC<LinkCardProps> = ({
           </span>
         </div>
         <Button
-          className="gencl:w-full gencl:text-body-1-medium gencl:font-semibold gencl:transition-all gencl:bg-white gencl:hover:bg-white/90 gencl:!text-black gencl:flex gencl:justify-between gencl:items-center gencl:px-3 gencl:py-2 gencl:rounded"
+          className="gencl:w-full gencl:text-body-1-medium gencl:font-semibold gencl:transition-all gencl:bg-white gencl:hover:bg-white/90 gencl:!text-black gencl:flex gencl:justify-between gencl:items-center gencl:px-3 gencl:py-2 gencl:rounded-lg"
           onClick={handleCTAClick}
         >
           {ctaText}
-          <ChevronRight className="gencl:h-4 gencl:w-4 gencl:shrink-0" />
+          <ChevronRight className="gencl:h-4 gencl:w-4 gencl:stroke-black gencl:shrink-0" />
         </Button>
       </div>
     );
@@ -94,12 +94,12 @@ export const LinkCard: React.FC<LinkCardProps> = ({
 
   return (
     <div
-      className="gencl:bg-black/50 gencl:gap-2 gencl:flex gencl:items-center gencl:justify-between gencl:backdrop-blur-md gencl:rounded-lg gencl:text-sm gencl:font-medium gencl:text-white gencl:p-2 gencl:w-full gencl:cursor-pointer gencl:hover:bg-black/60 gencl:transition-colors"
+      className="gencl:bg-black/50 gencl:gap-2 gencl:flex gencl:items-center gencl:justify-between gencl:backdrop-blur-md gencl:rounded-xl gencl:text-sm gencl:font-medium gencl:text-white gencl:p-2 gencl:w-full gencl:cursor-pointer gencl:hover:bg-black/60 gencl:transition-colors"
       onClick={handleCardClick}
     >
       <div className="gencl:flex-1 gencl:text-start gencl:flex gencl:items-center gencl:gap-2 gencl:line-clamp-1">
         {hasImage && showThumbnail ? (
-          <div className="gencl:h-16 gencl:w-16 gencl:rounded-lg gencl:bg-gray-200 gencl:shrink-0 gencl:overflow-hidden">
+          <div className="gencl:h-16 gencl:w-16 gencl:rounded-xl gencl:bg-gray-200 gencl:shrink-0 gencl:overflow-hidden">
             <img
               src={link.image ?? ""}
               alt=""

@@ -35,7 +35,12 @@ export function MemberList({
   }
 
   if (isError) {
-    return <ComponentErrorState type="WARNING" subtitle="We're unable to load members."/>
+    return (
+      <ComponentErrorState
+        type="WARNING"
+        subtitle="We're unable to load members."
+      />
+    );
   }
 
   if (!members || members.length === 0) {
@@ -52,13 +57,13 @@ export function MemberList({
         hasNextPage={hasNextPage}
         getNextPage={fetchNextPage}
         isLoadingNextPage={isFetchingNextPage}
-        loader={<MemberListSkeleton/>}
+        loader={<MemberListSkeleton />}
       >
         {members.map((member) => (
           <MemberItem
             key={member.memberId}
             memberData={member}
-            className="gencl:py-2 gencl:mb-2 gencl:rounded-lg gencl:hover:bg-secondary-150 gencl:pl-2 gencl:pr-4"
+            className="gencl:py-2 gencl:mb-2 gencl:rounded-lg gencl:hover:bg-secondary-50 gencl:pl-2 gencl:pr-4"
           />
         ))}
       </InfiniteScroll>

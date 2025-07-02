@@ -102,7 +102,7 @@ const ScrubberSlider = React.forwardRef<
         className={cn(
           "gencl:relative gencl:left-1/2 gencl:flex gencl:w-full gencl:-translate-x-1/2 gencl:touch-none gencl:select-none gencl:items-center gencl:transition-all",
           showSeeker &&
-            "gencl:mx-auto gencl:-translate-y-2 gencl:w-[90%] gencl:pb-3 gencl:py-1.5",
+            "gencl:mx-auto gencl:-translate-y-2 gencl:w-[92%] gencl:pb-3 gencl:py-1.5",
           className
         )}
         value={value}

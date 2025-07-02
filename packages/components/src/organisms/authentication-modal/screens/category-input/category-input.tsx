@@ -67,7 +67,7 @@ export function CategoryInput({ ...props }: CategoryInputProps) {
         <p className="gencl:text-headline-2-semi-bold">
           What are you interested in?
         </p>
-        <p className="gencl:text-body-1-medium gencl:text-secondary-600 gencl:w-4/5">
+        <p className="gencl:text-body-1-medium gencl:text-secondary-600">
           Get started by picking three topics you're interested in, to see more
           of what you love.
         </p>

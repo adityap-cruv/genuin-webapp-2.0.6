@@ -21,7 +21,7 @@ const menuItems = (text: string, className?: string): React.ReactNode => {
   return (
     <p
       className={cn(
-        "gencl:!text-body-1-medium gencl:text-secondary-500 gencl:p-2 gencl:cursor-pointer",
+        "gencl:!text-body-1-medium gencl:text-secondary-600 gencl:hover:bg-secondary-50 gencl:rounded-md gencl:p-2 gencl:cursor-pointer",
         className
       )}
     >

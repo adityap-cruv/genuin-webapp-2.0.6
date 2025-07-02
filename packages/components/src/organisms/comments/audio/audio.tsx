@@ -192,7 +192,7 @@ export const Audio = ({
     >
       <div
         ref={elementRef}
-        className="gencl:flex gencl:w-3/5 gencl:items-center gencl:rounded-lg gencl:border gencl:gap-4 gencl:border-secondary-200 gencl:p-2"
+        className="gencl:flex gencl:w-3/5 gencl:items-center gencl:rounded-lg gencl:border gencl:gap-4 gencl:border-secondary-150 gencl:p-2"
       >
         <button
           ref={btnRef}

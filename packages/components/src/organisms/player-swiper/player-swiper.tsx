@@ -45,7 +45,7 @@ export function PlayerList({
   onGroupJoinStatusChange,
   onGroupSubscriptionChange,
 }: PlayerListPropsType) {
-  const { value, toggle } = useBoolean();
+  const { value, toggle } = useBoolean(true);
   const { showExpandView, activeIndex } = useFeedContext();
 
   return (
@@ -71,7 +71,7 @@ export function PlayerList({
                   slug={post.video.slug}
                   reactionCount={post.video.sparkCount}
                   variant={showExpandView ? "dark" : "light"}
-                  className="gencl:shrink-0 gencl:pb-4"
+                  className="gencl:shrink-0"
                   isCommentBoxOpen={!showExpandView || value}
                   actionWrapper={{
                     COMMENT: (defaultNode) => (

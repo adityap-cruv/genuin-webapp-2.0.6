@@ -22,8 +22,8 @@ const tooltipVariants = cva("", {
   variants: {
     variant: {
       light:
-        "gencl:border-secondary-200 gencl:border gencl:hover:bg-secondary-200 ",
-      dark: "gencl:bg-secondary-900 gencl:hover:bg-secondary-800",
+        "gencl:border-secondary-200 gencl:border gencl:hover:bg-secondary-50 ",
+      dark: "gencl:bg-secondary-900 gencl:hover:bg-secondary-700",
     },
   },
   defaultVariants: {
@@ -56,7 +56,7 @@ function TooltipAction({
         className={cn(
           tooltipVariants({ variant }),
           "gencl:hover:cursor-pointer ",
-          "gencl:h-12 gencl:p-0 gencl:w-12 gencl:flex gencl:items-center gencl:justify-center  gencl:rounded-full",
+          "gencl:h-12 gencl:p-0 gencl:w-12 gencl:flex gencl:items-center gencl:justify-center gencl:rounded-full",
           "gencl:[&_svg]:w-8 gencl:[&_svg]:h-8",
           className
         )}
@@ -261,7 +261,7 @@ export function Actions({
               action.actionType === "COMMENT" && isCommentBoxOpen
                 ? variant === "dark"
                   ? "gencl:bg-secondary-800"
-                  : "gencl:bg-secondary-200"
+                  : "gencl:bg-secondary-50"
                 : ""
             }
             disableTooltip={action.actionType === "COMMENT" && isCommentBoxOpen}

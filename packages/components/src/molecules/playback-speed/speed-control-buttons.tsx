@@ -71,9 +71,9 @@ export default function PlaybackSpeedControlSlider() {
         </Button>
       </div>
 
-      <div className="gencl:flex gencl:justify-between gencl:gap-4 gencl:w-full">
+      <div className="gencl:flex gencl:gap-4">
         {PLAYBACK_SPEEDS.map((speed) => (
-            <Button
+          <Button
             theme="secondary"
             key={speed}
             onClick={() => {
@@ -82,12 +82,12 @@ export default function PlaybackSpeedControlSlider() {
             className={cn(
               "gencl:w-20 gencl:rounded-full gencl:px-4 gencl:py-2 gencl:text-body-0-semi-bold",
               playbackSpeed.speed === speed
-              ? "gencl:bg-primary gencl:text-white! gencl:hover:bg-primary gencl:hover:text-white!"
-              : ""
+                ? "gencl:bg-primary gencl:text-white! gencl:hover:bg-primary gencl:hover:text-white!"
+                : ""
             )}
-            >
+          >
             {speed}
-            </Button>
+          </Button>
         ))}
       </div>
     </div>

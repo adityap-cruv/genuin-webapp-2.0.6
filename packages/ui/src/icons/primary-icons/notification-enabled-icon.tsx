@@ -2,7 +2,7 @@ import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 import type { SVGIconsProps } from "../type";
 
-const variants = cva("gencl:w-5 gencl:shrink-0 gencl:h-5", {
+const variants = cva("gencl:shrink-0", {
   variants: {
     variant: {
       light: "gencl:stroke-black",
@@ -21,9 +21,9 @@ export function NotificationEnabledIcon({
 }: SVGIconsProps & VariantProps<typeof variants>) {
   return (
     <svg
-      width="25"
+      width="24"
       height="24"
-      viewBox="0 0 25 24"
+      viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={variants({ className, ...props })}

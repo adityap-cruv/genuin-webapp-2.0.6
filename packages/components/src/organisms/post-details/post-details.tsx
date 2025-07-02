@@ -39,7 +39,7 @@ export function PostDetails({
   return (
     <div
       className={cn(
-        "gencl:border gencl:border-secondary-200 gencl:p-4 gencl:rounded-2xl",
+        "gencl:border gencl:border-secondary-150 gencl:p-4 gencl:rounded-2xl",
         className
       )}
       {...restProps}

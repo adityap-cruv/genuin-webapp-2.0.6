@@ -74,7 +74,7 @@ export function DecorativeList({
       role="list"
       style={{
         paddingLeft: "0.95em",
-        borderImage: `linear-gradient(to bottom, var(--secondary-200) calc(100% - ${lastLiHeight / 2}px - ${
+        borderImage: `linear-gradient(to bottom, var(--secondary-150) calc(100% - ${lastLiHeight / 2}px - ${
           window.devicePixelRatio > 1
             ? (4 * window.devicePixelRatio).toFixed(1) + "px"
             : "0px"

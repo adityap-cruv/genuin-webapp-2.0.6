@@ -192,8 +192,11 @@ function CommunityMembers({
     isLoading,
   } = useGetCommunityMembers(slug);
 
-  // Type the communityMembers variable as an array of members
-  const membersData = communityMembers as MembersSchemaType | undefined;
+  // If the API returns { members: [...] }, extract the array
+  const membersData =
+    communityMembers && "members" in communityMembers
+      ? communityMembers.members
+      : (communityMembers as MembersSchemaType | undefined);
 
   // Helper function to transform member data
   const transformMember = (member: MembersSchemaType[number]) => ({
@@ -225,7 +228,6 @@ function CommunityMembers({
       <div>
         <p className="gencl:text-body-1-semi-bold gencl:mb-3">Admins</p>
         <MemberList
-          className="gencl:max-w-sm"
           isError={isError}
           isLoading={isLoading}
           members={admins.map(transformMember)}
@@ -235,7 +237,6 @@ function CommunityMembers({
       <div>
         <p className="gencl:text-body-1-semi-bold gencl:mb-3">Members</p>
         <MemberList
-          className="gencl:max-w-sm"
           isError={isError}
           isLoading={isLoading}
           members={members.map(transformMember)}
@@ -247,7 +248,7 @@ function CommunityMembers({
 
 export function CommunityGroupsSkeleton() {
   return (
-    <div className="gencl:gap-4 gencl:border-secondary-200 gencl:border gencl:rounded-xl gencl:mb-4 gencl:overflow-clip">
+    <div className="gencl:gap-4 gencl:border-secondary-150 gencl:border gencl:rounded-xl gencl:mb-4 gencl:overflow-clip">
       <GroupCardSkeleton className="gencl:p-4" />
       <PostsGridSkeleton className="gencl:p-4" noOfPosts={6} />
     </div>

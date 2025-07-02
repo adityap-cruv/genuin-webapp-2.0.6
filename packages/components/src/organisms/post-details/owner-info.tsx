@@ -26,9 +26,9 @@ export function OwnerInfo({
           slug: !!owner.brand ? owner.brand.slug : owner.userName,
         })}
         userLogoType={owner.brand?.userLogo}
-        className="gencl:text-body-1-medium"
+        className="gencl:text-body-0-semi-bold"
       >
-        @{owner.userName}
+        {owner.name ?? `@${owner.userName}`}
       </ProfileLink>
       <span className="gencl:text-body-1-medium gencl:text-secondary-600">
         {createdAt}

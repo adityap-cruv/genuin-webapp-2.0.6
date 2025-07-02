@@ -42,7 +42,7 @@ export function SidebarActions({
       })}
       <Popover>
         <PopoverTrigger asChild>
-          <div className="gencl:flex gencl:rounded-lg gencl:items-center gencl:gap-4 gencl:px-3 gencl:py-2 gencl:hover:bg-secondary-50 gencl:cursor-pointer">
+          <div className="gencl:flex gencl:rounded-lg gencl:items-center gencl:gap-4 gencl:px-2 gencl:py-2 gencl:hover:bg-secondary-50 gencl:cursor-pointer">
             <ThreeDotsIcon className="gencl:h-6 gencl:w-6 gencl:p-0" />
             <p className="gencl:text-body-1-medium gencl:hidden gencl:xl:!block">
               More

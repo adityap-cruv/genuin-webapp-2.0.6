@@ -37,17 +37,15 @@ export function FooterInfo({ className, ...restProps }: ComponentProps<'p'>) {
         }}>
         {formData.flowType === 'email' ? (
           <>
-            <KeypadIcon className='mr-1 h-4 w-4 fill-primary-400' />
-            <p className='text-body-1-med text-primary-400'>
+            <KeypadIcon className='mr-1 h-4 w-4 fill-bg-primary' />
+            <p className='text-body-1-med text-bg-primary'>
               Use phone number instead
             </p>
           </>
         ) : (
           <>
-            <EmailIcon className='mr-1 h-4 w-4 stroke-primary-400' />
-            <p className='text-body-1-med text-primary-400'>
-              Use email instead
-            </p>
+            <EmailIcon className='mr-1 h-4 w-4 stroke-bg-primary' />
+            <p className='text-body-1-med text-bg-primary'>Use email instead</p>
           </>
         )}
       </Button>

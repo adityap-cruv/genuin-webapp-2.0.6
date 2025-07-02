@@ -63,7 +63,7 @@ const InputComponent = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, ...props }, ref) => (
     <Input
       className={cn(
-        "gencl:ml-2 gencl:rounded-lg gencl:border gencl:border-secondary-300",
+        "gencl:ml-2 gencl:rounded-lg gencl:border gencl:border-secondary-150",
         className
       )}
       {...props}
@@ -105,7 +105,7 @@ const CountrySelect = ({
           type="button"
           theme="outline"
           className={cn(
-            "gencl:flex gencl:gap-1 gencl:rounded-lg gencl:border-secondary-300 gencl:pl-3 gencl:pr-1"
+            "gencl:flex gencl:gap-1 gencl:rounded-lg gencl:border-secondary-150 gencl:pl-3 gencl:pr-1"
           )}
           disabled={disabled}
         >

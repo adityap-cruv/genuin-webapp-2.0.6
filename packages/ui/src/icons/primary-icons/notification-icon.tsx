@@ -5,18 +5,18 @@ import type { SVGIconsProps } from "../type";
 export function NotificationIcon({ className, ...restProps }: SVGIconsProps) {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="18"
-      height="19"
-      viewBox="0 0 18 19"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
       fill="none"
-      className={cn("", className)}
+      className={cn(className)}
+      xmlns="http://www.w3.org/2000/svg"
       {...restProps}
     >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
-        d="M9.12817 1C12.4838 1 15.2042 3.72029 15.2042 7.07596C15.2042 8.96385 15.2042 10.8496 15.2042 12C15.2042 15 17.2295 16 17.2295 16L1.02685 16C1.02685 16 3.05218 15 3.05218 12C3.05218 10.8496 3.05218 8.96385 3.05218 7.07596C3.05218 3.72029 5.77249 1 9.12817 1V1Z"
+        d="M12.1331 4C15.4887 4 18.209 6.72029 18.209 10.076C18.209 11.9639 18.209 13.8496 18.209 15C18.209 18 20.2344 19 20.2344 19L4.03173 19C4.03173 19 6.05706 18 6.05706 15C6.05706 13.8496 6.05706 11.9639 6.05706 10.076C6.05706 6.72029 8.77738 4 12.1331 4V4Z"
         stroke="#1D1F20"
         strokeWidth="1.5"
         strokeLinejoin="round"
@@ -24,14 +24,15 @@ export function NotificationIcon({ className, ...restProps }: SVGIconsProps) {
       <path
         fillRule="evenodd"
         clipRule="evenodd"
-        d="M7.10559 15.5C7.10559 16.6046 8.01236 17.5 9.13092 17.5C10.2495 17.5 11.1562 16.6046 11.1562 15.5"
+        d="M10.1056 18.5C10.1056 19.6046 11.0124 20.5 12.1309 20.5C13.2495 20.5 14.1562 19.6046 14.1562 18.5"
         fill="#1D1F20"
       />
       <path
-        d="M7.10559 15.5C7.10559 16.6046 8.01236 17.5 9.13092 17.5C10.2495 17.5 11.1562 16.6046 11.1562 15.5"
+        d="M10.1056 18.5C10.1056 19.6046 11.0124 20.5 12.1309 20.5C13.2495 20.5 14.1562 19.6046 14.1562 18.5"
         stroke="#1D1F20"
         strokeWidth="1.5"
       />
+      <circle cx="12.125" cy="2.5" r="1" stroke="#1D1F20" />
     </svg>
   );
 }
