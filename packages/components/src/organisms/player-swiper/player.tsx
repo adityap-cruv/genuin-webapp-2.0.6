@@ -9,9 +9,10 @@ import type { PostDetailsType } from "@genuin/components/react-query/api/feed/sc
 import { useFeedContext } from "@genuin/components/templates/feed/context";
 import { useSwiper, useSwiperSlide } from "swiper/react";
 import { useWindowSize } from "usehooks-ts";
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
 import { ComponentProps } from "react";
+import { REEL_ASPECT_RATIO } from "@genuin/components/lib/constants";
 
 type PlayerProps = {
   post: PostDetailsType;
@@ -37,7 +38,20 @@ export function Player({
   const { feedVideoSizeBox, muted } = useBaseContext();
   const { isActive } = useSwiperSlide();
   const swiper = useSwiper();
+  const [swiperSlideHeight, setSwiperSlideHeight] = useState<
+    number | undefined
+  >(undefined);
   const { showGestureOverlay } = useGestureOverlayManager();
+
+  useEffect(() => {
+    function handleResize() {
+      setSwiperSlideHeight(swiper?.slides[0]?.offsetHeight);
+    }
+    swiper.on("resize", handleResize);
+    return () => {
+      swiper.off("resize", handleResize);
+    };
+  }, [swiper]);
 
   const handleTimeUpdate = useCallback(
     (event: React.SyntheticEvent<HTMLVideoElement>) => {
@@ -59,9 +73,7 @@ export function Player({
       videoId={post.video.id}
       showExpandView={showExpandView}
       toggleExpandView={toggleExpandView}
-      swipeNext={() => {
-        swiper.slideNext();
-      }}
+      swipeNext={swiper.slideNext}
     >
       <div
         className={cn(
@@ -76,10 +88,16 @@ export function Player({
           src={post.video.source}
           id={post.video.id}
           poster={post.video.thumbnail ?? ""}
-          className={cn("gencl:bg-secondary-200 gencl:object-cover")}
+          className={cn(
+            "gencl:bg-secondary-200 gencl:object-cover gencl:aspect-reel"
+          )}
           playsInline
           style={{
-            width: showExpandView ? (height * 9) / 16 : feedVideoSizeBox.width,
+            width: showExpandView
+              ? height * REEL_ASPECT_RATIO
+              : swiperSlideHeight
+                ? swiperSlideHeight * REEL_ASPECT_RATIO
+                : feedVideoSizeBox.width,
           }}
           onTimeUpdate={handleTimeUpdate}
           onEnded={() => {

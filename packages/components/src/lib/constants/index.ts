@@ -52,3 +52,8 @@ export const TOP_BAR_HEIGHT = 64;
  * Constant representing the Genuin brand ID.
  */
 export const GENUIN_BRAND_ID = 99 as const;
+
+/**
+ * Aspect ratio for reels, typically used for video content.
+ */
+export const REEL_ASPECT_RATIO = 0.5625;
