@@ -14,6 +14,7 @@ import { Comments } from "../comments";
 import { Player } from "./player";
 import { SwiperImplementation } from "./swiper-implementation";
 import { ComponentProps } from "react";
+import { cn } from "@genuin/ui/lib/utils";
 
 type PlayerListPropsType = {
   posts: PostDetailsType[];
@@ -71,7 +72,10 @@ export function PlayerList({
                   slug={post.video.slug}
                   reactionCount={post.video.sparkCount}
                   variant={showExpandView ? "dark" : "light"}
-                  className="gencl:shrink-0"
+                  className={cn(
+                    "gencl:shrink-0",
+                    showExpandView && "gencl:pb-6"
+                  )}
                   isCommentBoxOpen={!showExpandView || value}
                   actionWrapper={{
                     COMMENT: (defaultNode) => (
@@ -102,7 +106,7 @@ export function PlayerList({
       </SwiperImplementation>
       {/* show this only if expand view is open  */}
       {value && showExpandView && posts[activeIndex] && (
-        <div className="gencl:w-100 gencl:h-full gencl:py-6">
+        <div className="gencl:max-w-118 gencl:w-full gencl:h-full gencl:py-6">
           <Comments
             videoId={posts[activeIndex].video.id}
             loopId={posts[activeIndex].group.id}

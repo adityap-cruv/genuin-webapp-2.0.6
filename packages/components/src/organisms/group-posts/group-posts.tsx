@@ -104,11 +104,11 @@ export function GroupPosts({
           </>
         )}
       </PostsGrid>
-      {enableFeedView && feed && expandViewId !== null && (
+      {enableFeedView && expandViewId !== null && (
         <Suspense>
           <FeedView
             defaultExpandView={true}
-            startIndex={feed.findIndex(
+            startIndex={feed?.findIndex(
               (post) => post.video.id === expandViewId
             )}
             feedData={{

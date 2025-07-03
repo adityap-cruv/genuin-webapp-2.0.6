@@ -212,7 +212,10 @@ function CommunityMembers({
       isAvatar: member.is_avatar,
       url: member.profile_image,
     },
-    url: `/test/${member.member_id}`,
+    url: buildPageUrl({
+      type: !!member.brand ? "brand" : "profile",
+      slug: member.nickname,
+    }),
     userName: member.nickname,
     brand: {
       userLogoType: member.brand?.brand_user_logo,

@@ -43,13 +43,13 @@ const showCustomToast = (
       <div
         className={cn(
           "gencl:flex gencl:items-center gencl:gap-2",
-          description && "gencl:items-baseline"
+          description && "gencl:items-start"
         )}
       >
         {variant === "success" ? (
           <CircleCheck className="gencl:size-5 gencl:shrink-0 gencl:fill-success-status gencl:text-white" />
         ) : (
-          <X className="gencl:size-4 gencl:bg-error-status gencl:text-white gencl:rounded-full gencl:p-0.5" />
+          <X className="gencl:size-4 gencl:shrink-0 gencl:bg-error-status gencl:text-white gencl:rounded-full gencl:p-0.5" />
         )}
         <div className="gencl:text-body-0-semi-bold gencl:text-secondary-900 gencl:flex gencl:flex-col gencl:gap-2">
           <p>{message}</p>
@@ -60,7 +60,7 @@ const showCustomToast = (
       </div>
       <XIcon
         onClick={() => toast.dismiss(id)}
-        className="gencl:size-4 gencl:text-secondary-600 hover:gencl:text-black gencl:cursor-pointer"
+        className="gencl:size-4 gencl:shrink-0 gencl:text-secondary-600 hover:gencl:text-black gencl:cursor-pointer"
       />
     </div>
   ));

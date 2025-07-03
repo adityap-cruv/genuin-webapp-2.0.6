@@ -299,9 +299,8 @@ function FeedViewCore({
     [setActiveIndex, hideGestureOverlay]
   );
 
-  // TODO: Create a shimmer for feed.
   if (isLoading) {
-    return <FeedSkeleton />;
+    return <FeedSkeleton variant={showExpandView ? "fullscreen" : "default"} />;
   }
 
   if (videos && videos.length !== 0) {

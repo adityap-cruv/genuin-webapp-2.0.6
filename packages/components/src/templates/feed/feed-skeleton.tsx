@@ -1,13 +1,45 @@
 "use client";
+import { FC } from "react";
 import { Skeleton } from "@genuin/ui/skeleton";
 import { CommentsItemSkeleton } from "@genuin/components/organisms/comments/comment-item";
 
-export function FeedSkeleton() {
+type FeedSkeletonProps = {
+  variant?: "default" | "fullscreen";
+};
+
+export const FeedSkeleton: FC<FeedSkeletonProps> = ({ variant = "default" }) => {
+    if (variant === "fullscreen") {
+    return (
+      <div className="gencl:fixed gencl:inset-0 gencl:bg-black gencl:z-50 gencl:flex gencl:items-center gencl:justify-center gencl:gap-6">
+        <div className="gencl:h-full gencl:flex gencl:gap-2">
+          <Skeleton className="gencl:aspect-reel gencl:h-full" />
+          <div className="gencl:flex gencl:gap-4 gencl:flex-col gencl:justify-end gencl:w-13">
+            {Array.from({ length: 5 }).map((_, index) => (
+              <Skeleton
+                key={index}
+                className="gencl:size-12 gencl:rounded-full gencl:shrink-0"
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className="gencl:max-w-118 gencl:w-full gencl:h-full gencl:py-6">
+          <Skeleton className="gencl:w-full gencl:h-full gencl:py-6 gencl:rounded-2xl" />
+        </div>
+
+        <div className="gencl:absolute gencl:right-7.5 gencl:space-y-2">
+          <Skeleton className="gencl:size-12 gencl:rounded-full gencl:shrink-0" />
+          <Skeleton className="gencl:size-12 gencl:rounded-full gencl:shrink-0" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="gencl:grid gencl:py-4 gencl:w-full gencl:h-full gencl:grid-cols-2 gencl:ml-6 gencl:gap-6">
       <div className="gencl:flex gencl:justify-center gencl:h-full gencl:w-10/12 gencl:gap-2 gencl:overflow-auto">
         <Skeleton className="gencl:aspect-reel" />
-        <div className="gencl:flex gencl:gap-4 gencl:flex-col gencl:justify-end gencl:w-13 gencl:pb-4">
+        <div className="gencl:flex gencl:gap-4 gencl:flex-col gencl:justify-end gencl:w-13">
           {Array.from({ length: 5 }).map((_, index) => (
             <Skeleton
               key={index}

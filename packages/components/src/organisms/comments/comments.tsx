@@ -126,8 +126,7 @@ function CommentsComponent({
     return (
       <div
         className={cn(
-          "gencl:h-full gencl:w-full gencl:overflow-auto gencl:p-4 gencl:space-y-4 gencl:!pb-16",
-          showCloseButton && "gencl:mt-6"
+          "gencl:h-full gencl:w-full gencl:overflow-auto gencl:p-4 gencl:space-y-4 gencl:!pb-16"
         )}
       >
         <InfiniteScroll
