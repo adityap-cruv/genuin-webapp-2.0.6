@@ -39,7 +39,7 @@ const showCustomToast = (
   variant: ToastVariant
 ) => {
   toast.custom((id) => (
-    <div className="gencl:bg-white gencl:text-black gencl:flex gencl:items-center gencl:border gencl:border-secondary-150 gencl:justify-between gencl:gap-4 gencl:p-4 gencl:rounded-lg gencl:shadow-lg gencl:w-sm gencl:max-w-sm">
+    <div className="gencl:bg-white gencl:text-black gencl:flex gencl:items-start gencl:border gencl:border-secondary-150 gencl:justify-between gencl:gap-4 gencl:p-4 gencl:rounded-lg gencl:shadow-lg gencl:w-sm gencl:max-w-sm">
       <div
         className={cn(
           "gencl:flex gencl:items-center gencl:gap-2",

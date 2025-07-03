@@ -40,7 +40,7 @@ const AccordionTrigger = ({
   <AccordionPrimitive.Header className="gencl:flex">
     <AccordionPrimitive.Trigger
       className={cn(
-        "gencl:flex gencl:flex-1 gencl:items-center gencl:justify-between gencl:py-4 gencl:transition-all hover:gencl:underline gencl:[&[data-state=open]>svg]:rotate-180",
+        "gencl:flex gencl:flex-1 gencl:items-center gencl:justify-between gencl:py-4 gencl:transition-all hover:gencl:underline gencl:[&[data-state=open]>svg]:rotate-180 gencl:cursor-pointer",
         className
       )}
       {...props}

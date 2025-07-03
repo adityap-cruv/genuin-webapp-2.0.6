@@ -30,25 +30,23 @@ function Dialog({
   // Determine the actual open state
   const isOpen = isControlled ? open! : internalOpen;
 
-  // Register/unregister modal on mount/unmount
-  React.useEffect(() => {
-    modalManager.registerModal(id);
-    return () => modalManager.unregisterModal(id);
-  }, [id]);
-
-  // Notify manager when open state changes
   React.useEffect(() => {
     if (isOpen) {
+      modalManager.registerModal(id);
       if (!modalManager.notifyModalOpen(id)) {
         // If not allowed, close the modal
         if (!isControlled) setInternalOpen(false);
         onOpenChange?.(false);
       }
     } else {
+      modalManager.unregisterModal(id);
       modalManager.notifyModalClose(id);
     }
-    // Only run when isOpen or id changes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Clean up on unmount
+    return () => {
+      modalManager.unregisterModal(id);
+      modalManager.notifyModalClose(id);
+    };
   }, [isOpen, id]);
 
   // Handle open state changes from user interaction
