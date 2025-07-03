@@ -1,96 +1,16 @@
 "use client";
 import type { ComponentProps } from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@genuin/ui/lib/utils";
 
 import {
   applyLineClampStyles,
   convertUrlsToAnchorTags,
   renderAnchorTag,
-  safeJsonParse,
 } from "./utils";
-
-export type ReadMoreTextType =
-  | string
-  | null
-  | Array<Record<string, unknown> | string | null>;
-
-export type ReadMoreProps = {
-  /**
-   * The text content to display. Can be a string or an array of objects for rich text.
-   */
-  text?: ReadMoreTextType;
-  /**
-   * Maximum number of characters to show before truncation.
-   * Only used when truncateBy is 'characters'
-   */
-  maxChars?: number;
-  /**
-   * Maximum number of lines to show before truncation
-   * @default 1
-   */
-  maxLines?: number;
-  /**
-   * Maximum width of the component container
-   * @default '100%'
-   */
-  maxWidth?: string | number;
-  /**
-   * Whether to show the "View more/less" button
-   * @default true
-   */
-  showExpandText?: boolean;
-  /**
-   * Whether to animate the expansion/collapse
-   * @default false
-   */
-  shouldAnimate?: boolean;
-  /**
-   * The position of the text relative to its container
-   * @default 'outside'
-   */
-  position?: "overlay" | "outside";
-  /**
-   * Custom class name for the container
-   */
-  className?: string;
-  /**
-   * Custom class name for the text content
-   */
-  textClassName?: string;
-  /**
-   * Custom class name for the view more/less button
-   */
-  buttonClassName?: string;
-  /**
-   * Custom text for the "View more" button
-   * @default "(View more)"
-   */
-  viewMoreText?: string;
-  /**
-   * Custom text for the "View less" button
-   * @default "(View less)"
-   */
-  viewLessText?: string;
-  /**
-   * Height of the expanded view
-   * @default "500px"
-   */
-  expandedHeight?: string;
-  /**
-   * Default Configuration to Open Expanded or not
-   * @default false
-   */
-  defaultExpand?: boolean;
-  /**
-   * Callback of Parent if there is already Expanded
-   */
-  onExpandChange?: (isExpanded: boolean) => void;
-  /**
-   * Boolean value for the explicitly manage the state of parent for expansion
-   */
-  open?: boolean;
-} & Omit<ComponentProps<"p">, "children">;
+import { tryJsonParse } from "@genuin/ui/lib/utils";
+import type { ReadMoreProps, ReadMoreTextType } from "./read-more.types";
+import { set } from "react-hook-form";
 
 /**
  * ReadMore Component
@@ -135,11 +55,10 @@ export type ReadMoreProps = {
  *   maxLines={2}
  * />
  */
-
 export function ReadMore({
   text,
-  maxChars = 150,
-  maxLines = 1,
+  maxChars = 100,
+  maxLines = 2,
   maxWidth = "100%",
   showExpandText = true,
   shouldAnimate = false,
@@ -147,120 +66,176 @@ export function ReadMore({
   className,
   textClassName,
   buttonClassName,
-  viewMoreText = "(View more)",
-  viewLessText = "(View less)",
+  viewMoreText = "View More",
+  viewLessText = "View Less",
   expandedHeight = "500px",
   onClick,
   defaultExpand = false,
   onExpandChange,
   open,
-  ...props
+  ...rest
 }: ReadMoreProps) {
   const textRef = useRef<HTMLParagraphElement>(null);
   const [isExpanded, setIsExpanded] = useState(defaultExpand);
-  const [isOverflowing, setIsOverflowing] = useState(false);
-  const [truncatedText, setTruncatedText] = useState<string>("");
+  // For smooth collapse: delay reducing chars until after animation
+  const [showCollapsed, setShowCollapsed] = useState(!defaultExpand);
 
-  // Only stringify text when it changes
-  const stringifiedText = useMemo(() => {
-    if (typeof text === "string") return text;
-    return JSON.stringify(text);
+  // Memoize parsed text processing
+  const parsedText = useMemo(() => {
+    if (!text) return "";
+    if (typeof text === "string") {
+      // Try to parse if it's a stringified JSON
+      const parsed = tryJsonParse(text);
+      // If parsing was successful and returned an object/array, use it
+      if (
+        parsed !== text &&
+        (Array.isArray(parsed) || (parsed && typeof parsed === "object"))
+      ) {
+        return parsed as ReadMoreTextType;
+      }
+      return text;
+    }
+    if (Array.isArray(text)) return text;
+    return text;
   }, [text]);
 
-  // Process text content for rich text support
-  const processedText = useMemo<React.ReactNode>(() => {
-    if (!stringifiedText) return null;
+  // Memoize flattened text for performance
+  const flattenedText = useMemo(() => {
+    if (typeof parsedText === "string") return parsedText;
+    if (Array.isArray(parsedText)) {
+      return parsedText
+        .map((item) => {
+          if (typeof item === "string") return item;
+          if (item?.text && typeof item.text === "string") {
+            return item.text;
+          }
+          return "";
+        })
+        .join(" ");
+    }
+    return "";
+  }, [parsedText]);
 
-    let textObj: unknown;
-    if (typeof stringifiedText === "string") {
-      try {
-        textObj = safeJsonParse(stringifiedText);
-      } catch {
-        textObj = stringifiedText;
+  // Memoize text splitting for performance
+  const textParts = useMemo(() => {
+    if (!parsedText || flattenedText.length <= maxChars) {
+      return { teaser: parsedText, remaining: null, shouldTruncate: false };
+    }
+
+    if (typeof parsedText === "string") {
+      const words = parsedText.split(" ");
+      const teaserWords: string[] = [];
+      let teaserLen = 0;
+      let i = 0;
+
+      for (; i < words.length; i++) {
+        const word = words[i] ?? "";
+        const wordLen = word.length + (i === 0 ? 0 : 1);
+        if (teaserLen + wordLen > maxChars) break;
+        teaserWords.push(word);
+        teaserLen += wordLen;
       }
+
+      return {
+        teaser: teaserWords.join(" "),
+        remaining: words.slice(i).join(" "),
+        shouldTruncate: true,
+      };
     }
 
-    const anchorDataArr = Array.isArray(textObj)
-      ? convertUrlsToAnchorTags(
-          textObj as Array<Record<string, unknown> | string | null>
-        )
-      : textObj;
+    if (Array.isArray(parsedText)) {
+      const teaserArr: typeof parsedText = [];
+      const remainingArr: typeof parsedText = [];
+      let charCount = 0;
+      let foundLimit = false;
 
-    return Array.isArray(anchorDataArr)
-      ? anchorDataArr.map((item, idx) => renderAnchorTag(item, idx))
-      : String(textObj);
-  }, [stringifiedText]);
+      for (const item of parsedText) {
+        if (foundLimit) {
+          remainingArr.push(item);
+          continue;
+        }
 
-  // Handle text truncation for maxChars
-  useEffect(() => {
-    if (typeof stringifiedText === "string" && !isExpanded) {
-      const shouldTruncate = stringifiedText.length > maxChars;
-      setTruncatedText(
-        shouldTruncate
-          ? stringifiedText.slice(0, maxChars) + "..."
-          : stringifiedText
-      );
-    } else {
-      setTruncatedText("");
+        const itemText =
+          typeof item === "string"
+            ? item
+            : item &&
+                typeof item === "object" &&
+                "text" in item &&
+                typeof item.text === "string"
+              ? item.text
+              : "";
+
+        if (charCount + itemText.length > maxChars) {
+          const remainingChars = maxChars - charCount;
+          if (remainingChars > 0 && typeof item === "string") {
+            teaserArr.push(item.slice(0, remainingChars));
+            remainingArr.push(item.slice(remainingChars));
+          } else {
+            remainingArr.push(item);
+          }
+          foundLimit = true;
+        } else {
+          teaserArr.push(item);
+          charCount += typeof itemText === "string" ? itemText.length : 0;
+        }
+      }
+
+      return {
+        teaser: teaserArr,
+        remaining: remainingArr,
+        shouldTruncate: true,
+      };
     }
-  }, [stringifiedText, maxChars, isExpanded]);
+
+    return { teaser: parsedText, remaining: null, shouldTruncate: false };
+  }, [parsedText, flattenedText, maxChars]);
+
+  // Memoize text rendering for performance
+  const renderText = useCallback((input: ReadMoreTextType) => {
+    if (typeof input === "string") return input;
+    if (Array.isArray(input)) {
+      // Convert to anchor tags format and render properly
+      const anchorTags = convertUrlsToAnchorTags(input);
+      return anchorTags.map((item, idx) => renderAnchorTag(item, idx));
+    }
+    return null;
+  }, []);
 
   // Handle line-based truncation
   useEffect(() => {
-    if (!textRef.current) return;
+    if (!textRef.current || shouldAnimate) return;
     const textElement = textRef.current;
     applyLineClampStyles(textElement, isExpanded ? null : maxLines);
-  }, [maxLines, processedText, isExpanded]);
+  }, [maxLines, isExpanded, shouldAnimate]);
 
-  // Check for text overflow
-  useEffect(() => {
-    const checkOverflow = () => {
-      const element = textRef.current;
-      if (!element || !stringifiedText) return;
-
-      const lineHeight = parseInt(getComputedStyle(element).lineHeight);
-      const height = element.scrollHeight;
-      const maxHeight = lineHeight * maxLines;
-      const isTextOverflowing =
-        typeof stringifiedText === "string" &&
-        stringifiedText.length > maxChars;
-      setIsOverflowing(height > maxHeight || isTextOverflowing);
-    };
-
-    checkOverflow();
-    window.addEventListener("resize", checkOverflow);
-    return () => {
-      window.removeEventListener("resize", checkOverflow);
-      onExpandChange?.(open ?? false);
-    };
-  }, [stringifiedText, maxLines, maxChars]);
-
-  // Calculate collapsed height based on line height and maxLines
-  const getCollapsedHeight = () => {
-    return `${maxLines * 24}px`;
-  };
-
-  // Calculate expanded height based on content
-  const getExpandedHeight = () => {
-    return `${parseInt(expandedHeight) * 0.2}px`;
-  };
-
-  // Modified animation logic
+  // Modified animation logic for smooth expand/collapse and delayed char reduction
   useEffect(() => {
     if (!shouldAnimate || !textRef.current) return;
 
     const textElement = textRef.current;
-    if (isExpanded) {
-      applyLineClampStyles(textElement, null);
-      return;
+
+    // Remove line clamp before animating both expand and collapse
+    applyLineClampStyles(textElement, null);
+
+    let timeout: NodeJS.Timeout | undefined;
+    if (!isExpanded) {
+      // Wait for animation, then re-apply clamp and reduce chars
+      timeout = setTimeout(() => {
+        if (!isExpanded && textRef.current) {
+          applyLineClampStyles(textRef.current, maxLines);
+          setShowCollapsed(true);
+        }
+      }, 500);
+      // During animation, keep full text visible
+      setShowCollapsed(false);
+    } else {
+      // On expand, immediately show full text
+      setShowCollapsed(false);
     }
-
-    const timeoutId = setTimeout(() => {
-      applyLineClampStyles(textElement, maxLines);
-    }, 500);
-
-    return () => clearTimeout(timeoutId);
-  }, [isExpanded, shouldAnimate, maxLines]);
+    return () => {
+      if (timeout) clearTimeout(timeout);
+    };
+  }, [shouldAnimate, isExpanded, maxLines]);
 
   useEffect(() => {
     if (typeof open === "undefined") return;
@@ -275,50 +250,166 @@ export function ReadMore({
     wordBreak: "break-word",
   };
 
-  const toggleExpand = () => {
+  // Memoize toggle function
+  const toggleExpand = useCallback(() => {
     setIsExpanded((prevValue: boolean) => {
       onExpandChange?.(!prevValue);
       return !prevValue;
     });
-  };
+  }, [onExpandChange]);
 
-  const displayText =
-    typeof processedText === "string" && !isExpanded
-      ? truncatedText
-      : processedText;
+  // Memoize height calculations
+  const heights = useMemo(
+    () => ({
+      collapsed: `${maxLines * 24}px`,
+      expanded: expandedHeight,
+    }),
+    [maxLines, expandedHeight]
+  );
 
-  if (text === null || !stringifiedText || stringifiedText.length === 0)
-    return null;
+  // Memoize display text generation
+  const displayText = useMemo(() => {
+    const { teaser, remaining, shouldTruncate } = textParts;
+
+    if (!shouldTruncate) {
+      // If shouldAnimate and not expanded, add 3 dots at the end
+      if (shouldAnimate && !isExpanded && showCollapsed) {
+        return (
+          <>
+            {renderText(parsedText)}
+            <span className="gencl:whitespace-nowrap align-baseline">…</span>
+          </>
+        );
+      }
+      // If shouldAnimate and expanded, do not show 3 dots
+      return renderText(parsedText);
+    }
+
+    const createButton = (text: string) => (
+      <button
+        type="button"
+        className={cn(
+          "gencl:inline gencl:bg-transparent gencl:!text-secondary-600 gencl:hover:underline gencl:cursor-pointer",
+          buttonClassName
+        )}
+        style={{
+          padding: 0,
+          margin: 0,
+          background: "none",
+          border: "none",
+        }}
+        onClick={(e) => {
+          e.stopPropagation();
+          toggleExpand();
+        }}
+      >
+        {text}
+      </button>
+    );
+
+    if (!isExpanded) {
+      const teaserContent =
+        typeof teaser === "string"
+          ? teaser.replace(/\s*$/, "")
+          : renderText(teaser);
+
+      // If shouldAnimate, only show teaser after animation completes
+      if (shouldAnimate && showCollapsed) {
+        return (
+          <>
+            {teaserContent}
+            <span className="gencl:whitespace-nowrap align-baseline">…</span>
+          </>
+        );
+      }
+      // During animation, show full text (no truncation)
+      if (shouldAnimate && !showCollapsed) {
+        return renderText(parsedText);
+      }
+
+      return (
+        <>
+          {teaserContent}
+          {showExpandText && (
+            <span className="gencl:whitespace-nowrap align-baseline">
+              &nbsp;…
+              {createButton(viewMoreText)}
+            </span>
+          )}
+        </>
+      );
+    }
+
+    // If shouldAnimate and expanded, do not show 3 dots
+    if (shouldAnimate) {
+      return (
+        <>
+          {renderText(teaser)}
+          <span className="gencl:max-h-[10em] gencl:opacity-100 gencl:text-inherit">
+            {renderText(remaining)}
+          </span>
+        </>
+      );
+    }
+
+    return (
+      <>
+        {renderText(teaser)}
+        <span className="gencl:max-h-[10em] gencl:opacity-100 gencl:text-inherit">
+          {renderText(remaining)}
+        </span>
+        {showExpandText && createButton(viewLessText)}
+      </>
+    );
+  }, [
+    textParts,
+    isExpanded,
+    showCollapsed,
+    showExpandText,
+    viewMoreText,
+    viewLessText,
+    buttonClassName,
+    toggleExpand,
+    renderText,
+    parsedText,
+    shouldAnimate,
+  ]);
+
+  // Early return if no text
+  if (!flattenedText || flattenedText.length === 0) return null;
 
   return (
     <div className="gencl:w-full gencl:overflow-clip" style={{ maxWidth }}>
       <p
-        {...props}
+        {...rest}
         className={cn(
-          "gencl:transition-all gencl:duration-500 gencl:ease-in-out",
-          {
-            "gencl:swiper-no-swiping gencl:hide-scrollbar gencl:overflow-auto":
-              isExpanded,
-          },
+          "gencl:transition-all gencl:relative gencl:duration-500 gencl:ease-in-out",
           className
         )}
         style={{
-          height: shouldAnimate
+          maxHeight: shouldAnimate
             ? isExpanded
-              ? getExpandedHeight()
-              : getCollapsedHeight()
+              ? "40vh"
+              : heights.collapsed
+            : undefined,
+          overflow: shouldAnimate ? "auto" : undefined,
+          transition: shouldAnimate
+            ? "max-height 0.5s cubic-bezier(0.4,0,0.2,1)"
             : undefined,
         }}
         onClick={(e) => {
-          onClick?.(e);
           e.stopPropagation();
+          onClick?.(e);
+          setIsExpanded((prev) => !prev);
         }}
       >
         <span
           ref={textRef}
           className={cn(
-            "gencl:w-full gencl:break-words gencl:text-secondary-900",
-            position !== "outside" && "gencl:text-white",
+            "gencl:w-full gencl:break-words",
+            position !== "outside"
+              ? "gencl:text-white!"
+              : "gencl:text-secondary-900",
             textClassName,
             className
           )}
@@ -327,32 +418,9 @@ export function ReadMore({
               ? clampedStyle
               : { wordBreak: "break-word" }
           }
-          onClick={
-            !showExpandText && isOverflowing
-              ? (e) => {
-                  e.stopPropagation();
-                  toggleExpand();
-                }
-              : undefined
-          }
         >
           {displayText}
         </span>
-        {showExpandText && isOverflowing && (
-          <button
-            type="button"
-            className={cn(
-              "gencl:mt-1 gencl:!text-secondary-600 gencl:hover:underline gencl:cursor-pointer",
-              textClassName
-            )}
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleExpand();
-            }}
-          >
-            {isExpanded ? viewLessText : viewMoreText}
-          </button>
-        )}
       </p>
     </div>
   );
