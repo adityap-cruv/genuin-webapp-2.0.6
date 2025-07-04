@@ -12,13 +12,13 @@ export function CommunityDetailsSkeleton() {
           <GenericDetailsSkeleton variant="default" />
           <TabsSkeleton className="gencl:pt-6" />
           <div className="gencl:pt-6">
-            {Array.from({ length: 5 }).map((_, idx) => (
+            {Array.from({ length: 1 }).map((_, idx) => (
               <CommunityGroupsSkeleton key={idx} />
             ))}
           </div>
         </div>
         {/* Side Info Skeleton */}
-        <div style={{ width: "100%", maxWidth: "320px" }}>
+        <div style={{ width: "100%", maxWidth: "384px" }}>
           <Skeleton className="gencl:w-full gencl:h-100" />
         </div>
       </div>

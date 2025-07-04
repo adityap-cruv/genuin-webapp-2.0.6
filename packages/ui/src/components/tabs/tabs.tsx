@@ -82,16 +82,13 @@ function TabsSkeleton({
 }) {
   return (
     <div
-      className={cn(
-        "gencl:border-b gencl:border-b-secondary-200 gencl:py-1.5",
-        className
-      )}
+      className={cn("gencl:border-b gencl:border-b-secondary-200", className)}
     >
-      <div className="gencl:flex gencl:items-center gencl:gap-3 gencl:pb-2 gencl:pt-2 gencl:ps-2">
+      <div className="gencl:flex gencl:items-center gencl:gap-3 gencl:py-2 gencl:ps-2">
         {Array.from({ length: noOfTabs }).map((_, idx) => (
           <Skeleton
             key={idx}
-            className="gencl:w-13 gencl:h-3 gencl:rounded-full gencl:shrink-0"
+            className="gencl:w-13 gencl:h-5 gencl:rounded-md gencl:shrink-0"
           />
         ))}
       </div>

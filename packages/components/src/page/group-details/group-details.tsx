@@ -179,7 +179,7 @@ export function GroupDetailsSkeleton() {
         <TabsSkeleton />
         <PostsGridSkeleton noOfPosts={6} />
       </div>
-      <div style={{ width: "100%", maxWidth: "320px" }}>
+      <div style={{ width: "100%", maxWidth: "384px" }}>
         <Skeleton className="gencl:w-full gencl:h-49" />
       </div>
     </div>

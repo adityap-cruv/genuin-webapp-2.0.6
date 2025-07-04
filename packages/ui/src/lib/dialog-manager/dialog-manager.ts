@@ -4,6 +4,20 @@
 class ModalManager {
   private currentOpenId: string | null = null;
   private registeredModals = new Set<string>();
+  private listeners = new Set<() => void>();
+
+  /**
+   * Subscribe to modal open/close changes.
+   * @param listener - Callback to invoke on modal state change.
+   */
+  subscribe(listener: () => void) {
+    this.listeners.add(listener);
+    return () => this.listeners.delete(listener);
+  }
+
+  private notifyListeners() {
+    this.listeners.forEach((listener) => listener());
+  }
 
   /**
    * Registers a modal with the modal manager.
@@ -12,6 +26,7 @@ class ModalManager {
   registerModal(id: string) {
     this.currentOpenId = id;
     this.registeredModals.add(id);
+    this.notifyListeners();
     // No-op for now, but could be used for future features
   }
 
@@ -24,6 +39,7 @@ class ModalManager {
       this.currentOpenId = null;
     }
     this.registeredModals.delete(id);
+    this.notifyListeners();
   }
 
   /**
@@ -44,6 +60,7 @@ class ModalManager {
       return false;
     }
     this.currentOpenId = id;
+    this.notifyListeners();
     return true;
   }
 
@@ -54,6 +71,7 @@ class ModalManager {
   notifyModalClose(id: string) {
     if (this.currentOpenId === id) {
       this.currentOpenId = null;
+      this.notifyListeners();
     }
   }
 

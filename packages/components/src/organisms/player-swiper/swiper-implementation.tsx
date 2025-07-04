@@ -1,9 +1,11 @@
 import { Mousewheel, Keyboard } from "swiper/modules";
 import { Swiper } from "swiper/react";
+import { useEffect, useRef, useState } from "react";
 
 import { useBaseContext } from "@genuin/components/context/base";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
+import { modalManager } from "@genuin/ui/lib/dialog-manager/dialog-manager";
 
 const CONFIG = {
   SCROLL_DELAY: 500,
@@ -32,9 +34,40 @@ export function SwiperImplementation({
   const { feedVideoSizeBox } = useBaseContext();
   const { showExpandView } = useFeedContext();
   const { isWindows } = useDeviceDetection();
+  const swiperRef = useRef<any>(null);
+
+  // Track if any modal is open
+  const [modalOpen, setModalOpen] = useState(
+    modalManager.getRegisteredModals().length > 0
+  );
+
+  useEffect(() => {
+    // Subscribe to modal open/close changes
+    const unsubscribe = modalManager.subscribe(() => {
+      setModalOpen(modalManager.getRegisteredModals().length > 0);
+    });
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  // Disable any swiping event when modal is open
+  useEffect(() => {
+    if (swiperRef.current) {
+      if (modalOpen) {
+        swiperRef.current.disable();
+      } else {
+        swiperRef.current.enable();
+      }
+    }
+  }, [modalOpen]);
 
   return (
     <Swiper
+      ref={swiperRef}
+      onSwiper={(swiper) => {
+        swiperRef.current = swiper;
+      }}
       className="gencl:mx-0!"
       style={{
         height: showExpandView ? "100%" : feedVideoSizeBox.height,

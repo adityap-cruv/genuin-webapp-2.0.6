@@ -236,18 +236,18 @@ export function GenericDetailsSkeleton({
   }
 
   return (
-    <div className={cn("gencl:flex gencl:gap-6 gencl:items-center", className)}>
+    <div className={cn("gencl:flex gencl:gap-6 gencl:items-start", className)}>
       {hasImage && (
         <Skeleton className="gencl:size-40 gencl:rounded-full gencl:shrink-0" />
       )}
       <div className="gencl:w-full gencl:flex gencl:flex-col gencl:gap-2">
-        <Skeleton className="gencl:w-full gencl:h-9 gencl:rounded-md" />
+        <Skeleton className="gencl:w-72 gencl:h-9 gencl:rounded-md" />
         <div className="gencl:flex gencl:items-center gencl:gap-2">
           {Array.from({ length: 5 }).map((_, idx, arr) => (
-            <div key={idx}>
-              <Skeleton className="gencl:w-18 gencl:h-4 gencl:rounded-md" />
+            <div key={idx} className="gencl:flex gencl:gap-2 gencl:items-center">
+              <Skeleton className="gencl:w-14 gencl:h-4 gencl:rounded-md" />
               {idx < arr.length - 1 && (
-                <Skeleton className="gencl:w-1 gencl:h-1 gencl:rounded-md" />
+                <Skeleton className="gencl:w-1.5 gencl:h-1.5 gencl:rounded-md" />
               )}
             </div>
           ))}
@@ -261,7 +261,7 @@ export function GenericDetailsSkeleton({
             {Array.from({ length: 4 }).map((_, idx) => (
               <Skeleton
                 key={idx}
-                className="gencl:w-6 gencl:h-6 gencl:rounded-md"
+                className="gencl:size-7 gencl:rounded-md"
               />
             ))}
           </div>

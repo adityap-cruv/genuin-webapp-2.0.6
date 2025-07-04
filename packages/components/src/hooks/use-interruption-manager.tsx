@@ -10,7 +10,7 @@ const INTERRUPTION_STEPS = [
   {
     key: "SIGNIN" as StepsType,
     configKey: "login_signup_popup",
-    isComplete: (user?: AuthUser | null) => !!user,
+    isComplete: (user?: AuthUser | null) => Boolean(user?.id),
   },
   {
     key: "CATEGORY_SELECTION" as StepsType,

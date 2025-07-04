@@ -10,6 +10,7 @@ import { Command, CommandList, CommandItem } from "@genuin/ui/components";
 import { useCommentMentions } from "../../hooks/use-comment-mentions";
 import { useCommentInputHandlers } from "../../hooks/use-comment-input-handlers";
 import HighlightedInput from "./highlighted-field";
+import { Loader } from "@genuin/ui/components/loader";
 
 // Types for props
 export type SelectedMention = {
@@ -193,7 +194,7 @@ export function MentionInput({
             commentValue.trim().length === 0
           }
         >
-          {isPending ? "Posting..." : "Post"}
+          {isPending ? <Loader size='xs'/> : "Post"}
         </Button>
       </form>
     </Form>
