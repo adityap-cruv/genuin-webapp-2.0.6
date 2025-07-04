@@ -39,6 +39,8 @@ export function useInterruptionManager() {
     undefined
   );
 
+  console.log("user in interruption::", user);
+
   // First check if get_app_popup is enabled
   const getAppConfig = brandDetails?.web_configs?.get_app_popup;
   const shouldShowAppDownload =

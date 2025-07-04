@@ -136,7 +136,9 @@ function CommunityDetailsView({ slug }: { slug: string }) {
           name: communityDetails.leader.name ?? "",
           url: buildPageUrl({
             type: !!communityDetails.leader.brand ? "brand" : "profile",
-            slug: communityDetails.leader.nickname,
+            slug: !!communityDetails.leader.brand
+              ? communityDetails.leader.brand.brand_slug
+              : communityDetails.leader.nickname,
           }),
           userName: communityDetails.leader.nickname,
           brand: {
@@ -154,7 +156,9 @@ function CommunityDetailsView({ slug }: { slug: string }) {
           name: moderator.name ?? "",
           url: buildPageUrl({
             type: !!moderator.brand ? "brand" : "profile",
-            slug: moderator.nickname,
+            slug: !!moderator.brand
+              ? moderator.brand.brand_slug
+              : moderator.nickname,
           }),
           userName: moderator.nickname,
         })),
@@ -263,7 +267,9 @@ function CommunityDetailsView({ slug }: { slug: string }) {
                 },
                 url: buildPageUrl({
                   type: !!communityDetails.leader.brand ? "brand" : "profile",
-                  slug: communityDetails.leader.nickname,
+                  slug: !!communityDetails.leader.brand
+                    ? communityDetails.leader.brand?.brand_slug
+                    : communityDetails.leader.nickname,
                 }),
                 userName: communityDetails.leader.nickname ?? "",
                 name: communityDetails.leader.name ?? "",
