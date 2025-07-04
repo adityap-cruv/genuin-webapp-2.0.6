@@ -53,6 +53,7 @@ async function fetchFeed(
       return {
         feed: parseFeed(res.data.data.feeds),
         pageSession: res.data.data.page_session,
+        endOfFeed: res.data.data.end_of_feed,
       };
     })
     .catch(() => {
@@ -75,6 +76,7 @@ export const useFeed = (feedType: FeedType) => {
     }) => await fetchFeed(feedType, pageParam),
     initialPageParam: undefined,
     getNextPageParam: (lastPage) => {
+      if (lastPage.endOfFeed) return undefined;
       const lastPageData = lastPage.feed[lastPage.feed.length - 1];
       if (!lastPageData) return undefined;
 

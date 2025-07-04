@@ -17,7 +17,7 @@ export function AuthBridge({ children }: SiteLayoutProps) {
       }}
       onSignOut={(redirectPath) => signOut({ callbackUrl: redirectPath })}
       onUpdateUser={async (newUser) => {
-        await update({ ...authUser, ...newUser })
+        await update({ ...authUser, user: { ...authUser?.user, ...newUser } })
       }}>
       {children}
     </AuthProvider>

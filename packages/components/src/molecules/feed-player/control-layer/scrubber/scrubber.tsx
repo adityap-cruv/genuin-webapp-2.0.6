@@ -31,7 +31,8 @@ export function Scrubber({
     duration: 0,
     currentTime: 0,
   });
-  const { onVideoTimeStateChange, showSeeker, play } = usePlayerContext();
+  const { onVideoTimeStateChange, showSeeker, setShowSeeker, play } =
+    usePlayerContext();
   const [progressValue, setProgressValue] = useState(0);
 
   useEffect(() => {
@@ -94,6 +95,8 @@ export function Scrubber({
       showSeeker={showSeeker}
       playerTimeState={playerTimeState}
       onValueCommit={handleValueCommit}
+      onMouseEnter={() => setShowSeeker?.(true)}
+      // onMouseLeave={() => setShowSeeker?.(false)}
       {...restProps}
     />
   );
