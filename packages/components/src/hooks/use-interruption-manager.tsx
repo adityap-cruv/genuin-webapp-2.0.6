@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useCallback, useState } from "react";
+import { useEffect, useRef, useCallback, useState, useMemo } from "react";
 import { useBaseContext } from "../context/base";
 import { useAuthContext } from "../context/auth";
 import type { AuthUser } from "@genuin/components/types/auth";
@@ -48,16 +48,32 @@ export function useInterruptionManager() {
   const loginSignupConfig = brandDetails?.web_configs?.login_signup_popup;
   const isLoginSignupEnabled = !!loginSignupConfig?.enable;
 
-  const interruptionToShow = !shouldShowAppDownload
-    ? // If user is not logged in and login_signup_popup is not enabled, don't show any interruption
-      !user && !isLoginSignupEnabled
-      ? null
-      : INTERRUPTION_STEPS.find(
-          (step) =>
-            brandDetails?.web_configs?.[step.configKey]?.enable &&
-            !step.isComplete(user)
-        )
-    : null;
+  // Use useMemo to recompute the interruptionToShow when dependencies change
+  const interruptionToShow = useMemo(() => {
+    if (shouldShowAppDownload) return null;
+
+    // If user is not logged in and login_signup_popup is not enabled, don't show any interruption
+    if (!user && !isLoginSignupEnabled) return null;
+
+    return INTERRUPTION_STEPS.find(
+      (step) =>
+        brandDetails?.web_configs?.[step.configKey]?.enable &&
+        !step.isComplete(user)
+    );
+  }, [
+    brandDetails?.web_configs,
+    user,
+    isLoginSignupEnabled,
+    shouldShowAppDownload,
+  ]);
+
+  // Debug effect to track changes (only in development)
+  useEffect(() => {
+    console.log("brandDetails?.web_configs::", brandDetails?.web_configs);
+    console.log("user in interruption::", user);
+    console.log("interruptionToShow in interruption::", interruptionToShow);
+    console.log("--------------------------------------------------------");
+  }, [user, interruptionToShow, brandDetails?.web_configs]);
 
   // Debug effect to track changes (only in development)
   useEffect(() => {
@@ -71,8 +87,22 @@ export function useInterruptionManager() {
   const allInterruptionsCompleted =
     !shouldShowAppDownload && !interruptionToShow;
 
+  // Determine which dialog type to show based on current state
+  const getCurrentDialogType = useCallback((): StepsType | undefined => {
+    if (shouldShowAppDownload) return "GET_APP";
+    if (interruptionToShow) return interruptionToShow.key;
+    return undefined;
+  }, [shouldShowAppDownload, interruptionToShow]);
+
+  // Update dialogType whenever shouldShowDialog changes
+  useEffect(() => {
+    if (shouldShowDialog) {
+      setDialogType(getCurrentDialogType());
+    }
+  }, [shouldShowDialog, getCurrentDialogType]);
+
   // Trigger authentication or download modal based on configuration
-  const triggerAuthenticationModal = useCallback(async () => {
+  const triggerAuthenticationModal = useCallback(() => {
     // Check if any other modal is open
     if (!modalManager.canOpenModal("INTERRUPTION_MANAGER")) {
       setShouldShowDialog(false);
@@ -80,17 +110,13 @@ export function useInterruptionManager() {
       return;
     }
 
-    if (shouldShowAppDownload) {
+    // Only proceed if we have a dialog to show
+    const dialogToShow = getCurrentDialogType();
+    if (dialogToShow) {
       setShouldShowDialog(true);
-      setDialogType("GET_APP");
-      return;
+      setDialogType(dialogToShow);
     }
-
-    if (interruptionToShow) {
-      setShouldShowDialog(true);
-      setDialogType(interruptionToShow.key);
-    }
-  }, [interruptionToShow, shouldShowAppDownload, brandDetails, modalManager]);
+  }, [shouldShowAppDownload, interruptionToShow]);
 
   // Function to close dialog and reset state
   const closeDialog = useCallback(() => {
@@ -126,14 +152,14 @@ export function useInterruptionManager() {
       // Trigger modal if we've reached the required swipe count
       if (interactionRef.current.swipeCount >= popupAfter && popupAfter > 0) {
         interactionRef.current.swipeCount = 0;
-        void triggerAuthenticationModal();
+        triggerAuthenticationModal();
       }
     },
     [
-      brandDetails?.web_configs,
-      interruptionToShow,
       shouldShowAppDownload,
-      getAppConfig,
+      getAppConfig?.popup_after,
+      interruptionToShow,
+      brandDetails?.web_configs,
       triggerAuthenticationModal,
       allInterruptionsCompleted,
     ]

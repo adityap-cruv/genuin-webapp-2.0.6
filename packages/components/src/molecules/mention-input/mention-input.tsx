@@ -5,7 +5,7 @@ import { Button } from "@genuin/ui/components/button";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormMessage } from "@genuin/ui/components/form";
+import { Form, FormMessage, FormField, FormControl } from "@genuin/ui/components/form";
 import { cn } from "@genuin/ui/lib/utils";
 import { Command, CommandList, CommandItem } from "@genuin/ui/components";
 import { useCommentMentions } from "../../hooks/use-comment-mentions";
@@ -89,7 +89,7 @@ export function MentionInput({
     });
 
   useEffect(() => {
-      console.log("commentValue:", commentValue);
+    console.log("commentValue:", commentValue);
   }, [commentValue]);
 
   return (
@@ -168,20 +168,31 @@ export function MentionInput({
               />
             )}
             <div className="gencl:flex-1 gencl:relative">
-              {/* Custom input display with conditional mention highlighting */}
-              <div className="gencl:relative gencl:w-full">
-                <HighlightedInput
-                  ref={inputRef}
-                  value={commentValue}
-                  onChange={handleInputChange}
-                  onKeyDown={handleMentionKeyDown}
-                  selectedMentions={selectedMentions}
-                  placeholder="Add a comment"
-                  className="w-full"
-                  aria-invalid={!!form.formState.errors.comment}
-                  maxLength={500}
-                />
-              </div>
+              {/* Use FormField to properly register the input with React Hook Form */}
+              <FormField
+                control={form.control}
+                name="comment"
+                render={({ field }) => (
+                  <FormControl>
+                    <div className="gencl:relative gencl:w-full">
+                      <HighlightedInput
+                        ref={inputRef}
+                        value={field.value}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          handleInputChange(e);
+                        }}
+                        onKeyDown={handleMentionKeyDown}
+                        selectedMentions={selectedMentions}
+                        placeholder="Add a comment"
+                        className="w-full"
+                        aria-invalid={!!form.formState.errors.comment}
+                        maxLength={500}
+                      />
+                    </div>
+                  </FormControl>
+                )}
+              />
             </div>
           </div>
           <FormMessage />

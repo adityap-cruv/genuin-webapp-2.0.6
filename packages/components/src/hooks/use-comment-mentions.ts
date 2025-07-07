@@ -99,7 +99,12 @@ export function useCommentMentions({
         const type = isCommunity ? "community" : "member";
         const updatedText = `${start}${handle} ${end}`;
         setSelectedMentions((prev) => [...prev, { handle, id, slug, type }]);
-        form?.setValue?.("comment", updatedText, { shouldValidate: true });
+        // When form is properly connected via FormField, the value update will be reflected
+        form?.setValue?.("comment", updatedText, { 
+          shouldValidate: true,
+          shouldDirty: true, 
+          shouldTouch: true 
+        });
         setTimeout(() => {
           const newCaretPosition = start.length + handle.length + 1;
           inputRef.current?.setSelectionRange(
