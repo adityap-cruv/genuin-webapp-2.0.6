@@ -4,6 +4,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { Button } from "@genuin/ui/button";
 import { useInView } from "@genuin/components/hooks/use-in-view";
 import { audioManager } from "@genuin/components/lib/audio-manager";
+import { memo } from "react";
 /**
  * Video component that displays a video player with a custom play button overlay and thumbnail.
  * Handles play/pause state and resets when the video ends.
@@ -18,7 +19,7 @@ import { audioManager } from "@genuin/components/lib/audio-manager";
  * @param {string} props.videoUrl - URL of the video file to play
  * @param {string} props.thumbnail - URL of the thumbnail image to display before playback
  */
-export const Video = ({
+export const Video = memo(({
   videoUrl,
   thumbnail,
 }: {
@@ -77,4 +78,4 @@ export const Video = ({
       />
     </div>
   );
-};
+});

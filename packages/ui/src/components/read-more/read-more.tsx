@@ -10,7 +10,7 @@ import {
 } from "./utils";
 import { tryJsonParse } from "@genuin/ui/lib/utils";
 import type { ReadMoreProps, ReadMoreTextType } from "./read-more.types";
-import { set } from "react-hook-form";
+import { memo } from "react";
 
 /**
  * ReadMore Component
@@ -55,7 +55,7 @@ import { set } from "react-hook-form";
  *   maxLines={2}
  * />
  */
-export function ReadMore({
+export const ReadMore = memo(function ReadMore({
   text,
   maxChars = 100,
   maxLines = 2,
@@ -411,7 +411,6 @@ export function ReadMore({
               ? "gencl:text-white!"
               : "gencl:text-secondary-900",
             textClassName,
-            className
           )}
           style={
             !shouldAnimate && !isExpanded
@@ -424,4 +423,4 @@ export function ReadMore({
       </p>
     </div>
   );
-}
+});

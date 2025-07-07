@@ -94,7 +94,10 @@ export function PostsGrid({
             {Posts}
           </InfiniteScroll>
         ) : (
-          Posts
+          <div className="gencl:flex gencl:flex-wrap gencl:gap-2">
+            {Posts}
+            {isFetchingNextPage && <PostsGridLoader noOfPosts={6} />}
+          </div>
         )}
       </div>
       {children}
@@ -117,5 +120,23 @@ export function PostsGridSkeleton({
         <PostTileSkeleton key={idx} size={size} />
       ))}
     </div>
+  );
+}
+
+export function PostsGridLoader({
+  noOfPosts = 1,
+  className,
+  size = "sm",
+}: {
+  noOfPosts?: number;
+  className?: string;
+  size?: "sm" | "lg";
+}) {
+  return (
+    <>
+      {Array.from({ length: noOfPosts }).map((_, idx) => (
+        <PostTileSkeleton key={idx} size={size} />
+      ))}
+    </>
   );
 }

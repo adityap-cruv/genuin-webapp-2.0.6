@@ -16,6 +16,7 @@ import {
 } from "@genuin/components/molecules/reaction-button";
 import { ComponentProps } from "react";
 import { useAuthContext } from "@genuin/components/context/auth";
+import { useFeedContext } from "@genuin/components/templates/feed/context";
 
 export type CommentItemProps = {
   comment: CommentListType[number];
@@ -109,6 +110,7 @@ export function CommentContent({
 }: {
   comment: CommentListType[number];
 }) {
+  const { showExpandView } = useFeedContext();
   return (
     <>
       {comment.type === "text" && (
@@ -128,7 +130,12 @@ export function CommentContent({
           thumbnail={comment.thumbnail || ""}
         />
       )}
-      {comment.type === "audio" && <Audio audioUrl={comment.audioUrl || ""} />}
+      {comment.type === "audio" && (
+        <Audio
+          showExpandView={showExpandView}
+          audioUrl={comment.audioUrl || ""}
+        />
+      )}
     </>
   );
 }

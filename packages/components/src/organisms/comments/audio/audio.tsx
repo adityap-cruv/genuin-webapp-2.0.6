@@ -5,6 +5,7 @@ import React, {
   useCallback,
   useId,
   ComponentProps,
+  memo
 } from "react";
 import { PlayIcon } from "@genuin/ui/icons";
 import { useInView } from "@genuin/components/hooks/use-in-view";
@@ -35,6 +36,7 @@ type AudioWaveformPlayerProps = ComponentProps<"div"> & {
     duration: number
   ) => void;
   className?: string;
+  showExpandView?: boolean;
 };
 
 const sampleData = [
@@ -44,13 +46,14 @@ const sampleData = [
 
 const CANVAS_HEIGHT = 35;
 
-export const Audio = ({
+export const Audio = memo(({
   audioUrl,
   onPlay,
   onPause,
   onEnded,
   onProgress,
   className = "",
+  showExpandView = false,
   ...props
 }: AudioWaveformPlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -136,6 +139,14 @@ export const Audio = ({
     }
   }, [isPlaying]);
 
+  const getSampleData = useCallback(() => {
+    if (!showExpandView) {
+      return sampleData;
+    }
+    // If not in expand view, return a smaller sample data
+    return sampleData.slice(0, 15);
+  },[sampleData,showExpandView])
+
   useEffect(() => {
     const canvas = document.getElementById(canvasId) as HTMLCanvasElement;
     const audioElement = audioRef.current;
@@ -149,23 +160,23 @@ export const Audio = ({
       return;
     progressCanvas.style.setProperty("width", canvas.clientWidth + "px");
 
-    const waveform = new BarWaveform(canvas, 6, 8, "#D4D7D9", "center");
-    waveform.drawWaveform(sampleData);
+    const waveform = new BarWaveform(canvas, showExpandView ? 10 : 6,  8, "#D4D7D9", "center");
+    waveform.drawWaveform(getSampleData());
 
     const progressWave = new BarWaveform(
       progressCanvas,
-      6,
+      showExpandView ? 10 : 6,
       8,
       "#939aa1",
       "center"
     );
 
-    progressWave.drawWaveform(sampleData);
+    progressWave.drawWaveform(getSampleData());
 
     const resizeObserver = new ResizeObserver(() => {
       progressCanvas.style.setProperty("width", canvas.clientWidth + "px");
-      waveform.drawWaveform(sampleData);
-      progressWave.drawWaveform(sampleData);
+      waveform.drawWaveform(getSampleData());
+      progressWave.drawWaveform(getSampleData());
     });
 
     resizeObserver.observe(canvas);
@@ -248,4 +259,4 @@ export const Audio = ({
       </div>
     </div>
   );
-};
+});

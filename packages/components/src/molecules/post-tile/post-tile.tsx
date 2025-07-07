@@ -51,23 +51,24 @@ export function PostTile({
         <Stats
           className="gencl:group-hover:hidden gencl:flex gencl:gap-2 gencl:justify-between gencl:p-2 gencl:absolute gencl:bottom-0 gencl:w-full"
           valueClassName="gencl:text-white! gencl:text-body-2-medium"
+          pairClassName="gencl:gap-1"
           stats={{
             views: {
               value: stats.views,
               icon: (
-                <PlayIcon className="gencl:stroke-white gencl:mr-1 gencl:stroke-2 gencl:size-3 gencl:fill-none" />
+                <PlayIcon className="gencl:stroke-white gencl:stroke-2 gencl:size-3 gencl:fill-none" />
               ),
             },
              reaction: {
               value: stats.reactions,
               icon: (
-                <DynamicReactionIcon sparkCount={0} className="gencl:mr-1" isSparked={false} iconHeight={16} iconWidth={16} variant="dark"/>
+                <DynamicReactionIcon sparkCount={0} isSparked={false} iconHeight={16} iconWidth={16} variant="dark"/>
               ),
             },
             comments: {
               value: stats.comments,
               icon: (
-                <CommentIcon className="gencl:stroke-white! gencl:stroke-2 gencl:mr-1 gencl:size-4" />
+                <CommentIcon className="gencl:stroke-white! gencl:stroke-2 gencl:size-4" />
               ),
             },
            
