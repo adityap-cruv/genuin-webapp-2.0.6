@@ -10,7 +10,7 @@ export function TopBar({ className, search, ...restProps }: TopBarProps) {
   return (
     <div
       className={cn(
-        "gencl:h-16 gencl:w-full gencl:flex gencl:px-6 gencl:items-center gencl:justify-between",
+        "gencl:h-16 gencl:w-full gencl:bg-white gencl:flex gencl:px-6 gencl:items-center gencl:justify-between",
         className
       )}
       {...restProps}
