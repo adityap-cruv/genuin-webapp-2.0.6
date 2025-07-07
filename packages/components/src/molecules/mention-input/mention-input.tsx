@@ -1,4 +1,5 @@
-import { useRef, useState } from "react";
+"use client";
+import { useEffect, useRef, useState } from "react";
 import { Avatar } from "@genuin/ui/components/avatar";
 import { Button } from "@genuin/ui/components/button";
 import { useForm } from "react-hook-form";
@@ -59,6 +60,8 @@ export function MentionInput({
   );
   const inputRef = useRef<HTMLInputElement | null>(null);
   const commentValue = form.watch("comment");
+  const { formState } = form;
+  const isFormValid = formState.isValid && commentValue.trim().length > 0;
 
   const {
     filteredMentions,
@@ -85,13 +88,11 @@ export function MentionInput({
       onCommentPosted,
     });
 
-  console.log(
-    "form.formState.isValid & commentValue::::::::::::",
-    form.formState.isValid,
-    commentValue
-  );
+  useEffect(() => {
+      console.log("commentValue:", commentValue);
+  }, [commentValue]);
 
-  const formContent = (
+  return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(commentSubmit)}
@@ -109,14 +110,15 @@ export function MentionInput({
                   const profileImage = isCommunity
                     ? mention.community?.dp || ""
                     : mention.user?.profile_image || "";
+                  
+                  // Generate stable keys for React 19 optimization
+                  const uniqueKey = isCommunity
+                    ? `community-${mention.community?.community_id ?? idx}`
+                    : `user-${mention.user?.member_id ?? idx}`;
 
                   return (
                     <CommandItem
-                      key={
-                        isCommunity
-                          ? `community-${mention.community?.community_id ?? ""}`
-                          : `user-${mention.user?.member_id ?? ""}`
-                      }
+                      key={uniqueKey}
                       onSelect={() => handleUserSelect(mention)}
                       className={cn(
                         "gencl:flex gencl:items-center gencl:gap-x-3 gencl:rounded-md gencl:p-2 gencl:px-4 gencl:cursor-pointer gencl:hover:bg-secondary-100",
@@ -190,23 +192,18 @@ export function MentionInput({
           theme="text"
           className={cn(
             "gencl:!text-body-1-medium",
-            form.formState.isValid && commentValue.trim().length > 0
+            isFormValid
               ? "gencl:text-primary"
               : "gencl:text-secondary-400"
           )}
-          disabled={
-            !form.formState.isValid ||
-            isPending ||
-            commentValue.trim().length === 0
-          }
+          disabled={!isFormValid || isPending}
+          aria-label="Post comment"
         >
           {isPending ? <Loader size="xs" /> : "Post"}
         </Button>
       </form>
     </Form>
   );
-
-  return formContent;
 }
 
 export default MentionInput;
