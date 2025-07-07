@@ -127,8 +127,8 @@ export function CategoryInput({ ...props }: CategoryInputProps) {
       />
       <Button
         onClick={handleSurpriseMe}
-        theme="outline"
-        className="gencl:h-9 gencl:w-full gencl:mt-2 gencl:border-primary"
+        theme="secondary"
+        className="gencl:w-full gencl:mt-6"
         disabled={
           isPending ||
           isSurpriseMe ||
@@ -139,7 +139,7 @@ export function CategoryInput({ ...props }: CategoryInputProps) {
         {isSurpriseMe ? (
           <Loader className="gencl:stroke-primary gencl:fill-primary" />
         ) : (
-          <p className="gencl:text-title-3-demi gencl:text-primary">
+          <p className="gencl:text-title-3-demi gencl:text-secondary-900">
             Surprise Me
           </p>
         )}

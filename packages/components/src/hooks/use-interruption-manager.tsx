@@ -39,7 +39,7 @@ export function useInterruptionManager() {
     undefined
   );
 
-  console.log("user in interruption::", user);
+  console.log("user in interruption::", Boolean(user?.id));
 
   // First check if get_app_popup is enabled
   const getAppConfig = brandDetails?.web_configs?.get_app_popup;

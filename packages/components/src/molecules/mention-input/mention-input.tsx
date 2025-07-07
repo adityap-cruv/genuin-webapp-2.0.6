@@ -85,6 +85,12 @@ export function MentionInput({
       onCommentPosted,
     });
 
+  console.log(
+    "form.formState.isValid & commentValue::::::::::::",
+    form.formState.isValid,
+    commentValue
+  );
+
   const formContent = (
     <Form {...form}>
       <form
@@ -194,7 +200,7 @@ export function MentionInput({
             commentValue.trim().length === 0
           }
         >
-          {isPending ? <Loader size='xs'/> : "Post"}
+          {isPending ? <Loader size="xs" /> : "Post"}
         </Button>
       </form>
     </Form>

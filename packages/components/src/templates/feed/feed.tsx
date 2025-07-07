@@ -242,6 +242,8 @@ function FeedViewCore({
     }
   }, [hasNextPage, isFetchingNextPage, videos, activeIndex, fetchNextPage]);
 
+  console.log("dialogType-----", dialogType);
+
   // Extract common callback handlers to follow DRY principle
   const handleCommunityJoinStatusChange = useCallback(
     (newRole: CommunityUserRole) => {
