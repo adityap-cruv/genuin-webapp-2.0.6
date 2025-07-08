@@ -64,7 +64,7 @@ export function MentionInput({
     []
   );
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const commentValue = form.watch("comment");
+  const [commentValue, setCommentValue] = useState("");
   const { formState } = form;
   const isFormValid = formState.isValid && commentValue.trim().length > 0;
 
@@ -94,21 +94,16 @@ export function MentionInput({
     });
     
   useEffect(() => {
-    console.log("MentionInput - commentValue updated:", commentValue);
+    const unSub = form.watch(({ comment }) => {
+      if (comment) setCommentValue(comment);
+    });
+    return () => {
+      unSub.unsubscribe();
+    };
   }, [commentValue]);
 
-  // Add a debug log to track form state
-  useEffect(() => {
-    console.log("Form state:", {
-      isDirty: formState.isDirty,
-      isValid: formState.isValid,
-      isSubmitting: formState.isSubmitting,
-      errors: formState.errors,
-    });
-  }, [formState]);
-
   return (
-    <Form {...form}>
+    <Form {...form} key="comment">
       <form
         onSubmit={form.handleSubmit(commentSubmit)}
         className="gencl:absolute gencl:bottom-0 gencl:left-0 gencl:right-0 gencl:bg-white gencl:p-4 gencl:border-t gencl:border-secondary-150 gencl:flex gencl:justify-between"
@@ -183,7 +178,6 @@ export function MentionInput({
               />
             )}
             <div className="gencl:flex-1 gencl:relative">
-              {/* Use FormField to properly register the input with React Hook Form */}
               <FormField
                 control={form.control}
                 name="comment"

@@ -69,7 +69,7 @@ export function TrendingGroups() {
         )}
       </div>
 
-      <div className="gencl:grid gencl:grid-cols-1 gencl:sm:grid-cols-2 gencl:lg:grid-cols-3 gencl:gap-3">
+      <div className="gencl:grid gencl:grid-cols-1 gencl:sm:grid-cols-2 gencl:lg:grid-cols-3 gencl:gap-2">
         {groupsToDisplay.map(
           ({ chat_id, group, slug, latest_messages }: GroupInfoType) => {
             const formattedPostThumbnails = latest_messages?.map(

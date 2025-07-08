@@ -106,12 +106,14 @@ export function useInterruptionManager() {
   const dialogToShow = interruptionState.type;
   const allInterruptionsCompleted = interruptionState.isCompleted;
 
-  // Update dialogType whenever shouldShowDialog changes
+  // Update dialogType whenever interruptionState changes
   useEffect(() => {
-    if (shouldShowDialog) {
+    if (allInterruptionsCompleted) {
+      setDialogType(undefined);
+    } else if (shouldShowDialog) {
       setDialogType(dialogToShow);
     }
-  }, [shouldShowDialog, dialogToShow]);
+  }, [shouldShowDialog, dialogToShow, allInterruptionsCompleted]);
 
   // Trigger authentication or download modal based on configuration
   const triggerAuthenticationModal = useCallback(() => {
