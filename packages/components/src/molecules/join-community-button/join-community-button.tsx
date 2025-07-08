@@ -144,7 +144,11 @@ function Button({
       disabled={buttonDisabled}
       onClick={handleClick}
       theme={
-        role === "MEMBER" || role === "REQUESTED" ? "secondary" : "primary"
+        role === "MEMBER"
+          ? "outline"
+          : role === "REQUESTED"
+            ? "secondary"
+            : "primary"
       }
       {...rest}
     >
