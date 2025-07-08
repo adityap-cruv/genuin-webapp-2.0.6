@@ -95,7 +95,7 @@ function Button({
       variant={showText ? "default" : "icon"}
       shape={shape === "pill" ? "pill" : undefined}
       onClick={handleClick}
-      className={cn(shape === "pill" && 'gencl:p-0')}
+      className={cn(shape === "pill" && "gencl:p-0")}
       disabled={isPending || disabled}
       {...restProps}
     >
@@ -103,13 +103,11 @@ function Button({
         <Loader strokeColor="black" size={shape === "pill" ? "xs" : "sm"} />
       ) : isSubscriber ? (
         <NotificationEnabledIcon
-          className={cn(shape === "pill" && "gencl:size-3.5")}
+          className={cn(shape === "pill" && "gencl:size-4")}
           variant="light"
         />
       ) : (
-        <NotificationIcon
-          className={cn(shape === "pill" && "gencl:size-3.5")}
-        />
+        <NotificationIcon className={cn(shape === "pill" && "gencl:size-4")} />
       )}
       {showText && !isSubscriber && (isPending ? " Loading..." : " Notify Me")}
     </PrimitiveButton>

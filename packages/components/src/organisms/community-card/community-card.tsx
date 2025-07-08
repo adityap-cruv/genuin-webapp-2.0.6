@@ -1,13 +1,12 @@
 import { Avatar } from "@genuin/ui/components/avatar";
 import { Stats } from "../../molecules/stats";
 import { Image } from "@genuin/ui/components/image";
-import { Button } from "@genuin/ui/components/button";
 import { cn } from "@genuin/ui/lib/utils";
 import { Skeleton } from "@genuin/ui/components/skeleton";
 import { CommunityCardProps } from "./community-card.types";
 import { ReadMore } from "@genuin/ui/components/read-more";
 import { JoinCommunityButton } from "@genuin/components/molecules/join-community-button";
-import { useState } from "react";
+import { useState, MouseEvent } from "react";
 import { CommunityUserRole } from "@genuin/components/types/post";
 
 export function CommunityCard({ community }: CommunityCardProps) {
@@ -52,6 +51,10 @@ export function CommunityCard({ community }: CommunityCardProps) {
             communityHandle={""}
             communityName={""}
             slug={""}
+            onClick={(e: MouseEvent<HTMLButtonElement>) => {
+              e.stopPropagation();
+              e.preventDefault();
+            }}
           >
             Join
           </JoinCommunityButton>

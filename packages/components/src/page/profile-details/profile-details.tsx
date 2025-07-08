@@ -70,7 +70,7 @@ export function ProfileDetails({
         }}
         ctas={
           <div className="gencl:flex gencl:gap-2">
-            <BecomeCreatorButton theme="secondary" />
+            <BecomeCreatorButton />
             <ShareButton
               pathName={buildPageUrl({
                 type: !!profileData.brand ? "brand" : "profile",

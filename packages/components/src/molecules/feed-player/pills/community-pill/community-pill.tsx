@@ -15,7 +15,7 @@ import { CommunityHoverCard } from "../community-hover-card";
 import { ComponentProps } from "react";
 
 const communityPillVariants = cva(
-  "gencl:flex gencl:w-fit gencl:items-center gencl:gap-1 gencl:p-1 gencl:rounded-full gencl:transition-all gencl:cursor-pointer",
+  "gencl:flex gencl:w-fit gencl:items-center gencl:gap-1 gencl:p-1 gencl:pr-2 gencl:rounded-full gencl:transition-all gencl:cursor-pointer",
   {
     variants: {
       variant: {
@@ -95,7 +95,7 @@ export function CommunityPill({
   }
 
   return (
-    <HoverCard openDelay={300} closeDelay={0}>
+    <HoverCard openDelay={300} closeDelay={200}>
       <HoverCardTrigger asChild>{pill}</HoverCardTrigger>
       <HoverCardContent
         align="start"

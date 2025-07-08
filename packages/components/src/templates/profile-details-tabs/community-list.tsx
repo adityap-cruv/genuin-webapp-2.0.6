@@ -270,6 +270,7 @@ function Groups({
               ctas={
                 <div className="gencl:flex gencl:gap-2 gencl:items-center">
                   <JoinGroupButton
+                    size="sm"
                     buttonTexts={{
                       UNJOINED: "Join",
                     }}
@@ -290,6 +291,7 @@ function Groups({
                     }}
                   />
                   <GroupSubscriptionButton
+                    size="sm"
                     groupId={group.id}
                     groupName={group.name ?? ""}
                     groupDescription={""}
@@ -307,6 +309,7 @@ function Groups({
                     showText={false}
                   />
                   <ShareButton
+                    size="sm"
                     showText={false}
                     pathName={buildPageUrl({
                       type: "group",

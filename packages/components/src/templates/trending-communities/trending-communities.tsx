@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useState } from "react";
 import {
@@ -8,6 +8,8 @@ import {
 import { Button } from "@genuin/ui/components/button";
 import { Skeleton } from "@genuin/ui/components/skeleton";
 import { getTrendingCommunities } from "@genuin/components/react-query/api/community/trending";
+import { Link } from "@genuin/components/molecules/link";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 
 type CommunityInfoType = {
   community_id: string;
@@ -45,7 +47,7 @@ export function TrendingCommunities() {
 
   // TODO: Handle empty state properly
   if (!data || data?.communities.length === 0) {
-    return null
+    return null;
   }
 
   const communitiesToDisplay = isExpanded
@@ -65,21 +67,25 @@ export function TrendingCommunities() {
 
       <div className="gencl:grid gencl:grid-cols-1 gencl:sm:grid-cols-2 gencl:md:grid-cols-3 gencl:lg:grid-cols-3 gencl:gap-x-2 gencl:gap-y-4">
         {communitiesToDisplay.map((community: CommunityInfoType) => (
-          <CommunityCard
+          <Link
             key={community.community_id}
-            community={{
-              id : community.community_id,
-              banner: community.banner,
-              description: community.description,
-              dp: community.dp,
-              name: community.name,
-              stats: {
-                members: community.no_of_members,
-                groups: 0,
-                posts: 0,
-              },
-            }}
-          />
+            href={buildPageUrl({ type: "community", slug: community.slug })}
+          >
+            <CommunityCard
+              community={{
+                id: community.community_id,
+                banner: community.banner,
+                description: community.description,
+                dp: community.dp,
+                name: community.name,
+                stats: {
+                  members: community.no_of_members,
+                  groups: 0,
+                  posts: 0,
+                },
+              }}
+            />
+          </Link>
         ))}
       </div>
     </div>

@@ -16,7 +16,7 @@ import { ComponentProps } from "react";
 import { JoinGroupButton } from "@genuin/components/molecules/join-group-button";
 
 const groupPillVariants = cva(
-  "gencl:flex gencl:w-fit gencl:items-center gencl:gap-1 gencl:p-1 gencl:rounded-full gencl:transition-all gencl:cursor-pointer",
+  "gencl:flex gencl:w-fit gencl:items-center gencl:gap-1 gencl:p-1 gencl:pr-2 gencl:rounded-full gencl:transition-all gencl:cursor-pointer",
   {
     variants: {
       variant: {
@@ -103,7 +103,7 @@ export function GroupPill({
   }
 
   return (
-    <HoverCard openDelay={300} closeDelay={0}>
+    <HoverCard openDelay={300} closeDelay={200}>
       <HoverCardTrigger asChild>{pill}</HoverCardTrigger>
       <HoverCardContent
         align="start"

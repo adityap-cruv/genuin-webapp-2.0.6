@@ -62,6 +62,7 @@ export function PostDetails({
         onCommunityJoinStatusChange={onCommunityJoinStatusChange}
         onGroupJoinStatusChange={onGroupJoinStatusChange}
         onGroupSubscriptionChange={onGroupSubscriptionChange}
+        isHoverable={true}
       />
     </div>
   );

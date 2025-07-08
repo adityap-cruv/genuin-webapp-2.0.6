@@ -41,7 +41,7 @@ const tooltipContentVariants = cva(
   {
     variants: {
       theme: {
-        light: "gencl:bg-secondary-300 gencl:text-white",
+        light: "gencl:bg-secondary-700 gencl:text-white",
         dark: "gencl:bg-secondary-800 gencl:text-white",
       },
     },
@@ -56,7 +56,7 @@ const tooltipArrowVariants = cva(
   {
     variants: {
       theme: {
-        light: "gencl:bg-secondary-300 gencl:fill-secondary-300",
+        light: "gencl:bg-secondary-700 gencl:fill-secondary-700",
         dark: "gencl:bg-secondary-800 gencl:fill-secondary-800",
       },
     },
