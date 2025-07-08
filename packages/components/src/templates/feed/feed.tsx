@@ -226,6 +226,10 @@ function FeedViewCore({
   const { handleSwipeCount, dialogType, shouldShowDialog, closeDialog } =
     useInterruptionManager();
 
+  useEffect(() => {
+    console.log("dialogType::", dialogType);
+  }, [dialogType]);
+
   // this useEffect is used to fetch the next page of videos when the user scrolls to the end of the list.
   // it checks if there is a next page and if the user is not already fetching the next page.
   // if there is a next page and the user is not already fetching the next page, it fetches the next page.
@@ -241,10 +245,6 @@ function FeedViewCore({
       fetchNextPage();
     }
   }, [hasNextPage, isFetchingNextPage, videos, activeIndex, fetchNextPage]);
-
-  useEffect(() => {
-    console.log("dialogType in feed$$$$$$$$$$$$$$$$$$$$$$", dialogType);
-  }, [dialogType]);
 
   // Extract common callback handlers to follow DRY principle
   const handleCommunityJoinStatusChange = useCallback(

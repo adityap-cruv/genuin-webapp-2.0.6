@@ -21,6 +21,7 @@ interface HighlightedInputProps
   value?: string;
   onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
   selectedMentions?: SelectedMention[];
+  name: string;
   classes?: {
     input?: string;
     highlight?: string;
@@ -34,6 +35,7 @@ const HighlightedInput = forwardRef<HTMLInputElement, HighlightedInputProps>(
       onChange,
       placeholder = "",
       className = "",
+      name = "",
       selectedMentions = [],
       classes = {},
       ...props
@@ -61,7 +63,16 @@ const HighlightedInput = forwardRef<HTMLInputElement, HighlightedInputProps>(
       setInputValue(newValue);
 
       if (onChange) {
-        onChange(e);
+        // Create a synthetic event with the current target to ensure proper event handling
+        const syntheticEvent = {
+          ...e,
+          target: {
+            ...e.target,
+            value: newValue,
+          },
+        } as ChangeEvent<HTMLInputElement>;
+
+        onChange(syntheticEvent);
       }
     };
 
@@ -148,6 +159,7 @@ const HighlightedInput = forwardRef<HTMLInputElement, HighlightedInputProps>(
         <input
           ref={ref || inputRef}
           type="text"
+          name={name}
           value={inputValue}
           onChange={handleInputChange}
           onScroll={handleScroll}

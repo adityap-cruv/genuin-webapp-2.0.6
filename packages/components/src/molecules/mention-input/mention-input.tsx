@@ -5,7 +5,12 @@ import { Button } from "@genuin/ui/components/button";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormMessage, FormField, FormControl } from "@genuin/ui/components/form";
+import {
+  Form,
+  FormMessage,
+  FormField,
+  FormControl,
+} from "@genuin/ui/components/form";
 import { cn } from "@genuin/ui/lib/utils";
 import { Command, CommandList, CommandItem } from "@genuin/ui/components";
 import { useCommentMentions } from "../../hooks/use-comment-mentions";
@@ -87,10 +92,20 @@ export function MentionInput({
       loopId,
       onCommentPosted,
     });
-
+    
   useEffect(() => {
-    console.log("commentValue:", commentValue);
+    console.log("MentionInput - commentValue updated:", commentValue);
   }, [commentValue]);
+
+  // Add a debug log to track form state
+  useEffect(() => {
+    console.log("Form state:", {
+      isDirty: formState.isDirty,
+      isValid: formState.isValid,
+      isSubmitting: formState.isSubmitting,
+      errors: formState.errors,
+    });
+  }, [formState]);
 
   return (
     <Form {...form}>
@@ -188,6 +203,7 @@ export function MentionInput({
                         className="w-full"
                         aria-invalid={!!form.formState.errors.comment}
                         maxLength={500}
+                        name={field.name}
                       />
                     </div>
                   </FormControl>
@@ -203,9 +219,7 @@ export function MentionInput({
           theme="text"
           className={cn(
             "gencl:!text-body-1-medium",
-            isFormValid
-              ? "gencl:text-primary"
-              : "gencl:text-secondary-400"
+            isFormValid ? "gencl:text-primary" : "gencl:text-secondary-400"
           )}
           disabled={!isFormValid || isPending}
           aria-label="Post comment"

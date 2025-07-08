@@ -52,7 +52,11 @@ export function useCommentInputHandlers({
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const { value } = e.target;
-      form.setValue("comment", value, { shouldValidate: true });
+      form.setValue("comment", value, { 
+        shouldValidate: true,
+        shouldDirty: true,
+        shouldTouch: true
+      });
       // URL detection logic
       const urlMatches = value.match(REGEX_FOR_URLS);
       // Remove mentions that are no longer present in the input value

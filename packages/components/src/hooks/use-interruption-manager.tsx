@@ -48,58 +48,70 @@ export function useInterruptionManager() {
   const loginSignupConfig = brandDetails?.web_configs?.login_signup_popup;
   const isLoginSignupEnabled = !!loginSignupConfig?.enable;
 
-  // Use useMemo to recompute the interruptionToShow when dependencies change
-  const interruptionToShow = useMemo(() => {
-    if (shouldShowAppDownload) return null;
+  // Use useMemo to centralize interruption management logic
+  const interruptionState = useMemo(() => {
+    // Handle app download case
+    if (shouldShowAppDownload) {
+      return {
+        type: "GET_APP" as StepsType,
+        configKey: "get_app_popup",
+        popupAfter: getAppConfig?.popup_after ?? 0,
+        isCompleted: false,
+      };
+    }
 
     // If user is not logged in and login_signup_popup is not enabled, don't show any interruption
-    if (!user && !isLoginSignupEnabled) return null;
+    if (!user && !isLoginSignupEnabled) {
+      return {
+        type: undefined,
+        configKey: undefined,
+        popupAfter: 0,
+        isCompleted: true,
+      };
+    }
 
-    return INTERRUPTION_STEPS.find(
+    // Find the next incomplete interruption step
+    const nextInterruption = INTERRUPTION_STEPS.find(
       (step) =>
         brandDetails?.web_configs?.[step.configKey]?.enable &&
         !step.isComplete(user)
     );
+
+    if (!nextInterruption) {
+      return {
+        type: undefined,
+        configKey: undefined,
+        popupAfter: 0,
+        isCompleted: true,
+      };
+    }
+
+    return {
+      type: nextInterruption.key,
+      configKey: nextInterruption.configKey,
+      popupAfter:
+        brandDetails?.web_configs?.[nextInterruption.configKey]?.popup_after ??
+        0,
+      isCompleted: false,
+    };
   }, [
     brandDetails?.web_configs,
     user,
     isLoginSignupEnabled,
     shouldShowAppDownload,
+    getAppConfig?.popup_after,
   ]);
 
-  // Debug effect to track changes (only in development)
-  useEffect(() => {
-    console.log("brandDetails?.web_configs::", brandDetails?.web_configs);
-    console.log("user in interruption::", user);
-    console.log("interruptionToShow in interruption::", interruptionToShow);
-    console.log("--------------------------------------------------------");
-  }, [user, interruptionToShow, brandDetails?.web_configs]);
-
-  // Debug effect to track changes (only in development)
-  useEffect(() => {
-    console.log("brandDetails?.web_configs::", brandDetails?.web_configs);
-    console.log("user in interruption::", user);
-    console.log("interruptionToShow in interruption::", interruptionToShow);
-    console.log("--------------------------------------------------------");
-  }, [user, interruptionToShow, brandDetails?.web_configs]);
-
-  // Whether all interruption steps are completed
-  const allInterruptionsCompleted =
-    !shouldShowAppDownload && !interruptionToShow;
-
-  // Determine which dialog type to show based on current state
-  const getCurrentDialogType = useCallback((): StepsType | undefined => {
-    if (shouldShowAppDownload) return "GET_APP";
-    if (interruptionToShow) return interruptionToShow.key;
-    return undefined;
-  }, [shouldShowAppDownload, interruptionToShow]);
+  // Extract values from the interruptionState for easier use
+  const dialogToShow = interruptionState.type;
+  const allInterruptionsCompleted = interruptionState.isCompleted;
 
   // Update dialogType whenever shouldShowDialog changes
   useEffect(() => {
     if (shouldShowDialog) {
-      setDialogType(getCurrentDialogType());
+      setDialogType(dialogToShow);
     }
-  }, [shouldShowDialog, getCurrentDialogType]);
+  }, [shouldShowDialog, dialogToShow]);
 
   // Trigger authentication or download modal based on configuration
   const triggerAuthenticationModal = useCallback(() => {
@@ -111,12 +123,11 @@ export function useInterruptionManager() {
     }
 
     // Only proceed if we have a dialog to show
-    const dialogToShow = getCurrentDialogType();
     if (dialogToShow) {
       setShouldShowDialog(true);
       setDialogType(dialogToShow);
     }
-  }, [shouldShowAppDownload, interruptionToShow]);
+  }, [dialogToShow]);
 
   // Function to close dialog and reset state
   const closeDialog = useCallback(() => {
@@ -136,12 +147,7 @@ export function useInterruptionManager() {
       }
 
       const { swipeCount, lastIndex } = interactionRef.current;
-      const popupAfter = shouldShowAppDownload
-        ? (getAppConfig?.popup_after ?? 0)
-        : interruptionToShow
-          ? (brandDetails?.web_configs?.[interruptionToShow.configKey]
-              ?.popup_after ?? 0)
-          : 0;
+      const popupAfter = interruptionState.popupAfter;
 
       // Only increment count if we moved to a different index
       if (index !== lastIndex) {
@@ -156,10 +162,7 @@ export function useInterruptionManager() {
       }
     },
     [
-      shouldShowAppDownload,
-      getAppConfig?.popup_after,
-      interruptionToShow,
-      brandDetails?.web_configs,
+      interruptionState.popupAfter,
       triggerAuthenticationModal,
       allInterruptionsCompleted,
     ]
