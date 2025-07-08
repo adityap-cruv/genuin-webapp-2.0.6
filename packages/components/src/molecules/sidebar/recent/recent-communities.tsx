@@ -12,6 +12,7 @@ import { useLocalStorage } from "usehooks-ts";
 import { RecentCommunity } from "@genuin/components/types/community";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { Link } from "@genuin/components/molecules/link";
+import { compressText } from "@genuin/components/lib/utils";
 
 export function Recent() {
   const [communities] = useLocalStorage<RecentCommunity[]>(
@@ -56,7 +57,7 @@ export function Recent() {
                 size="xs"
               />
               <p className="gencl:text-body-1-medium gencl:hidden gencl:xl:!block gencl:!line-clamp-1">
-                {community.community_name}
+                 {compressText(community.community_name,20) }
               </p>
             </Link>
           ))}

@@ -10,6 +10,7 @@ import { useMemo } from "react";
 import { useCategory } from "@genuin/components/react-query/api/category/category";
 import { Link } from "@genuin/components/molecules/link";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { compressText } from "@genuin/components/lib/utils";
 
 export function Category() {
   const { data } = useCategory();
@@ -38,13 +39,17 @@ export function Category() {
             {categories.map((cat, index) => (
               <AccordionItem key={index} value={`category-${index}`}>
                 <AccordionTrigger className="gencl:justify-between gencl:items-center gencl:px-3 gencl:py-2 gencl:hidden gencl:xl:!flex">
-                  <p className="gencl:text-body-1-medium gencl:text-nowrap">{cat.category}</p>
+                  <p title={cat.category} className="gencl:text-body-1-medium gencl:text-nowrap gencl:line-clamp-1">{compressText(cat.category,22)}</p>
                 </AccordionTrigger>
                 <AccordionContent className="gencl:flex gencl:flex-col gencl:pb-0">
                   {cat.communities.map((community, commIndex) => (
                     <Link
                       key={commIndex}
-                      href={buildPageUrl({type : "community" , slug : community.slug , searchParams : {feed : "1"}})}
+                      href={buildPageUrl({
+                        type: "community",
+                        slug: community.slug,
+                        searchParams: { feed: "1" },
+                      })}
                       className="gencl:flex gencl:items-center gencl:gap-2 gencl:py-2 gencl:px-2 gencl:xl:px-3 gencl:hover:bg-secondary-50 gencl:cursor-pointer gencl:rounded-lg"
                     >
                       <Avatar
@@ -54,7 +59,7 @@ export function Category() {
                         size="xs"
                       />
                       <p className="gencl:text-body-1-medium gencl:text-nowrap gencl:hidden gencl:xl:!block">
-                        {community.community_name}
+                        {compressText(community.community_name, 20)}
                       </p>
                     </Link>
                   ))}

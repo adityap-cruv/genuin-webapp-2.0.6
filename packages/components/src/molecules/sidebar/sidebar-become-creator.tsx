@@ -12,7 +12,6 @@ export function SideBarBecomeCreator({
 }: SideBarBecomeCreatorProps) {
   const { authenticationStatus, user } = useAuthContext();
   const { name } = useBaseContext().brandDetails;
-
   if (user?.ksCbRequestStatus === "Accepted") return null;
 
   return (

@@ -1,3 +1,4 @@
+import { useComments } from "@genuin/components/react-query/api/comments";
 import { cn } from "@genuin/ui/lib/utils";
 
 type CommentButtonProps = {
@@ -7,6 +8,7 @@ type CommentButtonProps = {
   onClick?: () => void;
   className?: string;
   countClassName?: string;
+  postId : string;
 };
 
 export function CommentButton({
@@ -16,7 +18,9 @@ export function CommentButton({
   onClick,
   className,
   countClassName,
+  postId
 }: CommentButtonProps) {
+  const {data} = useComments(postId)
   return (
     <span onClick={onClick} className={className}>
       {defaultNode}
@@ -27,7 +31,7 @@ export function CommentButton({
             countClassName
           )}
         >
-          {count}
+          {data?.pages[0]?.comments.length || count}
         </p>
       )}
     </span>

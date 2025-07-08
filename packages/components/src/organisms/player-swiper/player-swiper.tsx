@@ -48,7 +48,7 @@ export function PlayerList({
 }: PlayerListPropsType) {
   const { value, toggle } = useBoolean(true);
   const { showExpandView, activeIndex } = useFeedContext();
-
+  
   return (
     <div className="gencl:flex gencl:justify-center gencl:h-full gencl:w-full gencl:gap-6">
       <SwiperImplementation
@@ -82,6 +82,7 @@ export function PlayerList({
                       <CommentButton
                         key="comment-button"
                         defaultNode={defaultNode}
+                        postId={post.video.id}
                         count={post.video.commentCount}
                         showCount={true}
                         onClick={() => {

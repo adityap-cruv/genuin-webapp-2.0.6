@@ -65,7 +65,7 @@ const nextAuth = NextAuth({
           bio,
           name,
           accessToken: String(credentials.accessToken),
-          ksCbRequestStatus: Number(credentials.ksCbRequestStatus),
+          ksCbRequestStatus: credentials.ksCbRequestStatus,
           isBrandSystemUser: credentials.isBrandSystemUser === 'true',
           brandId,
           brandSlug,
