@@ -37,7 +37,8 @@ export async function fetchUserData(nickname: string, headers?: Headers, forBran
   const payload = forBrand ? { brand_slug: nickname } : { nickname }
 
   return await axios
-    .post(process.env.NEXT_PUBLIC_API_URL + '/goservices/profile/info', payload, { headers: parsedHeader })
+    .create({ baseURL: process.env.NEXT_PUBLIC_API_URL })
+    .post('/goservices/profile/info', payload, { headers: parsedHeader })
     .then((res) => {
       return validateProfileDetails(res.data.data)
     })
