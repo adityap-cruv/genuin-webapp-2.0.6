@@ -4,6 +4,7 @@ import { getVideoPlayerConfigs } from "../utils";
 import type {
   ButtonActionType,
   ExpandViewProps,
+  PlaybackSpeedType,
   PlayingStateType,
   SetVideoTimeStateType,
   VideoTimeStateType,
@@ -102,6 +103,12 @@ export type PlayerContextType = {
    * Function to be called when the player completes it's iteration.
    */
   handleEnded: () => void;
+
+  /**
+   * Current playback speed and whether it was set by a gesture
+   */
+  playbackSpeed: PlaybackSpeedType;
+  setPlaybackSpeed: React.Dispatch<React.SetStateAction<PlaybackSpeedType>>;
 } & ExpandViewProps;
 
 export const PlayerContext = createContext<PlayerContextType>({
@@ -125,6 +132,8 @@ export const PlayerContext = createContext<PlayerContextType>({
   playerConfigRef: { current: getVideoPlayerConfigs() },
   handleEnded: () => {},
   showExpandView: false,
+  playbackSpeed: { speed: 1.0, isSpeedFromGesture: false },
+  setPlaybackSpeed: () => {},
 });
 
 /**

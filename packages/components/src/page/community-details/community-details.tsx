@@ -285,7 +285,7 @@ function CommunityDetailsView({ slug }: { slug: string }) {
                   slug: communityDetails.brand?.brand_slug ?? "",
                 }),
                 name: communityDetails.brand?.name ?? "",
-                userName: communityDetails.brand?.brand_slug ?? "",
+                userName: communityDetails.brand?.brand_handle ?? "",
                 userLogoType: communityDetails.brand?.brand_user_logo,
               },
               stats: {

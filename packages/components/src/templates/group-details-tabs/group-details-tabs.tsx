@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import { GroupPosts } from "@genuin/components/organisms/group-posts";
 import { MemberList } from "@genuin/components/organisms/member-list";
 import { useGetGroupMembers } from "@genuin/components/react-query/api/group/members";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 
 type GroupDetailsTabsProps = Omit<
   {
@@ -72,8 +73,12 @@ function GroupMembers({ slug }: { slug: string }) {
         brand: {
           userLogoType: member.brand?.brand_user_logo ?? null,
         },
-        //TODO: handle url paths.
-        url: `/${member.nickname}`,
+        url: buildPageUrl({
+          type: !!member.brand ? "brand" : "profile",
+          slug: !!member.brand
+            ? (member.brand.brand_slug ?? undefined)
+            : (member.nickname ?? undefined),
+        }),
       }))}
     />
   );

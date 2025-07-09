@@ -13,6 +13,11 @@ export function PlayingState({
 }: ComponentProps<"div">) {
   const { playingState, buttonAction } = usePlayerContext();
 
+  // If no buttonAction is set (which happens when not user initiated), don't render anything
+  if (!buttonAction) {
+    return null;
+  }
+
   if (playingState === "LOADING")
     return (
       <div

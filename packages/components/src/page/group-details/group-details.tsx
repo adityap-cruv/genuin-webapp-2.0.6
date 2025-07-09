@@ -139,7 +139,9 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
               userName: groupDetails.owner.userName,
               url: buildPageUrl({
                 type: !!groupDetails.owner.brand ? "brand" : "profile",
-                slug: groupDetails.owner.userName,
+                slug: !!groupDetails.owner.brand
+                  ? (groupDetails.owner.brand.slug ?? "")
+                  : groupDetails.owner.userName,
               }),
               userLogoType: groupDetails.owner.brand?.brandUserLogo,
             },
@@ -157,7 +159,7 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
               name: groupDetails.community.name ?? "",
               url: buildPageUrl({
                 type: "community",
-                slug: groupDetails.community.handle,
+                slug: groupDetails.community.slug,
               }),
             },
           }}
