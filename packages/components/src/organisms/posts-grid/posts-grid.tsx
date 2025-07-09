@@ -2,6 +2,7 @@ import { ErrorIcon, PlayIcon } from "@genuin/ui/icons";
 import { InfiniteScroll } from "@genuin/ui/infinite-scroll";
 import { cn } from "@genuin/ui/utils";
 import { useMemo } from "react";
+import { DialogClose } from "@genuin/ui/components/dialog";
 
 import {
   PostTile,
@@ -19,25 +20,34 @@ export function PostsGrid({
   fetchNextPage,
   hasNextPage,
   isFetchingNextPage,
+  shouldCloseModal = false,
   children,
-  onPostTileClick,
   ...restProps
-}: PostsGridProps) {
+}: PostsGridProps & { shouldCloseModal?: boolean }) {
   const Posts = useMemo(() => {
     return posts.map((post) => {
-      return (
+      const postTile = (
         <PostTile
           key={post.postId}
-          className="gencl:shrink-0"
+          className="gencl:flex-none gencl:w-40 sm:gencl:w-44 md:gencl:w-48"
           postData={post}
           imageCompProps={{ useWebp: false }}
-          onClick={() => {
-            onPostTileClick?.(post.postId);
-          }}
+          shouldCloseModal={shouldCloseModal}
         />
       );
+
+      // Wrap with DialogClose if we want to close modal when clicking on posts
+      if (shouldCloseModal) {
+        return (
+          <DialogClose key={post.postId} asChild>
+            <div>{postTile}</div>
+          </DialogClose>
+        );
+      }
+
+      return postTile;
     });
-  }, [onPostTileClick, posts]);
+  }, [posts, shouldCloseModal]);
 
   if (isLoading) {
     return (

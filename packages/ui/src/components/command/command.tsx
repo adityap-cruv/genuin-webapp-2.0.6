@@ -32,11 +32,19 @@ function Command({
 function CommandDialog({
   title = "Command Palette",
   description = "Search for a command to run...",
+  variant,
+  contentClassName,
+  showClose = true, // Default to true to show close button
+  onClick,
   children,
   ...props
 }: React.ComponentProps<typeof Dialog> & {
   title?: string;
   description?: string;
+  variant?: React.ComponentProps<typeof DialogContent>["variant"];
+  showClose?: boolean; // Whether to show the close button
+  contentClassName?: string; // Additional class names for the content
+  onClick?: () => void; // onClick handler for the dialog content
 }) {
   return (
     <Dialog {...props}>
@@ -44,7 +52,12 @@ function CommandDialog({
         <DialogTitle>{title}</DialogTitle>
         <DialogDescription>{description}</DialogDescription>
       </DialogHeader>
-      <DialogContent className="gencl:overflow-hidden gencl:p-0">
+      <DialogContent
+        variant={variant}
+        className={cn("gencl:overflow-hidden gencl:p-0", contentClassName)}
+        showClose={showClose}
+        onClick={onClick}
+      >
         <Command
           className={cn(
             "gencl:**:data-[slot=command-input-wrapper]:h-12 gencl:[&_[cmdk-group-heading]]:px-2",
@@ -68,7 +81,7 @@ function CommandInput({
   return (
     <div
       data-slot="command-input-wrapper"
-      className="gencl:flex gencl:h-9 gencl:items-center gencl:gap-2 gencl:border-b gencl:px-3"
+      className="gencl:flex gencl:h-9 gencl:items-center gencl:gap-2 gencl:border-b gencl:border-secondary-150 gencl:px-3"
     >
       <SearchIcon className="gencl:size-4 gencl:shrink-0 gencl:opacity-50" />
       <CommandPrimitive.Input

@@ -12,6 +12,7 @@ const meta: Meta<typeof PostTile> = {
   argTypes: {
     showHover: { control: "boolean" },
     size: { control: "select", options: ["sm", "lg"] },
+    onClick: { action: "clicked" },
   },
 };
 
@@ -66,3 +67,27 @@ export const Skeleton: Story = {
     imageCompProps: { table: { disable: true } },
   },
 };
+
+export const WithNavigation: Story = {
+  args: {
+    postData: {
+      postId: "2",
+      imageUrl:
+        "https://media.qa.begenuin.com/uploads/thumbnails/1691038031235.png",
+      url: "https://example.com", // External URL
+      linkouts: "ldjfl",
+      stats: {
+        views: 54321,
+        comments: 987,
+        shares: 123,
+      },
+      isPinned: false,
+    },
+    size: "sm",
+    showHover: true,
+    imageCompProps: {
+      useWebp: false,
+    },
+  },
+};
+

@@ -73,6 +73,8 @@ export const ReadMore = memo(function ReadMore({
   defaultExpand = false,
   onExpandChange,
   open,
+  href,
+  linkClassName,
   ...rest
 }: ReadMoreProps) {
   const textRef = useRef<HTMLParagraphElement>(null);
@@ -378,7 +380,7 @@ export const ReadMore = memo(function ReadMore({
   // Early return if no text
   if (!flattenedText || flattenedText.length === 0) return null;
 
-  return (
+  const content = (
     <div className="gencl:w-full gencl:overflow-clip" style={{ maxWidth }}>
       <p
         {...rest}
@@ -410,7 +412,7 @@ export const ReadMore = memo(function ReadMore({
             position !== "outside"
               ? "gencl:text-white!"
               : "gencl:text-secondary-900",
-            textClassName,
+            textClassName
           )}
           style={
             !shouldAnimate && !isExpanded
@@ -423,4 +425,21 @@ export const ReadMore = memo(function ReadMore({
       </p>
     </div>
   );
+
+  // If href is provided, wrap the content in a link
+  if (href) {
+    return (
+      <a
+        href={href}
+        className={cn(
+          "gencl:cursor-pointer hover:gencl:underline focus:gencl:outline-none",
+          linkClassName
+        )}
+      >
+        {content}
+      </a>
+    );
+  }
+
+  return content;
 });

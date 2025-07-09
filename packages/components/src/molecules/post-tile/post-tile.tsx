@@ -2,14 +2,15 @@ import {
   CommentIcon,
   PinIcon,
   PlayIcon,
-  ShareIcon,
   // ThreeDotsIcon,
 } from "@genuin/ui/icons";
 import { Image } from "@genuin/ui/image";
 import { cn } from "@genuin/ui/utils";
 import { Skeleton } from "@genuin/ui/skeleton";
 import { cva } from "class-variance-authority";
+import { DialogClose } from "@genuin/ui/components/dialog";
 
+import { Link } from "@genuin/components/molecules/link";
 import { Stats } from "../stats";
 
 import type { PostTileProps } from "./post-tile.type";
@@ -31,15 +32,21 @@ export const postTileVariants = cva(
 );
 
 export function PostTile({
-  postData: { imageUrl, isPinned, linkouts, stats },
+  postData: { imageUrl, url, isPinned, linkouts, stats },
   imageCompProps,
   showHover = true,
   size = "sm",
   className,
+  onClick,
+  shouldCloseModal = false,
   ...restProps
-}: PostTileProps) {
-  return (
-    <div className={cn(postTileVariants({ size }), className)} {...restProps}>
+}: PostTileProps & { shouldCloseModal?: boolean }) {
+  const content = (
+    <div
+      className={cn(postTileVariants({ size }), className)}
+      onClick={onClick}
+      {...restProps}
+    >
       <Image src={imageUrl} {...imageCompProps} />
       {isPinned && (
         <PinIcon className="gencl:stroke-white gencl:group-hover:hidden gencl:absolute gencl:top-2 gencl:right-2 gencl:fill-white" />
@@ -59,10 +66,17 @@ export function PostTile({
                 <PlayIcon className="gencl:stroke-white gencl:stroke-2 gencl:size-3 gencl:fill-none" />
               ),
             },
-             reaction: {
+            reaction: {
               value: stats.reactions,
               icon: (
-                <DynamicReactionIcon sparkCount={0} isSparked={false} iconHeight={16} iconWidth={16} variant="dark"/>
+                <DynamicReactionIcon
+                  sparkCount={0}
+                  className="gencl:mr-1"
+                  isSparked={false}
+                  iconHeight={16}
+                  iconWidth={16}
+                  variant="dark"
+                />
               ),
             },
             comments: {
@@ -71,7 +85,6 @@ export function PostTile({
                 <CommentIcon className="gencl:stroke-white! gencl:stroke-2 gencl:size-4" />
               ),
             },
-           
           }}
         />
       )}
@@ -85,6 +98,31 @@ export function PostTile({
       )}
     </div>
   );
+
+  // If onClick is provided, don't wrap with Link to avoid conflicts
+  if (onClick) {
+    const finalContent = content;
+    if (shouldCloseModal) {
+      return <DialogClose asChild>{finalContent}</DialogClose>;
+    }
+    return finalContent;
+  }
+
+  // If no URL is provided, return content without Link wrapper
+  if (!url) {
+    const finalContent = content;
+    if (shouldCloseModal) {
+      return <DialogClose asChild>{finalContent}</DialogClose>;
+    }
+    return finalContent;
+  }
+
+  // Default behavior: wrap with Link for navigation
+  const finalContent = <Link href={url}>{content}</Link>;
+  if (shouldCloseModal) {
+    return <DialogClose asChild>{finalContent}</DialogClose>;
+  }
+  return finalContent;
 }
 
 export function PostTileSkeleton({
@@ -96,7 +134,11 @@ export function PostTileSkeleton({
 }) {
   return (
     <Skeleton
-      className={cn(postTileVariants({ size }), "gencl:shrink-0", className)}
+      className={cn(
+        postTileVariants({ size }),
+        "gencl:flex-none gencl:w-40 sm:gencl:w-44 md:gencl:w-48",
+        className
+      )}
     />
   );
 }

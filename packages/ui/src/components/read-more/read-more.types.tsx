@@ -80,4 +80,12 @@ export type ReadMoreProps = {
    * Boolean value for the explicitly manage the state of parent for expansion
    */
   open?: boolean;
+  /**
+   * URL to make the text content clickable as a link
+   */
+  href?: string;
+  /**
+   * Custom class name for the link wrapper
+   */
+  linkClassName?: string;
 } & Omit<ComponentProps<"p">, "children">;

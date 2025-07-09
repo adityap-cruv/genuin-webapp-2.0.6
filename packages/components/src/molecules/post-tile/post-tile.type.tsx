@@ -14,6 +14,10 @@ export type PostTileDataType = {
    */
   imageUrl: string;
   /**
+   * Navigation URL. When provided, the post tile becomes clickable and navigates to this URL.
+   */
+  url?: string;
+  /**
    * If the post tile is pinned.
    */
   isPinned?: boolean;

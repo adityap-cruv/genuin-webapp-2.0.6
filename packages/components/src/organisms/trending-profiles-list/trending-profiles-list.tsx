@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { Button } from "@genuin/ui/components/button";
-import {
-  ProfileItem,
-  ProfileItemSkeleton,
-} from "@genuin/components/molecules/profile-item";
 import { Skeleton } from "@genuin/ui/components/skeleton";
+import {
+  MemberItem,
+  MemberItemSkeleton,
+} from "@genuin/components/molecules/member-item";
 
 type ProfileDataType = {
   username: string;
@@ -66,15 +66,21 @@ export function TrendingProfilesList(props: {
 
       <div className="gencl:grid gencl:grid-cols-1 gencl:sm:grid-cols-12 gencl:lg:grid-cols-9 gencl:xl:grid-cols-12 gencl:gap-x-2 gencl:gap-y-4">
         {visibleProfiles.map((profile, index) => (
-          <ProfileItem
+          <MemberItem
             key={index}
             className="gencl:flex gencl:flex-col gencl:items-center"
-            username={profile.username}
-            isVerified={profile.is_verified}
-            profileImage={{
-              isAvatar: profile.is_avatar,
-              url: profile.profile_img,
+            memberData={{
+              memberId: profile.username, // TODO: Use a unique ID if available
+              userName: profile.username,
+              name: profile.username,
+              profileImage: {
+                isAvatar: profile.is_avatar,
+                url: profile.profile_img,
+              },
+              url: `/profile/${profile.username}`,
+              bio: "", // TODO: Use a bio if available
             }}
+            variant="profile"
           />
         ))}
         {props.isLoading && <ProfilesSkeleton noOfProfiles={4} />}
@@ -99,6 +105,9 @@ function TrendingProfilesSkeleton() {
 
 function ProfilesSkeleton({ noOfProfiles = 1 }: { noOfProfiles: number }) {
   return Array.from({ length: noOfProfiles }).map(() => (
-    <ProfileItemSkeleton className="gencl:flex gencl:flex-col gencl:items-center" />
+    <MemberItemSkeleton
+      variant="profile"
+      className="gencl:flex gencl:flex-col gencl:items-center"
+    />
   ));
 }

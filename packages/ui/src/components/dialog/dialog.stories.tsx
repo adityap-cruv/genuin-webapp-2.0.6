@@ -116,3 +116,29 @@ export const FormDialog: Story = {
     </Dialog>
   ),
 };
+
+export const TopDialog: Story = {
+  render: () => (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button theme="primary">Open Top Dialog</Button>
+      </DialogTrigger>
+      <DialogContent variant="top">
+        <DialogHeader>
+          <DialogTitle>Top Dialog</DialogTitle>
+          <DialogDescription>
+            This dialog uses the <code>top</code> variant and appears near the
+            top of the viewport.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="py-4">
+          <p>This is the main content of the top-aligned dialog.</p>
+        </div>
+        <DialogFooter>
+          <Button theme="outline">Cancel</Button>
+          <Button theme="primary">Confirm</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  ),
+};

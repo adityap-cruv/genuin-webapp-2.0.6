@@ -1,3 +1,4 @@
+import { DotIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/utils";
 import { abbreviateNumber } from "@genuin/ui/utils";
 import type { ComponentProps, ReactNode } from "react";
@@ -26,9 +27,9 @@ type StatsPropsType = {
    */
   labelClassName?: string;
   /**
-   * Optional separator to be used between the statsitem.
+   * Optional separator to be used between the stats items. Can be an Icon component or any ReactNode.
    */
-  separator?: string;
+  separator?: ReactNode;
 } & ComponentProps<"div">;
 
 /**
@@ -42,7 +43,7 @@ export function Stats({
   labelClassName,
   pairClassName,
   valueFirst = false, // Default to false if not provided
-  separator = " ", // Default to non-breaking space if not provided
+  separator = <></>, // Default to non-breaking space if not provided
   className,
   ...restProps
 }: StatsPropsType) {

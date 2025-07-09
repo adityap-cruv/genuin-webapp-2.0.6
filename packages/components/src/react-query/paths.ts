@@ -181,4 +181,16 @@ export const API_PATHS = {
    * Api path to Submits a request to become a creator.
    * */
   BECOME_CREATOR_REQUEST: "api/v3/users/ks_cb_request",
+  /**
+   * Api path to fetch search suggestions.
+   */
+  SEARCH_SUGGESTIONS: "/api/v3/search/suggestions",
+  /**
+   * Api path to fetch top search.
+   */
+  SEARCH_TOP_RESULTS: "/api/v3/search/top",
+  /**
+   * Api path to for recent results.
+   */
+  SEARCH_RECENT: "/api/v3/global_search/recent",
 } as const;

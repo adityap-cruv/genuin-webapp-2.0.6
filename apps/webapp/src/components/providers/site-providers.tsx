@@ -5,10 +5,10 @@ import { SessionProvider } from 'next-auth/react'
 import BrandDetailsProviderClient from '@components/providers/brand-details-provider'
 import { ReactQueryClientProvider } from '@genuin/components/react-query/react-query-provider'
 import { BaseLayout } from '@genuin/components/templates/base-layout/base-layout'
-import { OldSearch } from './old-search'
 import { AuthBridge } from './auth-bridge'
 import { AnalyticsProvider } from '@genuin/components/context/analytics'
 import { LinkBridge } from './link-bridge'
+import { Search } from '@genuin/components/molecules/search'
 
 interface SiteProvidersBaseProps {
   children: React.ReactNode
@@ -55,7 +55,7 @@ function InnerContentProviders({ children, config }: { children: React.ReactNode
 export function SiteProvidersWithLayout({ children, config, session }: SiteProvidersBaseProps) {
   return (
     <CoreProviders config={config} session={session}>
-      <BaseLayout search={<OldSearch />}>
+      <BaseLayout>
         <InnerContentProviders config={config}>{children}</InnerContentProviders>
       </BaseLayout>
     </CoreProviders>

@@ -9,10 +9,9 @@ import { TopBar } from "@genuin/components/organisms/top-bar";
 import React from "react";
 import { Toaster } from "@genuin/ui/toaster";
 
-type BaseLayoutProps = ComponentProps<"section"> & { search?: React.ReactNode };
+type BaseLayoutProps = ComponentProps<"section">;
 
 export function BaseLayout({
-  search,
   children,
   className,
   ...restProps
@@ -24,7 +23,6 @@ export function BaseLayout({
       <TopBar
         className="gencl:border-b gencl:border-secondary-150 gencl:bg-white gencl:relative"
         style={{ zIndex: 9 }}
-        search={search}
       />
       <main
         className="gencl:flex gencl:h-full"
