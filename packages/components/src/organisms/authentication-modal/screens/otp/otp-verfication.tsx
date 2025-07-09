@@ -172,8 +172,8 @@ export function OtpVerification({
       <p className="gencl:text-body-1-medium gencl:text-secondary-600 gencl:mt-3">
         Please Enter the 6-digit code sent to
         {flowType === "EMAIL"
-          ? `your email address: ${email}`
-          : `your phone: ${formatPhoneNumberIntl(phone as string)}`}
+          ? ` your email address: ${email}`
+          : ` your phone: ${formatPhoneNumberIntl(phone as string)}`}
       </p>
       <Form {...form}>
         <form

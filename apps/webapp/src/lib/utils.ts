@@ -402,6 +402,7 @@ export function parseColors(colors: any) {
       }
     }
   }
+  return parsedColors
 }
 
 export function tryJsonParse(data: string) {

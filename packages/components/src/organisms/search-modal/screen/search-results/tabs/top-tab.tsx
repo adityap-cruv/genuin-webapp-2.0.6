@@ -128,7 +128,7 @@ export function TopTab({
           {topResults.communities.map((community) => (
             <div
               key={community.community_id}
-              className="gencl:flex-shrink-0 gencl:max-w-96"
+              className="gencl:flex-shrink-0 gencl:max-w-100"
             >
               <CommunityCard
                 community={{
