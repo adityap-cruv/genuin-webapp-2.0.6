@@ -1,5 +1,6 @@
 "use client";
-import { useId } from "react";
+import { useId, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { TabsSkeleton } from "@genuin/ui/tabs";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { NOT_FOUND_ERROR_CODES } from "@genuin/components/lib/constants/errors";
@@ -19,7 +20,6 @@ import {
 } from "@genuin/components/templates/profile-details-tabs";
 import { DetailsPageTopbar } from "@genuin/components/organisms/details-page-topbar";
 import { useBaseContext } from "@genuin/components/context/base";
-import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
 
 export function ProfileDetails({
   userName,
@@ -36,6 +36,19 @@ export function ProfileDetails({
   } = useGetProfileDetails(userName, forBrand);
   const detailsId = useId();
   const { brandDetails } = useBaseContext();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (profileData && profileData.brand && !forBrand) {
+      // Redirect to the brand page when profile gets converted into brand
+      const brandUrl = buildPageUrl({
+        type: "brand",
+        slug: profileData.brand.brand_slug,
+      });
+      router.replace(brandUrl);
+    }
+  }, [profileData, forBrand, router]);
+
   if (isLoading) {
     return <ProfileDetailsSkeleton />;
   }

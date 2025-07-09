@@ -36,13 +36,29 @@ export function ShareButton({
     // Build the URL string directly
     const baseUrl = window.location.origin;
     const fullPath = videoPathName ? "/video" + videoPathName : pathName;
-    const fullUrl = baseUrl + fullPath;
+
+    // Append UTM source parameter for tracking
+    const url = new URL(fullPath, baseUrl);
+    url.searchParams.append("utm_source", "web");
+    let fullUrl = url.toString();
+
+    // Check if share_image_id exists in the current URL
+    if (window.location.href.includes('share_image_id=')) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const shareImageId = urlParams.get('share_image_id');
+
+      if (shareImageId && !fullUrl.includes('share_image_id=')) {
+        // Add share_image_id to the shareLink
+        const separator = fullUrl.includes('?') ? '&' : '?';
+        fullUrl = `${fullUrl}${separator}share_image_id=${shareImageId}`;
+      }
+    }
 
     const success = await copy(fullUrl);
     if (success) {
-      Toast.Success({message : "Link Copied"})
+      Toast.Success({ message: "Link Copied" });
     } else {
-      Toast.Error({message : "Failed to copy link. Please try again."})
+      Toast.Error({ message: "Failed to copy link. Please try again." });
     }
   }, [copy, pathName]);
 

@@ -92,7 +92,7 @@ const BrandSchema = z
     brand_system_user_id: z.string(),
     brand_slug: z.string(),
     brand_user_logo: z.number().nullish().default(1),
-    brand_handle: z.string()
+    brand_handle: z.string().optional(),
   })
   .nullish();
 
