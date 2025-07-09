@@ -1,14 +1,13 @@
 /**
- * Manages modals to ensure only one is open at a time.
+ * Manages a registry of dialogs.
  */
-class ModalManager {
-  private currentOpenId: string | null = null;
-  private registeredModals = new Set<string>();
+class DialogManager {
+  private registeredDialogs = new Set<string>();
   private listeners = new Set<() => void>();
 
   /**
-   * Subscribe to modal open/close changes.
-   * @param listener - Callback to invoke on modal state change.
+   * Subscribe to dialog registry changes.
+   * @param listener - Callback to invoke on registry changes.
    */
   subscribe(listener: () => void) {
     this.listeners.add(listener);
@@ -20,70 +19,32 @@ class ModalManager {
   }
 
   /**
-   * Registers a modal with the modal manager.
-   * @param id - The unique identifier for the modal.
+   * Registers a dialog with the dialog manager.
+   * @param id - The unique identifier for the dialog.
    */
-  registerModal(id: string) {
-    this.currentOpenId = id;
-    this.registeredModals.add(id);
-    this.notifyListeners();
-    // No-op for now, but could be used for future features
-  }
-
-  /**
-   * Unregisters a modal from the modal manager.
-   * @param id - The unique identifier of the modal to unregister.
-   */
-  unregisterModal(id: string) {
-    if (this.currentOpenId === id) {
-      this.currentOpenId = null;
-    }
-    this.registeredModals.delete(id);
+  registerDialog(id: string) {
+    this.registeredDialogs.add(id);
     this.notifyListeners();
   }
 
   /**
-   * Returns true if the modal can be opened (no other modal is open or same id).
+   * Unregisters a dialog from the dialog manager.
+   * @param id - The unique identifier of the dialog to unregister.
    */
-  canOpenModal(id: string) {
-    return this.currentOpenId === null || this.currentOpenId === id;
-  }
-
-  /**
-   * Notifies the manager that a modal has been opened.
-   * @param id - The unique identifier of the modal that has opened.
-   * @returns true if opening is allowed, false otherwise.
-   */
-  notifyModalOpen(id: string) {
-    if (this.currentOpenId && this.currentOpenId !== id) {
-      // Another modal is already open, do not allow opening
-      return false;
-    }
-    this.currentOpenId = id;
+  unregisterDialog(id: string) {
+    this.registeredDialogs.delete(id);
     this.notifyListeners();
-    return true;
   }
 
   /**
-   * Notifies the manager that a modal has been closed.
-   * @param id - The unique identifier of the modal that has closed.
+   * Returns an array of all currently registered dialog IDs.
    */
-  notifyModalClose(id: string) {
-    if (this.currentOpenId === id) {
-      this.currentOpenId = null;
-      this.notifyListeners();
-    }
-  }
-
-  /**
-   * Returns an array of all currently registered modal IDs.
-   */
-  getRegisteredModals(): string[] {
-    return Array.from(this.registeredModals);
+  getRegisteredDialogs(): string[] {
+    return Array.from(this.registeredDialogs);
   }
 }
 
 /**
- * Singleton instance of the ModalManager.
+ * Singleton instance of the DialogManager.
  */
-export const modalManager = new ModalManager();
+export const dialogManager = new DialogManager();

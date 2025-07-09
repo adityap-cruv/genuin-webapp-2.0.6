@@ -26,7 +26,7 @@ type Story = StoryObj<typeof Dialog>;
 
 export const Default: Story = {
   render: () => (
-    <Dialog>
+    <Dialog type="default-dialog">
       <DialogTrigger asChild>
         <Button theme="primary">Open Dialog</Button>
       </DialogTrigger>
@@ -52,7 +52,7 @@ export const Default: Story = {
 
 export const ConfirmationDialog: Story = {
   render: () => (
-    <Dialog>
+    <Dialog type="confirmation-dialog">
       <DialogTrigger asChild>
         <Button theme="primary">Delete Item</Button>
       </DialogTrigger>
@@ -75,7 +75,7 @@ export const ConfirmationDialog: Story = {
 
 export const FormDialog: Story = {
   render: () => (
-    <Dialog>
+    <Dialog type="form-dialog">
       <DialogTrigger asChild>
         <Button theme="primary">Edit Profile</Button>
       </DialogTrigger>

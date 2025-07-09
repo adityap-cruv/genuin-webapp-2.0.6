@@ -4,7 +4,7 @@ import { useBaseContext } from "../context/base";
 import { useAuthContext } from "../context/auth";
 import type { AuthUser } from "@genuin/components/types/auth";
 import { StepsType } from "../organisms/authentication-modal/context";
-import { modalManager } from "@genuin/ui/lib/dialog-manager";
+import { dialogManager } from "@genuin/ui/lib/dialog-manager";
 
 const INTERRUPTION_STEPS = [
   {
@@ -117,13 +117,6 @@ export function useInterruptionManager() {
 
   // Trigger authentication or download modal based on configuration
   const triggerAuthenticationModal = useCallback(() => {
-    // Check if any other modal is open
-    if (!modalManager.canOpenModal("INTERRUPTION_MANAGER")) {
-      setShouldShowDialog(false);
-      setDialogType(undefined);
-      return;
-    }
-
     // Only proceed if we have a dialog to show
     if (dialogToShow) {
       setShouldShowDialog(true);
@@ -179,7 +172,12 @@ export function useInterruptionManager() {
     const resetIdleTimeout = () => {
       clearTimeout(timeout);
       timeout = setTimeout(
-        triggerAuthenticationModal,
+        () => {
+          // Only trigger if there are no active dialogs
+          if (dialogManager.getRegisteredDialogs().length === 0) {
+            triggerAuthenticationModal();
+          }
+        },
         (idleConfig?.popup_after ?? 0) * 1000
       );
     };

@@ -58,7 +58,7 @@ export function AuthenticationModal({
 
   return (
     <Dialog
-      type={`${getAppData?.data?.type}-dialog`}
+      type="authentication-dialog"
       open={isOpen}
       onOpenChange={handleOpenChange}
     >

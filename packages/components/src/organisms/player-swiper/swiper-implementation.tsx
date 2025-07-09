@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { useBaseContext } from "@genuin/components/context/base";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
-import { modalManager } from "@genuin/ui/lib/dialog-manager/dialog-manager";
+import { dialogManager } from "@genuin/ui/lib/dialog-manager/dialog-manager";
 
 const CONFIG = {
   SCROLL_DELAY: 500,
@@ -38,13 +38,13 @@ export function SwiperImplementation({
 
   // Track if any modal is open
   const [modalOpen, setModalOpen] = useState(
-    modalManager.getRegisteredModals().length > 0
+    dialogManager.getRegisteredDialogs().length > 0
   );
 
   useEffect(() => {
     // Subscribe to modal open/close changes
-    const unsubscribe = modalManager.subscribe(() => {
-      setModalOpen(modalManager.getRegisteredModals().length > 0);
+    const unsubscribe = dialogManager.subscribe(() => {
+      setModalOpen(dialogManager.getRegisteredDialogs().length > 0);
     });
     return () => {
       unsubscribe();

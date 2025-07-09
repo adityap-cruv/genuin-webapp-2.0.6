@@ -5,14 +5,14 @@ import { XIcon } from "lucide-react";
 import * as React from "react";
 
 import { cn } from "@genuin/ui/lib/utils";
-import { modalManager } from "@genuin/ui/lib/dialog-manager";
+import { dialogManager } from "@genuin/ui/lib/dialog-manager";
 
 /**
- * Dialog component with modal management.
+ * Dialog component with registry tracking.
  *
  * @param {string} type - Required type for the dialog instance.
- *   This type is used for modal management (registration, open/close control).
- *   Pass a type if you need to coordinate multiple dialogs or control them programmatically.
+ *   This type is used for dialog registry tracking.
+ *   Pass a type if you need to identify dialogs programmatically.
  */
 function Dialog({
   type,
@@ -23,7 +23,6 @@ function Dialog({
 }: React.ComponentProps<typeof DialogPrimitive.Root> & {
   type: string;
 }) {
-  const id = type;
   const isControlled = open !== undefined;
   const [internalOpen, setInternalOpen] = React.useState(defaultOpen ?? false);
 
@@ -32,30 +31,18 @@ function Dialog({
 
   React.useEffect(() => {
     if (isOpen) {
-      modalManager.registerModal(id);
-      if (!modalManager.notifyModalOpen(id)) {
-        // If not allowed, close the modal
-        if (!isControlled) setInternalOpen(false);
-        onOpenChange?.(false);
-      }
+      dialogManager.registerDialog(type);
     } else {
-      modalManager.unregisterModal(id);
-      modalManager.notifyModalClose(id);
+      dialogManager.unregisterDialog(type);
     }
     // Clean up on unmount
     return () => {
-      modalManager.unregisterModal(id);
-      modalManager.notifyModalClose(id);
+      dialogManager.unregisterDialog(type);
     };
-  }, [isOpen, id]);
+  }, [isOpen, type]);
 
   // Handle open state changes from user interaction
   const handleOpenChange = (next: boolean) => {
-    if (next && !modalManager.canOpenModal(id)) {
-      if (!isControlled) setInternalOpen(false);
-      onOpenChange?.(false);
-      return;
-    }
     if (!isControlled) setInternalOpen(next);
     onOpenChange?.(next);
   };
