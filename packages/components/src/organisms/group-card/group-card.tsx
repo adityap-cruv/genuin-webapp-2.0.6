@@ -53,6 +53,7 @@ type GroupCardProps = {
   url?: string;
   shouldCloseModal?: boolean;
   onClick?: () => void;
+  onGroupJoinStatusChange?: (newRole: GroupUserStatusType) => void;
 } & ComponentProps<"div">;
 
 type GroupNameProps = {
@@ -104,6 +105,7 @@ export function GroupCard({
   url,
   shouldCloseModal = false,
   onClick,
+  onGroupJoinStatusChange,
   ...restProps
 }: GroupCardProps) {
   const isCardClickable = variant === "recent" || variant === "suggestion";
@@ -153,6 +155,7 @@ export function GroupCard({
                     buttonTexts={{
                       UNJOINED: "Join",
                     }}
+                    onGroupJoinStatusChange={onGroupJoinStatusChange}
                   />
                   <Button theme={"secondary"} size={"sm"} className="">
                     <NotificationIcon />
@@ -199,6 +202,7 @@ export function GroupCard({
                     buttonTexts={{
                       UNJOINED: "Join",
                     }}
+                    onGroupJoinStatusChange={onGroupJoinStatusChange}
                   />
                 </div>
               </div>

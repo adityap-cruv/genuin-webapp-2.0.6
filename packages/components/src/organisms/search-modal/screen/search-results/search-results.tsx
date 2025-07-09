@@ -155,7 +155,7 @@ export function SearchResults({
           </TabsContent>
 
           <TabsContent value="groups" className="gencl:p-4 gencl:m-0">
-            <GroupsTab groups={topResults.loops} />
+            <GroupsTab groups={topResults.loops} query={query} />
           </TabsContent>
 
           <TabsContent value="profiles" className="gencl:p-4 gencl:m-0">

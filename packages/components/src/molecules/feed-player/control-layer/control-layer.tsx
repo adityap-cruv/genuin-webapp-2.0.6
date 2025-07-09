@@ -41,9 +41,8 @@ export const ControlLayer = memo(function ControlLayer({
 }: ControlLayerPropsType) {
   const { showExpandView, togglePlay, toggleMuted, muted, playingState } =
     usePlayerContext();
-  const { gestureOverlayUI } = useGestureOverlayManager();
+  const { gestureOverlayUI, hideGestureOverlay } = useGestureOverlayManager();
   const { showSeeker } = usePlayerContext();
-  // const { hideGestureOverlay } = useGestureOverlayManager();
 
   const {
     brandDetails: {
@@ -55,7 +54,7 @@ export const ControlLayer = memo(function ControlLayer({
   const handleVideoClick = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
-      // hideGestureOverlay("PLAY_PAUSE", muted);
+      hideGestureOverlay("PLAY_PAUSE", muted);
 
       // if (isExpanded) {
       //   setIsExpanded(false);

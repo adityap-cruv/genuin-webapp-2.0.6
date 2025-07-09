@@ -5,3 +5,4 @@ export * from "./types";
 export * from "./suggestions";
 export * from "./recents";
 export * from "./top-results";
+export * from "./update-group-status";

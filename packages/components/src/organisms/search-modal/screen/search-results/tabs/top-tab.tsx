@@ -9,6 +9,9 @@ import { MemberItem } from "@genuin/components/molecules/member-item";
 import { HorizontalScrollContainer } from "@genuin/components/molecules/horizontal-scroll-container";
 import { DialogClose } from "@genuin/ui/components/dialog";
 import { urlGenerators } from "../../../shared";
+import { mapGroupJoinStatus } from "@genuin/components/lib/utils";
+import { updateGroupJoinStatusInSearchResults } from "@genuin/components/react-query/api/search";
+import { GroupUserStatusType } from "@genuin/components/types/roles";
 
 type SectionHeaderProps = {
   title: string;
@@ -100,6 +103,7 @@ export function TopTab({
                   url: urlGenerators.group(loop.slug || ""),
                   slug: loop.group.slug || "",
                   description: loop.group.group_description || "",
+                  role: mapGroupJoinStatus(loop.logged_in_user_status),
                   stats: {
                     members: loop.group.no_of_members,
                     posts: loop.group.no_of_videos,
@@ -111,6 +115,14 @@ export function TopTab({
                 url={urlGenerators.group(loop.slug || "")}
                 shouldCloseModal={true}
                 className="gencl:min-h-34"
+                onGroupJoinStatusChange={(newRole: GroupUserStatusType) => {
+                  // Update the group join status in search results
+                  updateGroupJoinStatusInSearchResults(
+                    query,
+                    loop.chat_id,
+                    newRole
+                  );
+                }}
               />
             </div>
           ))}

@@ -273,7 +273,7 @@ function CommunityDetailsView({ slug }: { slug: string }) {
                 }),
                 userName: communityDetails.leader.nickname ?? "",
                 name: communityDetails.leader.name ?? "",
-                userLogoType: communityDetails.brand?.brand_user_logo,
+                userLogoType: communityDetails.leader.brand?.brand_user_logo,
               },
               createdIn: {
                 profileImage: {

@@ -189,7 +189,7 @@ export const LoopTopResultSchema = z.object({
     no_of_videos: z.number().default(0),
     no_of_views: z.number().default(0), // Added views count
   }),
-
+  logged_in_user_status: z.number().optional(),
   is_view_allowed: z.boolean().default(true),
   settings: z
     .object({
