@@ -8,6 +8,7 @@ import { PostDetailsType } from "../feed/schema";
 import { getQueryKeyForVideoDetails } from "../../keys/video";
 import { useQuery } from "@tanstack/react-query";
 import { tryJsonParse } from "@genuin/ui/lib/utils";
+import { parseVideo } from "./parser";
 
 async function fetchVideoMetadata(videoSlug: string) {
   return await axiosInstance
@@ -42,7 +43,7 @@ async function getVideoDetails(slug: string): Promise<PostDetailsType> {
   if (!loopDetails || !videoDetails) {
     throw new Error("Failed to fetch loop details or video details.");
   }
-
+  
   return {
     video: {
       id: videoDetails.message_id,
@@ -116,7 +117,7 @@ async function fetchLoopVideo(loopId: string, videoId: string) {
       },
     })
     .then((res) => {
-      return res.data.data.messages[0] as LoopVideoType;
+      return parseVideo(res.data.data.messages[0]);
     })
     .catch((e) => {
       console.log("error in conversation messages::", e);

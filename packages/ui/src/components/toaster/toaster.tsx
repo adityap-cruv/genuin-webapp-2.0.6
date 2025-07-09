@@ -60,7 +60,7 @@ const showCustomToast = (
       </div>
       <XIcon
         onClick={() => toast.dismiss(id)}
-        className="gencl:size-4 gencl:shrink-0 gencl:text-secondary-600 hover:gencl:text-black gencl:cursor-pointer"
+        className="gencl:size-4 gencl:shrink-0 gencl:text-secondary-600 hover:gencl:text-black gencl:cursor-pointer gencl:mt-1"
       />
     </div>
   ));
