@@ -22,6 +22,7 @@ export function PostsGrid({
   isFetchingNextPage,
   shouldCloseModal = false,
   children,
+  onPostTileClick,
   ...restProps
 }: PostsGridProps & { shouldCloseModal?: boolean }) {
   const Posts = useMemo(() => {
@@ -33,6 +34,9 @@ export function PostsGrid({
           postData={post}
           imageCompProps={{ useWebp: false }}
           shouldCloseModal={shouldCloseModal}
+          onClick={() => {
+            onPostTileClick?.(post.postId);
+          }}
         />
       );
 
@@ -47,7 +51,7 @@ export function PostsGrid({
 
       return postTile;
     });
-  }, [posts, shouldCloseModal]);
+  }, [posts, shouldCloseModal, onPostTileClick]);
 
   if (isLoading) {
     return (

@@ -17,6 +17,7 @@ import { CommunityPrivacyInfo } from "@genuin/components/molecules/community-pri
 import { Link } from "@genuin/components/molecules/link";
 import { DotIcon } from "@genuin/ui/icons";
 import { DialogClose } from "@genuin/ui/components/dialog";
+import { mapCommunityUserRole } from "@genuin/components/lib/utils";
 
 function CommunityName({
   name,
@@ -217,7 +218,12 @@ export function CommunityCard({
   onSelect?: (community: CommunityCardProps["community"]) => void;
   shouldCloseModal?: boolean;
 }) {
-  const [role, setRole] = useState<CommunityUserRole>("UNJOINED");
+  const [role, setRole] = useState<CommunityUserRole>(
+    mapCommunityUserRole(
+      community.logged_in_user_status,
+      community.is_community_join_requested
+    )
+  );
 
   const cardContent = (
     <div

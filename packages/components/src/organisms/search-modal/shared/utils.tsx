@@ -19,6 +19,8 @@ export const searchDataTransformers = {
     description: community.description || "",
     handle: community.handle || "",
     slug: community.slug || "",
+    logged_in_user_status: community.logged_in_user_status || "",
+    is_community_join_requested: community.is_community_join_requested || false,
     stats: {
       members: community.no_of_members,
       groups: community.no_of_loops,
