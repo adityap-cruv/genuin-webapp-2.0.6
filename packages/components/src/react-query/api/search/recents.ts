@@ -25,10 +25,13 @@ export async function fetchRecents() {
   }
 }
 
-export function useRecents() {
+export function useRecents(
+  options: Omit<Parameters<typeof useQuery>[0], "queryFn" | "queryKey"> = {}
+) {
   return useQuery({
     queryKey: getQueryKeyForRecents(),
     queryFn: fetchRecents,
+    ...options,
   });
 }
 

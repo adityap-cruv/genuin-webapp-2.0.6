@@ -1,3 +1,4 @@
+"use client";
 import { cn } from "@genuin/ui/lib/utils";
 import { ComponentProps, ReactNode } from "react";
 import {
@@ -15,6 +16,7 @@ import { GroupCard } from "@genuin/components/organisms/group-card";
 import { MemberItem } from "@genuin/components/molecules/member-item";
 import { Skeleton } from "@genuin/ui/skeleton";
 import { DialogClose } from "@genuin/ui/components/dialog";
+import { useAuthContext } from "@genuin/components/context/auth";
 
 export function Recents({
   className,
@@ -23,12 +25,20 @@ export function Recents({
 }: ComponentProps<"div"> & {
   onSearch?: (query: string) => void;
 }) {
-  const { data: recentSearches, isLoading, isFetching } = useRecents();
+  const { authenticationStatus } = useAuthContext();
+  const isAuthenticated = authenticationStatus === "authenticated";
+  const {
+    data: recentSearches,
+    isLoading,
+    isFetching,
+  } = useRecents({
+    enabled: isAuthenticated,
+  });
 
   const deleteRecentMutation = useDeleteRecent();
 
-  // Show skeleton while loading or fetching
-  const showSkeleton = isLoading || isFetching;
+  // Show skeleton while loading or fetching (only if authenticated)
+  const showSkeleton = isAuthenticated && (isLoading || isFetching);
 
   const handleDeleteRecent = async (id: string) => {
     try {
@@ -59,7 +69,11 @@ export function Recents({
     );
   }
 
-  if (!recentSearches || recentSearches.length === 0) {
+  if (
+    !recentSearches ||
+    !Array.isArray(recentSearches) ||
+    recentSearches.length === 0
+  ) {
     return (
       <div
         className={cn(
@@ -82,7 +96,7 @@ export function Recents({
         <h3 className="gencl:text-body-1-semi-bold gencl:text-secondary-600">
           Recent
         </h3>
-        {recentSearches.length > 0 && (
+        {Array.isArray(recentSearches) && recentSearches.length > 0 && (
           <Button
             onClick={handleClearAll}
             variant="default"
@@ -97,81 +111,82 @@ export function Recents({
 
       {/* Recent Items */}
       <div className="gencl:space-y-1">
-        {recentSearches.map((item: RecentSearchItemType) => {
-          if (item.type === "text" && item.text) {
-            return (
-              <RecentTextItem
-                key={item.id}
-                id={item.id}
-                text={item.text}
-                onDelete={() => handleDeleteRecent(item.id)}
-                onSearch={onSearch}
-              />
-            );
-          }
-
-          if (item.type === "community" && item.community) {
-            return (
-              <span
-                key={item.id}
-                onClick={async () => {
-                  await postRecents(
-                    RECENT_SEARCH_CONTENT_TYPE.community,
-                    item?.community?.community_id
-                  );
-                }}
-              >
-                <RecentCommunityItem
+        {Array.isArray(recentSearches) &&
+          recentSearches.map((item: RecentSearchItemType) => {
+            if (item.type === "text" && item.text) {
+              return (
+                <RecentTextItem
+                  key={item.id}
                   id={item.id}
-                  community={item.community}
+                  text={item.text}
                   onDelete={() => handleDeleteRecent(item.id)}
+                  onSearch={onSearch}
                 />
-              </span>
-            );
-          }
+              );
+            }
 
-          if (item.type === "loop" && item.loop) {
-            return (
-              <span
-                key={item.id}
-                onClick={async () => {
-                  await postRecents(
-                    RECENT_SEARCH_CONTENT_TYPE.loop,
-                    item?.loop?.chat_id
-                  );
-                }}
-              >
-                <RecentGroupItem
-                  id={item.id}
-                  loop={item.loop}
-                  onDelete={() => handleDeleteRecent(item.id)}
-                />
-              </span>
-            );
-          }
+            if (item.type === "community" && item.community) {
+              return (
+                <span
+                  key={item.id}
+                  onClick={async () => {
+                    await postRecents(
+                      RECENT_SEARCH_CONTENT_TYPE.community,
+                      item?.community?.community_id
+                    );
+                  }}
+                >
+                  <RecentCommunityItem
+                    id={item.id}
+                    community={item.community}
+                    onDelete={() => handleDeleteRecent(item.id)}
+                  />
+                </span>
+              );
+            }
 
-          if (item.type === "user" && item.user) {
-            return (
-              <span
-                key={item.id}
-                onClick={async () => {
-                  await postRecents(
-                    RECENT_SEARCH_CONTENT_TYPE.user,
-                    item?.user?.user_id
-                  );
-                }}
-              >
-                <RecentUserItem
-                  id={item.id}
-                  user={item.user}
-                  onDelete={() => handleDeleteRecent(item.id)}
-                />
-              </span>
-            );
-          }
+            if (item.type === "loop" && item.loop) {
+              return (
+                <span
+                  key={item.id}
+                  onClick={async () => {
+                    await postRecents(
+                      RECENT_SEARCH_CONTENT_TYPE.loop,
+                      item?.loop?.chat_id
+                    );
+                  }}
+                >
+                  <RecentGroupItem
+                    id={item.id}
+                    loop={item.loop}
+                    onDelete={() => handleDeleteRecent(item.id)}
+                  />
+                </span>
+              );
+            }
 
-          return null;
-        })}
+            if (item.type === "user" && item.user) {
+              return (
+                <span
+                  key={item.id}
+                  onClick={async () => {
+                    await postRecents(
+                      RECENT_SEARCH_CONTENT_TYPE.user,
+                      item?.user?.user_id
+                    );
+                  }}
+                >
+                  <RecentUserItem
+                    id={item.id}
+                    user={item.user}
+                    onDelete={() => handleDeleteRecent(item.id)}
+                  />
+                </span>
+              );
+            }
+
+            return null;
+          })}
       </div>
     </div>
   );

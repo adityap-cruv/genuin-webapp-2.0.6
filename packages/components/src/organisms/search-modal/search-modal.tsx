@@ -8,6 +8,10 @@ import { Suggestions } from "./screen/suggestions";
 import { SearchResults } from "./screen/search-results";
 import { useDebouncedSuggestions } from "./hooks";
 import { SEARCH_CONFIG, SEARCH_MODAL_CLASSES } from "./constants";
+import {
+  postRecents,
+  RECENT_SEARCH_CONTENT_TYPE,
+} from "@genuin/components/react-query/api/search";
 
 type SearchModalProps = ComponentProps<typeof CommandDialog> & {
   placeholder?: string;
@@ -79,7 +83,8 @@ export function SearchModal({
   const handleSeeAll = useCallback(() => {
     setShowFullResults(true);
     onSeeAll?.();
-  }, [onSeeAll]);
+    postRecents(RECENT_SEARCH_CONTENT_TYPE.text, undefined, query);
+  }, [onSeeAll, query]);
 
   // Helper component for centered messages
   const CenteredMessage = ({
