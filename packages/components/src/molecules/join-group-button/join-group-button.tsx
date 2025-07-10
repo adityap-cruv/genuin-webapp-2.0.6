@@ -114,7 +114,7 @@ function Button({
       onClick={handleGroupJoin}
       disabled={disabled}
       {...restProps}
-      theme={role === "UNJOINED" ? "primary" : "secondary"} 
+      theme={role === "UNJOINED" ? "primary" : (role === "JOINED" ? "outline"  : "secondary")} 
     >
       {isLoading ? (
         <Loader strokeColor="white" />

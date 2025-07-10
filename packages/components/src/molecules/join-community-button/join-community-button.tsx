@@ -38,6 +38,7 @@ export function JoinCommunityButton({
   communityId,
   isPrivate,
   slug,
+  onCommunityJoinStatusChange,
   ...restProps
 }: JoinCommunityButtonProps) {
   const { authenticationStatus } = useAuthContext();
@@ -52,6 +53,7 @@ export function JoinCommunityButton({
       isPrivate={isPrivate}
       slug={slug}
       role={role}
+      onCommunityJoinStatusChange={onCommunityJoinStatusChange}
       {...restProps}
     />
   );
@@ -143,14 +145,14 @@ function Button({
     <PrimitiveButton
       disabled={buttonDisabled}
       onClick={handleClick}
-      theme={
+      {...rest}
+       theme={
         role === "MEMBER"
           ? "outline"
           : role === "REQUESTED"
             ? "secondary"
             : "primary"
       }
-      {...rest}
     >
       {isLoading ? (
         <Loader
