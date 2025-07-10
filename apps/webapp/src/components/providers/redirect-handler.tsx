@@ -85,6 +85,11 @@ export async function RedirectHandler({
         return permanentRedirect(checkAndAppendHttps('https://ted.com') + finalQuery)
       }
       if (shouldRedirect) {
+        console.log(
+          '[RedirectHandler] Redirecting to white label domain:',
+          config.integrations.white_label.allowed_domains[0]
+        )
+        // Redirect to the first allowed domain with path and search params
         permanentRedirect(
           checkAndAppendHttps(config.integrations.white_label.allowed_domains[0]) + pathParamStr + searchParamStr
         )
