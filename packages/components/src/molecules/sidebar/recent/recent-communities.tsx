@@ -56,7 +56,7 @@ export function Recent() {
                 alt={community.community_name}
                 size="xs"
               />
-              <p className="gencl:text-body-1-medium gencl:hidden gencl:xl:!block gencl:!line-clamp-1">
+              <p title={community.community_name} className="gencl:text-body-1-medium gencl:hidden gencl:xl:!block gencl:!line-clamp-1">
                  {compressText(community.community_name,20) }
               </p>
             </Link>

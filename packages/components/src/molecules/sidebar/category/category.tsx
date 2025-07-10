@@ -58,7 +58,7 @@ export function Category() {
                         alt={community.community_name}
                         size="xs"
                       />
-                      <p className="gencl:text-body-1-medium gencl:text-nowrap gencl:hidden gencl:xl:!block">
+                      <p title={community.community_name} className="gencl:text-body-1-medium gencl:text-nowrap gencl:hidden gencl:xl:!block">
                         {compressText(community.community_name, 20)}
                       </p>
                     </Link>

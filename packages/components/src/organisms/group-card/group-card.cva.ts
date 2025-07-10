@@ -4,9 +4,9 @@ export const groupCardVariants = cva("", {
   variants: {
     variant: {
       explore:
-        "gencl:border gencl:rounded-lg gencl:border-secondary-300 gencl:w-[750px] gencl:p-4 gencl:space-y-4",
+        "gencl:border gencl:rounded-lg gencl:border-secondary-150 gencl:p-4 gencl:space-y-4",
       search:
-        "gencl:border gencl:rounded-lg gencl:border-secondary-300 gencl:p-4 gencl:flex gencl:items-center gencl:gap-3 gencl:w-full",
+        "gencl:border gencl:rounded-lg gencl:border-secondary-150 gencl:p-4 gencl:flex gencl:items-center gencl:gap-3 gencl:w-full",
       suggestion:
         "gencl:p-3 gencl:flex gencl:items-start gencl:gap-3 gencl:w-full gencl:hover:bg-secondary-50 gencl:transition-colors gencl:cursor-pointer",
       recent:

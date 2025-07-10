@@ -109,7 +109,7 @@ function RepostButton({
   return (
     <Button
       theme={isSuccess ? "primary" : "outline"}
-      disabled={isPending}
+      disabled={isPending || isSuccess}
       onClick={handleRepost}
     >
       <RepostIcon

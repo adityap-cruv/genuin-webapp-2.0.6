@@ -87,7 +87,6 @@ function CommunityGroups({
   }
 
   const groups = communityGroups.groups;
-  console.log("groups", groups);
 
   return groups.map((group) => {
     const showPrivateGroupAccess =

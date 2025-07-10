@@ -1,4 +1,5 @@
 "use client";
+import { ErrorState } from "@genuin/components/molecules/error-state";
 import { useGetVideoDetails } from "@genuin/components/react-query/api/video";
 import { getQueryKeyForVideoDetails } from "@genuin/components/react-query/keys/video";
 import { FeedView } from "@genuin/components/templates/feed";
@@ -6,7 +7,7 @@ import { FeedView } from "@genuin/components/templates/feed";
 export function VideoPage({ videoId }: { videoId: string }) {
   const { data, isLoading, isError } = useGetVideoDetails(videoId);
   if (isError) {
-    return <div>Error loading video details.</div>;
+    return <ErrorState type="NO_VIDEO" />;
   }
   return (
     <FeedView

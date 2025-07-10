@@ -90,7 +90,7 @@ export function SideInfo({
       {stats && (
         <Stats
           valueClassName="gencl:text-body-0-semi-bold!"
-          pairClassName="gencl:flex-col gencl:items-start"
+          pairClassName="gencl:flex-col gencl:items-start gencl:gap-1"
           labelClassName="gencl:text-body-2-medium! gencl:text-secondary-600"
           valueFirst
           className="gencl:flex gencl:justify-between gencl:max-w-xs"
@@ -109,7 +109,7 @@ export function SideInfo({
         {createdBy && (
           <EntityInfo
             icon={
-              <CreatedProfileIcon className="gencl:stroke-secondary-600 gencl:size-6" />
+              <CreatedProfileIcon className="gencl:stroke-secondary-600 gencl:size-5" />
             }
             title="Created by"
             entity={createdBy}
@@ -118,7 +118,7 @@ export function SideInfo({
         {createdIn && (
           <EntityInfo
             icon={
-              <BagIcon className="gencl:stroke-secondary-600 gencl:size-6 gencl:shrink-0" />
+              <BagIcon className="gencl:stroke-secondary-600 gencl:size-5 gencl:shrink-0" />
             }
             title="Created in&nbsp;"
             entity={createdIn}

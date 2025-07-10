@@ -156,7 +156,7 @@ export function TopTab({
                     groups: community.no_of_loops || 0,
                     posts: community.no_of_loops || 0,
                   },
-                  type: community.type === 1 ? "PRIVATE" : "PUBLIC",
+                  type: community.type === 2   ? "PRIVATE" : "PUBLIC",
                 }}
                 variant="search"
                 url={urlGenerators.community(community.slug)}
