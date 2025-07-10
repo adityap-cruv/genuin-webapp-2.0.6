@@ -1,7 +1,6 @@
 /**
  * @type {import('next').NextConfig}
  */
-console.log('Next.js configuration loaded for webapp', process.env.NEXT_PUBLIC_CURRENT_ENV)
 const nextConfig = {
   // === Stable Next.js 15 root-level options ===
   eslint: {
@@ -162,7 +161,7 @@ const nextConfig = {
     // ppr: process.env.NODE_ENV === 'production',
 
     // React Compiler for production builds
-    reactCompiler: process.env.NODE_ENV === 'production',
+    reactCompiler: false,
 
     // Enable view transitions for smooth page navigation
     viewTransition: true,

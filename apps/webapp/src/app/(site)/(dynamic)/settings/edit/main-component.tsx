@@ -25,6 +25,8 @@ import { Button } from '@components/ui/button'
 import { useQueryClient } from '@tanstack/react-query'
 import { type ProfileDetailsType } from '@/lib/schemas/profile/profile'
 import { useSession } from 'next-auth/react'
+import { useGenuinOptions } from '@/lib/stores/genuin-options'
+import { fetchUserData } from '@/lib/api/settings'
 
 const linkedInUrlPattern =
   /^(?:https?:\/\/)?(?:www\.)?(in\.)?linkedin\.com\/(pub|in|profile|company)\/([a-zA-Z0-9À-ž-]+)/
@@ -51,21 +53,60 @@ const formSchema = z.object({
 
 // TODO: Divide this component
 export default function MainComponent() {
-  const { isLoading, data: profileData } = getUserData()
+  const { user } = useGenuinOptions()
+  const [profileData, setProfileData] = useState<ProfileDetailsType | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isError, setIsError] = useState(false)
 
-  if (isLoading)
+  useEffect(() => {
+    if (!user?.nickname) {
+      return
+    }
+    let isMounted = true
+    setIsLoading(true)
+    setIsError(false)
+    fetchUserData(user?.nickname ?? '')
+      .then((data) => {
+        if (isMounted) {
+          setProfileData(data)
+          setIsLoading(false)
+        }
+      })
+      .catch((err) => {
+        if (isMounted) {
+          setIsError(true)
+          setIsLoading(false)
+        }
+      })
+    return () => {
+      isMounted = false
+    }
+  }, [user])
+
+  if (isLoading) {
     return (
       <div className="flex h-full w-full items-center justify-center">
         <Loader size="md" />
       </div>
     )
-  if (profileData !== undefined)
+  }
+
+  if (isError) {
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        <p className="text-title-3-med text-supplementary-red">Failed to load profile data. Please try again.</p>
+      </div>
+    )
+  }
+
+  if (profileData)
     return (
       <div className="h-full">
         <EditProfile profileData={profileData} />
         <Toaster />
       </div>
     )
+  return null
 }
 
 function EditProfile({ profileData }: { profileData: ProfileDetailsType }) {
@@ -164,7 +205,7 @@ function EditProfile({ profileData }: { profileData: ProfileDetailsType }) {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="h-full w-full overflow-auto">
         <div className="sticky top-0">
-          <div className={`flex items-center justify-between bg-monochrome-white p-4 md:px-8 md:py-4`}>
+          <div className={`bg-monochrome-white flex items-center justify-between p-4 md:px-8 md:py-4`}>
             <ChevronLeft
               className="block md:hidden"
               onClick={() => {
@@ -172,11 +213,11 @@ function EditProfile({ profileData }: { profileData: ProfileDetailsType }) {
               }}
             />
             <p className="text-title-2-bold">Edit Profile</p>
-            <Button variant="custom" type="submit" className="py-0 text-title-3-demi text-primary">
+            <Button variant="custom" type="submit" className="text-title-3-demi text-primary py-0">
               Save
             </Button>
           </div>
-          <hr className="block bg-monochrome-black/10 md:hidden" />
+          <hr className="bg-monochrome-black/10 block md:hidden" />
         </div>
         <div className="px-8 py-4 pb-20">
           <ImageInput />
@@ -190,7 +231,7 @@ function EditProfile({ profileData }: { profileData: ProfileDetailsType }) {
                   <FormLabel className="text-body-1-med">
                     <div className="flex w-full justify-between">
                       <p className="">Full Name</p>
-                      <p className="text-cap-1-med ">{form.getValues('displayName')?.length ?? 0}/25</p>
+                      <p className="text-cap-1-med">{form.getValues('displayName')?.length ?? 0}/25</p>
                     </div>
                   </FormLabel>
                   <FormControl>
@@ -198,7 +239,7 @@ function EditProfile({ profileData }: { profileData: ProfileDetailsType }) {
                       maxLength={25}
                       type="text"
                       className={cn(
-                        'border border-tertiary-200 bg-tertiary-100 text-title-3-med',
+                        'border-tertiary-200 bg-tertiary-100 text-title-3-med border',
                         errors && '!border-red'
                       )}
                       {...field}
@@ -219,7 +260,7 @@ function EditProfile({ profileData }: { profileData: ProfileDetailsType }) {
                   <FormLabel className="text-body-1-med">
                     <div className="flex w-full justify-between">
                       <p className="text-body-1-med">Bio</p>
-                      <p className="text-cap-1-med ">{form.getValues('bio')?.length ?? 0}/150</p>
+                      <p className="text-cap-1-med">{form.getValues('bio')?.length ?? 0}/150</p>
                     </div>
                   </FormLabel>
                   <FormControl>
@@ -228,7 +269,7 @@ function EditProfile({ profileData }: { profileData: ProfileDetailsType }) {
                       {...field}
                       value={field.value ?? ''}
                       className={cn(
-                        'border-tertiary-200 bg-tertiary-100 p-2 py-3 text-title-3-med',
+                        'border-tertiary-200 bg-tertiary-100 text-title-3-med p-2 py-3',
                         errors && '!border-red'
                       )}
                     />
@@ -249,12 +290,12 @@ function EditProfile({ profileData }: { profileData: ProfileDetailsType }) {
                   <FormLabel className="text-body-1-med">Instagram profile</FormLabel>
                   <FormControl>
                     <div className="relative flex items-center">
-                      <InstagramIcon className="absolute ml-4 h-5 w-5 fill-primary" />
+                      <InstagramIcon className="fill-primary absolute ml-4 h-5 w-5" />
                       <Input
                         type="text"
                         placeholder="@username"
                         className={cn(
-                          'border border-tertiary-200 bg-tertiary-100 pl-12 text-title-3-med',
+                          'border-tertiary-200 bg-tertiary-100 text-title-3-med border pl-12',
                           errors && '!border-red'
                         )}
                         {...field}
@@ -277,12 +318,12 @@ function EditProfile({ profileData }: { profileData: ProfileDetailsType }) {
                   <FormLabel className="text-body-1-med">LinkedIn profile</FormLabel>
                   <FormControl>
                     <div className="relative flex items-center">
-                      <LinkedInIcon className="absolute ml-4 h-5 w-5 fill-primary" />
+                      <LinkedInIcon className="fill-primary absolute ml-4 h-5 w-5" />
                       <Input
                         type="text"
                         placeholder="https://www.linkedin.com/profile/username"
                         className={cn(
-                          'border border-tertiary-200 bg-tertiary-100 pl-12 text-title-3-med',
+                          'border-tertiary-200 bg-tertiary-100 text-title-3-med border pl-12',
                           errors && '!border-red'
                         )}
                         {...field}
@@ -305,12 +346,12 @@ function EditProfile({ profileData }: { profileData: ProfileDetailsType }) {
                   <FormLabel className="text-body-1-med">X profile</FormLabel>
                   <FormControl>
                     <div className="relative flex items-center">
-                      <TwitterIcon className="absolute ml-4 h-5 w-5 fill-primary " />
+                      <TwitterIcon className="fill-primary absolute ml-4 h-5 w-5" />
                       <Input
                         type="text"
                         placeholder="@username"
                         className={cn(
-                          'border border-tertiary-200 bg-tertiary-100 pl-12 text-title-3-med',
+                          'border-tertiary-200 bg-tertiary-100 text-title-3-med border pl-12',
                           errors && '!border-red'
                         )}
                         {...field}
@@ -333,12 +374,12 @@ function EditProfile({ profileData }: { profileData: ProfileDetailsType }) {
                   <FormLabel className="text-body-1-med">TikTok profile</FormLabel>
                   <FormControl>
                     <div className="relative flex items-center">
-                      <TikTokIcon className="absolute ml-4 h-5 w-5 fill-primary" />
+                      <TikTokIcon className="fill-primary absolute ml-4 h-5 w-5" />
                       <Input
                         type="text"
                         placeholder="@username"
                         className={cn(
-                          'border border-tertiary-200 bg-tertiary-100 pl-12 text-title-3-med',
+                          'border-tertiary-200 bg-tertiary-100 text-title-3-med border pl-12',
                           errors && '!border-red'
                         )}
                         {...field}
@@ -352,9 +393,9 @@ function EditProfile({ profileData }: { profileData: ProfileDetailsType }) {
           />
         </div>
 
-        <span className="flex flex-col gap-y-3 text-title-3-demi">
+        <span className="text-title-3-demi flex flex-col gap-y-3">
           {form.formState.errors.root && (
-            <p className="flex items-center justify-center text-title-3-med text-supplementary-red">
+            <p className="text-title-3-med text-supplementary-red flex items-center justify-center">
               {form.formState.errors.root.message}
             </p>
           )}

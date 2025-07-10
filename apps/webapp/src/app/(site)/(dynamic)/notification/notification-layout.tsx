@@ -2,12 +2,12 @@
 import { type NotificationsType } from '@lib/schemas/notification/notification'
 import { GetNotificationAttributedText } from './notification-tab-view'
 import { CustomAvatar } from '@components/custom/custom-avatar'
-import { getNotifications, notificationsCount, readNotifications } from '@lib/api/notification'
+import { notificationsCount, readNotifications, fetchNotifications } from '@lib/api/notification'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { generatePathname } from '@lib/generate-notification-pathparam'
 import { useMotionValueEvent, useScroll } from 'motion/react'
-import { useEffect, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { Loader } from '@components/ui/loader'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { BellIcon } from '@icons/bell-icon'
@@ -17,13 +17,58 @@ import icBack from '@icons/icBack.svg'
 import { Shimmer } from '@components/ui/shimmer'
 
 export function NotificationLayout() {
-  const { data, isLoading, fetchNextPage, isFetchingNextPage } = getNotifications(10)
-  const notifications = data?.pages.flatMap((item) => item.notifications)
   const { isMobile, user, setInitialData } = useGenuinOptions((state) => ({
     isMobile: state.isMobile,
     user: state.user,
     setInitialData: state.setData,
   }))
+
+  // Local state for notifications
+  const [notifications, setNotifications] = React.useState<any[]>([])
+  const [isLoading, setIsLoading] = React.useState<boolean>(true)
+  const [isFetchingNextPage, setIsFetchingNextPage] = React.useState<boolean>(false)
+  const [end, setEnd] = React.useState<boolean>(false)
+  const limit = 10
+
+  // Fetch first page on mount
+  React.useEffect(() => {
+    let mounted = true
+    async function loadInitial() {
+      setIsLoading(true)
+      try {
+        const res = await fetchNotifications(limit)
+        if (mounted) {
+          setNotifications(res.notifications)
+          setEnd(res.end)
+        }
+      } catch (e) {
+        // Optionally handle error
+      } finally {
+        if (mounted) setIsLoading(false)
+      }
+    }
+    loadInitial()
+    return () => {
+      mounted = false
+    }
+  }, [])
+
+  // Fetch next page for infinite scroll
+  const fetchNextPage = React.useCallback(async () => {
+    if (isFetchingNextPage || end || notifications.length === 0) return
+    setIsFetchingNextPage(true)
+    try {
+      const last = notifications[notifications.length - 1]
+      const pageParam = last ? { last_notification_id: last.notification_id } : {}
+      const res = await fetchNotifications(limit, pageParam)
+      setNotifications((prev) => [...prev, ...res.notifications])
+      setEnd(res.end)
+    } catch (e) {
+      // Optionally handle error
+    } finally {
+      setIsFetchingNextPage(false)
+    }
+  }, [isFetchingNextPage, end, notifications])
 
   async function fetchNotificationCount() {
     const response = await notificationsCount()
@@ -41,7 +86,7 @@ export function NotificationLayout() {
     }
   }, [])
 
-  if (isLoading)
+  if (isLoading) {
     return (
       <div className={`h-full w-full p-6 sm:w-1/2`}>
         <Shimmer className="h-8 w-2/3" />
@@ -61,16 +106,16 @@ export function NotificationLayout() {
         </div>
       </div>
     )
+  }
 
-  if (data)
-    return (
-      <Notifications
-        notificationDetails={notifications}
-        fetchNextPage={fetchNextPage}
-        isFetchingNextPage={isFetchingNextPage}
-        isMobile={isMobile}
-      />
-    )
+  return (
+    <Notifications
+      notificationDetails={notifications}
+      fetchNextPage={fetchNextPage}
+      isFetchingNextPage={isFetchingNextPage}
+      isMobile={isMobile}
+    />
+  )
 }
 
 // TODO: FIX type issues and CustomAvatar of community doesn't get set.

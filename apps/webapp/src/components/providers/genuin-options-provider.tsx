@@ -2,7 +2,7 @@
 import { type ConfigType, useGenuinOptions } from '@lib/stores/genuin-options'
 import { getSizeBoxes } from '@lib/utils/common/size-box'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useLayoutEffect } from 'react'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import FingerprintJS from '@fingerprintjs/fingerprintjs'
 import { setBrandIdInAxiosInstance, ejectAuthTokenInterceptor, setAuthTokenInAxiosInstance } from '@lib/api/instance'
@@ -11,7 +11,6 @@ import { saveVisitor, ssoAutoLogin } from '@components/common/modals/authenticat
 import { notificationsCount } from '@lib/api/notification'
 import { useRefreshToken } from '@/hooks/use-refresh-token'
 import { rudderStackIdentify } from '@/services/analytics/useRudderAnalytics'
-import { getBalanceAPI } from '@/lib/api/wallet'
 import { type User } from 'next-auth'
 import { useSession, signIn } from 'next-auth/react'
 import { RepostModal } from '@components/common/modals/repost'
@@ -19,6 +18,7 @@ import { checkAndResetGestures, replaceUrlWithoutReload, syncTapBehavior } from 
 import { useIHeartDemoStates } from './iheart-demo-provider'
 import { WEB_CONFIGS } from '@/lib/constants'
 import { useKsGestureStore } from '../common/gestures/gesture-store'
+import { Loader } from '../ui/loader'
 
 const AuthenticationModal = dynamic(
   async () => await import('@components/common/modals/authentication').then((comp) => comp.AuthenticationModal.ui)
@@ -36,7 +36,7 @@ type Props = {
   user?: User | null
 }
 // it won't log any consoles in production.
- 
+
 if (process.env.NEXT_PUBLIC_CURRENT_ENV === 'prod') console.log = () => {}
 
 // TODO: separate this component into 2 comps with once has auth and second doesn't have auth.
@@ -46,8 +46,9 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
   const { resetAllGestures } = useKsGestureStore()
   const { data: sessionData, status } = useSession()
   const { shouldShowIHeartDemo } = useIHeartDemoStates()
-  const { setInitialData } = useGenuinOptions((state) => ({
+  const { setInitialData, isLoading } = useGenuinOptions((state) => ({
     setInitialData: state.setData,
+    isLoading: state.isLoading,
   }))
   const { setDeviceId, visitorAdded, setVisitor } = useLocalStorage((state) => ({
     setDeviceId: state.setDeviceId,
@@ -76,10 +77,10 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     if (response.status) setInitialData({ notificationCount: response.count })
   }
 
-  async function fetchWalletBalance() {
-    const { wallet } = await getBalanceAPI({ isCurrentBalance: true })
-    setInitialData({ walletBalance: Number(wallet.balance) })
-  }
+  // async function fetchWalletBalance() {
+  //   const { wallet } = await getBalanceAPI({ isCurrentBalance: true })
+  //   setInitialData({ walletBalance: Number(wallet.balance) })
+  // }
 
   useEffect(() => {
     const autoLoginToken = searchParams.get('auto_login_token')
@@ -115,7 +116,7 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
       interceptorId = setAuthTokenInAxiosInstance(user.accessToken)
       setInitialData({ user, isLoading: false })
       void fetchNotificationCount()
-      void fetchWalletBalance()
+      // void fetchWalletBalance()
     }
     void rudderStackIdentify()
 
@@ -124,18 +125,16 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     }
   }, [])
 
-  useEffect(() => {
-    if (!!user || status === 'loading') return
-    if (status === 'unauthenticated') {
+  useLayoutEffect(() => {
+    if (!user || status === 'loading') return
+    if (user) {
+      setInitialData({ user, isLoading: false })
+      setAuthTokenInAxiosInstance(user.accessToken)
+      void fetchNotificationCount()
+      // void fetchWalletBalance()
+    } else {
       setInitialData({ user: undefined, isLoading: false })
       setAuthTokenInAxiosInstance(undefined)
-    } else {
-      setInitialData({ user: sessionData?.user, isLoading: false })
-      setAuthTokenInAxiosInstance(sessionData?.user?.accessToken)
-      if (sessionData?.user) {
-        void fetchNotificationCount()
-        void fetchWalletBalance()
-      }
     }
   }, [user, status])
 
@@ -233,6 +232,15 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
       window.removeEventListener('focus', handleFocus)
     }
   }, [])
+
+  if (status === 'loading') {
+    console.log('stuck here in loader of genuin options provider')
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <Loader size="md" />
+      </div>
+    )
+  }
 
   return (
     <>

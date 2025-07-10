@@ -13,6 +13,7 @@ export default async function Page() {
     redirect(PATH_NAME.home())
   }
   if (isMobile) return <NotificationLayout />
+
   return (
     <Layout>
       <NotificationLayout />
