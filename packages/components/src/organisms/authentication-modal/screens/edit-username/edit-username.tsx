@@ -65,7 +65,11 @@ export function EditUserName({
     useUpdateUserMutation({
       onSuccess: ({ status }) => {
         if (status) {
-          updateUser({ ...user, nickname: form.getValues("username"), usernameSet: true });
+          updateUser({
+            ...user,
+            nickname: form.getValues("username"),
+            usernameSet: true,
+          });
         }
         closeModal();
       },

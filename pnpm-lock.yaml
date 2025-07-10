@@ -462,8 +462,8 @@ importers:
         specifier: ^1.1.1
         version: 1.1.1(@types/react-dom@19.1.6)(@types/react@19.1.8)(react-dom@19.1.0)(react@19.1.0)
       cropperjs:
-        specifier: ^2.0.0
-        version: 2.0.0
+        specifier: 1.5.13
+        version: 1.5.13
       dompurify:
         specifier: ^3.2.5
         version: 3.2.6
@@ -495,7 +495,7 @@ importers:
         specifier: ^2.14.10
         version: 2.14.10
       react-cropper:
-        specifier: ^2.3.3
+        specifier: 2.3.3
         version: 2.3.3(react@19.1.0)
       react-flag-kit:
         specifier: ^1.1.1
@@ -10331,8 +10331,8 @@ packages:
       postcss-media-query-parser: 0.2.3
     dev: true
 
-  /cropperjs@1.6.2:
-    resolution: {integrity: sha512-nhymn9GdnV3CqiEHJVai54TULFAE3VshJTXSqSJKa8yXAKyBKDWdhHarnlIPrshJ0WMFTGuFvG02YjLXfPiuOA==}
+  /cropperjs@1.5.13:
+    resolution: {integrity: sha512-by7jKAo73y5/Do0K6sxdTKHgndY0NMjG2bEdgeJxycbcmHuCiMXqw8sxy5C5Y5WTOTcDGmbT7Sr5CgKOXR06OA==}
     dev: false
 
   /cropperjs@2.0.0:
@@ -15901,7 +15901,7 @@ packages:
     peerDependencies:
       react: ^19.1.0 || 19
     dependencies:
-      cropperjs: 1.6.2
+      cropperjs: 1.5.13
       react: 19.1.0
     dev: false
 

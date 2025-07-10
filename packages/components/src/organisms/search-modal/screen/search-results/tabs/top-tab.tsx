@@ -150,13 +150,16 @@ export function TopTab({
                   slug: community.slug,
                   description: community.description || "",
                   dp: community.dp || "",
+                  is_community_join_requested:
+                    community.is_community_join_requested,
+                  logged_in_user_role: community.logged_in_user_role,
                   banner: "",
                   stats: {
                     members: community.no_of_members || 0,
                     groups: community.no_of_loops || 0,
                     posts: community.no_of_loops || 0,
                   },
-                  type: community.type === 2   ? "PRIVATE" : "PUBLIC",
+                  type: community.type === 2 ? "PRIVATE" : "PUBLIC",
                 }}
                 variant="search"
                 url={urlGenerators.community(community.slug)}

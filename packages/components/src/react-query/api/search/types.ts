@@ -156,7 +156,7 @@ export const CommunityTopResultSchema = z.object({
   no_of_loops: z.number().default(0),
   no_of_videos: z.number().default(0),
   type: z.number().nullish(),
-  logged_in_user_status: z.number().optional(),
+  logged_in_user_role: z.number().optional(),
   is_community_join_requested: z.boolean().optional(),
   brand: BrandSchema.nullish(),
 });

@@ -343,7 +343,6 @@ function FeedViewCore({
         {/* For Interruption */}
         {shouldShowDialog && dialogType && (
           <AuthenticationModal
-            key={`auth-modal-${dialogType}`}
             open={shouldShowDialog}
             onOpenChange={() => {
               closeDialog();

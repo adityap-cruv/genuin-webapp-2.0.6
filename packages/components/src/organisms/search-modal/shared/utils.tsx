@@ -19,7 +19,7 @@ export const searchDataTransformers = {
     description: community.description || "",
     handle: community.handle || "",
     slug: community.slug || "",
-    logged_in_user_status: community.logged_in_user_status || "",
+    logged_in_user_role: community.logged_in_user_role || "",
     is_community_join_requested: community.is_community_join_requested || false,
     stats: {
       members: community.no_of_members,

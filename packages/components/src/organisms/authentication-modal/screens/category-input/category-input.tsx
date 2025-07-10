@@ -13,17 +13,21 @@ import { useAuthenticationModalContext } from "../../context";
 export type CategoryInputProps = ComponentProps<"div">;
 
 export function CategoryInput({ ...props }: CategoryInputProps) {
-  const { updateUser } = useAuthContext();
+  const { updateUser, user } = useAuthContext();
   const { isFetching, data: categories } = useGetCategoriesQuery();
   const [error, setError] = useState<string | null>(null);
-  const { setStep } = useAuthenticationModalContext();
+  const { setStep, closeModal } = useAuthenticationModalContext();
 
   const { mutate: addCategories, isPending } = useAddCategoriesMutation({
     onSuccess: (response) => {
       if (response) {
         updateUser({ hasTopics: true });
+        if (!user?.usernameSet) {
+          setStep("EDIT_USERNAME");
+        } else {
+          closeModal();
+        }
       }
-      setStep("EDIT_USERNAME");
     },
     onError: (error) => {
       // TODO: show toast if error occurs.
@@ -53,12 +57,7 @@ export function CategoryInput({ ...props }: CategoryInputProps) {
     setIsSurpriseMe(true);
     const allTopicIds = getAllTopicIds();
     setSelectedCategory(allTopicIds);
-    addCategories(allTopicIds, {
-      onSettled: () => {
-        updateUser({ hasTopics: true });
-        setIsSurpriseMe(false);
-      },
-    });
+    addCategories(allTopicIds);
   };
 
   return (

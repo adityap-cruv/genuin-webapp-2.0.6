@@ -8,7 +8,7 @@ export type CommunityInfoType = {
   description: string;
   handle?: string;
   slug?: string;
-  logged_in_user_status?: number;
+  logged_in_user_role?: number;
   is_community_join_requested?: boolean;
   stats: {
     members: number;

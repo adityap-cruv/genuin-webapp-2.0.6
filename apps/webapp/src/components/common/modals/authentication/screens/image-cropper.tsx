@@ -1,6 +1,6 @@
 import React, { createRef, useState } from 'react'
 import Cropper from 'react-cropper'
-// import 'cropperjs/dist/cropper.css'
+import 'cropperjs/dist/cropper.css'
 import { Button } from '@components/ui/button'
 import { useAuthenticationModalStore } from '../store'
 import { ModalShell } from '../modal-shell'
@@ -79,7 +79,7 @@ export function ImageCropper() {
   return (
     <ModalShell className="relative">
       {pathname.includes('settings') && (
-        <div className="absolute -right-0 -top-8">
+        <div className="absolute -top-8 -right-0">
           <CloseIcon
             onClick={() => {
               setImage({ image: user?.image ?? undefined, isAvatar: false })
@@ -88,7 +88,7 @@ export function ImageCropper() {
           />
         </div>
       )}
-      <h3 className="mb-4 flex w-full items-center justify-center text-title-1-demi sm:text-heading-3">
+      <h3 className="text-title-1-demi sm:text-heading-3 mb-4 flex w-full items-center justify-center">
         Edit Profile picture
       </h3>
       <div className="pb-2">
@@ -113,11 +113,11 @@ export function ImageCropper() {
       </div>
       <Button
         disabled={uploadingImage}
-        className="w-full text-title-3-demi !text-monochrome-white"
+        className="text-title-3-demi !text-monochrome-white w-full"
         onClick={getCropData}>
         {uploadingImage ? <p>Uploading...</p> : <p>Save Changes</p>}
       </Button>
-      {error && <p className="flex items-center justify-center text-title-3-med text-supplementary-red">{error}</p>}
+      {error && <p className="text-title-3-med text-supplementary-red flex items-center justify-center">{error}</p>}
     </ModalShell>
   )
 }

@@ -220,7 +220,7 @@ export function CommunityCard({
 }) {
   const [role, setRole] = useState<CommunityUserRole>(
     mapCommunityUserRole(
-      community.logged_in_user_status,
+      community.logged_in_user_role,
       community.is_community_join_requested
     )
   );
