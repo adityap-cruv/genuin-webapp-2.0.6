@@ -13,7 +13,7 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "lint:fix": "lint . --fix",
-    "br": "next build && node .next/standalone/apps/webapp/server.js",
+    "br": "env-cmd -f ../../.env.production.local next build && cp -r .next/static .next/standalone/apps/webapp/.next/ && cp -r public .next/standalone/apps/webapp/public/ && env-cmd -f ../../.env.production.local node .next/standalone/apps/webapp/server.js",
     "check-node": "node ../../scripts/check-node-version.js",
     "predev": "ALLOW_NODE_VERSION_WARNING=true npm run check-node",
     "predev:turbo": "ALLOW_NODE_VERSION_WARNING=true npm run check-node"
