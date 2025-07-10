@@ -142,7 +142,7 @@ async function getHeaders() {
               "script-src 'self'",
               'https://cdn.rudderlabs.com',
               'https://cdn.jsdelivr.net',
-              'https://*.qa.begenuin.com',
+              'https://*.begenuin.com',
               'https://*.vercel-insights.com',
               ...(isDev
                 ? ["'unsafe-inline'", "'unsafe-eval'", 'http://localhost:*', 'ws://localhost:*']
@@ -150,9 +150,12 @@ async function getHeaders() {
             ].join(' '),
 
             // styles: self + inline + dev HMR
-            ["style-src 'self' 'unsafe-inline'", ...(isDev ? ['http://localhost:*', 'ws://localhost:*'] : [])].join(
-              ' '
-            ),
+            [
+              "style-src 'self' 'unsafe-inline'",
+              'https://*.begenuin.com',
+              'https://fonts.googleapis.com',
+              ...(isDev ? ['http://localhost:*', 'ws://localhost:*'] : []),
+            ].join(' '),
 
             // images
             `img-src 'self' data: blob: ${HOSTS.media} ${HOSTS.bunnyCDN} https://*.picsum.photos https://picsum.photos`,
@@ -167,6 +170,7 @@ async function getHeaders() {
               "connect-src 'self'",
               ...(isDev ? ['http://localhost:*', 'ws://localhost:*'] : []),
               'https://api.rudderstack.com',
+              'https://*.begenuin.com',
               HOSTS.api,
               HOSTS.rudder,
               HOSTS.media,

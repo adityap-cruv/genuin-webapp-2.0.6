@@ -32,9 +32,10 @@ export function tryJsonParse<T = unknown>(data: string): T | null {
  */
 export function getWebpUrlForImage(url?: string | null): string {
   if (!url) return "";
-  return url.includes("/uploads/")
-    ? url.replace(/(\/)([^/]+)\.([^/.]+)$/, "$1webp/$2.webp")
-    : url;
+  return url;
+  // return url.includes("/uploads/")
+  //   ? url.replace(/(\/)([^/]+)\.([^/.]+)$/, "$1webp/$2.webp")
+  //   : url;
 }
 
 /**
@@ -201,9 +202,10 @@ export function convertISOToLocalDateFormate(isoString: string): string {
 //   return encrypted.toString("base64");
 // }
 
-
 export function checkAndAppendHttps(link: string): string {
-  return link?.startsWith('http') || link?.startsWith('https')
+  return link?.startsWith("http") || link?.startsWith("https")
     ? link
-    : (process.env.NEXT_PUBLIC_CURRENT_ENV === 'local' ? 'http://' : 'https://') + link
+    : (process.env.NEXT_PUBLIC_CURRENT_ENV === "local"
+        ? "http://"
+        : "https://") + link;
 }
