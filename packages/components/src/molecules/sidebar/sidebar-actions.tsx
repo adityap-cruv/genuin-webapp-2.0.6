@@ -6,6 +6,11 @@ import { Link } from "@genuin/components/molecules/link";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { usePathname } from "@genuin/components/hooks/use-pathname";
 import { NEXT_PUBLIC_HOST_URL } from "@genuin/components/lib/utils/env";
+import { useAuthContext } from "@genuin/components/context/auth";
+import {
+  NotificationCountResponse,
+  useNotificationCount,
+} from "@genuin/components/react-query/api/notification/get-notification-count";
 
 export function SidebarActions({
   brandConfiguredTerms,
@@ -15,25 +20,45 @@ export function SidebarActions({
   brandConfiguredPrivacy: string | null;
 }) {
   const pathName = usePathname();
-  console.log("SidebarActions pathName", pathName);
+  const { user } = useAuthContext();
+  const { data: notificationData } = useNotificationCount({
+    // Only enable the query if the user is logged in
+    enabled: !!user,
+  });
+
   return (
     <div className="gencl:px-3 gencl:py-4 gencl:!w-full gencl:min-h-48 gencl:border-b gencl:border-secondary-100">
       {SideBarActionLinks.map((links, index) => {
+        // Skip notification link if user is not logged in
+        if (links.type === "notification" && !user) return null;
         const Icon = links.icon;
+        const isNotification = links.type === "notification";
+        const notificationCount =
+          (notificationData as NotificationCountResponse)?.count || 0;
+        const showNotificationCount = isNotification && notificationCount > 0;
+
         return (
           <Link
             key={index}
             href={buildPageUrl({ type: links.type })}
             className="gencl:flex gencl:rounded-lg gencl:items-center gencl:gap-4 gencl:px-2 gencl:py-2 gencl:xl:py-4 gencl:xl:px-3 gencl:hover:bg-secondary-50 gencl:cursor-pointer"
           >
-            <Icon
-              className="gencl:w-6 gencl:h-6"
-              variant={
-                pathName === buildPageUrl({ type: links.type })
-                  ? "active"
-                  : "default"
-              }
-            />
+            <div className="gencl:w-6 gencl:h-6 gencl:relative">
+              <Icon
+                className="gencl:w-6 gencl:h-6"
+                variant={
+                  pathName === buildPageUrl({ type: links.type })
+                    ? "active"
+                    : "default"
+                }
+              />
+              {showNotificationCount && (
+                <span className="gencl:absolute gencl:-top-1 gencl:-right-1 gencl:inline-flex gencl:items-center gencl:justify-center gencl:w-4 gencl:h-4 gencl:text-body-2-semi-bold gencl:text-white gencl:bg-primary gencl:rounded-full">
+                  {notificationCount > 99 ? "+" : notificationCount}
+                </span>
+              )}
+            </div>
+
             <p className="gencl:text-body-1-medium gencl:hidden gencl:xl:!block">
               {links.text}
             </p>

@@ -3,6 +3,7 @@ import {
   PopularIcon,
   ExploreIcon,
   LatestIcon,
+  NotificationIcon,
 } from "@genuin/ui/icons";
 
 export const SideBarActionLinks = [
@@ -25,5 +26,10 @@ export const SideBarActionLinks = [
     icon: ExploreIcon,
     text: "Explore",
     type: "explore",
+  },
+  {
+    icon: NotificationIcon,
+    text: "Notification",
+    type: "notification",
   },
 ] as const;
