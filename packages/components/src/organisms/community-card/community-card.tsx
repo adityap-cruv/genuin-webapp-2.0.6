@@ -6,7 +6,7 @@ import { Skeleton } from "@genuin/ui/components/skeleton";
 import { CommunityCardProps } from "./community-card.types";
 import { ReadMore } from "@genuin/ui/components/read-more";
 import { JoinCommunityButton } from "@genuin/components/molecules/join-community-button";
-import { useState, MouseEvent } from "react";
+import { MouseEvent } from "react";
 import { CommunityUserRole } from "@genuin/components/types/post";
 import {
   communityCardVariants,
@@ -58,19 +58,17 @@ function CommunityName({
 function CommunityCardHeader({
   community,
   variant,
-  role,
-  setRole,
   url,
   onSelect = () => {},
   shouldCloseModal = false,
+  onCommunityJoinStatusChange,
 }: {
   community: CommunityCardProps["community"];
   variant: CommunityCardVariant;
-  role: CommunityUserRole;
-  setRole: (role: CommunityUserRole) => void;
   url?: string;
   onSelect?: () => void;
   shouldCloseModal?: boolean;
+  onCommunityJoinStatusChange?: (newRole: CommunityUserRole) => void;
 }) {
   const isCardClickable = variant === "recent" || variant === "suggestion";
 
@@ -171,17 +169,26 @@ function CommunityCardHeader({
               />
             </div>
           </div>
-          <div className="gencl:flex gencl:items-center gencl:gap-2">
+          <div
+            className="gencl:flex gencl:items-center gencl:gap-2"
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+            }}
+          >
             <JoinCommunityButton
               size="sm"
-              role={role}
+              role={mapCommunityUserRole(
+                community.logged_in_user_role,
+                community.is_community_join_requested
+              )}
               isPrivate={false}
               communityId={community.id}
               communityHandle={community.handle || ""}
               communityName={community.name}
               slug={community.slug || ""}
               roleTexts={{ UNJOINED: "Join" }}
-              onCommunityJoinStatusChange={setRole}
+              onCommunityJoinStatusChange={onCommunityJoinStatusChange}
             >
               Join
             </JoinCommunityButton>
@@ -212,20 +219,15 @@ export function CommunityCard({
   url,
   onSelect,
   shouldCloseModal = false,
+  onCommunityJoinStatusChange,
   ...props
 }: CommunityCardProps & {
   variant?: CommunityCardVariant;
   url?: string;
   onSelect?: (community: CommunityCardProps["community"]) => void;
   shouldCloseModal?: boolean;
+  onCommunityJoinStatusChange?: (newRole: CommunityUserRole) => void;
 }) {
-  const [role, setRole] = useState<CommunityUserRole>(
-    mapCommunityUserRole(
-      community.logged_in_user_role,
-      community.is_community_join_requested
-    )
-  );
-
   const cardContent = (
     <div
       className={cn(communityCardVariants({ variant }), className)}
@@ -234,10 +236,9 @@ export function CommunityCard({
       <CommunityCardHeader
         community={community}
         variant={variant}
-        role={role}
-        setRole={setRole}
         url={url}
         shouldCloseModal={shouldCloseModal}
+        onCommunityJoinStatusChange={onCommunityJoinStatusChange}
       />
       {variant !== "suggestion" && variant !== "recent" && (
         <>
@@ -266,22 +267,26 @@ export function CommunityCard({
                     textClassName="gencl:!text-body-1-semi-bold gencl:line-clamp-2 gencl:break-all"
                   />
                 </div>
-                <JoinCommunityButton
-                  role={role}
-                  isPrivate={false}
-                  communityId={community.id}
-                  communityHandle=""
-                  communityName=""
-                  slug=""
-                  roleTexts={{ UNJOINED: "Join" }}
-                  onCommunityJoinStatusChange={setRole}
-                  onClick={(e: MouseEvent<HTMLButtonElement>) => {
+                <div
+                  onClick={(e) => {
                     e.stopPropagation();
                     e.preventDefault();
                   }}
                 >
-                  Join
-                </JoinCommunityButton>
+                  <JoinCommunityButton
+                    role={mapCommunityUserRole(
+                      community.logged_in_user_role,
+                      community.is_community_join_requested
+                    )}
+                    isPrivate={false}
+                    communityId={community.id}
+                    communityHandle=""
+                    communityName=""
+                    slug=""
+                    roleTexts={{ UNJOINED: "Join" }}
+                    onCommunityJoinStatusChange={onCommunityJoinStatusChange}
+                  />
+                </div>
               </div>
             ) : null}
             {community?.description && (

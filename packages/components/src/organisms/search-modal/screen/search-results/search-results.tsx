@@ -151,7 +151,10 @@ export function SearchResults({
           </TabsContent>
 
           <TabsContent value="communities" className="gencl:p-4 gencl:m-0">
-            <CommunitiesTab communities={topResults.communities} />
+            <CommunitiesTab
+              communities={topResults.communities}
+              query={query}
+            />
           </TabsContent>
 
           <TabsContent value="groups" className="gencl:p-4 gencl:m-0">

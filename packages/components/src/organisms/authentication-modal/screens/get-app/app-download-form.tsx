@@ -11,6 +11,7 @@ import { ComponentProps, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { isValidPhoneNumber } from "react-phone-number-input";
 import { useBaseContext } from "@genuin/components/context/base";
 import { Link } from "@genuin/components/molecules/link";
 import { SubmitButton } from "../../submit-button";
@@ -22,12 +23,23 @@ import { useSearchParams } from "@genuin/components/hooks/use-search-params";
 // Form validation schema
 const formSchema = z
   .object({
-    phoneNumber: z.string().optional(),
-    email: z.string().email("Please enter a valid email address").optional(),
+    phoneNumber: z
+      .string()
+      .or(z.literal(""))
+      .optional()
+      .refine((val) => val === "" || isValidPhoneNumber(val ?? ""), {
+        message: "Enter a valid phone number",
+      }),
+    email: z
+      .string()
+      .email("Please enter a valid email address")
+      .or(z.literal(""))
+      .optional(),
+    _form: z.string().optional(),
   })
-  .refine((data) => data.phoneNumber || data.email, {
-    message: "Please provide either a phone number or email address",
-    path: ["phoneNumber"], // Show error on phone number field
+  .refine((data) => !!data.email || !!data.phoneNumber, {
+    message: "Either phone or email is required",
+    path: ["_form"],
   });
 
 type FormData = z.infer<typeof formSchema>;
@@ -45,9 +57,12 @@ export function AppDownloadForm({
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
+    mode: "onChange",
+    criteriaMode: "firstError",
     defaultValues: {
       phoneNumber: "",
       email: "",
+      _form: "",
     },
   });
 
@@ -84,10 +99,18 @@ export function AppDownloadForm({
                 <FormControl>
                   <PhoneInput
                     value={field.value as string & { __tag: "E164Number" }}
-                    onChange={field.onChange}
                     placeholder="Enter your phone number"
                     defaultCountry="US"
                     international
+                    className="gencl:w-full"
+                    popoverClassName="gencl:absolute gencl:z-50"
+                    onChange={(value) => {
+                      form.setValue("phoneNumber", value);
+                      void form.trigger();
+                    }}
+                    onBlur={() => {
+                      void form.trigger();
+                    }}
                   />
                 </FormControl>
                 <FormMessage />

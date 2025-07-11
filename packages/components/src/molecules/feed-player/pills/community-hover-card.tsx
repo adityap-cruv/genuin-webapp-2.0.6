@@ -67,7 +67,7 @@ export function CommunityHoverCard({
                     slug: communityDetails.brand?.slug ?? "",
                   })}
                   userLogoType={communityDetails.brand?.userLogo}
-                  userName={"@" + communityDetails.handle}
+                  userName={"@" + communityDetails.brand?.handle}
                 />
               </>
             )

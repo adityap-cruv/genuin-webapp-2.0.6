@@ -89,6 +89,7 @@ export function parseFeed(
           slug: item.community.brand.brand_slug,
           webLogo: item.community.brand.brand_web_logo || null,
           userLogo: item.community.brand.brand_user_logo || null,
+          handle: item.community.brand.brand_handle ?? undefined,
         },
       }),
     },

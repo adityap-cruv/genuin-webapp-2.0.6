@@ -32,6 +32,7 @@ const Brand = z
     favicon: z.string(),
     brandSystemUserId: z.string(),
     slug: z.string(),
+    handle: z.string().optional()
   })
   .nullish();
 

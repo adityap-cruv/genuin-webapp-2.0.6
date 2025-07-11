@@ -78,6 +78,9 @@ export function TrendingCommunities() {
                 description: community.description,
                 dp: community.dp,
                 name: community.name,
+                handle: community.handle,
+                slug: community.slug,
+                type: "PUBLIC",
                 stats: {
                   members: community.no_of_members,
                   groups: 0,

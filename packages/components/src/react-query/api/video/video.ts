@@ -95,6 +95,7 @@ async function getVideoDetails(slug: string): Promise<PostDetailsType> {
             id: loopDetails.community.brand.id,
             logo: loopDetails.community.brand.logo ?? null,
             webLogo: loopDetails.community.brand.webLogo ?? null,
+            handle: loopDetails.community.brand.handle ?? ''
           }
         : undefined,
     },

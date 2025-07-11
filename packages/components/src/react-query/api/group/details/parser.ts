@@ -72,6 +72,7 @@ export function parseGroupDetails(
             favicon: data.community.brand.favicon,
             brandSystemUserId: data.community.brand.brand_system_user_id,
             slug: data.community.brand.brand_slug,
+            handle: data.community.brand.handle
           }
         : undefined,
     },

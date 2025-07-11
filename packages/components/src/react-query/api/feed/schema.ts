@@ -51,6 +51,7 @@ export const BrandSchema = z.object({
   webLogo: z.string().nullish(),
   slug: z.string(),
   userLogo: z.number().nullish(),
+  handle: z.string().optional(),
 });
 
 // Define the community schema

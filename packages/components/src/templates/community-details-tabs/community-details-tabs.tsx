@@ -217,7 +217,9 @@ function CommunityMembers({
     }),
     userName: member.nickname,
     brand: {
-      userLogoType: member.brand?.brand_user_logo,
+      brand_user_logo: member.brand?.brand_user_logo ?? -1,
+      brand_id: member.brand?.brand_id ?? 0,
+      brand_slug: member.brand?.brand_slug ?? "",
     },
   });
 

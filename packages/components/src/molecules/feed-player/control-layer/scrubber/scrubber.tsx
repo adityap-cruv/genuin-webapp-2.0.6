@@ -95,7 +95,7 @@ export function Scrubber({
       showSeeker={showSeeker}
       playerTimeState={playerTimeState}
       onValueCommit={handleValueCommit}
-      onMouseEnter={() => setShowSeeker?.(true)}
+      // onMouseEnter={() => setShowSeeker?.(true)}
       // onMouseLeave={() => setShowSeeker?.(false)}
       {...restProps}
     />

@@ -10,8 +10,12 @@ import { HorizontalScrollContainer } from "@genuin/components/molecules/horizont
 import { DialogClose } from "@genuin/ui/components/dialog";
 import { urlGenerators } from "../../../shared";
 import { mapGroupJoinStatus } from "@genuin/components/lib/utils";
-import { updateGroupJoinStatusInSearchResults } from "@genuin/components/react-query/api/search";
+import {
+  updateGroupJoinStatusInSearchResults,
+  updateCommunityJoinStatusInSearchResults,
+} from "@genuin/components/react-query/api/search";
 import { GroupUserStatusType } from "@genuin/components/types/roles";
+import { CommunityUserRole } from "@genuin/components/types/post";
 
 type SectionHeaderProps = {
   title: string;
@@ -166,6 +170,14 @@ export function TopTab({
                 shouldCloseModal={true}
                 onSelect={() => {
                   console.log("Community selected:", community);
+                }}
+                onCommunityJoinStatusChange={(newRole: CommunityUserRole) => {
+                  // Update the community join status in search results
+                  updateCommunityJoinStatusInSearchResults(
+                    query,
+                    community.community_id,
+                    newRole
+                  );
                 }}
               />
             </div>

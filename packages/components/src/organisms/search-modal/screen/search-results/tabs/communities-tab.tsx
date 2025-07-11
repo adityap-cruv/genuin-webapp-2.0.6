@@ -1,19 +1,25 @@
 import { ComponentProps, useMemo } from "react";
 import { cn } from "@genuin/ui/lib/utils";
 import { CommunityCard } from "@genuin/components/organisms/community-card";
-import { CommunityTopResultType } from "@genuin/components/react-query/api/search";
+import {
+  CommunityTopResultType,
+  updateCommunityJoinStatusInSearchResults,
+} from "@genuin/components/react-query/api/search";
 import {
   SearchEmptyState,
   searchDataTransformers,
   urlGenerators,
 } from "../../../shared";
+import { CommunityUserRole } from "@genuin/components/types/post";
 
 type CommunitiesTabProps = {
   communities: CommunityTopResultType[];
+  query: string;
 } & ComponentProps<"div">;
 
 export function CommunitiesTab({
   communities,
+  query,
   className,
   ...restProps
 }: CommunitiesTabProps) {
@@ -46,6 +52,10 @@ export function CommunitiesTab({
           variant="search"
           url={url}
           shouldCloseModal={true}
+          onCommunityJoinStatusChange={(newRole: CommunityUserRole) => {
+            // Update the community join status in search results
+            updateCommunityJoinStatusInSearchResults(query, key, newRole);
+          }}
         />
       ))}
     </div>

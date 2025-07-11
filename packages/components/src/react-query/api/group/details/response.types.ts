@@ -57,6 +57,7 @@ const Brand = z
     favicon: z.string(),
     brand_system_user_id: z.string(),
     brand_slug: z.string(),
+    handle: z.string().optional()
   })
   .nullish();
 

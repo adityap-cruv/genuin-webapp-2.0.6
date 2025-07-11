@@ -71,7 +71,9 @@ function GroupMembers({ slug }: { slug: string }) {
         isOwner: false,
         memberId: member.member_id,
         brand: {
-          userLogoType: member.brand?.brand_user_logo ?? null,
+          brand_id: member.brand?.brand_id ?? 0,
+          brand_slug: member.brand?.brand_slug ?? "",
+          brand_user_logo: member.brand?.brand_user_logo ?? -1,
         },
         url: buildPageUrl({
           type: !!member.brand ? "brand" : "profile",

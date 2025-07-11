@@ -6,3 +6,4 @@ export * from "./suggestions";
 export * from "./recents";
 export * from "./top-results";
 export * from "./update-group-status";
+export * from "./update-community-status";

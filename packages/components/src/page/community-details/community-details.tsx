@@ -127,7 +127,6 @@ function CommunityDetailsView({ slug }: { slug: string }) {
       members={[
         {
           bio: communityDetails.leader.bio ?? "",
-          isOwner: true,
           memberId: communityDetails.leader.member_id,
           profileImage: {
             isAvatar: communityDetails.leader.is_avatar,
@@ -142,7 +141,10 @@ function CommunityDetailsView({ slug }: { slug: string }) {
           }),
           userName: communityDetails.leader.nickname,
           brand: {
-            userLogoType: communityDetails.leader.brand?.brand_user_logo,
+            brand_user_logo:
+              communityDetails.leader.brand?.brand_user_logo ?? -1,
+            brand_id: communityDetails.leader.brand?.brand_id ?? 0,
+            brand_slug: communityDetails.leader.brand?.brand_slug ?? "",
           },
         },
         ...communityDetails.moderators.map((moderator) => ({
@@ -161,6 +163,11 @@ function CommunityDetailsView({ slug }: { slug: string }) {
               : moderator.nickname,
           }),
           userName: moderator.nickname,
+          brand: {
+            brand_user_logo: moderator.brand?.brand_user_logo ?? 2,
+            brand_id: moderator.brand?.brand_id ?? 0,
+            brand_slug: moderator.brand?.brand_slug ?? "",
+          },
         })),
       ]}
     />

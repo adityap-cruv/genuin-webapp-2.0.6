@@ -137,6 +137,7 @@ type FeedCommunityInfo = {
     brand_web_logo: string;
     name: string;
     brand_user_logo: number;
+    brand_handle?: string
   };
 };
 
