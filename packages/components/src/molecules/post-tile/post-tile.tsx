@@ -99,7 +99,16 @@ export function PostTile({
     </div>
   );
 
-  // If onClick is provided, don't wrap with Link to avoid conflicts
+  // Priority 1: If URL is provided, wrap with Link for navigation
+  if (url) {
+    const linkContent = <Link href={url}>{content}</Link>;
+    if (shouldCloseModal) {
+      return <DialogClose asChild>{linkContent}</DialogClose>;
+    }
+    return linkContent;
+  }
+
+  // Priority 2: If onClick is provided, use content as is
   if (onClick) {
     const finalContent = content;
     if (shouldCloseModal) {
@@ -108,17 +117,8 @@ export function PostTile({
     return finalContent;
   }
 
-  // If no URL is provided, return content without Link wrapper
-  if (!url) {
-    const finalContent = content;
-    if (shouldCloseModal) {
-      return <DialogClose asChild>{finalContent}</DialogClose>;
-    }
-    return finalContent;
-  }
-
-  // Default behavior: wrap with Link for navigation
-  const finalContent = <Link href={url}>{content}</Link>;
+  // Fallback: Return content without any wrapper
+  const finalContent = content;
   if (shouldCloseModal) {
     return <DialogClose asChild>{finalContent}</DialogClose>;
   }
