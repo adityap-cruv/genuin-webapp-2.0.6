@@ -330,7 +330,10 @@ export function GroupCard({
     );
 
     // For recent variant, wrap with DialogClose when shouldCloseModal is true
-    if (shouldCloseModal && variant === "recent") {
+    if (
+      shouldCloseModal &&
+      (variant === "recent" || variant === "suggestion")
+    ) {
       return <DialogClose asChild>{linkElement}</DialogClose>;
     }
 

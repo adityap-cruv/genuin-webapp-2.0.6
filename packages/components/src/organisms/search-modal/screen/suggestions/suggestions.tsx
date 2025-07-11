@@ -122,6 +122,7 @@ export function Suggestions({
                       suggestion.loop?.chat_id
                     );
                   }}
+                  shouldCloseModal={true} // Ensure modal closes on click
                 />
               </DialogClose>
             );

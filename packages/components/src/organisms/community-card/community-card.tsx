@@ -173,6 +173,7 @@ function CommunityCardHeader({
           </div>
           <div className="gencl:flex gencl:items-center gencl:gap-2">
             <JoinCommunityButton
+              size="sm"
               role={role}
               isPrivate={false}
               communityId={community.id}
