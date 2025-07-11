@@ -209,3 +209,32 @@ export function checkAndAppendHttps(link: string): string {
         ? "http://"
         : "https://") + link;
 }
+
+export function encodeVideoSourceUrl(videoSource: string) {
+  try {
+    if (!videoSource || videoSource.trim() === "") {
+      return videoSource; // Return if the source is empty or null
+    }
+    // Create a URL object to easily access query parameters
+    const url = new URL(videoSource);
+    // If there are no query parameters, return the original URL
+    if (!url.search) {
+      return videoSource;
+    }
+    // Get query parameters from the URL
+    const params = new URLSearchParams(url.search);
+
+    // Encode each parameter value
+    for (const [key, value] of params.entries()) {
+      params.set(key, encodeURIComponent(value));
+    }
+
+    // Return the complete encoded URL
+    const paramString = params.toString();
+
+    return `${url.origin}${url.pathname}${paramString ? "?" + paramString : ""}`;
+  } catch (error) {
+    console.error("Invalid URL:", error);
+    return videoSource;
+  }
+}

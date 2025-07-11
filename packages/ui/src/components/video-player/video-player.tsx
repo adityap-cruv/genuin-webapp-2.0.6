@@ -1,8 +1,14 @@
 import OpenPlayerJS from "openplayerjs";
 import type { ComponentProps } from "react";
-import { memo, useCallback, useEffect, useImperativeHandle, useRef } from "react";
+import {
+  memo,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+} from "react";
 
-import { cn } from "@genuin/ui/lib/utils";
+import { cn, encodeVideoSourceUrl } from "@genuin/ui/lib/utils";
 
 const hlsConfigs = {
   // debug: true,
@@ -100,7 +106,9 @@ export const VideoPlayer = memo(function VideoPlayer({
   ...props
 }: PlayerProps) {
   const internalVideoRef = useRef<HTMLAudioElement>(null);
-   useImperativeHandle(ref, () => internalVideoRef.current as HTMLVideoElement, [internalVideoRef.current]);
+  useImperativeHandle(ref, () => internalVideoRef.current as HTMLVideoElement, [
+    internalVideoRef.current,
+  ]);
   const videoRef = internalVideoRef;
   const playerRef = useRef<OpenPlayerJS | null>(null);
   const playRef = useRef(play);
@@ -303,7 +311,7 @@ export const VideoPlayer = memo(function VideoPlayer({
       style={{ backgroundImage: `url(${poster})`, ...style }}
       poster={poster}
       ref={videoRef}
-      src={src}
+      src={encodeVideoSourceUrl(src ?? "")}
       playsInline={playsInline}
       loop={loop}
       {...props}
