@@ -328,6 +328,7 @@ type StateType = {
 
 type ActionsType = {
   setData: (data: Partial<StateType>) => void
+  clearUserData: () => void
 }
 
 const initialState: StateType = {
@@ -376,6 +377,10 @@ export const useGenuinOptions = create(
         setData(data) {
           set(data)
         },
+        // Add a specific method to clear user data
+        clearUserData() {
+          set((state) => ({ ...state, user: undefined }))
+        }
       }
     },
     { name: 'genuin-options', storage: createJSONStorage(() => sessionStorage) }

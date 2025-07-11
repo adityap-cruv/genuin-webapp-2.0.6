@@ -126,15 +126,19 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
   }, [])
 
   useLayoutEffect(() => {
-    if (!user || status === 'loading') return
-    if (user) {
+    if (status === 'loading') return
+
+    if (user && status === 'authenticated') {
       setInitialData({ user, isLoading: false })
       setAuthTokenInAxiosInstance(user.accessToken)
       void fetchNotificationCount()
       // void fetchWalletBalance()
-    } else {
+    } else if (status === 'unauthenticated') {
+      // Explicitly clear user data when status is unauthenticated
       setInitialData({ user: undefined, isLoading: false })
       setAuthTokenInAxiosInstance(undefined)
+      // Ensure the Zustand store is fully cleared
+      useGenuinOptions.getState().clearUserData?.()
     }
   }, [user, status])
 
@@ -142,8 +146,13 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
   useEffect(() => {
     if (sessionData?.user) {
       setInitialData({ user: sessionData?.user })
+    } else if (status === 'unauthenticated' && sessionData === null) {
+      // Clear user data when session is explicitly null and status is unauthenticated
+      setInitialData({ user: undefined })
+      // Ensure the Zustand store is fully cleared
+      useGenuinOptions.getState().clearUserData?.()
     }
-  }, [sessionData])
+  }, [sessionData, status])
 
   function getParsedWebConfigs() {
     let parsedWebConfigs = null

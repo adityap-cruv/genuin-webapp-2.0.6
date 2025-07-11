@@ -2,6 +2,7 @@
 import { AuthProvider } from '@genuin/components/context/auth'
 import React from 'react'
 import { signIn, useSession, signOut } from 'next-auth/react'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 type SiteLayoutProps = {
   children: React.ReactNode
@@ -15,7 +16,11 @@ export function AuthBridge({ children }: SiteLayoutProps) {
       onSignIn={async (user) => {
         await signIn('credentials', { ...user, profileImage: user.image, redirect: false }).then((result) => {})
       }}
-      onSignOut={(redirectPath) => signOut({ callbackUrl: redirectPath })}
+      onSignOut={(redirectPath) => {
+        // Clear user data from Zustand store
+        useGenuinOptions.getState().clearUserData()
+        return signOut({ callbackUrl: redirectPath })
+      }}
       onUpdateUser={async (newUser) => {
         await update({ ...authUser, user: { ...authUser?.user, ...newUser } })
       }}>

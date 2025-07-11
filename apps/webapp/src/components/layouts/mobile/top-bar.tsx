@@ -122,7 +122,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
               {!notificationsCount ||
                 (notificationsCount > 0 && (
                   <div
-                    className="absolute right-[-2px] top-[-5px] flex h-4 w-4 items-center justify-center rounded-full bg-red text-monochrome-white"
+                    className="bg-red text-monochrome-white absolute top-[-5px] right-[-2px] flex h-4 w-4 items-center justify-center rounded-full"
                     style={{
                       fontSize: '8px',
                     }}>
@@ -141,7 +141,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
         {(webCTA === 'app' || webCTA === 'both') && (
           <GetAppButton
             buttonText="Get App"
-            className="h-8 text-[15px] text-body-1-demi text-primary"
+            className="text-body-1-demi text-primary h-8 text-[15px]"
             variant="outline"
           />
         )}
@@ -217,7 +217,7 @@ function Menu({
         {shouldShowIHeartDemo && (
           <>
             <Stations />
-            <hr className="my-1 border border-monochrome-9" />
+            <hr className="border-monochrome-9 my-1 border" />
           </>
         )}
         {shouldShowIHeartDemo && <p className="text-title-2-demi text-tertiary">Menu</p>}
@@ -259,7 +259,7 @@ function Menu({
                 <AccordionContent key={path} className="p-0">
                   <a href={PATH_NAME.embed(path)}>
                     <p
-                      className={`p-1.5 pl-14 text-title-3-demi ${
+                      className={`text-title-3-demi p-1.5 pl-14 ${
                         pathName === PATH_NAME.embed(path) && 'text-primary'
                       }`}>
                       {label}
@@ -286,25 +286,25 @@ function Menu({
         {shouldShowIHeartDemo && <CategoryView />}
         {user?.ksCbRequestStatus === 3 && (
           <div
-            className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
+            className="hover:bg-monochrome-6/10 flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4"
             onClick={() => {
               void handleAppDownloadModal()
             }}>
             <AddIcon className="stroke-primary" />
-            <p className={cn('whitespace-nowrap !text-title-3-demi text-primary')}>Create Community</p>
+            <p className={cn('!text-title-3-demi text-primary whitespace-nowrap')}>Create Community</p>
           </div>
         )}
         {isClaimed && status === 'unauthenticated' && webCTA !== 'app' && (
           <>
-            <hr className="border-1 my-2 border-monochrome-black/10" />
+            <hr className="border-monochrome-black/10 my-2 border-1" />
             <SheetClose>
               <div
-                className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
+                className="hover:bg-monochrome-6/10 flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4"
                 onClick={() => {
                   AuthenticationModal.open()
                 }}>
                 <LoginIcon className="stroke-primary" />
-                <p className={cn('whitespace-nowrap !text-title-3-demi text-primary')}>Log in</p>
+                <p className={cn('!text-title-3-demi text-primary whitespace-nowrap')}>Log in</p>
               </div>
             </SheetClose>
           </>
@@ -312,16 +312,16 @@ function Menu({
         {!isClaimed && (
           <SheetClose>
             <div
-              className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
+              className="hover:bg-monochrome-6/10 flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4"
               onClick={() => {
                 AuthenticationModal.open(undefined, 'CLAIM_BRAND_PROFILE')
               }}>
               <VerifiedIcon className="stroke-primary" />
-              <p className={cn('whitespace-nowrap !text-title-3-demi text-primary')}>Claim Brand Profile</p>
+              <p className={cn('!text-title-3-demi text-primary whitespace-nowrap')}>Claim Brand Profile</p>
             </div>
           </SheetClose>
         )}
-        {(!isClaimed || user?.ksCbRequestStatus !== 3) && <hr className="border-1 my-2 border-monochrome-black/10" />}
+        {(!isClaimed || user?.ksCbRequestStatus !== 3) && <hr className="border-monochrome-black/10 my-2 border-1" />}
         {user?.ksCbRequestStatus !== 3 && showBecomeACreator && (
           <SheetClose className="my-4 lg:hidden">
             <BecomeCbCard />
@@ -369,7 +369,7 @@ function MenuItem({ title, isActive, children, brandName }: ItemProps) {
           })
         }
       }}
-      className="flex w-full items-center gap-x-3 rounded-md p-2 hover:bg-monochrome-6/10">
+      className="hover:bg-monochrome-6/10 flex w-full items-center gap-x-3 rounded-md p-2">
       {children}
       <p className={`text-title-2-bold font-semibold ${isActive && 'text-primary'}`}>{title}</p>
     </div>
@@ -403,7 +403,7 @@ function UserTick({ variant = 'light', webCTA }: { variant: 'light' | 'transpare
         {(status === 'loading' || loadingAuthData) && (
           <Loader size="sm" className="fill-monochrome-white stroke-monochrome-white" />
         )}
-        <p className="min-w-max text-title-3-demi text-monochrome-white">Log in</p>
+        <p className="text-title-3-demi text-monochrome-white min-w-max">Log in</p>
       </Button>
     )
 
@@ -422,7 +422,7 @@ function UserTick({ variant = 'light', webCTA }: { variant: 'light' | 'transpare
         </PopoverTrigger>
         <PopoverContent
           sideOffset={-6}
-          className="rounded-2xl p-2 shadow-lg shadow-monochrome-3/40"
+          className="shadow-monochrome-3/40 rounded-2xl p-2 shadow-lg"
           side="bottom"
           align="end">
           <div className="my-2 flex items-center gap-2">
@@ -432,7 +432,7 @@ function UserTick({ variant = 'light', webCTA }: { variant: 'light' | 'transpare
               isAvatar={data.user.isAvatar}
             />
             <div>
-              <p className="line-clamp-1 break-words break-all text-title-3-bold">
+              <p className="text-title-3-bold line-clamp-1 break-words break-all">
                 {data.user.usernameSet
                   ? '@' + data.user.nickname
                   : data.user.email
@@ -444,7 +444,7 @@ function UserTick({ variant = 'light', webCTA }: { variant: 'light' | 'transpare
               {!data.user.isBrandSystemUser && <p className="text-body-1-demi text-monochrome-6">Complete profile</p>}
             </div>
           </div>
-          <hr className="border-b border-monochrome-9" />
+          <hr className="border-monochrome-9 border-b" />
           <div className="flex flex-col gap-4 p-4">
             {!data.user.isBrandSystemUser && (
               <Link
@@ -468,15 +468,17 @@ function UserTick({ variant = 'light', webCTA }: { variant: 'light' | 'transpare
                     localStorage.setItem('previous_path', pathName)
                   }
                 }}>
-                <BellIcon className="h-6 w-6 stroke-secondary" size="sm" />
+                <BellIcon className="stroke-secondary h-6 w-6" size="sm" />
                 <p className="text-body-1-demi">Notifications</p>
               </Link>
             )}
             <div className="flex items-center gap-x-2">
-              <LogoutIcon className="h-6 w-6 stroke-secondary" />
+              <LogoutIcon className="stroke-secondary h-6 w-6" />
               <p
                 className="text-body-1-demi"
                 onClick={() => {
+                  // Clear the user data in the Zustand store
+                  useGenuinOptions.getState().clearUserData()
                   void signOut({ callbackUrl: `${window.location.pathname}${window.location.search}`, redirect: true })
                   removeAllAuthToken()
                 }}>

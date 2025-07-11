@@ -42,9 +42,9 @@ export function TopBar({
   const showIHeartDemo = renderIn === 'root' && shouldShowIHeartDemo
   return (
     <>
-      <div className="z-40 flex h-[76px] w-full justify-center border-b border-monochrome-9  bg-monochrome-white sm:flex">
+      <div className="border-monochrome-9 bg-monochrome-white z-40 flex h-[76px] w-full justify-center border-b sm:flex">
         {isLoading ? (
-          <div className="sticky top-0 flex  w-full items-center justify-between px-2 2xl:container xl:px-10 2xl:px-0 ">
+          <div className="sticky top-0 flex w-full items-center justify-between px-2 xl:px-10 2xl:container 2xl:px-0">
             <Shimmer className="h-10 w-20" />
             <div className="flex gap-2">
               <Shimmer className="h-10 w-10" />
@@ -52,7 +52,7 @@ export function TopBar({
             </div>
           </div>
         ) : (
-          <nav className="sticky top-0 z-40 flex h-full w-full items-center justify-between gap-6 px-2 2xl:container xl:px-10 2xl:px-0">
+          <nav className="sticky top-0 z-40 flex h-full w-full items-center justify-between gap-6 px-2 xl:px-10 2xl:container 2xl:px-0">
             <div className="flex flex-shrink-0">
               <Link draggable={false} href={{ pathname: PATH_NAME.home() }}>
                 <AppLogo.logo className="fill-new-off-black" imageHeight={44} />
@@ -85,7 +85,7 @@ export function TopBar({
               {(webCTA === 'app' || webCTA === 'both') && (
                 <GetAppButton
                   buttonText="Get App"
-                  className="h-8 flex-shrink-0 px-4 py-3 text-[15px] text-new-para-2 font-semibold text-primary"
+                  className="text-new-para-2 text-primary h-8 flex-shrink-0 px-4 py-3 text-[15px] font-semibold"
                   variant="outline"
                   size="custom"
                 />
@@ -127,7 +127,7 @@ function UserTick() {
         {(status === 'loading' || loadingAuthData) && (
           <Loader size="sm" className="fill-monochrome-white stroke-monochrome-white" />
         )}
-        <p className="min-w-max text-[15px] text-title-3-demi text-monochrome-white">Log in</p>
+        <p className="text-title-3-demi text-monochrome-white min-w-max text-[15px]">Log in</p>
       </Button>
     )
 
@@ -146,7 +146,7 @@ function UserTick() {
         </PopoverTrigger>
         <PopoverContent
           sideOffset={0}
-          className="rounded-2xl p-2 shadow-lg shadow-monochrome-3/40"
+          className="shadow-monochrome-3/40 rounded-2xl p-2 shadow-lg"
           side="bottom"
           align="end">
           <div className="my-2 flex items-center gap-2">
@@ -157,7 +157,7 @@ function UserTick() {
               isAvatar={data.user.isAvatar}
             />
             <div>
-              <p className="line-clamp-1 break-words break-all text-title-3-bold">
+              <p className="text-title-3-bold line-clamp-1 break-words break-all">
                 {data.user.usernameSet
                   ? '@' + data.user.nickname
                   : data.user.email
@@ -181,7 +181,7 @@ function UserTick() {
               )}
             </div>
           </div>
-          <hr className="border-b border-monochrome-9" />
+          <hr className="border-monochrome-9 border-b" />
           <div className="flex flex-col gap-3 p-4">
             {!data.user?.isBrandSystemUser && (
               <>
@@ -203,10 +203,12 @@ function UserTick() {
             <div
               className="flex cursor-pointer items-center gap-2"
               onClick={() => {
+                // Clear the user data in the Zustand store
+                useGenuinOptions.getState().clearUserData()
                 void signOut({ callbackUrl: `${window.location.pathname}${window.location.search}`, redirect: true })
                 removeAllAuthToken()
               }}>
-              <LogoutIcon className="h-6 w-6 stroke-secondary" />
+              <LogoutIcon className="stroke-secondary h-6 w-6" />
               <p className="text-body-1-demi">Log out</p>
             </div>
           </div>
