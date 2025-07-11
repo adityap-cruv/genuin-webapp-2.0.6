@@ -104,7 +104,7 @@ type FeedLoopInfo = {
   type?: number;
   share_url?: string;
   member_info?: MemberInfo;
-  is_loop_subscribe?: boolean;
+  is_subscriber?: boolean;
   logged_in_user_status?: number;
   is_view_allowed?: boolean;
   request_status?: number | null;
@@ -128,9 +128,9 @@ type FeedCommunityInfo = {
   type?: number;
   share_url?: string;
   logged_in_user_role?: number;
-  members_count?: number | null;
-  groups_count?: number | null;
-  posts_count?: number | null;
+  no_of_members?: number | null;
+  no_of_groups?: number | null;
+  no_of_videos?: number | null;
   brand?: {
     brand_id: number;
     brand_slug: string;

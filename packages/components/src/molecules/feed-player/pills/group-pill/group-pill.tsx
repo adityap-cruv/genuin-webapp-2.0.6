@@ -14,6 +14,7 @@ import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema"
 import { GroupHoverCard } from "../group-hover-card";
 import { ComponentProps } from "react";
 import { JoinGroupButton } from "@genuin/components/molecules/join-group-button";
+import { GroupIcon } from "@genuin/ui/icons";
 
 const groupPillVariants = cva(
   "gencl:flex gencl:w-fit gencl:items-center gencl:gap-1 gencl:p-1 gencl:pr-2 gencl:rounded-full gencl:transition-all gencl:cursor-pointer",
@@ -66,12 +67,12 @@ export function GroupPill({
     <Link href={buildPageUrl({ type: "group", slug: groupDetails.slug })}>
       <div className={groupPillVariants({ variant, className })}>
         <div className="gencl:flex gencl:gap-1 gencl:items-center">
-          <Avatar
-            alt={groupDetails.name ?? ""}
-            imageUrl={""}
-            isAvatar={false}
-            size="xs"
-          />
+          <div className="gencl:rounded-full gencl:bg-secondary-600 gencl:p-1">
+            <GroupIcon
+              variant="filled"
+              className="gencl:h-4 gencl:w-4 gencl:fill-white"
+            />
+          </div>
           <span className="gencl:text-body-2-medium gencl:line-clamp-1">
             {groupDetails.name}
           </span>

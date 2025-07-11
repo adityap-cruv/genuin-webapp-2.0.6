@@ -59,7 +59,7 @@ export function parseFeed(
       description: item.loop.group_description || "",
       shareUrl: item.loop.share_url || undefined,
       name: item.loop.group_name || "",
-      isSubscribed: item.loop.is_loop_subscribe || false,
+      isSubscribed: item.loop.is_subscriber || false,
       role: mapGroupJoinStatus(item.loop.request_status),
       isPrivate: isGroupPrivate(
         item.loop.actions,
@@ -79,9 +79,9 @@ export function parseFeed(
       type: item.community.type || null,
       name: item.community.name || null,
       profileImage: item.community.dp_m || null,
-      membersCount: item.community.members_count || 0,
-      groupsCount: item.community.groups_count || 0,
-      postsCount: item.community.posts_count || 0,
+      membersCount: item.community.no_of_members || 0,
+      groupsCount: item.community.no_of_groups || 0,
+      postsCount: item.community.no_of_videos || 0,
       ...(item.community.brand && {
         brand: {
           id: item.community.brand.brand_id,
