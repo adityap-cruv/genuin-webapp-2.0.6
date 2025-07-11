@@ -64,6 +64,18 @@ const config: StorybookConfig = {
         "import.meta.env.NEXT_PUBLIC_API_URL": JSON.stringify(
           process.env.NEXT_PUBLIC_API_URL
         ),
+        "import.meta.env.NEXT_PUBLIC_AES_IV": JSON.stringify(
+          process.env.NEXT_PUBLIC_AES_IV
+        ),
+        "import.meta.env.NEXT_PUBLIC_AES_KEY": JSON.stringify(
+          process.env.NEXT_PUBLIC_AES_KEY
+        ),
+        "import.meta.env.NEXT_PUBLIC_SECRET_STRING": JSON.stringify(
+          process.env.NEXT_PUBLIC_SECRET_STRING
+        ),
+        "import.meta.env.NEXT_PUBLIC_REDIRECT_URI": JSON.stringify(
+          process.env.NEXT_PUBLIC_REDIRECT_URI
+        ),
       },
     };
   },

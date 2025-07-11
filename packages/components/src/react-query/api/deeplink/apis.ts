@@ -1,5 +1,6 @@
 import { axiosInstance } from "@genuin/components/react-query/axios-instance";
 import { API_PATHS } from "@genuin/components/react-query/paths";
+import { NEXT_PUBLIC_HOST_URL } from "@genuin/components/lib/utils/env";
 
 /**
  * Generates a deep link URL with the provided parameters
@@ -25,7 +26,7 @@ export const generateDeepLink = async (
   payload: DeepLinkPayload
 ): Promise<string> => {
   const queryParams: Record<string, any> = {};
-  
+
   if (payload.utmCampaign) queryParams.utm_campaign = payload.utmCampaign;
   if (payload.utmSource) queryParams.utm_source = payload.utmSource;
   if (payload.utmMedium) queryParams.utm_medium = payload.utmMedium;
@@ -48,9 +49,9 @@ export const generateDeepLink = async (
       API_PATHS.GENERATE_DYNAMIC_LINK,
       finalPayload
     );
-    return res?.data?.data?.shortLink || process.env.NEXT_PUBLIC_HOST_URL || "";
+    return res?.data?.data?.shortLink || NEXT_PUBLIC_HOST_URL || "";
   } catch (e) {
-    return process.env.NEXT_PUBLIC_HOST_URL || "";
+    return NEXT_PUBLIC_HOST_URL || "";
   }
 };
 
@@ -68,9 +69,7 @@ export const resolveDeepLink = async (
   linkIdentifier: string
 ): Promise<DeepLinkData | null> => {
   try {
-    const res = await axiosInstance.get(
-      `/goservices/links/${linkIdentifier}`
-    );
+    const res = await axiosInstance.get(`/goservices/links/${linkIdentifier}`);
     return res?.data?.data || null;
   } catch (error) {
     console.error("Error resolving deep link:", error);

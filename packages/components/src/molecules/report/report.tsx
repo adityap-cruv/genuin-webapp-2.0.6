@@ -19,6 +19,7 @@ import { UseMutationResult } from "@tanstack/react-query";
 import { Image } from "@genuin/ui/image";
 import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
 import { useAuthContext } from "@genuin/components/context/auth";
+import { MEDIA_BASE_URL } from "@genuin/components/lib/utils/env";
 
 type ReportProps = ComponentProps<typeof Dialog> & {
   reportFor: "VIDEO" | "COMMENT";
@@ -154,7 +155,7 @@ function ReportSuccess() {
     <div className="gencl:flex gencl:flex-col gencl:items-center gencl:justify-center gencl:text-center gencl:gap-5">
       <Image
         alt="Success"
-        src="https://media.qa.begenuin.com/web-sdk/v1/icons/success.gif"
+        src={`https://${MEDIA_BASE_URL}/web-sdk/v1/icons/success.gif`}
         className="gencl:h-36"
       />
       <div className="gencl:flex gencl:flex-col gencl:gap-2">

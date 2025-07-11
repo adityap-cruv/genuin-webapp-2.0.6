@@ -43,3 +43,15 @@ export const NEXT_PUBLIC_HOST_URL = isServer
 export const NEXT_PUBLIC_API_URL = isServer
   ? process.env.NEXT_PUBLIC_API_URL
   : (import.meta.env.NEXT_PUBLIC_API_URL as string);
+export const NEXT_PUBLIC_AES_IV = isServer
+  ? (process.env.NEXT_PUBLIC_AES_IV as string)
+  : (import.meta.env.NEXT_PUBLIC_AES_IV as string);
+export const NEXT_PUBLIC_AES_KEY = isServer
+  ? (process.env.NEXT_PUBLIC_AES_KEY as string)
+  : (import.meta.env.NEXT_PUBLIC_AES_KEY as string);
+export const NEXT_PUBLIC_SECRET_STRING = isServer
+  ? (process.env.NEXT_PUBLIC_SECRET_STRING as string)
+  : (import.meta.env.NEXT_PUBLIC_SECRET_STRING as string);
+export const NEXT_PUBLIC_REDIRECT_URI = isServer
+  ? (process.env.NEXT_PUBLIC_REDIRECT_URI as string)
+  : (import.meta.env.NEXT_PUBLIC_REDIRECT_URI as string);

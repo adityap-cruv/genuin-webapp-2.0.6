@@ -8,6 +8,7 @@ import {
   getQueryKeyForProfileVideos,
 } from "@genuin/components/react-query/keys/profile";
 import { API_PATHS } from "@genuin/components/react-query/paths";
+import { NEXT_PUBLIC_API_URL } from "@genuin/components/lib/utils/env";
 
 import { parseFeed } from "../../feed/parser";
 
@@ -46,7 +47,8 @@ function prepareApiUrl(
   }: { forBrand: boolean; profileId: string; videosLimit?: number }
 ) {
   const url = new URL(
-    "https://api.qa.begenuin.com/" +
+    NEXT_PUBLIC_API_URL +
+      "/" +
       (forBrand ? endpoint : endpoint.replace("/brand", ""))
   );
   url.searchParams.append(forBrand ? "brand_id" : "user_id", profileId);

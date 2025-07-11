@@ -5,6 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import { LOGIN_SOURCE } from "./constants";
 import { encryptText } from "@genuin/components/lib/utils/encryption";
 import { parseUserData } from "./parser";
+import { NEXT_PUBLIC_REDIRECT_URI } from "@genuin/components/lib/utils/env";
 
 const DEVICE_TYPE_WEB = 3;
 
@@ -18,8 +19,7 @@ async function getUrlToRedirectForSSO({
     const res = await axiosInstance.get(API_PATHS.AUTH_GET_REDIRECTION_URL, {
       params: {
         thirdPartyId,
-        redirectURIOnProviderDashboard:
-          "https://nodejs.qa.begenuin.com/api/v4/thirdparty/callback",
+        redirectURIOnProviderDashboard: NEXT_PUBLIC_REDIRECT_URI,
       },
     });
     return res.data.data.url;
@@ -70,7 +70,7 @@ export async function getUserDataForSSO({
       device_type: DEVICE_TYPE_WEB,
       thirdPartyId: provider,
       redirectURIInfo: {
-        redirectURIOnProviderDashboard: `https://nodejs.qa.begenuin.com/api/v4/thirdparty/callback`,
+        redirectURIOnProviderDashboard: NEXT_PUBLIC_REDIRECT_URI,
         redirectURIQueryParams: {
           code,
         },
