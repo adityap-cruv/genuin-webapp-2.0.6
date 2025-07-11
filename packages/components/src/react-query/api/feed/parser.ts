@@ -40,6 +40,7 @@ export function parseFeed(
       isSparked: item.video.is_sparked || false,
       sparkCount: item.video.no_of_sparks || 0,
       thumbnail: item.video.thumbnail_url,
+      viewCount : item.video.no_of_views || 0,
       thumbnailM: item.video.thumbnail_url_m || null,
       description:
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

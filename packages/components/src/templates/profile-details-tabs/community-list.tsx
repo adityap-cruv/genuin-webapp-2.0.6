@@ -408,9 +408,9 @@ function GroupVideos({
           imageUrl: video.thumbnail ?? "",
           postId: video.id,
           stats: {
-            comments: 0,
-            views: 0,
-            reactions: 0,
+            comments: video.noOfComments || 0,
+            views: video.noOfViews || 0,
+            reactions: video.sparkCount || 0,
           },
         }))}
         hasNextPage={hasNextPage}

@@ -11,7 +11,7 @@ export function SideBarBecomeCreator({
   ...restProps
 }: SideBarBecomeCreatorProps) {
   const { authenticationStatus, user } = useAuthContext();
-  const { name } = useBaseContext().brandDetails;
+  const { name , web_cta } = useBaseContext().brandDetails;
   if (user?.ksCbRequestStatus === "Accepted") return null;
 
   return (
@@ -19,7 +19,7 @@ export function SideBarBecomeCreator({
       <AuthenticationModal
         asChild
         customStep={
-          authenticationStatus === "authenticated" ? "BECOME_CREATOR" : "SIGNIN"
+          authenticationStatus === "authenticated" ? "BECOME_CREATOR" : (web_cta === "app" ? "GET_APP"  : "SIGNIN")
         }
       >
         <div

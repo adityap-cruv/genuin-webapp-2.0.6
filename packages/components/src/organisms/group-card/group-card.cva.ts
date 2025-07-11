@@ -1,6 +1,6 @@
 import { cva, VariantProps } from "class-variance-authority";
 
-export const groupCardVariants = cva("", {
+export const groupCardVariants = cva("gencl:cursor-pointer", {
   variants: {
     variant: {
       explore:

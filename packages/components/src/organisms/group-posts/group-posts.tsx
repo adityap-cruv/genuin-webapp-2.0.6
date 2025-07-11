@@ -77,8 +77,8 @@ export function GroupPosts({
             linkouts: null,
             stats: {
               comments: post.video.commentCount,
-              reactions: 0,
-              views: 0,
+              reactions: post.video.sparkCount,
+              views: post.video.viewCount,
             },
           })) ?? []
         }

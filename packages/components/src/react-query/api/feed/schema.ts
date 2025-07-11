@@ -15,6 +15,7 @@ export const videoSchema = z.object({
   id: z.string(),
   createdAt: z.number().default(-1).nullish(),
   commentCount: z.number(),
+  viewCount : z.number(),
   shareUrl: z.string(),
   attachedLink: z.string().nullish(),
   source: z.string(),

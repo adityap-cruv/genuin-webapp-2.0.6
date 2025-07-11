@@ -1,7 +1,7 @@
 import { cva, VariantProps } from "class-variance-authority";
 
 export const communityCardVariants = cva(
-  "gencl:flex gencl:flex-col gencl:overflow-clip gencl:w-full gencl:h-full",
+  "gencl:flex gencl:flex-col gencl:overflow-clip gencl:w-full gencl:h-full gencl:cursor-pointer",
   {
     variants: {
       variant: {
@@ -21,7 +21,7 @@ export const communityCardVariants = cva(
 );
 
 export const communityCardHeaderVariants = cva("", {
-  variants: {
+  variants: { 
     variant: {
       explore: "gencl:w-full gencl:h-15 gencl:bg-secondary-500",
       search: "gencl:flex gencl:items-center gencl:gap-2 gencl:w-full",

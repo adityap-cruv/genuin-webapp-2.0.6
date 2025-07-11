@@ -12,6 +12,9 @@ export type VideoType = {
   id: string;
   thumbnail: string;
   sparkCount: number;
+  noOfViews: number;
+  noOfComments?: number;
+  noOfShares?: number;
 };
 
 export type FetchCommunityReturnType = {

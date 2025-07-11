@@ -204,7 +204,7 @@ export function parseVideoResponse(
       id: message.message_id,
       sparkCount: message.no_of_views,
       thumbnail: message.thumbnail_url ?? "",
-      noOfViews: message.no_of_views,
+      noOfViews: message.no_of_views ?? 0,
       noOfComments: message.no_of_comments ?? 0,
       noOfShares: message.no_of_shares ?? 0,
     };
