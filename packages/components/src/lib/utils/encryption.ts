@@ -17,6 +17,10 @@ export function encryptText(text?: string, appendString?: boolean): string {
     return "";
   }
   // TODO: Load these from env variables
+  console.log(
+    "[encryptText] Encrypting text with AES",
+    NEXT_PUBLIC_SECRET_STRING
+  );
   const textToEncrypt = appendString ? text + NEXT_PUBLIC_SECRET_STRING : text;
   const encrypted = CryptoJS.AES.encrypt(
     textToEncrypt,
