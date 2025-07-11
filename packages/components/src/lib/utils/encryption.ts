@@ -13,6 +13,7 @@ import {
  * @returns The base64 encoded encrypted string.
  */
 export function encryptText(text?: string, appendString?: boolean): string {
+  console.log("[encryptText] Encrypting text", text);
   if (!text) {
     return "";
   }
@@ -21,7 +22,7 @@ export function encryptText(text?: string, appendString?: boolean): string {
     "[encryptText] Encrypting text with AES",
     NEXT_PUBLIC_SECRET_STRING
   );
-  const textToEncrypt = appendString ? text + NEXT_PUBLIC_SECRET_STRING : text;
+  const textToEncrypt = appendString ? text + "Cwv5\$uV%" : text;
   const encrypted = CryptoJS.AES.encrypt(
     textToEncrypt,
     CryptoJS.enc.Utf8.parse(NEXT_PUBLIC_AES_KEY),
