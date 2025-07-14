@@ -4,6 +4,7 @@ import {
   useCallback,
   useEffect,
   useId,
+  useMemo,
   type ComponentProps,
 } from "react";
 import { useBaseContext } from "@genuin/components/context/base";
@@ -19,6 +20,9 @@ type Props = Omit<
 > & {
   postDetails: PostDetailsType;
 };
+
+const EVENT_DURATION_PROPERTY_NAME = "video_length";
+const EVENT_VIEW_LENGTH_PROPERTY_NAME = "video_view_length";
 
 export const FeedPlayer = memo(function FeedPlayer({
   src,
@@ -65,6 +69,17 @@ export const FeedPlayer = memo(function FeedPlayer({
     }
   }, [muted]);
 
+  // DRY: Common analytics event data (memoized)
+  const analyticsEventData = useMemo(
+    () => ({
+      content_category: "loop",
+      content_id: postDetails.video.id,
+      event_record_screen: "feed",
+      event_target_screen: "none",
+    }),
+    [postDetails.video.id]
+  );
+
   const handleTimeUpdate = useCallback((event: any) => {
     onTimeUpdate?.(event);
     const target = event.target as HTMLVideoElement;
@@ -75,13 +90,19 @@ export const FeedPlayer = memo(function FeedPlayer({
     });
   }, []);
 
-  const handleEnded = useCallback((e: any) => {
-    onEnded?.(e);
-    stateHandleEnded?.();
-    Analytics.track(Analytics.EventName.VIDEO_COMPLETED, {
-      content_id: postDetails.video.id,
-    });
-  }, []);
+  const handleEnded = useCallback(
+    (e: any) => {
+      onEnded?.(e);
+      stateHandleEnded?.();
+      const target = e?.target as HTMLVideoElement | undefined;
+      Analytics.track(Analytics.EventName.VIDEO_COMPLETED, {
+        ...analyticsEventData,
+        video_length: target?.duration,
+        video_view_length: target?.currentTime,
+      });
+    },
+    [onEnded, stateHandleEnded, Analytics, analyticsEventData]
+  );
 
   const handlePlayerLoad = useCallback(
     (player: any) => {
@@ -93,29 +114,49 @@ export const FeedPlayer = memo(function FeedPlayer({
     [feedPlayerShouldPlay]
   );
 
-  const handleVideoFirstQuartile = useCallback(() => {
-    Analytics.track(Analytics.EventName.VIDEO_FIRST_QUARTILE, {
-      content_id: postDetails.video.id,
-    });
-  }, []);
+  const handleVideoFirstQuartile = useCallback(
+    (duration: number, currentTime: number) => {
+      Analytics.track(Analytics.EventName.VIDEO_FIRST_QUARTILE, {
+        ...analyticsEventData,
+        video_length: duration,
+        video_view_length: currentTime,
+      });
+    },
+    [Analytics, analyticsEventData]
+  );
 
-  const handleVideoWatched = useCallback(() => {
-    Analytics.track(Analytics.EventName.VIDEO_WATCHED, {
-      content_id: postDetails.video.id,
-    });
-  }, []);
+  const handleVideoWatched = useCallback(
+    (duration: number, currentTime: number) => {
+      Analytics.track(Analytics.EventName.VIDEO_WATCHED, {
+        ...analyticsEventData,
+        video_length: duration,
+        video_view_length: currentTime,
+      });
+    },
+    [Analytics, analyticsEventData]
+  );
 
-  const handleVideoMidpoint = useCallback(() => {
-    Analytics.track(Analytics.EventName.VIDEO_MIDPOINT, {
-      content_id: postDetails.video.id,
-    });
-  }, []);
+  const handleVideoMidpoint = useCallback(
+    (duration: number, currentTime: number) => {
+      Analytics.track(Analytics.EventName.VIDEO_MIDPOINT, {
+        ...analyticsEventData,
+        video_length: duration,
+        video_view_length: currentTime,
+      });
+    },
+    [Analytics, analyticsEventData]
+  );
 
-  const handleVideoThirdQuartile = useCallback(() => {
-    Analytics.track(Analytics.EventName.VIDEO_THIRD_QUARTILE, {
-      content_id: postDetails.video.id,
-    });
-  }, []);
+  const handleVideoThirdQuartile = useCallback(
+    (duration: number, currentTime: number) => {
+      Analytics.track(Analytics.EventName.VIDEO_THIRD_QUARTILE, {
+        ...analyticsEventData,
+        video_length: duration,
+        video_view_length: currentTime,
+      });
+    },
+    [Analytics, analyticsEventData]
+  );
 
   const handleOpenPlayerReady = useCallback(
     (player: any) => {
@@ -141,11 +182,16 @@ export const FeedPlayer = memo(function FeedPlayer({
     [onPause, setPlayingState]
   );
 
-  const handleVideoStart = useCallback(() => {
-    Analytics.track(Analytics.EventName.VIDEO_STARTED, {
-      content_id: postDetails.video.id,
-    });
-  }, []);
+  const handleVideoStart = useCallback(
+    (duration: number, currentTime: number) => {
+      Analytics.track(Analytics.EventName.VIDEO_STARTED, {
+        ...analyticsEventData,
+        video_length: duration,
+        video_view_length: currentTime,
+      });
+    },
+    [Analytics, analyticsEventData]
+  );
 
   return (
     <VideoPlayer

@@ -10,9 +10,13 @@ import { RudderAnalytics } from "@rudderstack/analytics-js";
 type DefaultAnalyticsPayload = {
   user_id: string | undefined;
   gen_user_id: string | undefined;
-  brand_id: string | undefined;
+  brand_id: number | undefined;
   channel: string;
   environment: string;
+  url?: string;
+  path: string;
+  query_params: Record<string, string | string[]>;
+  title: string;
 };
 
 class AnalyticsServiceSingleton {
@@ -34,18 +38,19 @@ class AnalyticsServiceSingleton {
     return AnalyticsServiceSingleton.instance;
   }
 
-  public initialize(defaultPayload?: DefaultAnalyticsPayload): Promise<void> {
+  public initialize(defaultPayload: DefaultAnalyticsPayload): Promise<void> {
     if (this.initializationPromise) {
       return this.initializationPromise;
     }
 
-    if (defaultPayload) {
-      this.defaultPayload = defaultPayload;
-      // console.log(
-      //   "[AnalyticsService] Default payload set:",
-      //   this.defaultPayload
-      // );
+    if (!defaultPayload) {
+      console.warn(
+        "[AnalyticsService] initialize called without defaultPayload. Analytics events may be missing required fields."
+      );
+      // Optionally, throw an error here if you want to enforce it strictly
+      // throw new Error("defaultPayload is required for AnalyticsService.initialize");
     }
+    this.defaultPayload = defaultPayload;
 
     this.initializationPromise = new Promise<void>((resolve, reject) => {
       if (this.isInitialized) {
@@ -159,6 +164,7 @@ class AnalyticsServiceSingleton {
 
     const eventData: QueuedEvent = {
       eventName,
+
       payload: mergedPayload,
       timestamp: Date.now(),
     };
@@ -189,12 +195,18 @@ class AnalyticsServiceSingleton {
       this.eventQueue.push(eventData);
       // Ensure initialization is triggered if not already in progress
       if (!this.initializationPromise) {
-        this.initialize().catch((error) => {
-          // console.error(
-          //   "[AnalyticsService] Error during initialization after event track:",
-          //   error
-          // );
-        });
+        if (this.defaultPayload) {
+          this.initialize(this.defaultPayload).catch((error) => {
+            // console.error(
+            //   "[AnalyticsService] Error during initialization after event track:",
+            //   error
+            // );
+          });
+        } else {
+          console.warn(
+            "[AnalyticsService] Cannot auto-initialize: defaultPayload is not set."
+          );
+        }
       }
     }
   }

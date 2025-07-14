@@ -28,7 +28,7 @@ export function getDeviceId() {
   if (!deviceId || deviceId.trim() === "" || deviceId === "undefined") {
     return undefined;
   }
-  return deviceId.trim();
+  return JSON.parse(deviceId.trim());
 }
 
 export function useGetDeviceId() {

@@ -25,7 +25,7 @@ type AnalyticsProviderProps = {
 };
 
 enum Channel {
-  WEB_APP = "genui web",
+  WEB_APP = "genuin web",
   WEB_SDK = "web sdk",
   WHITE_LABEL = "white label",
 }
@@ -71,18 +71,24 @@ export function AnalyticsProvider({
       const userIdToPass = user?.id ?? deviceId;
       const channel = isWebSDK
         ? Channel.WEB_SDK
-        : brandDetails.brand_id === GENUIN_BRAND_ID
+        : brandDetails.brand_id !== GENUIN_BRAND_ID
           ? Channel.WHITE_LABEL
           : Channel.WEB_APP;
 
       // Initialize the service. It handles its own low-priority loading and idempotency.
       // We call initialize here but don't need to track its state within the provider anymore.
       AnalyticsService.initialize({
-        brand_id: brandDetails.brand_id.toString(),
+        brand_id: brandDetails.brand_id,
         channel,
         environment: brandDetails.environment,
         gen_user_id: userIdToPass,
         user_id: userIdToPass,
+        url: typeof window !== "undefined" ? window.location.href : undefined,
+        path: pathname,
+        query_params: Object.fromEntries(
+          new URLSearchParams(window.location.search)
+        ),
+        title: document.title,
       })
         .then(() => {
           console.log(
@@ -101,6 +107,7 @@ export function AnalyticsProvider({
       cancelIdleCallbackPolyfill(idleCallbackHandle);
     };
   }, [brandDetails, user, isWebSDK]); // Re-run if config changes, AnalyticsService.initialize is idempotent
+
   const track = useCallback(
     async (eventName: EventNameType, payload?: EventPayload) => {
       await AnalyticsService.track(eventName, payload);

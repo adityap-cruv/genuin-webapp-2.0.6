@@ -71,11 +71,11 @@ export type PlayerProps = ComponentProps<"video"> & {
   play?: boolean;
   onOpenPlayerReady?: (player: OpenPlayerJS) => void;
   onPlayerLoad?: (player: OpenPlayerJS | null) => void; // Add custom event prop
-  onVideoFirstQuartile?: () => void;
-  onVideoMidpoint?: () => void;
-  onVideoThirdQuartile?: () => void;
-  onVideoWatched?: () => void;
-  onVideoStart?: () => void; // Add onVideoStart prop
+  onVideoFirstQuartile?: (duration: number, currentTime: number) => void;
+  onVideoMidpoint?: (duration: number, currentTime: number) => void;
+  onVideoThirdQuartile?: (duration: number, currentTime: number) => void;
+  onVideoWatched?: (duration: number, currentTime: number) => void;
+  onVideoStart?: (duration: number, currentTime: number) => void; // Add onVideoStart prop
 };
 
 type VideoPlayerStateRef = {
@@ -90,29 +90,28 @@ export const VideoPlayer = memo(function VideoPlayer({
   poster,
   className,
   style,
-  onOpenPlayerReady,
-  onPlayerLoad, // Destructure new prop
+  ref,
   playsInline = true,
   volume = 100,
   playbackSpeed = 1,
   play = true,
   loop = false, // loop prop is now destructured
   onVideoFirstQuartile,
+  onOpenPlayerReady,
+  onPlayerLoad, // Destructure new prop
   onVideoMidpoint,
   onVideoThirdQuartile,
-  ref,
   onVideoWatched,
   onVideoStart, // Destructure onVideoStart prop
   ...props
 }: PlayerProps) {
-  const internalVideoRef = useRef<HTMLAudioElement>(null);
+  const internalVideoRef = useRef<HTMLVideoElement>(null);
   useImperativeHandle(ref, () => internalVideoRef.current as HTMLVideoElement, [
     internalVideoRef.current,
   ]);
   const videoRef = internalVideoRef;
   const playerRef = useRef<OpenPlayerJS | null>(null);
   const playRef = useRef(play);
-  const videoStartRef = useRef(false);
 
   const playerStateRef = useRef<
     VideoPlayerStateRef & { videoStartFired: boolean }
@@ -216,7 +215,10 @@ export const VideoPlayer = memo(function VideoPlayer({
     const handlePlay = () => {
       if (!playerStateRef.current.videoStartFired) {
         playerStateRef.current.videoStartFired = true;
-        onVideoStart?.();
+        onVideoStart?.(
+          playerRef.current?.getMedia().duration ?? 0,
+          videoElement.currentTime
+        );
       }
     };
 
@@ -263,7 +265,7 @@ export const VideoPlayer = memo(function VideoPlayer({
       const { currentTime } = videoElement;
 
       if (!videoWatchedFired && currentTime >= 3) {
-        onVideoWatched?.();
+        onVideoWatched?.(duration, currentTime);
         playerStateRef.current.videoWatchedFired = true;
       }
 
@@ -272,17 +274,17 @@ export const VideoPlayer = memo(function VideoPlayer({
       const thirdQuartileTime = (duration * 3) / 4;
 
       if (!firstQuartileFired && currentTime >= firstQuartileTime) {
-        onVideoFirstQuartile?.();
+        onVideoFirstQuartile?.(duration, currentTime);
         playerStateRef.current.firstQuartileFired = true;
       }
 
       if (!midpointFired && currentTime >= midpointTime) {
-        onVideoMidpoint?.();
+        onVideoMidpoint?.(duration, currentTime);
         playerStateRef.current.midpointFired = true;
       }
 
       if (!thirdQuartileFired && currentTime >= thirdQuartileTime) {
-        onVideoThirdQuartile?.();
+        onVideoThirdQuartile?.(duration, currentTime);
         playerStateRef.current.thirdQuartileFired = true;
       }
     };
