@@ -83,7 +83,7 @@ export function Recents({
         {...restProps}
       >
         <p className="gencl:text-body-1-semi-bold gencl:text-secondary-600">
-          Start typing to search for communities, topics, or users
+      Try searching for communities, topics, or keywords
         </p>
       </div>
     );

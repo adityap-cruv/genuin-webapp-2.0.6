@@ -95,6 +95,7 @@ function Button({
   disabled,
   roleTexts = DEFAULT_ROLE_TEXTS,
   onClick,
+  theme,
   onCommunityJoinStatusChange,
   ...rest
 }: JoinCommunityButtonProps) {
@@ -147,20 +148,22 @@ function Button({
       onClick={handleClick}
       {...rest}
       theme={
-        role === "MEMBER"
-          ? "outline"
-          : role === "REQUESTED"
-            ? "secondary"
-            : "primary"
+      theme
+        ? theme
+        : role === "MEMBER"
+        ? "outline"
+        : role === "REQUESTED"
+          ? "secondary"
+          : "primary"
       }
     >
       {isLoading ? (
-        <Loader
-          size={rest.shape === "pill" ? "xs" : "sm"}
-          strokeColor={role === "MEMBER" ? "black" : "white"}
-        />
+      <Loader
+        size={rest.shape === "pill" ? "xs" : "sm"}
+        strokeColor="black"
+      />
       ) : (
-        (roleTexts[role] ?? DEFAULT_ROLE_TEXTS[role])
+      roleTexts[role] ?? DEFAULT_ROLE_TEXTS[role]
       )}
     </PrimitiveButton>
   );

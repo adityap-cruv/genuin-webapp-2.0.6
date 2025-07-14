@@ -98,7 +98,7 @@ function FormLabel({
       data-slot="form-label"
       data-error={!!error}
       className={cn(
-        "gencl:text-body-1-medium gencl: gencl:data-[error=true]:text-red",
+        "gencl:text-body-1-medium gencl:data-[error=true]:text-red",
         className
       )}
       htmlFor={formItemId}

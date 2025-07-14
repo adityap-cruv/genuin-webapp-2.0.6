@@ -79,9 +79,18 @@ export function CommunityPill({
             isPrivate={communityDetails.isPrivate}
             role={communityDetails.userRole}
             shape="pill"
-            theme={variant === "dark" ? "secondary" : "primary"}
+            theme={
+              variant === "fullScreen"
+                ? "secondary"
+                : communityDetails.userRole === "MEMBER"
+                  ? "outline"
+                  : communityDetails.userRole === "REQUESTED"
+                    ? "secondary"
+                    : "primary"
+            }
             onClick={(e) => {
               e.preventDefault();
+              e.stopPropagation();
             }}
             onCommunityJoinStatusChange={onCommunityJoinStatusChange}
           />

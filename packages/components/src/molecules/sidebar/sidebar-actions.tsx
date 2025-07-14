@@ -27,7 +27,7 @@ export function SidebarActions({
   });
 
   return (
-    <div className="gencl:px-3 gencl:py-4 gencl:!w-full gencl:min-h-48 gencl:border-b gencl:border-secondary-100">
+    <div className="gencl:px-3 gencl:py-4 gencl:!w-full gencl:border-b gencl:border-secondary-100">
       {SideBarActionLinks.map((links, index) => {
         // Skip notification link if user is not logged in
         if (links.type === "notification" && !user) return null;

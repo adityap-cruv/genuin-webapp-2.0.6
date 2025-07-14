@@ -9,6 +9,7 @@ import {
   FormItem,
   FormControl,
   FormMessage,
+  FormLabel,
 } from "@genuin/ui/components/form";
 import { useState } from "react";
 
@@ -102,7 +103,7 @@ export function Guidelines({ ...props }: GuidelinesProps) {
             rules={{ required: "You must agree to the guidelines" }}
             render={({ field }) => (
               <FormItem>
-                <div className="gencl:flex gencl:items-center gencl:justify-start gencl:gap-3 gencl:px-4 gencl:py-3 gencl:rounded-lg gencl:border gencl:border-secondary-100">
+                <FormLabel className="gencl:!text-black gencl:flex gencl:items-center gencl:justify-start gencl:gap-3 gencl:px-4 gencl:py-3 gencl:rounded-lg gencl:border gencl:border-secondary-100">
                   <FormControl>
                     <Checkbox
                       checked={field.value}
@@ -113,7 +114,7 @@ export function Guidelines({ ...props }: GuidelinesProps) {
                   <p className="gencl:text-body-1-medium">
                     I agree to the guidelines
                   </p>
-                </div>
+                </FormLabel>
                 <FormMessage />
               </FormItem>
             )}
