@@ -21,68 +21,97 @@ export async function RedirectHandler({
     if (config?.integrations.white_label.enable && config?.integrations.white_label.allowed_domains[0]) {
       const searchParamStr = headersList.get('x-search-params')
       const pathParamStr = headersList.get('x-path-params')
+      console.log('[RedirectHandler] in RedirectHandler', pathParamStr)
       // Special case for brand_id 2357 (ted), redirect to the specific domain as per the client request
       // Convert path params to query string for this special case
       // Always start with utm_source=shorts
       // **NOTE**: This is a special case for ted.com, where we need to handle the path and search params differently
       //  reason to pass all the details in query param is to consume it on our ted.com embed
-      if (config.brand_id.toString() === '2357') {
-        // only allow these pages for redirection, allow rest of the pages to go through
-        const whitelistPaths = [
-          '/home',
-          '/popular',
-          '/latest',
-          '/explore',
-          '/group',
-          '/community',
-          '/brand',
-          '/profile',
-          '/video',
-        ]
-        // for these paths we will add the path as a query param to consumed on ted.com, which will be added as trend
-        // and will be used to show the correct feed home, latest, popular etc. content on ted.com if our
-        // embed is integrated
-        const trendWhitelistPaths = ['/home', '/popular', '/latest']
-        // Check if pathParamStr starts with any whitelisted path (with or without trailing slash)
-        const isWhitelisted = whitelistPaths.some(
-          (base) => pathParamStr && pathParamStr.replace(/\/$/, '').startsWith(base)
-        )
-        if (pathParamStr && !isWhitelisted) {
+      if (config.brand_id.toString() === '2357' || config.brand_id.toString() === '1429') {
+        if (!pathParamStr) {
           return children
         }
-        const queryParts = ['utm_source=shorts']
+        // if path param is /ted it means the url is shared from the ted.com desktop/mobile web and it should go only
+        // to ted.com web even if the user has TED app installed
+        // if user has app installed why this will work and how this request would even reach to web?
+        // because the app will not handle the /ted path, it has added this path specifically to it's exclusion list
+        // so that the request will reach to the webapp and then we can handle it here
+        if (pathParamStr && pathParamStr.startsWith('/ted')) {
+          console.log('[RedirectHandler] Path starts with /ted', pathParamStr)
+          // Remove '/ted' from the start of the path before processing
+          const cleanPathParamStr = pathParamStr.replace(/^\/ted/, '')
+          // only allow these pages for redirection, allow rest of the pages to go through
+          const whitelistPaths = [
+            '/home',
+            '/popular',
+            '/latest',
+            '/explore',
+            '/group',
+            '/community',
+            '/brand',
+            '/profile',
+            '/video',
+          ]
+          // for these paths we will add the path as a query param to consumed on ted.com, which will be added as trend
+          // and will be used to show the correct feed home, latest, popular etc. content on ted.com if our
+          // embed is integrated
+          const trendWhitelistPaths = ['/home', '/popular', '/latest']
+          // Check if cleanPathParamStr starts with any whitelisted path (with or without trailing slash)
+          const isWhitelisted = whitelistPaths.some(
+            (base) => cleanPathParamStr && cleanPathParamStr.replace(/\/$/, '').startsWith(base)
+          )
+          if (cleanPathParamStr && !isWhitelisted) {
+            return children
+          }
+          const queryParts = ['utm_source=shorts']
 
-        // If pathParamStr is present and not just '/', add as path param
-        if (pathParamStr && pathParamStr !== '/') {
-          // Remove leading and trailing slashes
-          const cleanPath = pathParamStr.replace(/^\/|\/$/g, '')
-          // If path is in trendWhitelistPaths, add as "trend" param
-          if (trendWhitelistPaths.includes('/' + cleanPath)) {
-            queryParts.push(`trend=${encodeURIComponent(cleanPath)}`)
-          } else {
-            // Split by '/' and process as key/value pairs
-            const segments = cleanPath.split('/')
-            for (let i = 0; i < segments.length - 1; i += 2) {
-              const key = segments[i]
-              const value = segments[i + 1]
-              if (key && value) {
-                queryParts.push(`${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+          // If cleanPathParamStr is present and not just '/', add as path param
+          if (cleanPathParamStr) {
+            // Remove leading and trailing slashes
+            const cleanPath = cleanPathParamStr.replace(/^\/|\/$/g, '')
+            // If path is in trendWhitelistPaths, add as "trend" param
+            if (trendWhitelistPaths.includes('/' + cleanPath)) {
+              queryParts.push(`trend=${encodeURIComponent(cleanPath)}`)
+            } else {
+              // Split by '/' and process as key/value pairs
+              const segments = cleanPath.split('/')
+              for (let i = 0; i < segments.length - 1; i += 2) {
+                const key = segments[i]
+                const value = segments[i + 1]
+                if (key && value) {
+                  queryParts.push(`${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+                }
               }
             }
           }
-        }
 
-        // If searchParamStr is present, append its params (without leading '?')
-        if (searchParamStr) {
-          const search = searchParamStr.startsWith('?') ? searchParamStr.slice(1) : searchParamStr
-          if (search) {
-            queryParts.push(search)
+          // If searchParamStr is present, append its params (without leading '?')
+          if (searchParamStr) {
+            const search = searchParamStr.startsWith('?') ? searchParamStr.slice(1) : searchParamStr
+            if (search) {
+              queryParts.push(search)
+            }
           }
-        }
 
-        // Join all parts with '&' and prepend '?'
-        const finalQuery = '?' + queryParts.join('&')
-        return permanentRedirect(checkAndAppendHttps('https://ted.com') + finalQuery)
+          // Join all parts with '&' and prepend '?'
+          const finalQuery = '?' + queryParts.join('&')
+          return permanentRedirect(checkAndAppendHttps('https://ted.com') + finalQuery)
+        } else {
+          console.log('[RedirectHandler] Path is not /ted, checking for /redirect', pathParamStr)
+          if (pathParamStr && pathParamStr.startsWith('/ted')) {
+            return children
+          }
+          let targetDomain = checkAndAppendHttps(config.integrations.white_label.allowed_domains[0])
+          const host = headersList.get('host') ?? ''
+          if (host.includes('localhost') || host.includes('127.0.0.1') || host.startsWith('192.168.')) {
+            targetDomain = `//${host}`
+          }
+          // For all other paths, we will redirect to the app store or play store link of TED app
+          // if user had TED app installed they would've been redirected to the app already
+          console.log('[RedirectHandler] Redirecting to TED app store link')
+          console.log('[RedirectHandler] Target domain:', targetDomain + '/ted/redirect?utm_source=shorts')
+          return permanentRedirect(targetDomain + '/ted/redirect?utm_source=shorts')
+        }
       }
 
       if (shouldRedirect) {

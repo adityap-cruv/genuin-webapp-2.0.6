@@ -5,7 +5,7 @@ import { resolveDeepLink } from '@lib/get-deeplink'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { useShallow } from 'zustand/react/shallow'
 import { Loader } from '@components/ui/loader'
-import smartAppRedirect from './redirection'
+import smartAppRedirect from '@lib/utils/redirection'
 
 export function MainComponent() {
   const pathname = usePathname()
