@@ -87,15 +87,13 @@ export function MemberItem({
       onClick={onClick}
       {...restProps}
     >
-      {profileImage.url && (
-        <Avatar
-          isAvatar={profileImage.isAvatar}
-          imageUrl={profileImage.url}
-          alt={name}
-          size="md"
-          className={memberItemAvatarVariants({ variant })}
-        />
-      )}
+      <Avatar
+        isAvatar={profileImage.isAvatar}
+        imageUrl={profileImage.url}
+        alt={name}
+        size="md"
+        className={memberItemAvatarVariants({ variant })}
+      />
       {variant === "profile" ? renderProfileLayout() : renderDefaultLayout()}
     </div>
   );

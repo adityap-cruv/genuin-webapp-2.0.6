@@ -10,12 +10,12 @@ import { Link } from "../link";
 
 export type LinksType = Partial<
   Record<
-    "x" | "instagram" | "tiktok" | "custom" | "linkedin",
+    "x" | "instagram" | "tiktok" | "custom" | "linkedin" | "reddit",
     string | undefined
   >
 >;
 
-type LinkProps = {
+export type LinkProps = {
   links: LinksType;
 };
 

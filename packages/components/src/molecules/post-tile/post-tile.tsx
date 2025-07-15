@@ -47,7 +47,11 @@ export function PostTile({
       onClick={onClick}
       {...restProps}
     >
-      <Image src={imageUrl} {...imageCompProps} />
+      {imageUrl? (
+        <Image aspectRatio="reel" className="gencl:bg-secondary-50" src={imageUrl} {...imageCompProps} />
+      ) : (
+        <div className="gencl:w-full gencl:h-full gencl:bg-secondary-50" />
+      )}
       {isPinned && (
         <PinIcon className="gencl:stroke-white gencl:group-hover:hidden gencl:absolute gencl:top-2 gencl:right-2 gencl:fill-white" />
       )}

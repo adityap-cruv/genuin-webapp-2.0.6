@@ -33,6 +33,7 @@ import { ComponentErrorState } from "@genuin/components/organisms/error-state-co
 import { useLocalStorage } from "usehooks-ts";
 import { RECENT_COMMUNITIES_KEY } from "@genuin/components/lib/constants";
 import { type RecentCommunity } from "@genuin/components/types/community";
+import { buildSocialLinks } from "@genuin/components/lib/utils/social-link-parser";
 
 export function CommunityDetails({
   slug,
@@ -237,13 +238,7 @@ function CommunityDetailsView({ slug }: { slug: string }) {
                   }}
                 />
               }
-              links={{
-                custom:
-                  communityDetails.social_links.social_web_url ?? undefined,
-                x: communityDetails.social_links.twitter?.url ?? undefined,
-                instagram:
-                  communityDetails.social_links.insta?.url ?? undefined,
-              }}
+              links={buildSocialLinks(communityDetails.social_links)}
               ctas={<div className="gencl:flex gencl:gap-2">{ctas}</div>}
             />
             {showPrivateCommunityAccess ? (

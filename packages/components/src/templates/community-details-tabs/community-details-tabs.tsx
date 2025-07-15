@@ -213,7 +213,7 @@ function CommunityMembers({
     },
     url: buildPageUrl({
       type: !!member.brand ? "brand" : "profile",
-      slug: member.nickname,
+      slug: !!member.brand ? member.brand.brand_slug : member.nickname,
     }),
     userName: member.nickname,
     brand: {
