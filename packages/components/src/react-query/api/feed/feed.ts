@@ -85,6 +85,7 @@ export const useFeed = (feedType: FeedType) => {
         lastVideoId: lastPageData.video.id,
       };
     },
+    refetchOnMount: false,
   });
 };
 

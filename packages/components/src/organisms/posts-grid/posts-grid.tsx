@@ -32,7 +32,7 @@ export function PostsGrid({
           key={post.postId}
           className="gencl:flex-none gencl:w-40 sm:gencl:w-44 md:gencl:w-48"
           postData={post}
-          imageCompProps={{ useWebp: false }}
+          imageCompProps={{ useWebp: true }}
           shouldCloseModal={shouldCloseModal}
           onClick={() => {
             onPostTileClick?.(post.postId);

@@ -428,8 +428,8 @@ export function tryJsonParse(data: string) {
 
 export function getWebpUrlForImage(url?: string | null): string {
   if (!url) return ''
-  return url
-  // return url.includes('/uploads/') ? url.replace(/(\/)([^/]+)\.([^/.]+)$/, '$1webp/$2.webp') : url
+  // return url
+  return url.includes('/uploads/') ? url.replace(/(\/)([^/]+)\.([^/.]+)$/, '$1webp/$2.webp') : url
 }
 
 /**

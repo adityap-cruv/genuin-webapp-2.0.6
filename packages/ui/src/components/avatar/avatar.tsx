@@ -5,6 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import * as React from "react";
 
 import { cn, isValidHTTPS } from "@genuin/ui/lib/utils";
+import { getWebpUrlForImage } from "@genuin/ui/utils";
 
 const avatarVariants = cva(
   "gencl:relative gencl:flex gencl:w-min gencl:shrink-0 gencl:overflow-hidden gencl:rounded-full",
@@ -59,8 +60,9 @@ function Avatar({
       <AvatarPrimitive.Image
         data-slot="avatar-image"
         className="gencl:aspect-square gencl:rounded-full gencl:size-full"
-        src={isAvatar ? getAvatarUrl(imageUrl) : imageUrl}
+        src={isAvatar ? getAvatarUrl(imageUrl) : getWebpUrlForImage(imageUrl)}
         alt={alt}
+        loading="lazy"
       />
       <AvatarPrimitive.Fallback
         data-slot="avatar-fallback"

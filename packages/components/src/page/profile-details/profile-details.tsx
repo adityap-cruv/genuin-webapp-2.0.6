@@ -83,11 +83,15 @@ export function ProfileDetails({
         }}
         ctas={
           <div className="gencl:flex gencl:gap-2">
-            <BecomeCreatorButton />
+            {(forBrand || (!forBrand && profileData && profileData.brand)) && (
+              <BecomeCreatorButton />
+            )}
             <ShareButton
               pathName={buildPageUrl({
                 type: !!profileData.brand ? "brand" : "profile",
-                slug: profileData.nickname,
+                slug: !!profileData.brand
+                  ? profileData.brand.brand_slug
+                  : profileData.nickname,
               })}
             />
           </div>
@@ -138,11 +142,16 @@ export function ProfileDetails({
           }}
           ctas={
             <div className="gencl:flex gencl:gap-2">
-              <BecomeCreatorButton />
+              {(forBrand ||
+                (!forBrand && profileData && profileData.brand)) && (
+                <BecomeCreatorButton />
+              )}
               <ShareButton
                 pathName={buildPageUrl({
                   type: !!profileData.brand ? "brand" : "profile",
-                  slug: profileData.nickname,
+                  slug: !!profileData.brand
+                    ? profileData.brand.brand_slug
+                    : profileData.nickname,
                 })}
               />
             </div>

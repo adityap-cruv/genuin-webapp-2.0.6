@@ -47,7 +47,7 @@ const HOSTS = {
   /**
    * Media server endpoint - Used for serving user-generated content
    */
-  media: isProd ? 'https://media.begenuin.com' : 'https://media.qa.begenuin.com',
+  media: 'https://*.begenuin.com',
 
   /**
    * Amazon S3 bucket endpoints - Used for media storage

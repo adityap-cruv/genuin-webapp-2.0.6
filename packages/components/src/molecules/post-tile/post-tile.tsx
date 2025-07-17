@@ -48,7 +48,7 @@ export function PostTile({
       {...restProps}
     >
       {imageUrl? (
-        <Image aspectRatio="reel" className="gencl:bg-secondary-50" src={imageUrl} {...imageCompProps} />
+        <Image aspectRatio="reel" className="gencl:bg-secondary-200" src={imageUrl} {...imageCompProps} />
       ) : (
         <div className="gencl:w-full gencl:h-full gencl:bg-secondary-50" />
       )}

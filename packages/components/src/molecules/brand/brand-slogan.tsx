@@ -27,7 +27,7 @@ export function BrandSlogan({ ...props }: BrandSloganProps) {
       {hasValidImage ? (
         <Image
           src={image}
-          className="gencl:w-80"
+          className="gencl:w-fit gencl:max-w-full"
           alt="Brand slogan"
           useWebp={false}
           {...props}
