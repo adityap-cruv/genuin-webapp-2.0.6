@@ -1,7 +1,5 @@
 import { NOT_FOUND_ERROR_CODES } from "@genuin/components/lib/constants/errors";
-import { mapCommunityUserRole } from "@genuin/components/lib/utils";
 import { axiosInstance } from "@genuin/components/react-query/axios-instance";
-import { LoopVideoType } from "@genuin/components/react-query/api/video";
 import { fetchLoopDetails } from "@genuin/components/react-query/api/group/details";
 import { API_PATHS } from "@genuin/components/react-query/paths";
 import { PostDetailsType } from "../feed/schema";
@@ -43,15 +41,14 @@ async function getVideoDetails(slug: string): Promise<PostDetailsType> {
   if (!loopDetails || !videoDetails) {
     throw new Error("Failed to fetch loop details or video details.");
   }
-  
   return {
     video: {
-      id: videoDetails.message_id,
+      id: videoDetails.message_id ?? loopDetails.id ?? null,
       clickableUrl: videoDetails.clickable_url ?? null,
-      slug: videoDetails.slug,
+      slug: videoDetails.slug ?? loopDetails.slug ?? null,
       createdAt: videoDetails.message_at ?? -1,
       commentCount: videoDetails.no_of_comments ?? 0,
-      shareUrl: videoDetails.share_url,
+      shareUrl: videoDetails.share_url ?? loopDetails.shareUrl ?? "",
       attachedLink: videoDetails.attached_link ?? null,
       source: videoDetails.media_url,
       isSparked: videoDetails.is_sparked ?? false,
@@ -64,6 +61,7 @@ async function getVideoDetails(slug: string): Promise<PostDetailsType> {
       linkouts: null, // Map if available
       isPinned: videoDetails.is_pinned ?? false,
       thumbnailSprite: null, // Map if available
+      viewCount: videoDetails.no_of_views ?? 0,
     },
     group: {
       slug: loopDetails.slug,
@@ -95,7 +93,7 @@ async function getVideoDetails(slug: string): Promise<PostDetailsType> {
             id: loopDetails.community.brand.id,
             logo: loopDetails.community.brand.logo ?? null,
             webLogo: loopDetails.community.brand.webLogo ?? null,
-            handle: loopDetails.community.brand.handle ?? ''
+            handle: loopDetails.community.brand.handle ?? "",
           }
         : undefined,
     },
@@ -104,7 +102,23 @@ async function getVideoDetails(slug: string): Promise<PostDetailsType> {
       profileImage: videoDetails.owner.profile_image,
       userName: videoDetails.owner.username,
       name: videoDetails.owner.name ?? null,
-      brand: videoDetails.owner.brand ?? null,
+      brand:
+        videoDetails.owner.brand || loopDetails.owner.brand
+          ? {
+              id:
+                videoDetails.owner.brand?.id ??
+                loopDetails.owner.brand?.id ??
+                0,
+              slug:
+                videoDetails.owner.brand?.slug ??
+                loopDetails.owner.brand?.slug ??
+                "",
+              userLogo:
+                videoDetails.owner.brand?.userLogo ??
+                loopDetails.owner.brand?.brandUserLogo ??
+                null,
+            }
+          : undefined,
     },
   };
 }

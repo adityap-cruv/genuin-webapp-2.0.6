@@ -17,6 +17,7 @@ import { RepostModal } from "@genuin/components/organisms/repost-modal/repost-mo
 import { useAuthContext } from "@genuin/components/context/auth";
 import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
 import { Button } from "@genuin/ui/components/button";
+import { useBaseContext } from "@genuin/components/context/base";
 
 const tooltipVariants = cva("", {
   variants: {
@@ -208,6 +209,7 @@ export function Actions({
   isCommentBoxOpen = false,
   ...restProps
 }: ActionsPropsType) {
+  const { tooltip } = useBaseContext().brandDetails.reactions;
   const actions = [
     {
       icon: <RepostIcon variant={variant} />,
@@ -223,7 +225,7 @@ export function Actions({
         />
       ),
       actionType: "REACTION",
-      tooltipText: "I find this insightful",
+      tooltipText: tooltip,
     },
     {
       icon: <CommentIcon variant={variant} />,
