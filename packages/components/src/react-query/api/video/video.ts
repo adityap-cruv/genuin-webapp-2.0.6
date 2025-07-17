@@ -102,23 +102,13 @@ async function getVideoDetails(slug: string): Promise<PostDetailsType> {
       profileImage: videoDetails.owner.profile_image,
       userName: videoDetails.owner.username,
       name: videoDetails.owner.name ?? null,
-      brand:
-        videoDetails.owner.brand || loopDetails.owner.brand
-          ? {
-              id:
-                videoDetails.owner.brand?.id ??
-                loopDetails.owner.brand?.id ??
-                0,
-              slug:
-                videoDetails.owner.brand?.slug ??
-                loopDetails.owner.brand?.slug ??
-                "",
-              userLogo:
-                videoDetails.owner.brand?.userLogo ??
-                loopDetails.owner.brand?.brandUserLogo ??
-                null,
-            }
-          : undefined,
+      brand: videoDetails.owner.brand
+        ? {
+            id: videoDetails.owner.brand?.id,
+            slug: videoDetails.owner.brand?.slug,
+            userLogo: videoDetails.owner.brand?.userLogo,
+          }
+        : undefined,
     },
   };
 }
