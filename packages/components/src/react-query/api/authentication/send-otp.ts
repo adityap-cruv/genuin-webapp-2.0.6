@@ -30,15 +30,14 @@ export async function sendOtp({ email, phoneNumber, isUpdate }: SendOtpProps) {
       let message = "Something went wrong. Please try again!";
       const retryTime = Number(e.response.data.data?.retryTime);
       if (e.response.data.code === "5262") {
-        message =
-          "This number is linked to another account. Please use a different one.";
+        message = e.response.data.message
       }
       if (e.response.data.code === "5263") {
         message = isUpdate
           ? "Unable to send the code. Please use another phone number."
           : "Unable to send the code. Please use another phone number or email to log in.";
       } else if (e.response.data.code === "5205") {
-        message = "Email already exists. Please try another one.";
+        message = e.response.data.message;
       } else if (!isNaN(retryTime)) {
         if (retryTime < 1) {
           const minutes = Math.floor(retryTime / 60);

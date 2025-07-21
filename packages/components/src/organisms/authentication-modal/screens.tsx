@@ -1,12 +1,22 @@
+import { useEffect } from "react";
 import { useAuthenticationModalContext } from "./context";
 import { BecomeCreator } from "./screens/become-creator";
 import { CategoryInput } from "./screens/category-input";
+import { DeleteAccount } from "./screens/delete-account";
+import { EditBio } from "./screens/edit-bio";
+import { EditBirthDate } from "./screens/edit-birth-date";
 import { EditEmail } from "./screens/edit-email";
+import { EditFullName } from "./screens/edit-full-name";
 import { EditPhoneNumber } from "./screens/edit-phone-number";
+import { EditProfilePicture } from "./screens/edit-profile-picture";
+import { EditSocialProfiles } from "./screens/edit-social-profiles";
 import { EditUserName } from "./screens/edit-username";
 import { GetApp } from "./screens/get-app";
 import { Guidelines } from "./screens/guidelines";
 import { OtpVerification } from "./screens/otp";
+import { OtpVerificationDeleteAccount } from "./screens/otp/otp-verfication-delete-account";
+import { RemovePicture } from "./screens/remove-picture";
+import { SignOut } from "./screens/sign-out";
 import { SignIn } from "./screens/signin";
 
 export function Screens() {
@@ -39,5 +49,23 @@ export function Screens() {
       return <GetApp />;
     case "BECOME_CREATOR":
       return <BecomeCreator />;
+    case "EDIT_FULLNAME":
+      return <EditFullName />;
+    case "EDIT_BIO":
+      return <EditBio />;
+    case "EDIT_SOCIAL_PROFILES":
+      return <EditSocialProfiles />;
+    case "EDIT_BIRTHDATE":
+      return <EditBirthDate />;
+    case "SIGN_OUT":
+      return <SignOut />;
+    case "REMOVE_PICTURE":
+      return <RemovePicture />;
+    case "EDIT_PROFILE_PICTURE":
+      return <EditProfilePicture />;
+    case "VERIFY_DELETE_ACCOUNT":
+      return <OtpVerificationDeleteAccount />;
+    case "DELETE_CONFIRMATION":
+      return <DeleteAccount />;
   }
 }

@@ -1,5 +1,5 @@
 import { axiosInstance } from "@genuin/components/react-query/axios-instance";
-import { getQueryKeyForCategories } from "@genuin/components/react-query/keys/authentication";
+import { getQueryKeyForInterests } from "@genuin/components/react-query/keys/authentication";
 import { API_PATHS } from "@genuin/components/react-query/paths";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import z from "zod";
@@ -48,7 +48,7 @@ async function fetchCategoryList() {
 export function useGetCategoriesQuery() {
   return useQuery({
     queryFn: fetchCategoryList,
-    queryKey: getQueryKeyForCategories(),
+    queryKey: getQueryKeyForInterests(),
   });
 }
 
@@ -79,7 +79,7 @@ export function useAddCategoriesMutation({
 }) {
   return useMutation({
     mutationFn: addTopics,
-    mutationKey: getQueryKeyForCategories(),
+    mutationKey: getQueryKeyForInterests(),
     onSuccess,
     onError,
   });

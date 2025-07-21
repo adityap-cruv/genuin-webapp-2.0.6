@@ -18,12 +18,12 @@ import { useValidateUsername } from "@genuin/components/react-query/api/authenti
 import { useDebounceValue } from "usehooks-ts";
 import { useUpdateUserMutation } from "@genuin/components/react-query/api/authentication";
 import { sanitizeInput } from "@genuin/components/lib/utils";
+import { Toast } from "@genuin/ui/components";
 import { useAuthenticationModalContext } from "../../context";
 
 const usernameSchema = z.object({
   username: z.string().regex(/^[a-zA-Z0-9._-]+$/, {
-    message:
-      "Usernames can only use letters, numbers, underscores, and periods.",
+    message: "Use only letters, numbers, underscores, or periods",
   }),
 });
 
@@ -36,7 +36,7 @@ export function EditUserName({
 
   const form = useForm<z.infer<typeof usernameSchema>>({
     resolver: zodResolver(usernameSchema),
-    mode: "onSubmit",
+    mode: "onChange",
     defaultValues: { username: user?.nickname },
   });
 
@@ -69,6 +69,10 @@ export function EditUserName({
             ...user,
             nickname: form.getValues("username"),
             usernameSet: true,
+          });
+          Toast.Success({
+            message: "Your username has been updated",
+            description: "",
           });
         }
         closeModal();
@@ -104,8 +108,8 @@ export function EditUserName({
         <h3 className="gencl:text-center gencl:text-headline-2-semi-bold">
           Edit username
         </h3>
-        <p className="gencl:text-title-3-medium gencl:text-center">
-          Enter a name to show on your videos{" "}
+        <p className="gencl:text-center gencl:text-body-1-medium gencl:text-secondary-600">
+          This handle will show on your videos
         </p>
       </div>
       <Form {...form}>

@@ -8,6 +8,7 @@ import { LogOutIcon, SettingsIcon } from "lucide-react";
 import { Link } from "@genuin/components/molecules/link";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { cn } from "@genuin/ui/lib/utils";
+import { useState } from "react";
 
 export function CtaButtons() {
   const { web_cta } = useBaseContext().brandDetails;
@@ -44,11 +45,13 @@ export function CtaButtons() {
 
 function UserTick() {
   const { user } = useAuthContext();
+  const [open, setOpen] = useState(false);
+
   if (!user) {
     return null; // or handle the case where user is not defined
   }
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger>
         <Avatar
           imageUrl={user.image}
@@ -62,13 +65,13 @@ function UserTick() {
         sideOffset={8}
         collisionPadding={{ right: 16 }}
       >
-        <Content />
+        <Content onClose={() => setOpen(false)} />
       </PopoverContent>
     </Popover>
   );
 }
 
-function Content() {
+function Content({ onClose }: { onClose: () => void }) {
   const { user, signOut } = useAuthContext();
 
   const ACTIONS = [
@@ -101,7 +104,7 @@ function Content() {
             </p>
             {!user.isBrandSystemUser && (
               // <AuthenticationModal customStep="COMPLETE_PROFILE">
-              <Link href={buildPageUrl({ type: "settings" })}>
+              <Link href={buildPageUrl({ type: "settings" })} onClick={onClose}>
                 <p className="gencl:text-body-1-semi-bold gencl:cursor-pointer gencl:text-primary gencl:hover:text-primary-700">
                   Complete Profile
                 </p>
@@ -111,16 +114,21 @@ function Content() {
           </div>
         </div>
       </div>
-      <Link href={buildPageUrl({ type: "settings" })}>
-        <div className="gencl:flex gencl:items-center gencl:gap-2 gencl:px-2 gencl:hover:bg-secondary-50 gencl:py-3 gencl:rounded-lg gencl:text-body-1-medium">
-          <SettingsIcon />
-          Settings
-        </div>
-      </Link>
+      {!user.isBrandSystemUser && (
+        <Link href={buildPageUrl({ type: "settings" })} onClick={onClose}>
+          <div className="gencl:flex gencl:items-center gencl:gap-2 gencl:px-2 gencl:hover:bg-secondary-50 gencl:py-3 gencl:rounded-lg gencl:text-body-1-medium">
+            <SettingsIcon />
+            Settings
+          </div>
+        </Link>
+      )}
       <Button
         className="gencl:px-2 gencl:hover:bg-secondary-50 gencl:text-body-1-medium! gencl:justify-start"
         theme="custom"
-        onClick={() => signOut(buildPageUrl({ type: "home" }))}
+        onClick={() => {
+          onClose();
+          signOut(buildPageUrl({ type: "home" }));
+        }}
       >
         <LogOutIcon className="gencl:size-6" />
         Log out

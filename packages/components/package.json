@@ -19,7 +19,9 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.56.4",
-    "tailwindcss": "^4.1.8"
+    "tailwindcss": "^4.1.8",
+    "cropperjs": "^1.5.13",
+    "react-cropper": "^2.3.3"
   },
   "dependencies": {
     "@fingerprintjs/fingerprintjs": "^4.2.2",
@@ -33,6 +35,7 @@
     "motion": "^12.18.1",
     "next": "15.2.0",
     "openplayerjs": "^2.14.10",
+    "react-drag-drop-files": "^3.0.1",
     "react-phone-number-input": "^3.4.12",
     "react-qr-code": "^2.0.16",
     "swiper": "^11.2.7",

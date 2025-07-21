@@ -4,11 +4,12 @@ import {
 } from "@genuin/components/react-query/api/authentication/categories";
 import { Button } from "@genuin/ui/button";
 import { cn } from "@genuin/ui/utils";
-import { ComponentProps, useState } from "react";
+import { ComponentProps, useState, useEffect } from "react";
 import { SubmitButton } from "../../submit-button";
 import { useAuthContext } from "@genuin/components/context/auth";
 import { Loader } from "@genuin/ui/components/loader";
 import { useAuthenticationModalContext } from "../../context";
+import { Toast } from "@genuin/ui/components";
 
 export type CategoryInputProps = ComponentProps<"div">;
 
@@ -17,11 +18,14 @@ export function CategoryInput({ ...props }: CategoryInputProps) {
   const { isFetching, data: categories } = useGetCategoriesQuery();
   const [error, setError] = useState<string | null>(null);
   const { setStep, closeModal } = useAuthenticationModalContext();
+  // Track if the user is in the signup flow
+  const [isSignupFlow, setIsSignupFlow] = useState(false);
 
   const { mutate: addCategories, isPending } = useAddCategoriesMutation({
     onSuccess: (response) => {
       if (response) {
         updateUser({ hasTopics: true });
+        Toast.Success({ message: "Your categories has been updated" });
         if (!user?.usernameSet) {
           setStep("EDIT_USERNAME");
         } else {
@@ -39,6 +43,19 @@ export function CategoryInput({ ...props }: CategoryInputProps) {
 
   const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
   const [isSurpriseMe, setIsSurpriseMe] = useState(false);
+
+  // Initialize selected categories when categories data is loaded
+  useEffect(() => {
+    if (Array.isArray(categories)) {
+      const preSelectedTopics = categories.flatMap((category) =>
+        category.topics
+          .filter((topic) => topic.is_selected)
+          .map((topic) => topic.topic_id)
+      );
+      setSelectedCategory(preSelectedTopics);
+      setIsSignupFlow(preSelectedTopics.length === 0);
+    }
+  }, [categories]);
 
   const handleCategorySelection = (cat: string) => {
     setSelectedCategory((prev) =>
@@ -64,7 +81,9 @@ export function CategoryInput({ ...props }: CategoryInputProps) {
     <div {...props}>
       <div className="gencl:text-center gencl:flex gencl:items-center gencl:gap-3 gencl:flex-col">
         <p className="gencl:text-headline-2-semi-bold">
-          What are you interested in?
+          {isSignupFlow
+            ? "What are you interested in?"
+            : "Select your interests"}
         </p>
         <p className="gencl:text-body-1-medium gencl:text-secondary-600">
           Get started by picking three topics you're interested in, to see more
@@ -72,7 +91,7 @@ export function CategoryInput({ ...props }: CategoryInputProps) {
         </p>
       </div>
       <div className="gencl:max-h-[40vh] gencl:overflow-y-auto gencl:my-6">
-        {isFetching && (
+        {isFetching && !categories && (
           <div className="gencl:w-full gencl:flex gencl:justify-center gencl:items-center">
             <Loader />
           </div>

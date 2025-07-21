@@ -49,7 +49,9 @@
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.57.0",
     "tailwindcss": "^4.1.8",
-    "zod": "^3.25.16"
+    "zod": "^3.25.16",
+    "cropperjs": "^1.5.13",
+    "react-cropper": "^2.3.3"
   },
   "devDependencies": {
     "@alloc/quick-lru": "^5.2.0",

@@ -6,6 +6,7 @@ import {
 } from "@genuin/ui/components/dialog";
 import { ComponentProps, useState, useEffect } from "react";
 import { ModalShell } from "./modal-shell";
+import { cn } from "@genuin/ui/lib/utils";
 import {
   AuthActionType,
   AuthenticationModalProvider,
@@ -36,8 +37,29 @@ export function AuthenticationModal({
   const {
     brandDetails: { web_cta },
   } = useBaseContext();
+
   const [internalOpen, setInternalOpen] = useState(false);
+
   const step = customStep ?? (web_cta !== "app" ? "SIGNIN" : "GET_APP");
+
+  const compactSteps = ["DELETE_CONFIRMATION", "SIGN_OUT", "REMOVE_PICTURE"]; // Steps that use reduced padding and width
+
+  const expandedSteps = ["EDIT_PROFILE_PICTURE"]; // Steps that use expand width
+
+  const variant = compactSteps.includes(step)
+    ? "compact"
+    : expandedSteps.includes(step)
+      ? "expanded"
+      : "default";
+
+  const wrapClass = cn(
+    "gencl:p-0 gencl:rounded-2xl",
+    compactSteps.includes(step)
+      ? "gencl:max-w-[500px]"
+      : expandedSteps.includes(step)
+        ? "gencl:!max-w-4xl"
+        : "gencl:!max-w-xl"
+  );
 
   const isControlled = controlledOpen !== undefined;
   const isOpen = isControlled ? controlledOpen : internalOpen;
@@ -65,7 +87,7 @@ export function AuthenticationModal({
       <DialogTrigger asChild {...restProps}>
         {children}
       </DialogTrigger>
-      <DialogContent className="gencl:p-0 gencl:!max-w-xl gencl:rounded-2xl">
+      <DialogContent className={wrapClass}>
         <AuthenticationModalProvider
           action={action}
           customStep={step}
@@ -74,7 +96,7 @@ export function AuthenticationModal({
           getAppData={getAppData}
         >
           <div className="gencl:max-h-[90vh] gencl:overflow-y-auto">
-            <Content />
+            <Content variant={variant} />
           </div>
         </AuthenticationModalProvider>
       </DialogContent>
@@ -82,7 +104,7 @@ export function AuthenticationModal({
   );
 }
 
-function Content() {
+function Content({ variant }: { variant: "default" | "compact" | "expanded" }) {
   const { step } = useAuthenticationModalContext();
   // Determine if the back button should be shown based on the current step
   const showBackButton =
@@ -91,7 +113,7 @@ function Content() {
     step === "LOGIN_OTP_INPUT";
 
   return (
-    <ModalShell showBack={showBackButton}>
+    <ModalShell showBack={showBackButton} variant={variant}>
       <Screens />
     </ModalShell>
   );

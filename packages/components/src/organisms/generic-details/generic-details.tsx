@@ -129,7 +129,7 @@ export function GenericDetails({
             alt={profileImageDetails.alt}
             imageUrl={profileImageDetails.imageUrl}
             isAvatar={profileImageDetails.isAvatar}
-            size={variant === "list" ? "2xl" : "3xl"}
+            size={variant === "list" ? "2xl" : "4xl"}
           />
         )}
         <div className="gencl:flex gencl:w-full gencl:gap-4 gencl:justify-between">
@@ -244,7 +244,10 @@ export function GenericDetailsSkeleton({
         <Skeleton className="gencl:w-72 gencl:h-9 gencl:rounded-md" />
         <div className="gencl:flex gencl:items-center gencl:gap-2">
           {Array.from({ length: 5 }).map((_, idx, arr) => (
-            <div key={idx} className="gencl:flex gencl:gap-2 gencl:items-center">
+            <div
+              key={idx}
+              className="gencl:flex gencl:gap-2 gencl:items-center"
+            >
               <Skeleton className="gencl:w-14 gencl:h-4 gencl:rounded-md" />
               {idx < arr.length - 1 && (
                 <Skeleton className="gencl:w-1.5 gencl:h-1.5 gencl:rounded-md" />
@@ -259,10 +262,7 @@ export function GenericDetailsSkeleton({
         {hasLinks && (
           <div className="gencl:flex gencl:gap-2">
             {Array.from({ length: 4 }).map((_, idx) => (
-              <Skeleton
-                key={idx}
-                className="gencl:size-7 gencl:rounded-md"
-              />
+              <Skeleton key={idx} className="gencl:size-7 gencl:rounded-md" />
             ))}
           </div>
         )}

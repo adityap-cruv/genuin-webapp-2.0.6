@@ -1,4 +1,7 @@
-import { Button } from "@genuin/ui/button";
+import type { ComponentProps } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { formatPhoneNumberIntl } from "react-phone-number-input";
 import {
   Form,
   FormControl,
@@ -7,19 +10,16 @@ import {
   FormMessage,
 } from "@genuin/ui/form";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@genuin/ui/input-otp";
-import { TimerMessage } from "./timer";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { ComponentProps } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { useAuthenticationModalContext } from "../../context";
 import {
   useConsumeOtpMutation,
   useSendOtpMutation,
   useUpdateEmailOrPhoneMutation,
 } from "@genuin/components/react-query/api/authentication";
 import { useAuthContext } from "@genuin/components/context/auth";
-import { formatPhoneNumberIntl } from "react-phone-number-input";
+import { Toast } from "@genuin/ui/components";
+import { useAuthenticationModalContext } from "../../context";
+import { TimerMessage } from "./timer";
 import { SubmitButton } from "../../submit-button";
 
 const OTPSchema = z.object({
@@ -41,6 +41,7 @@ type OtpVerificationProps = ComponentProps<"div"> & {
 export function OtpVerification({
   verificationType,
   title,
+  className,
   ...props
 }: OtpVerificationProps) {
   const {
@@ -99,7 +100,22 @@ export function OtpVerification({
       },
       onSuccess: ({ verified }) => {
         if (verified) {
-          updateUser({ email, phoneNumber: phone });
+          if (verificationType === "EMAIL") {
+            updateUser({ email });
+            Toast.Success({
+              message: "Your email has been updated",
+              description: "",
+            });
+          } else if (verificationType === "PHONE") {
+            updateUser({ phoneNumber: phone });
+            Toast.Success({
+              message: "Your phone number has been updated",
+              description: "",
+            });
+          } else {
+            updateUser({ email, phoneNumber: phone });
+          }
+          closeModal();
         }
       },
     });
@@ -169,16 +185,17 @@ export function OtpVerification({
   return (
     <div className="gencl:text-center" {...props}>
       <p className="gencl:text-headline-2-semi-bold">{title ?? "Enter code"}</p>
-      <p className="gencl:text-body-1-medium gencl:text-secondary-600 gencl:mt-3">
+      <p className="gencl:text-body-1-medium gencl:text-secondary-600 gencl:mt-3 gencl:mb-3">
         Please Enter the 6-digit code sent to
-        {flowType === "EMAIL"
+        {(verificationType === "LOGIN" ? flowType : verificationType) ===
+        "EMAIL"
           ? ` your email address: ${email}`
           : ` your phone: ${formatPhoneNumberIntl(phone as string)}`}
       </p>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="gencl:space-y-4 gencl:mt-4"
+          className="gencl:space-y-6 gencl:text-center"
         >
           <FormField
             control={form.control}
@@ -200,7 +217,7 @@ export function OtpVerification({
                         <InputOTPSlot
                           key={idx}
                           index={idx}
-                          className="gencl:w-full gencl:h-16 gencl:border-0 gencl:rounded-lg gencl:bg-secondary-50"
+                          className="gencl:w-full gencl:h-16 gencl:rounded-lg gencl:bg-secondary-50 gencl:border gencl:border-secondary-150"
                         />
                       ))}
                     </InputOTPGroup>
@@ -211,7 +228,6 @@ export function OtpVerification({
             )}
           />
           <TimerMessage
-            className="gencl:mt-4"
             time={data?.retryTime ?? 30}
             isOtpSending={isSendingOtp}
             verificationType="login"

@@ -1,2 +1,43 @@
 @import "@genuin/tailwind-config";
 @import "@genuin/ui/styles";
+
+
+/* Use for file uploader component */
+.drop_area, .drop_zone {
+  width: 100%;
+}
+
+.custom_style {
+  border: none;
+  display: flex;
+  justify-content: center;
+  background-color: transparent !important;
+  outline: none !important;
+}
+
+.drop_area:hover {
+  background-color: transparent !important;
+}
+
+.drop_area.drag-active {
+  border: none !important;
+  background-color: transparent !important;
+  color: inherit;
+
+}
+
+.drop_area .sc-hvigdm{
+  background-color: transparent !important;
+  border: none;
+}
+
+label.is-required {
+  display: block;
+}
+
+label.is-required::after{
+  position: absolute;
+  content: '*';
+  color: red;
+  margin-left: 2px;
+}

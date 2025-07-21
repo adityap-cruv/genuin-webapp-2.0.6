@@ -18,7 +18,8 @@ const avatarVariants = cva(
         lg: "gencl:size-12 gencl:text-headline-4-semi-bold",
         xl: "gencl:size-14 gencl:text-headline-3-bold",
         "2xl": "gencl:size-16 gencl:text-headline-3-semi-bold",
-        "3xl": "gencl:size-40 gencl:text-h2-bold",
+        "3xl": "gencl:size-22 gencl:text-h2-bold",
+        "4xl": "gencl:size-40 gencl:text-h2-bold",
       },
     },
     defaultVariants: {

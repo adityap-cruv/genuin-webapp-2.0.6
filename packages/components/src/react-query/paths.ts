@@ -181,6 +181,11 @@ export const API_PATHS = {
    * Api path to Submits a request to become a creator.
    * */
   BECOME_CREATOR_REQUEST: "api/v3/users/ks_cb_request",
+
+  /**
+   * Api path for the feedback in the contact us.
+   */
+  CONTACT_US: "/api/v3/contact-us",
   /**
    * Api path to fetch search suggestions.
    */
@@ -193,4 +198,22 @@ export const API_PATHS = {
    * Api path to for recent results.
    */
   SEARCH_RECENT: "/api/v3/global_search/recent",
+  /**
+   * Api path to fetch image upload presigned Url.
+   */
+  UPLOAD_URL: "/api/v3/users/video/upload/create_upload_url",
+  /**
+   * Api path to for settings.
+   */
+  UPDATE_NOTIFICATION_SETTINGS: "/api/v3/users/update_notification_settings",
+
+  /**
+   * Api path to for delete account.
+   */
+  DELETE_ACCOUNT: "/api/v3/users/delete",
+
+  /**
+   * Api path to for fetch image.
+   */
+  FETCH_IMAGE: '/api/v3/redirect_media',
 } as const;

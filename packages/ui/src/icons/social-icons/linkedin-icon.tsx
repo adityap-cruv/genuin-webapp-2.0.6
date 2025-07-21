@@ -4,10 +4,10 @@ import type { SVGIconsProps } from "../type";
 export function LinkedInIcon({ className, ...restProps }: SVGIconsProps) {
   return (
     <svg
-      width="24"
-      height="24"
-      className={cn("gencl:fill-primary", className)}
-      viewBox="0 0 22 22"
+      width="20"
+      height="20"
+      className={cn("gencl:fill-secondary-600", className)}
+      viewBox="0 0 20 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       {...restProps}

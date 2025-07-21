@@ -1,8 +1,45 @@
 import { type ConfigType } from '@lib/stores/genuin-options'
 import { checkAndAppendHttps } from '@lib/utils'
+import { auth } from 'auth'
 import { headers } from 'next/headers'
 import { permanentRedirect } from 'next/navigation'
 import type { ReactNode } from 'react'
+
+// Define which routes require authentication with optional additional conditions
+const PROTECTED_ROUTES = [
+  {
+    path: '/settings',
+    additionalCheck: (user: any) => {
+      // Only allow if user is NOT a brand system user
+      return user?.isBrandSystemUser === false
+    },
+  },
+  // Add more protected routes as needed
+  // Example: { path: '/create-post', additionalCheck: (user) => user?.subscription === 'active' }
+]
+
+// Helper function to check if a route is protected and meets additional conditions
+function checkProtectedRoute(path: string, user: any): { isProtected: boolean; hasAccess: boolean; reason?: string } {
+  const route = PROTECTED_ROUTES.find((route) => path.startsWith(route.path))
+
+  if (!route) {
+    return { isProtected: false, hasAccess: true }
+  }
+
+  // Route is protected, check additional conditions if any
+  if (route.additionalCheck) {
+    const hasAdditionalAccess = route.additionalCheck(user)
+    if (!hasAdditionalAccess) {
+      return {
+        isProtected: true,
+        hasAccess: false,
+        reason: `Additional access condition failed for ${route.path}`,
+      }
+    }
+  }
+
+  return { isProtected: true, hasAccess: true }
+}
 
 export async function RedirectHandler({
   children,
@@ -17,6 +54,27 @@ export async function RedirectHandler({
     permanentRedirect('/inactive')
   }
   const headersList = await headers()
+  const session = await auth()
+
+  // Check for actual user login session (NextAuth)
+  const hasUserLogin = !!session?.user
+  const pathParamStr = headersList.get('x-path-params') ?? ''
+  const protectedRouteCheck = checkProtectedRoute(pathParamStr, session?.user)
+
+  // Protected routes handling - check FIRST before any other logic
+  if (protectedRouteCheck.isProtected) {
+    if (!hasUserLogin) {
+      permanentRedirect('/home')
+    }
+
+    if (!protectedRouteCheck.hasAccess) {
+      permanentRedirect('/home')
+    }
+
+    // User is authenticated and has access - allow access
+    console.log(`[RedirectHandler] Authenticated user accessing protected route: ${pathParamStr}`)
+  }
+
   if (config) {
     if (config?.integrations.white_label.enable && config?.integrations.white_label.allowed_domains[0]) {
       const searchParamStr = headersList.get('x-search-params')
@@ -51,6 +109,7 @@ export async function RedirectHandler({
             '/brand',
             '/profile',
             '/video',
+            '/settings',
           ]
           // for these paths we will add the path as a query param to consumed on ted.com, which will be added as trend
           // and will be used to show the correct feed home, latest, popular etc. content on ted.com if our

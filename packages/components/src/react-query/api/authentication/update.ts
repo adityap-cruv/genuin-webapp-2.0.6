@@ -74,6 +74,7 @@ type UserType = {
   insta_id?: string | null;
   twitter_id?: string | null;
   tiktok_id?: string | null;
+  youtube_id?: string | null;
   platform_guidelines: boolean;
   community_walkthrough: boolean;
   password: string;

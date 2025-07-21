@@ -4,4 +4,5 @@ export * from "./twitter-icon";
 export * from "./google-icon";
 export * from "./apple-icon";
 export * from "./multiple-dots-icon";
-export * from "./linkedin-icon"
+export * from "./linkedin-icon";
+export * from "./you-tube-icon";

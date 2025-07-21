@@ -12,6 +12,11 @@ export type AuthUser = {
   name: string;
   nickname: string;
   image: string;
+  instaId?: string;
+  linkedinId?: string;
+  tiktokId?: string;
+  youtubeId?: string;
+  xId?: string;
   /**
    * Token to refresh accessToken.
    */

@@ -40,7 +40,15 @@ export type StepsType =
   | "WITHDRAW_CASH"
   | "REDEEM_CREDITS"
   | "GET_APP"
-  | "BECOME_CREATOR";
+  | "BECOME_CREATOR"
+  | "EDIT_FULLNAME"
+  | "EDIT_BIO"
+  | "EDIT_SOCIAL_PROFILES"
+  | "SIGN_OUT"
+  | "REMOVE_PICTURE"
+  | "EDIT_PROFILE_PICTURE"
+  | "VERIFY_DELETE_ACCOUNT"
+  | "DELETE_CONFIRMATION";
 
 export type FormDataType = {
   email: string;

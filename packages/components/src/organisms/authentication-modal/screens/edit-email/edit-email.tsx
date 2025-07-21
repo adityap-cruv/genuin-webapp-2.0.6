@@ -3,6 +3,7 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "@genuin/ui/components/form";
 import { Input } from "@genuin/ui/components/input";
@@ -15,24 +16,25 @@ import { ComponentProps, useCallback, useEffect } from "react";
 import { useSendOtpMutation } from "@genuin/components/react-query/api/authentication";
 import { useAuthenticationModalContext } from "../../context";
 import { sanitizeInput } from "@genuin/components/lib/utils";
+import { cn } from "@genuin/ui/lib/utils";
 
 const formSchema = z.object({
-  email: z.string().email({ message: "Please enter valid email." }),
+  email: z.string().email({ message: "Please enter a valid email address." }),
 });
 
-export function EditEmail({ ...restProps }: ComponentProps<"div">) {
+export function EditEmail({ className, ...restProps }: ComponentProps<"div">) {
   const { user } = useAuthContext();
   const { setStep, setFormData } = useAuthenticationModalContext();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    mode: "onSubmit",
+    mode: "onChange",
     defaultValues: { email: user?.email ?? "" },
   });
 
-  const { mutate: sendOtp } = useSendOtpMutation({
+  const { mutate: sendOtp, isPending } = useSendOtpMutation({
     onError() {
       form.control.setError("root", {
-        message: "Something went wrong. Please try again!",
+        message: "Something went wrong while updating email. Please try again!",
       });
     },
     onSuccess(response) {
@@ -49,42 +51,44 @@ export function EditEmail({ ...restProps }: ComponentProps<"div">) {
     },
   });
 
-  useEffect(() => {
-    form.control.setError("root", {
-      message: "Something went wrong. Please try again!",
-    });
-  }, []);
-
   const onSubmit = useCallback(() => {
     sendOtp({ isUpdate: true, email: sanitizeInput(form.getValues("email")) });
   }, []);
 
   return (
-    <div {...restProps}>
-      <p className="gencl:text-center gencl:text-body-0-semi-bold gencl:pb-4">
-        Email
-      </p>
+    <div className={cn("gencl:space-y-6", className)} {...restProps}>
+      <div className="gencl:space-y-2">
+        <h3 className="gencl:text-center gencl:text-headline-2-semi-bold">
+          Edit email address
+        </h3>
+        <p className="gencl:text-center gencl:text-body-1-medium gencl:text-secondary-600">
+          Enter the email address where you would like to receive updates
+        </p>
+      </div>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="gencl:space-y-6"
+        >
           <FormField
             control={form.control}
             name="email"
             render={({ field }) => {
               return (
-                <FormItem className="gencl:pb-3">
+                <FormItem>
+                  <FormLabel htmlFor="email">Email</FormLabel>
                   <FormControl>
-                    <Input type="email" {...field} />
+                    <Input type="email" id="email" {...field} />
                   </FormControl>
-                  <FormMessage>
-                    Verifying your email helps secure your account.
-                  </FormMessage>
+                  <FormMessage />
                 </FormItem>
               );
             }}
           />
           <SubmitButton
-            disabled
+            disabled={!form.formState.isValid || !form.formState.isDirty}
             title="Save"
+            isLoading={isPending}
             error={form.formState.errors.root?.message}
           />
         </form>
