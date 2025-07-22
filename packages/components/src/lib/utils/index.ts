@@ -204,3 +204,40 @@ export function getActionText(
   };
   return actionObjectMap[action];
 }
+
+/**
+ * Generates a normalized object containing social media links
+ * @param socialLinks
+ * @returns
+ */
+export function getSocialLinks(socialLinks: {
+  social_web_url?: string | null;
+  twitter?: { url?: string | null; id?: string | null } | null;
+  insta?: { url?: string | null; id?: string | null } | null;
+  linkedin?: { id?: string | null } | null;
+  reddit_id?: { id?: string | null; url?: string | null } | null;
+}) {
+  const links: Record<string, string | undefined> = {};
+
+  if (socialLinks.social_web_url) {
+    links.custom = socialLinks.social_web_url;
+  }
+
+  if (socialLinks.twitter?.url && socialLinks.twitter?.id) {
+    links.x = socialLinks.twitter.url + socialLinks.twitter.id;
+  }
+
+  if (socialLinks.insta?.url && socialLinks.insta?.id) {
+    links.instagram = socialLinks.insta.url + socialLinks.insta.id;
+  }
+
+  if (socialLinks.linkedin?.id) {
+    links.linkedin = socialLinks.linkedin.id;
+  }
+
+  if (socialLinks.reddit_id?.id && socialLinks.reddit_id?.url) {
+    links.reddit = socialLinks.reddit_id.url + socialLinks.reddit_id.url;
+  }
+
+  return links;
+}

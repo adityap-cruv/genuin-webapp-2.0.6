@@ -1,5 +1,6 @@
 import { ComponentProps, useEffect, useState } from "react";
 import { Button } from "@genuin/ui/components/button";
+import { cn } from "@genuin/ui/lib/utils";
 
 type TimerMessageProps = ComponentProps<"div"> & {
   time: number;
@@ -13,6 +14,7 @@ export function TimerMessage({
   verificationType,
   isOtpSending = false,
   resentOtp,
+  className,
   ...props
 }: TimerMessageProps) {
   const [timer, setTimer] = useState(time);

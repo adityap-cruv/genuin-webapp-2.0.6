@@ -28,12 +28,17 @@ type GroupPostsPropsType = Omit<
    * if you want to enable expand view for group posts, set this to true
    */
   enableFeedView: boolean;
+  /**
+   * Variant for the post tiles.
+   */
+  postTileVariant?: ComponentProps<typeof PostsGrid>["postTileVariant"];
 };
 
 export function GroupPosts({
   slug,
   lazyLoad,
   enableFeedView = false,
+  postTileVariant,
   onPostTileClick,
   ...restProps
 }: GroupPostsPropsType) {
@@ -69,6 +74,7 @@ export function GroupPosts({
   return (
     <>
       <PostsGrid
+        postTileVariant={postTileVariant}
         posts={
           feed?.map((post) => ({
             imageUrl: post.video.thumbnailM ?? post.video.thumbnail ?? "",

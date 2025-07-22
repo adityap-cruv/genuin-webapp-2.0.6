@@ -31,6 +31,7 @@ export function DetailsPageTopbar({
   const [isOpen, setIsOpen] = useState(false);
   const [topBarWidth, setTopBarWidth] = useState<number | undefined>(undefined);
 
+  // TODO: Replace this component with <PrivacyInfo/> component.
   function RenderTypeBadge() {
     switch (metadata?.type) {
       case "PUBLIC":
@@ -52,43 +53,71 @@ export function DetailsPageTopbar({
     }
   }
 
+  // TODO: performance heavy task, optimize this one.
   useEffect(() => {
-    const detailsElement = document.getElementById(idToTrack);
-    if (!detailsElement) return;
+    let observer: IntersectionObserver | null = null;
+    let resizeTimeout: NodeJS.Timeout;
 
-    const updateWidth = () => {
-      setTopBarWidth(detailsElement.offsetWidth);
+    const setupObserver = () => {
+      // Clean up existing observer
+      if (observer) {
+        observer.disconnect();
+      }
+
+      const detailsElement = document.getElementById(idToTrack);
+      if (!detailsElement) return;
+
+      const updateWidth = () => {
+        setTopBarWidth(detailsElement.offsetWidth);
+      };
+
+      updateWidth();
+
+      observer = new IntersectionObserver(
+        ([entry]) => {
+          // @ts-ignore
+          setIsOpen(!entry.isIntersecting);
+        },
+        { threshold: 0.1 }
+      );
+      observer.observe(detailsElement);
     };
 
-    updateWidth();
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        // @ts-ignore
-        setIsOpen(!entry.isIntersecting);
-      },
-      { threshold: 0.1 }
-    );
-    observer.observe(detailsElement);
+    const handleResize = () => {
+      // Clear existing timeout
+      clearTimeout(resizeTimeout);
 
-    window.addEventListener("resize", updateWidth);
+      // Debounce the resize handler to avoid excessive re-setup
+      resizeTimeout = setTimeout(() => {
+        setupObserver();
+      }, 100);
+    };
+
+    // Initial setup
+    setupObserver();
+
+    window.addEventListener("resize", handleResize);
+
     return () => {
-      observer.disconnect();
-      window.removeEventListener("resize", updateWidth);
+      if (observer) {
+        observer.disconnect();
+      }
+      clearTimeout(resizeTimeout);
+      window.removeEventListener("resize", handleResize);
     };
   }, [idToTrack]);
 
   return (
     <div
       className={cn(
-        "gencl:absolute gencl:top-0 gencl:transition-transform gencl:duration-200 gencl:ease-linear",
-        "gencl:flex gencl:items-center gencl:justify-between gencl:border-b gencl:border-b-secondary-150 gencl:bg-white",
+        "gencl:absolute gencl:z-[-1] gencl:top-0 gencl:h-14 gencl:sm:ml-6 gencl:ml-0 gencl:transition-transform gencl:duration-200 gencl:ease-linear",
+        "gencl:flex gencl:gap-2 gencl:items-center gencl:justify-between gencl:border-b gencl:border-b-secondary-150 gencl:bg-white",
         className
       )}
       style={{
         width: `${(topBarWidth || 0) + 10}px`,
         transform: `translateY(${isOpen ? "0" : "-100"}%) `,
         zIndex: 2,
-        marginLeft: 24,
       }}
       {...restProps}
     >
@@ -102,7 +131,9 @@ export function DetailsPageTopbar({
             aria-label="Profile Image"
           />
         )}
-        <p className="gencl:text-headline-4-semi-bold">{title}</p>
+        <p className="gencl:text-headline-4-semi-bold gencl:line-clamp-1">
+          {title}
+        </p>
         <div className="gencl:ml-1">{RenderTypeBadge()}</div>
       </div>
       {ctas && ctas}

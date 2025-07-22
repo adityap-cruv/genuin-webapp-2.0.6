@@ -1,7 +1,37 @@
-import { DotIcon } from "@genuin/ui/icons";
+import { CommentIcon, PlayIcon, SparkIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/utils";
 import { abbreviateNumber } from "@genuin/ui/utils";
+import { cva, VariantProps } from "class-variance-authority";
 import type { ComponentProps, ReactNode } from "react";
+
+type StatsKeyType =
+  | "Members"
+  | "Posts"
+  | "Comments"
+  | "Reactions"
+  | "Shares"
+  | "Videos"
+  | "Communities"
+  | "Views"
+  | "Groups";
+
+const statsVariant = cva("", {
+  variants: {
+    theme: {
+      secondary: "gencl:text-secondary-600",
+    },
+    variant: {
+      /**
+       * This variant will show the stats in a column layout with icons and labels.
+       */
+      descriptive: "gencl:flex gencl:flex-col gencl:gap-2",
+    },
+  },
+  defaultVariants: {
+    theme: undefined,
+    variant: undefined,
+  },
+});
 
 type StatsPropsType = {
   /**
@@ -9,7 +39,9 @@ type StatsPropsType = {
    * - A number representing the statistic value.
    * - An object with `value`, `label`, and an optional `icon`.
    */
-  stats: Record<string, { value: number; icon?: ReactNode } | number>;
+  stats: Partial<
+    Record<StatsKeyType, { value: number; icon?: ReactNode } | number>
+  >;
   /**
    * If value should be displayed before the label.
    */
@@ -29,8 +61,34 @@ type StatsPropsType = {
   /**
    * Optional separator to be used between the stats items. Can be an Icon component or any ReactNode.
    */
-  separator?: ReactNode;
-} & ComponentProps<"div">;
+  separator?: ReactNode | string;
+} & ComponentProps<"div"> &
+  VariantProps<typeof statsVariant>;
+
+const Icons = (
+  theme: VariantProps<typeof statsVariant>["theme"]
+): Partial<Record<StatsKeyType, ReactNode>> => {
+  return {
+    Views: (
+      <PlayIcon
+        theme={theme === "secondary" ? "secondary" : "light"}
+        size="md"
+      />
+    ),
+    Comments: (
+      <CommentIcon
+        theme={theme === "secondary" ? "secondary" : "light"}
+        size="md"
+      />
+    ),
+    Reactions: (
+      <SparkIcon
+        theme={theme === "secondary" ? "secondary" : "light"}
+        size="md"
+      />
+    ),
+  };
+};
 
 /**
  * Renders a list of statistics.
@@ -38,7 +96,9 @@ type StatsPropsType = {
  * If an icon is provided, it will be rendered instead of the label.
  */
 export function Stats({
+  variant,
   stats,
+  theme,
   valueClassName,
   labelClassName,
   pairClassName,
@@ -48,8 +108,41 @@ export function Stats({
   ...restProps
 }: StatsPropsType) {
   const statEntries = Object.entries(stats);
+
+  if (variant === "descriptive") {
+    return (
+      <div
+        className={cn(
+          "gencl:space-y-2",
+          statsVariant({ variant, theme }),
+          className
+        )}
+        {...restProps}
+      >
+        {statEntries.map(([key, value]) => {
+          const isObjectWithValue = typeof value === "object" && value !== null;
+          const val = isObjectWithValue ? value.value : value;
+          const label = key;
+          const icon = Icons("secondary")[key as StatsKeyType];
+
+          return (
+            <div
+              key={key}
+              className="gencl:flex gencl:items-center gencl:gap-2"
+            >
+              {icon && icon}
+              <p className="gencl:text-body-1-medium">
+                {abbreviateNumber(val)}&nbsp;
+                {label}
+              </p>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
   return (
-    <div className={cn("gencl:flex gencl:!gap-2", className)} {...restProps}>
+    <div className={cn(className, statsVariant({ variant }))} {...restProps}>
       {statEntries.map(([key, value], index) => {
         const isObjectWithValue = typeof value === "object" && value !== null;
         const val = isObjectWithValue ? value.value : value;

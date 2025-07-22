@@ -13,7 +13,9 @@ import type { PostsGridProps } from "./posts-grid.types";
 
 export function PostsGrid({
   posts,
+  postTileVariant,
   className,
+  gridClassName,
   lazyLoad = "auto",
   isError,
   isLoading,
@@ -25,12 +27,20 @@ export function PostsGrid({
   onPostTileClick,
   ...restProps
 }: PostsGridProps & { shouldCloseModal?: boolean }) {
+  // Default grid styles
+  const defaultGridStyles =
+    "gencl:grid gencl:gap-2 gencl:grid-cols-4! gencl:lg:grid-cols-5! gencl:xl:grid-cols-6! gencl:2xl:grid-cols-8!";
+
+  // Use custom grid styles if provided, or default if not
+  const gridStyles = cn(defaultGridStyles, gridClassName);
+
   const Posts = useMemo(() => {
     return posts.map((post) => {
       const postTile = (
         <PostTile
           key={post.postId}
-          className="gencl:flex-none gencl:w-40 sm:gencl:w-44 md:gencl:w-48"
+          className="gencl:w-full" // Use full width of grid cell
+          variant={postTileVariant ?? "responsive"}
           postData={post}
           imageCompProps={{ useWebp: true }}
           shouldCloseModal={shouldCloseModal}
@@ -51,12 +61,16 @@ export function PostsGrid({
 
       return postTile;
     });
-  }, [posts, shouldCloseModal, onPostTileClick]);
+  }, [posts, shouldCloseModal, onPostTileClick, postTileVariant]);
 
   if (isLoading) {
     return (
       <div className={cn("gencl:w-full gencl:h-full", className)}>
-        <PostsGridSkeleton noOfPosts={6} />
+        <PostsGridSkeleton
+          noOfPosts={6}
+          gridClassName={gridClassName}
+          className={className}
+        />
       </div>
     );
   }
@@ -81,11 +95,11 @@ export function PostsGrid({
     return (
       <div
         className={cn(
-          "gencl:w-full gencl:flex gencl:flex-col gencl:gap-4 gencl:justify-center gencl:items-center gencl:bg-secondary-50 gencl:h-72 gencl:rounded-lg",
+          "gencl:w-full gencl:flex gencl:flex-col gencl:gap-4 gencl:justify-center gencl:items-center gencl:h-45 gencl:sm:!h-60",
           className
         )}
       >
-        <PlayIcon variant="stroke-dark" className="gencl:size-8" />
+        <PlayIcon theme="light" />
         <div className="gencl:space-y-1 gencl:flex-center gencl:flex-col">
           <p className="gencl:text-body-0-semi-bold">No Posts Yet</p>
           <p className="gencl:text-body-1-medium gencl:text-secondary-600">
@@ -97,9 +111,9 @@ export function PostsGrid({
   }
 
   return (
-    <div className={cn("gencl:w-full gencl:h-full ", className)} {...restProps}>
-      <div className="gencl:flex gencl:flex-wrap gencl:gap-2">
-        {lazyLoad === "auto" ? (
+    <div className={cn("gencl:w-full gencl:h-full", className)} {...restProps}>
+      {lazyLoad === "auto" ? (
+        <div className={gridStyles}>
           <InfiniteScroll
             getNextPage={fetchNextPage}
             hasNextPage={hasNextPage}
@@ -107,13 +121,13 @@ export function PostsGrid({
           >
             {Posts}
           </InfiniteScroll>
-        ) : (
-          <div className="gencl:flex gencl:flex-wrap gencl:gap-2">
-            {Posts}
-            {isFetchingNextPage && <PostsGridLoader noOfPosts={6} />}
-          </div>
-        )}
-      </div>
+        </div>
+      ) : (
+        <div className={gridStyles}>
+          {Posts}
+          {isFetchingNextPage && <PostsGridLoader noOfPosts={6} />}
+        </div>
+      )}
       {children}
     </div>
   );
@@ -122,16 +136,25 @@ export function PostsGrid({
 export function PostsGridSkeleton({
   noOfPosts = 1,
   className,
+  gridClassName,
   size = "sm",
 }: {
   noOfPosts?: number;
   className?: string;
+  gridClassName?: string;
   size?: "sm" | "lg";
 }) {
+  // Default grid styles
+  const defaultGridStyles =
+    "gencl:grid gencl:gap-2 gencl:grid-cols-4! gencl:lg:grid-cols-5! gencl:xl:grid-cols-6! gencl:2xl:grid-cols-8!";
+
+  // Use custom grid styles if provided, or default if not
+  const gridStyles = cn(defaultGridStyles, gridClassName);
+
   return (
-    <div className={cn("gencl:flex gencl:flex-wrap gencl:gap-2", className)}>
+    <div className={cn(gridStyles, className)}>
       {Array.from({ length: noOfPosts }).map((_, idx) => (
-        <PostTileSkeleton key={idx} size={size} />
+        <PostTileSkeleton key={idx} size={size} className="gencl:w-full" />
       ))}
     </div>
   );
@@ -139,17 +162,15 @@ export function PostsGridSkeleton({
 
 export function PostsGridLoader({
   noOfPosts = 1,
-  className,
   size = "sm",
 }: {
   noOfPosts?: number;
-  className?: string;
   size?: "sm" | "lg";
 }) {
   return (
     <>
       {Array.from({ length: noOfPosts }).map((_, idx) => (
-        <PostTileSkeleton key={idx} size={size} />
+        <PostTileSkeleton key={idx} size={size} className="gencl:w-full" />
       ))}
     </>
   );

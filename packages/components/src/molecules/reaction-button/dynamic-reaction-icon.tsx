@@ -1,34 +1,45 @@
 import { useBaseContext } from "@genuin/components/context/base";
 import { Image } from "@genuin/ui/image";
-import { abbreviateNumber } from "@genuin/ui/lib/utils";
 import { getUrlForReaction } from "@genuin/components/lib/utils";
 import { useMemo } from "react";
+import { cva, VariantProps } from "class-variance-authority";
+
+const reactionButtonVariant = cva("", {
+  variants: {
+    theme: {
+      dark: "",
+      light: "",
+    },
+  },
+  defaultVariants: {
+    theme: "light",
+  },
+});
 
 type DynamicReactionIconProps = {
   isSparked: boolean;
-  variant: "dark" | "light";
   sparkCount: number;
   showSparkCount?: boolean;
   iconHeight?: number;
   iconWidth?: number;
   className?: string;
-};
+} & VariantProps<typeof reactionButtonVariant>;
 
 export function DynamicReactionIcon({
   isSparked,
-  variant,
-  showSparkCount = false,
+  theme,
+  // showSparkCount = false,
   iconHeight = 32,
-  sparkCount = 0,
+  // sparkCount = 0,
   iconWidth = 32,
-  className
+  className,
 }: DynamicReactionIconProps) {
   const {
     brandDetails: { reactions },
   } = useBaseContext();
   const iconToShow = useMemo(() => {
     const reaction = reactions;
-    const forComment = variant === "light";
+    const forComment = theme === "light";
 
     // In case there is no reactions in config then we will show the spark icon.
     if (!reaction) return getUrlForReaction("spark", isSparked, forComment);
@@ -42,7 +53,7 @@ export function DynamicReactionIcon({
         ? reaction?.keys.feed_selected.svg
         : reaction?.keys.feed_unselected.svg;
     }
-  }, [reactions, isSparked, variant]);
+  }, [reactions, isSparked, theme]);
 
   return (
     <>

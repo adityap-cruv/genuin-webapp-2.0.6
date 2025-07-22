@@ -27,11 +27,6 @@ export function BaseContextProvider({
   children,
   brandDetails,
 }: BaseContextProviderProps) {
-  // //TODO:  Figure out a way to run this only once. Not in useEffect.
-  // if (brandDetails) {
-  //   setBrandIdInAxiosInstance(2922);
-  // }
-
   useLayoutEffect(() => {
     // Set the brand details in the context.
     if (brandDetails) {
@@ -42,9 +37,6 @@ export function BaseContextProvider({
   const [muted, setMuted] = useState(true);
   const [volume, setVolume] = useState(100);
   const [deviceId, setDeviceId] = useGetDeviceId();
-
-  // todo: handle in case of embed here.
-  const feedVideoSizeBox = useFeedVideoSizeBox();
 
   useEffect(() => {
     // If deviceId is not available, get a new one.
@@ -63,7 +55,6 @@ export function BaseContextProvider({
         volume,
         setVolume,
         brandDetails,
-        feedVideoSizeBox,
       }}
     >
       {children}

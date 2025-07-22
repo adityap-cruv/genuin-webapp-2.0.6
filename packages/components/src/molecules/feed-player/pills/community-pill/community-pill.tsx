@@ -1,3 +1,4 @@
+"use client";
 import { Avatar } from "@genuin/ui/avatar";
 import { Link } from "@genuin/components/molecules/link";
 import { JoinCommunityButton } from "@genuin/components/molecules/join-community-button";
@@ -12,7 +13,7 @@ import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { useAuthContext } from "@genuin/components/context/auth";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { CommunityHoverCard } from "../community-hover-card";
-import { ComponentProps } from "react";
+import { ComponentProps, useEffect, useState } from "react";
 
 const communityPillVariants = cva(
   "gencl:flex gencl:w-fit gencl:items-center gencl:gap-1 gencl:p-1 gencl:pr-2 gencl:rounded-full gencl:transition-all gencl:cursor-pointer",
@@ -50,12 +51,47 @@ export function CommunityPill({
   className,
 }: CommunityPillProps) {
   const { authenticationStatus } = useAuthContext();
+  const [showButton, setShowButton] = useState(
+    communityDetails.userRole !== "MEMBER"
+  );
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  // Reset visibility when role changes to non-member
+  useEffect(() => {
+    if (communityDetails.userRole !== "MEMBER") {
+      setShowButton(true);
+      setIsAnimating(false);
+    }
+  }, [communityDetails.userRole]);
+
+  const handleCommunityJoinStatusChange = (
+    newRole: ComponentProps<typeof JoinCommunityButton>["role"]
+  ) => {
+    // Call the original handler if provided
+    if (onCommunityJoinStatusChange) {
+      onCommunityJoinStatusChange(newRole);
+    }
+
+    // If user has joined, start the timer to hide the button
+    if (newRole === "MEMBER") {
+      // Give a slight delay before starting the animation
+      setTimeout(() => {
+        setIsAnimating(true);
+
+        // Hide after animation completes
+        setTimeout(() => {
+          setShowButton(false);
+        }, 500); // This should match the CSS transition duration
+      }, 5000); // Show for 5 seconds before animation starts
+    }
+  };
+
   const pill = (
     <Link
       href={buildPageUrl({ type: "community", slug: communityDetails.slug })}
     >
       <div className={communityPillVariants({ variant, className })}>
-        <div className="gencl:flex gencl:gap-1 gencl:items-center">
+        <div className="gencl:flex gencl:gap-1 gencl:items-center gencl:line-clamp-1">
           <Avatar
             alt={communityDetails.name ?? ""}
             imageUrl={communityDetails.profileImage ?? ""}
@@ -66,35 +102,44 @@ export function CommunityPill({
             {communityDetails.name}
           </span>
         </div>
-        {authenticationStatus === "authenticated" && (
-          <JoinCommunityButton
-            size="sm"
-            roleTexts={{
-              UNJOINED: "Join",
-            }}
-            communityId={communityDetails.id}
-            communityHandle={communityDetails.handle}
-            communityName={communityDetails.name ?? ""}
-            slug={communityDetails.slug}
-            isPrivate={communityDetails.isPrivate}
-            role={communityDetails.userRole}
-            shape="pill"
-            theme={
-              variant === "fullScreen"
-                ? "secondary"
-                : communityDetails.userRole === "MEMBER"
-                  ? "outline"
-                  : communityDetails.userRole === "REQUESTED"
+        {authenticationStatus === "authenticated" &&
+          (communityDetails.userRole !== "MEMBER" || showButton) && (
+            <div
+              className={`gencl:overflow-hidden gencl:transition-all gencl:duration-500 ${
+                isAnimating
+                  ? "gencl:max-w-0 gencl:opacity-0 gencl:ml-0"
+                  : "gencl:max-w-24 gencl:opacity-100 gencl:ml-1"
+              }`}
+            >
+              <JoinCommunityButton
+                size="sm"
+                roleTexts={{
+                  UNJOINED: "Join",
+                }}
+                communityId={communityDetails.id}
+                communityHandle={communityDetails.handle}
+                communityName={communityDetails.name ?? ""}
+                slug={communityDetails.slug}
+                isPrivate={communityDetails.isPrivate}
+                role={communityDetails.userRole}
+                shape="pill"
+                theme={
+                  variant === "fullScreen"
                     ? "secondary"
-                    : "primary"
-            }
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
-            onCommunityJoinStatusChange={onCommunityJoinStatusChange}
-          />
-        )}
+                    : communityDetails.userRole === "MEMBER"
+                      ? "outline"
+                      : communityDetails.userRole === "REQUESTED"
+                        ? "secondary"
+                        : "primary"
+                }
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+                onCommunityJoinStatusChange={handleCommunityJoinStatusChange}
+              />
+            </div>
+          )}
       </div>
     </Link>
   );

@@ -1,6 +1,8 @@
+"use client";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@genuin/ui/tabs";
 import { cn } from "@genuin/ui/utils";
+import React, { useEffect, useState } from "react";
 
 import { GroupSubscriptionButton } from "@genuin/components/molecules/group-subscription-button";
 import { JoinGroupButton } from "@genuin/components/molecules/join-group-button";
@@ -19,10 +21,18 @@ import { useGetCommunityMembers } from "@genuin/components/react-query/api/commu
 import type { MembersSchemaType } from "@genuin/components/react-query/api/community/members/schema";
 import { ComponentErrorState } from "@genuin/components/organisms/error-state-component";
 import { GroupPosts } from "@genuin/components/organisms/group-posts";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 
 type CommunityDetailsTabsPropsType = Omit<
   {
     slug: string;
+    /**
+     * About component to be rendered in the about tab.
+     */
+    aboutComponent: React.ReactNode;
+    /**
+     * ID of the community owner.
+     */
     communityOwnerId: string;
     ownerInfo: {
       userName: string;
@@ -35,24 +45,46 @@ export function CommunityDetailsTabs({
   slug,
   className,
   communityOwnerId,
+  aboutComponent,
   ownerInfo,
   ...restProps
 }: CommunityDetailsTabsPropsType) {
+  const { isDesktop } = useDeviceDetectMediaQuery();
+  const contentClassName = "gencl:px-4 gencl:sm:px-0!";
+
+  // Track the current tab value
+  const [tabValue, setTabValue] = useState<string>("groups");
+
+  // Sync tab value when isDesktop changes
+  useEffect(() => {
+    if (isDesktop && tabValue === "about") {
+      setTabValue("groups");
+    } else if (!isDesktop && tabValue === "posts") {
+      // Optionally, keep the current tab or switch to 'about' if you want
+      // setTabValue("about");
+    }
+  }, [isDesktop, tabValue]);
+
   return (
     <Tabs
-      defaultValue="groups"
+      value={tabValue}
+      onValueChange={setTabValue}
       className={cn("gencl:w-full gencl:h-full", className)}
       {...restProps}
     >
-      <TabsList className="">
+      <TabsList className="groups">
         <TabsTrigger value="groups">Groups</TabsTrigger>
         <TabsTrigger value="members">Members</TabsTrigger>
+        {!isDesktop && <TabsTrigger value="about">About</TabsTrigger>}
       </TabsList>
-      <TabsContent value="groups">
+      <TabsContent value="groups" className={contentClassName}>
         <CommunityGroups slug={slug} ownerInfo={ownerInfo} />
       </TabsContent>
-      <TabsContent value="members">
-        <CommunityMembers communityOwnerId={communityOwnerId} slug={slug} />
+      <TabsContent value="members" className={contentClassName}>
+        <CommunityMembers slug={slug} communityOwnerId={communityOwnerId} />
+      </TabsContent>
+      <TabsContent value="about" className={contentClassName}>
+        {aboutComponent}
       </TabsContent>
     </Tabs>
   );
@@ -116,7 +148,7 @@ function CommunityGroups({
           />
         }
         ctas={
-          <div className="gencl:flex gencl:gap-2">
+          <div className="gencl:sm:flex! gencl:hidden gencl:gap-2">
             <JoinGroupButton
               size="sm"
               buttonTexts={{ UNJOINED: "Join" }}
@@ -217,9 +249,9 @@ function CommunityMembers({
     }),
     userName: member.nickname,
     brand: {
-      brand_user_logo: member.brand?.brand_user_logo ?? -1,
-      brand_id: member.brand?.brand_id ?? 0,
-      brand_slug: member.brand?.brand_slug ?? "",
+      brandUserLogo: member.brand?.brand_user_logo ?? -1,
+      brandId: member.brand?.brand_id ?? 0,
+      brandSlug: member.brand?.brand_slug ?? "",
     },
   });
 

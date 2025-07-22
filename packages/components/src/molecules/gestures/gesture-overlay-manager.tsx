@@ -5,6 +5,7 @@ import {
 } from "@genuin/components/molecules/gestures/context";
 import { LazyGestureGuideOverlay } from "@genuin/components/molecules/gestures/gesture-guide-overlay";
 import { useBaseContext } from "@genuin/components/context/base";
+import { usePathname } from "@genuin/components/hooks/use-pathname";
 
 function useGestureOverlayMethods({ tapBehavior }: { tapBehavior: number }) {
   const {
@@ -134,9 +135,14 @@ export function useGestureOverlayManager(gestureGuidance?: boolean) {
   const isGuidanceEnabled = brandDetails.web_configs.gesture_guidance;
   const isValidTapBehavior =
     tapBehavior && VALID_TAP_BEHAVIORS.includes(tapBehavior);
+  const pathname = usePathname();
 
   // Return no-op functions if guidance is disabled or tap behavior is invalid
-  if (!isGuidanceEnabled || !isValidTapBehavior) {
+  if (
+    !isGuidanceEnabled ||
+    !isValidTapBehavior ||
+    pathname.includes("/video")
+  ) {
     return {
       gestureOverlayUI: null,
       showGestureOverlay: () => {},

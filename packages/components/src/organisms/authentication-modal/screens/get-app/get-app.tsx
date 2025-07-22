@@ -14,6 +14,8 @@ import { useAuthenticationModalContext } from "@genuin/components/organisms/auth
 import { deepLinkActions } from "@genuin/components/react-query/api/deeplink/get-deeplink";
 import { Loader } from "@genuin/ui/components/loader";
 import { getActionText } from "@genuin/components/lib/utils";
+import { BrandLogo } from "@genuin/components/molecules/brand";
+import { Button } from "@genuin/ui/components";
 
 export type GetAppProps = ComponentProps<"div"> & {
   onSubmit?: (data: AppDownloadFormData) => void;
@@ -84,15 +86,15 @@ export function GetApp({ onSubmit, ...props }: GetAppProps) {
   }, [getAppData?.data]);
 
   return (
-    <div className="gencl:text-center gencl:space-y-4 gencl:w-full" {...props}>
+    <div
+      className="gencl:text-center gencl:space-y-4 gencl:w-full gencl:pt-8 gencl:sm:pt-0!"
+      {...props}
+    >
       {brandDetails.logo && (
-        <Image
-          src={brandDetails.logo}
-          className="gencl:h-12 gencl:w-12 gencl:mx-auto gencl:rounded-full"
-        />
+        <BrandLogo className="gencl:mx-auto gencl:h-10 gencl:sm:h-12! gencl:w-10 gencl:sm:w-full! gencl:rounded-full gencl:sm:rounded-none! gencl:mb-3" />
       )}
       <div className="gencl:space-y-3">
-        <p className="gencl:text-headline-2-semi-bold">
+        <p className="gencl:sm:text-headline-2-semi-bold! gencl:text-headline-3-semi-bold">
           {getAppData?.title ?? `Get the ${brandDetails.name} app`}
         </p>
         <p className="gencl:text-body-1-medium gencl:text-secondary-600">
@@ -104,7 +106,7 @@ export function GetApp({ onSubmit, ...props }: GetAppProps) {
             )}
         </p>
       </div>
-      <div className="gencl:flex gencl:flex-col gencl:items-center gencl:gap-2">
+      <div className="gencl:sm:flex! gencl:hidden gencl:flex-col gencl:items-center gencl:gap-2">
         <QRCode
           value={isLoading ? "placeholder" : deeplinkUrl}
           size={160}
@@ -112,9 +114,42 @@ export function GetApp({ onSubmit, ...props }: GetAppProps) {
         />
         <p className="gencl:text-body-1-medium">Scan to download app</p>
       </div>
-      <AppDownloadForm />
+      <AppDownloadForm className="gencl:sm:block! gencl:hidden" />
+
+      <div>
+        <Link target="_blank" rel="noopener noreferrer" href={deeplinkUrl}>
+          <Button
+            theme="primary"
+            className="gencl:w-full gencl:flex gencl:items-center gencl:justify-center gencl:sm:hidden!"
+          >
+            {isLoading ? (
+              <Loader size="sm" strokeColor="white" />
+            ) : (
+              <span>Get App</span>
+            )}
+          </Button>
+        </Link>
+      </div>
+
+      <p className="gencl:text-center gencl:text-secondary-300 gencl:text-body-2-medium gencl:block gencl:sm:hidden!">
+        By continuing, you agree to our{" "}
+        <Link
+          href={brandDetails?.terms_and_condition ?? ""}
+          className="gencl:underline gencl:text-primary!"
+        >
+          Terms of Service
+        </Link>{" "}
+        and{" "}
+        <Link
+          href={brandDetails?.privacy_policy ?? ""}
+          className="gencl:underline gencl:text-primary!"
+        >
+          Privacy Policy
+        </Link>
+      </p>
+
       {/* TODO : put the src link of the play store and app store  */}
-      <div className="gencl:flex gencl:gap-x-2 gencl:justify-center">
+      <div className="gencl:sm:flex! gencl:hidden gencl:gap-x-2 gencl:justify-center">
         <Link
           target="_blank"
           rel="noopener noreferrer"

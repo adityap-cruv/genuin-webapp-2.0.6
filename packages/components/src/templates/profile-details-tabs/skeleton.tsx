@@ -10,7 +10,7 @@ function CommunitySkeleton({ className }: { className?: string }) {
         <div className="gencl:flex gencl:flex-col gencl:justify-center gencl:gap-3">
           <Skeleton className="gencl:w-[50%] gencl:h-6 gencl:rounded-md" />
           <div className="gencl:flex gencl:items-center gencl:gap-2">
-            {Array.from({ length: 4 }).map((_, idx, arr) => (
+            {Array.from({ length: 3 }).map((_, idx, arr) => (
               <div key={idx}>
                 <Skeleton className="gencl:w-18 gencl:h-4 gencl:rounded-md" />
                 {idx < arr.length - 1 && (
@@ -21,7 +21,7 @@ function CommunitySkeleton({ className }: { className?: string }) {
           </div>
         </div>
       </div>
-      <div className="gencl:flex gencl:gap-2">
+      <div className="gencl:sm:flex! gencl:gap-2 gencl:hidden ">
         <Skeleton className="gencl:w-20 gencl:h-9 gencl:rounded-full" />
         <Skeleton className="gencl:w-15 gencl:h-9 gencl:rounded-md" />
         <Skeleton className="gencl:w-25 gencl:h-9 gencl:rounded-md" />

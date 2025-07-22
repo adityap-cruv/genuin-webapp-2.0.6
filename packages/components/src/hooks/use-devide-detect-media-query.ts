@@ -10,11 +10,11 @@ import { useMediaQuery } from "usehooks-ts";
  * - LARGE_DESKTOP: Minimum width for large desktop displays
  */
 export const BREAKPOINTS = {
-  MOBILE: 768, // Devices smaller than 768px are considered mobile
-  TABLET: 1024, // Devices between 768px and 1024px are considered tablets
-  DESKTOP: 1024, // Devices larger than 1024px are considered desktops
+  MOBILE: 640, // Devices smaller than 640px are considered small
+  TABLET: 768, // Devices smaller than 768px are considered mobile
+  DESKTOP: 1024, // Devices between 768px and 1024px are considered tablets
   LARGE_DESKTOP: 1280, // Devices larger than 1280px are considered large desktops
-};
+} as const;
 
 /**
  * Media queries based on breakpoints
@@ -26,10 +26,10 @@ export const BREAKPOINTS = {
  */
 export const MEDIA_QUERIES = {
   MOBILE: `(max-width: ${BREAKPOINTS.MOBILE}px)`,
-  TABLET: `(min-width: ${BREAKPOINTS.MOBILE}px) and (max-width: ${BREAKPOINTS.TABLET}px)`,
+  TABLET: `(min-width: ${BREAKPOINTS.MOBILE}px)`,
   DESKTOP: `(min-width: ${BREAKPOINTS.DESKTOP}px)`,
   LARGE_DESKTOP: `(min-width: ${BREAKPOINTS.LARGE_DESKTOP}px)`,
-};
+} as const;
 
 /**
  * Device detection hook based on media queries

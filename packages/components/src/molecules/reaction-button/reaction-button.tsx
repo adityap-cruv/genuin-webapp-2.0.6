@@ -7,6 +7,19 @@ import { ComponentProps, useCallback } from "react";
 import { DynamicReactionIcon } from "./dynamic-reaction-icon";
 import { useBaseContext } from "@genuin/components/context/base";
 import { cn } from "@genuin/ui/lib/utils";
+import { cva, type VariantProps } from "class-variance-authority";
+
+const reactionButtonVariant = cva("", {
+  variants: {
+    reactionButtonTheme: {
+      light: "",
+      dark: "gencl:text-white!",
+    },
+  },
+  defaultVariants: {
+    reactionButtonTheme: "light",
+  },
+});
 
 type ReactionButtonProps = ComponentProps<typeof PrimitiveButton> & {
   contentId: string;
@@ -21,28 +34,41 @@ type ReactionButtonProps = ComponentProps<typeof PrimitiveButton> & {
   shareUrl?: string;
   videoSlug?: string;
   contentType: "VIDEO" | "COMMENT";
-  actionButtonVariant?: "light" | "dark";
-  showReactionCount: boolean;
+  showReactionCount?: boolean;
   /**
    * Whether to render the button children or not.
    */
   withCustomChildren?: boolean;
   onReactionStateChange?: (isReacted: boolean) => void;
-};
+} & VariantProps<typeof reactionButtonVariant>;
 
-export function ReactionButton(props: ReactionButtonProps) {
+export function ReactionButton({
+  reactionCount,
+  shareUrl,
+  videoSlug,
+  reactionButtonTheme,
+  showReactionCount,
+  ...restProps
+}: ReactionButtonProps) {
   const { authenticationStatus } = useAuthContext();
   const { brandDetails } = useBaseContext();
-  const button = <Button {...props} />;
+  const button = (
+    <Button
+      showReactionCount={showReactionCount}
+      reactionCount={reactionCount}
+      {...restProps}
+    />
+  );
   const count = (
     <p
       className={cn(
         "gencl:p-0 gencl:text-center gencl:text-body-2-medium",
-        props.actionButtonVariant === "dark" && "gencl:text-white",
-        !props.showReactionCount && "gencl:hidden"
+        reactionButtonVariant({
+          reactionButtonTheme,
+        })
       )}
     >
-      {props.reactionCount}
+      {reactionCount}
     </p>
   );
 
@@ -55,8 +81,8 @@ export function ReactionButton(props: ReactionButtonProps) {
             payload: {
               reactionSuffix: brandDetails.reactions.suffix,
               reactionTitle: brandDetails.reactions.title,
-              shareUrl: props.shareUrl ?? "",
-              videoSlug: props.videoSlug ?? "",
+              shareUrl: shareUrl ?? "",
+              videoSlug: videoSlug ?? "",
             },
           },
         }}
@@ -64,7 +90,7 @@ export function ReactionButton(props: ReactionButtonProps) {
       >
         <div>
           {button}
-          {count}
+          {showReactionCount && count}
         </div>
       </AuthenticationModal>
     );
@@ -73,7 +99,7 @@ export function ReactionButton(props: ReactionButtonProps) {
   return (
     <div>
       {button}
-      {count}
+      {showReactionCount && count}
     </div>
   );
 }
@@ -130,7 +156,7 @@ function Button({
       {...restProps}
     >
       <DynamicReactionIcon
-        variant="dark"
+        theme="dark"
         isSparked={isReacted}
         showSparkCount={true}
         iconHeight={24}

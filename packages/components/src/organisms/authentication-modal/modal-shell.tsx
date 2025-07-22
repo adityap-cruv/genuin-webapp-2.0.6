@@ -6,7 +6,7 @@ import { Button } from "@genuin/ui/components/button";
 import { ChevronLeft } from "lucide-react";
 
 const VARIANT_PADDING: Record<"default" | "compact" | "expanded", string> = {
-  default: "gencl:p-12",
+  default: "gencl:p-4 gencl:sm:p-12!",
   compact: "gencl:p-8",
   expanded: "gencl:p-8",
 };

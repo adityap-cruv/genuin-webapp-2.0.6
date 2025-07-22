@@ -20,6 +20,7 @@ const messageSchema = z.object({
   message_at: z.number().nullish(),
   no_of_comments: z.number().default(0).nullish(),
   no_of_shares: z.number().default(0).nullish(),
+  no_of_sparks: z.number().default(0).nullish(),
 });
 
 const actionsSchema = z.array(
@@ -202,7 +203,7 @@ export function parseVideoResponse(
   return messages.map((message) => {
     return {
       id: message.message_id,
-      sparkCount: message.no_of_views,
+      sparkCount: message.no_of_sparks ?? 0,
       thumbnail: message.thumbnail_url ?? "",
       noOfViews: message.no_of_views ?? 0,
       noOfComments: message.no_of_comments ?? 0,

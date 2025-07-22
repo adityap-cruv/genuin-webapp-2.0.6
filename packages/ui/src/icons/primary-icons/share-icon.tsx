@@ -1,28 +1,26 @@
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 
-import { cn } from "@genuin/ui/lib/utils";
+import { cn, defaultSizesForIcons } from "@genuin/ui/lib/utils";
 import type { SVGIconsProps } from "../type";
 
 const shareIconVariants = cva("gencl:stroke-black", {
   variants: {
-    variant: {
+    theme: {
       light: "gencl:stroke-black",
       dark: "gencl:stroke-white",
     },
+    size: defaultSizesForIcons(),
   },
   defaultVariants: {
-    variant: "light",
+    theme: "light",
+    size: "md",
   },
 });
 
 type ShareIconProps = SVGIconsProps & VariantProps<typeof shareIconVariants>;
 
-export function ShareIcon({
-  className,
-  variant,
-  ...restProps
-}: ShareIconProps) {
+export function ShareIcon({ className, theme, ...restProps }: ShareIconProps) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -30,7 +28,7 @@ export function ShareIcon({
       height="24"
       viewBox="0 0 24 24"
       fill="none"
-      className={cn(shareIconVariants({ variant }), className)}
+      className={cn(shareIconVariants({ theme }), className)}
       {...restProps}
     >
       <path

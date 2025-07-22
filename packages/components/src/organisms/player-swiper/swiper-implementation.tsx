@@ -2,9 +2,11 @@ import { Mousewheel, Keyboard } from "swiper/modules";
 import { Swiper } from "swiper/react";
 import { useEffect, useRef, useState } from "react";
 
-import { useBaseContext } from "@genuin/components/context/base";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
+import { useFeedVideoSizeBox } from "@genuin/components/hooks/use-feed-video-size-box";
+import { ComponentProps } from "react";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { dialogManager } from "@genuin/ui/lib/dialog-manager/dialog-manager";
 
 const CONFIG = {
@@ -21,19 +23,22 @@ const CONFIG = {
 };
 
 type SwiperImplementationProps = {
-  onActiveIndexChange?: (index: number) => void;
-  startIndex: number;
   children: React.ReactNode;
-};
+} & ComponentProps<typeof Swiper>;
 
 export function SwiperImplementation({
-  startIndex,
   children,
-  onActiveIndexChange,
+  ...restProps
 }: SwiperImplementationProps) {
-  const { feedVideoSizeBox } = useBaseContext();
+  const { height } = useFeedVideoSizeBox();
   const { showExpandView } = useFeedContext();
   const { isWindows } = useDeviceDetection();
+  const { isMobile } = useDeviceDetectMediaQuery();
+
+  const swiperHeight = showExpandView ? "100%" : isMobile ? "100%" : height;
+  const swiperSpaceBetween = showExpandView || isMobile ? 0 : 16;
+  const swiperSlidesPerView =
+    showExpandView || isMobile ? 1 : isWindows ? 1.06 : 1.03;
   const swiperRef = useRef<any>(null);
 
   // Track if any modal is open
@@ -70,14 +75,13 @@ export function SwiperImplementation({
       }}
       className="gencl:mx-0!"
       style={{
-        height: showExpandView ? "100%" : feedVideoSizeBox.height,
+        height: swiperHeight,
       }}
       enabled
-      spaceBetween={showExpandView ? 0 : 16}
+      spaceBetween={swiperSpaceBetween}
       direction="vertical"
-      slidesPerView={showExpandView ? 1 : isWindows ? 1.06 : 1.03}
+      slidesPerView={swiperSlidesPerView}
       speed={CONFIG.SCROLL_DELAY}
-      initialSlide={startIndex}
       modules={[Mousewheel, Keyboard]}
       keyboard={{
         enabled: true,
@@ -95,9 +99,7 @@ export function SwiperImplementation({
           : CONFIG.MOUSE_SENSITIVITY.DEFAULT,
       }}
       followFinger={false}
-      onActiveIndexChange={(swiper) => {
-        onActiveIndexChange?.(swiper.activeIndex);
-      }}
+      {...restProps}
     >
       {children}
     </Swiper>

@@ -32,10 +32,7 @@ export function Pills({
   ...restProps
 }: PillsPropsType) {
   return (
-    <div
-      className={cn("gencl:pt-3 gencl:flex gencl:gap-2", className)}
-      {...restProps}
-    >
+    <div className={cn("gencl:flex gencl:gap-2", className)} {...restProps}>
       <CommunityPill
         isHoverable={isHoverable}
         variant={variant}

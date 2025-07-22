@@ -20,7 +20,7 @@ export const PlaybackSpeedCapsule = ({
       className={cn(
         "gencl:flex gencl:items-center gencl:justify-center gencl:gap-2",
         {
-          "gencl:rounded-xl gencl:bg-monochrome-black/40 gencl:px-2 gencl:py-1":
+          "gencl:rounded-xl gencl:bg-black/40 gencl:px-2 gencl:py-1":
             !playbackSpeed.isSpeedFromGesture,
         },
         className
@@ -36,7 +36,8 @@ export const PlaybackSpeedCapsule = ({
       </span>
       {!playbackSpeed.isSpeedFromGesture && (
         <XIcon
-          className="gencl:h-3.5 gencl:w-3.5 gencl:cursor-pointer gencl:stroke-2 gencl:stroke-white"
+          size="sm"
+          theme="dark"
           onClick={(e) => {
             e.stopPropagation();
             setPlaybackSpeed({ speed: 1, isSpeedFromGesture: false });

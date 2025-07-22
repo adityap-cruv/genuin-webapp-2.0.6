@@ -11,9 +11,7 @@ import {
 import { cn } from "@genuin/ui/lib/utils";
 
 const ICONS = {
-  play: (
-    <PlayIcon variant="stroke-secondary" className="gencl:mb-2 gencl:size-8" />
-  ),
+  play: <PlayIcon theme="secondary" size="xl" className="gencl:mb-2" />,
   community: <CommunitiesIcon className="gencl:mb-2 gencl:size-8" />,
   group: <GroupIcon className="gencl:mb-2 gencl:size-8" />,
   warning: <ErrorIcon className="gencl:mb-2 gencl:size-8" />,
@@ -63,11 +61,11 @@ const STATES_MESSAGES = {
     subtitle: "Be the first one to post!",
     showButton: false,
   },
-  NO_MEMBERS : {
-    icon : "group",
-    title : "No Members Yet",
-    subtitle : "",
-    showButton : false
+  NO_MEMBERS: {
+    icon: "group",
+    title: "No Members Yet",
+    subtitle: "",
+    showButton: false,
   },
   WARNING: {
     icon: "warning",
@@ -127,12 +125,12 @@ export function ComponentErrorState({
       <div className="gencl:flex gencl:flex-col gencl:h-100 gencl:items-center gencl:justify-center gencl:w-full">
         {ICONS[state.icon]}
         {(state.title || title) && (
-          <p className="gencl:mb-2 gencl:text-center gencl:text-headline-4-semi-bold mb-3">
+          <p className="gencl:mb-2 gencl:text-center gencl:text-body-0-semi-bold gencl:sm:!text-headline-4-semi-bold mb-3">
             {title ? title : state.title}
           </p>
         )}
         {(state.subtitle || subtitle) && (
-          <p className="gencl:text-secondary-600 mb-4  gencl:text-center gencl:mb-4">
+          <p className="gencl:text-secondary-600 mb-4 gencl:text-body-1-medium gencl:text-center gencl:mb-4">
             {subtitle ? subtitle : state.subtitle}
           </p>
         )}

@@ -80,7 +80,7 @@ export default function PlaybackSpeedControlSlider() {
               setPlaybackSpeed({ speed, isSpeedFromGesture: false });
             }}
             className={cn(
-              "gencl:w-20 gencl:rounded-full gencl:px-4 gencl:py-2 gencl:text-body-0-semi-bold",
+              "gencl:w-16 gencl:md:w-20! gencl:rounded-full gencl:px-4 gencl:py-2 gencl:text-body-1-semi-bold gencl:md:text-body-0-semi-bold!",
               playbackSpeed.speed === speed
                 ? "gencl:bg-primary gencl:text-white! gencl:hover:bg-primary gencl:hover:text-white!"
                 : ""

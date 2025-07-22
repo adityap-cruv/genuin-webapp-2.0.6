@@ -1,4 +1,4 @@
-import { Avatar } from "@genuin/ui/avatar";
+"use client";
 import {
   HoverCard,
   HoverCardTrigger,
@@ -12,7 +12,7 @@ import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { useAuthContext } from "@genuin/components/context/auth";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { GroupHoverCard } from "../group-hover-card";
-import { ComponentProps } from "react";
+import { ComponentProps, useState, useEffect } from "react";
 import { JoinGroupButton } from "@genuin/components/molecules/join-group-button";
 import { GroupIcon } from "@genuin/ui/icons";
 
@@ -58,6 +58,38 @@ export function GroupPill({
   className,
 }: GroupPillProps) {
   const { authenticationStatus } = useAuthContext();
+  const [showButton, setShowButton] = useState(!groupDetails.isSubscribed);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  // Reset visibility when subscription status changes to false
+  useEffect(() => {
+    if (!groupDetails.isSubscribed) {
+      setShowButton(true);
+      setIsAnimating(false);
+    }
+  }, [groupDetails.isSubscribed]);
+
+  const handleGroupSubscriptionChange: ComponentProps<
+    typeof GroupSubscriptionButton
+  >["onSubscriptionChange"] = (isSubscribed) => {
+    // Call the original handler if provided
+    if (onGroupSubscriptionChange) {
+      onGroupSubscriptionChange(isSubscribed);
+    }
+
+    // If user has subscribed, start the timer to hide the button
+    if (isSubscribed) {
+      // Give a slight delay before starting the animation
+      setTimeout(() => {
+        setIsAnimating(true);
+
+        // Hide after animation completes
+        setTimeout(() => {
+          setShowButton(false);
+        }, 500); // This should match the CSS transition duration
+      }, 5000); // Show for 5 seconds before animation starts
+    }
+  };
 
   const ldDescription = `${
     groupDetails?.description ? groupDetails.description + " | " : ""
@@ -66,35 +98,39 @@ export function GroupPill({
   const pill = (
     <Link href={buildPageUrl({ type: "group", slug: groupDetails.slug })}>
       <div className={groupPillVariants({ variant, className })}>
-        <div className="gencl:flex gencl:gap-1 gencl:items-center">
+        <div className="gencl:flex gencl:gap-1 gencl:items-center gencl:line-clamp-1">
           <div className="gencl:rounded-full gencl:bg-secondary-300 gencl:p-1">
-            <GroupIcon
-              variant="filled"
-              className="gencl:h-4 gencl:w-4 gencl:fill-white"
-            />
+            <GroupIcon theme="dark" size="sm" />
           </div>
-          <span className="gencl:text-body-2-medium gencl:line-clamp-1">
-            {groupDetails.name}
-          </span>
+          <span className="gencl:text-body-2-medium">{groupDetails.name}</span>
         </div>
-        {authenticationStatus === "authenticated" && (
-          <GroupSubscriptionButton
-            className="gencl:px-2"
-            variant="icon"
-            shape="pill"
-            size="sm"
-            groupId={groupDetails.id}
-            groupName={groupDetails.name ?? ""}
-            groupDescription={ldDescription}
-            shareUrl={groupDetails.shareUrl ?? ""}
-            isSubscriber={groupDetails.isSubscribed ?? false}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
-            onSubscriptionChange={onGroupSubscriptionChange}
-          />
-        )}
+        {authenticationStatus === "authenticated" &&
+          (!(groupDetails.isSubscribed ?? false) || showButton) && (
+            <div
+              className={`gencl:overflow-hidden gencl:transition-all gencl:duration-500 ${
+                isAnimating
+                  ? "gencl:max-w-0 gencl:opacity-0 gencl:ml-0"
+                  : "gencl:max-w-24 gencl:opacity-100 gencl:ml-1"
+              }`}
+            >
+              <GroupSubscriptionButton
+                className="gencl:px-2"
+                variant="icon"
+                shape="pill"
+                size="sm"
+                groupId={groupDetails.id}
+                groupName={groupDetails.name ?? ""}
+                groupDescription={ldDescription}
+                shareUrl={groupDetails.shareUrl ?? ""}
+                isSubscriber={groupDetails.isSubscribed ?? false}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+                onSubscriptionChange={handleGroupSubscriptionChange}
+              />
+            </div>
+          )}
       </div>
     </Link>
   );

@@ -34,13 +34,13 @@ export function Search({
     <>
       <div
         className={cn(
-          "gencl:relative gencl:w-full gencl:max-w-lg gencl:cursor-pointer",
+          "gencl:relative gencl:max-w-lg gencl:cursor-pointer",
           className
         )}
         onClick={handleInputClick}
         {...restProps}
       >
-        <div className="gencl:relative">
+        <div className="gencl:relative gencl:w-xs gencl:hidden gencl:md:block!">
           <div
             className={cn(
               "gencl:flex gencl:h-10 gencl:text-body-1-medium gencl:w-full gencl:px-4 gencl:py-3",
@@ -52,11 +52,15 @@ export function Search({
             tabIndex={0}
             aria-label={`Search: ${placeholder}`}
           >
-            <SearchIcon className="gencl:h-5 gencl:w-5" />
+            <SearchIcon size="md" />
             <span className="gencl:text-secondary-600 gencl:select-none gencl:flex-1 gencl:hover:text-secondary-900 gencl:transition-colors">
               {placeholder}
             </span>
           </div>
+        </div>
+
+        <div className="gencl:flex gencl:size-9 gencl:md:hidden! gencl:items-center gencl:justify-center gencl:rounded-full gencl:bg-black/40">
+          <SearchIcon size="md" theme="light" />
         </div>
       </div>
 

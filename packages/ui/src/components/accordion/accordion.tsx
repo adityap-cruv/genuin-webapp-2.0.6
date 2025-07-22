@@ -9,19 +9,19 @@ import { cn } from "@genuin/ui/lib/utils";
 type AccordionItemProps = {
   className?: string;
   value: string;
-} & React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Item>;
+} & React.ComponentProps<typeof AccordionPrimitive.Item>;
 
 type AccordionTriggerProps = {
   className?: string;
   children: React.ReactNode;
   openIcon?: React.ReactNode;
   closedIcon?: React.ReactNode;
-} & React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger>;
+} & React.ComponentProps<typeof AccordionPrimitive.Trigger>;
 
 type AccordionContentProps = {
   className?: string;
   children: React.ReactNode;
-} & React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Content>;
+} & React.ComponentProps<typeof AccordionPrimitive.Content>;
 
 const Accordion = AccordionPrimitive.Root;
 

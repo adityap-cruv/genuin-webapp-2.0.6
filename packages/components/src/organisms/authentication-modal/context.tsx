@@ -28,7 +28,6 @@ export type StepsType =
   | "CLAIM_BRAND_PROFILE"
   | "IMAGE_CROPPER"
   | "COMPLETE_PROFILE"
-  | "USERNAME_INPUT"
   | "GUIDELINES"
   | "KS_CB_WEB"
   | "KS_CB_SUBDOMAIN"

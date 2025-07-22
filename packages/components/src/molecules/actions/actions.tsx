@@ -4,10 +4,7 @@ import {
   ShareIcon,
   ThreeDotsIcon,
 } from "@genuin/ui/icons";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@genuin/ui/tooltip";
 import { cn } from "@genuin/ui/utils";
-import type { VariantProps } from "class-variance-authority";
-import { cva } from "class-variance-authority";
 import { type ComponentProps, type ReactNode } from "react";
 import { Menu } from "./menu";
 import { ReactionButton } from "@genuin/components/molecules/reaction-button";
@@ -16,79 +13,9 @@ import { ShareButton } from "@genuin/components/molecules/share-button";
 import { RepostModal } from "@genuin/components/organisms/repost-modal/repost-modal";
 import { useAuthContext } from "@genuin/components/context/auth";
 import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
-import { Button } from "@genuin/ui/components/button";
+import { TooltipAction } from "./tooltip";
+import { cva, VariantProps } from "class-variance-authority";
 import { useBaseContext } from "@genuin/components/context/base";
-
-const tooltipVariants = cva("", {
-  variants: {
-    variant: {
-      light:
-        "gencl:border-secondary-200 gencl:border gencl:hover:border-secondary-50 gencl:transition-all gencl:hover:bg-secondary-50",
-      dark: "gencl:bg-secondary-900 gencl:hover:bg-secondary-700",
-    },
-  },
-  defaultVariants: {
-    variant: "light",
-  },
-});
-
-// TooltipAction component definition
-type TooltipActionProps = {
-  icon: ReactNode;
-  tooltipText: string;
-  onClick?: () => void;
-  disableTooltip?: boolean;
-} & VariantProps<typeof tooltipVariants> &
-  ComponentProps<typeof TooltipTrigger>;
-
-function TooltipAction({
-  icon,
-  tooltipText,
-  variant,
-  onClick,
-  className,
-  disableTooltip = false,
-  ...restProps
-}: TooltipActionProps) {
-  if (disableTooltip) {
-    return (
-      <Button
-        theme={"custom"}
-        className={cn(
-          tooltipVariants({ variant }),
-          "gencl:hover:cursor-pointer ",
-          "gencl:h-12 gencl:p-0 gencl:w-12 gencl:flex gencl:items-center gencl:justify-center gencl:rounded-full",
-          "gencl:[&_svg]:w-8 gencl:[&_svg]:h-8",
-          className
-        )}
-        onClick={onClick}
-        {...restProps}
-      >
-        {icon}
-      </Button>
-    );
-  }
-  return (
-    <Tooltip>
-      <TooltipTrigger
-        className={cn(
-          tooltipVariants({ variant }),
-          "gencl:hover:cursor-pointer",
-          "gencl:h-12 gencl:w-12 gencl:flex gencl:items-center gencl:justify-center  gencl:rounded-full",
-          "gencl:[&_svg]:w-8 gencl:[&_svg]:h-8",
-          className
-        )}
-        onClick={onClick}
-        {...restProps}
-      >
-        {icon}
-      </TooltipTrigger>
-      <TooltipContent theme={variant ?? "light"} side="right">
-        <p>{tooltipText}</p>
-      </TooltipContent>
-    </Tooltip>
-  );
-}
 
 type ActionType = "REPOST" | "REACTION" | "COMMENT" | "SHARE" | "MORE";
 
@@ -99,18 +26,35 @@ type ActionWrapperContextType = {
   reactionCount: number;
   shareUrl: string;
   slug: string;
-  variant?: "light" | "dark";
+  groupSlug: string;
+  variant?: VariantProps<typeof actionVariants>["theme"];
   onReactionStateChange?: (isReacted: boolean) => void;
 };
+
+const actionVariants = cva("", {
+  variants: {
+    theme: {
+      dark: "",
+      light: "",
+    },
+    variant: {
+      mobile: "",
+    },
+  },
+  defaultVariants: {
+    theme: "light",
+    variant: undefined,
+  },
+});
 
 type ActionsPropsType = ComponentProps<"div"> & {
   isReacted: boolean;
   reactionCount: number;
   onReactionStateChange?: (isReacted: boolean) => void;
   contentId: string;
-  variant?: "light" | "dark";
   shareUrl: string;
   slug: string;
+  groupSlug: string;
   isCommentBoxOpen?: boolean;
   /**
    * If you want to override the default action wrappers, you can pass a namedActionWrapper object.
@@ -122,10 +66,10 @@ type ActionsPropsType = ComponentProps<"div"> & {
       (defaultNode: ReactNode, context: ActionWrapperContextType) => ReactNode
     >
   >;
-};
+} & VariantProps<typeof actionVariants>;
 
 // Default wrappers for each action type
-export const defaultActionWrappers: Record<
+const defaultActionWrappers: Record<
   ActionType,
   (defaultNode: ReactNode, context: ActionWrapperContextType) => ReactNode
 > = {
@@ -169,7 +113,7 @@ export const defaultActionWrappers: Record<
       contentType="VIDEO"
       onReactionStateChange={context.onReactionStateChange}
       children={node}
-      actionButtonVariant={context.variant}
+      reactionButtonTheme={context.variant}
       showReactionCount
       withCustomChildren
       asChild
@@ -191,6 +135,7 @@ export const defaultActionWrappers: Record<
       contentId={context.contentId}
       shareUrl={context.shareUrl}
       videoSlug={context.slug}
+      groupSlug={context.groupSlug}
       children={node}
     />
   ),
@@ -198,21 +143,24 @@ export const defaultActionWrappers: Record<
 
 export function Actions({
   className,
-  variant = "light",
+  theme = "light",
+  variant,
   isReacted,
   actionWrapper,
   reactionCount,
   contentId,
   shareUrl,
+  groupSlug,
   onReactionStateChange,
   slug,
   isCommentBoxOpen = false,
+  onClick,
   ...restProps
 }: ActionsPropsType) {
   const { tooltip } = useBaseContext().brandDetails.reactions;
   const actions = [
     {
-      icon: <RepostIcon variant={variant} />,
+      icon: <RepostIcon theme={theme} />, // fallback to light for mobile
       actionType: "REPOST",
       tooltipText: "Repost",
     },
@@ -221,24 +169,24 @@ export function Actions({
         <DynamicReactionIcon
           isSparked={isReacted}
           sparkCount={reactionCount}
-          variant={variant}
+          theme={theme}
         />
       ),
       actionType: "REACTION",
       tooltipText: tooltip,
     },
     {
-      icon: <CommentIcon variant={variant} />,
+      icon: <CommentIcon theme={theme} />,
       actionType: "COMMENT",
       tooltipText: "Add a comment",
     },
     {
-      icon: <ShareIcon variant={variant} />,
+      icon: <ShareIcon theme={theme} />,
       actionType: "SHARE",
       tooltipText: "Share",
     },
     {
-      icon: <ThreeDotsIcon variant={variant} />,
+      icon: <ThreeDotsIcon theme={theme} />,
       actionType: "MORE",
       tooltipText: "More",
     },
@@ -247,29 +195,16 @@ export function Actions({
   return (
     <div
       className={cn(
-        "gencl:space-y-4 gencl:flex gencl:flex-col gencl:justify-end",
+        "gencl:space-y-4 gencl:flex gencl:flex-col gencl:justify-end gencl:[&_svg]:size-8 gencl:[&_img]:size-8!",
         className
       )}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick?.(e);
+      }}
       {...restProps}
     >
       {actions.map((action, index) => {
-        const defaultNode = (
-          <TooltipAction
-            key={`action-${index}`}
-            icon={action.icon}
-            tooltipText={action.tooltipText}
-            variant={variant}
-            className={
-              action.actionType === "COMMENT" && isCommentBoxOpen
-                ? variant === "dark"
-                  ? "gencl:bg-secondary-800"
-                  : "gencl:bg-secondary-50 gencl:border-secondary-50"
-                : ""
-            }
-            disableTooltip={action.actionType === "COMMENT" && isCommentBoxOpen}
-          />
-        );
-        // Create context object
         const context = {
           contentId,
           isReacted,
@@ -277,9 +212,34 @@ export function Actions({
           reactionCount,
           shareUrl,
           slug,
-          variant,
+          groupSlug,
+          variant:
+            (variant === "mobile" ? "dark" : theme) ?? ("light" as const),
         };
-        // Priority: namedActionWrapper > defaultActionWrappers
+        // For mobile variant, render icon directly without TooltipAction
+        if (variant === "mobile") {
+          if (actionWrapper?.[action.actionType]) {
+            return actionWrapper[action.actionType]!(action.icon, context);
+          }
+          return defaultActionWrappers[action.actionType](action.icon, context);
+        }
+
+        const defaultNode = (
+          <TooltipAction
+            key={`action-${index}`}
+            icon={action.icon}
+            tooltipText={action.tooltipText}
+            variant={theme}
+            className={
+              action.actionType === "COMMENT" && isCommentBoxOpen
+                ? theme === "dark"
+                  ? "gencl:bg-secondary-800"
+                  : "gencl:bg-secondary-50 gencl:border-secondary-50"
+                : ""
+            }
+            disableTooltip={action.actionType === "COMMENT" && isCommentBoxOpen}
+          />
+        );
         if (actionWrapper?.[action.actionType]) {
           return actionWrapper[action.actionType]!(defaultNode, context);
         }

@@ -28,7 +28,7 @@ export function Footer() {
         <div className="gencl:w-full gencl:h-px gencl:bg-secondary-50">
           &nbsp;
         </div>
-        <p className="gencl:whitespace-nowrap gencl:text-body-1-med gencl:text-secondary-500">
+        <p className="gencl:whitespace-nowrap gencl:text-body-2-medium gencl:sm:!text-body-1-med gencl:text-secondary-500">
           OR
         </p>
         <div className="gencl:w-full gencl:h-px gencl:bg-secondary-50">
@@ -49,11 +49,11 @@ export function Footer() {
         className="gencl:flex gencl:justify-center gencl:items-center gencl:gap-2.5 gencl:mt-4 gencl:cursor-pointer"
       >
         {flowType === "EMAIL" ? (
-          <MultipleDotsIcon className="gencl:fill-primary" />
+          <MultipleDotsIcon theme="primary" size="sm" />
         ) : (
-          <EmailIcon className="gencl:text-primary" />
+          <EmailIcon theme="primary" size="sm" />
         )}
-        <p className="gencl:text-primary gencl:text-body-1-semi-bold">
+        <p className="gencl:text-primary gencl:text-body-1-semi-bold gencl:sm:!text-body-0-semi-bold">
           Use {flowType === "EMAIL" ? "phone number" : "email"} instead
         </p>
       </div>

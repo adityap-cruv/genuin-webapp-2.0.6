@@ -210,6 +210,18 @@ export function checkAndAppendHttps(link: string): string {
         : "https://") + link;
 }
 
+/**
+ * Returns an object containing default sizes for icons in different sizes.
+ */
+export function defaultSizesForIcons() {
+  return {
+    sm: "gencl:size-4",
+    md: "gencl:size-5",
+    lg: "gencl:size-6",
+    xl: "gencl:size-8",
+  } as const;
+}
+
 export function encodeVideoSourceUrl(videoSource: string) {
   try {
     if (!videoSource || videoSource.trim() === "") {

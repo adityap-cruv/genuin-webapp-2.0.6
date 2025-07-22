@@ -117,8 +117,8 @@ export function SearchResults({
         className="gencl:flex gencl:flex-col gencl:h-full"
       >
         {/* Fixed header with tabs - sticky positioning */}
-        <div className="gencl:sticky gencl:top-0 gencl:z-10 gencl:bg-white gencl:border-b gencl:border-secondary-200 gencl:px-4">
-          <TabsList className="gencl:w-auto gencl:inline-flex gencl:bg-transparent gencl:border-none gencl:rounded-none gencl:h-10 gencl:p-0">
+        <div className="gencl:sticky gencl:top-0 gencl:z-20 gencl:bg-white gencl:border-b gencl:border-secondary-200 gencl:px-4 gencl:overflow-x-auto gencl:scrollbar-none">
+          <TabsList className="gencl:w-full gencl:inline-flex gencl:bg-transparent gencl:border-none gencl:rounded-none gencl:h-10 gencl:p-0 gencl:min-w-max">
             {tabs.map((tab) => (
               <TabsTrigger
                 key={tab.value}

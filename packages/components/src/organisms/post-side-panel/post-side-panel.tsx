@@ -3,7 +3,7 @@ import type { ComponentProps } from "react";
 
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
-import { Comments } from "../comments";
+import { Comments } from "../../molecules/comments";
 import { PostDetails } from "../post-details";
 
 type PostSidePanelPropsType = ComponentProps<"div"> & {

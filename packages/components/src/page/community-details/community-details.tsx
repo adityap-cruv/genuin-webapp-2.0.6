@@ -1,17 +1,12 @@
 "use client";
-import { Image } from "@genuin/ui/image";
-import { cn } from "@genuin/ui/utils";
 import {
   useId,
   useCallback,
-  type ComponentProps,
   useEffect,
-  useMemo,
+  ReactNode,
+  ComponentProps,
 } from "react";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
-import { FeedView } from "@genuin/components/templates/feed";
-import { useGetCommunityFeed } from "@genuin/components/react-query/api/community/feed";
-import { getQueryKeyForCommunityFeed } from "@genuin/components/react-query/keys/community";
 
 import { JoinCommunityButton } from "@genuin/components/molecules/join-community-button";
 import { ShareButton } from "@genuin/components/molecules/share-button";
@@ -33,7 +28,12 @@ import { ComponentErrorState } from "@genuin/components/organisms/error-state-co
 import { useLocalStorage } from "usehooks-ts";
 import { RECENT_COMMUNITIES_KEY } from "@genuin/components/lib/constants";
 import { type RecentCommunity } from "@genuin/components/types/community";
-import { buildSocialLinks } from "@genuin/components/lib/utils/social-link-parser";
+import { CommunityFeedView } from "./feed-view";
+import { Avatar } from "@genuin/ui/components/avatar";
+import { CommunityBanner } from "@genuin/components/molecules/comunity-banner";
+import { mapMemberDetails } from "./utils";
+import { getSocialLinks } from "@genuin/components/lib/utils";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 
 export function CommunityDetails({
   slug,
@@ -76,6 +76,7 @@ function CommunityDetailsView({ slug }: { slug: string }) {
     isError,
     error,
   } = useGetCommunityDetails(slug);
+  const { isDesktop } = useDeviceDetectMediaQuery();
   const detailsId = useId();
   const [storedCommunities, setStoredCommunities] = useLocalStorage<
     RecentCommunity[]
@@ -123,60 +124,25 @@ function CommunityDetailsView({ slug }: { slug: string }) {
 
   const admins = (
     <MemberList
-      className="gencl:border-t gencl:pt-4 gencl:border-secondary-150"
       title="Admins"
       members={[
-        {
-          bio: communityDetails.leader.bio ?? "",
-          memberId: communityDetails.leader.member_id,
-          profileImage: {
-            isAvatar: communityDetails.leader.is_avatar,
-            url: communityDetails.leader.profile_image ?? "",
-          },
-          name: communityDetails.leader.name ?? "",
-          url: buildPageUrl({
-            type: !!communityDetails.leader.brand ? "brand" : "profile",
-            slug: !!communityDetails.leader.brand
-              ? communityDetails.leader.brand.brand_slug
-              : communityDetails.leader.nickname,
-          }),
-          userName: communityDetails.leader.nickname,
-          brand: {
-            brand_user_logo:
-              communityDetails.leader.brand?.brand_user_logo ?? -1,
-            brand_id: communityDetails.leader.brand?.brand_id ?? 0,
-            brand_slug: communityDetails.leader.brand?.brand_slug ?? "",
-          },
-        },
-        ...communityDetails.moderators.map((moderator) => ({
-          bio: moderator.bio ?? "",
-          isOwner: moderator.member_id === communityDetails.leader.member_id,
-          memberId: moderator.member_id,
-          profileImage: {
-            isAvatar: moderator.is_avatar,
-            url: moderator.profile_image_m ?? moderator.profile_image ?? "",
-          },
-          name: moderator.name ?? "",
-          url: buildPageUrl({
-            type: !!moderator.brand ? "brand" : "profile",
-            slug: !!moderator.brand
-              ? moderator.brand.brand_slug
-              : moderator.nickname,
-          }),
-          userName: moderator.nickname,
-          brand: {
-            brand_user_logo: moderator.brand?.brand_user_logo ?? 2,
-            brand_id: moderator.brand?.brand_id ?? 0,
-            brand_slug: moderator.brand?.brand_slug ?? "",
-          },
-        })),
+        mapMemberDetails(
+          communityDetails.leader,
+          communityDetails.leader.member_id
+        ),
+        ...communityDetails.moderators.map((moderator) =>
+          mapMemberDetails(moderator, communityDetails.leader.member_id)
+        ),
       ]}
     />
   );
 
-  const ctas = (
-    <>
+  const createCtas = ({ inTopBar = false }: { inTopBar?: boolean }) => (
+    <div className="gencl:flex gencl:gap-2">
       <JoinCommunityButton
+        roleTexts={{
+          UNJOINED: inTopBar ? "Join" : "Join Community",
+        }}
         role={communityDetails.logged_in_user_role}
         communityId={communityDetails.community_id}
         communityHandle={communityDetails.handle}
@@ -184,9 +150,12 @@ function CommunityDetailsView({ slug }: { slug: string }) {
         slug={communityDetails.slug}
         isPrivate={communityDetails.type === "PRIVATE"}
         onCommunityJoinStatusChange={handleCommunityJoinStatusChange}
+        className="gencl:flex-grow gencl:sm:flex-grow-0!"
       />
-      <ShareButton pathName={buildPageUrl({ type: "community", slug })} />
-    </>
+      {!inTopBar && (
+        <ShareButton pathName={buildPageUrl({ type: "community", slug })} />
+      )}
+    </div>
   );
 
   return (
@@ -203,43 +172,31 @@ function CommunityDetailsView({ slug }: { slug: string }) {
         }}
         metadata={{ type: communityDetails.type }}
         ctas={
-          <div className="gencl:flex gencl:gap-2 gencl:justify-end">{ctas}</div>
+          <div className="gencl:gap-2 gencl:justify-end gencl:flex">
+            {createCtas({ inTopBar: true })}
+          </div>
         }
       />
-      <div className="gencl:w-full gencl:overflow-auto gencl:h-full gencl:px-6">
-        <CommunityBanner
-          src={communityDetails?.banner ?? ""}
-          className="gencl:shrink-0"
-        />
-        <div className="gencl:flex gencl:pt-6 gencl:gap-6">
+      <div className="gencl:w-full gencl:overflow-auto gencl:h-full gencl:px-0 gencl:sm:px-6">
+        <div className="gencl:h-auto gencl:relative">
+          <CommunityBanner
+            src={communityDetails?.banner ?? ""}
+            className="gencl:shrink-0"
+          />
+          <Avatar
+            alt={communityDetails?.name ?? ""}
+            imageUrl={communityDetails?.dp_m ?? communityDetails.dp ?? ""}
+            size="xl"
+            isAvatar={false}
+            className="gencl:absolute gencl:bottom-0 gencl:translate-y-1/2 gencl:left-4 gencl:sm:hidden! gencl:block"
+          />
+        </div>
+        <div className="gencl:flex gencl:pt-10 gencl:sm:pt-6! gencl:gap-6">
           <div className="gencl:w-full">
-            <GenericDetails
-              id={detailsId}
-              title={communityDetails?.name ?? ""}
-              profileImageDetails={{
-                imageUrl: communityDetails?.dp_m ?? communityDetails.dp ?? "",
-                isAvatar: false,
-                alt: communityDetails?.name ?? "",
-              }}
-              description={communityDetails.description ?? ""}
-              metadata={
-                <GenericDetailsMetadata
-                  handle={{
-                    userName: communityDetails.handle ?? "",
-                    url: `/community/${slug}`,
-                  }}
-                  privacyInfo={{
-                    isPrivate: communityDetails.type === "PRIVATE",
-                  }}
-                  stats={{
-                    Members: communityDetails.no_of_members,
-                    Groups: communityDetails.no_of_loops,
-                    Posts: communityDetails.no_of_videos,
-                  }}
-                />
-              }
-              links={buildSocialLinks(communityDetails.social_links)}
-              ctas={<div className="gencl:flex gencl:gap-2">{ctas}</div>}
+            <Details
+              communityDetails={communityDetails}
+              detailsId={detailsId}
+              ctas={createCtas({})}
             />
             {showPrivateCommunityAccess ? (
               <ComponentErrorState
@@ -248,103 +205,139 @@ function CommunityDetailsView({ slug }: { slug: string }) {
               />
             ) : (
               <CommunityDetailsTabs
-                communityOwnerId={communityDetails.leader.member_id}
                 slug={slug}
+                className="gencl:pt-3 gencl:sm:pt-6"
+                communityOwnerId={communityDetails.leader.member_id}
+                aboutComponent={
+                  <About
+                    communityDetails={communityDetails}
+                    admins={admins}
+                    variant="mobile"
+                  />
+                }
                 ownerInfo={{
-                  userName: communityDetails.brand?.brand_slug ?? "",
+                  userName: communityDetails.leader.nickname,
                 }}
-                className="gencl:pt-6"
               />
             )}
           </div>
-          <SideInfo
-            className="gencl:h-fit gencl:sticky gencl:top-2 gencl:shrink-0 gencl:pb-6 gencl:max-h-full gencl:overflow-auto"
-            sideInfoData={{
-              createdAt:
-                communityDetails.created_at ?? new Date().toISOString(),
-              createdBy: {
-                profileImage: {
-                  url: communityDetails.leader.profile_image ?? "",
-                  isAvatar: communityDetails.leader.is_avatar,
-                },
-                url: buildPageUrl({
-                  type: !!communityDetails.leader.brand ? "brand" : "profile",
-                  slug: !!communityDetails.leader.brand
-                    ? communityDetails.leader.brand?.brand_slug
-                    : communityDetails.leader.nickname,
-                }),
-                userName: communityDetails.leader.nickname ?? "",
-                name: communityDetails.leader.name ?? "",
-                userLogoType: communityDetails.leader.brand?.brand_user_logo,
-              },
-              createdIn: {
-                profileImage: {
-                  url: communityDetails.brand?.logo ?? "",
-                  isAvatar: false,
-                },
-                url: buildPageUrl({
-                  type: "brand",
-                  slug: communityDetails.brand?.brand_slug ?? "",
-                }),
-                name: communityDetails.brand?.name ?? "",
-                userName: communityDetails.brand?.brand_handle ?? "",
-                userLogoType: communityDetails.brand?.brand_user_logo,
-              },
-              stats: {
-                Views: communityDetails.no_of_views ?? 0,
-                Comments: communityDetails.no_of_comments ?? 0,
-                Reactions: communityDetails.no_of_reactions ?? 0,
-              },
-              guidelines: communityDetails.guidelines,
-            }}
-            others={admins}
-          />
+          {isDesktop && (
+            <About
+              communityDetails={communityDetails}
+              admins={admins}
+              variant="default"
+            />
+          )}
         </div>
       </div>
     </>
   );
 }
 
-function CommunityBanner({
-  src,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  alt,
-  className,
-  ...restProps
-}: ComponentProps<typeof Image>) {
+function About({
+  communityDetails,
+  admins,
+  variant,
+}: {
+  communityDetails: ReturnType<typeof useGetCommunityDetails>["data"];
+  admins: ReactNode;
+  variant: ComponentProps<typeof SideInfo>["variant"];
+}) {
+  if (!communityDetails) return null;
+
   return (
-    <Image
-      src={src}
-      alt={undefined}
-      className={cn(
-        "gencl:w-full gencl:h-40 gencl:bg-secondary-300 gencl:rounded-lg",
-        className
-      )}
-      {...restProps}
+    <SideInfo
+      variant={variant ?? "default"}
+      sideInfoData={{
+        createdAt: communityDetails.created_at ?? new Date().toISOString(),
+        description: communityDetails.description ?? "",
+        links: getSocialLinks(communityDetails.social_links),
+        createdBy: {
+          profileImage: {
+            url: communityDetails.leader.profile_image ?? "",
+            isAvatar: communityDetails.leader.is_avatar,
+          },
+          url: buildPageUrl({
+            type: !!communityDetails.leader.brand ? "brand" : "profile",
+            slug: !!communityDetails.leader.brand
+              ? communityDetails.leader.brand.brand_slug
+              : communityDetails.leader.nickname,
+          }),
+          userName: communityDetails.leader.nickname ?? "",
+          name: communityDetails.leader.name ?? "",
+          userLogoType: communityDetails.brand?.brand_user_logo,
+        },
+        createdIn: {
+          profileImage: {
+            url: communityDetails.brand?.logo ?? "",
+            isAvatar: false,
+          },
+          url: buildPageUrl({
+            type: "brand",
+            slug: communityDetails.brand?.brand_slug ?? "",
+          }),
+          name: communityDetails.brand?.name ?? "",
+          userName: communityDetails.brand?.brand_handle ?? "",
+          userLogoType: communityDetails.brand?.brand_user_logo,
+        },
+        stats: {
+          Views: communityDetails.no_of_views ?? 0,
+          Comments: communityDetails.no_of_comments ?? 0,
+          Reactions: communityDetails.no_of_reactions ?? 0,
+        },
+        guidelines: communityDetails.guidelines,
+      }}
+      others={admins}
     />
   );
 }
 
-function CommunityFeedView({ communitySlug }: { communitySlug: string }) {
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useGetCommunityFeed(communitySlug, "");
+function Details({
+  communityDetails,
+  detailsId,
+  ctas,
+}: {
+  communityDetails: ReturnType<typeof useGetCommunityDetails>["data"];
+  detailsId: string;
+  ctas: ReactNode;
+}) {
+  if (!communityDetails) return;
 
-  const feed = useMemo(
-    () => data?.pages.flatMap((page) => page.feed) ?? [],
-    [data]
+  const metadata = (
+    <GenericDetailsMetadata
+      handle={{
+        userName: communityDetails.handle ?? "",
+        url: buildPageUrl({
+          type: "community",
+          slug: communityDetails.slug,
+        }),
+      }}
+      privacyInfo={{
+        isPrivate: communityDetails.type === "PRIVATE",
+      }}
+      stats={{
+        Members: communityDetails.no_of_members,
+        Groups: communityDetails.no_of_loops,
+        Posts: communityDetails.no_of_videos,
+      }}
+    />
   );
 
   return (
-    <FeedView
-      startIndex={0}
-      feedData={{
-        videos: feed,
-        isLoading,
-        fetchNextPage,
-        hasNextPage,
-        isFetchingNextPage,
-        queryKey: getQueryKeyForCommunityFeed(communitySlug, ""),
+    <GenericDetails
+      className="gencl:px-4"
+      variant="community"
+      id={detailsId}
+      title={communityDetails?.name ?? ""}
+      profileImageDetails={{
+        imageUrl: communityDetails?.dp_m ?? communityDetails.dp ?? "",
+        isAvatar: false,
+        alt: communityDetails?.name ?? "",
       }}
+      description={communityDetails.description ?? ""}
+      metadata={metadata}
+      links={getSocialLinks(communityDetails.social_links)}
+      ctas={ctas}
     />
   );
 }

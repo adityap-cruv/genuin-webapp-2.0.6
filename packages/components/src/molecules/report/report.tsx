@@ -113,7 +113,7 @@ function ReportContent({
 }) {
   return (
     <>
-      <DialogHeader>
+      <DialogHeader className="gencl:border-none">
         <p className="gencl:text-headline-2-semi-bold gencl:text-black">
           {REPORT_HEADER_DATA[reportFor].title}
         </p>
@@ -155,7 +155,7 @@ function ReportSuccess() {
     <div className="gencl:flex gencl:flex-col gencl:items-center gencl:justify-center gencl:text-center gencl:gap-5">
       <Image
         alt="Success"
-        src={`https://${MEDIA_BASE_URL}/web-sdk/v1/icons/success.gif`}
+        src={`${MEDIA_BASE_URL}/web-sdk/v1/icons/success.gif`}
         className="gencl:h-36"
       />
       <div className="gencl:flex gencl:flex-col gencl:gap-2">

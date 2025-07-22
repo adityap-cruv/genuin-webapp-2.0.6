@@ -10,7 +10,11 @@ import { PhoneInput } from "@genuin/ui/components/phone-input";
 import { ComponentProps, useCallback } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
-import { isValidPhoneNumber } from "react-phone-number-input";
+import {
+  formatPhoneNumber,
+  formatPhoneNumberIntl,
+  isValidPhoneNumber,
+} from "react-phone-number-input";
 import { sanitizeInput } from "@genuin/components/lib/utils";
 import { cn } from "@genuin/ui/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";

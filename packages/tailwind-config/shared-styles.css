@@ -36,8 +36,8 @@
   --red-600: #981511;
   --red-700: #6d0f0c;
 
-  --error-status: #F35421;
-  --success-status : #77CE1A;
+  --error-status: #f35421;
+  --success-status: #77ce1a;
 
   font-family:
     "Inter",
@@ -126,15 +126,15 @@
   --text-body-1-medium--line-height: 20px;
   --text-body-1-medium--font-weight: 500;
 
-  --text-body-2-bold: 11px;
+  --text-body-2-bold: 12px;
   --text-body-2-bold--line-height: 16px;
   --text-body-2-bold--font-weight: 700;
 
-  --text-body-2-semi-bold: 11px;
+  --text-body-2-semi-bold: 12px;
   --text-body-2-semi-bold--line-height: 16px;
   --text-body-2-semi-bold--font-weight: 600;
 
-  --text-body-2-medium: 11px;
+  --text-body-2-medium: 12px;
   --text-body-2-medium--line-height: 16px;
   --text-body-2-medium--font-weight: 500;
 
@@ -231,13 +231,13 @@
   .gencl\:flex-center {
     @apply gencl:flex gencl:items-center gencl:justify-center;
   }
-}
 
-/* @layer base {
-  * {
-    @apply border-border outline-ring/50;
+  .gencl\:scrollbar-none {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;     /* Firefox */
   }
-  body {
-    @apply bg-background text-foreground;
+
+  .gencl\:scrollbar-none::-webkit-scrollbar {
+    display: none;             /* Chrome, Safari and Opera */
   }
-} */
+}

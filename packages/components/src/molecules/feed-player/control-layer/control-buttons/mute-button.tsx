@@ -6,6 +6,7 @@ import { MuteIcon } from "@genuin/ui/icons";
 import { AnimatedText } from "./animated-text";
 import { useBaseContext } from "@genuin/components/context/base";
 import { usePlayerContext } from "../../context";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 
 // todo: check if we can use <Slider/> component instead of input[type="range"] here.
 export const AnimatedMuteIcon = ({
@@ -15,7 +16,7 @@ export const AnimatedMuteIcon = ({
 }) => {
   const { volume, setVolume } = useBaseContext();
   const { toggleMuted, muted } = usePlayerContext();
-  const isMobile = window.matchMedia("(max-width: 768px)").matches;
+  const { isMobile } = useDeviceDetectMediaQuery();
   const [showVolumeSlider, setShowVolumeSlider] = useState(false);
   const [stopAnimating, setStopAnimating] = useState(!shouldAnimate);
 
@@ -50,7 +51,7 @@ export const AnimatedMuteIcon = ({
   return (
     <div
       onClick={handleClick}
-      className={`gencl:group gencl:cursor-pointer gencl:flex gencl:z-50 gencl:h-12 gencl:items-center gencl:justify-start gencl:overflow-hidden gencl:rounded-full gencl:bg-black/40 ${showVolumeSlider && !isMobile ? "gencl:w-full gencl:bg-black/50" : "gencl:bg-black/40"}`}
+      className={`gencl:group gencl:cursor-pointer gencl:flex gencl:z-50 gencl:items-center gencl:justify-start gencl:overflow-hidden gencl:rounded-full gencl:bg-black/40 ${showVolumeSlider && !isMobile ? "gencl:w-full gencl:bg-black/50" : "gencl:bg-black/40"}`}
       onMouseEnter={() => {
         setShowVolumeSlider(true);
       }}
@@ -58,8 +59,12 @@ export const AnimatedMuteIcon = ({
         setShowVolumeSlider(false);
       }}
     >
-      <div className="gencl:flex gencl:h-12 gencl:w-12 gencl:flex-shrink-0 gencl:items-center gencl:justify-center">
-        {!muted ? <UnmuteIcon variant="light" /> : <MuteIcon variant="light" />}
+      <div className="gencl:flex gencl:size-9 gencl:sm:size-12! gencl:flex-shrink-0 gencl:items-center gencl:justify-center">
+        {!muted ? (
+          <UnmuteIcon size="md" className="gencl:sm:size-6!" />
+        ) : (
+          <MuteIcon size="md" className="gencl:sm:size-6!" />
+        )}
       </div>
 
       {!showVolumeSlider && muted && (

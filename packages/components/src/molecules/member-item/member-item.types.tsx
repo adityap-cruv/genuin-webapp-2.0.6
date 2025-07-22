@@ -2,6 +2,7 @@ import type { ComponentProps } from "react";
 import type { MemberItemVariant } from "./member-item.cva";
 
 export type MemberDataType = {
+  isOwner?: boolean;
   memberId: string;
   url: string;
   name: string;
@@ -13,9 +14,9 @@ export type MemberDataType = {
   bio: string;
   // isOwner: boolean;
   brand?: {
-    brand_id: number;
-    brand_slug: string;
-    brand_user_logo: number;
+    brandId: number;
+    brandSlug: string;
+    brandUserLogo: number;
   };
   stats?: {
     communities: number;

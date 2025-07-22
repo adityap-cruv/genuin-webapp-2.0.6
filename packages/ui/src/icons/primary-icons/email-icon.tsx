@@ -1,6 +1,29 @@
+import type { VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
 import type { SVGIconsProps } from "../type";
+import { cn, defaultSizesForIcons } from "@genuin/ui/lib/utils";
 
-export function EmailIcon({ ...restProps }: SVGIconsProps) {
+const emailIconVariants = cva("", {
+  variants: {
+    theme: {
+      dark: "gencl:stroke-white",
+      light: "gencl:stroke-black",
+      primary: "gencl:stroke-primary-600",
+    },
+    size: defaultSizesForIcons(),
+  },
+  defaultVariants: {
+    theme: "dark",
+    size: "md",
+  },
+});
+
+export function EmailIcon({
+  theme,
+  size,
+  className,
+  ...restProps
+}: SVGIconsProps & VariantProps<typeof emailIconVariants>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -8,17 +31,16 @@ export function EmailIcon({ ...restProps }: SVGIconsProps) {
       height="16"
       viewBox="0 0 17 16"
       fill="none"
+      className={cn(emailIconVariants({ theme, size }), className)}
       {...restProps}
     >
       <path
         d="M2.28154 6.99192C2.09036 6.93799 1.9215 6.82422 1.7997 6.66731C1.67791 6.5104 1.60959 6.31859 1.60477 6.12002C1.59994 5.92144 1.65887 5.72654 1.7729 5.5639C1.88694 5.40126 2.05008 5.27944 2.23841 5.21629L14.7828 1.12504C14.865 1.09825 14.9529 1.09468 15.037 1.1147C15.1211 1.13473 15.198 1.17758 15.2593 1.23853C15.3206 1.29948 15.3638 1.37617 15.3843 1.46014C15.4048 1.54411 15.4016 1.6321 15.3753 1.71442L11.2872 14.265C11.2243 14.4537 11.1025 14.6172 10.9398 14.7315C10.7771 14.8458 10.582 14.9048 10.3832 14.8999C10.1844 14.895 9.9924 14.8264 9.8355 14.7043C9.67859 14.5821 9.56503 14.4128 9.51154 14.2213L8.10779 8.38942L2.28154 6.99192Z"
-        stroke="currentColor"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
         d="M15.2593 1.23755L8.10742 8.38942"
-        stroke="currentColor"
         strokeLinecap="round"
         strokeLinejoin="round"
       />

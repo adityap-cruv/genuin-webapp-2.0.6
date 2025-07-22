@@ -26,16 +26,18 @@ type TrendingGroupCardProps = {
     alt: string;
     slug: string;
   }[];
+  className?: string;
 };
 
 export const TrendingGroupCard = ({
-  slug,
   groupName,
   memberCount,
   postCount,
   userAvatars,
   description,
   postData,
+  className,
+  slug,
 }: TrendingGroupCardProps) => {
   const visiblePostThumbnails = postData?.slice(0, 3) || [];
 
@@ -44,13 +46,18 @@ export const TrendingGroupCard = ({
       href={buildPageUrl({ type: "group", slug: slug })}
       className="gencl:h-full"
     >
-      <div className="gencl:border gencl:rounded-lg gencl:border-secondary-150 gencl:relative gencl:overflow-hidden gencl:w-full">
-        <div className="gencl:px-4 gencl:py-3">
-          <div className="gencl:space-y-1">
+      <div
+        className={cn(
+          "gencl:border gencl:rounded-lg gencl:border-secondary-150 gencl:relative gencl:overflow-hidden gencl:w-full gencl:h-full gencl:flex gencl:flex-col",
+          className
+        )}
+      >
+        <div className="gencl:p-4">
+          <div className="gencl:flex gencl:flex-col gencl:gap-2">
             {groupName && (
               <ReadMore
                 maxChars={40}
-                textClassName="gencl:!text-body-1-semi-bold gencl:p-0"
+                textClassName="gencl:!text-body-1-semi-bold"
                 text={groupName}
               />
             )}
@@ -60,9 +67,7 @@ export const TrendingGroupCard = ({
                   <span className="gencl:text-secondary-900">
                     {abbreviateNumber(memberCount)}
                   </span>{" "}
-                  <span className="gencl:text-secondary-600 gencl:font-medium">
-                    members
-                  </span>
+                  <span className="gencl:text-secondary-600">members</span>
                 </>
               )}
               {memberCount && postCount && (
@@ -73,17 +78,20 @@ export const TrendingGroupCard = ({
                   <span className="gencl:text-secondary-900">
                     {abbreviateNumber(postCount)}
                   </span>{" "}
-                  <span className="gencl:text-secondary-600 gencl:font-medium">
-                    posts
-                  </span>
+                  <span className="gencl:text-secondary-600">posts</span>
                 </>
               )}
             </span>
           </div>
         </div>
-        <div className="gencl:flex gencl:justify-between gencl:p-4 gencl:bg-secondary-50 gencl:items-start">
-          <div className="gencl:flex gencl:flex-col gencl:gap-2 gencl:w-[70%]">
-            <div className="gencl:flex gencl:items-center">
+        <div className="gencl:flex gencl:justify-between gencl:p-5 gencl:bg-secondary-50 gencl:items-start gencl:h-full">
+          <div
+            className="gencl:flex gencl:flex-col"
+            style={{
+              width: "calc(100% - 150px)",
+            }}
+          >
+            <div className="gencl:flex gencl:mb-2 gencl:items-center">
               <div
                 className={`gencl:mr-1 gencl:relative gencl:flex ${userAvatars.length > 1 ? "gencl:space-x-[-10px]" : ""}`}
               >

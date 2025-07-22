@@ -320,10 +320,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
 
     showExpandView,
     toggleExpandView,
-
-    // playbackspeed state
-    playbackSpeed,
-    setPlaybackSpeed,
   };
 
   return (

@@ -5,20 +5,47 @@ import { SideBarActionLinks } from "./sidebar-actions-link";
 import { Link } from "@genuin/components/molecules/link";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { usePathname } from "@genuin/components/hooks/use-pathname";
+import { cva, VariantProps } from "class-variance-authority";
+import { ComponentProps } from "react";
 import { NEXT_PUBLIC_HOST_URL } from "@genuin/components/lib/utils/env";
+import { cn } from "@genuin/ui/lib/utils";
 import { useAuthContext } from "@genuin/components/context/auth";
 import {
   NotificationCountResponse,
   useNotificationCount,
 } from "@genuin/components/react-query/api/notification/get-notification-count";
 
+const sidebarActionsVariants = cva(
+  "gencl:px-3 gencl:py-4 gencl:!w-full gencl:border-b gencl:border-secondary-100",
+  {
+    variants: {
+      variant: {
+        default:
+          "gencl:flex gencl:flex-col gencl:[&_p]:hidden gencl:[&_p]:xl:block",
+        mobile: "gencl:flex gencl:flex-col gencl:[&_p]:block",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  }
+);
+
+type SidebarActionsProps = {
+  brandConfiguredTerms: string;
+  brandConfiguredPrivacy: string;
+  onItemClick?: () => void;
+} & VariantProps<typeof sidebarActionsVariants> &
+  ComponentProps<"div">;
+
 export function SidebarActions({
   brandConfiguredTerms,
   brandConfiguredPrivacy,
-}: {
-  brandConfiguredTerms: string | null;
-  brandConfiguredPrivacy: string | null;
-}) {
+  className,
+  variant,
+  onItemClick,
+  ...restProps
+}: SidebarActionsProps) {
   const pathName = usePathname();
   const { user } = useAuthContext();
   const { data: notificationData } = useNotificationCount({
@@ -27,7 +54,10 @@ export function SidebarActions({
   });
 
   return (
-    <div className="gencl:px-3 gencl:py-4 gencl:!w-full gencl:border-b gencl:border-secondary-100">
+    <div
+      className={cn(className, sidebarActionsVariants({ variant }))}
+      {...restProps}
+    >
       {SideBarActionLinks.map((links, index) => {
         // Skip notification link if user is not logged in
         if (links.type === "notification" && !user) return null;
@@ -42,6 +72,7 @@ export function SidebarActions({
             key={index}
             href={buildPageUrl({ type: links.type })}
             className="gencl:flex gencl:rounded-lg gencl:items-center gencl:gap-4 gencl:px-2 gencl:py-2 gencl:xl:py-4 gencl:xl:px-3 gencl:hover:bg-secondary-50 gencl:cursor-pointer"
+            onClick={onItemClick}
           >
             <div className="gencl:w-6 gencl:h-6 gencl:relative">
               <Icon
@@ -59,9 +90,7 @@ export function SidebarActions({
               )}
             </div>
 
-            <p className="gencl:text-body-1-medium gencl:hidden gencl:xl:!block">
-              {links.text}
-            </p>
+            <p className="gencl:text-body-1-medium">{links.text}</p>
           </Link>
         );
       })}
@@ -69,9 +98,7 @@ export function SidebarActions({
         <PopoverTrigger asChild>
           <div className="gencl:flex gencl:rounded-lg gencl:items-center gencl:gap-4 gencl:px-2 gencl:py-2 gencl:hover:bg-secondary-50 gencl:cursor-pointer">
             <ThreeDotsIcon className="gencl:h-6 gencl:w-6 gencl:p-0" />
-            <p className="gencl:text-body-1-medium gencl:hidden gencl:xl:!block">
-              More
-            </p>
+            <p className="gencl:text-body-1-medium">More</p>
           </div>
         </PopoverTrigger>
         <PopoverContent
@@ -84,6 +111,7 @@ export function SidebarActions({
                 ? brandConfiguredTerms
                 : NEXT_PUBLIC_HOST_URL + "/terms"
             }
+            onClick={onItemClick}
           >
             <p className="gencl:text-body-1-medium gencl:p-2 gencl:hover:bg-secondary-50 gencl:cursor-pointer gencl:rounded-lg">
               Terms and Condition
@@ -95,6 +123,7 @@ export function SidebarActions({
                 ? brandConfiguredPrivacy
                 : NEXT_PUBLIC_HOST_URL + "/privacy"
             }
+            onClick={onItemClick}
           >
             <p className="gencl:text-body-1-medium gencl:p-2 gencl:hover:bg-secondary-50 gencl:cursor-pointer gencl:rounded-lg">
               Privacy Policy

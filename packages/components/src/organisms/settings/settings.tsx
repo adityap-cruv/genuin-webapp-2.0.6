@@ -69,7 +69,7 @@ const menu: MenuItem[] = [
 export function SettingsPage() {
   const { user } = useAuthContext();
   const [activeTab, setActiveTab] = useState("account");
-  const { isMobile, isTablet } = useDeviceDetectMediaQuery();
+  const { isDesktop } = useDeviceDetectMediaQuery();
   const [groupNotify, setGroupNotify] = useState(false);
   const { isFetching, data: categories } = useGetCategoriesQuery();
 
@@ -153,7 +153,7 @@ export function SettingsPage() {
     setActiveTab(id);
   };
 
-  const isMobileOrTablet = isMobile || isTablet;
+  const isMobileOrTablet = !isDesktop;
 
   return (
     <div className="gencl:h-full">
@@ -191,13 +191,16 @@ export function SettingsPage() {
             {/* Tabs header only for mobile/tablet */}
             {isMobileOrTablet && (
               <div className="gencl:sticky gencl:top-0 gencl:z-10 gencl:bg-white gencl:border-b gencl:border-secondary-200">
-                <div className="gencl:overflow-x-auto gencl:px-4">
+                <div className="gencl:m-4">
+                  <span className="gencl:text-headline-4-medium">Settings</span>
+                </div>
+                <div className="gencl:overflow-x-auto gencl:overflow-y-hidden gencl:px-4  gencl:scrollbar-none [&::-webkit-scrollbar]:gencl:hidden [scrollbar-width:none] [-ms-overflow-style:none]">
                   <TabsList className="gencl:w-auto gencl:inline-flex gencl:bg-transparent gencl:border-none gencl:rounded-none gencl:h-10 gencl:p-0">
                     {tabs.map((tab) => (
                       <TabsTrigger
                         key={tab.value}
                         value={tab.value}
-                        className="gencl:relative gencl:data-[state=active]:gencl:bg-transparent gencl:data-[state=active]:gencl:text-secondary-900 gencl:data-[state=active]:gencl:border-b-2 gencl:data-[state=active]:gencl:border-primary gencl:rounded-none gencl:px-2 gencl:py-1 gencl:text-sm gencl:font-medium gencl:whitespace-nowrap gencl:flex-shrink-0"
+                        className="gencl:relative gencl:data-[state=active]:gencl:bg-transparent gencl:data-[state=active]:gencl:text-secondary-900 gencl:data-[state=active]:gencl:border-b-2 gencl:data-[state=active]:gencl:border-primary gencl:rounded-none gencl:px-2 gencl:py-1 gencl:text-sm gencl:font-medium gencl:whitespace-nowrap gencl:flex-shrink-0 gencl:translate-y-0!"
                       >
                         {tab.label}
                       </TabsTrigger>

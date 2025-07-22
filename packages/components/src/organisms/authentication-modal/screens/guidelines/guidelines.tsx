@@ -68,7 +68,9 @@ export function Guidelines({ ...props }: GuidelinesProps) {
 
   return (
     <div {...props}>
-      <BrandLogo />
+      <div className="gencl:w-full gencl:flex gencl:justify-center gencl:sm:!justify-start">
+        <BrandLogo className="gencl:max-w-40 gencl:h-9 gencl:sm:h-10! gencl:w-9 gencl:sm:w-full! gencl:rounded-full gencl:sm:rounded-none!" />
+      </div>
       <div className="gencl:w-full gencl:mt-5">
         <h2 className="gencl:text-headline-3-bold">Brand Guidelines</h2>
         <p className="gencl:text-body-1-medium gencl:font-normal gencl:mt-3">

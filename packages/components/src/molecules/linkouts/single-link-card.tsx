@@ -113,7 +113,7 @@ export const LinkCard: React.FC<LinkCardProps> = ({
         ) : (
           <LinkIcon className="gencl:h-4 gencl:w-4 gencl:shrink-0 gencl:stroke-white" />
         )}
-        <span className="gencl:truncate gencl:text-body-1-medium">
+        <span className="gencl:line-clamp-1 gencl:text-body-1-medium">
           {displayText}
         </span>
       </div>

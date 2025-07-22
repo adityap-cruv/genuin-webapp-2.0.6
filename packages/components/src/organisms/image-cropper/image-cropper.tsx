@@ -1,6 +1,6 @@
 import { createRef, useState } from "react";
 import Cropper from "react-cropper";
-// import "cropperjs/dist/cropper.css";
+import "cropperjs/dist/cropper.css";
 import { uploadProfileImage } from "@genuin/components/react-query/api/profile/image";
 import { Button } from "@genuin/ui/components";
 

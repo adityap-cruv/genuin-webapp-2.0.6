@@ -2,29 +2,42 @@ import { type ComponentProps } from "react";
 import { cn } from "@genuin/ui/utils";
 import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
 import { useAuthContext } from "@genuin/components/context/auth";
+import { cva, type VariantProps } from "class-variance-authority";
 import { useBaseContext } from "@genuin/components/context/base";
 
-export type SideBarBecomeCreatorProps = ComponentProps<"div">;
+const sideBarBecomeCreatorVariants = cva(
+  "gencl:px-4 gencl:py-3 gencl:border-b gencl:border-secondary-100 gencl:cursor-pointer",
+  {
+    variants: {
+      variant: {
+        default: "gencl:hidden gencl:xl:block!",
+        mobile: "gencl:block",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  }
+);
+
+export type SideBarBecomeCreatorProps = ComponentProps<"div"> &
+  VariantProps<typeof sideBarBecomeCreatorVariants>;
 
 export function SideBarBecomeCreator({
   className,
+  variant,
   ...restProps
 }: SideBarBecomeCreatorProps) {
-  const { authenticationStatus, user } = useAuthContext();
-  const { name , web_cta } = useBaseContext().brandDetails;
+  const { user } = useAuthContext();
+  const { name } = useBaseContext().brandDetails;
   if (user?.ksCbRequestStatus === "Accepted") return null;
 
   return (
     <>
-      <AuthenticationModal
-        asChild
-        customStep={
-          authenticationStatus === "authenticated" ? "BECOME_CREATOR" : (web_cta === "app" ? "GET_APP"  : "SIGNIN")
-        }
-      >
+      <AuthenticationModal asChild customStep="BECOME_CREATOR">
         <div
           className={cn(
-            "gencl:px-4 gencl:py-3 gencl:border-b gencl:border-secondary-100 gencl:cursor-pointer",
+            "gencl:px-4 gencl:block gencl:sm:hidden! gencl:xl:block! gencl:py-3 gencl:border-b gencl:border-secondary-100 gencl:cursor-pointer",
             className
           )}
           {...restProps}

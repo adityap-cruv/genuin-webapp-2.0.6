@@ -18,5 +18,6 @@ export * from "./chip";
 export * from "./hover-card";
 export * from "./tabs";
 export * from "./toaster";
+export * from "./sheet";
 export * from "./textarea";
 export * from "./select";

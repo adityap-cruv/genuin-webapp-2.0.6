@@ -12,9 +12,36 @@ import { useLocalStorage } from "usehooks-ts";
 import { RecentCommunity } from "@genuin/components/types/community";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { Link } from "@genuin/components/molecules/link";
+import { cva, VariantProps } from "class-variance-authority";
+import { ComponentProps } from "react";
+import { cn } from "@genuin/ui/lib/utils";
 import { compressText } from "@genuin/components/lib/utils";
 
-export function Recent() {
+const recentAccordionVariants = cva(
+  "gencl:!w-full gencl:py-4 gencl:px-3 gencl:border-b gencl:border-secondary-100",
+  {
+    variants: {
+      variant: {
+        default:
+          "gencl:[&_p]:hidden gencl:[&_button]:hidden gencl:[&_button]:xl:flex gencl:[&_p]:xl:block",
+        mobile: "",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  }
+);
+
+type RecentProps = Omit<
+  ComponentProps<typeof Accordion> &
+    VariantProps<typeof recentAccordionVariants>,
+  "children" | "type"
+> & {
+  onItemClick?: () => void;
+};
+
+export function Recent({ className, variant, onItemClick }: RecentProps) {
   const [communities] = useLocalStorage<RecentCommunity[]>(
     RECENT_COMMUNITIES_KEY,
     []
@@ -28,41 +55,47 @@ export function Recent() {
     return null;
   }
 
-  return (
-    <Accordion
-      type="single"
-      collapsible={true}
-      defaultValue="recent-communities"
-      className="gencl:w-full gencl:py-4 gencl:px-3 gencl:border-secondary-100"
-    >
-      <AccordionItem value="recent-communities">
-        <AccordionTrigger className="gencl:px-3 gencl:py-2 gencl:hidden gencl:xl:!flex">
-          <p className="gencl:text-body-1-bold">Recent</p>
-        </AccordionTrigger>
-        <AccordionContent className="gencl:pb-0">
-          {recentCommunities.map((community, commIndex) => (
-            <Link
-              key={commIndex}
-              href={buildPageUrl({
-                type: "community",
-                slug: community.slug,
-                searchParams: { feed: "1" },
-              })}
-              className="gencl:flex gencl:items-center gencl:gap-2 gencl:py-2 gencl:px-2 gencl:xl:px-3 gencl:hover:bg-secondary-50 gencl:cursor-pointer gencl:rounded-lg"
-            >
-              <Avatar
-                isAvatar={false}
-                imageUrl={community.dp}
-                alt={community.community_name}
-                size="xs"
-              />
-              <p title={community.community_name} className="gencl:text-body-1-medium gencl:hidden gencl:xl:!block gencl:!line-clamp-1">
-                 {compressText(community.community_name,20) }
-              </p>
-            </Link>
-          ))}
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
-  );
+  if (communities.length > 0) {
+    return (
+      <Accordion
+        type="single"
+        collapsible={true}
+        defaultValue="recent-communities"
+        className={cn(recentAccordionVariants({ variant }), className)}
+      >
+        <AccordionItem value="recent-communities">
+          <AccordionTrigger className="gencl:px-3 gencl:py-2">
+            <p className="gencl:text-body-1-bold">Recent</p>
+          </AccordionTrigger>
+          <AccordionContent className="gencl:pb-0">
+            {recentCommunities.map((community, commIndex) => (
+              <Link
+                key={commIndex}
+                href={buildPageUrl({
+                  type: "community",
+                  slug: community.slug,
+                  searchParams: { feed: "1" },
+                })}
+                onClick={onItemClick}
+                className="gencl:flex gencl:items-center gencl:gap-2 gencl:py-2 gencl:px-2 gencl:xl:px-3 gencl:hover:bg-secondary-50 gencl:cursor-pointer gencl:rounded-lg"
+              >
+                <Avatar
+                  isAvatar={false}
+                  imageUrl={community.dp}
+                  alt={community.community_name}
+                  size="xs"
+                />
+                <p
+                  title={community.community_name}
+                  className="gencl:text-body-1-medium"
+                >
+                  {compressText(community.community_name, 20)}
+                </p>
+              </Link>
+            ))}
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    );
+  }
 }

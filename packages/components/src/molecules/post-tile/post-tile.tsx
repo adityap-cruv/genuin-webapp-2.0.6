@@ -1,9 +1,4 @@
-import {
-  CommentIcon,
-  PinIcon,
-  PlayIcon,
-  // ThreeDotsIcon,
-} from "@genuin/ui/icons";
+import { CommentIcon, PinIcon, PlayIcon } from "@genuin/ui/icons";
 import { Image } from "@genuin/ui/image";
 import { cn } from "@genuin/ui/utils";
 import { Skeleton } from "@genuin/ui/skeleton";
@@ -21,12 +16,29 @@ export const postTileVariants = cva(
   {
     variants: {
       size: {
-        sm: "gencl:h-70",
-        lg: "gencl:h-75",
+        sm: "gencl:w-40 sm:gencl:w-44 md:gencl:w-48",
+        lg: "gencl:w-44 sm:gencl:w-48 md:gencl:w-52",
+      },
+      variant: {
+        default: "",
+        responsive: "",
       },
     },
+    compoundVariants: [
+      {
+        size: "sm",
+        variant: "responsive",
+        className: "gencl:w-32 gencl:sm:w-40 gencl:md:w-44 gencl:lg:w-48",
+      },
+      {
+        size: "lg",
+        variant: "responsive",
+        className: "gencl:w-36 gencl:sm:w-44 gencl:md:w-48 gencl:lg:w-52",
+      },
+    ],
     defaultVariants: {
       size: "sm",
+      variant: "default",
     },
   }
 );
@@ -36,6 +48,7 @@ export function PostTile({
   imageCompProps,
   showHover = true,
   size = "sm",
+  variant = "default",
   className,
   onClick,
   shouldCloseModal = false,
@@ -43,7 +56,7 @@ export function PostTile({
 }: PostTileProps & { shouldCloseModal?: boolean }) {
   const content = (
     <div
-      className={cn(postTileVariants({ size }), className)}
+      className={cn(postTileVariants({ size, variant }), className)}
       onClick={onClick}
       {...restProps}
     >
@@ -60,17 +73,20 @@ export function PostTile({
       )}
       {stats && (
         <Stats
-          className="gencl:group-hover:hidden gencl:flex gencl:gap-2 gencl:justify-between gencl:p-2 gencl:absolute gencl:bottom-0 gencl:w-full"
+          className={cn(
+            "gencl:group-hover:hidden gencl:flex gencl:gap-2 gencl:justify-between gencl:p-2 gencl:absolute gencl:bottom-0 gencl:w-full",
+            variant === "responsive" && "gencl:md:flex! gencl:hidden"
+          )}
           valueClassName="gencl:text-white! gencl:text-body-2-medium"
           pairClassName="gencl:gap-1"
           stats={{
-            views: {
+            Views: {
               value: stats.views,
               icon: (
                 <PlayIcon className="gencl:stroke-white gencl:stroke-2 gencl:size-3 gencl:fill-none" />
               ),
             },
-            reaction: {
+            Reactions: {
               value: stats.reactions,
               icon: (
                 <DynamicReactionIcon
@@ -79,11 +95,11 @@ export function PostTile({
                   isSparked={false}
                   iconHeight={16}
                   iconWidth={16}
-                  variant="dark"
+                  theme="dark"
                 />
               ),
             },
-            comments: {
+            Comments: {
               value: stats.comments,
               icon: (
                 <CommentIcon className="gencl:stroke-white! gencl:stroke-2 gencl:size-4" />
@@ -96,7 +112,7 @@ export function PostTile({
         <div className="gencl:hidden gencl:cursor-pointer gencl:group-hover:flex gencl:items-center gencl:justify-center gencl:absolute gencl:h-full gencl:w-full gencl:inset-0 gencl:bg-black/40">
           {/* <ThreeDotsIcon className="gencl:absolute gencl:top-2 gencl:p-1 gencl:rounded-md gencl:right-2 gencl:stroke-white gencl:bg-black/40" /> */}
           <div className="gencl:p-2.5 gencl:rounded-full gencl:bg-black/40 gencl:backdrop:blur-[3px]">
-            <PlayIcon variant="light" className="gencl:size-6" />
+            <PlayIcon theme="fill-dark" size="md" />
           </div>
         </div>
       )}
@@ -140,7 +156,7 @@ export function PostTileSkeleton({
     <Skeleton
       className={cn(
         postTileVariants({ size }),
-        "gencl:flex-none gencl:w-40 sm:gencl:w-44 md:gencl:w-48",
+        "gencl:w-full gencl:aspect-reel",
         className
       )}
     />

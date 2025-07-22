@@ -21,6 +21,7 @@ import { Loader } from "@genuin/ui/components/loader";
 import { useAnalytics } from "@genuin/components/context/analytics";
 import { useAuthContext } from "@genuin/components/context/auth";
 import { Toast } from "@genuin/ui/components/toaster";
+import { AuthenticationModal } from "../../authentication-modal";
 
 type BecomeCreatorProps = ComponentProps<"div">;
 
@@ -50,8 +51,43 @@ export function BecomeCreator({ ...props }: BecomeCreatorProps) {
     });
 
   const handleClick = useCallback(() => {
-    requestCbMutate();
-  }, []);
+    if (user) {
+      requestCbMutate();
+    }
+  }, [user, requestCbMutate]);
+
+  const renderButton = () => (
+    <>
+      {user ? (
+        <Button
+          className="gencl:w-full gencl:text-body-0-semi-bold"
+          theme="primary"
+          onClick={handleClick}
+          disabled={isRequestMutating || isCbStatusLoading || isRequested}
+        >
+          {isCbStatusLoading || isRequestMutating ? (
+            <Loader size="sm" />
+          ) : isRequested ? (
+            "Requested"
+          ) : (
+            "Become a Creator"
+          )}
+        </Button>
+      ) : (
+        <AuthenticationModal
+          asChild
+          customStep={brandDetails.web_cta === "app" ? "GET_APP" : "SIGNIN"}
+        >
+          <Button
+            className="gencl:w-full gencl:text-body-0-semi-bold"
+            theme="primary"
+          >
+            Become a Creator
+          </Button>
+        </AuthenticationModal>
+      )}
+    </>
+  );
 
   return (
     <div className="gencl:text-center gencl:w-full" {...props}>
@@ -85,22 +121,7 @@ export function BecomeCreator({ ...props }: BecomeCreatorProps) {
         <CarouselDots />
       </Carousel>
       <div className="gencl:flex gencl:flex-col gencl:gap-4 gencl:mt-6">
-        {cbStatus?.status !== "Accepted" && (
-          <Button
-            className="gencl:w-full gencl:text-body-0-semi-bold"
-            theme="primary"
-            onClick={handleClick}
-            disabled={isRequestMutating || isCbStatusLoading || isRequested}
-          >
-            {isCbStatusLoading || isRequestMutating ? (
-              <Loader size="sm" />
-            ) : isRequested ? (
-              "Requested"
-            ) : (
-              "Become a Creator"
-            )}
-          </Button>
-        )}
+        {cbStatus?.status !== "Accepted" && renderButton()}
         <DialogClose asChild>
           <Button
             className="gencl:w-full gencl:text-body-0-semi-bold"

@@ -23,7 +23,7 @@ export function BrandSlogan({ ...props }: BrandSloganProps) {
   }
 
   return (
-    <div className="gencl:px-16 gencl:w-2xl gencl:flex gencl:justify-center gencl:h-full">
+    <div className="gencl:px-16 gencl:w-2xl gencl:md:h-10! gencl:lg:h-12! gencl:flex gencl:justify-center gencl:h-full">
       {hasValidImage ? (
         <Image
           src={image}

@@ -1,6 +1,6 @@
 import React, { createRef, useState } from 'react'
 import Cropper from 'react-cropper'
-import 'cropperjs/dist/cropper.css'
+// import 'cropperjs/dist/cropper.css'
 import { Button } from '@components/ui/button'
 import { useAuthenticationModalStore } from '../store'
 import { ModalShell } from '../modal-shell'

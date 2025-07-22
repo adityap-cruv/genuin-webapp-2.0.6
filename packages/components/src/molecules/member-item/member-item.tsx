@@ -1,5 +1,4 @@
 import { Avatar } from "@genuin/ui/avatar";
-import { Chip } from "@genuin/ui/chip";
 import { cn } from "@genuin/ui/utils";
 import { Skeleton } from "@genuin/ui/skeleton";
 
@@ -22,7 +21,7 @@ import {
 import { DotIcon } from "@genuin/ui/icons";
 
 export function MemberItem({
-  memberData: { name, url, profileImage, bio, userName, brand, stats },
+  memberData: { name, url, profileImage, bio, userName, brand, stats, isOwner },
   variant = "default",
   className,
   onClick,
@@ -42,7 +41,8 @@ export function MemberItem({
   const ProfileLinkWithUsername = () => (
     <ProfileLink
       className={memberItemUsernameVariants({ variant })}
-      userLogoType={brand?.brand_user_logo}
+      userLogoType={brand?.brandUserLogo}
+      isOwner={isOwner}
     >
       @{userName}
     </ProfileLink>

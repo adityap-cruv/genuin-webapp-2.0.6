@@ -42,7 +42,7 @@ export function PlayingState({
         )}
         {...restProps}
       >
-        <PauseIcon variant="light" className="gencl:h-8 gencl:w-8" />
+        <PauseIcon theme="dark" size="xl" />
       </div>
     );
   }
@@ -51,11 +51,11 @@ export function PlayingState({
   const renderIcon = () => {
     switch (buttonAction) {
       case "PLAY":
-        return <PlayIcon variant="light" className="gencl:h-8 gencl:w-8" />;
+        return <PlayIcon theme="fill-dark" size="xl" />;
       case "MUTE":
-        return <MuteIcon variant="light" className="gencl:h-8 gencl:w-8" />;
+        return <MuteIcon theme="light" size="xl" />;
       case "UNMUTE":
-        return <UnmuteIcon variant="light" className="gencl:h-8 gencl:w-8" />;
+        return <UnmuteIcon theme="light" size="xl" />;
       default:
         return null;
     }

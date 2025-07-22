@@ -7,13 +7,13 @@ import { useBoolean } from "usehooks-ts";
 import { Actions } from "@genuin/components/molecules/actions";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
-import { CommentButton } from "@genuin/components/molecules/comment-button";
 
-import { Comments } from "../comments";
+import { Comments, CommentsDialog } from "../../molecules/comments";
 
 import { Player } from "./player";
 import { SwiperImplementation } from "./swiper-implementation";
 import { ComponentProps } from "react";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { cn } from "@genuin/ui/lib/utils";
 
 type PlayerListPropsType = {
@@ -37,6 +37,7 @@ type PlayerListPropsType = {
   >["onGroupSubscriptionChange"];
 };
 
+// TODO: This component is using feed context, which is not ideal. Remove this dep of FeedContext in future.
 export function PlayerList({
   posts,
   startIndex = 0,
@@ -48,12 +49,15 @@ export function PlayerList({
 }: PlayerListPropsType) {
   const { value, toggle } = useBoolean(true);
   const { showExpandView, activeIndex } = useFeedContext();
-  
+  const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
+
   return (
     <div className="gencl:flex gencl:justify-center gencl:h-full gencl:w-full gencl:gap-6">
       <SwiperImplementation
-        startIndex={startIndex}
-        onActiveIndexChange={onActiveIndexChange}
+        initialSlide={startIndex}
+        onActiveIndexChange={(swiper) => {
+          onActiveIndexChange?.(swiper.activeIndex);
+        }}
       >
         {posts.map((post) => {
           return (
@@ -65,49 +69,66 @@ export function PlayerList({
                   onGroupJoinStatusChange={onGroupJoinStatusChange}
                   onGroupSubscriptionChange={onGroupSubscriptionChange}
                 />
-                <Actions
-                  shareUrl={post.video.shareUrl}
-                  isReacted={post.video.isSparked ?? false}
-                  contentId={post.video.id}
-                  slug={post.video.slug}
-                  reactionCount={post.video.sparkCount}
-                  variant={showExpandView ? "dark" : "light"}
-                  className={cn(
-                    "gencl:shrink-0",
-                    showExpandView && "gencl:pb-6"
-                  )}
-                  isCommentBoxOpen={!showExpandView || value}
-                  actionWrapper={{
-                    COMMENT: (defaultNode) => (
-                      <CommentButton
-                        key="comment-button"
-                        defaultNode={defaultNode}
-                        postId={post.video.id}
-                        count={post.video.commentCount}
-                        showCount={true}
-                        onClick={() => {
-                          if (showExpandView) toggle();
-                        }}
-                        countClassName={
-                          showExpandView ? "gencl:text-white" : undefined
-                        }
-                      />
-                    ),
-                  }}
-                  onReactionStateChange={(isReacted) => {
-                    onReactionStateChange?.(post.video.id, isReacted);
-                  }}
-                />
+                {!isMobile && (
+                  <Actions
+                    shareUrl={post.video.shareUrl}
+                    isReacted={post.video.isSparked ?? false}
+                    contentId={post.video.id}
+                    groupSlug={post.group.slug}
+                    slug={post.video.slug}
+                    reactionCount={post.video.sparkCount}
+                    theme={showExpandView ? "dark" : "light"}
+                    className="gencl:shrink-0 gencl:pb-4"
+                    isCommentBoxOpen={value}
+                    actionWrapper={{
+                      COMMENT: (defaultNode) => {
+                        if (!isDesktop)
+                          return (
+                            <CommentsDialog
+                              commentCount={post.video.commentCount}
+                              communityId={post.community.id}
+                              loopId={post.group.id}
+                              videoId={post.video.id}
+                              videoSlug={post.video.slug}
+                            >
+                              {defaultNode}
+                            </CommentsDialog>
+                          );
+
+                        return (
+                          <span
+                            onClick={() => {
+                              if (showExpandView) toggle();
+                            }}
+                          >
+                            {defaultNode}
+                            <p
+                              className={cn(
+                                "gencl:p-0 gencl:text-center gencl:text-black gencl:text-body-2-medium",
+                                showExpandView && "gencl:text-white!"
+                              )}
+                            >
+                              {post.video.commentCount}
+                            </p>
+                          </span>
+                        );
+                      },
+                    }}
+                    onReactionStateChange={(isReacted) => {
+                      onReactionStateChange?.(post.video.id, isReacted);
+                    }}
+                  />
+                )}
               </div>
             </SwiperSlide>
           );
         })}
-        {/* in case of expand view show navigation buttons. */}
-        {showExpandView && <NavigationButton />}
+        {/* in case of expand view show navigation buttons. in case of mobile view don't show navigation. */}
+        {showExpandView && !isMobile && <NavigationButton />}
       </SwiperImplementation>
       {/* show this only if expand view is open  */}
       {value && showExpandView && posts[activeIndex] && (
-        <div className="gencl:max-w-118 gencl:w-full gencl:h-full gencl:py-6">
+        <div className="gencl:max-w-118 gencl:w-full gencl:h-full gencl:hidden gencl:sm:block! gencl:py-6">
           <Comments
             videoId={posts[activeIndex].video.id}
             loopId={posts[activeIndex].group.id}

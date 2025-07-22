@@ -11,11 +11,15 @@ import { ExpandViewDetails } from "./expand-view";
 import { PlaybackSpeedCapsule } from "@genuin/components/molecules/playback-speed/speed-capsule";
 import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
 import { LinkOutContentRenderer } from "@genuin/components/organisms/linkouts/linkouts-details";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { useFeedContext } from "@genuin/components/templates/feed/context";
+import { SpeedControlSideBars } from "../../playback-speed/speed-control-bars";
 
 type ControlLayerPropsType = ComponentProps<"div"> & {
   postDetails: PostDetailsType;
   isInModal?: boolean;
   isActive: boolean;
+  showCloseButton?: boolean;
   onGroupJoinStatusChange?: ComponentProps<
     typeof ExpandViewDetails
   >["onGroupJoinStatusChange"];
@@ -34,15 +38,17 @@ export const ControlLayer = memo(function ControlLayer({
   postDetails,
   className,
   isActive,
+  showCloseButton,
   onCommunityJoinStatusChange,
   onGroupJoinStatusChange,
   onGroupSubscriptionChange,
   ...restProps
 }: ControlLayerPropsType) {
-  const { showExpandView, togglePlay, toggleMuted, muted, playingState } =
-    usePlayerContext();
+  const { showExpandView, togglePlay, toggleMuted, muted } = usePlayerContext();
   const { gestureOverlayUI, hideGestureOverlay } = useGestureOverlayManager();
   const { showSeeker } = usePlayerContext();
+  const { isDesktop, isMobile } = useDeviceDetectMediaQuery();
+  const { playbackSpeed } = useFeedContext();
 
   const {
     brandDetails: {
@@ -56,11 +62,6 @@ export const ControlLayer = memo(function ControlLayer({
       e.stopPropagation();
       hideGestureOverlay("PLAY_PAUSE", muted);
 
-      // if (isExpanded) {
-      //   setIsExpanded(false);
-      //   return;
-      // }
-
       if (postDetails.video.clickableUrl) {
         window.open(postDetails.video.clickableUrl, "_blank");
         return;
@@ -69,12 +70,10 @@ export const ControlLayer = memo(function ControlLayer({
       switch (tapBehavior) {
         case 1: // Tap to mute/unmute
           toggleMuted(true);
-          // setButtonAction(muted ? "UNMUTE" : "MUTE");
           break;
 
         case 2: // Tap to play/pause
           togglePlay(true);
-          // setButtonAction(feedPlayerShouldPlay ? "PAUSE" : "PLAY");
           break;
 
         case 3: // Tap to unmute and then play/pause
@@ -97,14 +96,16 @@ export const ControlLayer = memo(function ControlLayer({
       <div
         onClick={handleVideoClick}
         className={cn(
-          "gencl:absolute group gencl:inset-0 gencl:z-10 gencl:h-full gencl:w-full gencl:overflow-clip gencl:transition-all gencl:flex gencl:justify-center",
-          // showSeeker && "gencl:-translate-y-4",
-          // showScrubber ? "gencl:hidden" : "gencl:block",
+          "gencl:absolute group gencl:inset-0 gencl:z-10 gencl:h-full",
+          "gencl:w-full gencl:overflow-clip gencl:transition-all gencl:flex gencl:justify-center",
           className
         )}
         {...restProps}
       >
-        <Controls className="gencl:group-hover:opacity-100 gencl:group-hover:pointer-events-auto gencl:opacity-0 gencl:pointer-events-none gencl:transition-opacity gencl:duration-300" />
+        <Controls
+          className={cn({ "gencl:group-hover:flex gencl:hidden": !isMobile })}
+          showCloseButton={showCloseButton}
+        />
         {/* this is wallet badge for wallet. */}
         {/* {isInModal && (
           <div
@@ -116,14 +117,13 @@ export const ControlLayer = memo(function ControlLayer({
           </div>
         )} */}
 
-        {/** These are play back speed controls. */}
-        {/* <PlaybackControls /> */}
-
         {/**
          * This is the expand view details.
          * It will show the details of the post. If post is expanded.
+         * iIf Playback speed is not 1 then it will not show the expand view details.
          */}
-        {showExpandView ? (
+        {playbackSpeed.speed !== 1 ? undefined : showExpandView ||
+          !isDesktop ? (
           <ExpandViewDetails
             postDetails={postDetails}
             isActive={isActive}
@@ -159,12 +159,15 @@ export const ControlLayer = memo(function ControlLayer({
 
         {/* This is the playback speed controls for the desktop. */}
         {playback_speed_enabled && (
-          <PlaybackSpeedCapsule
-            className={cn(
-              "gencl:absolute gencl:z-10 gencl:transition-all",
-              showExpandView ? "gencl:bottom-32" : "gencl:bottom-12"
-            )}
-          />
+          <>
+            <PlaybackSpeedCapsule
+              className={cn(
+                "gencl:absolute gencl:z-10 gencl:transition-all",
+                showExpandView ? "gencl:bottom-32" : "gencl:bottom-12"
+              )}
+            />
+            <SpeedControlSideBars />
+          </>
         )}
 
         {/**
@@ -173,8 +176,7 @@ export const ControlLayer = memo(function ControlLayer({
         <Scrubber
           spriteUrl={postDetails.video.thumbnailSprite ?? ""}
           className={cn(
-            "gencl:absolute gencl:bottom-0 gencl:z-10 gencl:transition-all"
-            // showSeeker && "gencl:bottom-4"
+            "gencl:absolute gencl:bottom-0 gencl:z-20 gencl:transition-all"
           )}
         />
 
@@ -183,45 +185,3 @@ export const ControlLayer = memo(function ControlLayer({
     </>
   );
 });
-
-// type MobileComponentsProps = {
-//   postDetails: VideoPlayerModalType;
-//   isExpanded?: boolean;
-//   setIsExpanded?: React.Dispatch<React.SetStateAction<boolean>>;
-//   showSeeker?: boolean;
-// };
-
-// function MobileComponents({
-//   postDetails,
-//   isExpanded,
-//   showSeeker,
-//   setIsExpanded,
-// }: MobileComponentsProps) {
-//   const { renderIn, shouldShowIHeartDemo, isIHeartPlaying } =
-//     useIHeartDemoStates();
-//   const { muted } = usePlayerControlStore(
-//     useShallow((state) => ({
-//       muted: state.muted,
-//     }))
-//   );
-//   const showIHeartDemo = renderIn === "root" && shouldShowIHeartDemo;
-
-//   return (
-//     <>
-//       <MobileDetails
-//         postDetails={postDetails}
-//         isActive
-//         isExpanded={isExpanded}
-//         setIsExpanded={setIsExpanded}
-//       />
-//       <CommentSheet postDetails={postDetails} />
-//       {!isIHeartPlaying && showIHeartDemo && !muted && (
-//         <img
-//           src="https://media.begenuin.com/iheart_demo/equalizer.gif"
-//           alt="gif"
-//           className="absolute right-4 top-20 z-10 h-12 w-12"
-//         />
-//       )}
-//     </>
-//   );
-// }

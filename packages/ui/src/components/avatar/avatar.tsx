@@ -3,6 +3,8 @@
 import * as AvatarPrimitive from "@radix-ui/react-avatar";
 import { cva, type VariantProps } from "class-variance-authority";
 import * as React from "react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
 
 import { cn, isValidHTTPS } from "@genuin/ui/lib/utils";
 import { getWebpUrlForImage } from "@genuin/ui/utils";
@@ -38,6 +40,10 @@ export type AvatarPropsType = React.ComponentProps<
      */
     alt: string;
     imageUrl: string;
+    /**
+     * When true, enables zoom functionality on click
+     */
+    shouldZoom?: boolean;
   };
 
 function Avatar({
@@ -46,14 +52,23 @@ function Avatar({
   alt,
   isAvatar,
   size = "sm",
+  shouldZoom = false,
   ...props
 }: AvatarPropsType) {
-  return (
+  const [isOpen, setIsOpen] = useState(false);
+  const finalImageSrc = isAvatar ? getAvatarUrl(imageUrl) : imageUrl;
+  // Generate a unique ID for this Avatar instance
+  const uniqueId = React.useId();
+  const layoutId = `avatar-zoom-${uniqueId}`;
+
+  // Function to create avatar component with dynamic size
+  const createAvatarComponent = (avatarSize = size) => (
     <AvatarPrimitive.Root
       data-slot="avatar"
       className={cn(
-        avatarVariants({ size }),
+        avatarVariants({ size: avatarSize }),
         isAvatar && "gencl:bg-secondary-300",
+        shouldZoom && "gencl:cursor-pointer",
         className
       )}
       {...props}
@@ -72,6 +87,65 @@ function Avatar({
         {getAvatarFallback(alt)}
       </AvatarPrimitive.Fallback>
     </AvatarPrimitive.Root>
+  );
+
+  // Create standard avatar component
+  const AvatarComponent = createAvatarComponent();
+
+  if (!shouldZoom) {
+    return AvatarComponent;
+  }
+
+  return (
+    <>
+      <div onClick={() => setIsOpen(true)}>
+        <motion.div
+          layoutId={layoutId}
+          transition={{
+            type: "spring",
+            bounce: 0.15,
+            duration: 0.5,
+          }}
+        >
+          {AvatarComponent}
+        </motion.div>
+      </div>
+
+      <AnimatePresence mode="sync">
+        {isOpen && (
+          <motion.div
+            onClick={() => setIsOpen(false)}
+            className="gencl:fixed gencl:inset-0 gencl:z-50 gencl:bg-white/1 gencl:backdrop-blur-lg gencl:flex gencl:items-center gencl:justify-center"
+            initial={{ opacity: 0 }}
+            animate={{
+              opacity: 1,
+              transition: {
+                duration: 0.3,
+                ease: [0.16, 1, 0.3, 1], // spring-like easing
+              },
+            }}
+            exit={{
+              opacity: 0,
+              transition: {
+                duration: 0.2,
+                ease: [0.4, 0, 0.2, 1], // ease-out for exits
+              },
+            }}
+          >
+            <motion.div
+              layoutId={layoutId}
+              transition={{
+                type: "spring",
+                bounce: 0.15,
+                duration: 0.5,
+              }}
+            >
+              {createAvatarComponent("3xl")}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
 

@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { Toast } from "@genuin/ui/components/toaster";
 import { useCreateCommentMutation, type CommentListType } from "@genuin/components/react-query/api/comments";
-import { convertCommentTextToArray } from "../organisms/comments/utils";
+import { convertCommentTextToArray } from "@genuin/components/molecules/comments/utils";
 import { useForm } from "react-hook-form";
 import { Dispatch, SetStateAction } from "react";
 

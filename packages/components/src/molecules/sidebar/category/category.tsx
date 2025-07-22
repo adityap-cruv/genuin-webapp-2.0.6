@@ -10,9 +10,40 @@ import { useMemo } from "react";
 import { useCategory } from "@genuin/components/react-query/api/category/category";
 import { Link } from "@genuin/components/molecules/link";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { cva, VariantProps } from "class-variance-authority";
+import { cn } from "@genuin/ui/lib/utils";
 import { compressText } from "@genuin/components/lib/utils";
 
-export function Category() {
+const accordionVariants = cva(
+  "gencl:!w-full gencl:py-4 gencl:px-3 gencl:border-b gencl:border-secondary-100",
+  {
+    variants: {
+      variant: {
+        default: "gencl:hidden gencl:xl:block! gencl:xl:border-b",
+        mobile: "",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  }
+);
+
+type CategoryProps = Omit<
+  React.ComponentProps<typeof Accordion> &
+    VariantProps<typeof accordionVariants>,
+  "type" | "collapsible" | "defaultValue"
+> & {
+  onItemClick?: () => void;
+};
+
+// TODO: Figure out why restProps are not being passed down correctly
+export function Category({
+  variant,
+  className,
+  onItemClick,
+  ...restProps
+}: CategoryProps) {
   const { data } = useCategory();
   const categories = useMemo(() => {
     const allCategories = data?.categories ?? [];
@@ -28,18 +59,23 @@ export function Category() {
       type="single"
       collapsible={true}
       defaultValue="categories"
-      className="gencl:!w-full gencl:py-4 gencl:px-3 gencl:border-b-0 gencl:xl:border-b gencl:border-secondary-100"
+      className={cn(accordionVariants({ variant }), className)}
     >
       <AccordionItem value="categories">
-        <AccordionTrigger className="gencl:px-3 gencl:py-2 gencl:hidden gencl:xl:!flex">
+        <AccordionTrigger className="gencl:px-3 gencl:py-2">
           <div className="gencl:text-body-1-bold">Categories</div>
         </AccordionTrigger>
         <AccordionContent className="gencl:pb-0">
           <Accordion collapsible type="single" className="gencl:w-full">
             {categories.map((cat, index) => (
               <AccordionItem key={index} value={`category-${index}`}>
-                <AccordionTrigger className="gencl:justify-between gencl:items-center gencl:px-3 gencl:py-2 gencl:hidden gencl:xl:!flex">
-                  <p title={cat.category} className="gencl:text-body-1-medium gencl:text-nowrap gencl:line-clamp-1">{compressText(cat.category,22)}</p>
+                <AccordionTrigger className="gencl:justify-between gencl:items-center gencl:px-3 gencl:py-2 gencl:!flex">
+                  <p
+                    title={cat.category}
+                    className="gencl:text-body-1-medium gencl:text-nowrap gencl:line-clamp-1"
+                  >
+                    {compressText(cat.category, 22)}
+                  </p>
                 </AccordionTrigger>
                 <AccordionContent className="gencl:flex gencl:flex-col gencl:pb-0">
                   {cat.communities.map((community, commIndex) => (
@@ -50,6 +86,7 @@ export function Category() {
                         slug: community.slug,
                         searchParams: { feed: "1" },
                       })}
+                      onClick={onItemClick}
                       className="gencl:flex gencl:items-center gencl:gap-2 gencl:py-2 gencl:px-2 gencl:xl:px-3 gencl:hover:bg-secondary-50 gencl:cursor-pointer gencl:rounded-lg"
                     >
                       <Avatar
@@ -58,7 +95,10 @@ export function Category() {
                         alt={community.community_name}
                         size="xs"
                       />
-                      <p title={community.community_name} className="gencl:text-body-1-medium gencl:text-nowrap gencl:hidden gencl:xl:!block">
+                      <p
+                        title={community.community_name}
+                        className="gencl:text-body-1-medium gencl:text-nowrap"
+                      >
                         {compressText(community.community_name, 20)}
                       </p>
                     </Link>

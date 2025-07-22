@@ -1,17 +1,19 @@
-import { cn } from "@genuin/ui/lib/utils";
+import { cn, defaultSizesForIcons } from "@genuin/ui/lib/utils";
 import type { SVGIconsProps } from "../type";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 
 const repostIconVariants = cva("", {
   variants: {
-    variant: {
+    theme: {
       light: "gencl:stroke-black",
       dark: "gencl:stroke-white",
+      secondary: "gencl:stroke-secondary-600",
     },
+    size: defaultSizesForIcons(),
   },
   defaultVariants: {
-    variant: "light",
+    theme: "light",
   },
 });
 
@@ -19,7 +21,8 @@ type CommentIconProps = SVGIconsProps & VariantProps<typeof repostIconVariants>;
 
 export function CommentIcon({
   className,
-  variant,
+  theme,
+  size,
   ...restProps
 }: CommentIconProps) {
   return (
@@ -29,7 +32,7 @@ export function CommentIcon({
       height="33"
       viewBox="0 0 32 33"
       fill="none"
-      className={cn(className, repostIconVariants({ variant }))}
+      className={cn(className, repostIconVariants({ theme, size }))}
       {...restProps}
     >
       <path

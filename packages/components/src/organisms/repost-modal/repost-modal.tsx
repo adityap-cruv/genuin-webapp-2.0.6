@@ -35,9 +35,9 @@ function Content({ videoId }: { videoId: string }) {
   const renderContent = () => {
     if (isLoading) {
       return (
-      <div className="gencl:flex gencl:items-center gencl:justify-center gencl:h-full">
-        <Loader />
-      </div>
+        <div className="gencl:flex gencl:items-center gencl:justify-center gencl:h-full">
+          <Loader />
+        </div>
       );
     }
 
@@ -52,7 +52,7 @@ function Content({ videoId }: { videoId: string }) {
     if (!destinations || destinations.length === 0) {
       return (
         <div className="gencl:text-body-0-semi-bold gencl:text-secondary-600">
-          <ComponentErrorState type="NO_COMMUNITIES" className="gencl:h-full"/>
+          <ComponentErrorState type="NO_GROUPS" className="gencl:h-full" />
         </div>
       );
     }

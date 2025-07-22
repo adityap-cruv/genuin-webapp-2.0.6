@@ -1,8 +1,35 @@
 import { cn } from "@genuin/ui/lib/utils";
 
 import type { SVGIconsProps } from "../type";
+import type { VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
 
-export function PencilWithLineIcon({ className, ...restProps }: SVGIconsProps) {
+const iconVariants = cva("gencl:stroke-black gencl:shrink-0", {
+  variants: {
+    theme: {
+      light: "gencl:stroke-black",
+      dark: "gencl:stroke-white",
+      secondary: "gencl:stroke-secondary-600",
+    },
+    variant: {},
+    size: {
+      md: "gencl:size-6",
+      sm: "gencl:size-4",
+    },
+  },
+  defaultVariants: {
+    theme: "light",
+    size: "md",
+  },
+});
+
+export function PencilWithLineIcon({
+  className,
+  variant,
+  size,
+  theme,
+  ...restProps
+}: SVGIconsProps & VariantProps<typeof iconVariants>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -10,7 +37,7 @@ export function PencilWithLineIcon({ className, ...restProps }: SVGIconsProps) {
       height="22"
       viewBox="0 0 22 22"
       fill="none"
-      className={cn("gencl:stroke-black", className)}
+      className={cn(iconVariants({ variant, size, theme }), className)}
       {...restProps}
     >
       <path

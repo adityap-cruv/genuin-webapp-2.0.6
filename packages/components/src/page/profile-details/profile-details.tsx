@@ -8,18 +8,15 @@ import { NOT_FOUND_ERROR_CODES } from "@genuin/components/lib/constants/errors";
 import { BecomeCreatorButton } from "@genuin/components/molecules/become-creator-button";
 import { ErrorState } from "@genuin/components/molecules/error-state";
 import { ShareButton } from "@genuin/components/molecules/share-button";
-import {
-  GenericDetails,
-  GenericDetailsSkeleton,
-} from "@genuin/components/organisms/generic-details";
+import { GenericDetails } from "@genuin/components/organisms/generic-details";
 import { GenericDetailsMetadata } from "@genuin/components/organisms/generic-details/generic-details-metadata";
 import { useGetProfileDetails } from "@genuin/components/react-query/api/profile/details";
-import {
-  CommunityListSkeleton,
-  ProfileDetailsTabs,
-} from "@genuin/components/templates/profile-details-tabs";
+import { ProfileDetailsTabs } from "@genuin/components/templates/profile-details-tabs";
 import { DetailsPageTopbar } from "@genuin/components/organisms/details-page-topbar";
 import { useBaseContext } from "@genuin/components/context/base";
+import { ProfileDetailsSkeleton } from "./skeleton";
+import { SideInfo } from "@genuin/components/organisms/side-info";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 
 export function ProfileDetails({
   userName,
@@ -36,6 +33,7 @@ export function ProfileDetails({
   } = useGetProfileDetails(userName, forBrand);
   const detailsId = useId();
   const { brandDetails } = useBaseContext();
+  const { isMobile } = useDeviceDetectMediaQuery();
   const router = useRouter();
 
   useEffect(() => {
@@ -69,6 +67,23 @@ export function ProfileDetails({
     return <ErrorState type="NO_USER" />;
   }
 
+  const ctas = (
+    <div className="gencl:flex gencl:gap-2">
+      {(forBrand || (!forBrand && profileData && profileData.brand)) && (
+        <BecomeCreatorButton
+          theme="primary"
+          className="gencl:flex-grow gencl:sm:flex-grow-0!"
+        />
+      )}
+      <ShareButton
+        pathName={buildPageUrl({
+          type: !!profileData?.brand ? "brand" : "profile",
+          slug: profileData?.nickname,
+        })}
+      />
+    </div>
+  );
+
   return (
     <>
       <DetailsPageTopbar
@@ -97,9 +112,20 @@ export function ProfileDetails({
           </div>
         }
       />
-      <div className="gencl:w-full gencl:overflow-auto gencl:h-full gencl:p-6">
+      <div className="gencl:w-full gencl:overflow-auto gencl:h-full gencl:sm:p-6">
         <GenericDetails
+          className="gencl:p-4 gencl:sm:p-0!"
           id={detailsId}
+          variant="profile"
+          handle={{
+            brandUserLogo: profileData.brand?.brand_user_logo,
+            userName: profileData.brand?.brand_slug ?? "",
+          }}
+          stats={{
+            Communities: profileData.no_of_communities,
+            Groups: profileData.no_of_groups,
+            Posts: profileData.videos,
+          }}
           title={profileData?.name ?? ""}
           profileImageDetails={{
             imageUrl:
@@ -140,45 +166,72 @@ export function ProfileDetails({
               custom: profileData.brand?.brand_url,
             }),
           }}
-          ctas={
-            <div className="gencl:flex gencl:gap-2">
-              {(forBrand ||
-                (!forBrand && profileData && profileData.brand)) && (
-                <BecomeCreatorButton />
-              )}
-              <ShareButton
-                pathName={buildPageUrl({
-                  type: !!profileData.brand ? "brand" : "profile",
-                  slug: !!profileData.brand
-                    ? profileData.brand.brand_slug
-                    : profileData.nickname,
-                })}
-              />
-            </div>
-          }
+          ctas={ctas}
         />
         <ProfileDetailsTabs
-          className="gencl:pt-6"
+          className="gencl:sm:pt-6!"
           userId={
             forBrand && profileData.brand
               ? profileData.brand?.brand_id.toString()
               : profileData.user_id
           }
           forBrand={forBrand}
+          aboutComponent={<About profileDetails={profileData} />}
         />
       </div>
     </>
   );
 }
 
-export function ProfileDetailsSkeleton() {
-  return (
-    <div className="gencl:w-full gencl:overflow-auto gencl:h-full gencl:p-6">
-      <GenericDetailsSkeleton />
-      <TabsSkeleton noOfTabs={1} className="gencl:pt-6" />
-      <div className="gencl:pt-6">
-        <CommunityListSkeleton />
+function About({
+  profileDetails,
+}: {
+  profileDetails: ReturnType<typeof useGetProfileDetails>["data"];
+}) {
+  const { brandDetails } = useBaseContext();
+  if (!profileDetails) return;
+
+  // Prepare links object
+  const links = {
+    linkedin: profileDetails.linkedin_id
+      ? profileDetails.linkedin_url + profileDetails.linkedin_id
+      : undefined,
+    instagram: profileDetails.insta_id
+      ? profileDetails.insta_url + profileDetails.insta_id
+      : undefined,
+    x: profileDetails.twitter_id
+      ? profileDetails.twitter_url + profileDetails.twitter_id
+      : undefined,
+    tiktok: profileDetails.tiktok_id
+      ? profileDetails.tiktok_url + profileDetails.tiktok_id
+      : undefined,
+    ...(Number(brandDetails?.brand_id) !== profileDetails?.brand?.brand_id && {
+      custom: profileDetails.brand?.brand_url,
+    }),
+  };
+
+  // Check if there's any data to display (description or links)
+  const hasDescription = !!profileDetails?.bio;
+  const hasLinks = Object.values(links).some((link) => !!link);
+
+  // If there's no data to display, show empty state
+  if (!hasDescription && !hasLinks) {
+    return (
+      <div className="gencl:p-4 gencl:h-60 gencl:flex gencl:items-center gencl:justify-center gencl:text-center gencl:bg-secondary-50 gencl:rounded-lg">
+        <p className="gencl:text-body-1-medium gencl:text-secondary-600">
+          No additional information available
+        </p>
       </div>
-    </div>
+    );
+  }
+
+  return (
+    <SideInfo
+      variant="mobile"
+      sideInfoData={{
+        description: profileDetails?.bio ?? "",
+        links,
+      }}
+    />
   );
 }

@@ -84,7 +84,6 @@ export type BaseContextType = {
   volume: number;
   setVolume: React.Dispatch<React.SetStateAction<number>>;
   brandDetails: BrandDetailsConfigType;
-  feedVideoSizeBox: SizeBoxType;
 };
 
 export const BaseContext = createContext<BaseContextType>({
@@ -94,10 +93,6 @@ export const BaseContext = createContext<BaseContextType>({
   setVolume: () => {},
   // default brand details configuration.
   brandDetails: DEFAULT_BRAND_DETAILS as any,
-  feedVideoSizeBox: {
-    height: 0,
-    width: 0,
-  },
 });
 
 export function useBaseContext() {

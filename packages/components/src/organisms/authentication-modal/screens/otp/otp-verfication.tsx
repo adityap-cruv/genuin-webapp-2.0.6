@@ -2,14 +2,6 @@ import type { ComponentProps } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { formatPhoneNumberIntl } from "react-phone-number-input";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@genuin/ui/form";
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@genuin/ui/input-otp";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   useConsumeOtpMutation,
@@ -17,7 +9,17 @@ import {
   useUpdateEmailOrPhoneMutation,
 } from "@genuin/components/react-query/api/authentication";
 import { useAuthContext } from "@genuin/components/context/auth";
-import { Toast } from "@genuin/ui/components";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+  Toast,
+} from "@genuin/ui/components";
 import { useAuthenticationModalContext } from "../../context";
 import { TimerMessage } from "./timer";
 import { SubmitButton } from "../../submit-button";
@@ -77,7 +79,7 @@ export function OtpVerification({
           } else if (!data.user.hasTopics) {
             setStep?.("CATEGORY_SELECTION");
           } else if (!data.user.usernameSet) {
-            setStep?.("USERNAME_INPUT");
+            setStep?.("EDIT_USERNAME");
           } else {
             closeModal();
           }
@@ -184,11 +186,12 @@ export function OtpVerification({
 
   return (
     <div className="gencl:text-center" {...props}>
-      <p className="gencl:text-headline-2-semi-bold">{title ?? "Enter code"}</p>
-      <p className="gencl:text-body-1-medium gencl:text-secondary-600 gencl:mt-3 gencl:mb-3">
-        Please Enter the 6-digit code sent to
-        {(verificationType === "LOGIN" ? flowType : verificationType) ===
-        "EMAIL"
+      <p className="gencl:text-headline-3-semi-bold gencl:sm:!text-headline-2-semi-bold">
+        {title ?? "Enter code"}
+      </p>
+      <p className="gencl:text-body-1-medium gencl:text-secondary-600 gencl:my-3">
+        Enter the 6-digit code sent to
+        {flowType === "EMAIL"
           ? ` your email address: ${email}`
           : ` your phone: ${formatPhoneNumberIntl(phone as string)}`}
       </p>

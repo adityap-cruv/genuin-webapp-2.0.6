@@ -1,12 +1,10 @@
 import { Avatar } from "@genuin/ui/components/avatar";
 import { Stats } from "../../molecules/stats";
 import { Image } from "@genuin/ui/components/image";
-import { cn } from "@genuin/ui/lib/utils";
 import { Skeleton } from "@genuin/ui/components/skeleton";
 import { CommunityCardProps } from "./community-card.types";
 import { ReadMore } from "@genuin/ui/components/read-more";
 import { JoinCommunityButton } from "@genuin/components/molecules/join-community-button";
-import { MouseEvent } from "react";
 import { CommunityUserRole } from "@genuin/components/types/post";
 import {
   communityCardVariants,
@@ -18,6 +16,7 @@ import { Link } from "@genuin/components/molecules/link";
 import { DotIcon } from "@genuin/ui/icons";
 import { DialogClose } from "@genuin/ui/components/dialog";
 import { mapCommunityUserRole } from "@genuin/components/lib/utils";
+import { cn } from "@genuin/ui/lib/utils";
 
 function CommunityName({
   name,

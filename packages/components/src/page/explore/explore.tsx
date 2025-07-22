@@ -5,7 +5,7 @@ import { TrendingCommunities } from "@genuin/components/templates/trending-commu
 
 export function Explore() {
   return (
-    <div className="gencl:p-6 gencl:flex gencl:flex-col gencl:gap-12 gencl:h-full gencl:overflow-auto">
+    <div className="gencl:sm:p-6! gencl:p-4 gencl:space-y-6 gencl:sm:!space-y-12 gencl:h-full gencl:overflow-auto">
       <TrendingGroups />
       <TrendingCommunities />
     </div>

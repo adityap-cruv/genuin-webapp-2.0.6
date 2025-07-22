@@ -6,13 +6,18 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@genuin/ui/accordion";
-import { useState } from "react";
+import { ComponentProps, useState } from "react";
 
 import type { GuidelineType } from "./side-info";
+import { cn } from "@genuin/ui/lib/utils";
 
 const INITIAL_DISPLAY_COUNT = 3;
 
-export function Guidelines({ guidelines }: { guidelines?: GuidelineType[] }) {
+export function Guidelines({
+  guidelines,
+  className,
+  ...restProps
+}: { guidelines?: GuidelineType[] } & ComponentProps<"div">) {
   const [showAll, setShowAll] = useState(false);
 
   if (!guidelines || guidelines.length === 0) return;
@@ -23,7 +28,7 @@ export function Guidelines({ guidelines }: { guidelines?: GuidelineType[] }) {
     : guidelines.slice(0, INITIAL_DISPLAY_COUNT);
 
   return (
-    <div className="gencl:border-t gencl:pt-4 gencl:border-secondary-300">
+    <div className={cn(className)} {...restProps}>
       <p className="gencl:text-body-1-semi-bold gencl:mb-4">Guidelines</p>
       <Accordion collapsible type="single" className="">
         {displayedGuidelines.map((guideline, index) => (

@@ -120,7 +120,9 @@ export function SignIn({
   return (
     <div className="gencl:text-center" {...props}>
       <div className="gencl:flex gencl:flex-col gencl:gap-3">
-        <h2 className="gencl:text-headline-2-semi-bold">Sign in</h2>
+        <h2 className="gencl:text-headline-3-semi-bold gencl:sm:!text-headline-2-semi-bold">
+          Sign in
+        </h2>
         <p className="gencl:text-body-1-medium gencl:text-secondary-600">
           {getActionText(
             "We`ll send you a code to sign in or create an account.",

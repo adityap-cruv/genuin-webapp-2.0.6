@@ -1,8 +1,7 @@
-import { PublicIcon, LockIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/utils";
 import type { ComponentProps } from "react";
 
-import { ReactNode } from "react";
+import { ReactNode, Fragment } from "react";
 import { ProfileLink } from "@genuin/components/molecules/profile-link";
 import { Stats } from "@genuin/components/molecules/stats/stats";
 import { CommunityPrivacyInfo } from "@genuin/components/molecules/community-privacy-info";
@@ -27,7 +26,7 @@ type GenericDetailsMetadataProps = ComponentProps<"div"> & {
    * }}
    * ```
    */
-  stats?: Record<string, number>;
+  stats?: ComponentProps<typeof Stats>["stats"];
   /**
    * Privacy information to display
    * @example
@@ -97,6 +96,38 @@ export function GenericDetailsMetadata({
   others,
   ...restProps
 }: GenericDetailsMetadataProps) {
+  // Create an array of elements to render with conditional rendering
+  const metadataElements = [
+    privacyInfo && (
+      <CommunityPrivacyInfo
+        key="privacy"
+        isPrivate={privacyInfo.isPrivate}
+        showPrivacyText={privacyInfo.showPrivacyText}
+      />
+    ),
+    handle && (
+      <span key="handle" className="gencl:flex gencl:items-center">
+        <ProfileLink
+          url={handle.url ?? undefined}
+          userLogoType={handle.brandUserLogo}
+        >
+          @{handle.userName}
+        </ProfileLink>
+      </span>
+    ),
+    stats && (
+      <Stats
+        key="stats"
+        stats={stats}
+        className="gencl:flex gencl:gap-2"
+        valueFirst={true}
+        valueClassName="gencl:text-black!"
+        separator="•"
+      />
+    ),
+    others && <span key="others" className="gencl:flex gencl:items-center gencl:gap-2">{others}</span>,
+  ].filter(Boolean); // Filter out any falsy values
+
   return (
     <div
       className={cn(
@@ -105,41 +136,12 @@ export function GenericDetailsMetadata({
       )}
       {...restProps}
     >
-      {/** todo: replace it with <PrivacyInfo/> component. */}
-      {privacyInfo && (
-        <>
-          <CommunityPrivacyInfo
-            isPrivate={privacyInfo.isPrivate}
-            showPrivacyText={privacyInfo.showPrivacyText}
-          />
-          <p>•</p>
-        </>
-      )}
-      {handle && (
-        <>
-          <span className="gencl:flex gencl:items-center">
-            <ProfileLink
-              url={handle.url ?? undefined}
-              userLogoType={handle.brandUserLogo}
-            >
-              @{handle.userName}
-            </ProfileLink>
-          </span>
-          <p>•</p>
-        </>
-      )}
-      {stats && (
-        <>
-          <Stats
-            stats={stats}
-            className="gencl:flex gencl:gap-1"
-            valueFirst={true}
-            valueClassName="gencl:text-black!"
-            separator="•"
-          />
-        </>
-      )}
-      {others && <>{others}</>}
+      {metadataElements.map((element, index) => (
+        <Fragment key={`metadata-item-${index}`}>
+          {index > 0 && <span className="gencl:text-secondary-600">•</span>}
+          {element}
+        </Fragment>
+      ))}
     </div>
   );
 }

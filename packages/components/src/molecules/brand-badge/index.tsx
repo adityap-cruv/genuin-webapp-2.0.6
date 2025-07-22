@@ -12,7 +12,7 @@ type BrandBadgeIconProps = {
 
 // Define the BrandBadgeIcon component
 export const BrandBadge: React.FC<BrandBadgeIconProps> = ({
-  userLogoType = 1,
+  userLogoType = 2,
   className,
   variant = "primary",
 }) => {

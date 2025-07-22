@@ -6,13 +6,13 @@ import type { SVGIconsProps } from "../type";
 
 const threeDotsIconVariants = cva("", {
   variants: {
-    variant: {
+    theme: {
       light: "gencl:stroke-black",
       dark: "gencl:stroke-white",
     },
   },
   defaultVariants: {
-    variant: "light",
+    theme: "light",
   },
 });
 
@@ -21,7 +21,7 @@ type ThreeDotsIconProps = SVGIconsProps &
 
 export function ThreeDotsIcon({
   className,
-  variant,
+  theme,
   ...restProps
 }: ThreeDotsIconProps) {
   return (
@@ -35,7 +35,7 @@ export function ThreeDotsIcon({
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className={cn(threeDotsIconVariants({ variant }), className)}
+      className={cn(threeDotsIconVariants({ theme }), className)}
       {...restProps}
     >
       <circle cx="12" cy="12" r="1" />

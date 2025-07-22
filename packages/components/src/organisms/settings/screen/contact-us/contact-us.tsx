@@ -18,6 +18,7 @@ import { Textarea } from "@genuin/ui/components/textarea";
 import { SendIcon } from "@genuin/ui/icons";
 import { useContactUsMutation } from "@genuin/components/react-query/api/authentication/use-contact-us-mutation";
 import { Toast } from "@genuin/ui/components";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 
 const formSchema = z.object({
   email: z
@@ -38,6 +39,7 @@ export const ContactUs = ({ email }: { email: string }) => {
   });
   const { isValid, isDirty } = form.formState;
   const contactUsMutation = useContactUsMutation();
+  const { isDesktop } = useDeviceDetectMediaQuery();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     contactUsMutation.mutate(
@@ -70,12 +72,15 @@ export const ContactUs = ({ email }: { email: string }) => {
         onSubmit={form.handleSubmit(onSubmit)}
         className="gencl:relative gencl:h-full gencl:w-full"
       >
-        <h4 className="gencl:text-headline-4-medium gencl:mb-3">Contact Us</h4>
+        {isDesktop && (
+          <h4 className="gencl:text-headline-4-medium gencl:mb-3">
+            Contact Us
+          </h4>
+        )}
         <p className="gencl:text-left gencl:text-body-1-medium gencl:text-secondary-600 gencl:mb-4">
           Need help, experiencing problems or want to share feedback? Share the
           details below.
         </p>
-
         <FormField
           control={form.control}
           name="email"
@@ -99,7 +104,6 @@ export const ContactUs = ({ email }: { email: string }) => {
             );
           }}
         />
-
         <FormField
           name="issue"
           control={form.control}

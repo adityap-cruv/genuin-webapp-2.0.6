@@ -11,31 +11,50 @@ import { Category } from "@genuin/components/molecules/sidebar/category";
 import { Recent } from "@genuin/components/molecules/sidebar/recent";
 import { PoweredByGenuin } from "@genuin/components/molecules/sidebar";
 import { useBaseContext } from "@genuin/components/context/base";
+import { cva, VariantProps } from "class-variance-authority";
 
-type SideBarProps = ComponentProps<"aside">;
+type SideBarProps = ComponentProps<"aside"> &
+  VariantProps<typeof sidebarVariants> & {
+    onItemClick?: () => void;
+  };
 
-export function SideBar({ className, ...restProps }: SideBarProps) {
+const sidebarVariants = cva("gencl:relative gencl:overflow-auto", {
+  variants: {
+    variant: {
+      default:
+        "gencl:border-r gencl:xl:!w-60 gencl:border-secondary-150 gencl:w-16 gencl:shrink-0 gencl:flex gencl:flex-col gencl:overflow-y-auto",
+      mobile: "gencl:w-full gencl:flex gencl:flex-col gencl:xl:block",
+    },
+  },
+  defaultVariants: {
+    variant: "default",
+  },
+});
+
+export function SideBar({
+  variant,
+  className,
+  onItemClick,
+  ...restProps
+}: SideBarProps) {
   const { brandDetails } = useBaseContext();
   const showBecomeACreator = brandDetails.show_become_creator ?? true;
 
   return (
     <aside
-      className={cn(
-        "gencl:border-r gencl:xl:!w-60 gencl:border-secondary-150 gencl:w-16 gencl:shrink-0 gencl:flex gencl:flex-col gencl:overflow-y-auto",
-        className
-      )}
+      className={cn(sidebarVariants({ variant }), className)}
       {...restProps}
     >
       <SidebarActions
-        brandConfiguredTerms={brandDetails.terms_and_condition?.trim() || null}
-        brandConfiguredPrivacy={brandDetails.privacy_policy?.trim() || null}
+        brandConfiguredTerms={brandDetails.terms_and_condition ?? ""}
+        brandConfiguredPrivacy={brandDetails.privacy_policy ?? ""}
+        variant={variant}
+        onItemClick={onItemClick}
       />
-      {showBecomeACreator && (
-        <SideBarBecomeCreator className="gencl:hidden gencl:xl:!block" />
-      )}
-      <Category />
-      <Recent />
-      <PoweredByGenuin />
+      {showBecomeACreator && <SideBarBecomeCreator variant={variant} />}
+      <Category variant={variant} onItemClick={onItemClick} />
+      <Recent variant={variant} onItemClick={onItemClick} />
+      <PoweredByGenuin variant={variant} />
     </aside>
   );
 }

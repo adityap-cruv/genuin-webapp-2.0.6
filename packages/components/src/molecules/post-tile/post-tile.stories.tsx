@@ -14,6 +14,13 @@ const meta: Meta<typeof PostTile> = {
     size: { control: "select", options: ["sm", "lg"] },
     onClick: { action: "clicked" },
   },
+  decorators: [
+    (Story) => (
+      <div style={{ width: "300px" }}>
+        <Story />
+      </div>
+    ),
+  ],
 };
 
 export default meta;
@@ -29,7 +36,7 @@ export const Default: Story = {
       stats: {
         views: 12345,
         comments: 678,
-        shares: 90,
+        reactions: 90,
       },
       isPinned: true,
     },
@@ -47,7 +54,7 @@ export const Skeleton: Story = {
       source: {
         code: `
           <div className="gencl:flex gencl:gap-4"> 
-            <PostTileSkeleton size="sm" />
+            <PostTileSkeleton />
           </div>`,
         language: "tsx",
         type: "auto",
@@ -57,7 +64,7 @@ export const Skeleton: Story = {
   render: (args) => {
     return (
       <div className="gencl:flex gencl:gap-4">
-        <PostTileSkeleton size={args.size} />
+        <PostTileSkeleton />
       </div>
     );
   },
@@ -79,7 +86,7 @@ export const WithNavigation: Story = {
       stats: {
         views: 54321,
         comments: 987,
-        shares: 123,
+        reactions: 123,
       },
       isPinned: false,
     },
@@ -90,4 +97,3 @@ export const WithNavigation: Story = {
     },
   },
 };
-

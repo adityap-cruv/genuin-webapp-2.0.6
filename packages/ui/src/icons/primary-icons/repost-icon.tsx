@@ -1,16 +1,19 @@
-import { cn } from "@genuin/ui/lib/utils";
+import { cn, defaultSizesForIcons } from "@genuin/ui/lib/utils";
 import type { SVGIconsProps } from "../type";
-import { cva, VariantProps } from "class-variance-authority";
+import type { VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
 
 const repostIconVariants = cva("gencl:stroke-black", {
   variants: {
-    variant: {
+    theme: {
       light: "gencl:stroke-black",
       dark: "gencl:stroke-white",
     },
+    size: defaultSizesForIcons(),
   },
   defaultVariants: {
-    variant: "light",
+    theme: "light",
+    size: "md",
   },
 });
 
@@ -18,7 +21,8 @@ type RepostIconProps = SVGIconsProps & VariantProps<typeof repostIconVariants>;
 
 export function RepostIcon({
   className,
-  variant,
+  theme = "light",
+  size = "md",
   ...restProps
 }: RepostIconProps) {
   return (
@@ -28,7 +32,7 @@ export function RepostIcon({
       height="32"
       viewBox="0 0 33 32"
       fill="none"
-      className={cn(repostIconVariants({ variant }), className)}
+      className={cn(repostIconVariants({ theme, size }), className)}
       {...restProps}
     >
       <path

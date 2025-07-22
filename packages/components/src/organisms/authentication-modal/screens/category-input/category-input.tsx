@@ -119,9 +119,9 @@ export function CategoryInput({ ...props }: CategoryInputProps) {
                       key={idx}
                       theme="outline"
                       className={cn(
-                        "gencl:rounded-3xl gencl:px-3 gencl:py-2 gencl:text-body-1-medium",
+                        "gencl:rounded-3xl gencl:px-3 gencl:py-2 gencl:!text-body-1-medium",
                         selectedCategory.includes(item.topic_id)
-                          ? "gencl:border gencl:border-primary gencl:bg-primary-100"
+                          ? "gencl:border gencl:border-primary gencl:text-primary gencl:bg-primary-100"
                           : ""
                       )}
                       onClick={() => handleCategorySelection(item.topic_id)}

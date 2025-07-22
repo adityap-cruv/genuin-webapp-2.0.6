@@ -44,6 +44,7 @@ export function PostsTab({ posts, className, ...restProps }: PostsTabProps) {
           posts={transformedPosts}
           isLoading={false}
           isError={false}
+          gridClassName="gencl:grid-cols-3! gencl:lg:grid-cols-3! gencl:xl:grid-cols-3! gencl:2xl:grid-cols-3!"
           hasNextPage={false}
           fetchNextPage={() => {}}
           isFetchingNextPage={false}

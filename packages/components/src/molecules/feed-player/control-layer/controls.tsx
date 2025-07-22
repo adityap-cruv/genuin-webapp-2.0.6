@@ -1,24 +1,35 @@
 import { cn } from "@genuin/ui/utils";
 import { memo, type ComponentProps } from "react";
 
-import { ExpandIcon } from "@genuin/ui/icons";
+import { ExpandIcon, XIcon } from "@genuin/ui/icons";
 import { CollapseIcon } from "@genuin/ui/icons";
 import { useBaseContext } from "@genuin/components/context/base";
 import { AnimatedPlayButton } from "./control-buttons";
 import { AnimatedMuteIcon } from "./control-buttons";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { usePlayerContext } from "../context/context";
+import { useSearchParams } from "@genuin/components/hooks/use-search-params";
+import { usePathname } from "@genuin/components/hooks/use-pathname";
 
-type ControlButtonsPropsType = ComponentProps<"div">;
+type ControlButtonsPropsType = ComponentProps<"div"> & {
+  /**
+   * Whether to show the close button on mobile devices.
+   * If true, a close button will be displayed on mobile devices.
+   * This is useful for mobile players where the close button is needed to exit the expand view.
+   */
+  showCloseButton?: boolean;
+};
 
 export const Controls = memo(function Controls({
+  showCloseButton = false,
   className,
   onClick,
   ...restProps
 }: ControlButtonsPropsType) {
   const { isMobile } = useDeviceDetectMediaQuery();
   const { showExpandView, toggleExpandView } = usePlayerContext();
-
+  const { getSearchParams } = useSearchParams();
+  const pathname = usePathname();
   const {
     brandDetails: {
       web_configs: { tap_behavior: tapBehavior },
@@ -37,7 +48,11 @@ export const Controls = memo(function Controls({
   return (
     <div
       className={cn(
-        "gencl:absolute gencl:transition-all gencl:z-10 gencl:flex gencl:w-full gencl:bg-gradient-to-b gencl:from-black/50 gencl:to-transparent gencl:top-16 gencl:sm:top-0 gencl:justify-between gencl:items-center gencl:gap-3 gencl:p-4",
+        "gencl:absolute gencl:transition-all gencl:z-20 gencl:flex gencl:w-full gencl:sm:bg-gradient-to-b gencl:from-black/50 gencl:to-transparent gencl:top-16 gencl:sm:top-0 gencl:justify-between gencl:items-center gencl:gap-3 gencl:p-2 gencl:px-4",
+        // in case of expand view and show close button is true, which means the control layer is on mobile expand view, which doesn't contain the top-bar so that we can put top-0.
+        showExpandView && isMobile && showCloseButton
+          ? "gencl:top-0"
+          : "gencl:top-16",
         className
       )}
       onClick={(e) => {
@@ -68,6 +83,17 @@ export const Controls = memo(function Controls({
           )}
         </div>
       )}
+      {isMobile &&
+        showCloseButton &&
+        getSearchParams("feed") !== "1" &&
+        !pathname.includes("/video") && (
+          <div
+            className="gencl:p-2 gencl:rounded-full gencl:bg-black/40 gencl:cursor-pointer"
+            onClick={toggleExpandView}
+          >
+            <XIcon theme="dark" />
+          </div>
+        )}
     </div>
   );
 });

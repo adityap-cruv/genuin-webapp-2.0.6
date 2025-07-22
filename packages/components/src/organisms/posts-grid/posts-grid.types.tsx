@@ -1,8 +1,12 @@
 import type { ComponentProps } from "react";
 
-import type { PostTileDataType } from "@genuin/components/molecules/post-tile";
+import type {
+  PostTile,
+  PostTileDataType,
+} from "@genuin/components/molecules/post-tile";
 
 export type PostsGridProps = {
+  postTileVariant?: ComponentProps<typeof PostTile>["variant"];
   posts: PostTileDataType[];
   hasNextPage: boolean;
   fetchNextPage: () => void;
@@ -14,6 +18,11 @@ export type PostsGridProps = {
    * If set to 'manual', the grid will not load more posts automatically and will require a manual trigger.
    */
   lazyLoad?: "manual" | "auto";
+  /**
+   * Custom className for the grid container to override default grid styles.
+   * If provided, this will be merged with the default grid styles.
+   */
+  gridClassName?: string;
   /**
    * Callback function to handle click on post tile.
    * @param postId

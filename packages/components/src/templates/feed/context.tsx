@@ -1,6 +1,18 @@
+"use client";
+
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { PlaybackSpeedType } from "@genuin/components/molecules/feed-player/context/types";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  ComponentProps,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { useBoolean } from "usehooks-ts";
+import { FeedView } from "./feed";
+
+type VariantType = ComponentProps<typeof FeedView>["variant"];
 
 type FeedContextType = {
   activeIndex: number;
@@ -28,6 +40,11 @@ type FeedContextType = {
   playbackSpeed: PlaybackSpeedType;
 
   setPlaybackSpeed: React.Dispatch<React.SetStateAction<PlaybackSpeedType>>;
+
+  /**
+   * The variant of the feed view.
+   */
+  variant?: VariantType;
 };
 
 const FeedContext = createContext<FeedContextType>({
@@ -62,13 +79,19 @@ type FeedContextProviderProps = {
    * Callback function to handle when the expand view is closed.
    */
   onCloseExpandView?: () => void;
+  /**
+   * The variant of the feed view.
+   */
+  variant?: VariantType;
 };
 
 export function FeedContextProvider({
   children,
   defaultExpandView = false,
   onCloseExpandView,
+  variant,
 }: FeedContextProviderProps) {
+  const { isMobile } = useDeviceDetectMediaQuery();
   // State is used to track the active index of the feed.
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -86,6 +109,8 @@ export function FeedContextProvider({
   });
 
   useEffect(() => {
+    // If the device is mobile, we do not want to request fullscreen mode.
+    if (isMobile) return;
     // Only run this effect in browser environments
     if (typeof document === "undefined") return;
 
@@ -120,7 +145,7 @@ export function FeedContextProvider({
     }
 
     function handleFullScreenChange() {
-      if (!document.fullscreenElement) {
+      if (!document?.fullscreenElement) {
         closeExpandView();
       }
     }
@@ -168,6 +193,7 @@ export function FeedContextProvider({
         toggleExpandView,
         playbackSpeed,
         setPlaybackSpeed,
+        variant,
       }}
     >
       {children}
