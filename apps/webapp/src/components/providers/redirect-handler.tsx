@@ -85,7 +85,12 @@ export async function RedirectHandler({
       // Always start with utm_source=shorts
       // **NOTE**: This is a special case for ted.com, where we need to handle the path and search params differently
       //  reason to pass all the details in query param is to consume it on our ted.com embed
-      if (config.brand_id.toString() === '2357' || config.brand_id.toString() === '1429') {
+      if (config.brand_id.toString() === '2357') {
+        const secFetchDest = headersList.get('sec-fetch-dest') ?? ''
+        const referer = headersList.get('referer') ?? ''
+        if (secFetchDest === 'iframe' && referer && referer.includes('begenuin.com')) {
+          return children
+        }
         if (!pathParamStr) {
           return children
         }

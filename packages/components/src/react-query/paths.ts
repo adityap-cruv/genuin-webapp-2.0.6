@@ -207,12 +207,12 @@ export const API_PATHS = {
    */
   UPDATE_NOTIFICATION_SETTINGS: "/api/v3/users/update_notification_settings",
 
-   /**
+  /**
    * Api path to for delete account.
    */
   DELETE_ACCOUNT: "/api/v3/users/delete",
   /**
    * Api path to for fetch image.
    */
-  FETCH_IMAGE: '/api/v3/redirect_media',
+  FETCH_IMAGE: "/api/v3/redirect_media",
 } as const;
