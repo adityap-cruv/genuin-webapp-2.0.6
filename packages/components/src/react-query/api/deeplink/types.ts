@@ -1,14 +1,15 @@
 type BaseSearchParams = Record<string, any>;
 
-export type DeepLinkActionType = 
-  | 'subscribe'
-  | 'join_as_collaborator'
-  | 'join_community'
-  | 'comment'
-  | 'repost'
-  | 'spark'
-  | 'report'
-  | 'get_app';
+export type DeepLinkActionType =
+  | "subscribe"
+  | "join_as_collaborator"
+  | "join_community"
+  | "comment"
+  | "repost"
+  | "spark"
+  | "report"
+  | "get_app"
+  | "video";
 
 export interface SubscribeActionData {
   ldDescription: string;
@@ -62,23 +63,32 @@ export interface GetAppActionData {
 }
 
 export type DeepLinkActionData = {
-  [K in DeepLinkActionType]: K extends 'subscribe' ? SubscribeActionData
-    : K extends 'join_as_collaborator' ? JoinCollaboratorActionData
-    : K extends 'join_community' ? JoinCommunityActionData
-    : K extends 'comment' ? CommentActionData
-    : K extends 'repost' ? RepostActionData
-    : K extends 'spark' ? SparkActionData
-    : K extends 'report' ? ReportActionData
-    : K extends 'get_app' ? GetAppActionData
-    : never;
+  [K in DeepLinkActionType]: K extends "subscribe"
+    ? SubscribeActionData
+    : K extends "join_as_collaborator"
+      ? JoinCollaboratorActionData
+      : K extends "join_community"
+        ? JoinCommunityActionData
+        : K extends "comment"
+          ? CommentActionData
+          : K extends "repost"
+            ? RepostActionData
+            : K extends "spark"
+              ? SparkActionData
+              : K extends "report"
+                ? ReportActionData
+                : K extends "get_app"
+                  ? GetAppActionData
+                  : never;
 }[DeepLinkActionType];
 
-export type DeepLinkPayloadUnion = 
-  | { type: 'subscribe'; payload: SubscribeActionData }
-  | { type: 'join_as_collaborator'; payload: JoinCollaboratorActionData }
-  | { type: 'join_community'; payload: JoinCommunityActionData }
-  | { type: 'comment'; payload: CommentActionData }
-  | { type: 'repost'; payload: RepostActionData }
-  | { type: 'spark'; payload: SparkActionData }
-  | { type: 'report'; payload: ReportActionData }
-  | { type: 'get_app'; payload: GetAppActionData };
+export type DeepLinkPayloadUnion =
+  | { type: "subscribe"; payload: SubscribeActionData }
+  | { type: "join_as_collaborator"; payload: JoinCollaboratorActionData }
+  | { type: "join_community"; payload: JoinCommunityActionData }
+  | { type: "comment"; payload: CommentActionData }
+  | { type: "repost"; payload: RepostActionData }
+  | { type: "spark"; payload: SparkActionData }
+  | { type: "report"; payload: ReportActionData }
+  | { type: "get_app"; payload: GetAppActionData }
+  | { type: "video" };

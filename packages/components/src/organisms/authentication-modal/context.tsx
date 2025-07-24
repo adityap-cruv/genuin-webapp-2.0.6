@@ -39,6 +39,7 @@ export type StepsType =
   | "WITHDRAW_CASH"
   | "REDEEM_CREDITS"
   | "GET_APP"
+  | "GET_APP_WITH_BLURRED_BG"
   | "BECOME_CREATOR"
   | "EDIT_FULLNAME"
   | "EDIT_BIO"

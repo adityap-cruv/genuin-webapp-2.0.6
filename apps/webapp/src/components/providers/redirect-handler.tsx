@@ -2,8 +2,9 @@ import { type ConfigType } from '@lib/stores/genuin-options'
 import { checkAndAppendHttps } from '@lib/utils'
 import { auth } from 'auth'
 import { headers } from 'next/headers'
-import { permanentRedirect } from 'next/navigation'
+import { permanentRedirect, redirect } from 'next/navigation'
 import type { ReactNode } from 'react'
+import { cookies } from 'next/headers'
 
 // Define which routes require authentication with optional additional conditions
 const PROTECTED_ROUTES = [
@@ -79,7 +80,8 @@ export async function RedirectHandler({
     if (config?.integrations.white_label.enable && config?.integrations.white_label.allowed_domains[0]) {
       const searchParamStr = headersList.get('x-search-params')
       const pathParamStr = headersList.get('x-path-params')
-      console.log('[RedirectHandler] in RedirectHandler', pathParamStr)
+      const isMobile = (await cookies()).get('device_type')?.value === 'mobile'
+      console.log('[RedirectHandler] in RedirectHandler', pathParamStr, isMobile)
       // Special case for brand_id 2357 (ted), redirect to the specific domain as per the client request
       // Convert path params to query string for this special case
       // Always start with utm_source=shorts
@@ -116,6 +118,16 @@ export async function RedirectHandler({
             '/video',
             '/settings',
           ]
+          // This is the case where share link is from mobile web of ted.com and if the user tries to open it up on
+          // desktop web, we will redirect them to the video page of the webapp and show the app popup
+          // reason fo this is that the mobile web share link will not work on desktop web since ted has not implemented
+          // embed on their desktop
+          if (!isMobile && cleanPathParamStr && cleanPathParamStr.replace(/\/$/, '').startsWith('/video')) {
+            console.log('[RedirectHandler] Redirecting to video page', cleanPathParamStr)
+            const searchParams = new URLSearchParams(searchParamStr ?? '')
+            searchParams.set('show_app_popup', 'true')
+            return redirect(cleanPathParamStr + '?' + searchParams.toString())
+          }
           // for these paths we will add the path as a query param to consumed on ted.com, which will be added as trend
           // and will be used to show the correct feed home, latest, popular etc. content on ted.com if our
           // embed is integrated
@@ -159,10 +171,15 @@ export async function RedirectHandler({
 
           // Join all parts with '&' and prepend '?'
           const finalQuery = '?' + queryParts.join('&')
+          console.log('[RedirectHandler] Redirecting to TED with query:', finalQuery)
           return permanentRedirect(checkAndAppendHttps('https://ted.com') + finalQuery)
         } else {
           console.log('[RedirectHandler] Path is not /ted, checking for /redirect', pathParamStr)
           if (pathParamStr && pathParamStr.startsWith('/ted')) {
+            return children
+          }
+          // return this since this is meant to show app promotion popup on webapp
+          if (searchParamStr && searchParamStr.includes('show_app_popup')) {
             return children
           }
           let targetDomain = checkAndAppendHttps(config.integrations.white_label.allowed_domains[0])
@@ -174,7 +191,11 @@ export async function RedirectHandler({
           // if user had TED app installed they would've been redirected to the app already
           console.log('[RedirectHandler] Redirecting to TED app store link')
           console.log('[RedirectHandler] Target domain:', targetDomain + '/ted/redirect?utm_source=shorts')
-          return permanentRedirect(targetDomain + '/ted/redirect?utm_source=shorts')
+          if (isMobile) {
+            return permanentRedirect(targetDomain + '/ted/redirect?utm_source=shorts')
+          } else {
+            return permanentRedirect(checkAndAppendHttps('https://ted.com?utm_source=shorts'))
+          }
         }
       }
 

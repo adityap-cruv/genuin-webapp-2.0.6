@@ -4,7 +4,7 @@ import {
   DialogContent,
   DialogTrigger,
 } from "@genuin/ui/components/dialog";
-import { ComponentProps, useState, useEffect } from "react";
+import { ComponentProps, useState } from "react";
 import { ModalShell } from "./modal-shell";
 import { cn } from "@genuin/ui/lib/utils";
 import {
@@ -22,6 +22,7 @@ export type AuthenticationModalProps = ComponentProps<typeof DialogTrigger> & {
   customStep?: ComponentProps<typeof AuthenticationModalProvider>["customStep"];
   onOpenChange?: (open: boolean) => void;
   getAppData?: Partial<getAppDataType>;
+  showClose?: boolean;
 };
 
 export function AuthenticationModal({
@@ -32,6 +33,7 @@ export function AuthenticationModal({
   customStep,
   onOpenChange,
   getAppData,
+  showClose = true,
   ...restProps
 }: AuthenticationModalProps) {
   const {
@@ -80,14 +82,18 @@ export function AuthenticationModal({
 
   return (
     <Dialog
-      type="authentication-dialog"
+      type={`${getAppData?.data?.type}-dialog`}
       open={isOpen}
       onOpenChange={handleOpenChange}
     >
       <DialogTrigger asChild {...restProps}>
         {children}
       </DialogTrigger>
-      <DialogContent className={wrapClass}>
+      <DialogContent
+        bgBlur={customStep === "GET_APP_WITH_BLURRED_BG"}
+        className={wrapClass}
+        showClose={showClose}
+      >
         <AuthenticationModalProvider
           action={action}
           customStep={customStep}

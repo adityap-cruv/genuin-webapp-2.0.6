@@ -1,7 +1,7 @@
 "use client";
 import { cn } from "@genuin/ui/utils";
 import { CommunityUserRole } from "@genuin/components/types/post";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, lazy, Suspense } from "react";
 import "swiper/css";
 
 import { PlayerList } from "@genuin/components/organisms/player-swiper";
@@ -18,12 +18,20 @@ import { useGestureOverlayManager } from "@genuin/components/molecules/gestures"
 import { GroupUserStatusType } from "@genuin/components/types/roles";
 import { FeedSkeleton } from "./feed-skeleton";
 import { useInterruptionManager } from "@genuin/components/hooks/use-interruption-manager";
-import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
+// import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { FeedViewPropsType } from "./feed.type";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
-// TODO: lazy load auth modal with dynamic import.
+const AuthenticationModal = lazy(
+  () =>
+    import("@genuin/components/organisms/authentication-modal").then((mod) => ({
+      default: mod.AuthenticationModal,
+    })) as Promise<{
+      default: typeof import("@genuin/components/organisms/authentication-modal").AuthenticationModal;
+    }>
+);
+
 /**
  * Internal core presentation component for displaying feed data.
  * This component requires FeedContextProvider to be wrapped by a parent component.
@@ -163,13 +171,17 @@ export function FeedViewCore({
           />
         )}
         {/* For Interruption */}
-        <AuthenticationModal
-          open={shouldShowDialog}
-          onOpenChange={() => {
-            closeDialog();
-          }}
-          customStep={dialogType}
-        />
+        {shouldShowDialog && (
+          <Suspense fallback={null}>
+            <AuthenticationModal
+              open={shouldShowDialog}
+              onOpenChange={() => {
+                closeDialog();
+              }}
+              customStep={dialogType}
+            />
+          </Suspense>
+        )}
       </div>
     );
   }

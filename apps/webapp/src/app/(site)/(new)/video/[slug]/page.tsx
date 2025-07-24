@@ -2,7 +2,6 @@ import { type Metadata } from 'next'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { fetchMetadata } from '@lib/api/meta-data'
 import { VideoPage } from '@genuin/components/page/video'
-import { Video } from 'lucide-react'
 
 type PageProps = {
   params: Promise<{

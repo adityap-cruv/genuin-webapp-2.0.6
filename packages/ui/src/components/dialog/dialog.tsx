@@ -120,6 +120,7 @@ interface DialogContentProps
   extends React.ComponentProps<typeof DialogPrimitive.Content>,
     VariantProps<typeof dialogContentVariants> {
   showClose?: boolean;
+  bgBlur?: boolean;
 }
 
 function DialogContent({
@@ -127,11 +128,12 @@ function DialogContent({
   children,
   variant = "default",
   showClose = true,
+  bgBlur = false,
   ...props
 }: DialogContentProps) {
   return (
     <DialogPortal data-slot="dialog-portal">
-      <DialogOverlay />
+      <DialogOverlay className={cn({ "gencl:backdrop-blur-lg": bgBlur })} />
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(dialogContentVariants({ variant }), className)}

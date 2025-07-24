@@ -18,9 +18,13 @@ import { OtpVerificationDeleteAccount } from "./screens/otp/otp-verfication-dele
 import { RemovePicture } from "./screens/remove-picture";
 import { SignOut } from "./screens/sign-out";
 import { SignIn } from "./screens/signin";
+import { useBaseContext } from "@genuin/components/context/base";
 
 export function Screens() {
   const { step, setStep } = useAuthenticationModalContext();
+  const {
+    brandDetails: { website },
+  } = useBaseContext();
 
   switch (step) {
     case "SIGNIN":
@@ -49,6 +53,36 @@ export function Screens() {
       return <GetApp />;
     case "BECOME_CREATOR":
       return <BecomeCreator />;
+    case "GET_APP_WITH_BLURRED_BG":
+      return (
+        <>
+          <GetApp />
+          {website && (
+            <>
+              <div className="gencl:flex gencl:items-center gencl:my-4">
+                <div className="gencl:flex-1 gencl:border-b gencl:border-secondary-150" />
+                <span className="gencl:px-2 gencl:text-secondary-400 gencl:text-xs">
+                  or
+                </span>
+                <div className="gencl:flex-1 gencl:border-b gencl:border-secondary-150" />
+              </div>
+              <div className="gencl:w-full gencl:flex gencl:justify-center">
+                Go to&nbsp;
+                <a
+                  href={website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="gencl:text-primary-500 gencl:underline gencl:text-center"
+                >
+                  {website
+                    .replace(/^https?:\/\/(www\.)?/, "")
+                    .replace(/\/$/, "")}
+                </a>
+              </div>
+            </>
+          )}
+        </>
+      );
     case "EDIT_FULLNAME":
       return <EditFullName />;
     case "EDIT_BIO":

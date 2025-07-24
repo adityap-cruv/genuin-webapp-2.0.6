@@ -200,7 +200,8 @@ export function getActionText(
     repost: `${preText} to repost the post.`,
     spark: `${preText} to react to the post.`,
     report: `${preText} to report the post.`,
-    get_app: "the app",
+    get_app: `${preText} to watch the post`,
+    video: `${preText} to watch the video.`,
   };
   return actionObjectMap[action];
 }
