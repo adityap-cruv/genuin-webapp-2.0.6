@@ -1,14 +1,11 @@
 "use client";
 import { useBaseContext } from "@genuin/components/context/base";
 import { ErrorState } from "@genuin/components/molecules/error-state";
-import { useGetVideoDetails } from "@genuin/components/react-query/api/video";
+import { useGetVideoDetailsAsFeed } from "@genuin/components/react-query/api/video";
 import { getQueryKeyForVideoDetails } from "@genuin/components/react-query/keys/video";
 import { FeedView } from "@genuin/components/templates/feed";
 import { useEffect, useState, lazy, Suspense } from "react";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
-// import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
-
-import type { AuthenticationModal as AuthenticationModalType } from "@genuin/components/organisms/authentication-modal";
 
 const AuthenticationModal = lazy(
   () =>
@@ -21,7 +18,8 @@ const AuthenticationModal = lazy(
 export function VideoPage({ videoId }: { videoId: string }) {
   const [showGetApp, setShowGetApp] = useState(false);
 
-  const { data, isLoading, isError } = useGetVideoDetails(videoId);
+  const { data, isLoading, isError } = useGetVideoDetailsAsFeed(videoId);
+  const queryKey = getQueryKeyForVideoDetails(videoId);
   const { brandDetails } = useBaseContext();
   const { isMobile } = useDeviceDetection();
   useEffect(() => {
@@ -34,6 +32,7 @@ export function VideoPage({ videoId }: { videoId: string }) {
       setShowGetApp(true);
     }
   }, []);
+
   if (isError) {
     return <ErrorState type="NO_VIDEO" />;
   }
@@ -45,7 +44,7 @@ export function VideoPage({ videoId }: { videoId: string }) {
           hasNextPage: false,
           isFetchingNextPage: false,
           isLoading,
-          queryKey: getQueryKeyForVideoDetails(videoId),
+          queryKey,
           videos: data ? [data] : [],
         }}
       />

@@ -51,9 +51,6 @@ export async function RedirectHandler({
   config?: ConfigType
   shouldRedirect: boolean
 }) {
-  if (config && Object.keys(config).length === 0) {
-    permanentRedirect('/inactive')
-  }
   const headersList = await headers()
   const session = await auth()
 
@@ -61,6 +58,13 @@ export async function RedirectHandler({
   const hasUserLogin = !!session?.user
   const pathParamStr = headersList.get('x-path-params') ?? ''
   const protectedRouteCheck = checkProtectedRoute(pathParamStr, session?.user)
+  if (config && Object.keys(config).length === 0) {
+    if (pathParamStr === '/inactive') {
+      return children
+    }
+    console.log('[RedirectHandler] Empty config, redirecting to /inactive')
+    return permanentRedirect('/inactive')
+  }
 
   // Protected routes handling - check FIRST before any other logic
   if (protectedRouteCheck.isProtected) {

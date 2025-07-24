@@ -4,6 +4,7 @@ import {
 } from "@genuin/components/lib/utils/env";
 import { EventNameType, EventPayload, QueuedEvent } from "./types";
 import { RudderAnalytics } from "@rudderstack/analytics-js";
+import { UAParser } from "ua-parser-js";
 
 // Define an interface for the default payload.
 // You can customize this based on your specific default payload structure.
@@ -26,7 +27,7 @@ class AnalyticsServiceSingleton {
   private initializationPromise: Promise<void> | null = null;
   private defaultPayload: DefaultAnalyticsPayload | null = null;
   private rudderAnalyticsInstance: RudderAnalytics | null = null; // Added RudderAnalytics instance
-
+  private os = new UAParser().getResult().os.name;
   private constructor() {
     // Private constructor to prevent direct instantiation
   }
@@ -180,7 +181,9 @@ class AnalyticsServiceSingleton {
       //   `[AnalyticsService Track] Event: ${eventName}`,
       //   mergedPayload
       // );
-      this.rudderAnalyticsInstance.track(eventName, mergedPayload);
+      this.rudderAnalyticsInstance.track(eventName, mergedPayload, {
+        os: { name: this.os },
+      });
     } else if (this.isInitialized) {
       // SDK initialized (possibly simulated after error) but rudderAnalyticsInstance is not available
       // console.log(

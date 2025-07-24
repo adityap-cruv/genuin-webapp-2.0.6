@@ -48,6 +48,14 @@ export default async function RootLayout(props: any) {
       })
   }
 
+  if (
+    !config ||
+    (typeof config === 'object' && Object.keys(config).length === 0) ||
+    config.brand_id === undefined ||
+    config.brand_id === ''
+  ) {
+    return <RootHTML>{props.children}</RootHTML>
+  }
   const brandColors = parseColors(config?.brand_colors)
   const favicon = config?.favicon
   const isIheartDemo = IHEART_BRAND_URL.includes(Number(config?.brand_id) ?? '')

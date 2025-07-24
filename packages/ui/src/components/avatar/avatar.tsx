@@ -140,7 +140,7 @@ function Avatar({
                 duration: 0.5,
               }}
             >
-              {createAvatarComponent("3xl")}
+              {createAvatarComponent("4xl")}
             </motion.div>
           </motion.div>
         )}

@@ -112,6 +112,7 @@ export function setQueryDataForReactionInFeed({
         ...page,
         feed: page.feed.map((video) => {
           if (video.video.id === videoId) {
+            const sparkCount = video.video.sparkCount ?? 0;
             return {
               ...video,
               video: {
@@ -119,7 +120,9 @@ export function setQueryDataForReactionInFeed({
                 isSparked: isReacted,
                 sparkCount: isReacted
                   ? (video.video.sparkCount ?? 0) + 1
-                  : (video.video.sparkCount ?? 0) - 1,
+                  : sparkCount > 0
+                    ? sparkCount - 1
+                    : 0,
               },
             };
           }

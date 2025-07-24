@@ -20,6 +20,7 @@ type ControlLayerPropsType = ComponentProps<"div"> & {
   isInModal?: boolean;
   isActive: boolean;
   showCloseButton?: boolean;
+  onReactionStateChange?: (videoId: string, isReacted: boolean) => void;
   onGroupJoinStatusChange?: ComponentProps<
     typeof ExpandViewDetails
   >["onGroupJoinStatusChange"];
@@ -42,6 +43,7 @@ export const ControlLayer = memo(function ControlLayer({
   onCommunityJoinStatusChange,
   onGroupJoinStatusChange,
   onGroupSubscriptionChange,
+  onReactionStateChange,
   ...restProps
 }: ControlLayerPropsType) {
   const { showExpandView, togglePlay, toggleMuted, muted } = usePlayerContext();
@@ -130,6 +132,7 @@ export const ControlLayer = memo(function ControlLayer({
             onCommunityJoinStatusChange={onCommunityJoinStatusChange}
             onGroupJoinStatusChange={onGroupJoinStatusChange}
             onGroupSubscriptionChange={onGroupSubscriptionChange}
+            onReactionStateChange={onReactionStateChange}
           />
         ) : (
           <div

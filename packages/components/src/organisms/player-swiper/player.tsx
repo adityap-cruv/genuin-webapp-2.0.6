@@ -16,6 +16,7 @@ import { useWindowSize } from "usehooks-ts";
 
 type PlayerProps = {
   post: PostDetailsType;
+  onReactionStateChange?: (videoId: string, isReacted: boolean) => void;
   onCommunityJoinStatusChange: ComponentProps<
     typeof ControlLayer
   >["onCommunityJoinStatusChange"];
@@ -33,6 +34,7 @@ export function Player({
   onCommunityJoinStatusChange,
   onGroupJoinStatusChange,
   onGroupSubscriptionChange,
+  onReactionStateChange,
 }: PlayerProps) {
   const { showExpandView, toggleExpandView, activeIndex, variant } =
     useFeedContext();
@@ -108,6 +110,9 @@ export function Player({
           onGroupJoinStatusChange={onGroupJoinStatusChange}
           onGroupSubscriptionChange={onGroupSubscriptionChange}
           showCloseButton={variant === "expand"}
+          onReactionStateChange={onReactionStateChange}
+          // Applies GPU acceleration to prevent layer flickering on iOS devices during animations
+          className="gencl:translate-x-0"
         />
       </div>
     </PlayerProvider>

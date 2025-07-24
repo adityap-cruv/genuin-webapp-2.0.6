@@ -16,7 +16,7 @@ export function GroupDetailsSkeleton() {
         <PostsGridSkeleton className="gencl:grid-cols-2!" noOfPosts={6} />
       </div>
       <div
-        className="gencl:hidden gencl:sm:block"
+        className="gencl:hidden gencl:sm:block!"
         style={{ width: "100%", maxWidth: "320px" }}
       >
         <Skeleton className="gencl:w-full gencl:h-49" />

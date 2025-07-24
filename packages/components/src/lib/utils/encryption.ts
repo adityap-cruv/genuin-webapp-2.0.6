@@ -23,6 +23,7 @@ export function encryptText(text?: string, appendString?: boolean): string {
     NEXT_PUBLIC_SECRET_STRING
   );
   const textToEncrypt = appendString ? text + "Cwv5\$uV%" : text;
+
   const encrypted = CryptoJS.AES.encrypt(
     textToEncrypt,
     CryptoJS.enc.Utf8.parse(NEXT_PUBLIC_AES_KEY),

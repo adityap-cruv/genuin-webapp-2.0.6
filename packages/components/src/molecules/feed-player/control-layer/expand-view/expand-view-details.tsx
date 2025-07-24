@@ -1,3 +1,4 @@
+"use client";
 import { Avatar } from "@genuin/ui/avatar";
 import { ReadMore } from "@genuin/ui/read-more";
 import { cn } from "@genuin/ui/utils";
@@ -14,6 +15,7 @@ import { CommentsDialog } from "@genuin/components/molecules/comments";
 type ExpandViewProps = ComponentProps<"div"> & {
   postDetails: PostDetailsType;
   isActive: boolean;
+  onReactionStateChange?: (videoId: string, isReacted: boolean) => void;
   onGroupJoinStatusChange?: ComponentProps<
     typeof Pills
   >["onGroupJoinStatusChange"];
@@ -32,6 +34,7 @@ export function ExpandViewDetails({
   onGroupJoinStatusChange,
   onGroupSubscriptionChange,
   onCommunityJoinStatusChange,
+  onReactionStateChange,
   ...restProps
 }: ExpandViewProps) {
   const { showSeeker } = usePlayerContext();
@@ -43,11 +46,13 @@ export function ExpandViewDetails({
         "gencl:bg-gradient-to-b gencl:from-[#11111100] gencl:to-[#111111b3]",
         className
       )}
-      onClick={(e) => e.stopPropagation()}
       {...restProps}
     >
       <div className="gencl:flex gencl:gap-4 gencl:items-end">
-        <div className="gencl:flex gencl:flex-col gencl:gap-2 gencl:w-full gencl:transition-all">
+        <div
+          className="gencl:flex gencl:flex-col gencl:gap-2 gencl:w-full gencl:transition-all"
+          onClick={(e) => e.stopPropagation()}
+        >
           <div className="gencl:flex gencl:gap-2 gencl:items-center gencl:text-white gencl:text-body-0-semi-bold">
             <Avatar
               imageUrl={postDetails.owner.profileImage}
@@ -84,6 +89,7 @@ export function ExpandViewDetails({
           />
         </div>
         <Actions
+          onClick={(e) => e.stopPropagation()}
           className="gencl:sm:hidden!"
           variant="mobile"
           theme="dark"
@@ -108,10 +114,14 @@ export function ExpandViewDetails({
               );
             },
           }}
+          onReactionStateChange={(isReacted) => {
+            onReactionStateChange?.(postDetails.video.id, isReacted);
+          }}
         />
       </div>
       <div
         className="gencl:w-full gencl:overflow-x-auto gencl:scrollbar-none"
+        onClick={(e) => e.stopPropagation()}
         style={{
           scrollBehavior: "smooth",
           maskImage:
@@ -135,6 +145,7 @@ export function ExpandViewDetails({
           "gencl:h-0 gencl:transition-all",
           showSeeker && "gencl:h-4"
         )}
+        onClick={(e) => e.stopPropagation()}
       />
     </div>
   );

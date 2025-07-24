@@ -92,7 +92,7 @@ export function MentionInput({
       loopId,
       onCommentPosted,
     });
-    
+
   useEffect(() => {
     const unSub = form.watch(({ comment }) => {
       if (comment) setCommentValue(comment);
@@ -120,7 +120,7 @@ export function MentionInput({
                   const profileImage = isCommunity
                     ? mention.community?.dp || ""
                     : mention.user?.profile_image || "";
-                  
+
                   // Generate stable keys for React 19 optimization
                   const uniqueKey = isCommunity
                     ? `community-${mention.community?.community_id ?? idx}`
@@ -215,7 +215,7 @@ export function MentionInput({
             "gencl:!text-body-1-medium",
             isFormValid ? "gencl:text-primary" : "gencl:text-secondary-400"
           )}
-          disabled={!isFormValid || isPending}
+          disabled={!isFormValid || isPending || !user}
           aria-label="Post comment"
         >
           {isPending ? <Loader size="xs" /> : "Post"}

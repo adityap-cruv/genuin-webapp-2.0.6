@@ -60,8 +60,13 @@ export function PostTile({
       onClick={onClick}
       {...restProps}
     >
-      {imageUrl? (
-        <Image aspectRatio="reel" className="gencl:bg-secondary-200" src={imageUrl} {...imageCompProps} />
+      {imageUrl ? (
+        <Image
+          aspectRatio="reel"
+          className="gencl:bg-secondary-200"
+          src={imageUrl}
+          {...imageCompProps}
+        />
       ) : (
         <div className="gencl:w-full gencl:h-full gencl:bg-secondary-50" />
       )}
@@ -72,41 +77,59 @@ export function PostTile({
         <div className="gencl:bg-white gencl:group-hover:hidden gencl:rounded-lg gencl:absolute gencl:top-2 gencl:size-9 gencl:left-2"></div>
       )}
       {stats && (
-        <Stats
-          className={cn(
-            "gencl:group-hover:hidden gencl:flex gencl:gap-2 gencl:justify-between gencl:p-2 gencl:absolute gencl:bottom-0 gencl:w-full",
-            variant === "responsive" && "gencl:md:flex! gencl:hidden"
-          )}
-          valueClassName="gencl:text-white! gencl:text-body-2-medium"
-          pairClassName="gencl:gap-1"
-          stats={{
-            Views: {
-              value: stats.views,
-              icon: (
-                <PlayIcon className="gencl:stroke-white gencl:stroke-2 gencl:size-3 gencl:fill-none" />
-              ),
-            },
-            Reactions: {
-              value: stats.reactions,
-              icon: (
-                <DynamicReactionIcon
-                  sparkCount={0}
-                  className="gencl:mr-1"
-                  isSparked={false}
-                  iconHeight={16}
-                  iconWidth={16}
-                  theme="dark"
-                />
-              ),
-            },
-            Comments: {
-              value: stats.comments,
-              icon: (
-                <CommentIcon className="gencl:stroke-white! gencl:stroke-2 gencl:size-4" />
-              ),
-            },
-          }}
-        />
+        <>
+          <Stats
+            className={cn(
+              "gencl:group-hover:hidden gencl:flex gencl:gap-2 gencl:justify-between gencl:p-2 gencl:absolute gencl:bottom-0 gencl:w-full gencl:bg-linear-to-t gencl:from-black/40 gencl:to-black/0",
+              variant === "responsive" && "gencl:md:flex! gencl:hidden"
+            )}
+            valueClassName="gencl:text-white! gencl:text-body-2-medium"
+            pairClassName="gencl:gap-1"
+            stats={{
+              Views: {
+                value: stats.views,
+                icon: (
+                  <PlayIcon className="gencl:stroke-white gencl:stroke-2 gencl:size-3 gencl:fill-none" />
+                ),
+              },
+              Reactions: {
+                value: stats.reactions,
+                icon: (
+                  <DynamicReactionIcon
+                    sparkCount={0}
+                    isSparked={false}
+                    iconHeight={16}
+                    iconWidth={16}
+                    theme="dark"
+                  />
+                ),
+              },
+              Comments: {
+                value: stats.comments,
+                icon: (
+                  <CommentIcon className="gencl:stroke-white! gencl:stroke-2 gencl:size-4" />
+                ),
+              },
+            }}
+          />
+
+          <Stats
+            className={cn(
+              "gencl:group-hover:hidden gencl:flex gencl:gap-2 gencl:justify-between gencl:p-2 gencl:absolute gencl:bottom-0 gencl:w-full gencl:bg-linear-to-t gencl:from-black/40 gencl:to-black/0",
+              variant === "default" && "gencl:md:hidden! gencl:flex"
+            )}
+            valueClassName="gencl:text-white! gencl:text-body-2-medium"
+            pairClassName="gencl:gap-1"
+            stats={{
+              Views: {
+                value: stats.views,
+                icon: (
+                  <PlayIcon className="gencl:stroke-white gencl:stroke-2 gencl:size-3 gencl:fill-none" />
+                ),
+              },
+            }}
+          />
+        </>
       )}
       {showHover && (
         <div className="gencl:hidden gencl:cursor-pointer gencl:group-hover:flex gencl:items-center gencl:justify-center gencl:absolute gencl:h-full gencl:w-full gencl:inset-0 gencl:bg-black/40">

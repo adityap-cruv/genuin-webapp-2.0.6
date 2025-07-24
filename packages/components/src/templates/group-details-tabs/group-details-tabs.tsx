@@ -26,7 +26,7 @@ export function GroupDetailsTabs({
 }: GroupDetailsTabsProps) {
   const { isDesktop } = useDeviceDetectMediaQuery();
   const [value, setValue] = useState("posts");
-  const contentClassName = "gencl:p-4 gencl:sm:!pt-6 gencl:sm:p-0";
+  const contentClassName = "gencl:p-4 gencl:sm:p-0! gencl:sm:pt-6!";
 
   useEffect(() => {
     if (isDesktop && value === "about") {

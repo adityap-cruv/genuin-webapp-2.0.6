@@ -188,7 +188,7 @@ function CommunityDetailsView({ slug }: { slug: string }) {
             imageUrl={communityDetails?.dp_m ?? communityDetails.dp ?? ""}
             size="xl"
             isAvatar={false}
-            className="gencl:absolute gencl:bottom-0 gencl:translate-y-1/2 gencl:left-4 gencl:sm:hidden! gencl:block"
+            className="gencl:absolute gencl:bottom-0 gencl:translate-y-1/2 gencl:left-4 gencl:sm:hidden! gencl:block gencl:border gencl:border-white"
           />
         </div>
         <div className="gencl:flex gencl:pt-10 gencl:sm:pt-6! gencl:gap-6">
@@ -319,6 +319,9 @@ function Details({
         Members: communityDetails.no_of_members,
         Groups: communityDetails.no_of_loops,
         Posts: communityDetails.no_of_videos,
+      }}
+      separatorConfig={{
+        afterHandle: false,
       }}
     />
   );

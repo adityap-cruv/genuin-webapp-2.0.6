@@ -68,6 +68,9 @@ export function PlayerList({
                   onCommunityJoinStatusChange={onCommunityJoinStatusChange}
                   onGroupJoinStatusChange={onGroupJoinStatusChange}
                   onGroupSubscriptionChange={onGroupSubscriptionChange}
+                  onReactionStateChange={(_, isReacted) => {
+                    onReactionStateChange?.(post.video.id, isReacted);
+                  }}
                 />
                 {!isMobile && (
                   <Actions

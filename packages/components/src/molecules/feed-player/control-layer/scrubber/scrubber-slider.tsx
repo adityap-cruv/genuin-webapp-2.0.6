@@ -121,7 +121,7 @@ const ScrubberSlider = React.forwardRef<
               "gencl:block gencl:cursor-pointer gencl:h-3 gencl:w-3 gencl:rounded-full gencl:border-2 gencl:border-primary gencl:bg-primary gencl:outline-none gencl:transition-all gencl:disabled:pointer-events-none gencl:disabled:opacity-50"
             )}
           >
-            {showScrubber && (
+            {showScrubber && !spriteUrl && (
               <div
                 className={cn(
                   "gencl:flex gencl:w-24 gencl:-translate-x-[40%] gencl:-translate-y-[calc(100%+36px)] gencl:flex-col gencl:items-center gencl:transition-all",

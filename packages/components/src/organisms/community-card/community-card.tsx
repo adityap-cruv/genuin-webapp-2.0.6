@@ -293,7 +293,7 @@ export function CommunityCard({
                 maxLines={2}
                 showExpandText={variant === "search"}
                 text={community.description}
-                textClassName="gencl:!text-body-2-medium gencl:text-secondary-600 gencl:line-clamp-2 gencl:mt-0"
+                textClassName="gencl:!text-body-2-medium gencl:text-secondary-600 gencl:line-clamp-2 gencl:mt-2"
                 viewMoreText="more"
                 position="overlay"
               />

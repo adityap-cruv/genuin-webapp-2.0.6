@@ -24,12 +24,8 @@ const inter = Inter({
 
 // Metadata API for Next.js 15
 export const metadata: Metadata = {
-  title: {
-    template: '%s | Genuin',
-    default: 'Genuin',
-  },
   description: 'A video community platform',
-  metadataBase: new URL('https://app.begenuin.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_HOST_URL ?? 'https://begenuin.com'),
 }
 
 export const viewport: Viewport = {
@@ -81,6 +77,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         className={inter.className}
         style={{
           ...brandColors,
+          /* iOS Safari specific fixes */
+          // WebkitOverflowScrolling: 'touch',
+          position: 'fixed',
+          width: '100%',
+          height: '100%',
         }}>
         <SiteProviders config={config} session={userSession}>
           {children}

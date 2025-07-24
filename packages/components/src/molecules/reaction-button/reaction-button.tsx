@@ -118,10 +118,10 @@ function Button({
 }: ReactionButtonProps) {
   const { user } = useAuthContext();
   const { mutate: reactToVideo, isPending } = useVideoReationMutation({
-    onSuccess: (isReacted) => {
-      onReactionStateChange?.(isReacted);
-    },
+    // onSuccess: (isReacted) => {},
     onError: (error) => {
+      // Revert the optimistic update on error
+      onReactionStateChange?.(isReacted);
       Toast.Error({
         message: "Failed to react to video. Please try again later.",
       });
@@ -134,9 +134,28 @@ function Button({
       if (!user || isPending) {
         return; // If user is not authenticated, do nothing
       }
-      reactToVideo({ contentId, type: contentType, reaction: !isReacted });
+
+      // Optimistically update the UI immediately
+      const newReactionState = !isReacted;
+      onReactionStateChange?.(newReactionState);
+
+      // Make the API call in the background
+      reactToVideo({
+        contentId,
+        type: contentType,
+        reaction: newReactionState,
+      });
     },
-    [onClick, reactToVideo, contentId, contentType, isReacted, user, isPending]
+    [
+      onClick,
+      reactToVideo,
+      contentId,
+      contentType,
+      isReacted,
+      user,
+      isPending,
+      onReactionStateChange,
+    ]
   );
 
   // If withCustomChildren is true, just return the children with logic attached

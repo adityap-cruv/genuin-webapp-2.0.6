@@ -43,13 +43,24 @@ export function Comments({
 }: CommentPropsType) {
   return (
     <div className={cn(commentsVariant({ variant }), className)} {...restProps}>
-      {showCloseButton && (
+      {/* {showCloseButton && (
         <X
           className="gencl:absolute gencl:top-2 gencl:right-2 gencl:cursor-pointer"
           onClick={() => {
             onClose?.();
           }}
         />
+      )} */}
+      {showCloseButton && (
+        <div className="gencl:p-4 gencl:flex gencl:text-headline-4-semi-bold gencl:text-secondary-900 gencl:border-b gencl:border-secondary-150 gencl:items-center gencl:justify-between">
+          Comments
+          <X
+            className="gencl:size-5 gencl:cursor-pointer gencl:opacity-70 gencl:transition-opacity gencl:hover:opacity-100"
+            onClick={() => {
+              onClose?.();
+            }}
+          />
+        </div>
       )}
       <CommentsList videoId={videoId} showCloseButton={showCloseButton} />
       <CommentInputBox

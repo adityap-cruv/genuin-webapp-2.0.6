@@ -17,6 +17,7 @@ import {
 import { ComponentProps } from "react";
 import { useAuthContext } from "@genuin/components/context/auth";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 
 export type CommentItemProps = {
   comment: CommentListType[number];
@@ -32,6 +33,7 @@ export function CommentItem({
 }: CommentItemProps) {
   const { owner } = comment;
   const { user } = useAuthContext();
+  const { isMobile } = useDeviceDetectMediaQuery();
   return (
     <div
       className="comment gencl:flex gencl:gap-2 gencl:group"
@@ -58,7 +60,11 @@ export function CommentItem({
           {owner.memberId !== user?.id && (
             <CommentMenu
               contentId={comment.commentId}
-              className="gencl:group-hover:block gencl:data-[state=open]:block  gencl:hidden"
+              className={cn(
+                "gencl:block",
+                !isMobile &&
+                  "gencl:group-hover:block gencl:data-[state=open]:block gencl:hidden"
+              )}
             />
           )}
         </div>

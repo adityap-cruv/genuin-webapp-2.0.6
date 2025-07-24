@@ -151,40 +151,66 @@ export function TrendingCommunitiesMobileView({
       </div>
 
       <div className="gencl:swiper-navigation-container gencl:relative">
-        <Swiper
-          spaceBetween={10}
-          slidesPerView={1.05} // Show 5% of the next slide
-          className="gencl:w-full"
-          modules={[Navigation]}
-          navigation={{
-            prevEl: ".swiper-community-prev-button",
-            nextEl: ".swiper-community-next-button",
-          }}
-          onSwiper={handleSwiperInit}
-          onSlideChange={handleSlideChange}
-        >
-          {data.communities.map((community: CommunityInfoType) => (
-            <SwiperSlide key={community.community_id}>
-              <CommunityCard
-                community={{
-                  id: community.community_id,
-                  banner: community.banner,
-                  description: community.description,
-                  dp: community.dp,
-                  name: community.name,
-                  handle: community.handle,
-                  slug: community.slug,
-                  type: "PUBLIC",
-                  stats: {
-                    members: community.no_of_members,
-                    groups: 0,
-                    posts: 0,
-                  },
-                }}
-              />
-            </SwiperSlide>
-          ))}
-        </Swiper>
+        {/* Use a fixed height container with a specific height */}
+        <div className="gencl:swiper-container">
+          <Swiper
+            spaceBetween={10}
+            slidesPerView={1.05} // Show 5% of the next slide
+            className="gencl:w-full gencl:h-58"
+            modules={[Navigation]}
+            navigation={{
+              prevEl: ".swiper-community-prev-button",
+              nextEl: ".swiper-community-next-button",
+            }}
+            onSwiper={handleSwiperInit}
+            onSlideChange={handleSlideChange}
+            autoHeight={false}
+            watchSlidesProgress={true}
+          >
+            {data.communities.map((community: CommunityInfoType) => (
+              <SwiperSlide
+                key={community.community_id}
+                className="gencl:h-full"
+              >
+                <div className="gencl:card-wrapper gencl:h-full">
+                  <Link
+                    href={buildPageUrl({
+                      type: "community",
+                      slug: community.slug,
+                    })}
+                    className="gencl:block gencl:w-full gencl:h-full"
+                  >
+                    <CommunityCard
+                      className="gencl:h-full gencl:flex gencl:flex-col"
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        overflow: "hidden",
+                      }}
+                      community={{
+                        id: community.community_id,
+                        banner: community.banner,
+                        description: community.description,
+                        dp: community.dp,
+                        name: community.name,
+                        handle: community.handle,
+                        slug: community.slug,
+                        type: "PUBLIC",
+                        stats: {
+                          members: community.no_of_members,
+                          groups: 0,
+                          posts: 0,
+                        },
+                      }}
+                    />
+                  </Link>
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
+
+        {/* Navigation buttons - Always in DOM but conditionally styled */}
 
         {/* Navigation buttons - Always in DOM but conditionally styled */}
         {/* <Button

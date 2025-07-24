@@ -7,6 +7,7 @@ import {
 import { ReactNode } from "react";
 import { CommentsList } from "./comments-list";
 import { CommentInputBox } from "./comment-input";
+import { setQueryDataForNewComment } from "@genuin/components/react-query/api/comments";
 
 type CommentDialogProps = {
   communityId: string;
@@ -47,6 +48,9 @@ export function CommentsDialog({
           loopId={loopId}
           videoId={videoId}
           videoSlug={videoSlug}
+          onCommentPosted={(comments) => {
+            setQueryDataForNewComment(videoId, comments);
+          }}
         />
       </DialogContent>
     </Dialog>

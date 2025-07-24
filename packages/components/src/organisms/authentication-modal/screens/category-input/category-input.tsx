@@ -136,7 +136,7 @@ export function CategoryInput({ ...props }: CategoryInputProps) {
       </div>
       <SubmitButton
         isLoading={isPending && !isSurpriseMe}
-        title="Choose 3+"
+        title={selectedCategory.length < 3 ? "Choose 3+" : "Continue"}
         error={error ?? ""}
         disabled={selectedCategory.length < 3 || isPending || isSurpriseMe}
         onClick={() => {

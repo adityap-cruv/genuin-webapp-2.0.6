@@ -36,6 +36,7 @@ function Dialog({
     } else {
       dialogManager.unregisterDialog(type);
     }
+
     // Clean up on unmount
     return () => {
       dialogManager.unregisterDialog(type);
@@ -143,7 +144,7 @@ function DialogContent({
         {showClose && (
           <DialogPrimitive.Close
             className={cn(
-              "gencl:absolute gencl:top-4 gencl:right-4 gencl:rounded-xs",
+              "gencl:absolute gencl:top-4 gencl:right-4 gencl:rounded-xs gencl:p-1.5",
               "gencl:opacity-70 gencl:transition-opacity gencl:hover:opacity-100",
               "gencl:disabled:pointer-events-none gencl:[&_svg]:pointer-events-none",
               "gencl:[&_svg]:shrink-0 gencl:[&_svg:not([class*=size-])]:size-4",

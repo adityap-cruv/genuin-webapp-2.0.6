@@ -16,7 +16,45 @@ export const FeedSkeleton: FC<FeedSkeletonProps> = ({
   if (variant === "fullscreen") {
     return (
       <div className="gencl:fixed gencl:inset-0 gencl:bg-black gencl:z-50 gencl:flex gencl:items-center gencl:justify-center gencl:gap-6">
-        <div className="gencl:h-full gencl:flex gencl:gap-2">
+        <div
+          className={cn(
+            "gencl:relative gencl:block gencl:sm:hidden!",
+            isMobile
+              ? "gencl:w-full gencl:h-full"
+              : "gencl:aspect-reel gencl:h-full"
+          )}
+        >
+          <Skeleton className="gencl:w-full gencl:h-full gencl:bg-secondary-500 gencl:sm:bg-secondary-100!" />
+
+          <div className="gencl:flex gencl:sm:hidden! gencl:absolute gencl:bottom-0 gencl:left-1/2 gencl:-translate-x-1/2 gencl:p-4 gencl:justify-between gencl:items-end gencl:gap-4 gencl:w-screen gencl:max-w-full">
+            <div className="gencl:w-full">
+              <div className="gencl:flex gencl:gap-2 gencl:overflow-hidden gencl:mb-3 gencl:mt-0">
+                <Skeleton className="gencl:size-10 gencl:rounded-full gencl:shrink-0" />
+                <div className="gencl:w-full gencl:flex gencl:flex-col gencl:justify-center gencl:gap-2">
+                  <Skeleton className="gencl:w-1/2 gencl:h-3 gencl:rounded-md gencl:mt-1.5" />
+                </div>
+              </div>
+              <div className="gencl:mb-3 gencl:mt-0">
+                <Skeleton className="gencl:w-full gencl:h-3 gencl:rounded-md gencl:mt-1.5" />
+                <Skeleton className="gencl:w-full gencl:h-3 gencl:rounded-md gencl:mt-1.5" />
+              </div>
+              <div className="gencl:flex gencl:gap-2">
+                <Skeleton className="gencl:size-10 gencl:rounded-full gencl:shrink-0 gencl:w-32 gencl:h-7" />
+                <Skeleton className="gencl:size-10 gencl:rounded-full gencl:shrink-0 gencl:w-32 gencl:h-7" />
+              </div>
+            </div>
+            <div className="gencl:flex gencl:sm:hidden! gencl:gap-4 gencl:flex-col gencl:justify-end gencl:w-12">
+              {Array.from({ length: 5 }).map((_, index) => (
+                <Skeleton
+                  key={index}
+                  className="gencl:size-10 gencl:rounded-full gencl:shrink-0"
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="gencl:h-full gencl:gap-2 gencl:hidden gencl:sm:flex!">
           <Skeleton className="gencl:aspect-reel gencl:h-full" />
           <div className="gencl:flex gencl:gap-4 gencl:flex-col gencl:justify-end gencl:w-13">
             {Array.from({ length: 5 }).map((_, index) => (
@@ -28,11 +66,11 @@ export const FeedSkeleton: FC<FeedSkeletonProps> = ({
           </div>
         </div>
 
-        <div className="gencl:max-w-118 gencl:w-full gencl:h-full gencl:py-6">
+        <div className="gencl:max-w-118 gencl:w-full gencl:h-full gencl:py-6 gencl:hidden gencl:sm:block!">
           <Skeleton className="gencl:w-full gencl:h-full gencl:py-6 gencl:rounded-2xl" />
         </div>
 
-        <div className="gencl:absolute gencl:right-7.5 gencl:space-y-2">
+        <div className="gencl:absolute gencl:right-7.5 gencl:space-y-2 gencl:hidden gencl:sm:block!">
           <Skeleton className="gencl:size-12 gencl:rounded-full gencl:shrink-0" />
           <Skeleton className="gencl:size-12 gencl:rounded-full gencl:shrink-0" />
         </div>

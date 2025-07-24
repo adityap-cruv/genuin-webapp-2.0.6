@@ -7,15 +7,33 @@ import { Link } from "@genuin/components/molecules/link";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 
-type BrandLogoProps = ComponentProps<typeof Image>;
+type LogoType = "logo" | "brand_web_logo";
 
-export function BrandLogo({ className, ...props }: BrandLogoProps) {
+type BrandLogoProps = ComponentProps<typeof Image> & {
+  /**
+   * Explicitly specify which logo to use.
+   * If not provided, logo will be selected based on device type.
+   */
+  logoType?: LogoType;
+};
+
+export function BrandLogo({ className, logoType, ...props }: BrandLogoProps) {
   const { brandDetails } = useBaseContext();
   const { isMobile } = useDeviceDetectMediaQuery();
+
+  // Determine which logo to use based on props or device detection
+  const logoSrc = logoType
+    ? logoType === "logo"
+      ? brandDetails.logo
+      : brandDetails.brand_web_logo
+    : isMobile
+      ? brandDetails.logo
+      : brandDetails.brand_web_logo;
+
   return (
     <Link href={buildPageUrl({ type: "home" })}>
       <Image
-        src={isMobile ? brandDetails.logo : brandDetails.brand_web_logo}
+        src={logoSrc}
         alt="Brand Logo"
         useWebp={false}
         className={cn(

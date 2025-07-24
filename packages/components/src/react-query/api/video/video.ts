@@ -129,17 +129,38 @@ async function fetchLoopVideo(loopId: string, videoId: string) {
       throw new Error("Something went wrong in conversation messages.");
     });
 }
+
 /**
- * Hook to fetch video details.
+ * Hook to fetch video details in a format compatible with feed data structure.
+ * This ensures that feed-related functions work with single video pages.
+ *
  * @param slug - The slug of the video to fetch details for.
- * @returns
+ * @returns The video data in a structure matching useFeed's return value
  */
-export function useGetVideoDetails(slug: string) {
-  return useQuery({
+export function useGetVideoDetailsAsFeed(slug: string) {
+  const query = useQuery({
     queryKey: getQueryKeyForVideoDetails(slug),
     queryFn: async () => {
-      return await getVideoDetails(slug);
+      const video = await getVideoDetails(slug);
+      return {
+        pages: [
+          {
+            feed: [video],
+            pageSession: null,
+            endOfFeed: true,
+          },
+        ],
+        pageParams: [null],
+      };
     },
     enabled: !!slug,
   });
+
+  // Extract video from nested structure for easier access
+  const data = query.data?.pages[0]?.feed[0];
+
+  return {
+    ...query,
+    data,
+  };
 }

@@ -179,13 +179,13 @@ export function EditBirthDate({
               control={form.control}
               name="month"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="gencl:w-full">
                   <FormControl>
                     <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger>
+                      <SelectTrigger className="gencl:max-w-28 gencl:sm:max-w-full!">
                         <SelectValue placeholder="MM" />
                       </SelectTrigger>
-                      <SelectContent className="gencl:w-full">
+                      <SelectContent>
                         {monthOptions.map((m) => (
                           <SelectItem
                             key={m.value}
@@ -205,10 +205,10 @@ export function EditBirthDate({
               control={form.control}
               name="day"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="gencl:w-full">
                   <FormControl>
                     <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger>
+                      <SelectTrigger className="gencl:max-w-28 gencl:sm:max-w-full!">
                         <SelectValue placeholder="DD" />
                       </SelectTrigger>
                       <SelectContent>
@@ -231,10 +231,10 @@ export function EditBirthDate({
               control={form.control}
               name="year"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="gencl:w-full">
                   <FormControl>
                     <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger>
+                      <SelectTrigger className="gencl:max-w-28 gencl:sm:max-w-full!">
                         <SelectValue placeholder="YYYY" />
                       </SelectTrigger>
                       <SelectContent>
