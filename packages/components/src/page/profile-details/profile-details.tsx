@@ -119,7 +119,7 @@ export function ProfileDetails({
           variant="profile"
           handle={{
             brandUserLogo: profileData.brand?.brand_user_logo,
-            userName: profileData.brand?.brand_slug ?? "",
+            userName: profileData.nickname ?? "",
           }}
           stats={{
             Communities: profileData.no_of_communities,

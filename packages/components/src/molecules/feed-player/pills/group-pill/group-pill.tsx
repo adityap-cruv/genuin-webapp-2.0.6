@@ -102,12 +102,14 @@ export function GroupPill({
           <div className="gencl:rounded-full gencl:bg-secondary-300 gencl:p-1">
             <GroupIcon theme="dark" size="sm" />
           </div>
-          <span className="gencl:text-body-2-medium">{groupDetails.name}</span>
+          <span className="gencl:text-body-2-medium gencl:line-clamp-1">
+            {groupDetails.name}
+          </span>
         </div>
         {authenticationStatus === "authenticated" &&
           (!(groupDetails.isSubscribed ?? false) || showButton) && (
             <div
-              className={`gencl:overflow-hidden gencl:transition-all gencl:duration-500 ${
+              className={`gencl:overflow-hidden gencl:shrink-0 gencl:transition-all gencl:duration-500 ${
                 isAnimating
                   ? "gencl:max-w-0 gencl:opacity-0 gencl:ml-0"
                   : "gencl:max-w-24 gencl:opacity-100 gencl:ml-1"

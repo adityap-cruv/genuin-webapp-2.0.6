@@ -6,7 +6,7 @@ import { Button } from "@genuin/ui/components/button";
 import { ChevronLeft } from "lucide-react";
 
 const VARIANT_PADDING: Record<"default" | "compact" | "expanded", string> = {
-  default: "gencl:p-4 gencl:sm:p-12!",
+  default: "gencl:p-4 gencl:mt-8 gencl:sm:m-0! gencl:sm:p-12!",
   compact: "gencl:p-8",
   expanded: "gencl:p-8",
 };
@@ -29,7 +29,7 @@ export function ModalShell({
   return (
     <div
       className={cn(
-        "gencl:relative gencl:space-y-6",
+        "gencl:relative gencl:space-y-6 ",
         VARIANT_PADDING[variant],
         className
       )}

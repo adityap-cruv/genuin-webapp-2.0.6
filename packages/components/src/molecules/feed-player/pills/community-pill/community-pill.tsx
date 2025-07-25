@@ -105,7 +105,7 @@ export function CommunityPill({
         {authenticationStatus === "authenticated" &&
           (communityDetails.userRole !== "MEMBER" || showButton) && (
             <div
-              className={`gencl:overflow-hidden gencl:transition-all gencl:duration-500 ${
+              className={`gencl:overflow-hidden gencl:shrink-0 gencl:transition-all gencl:duration-500 ${
                 isAnimating
                   ? "gencl:max-w-0 gencl:opacity-0 gencl:ml-0"
                   : "gencl:max-w-24 gencl:opacity-100 gencl:ml-1"

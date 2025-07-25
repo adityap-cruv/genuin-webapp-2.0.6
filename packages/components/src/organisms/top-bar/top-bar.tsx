@@ -24,8 +24,7 @@ const topbarVariants = cva(
   {
     variants: {
       theme: {
-        light:
-          "gencl:bg-white gencl:shadow-sm gencl:border-b gencl:border-secondary-150",
+        light: "gencl:bg-white gencl:border-b gencl:border-secondary-150",
         // dark mode is only for mobile view in case of dark top-bar grows to desktop it will  be light mode.
         dark: "gencl:bg-transparent gencl:fixed gencl:top-0 gencl:sm:relative! gencl:sm:border-b gencl:sm:border-secondary-150 gencl:sm:bg-none gencl:bg-linear-to-b gencl:from-black/40 gencl:to-black/0",
       },

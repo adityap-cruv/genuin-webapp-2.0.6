@@ -4,12 +4,12 @@ import { cn } from "@genuin/ui/lib/utils";
 import { cva, VariantProps } from "class-variance-authority";
 
 const poweredByGenuinVariants = cva(
-  "gencl:border-t gencl:p-4 gencl:border-secondary-100 gencl:justify-self-end gencl:mt-auto",
+  "gencl:border-r gencl:border-t gencl:p-4 gencl:border-secondary-150 gencl:bg-white gencl:fixed gencl:bottom-0 gencl:z-10",
   {
     variants: {
       variant: {
-        default: "",
-        mobile: "gencl:flex",
+        default: "gencl:xl:!w-60 gencl:w-16 gencl:mr-2",
+        mobile: "gencl:flex gencl:w-fit",
       },
     },
     defaultVariants: {
@@ -31,7 +31,7 @@ export function PoweredByGenuin({
       className={cn(
         poweredByGenuinVariants({ variant }),
         className,
-        "gencl:xl:flex! gencl:absolute gencl:z-10 gencl:bg-white gencl:hidden gencl:bottom-0 gencl:w-full gencl:items-center gencl:justify-center"
+        "gencl:hidden gencl:xl:flex! gencl:items-center gencl:justify-center"
       )}
       {...restProps}
     >

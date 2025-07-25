@@ -18,18 +18,21 @@ type SideBarProps = ComponentProps<"aside"> &
     onItemClick?: () => void;
   };
 
-const sidebarVariants = cva("gencl:relative gencl:overflow-auto", {
-  variants: {
-    variant: {
-      default:
-        "gencl:border-r gencl:xl:!w-60 gencl:border-secondary-150 gencl:w-16 gencl:shrink-0 gencl:flex gencl:flex-col gencl:overflow-y-auto",
-      mobile: "gencl:w-full gencl:flex gencl:flex-col gencl:xl:block",
+const sidebarVariants = cva(
+  "gencl:relative gencl:h-[calc(100%-48px)] gencl:flex gencl:flex-col gencl:overflow-y-auto",
+  {
+    variants: {
+      variant: {
+        default:
+          "gencl:border-r gencl:xl:!w-60 gencl:border-secondary-150 gencl:w-16 gencl:shrink-0",
+        mobile: "gencl:w-full gencl:xl:block!",
+      },
     },
-  },
-  defaultVariants: {
-    variant: "default",
-  },
-});
+    defaultVariants: {
+      variant: "default",
+    },
+  }
+);
 
 export function SideBar({
   variant,

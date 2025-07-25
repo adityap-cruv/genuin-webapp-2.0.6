@@ -55,7 +55,7 @@ export function AuthenticationModal({
       : "default";
 
   const wrapClass = cn(
-    "gencl:p-0 gencl:!max-w-xl gencl:rounded-t-2xl gencl:md:rounded-2xl!",
+    "gencl:p-0 gencl:!max-w-xl gencl:rounded-t-2xl! gencl:md:rounded-2xl!",
     compactSteps.includes(step)
       ? "gencl:max-w-[500px]"
       : expandedSteps.includes(step)

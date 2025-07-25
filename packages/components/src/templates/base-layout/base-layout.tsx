@@ -52,12 +52,12 @@ export function BaseLayout({
       ? shouldUseDarkTheme && isMobile
         ? height
         : height - TOP_BAR_HEIGHT
-      : `calc(100% - ${TOP_BAR_HEIGHT}px)`;
+      : `calc(100vh - ${TOP_BAR_HEIGHT}px)`;
 
   return (
     <>
       <TopBar
-        theme={shouldUseDarkTheme ? "dark" : "light"}
+        theme={shouldUseDarkTheme && isMobile ? "dark" : "light"}
         style={{ zIndex: 9 }}
         search={undefined}
       />

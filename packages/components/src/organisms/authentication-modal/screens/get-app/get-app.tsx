@@ -87,7 +87,7 @@ export function GetApp({ onSubmit, ...props }: GetAppProps) {
 
   return (
     <div
-      className="gencl:text-center gencl:space-y-4 gencl:w-full gencl:pt-8 gencl:sm:pt-0!"
+      className="gencl:text-center gencl:space-y-4 gencl:w-full gencl:pt-0"
       {...props}
     >
       {brandDetails.logo && (
