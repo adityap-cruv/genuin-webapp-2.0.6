@@ -14,7 +14,7 @@ import { Player } from "./player";
 import { SwiperImplementation } from "./swiper-implementation";
 import { ComponentProps } from "react";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
-import { cn } from "@genuin/ui/lib/utils";
+import { abbreviateNumber, cn } from "@genuin/ui/lib/utils";
 
 type PlayerListPropsType = {
   posts: PostDetailsType[];
@@ -111,7 +111,7 @@ export function PlayerList({
                                 showExpandView && "gencl:text-white!"
                               )}
                             >
-                              {post.video.commentCount}
+                              {abbreviateNumber(post.video.commentCount)}
                             </p>
                           </span>
                         );

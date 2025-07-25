@@ -51,7 +51,8 @@
     "tailwindcss": "^4.1.8",
     "zod": "^3.25.16",
     "cropperjs": "^1.5.13",
-    "react-cropper": "^2.3.3"
+    "react-cropper": "^2.3.3",
+    "ua-parser-js": "^2.0.3"
   },
   "devDependencies": {
     "@alloc/quick-lru": "^5.2.0",

@@ -17,21 +17,18 @@ import { ComponentProps } from "react";
 import { cn } from "@genuin/ui/lib/utils";
 import { compressText } from "@genuin/components/lib/utils";
 
-const recentAccordionVariants = cva(
-  "gencl:!w-full gencl:py-4 gencl:px-3 gencl:border-b gencl:border-secondary-100",
-  {
-    variants: {
-      variant: {
-        default:
-          "gencl:[&_p]:hidden gencl:[&_button]:hidden gencl:[&_button]:xl:flex gencl:[&_p]:xl:block",
-        mobile: "",
-      },
+const recentAccordionVariants = cva("gencl:!w-full gencl:py-4 gencl:px-3", {
+  variants: {
+    variant: {
+      default:
+        "gencl:[&_p]:hidden gencl:[&_button]:hidden gencl:[&_button]:xl:flex gencl:[&_p]:xl:block",
+      mobile: "",
     },
-    defaultVariants: {
-      variant: "default",
-    },
-  }
-);
+  },
+  defaultVariants: {
+    variant: "default",
+  },
+});
 
 type RecentProps = Omit<
   ComponentProps<typeof Accordion> &

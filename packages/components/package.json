@@ -21,7 +21,8 @@
     "react-hook-form": "^7.56.4",
     "tailwindcss": "^4.1.8",
     "cropperjs": "^1.5.13",
-    "react-cropper": "^2.3.3"
+    "react-cropper": "^2.3.3",
+    "ua-parser-js": "^2.0.3"
   },
   "dependencies": {
     "@fingerprintjs/fingerprintjs": "^4.2.2",
@@ -39,7 +40,6 @@
     "react-phone-number-input": "^3.4.12",
     "react-qr-code": "^2.0.16",
     "swiper": "^11.2.7",
-    "ua-parser-js": "^2.0.3",
     "usehooks-ts": "^3.1.1",
     "zod": "^3.25.56"
   },

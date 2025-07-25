@@ -10,7 +10,8 @@ import { Toaster } from "@genuin/ui/toaster";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { usePathname } from "@genuin/components/hooks/use-pathname";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams } from "@genuin/components/hooks/use-search-params";
+// import { useSearchParams } from "next/navigation";
 
 type BaseLayoutProps = ComponentProps<"section">;
 
@@ -31,7 +32,7 @@ export function BaseLayout({
   const { height } = useWindowSize();
   const { isMobile } = useDeviceDetectMediaQuery();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const { searchParams, getSearchParams } = useSearchParams();
 
   // Update shouldUseDarkTheme when searchParams or pathname changes
   const [shouldUseDarkTheme, setShouldUseDarkTheme] = useState(false);
@@ -39,11 +40,19 @@ export function BaseLayout({
   useEffect(() => {
     const isDarkTheme =
       topBarDarkVariantRoutes.includes(pathname) ||
-      (pathname.includes("/community") && searchParams.get("feed") === "1") ||
+      (pathname.includes("/community") && getSearchParams("feed") === "1") ||
       pathname.includes("/video");
 
     setShouldUseDarkTheme(isDarkTheme);
   }, [pathname, searchParams]);
+
+  // Calculate height value with fallback that accounts for top bar
+  const calculatedHeight =
+    typeof height === "number" && !isNaN(height)
+      ? shouldUseDarkTheme && isMobile
+        ? height
+        : height - TOP_BAR_HEIGHT
+      : `calc(100% - ${TOP_BAR_HEIGHT}px)`;
 
   return (
     <>
@@ -55,8 +64,7 @@ export function BaseLayout({
       <main
         className="gencl:sm:flex gencl:overflow-clip"
         style={{
-          height:
-            shouldUseDarkTheme && isMobile ? height : height - TOP_BAR_HEIGHT,
+          height: calculatedHeight,
         }}
       >
         {!isMobile && <SideBar className="gencl:sm:block! gencl:hidden" />}
