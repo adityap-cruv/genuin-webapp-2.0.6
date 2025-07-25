@@ -91,9 +91,9 @@ export function AnalyticsProvider({
         title: document.title,
       })
         .then(() => {
-          console.log(
-            "[AnalyticsProvider] AnalyticsService.initialize() called and promise resolved."
-          );
+          // console.log(
+          //   "[AnalyticsProvider] AnalyticsService.initialize() called and promise resolved."
+          // );
         })
         .catch((error) => {
           console.error(

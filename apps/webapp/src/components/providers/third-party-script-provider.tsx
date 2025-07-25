@@ -31,8 +31,6 @@ export function ThirdPartyScriptProvider({ children }: { children: React.ReactNo
         },
       })
       analyticsRef.current = analytics
-      console.log('RudderStack initialized.')
-      console.log('RudderStack Key:', process.env.NEXT_PUBLIC_RUDDERSTACK_KEY)
     }
   }, [])
 
