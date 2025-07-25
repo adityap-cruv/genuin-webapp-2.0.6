@@ -24,7 +24,7 @@ export type GetAppProps = ComponentProps<"div"> & {
 
 export function GetApp({ onSubmit, ...props }: GetAppProps) {
   const { brandDetails } = useBaseContext();
-  const { getAppData } = useAuthenticationModalContext();
+  const { getAppData, step } = useAuthenticationModalContext();
   const [deeplinkUrl, setDeeplinkUrl] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const clickAction = getAppData?.data?.type;
@@ -114,7 +114,9 @@ export function GetApp({ onSubmit, ...props }: GetAppProps) {
         />
         <p className="gencl:text-body-1-medium">Scan to download app</p>
       </div>
-      <AppDownloadForm className="gencl:sm:block! gencl:hidden" />
+      {step !== "GET_APP_WITH_BLURRED_BG" && (
+        <AppDownloadForm className="gencl:sm:block! gencl:hidden" />
+      )}
 
       <div>
         <Link target="_blank" rel="noopener noreferrer" href={deeplinkUrl}>

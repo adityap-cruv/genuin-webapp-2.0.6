@@ -19,6 +19,8 @@ import { RemovePicture } from "./screens/remove-picture";
 import { SignOut } from "./screens/sign-out";
 import { SignIn } from "./screens/signin";
 import { useBaseContext } from "@genuin/components/context/base";
+import { Button } from "@genuin/ui/components";
+import { Link } from "@genuin/components/molecules/link";
 
 export function Screens() {
   const { step, setStep } = useAuthenticationModalContext();
@@ -66,19 +68,14 @@ export function Screens() {
                 </span>
                 <div className="gencl:flex-1 gencl:border-b gencl:border-secondary-150" />
               </div>
-              <div className="gencl:w-full gencl:flex gencl:justify-center">
-                Go to&nbsp;
-                <a
-                  href={website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="gencl:text-primary-500 gencl:underline gencl:text-center"
-                >
+              <Link href={website} target="_blank" rel="noopener noreferrer">
+                <Button theme="primary" className="gencl:w-full">
+                  Go to{" "}
                   {website
                     .replace(/^https?:\/\/(www\.)?/, "")
                     .replace(/\/$/, "")}
-                </a>
-              </div>
+                </Button>
+              </Link>
             </>
           )}
         </>

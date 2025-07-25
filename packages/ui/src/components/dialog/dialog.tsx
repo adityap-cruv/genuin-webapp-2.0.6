@@ -95,7 +95,7 @@ function DialogOverlay({
 
 const dialogContentVariants = cva(
   [
-    "gencl:data-[state=open]:animate-in gencl:data-[state=closed]:animate-out",
+    "gencl:data-[state=open]:animate-in gencl:data-[state=closed]:animate-out gencl:outline-none",
     "gencl:data-[state=closed]:fade-out-0 gencl:data-[state=open]:fade-in-0",
     "gencl:data-[state=closed]:zoom-out-95 gencl:data-[state=open]:zoom-in-95",
     "gencl:z-50 gencl:w-full gencl:gap-4 gencl:rounded-lg",
@@ -138,6 +138,7 @@ function DialogContent({
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(dialogContentVariants({ variant }), className)}
+        autoFocus={false}
         {...props}
       >
         {children}

@@ -109,6 +109,10 @@ export function AppDownloadForm({
                       void form.trigger();
                     }}
                     onBlur={() => {
+                      // Reset phone number to empty string if it's not a valid phone number
+                      if (field.value && !isValidPhoneNumber(field.value)) {
+                        form.setValue("phoneNumber", "");
+                      }
                       void form.trigger();
                     }}
                   />

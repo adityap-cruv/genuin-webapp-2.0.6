@@ -101,7 +101,7 @@ export function AuthenticationModal({
           onOpen={handleOpen}
           getAppData={getAppData}
         >
-          <div className="gencl:max-h-[90vh] gencl:overflow-y-auto">
+          <div className="gencl:max-h-[90vh] gencl:overflow-y-auto gencl:my-2">
             <Content variant={variant} />
           </div>
         </AuthenticationModalProvider>
