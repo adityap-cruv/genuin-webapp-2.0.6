@@ -48,7 +48,7 @@ export const Controls = memo(function Controls({
   return (
     <div
       className={cn(
-        "gencl:absolute gencl:transition-all gencl:z-20 gencl:flex gencl:w-full gencl:sm:bg-gradient-to-b gencl:from-black/50 gencl:to-transparent gencl:top-16 gencl:sm:top-0 gencl:justify-between gencl:items-center gencl:gap-3 gencl:p-2 gencl:px-4",
+        "gencl:absolute gencl:transition-all gencl:z-20 gencl:flex gencl:w-full gencl:sm:bg-gradient-to-b gencl:from-black/50 gencl:to-transparent gencl:top-16 gencl:sm:top-0 gencl:justify-between gencl:items-center gencl:gap-3 gencl:p-4",
         // in case of expand view and show close button is true, which means the control layer is on mobile expand view, which doesn't contain the top-bar so that we can put top-0.
         showExpandView && isMobile && showCloseButton
           ? "gencl:top-0"

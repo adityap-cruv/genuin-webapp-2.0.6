@@ -27,7 +27,7 @@ async function fetchComments(videoId: string, pageParam?: string) {
     const resData = res.data.data;
     return {
       comments: parseComments(resData.comments),
-      end: resData.endOfResult,
+      end: resData.end_of_result,
     };
   } catch (e) {
     throw new Error("Something went wrong with comments API!");
