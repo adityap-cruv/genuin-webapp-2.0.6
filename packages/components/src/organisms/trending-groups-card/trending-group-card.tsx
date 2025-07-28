@@ -165,7 +165,7 @@ export const TrendingGroupCard = ({
 
 export function TrendingGroupCardSkeleton() {
   return (
-    <div className="gencl:border gencl:rounded-lg gencl:border-secondary-150 gencl:relative gencl:overflow-hidden">
+    <div className="gencl:border gencl:rounded-lg gencl:border-secondary-150 gencl:relative gencl:overflow-hidden gencl:w-full">
       <div className="gencl:p-4">
         <div className="gencl:flex gencl:flex-col gencl:gap-2">
           <Skeleton className="gencl:w-50 gencl:h-5 gencl:rounded-md gencl:mt-1.5" />

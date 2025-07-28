@@ -269,3 +269,51 @@ export function setQueryDataForGroupSubscriptionChangeInFeed({
     };
   });
 }
+
+/**
+ * Set query data for comment count change in feed
+ * @param param0 - Parameters for setting query data for comment count change in feed
+ */
+export function setQueryDataForCommentCountInFeed({
+  queryKey,
+  videoId,
+  increment = true,
+}: {
+  queryKey: QueryKey;
+  videoId: string;
+  increment?: boolean;
+}) {
+  queryClient.setQueryData<QueryData>(queryKey, (oldData) => {
+    if (!oldData) return oldData;
+
+    // Create a new array with the updated comment count
+    const updatedPages = oldData.pages.map((page) => {
+      return {
+        ...page,
+        feed: page.feed.map((video) => {
+          if (video.video.id === videoId) {
+            const commentCount = video.video.commentCount ?? 0;
+            return {
+              ...video,
+              video: {
+                ...video.video,
+                commentCount: increment
+                  ? commentCount + 1
+                  : commentCount > 0
+                    ? commentCount - 1
+                    : 0,
+              },
+            };
+          }
+          return video;
+        }),
+      };
+    });
+
+    // Return the updated data structure
+    return {
+      ...oldData,
+      pages: updatedPages,
+    };
+  });
+}

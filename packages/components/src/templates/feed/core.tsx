@@ -11,6 +11,7 @@ import {
   setQueryDataForGroupSubscriptionChangeInFeed,
   setQueryDataForJoinCommunityStatusInFeed,
   setQueryDataForJoinGroupStatusInFeed,
+  setQueryDataForCommentCountInFeed,
 } from "@genuin/components/react-query/api/feed";
 
 import { useFeedContext } from "./context";
@@ -126,6 +127,17 @@ export function FeedViewCore({
     [queryKey]
   );
 
+  const handleCommentCountChange = useCallback(
+    (videoId: string, increment: boolean = true) => {
+      setQueryDataForCommentCountInFeed({
+        queryKey,
+        videoId,
+        increment,
+      });
+    },
+    [queryKey]
+  );
+
   const handleActiveIndexChange = useCallback(
     (newIndex: number) => {
       setActiveIndex(newIndex);
@@ -161,12 +173,14 @@ export function FeedViewCore({
           onCommunityJoinStatusChange={handleCommunityJoinStatusChange}
           onGroupJoinStatusChange={handleGroupJoinStatusChange}
           onGroupSubscriptionChange={handleGroupSubscriptionChange}
+          onCommentCountChange={handleCommentCountChange}
         />
         {showSidePanel && (
           <PostSidePanel
             onGroupJoinStatusChange={handleGroupJoinStatusChange}
             onGroupSubscriptionChange={handleGroupSubscriptionChange}
             onCommunityJoinStatusChange={handleCommunityJoinStatusChange}
+            onCommentCountChange={handleCommentCountChange}
             postDetails={videos?.[activeIndex] as PostDetailsType}
           />
         )}

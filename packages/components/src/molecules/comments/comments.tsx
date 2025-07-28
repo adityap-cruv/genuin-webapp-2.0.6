@@ -27,6 +27,11 @@ type CommentPropsType = {
   videoSlug: string;
   showCloseButton?: boolean;
   onClose?: () => void;
+  /**
+   * @param videoId - The video id
+   * @param increment - true to increment, false to decrement
+   */
+  onCommentCountChange?: (videoId: string, increment?: boolean) => void;
 } & ComponentProps<"div"> &
   VariantProps<typeof commentsVariant>;
 
@@ -39,10 +44,18 @@ export function Comments({
   showCloseButton = false,
   variant,
   onClose,
+  onCommentCountChange,
   ...restProps
 }: CommentPropsType) {
   return (
-    <div className={cn(commentsVariant({ variant }), className)} {...restProps}>
+    <div
+      className={cn(
+        commentsVariant({ variant }),
+        "gencl:relative gencl:flex gencl:flex-col gencl:h-full",
+        className
+      )}
+      {...restProps}
+    >
       {/* {showCloseButton && (
         <X
           className="gencl:absolute gencl:top-2 gencl:right-2 gencl:cursor-pointer"
@@ -62,16 +75,25 @@ export function Comments({
           />
         </div>
       )}
-      <CommentsList videoId={videoId} showCloseButton={showCloseButton} />
-      <CommentInputBox
-        videoId={videoId}
-        loopId={loopId}
-        communityId={communityId}
-        videoSlug={videoSlug}
-        onCommentPosted={(comments) => {
-          setQueryDataForNewComment(videoId, comments);
-        }}
-      />
+      <div className="gencl:flex-1 gencl:overflow-y-auto gencl:min-h-0">
+        <CommentsList
+          videoId={videoId}
+          showCloseButton={showCloseButton}
+          className="gencl:pb-24 gencl:h-full"
+        />
+      </div>
+      <div className="gencl:sticky gencl:bottom-0 gencl:left-0 gencl:w-full gencl:bg-white gencl:z-10 gencl:pt-2 gencl:pb-4 gencl:px-0">
+        <CommentInputBox
+          videoId={videoId}
+          loopId={loopId}
+          communityId={communityId}
+          videoSlug={videoSlug}
+          onCommentPosted={(comments) => {
+            setQueryDataForNewComment(videoId, comments);
+            onCommentCountChange?.(videoId);
+          }}
+        />
+      </div>
     </div>
   );
 }

@@ -35,6 +35,11 @@ type PlayerListPropsType = {
   onGroupSubscriptionChange: ComponentProps<
     typeof Player
   >["onGroupSubscriptionChange"];
+  /**
+   * @param videoId - The video id
+   * @param increment - true to increment, false to decrement
+   */
+  onCommentCountChange?: (videoId: string, increment?: boolean) => void;
 };
 
 // TODO: This component is using feed context, which is not ideal. Remove this dep of FeedContext in future.
@@ -46,6 +51,7 @@ export function PlayerList({
   onCommunityJoinStatusChange,
   onGroupJoinStatusChange,
   onGroupSubscriptionChange,
+  onCommentCountChange,
 }: PlayerListPropsType) {
   const { value, toggle } = useBoolean(true);
   const { showExpandView, activeIndex } = useFeedContext();
@@ -140,6 +146,7 @@ export function PlayerList({
             className="gencl:h-full"
             showCloseButton={value}
             onClose={toggle}
+            onCommentCountChange={onCommentCountChange}
           />
         </div>
       )}

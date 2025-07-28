@@ -7,16 +7,16 @@ export function TrendingGroupsSkeleton() {
       {/* Header with conditional "See more" button */}
       <div className="gencl:flex gencl:justify-between gencl:items-center gencl:self-stretch">
         <Skeleton className="gencl:w-40 gencl:h-6" />
-        <Skeleton className="gencl:hidden gencl:md:block gencl:w-20 gencl:h-6" />
+        <Skeleton className="gencl:hidden gencl:md:block! gencl:w-20 gencl:h-6" />
       </div>
 
       {/* Mobile View Skeleton (default for smaller than md screens) */}
-      <div className="gencl:flex gencl:overflow-x-auto gencl:gap-2 gencl:pb-4 gencl:md:hidden">
-        <GroupsSkeleton noOfGroups={3} />
+      <div className="gencl:flex gencl:overflow-x-auto gencl:gap-2 gencl:md:hidden!">
+        <GroupsSkeleton noOfGroups={1} />
       </div>
 
       {/* Desktop View Skeleton (md and larger screens) */}
-      <div className="gencl:hidden gencl:md:grid gencl:grid-cols-1 gencl:md:grid-cols-2 gencl:lg:grid-cols-3 gencl:gap-3">
+      <div className="gencl:hidden gencl:md:grid! gencl:grid-cols-1 gencl:md:grid-cols-2! gencl:lg:grid-cols-3! gencl:gap-x-2 gencl:gap-y-4">
         <GroupsSkeleton noOfGroups={3} />
       </div>
     </div>

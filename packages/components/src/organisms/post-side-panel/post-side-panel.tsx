@@ -17,6 +17,11 @@ type PostSidePanelPropsType = ComponentProps<"div"> & {
   onCommunityJoinStatusChange?: ComponentProps<
     typeof PostDetails
   >["onCommunityJoinStatusChange"];
+  /**
+   * @param videoId - The video id
+   * @param increment - true to increment, false to decrement
+   */
+  onCommentCountChange?: (videoId: string, increment?: boolean) => void;
 };
 
 export function PostSidePanel({
@@ -25,6 +30,7 @@ export function PostSidePanel({
   onGroupJoinStatusChange,
   onGroupSubscriptionChange,
   onCommunityJoinStatusChange,
+  onCommentCountChange,
   ...restProps
 }: PostSidePanelPropsType) {
   return (
@@ -47,6 +53,7 @@ export function PostSidePanel({
         communityId={postDetails.community.id}
         videoSlug={postDetails.video.slug}
         className="gencl:overflow-auto"
+        onCommentCountChange={onCommentCountChange}
       />
     </div>
   );

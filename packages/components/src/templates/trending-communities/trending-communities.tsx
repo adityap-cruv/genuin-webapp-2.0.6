@@ -91,7 +91,7 @@ export function TrendingCommunitiesDesktopView({
         )}
       </div>
 
-      <div className="gencl:grid gencl:grid-cols-1 gencl:sm:grid-cols-2 gencl:md:grid-cols-3 gencl:lg:grid-cols-3 gencl:gap-x-2 gencl:gap-y-4">
+      <div className="gencl:grid gencl:grid-cols-1 gencl:md:grid-cols-2! gencl:lg:grid-cols-3! gencl:xl:grid-cols-3! gencl:gap-x-2 gencl:gap-y-4">
         {communitiesToDisplay.map((community: CommunityInfoType) => (
           <Link
             key={community.community_id}
