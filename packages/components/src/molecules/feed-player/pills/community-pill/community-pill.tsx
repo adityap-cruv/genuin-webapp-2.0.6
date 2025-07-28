@@ -104,41 +104,38 @@ export function CommunityPill({
         </div>
         {authenticationStatus === "authenticated" &&
           (communityDetails.userRole !== "MEMBER" || showButton) && (
-            <div
-              className={`gencl:overflow-hidden gencl:shrink-0 gencl:transition-all gencl:duration-500 ${
+            <JoinCommunityButton
+              className={`gencl:overflow-hidden gencl:shrink-0 gencl:transition-all gencl:duration-500 gencl:h-6 ${
                 isAnimating
                   ? "gencl:max-w-0 gencl:opacity-0 gencl:ml-0"
                   : "gencl:max-w-24 gencl:opacity-100 gencl:ml-1"
               }`}
-            >
-              <JoinCommunityButton
-                size="sm"
-                roleTexts={{
-                  UNJOINED: "Join",
-                }}
-                communityId={communityDetails.id}
-                communityHandle={communityDetails.handle}
-                communityName={communityDetails.name ?? ""}
-                slug={communityDetails.slug}
-                isPrivate={communityDetails.isPrivate}
-                role={communityDetails.userRole}
-                shape="pill"
-                theme={
-                  variant === "fullScreen"
-                    ? "secondary"
-                    : communityDetails.userRole === "MEMBER"
-                      ? "outline"
-                      : communityDetails.userRole === "REQUESTED"
-                        ? "secondary"
-                        : "primary"
-                }
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                }}
-                onCommunityJoinStatusChange={handleCommunityJoinStatusChange}
-              />
-            </div>
+              size="sm"
+              roleTexts={{
+                UNJOINED: "Join",
+              }}
+              communityId={communityDetails.id}
+              communityHandle={communityDetails.handle}
+              communityName={communityDetails.name ?? ""}
+              slug={communityDetails.slug}
+              isPrivate={communityDetails.isPrivate}
+              role={communityDetails.userRole}
+              shape="pill"
+              theme={
+                variant === "fullScreen"
+                  ? "secondary"
+                  : communityDetails.userRole === "MEMBER"
+                    ? "outline"
+                    : communityDetails.userRole === "REQUESTED"
+                      ? "secondary"
+                      : "primary"
+              }
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+              onCommunityJoinStatusChange={handleCommunityJoinStatusChange}
+            />
           )}
       </div>
     </Link>

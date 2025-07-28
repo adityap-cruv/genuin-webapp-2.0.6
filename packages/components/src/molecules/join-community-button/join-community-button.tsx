@@ -148,22 +148,22 @@ function Button({
       onClick={handleClick}
       {...rest}
       theme={
-      theme
-        ? theme
-        : role === "MEMBER"
-        ? "outline"
-        : role === "REQUESTED"
-          ? "secondary"
-          : "primary"
+        theme
+          ? theme
+          : role === "MEMBER"
+            ? "outline"
+            : role === "REQUESTED"
+              ? "secondary"
+              : "primary"
       }
     >
       {isLoading ? (
-      <Loader
-        size={rest.shape === "pill" ? "xs" : "sm"}
-        strokeColor="black"
-      />
+        <Loader
+          size={rest.shape === "pill" ? "xs" : "sm"}
+          strokeColor="black"
+        />
       ) : (
-      roleTexts[role] ?? DEFAULT_ROLE_TEXTS[role]
+        (roleTexts[role] ?? DEFAULT_ROLE_TEXTS[role])
       )}
     </PrimitiveButton>
   );

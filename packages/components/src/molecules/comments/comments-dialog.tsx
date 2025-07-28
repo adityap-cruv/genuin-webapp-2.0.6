@@ -8,6 +8,7 @@ import { ReactNode } from "react";
 import { CommentsList } from "./comments-list";
 import { CommentInputBox } from "./comment-input";
 import { setQueryDataForNewComment } from "@genuin/components/react-query/api/comments";
+import { abbreviateNumber } from "@genuin/ui/lib/utils";
 
 type CommentDialogProps = {
   communityId: string;
@@ -32,6 +33,9 @@ export function CommentsDialog({
     <Dialog type="comment-dialog">
       <DialogTrigger className={className} {...props}>
         {children}
+        <p className="gencl:p-0 gencl:text-center gencl:text-white gencl:text-body-2-medium">
+          {abbreviateNumber(commentCount)}
+        </p>
       </DialogTrigger>
       <DialogContent className="gencl:max-h-[80vh] gencl:flex gencl:flex-col gencl:overflow-clip gencl:h-full gencl:p-0 gencl:gap-0">
         <DialogHeader className="gencl:py-4 gencl:text-body-0-semi-bold">

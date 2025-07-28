@@ -108,30 +108,26 @@ export function GroupPill({
         </div>
         {authenticationStatus === "authenticated" &&
           (!(groupDetails.isSubscribed ?? false) || showButton) && (
-            <div
-              className={`gencl:overflow-hidden gencl:shrink-0 gencl:transition-all gencl:duration-500 ${
+            <GroupSubscriptionButton
+              className={`gencl:px-2 gencl:overflow-hidden gencl:shrink-0 gencl:transition-all gencl:duration-500 gencl:h-6 ${
                 isAnimating
                   ? "gencl:max-w-0 gencl:opacity-0 gencl:ml-0"
                   : "gencl:max-w-24 gencl:opacity-100 gencl:ml-1"
               }`}
-            >
-              <GroupSubscriptionButton
-                className="gencl:px-2"
-                variant="icon"
-                shape="pill"
-                size="sm"
-                groupId={groupDetails.id}
-                groupName={groupDetails.name ?? ""}
-                groupDescription={ldDescription}
-                shareUrl={groupDetails.shareUrl ?? ""}
-                isSubscriber={groupDetails.isSubscribed ?? false}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                }}
-                onSubscriptionChange={handleGroupSubscriptionChange}
-              />
-            </div>
+              variant="icon"
+              shape="pill"
+              size="sm"
+              groupId={groupDetails.id}
+              groupName={groupDetails.name ?? ""}
+              groupDescription={ldDescription}
+              shareUrl={groupDetails.shareUrl ?? ""}
+              isSubscriber={groupDetails.isSubscribed ?? false}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+              onSubscriptionChange={handleGroupSubscriptionChange}
+            />
           )}
       </div>
     </Link>
