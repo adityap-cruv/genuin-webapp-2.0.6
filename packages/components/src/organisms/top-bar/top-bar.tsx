@@ -1,7 +1,6 @@
 import { CtaButtons } from "./cta-buttons";
 import { BrandLogo } from "@genuin/components/molecules/brand";
 import { BrandSlogan } from "@genuin/components/molecules/brand";
-import { Search } from "@genuin/components/molecules/search";
 import { cn } from "@genuin/ui/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 import type { ReactNode } from "react";
@@ -11,13 +10,10 @@ import {
   SheetContent,
   SheetClose,
 } from "@genuin/ui/sheet";
-import { AlignJustifyIcon, NotificationIcon, XIcon } from "@genuin/ui/icons";
+import { AlignJustifyIcon, XIcon } from "@genuin/ui/icons";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { SideBar } from "../side-bar";
 import { useRef } from "react";
-import { Link } from "@genuin/components/molecules/link";
-import { buildPageUrl } from "@genuin/components/lib/utils/pages";
-import { useAuthContext } from "@genuin/components/context/auth";
 
 const topbarVariants = cva(
   "playback-speed-class gencl:h-16 gencl:w-full gencl:flex gencl:px-4 gencl:sm:px-6! gencl:items-center gencl:justify-between",
@@ -46,7 +42,6 @@ export function TopBar({
   ...restProps
 }: TopBarProps) {
   const { isMobile } = useDeviceDetectMediaQuery();
-  const { user } = useAuthContext();
   return (
     <div className={cn(className, topbarVariants({ theme }))} {...restProps}>
       <div className="gencl:flex gencl:items-center">
@@ -59,22 +54,8 @@ export function TopBar({
         <BrandLogo className="gencl:h-9 gencl:sm:h-12! gencl:w-9 gencl:sm:w-full! gencl:rounded-full gencl:sm:rounded-none!" />
       </div>
       {!isMobile && <BrandSlogan className="gencl:hidden gencl:sm:block!" />}
-      <div className="gencl:flex gencl:justify-between gencl:items-center gencl:gap-2.5!">
-        <Search />
-        {user && isMobile && <Notification />}
-        <CtaButtons />
-      </div>
+      <CtaButtons theme={theme} />
     </div>
-  );
-}
-
-function Notification() {
-  return (
-    <Link href={buildPageUrl({ type: "notification" })}>
-      <div className="gencl:flex gencl:size-9 gencl:md:hidden! gencl:items-center gencl:justify-center gencl:rounded-full gencl:bg-black/40">
-        <NotificationIcon size="md" theme="dark" />
-      </div>
-    </Link>
   );
 }
 

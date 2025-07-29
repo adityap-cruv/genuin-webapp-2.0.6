@@ -131,7 +131,7 @@ export function DetailsPageTopbar({
             aria-label="Profile Image"
           />
         )}
-        <p className="gencl:text-headline-4-semi-bold gencl:line-clamp-1">
+        <p className="gencl:text-headline-4-semi-bold gencl:line-clamp-1 gencl:break-all">
           {title}
         </p>
         <div className="gencl:ml-1">{RenderTypeBadge()}</div>

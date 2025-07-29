@@ -8,8 +8,8 @@ const iconVariants = cva("", {
   variants: {
     theme: {
       default: "gencl:fill-secondary-900",
-      active: "gencl:fill-black",
-      light: "gencl:fill-white",
+      light: "gencl:fill-black",
+      dark: "gencl:fill-white",
     },
     size: defaultSizesForIcons(),
   },

@@ -9,17 +9,52 @@ import { Link } from "@genuin/components/molecules/link";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { cn } from "@genuin/ui/lib/utils";
 import { useState } from "react";
+import { Search } from "@genuin/components/molecules/search";
+import { cva, VariantProps } from "class-variance-authority";
+import { NotificationIcon } from "@genuin/ui/icons";
 
-export function CtaButtons() {
+export const iconVariant = cva(
+  "gencl:flex gencl:size-9 gencl:items-center gencl:justify-center gencl:rounded-full",
+  {
+    variants: {
+      theme: {
+        light: "gencl:bg-white gencl:border gencl:border-secondary-150",
+        dark: "gencl:bg-black/40",
+      },
+    },
+    defaultVariants: {
+      theme: "light",
+    },
+  }
+);
+
+/**
+ * Top bar CTA buttons for the web app.
+ * Handles login, app download, notifications, and user menu.
+ */
+export function CtaButtons({ theme }: VariantProps<typeof iconVariant>) {
   const { web_cta } = useBaseContext().brandDetails;
   const { authenticationStatus } = useAuthContext();
 
   const showApp = web_cta === "app" || web_cta === "both";
   const showLogin = web_cta === "login" || web_cta === "both";
+  const isAuthenticated = authenticationStatus === "authenticated";
 
-  const showUserTick = authenticationStatus === "authenticated";
   return (
     <div className="gencl:flex gencl:gap-2.5 gencl:justify-between gencl:items-center">
+      <Search theme={theme} />
+
+      {isAuthenticated && (
+        <Link
+          className="gencl:flex gencl:md:hidden!"
+          href={buildPageUrl({ type: "notification" })}
+        >
+          <div className={cn(iconVariant({ theme }))}>
+            <NotificationIcon size="md" theme={theme} />
+          </div>
+        </Link>
+      )}
+
       {showApp && (
         <AuthenticationModal asChild customStep="GET_APP">
           <Button theme="outline" size="sm">
@@ -27,32 +62,35 @@ export function CtaButtons() {
           </Button>
         </AuthenticationModal>
       )}
+
       {showLogin && (
         <AuthenticationModal customStep="SIGNIN" asChild>
           <Button
             theme="primary"
-            className={cn(showUserTick && "gencl:hidden")}
+            className={cn(isAuthenticated && "gencl:hidden")}
             size="sm"
           >
             Log in
           </Button>
         </AuthenticationModal>
       )}
-      {showUserTick && <UserTick />}
+
+      {isAuthenticated && <UserMenu />}
     </div>
   );
 }
 
-function UserTick() {
+/**
+ * UserMenu: Avatar popover for authenticated users.
+ * Shows user info, settings, and logout.
+ */
+function UserMenu() {
   const { user } = useAuthContext();
   const [open, setOpen] = useState(false);
-
-  if (!user) {
-    return null; // or handle the case where user is not defined
-  }
+  if (!user) return null;
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger>
+      <PopoverTrigger className="gencl:cursor-pointer">
         <Avatar
           imageUrl={user.image}
           isAvatar={user.isAvatar}
@@ -65,31 +103,24 @@ function UserTick() {
         sideOffset={8}
         collisionPadding={{ right: 16 }}
       >
-        <Content onClose={() => setOpen(false)} />
+        <UserMenuContent onClose={() => setOpen(false)} />
       </PopoverContent>
     </Popover>
   );
 }
 
-function Content({ onClose }: { onClose: () => void }) {
+// TODO: Have clarity from desgn on which button type to use here.
+/**
+ * UserMenuContent: Popover content for user menu.
+ * Shows user info, settings, and logout.
+ */
+function UserMenuContent({ onClose }: { onClose: () => void }) {
   const { user, signOut } = useAuthContext();
+  if (!user) return null;
 
-  const ACTIONS = [
-    {
-      icon: <LogOutIcon className="gencl:size-6" />,
-      label: "Log out",
-      onClick: () => signOut("/"),
-    },
-  ] as const;
-
-  if (!user) {
-    return null; // or handle the case where user is not defined
-  }
-
-  // TODO: Have clarity from desgn on which button type to use here.
-  // TODO: add a component for the settings link.
   return (
     <div className="gencl:flex gencl:flex-col gencl:gap-2">
+      {/* User info and profile completion */}
       <div className="gencl:border-b gencl:border-secondary-150 gencl:pb-3">
         <div className="gencl:flex gencl:items-center gencl:gap-2">
           <Avatar
@@ -98,22 +129,22 @@ function Content({ onClose }: { onClose: () => void }) {
             alt={user.name}
             size="md"
           />
-          <div className="">
+          <div>
             <p className="gencl:text-body-1-bold">
               {user.name ?? "@" + user.nickname}
             </p>
             {!user.isBrandSystemUser && (
-              // <AuthenticationModal customStep="COMPLETE_PROFILE">
               <Link href={buildPageUrl({ type: "settings" })} onClick={onClose}>
                 <p className="gencl:text-body-1-semi-bold gencl:cursor-pointer gencl:text-primary gencl:hover:text-primary-700">
                   Complete Profile
                 </p>
               </Link>
-              // </AuthenticationModal>
             )}
           </div>
         </div>
       </div>
+
+      {/* Settings link for non-brand users */}
       {!user.isBrandSystemUser && (
         <Link href={buildPageUrl({ type: "settings" })} onClick={onClose}>
           <div className="gencl:flex gencl:items-center gencl:gap-2 gencl:px-2 gencl:hover:bg-secondary-50 gencl:py-3 gencl:rounded-lg gencl:text-body-1-medium">
@@ -122,6 +153,8 @@ function Content({ onClose }: { onClose: () => void }) {
           </div>
         </Link>
       )}
+
+      {/* Logout button */}
       <Button
         className="gencl:px-2 gencl:hover:bg-secondary-50 gencl:text-body-1-medium! gencl:justify-start"
         theme="custom"

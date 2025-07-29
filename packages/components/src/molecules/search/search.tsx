@@ -4,16 +4,19 @@ import { type ComponentProps, useState } from "react";
 import { cn } from "@genuin/ui/utils";
 import { SearchIcon } from "@genuin/ui/icons";
 import { SearchModal } from "@genuin/components/organisms/search-modal";
+import { iconVariant } from "@genuin/components/organisms/top-bar/cta-buttons";
+import { VariantProps } from "class-variance-authority";
 
 export type SearchProps = ComponentProps<"div"> & {
   placeholder?: string;
   onSearch?: (query: string) => void;
-};
+} & VariantProps<typeof iconVariant>;
 
 export function Search({
   className,
   placeholder = "Search...",
   onSearch,
+  theme,
   ...restProps
 }: SearchProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -59,8 +62,10 @@ export function Search({
           </div>
         </div>
 
-        <div className="gencl:flex gencl:size-9 gencl:md:hidden! gencl:items-center gencl:justify-center gencl:rounded-full gencl:bg-black/40">
-          <SearchIcon size="md" theme="light" />
+        <div
+          className={cn("gencl:flex gencl:md:hidden!", iconVariant({ theme }))}
+        >
+          <SearchIcon size="md" theme={theme} />
         </div>
       </div>
 
