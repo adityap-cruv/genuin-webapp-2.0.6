@@ -50,6 +50,13 @@ async function fetchFeed(
       if (res.status !== 200) {
         throw new Error("Something went wrong feed api.");
       }
+      if (!res.data || !res.data.data) {
+        return {
+          feed: [],
+          pageSession: undefined,
+          endOfFeed: true,
+        };
+      }
       return {
         feed: parseFeed(res.data.data.feeds),
         pageSession: res.data.data.page_session,

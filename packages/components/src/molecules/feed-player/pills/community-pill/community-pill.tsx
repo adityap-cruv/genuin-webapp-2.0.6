@@ -81,7 +81,7 @@ export function CommunityPill({
       href={buildPageUrl({ type: "community", slug: communityDetails.slug })}
     >
       <div className={communityPillVariants({ variant, className })}>
-        <div className="gencl:flex gencl:gap-1 gencl:items-center gencl:line-clamp-1 gencl:break-words">
+        <div className="gencl:flex gencl:gap-1 gencl:items-center gencl:line-clamp-1 gencl:break-all">
           <Avatar
             alt={communityDetails.name ?? ""}
             imageUrl={communityDetails.profileImage ?? ""}
