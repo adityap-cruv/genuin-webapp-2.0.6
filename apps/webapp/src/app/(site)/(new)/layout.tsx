@@ -12,6 +12,7 @@ import { type ConfigType } from '@lib/stores/genuin-options'
 import { parseBrandColors } from '@lib/utils'
 import { auth } from '../../../../auth'
 import { type Session } from 'next-auth'
+import Error from '../../error'
 
 // Enhanced font configuration for better performance
 const inter = Inter({
@@ -57,7 +58,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <meta charSet="utf-8" />
             <meta name="viewport" content="width=device-width, initial-scale=1" />
           </head>
-          <body className={inter.className}>{/* Error fallback UI */}</body>
+          <body className={inter.className}>
+            <Error />
+          </body>
         </html>
       )
     }

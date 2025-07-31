@@ -76,7 +76,7 @@ export function SidebarActions({
         return (
           <Link
             key={index}
-            href={buildPageUrl({ type: links.type, slug : user?.nickname })}
+            href={buildPageUrl({ type: links.type, slug: user?.nickname })}
             className="gencl:flex gencl:rounded-lg gencl:items-center gencl:gap-4 gencl:px-2 gencl:py-2 gencl:xl:py-4 gencl:xl:px-3 gencl:hover:bg-secondary-50 gencl:cursor-pointer"
             onClick={onItemClick}
           >

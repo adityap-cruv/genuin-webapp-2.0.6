@@ -96,7 +96,7 @@ export function AuthenticationModal({
       >
         <AuthenticationModalProvider
           action={action}
-          customStep={customStep}
+          customStep={customStep ?? step}
           onClose={handleClose}
           onOpen={handleOpen}
           getAppData={getAppData}

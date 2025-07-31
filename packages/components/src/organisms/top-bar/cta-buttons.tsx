@@ -142,8 +142,8 @@ function UserMenuContent({ onClose }: { onClose: () => void }) {
             </p>
             {!user.isBrandSystemUser && (
               <Link href={buildPageUrl({ type: "settings" })} onClick={onClose}>
-                <p className="gencl:text-body-1-semi-bold gencl:cursor-pointer gencl:text-secondary-600 gencl:hover:text-secondary-900"> 
-                  {isProfileComplete() ? " View Profile" :"Complete Profile"}
+                <p className="gencl:text-body-1-semi-bold gencl:cursor-pointer gencl:text-secondary-600 gencl:hover:text-secondary-900">
+                  {isProfileComplete() ? " View Profile" : "Complete Profile"}
                 </p>
               </Link>
             )}
