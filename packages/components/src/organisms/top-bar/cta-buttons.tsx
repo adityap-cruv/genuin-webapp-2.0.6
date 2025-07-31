@@ -8,7 +8,7 @@ import { LogOutIcon, SettingsIcon } from "lucide-react";
 import { Link } from "@genuin/components/molecules/link";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { cn } from "@genuin/ui/lib/utils";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Search } from "@genuin/components/molecules/search";
 import { cva, VariantProps } from "class-variance-authority";
 import { NotificationIcon } from "@genuin/ui/icons";
@@ -118,6 +118,13 @@ function UserMenuContent({ onClose }: { onClose: () => void }) {
   const { user, signOut } = useAuthContext();
   if (!user) return null;
 
+  // Profile is considered complete if all required fields are truthy
+  const isProfileComplete = useCallback(() => {
+    if (!user) return false;
+    const { hasTopics, name, usernameSet, image, bio } = user;
+    return [hasTopics, name, usernameSet, image, bio].every(Boolean);
+  }, [user]);
+
   return (
     <div className="gencl:flex gencl:flex-col gencl:gap-2">
       {/* User info and profile completion */}
@@ -135,8 +142,8 @@ function UserMenuContent({ onClose }: { onClose: () => void }) {
             </p>
             {!user.isBrandSystemUser && (
               <Link href={buildPageUrl({ type: "settings" })} onClick={onClose}>
-                <p className="gencl:text-body-1-semi-bold gencl:cursor-pointer gencl:text-primary gencl:hover:text-primary-700">
-                  Complete Profile
+                <p className="gencl:text-body-1-semi-bold gencl:cursor-pointer gencl:text-secondary-600 gencl:hover:text-secondary-900"> 
+                  {isProfileComplete() ? " View Profile" :"Complete Profile"}
                 </p>
               </Link>
             )}

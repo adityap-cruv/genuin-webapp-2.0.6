@@ -14,6 +14,7 @@ import {
   NotificationCountResponse,
   useNotificationCount,
 } from "@genuin/components/react-query/api/notification/get-notification-count";
+import { Avatar } from "@genuin/ui/components";
 
 const sidebarActionsVariants = cva(
   "gencl:px-3 gencl:py-4 gencl:!w-full gencl:border-b gencl:border-secondary-100",
@@ -59,9 +60,14 @@ export function SidebarActions({
       {...restProps}
     >
       {SideBarActionLinks.map((links, index) => {
-        // Skip notification link if user is not logged in
-        if (links.type === "notification" && !user) return null;
-        const Icon = links.icon;
+        // Skip notification and Profile link if user is not logged in
+        if (
+          (links.type === "notification" || links.type === "profile") &&
+          !user
+        )
+          return null;
+
+        const Icon = links.type !== "profile" ? links.icon : undefined;
         const isNotification = links.type === "notification";
         const notificationCount =
           (notificationData as NotificationCountResponse)?.count || 0;
@@ -70,26 +76,36 @@ export function SidebarActions({
         return (
           <Link
             key={index}
-            href={buildPageUrl({ type: links.type })}
+            href={buildPageUrl({ type: links.type, slug : user?.nickname })}
             className="gencl:flex gencl:rounded-lg gencl:items-center gencl:gap-4 gencl:px-2 gencl:py-2 gencl:xl:py-4 gencl:xl:px-3 gencl:hover:bg-secondary-50 gencl:cursor-pointer"
             onClick={onItemClick}
           >
             <div className="gencl:w-6 gencl:h-6 gencl:relative">
-              <Icon
-                className="gencl:w-6 gencl:h-6"
-                variant={
-                  pathName === buildPageUrl({ type: links.type })
-                    ? "active"
-                    : "default"
-                }
-              />
+              {links.type === "profile" && user ? (
+                <Avatar
+                  isAvatar={user.isAvatar || false}
+                  alt={user.nickname || "profile"}
+                  imageUrl={user.image || ""}
+                  size="xs"
+                />
+              ) : (
+                Icon && (
+                  <Icon
+                    className="gencl:w-6 gencl:h-6"
+                    variant={
+                      pathName === buildPageUrl({ type: links.type })
+                        ? "active"
+                        : "default"
+                    }
+                  />
+                )
+              )}
               {showNotificationCount && (
                 <span className="gencl:absolute gencl:-top-1 gencl:-right-1 gencl:inline-flex gencl:items-center gencl:justify-center gencl:w-4 gencl:h-4 gencl:text-body-2-semi-bold gencl:text-white gencl:bg-primary gencl:rounded-full">
                   {notificationCount > 99 ? "+" : notificationCount}
                 </span>
               )}
             </div>
-
             <p className="gencl:text-body-1-medium">{links.text}</p>
           </Link>
         );
