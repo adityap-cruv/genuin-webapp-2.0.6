@@ -163,7 +163,7 @@ export function ProfileDetails({
               : undefined,
             ...(Number(brandDetails?.brand_id) !==
               profileData?.brand?.brand_id && {
-              custom: profileData.brand?.brand_url,
+              custom: profileData.brand?.website,
             }),
           }}
           ctas={ctas}

@@ -12,12 +12,13 @@ import {
   DialogTrigger,
 } from "@genuin/ui/components/dialog/dialog";
 import { cn } from "@genuin/ui/lib/utils";
-import React, { ReactNode } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { ShareButton } from "@genuin/components/molecules/share-button";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { Link } from "../../link";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { FlagIcon, GroupIcon, PlayIcon } from "@genuin/ui/icons";
+import { useFeedContext } from "@genuin/components/templates/feed/context";
 
 type MenuProps = {
   children?: React.ReactNode;
@@ -63,6 +64,17 @@ export function Menu({
 }: MenuProps) {
   const { isMobile } = useDeviceDetectMediaQuery();
   const { brandDetails } = useBaseContext();
+  const [isOpen, setIsOpen] = useState(false);
+  const { activeIndex } = useFeedContext();
+
+  useEffect(() => {
+    if (isOpen) {
+      setIsOpen(false);
+    }
+    return () => {
+      setIsOpen(false);
+    };
+  }, [activeIndex]);
 
   const MenuData = [
     shareUrl &&
@@ -106,7 +118,7 @@ export function Menu({
           children={menuItems({
             text: "Report Post",
             className: "gencl:text-error-status",
-            ...(isMobile && {icon : <FlagIcon theme="danger" size="lg" /> })
+            ...(isMobile && { icon: <FlagIcon theme="danger" size="lg" /> }),
           })}
         />
       ),
@@ -133,7 +145,7 @@ export function Menu({
     );
   }
   return (
-    <Popover {...props}>
+    <Popover open={isOpen} onOpenChange={setIsOpen} {...props}>
       <PopoverTrigger asChild>{children}</PopoverTrigger>
       <PopoverContent
         align="start"

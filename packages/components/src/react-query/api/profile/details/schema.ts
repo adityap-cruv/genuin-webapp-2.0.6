@@ -9,6 +9,7 @@ const BrandSchema = z
     brand_slug: z.string(),
     brand_url: z.string(),
     brand_user_logo: z.number().nullish().default(1),
+    website: z.string(),
   })
   .nullish();
 
