@@ -48,9 +48,9 @@ export function ExpandViewDetails({
       )}
       {...restProps}
     >
-      <div className="gencl:flex gencl:gap-4 gencl:items-end">
+      <div className="gencl:flex gencl:w-full gencl:gap-4 gencl:justify-between gencl:items-end">
         <div
-          className="gencl:flex gencl:flex-col gencl:gap-2 gencl:w-full gencl:transition-all"
+          className="gencl:flex gencl:flex-col gencl:gap-4 gencl:sm:gap-2 gencl:w-5/6 gencl:sm:w-full gencl:transition-all"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="gencl:flex gencl:gap-2 gencl:items-center gencl:text-white gencl:text-body-0-semi-bold">

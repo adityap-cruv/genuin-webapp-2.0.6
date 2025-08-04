@@ -118,6 +118,7 @@ export function PostsGrid({
             getNextPage={fetchNextPage}
             hasNextPage={hasNextPage}
             isLoadingNextPage={isFetchingNextPage}
+            loader={<PostsGridLoader noOfPosts={6} />}
           >
             {Posts}
           </InfiniteScroll>
