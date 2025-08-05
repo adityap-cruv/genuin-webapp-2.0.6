@@ -16,9 +16,9 @@ export function ChevronUp({ className, ...restProps }: ComponentProps<'svg'>) {
         <path
           id='Vector'
           d='M1 10L9.576 1.18082C9.81004 0.939725 10.19 0.939725 10.424 1.18082L19 10'
-          stroke-width='1.5'
-          stroke-linecap='round'
-          stroke-linejoin='round'
+          strokeWidth='1.5'
+          strokeLinecap='round'
+          strokeLinejoin='round'
         />
       </g>
     </svg>

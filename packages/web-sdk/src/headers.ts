@@ -31,12 +31,16 @@ export const removeBaseHeaders = () => {
   localStorage.removeItem(ACCESS_TOKEN_KEY)
 }
 
-export const getBaseHeaders = (addContentTypeJson: boolean) => {
+export const getBaseHeaders = (
+  addContentTypeJson: boolean,
+  brandIds?: number[] | undefined,
+) => {
   const accessToken = localStorage.getItem(ACCESS_TOKEN_KEY)
   const brandId = localStorage.getItem(BRAND_ID_KEY)
-
   return {
-    ...(brandId && { 'x-brand-id': brandId }),
+    ...(brandIds
+      ? brandIds.length === 0 && brandId && { 'x-brand-id': brandId }
+      : brandId && { 'x-brand-id': brandId }),
     ...(accessToken && {
       Authorization: 'Bearer ' + accessToken,
     }),

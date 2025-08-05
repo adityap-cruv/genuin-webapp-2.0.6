@@ -30,6 +30,7 @@ const CommentsLayout = ({ videoDetails, ...props }: CommentsLayoutProps) => {
           loopId={videoDetails.loop.uuid}
           videoSlug={videoDetails.video.slug}
           communityId={videoDetails.community.uuid}
+          shareUrl={videoDetails.video.share_url}
         />
       </div>
     </div>

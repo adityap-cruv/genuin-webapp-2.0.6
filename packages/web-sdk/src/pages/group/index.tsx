@@ -6,12 +6,14 @@ import { Details } from '@/components/pages/group/details'
 import { Loader } from '@/components/pages/group/loader'
 import { TopBarContent } from '@/components/pages/group/top-bar-content'
 import { TopBar } from '@/components/top-bar'
+import { useInvalidateOnUser } from '@/hooks/useInvalidateOnUser'
 import { NOT_FOUND_ERROR_CODES } from '@/utils/constants/errors'
 import { useId } from 'react'
 
 export function GroupPage({ slug }: { slug: string }) {
   const detailsId = useId()
   const { data: groupDetails, isLoading, isError, error } = getLoopDetails(slug)
+  useInvalidateOnUser('group', slug)
 
   if (isLoading) {
     return <Loader />
@@ -36,6 +38,8 @@ export function GroupPage({ slug }: { slug: string }) {
           shareUrl={groupDetails.share_url}
           slug={groupDetails.slug}
           name={groupDetails.group.group_name ?? ''}
+          description={groupDetails.group.group_description}
+          loggedInUserStatus={groupDetails.logged_in_user_status}
         />
       </TopBar>
       <Details

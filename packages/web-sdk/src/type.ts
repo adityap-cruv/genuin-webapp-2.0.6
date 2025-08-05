@@ -21,13 +21,39 @@ export type SDKConfig = {
   live_customization_data?: any
   token?: string
   name?: string
+  contextualParams?: {
+    page_context?: string | null
+    geo?: {
+      lat?: string | null
+      long?: string | null
+    }
+    url?: string | null
+  }
+  params?: {
+    name?: string | null
+    mobile?: string | null
+    email?: string | null
+    nickname?: string | null
+    profileImage?: string | null
+    brandUserIdentity?: string | null
+  }
+  brand_ids?: number[]
   type?: 'brand_feed' | 'community_feed' | 'loop_feed'
+  action?: string
+  authInfo?: AuthInfoType
+}
+
+type AuthInfoType = {
+  signInUrl: string
+  signUpUrl: string
 }
 
 export type SDKInitConfig = {
   embed_id?: string
   api_key?: string
   token?: string
+  params?: SDKConfig['params']
+  authInfo?: AuthInfoType
 }
 
 type ReactionKey = {
@@ -93,6 +119,7 @@ export type WebConfigsType = {
   video_aspect_ratio: string
   tap_behavior: number
   gesture_guidance: boolean
+  playback_speed_enabled: boolean
 }
 
 export type BrandDetailsConfigType = {
@@ -180,6 +207,8 @@ export type BrandDetailsConfigType = {
   reactions: ReactionType
   show_become_creator: boolean
   web_configs: WebConfigsType
+  web_cta: 'login' | 'app' | 'both'
+  white_label_url: string
 }
 
 export type UserParam = {
@@ -200,6 +229,12 @@ export type EmbedDataType = {
   embed_id: string
   brandDetails: BrandDetailsConfigType
   environment: string
+  contextualParams?: SDKConfig['contextualParams']
+  elementId: string
+  brand_ids?: number[]
+  startVideoSlug?: string
+  action?: string
+  authInfo?: AuthInfoType
 }
 
 export type CustomizationType = {
@@ -304,6 +339,7 @@ export type FeedVideoType = {
     slug: string
     type: number
     uuid: string
+    is_subscriber?: boolean
   }
   owner: {
     bio: string
@@ -356,6 +392,7 @@ export type FeedVideoType = {
     video_summary: string | null
     is_sparked?: boolean
     is_read?: boolean
+    is_pinned?: boolean
   }
 }
 

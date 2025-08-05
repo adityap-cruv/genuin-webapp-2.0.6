@@ -97,15 +97,14 @@ const LoopDetailsSchema = z.object({
   is_view_allowed: z.boolean(),
   group: groupSchema,
   owner: ownerSchema,
-  member_info: z
-    .object({
-      role: z.number(),
-      status: z.number(),
-    })
-    .optional(),
+  member_info: z.object({
+    role: z.number(),
+    status: z.number(),
+  }).optional(),
   is_post_allowed: z.boolean(),
   community: communitySchema,
   is_subscriber: z.boolean().optional(),
+  logged_in_user_status: z.number()
 })
 
 export type LoopDetailsType = z.infer<typeof LoopDetailsSchema>

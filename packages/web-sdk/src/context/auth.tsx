@@ -4,11 +4,10 @@ import { removeBaseHeaders, setBaseHeaders } from '@/headers'
 import { useQueryClient } from '@tanstack/react-query'
 import { navigate } from '@/router/context'
 import { usePathNameWithSubdomain } from '@/hooks/usePathNameWithSubdomain'
-import {
-  AuthModalProvider,
-  useAuthModalContext,
-} from '@/components/authentication/context'
+import { AuthModalProvider } from '@/components/authentication/context'
 import { AuthenticationModal } from '@/components/authentication'
+import { DownloadDialogProvider } from '@/components/download-app/context'
+import { DownloadAppModal } from '@/components/download-app/modal'
 
 type AuthStatusType = 'loading' | 'authenticated' | 'unauthenticated'
 
@@ -96,10 +95,13 @@ export function AuthProvider({
         signOut,
         updateUser,
       }}>
-      <AuthModalProvider>
-        {children}
-        <AuthenticationModal.ui />
-      </AuthModalProvider>
+      <DownloadDialogProvider>
+        <AuthModalProvider>
+          {children}
+          <AuthenticationModal.ui />
+          <DownloadAppModal />
+        </AuthModalProvider>
+      </DownloadDialogProvider>
     </AuthContext.Provider>
   )
 }

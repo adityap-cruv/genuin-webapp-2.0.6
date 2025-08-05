@@ -9,9 +9,15 @@ import {
 } from './comment'
 import { CustomAvatar } from '../custom-avatar'
 import { Input } from '../ui/input'
-import { cn } from '@/utils'
+import { cn, sanitizeInput } from '@/utils'
 import { createComment, getComments, mentionUser } from './api'
-import { AuthenticationModal } from '../authentication'
+import { commentDeepLink } from '../download-app/get-deeplink'
+import { useModalHandler } from '@/hooks/useModalHandler'
+import { useSearchParams } from 'wouter'
+import { useBrandDetails } from '@/context/brand-details'
+import { ActionPopover } from '../action-popover'
+import { useBaseContext } from '@/context/base'
+import { useSizeContext } from '@/context/size'
 
 function prependComment(commentData: any, videoId: string) {
   type QueryDataType = ReturnType<typeof getComments>['data']
@@ -38,10 +44,13 @@ const MentionInput: React.FC<{
   videoSlug: string
   communityId: string
   className?: string
-}> = ({ videoId, loopId, videoSlug, className, communityId }) => {
+  shareUrl: string
+}> = ({ videoId, loopId, videoSlug, className, communityId, shareUrl }) => {
   // const { handleWalletBalance } = useWalletBalanceHandler()
-
+  const { isMobile } = useSizeContext()
   const { user } = useAuth()
+  const { embedStyle } = useBrandDetails()
+  const { brandDetails, embedData } = useBaseContext()
   const [text, setText] = useState('')
   const [isMentioning, setIsMentioning] = useState(false)
   const [mentionQuery, setMentionQuery] = useState('')
@@ -58,14 +67,19 @@ const MentionInput: React.FC<{
   const abortControllerRef = useRef<AbortController | null>(null)
   const REGEX_FOR_URLS =
     /(?:https?:\/\/)?(?:www\.)?[\w-]+(\.[\w-]+)+(\/[^\s]*)?/g
+  const searchParams = useSearchParams()
+  const { openModal } = useModalHandler()
 
   const postComment = async () => {
     if (!text.trim()) return
     try {
       setIsPosting(true)
       // await handleWalletBalance({ action: 'comments', videoId, type: 'POST' })
-      const commentData = convertCommentTextToArray(text, selectedMentions)
-
+      const sanitisedText = sanitizeInput(text)
+      const commentData = convertCommentTextToArray(
+        sanitisedText,
+        selectedMentions,
+      )
       const response = await createComment(
         videoId,
         loopId,
@@ -266,6 +280,20 @@ const MentionInput: React.FC<{
     }
   }, [])
 
+  const returnQueryParams = (): string => {
+    try {
+      if (typeof shareUrl === 'string' && shareUrl.includes('?')) {
+        const url = new URL(shareUrl)
+        url.searchParams.set('action', 'comment')
+        if (videoSlug) url.searchParams.set('video', videoSlug)
+        return url.search.substring(1) // Remove the leading '?'
+      }
+      return ''
+    } catch (e) {
+      return ''
+    }
+  }
+
   return (
     <div>
       {isMentioning && (
@@ -361,11 +389,48 @@ const MentionInput: React.FC<{
                 </button>
               </div>
             </div>
+          ) : brandDetails?.brand_id === 2357 &&
+            (embedData?.authInfo?.signInUrl ||
+              embedData?.authInfo?.signUpUrl) &&
+            isMobile ? (
+            <ActionPopover
+              offSet={0}
+              content='to comment on this post.'
+              params={returnQueryParams()}
+              children={
+                <div className='h-full w-full rounded-full border-2 border-tertiary-200 bg-background py-2 pl-6'>
+                  <p className='text-start text-title-3-demi text-tertiary'>
+                    Add a Comment
+                  </p>
+                </div>
+              }
+            />
           ) : (
             <div
               className='h-full w-full rounded-full border-2 border-tertiary-200 bg-background py-2 pl-6'
-              onClick={() => {
-                if (!user) AuthenticationModal.open()
+              onClick={async () => {
+                if (window.genuinAuth) {
+                  window.genuinAuth({
+                    path: '/',
+                    action: 'comment',
+                    returnQueryParams: returnQueryParams(),
+                  })
+                } else if (embedStyle !== 'standard_wall') {
+                  window.open(shareUrl, '_blank')
+                  return
+                } else {
+                  await commentDeepLink({
+                    videoSlug,
+                    communityId,
+                    loopId,
+                    searchParams,
+                  }).then((generatedLink) => {
+                    openModal({
+                      deepLink: generatedLink,
+                      subtitle: <>Download app to comment on this video.</>,
+                    })
+                  })
+                }
               }}>
               <p className='text-start text-title-3-demi text-tertiary'>
                 Add a Comment

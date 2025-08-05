@@ -2,6 +2,8 @@ import { LOGIN_SOURCE } from '@/const'
 import { getBaseHeaders } from '@/headers'
 import { AuthUser } from '@/type'
 import { encryptText, getApiUrl, getEncryptedDeviceId } from '@/utils'
+import { getQueryKeyForksCbStatus } from '@/utils/constants/keys'
+import { useQuery } from '@tanstack/react-query'
 
 type SendOtpProps = {
   phoneNumber: string
@@ -60,9 +62,9 @@ export async function sendOtp({
       }),
     })
 
-    if (!response.ok) {
+    if(!response.ok) {
       const errorBody = await response.json()
-      throw { data: { ...errorBody, status: response.status } }
+      throw {data : {...errorBody,status: response.status}}
     }
 
     const resData = (await response.json()).data
@@ -74,7 +76,7 @@ export async function sendOtp({
       codeSent: true,
       retryTime: resData.retryTime,
       message: resData.message,
-      responseCode: response.status,
+      responseCode: response.status
     }
   } catch (e: any) {
     let message = 'Something went wrong. Please try again!'
@@ -83,9 +85,11 @@ export async function sendOtp({
     if (e?.data?.code === '5262') {
       message =
         'This number is linked to another account. Please use a different one.'
-    } else if (e?.data?.code === '5205') {
+    } 
+    else if (e?.data?.code === '5205') {
       message = 'Email already exists. Please try another one.'
-    } else if (e?.data?.code === '5263') {
+    } 
+    else if (e?.data?.code === '5263') {
       message = isUpdate
         ? 'Unable to send the code. Please use another phone number.'
         : 'Unable to send the code. Please use another phone number or email to log in.'
@@ -109,7 +113,7 @@ export async function sendOtp({
       codeSent: false,
       retryTime,
       message,
-      responseCode: e?.data?.status,
+      responseCode: e?.data?.status
     }
   }
 }
@@ -405,6 +409,15 @@ export async function fetchKsCbRequestStatus(): Promise<{ status: number }> {
   }
 }
 
+export function useKsCbStatus() {
+  return useQuery({
+    queryKey: getQueryKeyForksCbStatus(),
+    queryFn: fetchKsCbRequestStatus,
+    // staleTime: 1000 * 60 * 5,
+    retry: 2,
+  })
+}
+
 export async function ksCbRequest(): Promise<{ code: number; data: any }> {
   try {
     const response = await fetch(getApiUrl('/api/v3/users/ks_cb_request'), {
@@ -565,5 +578,45 @@ export async function ssoAutoLogin(
     return null
   } catch (e) {
     return null
+  }
+}
+
+type VideoDetailsResponseItem = {
+  uuid: string
+  loop: {
+    uuid: string
+    is_subscriber: boolean
+  }
+  community: {
+    uuid: string
+    logged_in_user_role: number
+  }
+  video: {
+    uuid: string
+    no_of_sparks: number
+    is_sparked: boolean
+    no_of_comments: number
+  }
+}
+
+export async function getUpdatedVideoDetails(videoIds: string[]): Promise<VideoDetailsResponseItem[]> {
+  try {
+    const response = await fetch(getApiUrl('/goservices/feed/user/details'), {
+      method: 'POST',
+      headers: getBaseHeaders(true),
+      body: JSON.stringify({
+        video_uuids: videoIds,
+      }),
+    })
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch video details')
+    }
+
+    const resData = await response.json()
+    return resData.data as VideoDetailsResponseItem[]
+  } catch (error) {
+    console.error('::Error in getUpdatedVideoDetails::', error)
+    throw new Error('Something went wrong, please try again later')
   }
 }

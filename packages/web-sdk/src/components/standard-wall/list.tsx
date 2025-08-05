@@ -1,20 +1,21 @@
 import { useSizeContext } from '@/context/size'
 import { Shimmer } from '@/components/shimmer'
-import { FullScreenDesktopDetailsView } from '@/components/full-screen-view/desktop/details'
+import { DesktopDetailsView } from '@/components/full-screen-view/desktop/details'
 import { HeaderMobile } from '../header/mobile'
-import { StandardWallPlayer } from './player'
 import { useState } from 'react'
+import { StandardWallPlayer } from '@/components/player/standard-wall'
 import { FeedVideoType } from '@/type'
 import { CommunityUserRole } from '../tree-structure'
 import { SWIPER_CONFIG } from '@/utils/constants'
 import { useDeviceDetect } from '@/hooks/useDeviceDetect'
 import { cn } from '@/utils'
-import FullScreenComponents from '../expand-view/full-screen-components'
-import { useExpandViewContext } from '@/context/expand-view'
+import { ExpandViewComponents } from '../expand-view/common-components'
 import { useGestureOverlayManager } from '../gestures/gesture-overlay-manager'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Mousewheel } from 'swiper/modules'
 import 'swiper/css'
+import { useExpandViewContext } from '../expand-view/context'
+// import { ExpandViewEsc } from '../expand-view/esc-tab'
 
 type ListPropsType = {
   swiperElementId: string
@@ -63,11 +64,11 @@ export function StandardWallList({
       })}
       style={{ height: isFullScreen ? '100%' : videoSizeBox.height }}>
       {isMobile && (
-        <div className='absolute z-10 top-0 mx-auto'>
+        <div className='absolute z-10 left-1/2 -translate-x-1/2 top-0 mx-auto'>
           <HeaderMobile style={{ width: videoSizeBox.width }} />
         </div>
       )}
-      <div className='h-full flex aspect-reel'>
+      <div className='h-full w-full sm:w-auto flex aspect-reel'>
         <Swiper
           className='relative shrink-0 bg-black'
           style={{
@@ -105,7 +106,7 @@ export function StandardWallList({
           {videos.map((video, index) => (
             <SwiperSlide
               key={index}
-              className='relative'>
+              className='relative overflow-clip'>
               {({ isActive, isPrev, isNext }) => {
                 if (isActive || isPrev || isNext) {
                   return video ? (
@@ -113,7 +114,7 @@ export function StandardWallList({
                       id={'standard__wall__' + video.uuid}
                       videoDetails={video}
                       index={index}
-                      shouldPlay={activeIndex === index && videoShouldPlay}
+                      shouldPlay={isActive && videoShouldPlay}
                       onSpark={onSpark}
                     />
                   ) : (
@@ -124,20 +125,21 @@ export function StandardWallList({
               }}
             </SwiperSlide>
           ))}
+
+          {/* <ExpandViewEsc videoId={videos[activeIndex].video.uuid} /> */}
         </Swiper>
       </div>
-
       {isFullScreen ? (
-        <FullScreenComponents
+        <ExpandViewComponents
           videos={videos}
           activeIndex={activeIndex}
-          swiperInstance={swiperInstance}
           onSpark={onSpark}
+          swiperInstance={swiperInstance}
         />
       ) : (
         !isMobile && (
           <div className='relative w-full'>
-            <FullScreenDesktopDetailsView
+            <DesktopDetailsView
               renderedIn='STANDARD_WALL'
               videoDetails={videos[activeIndex]}
               showCloseButton={false}

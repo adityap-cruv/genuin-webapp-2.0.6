@@ -1,58 +1,72 @@
 import { useCallback, useEffect, useState } from 'react'
 import { ModalShell } from '../modal-shell'
 import { Button } from '@/components/ui/button'
-import { fetchKsCbRequestStatus, ksCbRequest } from '../api/auth'
+import { fetchKsCbRequestStatus, ksCbRequest, useKsCbStatus } from '../api/auth'
 import { Loader } from '@/components/loader'
 import { useAuth } from '@/context/auth'
 import { KsCbSlides } from '../components/ks-cb-slides'
 import { Analytics } from '@/analytics'
 import { useAuthModalContext } from '@/components/authentication/context'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { getQueryKeyForksCbStatus } from '@/utils/constants/keys'
+import { getAppLink } from '@/components/download-app/get-deeplink'
+import { useBaseContext } from '@/context/base'
+import { useModalHandler } from '@/hooks/useModalHandler'
 
 export function KsToCbSubdomain() {
+  const { brandDetails } = useBaseContext()
   const { setStep } = useAuthModalContext()
   const { updateUser, user } = useAuth()
-  const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const { data: ksCbStatus, isLoading: isKsCbStatusLoading } = useKsCbStatus()
+  const queryClient = useQueryClient()
+  const { openModal } = useModalHandler()
   // To check if the user has already requested to become a creator.
   const isRequested = user?.ksCbRequestStatus === 2
 
   useEffect(() => {
-    setLoading(true)
-    // This func won't return any error so no need to handle it.
-    void fetchKsCbRequestStatus().then(async (res) => {
-      // Update the session data if the status is changed.
-      if (res.status && user?.ksCbRequestStatus !== res.status) {
-        updateUser({ ksCbRequestStatus: res.status })
+    if (ksCbStatus?.status && user?.ksCbRequestStatus !== ksCbStatus.status) {
+      updateUser({ ksCbRequestStatus: ksCbStatus.status })
+    }
+  }, [ksCbStatus])
+
+  const { mutate: requestKsCb } = useMutation({
+    mutationFn: ksCbRequest,
+    onSuccess: async (res) => {
+      if (res.code === 200) {
+        updateUser({ ksCbRequestStatus: res.data.ks_cb_request_status })
+        void queryClient.invalidateQueries({
+          queryKey: getQueryKeyForksCbStatus(),
+        })
+        Analytics.track(Analytics.EventNames.BecomeCbRequestClicked)
+      } else {
+        setError('Something went wrong.')
       }
-      setLoading(false)
-    })
-  }, [])
+    },
+    onError: () => {
+      setError('Something went wrong.')
+    },
+  })
 
   const handleClick = useCallback(() => {
-    setLoading(true)
     setError(null)
-    Analytics.track(Analytics.EventNames.BecomeCbRequestClicked)
+
     if (!user) {
-      setStep('STARTER', 'KS_CB_REQUEST')
-      setLoading(false)
+      if (brandDetails?.web_cta === 'app') {
+        void getAppLink().then((generatedLink) => {
+          openModal({
+            deepLink: generatedLink,
+            subtitle: 'Download app to browse more communities.',
+          })
+        })
+      } else {
+        setStep('STARTER', 'KS_CB_REQUEST')
+      }
       return
     }
 
-    ksCbRequest()
-      .then(async (res) => {
-        if (res.code === 200) {
-          updateUser({ ksCbRequestStatus: res.data.ks_cb_request_status })
-          setLoading(false)
-        } else {
-          setError('Something went wrong.')
-          setLoading(false)
-        }
-      })
-      .catch(() => {
-        setError('Something went wrong.')
-        setLoading(false)
-      })
-  }, [user, setStep, updateUser])
+    requestKsCb()
+  }, [user, brandDetails?.web_cta, setStep, requestKsCb])
 
   return (
     <ModalShell>
@@ -62,9 +76,9 @@ export function KsToCbSubdomain() {
           type='submit'
           variant='default'
           className='w-full text-white'
-          disabled={isRequested || loading}
+          disabled={isRequested || isKsCbStatusLoading}
           onClick={handleClick}>
-          {loading ? (
+          {isKsCbStatusLoading ? (
             <Loader className='fill-white' />
           ) : isRequested ? (
             'Requested'

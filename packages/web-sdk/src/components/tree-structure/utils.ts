@@ -6,6 +6,12 @@ export enum CommunityUserRole {
   UNJOINED = 'UNJOINED',
 }
 
+export enum GroupUserStatusType {
+  UNJOINED = 'UNJOINED',
+  REQUESTED = 'REQUESTED',
+  JOINED = 'JOINED',
+}
+
 /*
  * This function maps the role of the user in the community.
  * @param role - Role of the user in the community.
@@ -51,6 +57,31 @@ export function reverseMapCommunityUserRole(role: CommunityUserRole): {
   }
 
   return { role: roleMap[role], isRequested: false }
+}
+
+/**
+ * Maps the numeric role value to a GroupUserStatusType string
+ * @param role - The numeric role value:
+ *               1 = Not joined/No role
+ *               2 = Requested to join
+ *               3 = Joined member
+ * @returns GroupUserStatusType - One of:
+ *          'UNJOINED' - User has not joined or has invalid role
+ *          'REQUESTED' - User has requested to join
+ *          'JOINED' - User is an active member
+ */
+export function mapMemberJoinStatus(role?: number | null): GroupUserStatusType {
+  switch (role) {
+    case 1:
+      return GroupUserStatusType.UNJOINED
+    case 2:
+      return GroupUserStatusType.REQUESTED
+    case 3:
+      return GroupUserStatusType.JOINED
+    // If role is null or anything other than above cases than return 'UNJOINED'.
+    default:
+      return GroupUserStatusType.UNJOINED
+  }
 }
 
 /**

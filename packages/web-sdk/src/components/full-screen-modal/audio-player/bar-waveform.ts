@@ -4,7 +4,7 @@ export class BarWaveform {
   private barWidth: number
   private barGap: number
   private barColor: string
-  private barRadius: number = 16
+  private barRadius: number = 1000
   private barAlign: 'top' | 'bottom' | 'center' = 'center'
 
   constructor(
@@ -59,7 +59,8 @@ export class BarWaveform {
         const barHeight = topBarHeight + bottomBarHeight || 1
         const y = halfHeight - barHeight / 2
 
-        ctx.roundRect(prevX * (barWidth + barGap), y, barWidth, barHeight, this.barRadius)
+        ctx.roundRect(prevX * (barWidth + barGap), y, barWidth, barHeight, [10])
+
         prevX = x
         maxTop = 0
         maxBottom = 0

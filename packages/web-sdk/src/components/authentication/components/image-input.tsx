@@ -1,4 +1,4 @@
-import { getAvatarUrl } from '@/utils'
+import { getAvatarUrl, validateImage } from '@/utils'
 import { Label } from '@/components/ui/label'
 import { AuthenticationModal } from '..'
 import { useRef, useEffect } from 'react'
@@ -9,18 +9,6 @@ type ImageInputPropsType = {
   forSettings?: boolean
 }
 
-const validateImage = (image: File): boolean => {
-  const validImageTypes = ['image/png', 'image/jpeg', 'image/jpg']
-  if (!validImageTypes.includes(image.type)) return false
-  return true
-}
-
-/**
- * This component takes image from user and sets it into form data.
- * However, This component is used at only places, (authentication modal, settings) to take image of user.
- * In need to use any other places we have to imporove this component.
- * @returns
- */
 export function ImageInput({ forSettings }: ImageInputPropsType) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { formData, setFormData, isOpen } = useAuthModalContext()
@@ -51,8 +39,8 @@ export function ImageInput({ forSettings }: ImageInputPropsType) {
         type='file'
         className='hidden w-full'
         accept='image/png, image/jpeg, image/jpg'
-        onChange={(e) => {
-          const validationResponse: boolean = validateImage(
+        onChange={async (e) => {
+          const validationResponse: boolean = await validateImage(
             e.target.files?.[0] as File,
           )
           if (!validationResponse) {

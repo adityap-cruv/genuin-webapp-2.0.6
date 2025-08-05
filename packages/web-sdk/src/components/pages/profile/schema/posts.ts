@@ -103,6 +103,7 @@ export function parseCommunityResponse(
         community.is_community_join_requested,
       ),
       loops: parseGroupResponse(community.loops),
+      handle: community.handle
     }
   })
 }

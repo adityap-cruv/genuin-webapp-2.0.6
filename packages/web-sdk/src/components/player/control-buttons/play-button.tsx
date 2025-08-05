@@ -4,6 +4,7 @@ import { cn } from '@/utils'
 import { ComponentProps, memo, useEffect, useRef, useState } from 'react'
 import { AnimatedText } from './animated-text'
 import { useBaseContext } from '@/context/base'
+import { useExpandViewContext } from '@/components/expand-view/context'
 
 type PlayButtonProps = {
   shouldAnimate: boolean
@@ -14,8 +15,12 @@ export const AnimatedPlayButton = memo(function PlayButton({
   shouldAnimate,
   ...restProps
 }: PlayButtonProps) {
-  const { setIsVideoPlaying, isVideoPlaying, handlePlayerAction } =
-    useBaseContext()
+  const {
+    setIsVideoPlaying,
+    isVideoPlaying,
+    handlePlayerAction,
+    customizations,
+  } = useBaseContext()
   const [stopAnimating, setStopAnimating] = useState(!shouldAnimate)
   const [hasInteracted, setHasInteracted] = useState(false)
   const prevState = useRef(isVideoPlaying)
@@ -59,7 +64,6 @@ export const AnimatedPlayButton = memo(function PlayButton({
           <PlayIcon variant='light' />
         )}
       </div>
-
       {/* Animated Text should stop once user interacts */}
       {!hasInteracted && (
         <AnimatedText

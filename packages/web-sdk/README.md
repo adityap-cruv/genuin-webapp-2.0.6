@@ -189,6 +189,26 @@ The SDK now uses npm version management instead of separate version files. The v
    npm run version:bump
    ```
 
+### Configure Index.html
+To configure your `index.html` for embedding the Genuin Web SDK, refer to the provided example files in the repository:
+
+- **`index.html.example`**: Use this as a template if you want to embed a single instance of the SDK on your web page.
+- **`index.multi.html.example`**: Use this template if you need to embed multiple SDK instances on the same page. The multi-embed setup is also compatible with single-embed scenarios.
+
+### Choosing the Right Example
+
+- **Single Embed**:  
+   If your application only requires one SDK embed, start with `index.html.example`. This file demonstrates the minimal setup needed for a single integration.
+- **Multiple Embeds**:  
+   If you plan to have more than one SDK embed on the same page (for example, multiple widgets or components), use `index.multi.html.example`. This example shows how to initialize and configure several SDK instances independently. Note: The multi-embed approach also works for single embeds, so you can use it for both cases if you prefer a unified setup.
+
+### Steps to Configure
+
+1. Choose the appropriate example file and copy its contents to your project's `index.html`.
+2. Review the comments in the example files for further guidance on configuration options and usage patterns.
+
+By following these steps and using the provided examples, you can quickly set up and customize your `index.html` for both single and multiple SDK embeds.
+
 ### Build Commands
 
 - Development build: `npm run build`

@@ -16,9 +16,9 @@ export const NOT_FOUND_ERROR_MESSAGES = {
     showButton: true,
   },
   brand: {
-    title: 'User not found',
+    title: 'Brand not found',
     description:
-      "We're sorry, but the user you are looking for no longer exists.",
+      "We're sorry, but the brand you are looking for no longer exists.",
     showButton: true,
   },
   community: {

@@ -1,9 +1,12 @@
 import React, { memo } from 'react'
-import { checkAndAppendHttps, cn, getIconLink } from '@/utils'
+import { checkAndAppendHttps, cn, isCheckFifthVideoType } from '@/utils'
 import { Analytics } from '@/analytics'
 import { LinkIcon } from 'lucide-react'
 import { Shimmer } from './shimmer'
 import { getLinkouts } from './pages/video/api'
+import { useBaseContext } from '@/context/base'
+import { ChevronRightIcon } from './icons/chevron-right'
+
 // const mockData = [
 //   {
 //     style: 1,
@@ -69,6 +72,7 @@ export const Linkouts = memo(function Linkouts({
   linkoutId,
 }: LinkoutsPropsType) {
   // Fetch linkouts if not available.
+  const { brandDetails, customizations } = useBaseContext()
   let isLoading = false
   if (!linkouts) {
     const resData = getLinkouts(Number(linkoutId))
@@ -83,9 +87,26 @@ export const Linkouts = memo(function Linkouts({
 
   if (!linkouts || linkouts.length === 0) return
 
+  if (
+    isCheckFifthVideoType(brandDetails?.brand_id) &&
+    customizations?.view === 'carousel' &&
+    forMobile
+  ) {
+    return (
+      <LinkoutVideoTypeFive
+        linkouts={linkouts}
+        position={position}
+        imageSize={imageSize}
+        forMobile={true}
+        videoId={videoId}
+        linkoutId={linkoutId}
+      />
+    )
+  }
+
   return (
     <div
-      className='overflow-auto w-full'
+      className='overflow-auto w-full break-word'
       onClick={(e) => {
         e.stopPropagation()
       }}>
@@ -278,6 +299,95 @@ type CtaButtonProps = {
   linkoutId: string
 }
 
+function LinkoutVideoTypeFive({
+  linkouts,
+  position,
+  videoId,
+  linkoutId,
+}: LinkoutsPropsType) {
+  return (
+    <div
+      className='overflow-auto w-full pl-4'
+      onClick={(e) => {
+        e.stopPropagation()
+      }}>
+      {linkouts.map((linkoutItem: any, index: number) => {
+        triggerEvent({
+          eventName: Analytics.EventNames.LinkoutsViewed,
+          videoId,
+          linkoutId,
+          cta: linkoutItem.cta_link
+            ? { name: linkoutItem.cta_text, link: linkoutItem.cta_link }
+            : undefined,
+          noOfLinks: linkoutItem.links.length,
+        })
+
+        if (linkoutItem.links.length === 1) {
+          return (
+            <div
+              key={index}
+              className='w-full'>
+              {linkoutItem.links.map((item: any, index: number) => {
+                return (
+                  <div
+                    key={index}
+                    style={{
+                      padding: 8,
+                      backgroundColor:
+                        position === 'overlay'
+                          ? 'rgba(16, 16, 16, 0.50)'
+                          : undefined,
+                      borderRadius: 8,
+                    }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        width: '100%',
+                      }}>
+                      <LinkItem
+                        index={index}
+                        linkoutId={linkoutId}
+                        videoId={videoId}
+                        hasImage={!!item.image}
+                        link={item.link}
+                        title={item.title}
+                        showIcon={true}
+                        position={position}
+                        style={{ width: '100%' }}
+                      />
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )
+        }
+        return (
+          <React.Fragment key={index}>
+            <div className='__gen__sdk__hide__scrollbar overflow-auto whitespace-nowrap mb-2 w-full'>
+              {linkoutItem.links.map((item: any, index: number) => {
+                return (
+                  <div
+                    key={index}
+                    className='my-0 mx-2 inline-block align-middle w-full'>
+                    <LinkItem
+                      index={index}
+                      linkoutId={linkoutId}
+                      videoId={videoId}
+                      link={item.link}
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+                )
+              })}
+            </div>
+          </React.Fragment>
+        )
+      })}
+    </div>
+  )
+}
+
 export function CtaButton({ link, text, linkoutId, videoId }: CtaButtonProps) {
   return (
     <a
@@ -316,6 +426,7 @@ type LinkItemProps = {
   videoId: string
   linkoutId: string
   index: number
+  showIcon?: boolean
 }
 
 export function LinkItem({
@@ -327,7 +438,9 @@ export function LinkItem({
   linkoutId,
   videoId,
   index,
+  showIcon,
 }: LinkItemProps) {
+  const { brandDetails, customizations } = useBaseContext()
   return (
     <a
       target='_blank'
@@ -336,7 +449,11 @@ export function LinkItem({
         display: 'flex',
         alignItems: 'center',
         gap: 13,
-        padding: 8,
+        padding:
+          isCheckFifthVideoType(brandDetails?.brand_id) &&
+          customizations?.view === 'carousel'
+            ? 0
+            : 8,
         borderRadius: !hasImage ? 8 : 0,
         backgroundColor:
           !hasImage && position !== 'overlay'
@@ -354,21 +471,43 @@ export function LinkItem({
           link: { hasThumbnail: hasImage, hasText: !!title },
         })
       }}>
-      {!title && (
+      {showIcon && (
         <LinkIcon
           className={cn(
             'h-4 w-4 shrink-0',
             position === 'overlay' ? 'stroke-white' : 'stroke-foreground',
+            {
+              'h-5 w-5':
+                isCheckFifthVideoType(brandDetails?.brand_id) &&
+                customizations?.view === 'carousel',
+            },
           )}
         />
       )}
       <p
-        className='__gen__sdk__line__clamp__1 __gen__sdk__text__body__2 __gen__sdk__font__weight__demi'
+        className={cn(
+          'line-clamp-1 overflow-hidden text-body-1-demi',
+          title ? 'break-words' : 'break-all',
+          {
+            'text-body-1-med':
+              isCheckFifthVideoType(brandDetails?.brand_id) &&
+              customizations?.view === 'carousel',
+          },
+        )}
         style={{
           color: position === 'overlay' ? 'white' : undefined,
         }}>
         {title && title !== '' ? title : link}
       </p>
+      {isCheckFifthVideoType(brandDetails?.brand_id) &&
+        customizations?.view === 'carousel' && (
+          <ChevronRightIcon
+            className={cn(
+              'h-5 w-5 shrink-0 ml-auto',
+              position === 'overlay' ? 'stroke-white' : 'stroke-foreground',
+            )}
+          />
+        )}
     </a>
   )
 }

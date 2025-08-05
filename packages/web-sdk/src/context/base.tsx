@@ -9,8 +9,12 @@ import {
   FeedType,
   type FeedVideoType,
 } from '@/type'
-import { reverseRoleMapping } from '@/utils'
+import { getSlidesPerView, reverseRoleMapping } from '@/utils'
 import React, { useCallback, useEffect, useState, useRef } from 'react'
+import usePrevious from '@/hooks/use-previous'
+import PubSub from 'pubsub-js'
+import { TOPICS } from '@/const'
+import { useAuth } from './auth'
 
 export type ShouldPlayType =
   | 'COMMENT'
@@ -24,6 +28,7 @@ export type ActionButtonType = 'mute' | 'unmute' | 'play' | 'pause' | ''
 export type PlayingStateType = 'paused' | 'playing' | 'loading' | ''
 
 type BaseContextType = {
+  previousShouldPlay?: ShouldPlayType | undefined
   videos: FeedVideoType[]
   setVideos: React.Dispatch<React.SetStateAction<FeedVideoType[]>>
   hasNextPage: boolean
@@ -32,23 +37,17 @@ type BaseContextType = {
   muted: boolean
   updateMuted: (value: boolean) => void
   shouldPlay: ShouldPlayType
-  updateShouldPlay: React.Dispatch<React.SetStateAction<ShouldPlayType>>
+  updateShouldPlay: (value: ShouldPlayType) => void
   customizations: CustomizationType | null
   brandDetails?: BrandDetailsConfigType
-  rootFocusStatus: {
-    isInView: boolean
-    isFocused: boolean
-  }
+  rootFocusStatus: { isInView: boolean; isFocused: boolean }
   toggleSpark: (videoId: string) => void
   updateCommunityJoinState: (
     communityId: string,
     joinStatus: CommunityJoinStatusType,
   ) => void
   increaseCommentCount: (videoId: string, value: number) => void
-  baseSwiperRef: React.MutableRefObject<{
-    swiper: any
-    ratio: number | null
-  }>
+  baseSwiperRef: React.MutableRefObject<{ swiper: any; ratio: number | null }>
   activeFeed: FeedType
   updateActiveFeed: React.Dispatch<React.SetStateAction<FeedType>>
   isLoading: boolean
@@ -56,7 +55,6 @@ type BaseContextType = {
   setVolume: (volume: number) => void
   buttonAction: ActionButtonType
   handlePlayerAction: (action: ActionButtonType) => void
-
   setNotificationCount: React.Dispatch<React.SetStateAction<number>>
   notificationCount: number
 
@@ -65,6 +63,15 @@ type BaseContextType = {
 
   isVideoPlaying: boolean
   setIsVideoPlaying: (value: boolean) => void
+
+  updateLoopSubscriptionState: (loopId: string, isSubscribed: boolean) => void
+  playbackSpeed: { speed: number; isSpeedFromGesture: boolean }
+  setPlaybackSpeed: (speed: number, isGestureControl?: boolean) => void
+  setStartVideoSlug: React.Dispatch<React.SetStateAction<string | undefined>>
+
+  embedData?: EmbedDataType
+  action?: string
+  toggleAction: () => void
 }
 
 /**
@@ -79,6 +86,7 @@ type BaseContextType = {
  * - shouldPlay: Enum to check if the video should play
  */
 export const BaseContext = React.createContext<BaseContextType>({
+  setStartVideoSlug: () => {},
   videos: [],
   setVideos: () => {},
   hasNextPage: true,
@@ -89,10 +97,7 @@ export const BaseContext = React.createContext<BaseContextType>({
   updateActiveIndex: () => {},
   updateMuted: () => {},
   updateShouldPlay: () => {},
-  rootFocusStatus: {
-    isInView: false,
-    isFocused: false,
-  },
+  rootFocusStatus: { isInView: false, isFocused: false },
   toggleSpark: () => {},
   updateCommunityJoinState: () => {},
   increaseCommentCount: () => {},
@@ -113,6 +118,12 @@ export const BaseContext = React.createContext<BaseContextType>({
 
   isVideoPlaying: true,
   setIsVideoPlaying: () => {},
+
+  updateLoopSubscriptionState: () => {},
+  playbackSpeed: { speed: 1, isSpeedFromGesture: false },
+  setPlaybackSpeed: () => {},
+  action: '',
+  toggleAction: () => {},
 })
 
 type BaseContextProviderPropsType = {
@@ -127,6 +138,12 @@ export function BaseContextProvider({
 }: BaseContextProviderPropsType) {
   // This state is used to keep track of the active feed type.
   const [activeFeed, setActiveFeed] = useState<FeedType>('HOME')
+  // const { has: queryHas, get: queryGet } = useSearchParams()
+  // startVideoSlug state and updater
+  const [startVideoSlug, setStartVideoSlug] = useState<string | undefined>(
+    embedData.startVideoSlug,
+  )
+  const [action, setAction] = useState<string | undefined>(embedData.action)
   // This call is made to fetch the videos
   const {
     isLoading,
@@ -138,9 +155,13 @@ export function BaseContextProvider({
     communityIds: embedData.customization?.community_ids,
     loopIds: embedData.customization?.community_loop_ids,
     feedType: activeFeed,
+    contextualParams: embedData.contextualParams,
+    brandIds: embedData.brand_ids,
+    startVideoSlug,
   })
 
   const [videos, setVideos] = useState<FeedVideoType[]>([])
+  const { status: authStatus } = useAuth()
   const [activeIndex, setActiveIndex] = React.useState(
     // If embed style is standard wall then set active index to 0
     embedData.style === 'standard_wall'
@@ -154,6 +175,8 @@ export function BaseContextProvider({
   const [shouldPlay, setShouldPlay] = React.useState<ShouldPlayType>(
     embedData.style === 'standard_wall' ? 'STANDARD_WALL' : 'EMBED',
   )
+  // Track previous shouldPlay value
+  const previousShouldPlay = usePrevious(shouldPlay)
   const [volume, setVolume] = React.useState(0) // Add volume state
   const [prevVolume, setPrevVolume] = useState(100) // Store the last non-zero volume
   const [buttonAction, setButtonAction] = useState<ActionButtonType>('')
@@ -161,17 +184,39 @@ export function BaseContextProvider({
   const [isVideoPlaying, setIsVideoPlaying] = React.useState(true)
   const [isFocused, setIsFocused] = React.useState(true)
   const [isIntersecting, setIsIntersecting] = React.useState(true)
-  const baseSwiperRef = useRef<{
-    swiper: any
-    ratio: number | null
-  }>({
+  const baseSwiperRef = useRef<{ swiper: any; ratio: number | null }>({
     swiper: null,
-    ratio: null,
+    ratio: getSlidesPerView(embedData.customization?.element, false),
   })
 
   const [notificationCount, setNotificationCount] = React.useState(-1)
+  const [playbackSpeed, setPlaybackSpeed] = useState<{
+    speed: number
+    isSpeedFromGesture: boolean
+  }>({ speed: 1, isSpeedFromGesture: false })
+
+  const handlePlaybackSpeed = useCallback(
+    (speed: number, isGestureControl: boolean = false) => {
+      setPlaybackSpeed({ speed, isSpeedFromGesture: isGestureControl })
+    },
+    [],
+  )
 
   useEffect(() => {
+    console.log('Embed Data:', embedData.startVideoSlug)
+    if (embedData.startVideoSlug) {
+      setStartVideoSlug(embedData.startVideoSlug)
+    }
+    // if (queryHas(QUERY_PARAMS_KEY_FOR_VIDEO_SLUG)) {
+    //   const videoSlug = queryGet(QUERY_PARAMS_KEY_FOR_VIDEO_SLUG)
+    //   if (videoSlug) {
+    //     setStartVideoSlug(videoSlug)
+    //   }
+    // }
+  }, [])
+
+  useEffect(() => {
+    if (authStatus !== 'authenticated') return
     async function fetchNotificationCount() {
       const response = await notificationsCount()
       if (!response) return
@@ -179,10 +224,12 @@ export function BaseContextProvider({
     }
 
     fetchNotificationCount()
-  }, [])
+  }, [authStatus])
 
   useEffect(() => {
     if (videosFromApi.length === 0 || isLoadingNextPage) return
+    if (videosFromApi.length - Math.ceil(baseSwiperRef.current.ratio ?? 3) < 0)
+      return
     if (
       activeIndex + 2 >
         videosFromApi.length - Math.ceil(baseSwiperRef.current.ratio ?? 3) &&
@@ -266,17 +313,84 @@ export function BaseContextProvider({
     }
   }, [])
 
+  useEffect(() => {
+    const element = embedData.customization?.element
+    if (!element) return
+
+    const instanceId = element.getAttribute('data-instance-id')
+    if (!instanceId) return
+
+    // Handle external mute/unmute events
+    const handleExternalMute = (event: CustomEvent) => {
+      // If another embed is unmuted, we should mute this one
+      if (!event.detail.muted) {
+        setMuted(true)
+        setPrevVolume(volume > 0 ? volume : 100)
+        setVolume(0)
+      }
+    }
+    // Subscribe to PubSub events for this instance
+    const muteSubscription = PubSub.subscribe(
+      TOPICS.MUTE,
+      (_topic: any, data: { sourceId: string; muted: any }) => {
+        if (data.sourceId !== instanceId) {
+          const event = new CustomEvent('external-mute', {
+            detail: { muted: data.muted },
+          })
+          element.dispatchEvent(event)
+        }
+      },
+    )
+
+    const floatingSubscription = PubSub.subscribe(
+      TOPICS.FLOATING,
+      (_topic: any, data: { sourceId: string; floating: any }) => {
+        if (data.sourceId !== instanceId) {
+          const event = new CustomEvent('external-floating', {
+            detail: { floating: data.floating },
+          })
+          element.dispatchEvent(event)
+        }
+      },
+    )
+
+    element.addEventListener(
+      'external-mute',
+      handleExternalMute as EventListener,
+    )
+
+    return () => {
+      // Clean up event listeners
+      element.removeEventListener(
+        'external-mute',
+        handleExternalMute as EventListener,
+      )
+
+      // Clean up PubSub subscriptions
+      PubSub.unsubscribe(muteSubscription)
+      PubSub.unsubscribe(floatingSubscription)
+    }
+  }, [embedData.customization?.element, volume])
+
+  useEffect(() => {
+    if (shouldPlay === 'FULLSCREEN') {
+      setIsIntersecting(true)
+    }
+  }, [shouldPlay])
+
   const toggleSpark = useCallback((videoId: string) => {
     setVideos((oldVideos) => {
       const indexToChange = oldVideos.findIndex(
-        (video) => video && video.video.uuid === videoId,
+        (video) => video && video?.video.uuid === videoId,
       )
-      oldVideos[indexToChange].video.is_sparked =
-        !oldVideos[indexToChange].video.is_sparked
-      if (oldVideos[indexToChange].video.is_sparked) {
-        oldVideos[indexToChange].video.no_of_sparks += 1
-      } else {
-        oldVideos[indexToChange].video.no_of_sparks -= 1
+      if (oldVideos[indexToChange]?.video) {
+        oldVideos[indexToChange].video.is_sparked =
+          !oldVideos[indexToChange].video.is_sparked
+        if (oldVideos[indexToChange].video.is_sparked) {
+          oldVideos[indexToChange].video.no_of_sparks += 1
+        } else {
+          oldVideos[indexToChange].video.no_of_sparks -= 1
+        }
       }
       return [...oldVideos]
     })
@@ -309,41 +423,81 @@ export function BaseContextProvider({
     (videoId: string, value: number = 1) => {
       setVideos((oldVideos) => {
         const indexToChange = oldVideos.findIndex(
-          (video) => video && video.video.uuid === videoId,
+          (video) => video && video?.video.uuid === videoId,
         )
-        oldVideos[indexToChange].video.no_of_comments += value
+        if (oldVideos[indexToChange]?.video) {
+          oldVideos[indexToChange].video.no_of_comments += value
+        }
         return [...oldVideos]
       })
     },
     [],
   )
 
+  // Modify the updateMuted function to publish changes
+  const updateMuted = useCallback(
+    (value: boolean) => {
+      setMuted(value)
+      Analytics.track(
+        value
+          ? Analytics.EventNames.VideoMuted
+          : Analytics.EventNames.VideoUnmuted,
+        { video_id: videos[activeIndex]?.video.uuid },
+      )
+      if (value) {
+        setPrevVolume(volume > 0 ? volume : 100)
+        setVolume(0)
+      } else {
+        // When unmuting, first notify others to mute
+        PubSub.publish(TOPICS.MUTE, {
+          muted: false, // This signals other embeds to mute themselves
+          sourceId:
+            embedData.customization?.element?.getAttribute('data-instance-id'),
+        })
+        // Then unmute this embed
+        setVolume(prevVolume)
+      }
+    },
+    [volume, prevVolume, embedData.customization?.element],
+  )
+
+  const updateShouldPlay = useCallback(
+    (shouldPlayValue: ShouldPlayType) => {
+      setShouldPlay(shouldPlayValue)
+    },
+    [embedData.customization?.element],
+  )
+
+  const updateLoopSubscriptionState = useCallback(
+    (loopId: string, isSubscribed: boolean) => {
+      setVideos((oldVideos) => {
+        oldVideos.forEach((video) => {
+          if (video && video.loop.uuid === loopId) {
+            video.loop.is_subscriber = isSubscribed
+          }
+        })
+        return [...oldVideos]
+      })
+    },
+    [],
+  )
+
+  const toggleAction = useCallback(() => {
+    setAction('')
+  }, [])
+
   return (
     <BaseContext.Provider
       value={{
+        setStartVideoSlug,
         activeIndex,
         updateActiveIndex: setActiveIndex,
         hasNextPage,
         muted,
-        updateMuted: (value) => {
-          setMuted(value)
-          Analytics.track(
-            value
-              ? Analytics.EventNames.VideoMuted
-              : Analytics.EventNames.VideoUnmuted,
-            { video_id: videos[activeIndex]?.video.uuid },
-          )
-          if (value) {
-            setPrevVolume(volume > 0 ? volume : 100) // Store last volume before muting
-            setVolume(0) // Mute
-          } else {
-            setVolume(prevVolume) // Restore previous volume when unmuted
-          }
-        },
+        updateMuted,
         shouldPlay,
-        updateShouldPlay: (shouldPlay) => {
-          setShouldPlay(shouldPlay)
-        },
+        updateShouldPlay,
+        previousShouldPlay, // <-- Expose previousShouldPlay in context
         customizations: embedData.customization as any,
         videos,
         setVideos,
@@ -381,6 +535,12 @@ export function BaseContextProvider({
         playingState,
         isVideoPlaying,
         setIsVideoPlaying,
+        updateLoopSubscriptionState,
+        playbackSpeed,
+        setPlaybackSpeed: handlePlaybackSpeed,
+        embedData,
+        action,
+        toggleAction,
       }}>
       {children}
     </BaseContext.Provider>

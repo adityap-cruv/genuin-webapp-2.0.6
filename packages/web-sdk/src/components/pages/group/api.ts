@@ -7,7 +7,7 @@ import {
 } from '@/utils/constants/keys'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { validateMembers, type LoopDetailsType } from './schema'
-import { FeedVideoType, FetchFeedReturnType } from '@/type'
+import { FeedVideoType, FetchFeedReturnType, SDKConfig } from '@/type'
 import { NOT_FOUND_ERROR_CODES } from '@/utils/constants/errors'
 
 export async function fetchLoopDetails(slug: string) {
@@ -51,6 +51,8 @@ async function fetchPosts(
   try {
     const url = new URL(getApiUrl('/goservices/feed/loop'))
     url.searchParams.append('slug', slug)
+    url.searchParams.append('is_order_by_pinned', 'true')
+    
     if (pageParams?.lastVideoId) {
       url.searchParams.append('last_video_id', pageParams.lastVideoId)
     }
@@ -155,6 +157,54 @@ export async function subscribeLoop(uuid: string, subscribe: boolean) {
 
     return {
       code: e?.response?.data?.code ? Number(e.response.data.code) : 500, // Default to 500 if code is unavailable
+    }
+  }
+}
+
+export async function joinGroupAsMember(uuid: string) {
+  try {
+    const response = await fetch(getApiUrl('/api/v3/conversation/participation_request'), {
+      method: 'POST',
+      headers: getBaseHeaders(true),
+      body: JSON.stringify({
+        chat_id: uuid,
+      }),
+    })
+
+    const resData = await response.json()
+    return {
+      code: response.status,
+      data: resData.data,
+    }
+  } catch (e: any) {
+    console.error('::Error in joinGroupAsMember::', e)
+    return {
+      code: e?.response?.data?.code ? Number(e.response.data.code) : 500,
+      data: null,
+    }
+  }
+}
+
+export async function leaveGroupAsMember(uuid: string) {
+  try {
+    const url = new URL(getApiUrl('/api/v3/conversation/leave'))
+    url.searchParams.append('chat_id', uuid)
+
+    const response = await fetch(url.toString(), {
+      method: 'DELETE',
+      headers: getBaseHeaders(true),
+    })
+
+    const resData = await response.json()
+    return {
+      code: response.status,
+      data: resData.data,
+    }
+  } catch (e: any) {
+    console.error('::Error in leaveGroupAsMember::', e)
+    return {
+      code: e?.response?.data?.code ? Number(e.response.data.code) : 500,
+      data: null,
     }
   }
 }

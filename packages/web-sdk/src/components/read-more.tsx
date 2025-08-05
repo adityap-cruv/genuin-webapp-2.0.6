@@ -10,6 +10,7 @@ import React, {
   useEffect,
 } from 'react'
 import { usePathNameWithSubdomain } from '@/hooks/usePathNameWithSubdomain'
+import { useExpandViewContext } from './expand-view/context'
 
 type Props = {
   text?: string | null
@@ -62,11 +63,8 @@ function WithMentions({
     <span
       key='show-more'
       onClick={() => setShowMore((prev) => !prev)}
-      style={{
-        color: 'var(--tertiary)',
-        paddingLeft: 4,
-        cursor: 'pointer',
-      }}>
+      style={{ color: 'var(--tertiary)', paddingLeft: 4, cursor: 'pointer' }}
+      className='whitespace-normal break-words'>
       {showMore ? '(View more)' : '(View less)'}
     </span>
   )
@@ -126,9 +124,7 @@ function WithMentions({
 
   return (
     <p
-      style={{
-        wordBreak: 'break-word',
-      }}
+      style={{ wordBreak: 'break-word' }}
       {...props}>
       {processedComponent}
     </p>
@@ -148,9 +144,7 @@ function WithoutMentions({ text, maxChars = 150, ...props }: Props) {
   if (!text) return null
   return (
     <p
-      style={{
-        wordBreak: 'break-word',
-      }}
+      style={{ wordBreak: 'break-word' }}
       {...props}>
       {showMore ? text : slicedText}
       {text && text?.length > maxChars && (
@@ -162,7 +156,8 @@ function WithoutMentions({ text, maxChars = 150, ...props }: Props) {
             cursor: 'pointer',
             paddingLeft: 4,
             color: 'var(--tertiary)',
-          }}>
+          }}
+          className='whitespace-normal break-words'>
           {showMore ? '(View less)' : '(View more)'}
         </span>
       )}
@@ -221,6 +216,7 @@ export const ReadMoreDynamic = memo(function ReadMoreDynamic({
   const setIsExpanded = setIsExpandedExternal ?? setIsExpandedInternal
   const redirectionStatus = getRedirectionStatusForPaths()
   const pathName = usePathNameWithSubdomain()
+  const { isFullScreen } = useExpandViewContext()
 
   const convertUrlsToAnchorTags = (strArr: any) => {
     return strArr.map((item: any, index: number) => {
@@ -393,7 +389,7 @@ export const ReadMoreDynamic = memo(function ReadMoreDynamic({
             </span>
             {showViewMore && isOverflowing && (
               <span
-                className='cursor-pointer pl-1 text-body-1-med text-tertiary'
+                className='cursor-pointer whitespace-normal break-words pl-1 text-body-1-med text-tertiary'
                 onClick={() => {
                   setIsExpanded((x) => !x)
                 }}>
@@ -402,7 +398,7 @@ export const ReadMoreDynamic = memo(function ReadMoreDynamic({
             )}
           </p>
         </div>
-      ) : (
+      ) : isFullScreen ? null : (
         <div style={{ margin: '-1rem' }}></div>
       )}
     </>

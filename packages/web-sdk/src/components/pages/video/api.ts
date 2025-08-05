@@ -100,7 +100,7 @@ export function getLinkouts(id: number) {
   })
 }
 
-async function getVideoDetails(slug: string): Promise<FeedVideoType> {
+export async function getVideoDetails(slug: string): Promise<FeedVideoType> {
   const metadata = await fetchVideoMetadata(slug)
   if (!metadata?.chat_id) {
     throw new Error(`Invalid metadata for slug: ${slug}`)

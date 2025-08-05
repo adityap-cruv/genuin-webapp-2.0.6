@@ -136,3 +136,43 @@ export const updateCommentCount = (
     },
   )
 }
+
+/**
+ * This function is used to update the loop subscription status.
+ * It will only update Data which is related to passed queryKey
+ * @param queryKey - The query key to identify which feed data to update
+ * @param loopId - The UUID of the loop to update
+ * @param isSubscribed - The new subscription status
+ */
+export const updateLoopSubscriptionStatus = (
+  queryKey: QueryKey,
+  loopId: string,
+  isSubscribed: boolean,
+) => {
+  queryClient.setQueryData<QueryDataType>(
+    queryKey,
+    (oldData): QueryDataType | undefined => {
+      if (!oldData) return oldData
+      return {
+        ...oldData,
+        pages: oldData.pages.map((page) => {
+          return {
+            ...page,
+            videos: page.videos.map((video) => {
+              if (video.loop.uuid === loopId) {
+                return {
+                  ...video,
+                  loop: {
+                    ...video.loop,
+                    is_loop_subscribe: isSubscribed,
+                  },
+                }
+              }
+              return video
+            }),
+          }
+        }),
+      }
+    },
+  )
+}

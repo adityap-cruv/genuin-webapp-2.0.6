@@ -7,6 +7,7 @@ import { getQueryKeyForLoopFeed } from '@/utils/constants/keys'
 import {
   updateCommentCount,
   updateCommunityJoinStatus,
+  updateLoopSubscriptionStatus,
   updateSparkStatus,
 } from '@/utils/react-query/feed'
 
@@ -67,6 +68,9 @@ function PlayerModalWrapper({
       onCommentCountChange={(videoId, count) => {
         updateCommentCount(queryKeyForLoopFeed, videoId, count)
       }}
+      onSubscriberChange={(loopId, isSubscribed) => {
+        updateLoopSubscriptionStatus(queryKeyForLoopFeed, loopId, isSubscribed)
+      }}
     />
   )
 }
@@ -94,7 +98,7 @@ function Loops({
         owner: { userName: video.owner.username },
         thumbnail: video.thumbnail_url_m
           ? video.thumbnail_url_m
-          : (video.thumbnail_url_l ?? video.thumbnail_url ?? ''),
+          : video.thumbnail_url_l ?? video.thumbnail_url ?? '',
         createdAt: video.message_at ?? '',
       }))}
       loopSlug={loop.slug}
@@ -113,6 +117,7 @@ function Loops({
       viewCount={loop.group.no_of_views}
       unreadMessageCount={loop.unread_message_count}
       noOfVideos={loop.group.no_of_videos}
+      position={loop.position}
     />
   ))
 }

@@ -353,19 +353,20 @@ class DeviceResolver extends BaseResolver implements DeviceResolverConfig {
    */
   async resolveGeolocation() {
     try {
-      const response = await fetch('https://ipinfo.io/json')
+      const response = await fetch(
+        `${process.env.API_BASE_URL}/goservices/data/ip_info`,
+      )
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
       const data = await response.json()
       if (data) {
-        if (data.loc) {
-          const [latitude, longitude] = data.loc.split(',')
+        if (data.location) {
+          const [latitude, longitude] = data.location.split(',')
           this.setKeyValue('device.geo.lat', parseFloat(latitude))
           this.setKeyValue('device.geo.lon', parseFloat(longitude))
         }
         this.setKeyValue('device.ip', data.ip || 'Unknown')
-        this.setKeyValue('device.geo.region', data.region || 'Unknown')
         this.setKeyValue('device.geo.region', data.region || 'Unknown')
         this.setKeyValue('device.geo.city', data.city || 'Unknown')
         this.setKeyValue('device.geo.zip', data.postal || 'Unknown')
@@ -702,7 +703,7 @@ class SiteResolver extends BaseResolver implements SiteResolverConfig {
    */
   getMetaKeywords() {
     const metaTag = document.querySelector('meta[name="keywords"]')
-    return metaTag ? (metaTag.getAttribute('content') ?? '') : ''
+    return metaTag ? metaTag.getAttribute('content') ?? '' : ''
   }
 
   /**
@@ -711,7 +712,7 @@ class SiteResolver extends BaseResolver implements SiteResolverConfig {
    */
   getOgKeywords() {
     const ogTag = document.querySelector('meta[property="og:keywords"]')
-    return ogTag ? (ogTag.getAttribute('content') ?? '') : ''
+    return ogTag ? ogTag.getAttribute('content') ?? '' : ''
   }
 
   /**

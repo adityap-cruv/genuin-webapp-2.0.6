@@ -47,6 +47,8 @@ export function Details({
               shareUrl={loopDetails.share_url}
               name={loopDetails.group.group_name}
               slug={loopDetails.slug}
+              description={loopDetails.group.group_description}
+              loggedInUserStatus={loopDetails.logged_in_user_status}
             />
           )}
         </div>
@@ -77,6 +79,8 @@ export function Details({
               shareUrl={loopDetails.share_url}
               name={loopDetails.group.group_name}
               slug={loopDetails.slug}
+              description={loopDetails.group.group_description}
+              loggedInUserStatus={loopDetails.logged_in_user_status}
             />
             <hr className='border-t my-2 border-tertiary-200' />
           </>

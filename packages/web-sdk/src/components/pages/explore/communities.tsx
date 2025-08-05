@@ -48,14 +48,14 @@ export function Communities({ className, ...restProps }: CommunitiesPropsType) {
       className={cn('h-auto w-full', className)}
       {...restProps}>
       {/* For desktop */}
-      <div className='hidden md:block'>
-        <p className='pb-2 text-title-1-bold'>Featured Communities</p>
-        <div className='grid grid-cols-1 gap-4 md:grid-cols-2 '>
-          {isLoading ? (
-            <CommunitiesLoader />
-          ) : (
-            communityList?.map((community, index) => {
-              return (
+      {isLoading ? (
+        <CommunitiesLoader />
+      ) : (
+        communityList?.length !== 0 && (
+          <div className='hidden md:block'>
+            <p className='pb-2 text-title-1-bold'>Featured Communities</p>
+            <div className='grid grid-cols-1 gap-4 md:grid-cols-2 '>
+              {communityList?.map((community, index) => (
                 <CommunityTile
                   redirectOnClick
                   key={index}
@@ -63,71 +63,67 @@ export function Communities({ className, ...restProps }: CommunitiesPropsType) {
                   communityDetails={{
                     id: community.community_id,
                     slug: community.slug,
-                    /**
-                     * Always unjoined communities will be shown in explore page.
-                     */
                     userRole: mapCommunityUserRole(
                       community.logged_in_user_role,
                     ),
                     memberCount: community.no_of_members,
                     name: community.name,
                     profileImage: community.dp_m ?? community.dp ?? '',
-                    /*
-                     * All communities coming from this api will be public by default.
-                     */
                     type: CommunityPrivacyEnum.PUBLIC,
                     description: community.description ?? undefined,
-                    // TODO: Ask about brand communities.
-                    // brand: community.brand ? {logo:}: undefined,
+                    handle: community.handle,
                   }}
                   onCommunityRoleChanged={(newRole) => {
                     handleCommunityRoleChanged(community.community_id, newRole)
                   }}
                 />
-              )
-            })
-          )}
-        </div>
-      </div>
+              ))}
+            </div>
+          </div>
+        )
+      )}
       {/* For Mobile */}
-      <div className='block w-full md:hidden'>
-        <p className='pb-2 text-title-1-bold'>Featured Communities</p>
-        {isLoading ? (
-          <CommunitiesLoader />
-        ) : (
-          <Swiper
-            direction='horizontal'
-            loop
-            spaceBetween={16}
-            centeredSlides
-            slidesPerView={1.2}>
-            {communityList?.map((community, index) => (
-              <SwiperSlide key={community.community_id}>
-                <CommunityTile
-                  redirectOnClick
-                  key={index}
-                  showJoinButton
-                  communityDetails={{
-                    id: community.community_id,
-                    slug: community.slug,
-                    userRole: CommunityUserRole.UNJOINED,
-                    memberCount: community.no_of_members,
-                    name: community.name,
-                    profileImage: community.dp_m ?? community.dp ?? '',
-                    /*
-                     * All communities coming from this api will be public by default.
-                     */
-                    type: CommunityPrivacyEnum.PUBLIC,
-                    description: community.description ?? undefined,
-                    // TODO: Ask about brand communities.
-                    // brand: community.brand ? {logo:}: undefined,
-                  }}
-                />
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        )}
-      </div>
+      {isLoading ? (
+        <CommunitiesLoader />
+      ) : (
+        communityList?.length !== 0 && (
+          <div className='block w-full md:hidden'>
+            <p className='pb-2 text-title-1-bold'>Featured Communities</p>
+            <Swiper
+              direction='horizontal'
+              loop
+              spaceBetween={16}
+              centeredSlides
+              slidesPerView={1.2}>
+              {communityList?.map((community, index) => (
+                <SwiperSlide key={community.community_id}>
+                  <CommunityTile
+                    redirectOnClick
+                    key={index}
+                    showJoinButton
+                    communityDetails={{
+                      id: community.community_id,
+                      slug: community.slug,
+                      userRole: CommunityUserRole.UNJOINED,
+                      memberCount: community.no_of_members,
+                      name: community.name,
+                      profileImage: community.dp_m ?? community.dp ?? '',
+                      /*
+                       * All communities coming from this api will be public by default.
+                       */
+                      type: CommunityPrivacyEnum.PUBLIC,
+                      description: community.description ?? undefined,
+                      // TODO: Ask about brand communities.
+                      // brand: community.brand ? {logo:}: undefined,
+                      handle: community.handle,
+                    }}
+                  />
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
+        )
+      )}
     </div>
   )
 }

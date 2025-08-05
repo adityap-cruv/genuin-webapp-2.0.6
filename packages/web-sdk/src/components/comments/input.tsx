@@ -1,4 +1,4 @@
-import { checkAndAppendHttps, cn } from '@/utils'
+import { checkAndAppendHttps, cn, sanitizeInput } from '@/utils'
 import { useCallback, useContext, useId, useState } from 'react'
 import { getComments, postComment } from './api'
 import { BaseContext } from '@/context/base'
@@ -66,10 +66,13 @@ export function CommentInputBox({
     const commentInputElement = document.getElementById(
       inputId,
     ) as HTMLInputElement
+    if (!commentInputElement) return
     const value = commentInputElement?.value.trim()
-    if (value.length === 0 || !commentInputElement) return
+    if (value.length === 0) return
     setIsLoading(true)
-    postComment(videoId, loopId, value)
+    const sanitisedText = sanitizeInput(value)
+    if (sanitisedText.length === 0) return
+    postComment(videoId, loopId, sanitisedText)
       .then(async (comment) => {
         if (comment) prependComment(comment, videoId)
       })

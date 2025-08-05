@@ -32,9 +32,11 @@ import { PlayerModal } from '@/components/player-modal'
 import {
   updateCommentCount,
   updateCommunityJoinStatus,
+  updateLoopSubscriptionStatus,
   updateSparkStatus,
 } from '@/utils/react-query/feed'
 import { updateCommunityUserRoleForProfileCommunities } from './utils'
+import { useInvalidateOnUser } from '@/hooks/useInvalidateOnUser'
 
 type BasePropsType = {
   profileId: string
@@ -51,14 +53,12 @@ export function Posts({
   profileId,
   className,
   forBrand = false,
-  forEmbed,
-  isSelfUser,
+  ...restProps
 }: PostsPropsType) {
   return (
     <TreeStructure
       className={cn(className)}
-      forEmbed={forEmbed}
-      isSelfUser={isSelfUser}>
+      {...restProps}>
       <Ui
         profileId={profileId}
         forBrand={forBrand}
@@ -89,6 +89,7 @@ function Ui({ profileId, forBrand }: BasePropsType) {
     () => communitiesData?.pages.flatMap((page) => page.communities),
     [communitiesData],
   )
+  useInvalidateOnUser('profileCommunities', profileId, forBrand)
 
   return (
     <>
@@ -349,6 +350,9 @@ function PlayerModalWrapper({ profileId, forBrand }: BasePropsType) {
       videos={videos}
       onCommentCountChange={(videoId, count) => {
         updateCommentCount(queryKeyForFeed, videoId, count)
+      }}
+      onSubscriberChange={(loopId, isSubscribed) => {
+        updateLoopSubscriptionStatus(queryKeyForFeed, loopId, isSubscribed)
       }}
     />
   )

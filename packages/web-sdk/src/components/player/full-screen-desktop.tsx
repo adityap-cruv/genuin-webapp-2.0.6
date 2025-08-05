@@ -1,9 +1,10 @@
 import { FeedVideoType, SizeBoxType } from '@/type'
 import { BasePlayer } from './base'
-import { cn } from '@/utils'
+import { cn, resolveVideoUrl } from '@/utils'
 import { useBaseContext } from '@/context/base'
-import { useExpandViewContext } from '@/context/expand-view'
+import { useExpandViewContext } from '@/components/expand-view/context'
 import { ControlLayer } from './control-layer'
+import { PlayerProvider } from './context'
 
 type FullScreenPlayerPropsType = {
   videoSizeBox: SizeBoxType
@@ -24,7 +25,7 @@ export function DesktopModalPlayer({
   index,
   onCommentCountChange,
 }: FullScreenPlayerPropsType) {
-  const { muted, setIsVideoPlaying, isVideoPlaying } = useBaseContext()
+  const { muted, isVideoPlaying, brandDetails } = useBaseContext()
   const { isFullScreen } = useExpandViewContext()
 
   return (
@@ -34,28 +35,28 @@ export function DesktopModalPlayer({
         height: isFullScreen ? '100%' : videoSizeBox.height,
         width: isFullScreen ? undefined : videoSizeBox.width,
       }}>
-      <BasePlayer
-        id={id}
-        shouldPlay={shouldPlay && isVideoPlaying}
-        muted={muted}
-        src={
-          videoDetails.video.media_url_m3u8
-            ? videoDetails.video.media_url_m3u8
-            : videoDetails.video.media_url
-        }
-        style={{ cursor: 'pointer' }}
-        poster={videoDetails.video.thumbnail_url}
-        triggerAnalytics
-        index={index}
-      />
-      <ControlLayer
-        videoDetails={videoDetails}
-        isVideoPlaying={isVideoPlaying}
-        setIsVideoPlaying={setIsVideoPlaying}
-        onSpark={onSpark}
-        onCommentCountChange={onCommentCountChange}
-        index={index}
-      />
+      <PlayerProvider>
+        <BasePlayer
+          id={id}
+          shouldPlay={shouldPlay && isVideoPlaying}
+          muted={muted}
+          src={resolveVideoUrl(
+            brandDetails?.brand_id,
+            videoDetails.video.media_url_m3u8,
+            videoDetails.video.media_url,
+          )}
+          style={{ cursor: 'pointer' }}
+          poster={videoDetails.video.thumbnail_url}
+          triggerAnalytics
+          index={index}
+        />
+        <ControlLayer
+          videoDetails={videoDetails}
+          onSpark={onSpark}
+          onCommentCountChange={onCommentCountChange}
+          index={index}
+        />
+      </PlayerProvider>
     </div>
   )
 }

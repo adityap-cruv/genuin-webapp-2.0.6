@@ -1,6 +1,6 @@
 import { ACCESS_TOKEN_KEY } from '@/const'
 import { getBaseHeaders } from '@/headers'
-import { type AuthUser } from '@/type'
+import { SDKConfig, type AuthUser } from '@/type'
 import { getApiUrl, getEncryptedDeviceId, parseUserData } from '@/utils'
 
 /**
@@ -13,7 +13,29 @@ import { getApiUrl, getEncryptedDeviceId, parseUserData } from '@/utils'
 export async function getAuthenticatedUserDetails(
   token: string,
   brandId: number,
+  userParams: SDKConfig['params'],
 ) {
+  
+  const userParamsBody = {
+    ...(userParams?.name && {
+      name: userParams.name,
+    }),
+    ...(userParams?.nickname && {
+      nickname: userParams.nickname,
+    }),
+    ...(userParams?.email && {
+      email: userParams.email,
+    }),
+    ...(userParams?.mobile && {
+      mobile: userParams.mobile,
+    }),
+    ...(userParams?.profileImage && {
+      profile_image: userParams.profileImage,
+    }),
+    ...(userParams?.brandUserIdentity && {
+      brand_user_identity: userParams.brandUserIdentity
+    })
+  }
   return fetch(getApiUrl('/api/v4/sso/autologin'), {
     method: 'POST',
     headers: {
@@ -25,6 +47,7 @@ export async function getAuthenticatedUserDetails(
       brand_id: brandId,
       device_type: 3,
       login_source: 1,
+      ...userParamsBody,
     }),
   })
     .then(async (res) => {

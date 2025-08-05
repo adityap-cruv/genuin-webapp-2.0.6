@@ -15,7 +15,6 @@ import { Analytics, ANALYTICS_DATA, getIpAddress } from '@/analytics'
 import { AuthProvider } from '@/context/auth'
 import { setBaseHeaders } from '@/headers'
 import { BaseContextProvider, useBaseContext } from '@/context/base'
-import { FullScreenModalProvider } from '@/context/full-screen'
 import { FloatingViewProvider } from '@/context/floating'
 import { FullScreenModal } from '@/components/full-screen-modal'
 import { FloatingView } from './floating'
@@ -30,11 +29,13 @@ import { Routes } from '@/router'
 import { BrandDetailsProvider } from '@/context/brand-details'
 import { SizeProvider } from '@/context/size'
 import { Toaster } from '@/components/ui/toaster'
-import { RepostModal } from '@/components/repost'
 import { ReactQueryProvider } from '@/context/react-query'
-import { ExpandViewProvider } from '@/context/expand-view'
+import { ExpandViewProvider } from '@/components/expand-view/context'
 import { useAuthModalContext } from '@/components/authentication/context'
 import { AuthenticationModal } from '@/components/authentication'
+import { PlayerProvider } from '@/components/player/context'
+
+const ROOT_KEY = '__REACT_ROOT__'
 
 export async function loadEmbedView(
   container: HTMLElement,
@@ -42,11 +43,15 @@ export async function loadEmbedView(
   user?: AuthUser,
   brandName?: string | null,
 ) {
-  console.log('embedData :>> ', embedData)
-  const root = createRoot(container)
+  let root = (container as any)[ROOT_KEY]
+
+  if (!root) {
+    root = createRoot(container)
+    ;(container as any)[ROOT_KEY] = root
+  }
+
   setAnalyticsData(embedData, user)
   root.render(<InitialLoader />)
-
   await Promise.all([
     (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'qa') &&
       loadMainCSS(),
@@ -57,9 +62,7 @@ export async function loadEmbedView(
   getIpAddressAndIdentifyUser()
 
   // Set the base headers for the API calls.
-  setBaseHeaders({
-    brandId: String(embedData.brandDetails?.brand_id),
-  })
+  setBaseHeaders({ brandId: String(embedData.brandDetails?.brand_id) })
 
   container.classList.contains('gen-sdk-class')
     ? undefined
@@ -81,8 +84,12 @@ export async function loadEmbedView(
             embedData.style !== 'standard_wall' &&
             embedData.customization.is_popup_view
           }>
-          {embedData.style === 'carousel' && <Carousel />}
-          {embedData.style === 'feed' && <Feed />}
+          {embedData.style === 'carousel' && (
+            <Carousel elementId={embedData.elementId} />
+          )}
+          {embedData.style === 'feed' && (
+            <Feed elementId={embedData.elementId} />
+          )}
           {embedData.style === 'standard_wall' && <Routes />}
           <Toaster />
         </Providers>
@@ -109,16 +116,18 @@ function Providers({
   enableFullScreen = true,
 }: ProvidersPropsType) {
   return (
-    <BaseContextProvider embedData={embedData}>
-      <ExpandViewProvider>
-        <ReactQueryProvider>
-          <BrandDetailsProvider
-            customizations={embedData.customization}
-            brandDetails={embedData.brandDetails}
-            embedStyle={embedData.style}>
-            <AuthProvider
-              brandId={embedData.brand_id}
-              user={user}>
+    <ReactQueryProvider>
+      <AuthProvider
+        brandId={embedData.brand_id}
+        user={user}>
+        <BaseContextProvider embedData={embedData}>
+          <ExpandViewProvider>
+            <BrandDetailsProvider
+              brandIds={embedData.brand_ids}
+              contextualParams={embedData.contextualParams}
+              customizations={embedData.customization}
+              brandDetails={embedData.brandDetails}
+              embedStyle={embedData.style}>
               <SizeProvider>
                 <RenderComponents
                   embedData={embedData}
@@ -129,11 +138,11 @@ function Providers({
                   {children}
                 </RenderComponents>
               </SizeProvider>
-            </AuthProvider>
-          </BrandDetailsProvider>
-        </ReactQueryProvider>
-      </ExpandViewProvider>
-    </BaseContextProvider>
+            </BrandDetailsProvider>
+          </ExpandViewProvider>
+        </BaseContextProvider>
+      </AuthProvider>
+    </ReactQueryProvider>
   )
 }
 
@@ -225,13 +234,14 @@ function Content({
   children,
   enableFullScreen,
   isFloatingViewEnabled,
-  showPopupByDefault,
+  // showPopupByDefault,
 }: ContentPropsType) {
   return (
     <>
       {/* To check whether full screen should be enabled or not. */}
       {enableFullScreen ? (
-        <FullScreenModalProvider defaultOpen={showPopupByDefault}>
+        <PlayerProvider>
+          {/* <FullScreenModalProvider defaultOpen={showPopupByDefault}> */}
           {/* To check whether floating view should be enabled or not. */}
           {isFloatingViewEnabled ? (
             <FloatingViewProvider>
@@ -242,12 +252,15 @@ function Content({
             children
           )}
           <FullScreenModal />
-        </FullScreenModalProvider>
+          {/* </FullScreenModalProvider> */}
+        </PlayerProvider>
       ) : isFloatingViewEnabled ? (
-        <FloatingViewProvider>
-          {children}
-          <FloatingView />
-        </FloatingViewProvider>
+        <PlayerProvider>
+          <FloatingViewProvider>
+            {children}
+            <FloatingView />
+          </FloatingViewProvider>
+        </PlayerProvider>
       ) : (
         children
       )}
@@ -262,9 +275,7 @@ function getIpAddressAndIdentifyUser() {
       proxyWindow.rudderanalytics.identify(
         localStorage.getItem(UNIQUE_USER_ID_KEY),
         { ip },
-        {
-          ip: ip,
-        },
+        { ip: ip },
       )
     }
   })

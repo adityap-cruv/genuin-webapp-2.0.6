@@ -14,8 +14,11 @@ import { getQueryKeyForLoopPosts } from '@/utils/constants/keys'
 import {
   updateCommentCount,
   updateCommunityJoinStatus,
+  updateLoopSubscriptionStatus,
   updateSparkStatus,
 } from '@/utils/react-query/feed'
+import { PinIcon } from '@/components/icons/pin-icon'
+import { useBrandDetails } from '@/context/brand-details'
 
 type PostsPropsType = { slug: string; showTitle?: boolean }
 
@@ -32,7 +35,7 @@ export function Posts({ slug, showTitle = true }: PostsPropsType) {
   const nextLoaderId = useId()
   useInfiniteScroll(nextLoaderId, fetchNextPage, hasNextPage, isLoading)
   const posts = useMemo(
-    () => loopPosts?.pages.flatMap((page) => page.videos),
+    () => loopPosts?.pages.flatMap((item) => item.videos),
     [loopPosts],
   )
 
@@ -62,27 +65,28 @@ export function Posts({ slug, showTitle = true }: PostsPropsType) {
           length={2}
         />
       )}
-      {playerModalIndex !== -1 && (
-        <PlayerModal
-          onSpark={(videoId, isSparked) => {
-            updateSparkStatus(queryKeyForFeed, videoId, isSparked)
-          }}
-          fetchNextPage={() => fetchNextPage()}
-          isLoading={false}
-          onCommunityRoleChanged={(communityId, role) => {
-            updateCommunityJoinStatus(queryKeyForFeed, communityId, role)
-          }}
-          onCommentCountChange={(videoId, count) => {
-            updateCommentCount(queryKeyForFeed, videoId, count)
-          }}
-          open={playerModalIndex !== -1}
-          videos={posts}
-          startIndex={playerModalIndex}
-          closeModal={() => {
-            setPlayerModalIndex(-1)
-          }}
-        />
-      )}
+      <PlayerModal
+        onSpark={(videoId, isSparked) => {
+          updateSparkStatus(queryKeyForFeed, videoId, isSparked)
+        }}
+        fetchNextPage={() => fetchNextPage()}
+        isLoading={false}
+        onCommunityRoleChanged={(communityId, role) => {
+          updateCommunityJoinStatus(queryKeyForFeed, communityId, role)
+        }}
+        onCommentCountChange={(videoId, count) => {
+          updateCommentCount(queryKeyForFeed, videoId, count)
+        }}
+        open={playerModalIndex !== -1}
+        videos={posts}
+        startIndex={playerModalIndex}
+        closeModal={() => {
+          setPlayerModalIndex(-1)
+        }}
+        onSubscriberChange={(loopId, isSubscribed) => {
+          updateLoopSubscriptionStatus(queryKeyForFeed, loopId, isSubscribed)
+        }}
+      />
     </div>
   )
 }
@@ -105,6 +109,12 @@ function PostList({ posts, clickOnPost }: PostListPropsType) {
         alt={post.video.slug}
         className='rounded-xl object-fill h-full w-full absolute inset-0'
       />
+      {post.video.is_pinned && (
+        <PinIcon className='absolute right-2 top-2 h-6 w-6 fill-monochrome-white' />
+      )}
+      {post.video.is_pinned && (
+        <PinIcon className='absolute right-2 top-2 h-6 w-6 fill-monochrome-white' />
+      )}
       <div className='absolute bottom-2 left-2'>
         <div className='flex h-6 w-6 items-center'>
           <CustomAvatar

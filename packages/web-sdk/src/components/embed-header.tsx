@@ -1,6 +1,6 @@
 import { Analytics } from '@/analytics'
 import { BaseContext } from '@/context/base'
-import { checkAndAppendHttps, cn } from '@/utils'
+import { checkAndAppendHttps, cn, isCheckFifthVideoType } from '@/utils'
 import { ComponentProps, useContext } from 'react'
 
 type EmbedHeaderPropsType = ComponentProps<'div'> & { forFeed: boolean }
@@ -10,7 +10,7 @@ export function EmbedHeader({
   className,
   forFeed,
 }: EmbedHeaderPropsType) {
-  const { customizations } = useContext(BaseContext)
+  const { customizations , brandDetails } = useContext(BaseContext)
   const hasHeadings =
     Boolean(customizations?.heading) ||
     Boolean(customizations?.sub_heading) ||
@@ -29,9 +29,16 @@ export function EmbedHeader({
           {customizations.heading && (
             <p
               style={{ color: customizations.heading_text_color }}
-              className='__gen__sdk__text__title__2 __gen__sdk__font__weight__demi __gen__sdk__line__clamp__1'>
+              className={cn(
+                '__gen__sdk__font__weight__demi __gen__sdk__line__clamp__1',
+                {
+                  '!font-bold !text-[14px] !leading-[150%] !tracking-wide !uppercase':
+                    (isCheckFifthVideoType(brandDetails?.brand_id)) &&
+                    customizations.view === 'carousel',
+                }
+              )}>
               {customizations.heading}
-            </p>
+            </p>    
           )}
           {customizations.sub_heading && (
             <p

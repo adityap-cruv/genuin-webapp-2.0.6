@@ -2,6 +2,7 @@
   @tailwind base;
   @tailwind components;
 }
+
 @tailwind utilities;
 
 .gen-sdk-class {
@@ -48,23 +49,35 @@
   --primary-600: #163b69 !important;
   --primary-700: #102a4b !important;
 
-  --secondary-300: #b4b4b4 !important; /* Lighter gray */
+  --secondary-300: #b4b4b4 !important;
+  /* Lighter gray */
   --secondary-400: #d4d4d4 !important;
   --secondary: #e6e6e6 !important;
   --secondary-600: #f4f4f4 !important;
 
-  --tertiary: #707070 !important; /* Muted for dark UI */
+  --tertiary: #707070 !important;
+  /* Muted for dark UI */
   --tertiary-400: #5a5a5a !important;
   --tertiary-300: #414141 !important;
   --tertiary-200: #2a2a2a !important;
   --tertiary-100: #1a1a1a !important;
 
-  --background: #090909 !important; /* Dark background */
-  --foreground: #e6e6e6 !important; /* Light foreground for readability */
+  --background: #090909 !important;
+  /* Dark background */
+  --foreground: #e6e6e6 !important;
+  /* Light foreground for readability */
 }
 
 .gen-sdk-dialog-open {
   z-index: 99999999999 !important;
+}
+
+.gen-sdk-pip-open {
+  z-index: 999 !important;
+}
+
+.gen-sdk-expand-open {
+  z-index: 999999 !important;
 }
 
 .gen-sdk-class * {
@@ -126,7 +139,7 @@
   border: 1px solid var(--tertiary-300) !important;
 } */
 
-.gen-sdk-class .op-ads > div {
+.gen-sdk-class .op-ads>div {
   top: 0px;
 }
 
@@ -150,6 +163,7 @@
   0% {
     opacity: 0;
   }
+
   100% {
     opacity: 1;
   }
@@ -161,12 +175,16 @@
 
 @keyframes moveToCenter {
   0% {
-    top: -100%; /* Start off-screen */
+    top: -100%;
+    /* Start off-screen */
   }
+
   100% {
-    top: 50%; /* Move to center */
+    top: 50%;
+    /* Move to center */
   }
 }
+
 .gen-sdk-class .__gen__sdk__animate__pulse {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   background-color: var(--tertiary-200);
@@ -184,10 +202,13 @@
 
 @keyframes commentBoxFromBottom {
   0% {
-    transform: translate(0, 100%); /* Start off-screen */
+    transform: translate(0, 100%);
+    /* Start off-screen */
   }
+
   100% {
-    transform: translate(0, 0); /* Move to center */
+    transform: translate(0, 0);
+    /* Move to center */
   }
 }
 
@@ -199,6 +220,7 @@
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
@@ -209,6 +231,7 @@
   justify-content: center;
   align-items: center;
 }
+
 .gen-sdk-class .__gen__sdk__icon__with__bg__white {
   display: flex;
   justify-content: center;
@@ -219,6 +242,7 @@
   margin: 0;
   cursor: pointer;
 }
+
 .gen-sdk-class .__gen__sdk__left__side__icons {
   background-color: #f8f9fa;
   padding: 8px;
@@ -232,6 +256,7 @@
   cursor: pointer;
   box-sizing: border-box;
 }
+
 .gen-sdk-class .__gen__sdk__right__side__icons {
   background-color: #f8f9fa;
   padding: 8px;
@@ -245,16 +270,19 @@
   cursor: pointer;
   box-sizing: border-box;
 }
+
 .gen-sdk-class .__gen__sdk__feed__navigation__icon {
   border-radius: 50%;
   background-color: rgba(255, 255, 255, 0.6);
   cursor: pointer;
   padding: 8px;
 }
+
 .gen-sdk-class ul.gen-sdk-custom-decorative-list li.has-child::before {
   display: none;
 }
-.gen-sdk-class ul.gen-sdk-custom-custom-decorative-list > li::before {
+
+.gen-sdk-class ul.gen-sdk-custom-custom-decorative-list>li::before {
   content: '';
   width: 1em;
   height: 10px;
@@ -266,12 +294,14 @@
   top: 50%;
   transform: translateY(-100%);
 }
+
 .gen-sdk-class .__gen__sdk__hide__scrollbar::-webkit-scrollbar {
   -webkit-appearance: none;
   appearance: none;
   height: 0;
   width: 0;
 }
+
 .gen-sdk-class .__gen__sdk__line__clamp__1 {
   display: -webkit-box;
   -webkit-line-clamp: 1;
@@ -279,6 +309,7 @@
   overflow: hidden;
   word-break: break-all;
 }
+
 .gen-sdk-class .__gen__sdk__line__clamp__2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -286,41 +317,51 @@
   overflow: hidden;
   word-break: break-all;
 }
+
 .gen-sdk-class .__gen__sdk__text__white {
   color: white;
 }
+
 .gen-sdk-class .__gen__sdk__font__weight__bold {
   font-weight: 700;
 }
+
 .gen-sdk-class .__gen__sdk__font__weight__demi {
   font-weight: 600;
 }
+
 .gen-sdk-class .__gen__sdk__font__weight__medium {
   font-weight: 500;
 }
+
 .gen-sdk-class .__gen__sdk__font__weight__light {
   font-weight: 300;
 }
+
 .gen-sdk-class .__gen__sdk__text__title__1 {
   font-size: 20px;
   font-style: normal;
   line-height: 32px;
 }
+
 .gen-sdk-class .__gen__sdk__text__title__2 {
   font-size: 17px;
   font-style: normal;
   line-height: 24px;
 }
+
 .gen-sdk-class .__gen__sdk__text__body__2 {
   font-size: 15px;
   font-style: normal;
   line-height: 20px;
 }
+
 .gen-sdk-class .__gen__sdk__text__caption {
   font-size: 12px;
   font-style: normal;
   line-height: 16px;
 }
+
 .gen-sdk-class .__gen__sdk_pointer_events_none {
   pointer-events: none;
 }
@@ -337,6 +378,7 @@
   0% {
     transform: translateX(-100%);
   }
+
   100% {
     transform: translateX(0);
   }
@@ -376,7 +418,7 @@
   display: block;
 }
 
-.gen-sdk-class .swiper-vertical > .swiper-wrapper {
+.gen-sdk-class .swiper-vertical>.swiper-wrapper {
   flex-direction: column;
 }
 
@@ -387,10 +429,8 @@
   z-index: 1;
   display: flex;
   transition-property: transform;
-  transition-timing-function: var(
-    --swiper-wrapper-transition-timing-function,
-    initial
-  );
+  transition-timing-function: var(--swiper-wrapper-transition-timing-function,
+      initial);
   box-sizing: content-box;
 }
 
@@ -455,16 +495,14 @@
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
 }
 
 /* Add this to all animation references */
-.gen-sdk-class
-  .swiper-watch-progress
-  .swiper-slide-visible
-  .swiper-lazy-preloader,
+.gen-sdk-class .swiper-watch-progress .swiper-slide-visible .swiper-lazy-preloader,
 .gen-sdk-class .swiper:not(.swiper-watch-progress) .swiper-lazy-preloader {
   animation: gen-sdk-swiper-preloader-spin 1s infinite linear;
 }
@@ -472,12 +510,9 @@
 @font-face {
   font-family: 'Avenir';
   src:
-    url('https://media.begenuin.com/web-sdk/fonts/AvenirNext-Regular.woff')
-      format('woff'),
-    url('https://media.begenuin.com/web-sdk/fonts/AvenirNext-Regular.woff2')
-      format('woff2'),
-    url('https://media.begenuin.com/web-sdk/fonts/AvenirNext-Regular.ttf')
-      format('truetype');
+    url($MEDIA_BASE_URL/web-sdk/fonts/AvenirNext-Regular.woff) format('woff'),
+    url($MEDIA_BASE_URL/web-sdk/fonts/AvenirNext-Regular.woff2) format('woff2'),
+    url($MEDIA_BASE_URL/web-sdk/fonts/AvenirNext-Regular.ttf) format('truetype');
   font-weight: 300;
   font-style: normal;
 }
@@ -485,12 +520,9 @@
 @font-face {
   font-family: 'Avenir';
   src:
-    url('https://media.begenuin.com/web-sdk/fonts/AvenirNext-Medium.woff2')
-      format('woff2'),
-    url('https://media.begenuin.com/web-sdk/fonts/AvenirNext-Medium.woff')
-      format('woff'),
-    url('https://media.begenuin.com/web-sdk/fonts/AvenirNext-Medium.ttf')
-      format('truetype');
+    url($MEDIA_BASE_URL/web-sdk/fonts/AvenirNext-Medium.woff2) format('woff2'),
+    url($MEDIA_BASE_URL/web-sdk/fonts/AvenirNext-Medium.woff) format('woff'),
+    url($MEDIA_BASE_URL/web-sdk/fonts/AvenirNext-Medium.ttf) format('truetype');
   font-weight: 400;
   font-style: normal;
 }
@@ -498,12 +530,9 @@
 @font-face {
   font-family: 'Avenir';
   src:
-    url('https://media.begenuin.com/web-sdk/fonts/AvenirNext-MediumItalic.woff2')
-      format('woff2'),
-    url('https://media.begenuin.com/web-sdk/fonts/AvenirNext-MediumItalic.woff')
-      format('woff'),
-    url('https://media.begenuin.com/web-sdk/fonts/AvenirNext-MediumItalic.ttf')
-      format('truetype');
+    url($MEDIA_BASE_URL/web-sdk/fonts/AvenirNext-MediumItalic.woff2) format('woff2'),
+    url($MEDIA_BASE_URL/web-sdk/fonts/AvenirNext-MediumItalic.woff) format('woff'),
+    url($MEDIA_BASE_URL/web-sdk/fonts/AvenirNext-MediumItalic.ttf) format('truetype');
   font-weight: 400;
   font-style: italic;
 }
@@ -511,12 +540,9 @@
 @font-face {
   font-family: 'Avenir';
   src:
-    url('https://media.begenuin.com/web-sdk/fonts/AvenirNext-UltraLight.woff2')
-      format('woff2'),
-    url('https://media.begenuin.com/web-sdk/fonts/AvenirNext-UltraLight.woff')
-      format('woff'),
-    url('https://media.begenuin.com/web-sdk/fonts/AvenirNext-UltraLight.ttf')
-      format('truetype');
+    url($MEDIA_BASE_URL/web-sdk/fonts/AvenirNext-UltraLight.woff2) format('woff2'),
+    url($MEDIA_BASE_URL/web-sdk/fonts/AvenirNext-UltraLight.woff) format('woff'),
+    url($MEDIA_BASE_URL/web-sdk/fonts/AvenirNext-UltraLight.ttf) format('truetype');
   font-weight: 100;
   font-style: normal;
 }
@@ -524,12 +550,9 @@
 @font-face {
   font-family: 'Avenir';
   src:
-    url('https://media.begenuin.com/web-sdk/fonts/AvenirNext-UltraLightItalic.woff2')
-      format('woff2'),
-    url('https://media.begenuin.com/web-sdk/fonts/AvenirNext-UltraLightItalic.woff')
-      format('woff'),
-    url('https://media.begenuin.com/web-sdk/fonts/AvenirNext-UltraLightItalic.ttf')
-      format('truetype');
+    url($MEDIA_BASE_URL/web-sdk/fonts/AvenirNext-UltraLightItalic.woff2) format('woff2'),
+    url($MEDIA_BASE_URL/web-sdk/fonts/AvenirNext-UltraLightItalic.woff) format('woff'),
+    url($MEDIA_BASE_URL/web-sdk/fonts/AvenirNext-UltraLightItalic.ttf) format('truetype');
   font-weight: 100;
   font-style: italic;
 }
@@ -537,12 +560,9 @@
 @font-face {
   font-family: 'Avenir';
   src:
-    url('https://media.begenuin.com/web-sdk/fonts/AvenirNext-HeavyItalic.woff2')
-      format('woff2'),
-    url('https://media.begenuin.com/web-sdk/fonts/AvenirNext-HeavyItalic.woff')
-      format('woff'),
-    url('https://media.begenuin.com/web-sdk/fonts/AvenirNext-HeavyItalic.ttf')
-      format('truetype');
+    url($MEDIA_BASE_URL/web-sdk/fonts/AvenirNext-HeavyItalic.woff2) format('woff2'),
+    url($MEDIA_BASE_URL/web-sdk/fonts/AvenirNext-HeavyItalic.woff) format('woff'),
+    url($MEDIA_BASE_URL/web-sdk/fonts/AvenirNext-HeavyItalic.ttf) format('truetype');
   font-weight: 900;
   font-style: italic;
 }
@@ -550,12 +570,9 @@
 @font-face {
   font-family: 'Avenir';
   src:
-    url('https://media.begenuin.com/web-sdk/fonts/AvenirNext-Italic.woff2')
-      format('woff2'),
-    url('https://media.begenuin.com/web-sdk/fonts/AvenirNext-Italic.woff')
-      format('woff'),
-    url('https://media.begenuin.com/web-sdk/fonts/AvenirNext-Italic.ttf')
-      format('truetype');
+    url($MEDIA_BASE_URL/web-sdk/fonts/AvenirNext-Italic.woff2) format('woff2'),
+    url($MEDIA_BASE_URL/web-sdk/fonts/AvenirNext-Italic.woff) format('woff'),
+    url($MEDIA_BASE_URL/web-sdk/fonts/AvenirNext-Italic.ttf) format('truetype');
   font-weight: 400;
   font-style: italic;
 }
@@ -563,12 +580,9 @@
 @font-face {
   font-family: 'Avenir';
   src:
-    url('https://media.begenuin.com/web-sdk/fonts/AvenirNext-BoldItalic.woff2')
-      format('woff2'),
-    url('https://media.begenuin.com/web-sdk/fonts/AvenirNext-BoldItalic.woff')
-      format('woff'),
-    url('https://media.begenuin.com/web-sdk/fonts/AvenirNext-BoldItalic.ttf')
-      format('truetype');
+    url($MEDIA_BASE_URL/web-sdk/fonts/AvenirNext-BoldItalic.woff2) format('woff2'),
+    url($MEDIA_BASE_URL/web-sdk/fonts/AvenirNext-BoldItalic.woff) format('woff'),
+    url($MEDIA_BASE_URL/web-sdk/fonts/AvenirNext-BoldItalic.ttf) format('truetype');
   font-weight: 700;
   font-style: italic;
 }
@@ -576,12 +590,9 @@
 @font-face {
   font-family: 'Avenir';
   src:
-    url('https://media.begenuin.com/web-sdk/fonts/AvenirNext-DemiBoldItalic.woff2')
-      format('woff2'),
-    url('https://media.begenuin.com/web-sdk/fonts/AvenirNext-DemiBoldItalic.woff')
-      format('woff'),
-    url('https://media.begenuin.com/web-sdk/fonts/AvenirNext-DemiBoldItalic.ttf')
-      format('truetype');
+    url($MEDIA_BASE_URL/web-sdk/fonts/AvenirNext-DemiBoldItalic.woff2) format('woff2'),
+    url($MEDIA_BASE_URL/web-sdk/fonts/AvenirNext-DemiBoldItalic.woff) format('woff'),
+    url($MEDIA_BASE_URL/web-sdk/fonts/AvenirNext-DemiBoldItalic.ttf) format('truetype');
   font-weight: 600;
   font-style: italic;
 }
@@ -589,12 +600,9 @@
 @font-face {
   font-family: 'Avenir';
   src:
-    url('https://media.begenuin.com/web-sdk/fonts/AvenirNext-Heavy.woff2')
-      format('woff2'),
-    url('https://media.begenuin.com/web-sdk/fonts/AvenirNext-Heavy.woff')
-      format('woff'),
-    url('https://media.begenuin.com/web-sdk/fonts/AvenirNext-Heavy.ttf')
-      format('truetype');
+    url($MEDIA_BASE_URL/web-sdk/fonts/AvenirNext-Heavy.woff2) format('woff2'),
+    url($MEDIA_BASE_URL/web-sdk/fonts/AvenirNext-Heavy.woff) format('woff'),
+    url($MEDIA_BASE_URL/web-sdk/fonts/AvenirNext-Heavy.ttf) format('truetype');
   font-weight: 900;
   font-style: normal;
 }
@@ -602,12 +610,9 @@
 @font-face {
   font-family: 'Avenir';
   src:
-    url('https://media.begenuin.com/web-sdk/fonts/AvenirNext-DemiBold.woff2')
-      format('woff2'),
-    url('https://media.begenuin.com/web-sdk/fonts/AvenirNext-DemiBold.woff')
-      format('woff'),
-    url('https://media.begenuin.com/web-sdk/fonts/AvenirNext-DemiBold.ttf')
-      format('truetype');
+    url($MEDIA_BASE_URL/web-sdk/fonts/AvenirNext-DemiBold.woff2) format('woff2'),
+    url($MEDIA_BASE_URL/web-sdk/fonts/AvenirNext-DemiBold.woff) format('woff'),
+    url($MEDIA_BASE_URL/web-sdk/fonts/AvenirNext-DemiBold.ttf) format('truetype');
   font-weight: 600;
   font-style: normal;
 }
@@ -615,12 +620,9 @@
 @font-face {
   font-family: 'Avenir';
   src:
-    url('https://media.begenuin.com/web-sdk/fonts/AvenirNext-Bold.woff2')
-      format('woff2'),
-    url('https://media.begenuin.com/web-sdk/fonts/AvenirNext-Bold.woff')
-      format('woff'),
-    url('https://media.begenuin.com/web-sdk/fonts/AvenirNext-Bold.ttf')
-      format('truetype');
+    url($MEDIA_BASE_URL/web-sdk/fonts/AvenirNext-Bold.woff2) format('woff2'),
+    url($MEDIA_BASE_URL/web-sdk/fonts/AvenirNext-Bold.woff) format('woff'),
+    url($MEDIA_BASE_URL/web-sdk/fonts/AvenirNext-Bold.ttf) format('truetype');
   font-weight: 700;
   font-style: normal;
 }

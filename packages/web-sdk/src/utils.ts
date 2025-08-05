@@ -6,12 +6,14 @@ import {
   generateBrandURL,
   PROTECTED_ROUTES,
   UNIQUE_USER_ID_KEY,
+  MEDIA_BASE_URL,
 } from '@/const'
 import { AuthUser, CommunityJoinStatusType, FeedType, SDKConfig } from '@/type'
 import CryptoJS from 'crypto-es'
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import { useBaseContext } from './context/base'
+import DOMPurify from 'dompurify'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -26,7 +28,7 @@ export function cn(...inputs: ClassValue[]) {
  */
 export function generateConfiguredUrl(
   path: string,
-  params: Record<string, string | boolean | number>,
+  params: Record<string, string | boolean | number | undefined>,
   subdomain: string,
 ): string {
   return buildQueryString(generateBrandURL(subdomain) + path, params)
@@ -53,14 +55,14 @@ export function generateBasicUrl(path: string, brandId: string): string {
  */
 function buildQueryString(
   path: string,
-  params: Record<string, string | boolean | number>,
+  params: Record<string, string | boolean | number | undefined>,
 ): string {
   // Filter out undefined values from the parameters
   const filteredParams = Object.entries(params)
     .filter(([, value]) => value !== undefined)
     .map(
       ([key, value]) =>
-        `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
+        `${encodeURIComponent(key)}=${encodeURIComponent(value ?? '')}`,
     )
     .join('&')
 
@@ -160,7 +162,7 @@ export function generatePathFromConfig(
  * @returns The SVG link.
  */
 export function getIconLink(name: string, type: string = 'svg') {
-  return `https://media.begenuin.com/web-sdk/v1/icons/${name}.${type}`
+  return `${MEDIA_BASE_URL}/web-sdk/v1/icons/${name}.${type}`
 }
 
 /**
@@ -169,7 +171,7 @@ export function getIconLink(name: string, type: string = 'svg') {
  * @returns The GIF link.
  */
 export function getGifLink(name: string) {
-  return `https://media.begenuin.com/web-sdk/v1/icons/${name}.gif`
+  return `${MEDIA_BASE_URL}/web-sdk/v1/icons/${name}.gif`
 }
 
 export function parseColors(colors: any) {
@@ -204,7 +206,7 @@ export function getAvatarUrl(avatarUrl: any) {
   if (avatarUrl) {
     return isValidHTTPS(avatarUrl)
       ? avatarUrl
-      : `https://media.qa.begenuin.com/webapp_assets/assets/avatar/${avatarUrl}.gif`
+      : `${MEDIA_BASE_URL}/webapp_assets/assets/avatar/${avatarUrl}.gif`
   }
   return null
 }
@@ -215,6 +217,19 @@ export function isValidHTTPS(link: string) {
 
 export function checkAndAppendHttps(link: string): string {
   return link.includes('://') ? link : 'https://' + link
+}
+
+/**
+ * Sanitizes user input to prevent XSS attacks
+ * Only allows plain text by escaping dangerous HTML characters
+ * @param input - The user input to sanitize
+ * @returns Sanitized plain text string
+ */
+export function sanitizeInput(input: string | null | undefined): string {
+  if (typeof input !== 'string' || input.trim() === '') return ''
+  return DOMPurify.sanitize(input, {
+    USE_PROFILES: { html: false },
+  })
 }
 
 export function getTimeAgo(createdAt: any) {
@@ -287,9 +302,10 @@ export function encodeVideoSourceUrl(videoSource: string) {
 
 export function getWebpUrlForImage(url?: string | null): string {
   if (!url) return ''
-  return url.includes('/uploads/')
-    ? url.replace(/(\/)([^/]+)\.([^/.]+)$/, '$1webp/$2.webp')
-    : url
+  return url
+  // return url.includes('/uploads/')
+  //   ? url.replace(/(\/)([^/]+)\.([^/.]+)$/, '$1webp/$2.webp')
+  //   : url
 }
 
 export function encryptText(text: string, appendString: boolean): string {
@@ -304,7 +320,11 @@ export function encryptText(text: string, appendString: boolean): string {
   return encrypted.toString()
 }
 
-export function getSlidesPerView(element: Element, forFeed: boolean) {
+export function getSlidesPerView(
+  element: Element | undefined,
+  forFeed: boolean,
+) {
+  if (!element) return 1 // Default to 1 if element is not found
   const elementHeight = element.clientHeight
   const elementWidth = element.clientWidth
 
@@ -507,6 +527,10 @@ export function getRedirectionStatusForPaths(): {
   }
 }
 
+export function getRandomNumber(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1)) + min
+}
+
 /**
  * This function maps the privacy type of the community.
  * @param privacyType - Privacy type of the community.
@@ -528,7 +552,7 @@ export function getUrlForReaction(
   forComment: boolean = false,
   theme: string = 'light',
 ) {
-  return `https://media.begenuin.com/webapp_assets/reactions/${reaction}/${theme === 'dark' ? 'dark/' : ''}${forComment ? 'comment_' : 'feed_'}${
+  return `${MEDIA_BASE_URL}/webapp_assets/reactions/${reaction}/${theme === 'dark' ? 'dark/' : ''}${forComment ? 'comment_' : 'feed_'}${
     isReacted ? 'selected' : 'unselected'
   }.svg`
 }
@@ -596,4 +620,142 @@ export function findLastNonSettingsIndex(paths: string[]): number {
 
   // Return -1 if all paths contain "/settings"
   return -1
+}
+
+export const openGeneratedLink = (link = '') => {
+  setTimeout(() => {
+    const formattedLink = link.startsWith('http')
+      ? link
+      : `http://${link.replace('//', '/')}`
+    window.open(formattedLink, '_blank', 'noopener,noreferrer')
+  })
+}
+
+/**
+ * Detects the user's platform based on the `navigator.userAgent` string.
+ *
+ * @returns {string} - Returns "Android" if the user is on an Android device,
+ *                     "iOS" if on an iPhone, iPad, or iPod, and "Web" otherwise.
+ */
+export const getPlatform = () => {
+  if (typeof navigator !== 'undefined') {
+    const userAgent = navigator.userAgent || navigator.vendor
+
+    if (/android/i.test(userAgent)) {
+      return 'Android'
+    }
+    if (/iPhone|iPad|iPod/i.test(userAgent)) {
+      return 'iOS'
+    }
+  }
+  return 'Web'
+}
+
+export function getLoopAndCommunityShareString(shareUrl: string) {
+  const urlObj = new URL(shareUrl)
+  const loopShareString = urlObj.searchParams.get('loop')
+  const communityShareString = urlObj.searchParams.get('community')
+  return { loopShareString, communityShareString }
+}
+
+/**
+ * Validates if a file is a genuine image (JPEG or PNG) by examining both its
+ * reported MIME type and its binary signature (magic numbers).
+ *
+ * @param file - The File object to validate, typically from file input or drag-and-drop
+ * @returns A Promise that resolves to boolean - true if valid image, false otherwise
+ */
+
+export async function validateImage(file: File): Promise<boolean> {
+  try {
+    // Check MIME type reported by the browser
+    const validMimeTypes = ['image/jpeg', 'image/jpg', 'image/png']
+    if (!validMimeTypes.includes(file.type)) {
+      return false
+    }
+
+    // Read the first few bytes to check for image signatures (magic numbers)
+    const buffer = await readFileAsArrayBuffer(file.slice(0, 12))
+    const arr = new Uint8Array(buffer)
+
+    // Check for JPEG signature (FF D8 FF)
+    if (arr[0] === 0xff && arr[1] === 0xd8 && arr[2] === 0xff) {
+      return true
+    }
+
+    // Check for PNG signature (89 50 4E 47 0D 0A 1A 0A)
+    if (
+      arr[0] === 0x89 &&
+      arr[1] === 0x50 &&
+      arr[2] === 0x4e &&
+      arr[3] === 0x47 &&
+      arr[4] === 0x0d &&
+      arr[5] === 0x0a &&
+      arr[6] === 0x1a &&
+      arr[7] === 0x0a
+    ) {
+      return true
+    }
+    return false
+  } catch (err) {
+    return false
+  }
+}
+
+function readFileAsArrayBuffer(file: Blob): Promise<ArrayBuffer> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result as ArrayBuffer)
+    reader.onerror = reject
+    reader.readAsArrayBuffer(file)
+  })
+}
+
+/**
+ * Determines if the provided brand ID corresponds to a "fifth video type" brand.
+ *
+ * @param params - An object containing the brand ID to check.
+ * @param params.brandId - The brand ID to evaluate. Can be a number or undefined.
+ * @returns `true` if the brand ID is either 2883 or 2922; otherwise, `false`.
+ */
+export function isCheckFifthVideoType(
+  brandId: number | string | undefined,
+): boolean {
+  const parsedBrandId = Number(brandId)
+
+  if (!isNaN(parsedBrandId) && [2883, 2922, 2357].includes(parsedBrandId)) {
+    return true
+  }
+  return false
+}
+
+/**
+ * Resolves the appropriate video URL based on brand preferences and availability.
+ *
+ * Certain brands prefer MP4 format over M3U8. For these brands, MP4 URL is returned
+ * if available. For all other brands, M3U8 URL is preferred, with MP4 as fallback.
+ *
+ * @param params - Configuration object for video URL resolution
+ * @param params.brandId - The brand identifier (number or string)
+ * @param params.m3u8VideoUrl - The M3U8 streaming video URL
+ * @param params.mp4VideoUrl - The MP4 video URL
+ * @returns The preferred video URL based on brand configuration, or undefined if no URLs available
+ */
+export function resolveVideoUrl(
+  brandId: number | string | undefined,
+  m3u8VideoUrl: string | undefined,
+  mp4VideoUrl: string | undefined,
+): string | undefined {
+  // Brands that prefer MP4 format over M3U8
+  const mp4PreferredBrands = [2750] // Add more brand IDs as needed
+
+  const parsedBrandId = Number(brandId)
+
+  // Check if brand prefers MP4 format
+  if (!isNaN(parsedBrandId) && mp4PreferredBrands.includes(parsedBrandId)) {
+    return mp4VideoUrl
+  }
+
+  // Default behavior: prefer M3U8, fallback to MP4
+  return m3u8VideoUrl || mp4VideoUrl
 }

@@ -8,6 +8,7 @@ import { Loader } from '@/components/pages/community/loader'
 import { TopBarContent } from '@/components/pages/community/top-bar-content'
 import { TopBar } from '@/components/top-bar'
 import { mapCommunityUserRole } from '@/components/tree-structure'
+import { useInvalidateOnUser } from '@/hooks/useInvalidateOnUser'
 import { NOT_FOUND_ERROR_CODES } from '@/utils/constants/errors'
 import { useId } from 'react'
 
@@ -33,6 +34,7 @@ function CommunityDetails({ slug }: CommunityPagePropsType) {
     isError,
     error,
   } = getCommunityDetails(slug)
+  useInvalidateOnUser('community', slug)
 
   if (isLoading) {
     return <Loader />
@@ -60,6 +62,7 @@ function CommunityDetails({ slug }: CommunityPagePropsType) {
             communityDetails.is_community_join_requested,
           )}
           shareUrl={communityDetails.share_url}
+          communityHandle={communityDetails.handle}
         />
       </TopBar>
       <Details

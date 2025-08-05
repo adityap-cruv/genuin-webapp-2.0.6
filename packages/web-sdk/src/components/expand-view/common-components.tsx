@@ -1,7 +1,6 @@
 import { NavigationButtons } from './navigation-buttons'
 import { Actions } from '../actions'
 import { FeedVideoType } from '@/type'
-import { useEffect } from 'react'
 import { useBaseContext } from '@/context/base'
 import { ExpandViewCommentBoxLayout } from './comment-box'
 
@@ -18,20 +17,15 @@ export function ExpandViewComponents({
   swiperInstance,
   onSpark,
 }: ExpandViewComponentsProps) {
-  const { customizations } = useBaseContext()
+  const { brandDetails } = useBaseContext()
 
-  useEffect(() => {
-    const rootElement = customizations?.element
-    if (!rootElement) return
-
-    // Apply inline styles directly
-    rootElement.style.zIndex = '9999999999'
-
-    return () => {
-      // Clean up the inline styles when the component unmounts
-      rootElement.style.zIndex = ''
-    }
-  }, [])
+  const baseShareUrl = videos[activeIndex]?.video.share_url
+    ? videos[activeIndex]?.video.share_url.split('/video')
+    : []
+  const shareUrl =
+    baseShareUrl.length === 2
+      ? `${brandDetails?.brand_id === 2357 ? `${window.location.href}?video=${baseShareUrl[1].slice(1).replace('?', '&')}` : `${baseShareUrl[0]}?video=${baseShareUrl[1].slice(1).replace('?', '&')}`}`
+      : videos[activeIndex]?.video.share_url || ''
 
   return (
     <>
@@ -39,7 +33,8 @@ export function ExpandViewComponents({
         <Actions
           videoId={videos[activeIndex]?.uuid}
           videoSlug={videos[activeIndex]?.video.slug}
-          shareUrl={videos[activeIndex]?.video.share_url}
+          shareUrl={shareUrl}
+          videoShareUrl={videos[activeIndex]?.video.share_url}
           noOfSparks={videos[activeIndex]?.video.no_of_sparks}
           noOfComments={videos[activeIndex]?.video.no_of_comments}
           isSparked={videos[activeIndex]?.video.is_sparked}

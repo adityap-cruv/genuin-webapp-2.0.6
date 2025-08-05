@@ -100,19 +100,19 @@ module.exports = {
     },
     maxWidth: {
       // Convert default rem values to px (1rem = 16px)
-      0: '0px !important', // 0rem → 0px
+      0: '0px !important', // 0rem â†’ 0px
       none: 'none !important', // No max-width
-      xs: '320px !important', // 20rem → 320px
-      sm: '384px !important', // 24rem → 384px
-      md: '448px !important', // 28rem → 448px
-      lg: '512px !important', // 32rem → 512px
-      xl: '576px !important', // 36rem → 576px
-      '2xl': '672px !important', // 42rem → 672px
-      '3xl': '768px !important', // 48rem → 768px
-      '4xl': '896px !important', // 56rem → 896px
-      '5xl': '1024px !important', // 64rem → 1024px
-      '6xl': '1152px !important', // 72rem → 1152px
-      '7xl': '1280px !important', // 80rem → 1280px
+      xs: '320px !important', // 20rem â†’ 320px
+      sm: '384px !important', // 24rem â†’ 384px
+      md: '448px !important', // 28rem â†’ 448px
+      lg: '512px !important', // 32rem â†’ 512px
+      xl: '576px !important', // 36rem â†’ 576px
+      '2xl': '672px !important', // 42rem â†’ 672px
+      '3xl': '768px !important', // 48rem â†’ 768px
+      '4xl': '896px !important', // 56rem â†’ 896px
+      '5xl': '1024px !important', // 64rem â†’ 1024px
+      '6xl': '1152px !important', // 72rem â†’ 1152px
+      '7xl': '1280px !important', // 80rem â†’ 1280px
       full: '100% !important', // No conversion needed
       min: 'min-content !important', // No conversion needed
       max: 'max-content !important', // No conversion needed
@@ -122,70 +122,70 @@ module.exports = {
     lineHeight: {
       // Convert default rem values to px (1rem = 16px)
       none: '1 !important', // Unitless (no conversion needed)
-      tight: '20px !important', // 1.25rem → 20px
-      snug: '22px !important', // 1.375rem → 22px
-      normal: '24px !important', // 1.5rem → 24px
-      relaxed: '26px !important', // 1.625rem → 26px
-      loose: '32px !important', // 2rem → 32px
+      tight: '20px !important', // 1.25rem â†’ 20px
+      snug: '22px !important', // 1.375rem â†’ 22px
+      normal: '24px !important', // 1.5rem â†’ 24px
+      relaxed: '26px !important', // 1.625rem â†’ 26px
+      loose: '32px !important', // 2rem â†’ 32px
       // Custom values (optional)
-      3: '12px !important', // 0.75rem → 12px
-      4: '16px !important', // 1rem → 16px
-      5: '20px !important', // 1.25rem → 20px
-      6: '24px !important', // 1.5rem → 24px
-      7: '28px !important', // 1.75rem → 28px
-      8: '32px !important', // 2rem → 32px
-      9: '36px !important', // 2.25rem → 36px
-      10: '40px !important', // 2.5rem → 40px
+      3: '12px !important', // 0.75rem â†’ 12px
+      4: '16px !important', // 1rem â†’ 16px
+      5: '20px !important', // 1.25rem â†’ 20px
+      6: '24px !important', // 1.5rem â†’ 24px
+      7: '28px !important', // 1.75rem â†’ 28px
+      8: '32px !important', // 2rem â†’ 32px
+      9: '36px !important', // 2.25rem â†’ 36px
+      10: '40px !important', // 2.5rem â†’ 40px
     },
     borderRadius: {
       // Convert default rem values to px (1rem = 16px)
       none: '0px !important',
-      sm: '2px !important', // 0.125rem → 2px
-      DEFAULT: '4px !important', // 0.25rem  → 4px (used for `rounded`)
-      md: '6px !important', // 0.375rem → 6px
-      lg: '8px !important', // 0.5rem   → 8px
-      xl: '12px !important', // 0.75rem  → 12px
-      '2xl': '16px !important', // 1rem     → 16px
-      '3xl': '24px !important', // 1.5rem   → 24px
+      sm: '2px !important', // 0.125rem â†’ 2px
+      DEFAULT: '4px !important', // 0.25rem  â†’ 4px (used for `rounded`)
+      md: '6px !important', // 0.375rem â†’ 6px
+      lg: '8px !important', // 0.5rem   â†’ 8px
+      xl: '12px !important', // 0.75rem  â†’ 12px
+      '2xl': '16px !important', // 1rem     â†’ 16px
+      '3xl': '24px !important', // 1.5rem   â†’ 24px
       full: '9999px !important', // Unchanged (already px-based)
     },
     spacing: {
       // Hardcoded px values (1 unit = 4px instead of 0.25rem)
       0: '0px !important',
       px: '1px !important',
-      0.5: '2px !important', // 0.125rem → 2px
-      1: '4px !important', // 0.25rem  → 4px
-      1.5: '6px !important', // 0.375rem → 6px
-      2: '8px !important', // 0.5rem   → 8px
-      2.5: '10px !important', // 0.625rem → 10px
-      3: '12px !important', // 0.75rem  → 12px
-      3.5: '14px !important', // 0.875rem → 14px
-      4: '16px !important', // 1rem     → 16px
-      5: '20px !important', // 1.25rem  → 20px
-      6: '24px !important', // 1.5rem   → 24px
-      7: '28px !important', // 1.75rem  → 28px
-      8: '32px !important', // 2rem     → 32px
-      9: '36px !important', // 2.25rem  → 36px
-      10: '40px !important', // 2.5rem   → 40px
-      11: '44px !important', // 2.75rem  → 44px
-      12: '48px !important', // 3rem     → 48px
-      14: '56px !important', // 3.5rem   → 56px
-      16: '64px !important', // 4rem     → 64px
-      20: '80px !important', // 5rem     → 80px
-      24: '96px !important', // 6rem     → 96px
-      28: '112px !important', // 7rem     → 112px
-      32: '128px !important', // 8rem     → 128px
-      36: '144px !important', // 9rem     → 144px
-      40: '160px !important', // 10rem    → 160px
-      44: '176px !important', // 11rem    → 176px
-      48: '192px !important', // 12rem    → 192px
-      52: '208px !important', // 13rem    → 208px
-      56: '224px !important', // 14rem    → 224px
-      60: '240px !important', // 15rem    → 240px
-      64: '256px !important', // 16rem    → 256px
-      72: '288px !important', // 18rem    → 288px
-      80: '320px !important', // 20rem    → 320px
-      96: '384px !important', // 24rem    → 384px
+      0.5: '2px !important', // 0.125rem â†’ 2px
+      1: '4px !important', // 0.25rem  â†’ 4px
+      1.5: '6px !important', // 0.375rem â†’ 6px
+      2: '8px !important', // 0.5rem   â†’ 8px
+      2.5: '10px !important', // 0.625rem â†’ 10px
+      3: '12px !important', // 0.75rem  â†’ 12px
+      3.5: '14px !important', // 0.875rem â†’ 14px
+      4: '16px !important', // 1rem     â†’ 16px
+      5: '20px !important', // 1.25rem  â†’ 20px
+      6: '24px !important', // 1.5rem   â†’ 24px
+      7: '28px !important', // 1.75rem  â†’ 28px
+      8: '32px !important', // 2rem     â†’ 32px
+      9: '36px !important', // 2.25rem  â†’ 36px
+      10: '40px !important', // 2.5rem   â†’ 40px
+      11: '44px !important', // 2.75rem  â†’ 44px
+      12: '48px !important', // 3rem     â†’ 48px
+      14: '56px !important', // 3.5rem   â†’ 56px
+      16: '64px !important', // 4rem     â†’ 64px
+      20: '80px !important', // 5rem     â†’ 80px
+      24: '96px !important', // 6rem     â†’ 96px
+      28: '112px !important', // 7rem     â†’ 112px
+      32: '128px !important', // 8rem     â†’ 128px
+      36: '144px !important', // 9rem     â†’ 144px
+      40: '160px !important', // 10rem    â†’ 160px
+      44: '176px !important', // 11rem    â†’ 176px
+      48: '192px !important', // 12rem    â†’ 192px
+      52: '208px !important', // 13rem    â†’ 208px
+      56: '224px !important', // 14rem    â†’ 224px
+      60: '240px !important', // 15rem    â†’ 240px
+      64: '256px !important', // 16rem    â†’ 256px
+      72: '288px !important', // 18rem    â†’ 288px
+      80: '320px !important', // 20rem    â†’ 320px
+      96: '384px !important', // 24rem    â†’ 384px
     },
     fontFamily: {
       sans: ['"Avenir Next"', ...defaultTheme.fontFamily.sans], // Here sans is default font in tailwindcss so updated it to avenir next
@@ -230,76 +230,76 @@ module.exports = {
       '-1/12': '-8.333% !important',
       '-11/12': '-91.666% !important',
       px: '1px !important',
-      0.5: '2px !important', // 0.125rem → 2px
-      1: '4px !important', // 0.25rem  → 4px
-      1.5: '6px !important', // 0.375rem → 6px
-      2: '8px !important', // 0.5rem   → 8px
-      2.5: '10px !important', // 0.625rem → 10px
-      3: '12px !important', // 0.75rem  → 12px
-      3.5: '14px !important', // 0.875rem → 14px
-      4: '16px !important', // 1rem     → 16px
-      5: '20px !important', // 1.25rem  → 20px
-      6: '24px !important', // 1.5rem   → 24px
-      7: '28px !important', // 1.75rem  → 28px
-      8: '32px !important', // 2rem     → 32px
-      9: '36px !important', // 2.25rem  → 36px
-      10: '40px !important', // 2.5rem   → 40px
-      11: '44px !important', // 2.75rem  → 44px
-      12: '48px !important', // 3rem     → 48px
-      14: '56px !important', // 3.5rem   → 56px
-      16: '64px !important', // 4rem     → 64px
-      20: '80px !important', // 5rem     → 80px
-      24: '96px !important', // 6rem     → 96px
-      28: '112px !important', // 7rem     → 112px
-      32: '128px !important', // 8rem     → 128px
-      36: '144px !important', // 9rem     → 144px
-      40: '160px !important', // 10rem    → 160px
-      44: '176px !important', // 11rem    → 176px
-      48: '192px !important', // 12rem    → 192px
-      52: '208px !important', // 13rem    → 208px
-      56: '224px !important', // 14rem    → 224px
-      60: '240px !important', // 15rem    → 240px
-      64: '256px !important', // 16rem    → 256px
-      72: '288px !important', // 18rem    → 288px
-      80: '320px !important', // 20rem    → 320px
-      96: '384px !important', // 24rem    → 384px
+      0.5: '2px !important', // 0.125rem â†’ 2px
+      1: '4px !important', // 0.25rem  â†’ 4px
+      1.5: '6px !important', // 0.375rem â†’ 6px
+      2: '8px !important', // 0.5rem   â†’ 8px
+      2.5: '10px !important', // 0.625rem â†’ 10px
+      3: '12px !important', // 0.75rem  â†’ 12px
+      3.5: '14px !important', // 0.875rem â†’ 14px
+      4: '16px !important', // 1rem     â†’ 16px
+      5: '20px !important', // 1.25rem  â†’ 20px
+      6: '24px !important', // 1.5rem   â†’ 24px
+      7: '28px !important', // 1.75rem  â†’ 28px
+      8: '32px !important', // 2rem     â†’ 32px
+      9: '36px !important', // 2.25rem  â†’ 36px
+      10: '40px !important', // 2.5rem   â†’ 40px
+      11: '44px !important', // 2.75rem  â†’ 44px
+      12: '48px !important', // 3rem     â†’ 48px
+      14: '56px !important', // 3.5rem   â†’ 56px
+      16: '64px !important', // 4rem     â†’ 64px
+      20: '80px !important', // 5rem     â†’ 80px
+      24: '96px !important', // 6rem     â†’ 96px
+      28: '112px !important', // 7rem     â†’ 112px
+      32: '128px !important', // 8rem     â†’ 128px
+      36: '144px !important', // 9rem     â†’ 144px
+      40: '160px !important', // 10rem    â†’ 160px
+      44: '176px !important', // 11rem    â†’ 176px
+      48: '192px !important', // 12rem    â†’ 192px
+      52: '208px !important', // 13rem    â†’ 208px
+      56: '224px !important', // 14rem    â†’ 224px
+      60: '240px !important', // 15rem    â†’ 240px
+      64: '256px !important', // 16rem    â†’ 256px
+      72: '288px !important', // 18rem    â†’ 288px
+      80: '320px !important', // 20rem    â†’ 320px
+      96: '384px !important', // 24rem    â†’ 384px
     },
     translate: {
       0: '0px !important',
       px: '1px !important',
-      0.5: '2px !important', // 0.125rem → 2px
-      1: '4px !important', // 0.25rem  → 4px
-      1.5: '6px !important', // 0.375rem → 6px
-      2: '8px !important', // 0.5rem   → 8px
-      2.5: '10px !important', // 0.625rem → 10px
-      3: '12px !important', // 0.75rem  → 12px
-      3.5: '14px !important', // 0.875rem → 14px
-      4: '16px !important', // 1rem     → 16px
-      5: '20px !important', // 1.25rem  → 20px
-      6: '24px !important', // 1.5rem   → 24px
-      7: '28px !important', // 1.75rem  → 28px
-      8: '32px !important', // 2rem     → 32px
-      9: '36px !important', // 2.25rem  → 36px
-      10: '40px !important', // 2.5rem   → 40px
-      11: '44px !important', // 2.75rem  → 44px
-      12: '48px !important', // 3rem     → 48px
-      14: '56px !important', // 3.5rem   → 56px
-      16: '64px !important', // 4rem     → 64px
-      20: '80px !important', // 5rem     → 80px
-      24: '96px !important', // 6rem     → 96px
-      28: '112px !important', // 7rem     → 112px
-      32: '128px !important', // 8rem     → 128px
-      36: '144px !important', // 9rem     → 144px
-      40: '160px !important', // 10rem    → 160px
-      44: '176px !important', // 11rem    → 176px
-      48: '192px !important', // 12rem    → 192px
-      52: '208px !important', // 13rem    → 208px
-      56: '224px !important', // 14rem    → 224px
-      60: '240px !important', // 15rem    → 240px
-      64: '256px !important', // 16rem    → 256px
-      72: '288px !important', // 18rem    → 288px
-      80: '320px !important', // 20rem    → 320px
-      96: '384px !important', // 24rem    → 384px
+      0.5: '2px !important', // 0.125rem â†’ 2px
+      1: '4px !important', // 0.25rem  â†’ 4px
+      1.5: '6px !important', // 0.375rem â†’ 6px
+      2: '8px !important', // 0.5rem   â†’ 8px
+      2.5: '10px !important', // 0.625rem â†’ 10px
+      3: '12px !important', // 0.75rem  â†’ 12px
+      3.5: '14px !important', // 0.875rem â†’ 14px
+      4: '16px !important', // 1rem     â†’ 16px
+      5: '20px !important', // 1.25rem  â†’ 20px
+      6: '24px !important', // 1.5rem   â†’ 24px
+      7: '28px !important', // 1.75rem  â†’ 28px
+      8: '32px !important', // 2rem     â†’ 32px
+      9: '36px !important', // 2.25rem  â†’ 36px
+      10: '40px !important', // 2.5rem   â†’ 40px
+      11: '44px !important', // 2.75rem  â†’ 44px
+      12: '48px !important', // 3rem     â†’ 48px
+      14: '56px !important', // 3.5rem   â†’ 56px
+      16: '64px !important', // 4rem     â†’ 64px
+      20: '80px !important', // 5rem     â†’ 80px
+      24: '96px !important', // 6rem     â†’ 96px
+      28: '112px !important', // 7rem     â†’ 112px
+      32: '128px !important', // 8rem     â†’ 128px
+      36: '144px !important', // 9rem     â†’ 144px
+      40: '160px !important', // 10rem    â†’ 160px
+      44: '176px !important', // 11rem    â†’ 176px
+      48: '192px !important', // 12rem    â†’ 192px
+      52: '208px !important', // 13rem    â†’ 208px
+      56: '224px !important', // 14rem    â†’ 224px
+      60: '240px !important', // 15rem    â†’ 240px
+      64: '256px !important', // 16rem    â†’ 256px
+      72: '288px !important', // 18rem    â†’ 288px
+      80: '320px !important', // 20rem    â†’ 320px
+      96: '384px !important', // 24rem    â†’ 384px
       full: '100%',
       '1/2': '50% !important',
       '1/3': '33.333% !important',
@@ -361,40 +361,40 @@ module.exports = {
       '-1/12': '-8.333% !important',
       '-11/12': '-91.666% !important',
       px: '1px !important',
-      0.5: '2px !important', // 0.125rem → 2px
-      1: '4px !important', // 0.25rem  → 4px
-      1.5: '6px !important', // 0.375rem → 6px
-      2: '8px !important', // 0.5rem   → 8px
-      2.5: '10px !important', // 0.625rem → 10px
-      3: '12px !important', // 0.75rem  → 12px
-      3.5: '14px !important', // 0.875rem → 14px
-      4: '16px !important', // 1rem     → 16px
-      5: '20px !important', // 1.25rem  → 20px
-      6: '24px !important', // 1.5rem   → 24px
-      7: '28px !important', // 1.75rem  → 28px
-      8: '32px !important', // 2rem     → 32px
-      9: '36px !important', // 2.25rem  → 36px
-      10: '40px !important', // 2.5rem   → 40px
-      11: '44px !important', // 2.75rem  → 44px
-      12: '48px !important', // 3rem     → 48px
-      14: '56px !important', // 3.5rem   → 56px
-      '-14': '-56px !important', // 3.5rem   → 56px
-      16: '64px !important', // 4rem     → 64px
-      20: '80px !important', // 5rem     → 80px
-      24: '96px !important', // 6rem     → 96px
-      28: '112px !important', // 7rem     → 112px
-      32: '128px !important', // 8rem     → 128px
-      36: '144px !important', // 9rem     → 144px
-      40: '160px !important', // 10rem    → 160px
-      44: '176px !important', // 11rem    → 176px
-      48: '192px !important', // 12rem    → 192px
-      52: '208px !important', // 13rem    → 208px
-      56: '224px !important', // 14rem    → 224px
-      60: '240px !important', // 15rem    → 240px
-      64: '256px !important', // 16rem    → 256px
-      72: '288px !important', // 18rem    → 288px
-      80: '320px !important', // 20rem    → 320px
-      96: '384px !important', // 24rem    → 384px
+      0.5: '2px !important', // 0.125rem â†’ 2px
+      1: '4px !important', // 0.25rem  â†’ 4px
+      1.5: '6px !important', // 0.375rem â†’ 6px
+      2: '8px !important', // 0.5rem   â†’ 8px
+      2.5: '10px !important', // 0.625rem â†’ 10px
+      3: '12px !important', // 0.75rem  â†’ 12px
+      3.5: '14px !important', // 0.875rem â†’ 14px
+      4: '16px !important', // 1rem     â†’ 16px
+      5: '20px !important', // 1.25rem  â†’ 20px
+      6: '24px !important', // 1.5rem   â†’ 24px
+      7: '28px !important', // 1.75rem  â†’ 28px
+      8: '32px !important', // 2rem     â†’ 32px
+      9: '36px !important', // 2.25rem  â†’ 36px
+      10: '40px !important', // 2.5rem   â†’ 40px
+      11: '44px !important', // 2.75rem  â†’ 44px
+      12: '48px !important', // 3rem     â†’ 48px
+      14: '56px !important', // 3.5rem   â†’ 56px
+      '-14': '-56px !important', // 3.5rem   â†’ 56px
+      16: '64px !important', // 4rem     â†’ 64px
+      20: '80px !important', // 5rem     â†’ 80px
+      24: '96px !important', // 6rem     â†’ 96px
+      28: '112px !important', // 7rem     â†’ 112px
+      32: '128px !important', // 8rem     â†’ 128px
+      36: '144px !important', // 9rem     â†’ 144px
+      40: '160px !important', // 10rem    â†’ 160px
+      44: '176px !important', // 11rem    â†’ 176px
+      48: '192px !important', // 12rem    â†’ 192px
+      52: '208px !important', // 13rem    â†’ 208px
+      56: '224px !important', // 14rem    â†’ 224px
+      60: '240px !important', // 15rem    â†’ 240px
+      64: '256px !important', // 16rem    â†’ 256px
+      72: '288px !important', // 18rem    â†’ 288px
+      80: '320px !important', // 20rem    â†’ 320px
+      96: '384px !important', // 24rem    â†’ 384px
     },
     extend: {
       colors: {

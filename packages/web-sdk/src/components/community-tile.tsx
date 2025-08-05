@@ -23,6 +23,7 @@ type CommunityDetailsType = {
     logo: string
     name: string
   }
+  handle: string
 }
 
 type CommunityTileProps = {
@@ -110,9 +111,11 @@ export function CommunityTile({
                 onCommunityRoleChanged={(newRole) => {
                   onCommunityRoleChanged?.(newRole)
                 }}
-                fallbackFunc={() => {
-                  AuthenticationModal.open()
-                }}
+                // fallbackFunc={() => {
+                //   AuthenticationModal.open()
+                // }}
+                communityName={communityDetails.name}
+                communityHandle={communityDetails.handle}
               />
             </div>
           )}

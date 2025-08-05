@@ -7,6 +7,7 @@ import { useAuth } from '@/context/auth'
 import { cn } from '@/utils'
 import { SidebarList } from './sidebar-list'
 import { useBrandDetails } from '@/context/brand-details'
+import CreateCommunityButton from '../create-community-button'
 
 export function SidebarDesktop({
   className,
@@ -40,6 +41,9 @@ export function SidebarDesktop({
       {user?.ksCbRequestStatus !== 3 &&
         elementWidth >= SIDE_BAR_BREAKPOINT &&
         brandDetails.show_become_creator && <BecomeCbCard />}
+      {user?.ksCbRequestStatus === 3 &&
+        elementWidth >= SIDE_BAR_BREAKPOINT &&
+        brandDetails.show_become_creator && <CreateCommunityButton />}
       {elementWidth > SIDE_BAR_BREAKPOINT && <Categories />}
     </nav>
   )

@@ -6,13 +6,15 @@ import { getIconLink } from '@/utils'
 import { useSwiper } from '@/hooks/useSwiper'
 import { memo } from 'react'
 import { Shimmer } from '@/components/shimmer'
+import { FeedShimmers } from '@/components/shimmers/Feed'
+import { useSizeContext } from '@/context/size'
 
 const FEED_LIST_SWIPER_CLASS = '__gen__feed__list__swiper__class__'
 
-export const Feed = memo(() => {
+export const Feed = memo(({elementId} : {elementId:string}) => {
   return (
     <EmbedShell Header={Header}>
-      <SwiperRenderer />
+      <SwiperRenderer elementId={elementId} />
     </EmbedShell>
   )
 })
@@ -26,97 +28,109 @@ function Header() {
   )
 }
 
-function SwiperRenderer() {
-  const { customizations, videos, hasNextPage } = useBaseContext()
+function SwiperRenderer({elementId} : {elementId: string}) {
+  const { customizations, videos, hasNextPage, isLoading } = useBaseContext()
+  const {
+    sizeBoxes: { video: videoBoxSize },
+  } = useSizeContext()
   const {
     handleOnEnded,
     handleOnHoverOfPlayer,
     handleSwipeNext,
     handleSwipePrev,
     swiperStatus,
-  } = useSwiper(`.${FEED_LIST_SWIPER_CLASS}`, true)
+  } = useSwiper(`.${FEED_LIST_SWIPER_CLASS}${elementId}`, true)
   const hasHeadings = customizations?.heading || customizations?.sub_heading
 
   return (
-    <div
-      className={`${FEED_LIST_SWIPER_CLASS} swiper`}
-      style={{
-        height: '100%',
-        width: '100%',
-        flexGrow: 1,
-        display: 'flex',
-      }}>
-      <div
-        className='swiper-wrapper'
-        style={{ padding: '0px 16px', boxSizing: 'border-box' }}>
-        {videos.map((item, index) => {
-          return (
-            <div
-              className='swiper-slide'
-              key={index}>
-              {!item ? (
-                <Shimmer
-                  style={{ height: '100%', width: '100%', borderRadius: 8 }}
-                />
-              ) : (
-                <EmbedPlayer
-                  id={getFeedPlayerId(item.uuid)}
-                  index={index}
-                  videoData={item}
-                  onHover={handleOnHoverOfPlayer}
-                  onEnded={
-                    customizations?.is_loop_video
-                      ? undefined
-                      : (e) => {
-                          handleOnEnded(e, index)
-                        }
-                  }
-                />
-              )}
-            </div>
-          )
-        })}
-      </div>
-      <div
-        style={{
-          position: 'absolute',
-          right: 24,
-          top: '50%',
-          zIndex: 1,
-          transform: 'translate(0px, -50%)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 16,
-          marginTop: hasHeadings ? 24 : undefined,
-        }}>
-        {!swiperStatus.atBeginning && (
+    <>
+      {isLoading ? (
+        <FeedShimmers.Feed
+          videoHeight={videoBoxSize.height}
+          customizations={customizations!}
+        />
+      ) : (
+        <div
+          className={`${FEED_LIST_SWIPER_CLASS}${elementId} swiper`}
+          style={{
+            height: '100%',
+            width: '100%',
+            flexGrow: 1,
+            display: 'flex',
+          }}>
           <div
-            className='__gen__sdk__flex__center __gen__sdk__feed__navigation__icon'
-            onClick={(e) => {
-              e.stopPropagation()
-              handleSwipePrev()
-            }}>
-            <img
-              src={getIconLink('icChevronUpBlack')}
-              style={{ width: 20, height: 20 }}
-            />
+            className='swiper-wrapper'
+            style={{ padding: '0px 16px', boxSizing: 'border-box' }}>
+            {videos.map((item, index) => {
+              return (
+                <div
+                  className='swiper-slide'
+                  key={index}>
+                  {!item ? (
+                    <Shimmer
+                      style={{ height: '100%', width: '100%', borderRadius: 8 }}
+                    />
+                  ) : (
+                    <EmbedPlayer
+                      id={getFeedPlayerId(item.uuid)}
+                      index={index}
+                      videoData={item}
+                      onHover={handleOnHoverOfPlayer}
+                      onEnded={
+                        customizations?.is_loop_video
+                          ? undefined
+                          : (e) => {
+                              handleOnEnded(e, index)
+                            }
+                      }
+                    />
+                  )}
+                </div>
+              )
+            })}
           </div>
-        )}
-        {(hasNextPage || !swiperStatus.atEnd) && (
           <div
-            className='__gen__sdk__flex__center __gen__sdk__feed__navigation__icon'
-            onClick={(e) => {
-              e.stopPropagation()
-              handleSwipeNext()
+            style={{
+              position: 'absolute',
+              right: 24,
+              top: '50%',
+              zIndex: 1,
+              transform: 'translate(0px, -50%)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 16,
+              marginTop: hasHeadings ? 24 : undefined,
             }}>
-            <img
-              src={getIconLink('icChevronDownBlack')}
-              style={{ width: 20, height: 20 }}
-            />
+            {!swiperStatus.atBeginning && (
+              <div
+                className='__gen__sdk__flex__center __gen__sdk__feed__navigation__icon'
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleSwipePrev()
+                }}>
+                <img
+                  src={getIconLink('icChevronUpBlack')}
+                  style={{ width: 20, height: 20 }}
+                />
+              </div>
+            )}
+            {(hasNextPage || !swiperStatus.atEnd) && (
+              <div
+                className='__gen__sdk__flex__center __gen__sdk__feed__navigation__icon'
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleSwipeNext()
+                }}>
+                <img
+                  src={getIconLink('icChevronDownBlack')}
+                  style={{ width: 20, height: 20 }}
+                />
+              </div>
+            )}
           </div>
-        )}
-      </div>
-    </div>
+        </div>
+      )}
+    </>
   )
 }
 

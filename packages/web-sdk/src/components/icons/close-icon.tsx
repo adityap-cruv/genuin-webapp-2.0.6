@@ -4,10 +4,10 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/utils'
 
 // Define the closeVariant function using cva to handle different styles based on props
-const closeVariant = cva('stroke-foreground', {
+const closeVariant = cva('', {
   variants: {
     variant: {
-      light: 'stroke-secondary', // Light variant style
+      light: 'stroke-white', // Light variant style
       transparent: 'stroke-foreground', // Transparent variant style
       dark: 'stroke-foreground', // Dark variant style
     },

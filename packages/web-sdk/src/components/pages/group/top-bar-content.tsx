@@ -2,6 +2,10 @@ import { ComponentProps } from 'react'
 import { Subscription } from './subscription'
 import { cn } from '@/utils'
 import ShareButton from '@/components/share-button'
+import { getQueryKeyForLoopDetails } from '@/utils/constants/keys'
+import { useQueryClient } from '@tanstack/react-query'
+import { JoinAsMemberButton } from './join-as-member'
+import { mapMemberJoinStatus } from '@/components/tree-structure'
 
 type TopBarContentPropsType = {
   loopName: string
@@ -10,6 +14,8 @@ type TopBarContentPropsType = {
   shareUrl: string
   slug: string
   name: string
+  description: string | null | undefined
+  loggedInUserStatus: number
 } & ComponentProps<'div'>
 
 export function TopBarContent({
@@ -20,8 +26,19 @@ export function TopBarContent({
   className,
   slug,
   name,
+  description,
+  loggedInUserStatus,
   ...restProps
 }: TopBarContentPropsType) {
+  const ldDescription = `${
+    description !== null &&
+    description !== undefined &&
+    description.replace(/\s+/g, '') !== ''
+      ? description + ' | '
+      : ''
+  } • Join ${name} to talk about it`
+  const queryClient = useQueryClient()
+
   return (
     <div
       className={cn(
@@ -38,6 +55,22 @@ export function TopBarContent({
           loopId={loopId}
           slug={slug}
           name={name}
+          ldDescription={ldDescription}
+          shareUrl={shareUrl}
+          onSuccess={async () => {
+            await queryClient.invalidateQueries({
+              queryKey: getQueryKeyForLoopDetails(slug),
+              type: 'all',
+            })
+          }}
+        />
+        <JoinAsMemberButton
+          joinStatus={mapMemberJoinStatus(loggedInUserStatus)}
+          chatId={loopId}
+          groupName={name ?? ''}
+          ldDescription={ldDescription}
+          shareUrl={shareUrl}
+          slug={slug}
         />
         <ShareButton url={shareUrl} />
       </div>

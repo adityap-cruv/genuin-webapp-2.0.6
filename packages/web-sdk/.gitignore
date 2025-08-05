@@ -16,6 +16,9 @@ build/
 .env.qa
 .env.production
 
+# Index filesxp
+*.html
+
 # But include example environment files
 !.env.*.example
 
@@ -35,3 +38,5 @@ coverage/
 temp/
 
 src/views/output.css
+
+*.zip

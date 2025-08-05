@@ -13,7 +13,7 @@ export function Loader({ className, ...restProps }: LoaderPropsType) {
         <Shimmer className='my-5 h-5 w-1/5' />
         <Shimmer className='my-2 h-4 w-1/2' />
         <Shimmer className='my-2 h-4 w-1/2' />
-        <div className='my-3 w-1/2 rounded-xl border border-monochrome-9 p-4'>
+        <div className='my-3 w-1/2 rounded-xl border border-tertiary-300 p-4'>
           <span className='flex'>
             <span className='flex-1'>
               <Shimmer className='h-4 w-1/3' />

@@ -6,6 +6,7 @@ import { AuthenticationModal } from '@/components/authentication'
 import { UserTick } from '@/components/user-tick'
 import type { ComponentProps } from 'react'
 import { cn } from '@/utils'
+import GetAppButton from '../get-app-button'
 
 type HeaderDesktopPropsTypes = ComponentProps<'div'>
 
@@ -60,22 +61,32 @@ export function HeaderDesktop({
         {user ? (
           <UserTick />
         ) : (
-          <Button
-            className='px-4 py-2 h-min'
-            onClick={() => {
-              // @ts-expect-error desc
-              if (window.genuinAuth) {
-                // @ts-expect-error desc
-                window.genuinAuth({ path: '/', action: 'login' })
-              } else {
-                AuthenticationModal.open()
-              }
-              return
-            }}>
-            <p className='text-title-3-demi whitespace-nowrap text-white font-semibold'>
-              Log in
-            </p>
-          </Button>
+          <>
+            {(brandDetails?.web_cta === 'app' ||
+              brandDetails?.web_cta === 'both') && (
+              <GetAppButton
+                buttonText='Get App'
+                className='h-8 flex-shrink-0 px-4 py-3 text-[15px] text-new-para-2 font-semibold text-primary border border-primary border-solid'
+                variant='outline'
+                size='custom'
+              />
+            )}
+
+            {brandDetails?.web_cta !== 'app' && (
+              <Button
+                className='px-4 py-2 h-8'
+                onClick={() => {
+                  if (window.genuinAuth) {
+                    window.genuinAuth({ path: '/', action: 'login' })
+                  } else {
+                    AuthenticationModal.open()
+                  }
+                  return
+                }}>
+                <p className='whitespace-nowrap text-white'>Log in</p>
+              </Button>
+            )}
+          </>
         )}
       </div>
     </div>

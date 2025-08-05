@@ -7,6 +7,7 @@ import { PlayIcon } from '../icons/play-icon'
 import { CustomImage } from '../custom-image'
 import type { MemberType, MessageType } from './type'
 import { CustomLink } from '@/router/custom-link'
+import { PinIcon } from '../icons/pin-icon'
 
 type Props = ComponentProps<'div'> & {
   /**
@@ -34,6 +35,7 @@ type Props = ComponentProps<'div'> & {
    */
   onClickOnImage: (id?: string) => void
   linkOnImage?: string
+  position?: number | null
 }
 
 const TRANSFORM_VALUES = [[50], [48, 52], [46, 50, 54]]
@@ -59,6 +61,7 @@ export function LoopCard({
   className,
   linkOnImage,
   latestMessageAt,
+  position,
   ...props
 }: Props) {
   const pathName = usePathNameWithSubdomain()
@@ -67,7 +70,7 @@ export function LoopCard({
   return (
     <div
       key={id}
-      className={cn('relative max-h-[210px]', className)}
+      className={cn('relative max-h-[250px]', className)}
       {...props}>
       <CustomLink href={pathName.loop(loopSlug)}>
         <div
@@ -78,6 +81,14 @@ export function LoopCard({
           <div
             style={{ height: '35%', width: '70%' }}
             className='p-4'>
+            {position && (
+              <div className='mb-1.5 flex items-center gap-1'>
+                <PinIcon className='fill-tertiary' />
+                <span className='line-clamp-1 break-words text-cap-1-demi text-tertiary'>
+                  Pinned by admin
+                </span>
+              </div>
+            )}
             <p className='line-clamp-1 break-all text-body-1-demi sm:text-title-3-demi'>
               {name}
             </p>

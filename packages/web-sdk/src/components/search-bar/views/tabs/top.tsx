@@ -97,6 +97,7 @@ function CommunityView({ communities }: { communities: CommunityType[] }) {
                           slug: community.brand.brand_slug ?? '',
                         }
                       : undefined,
+                    handle: community.handle,
                   }}
                 />
               </CustomLink>

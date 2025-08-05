@@ -5,7 +5,6 @@ import { MuteIcon } from '../icons/mute-icon'
 import { UnmuteIcon } from '../icons/unmute-icon'
 import { ActionButtonType } from '@/context/base'
 import type { ComponentProps } from 'react'
-import { GestureOverlayKeysType } from '../gestures/context'
 
 type PlayingStateProps = {
   buttonAction: ActionButtonType
@@ -59,7 +58,6 @@ type TapBehaviorParams = {
   toggleMuted: () => void
   setShouldPlay: (value: boolean) => void
   handlePlayerAction: (action: ActionButtonType) => void
-  hideGestureOverlay?: (action: GestureOverlayKeysType) => void
 }
 
 // this is the tap behavior for the player
@@ -70,7 +68,6 @@ export const handleTapBehavior = ({
   toggleMuted,
   setShouldPlay,
   handlePlayerAction,
-  hideGestureOverlay,
 }: TapBehaviorParams) => {
   switch (tapBehavior) {
     case 1: // Tap to mute/unmute
@@ -79,7 +76,6 @@ export const handleTapBehavior = ({
       break
 
     case 2: // Tap to play/pause
-      if (hideGestureOverlay) hideGestureOverlay('PLAY_PAUSE')
       handlePlayerAction(shouldPlay ? 'pause' : 'play')
       setShouldPlay(!shouldPlay)
       break

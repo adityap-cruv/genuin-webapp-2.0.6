@@ -1,13 +1,16 @@
-import { useEffect } from 'react'
-import { useRef } from 'react'
-import { getIconLink } from '@/utils'
+import { useEffect, useRef } from 'react'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { Mousewheel } from 'swiper/modules'
+import type { Swiper as SwiperType } from 'swiper'
+
 import { FeedVideoType, SizeBoxType } from '@/type'
 import { Shimmer } from '../../shimmer'
 import { FullScreenMobilePlayer } from '@/components/player/full-screen-mobile'
 
-const MOBILE_FULL_SCREEN_CLASS_NAME = '__gen__sdk__mobile__full__screen__class'
+// Import Swiper styles
+import 'swiper/css'
 
-type FullScreenMobileViewPropsType = {
+type PlayerModalMobilePropsType = {
   sizeBox: SizeBoxType
   showClose?: boolean
   forStandardWall?: boolean
@@ -21,53 +24,27 @@ type FullScreenMobileViewPropsType = {
   onCommentCountChange?: (videoId: string, count: number) => void
 }
 
-export function FullScreenMobileView({
+export function PlayerModalMobile({
   sizeBox,
-  showClose = true,
   forStandardWall = false,
   shouldPlay,
   activeIndex,
-  closeModal,
   showNavigationBar,
   updateActiveIndex,
   videos,
   onSpark,
   onCommentCountChange,
-}: FullScreenMobileViewPropsType) {
-  const swiperRef = useRef<any>(null)
+}: PlayerModalMobilePropsType) {
+  const swiperRef = useRef<SwiperType | null>(null)
+  // const { brandDetails, customizations } = useBaseContext()
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const swiper = new Swiper('.' + MOBILE_FULL_SCREEN_CLASS_NAME, {
-      direction: 'vertical',
-      slidesPerView: 1,
-      speed: 500,
-      startIndex: activeIndex,
-      mousewheel: {
-        forceToAxis: true,
-        releaseOnEdges: true,
-        sensitivity: 0.1,
-        thresholdDelta: 5,
-        thresholdTime: 500,
-      },
-    })
-    swiper.slideTo(activeIndex, 0)
-    swiperRef.current = swiper
-
-    swiper.on('activeIndexChange', (swiper: any) => {
-      updateActiveIndex(swiper.activeIndex)
-    })
-
-    return () => {
-      swiper.destroy()
+    // console.log('activeIndex:::', activeIndex)
+    // Update swiper to the correct slide when activeIndex changes externally
+    if (swiperRef.current && swiperRef.current.activeIndex !== activeIndex) {
+      swiperRef.current.slideTo(activeIndex, 0)
     }
-  }, [])
-
-  useEffect(() => {
-    swiperRef.current?.update()
-  }, [videos])
+  }, [activeIndex])
 
   function setDivStyles(node: HTMLDivElement | null) {
     if (!node) return
@@ -80,48 +57,76 @@ export function FullScreenMobileView({
     node?.style.setProperty('margin-bottom', 'unset')
   }
 
+  const handleActiveIndexChange = (swiper: SwiperType) => {
+    updateActiveIndex(swiper.activeIndex)
+  }
+
   return (
     <div
       ref={setDivStyles}
-      className={`${MOBILE_FULL_SCREEN_CLASS_NAME} swiper flex flex-grow`}>
-      <div className='swiper-wrapper'>
-        {videos.map((video, index) => {
-          return (
-            <div
-              key={index}
-              className='swiper-slide relative overflow-clip'
-              ref={setDivStyles}>
-              {!video ? (
-                <Shimmer />
-              ) : (
-                <FullScreenMobilePlayer
-                  id={getMobileFullScreenPlayerId(video.uuid, forStandardWall)}
-                  key={index}
-                  video={video}
-                  index={index}
-                  swiperRef={swiperRef}
-                  shouldPlay={shouldPlay}
-                  hasNavbar={showNavigationBar}
-                  onSpark={onSpark}
-                  onCommentCountChange={onCommentCountChange}
-                />
-              )}
-            </div>
-          )
-        })}
-      </div>
-      {showClose && (
-        <div className='absolute top-4 right-4 z-10'>
+      className='flex flex-grow !absolute bottom-0'>
+      <Swiper
+        onInit={(swiper) => {
+          swiperRef.current = swiper
+        }}
+        direction='vertical'
+        slidesPerView={1}
+        speed={500}
+        initialSlide={activeIndex}
+        modules={[Mousewheel]}
+        mousewheel={{
+          forceToAxis: true,
+          releaseOnEdges: true,
+          sensitivity: 0.1,
+          thresholdDelta: 5,
+          thresholdTime: 500,
+        }}
+        onActiveIndexChange={handleActiveIndexChange}
+        className='w-full h-full'>
+        {videos.map((video, index) => (
+          <SwiperSlide
+            key={index}
+            className='relative overflow-clip'>
+            {!video ? (
+              <Shimmer />
+            ) : (
+              <FullScreenMobilePlayer
+                id={getMobileFullScreenPlayerId(video.uuid, forStandardWall)}
+                key={index}
+                video={video}
+                index={index}
+                swiperRef={swiperRef}
+                shouldPlay={shouldPlay}
+                hasNavbar={showNavigationBar}
+                onSpark={onSpark}
+                onCommentCountChange={onCommentCountChange}
+              />
+            )}
+          </SwiperSlide>
+        ))}
+      </Swiper>
+
+      {/* {showClose && (
+        <div
+          className={cn('absolute top-4 right-4 z-10', {
+            'size-9 p-2.5 bg-black/40 rounded-full flex justify-center items-center':
+              isCheckFifthVideoType(brandDetails?.brand_id) &&
+              customizations?.view === 'carousel',
+          })}>
           <img
-            alt='mute'
-            className='h-8 w-8 cursor-pointer'
+            alt='close'
+            className={cn('h-8 w-8 cursor-pointer', {
+              'size-5':
+                isCheckFifthVideoType(brandDetails?.brand_id) &&
+                customizations?.view === 'carousel',
+            })}
             src={getIconLink('icCloseWhite')}
             height={32}
             width={32}
             onClick={closeModal}
           />
         </div>
-      )}
+      )} */}
     </div>
   )
 }

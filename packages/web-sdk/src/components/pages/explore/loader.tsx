@@ -41,7 +41,7 @@ function CommunityCardShimmer({
   return (
     <div
       className={cn(
-        'relative w-full rounded-lg border border-monochrome-9 bg-monochrome-white',
+        'relative w-full rounded-lg border border-tertiary-100 bg-tertiary-300',
         className,
       )}
       {...restProps}>

@@ -1,16 +1,12 @@
-import {
-  ComponentProps,
-  ReactEventHandler,
-  useCallback,
-  useContext,
-} from 'react'
-import { useEffect, useRef } from 'react'
+import { ComponentProps, ReactEventHandler, useCallback } from 'react'
+import { useEffect } from 'react'
 import { Analytics } from '@/analytics'
-import { BaseContext, useBaseContext } from '@/context/base'
+import { useBaseContext } from '@/context/base'
 import { encodeVideoSourceUrl, getWebpUrlForImage } from '@/utils'
 import { useUrlParams } from '@/utils/ssai/urlParamResolver'
 import { getVideoPlayerConfigs } from './utils'
 import { useSwiper } from 'swiper/react'
+import { usePlayerContext } from './context'
 
 type BasePlayerProps = ComponentProps<'video'> & {
   id: string
@@ -91,6 +87,7 @@ export function BasePlayer({
   onPlaying,
   onError,
   onLoadStart,
+  onLoadedData,
   onCanPlay,
   onLoad,
   onTimeUpdate,
@@ -98,13 +95,6 @@ export function BasePlayer({
 }: BasePlayerProps) {
   let encodedSrc = src ?? ''
   const { appendParamsToUrl } = useUrlParams()
-  const {
-    brandDetails,
-    updateMuted,
-    // activeIndex,
-    setIsVideoPlaying,
-    setPlayingState,
-  } = useBaseContext()
   // Create a URL object to easily access query parameters
   const videoUrl = new URL(encodedSrc)
   // If there are no query parameters meaning either it's m3u8 without query params or mp4 file
@@ -112,109 +102,23 @@ export function BasePlayer({
     const macrosUpdatedVideoSource = appendParamsToUrl(encodedSrc)
     encodedSrc = encodeVideoSourceUrl(macrosUpdatedVideoSource)
   }
-  const { rootFocusStatus, volume } = useContext(BaseContext)
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const playerRef = useRef<{
-    player: any
-    isInitialized: boolean
-    isInitializing: boolean
-  }>({
-    player: null,
-    isInitialized: false,
-    isInitializing: false,
-  })
+  const {
+    rootFocusStatus,
+    volume,
+    playbackSpeed,
+    setPlayingState,
+    setIsVideoPlaying,
+    brandDetails,
+  } = useBaseContext()
+  const {
+    setTimeState,
+    videoRef,
+    playerRef,
+    playerConfigRef,
+    initializePlayer,
+    play,
+  } = usePlayerContext()
   const swiper = useSwiper()
-  const playerConfigRef = useRef({
-    ...getVideoPlayerConfigs(brandDetails?.web_configs),
-    hasStarted: false,
-  })
-
-  const initializePlayer = useCallback(
-    async (playState: boolean = false) => {
-      const player = playerRef.current.player
-      const playerConfig = playerConfigRef.current
-
-      if (
-        !player ||
-        playerRef.current.isInitialized ||
-        playerRef.current.isInitializing
-      )
-        return
-
-      playerRef.current.isInitializing = true
-
-      try {
-        setPlayingState('')
-        await player.init()
-        await player.load()
-
-        playerRef.current.isInitialized = true
-        playerRef.current.isInitializing = false
-
-        if (playState && playerConfig.autoplay) {
-          play()
-        } else {
-          setIsVideoPlaying(false)
-        }
-      } catch (e) {
-        console.error('Error initializing player', e)
-        playerRef.current.isInitializing = false
-      }
-    },
-    [index],
-  )
-
-  const play = useCallback(() => {
-    const player = playerRef.current.player
-    const playerConfig = playerConfigRef.current
-
-    if (!player || playerRef.current.isInitializing) return
-
-    const tryPlay = async () => {
-      const media = player.getMedia()
-      if (!media) return
-
-      try {
-        // Unmute if required
-        if (playerConfig.unmuteVideo && media.muted) {
-          updateMuted(false)
-        }
-
-        await media.play().catch(async (error: { toString: () => string }) => {
-          const errorString = error?.toString() || ''
-          if (errorString.startsWith('NotAllowedError')) {
-            // Try toggling muted state and retry playing
-            updateMuted(true)
-            // we have used setTimeout to give time for the muted state to be applied
-            setTimeout(async () => {
-              await media.play()
-            }, 500)
-          } else {
-            console.error('Error playing media:', error)
-          }
-        })
-
-        if (!playerConfigRef.current.hasStarted) {
-          playerConfigRef.current.hasStarted = true
-        }
-      } catch (err) {
-        console.error('Unexpected error during playback:', err)
-      }
-    }
-
-    if (!playerRef.current.isInitialized) {
-      return initializePlayer(true)
-    }
-
-    if (playerConfig.autoplayAfter > 0) {
-      setTimeout(() => {
-        void tryPlay()
-        playerConfig.autoplayAfter = 0
-      }, playerConfig.autoplayAfter * 1000)
-    } else {
-      void tryPlay()
-    }
-  }, [initializePlayer])
 
   const pause = useCallback(() => {
     const player = playerRef.current.player
@@ -222,17 +126,23 @@ export function BasePlayer({
     if (!player || playerRef.current.isInitializing) return
 
     if (!playerRef.current.isInitialized) {
-      return initializePlayer(false)
+      return initializePlayer(false, playbackSpeed.speed)
     }
 
     void player.getMedia()?.pause()
-  }, [initializePlayer])
+  }, [initializePlayer, playbackSpeed])
 
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.volume = volume / 100
     }
   }, [volume])
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.playbackRate = playbackSpeed.speed
+    }
+  }, [playbackSpeed])
 
   useEffect(() => {
     if (considerFocusStatus) {
@@ -320,6 +230,8 @@ export function BasePlayer({
 
   useEffect(() => {
     playerConfigRef.current.hasStarted = false
+    setPlayingState('loading') // Set loading when src changes
+
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -349,6 +261,10 @@ export function BasePlayer({
     useCallback(
       (ev) => {
         onTimeUpdate?.(ev)
+        setTimeState({
+          currentTime: ev.currentTarget.currentTime,
+          duration: ev.currentTarget.duration,
+        })
       },
       [onTimeUpdate],
     )
@@ -357,6 +273,7 @@ export function BasePlayer({
     useCallback(
       (ev) => {
         onCanPlay?.(ev)
+        setPlayingState('') // Clear loading state when video is ready
       },
       [onCanPlay],
     )
@@ -372,6 +289,7 @@ export function BasePlayer({
   const handleError: ReactEventHandler<HTMLVideoElement> = useCallback(
     (ev) => {
       onError?.(ev)
+      setPlayingState('') // Clear loading state if video errors
     },
     [onError],
   )
@@ -385,10 +303,19 @@ export function BasePlayer({
         play()
         return
       } else {
+        playerConfigRef.current = {
+          ...getVideoPlayerConfigs(brandDetails?.web_configs),
+          hasStarted: false,
+        }
         setIsVideoPlaying(false)
       }
 
       if (shouldSwipeNext && swiper) {
+        playerConfigRef.current = {
+          ...getVideoPlayerConfigs(brandDetails?.web_configs),
+          hasStarted: false,
+        }
+
         setIsVideoPlaying(true)
         swiper.slideNext()
       }
@@ -409,6 +336,14 @@ export function BasePlayer({
       onLoad?.(ev)
     },
     [onLoad],
+  )
+
+  const handleLoadData: ReactEventHandler<HTMLVideoElement> = useCallback(
+    (ev) => {
+      onLoadedData?.(ev)
+      setPlayingState('')
+    },
+    [onLoadedData],
   )
 
   return (
@@ -435,6 +370,7 @@ export function BasePlayer({
         onTimeUpdate={onTimeUpdateEventHandler}
         onEnded={handleEnded}
         onLoad={handleLoad}
+        onLoadedData={handleLoadData}
         onCanPlay={onCanPlayEventHandler}
         {...restProps}
       />

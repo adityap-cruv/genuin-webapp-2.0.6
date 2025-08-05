@@ -35,12 +35,30 @@ export function GestureProvider({ children }: { children: React.ReactNode }) {
       const saved = localStorage.getItem('_ks_gestures_')
       if (saved) {
         const parsed = JSON.parse(saved)
+        const gestureOverlays =
+          parsed?.gestureOverlays || parsed?.state?.gestureOverlays
 
-        // Try both shapes: with and without `state`
-        if (parsed?.gestureOverlays) {
-          return parsed.gestureOverlays
-        } else if (parsed?.state?.gestureOverlays) {
-          return parsed.state.gestureOverlays
+        if (gestureOverlays) {
+          // Reset any gestures that are visible and have been shown
+          const resetState = { ...gestureOverlays }
+          Object.entries(gestureOverlays).forEach(
+            ([key, gesture]: [string, any]) => {
+              if (gesture?.isVisible && gesture?.hasShown) {
+                resetState[key as GestureOverlayKeysType] = {
+                  isVisible: false,
+                  hasShown: false,
+                }
+              }
+            },
+          )
+
+          // Update localStorage with reset state
+          localStorage.setItem(
+            '_ks_gestures_',
+            JSON.stringify({ gestureOverlays: resetState }),
+          )
+
+          return resetState
         }
       }
     } catch (error) {
@@ -84,6 +102,31 @@ export function GestureProvider({ children }: { children: React.ReactNode }) {
       console.error('Failed to save to localStorage:', error)
     }
   }, [gestureState])
+
+  useEffect(() => {
+    const tapBehavior = brandDetails?.web_configs.tap_behavior
+    syncTapBehavior(tapBehavior?.toString())
+  }, [brandDetails])
+
+  /**
+   * Synchronizes tap behavior between config and localStorage
+   * If tap behavior changes, resets PLAY_PAUSE gesture to show new interaction guide
+   *
+   * @param tapBehavior - The tap behavior value from config
+   */
+  function syncTapBehavior(tapBehavior: string | undefined) {
+    if (!tapBehavior) return
+
+    const localTapBehavior = localStorage.getItem('_tap_behavior_')
+    if (localTapBehavior !== tapBehavior) {
+      localStorage.setItem('_tap_behavior_', tapBehavior)
+
+      setGestureState((prev) => ({
+        ...prev,
+        PLAY_PAUSE: { isVisible: false, hasShown: false },
+      }))
+    }
+  }
 
   return (
     <GestureContext.Provider

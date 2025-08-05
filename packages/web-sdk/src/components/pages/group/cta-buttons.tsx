@@ -1,8 +1,11 @@
 import ShareButton from '@/components/share-button'
 import { ComponentProps } from 'react'
-import { Button } from '@/components/ui/button'
 import { cn } from '@/utils'
 import { Subscription } from './subscription'
+import { JoinAsMemberButton } from './join-as-member'
+import { mapMemberJoinStatus } from '@/components/tree-structure'
+import { useQueryClient } from '@tanstack/react-query'
+import { getQueryKeyForLoopDetails } from '@/utils/constants/keys'
 
 type CTAButtonsPropsType = ComponentProps<'div'> & {
   isPrivate: boolean
@@ -11,6 +14,8 @@ type CTAButtonsPropsType = ComponentProps<'div'> & {
   shareUrl: string
   slug: string
   name?: string | null
+  description: string | null | undefined
+  loggedInUserStatus: number
 }
 
 export function CTAButtons({
@@ -21,8 +26,19 @@ export function CTAButtons({
   className,
   name,
   slug,
+  description,
+  loggedInUserStatus,
   ...restProps
 }: CTAButtonsPropsType) {
+  const ldDescription = `${
+    description !== null &&
+    description !== undefined &&
+    description.replace(/\s+/g, '') !== ''
+      ? description + ' | '
+      : ''
+  } • Join ${name} to talk about it`
+  const queryClient = useQueryClient()
+
   return (
     <div
       className={cn('flex items-center gap-x-3', className)}
@@ -31,45 +47,28 @@ export function CTAButtons({
         <Subscription
           name={name ?? ''}
           slug={slug}
-          isSubscribed={!!isSubscriber}
+          isSubscribed={isSubscriber}
           loopId={loopId}
+          ldDescription={ldDescription}
+          shareUrl={shareUrl}
+          onSuccess={async () => {
+            await queryClient.invalidateQueries({
+              queryKey: getQueryKeyForLoopDetails(slug),
+              type: 'all',
+            })
+          }}
         />
       )}
 
-      {isPrivate && (
-        <Button
-          size='custom'
-          variant='outline'
-          className='border border-primary'
-          onClick={async () => {
-            // TODO: Handle this link as well.
-            // await joinAsCollaboratorDeepLink({
-            //   ldDescription,
-            //   loopDetails,
-            //   searchParams,
-            // }).then((generatedLink) => {
-            //   openModal({
-            //     deepLink: generatedLink,
-            //     subtitle: (
-            //       <>
-            //         Get the app to Join as Member to
-            //         <span className='font-bold'>
-            //           {' '}
-            //           {loopDetails.group.group_name}
-            //         </span>{' '}
-            //         Group.
-            //       </>
-            //     ),
-            //   })
-            // })
-          }}>
-          <p
-            className='px-4 py-1 text-title-3-bold text-primary'
-            style={{ fontSize: '15px' }}>
-            Join as Member
-          </p>
-        </Button>
-      )}
+      <JoinAsMemberButton
+        joinStatus={mapMemberJoinStatus(loggedInUserStatus)}
+        chatId={loopId}
+        groupName={name ?? ''}
+        ldDescription={ldDescription}
+        shareUrl={shareUrl}
+        slug={slug}
+      />
+
       <ShareButton url={shareUrl} />
     </div>
   )

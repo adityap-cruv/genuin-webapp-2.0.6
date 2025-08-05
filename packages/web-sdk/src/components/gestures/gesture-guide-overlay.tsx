@@ -2,14 +2,17 @@ import { type ComponentProps, type ReactNode } from 'react'
 import { cn, getGifLink, getIconLink } from '@/utils'
 import { GestureOverlayKeysType } from './context'
 
-const GESTURE_CONFIG: Record<
-  GestureOverlayKeysType,
-  { mobileImage: string; desktopImage: string; text: ReactNode }
-> = {
+type GestureConfig = {
+  mobileImage: string
+  desktopImage: string
+  getText: (tapBehavior?: any) => ReactNode
+}
+
+const GESTURE_CONFIG: Record<GestureOverlayKeysType, GestureConfig> = {
   SWIPE: {
     mobileImage: getIconLink('swipeGesture', 'png'),
     desktopImage: getGifLink('chevronUp'),
-    text: (
+    getText: () => (
       <>
         Swipe up
         <br /> to view videos
@@ -19,33 +22,47 @@ const GESTURE_CONFIG: Record<
   PLAY_PAUSE: {
     mobileImage: getIconLink('tapGesture', 'png'),
     desktopImage: getIconLink('clickGesture', 'png'),
-    text: (
-      <>
-        Tap to play or pause <br /> while the video is
-        <br /> unmuted
-      </>
-    ),
+    getText: (tapBehavior: number) => {
+      switch (tapBehavior) {
+        case 1:
+          return <>Tap to Mute/Unmute</>
+        case 2:
+          return <>Tap to Play/Pause</>
+        case 3:
+          return (
+            <>
+              Tap to play or pause <br /> while the video is
+              <br /> unmuted
+            </>
+          )
+        default:
+          return (
+            <>
+              Tap to play or pause <br /> while the video is
+              <br /> unmuted
+            </>
+          )
+      }
+    },
   },
 }
 
 type LazyGestureGuideOverlayProps = {
   gestureStep: GestureOverlayKeysType
-  onClick?: () => void
+  tapBehavior?: number
 } & ComponentProps<'div'>
 
 export function LazyGestureGuideOverlay({
   gestureStep,
+  tapBehavior,
   className,
-  onClick,
 }: LazyGestureGuideOverlayProps) {
   const gestureData = GESTURE_CONFIG[gestureStep]
   if (!gestureData) return null
 
+  const gestureText = gestureData.getText(tapBehavior)
   return (
     <div
-      onClick={() => {
-        onClick?.()
-      }}
       className={cn(
         'fixed inset-0 z-[1000] h-full w-full bg-black/40 backdrop-blur-sm sm:absolute pointer-events-none',
       )}>
@@ -65,9 +82,7 @@ export function LazyGestureGuideOverlay({
           alt='gesture'
           className='h-20 w-20 hidden sm:block'
         />
-        <p className='text-center text-body-1-bold text-white'>
-          {gestureData.text}
-        </p>
+        <p className='text-center text-body-1-bold text-white'>{gestureText}</p>
       </div>
     </div>
   )

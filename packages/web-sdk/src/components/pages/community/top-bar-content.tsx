@@ -15,6 +15,7 @@ type TopBarContentPropsType = {
   isCommunityPrivate: boolean
   shareUrl: string
   communitySlug: string
+  communityHandle: string
 } & ComponentProps<'div'>
 
 export function TopBarContent({
@@ -26,6 +27,7 @@ export function TopBarContent({
   shareUrl,
   communitySlug,
   className,
+  communityHandle,
   ...restProps
 }: TopBarContentPropsType) {
   const queryClient = useQueryClient()
@@ -59,6 +61,8 @@ export function TopBarContent({
               queryKey: getQueryKeyForCommunityDetails(communitySlug),
             })
           }}
+          communityName={communityName}
+          communityHandle={communityHandle}
         />
         <ShareButton url={shareUrl} />
       </div>

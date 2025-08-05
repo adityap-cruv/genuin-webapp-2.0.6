@@ -6,6 +6,7 @@ type Props = {
   imageUrl: string
   fallbackString: string
   className?: string
+  smallSize?: boolean
 }
 
 export function CustomAvatar({
@@ -13,18 +14,24 @@ export function CustomAvatar({
   imageUrl,
   className,
   fallbackString,
+  smallSize = false,
 }: Props) {
   return (
     <Avatar
       className={cn(
-        className,
         'flex items-center justify-center bg-tertiary-400',
+         className,
       )}>
       <AvatarImage
         title={fallbackString}
         src={isAvatar ? getAvatarUrl(imageUrl) : getWebpUrlForImage(imageUrl)}
       />
-      <AvatarFallback className='text-title-2-bold text-white'>
+      <AvatarFallback
+        className={cn(
+          smallSize
+            ? '!text-cap-1-demi text-white'
+            : '!text-title-2-bold text-white',
+        )}>
         {getAvatarFallback(fallbackString)}
       </AvatarFallback>
     </Avatar>

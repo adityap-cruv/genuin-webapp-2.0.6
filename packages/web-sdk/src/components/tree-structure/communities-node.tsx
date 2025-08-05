@@ -78,7 +78,16 @@ type CommunityNodePropsType = ComponentProps<'div'> & {
 }
 
 export const CommunityItem = memo(function CommunityNode({
-  communityDetails: { id, name, isPrivate, profileImage, role, slug, brand },
+  communityDetails: {
+    id,
+    name,
+    isPrivate,
+    profileImage,
+    role,
+    slug,
+    brand,
+    handle,
+  },
   className,
   onCommunityRoleChanged,
   children,
@@ -139,9 +148,11 @@ export const CommunityItem = memo(function CommunityNode({
             onCommunityRoleChanged={(newRole) => {
               onCommunityRoleChanged?.(newRole)
             }}
-            fallbackFunc={() => {
-              AuthenticationModal.open()
-            }}
+            // fallbackFunc={() => {
+            //   AuthenticationModal.open()
+            // }}
+            communityName={name}
+            communityHandle={handle}
           />
         )}
       </div>

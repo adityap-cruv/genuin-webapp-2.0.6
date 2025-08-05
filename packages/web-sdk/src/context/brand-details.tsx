@@ -2,6 +2,7 @@ import type {
   BrandDetailsConfigType,
   CustomizationType,
   ViewType,
+  SDKConfig,
 } from '@/type'
 import { getUrlForReaction } from '@/utils'
 import { createContext, useContext } from 'react'
@@ -10,6 +11,8 @@ type BrandDetailsContextType = {
   customizations?: Partial<CustomizationType>
   brandDetails: BrandDetailsConfigType
   embedStyle?: ViewType
+  contextualParams?: SDKConfig['contextualParams']
+  brandIds?: number[]
 }
 
 const BrandDetailsContext = createContext<BrandDetailsContextType>({
@@ -41,6 +44,8 @@ const BrandDetailsContext = createContext<BrandDetailsContextType>({
     show_become_creator: true,
   } as any,
   embedStyle: 'carousel',
+  contextualParams: {} as SDKConfig['contextualParams'],
+  brandIds: [] as number[],
 })
 
 type BrandDetailsProviderPropsType = {
@@ -48,6 +53,8 @@ type BrandDetailsProviderPropsType = {
   brandDetails: BrandDetailsConfigType
   embedStyle?: ViewType
   children: React.ReactNode
+  contextualParams: SDKConfig['contextualParams']
+  brandIds?: number[]
 }
 
 export function BrandDetailsProvider({
@@ -55,10 +62,12 @@ export function BrandDetailsProvider({
   children,
   customizations,
   embedStyle,
+  contextualParams,
+  brandIds
 }: BrandDetailsProviderPropsType) {
   return (
     <BrandDetailsContext.Provider
-      value={{ brandDetails, customizations, embedStyle }}>
+      value={{ brandDetails, customizations, embedStyle, contextualParams, brandIds }}>
       {children}
     </BrandDetailsContext.Provider>
   )

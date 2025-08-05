@@ -67,9 +67,11 @@ export function Details({ communityDetails, detailsId }: DetailsPropsType) {
             onCommunityRoleChanged={async () => {
               await handleCommunityJoinClick()
             }}
-            fallbackFunc={() => {
-              AuthenticationModal.open()
-            }}
+            // fallbackFunc={() => {
+            //   AuthenticationModal.open()
+            // }}
+            communityName={communityDetails.name}
+            communityHandle={communityDetails.handle}
           />
           <ShareButton url={communityDetails.share_url} />
         </div>

@@ -43,6 +43,7 @@ export type CommunityType = {
     name: string
     slug: string
   }
+  handle: string
 }
 
 export type FetchCommunityReturnType = {

@@ -37,7 +37,7 @@ export default function Loader({ className, ...restProps }: LoaderPropsType) {
         <Shimmer className='h-6 w-1/6 rounded-xl' />
       </div>
 
-      <div className='w-full rounded-lg border border-monochrome-9 bg-monochrome-11 p-4'>
+      <div className='w-full rounded-lg border border-tertiary-300 bg-tertiary-300 p-4'>
         <Shimmer className='h-4 w-1/5' />
         <div className='my-4 grid grid-cols-8 gap-2'>
           <Shimmer className='aspect-reel w-full' />
@@ -51,7 +51,7 @@ export default function Loader({ className, ...restProps }: LoaderPropsType) {
         </div>
       </div>
 
-      <div className='my-2 w-full rounded-lg border border-monochrome-9 bg-monochrome-11 p-4'>
+      <div className='my-2 w-full rounded-lg border border-tertiary-300 bg-tertiary-300 p-4'>
         <Shimmer className='h-4 w-1/5' />
         <div className='my-4 grid grid-cols-8 gap-2'>
           <Shimmer className='aspect-reel w-full' />

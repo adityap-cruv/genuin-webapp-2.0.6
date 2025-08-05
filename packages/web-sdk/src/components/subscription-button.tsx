@@ -3,10 +3,13 @@ import React from 'react'
 import { Button } from '@/components/ui/button'
 import { BellIconOff } from '@/components/icons/bell-icon-off'
 import { SubscribedBellIcon } from './icons/subscribed-bell-icon'
+import { cn } from '@/utils'
+import { Loader } from './loader'
 
 type SubscriptionButtonProps = {
   onClick: () => void
   isSubscribed: boolean
+  isLoading?: boolean
 }
 
 /**
@@ -32,7 +35,7 @@ type SubscriptionButtonProps = {
  * When the user is subscribed, the `SubscribedBellIcon` is displayed with primary color fill and stroke.
  * When the user is not subscribed, the `BellIconOff` is displayed with a new off-white stroke.
  */
-export default function SubscriptionButton({
+export function SubscriptionButton({
   onClick,
   isSubscribed,
 }: SubscriptionButtonProps) {
@@ -48,6 +51,43 @@ export default function SubscriptionButton({
       {!isSubscribed && (
         <BellIconOff className='stroke-new-off-white'></BellIconOff>
       )}
+    </Button>
+  )
+}
+
+export function SubscriptionPillButton({
+  onClick,
+  isSubscribed,
+  isLoading,
+}: SubscriptionButtonProps) {
+  return (
+    <Button
+      variant='custom'
+      className='ml-1 flex gap-1.5 rounded-2xl bg-white px-3 py-1 text-cap-1-med'
+      onClick={(e) => {
+        e.stopPropagation()
+        onClick()
+      }}>
+      <div className='relative h-4 w-4 overflow-hidden'>
+        <div
+          className={cn(
+            'absolute left-0 flex w-full flex-col transition-transform duration-300 ease-in-out',
+            isLoading
+              ? '-translate-y-[16px]'
+              : isSubscribed
+                ? '-translate-y-[32px]'
+                : 'translate-y-0',
+          )}>
+          <BellIconOff
+            className='h-4 w-4 stroke-black'
+            variant='dark'
+          />
+          <div className='flex h-4 w-4 items-center justify-center'>
+            <Loader className='h-4 w-4' />
+          </div>
+          <SubscribedBellIcon className='h-4 w-4 stroke-black' />
+        </div>
+      </div>
     </Button>
   )
 }

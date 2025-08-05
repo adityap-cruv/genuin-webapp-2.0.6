@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <!-- Example of multiple embeds with contextual feeds. 
+    Use your own embed_id and api_key, and ensure each embed_id is unique.
+    Be careful to assign a unique id to each HTML element, as shown below. -->
+    <div
+      data-embed-id="67c17f9fe0ac202848d7ac61"
+      data-api-key="e895c22b1281e14ff16405aa54f1d68ac6238de9b709383c"
+      data-brand-ids="1234 3456 546 3476"
+      id="gen-sdk-4"
+      class="gen-sdk-class"
+      style="width: 100%; height: 300px"></div>
+
+    <div style="height: 150vh; width: 100%; background: #000"></div>
+
+    <div
+      data-embed-id="6824304055db06e58e479de4"
+      data-api-key="ca5a1ee517389afe3604c47955e8b37d8a650d7c9575fa20"
+      data-page-context="page_context"
+      data-lat="37.7749"
+      data-long="122.4194"
+      data-brand-ids="12354 35467 34567"
+      data-url="https://example.com"
+      id="gen-sdk-3"
+      class="gen-sdk-class"
+      style="width: 100%; height: 500px"></div>
+
+    <script src="./dist/gen_sdk.js"></script>
+    <!-- Use Any of the below initialization methods -->
+    <script>
+      window.genuin.init({})
+    </script>
+    <!-- <script>
+        window.onGenuinReady = (genuin) => {
+            genuin.initialize({
+    })}
+    </script> -->
+  </body>
+</html>

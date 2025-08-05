@@ -1,5 +1,4 @@
-import { useCallback, type ComponentProps } from 'react'
-import { useFullScreenModalContext } from '@/context/full-screen'
+import { type ComponentProps } from 'react'
 import {
   checkAndAppendHttps,
   cn,
@@ -24,10 +23,11 @@ import {
   CommunityUserRole,
   mapCommunityUserRole,
 } from '@/components/tree-structure'
-import { AuthenticationModal } from '@/components/authentication'
-import { useBrandDetails } from '@/context/brand-details'
+// import { AuthenticationModal } from '@/components/authentication'
+// import { useBrandDetails } from '@/context/brand-details'
 import CommentsLayout from '@/components/comments/comments-layout'
 import { usePathNameWithSubdomain } from '@/hooks/usePathNameWithSubdomain'
+import { useExpandViewContext } from '@/components/expand-view/context'
 
 type DetailsPropsType = {
   videoDetails: FeedVideoType
@@ -42,7 +42,7 @@ type DetailsPropsType = {
 } & ComponentProps<'div'>
 
 // TODO: separate this component.
-export function FullScreenDesktopDetailsView({
+export function DesktopDetailsView({
   videoDetails,
   showCloseButton = true,
   className,
@@ -52,21 +52,30 @@ export function FullScreenDesktopDetailsView({
   onCommentCountChange,
   ...restProps
 }: DetailsPropsType) {
-  const { closeFullScreenModal } = useFullScreenModalContext()
-  const { customizations, updateCommunityJoinState } = useBaseContext()
+  const { toggleFullScreen } = useExpandViewContext()
+  const {
+    customizations,
+    updateCommunityJoinState,
+    updateLoopSubscriptionState,
+  } = useBaseContext()
   const redirectionStatus = getRedirectionStatusForPaths()
   const { toast } = useToast()
   const { shareFn } = useAdaptiveShare()
-  const { embedStyle } = useBrandDetails()
+  // const { embedStyle } = useBrandDetails()
   const pathName = usePathNameWithSubdomain()
 
-  const fallbackFuncForJoinButton = useCallback(() => {
-    if (embedStyle !== 'standard_wall') {
-      window.open(pathName.community(videoDetails.community.slug), '_blank')
-      return
-    }
-    AuthenticationModal.open()
-  }, [])
+  // const fallbackFuncForJoinButton = useCallback(() => {
+  //   if (embedStyle !== 'standard_wall') {
+  //     window.open(pathName.community(videoDetails.community.slug), '_blank')
+  //     return
+  //   }
+
+  //   if (window.genuinAuth) {
+  //     window.genuinAuth({ path: '/', action: 'repost' })
+  //   } else {
+  //     AuthenticationModal.open()
+  //   }
+  // }, [])
 
   // TODO: Remove this show_comments_section condition after removing it from customizations.
   const showCommentSection =
@@ -85,7 +94,10 @@ export function FullScreenDesktopDetailsView({
           src={getIconLink('icCloseGray')}
           height={24}
           width={24}
-          onClick={closeModal ?? closeFullScreenModal}
+          onClick={() => {
+            if (closeModal) closeModal()
+            toggleFullScreen(videoDetails.uuid)
+          }}
         />
       )}
       <div className='p-4 pb-1'>
@@ -205,9 +217,17 @@ export function FullScreenDesktopDetailsView({
                             videoDetails.community.uuid,
                             mapCommunityUserRoleToJoinStatus(newRole),
                           )
+
+                          if (newRole === 'UNJOINED')
+                            updateLoopSubscriptionState(
+                              videoDetails.loop.uuid,
+                              false,
+                            )
                         }
                       }}
-                      fallbackFunc={fallbackFuncForJoinButton}
+                      // fallbackFunc={fallbackFuncForJoinButton}
+                      communityName={videoDetails.community.name}
+                      communityHandle={videoDetails.community.handle}
                     />
                   )}
                   {(customizations?.show_share_icon ||

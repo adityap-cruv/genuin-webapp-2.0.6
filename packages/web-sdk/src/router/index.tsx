@@ -76,20 +76,17 @@ export function Routes() {
   return (
     <RouterProvider>
       <RouteMiddleware>
-        {/* @ts-ignore */}
         <Switch>
-          {/* @ts-ignore */}
           <Route path={ROUTES.SETTINGS}>
             {(params) => {
               return (
                 <PageShell.settings>
-                  <SettingsPage path={params?.subpage as any} />
+                  <SettingsPage path={params.subpage as any} />
                 </PageShell.settings>
               )
             }}
           </Route>
           <PageShell.default>
-            {/* @ts-ignore */}
             <Route path={ROUTES.HOME}>
               <HomePage />
             </Route>

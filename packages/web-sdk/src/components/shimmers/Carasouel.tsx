@@ -22,7 +22,7 @@ function Carousel({
   const count = Math.ceil(embedWidth / videoWidth)
 
   return (
-    <div className='relative bg-white overflow-x-hidden __gen__sdk__hide__scrollbar h-full w-full'>
+    <div className='relative overflow-x-hidden __gen__sdk__hide__scrollbar h-full w-full'>
       {/* top section */}
       <div className='flex justify-between items-center mb-4'>
         <div>
@@ -40,7 +40,7 @@ function Carousel({
           return (
             <div
               key={index}
-              className='relative border-2 border-gray-100 rounded-xl'>
+              className='relative border-2 border-tertiary-200 rounded-xl'>
               {/* video section */}
               <Shimmer
                 className='p-0'
@@ -52,22 +52,22 @@ function Carousel({
               {/* Video View Count Section */}
               {customizations.is_show_view_count && (
                 <Shimmer
-                  className='absolute left-4 z-10 h-8 w-8 border border-gray-200 shadow-md bg-gray-200 rounded-md'
+                  className='absolute left-4 z-10 h-8 w-8 border border-tertiary-200 shadow-md bg-terborder-tertiary-200 rounded-md'
                   style={{ top: 'calc(90% - 48px)' }}
                 />
               )}
               {/* mute/unmute play/pause fullscreen section */}
               <div className='absolute z-10 top-2 right-4 flex gap-4'>
-                <Shimmer className='h-8 w-8 rounded-full border-gray-200 shadow-md bg-gray-200' />
-                <Shimmer className='h-8 w-8 rounded-full border-gray-200 shadow-md bg-gray-200' />
-                <Shimmer className='h-8 w-8 rounded-full border-gray-200 shadow-md bg-gray-200' />
+                <Shimmer className='h-8 w-8 rounded-full border-tertiary-300 shadow-md bg-tertiary-300' />
+                <Shimmer className='h-8 w-8 rounded-full border-tertiary-300 shadow-md bg-tertiary-300' />
+                <Shimmer className='h-8 w-8 rounded-full border-tertiary-300 shadow-md bg-tertiary-300' />
               </div>
               {/* spark comment and share section */}
               {customizations.is_show_social_interaction_data && (
                 <div className='flex justify-around items-center h-[10%]'>
-                  <Shimmer className='h-8 w-8 rounded-md' />
-                  <Shimmer className='h-8 w-8 rounded-md' />
-                  <Shimmer className='h-8 w-8 rounded-md' />
+                  <Shimmer className='h-8 w-8 rounded-md border-tertiary-300 bg-tertiary-300' />
+                  <Shimmer className='h-8 w-8 rounded-md border-tertiary-300 bg-tertiary-300' />
+                  <Shimmer className='h-8 w-8 rounded-md border-tertiary-300 bg-tertiary-300' />
                 </div>
               )}
             </div>

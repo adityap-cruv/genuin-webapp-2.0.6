@@ -92,7 +92,7 @@ const ExpandViewCommentBox = ({
       ) : (
         <div
           style={{ height: 'calc(100% - 32px)' }}
-          className={`rounded-2xl my-4 bg-monochrome-white pl-2 transition-all duration-700 ease-in-out ${
+          className={`rounded-2xl my-4 bg-monochrome-white transition-all duration-700 ease-in-out ${
             isAnimating ? 'w-1/4 opacity-100' : 'w-0 opacity-0'
           }`}>
           {commentBoxContent}

@@ -31,7 +31,9 @@ export const ANALYTICS_DATA: AnalyticsDataType = {
   gen_user_name: '',
 }
 export async function getIpAddress() {
-  const response = await fetch('https://api.ipify.org?format=json')
+  const response = await fetch(
+    `${process.env.API_BASE_URL}/goservices/data/ip_info`,
+  )
   const data = await response.json()
   return data.ip
 }
@@ -44,6 +46,19 @@ function cleanObject(obj: Record<string, any>): Record<string, any> {
   )
 }
 
+function getOS() {
+  const userAgent = navigator.userAgent
+  const platform = navigator.platform
+
+  if (/iPad|iPhone|iPod/.test(userAgent)) return 'iOS'
+  if (/Android/.test(userAgent)) return 'Android'
+  if (platform.includes('Mac')) return 'macOS'
+  if (platform.includes('Win')) return 'Windows'
+  if (platform.includes('Linux')) return 'Linux'
+  
+  return ''
+}
+
 export const Analytics = {
   track: (eventName: string, data?: Record<string, any>) => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -52,10 +67,18 @@ export const Analytics = {
     const cleanedAnalyticsData = cleanObject(ANALYTICS_DATA)
 
     if (rudderAnalytics) {
-      rudderAnalytics.track(eventName, {
-        ...cleanedAnalyticsData,
-        ...data,
-      })
+      rudderAnalytics.track(
+        eventName,
+        {
+          ...cleanedAnalyticsData,
+          ...data,
+        },
+        {
+          os: {
+            name: getOS(),
+          },
+        },
+      )
     }
   },
   EventNames: {
@@ -80,6 +103,7 @@ export const Analytics = {
     VideoShared: 'Video Shared',
     VideoMuted: 'Muted',
     VideoUnmuted: 'Unmuted',
+    VideoReport: 'Report',
     CommunityShared: 'Community Shared',
     LinkoutsViewed: 'Link Viewed',
     LinkoutsClicked: 'Link Clicked',
@@ -95,5 +119,9 @@ export const Analytics = {
     CheckRecentSearch: 'Check Recent Search',
     ClearRecentSearch: 'Clear Recent Search',
     KeywordSearchCancel: 'Keyword Search Cancel',
+    GetAppButtonClicked: 'Get App Button Clicked',
+    DownloadAppClicked: 'Download App Clicked',
+    DownloadAppViewed: 'Download App Viewed',
+    GetAppLinkSent: 'Get App Link Sent',
   },
 }

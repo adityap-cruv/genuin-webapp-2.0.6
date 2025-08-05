@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { cn } from '@/utils'
+import { cn, sanitizeInput } from '@/utils'
 import { Loader } from '@/components/loader'
 import {
   InputOTP,
@@ -84,7 +84,7 @@ export function OtpInput({
       formData.flowType === 'email'
         ? (properties.email = formData.email)
         : (properties.phoneNumber = formData.phoneNumber)
-      const data = await consumeOtp({ code: otp, ...properties })
+      const data = await consumeOtp({ code: sanitizeInput(otp), ...properties })
       if (data.otpVerified) {
         data.user && signIn(data.user)
         if (!data.user?.brandGuidelines) {

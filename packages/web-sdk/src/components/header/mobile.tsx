@@ -9,6 +9,7 @@ import { cn } from '@/utils'
 import { UserTick } from '@/components/user-tick'
 import { useBrandDetails } from '@/context/brand-details'
 import { SidebarMobile } from '../side-bar/mobile'
+import GetAppButton from '../get-app-button'
 
 export type HeaderMobileVariantType = 'transparent' | 'white'
 
@@ -38,7 +39,7 @@ export function HeaderMobile({
   return (
     <nav
       className={cn(
-        'm-auto sticky justify-between h-16 items-center flex md:hidden gap-4 left-0 w-full z-50 py-3 px-4',
+        'playback-speed-class m-auto sticky justify-between h-16 items-center flex md:hidden gap-4 left-0 w-full z-50 py-3 px-4',
         className,
         variant !== 'transparent' &&
           'bg-background border-b-2 border-tertiary-200',
@@ -76,22 +77,33 @@ export function HeaderMobile({
           {user ? (
             <UserTick />
           ) : (
-            <Button
-              onClick={() => {
-                // @ts-expect-error desc
-                if (window.genuinAuth) {
-                  // @ts-expect-error desc
-                  window.genuinAuth({ path: '/', action: 'login' })
-                } else {
-                  AuthenticationModal.open()
-                }
-                return
-              }}
-              className='hover:bg-primary-700 bg-primary py-1 px-4 leading-6'>
-              <p className='__gen__sdk__text__body__2 text-white font-semibold'>
-                Log in
-              </p>
-            </Button>
+            <>
+              {(brandDetails?.web_cta === 'app' ||
+                brandDetails?.web_cta === 'both') && (
+                <GetAppButton
+                  buttonText='Get App'
+                  className='h-8 text-[15px] text-body-1-demi text-primary border border-primary border-solid'
+                  variant='outline'
+                />
+              )}
+
+              {brandDetails?.web_cta !== 'app' && (
+                <Button
+                  onClick={() => {
+                    if (window.genuinAuth) {
+                      window.genuinAuth({ path: '/', action: 'login' })
+                    } else {
+                      AuthenticationModal.open()
+                    }
+                    return
+                  }}
+                  className='hover:bg-primary-700 bg-primary py-1 px-4 leading-6'>
+                  <p className='__gen__sdk__text__body__2 text-white font-semibold'>
+                    Log in
+                  </p>
+                </Button>
+              )}
+            </>
           )}
         </div>
       )}

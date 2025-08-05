@@ -7,7 +7,7 @@ import {
   FormControl,
   FormMessage,
 } from '@/components/ui/form'
-import { cn } from '@/utils'
+import { cn, sanitizeInput } from '@/utils'
 import { Input } from '@/components/ui/input'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -85,7 +85,9 @@ export function UsernameInput({ onNext }: ScreenProps) {
     setIsLoading(true)
     try {
       if (isUsernameValid) {
-        const { status } = await patchUserDetails({ nickname: username })
+        const { status } = await patchUserDetails({
+          nickname: sanitizeInput(username),
+        })
         if (status) {
           updateUser({ nickname: username, usernameSet: true })
           onNext()

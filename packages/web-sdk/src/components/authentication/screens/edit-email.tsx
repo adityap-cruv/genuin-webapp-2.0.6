@@ -9,7 +9,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { cn } from '@/utils'
+import { cn, sanitizeInput } from '@/utils'
 import { z } from 'zod'
 import { useEffect, useState } from 'react'
 import { ModalShell } from '../modal-shell'
@@ -63,7 +63,10 @@ export function EditEmail({ onNext }: ScreenProps) {
   async function onSubmit({ email }: { email: string }) {
     setIsLoading(true)
     try {
-      const response = await sendOtp({ email, isUpdate: true })
+      const response = await sendOtp({
+        email: sanitizeInput(email),
+        isUpdate: true,
+      })
       if (response.codeSent && response.responseCode === 200) {
         onNext()
       } else {

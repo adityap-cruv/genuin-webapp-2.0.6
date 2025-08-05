@@ -1,8 +1,8 @@
 import { Analytics } from '@/analytics'
 import { useCallback } from 'react'
 import { ActionItem } from './action-item'
-import { formatNumber, getIconLink } from '@/utils'
-import { useExpandViewContext } from '@/context/expand-view'
+import { cn, formatNumber, getIconLink } from '@/utils'
+import { useExpandViewContext } from '@/components/expand-view/context'
 
 export function Comment({
   videoId,
@@ -10,12 +10,14 @@ export function Comment({
   noOfComments,
   onCommentClick,
   isStandardWall,
+  textClassName,
 }: {
   videoId: string
   shareUrl: string
   noOfComments?: number
   onCommentClick?: () => void
   isStandardWall: boolean
+  textClassName?: string
 }) {
   const { isFullScreen, toggleCommentBox } = useExpandViewContext()
 
@@ -30,8 +32,8 @@ export function Comment({
         window.open(shareUrl, '_blank')
         return
       }
-      onCommentClick?.()
     }
+    onCommentClick?.()
   }, [
     videoId,
     shareUrl,
@@ -52,7 +54,11 @@ export function Comment({
           width={32}
         />
       </ActionItem>
-      <p className='__gen__sdk__text__body__2 __gen__sdk__font__weight__demi __gen__sdk__text__white'>
+      <p
+        className={cn(
+          '__gen__sdk__text__body__2 __gen__sdk__font__weight__demi __gen__sdk__text__white',
+          textClassName,
+        )}>
         {formatNumber(noOfComments ?? 0)}
       </p>
     </div>

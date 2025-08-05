@@ -37,10 +37,7 @@ export const SIDE_BAR_BREAKPOINT = 1010
 /**
  * The breakpoints for the responsive design.
  */
-export const BREAKPOINTS = {
-  MOBILE: 640,
-  TABLET: 768,
-}
+export const BREAKPOINTS = { MOBILE: 640, TABLET: 768 }
 /**
  * The maximum width of the content.
  * This is only for standard wall.
@@ -67,6 +64,8 @@ export const LOGIN_SOURCE = {
   adreels: 7,
 }
 
+export const TOPICS = { MUTE: 'MUTE', FLOATING: 'FLOATING' } as const
+
 // External URLs
 export const URL_TO_APP_STORE =
   'https://apps.apple.com/US/app/id1511177838?mt=8'
@@ -87,5 +86,10 @@ export function getBaseUrl(subdomain?: string): string {
   }
   return `https://${isQAEnv ? 'app.qa.' : ''}begenuin.com`
 }
+
+/**
+ * Query parameter key for video slug
+ */
+export const QUERY_PARAMS_KEY_FOR_VIDEO_SLUG = 'video'
 
 export { SDK_VERSION }

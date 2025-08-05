@@ -3,14 +3,22 @@ import { useBaseContext } from '@/context/base'
 import { UnmuteIcon } from '../../icons/unmute-icon'
 import { MuteIcon } from '../../icons/mute-icon'
 import { AnimatedText } from './animated-text'
+import { cn, isCheckFifthVideoType } from '@/utils'
 
 export const AnimatedMuteIcon = ({
   shouldAnimate,
 }: {
   shouldAnimate: boolean
 }) => {
-  const { muted, updateMuted, setVolume, volume, handlePlayerAction } =
-    useBaseContext()
+  const {
+    muted,
+    updateMuted,
+    setVolume,
+    volume,
+    handlePlayerAction,
+    brandDetails,
+    customizations,
+  } = useBaseContext()
   const isMobile = window.matchMedia('(max-width: 768px)').matches
   const [showVolumeSlider, setShowVolumeSlider] = useState(false)
   const [stopAnimating, setStopAnimating] = useState(!shouldAnimate)
@@ -47,18 +55,51 @@ export const AnimatedMuteIcon = ({
   return (
     <div
       onClick={handleClick}
-      className={`group flex z-50 h-12 items-center justify-start overflow-hidden rounded-full bg-black/40 ${showVolumeSlider && !isMobile ? 'w-full bg-black/50' : 'bg-black/40'}`}
+      className={cn(
+        `group flex z-50 h-12 items-center justify-center overflow-hidden rounded-full bg-black/40 ${showVolumeSlider && !isMobile ? 'w-full bg-black/50' : 'bg-black/40 '}`,
+        {
+          'h-9 w-9':
+            isCheckFifthVideoType(brandDetails?.brand_id) &&
+            customizations?.view === 'carousel' &&
+            isMobile,
+        },
+      )}
+      style={{
+        minWidth: isMobile ? undefined : '48px',
+      }}
       onMouseEnter={() => {
         setShowVolumeSlider(true)
       }}
       onMouseLeave={() => {
         setShowVolumeSlider(false)
       }}>
-      <div className='flex h-12 w-12 flex-shrink-0 items-center justify-center'>
+      <div
+        className={cn(
+          'flex h-12 w-12 flex-shrink-0 items-center justify-center',
+          {
+            'h-9 w-9':
+              isCheckFifthVideoType(brandDetails?.brand_id) &&
+              customizations?.view === 'carousel',
+          },
+        )}>
         {volume > 0 ? (
-          <UnmuteIcon variant='light' />
+          <UnmuteIcon
+            className={cn({
+              'h-5 w-5':
+                isCheckFifthVideoType(brandDetails?.brand_id) &&
+                customizations?.view === 'carousel',
+            })}
+            variant='light'
+          />
         ) : (
-          <MuteIcon variant='light' />
+          <MuteIcon
+            className={cn({
+              'h-5 w-5':
+                isCheckFifthVideoType(brandDetails?.brand_id) &&
+                customizations?.view === 'carousel',
+            })}
+            variant='light'
+          />
         )}
       </div>
 
@@ -85,9 +126,7 @@ export const AnimatedMuteIcon = ({
             onClick={(e) => {
               e.stopPropagation()
             }}
-            style={{
-              accentColor: 'white',
-            }}
+            style={{ accentColor: 'white' }}
             className='volume-slider relative h-1 w-full cursor-pointer rounded-full'
           />
           <div className='h-full w-4' />

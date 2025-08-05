@@ -1,6 +1,7 @@
-import { getLoopAndCommunityShareString, toTitleCase } from '@/utils'
-import { generateDeepLink } from './api'
-import { PATH_NAME } from '@/hooks/usePathNameWithSubdomain'
+import { getLoopAndCommunityShareString, toTitleCase } from "@/utils"
+import { generateDeepLink } from "./api"
+import { PATH_NAME } from "@/hooks/usePathNameWithSubdomain"
+
 
 type GenerateDeepLinkOptions = {
   action?: string
@@ -13,10 +14,7 @@ type GenerateDeepLinkOptions = {
   searchParams?: Record<string, any>
 }
 
-async function getDeepLink(
-  action: string,
-  options: GenerateDeepLinkOptions,
-): Promise<string> {
+async function getDeepLink(action: string, options: GenerateDeepLinkOptions): Promise<string> {
   const commonParams = {
     contentType: options.contentType ?? '',
     description: options.description ?? '',
@@ -54,14 +52,13 @@ export async function subscribeDeepLink({
     contentType: 'loop',
     description: ldDescription,
     title: name,
-    community:
-      getLoopAndCommunityShareString(shareUrl).communityShareString ?? '',
+    community: getLoopAndCommunityShareString(shareUrl).communityShareString ?? '',
     searchParams,
   })
 }
 
 // join_as_collaborator action
-export async function joinAsCollaboratorDeepLink({
+export async function joinGroupDeepLink({
   ldDescription,
   name,
   shareUrl,
@@ -72,12 +69,11 @@ export async function joinAsCollaboratorDeepLink({
   shareUrl: string
   searchParams: Record<string, any>
 }): Promise<string> {
-  return await getDeepLink('', {
+  return await getDeepLink('join-group', {
     contentType: 'loop',
     description: ldDescription,
     title: name ?? '',
-    community:
-      getLoopAndCommunityShareString(shareUrl).communityShareString ?? '',
+    community: getLoopAndCommunityShareString(shareUrl).communityShareString ?? '',
     searchParams,
   })
 }
@@ -136,8 +132,7 @@ export async function repostDeepLink({
   return await getDeepLink('repost', {
     contentType: 'video',
     pathName: PATH_NAME.video(videoSlug),
-    community:
-      getLoopAndCommunityShareString(shareUrl).communityShareString ?? '',
+    community: getLoopAndCommunityShareString(shareUrl).communityShareString ?? '',
     loop: getLoopAndCommunityShareString(shareUrl).loopShareString ?? '',
     title: `repost ${videoSlug} video`,
     searchParams,
@@ -151,15 +146,28 @@ export async function sparkDeepLink(
   videoSlug: string,
   shareUrl: string,
   reactionSuffix: string,
-  reactionTitle: string,
+  reactionTitle: string
 ): Promise<string> {
   return await getDeepLink('spark', {
     contentType: 'video',
     pathName: PATH_NAME.video(videoSlug),
-    community:
-      getLoopAndCommunityShareString(shareUrl).communityShareString ?? '',
+    community: getLoopAndCommunityShareString(shareUrl).communityShareString ?? '',
     loop: getLoopAndCommunityShareString(shareUrl).loopShareString ?? '',
     title: `${toTitleCase(reactionTitle) + ' ' + reactionSuffix} the ${videoSlug} video`,
+    searchParams: new URLSearchParams(window.location.search),
+  })
+}
+
+/*
+ * This function will generate deep link for report action.
+ */
+export async function reportDeepLink(videoSlug: string, shareUrl: string): Promise<string> {
+  return await getDeepLink('report', {
+    contentType: 'video',
+    pathName: PATH_NAME.video(videoSlug),
+    community: getLoopAndCommunityShareString(shareUrl).communityShareString ?? '',
+    loop: getLoopAndCommunityShareString(shareUrl).loopShareString ?? '',
+    title: `report ${videoSlug} video`,
     searchParams: new URLSearchParams(window.location.search),
   })
 }

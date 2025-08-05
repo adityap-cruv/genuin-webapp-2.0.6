@@ -1,7 +1,6 @@
 import { Analytics } from '@/analytics'
 import { useAuth } from '@/context/auth'
 import { useCallback } from 'react'
-import { AuthenticationModal } from '../authentication'
 import { getIconLink } from '@/utils'
 import {
   useRepostModalContext,
@@ -9,37 +8,44 @@ import {
 } from '@/components/repost/context'
 import { ActionItem } from './action-item'
 import { RepostModal } from '../repost'
+import { repostDeepLink } from '../download-app/get-deeplink'
+import { useModalHandler } from '@/hooks/useModalHandler'
+import { useSearchParams } from 'wouter'
 
 function RepostComponent({
   videoId,
   isStandardWall,
   shareUrl,
+  videoSlug,
 }: {
   videoId: string
   isStandardWall: boolean
   shareUrl: string
+  videoSlug: string
 }) {
   const { user } = useAuth()
   const { open: repostModalOpen } = useRepostModalContext()
+  const searchParams = useSearchParams()
+  const { openModal } = useModalHandler()
 
-  const handleRepostClick = useCallback(() => {
+  const handleRepostClick = useCallback(async () => {
     Analytics.track(Analytics.EventNames.VideoRepost, { content_id: videoId })
-    if (!isStandardWall && !user) {
+    if (window.genuinAuth && !user) {
+      window.genuinAuth({ path: '/', action: 'repost' })
+    } else if (!isStandardWall && !user) {
       window.open(shareUrl, '_blank')
       return
-    }
-
-    if (user) {
+    } else if (user) {
       repostModalOpen(videoId)
     } else {
-      // @ts-expect-error desc
-      if (window.genuinAuth) {
-        // @ts-expect-error desc
-        window.genuinAuth({ path: '/', action: 'repost' })
-      } else {
-        AuthenticationModal.open()
-      }
-      return
+      await repostDeepLink({ videoSlug, shareUrl, searchParams }).then(
+        (generatedLink) => {
+          openModal({
+            deepLink: generatedLink,
+            subtitle: 'Download app to repost the video.',
+          })
+        },
+      )
     }
   }, [user, isStandardWall])
 
@@ -59,6 +65,7 @@ export function Repost(props: {
   videoId: string
   isStandardWall: boolean
   shareUrl: string
+  videoSlug: string
 }) {
   return (
     <RepostModalProvider>

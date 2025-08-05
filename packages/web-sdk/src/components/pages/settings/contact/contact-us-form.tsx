@@ -1,6 +1,6 @@
 'use client'
 
-import { cn } from '@/utils'
+import { cn, sanitizeInput } from '@/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -61,8 +61,8 @@ export function ContactUsForm() {
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     mutation.mutate({
-      email: values.email,
-      message: values.issue,
+      email: sanitizeInput(values.email),
+      message: sanitizeInput(values.issue),
       type: 'contact_us',
     })
   }

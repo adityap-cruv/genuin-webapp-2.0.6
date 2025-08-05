@@ -21,7 +21,7 @@ import { CustomImage } from '../custom-image'
 import { QRCode } from 'react-qrcode-logo'
 import { URL_TO_APP_STORE, URL_TO_PLAY_STORE } from '@/const'
 import { useSearchParams } from 'wouter'
-import { cn, getIconLink } from '@/utils'
+import { cn, getIconLink, sanitizeInput } from '@/utils'
 import { Loader } from '../loader'
 import { usePathNameWithSubdomain } from '@/hooks/usePathNameWithSubdomain'
 import { sendGetAppLink } from './api'
@@ -81,8 +81,8 @@ export function Body({ title, subtitle, deepLink }: DownloadDialogType) {
               href={
                 typeof brandDetails?.integrations.sdk.ios === 'string'
                   ? brandDetails.integrations.sdk.ios
-                  : (brandDetails?.integrations.sdk.ios?.appstore_link ??
-                    URL_TO_APP_STORE)
+                  : brandDetails?.integrations.sdk.ios?.appstore_link ??
+                    URL_TO_APP_STORE
               }
               target='_blank'
               rel='noopener noreferrer'>
@@ -96,8 +96,8 @@ export function Body({ title, subtitle, deepLink }: DownloadDialogType) {
               href={
                 typeof brandDetails?.integrations.sdk.android === 'string'
                   ? brandDetails.integrations.sdk.android
-                  : (brandDetails?.integrations.sdk.android?.playstore_link ??
-                    URL_TO_PLAY_STORE)
+                  : brandDetails?.integrations.sdk.android?.playstore_link ??
+                    URL_TO_PLAY_STORE
               }
               target='_blank'
               rel='noopener noreferrer'>
@@ -152,8 +152,8 @@ function FormContent({
   const mutation = useMutation({
     mutationFn: async (data: z.infer<typeof formSchema>) => {
       const payload: Record<string, any> = {}
-      if (data.phone) payload.mobile = data.phone
-      if (data.email) payload.email = data.email
+      if (data.phone) payload.mobile = sanitizeInput(data.phone)
+      if (data.email) payload.email = sanitizeInput(data.email)
       if (searchParams.toString()) {
         payload.query_params = '?' + searchParams.toString()
       }
@@ -248,7 +248,7 @@ function FormContent({
                       <Input
                         placeholder='Enter Email'
                         className={cn(
-                          'border border-tertiary-200 bg-tertiary-100 !text-title-3-med placeholder:!text-tertiary-300',
+                          'border border-tertiary-300 bg-tertiary-100 !text-title-3-med placeholder:!text-tertiary-300',
                         )}
                         {...field}
                       />

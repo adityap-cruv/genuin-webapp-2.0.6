@@ -28,7 +28,7 @@ export function CommentBox({
   if (!customizations?.is_enable_engagement_tools) return
   return (
     <div
-      className='__gen__sdk__animate__comment__box__from__bottom fixed bottom-0 z-10 bg-background w-full h-[90%] rounded-t-2xl overflow-clip'
+      className='__gen__sdk__animate__comment__box__from__bottom fixed bottom-0 z-40 bg-background w-full h-[90%] rounded-t-2xl overflow-clip'
       onClick={(e) => {
         e.stopPropagation()
       }}>
@@ -53,6 +53,7 @@ export function CommentBox({
         loopId={loopId}
         videoSlug={videoSlug}
         communityId={communityId}
+        shareUrl={shareUrl}
       />
     </div>
   )

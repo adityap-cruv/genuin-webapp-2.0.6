@@ -19,9 +19,7 @@ export function UserTick() {
         disabled={status === 'loading'}
         className='h-8 gap-2 px-4'
         onClick={() => {
-          // @ts-expect-error desc
           if (window.genuinAuth) {
-            // @ts-expect-error desc
             window.genuinAuth({ path: '/', action: 'login' })
           } else {
             AuthenticationModal.open()
@@ -38,7 +36,7 @@ export function UserTick() {
   if (status === 'authenticated')
     return (
       <Popover>
-        <PopoverTrigger>
+        <PopoverTrigger asChild>
           <div className='flex rounded-full'>
             <CustomAvatar
               className='h-[40px] w-[40px]'

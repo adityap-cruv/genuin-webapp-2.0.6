@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+ 
+    <!-- only one embeds with contextual feed , use your embed_id and api_key, and embed_id must be unique-->
+     <div
+      id="gen-sdk"
+      class="gen-sdk-class"
+      style="width: 100%; height: 500px"></div>
+
+    <script src="./dist/gen_sdk.js"></script>
+
+     <!-- Use Any of the below initialization methods -->
+    <!-- <script>
+      window.onGenuinReady = (genuin) => {
+        genuin.initialize({
+          embed_id: '67c17f9fe0ac202848d7ac61',
+          api_key: 'e895c22b1281e14ff16405aa54f1d68ac6238de9b709383c',
+          contextualParams: {
+            page_context: 'page_context',
+            geo: {
+              lat: 37.7749,
+              long: -122.4194,
+            },
+            url: 'https://example.com',
+          },
+        })
+      }
+    </script> -->
+
+    <script>
+       window.genuin.init({
+          embed_id: '67c17f9fe0ac202848d7ac61',
+          api_key: 'e895c22b1281e14ff16405aa54f1d68ac6238de9b709383c',
+          contextualParams: {
+            page_context: 'page_context',
+            geo: {
+              lat: 37.7749,
+              long: -122.4194,
+            },
+            url: 'https://example.com',
+          }
+     })
+    </script>
+    
+   
+  </body>
+</html>

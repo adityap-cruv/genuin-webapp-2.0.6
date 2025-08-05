@@ -34,7 +34,7 @@ export function Loader() {
             <Shimmer className='h-4 w-1/6' />
             <Shimmer className='h-4 w-1/6' />
           </div>
-          <hr className='my-4 border-t border-monochrome-9' />
+          <hr className='my-4 border-t border-tertiary-200' />
           <LoopCardShimmer />
           <LoopCardShimmer />
         </div>

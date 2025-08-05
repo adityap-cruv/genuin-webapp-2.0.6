@@ -37,6 +37,7 @@ export function Communities({
                     }
                   : undefined,
                 description: community.description ?? undefined,
+                handle: community.handle,
               }}
             />
           )

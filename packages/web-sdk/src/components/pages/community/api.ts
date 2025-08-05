@@ -57,6 +57,7 @@ export async function fetchCommunityLoops(
   try {
     const url = new URL(getApiUrl('api/v3/community/loops'))
     url.searchParams.append('slug', slug)
+    url.searchParams.append('position', 'true')
 
     const response = await fetch(url.toString(), {
       method: 'GET',
