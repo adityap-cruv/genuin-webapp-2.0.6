@@ -16,6 +16,12 @@ async function fetchGroupMembers(slug: string, pageParam?: string) {
     })
     .then((res) => {
       const resData = res.data.data;
+      if (!resData) {
+        return {
+          members: [],
+          end: true,
+        };
+      }
       return {
         members: validateGroupMembers(resData?.members),
         end: resData.end_of_result,
@@ -32,7 +38,10 @@ export function useGetGroupMembers(slug: string) {
     queryFn: ({ pageParam }: { pageParam?: string }) =>
       fetchGroupMembers(slug, pageParam),
     getNextPageParam: (lastPage) => {
-      return lastPage.end ? undefined : lastPage.end;
+      if (lastPage.end) return undefined;
+      const lastPageData = lastPage.members[lastPage.members.length - 1];
+      if (!lastPageData) return undefined;
+      return lastPageData?.member_id;
     },
     initialPageParam: undefined,
   });

@@ -32,5 +32,8 @@ const MemberSchema = z
 const MemberListSchema = z.array(MemberSchema);
 
 export function validateGroupMembers(data: unknown) {
+  if (!data || !Array.isArray(data)) {
+    return [];
+  }
   return MemberListSchema.parse(data);
 }
