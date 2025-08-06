@@ -146,9 +146,14 @@ export default {
     },
     postcss({
       extensions: ['.css'],
-      include: !isDevelopment ? '**/*.css' : undefined,
-      extract: !isDevelopment ? 'gen-sdk.css' : undefined,
-      minimize: true,
+      // Always include all CSS files, including from node_modules (e.g. swiper/swiper.css)
+      include: [
+        '**/*.css',
+        '../../node_modules/**/*.css',
+        'node_modules/**/*.css',
+      ],
+      extract: !isDevelopment ? 'gen-sdk.css' : false,
+      minimize: !isDevelopment,
       plugins: [
         // Custom PostCSS plugin to fix "!important *" expressions
         {
