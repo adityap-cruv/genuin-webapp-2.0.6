@@ -26,11 +26,13 @@ type PlayerProps = {
   onGroupSubscriptionChange: ComponentProps<
     typeof ControlLayer
   >["onGroupSubscriptionChange"];
+   index : number
 };
 
 // TODO: This component is using feed context, which is not ideal. Remove this dep of FeedContext in future.
 export function Player({
   post,
+  index,
   onCommunityJoinStatusChange,
   onGroupJoinStatusChange,
   onGroupSubscriptionChange,
@@ -41,29 +43,16 @@ export function Player({
   const { muted } = useBaseContext();
   const { isActive } = useSwiperSlide();
   const swiper = useSwiper();
-  const [swiperSlideHeight, setSwiperSlideHeight] = useState<
-    number | undefined
-  >(undefined);
   const { showGestureOverlay } = useGestureOverlayManager();
   const { isMobile } = useDeviceDetectMediaQuery();
   const { height, width } = useWindowSize();
-
-  useEffect(() => {
-    function handleResize() {
-      setSwiperSlideHeight(swiper?.slides[0]?.offsetHeight);
-    }
-    swiper.on("resize", handleResize);
-    return () => {
-      swiper.off("resize", handleResize);
-    };
-  }, [swiper]);
 
   const handleTimeUpdate = useCallback(
     (event: React.SyntheticEvent<HTMLVideoElement>) => {
       const video = event.currentTarget;
       if (video.duration > 0) {
         const progress = (video.currentTime / video.duration) * 100;
-
+        
         if (activeIndex === 1 && progress >= 50) {
           showGestureOverlay("PLAY_PAUSE", muted);
         }
@@ -71,6 +60,7 @@ export function Player({
     },
     [activeIndex, muted, showGestureOverlay]
   );
+
   return (
     <PlayerProvider
       isActive={isActive}
@@ -78,6 +68,8 @@ export function Player({
       showExpandView={showExpandView}
       toggleExpandView={toggleExpandView}
       swipeNext={swiper.slideNext}
+      swiper={swiper}
+      index={index}
     >
       <div
         className={cn(

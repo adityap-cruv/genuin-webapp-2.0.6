@@ -65,7 +65,7 @@ export function PlayerList({
           onActiveIndexChange?.(swiper.activeIndex);
         }}
       >
-        {posts.map((post) => {
+        {posts.map((post,index) => {
           return (
             <SwiperSlide key={post.video.id}>
               <div className="gencl:flex gencl:gap-3 gencl:h-full">
@@ -77,6 +77,7 @@ export function PlayerList({
                   onReactionStateChange={(_, isReacted) => {
                     onReactionStateChange?.(post.video.id, isReacted);
                   }}
+                  index={index}
                 />
                 {!isMobile && (
                   <Actions

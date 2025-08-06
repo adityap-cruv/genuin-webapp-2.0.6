@@ -12,6 +12,7 @@ import { PlayerContext, PlayerContextType } from "./context";
 import mitt from "mitt";
 import { useBaseContext } from "@genuin/components/context/base";
 import { useAnalytics } from "@genuin/components/context/analytics";
+import { Swiper } from "swiper/types";
 
 type VideoProviderProps = {
   children: React.ReactNode;
@@ -20,6 +21,12 @@ type VideoProviderProps = {
    * Function to be called when the player completes it's iteration and is ready to play the next video.
    */
   swipeNext: () => void;
+  /**
+   * Post list index - used to compare against previous index
+   *
+   */
+  index: number;
+  swiper: Swiper;
   /**
    * If player is active or not.
    */
@@ -45,6 +52,8 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   isActive,
   swipeNext,
   toggleExpandView,
+  index,
+  swiper,
 }) => {
   const { brandDetails } = useBaseContext();
   const playerRef = useRef<OpenPlayerJS | null>(null);
@@ -127,6 +136,19 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       setShowSeeker(false);
     }
   }, [buttonAction]);
+
+  useEffect(() => {
+    // Skip if current index doesn't match previous index
+    // Skip impression event if video was viewed for less than 2 seconds
+    if (index !== swiper.previousIndex || videoStateRef.current.duration < 0.2)
+      return;
+
+    Analytics.track(Analytics.EventName.VIDEO_IMPRESSION, {
+      content_id: videoId,
+      video_length: videoStateRef.current.duration,
+      video_view_length: videoStateRef.current.currentTime,
+    });
+  }, [swiper.previousIndex]);
 
   const setVideoTimeState = useCallback((timeState: VideoTimeStateType) => {
     videoStateRef.current = {

@@ -1,4 +1,4 @@
-import { VideoPlayer } from "@genuin/ui/video-player";
+import { VideoPlayer } from "@genuin/ui/components/video-player";
 import {
   memo,
   useCallback,
@@ -80,6 +80,7 @@ export const FeedPlayer = memo(function FeedPlayer({
     [postDetails.video.id]
   );
 
+
   const handleTimeUpdate = useCallback((event: any) => {
     onTimeUpdate?.(event);
     const target = event.target as HTMLVideoElement;
@@ -96,6 +97,11 @@ export const FeedPlayer = memo(function FeedPlayer({
       stateHandleEnded?.();
       const target = e?.target as HTMLVideoElement | undefined;
       Analytics.track(Analytics.EventName.VIDEO_COMPLETED, {
+        ...analyticsEventData,
+        video_length: target?.duration,
+        video_view_length: target?.currentTime,
+      });
+      Analytics.track(Analytics.EventName.VIDEO_IMPRESSION, {
         ...analyticsEventData,
         video_length: target?.duration,
         video_view_length: target?.currentTime,
@@ -183,11 +189,12 @@ export const FeedPlayer = memo(function FeedPlayer({
   );
 
   const handleVideoStart = useCallback(
-    (duration: number, currentTime: number) => {
+    (duration: number, currentTime: number, latency : number) => {
       Analytics.track(Analytics.EventName.VIDEO_STARTED, {
         ...analyticsEventData,
         video_length: duration,
         video_view_length: currentTime,
+        latency : latency,
       });
     },
     [Analytics, analyticsEventData]
