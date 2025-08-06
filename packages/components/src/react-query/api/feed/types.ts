@@ -1,6 +1,5 @@
 export type FeedResponseFromGoApi = Array<{
   uuid: string;
-  ads_config?: AdsConfig;
   type: string;
   loop: FeedLoopInfo;
   community: FeedCommunityInfo;
@@ -13,6 +12,7 @@ type VideoData = {
   conversation_at: number;
   description_data?: string;
   description_text?: string;
+  description?: string;
   media_url: string;
   meta_data?: unknown;
   share_url: string;
@@ -22,13 +22,13 @@ type VideoData = {
   thumbnail_url_s: string;
   thumbnail_url_m: string;
   uuid: string;
-  attached_link?: string;
+  attached_link?: string | null;
   media_url_m3u8?: string;
   no_of_views?: number;
   no_of_sparks?: number;
   no_of_comments?: number;
-  video_summary?: string;
-  sprite_image_url?: string;
+  video_summary?: string | null;
+  sprite_image_url?: string | null;
   no_of_shares?: number;
   linkouts?: Linkout[];
   is_sparked?: boolean;
@@ -36,6 +36,20 @@ type VideoData = {
   clickable_url?: string;
   is_pinned?: boolean;
   linkouts_id?: number;
+  ads_config?: AdsConfig;
+  card_layout_id?: number;
+  video_layout_id?: number;
+  duration?: number;
+  is_transcribed?: boolean;
+  linkouts_inappbrowser?: boolean;
+  attributes?: {
+    clip_type?: string;
+    description?: string;
+    image_url?: string;
+    timestamp?: number;
+    title?: string;
+    [key: string]: unknown;
+  };
 };
 
 type AdsConfig = {
@@ -137,7 +151,7 @@ type FeedCommunityInfo = {
     brand_web_logo: string;
     name: string;
     brand_user_logo: number;
-    brand_handle?: string
+    brand_handle?: string;
   };
 };
 

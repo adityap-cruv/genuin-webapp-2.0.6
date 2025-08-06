@@ -17,6 +17,7 @@ type CommentDialogProps = {
   videoSlug: string;
   children: ReactNode;
   commentCount: number;
+  shareUrl: string;
 } & React.ComponentProps<typeof DialogTrigger>;
 
 export function CommentsDialog({
@@ -26,6 +27,7 @@ export function CommentsDialog({
   videoSlug,
   children,
   commentCount,
+  shareUrl,
   className,
   ...props
 }: CommentDialogProps) {
@@ -49,6 +51,7 @@ export function CommentsDialog({
         <CommentInputBox
           className="gencl:absolute gencl:bottom-0"
           communityId={communityId}
+          shareUrl={shareUrl}
           loopId={loopId}
           videoId={videoId}
           videoSlug={videoSlug}

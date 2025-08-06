@@ -1,32 +1,35 @@
 import { type ComponentProps } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "@genuin/ui/lib/utils";
+import { cn, defaultSizesForIcons } from "@genuin/ui/lib/utils";
 
 // Define the playVariant function using cva to handle different styles based on props
 const playVariant = cva("", {
   variants: {
-    variant: {
-      dark: "gencl:fill-black", // Light variant style
-      transparent: "gencl:fill-white", // Transparent variant style
-      light: "gencl:fill-white", // Dark variant style
+    theme: {
+      dark: "gencl:fill-white", // Light variant style
+      light: "gencl:fill-black", // Dark variant style
     },
+    size: defaultSizesForIcons(),
+  },
+  defaultVariants: {
+    theme: "light", // Default to dark theme
+    size: "md", // Default size
   },
 });
 
 // Define the Props type for the CollapseIcon component
 type CollapseIconPropsType = ComponentProps<"svg"> &
-  VariantProps<typeof playVariant> & {
-    variant?: "light" | "transparent" | "dark" | null;
-  };
+  VariantProps<typeof playVariant>;
 
 export function CollapseIcon({
-  variant = "dark",
+  theme,
+  size,
   className,
   ...restProps
 }: CollapseIconPropsType) {
   return (
     <svg
-      className={cn(playVariant({ variant }), className)}
+      className={cn(playVariant({ theme, size }), className)}
       xmlns="http://www.w3.org/2000/svg"
       width="24"
       height="24"

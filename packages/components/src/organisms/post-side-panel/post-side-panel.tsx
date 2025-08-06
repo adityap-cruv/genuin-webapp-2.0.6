@@ -51,6 +51,7 @@ export function PostSidePanel({
         videoId={postDetails.video.id}
         loopId={postDetails.group.id}
         communityId={postDetails.community.id}
+        shareUrl={postDetails.video.shareUrl}
         videoSlug={postDetails.video.slug}
         className="gencl:overflow-auto"
         onCommentCountChange={onCommentCountChange}

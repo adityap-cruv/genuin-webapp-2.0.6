@@ -26,6 +26,7 @@ type CommentPropsType = {
   communityId: string;
   videoSlug: string;
   showCloseButton?: boolean;
+  shareUrl: string;
   onClose?: () => void;
   /**
    * @param videoId - The video id
@@ -43,6 +44,7 @@ export function Comments({
   className,
   showCloseButton = false,
   variant,
+  shareUrl,
   onClose,
   onCommentCountChange,
   ...restProps
@@ -88,6 +90,7 @@ export function Comments({
           loopId={loopId}
           communityId={communityId}
           videoSlug={videoSlug}
+          shareUrl={shareUrl}
           onCommentPosted={(comments) => {
             setQueryDataForNewComment(videoId, comments);
             onCommentCountChange?.(videoId);

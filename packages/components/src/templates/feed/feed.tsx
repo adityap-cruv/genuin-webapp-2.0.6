@@ -95,6 +95,7 @@ export function FeedView({
   feedData,
   variant,
   defaultExpandView,
+  disableNativeFullscreenApi,
   onCloseExpandView,
   ...restProps
 }: FeedViewPropsType) {
@@ -103,6 +104,7 @@ export function FeedView({
       defaultExpandView={defaultExpandView}
       onCloseExpandView={onCloseExpandView}
       variant={variant ?? "expand"}
+      disableNativeFullscreenApi={disableNativeFullscreenApi}
     >
       <GestureProvider>
         <FeedViewCore feedData={feedData} {...restProps} />

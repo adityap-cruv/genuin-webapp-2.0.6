@@ -46,6 +46,7 @@ export function FeedViewCore({
   startIndex = 0,
   style,
   variant,
+  onActiveIndexChange,
   ...restProps
 }: FeedViewPropsType) {
   const {
@@ -140,6 +141,7 @@ export function FeedViewCore({
 
   const handleActiveIndexChange = useCallback(
     (newIndex: number) => {
+      onActiveIndexChange?.(newIndex);
       setActiveIndex(newIndex);
       hideGestureOverlay("SWIPE");
       handleSwipeCount(newIndex);

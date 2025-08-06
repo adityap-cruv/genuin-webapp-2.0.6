@@ -41,22 +41,9 @@ export function Player({
   const { muted } = useBaseContext();
   const { isActive } = useSwiperSlide();
   const swiper = useSwiper();
-  const [swiperSlideHeight, setSwiperSlideHeight] = useState<
-    number | undefined
-  >(undefined);
   const { showGestureOverlay } = useGestureOverlayManager();
   const { isMobile } = useDeviceDetectMediaQuery();
   const { height, width } = useWindowSize();
-
-  useEffect(() => {
-    function handleResize() {
-      setSwiperSlideHeight(swiper?.slides[0]?.offsetHeight);
-    }
-    swiper.on("resize", handleResize);
-    return () => {
-      swiper.off("resize", handleResize);
-    };
-  }, [swiper]);
 
   const handleTimeUpdate = useCallback(
     (event: React.SyntheticEvent<HTMLVideoElement>) => {
@@ -77,7 +64,7 @@ export function Player({
       videoId={post.video.id}
       showExpandView={showExpandView}
       toggleExpandView={toggleExpandView}
-      swipeNext={swiper.slideNext}
+      onPlayerIterationEnd={swiper.slideNext}
     >
       <div
         className={cn(
@@ -88,9 +75,9 @@ export function Player({
         )}
       >
         <FeedPlayer
-          postDetails={post}
+          videoId={post.video.id}
           src={post.video.source}
-          id={post.video.id}
+          id={"feed-player--" + post.video.id}
           poster={post.video.thumbnail ?? ""}
           className={cn(
             "gencl:bg-secondary-200 gencl:object-cover",

@@ -1,1 +1,1 @@
-export * from "./linkouts-details";
+export * from "./linkouts";

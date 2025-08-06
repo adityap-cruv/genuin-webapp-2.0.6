@@ -16,6 +16,7 @@ import { AuthenticationModal } from "@genuin/components/organisms/authentication
 import { TooltipAction } from "./tooltip";
 import { cva, VariantProps } from "class-variance-authority";
 import { useBaseContext } from "@genuin/components/context/base";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 type ActionType = "REPOST" | "REACTION" | "COMMENT" | "SHARE" | "MORE";
 
@@ -158,39 +159,59 @@ export function Actions({
   ...restProps
 }: ActionsPropsType) {
   const { tooltip } = useBaseContext().brandDetails.reactions;
+  const { engagement } = useEmbedConfigs();
+
+  if (!engagement.showEngagementTools) return;
+  const {
+    engagementTools: { comment, repost, share, spark },
+  } = engagement;
+
+  // Only include actions if enabled in engagementTools config
   const actions = [
-    {
-      icon: <RepostIcon theme={theme} />, // fallback to light for mobile
-      actionType: "REPOST",
-      tooltipText: "Repost",
-    },
-    {
-      icon: (
-        <DynamicReactionIcon
-          isSparked={isReacted}
-          sparkCount={reactionCount}
-          theme={theme}
-        />
-      ),
-      actionType: "REACTION",
-      tooltipText: tooltip,
-    },
-    {
-      icon: <CommentIcon theme={theme} />,
-      actionType: "COMMENT",
-      tooltipText: "Add a comment",
-    },
-    {
-      icon: <ShareIcon theme={theme} />,
-      actionType: "SHARE",
-      tooltipText: "Share",
-    },
+    repost
+      ? {
+          icon: <RepostIcon theme={theme} />, // fallback to light for mobile
+          actionType: "REPOST" as const,
+          tooltipText: "Repost",
+        }
+      : null,
+    spark
+      ? {
+          icon: (
+            <DynamicReactionIcon
+              isSparked={isReacted}
+              sparkCount={reactionCount}
+              theme={theme}
+            />
+          ),
+          actionType: "REACTION" as const,
+          tooltipText: tooltip,
+        }
+      : null,
+    comment
+      ? {
+          icon: <CommentIcon theme={theme} />,
+          actionType: "COMMENT" as const,
+          tooltipText: "Add a comment",
+        }
+      : null,
+    share
+      ? {
+          icon: <ShareIcon theme={theme} />,
+          actionType: "SHARE" as const,
+          tooltipText: "Share",
+        }
+      : null,
     {
       icon: <ThreeDotsIcon theme={theme} />,
-      actionType: "MORE",
+      actionType: "MORE" as const,
       tooltipText: "More",
     },
-  ] as const;
+  ].filter(Boolean) as Array<{
+    icon: ReactNode;
+    actionType: ActionType;
+    tooltipText: string;
+  }>;
 
   return (
     <div

@@ -5,7 +5,7 @@ import { MuteIcon } from "@genuin/ui/icons";
 
 import { AnimatedText } from "./animated-text";
 import { useBaseContext } from "@genuin/components/context/base";
-import { usePlayerContext } from "../../context";
+import { usePlayerContext } from "../../../context";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 
 // todo: check if we can use <Slider/> component instead of input[type="range"] here.
@@ -61,9 +61,9 @@ export const AnimatedMuteIcon = ({
     >
       <div className="gencl:flex gencl:size-9 gencl:sm:size-12! gencl:flex-shrink-0 gencl:items-center gencl:justify-center">
         {!muted ? (
-          <UnmuteIcon size="md" className="gencl:sm:size-6!" />
+          <UnmuteIcon theme="dark" size="md" className="gencl:sm:size-6!" />
         ) : (
-          <MuteIcon size="md" className="gencl:sm:size-6!" />
+          <MuteIcon theme="dark" size="md" className="gencl:sm:size-6!" />
         )}
       </div>
 

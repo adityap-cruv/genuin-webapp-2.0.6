@@ -47,19 +47,7 @@ type FeedContextType = {
   variant?: VariantType;
 };
 
-const FeedContext = createContext<FeedContextType>({
-  activeIndex: 0,
-  setActiveIndex: () => {},
-  showExpandView: true,
-  openExpandView: () => {},
-  closeExpandView: () => {},
-  toggleExpandView: () => {},
-  playbackSpeed: {
-    speed: 1.0,
-    isSpeedFromGesture: false,
-  },
-  setPlaybackSpeed: () => {},
-});
+const FeedContext = createContext<FeedContextType | undefined>(undefined);
 
 const useFeedContext = () => {
   const context = useContext(FeedContext);
@@ -83,12 +71,17 @@ type FeedContextProviderProps = {
    * The variant of the feed view.
    */
   variant?: VariantType;
+  /**
+   * A flag to indicate if you want to disable the native fullscreen API.
+   */
+  disableNativeFullscreenApi?: boolean;
 };
 
 export function FeedContextProvider({
   children,
   defaultExpandView = false,
   onCloseExpandView,
+  disableNativeFullscreenApi = false,
   variant,
 }: FeedContextProviderProps) {
   const { isMobile } = useDeviceDetectMediaQuery();
@@ -109,8 +102,8 @@ export function FeedContextProvider({
   });
 
   useEffect(() => {
-    // If the device is mobile, we do not want to request fullscreen mode.
-    if (isMobile) return;
+    // If the device is mobile, we do not want to request fullscreen mode. And if the fullscreen api is disabled by user.
+    if (isMobile || disableNativeFullscreenApi) return;
     // Only run this effect in browser environments
     if (typeof document === "undefined") return;
 

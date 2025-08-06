@@ -5,12 +5,21 @@ import type { FeedType } from "@genuin/components/types/post";
 import { baseQueryKey } from "./base";
 
 /**
- * This function generates a unique query key for the feed based on the feed type.
- * @param feedType
- * @returns
+ * This function generates a unique query key for the feed based on the feed type and options.
+ * @param feedType - Type of feed (HOME, LATEST, POPULAR)
+ * @param options - Optional filter options for the feed
+ * @returns QueryKey array
  */
-export function getQueryKeyForFeed(feedType: FeedType): QueryKey {
-  return [...baseQueryKey, "feed", feedType];
+export function getQueryKeyForFeed(
+  feedType: FeedType,
+  options?: {
+    communityIds?: string[];
+    groupIds?: Array<{ loop_id: string; community_id: string }>;
+  }
+): QueryKey {
+  return options
+    ? [...baseQueryKey, "feed", feedType, options]
+    : [...baseQueryKey, "feed", feedType];
 }
 
 /**

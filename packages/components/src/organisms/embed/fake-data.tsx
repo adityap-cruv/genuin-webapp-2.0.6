@@ -1,0 +1,633 @@
+export const fakeData = [
+  {
+    video: {
+      id: "40ca8f99-e014-48c0-b2db-8e29eae58cd5",
+      createdAt: 1746502395000,
+      commentCount: 0,
+      shareUrl:
+        "https://xcqajpyh.qa.begenuin.com/video/lululemons-latest-collaboration-has-us-running-on?community=1f5638402a800d1f&loop=1f563be93e801408",
+      attachedLink: null,
+      source:
+        "https://vz-eee5e913-a30.b-cdn.net/41687f5a-c224-440b-abec-7c34ff236c32/playlist.m3u8",
+      isSparked: false,
+      sparkCount: 0,
+      thumbnail:
+        "https://vz-eee5e913-a30.b-cdn.net/41687f5a-c224-440b-abec-7c34ff236c32/thumbnail.jpg",
+      thumbnailM: null,
+      description: [
+        "lululemon’s latest collaboration has us running on pure wonder. Keep following to be the first to shop.",
+      ],
+      slug: "lululemons-latest-collaboration-has-us-running-on",
+      linkoutId: null,
+      clickableUrl: null,
+      linkouts: [],
+      isPinned: false,
+      thumbnailSprite:
+        "https://media.qa.begenuin.com/uploads/sprite/68148e18dce1888f81b89a5d_1746502393252.jpeg",
+    },
+    group: {
+      id: "cac3c6ca-5ede-408d-8526-15ab347fa33e",
+      slug: "athleisure-trends",
+      description:
+        "Discuss the latest in athleisure fashion and Lululemon's innovative designs.",
+      shareUrl:
+        "https://xcqajpyh.qa.begenuin.com/loop/athleisure-trends?community=1f5638402a800d1f",
+      name: "Athleisure Trends 👗",
+      isSubscribed: false,
+      role: "UNJOINED",
+      isPrivate: false,
+    },
+    community: {
+      id: "08289bad-47e5-4689-be2a-db8ddba5e79f",
+      shareUrl:
+        "https://xcqajpyh.qa.begenuin.com/community/fashion-forward-athletes",
+      slug: "fashion-forward-athletes",
+      handle: "fashionforwardathlshin18",
+      isPrivate: false,
+      userRole: "UNJOINED",
+      type: 1,
+      name: "Fashion Forward Athletes 👟✨",
+      profileImage: null,
+      membersCount: 0,
+      groupsCount: 0,
+      postsCount: 0,
+    },
+    owner: {
+      profileImage:
+        "https://media.qa.begenuin.com/uploads/profile_images/brandProfileLogo_1745646632621.png",
+      isAvatar: false,
+      userName: "lululemon",
+      name: "lululemon",
+      brand: {
+        id: 2922,
+        slug: "lululemon",
+        userLogo: 2,
+      },
+    },
+  },
+  {
+    video: {
+      id: "cc1b6af6-60b3-4fda-9a4f-bf3492737966",
+      createdAt: 1746502395000,
+      commentCount: 1,
+      shareUrl:
+        "https://xcqajpyh.qa.begenuin.com/video/breaking-news-team-canada-athlete-philkwizards?community=1f5638402a800d1f&loop=1f563be93e801408",
+      attachedLink: null,
+      source:
+        "https://vz-eee5e913-a30.b-cdn.net/f554b7d5-ab26-441a-a042-437347b80851/playlist.m3u8",
+      isSparked: false,
+      sparkCount: 1,
+      thumbnail:
+        "https://vz-eee5e913-a30.b-cdn.net/f554b7d5-ab26-441a-a042-437347b80851/thumbnail.jpg",
+      thumbnailM: null,
+      description: [
+        "Breaking news: Team Canada athlete @philkwizard’s dancing his way to Olympic firsts, one spin at a time. Watch Phil outshine the spotlight tomorrow. \n \nEn manchette: L’athlète d’Équipe Canada @philkwizard inaugure le breaking aux Jeux olympiques – une pirouette à la fois. Demain, venez voir Phil briller en avant-scène.",
+      ],
+      slug: "breaking-news-team-canada-athlete-philkwizards",
+      linkoutId: null,
+      clickableUrl: null,
+      linkouts: [],
+      isPinned: false,
+      thumbnailSprite:
+        "https://media.qa.begenuin.com/uploads/sprite/68148e01dce1888f81b89a5a_1746502393252.jpeg",
+    },
+    group: {
+      id: "cac3c6ca-5ede-408d-8526-15ab347fa33e",
+      slug: "athleisure-trends",
+      description:
+        "Discuss the latest in athleisure fashion and Lululemon's innovative designs.",
+      shareUrl:
+        "https://xcqajpyh.qa.begenuin.com/loop/athleisure-trends?community=1f5638402a800d1f",
+      name: "Athleisure Trends 👗",
+      isSubscribed: false,
+      role: "UNJOINED",
+      isPrivate: false,
+    },
+    community: {
+      id: "08289bad-47e5-4689-be2a-db8ddba5e79f",
+      shareUrl:
+        "https://xcqajpyh.qa.begenuin.com/community/fashion-forward-athletes",
+      slug: "fashion-forward-athletes",
+      handle: "fashionforwardathlshin18",
+      isPrivate: false,
+      userRole: "UNJOINED",
+      type: 1,
+      name: "Fashion Forward Athletes 👟✨",
+      profileImage: null,
+      membersCount: 0,
+      groupsCount: 0,
+      postsCount: 0,
+    },
+    owner: {
+      profileImage:
+        "https://media.qa.begenuin.com/uploads/profile_images/brandProfileLogo_1745646632621.png",
+      isAvatar: false,
+      userName: "lululemon",
+      name: "lululemon",
+      brand: {
+        id: 2922,
+        slug: "lululemon",
+        userLogo: 2,
+      },
+    },
+  },
+  {
+    video: {
+      id: "e2c076c4-5c0d-4bea-9833-0b4302538941",
+      createdAt: 1746502395000,
+      commentCount: 1,
+      shareUrl:
+        "https://xcqajpyh.qa.begenuin.com/video/how-far-will-she-go-for-tennis-pro?community=1f5638402a800d1f&loop=1f563be93e801408",
+      attachedLink: null,
+      source:
+        "https://vz-eee5e913-a30.b-cdn.net/f22a0853-69e2-4ece-996f-8b32c57f5fc6/playlist.m3u8",
+      isSparked: false,
+      sparkCount: 0,
+      thumbnail:
+        "https://vz-eee5e913-a30.b-cdn.net/f22a0853-69e2-4ece-996f-8b32c57f5fc6/thumbnail.jpg",
+      thumbnailM: null,
+      description: [
+        "How far will she go? For tennis pro @leylahannietennis, expectations are just fuel for the fire. Watch Leylah outshine expectations today.\n\nJusqu’où ira-t-elle? Pour la joueuse de tennis @leylahannietennis, l’espoir est une source de motivation. Voyez Leylah briller au-delà des attentes aujourd’hui.",
+      ],
+      slug: "how-far-will-she-go-for-tennis-pro",
+      linkoutId: null,
+      clickableUrl: null,
+      linkouts: [],
+      isPinned: false,
+      thumbnailSprite:
+        "https://media.qa.begenuin.com/uploads/sprite/68148e11dce1888f81b89a5c_1746502393252.jpeg",
+    },
+    group: {
+      id: "cac3c6ca-5ede-408d-8526-15ab347fa33e",
+      slug: "athleisure-trends",
+      description:
+        "Discuss the latest in athleisure fashion and Lululemon's innovative designs.",
+      shareUrl:
+        "https://xcqajpyh.qa.begenuin.com/loop/athleisure-trends?community=1f5638402a800d1f",
+      name: "Athleisure Trends 👗",
+      isSubscribed: false,
+      role: "UNJOINED",
+      isPrivate: false,
+    },
+    community: {
+      id: "08289bad-47e5-4689-be2a-db8ddba5e79f",
+      shareUrl:
+        "https://xcqajpyh.qa.begenuin.com/community/fashion-forward-athletes",
+      slug: "fashion-forward-athletes",
+      handle: "fashionforwardathlshin18",
+      isPrivate: false,
+      userRole: "UNJOINED",
+      type: 1,
+      name: "Fashion Forward Athletes 👟✨",
+      profileImage: null,
+      membersCount: 0,
+      groupsCount: 0,
+      postsCount: 0,
+    },
+    owner: {
+      profileImage:
+        "https://media.qa.begenuin.com/uploads/profile_images/brandProfileLogo_1745646632621.png",
+      isAvatar: false,
+      userName: "lululemon",
+      name: "lululemon",
+      brand: {
+        id: 2922,
+        slug: "lululemon",
+        userLogo: 2,
+      },
+    },
+  },
+  {
+    video: {
+      id: "824443f2-bdaf-4958-b622-9b67d08588e0",
+      createdAt: 1746502395000,
+      commentCount: 1,
+      shareUrl:
+        "https://xcqajpyh.qa.begenuin.com/video/calliegullickson-is-back-and-she-brought-good?community=1f5638402a800d1f&loop=1f563be93e801408",
+      attachedLink: null,
+      source:
+        "https://vz-eee5e913-a30.b-cdn.net/bea62fee-bc4c-4653-b6c1-d7ae7f52cd30/playlist.m3u8",
+      isSparked: false,
+      sparkCount: 0,
+      thumbnail:
+        "https://vz-eee5e913-a30.b-cdn.net/bea62fee-bc4c-4653-b6c1-d7ae7f52cd30/thumbnail.jpg",
+      thumbnailM: null,
+      description: [
+        "@calliegullickson is back and she brought good times for the whole crew—shoutout to everyone who brought the energy to lululemon Members’ Weekend.",
+      ],
+      slug: "calliegullickson-is-back-and-she-brought-good",
+      linkoutId: null,
+      clickableUrl: null,
+      linkouts: [],
+      isPinned: false,
+      thumbnailSprite:
+        "https://media.qa.begenuin.com/uploads/sprite/68148e42dce1888f81b89a5f_1746502393252.jpeg",
+    },
+    group: {
+      id: "cac3c6ca-5ede-408d-8526-15ab347fa33e",
+      slug: "athleisure-trends",
+      description:
+        "Discuss the latest in athleisure fashion and Lululemon's innovative designs.",
+      shareUrl:
+        "https://xcqajpyh.qa.begenuin.com/loop/athleisure-trends?community=1f5638402a800d1f",
+      name: "Athleisure Trends 👗",
+      isSubscribed: false,
+      role: "UNJOINED",
+      isPrivate: false,
+    },
+    community: {
+      id: "08289bad-47e5-4689-be2a-db8ddba5e79f",
+      shareUrl:
+        "https://xcqajpyh.qa.begenuin.com/community/fashion-forward-athletes",
+      slug: "fashion-forward-athletes",
+      handle: "fashionforwardathlshin18",
+      isPrivate: false,
+      userRole: "UNJOINED",
+      type: 1,
+      name: "Fashion Forward Athletes 👟✨",
+      profileImage: null,
+      membersCount: 0,
+      groupsCount: 0,
+      postsCount: 0,
+    },
+    owner: {
+      profileImage:
+        "https://media.qa.begenuin.com/uploads/profile_images/brandProfileLogo_1745646632621.png",
+      isAvatar: false,
+      userName: "lululemon",
+      name: "lululemon",
+      brand: {
+        id: 2922,
+        slug: "lululemon",
+        userLogo: 2,
+      },
+    },
+  },
+  {
+    video: {
+      id: "f145c2c9-ea82-4e01-9f44-4847ca7729a3",
+      createdAt: 1746502375000,
+      commentCount: 0,
+      shareUrl:
+        "https://xcqajpyh.qa.begenuin.com/video/intense-maybe-a-little-wheelchair-basketball-star?community=1f5638402a800d1f&loop=1f563be93e801408",
+      attachedLink: null,
+      source:
+        "https://vz-eee5e913-a30.b-cdn.net/0a743edb-470e-4a62-8ec1-a4b3890c7c7f/playlist.m3u8",
+      isSparked: false,
+      sparkCount: 1,
+      thumbnail:
+        "https://vz-eee5e913-a30.b-cdn.net/0a743edb-470e-4a62-8ec1-a4b3890c7c7f/thumbnail.jpg",
+      thumbnailM: null,
+      description: [
+        "Intense? Maybe a little. Wheelchair basketball star @couellet07 can’t seem to slow down, on and off the court. Watch Cindy outshine convention tomorrow.\n\nIntense? Peut-être un peu. La star du basketball en fauteuil roulant @couellet07 est toujours aussi rapide, que ce soit sur le terrain ou en dehors. Demain, admirez Cindy alors qu’elle brille au-delà des normes.",
+      ],
+      slug: "intense-maybe-a-little-wheelchair-basketball-star",
+      linkoutId: null,
+      clickableUrl: null,
+      linkouts: [],
+      isPinned: false,
+      thumbnailSprite:
+        "https://media.qa.begenuin.com/uploads/sprite/68148ef6dce1888f81b89a70_1746502372547.jpeg",
+    },
+    group: {
+      id: "cac3c6ca-5ede-408d-8526-15ab347fa33e",
+      slug: "athleisure-trends",
+      description:
+        "Discuss the latest in athleisure fashion and Lululemon's innovative designs.",
+      shareUrl:
+        "https://xcqajpyh.qa.begenuin.com/loop/athleisure-trends?community=1f5638402a800d1f",
+      name: "Athleisure Trends 👗",
+      isSubscribed: false,
+      role: "UNJOINED",
+      isPrivate: false,
+    },
+    community: {
+      id: "08289bad-47e5-4689-be2a-db8ddba5e79f",
+      shareUrl:
+        "https://xcqajpyh.qa.begenuin.com/community/fashion-forward-athletes",
+      slug: "fashion-forward-athletes",
+      handle: "fashionforwardathlshin18",
+      isPrivate: false,
+      userRole: "UNJOINED",
+      type: 1,
+      name: "Fashion Forward Athletes 👟✨",
+      profileImage: null,
+      membersCount: 0,
+      groupsCount: 0,
+      postsCount: 0,
+    },
+    owner: {
+      profileImage:
+        "https://media.qa.begenuin.com/uploads/profile_images/brandProfileLogo_1745646632621.png",
+      isAvatar: false,
+      userName: "lululemon",
+      name: "lululemon",
+      brand: {
+        id: 2922,
+        slug: "lululemon",
+        userLogo: 2,
+      },
+    },
+  },
+  {
+    video: {
+      id: "0742d657-b111-4916-950a-c514646efa4d",
+      createdAt: 1753185467000,
+      commentCount: 0,
+      shareUrl:
+        "https://xcqajpyh.qa.begenuin.com/video/trust-ustheres-an-abc-pant-for-everyone-find-the-p8iw?community=1f5638402a800d1f&loop=1f563be93e801408",
+      attachedLink: null,
+      source:
+        "https://media.qa.begenuin.com/temp_video/68148f8adce1888f81b89a80_1746455572391.mp4",
+      isSparked: false,
+      sparkCount: 0,
+      thumbnail:
+        "https://media.qa.begenuin.com/uploads/thumbnails/68148f8adce1888f81b89a80_1746455572391.png",
+      thumbnailM: null,
+      description: [
+        "Trust us—there’s an ABC Pant for everyone. Find the one for you in one minute.",
+      ],
+      slug: "trust-ustheres-an-abc-pant-for-everyone-find-the-p8iw",
+      linkoutId: null,
+      clickableUrl: null,
+      linkouts: [],
+      isPinned: false,
+      thumbnailSprite: null,
+    },
+    group: {
+      id: "cac3c6ca-5ede-408d-8526-15ab347fa33e",
+      slug: "athleisure-trends",
+      description:
+        "Discuss the latest in athleisure fashion and Lululemon's innovative designs.",
+      shareUrl:
+        "https://xcqajpyh.qa.begenuin.com/loop/athleisure-trends?community=1f5638402a800d1f",
+      name: "Athleisure Trends 👗",
+      isSubscribed: false,
+      role: "UNJOINED",
+      isPrivate: false,
+    },
+    community: {
+      id: "08289bad-47e5-4689-be2a-db8ddba5e79f",
+      shareUrl:
+        "https://xcqajpyh.qa.begenuin.com/community/fashion-forward-athletes",
+      slug: "fashion-forward-athletes",
+      handle: "fashionforwardathlshin18",
+      isPrivate: false,
+      userRole: "UNJOINED",
+      type: 1,
+      name: "Fashion Forward Athletes 👟✨",
+      profileImage: null,
+      membersCount: 0,
+      groupsCount: 0,
+      postsCount: 0,
+    },
+    owner: {
+      profileImage:
+        "https://media.qa.begenuin.com/uploads/profile_images/avatar.png",
+      isAvatar: false,
+      userName: "three_glove",
+      name: null,
+      brand: null,
+    },
+  },
+  {
+    video: {
+      id: "41ccd4e3-565b-4b82-8554-b96223936e38",
+      createdAt: 1753185365000,
+      commentCount: 0,
+      shareUrl:
+        "https://xcqajpyh.qa.begenuin.com/video/so-proud-to-be-the-newest-member-of-the-lululemon-smlh?community=1f5638402a800d1f&loop=1f563be93e801408",
+      attachedLink: null,
+      source:
+        "https://media.qa.begenuin.com/temp_video/68148f1ddce1888f81b89a75_1746455876235.mp4",
+      isSparked: false,
+      sparkCount: 0,
+      thumbnail:
+        "https://media.qa.begenuin.com/uploads/thumbnails/68148f1ddce1888f81b89a75_1746455876235.png",
+      thumbnailM: null,
+      description: [
+        "So proud to be the newest member of the @lululemon ambassador family. Let’s play golf.",
+      ],
+      slug: "so-proud-to-be-the-newest-member-of-the-lululemon-smlh",
+      linkoutId: null,
+      clickableUrl: null,
+      linkouts: [],
+      isPinned: false,
+      thumbnailSprite: null,
+    },
+    group: {
+      id: "cac3c6ca-5ede-408d-8526-15ab347fa33e",
+      slug: "athleisure-trends",
+      description:
+        "Discuss the latest in athleisure fashion and Lululemon's innovative designs.",
+      shareUrl:
+        "https://xcqajpyh.qa.begenuin.com/loop/athleisure-trends?community=1f5638402a800d1f",
+      name: "Athleisure Trends 👗",
+      isSubscribed: false,
+      role: "UNJOINED",
+      isPrivate: false,
+    },
+    community: {
+      id: "08289bad-47e5-4689-be2a-db8ddba5e79f",
+      shareUrl:
+        "https://xcqajpyh.qa.begenuin.com/community/fashion-forward-athletes",
+      slug: "fashion-forward-athletes",
+      handle: "fashionforwardathlshin18",
+      isPrivate: false,
+      userRole: "UNJOINED",
+      type: 1,
+      name: "Fashion Forward Athletes 👟✨",
+      profileImage: null,
+      membersCount: 0,
+      groupsCount: 0,
+      postsCount: 0,
+    },
+    owner: {
+      profileImage:
+        "https://media.qa.begenuin.com/uploads/profile_images/avatar.png",
+      isAvatar: false,
+      userName: "three_glove",
+      name: null,
+      brand: null,
+    },
+  },
+  {
+    video: {
+      id: "1aec1a15-dc4f-4acb-879d-2de073e419f5",
+      createdAt: 1753168427000,
+      commentCount: 0,
+      shareUrl:
+        "https://xcqajpyh.qa.begenuin.com/video/the-collab-has-officially-left-the-group-chat-nhl-3vjn?community=1f5636adb0800d1e&loop=1f5636b2fd801425",
+      attachedLink: null,
+      source:
+        "https://vz-eee5e913-a30.b-cdn.net/f28e416f-7b15-4a16-b8e2-58840e274bf6/playlist.m3u8",
+      isSparked: false,
+      sparkCount: 0,
+      thumbnail:
+        "https://vz-eee5e913-a30.b-cdn.net/f28e416f-7b15-4a16-b8e2-58840e274bf6/thumbnail.jpg",
+      thumbnailM: null,
+      description: [
+        "The collab has officially left the group chat. @NHL fan gear now available on fanatics.com",
+      ],
+      slug: "the-collab-has-officially-left-the-group-chat-nhl-3vjn",
+      linkoutId: null,
+      clickableUrl: null,
+      linkouts: [],
+      isPinned: false,
+      thumbnailSprite: null,
+    },
+    group: {
+      id: "cf146abf-6132-4d5d-bc5a-e65898098f4a",
+      slug: "running-warriors",
+      description:
+        "Connect with runners to share training plans and Lululemon gear insights.",
+      shareUrl:
+        "https://xcqajpyh.qa.begenuin.com/loop/running-warriors?community=1f5636adb0800d1e",
+      name: "Running Warriors 🏃‍♀️",
+      isSubscribed: false,
+      role: "UNJOINED",
+      isPrivate: false,
+    },
+    community: {
+      id: "3cecf119-b6e4-4609-946b-00cc77e8cc89",
+      shareUrl:
+        "https://xcqajpyh.qa.begenuin.com/community/lululemon-active-tribe",
+      slug: "lululemon-active-tribe",
+      handle: "lululemonactivetritonsil",
+      isPrivate: false,
+      userRole: "UNJOINED",
+      type: 1,
+      name: "Lululemon Active Tribe 🧘‍♀️🏃‍♂️",
+      profileImage: null,
+      membersCount: 0,
+      groupsCount: 0,
+      postsCount: 0,
+    },
+    owner: {
+      profileImage: "smiling_face_with_sunglasses",
+      isAvatar: true,
+      userName: "teset",
+      name: null,
+      brand: null,
+    },
+  },
+  {
+    video: {
+      id: "9f07d07e-17b3-4e74-8634-0f60dd9163e2",
+      createdAt: 1753166704000,
+      commentCount: 0,
+      shareUrl:
+        "https://xcqajpyh.qa.begenuin.com/video/this-new-disney-x-lululemon-collection-has-us-8fpr?community=1f5636adb0800d1e&loop=1f5636b2fd801425",
+      attachedLink: null,
+      source:
+        "https://media.qa.begenuin.com/temp_video/68148e74dce1888f81b89a61_1746502393251.mp4",
+      isSparked: false,
+      sparkCount: 0,
+      thumbnail:
+        "https://media.qa.begenuin.com/uploads/thumbnails/68148e74dce1888f81b89a61_1746502393251.png",
+      thumbnailM: null,
+      description: [
+        "This new Disney x lululemon Collection has us spinning with joy. Shop now in stores, online and at disneystore.com. #Disneyxlululemon",
+      ],
+      slug: "this-new-disney-x-lululemon-collection-has-us-8fpr",
+      linkoutId: null,
+      clickableUrl: null,
+      linkouts: [],
+      isPinned: false,
+      thumbnailSprite: null,
+    },
+    group: {
+      id: "cf146abf-6132-4d5d-bc5a-e65898098f4a",
+      slug: "running-warriors",
+      description:
+        "Connect with runners to share training plans and Lululemon gear insights.",
+      shareUrl:
+        "https://xcqajpyh.qa.begenuin.com/loop/running-warriors?community=1f5636adb0800d1e",
+      name: "Running Warriors 🏃‍♀️",
+      isSubscribed: false,
+      role: "UNJOINED",
+      isPrivate: false,
+    },
+    community: {
+      id: "3cecf119-b6e4-4609-946b-00cc77e8cc89",
+      shareUrl:
+        "https://xcqajpyh.qa.begenuin.com/community/lululemon-active-tribe",
+      slug: "lululemon-active-tribe",
+      handle: "lululemonactivetritonsil",
+      isPrivate: false,
+      userRole: "UNJOINED",
+      type: 1,
+      name: "Lululemon Active Tribe 🧘‍♀️🏃‍♂️",
+      profileImage: null,
+      membersCount: 0,
+      groupsCount: 0,
+      postsCount: 0,
+    },
+    owner: {
+      profileImage: "smiling_face_with_sunglasses",
+      isAvatar: true,
+      userName: "teset",
+      name: null,
+      brand: null,
+    },
+  },
+  {
+    video: {
+      id: "8dbcb1b1-b632-47a5-b829-7410c9cb217e",
+      createdAt: 1753100745000,
+      commentCount: 2,
+      shareUrl:
+        "https://xcqajpyh.qa.begenuin.com/video/201c440246001407?community=1f5638402a800d1f&loop=1f563be93e801408",
+      attachedLink: null,
+      source:
+        "https://vz-eee5e913-a30.b-cdn.net/930e7963-46ba-4345-807b-f56313d160b5/playlist.m3u8",
+      isSparked: false,
+      sparkCount: 2,
+      thumbnail:
+        "https://vz-eee5e913-a30.b-cdn.net/930e7963-46ba-4345-807b-f56313d160b5/thumbnail.jpg",
+      thumbnailM: null,
+      description: null,
+      slug: "201c440246001407",
+      linkoutId: null,
+      clickableUrl: null,
+      linkouts: [],
+      isPinned: false,
+      thumbnailSprite: null,
+    },
+    group: {
+      id: "cac3c6ca-5ede-408d-8526-15ab347fa33e",
+      slug: "athleisure-trends",
+      description:
+        "Discuss the latest in athleisure fashion and Lululemon's innovative designs.",
+      shareUrl:
+        "https://xcqajpyh.qa.begenuin.com/loop/athleisure-trends?community=1f5638402a800d1f",
+      name: "Athleisure Trends 👗",
+      isSubscribed: false,
+      role: "UNJOINED",
+      isPrivate: false,
+    },
+    community: {
+      id: "08289bad-47e5-4689-be2a-db8ddba5e79f",
+      shareUrl:
+        "https://xcqajpyh.qa.begenuin.com/community/fashion-forward-athletes",
+      slug: "fashion-forward-athletes",
+      handle: "fashionforwardathlshin18",
+      isPrivate: false,
+      userRole: "UNJOINED",
+      type: 1,
+      name: "Fashion Forward Athletes 👟✨",
+      profileImage: null,
+      membersCount: 0,
+      groupsCount: 0,
+      postsCount: 0,
+    },
+    owner: {
+      profileImage:
+        "https://media.qa.begenuin.com/uploads/profile_images/6264BFF3-2AD4-44C7-B011-28FEBDCE10F8_1749124319782.jpeg",
+      isAvatar: false,
+      userName: "justin.bieberr",
+      name: "Justin",
+      brand: null,
+    },
+  },
+];

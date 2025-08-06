@@ -1,7 +1,6 @@
 "use client";
 import { getUrlForReaction } from "@genuin/ui/utils";
 import { createContext, useContext } from "react";
-import type { SizeBoxType } from "@genuin/components/types/base";
 import type { BrandDetailsConfigType } from "@genuin/components/types/brand";
 
 const DEFAULT_WEB_CONFIGS: BrandDetailsConfigType["web_configs"] = {
@@ -84,16 +83,14 @@ export type BaseContextType = {
   volume: number;
   setVolume: React.Dispatch<React.SetStateAction<number>>;
   brandDetails: BrandDetailsConfigType;
+  isEmbed: boolean;
+  /**
+   * Parsed brand colors for the application.
+   */
+  parsedBrandColors?: Record<string, string>;
 };
 
-export const BaseContext = createContext<BaseContextType>({
-  muted: true,
-  setMuted: () => {},
-  volume: 100,
-  setVolume: () => {},
-  // default brand details configuration.
-  brandDetails: DEFAULT_BRAND_DETAILS as any,
-});
+export const BaseContext = createContext<BaseContextType | null>(null);
 
 export function useBaseContext() {
   const context = useContext(BaseContext);

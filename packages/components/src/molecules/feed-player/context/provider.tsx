@@ -5,10 +5,11 @@ import {
   ButtonActionType,
   ExpandViewProps,
   PlaybackSpeedType,
+  // PlaybackSpeedType,
   PlayingStateType,
   VideoTimeStateType,
 } from "./types";
-import { PlayerContext, PlayerContextType } from "./context";
+import { AdInfoType, PlayerContext, PlayerContextType } from "./context";
 import mitt from "mitt";
 import { useBaseContext } from "@genuin/components/context/base";
 import { useAnalytics } from "@genuin/components/context/analytics";
@@ -19,7 +20,7 @@ type VideoProviderProps = {
   /**
    * Function to be called when the player completes it's iteration and is ready to play the next video.
    */
-  swipeNext: () => void;
+  onPlayerIterationEnd: () => void;
   /**
    * If player is active or not.
    */
@@ -43,7 +44,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   videoId,
   showExpandView,
   isActive,
-  swipeNext,
+  onPlayerIterationEnd,
   toggleExpandView,
 }) => {
   const { brandDetails } = useBaseContext();
@@ -59,6 +60,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
    */
   const [buttonAction, setButtonAction] = useState<ButtonActionType>();
   const [playingState, setPlayingState] = useState<PlayingStateType>("LOADING");
+  // TODO: Scrap it if not used in the future.
   const [playbackSpeed, setPlaybackSpeed] = useState<PlaybackSpeedType>({
     speed: 1.0,
     isSpeedFromGesture: false,
@@ -78,6 +80,10 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   // event emitter for time updates
   // Use mitt with unknown for browser compatibility and type safety
   const timeUpdateEventEmitterRef = useRef(mitt());
+  const [adInfo, setAdInfo] = useState<{
+    adInfo?: AdInfoType;
+    isAdPlaying: boolean;
+  }>({ isAdPlaying: false });
 
   const { muted, setMuted } = useBaseContext();
 
@@ -283,9 +289,16 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     // to move to the next video in the feed
     // This is useful for auto-swiping functionality
     if (shouldSwipeNext) {
-      swipeNext();
+      onPlayerIterationEnd();
     }
   }, []);
+
+  const updateAdInfo = useCallback(
+    (isAdPlaying: boolean, adInfo: AdInfoType) => {
+      setAdInfo({ isAdPlaying, adInfo });
+    },
+    []
+  );
 
   const value: PlayerContextType = {
     setPlayerRef,
@@ -320,6 +333,13 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
 
     showExpandView,
     toggleExpandView,
+
+    playbackSpeed,
+    setPlaybackSpeed,
+
+    adInfo: adInfo.adInfo,
+    isAdPlaying: adInfo.isAdPlaying,
+    updateAdInfo,
   };
 
   return (

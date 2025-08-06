@@ -53,9 +53,9 @@ export function PlayingState({
       case "PLAY":
         return <PlayIcon theme="fill-dark" size="xl" />;
       case "MUTE":
-        return <MuteIcon theme="light" size="xl" />;
+        return <MuteIcon theme="dark" size="xl" />;
       case "UNMUTE":
-        return <UnmuteIcon theme="light" size="xl" />;
+        return <UnmuteIcon theme="dark" size="xl" />;
       default:
         return null;
     }

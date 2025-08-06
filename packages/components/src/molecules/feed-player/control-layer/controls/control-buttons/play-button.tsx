@@ -3,7 +3,7 @@ import { PlayIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/utils";
 import { ComponentProps, memo, useCallback, useState } from "react";
 import { AnimatedText } from "./animated-text";
-import { usePlayerContext } from "../../context";
+import { usePlayerContext } from "../../../context";
 import { Pause } from "lucide-react";
 
 type PlayButtonProps = {

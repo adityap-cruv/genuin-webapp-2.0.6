@@ -19,7 +19,7 @@ const FAKE_POSTS: PostTileDataType[] = Array.from({ length: 20 }, (_, i) => ({
   stats: {
     views: Math.floor(Math.random() * 10000000),
     comments: Math.floor(Math.random() * 10000),
-    shares: Math.floor(Math.random() * 50),
+    reactions: Math.floor(Math.random() * 5000),
   },
 }));
 

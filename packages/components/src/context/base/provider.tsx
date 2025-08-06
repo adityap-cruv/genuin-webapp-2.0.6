@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useLayoutEffect, useState } from "react";
 
-import { useFeedVideoSizeBox } from "@genuin/components/hooks/use-feed-video-size-box";
 import {
   getNewDeviceId,
   useGetDeviceId,
@@ -10,11 +9,15 @@ import { setBrandIdInAxiosInstance } from "@genuin/components/react-query/axios-
 import type { BrandDetailsConfigType } from "@genuin/components/types/brand";
 
 import { BaseContext } from "./context";
-// import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
+import { parseBrandColors } from "@genuin/components/lib/utils/brand-color-parser";
 
 type BaseContextProviderProps = {
   children: React.ReactNode;
   brandDetails: BrandDetailsConfigType;
+  /**
+   * Pass this prop to indicate that this is an embed context.
+   */
+  isEmbed: boolean;
 };
 
 /**
@@ -26,6 +29,7 @@ type BaseContextProviderProps = {
 export function BaseContextProvider({
   children,
   brandDetails,
+  isEmbed = false,
 }: BaseContextProviderProps) {
   useLayoutEffect(() => {
     // Set the brand details in the context.
@@ -55,6 +59,8 @@ export function BaseContextProvider({
         volume,
         setVolume,
         brandDetails,
+        isEmbed,
+        parsedBrandColors: parseBrandColors(brandDetails.brand_colors),
       }}
     >
       {children}

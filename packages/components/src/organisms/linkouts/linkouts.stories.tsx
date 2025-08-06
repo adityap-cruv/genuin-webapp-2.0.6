@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { LinkOutContentRenderer } from "./linkouts-details";
+import { Linkouts } from "./linkouts";
 import { LinkoutsType } from "@genuin/components/react-query/api/linkouts/schema";
 
-const meta: Meta<typeof LinkOutContentRenderer> = {
+const meta: Meta<typeof Linkouts> = {
   title: "Organisms/LinkOut",
-  component: LinkOutContentRenderer,
+  component: Linkouts,
   parameters: {
     layout: "centered",
   },
@@ -12,7 +12,7 @@ const meta: Meta<typeof LinkOutContentRenderer> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof LinkOutContentRenderer>;
+type Story = StoryObj<typeof Linkouts>;
 
 const mockSingleLink: LinkoutsType = [
   {

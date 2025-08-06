@@ -25,8 +25,10 @@ const buttonVariants = cva(
         custom: "",
         navigation:
           "gencl:p-0 gencl:size-12! gencl:rounded-full! gencl:flex-center gencl:bg-secondary-800 gencl:text-white gencl:backdrop-blur-sm gencl:hover:bg-secondary-600 gencl:border-0 gencl:transition-all gencl:duration-200 [&_svg]:gencl:size-5",
+        overlay: "",
       },
       size: {
+        xs: "gencl:size-6",
         sm: "gencl:h-9 gencl:rounded-lg gencl:gap-1.5 gencl:text-body-1-semi-bold",
         md: "gencl:h-10",
         lg: "gencl:h-12",
@@ -66,6 +68,18 @@ const buttonVariants = cva(
         shape: "pill",
         size: "lg",
         class: "gencl:text-body-2-semi-bold gencl:py-2 gencl:px-5 gencl:h-auto",
+      },
+      {
+        theme: "overlay",
+        size: "xs",
+        class:
+          "gencl:size-4.5 gencl:rounded-full gencl:p-0.5! gencl:bg-black/40 gencl:backdrop-blur-[1px]",
+      },
+      {
+        theme: "overlay",
+        size: "sm",
+        class:
+          "gencl:size-8 gencl:rounded-full gencl:p-0.5! gencl:bg-black/40 gencl:backdrop-blur-[1px]",
       },
     ],
     defaultVariants: {

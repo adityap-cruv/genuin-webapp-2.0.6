@@ -73,6 +73,31 @@ type FeedViewPropsType = {
    * @default "page"
    */
   variant?: "page" | "expand";
+  /**
+   * Embed options for the feed.
+   */
+  embedOptions?: {
+    /**
+     * Which actions of the video-slide to show.
+     */
+    actions?: {
+      comments?: boolean;
+      share?: boolean;
+      reaction?: boolean;
+      repost?: boolean;
+    };
+  };
+
+  /**
+   * A flag to indicate if you want to disable the native fullscreen API.
+   */
+  disableNativeFullscreenApi?: boolean;
+  /**
+   * Callback function to handle when the active index changes.
+   * @param index - The index of the active video in the feed.
+   * @returns
+   */
+  onActiveIndexChange?: (index: number) => void;
 } & BaseFeedPropsType &
   ComponentProps<"div">;
 

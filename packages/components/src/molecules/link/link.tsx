@@ -8,10 +8,15 @@ type BaseLinkProps = ComponentProps<"a">;
 
 type ExtendedLinkProps = BaseLinkProps & Partial<NextJSLinkProps>;
 
+interface LinkProps extends ExtendedLinkProps {
+  enabled?: boolean;
+}
+
 export function Link({
   className,
   href,
   children,
+  enabled = true,
   // Next.js specific props
   as,
   replace,
@@ -23,10 +28,10 @@ export function Link({
   legacyBehavior,
   // Standard props
   ...restProps
-}: ExtendedLinkProps) {
+}: LinkProps) {
   const { LinkComponent, isNextJS } = useLinkContext();
 
-  if (!href) {
+  if (!href || enabled === false) {
     return <>{children}</>;
   }
 

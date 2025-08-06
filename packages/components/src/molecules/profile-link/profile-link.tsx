@@ -4,6 +4,7 @@ import type { ComponentProps } from "react";
 import { BrandBadge } from "../brand-badge";
 import { Link } from "../link";
 import { Chip } from "@genuin/ui/components";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 type ProfileLinkPropsType = {
   url?: string;
@@ -25,8 +26,13 @@ export function ProfileLink({
   children,
   ...restProps
 }: ProfileLinkPropsType) {
+  const {
+    engagement: {
+      redirectionTools: { user },
+    },
+  } = useEmbedConfigs();
   return (
-    <Link href={url}>
+    <Link href={url} enabled={!!user}>
       <div className="gencl:flex gencl:items-center gencl:gap-1">
         <p {...restProps}>{children}</p>
         {isOwner && <Chip>Owner</Chip>}

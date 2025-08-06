@@ -56,6 +56,13 @@ export function parseFeed(
       linkouts: item.video.linkouts || [],
       isPinned: item.video.is_pinned || false,
       thumbnailSprite: item.video.sprite_image_url || null,
+      adUrl: item.video.ads_config?.ads_url || null,
+      cardLayoutId: item.video.card_layout_id || null,
+      videoLayoutId: item.video.video_layout_id || null,
+      // cardLayoutType: mapVideoLayoutId(item.video.card_layout_id),
+      // videoLayoutType: mapVideoLayoutId(item.video.video_layout_id),
+      duration: item.video.duration || null,
+      attributes: item.video.attributes || null,
     },
     group: {
       id: item.loop.uuid,
@@ -102,6 +109,7 @@ export function parseFeed(
       isAvatar: item.owner.is_avatar,
       userName: item.owner.username,
       name: item.owner.name || null,
+      bio: item.owner.bio || null,
       brand: item.owner.brand
         ? {
             id: Number(item.owner.brand.brand_id),

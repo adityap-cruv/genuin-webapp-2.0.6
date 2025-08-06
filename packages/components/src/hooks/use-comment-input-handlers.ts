@@ -1,8 +1,11 @@
 import { useCallback } from "react";
 import { Toast } from "@genuin/ui/components/toaster";
-import { useCreateCommentMutation, type CommentListType } from "@genuin/components/react-query/api/comments";
-import { convertCommentTextToArray } from "@genuin/components/molecules/comments/utils";
+import {
+  useCreateCommentMutation,
+  type CommentListType,
+} from "@genuin/components/react-query/api/comments";
 import { useForm } from "react-hook-form";
+import { convertCommentTextToArray } from "../molecules/comments/utils";
 import { Dispatch, SetStateAction } from "react";
 
 type SelectedMention = {
@@ -52,10 +55,10 @@ export function useCommentInputHandlers({
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const { value } = e.target;
-      form.setValue("comment", value, { 
+      form.setValue("comment", value, {
         shouldValidate: true,
         shouldDirty: true,
-        shouldTouch: true
+        shouldTouch: true,
       });
       // URL detection logic
       const urlMatches = value.match(REGEX_FOR_URLS);
@@ -68,15 +71,23 @@ export function useCommentInputHandlers({
           } else {
             // For member/community, check if handle is present in value
             // Allow both @handle and handle
-            const handle = mention.handle.startsWith("@") ? mention.handle : `@${mention.handle}`;
-            return value.includes(handle) || value.includes(mention.handle.replace(/^@/, ""));
+            const handle = mention.handle.startsWith("@")
+              ? mention.handle
+              : `@${mention.handle}`;
+            return (
+              value.includes(handle) ||
+              value.includes(mention.handle.replace(/^@/, ""))
+            );
           }
         });
         // For URL, only allow one
         if (urlMatches && urlMatches.length > 0) {
           // Only add the last URL if not already present
           const lastUrl = urlMatches[urlMatches.length - 1];
-          if (typeof lastUrl === "string" && !newMentions.some((m) => m.type === "url" && m.handle === lastUrl)) {
+          if (
+            typeof lastUrl === "string" &&
+            !newMentions.some((m) => m.type === "url" && m.handle === lastUrl)
+          ) {
             // Remove all previous url mentions and add the new one
             newMentions = newMentions.filter((m) => m.type !== "url");
             newMentions.push({ handle: lastUrl, id: lastUrl, type: "url" });
@@ -107,4 +118,4 @@ export function useCommentInputHandlers({
     commentSubmit,
     isPending,
   };
-} 
+}

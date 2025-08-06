@@ -130,6 +130,10 @@
   --text-body-2-bold--line-height: 16px;
   --text-body-2-bold--font-weight: 700;
 
+  --text-body-2-normal: 12px;
+  --text-body-2-normal--line-height: 16px;
+  --text-body-2-normal--font-weight: 400;
+
   --text-body-2-semi-bold: 12px;
   --text-body-2-semi-bold--line-height: 16px;
   --text-body-2-semi-bold--font-weight: 600;

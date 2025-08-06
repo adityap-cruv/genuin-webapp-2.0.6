@@ -15,7 +15,7 @@ export const videoSchema = z.object({
   id: z.string(),
   createdAt: z.number().default(-1).nullish(),
   commentCount: z.number(),
-  viewCount : z.number(),
+  viewCount: z.number(),
   shareUrl: z.string(),
   attachedLink: z.string().nullish(),
   source: z.string(),
@@ -30,6 +30,19 @@ export const videoSchema = z.object({
   linkouts: z.any(),
   isPinned: z.boolean(),
   thumbnailSprite: z.string().nullish(),
+  adUrl: z.string().nullish(),
+  cardLayoutId: z.number().nullish(),
+  duration: z.number().nullish().optional(),
+  attributes: z
+    .object({
+      clip_type: z.string().nullish(),
+      description: z.string().nullish(),
+      image_url: z.string().nullish(),
+      timestamp: z.number().nullish(),
+      title: z.string().nullish(),
+    })
+    .nullish()
+    .optional(),
 });
 
 // Define the loop schema
@@ -83,6 +96,7 @@ export const ownerSchema = z.object({
   userName: z.string(),
   name: z.string().nullish(),
   brand: BrandUserSchema.nullish(),
+  bio: z.string().nullish().optional(),
 });
 
 // Define the PlayerVideoModal schema

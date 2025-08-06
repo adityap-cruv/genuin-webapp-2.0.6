@@ -205,9 +205,7 @@ export function convertISOToLocalDateFormate(isoString: string): string {
 export function checkAndAppendHttps(link: string): string {
   return link?.startsWith("http") || link?.startsWith("https")
     ? link
-    : (process.env.NEXT_PUBLIC_CURRENT_ENV === "local"
-        ? "http://"
-        : "https://") + link;
+    : "https://" + link;
 }
 
 /**
@@ -215,6 +213,7 @@ export function checkAndAppendHttps(link: string): string {
  */
 export function defaultSizesForIcons() {
   return {
+    xs: "gencl:size-3",
     sm: "gencl:size-4",
     md: "gencl:size-5",
     lg: "gencl:size-6",
@@ -248,5 +247,52 @@ export function encodeVideoSourceUrl(videoSource: string) {
   } catch (error) {
     console.error("Invalid URL:", error);
     return videoSource;
+  }
+}
+
+/**
+ * Formats a timestamp into a month-day or month-day-year string
+ * If the year matches the current year, only month and day are shown
+ * @param timestamp Unix timestamp in seconds
+ * @returns Formatted date string
+ */
+export function getMonthYear(timestamp: number): string {
+  const date = new Date(timestamp * 1000);
+  const currentYear = new Date().getFullYear();
+  const dateYear = date.getFullYear();
+  
+  // Format based on whether the year matches current year
+  if (dateYear === currentYear) {
+    // MMM dd format (e.g., "Aug 05")
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  } else {
+    // MMM dd, yyyy format (e.g., "Aug 05, 2024")
+    return date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric', 
+      // year: 'numeric' 
+    });
+  }
+}
+
+/**
+ * Formats a duration string (in seconds) into a readable format
+ * @param durationString Duration in seconds as a string
+ * @returns Formatted duration string (e.g., "2min 30s" or "45s")
+ */
+export function getFormattedDuration(durationString: string): string | null {
+  const totalSeconds = parseInt(durationString, 10);
+  
+  if (isNaN(totalSeconds)) {
+    return null;
+  }
+  
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  
+  if (minutes > 0) {
+    return seconds > 0 ? `${minutes}min ${seconds}s` : `${minutes}min`;
+  } else {
+    return `${seconds}s`;
   }
 }

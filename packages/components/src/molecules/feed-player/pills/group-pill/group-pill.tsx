@@ -15,6 +15,7 @@ import { GroupHoverCard } from "../group-hover-card";
 import { ComponentProps, useState, useEffect, useRef } from "react";
 import { JoinGroupButton } from "@genuin/components/molecules/join-group-button";
 import { GroupIcon } from "@genuin/ui/icons";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 const groupPillVariants = cva(
   "gencl:flex gencl:w-fit gencl:items-center gencl:gap-1 gencl:p-1 gencl:pr-2 gencl:rounded-full gencl:transition-all gencl:cursor-pointer",
@@ -62,6 +63,11 @@ export function GroupPill({
     undefined | boolean
   >(undefined);
   const prevSubscriptionStatus = useRef<boolean | undefined>(undefined);
+  const {
+    engagement: {
+      redirectionTools: { group },
+    },
+  } = useEmbedConfigs();
 
   /**
    * When the user successfully subscribes (isSubscribed becomes true),
@@ -89,7 +95,10 @@ export function GroupPill({
   } • Join ${groupDetails.name} to talk about it`;
 
   const pill = (
-    <Link href={buildPageUrl({ type: "group", slug: groupDetails.slug })}>
+    <Link
+      href={buildPageUrl({ type: "group", slug: groupDetails.slug })}
+      enabled={group}
+    >
       <div className={groupPillVariants({ variant, className })}>
         <div className="gencl:flex gencl:gap-1 gencl:items-center gencl:line-clamp-1 gencl:break-all">
           <div className="gencl:rounded-full gencl:bg-secondary-300 gencl:p-1">

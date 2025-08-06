@@ -8,9 +8,9 @@ import { cn, defaultSizesForIcons } from "@genuin/ui/lib/utils";
 const muteVariant = cva("", {
   variants: {
     theme: {
-      dark: "gencl:fill-black", // Light variant style
+      dark: "gencl:fill-white", // Light variant style
       transparent: "gencl:fill-white", // Transparent variant style
-      light: "gencl:fill-white", // Dark variant style
+      light: "gencl:fill-dark", // Dark variant style
     },
     size: defaultSizesForIcons(),
   },

@@ -8,17 +8,19 @@ import {
   type ComponentProps,
 } from "react";
 import { useBaseContext } from "@genuin/components/context/base";
-import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { audioManager } from "@genuin/components/lib/audio-manager";
 import { usePlayerContext } from "./context/context";
-import { useFeedContext } from "@genuin/components/templates/feed/context";
 import { useAnalytics } from "@genuin/components/context/analytics";
+import { cn } from "@genuin/ui/lib/utils";
 
 type Props = Omit<
   ComponentProps<typeof VideoPlayer>,
   "volume" | "playbackSpeed" | "shouldPlay"
 > & {
-  postDetails: PostDetailsType;
+  /**
+   * The id of the video to passed to analytics.
+   */
+  videoId: string;
 };
 
 const EVENT_DURATION_PROPERTY_NAME = "video_length";
@@ -26,8 +28,9 @@ const EVENT_VIEW_LENGTH_PROPERTY_NAME = "video_view_length";
 
 export const FeedPlayer = memo(function FeedPlayer({
   src,
+  videoId,
   poster,
-  postDetails,
+  className,
   onOpenPlayerReady,
   onTimeUpdate,
   onEnded,
@@ -45,9 +48,10 @@ export const FeedPlayer = memo(function FeedPlayer({
     mute,
     unmute,
     handleEnded: stateHandleEnded,
+    updateAdInfo,
   } = usePlayerContext();
   const Analytics = useAnalytics();
-  const { playbackSpeed } = useFeedContext();
+  // const { playbackSpeed } = useFeedContext();
   const id = useId();
 
   useEffect(() => {
@@ -73,11 +77,11 @@ export const FeedPlayer = memo(function FeedPlayer({
   const analyticsEventData = useMemo(
     () => ({
       content_category: "loop",
-      content_id: postDetails.video.id,
+      content_id: videoId,
       event_record_screen: "feed",
       event_target_screen: "none",
     }),
-    [postDetails.video.id]
+    [videoId]
   );
 
   const handleTimeUpdate = useCallback((event: any) => {
@@ -193,6 +197,35 @@ export const FeedPlayer = memo(function FeedPlayer({
     [Analytics, analyticsEventData]
   );
 
+  const handleAdStarted = useCallback((event: any) => {
+    // Handle ad started event if needed
+    console.log("Ad started", event);
+    updateAdInfo(true, event);
+  }, []);
+
+  const handleAdCompleted = useCallback((event: any) => {
+    // Handle ad ended event if needed
+    console.log("Ad ended", event);
+    updateAdInfo(false, event);
+  }, []);
+
+  const handleAdSkipped = useCallback((event: any) => {
+    // Handle ad skipped event if needed
+    console.log("Ad skipped", event);
+    updateAdInfo(false, event);
+  }, []);
+
+  const handleAdError = useCallback((event: any) => {
+    // Handle ad error event if needed
+    console.error("Ad error", event);
+    updateAdInfo(false, event);
+  }, []);
+
+  const handleAdClicked = useCallback((event: any) => {
+    // Handle ad clicked event if needed
+    console.log("Ad clicked", event);
+  }, []);
+
   return (
     <VideoPlayer
       poster={poster}
@@ -200,9 +233,10 @@ export const FeedPlayer = memo(function FeedPlayer({
       src={src}
       playsInline
       loop={false}
+      className={cn("gencl:m-auto", className)}
       volume={volume}
       play={feedPlayerShouldPlay}
-      playbackSpeed={playbackSpeed.speed}
+      // playbackSpeed={playbackSpeed.speed}
       onPlayerLoad={handlePlayerLoad}
       onOpenPlayerReady={handleOpenPlayerReady}
       onPlay={handleOnPlay}
@@ -214,6 +248,11 @@ export const FeedPlayer = memo(function FeedPlayer({
       onVideoThirdQuartile={handleVideoThirdQuartile}
       onVideoWatched={handleVideoWatched}
       onVideoStart={handleVideoStart}
+      onAdStarted={handleAdStarted}
+      onAdCompleted={handleAdCompleted}
+      onAdSkipped={handleAdSkipped}
+      onAdError={handleAdError}
+      onAdClicked={handleAdClicked}
       {...props}
     />
   );

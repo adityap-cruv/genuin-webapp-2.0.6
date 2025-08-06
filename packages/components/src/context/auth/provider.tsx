@@ -6,12 +6,25 @@ import {
 } from "@genuin/components/react-query/axios-instance";
 import type { AuthUser } from "../../types/auth";
 
-import { AuthContext, AuthenticationStatusType } from "./context";
+import {
+  AuthCallbackDataType,
+  AuthContext,
+  AuthenticationStatusType,
+} from "./context";
 import { useCallback, useLayoutEffect, useEffect, useState } from "react";
 import { useSearchParams } from "@genuin/components/hooks/use-search-params";
 import { useGetUserDataForSSOMutation } from "@genuin/components/react-query/api/authentication/auto-login";
 import { Toast } from "@genuin/ui/components/toaster";
 import { invalidateAllQueries } from "@genuin/components/react-query/client";
+import { useBaseContext } from "../base";
+import { useEmbedContext } from "../embed";
+
+// Define global window type for genuinAuth
+declare global {
+  interface Window {
+    genuinAuth?: (authCallbackData: AuthCallbackDataType) => void;
+  }
+}
 
 // Define the props type for the AuthProvider component.
 type AuthProviderPropsType = {
@@ -50,6 +63,12 @@ export function AuthProvider({
   >(user);
   const { removeSearchParams, getSearchParams, searchParams } =
     useSearchParams();
+
+  // Access isEmbed from BaseContext
+  const { isEmbed } = useBaseContext?.() || { isEmbed: false };
+
+  // Access embedData.style from EmbedContext if available
+  const { embedData } = useEmbedContext?.() || { embedData: { style: "" } };
 
   const { mutate: getUserDataForSSO } = useGetUserDataForSSOMutation({
     onSuccess: async ({ user }) => {
@@ -149,6 +168,46 @@ export function AuthProvider({
     [onUpdateUser, authenticatedUser]
   );
 
+  /**
+   * Handles authentication callback behavior based on environment (embed vs non-embed)
+   * and availability of global auth handler
+   *
+   * @param authCallbackData - Data to be passed to the authentication callback
+   * @param urlToOpen - URL to open if external authentication is needed
+   * @returns Function to handle external auth if applicable, otherwise undefined
+   */
+  const handleAuthCallback = useCallback(
+    ({
+      authCallbackData,
+      urlToOpen,
+    }: {
+      authCallbackData: AuthCallbackDataType;
+      urlToOpen?: string;
+    }) => {
+      // For non-embed environments, always return undefined so consumer shows auth modal
+      if (!isEmbed) {
+        return undefined;
+      }
+
+      // In embed environments with genuinAuth callback or non-standard_wall style,
+      // return a function to handle external auth
+      if (window.genuinAuth || embedData.style !== "standard_wall") {
+        return () => {
+          if (window.genuinAuth) {
+            window.genuinAuth(authCallbackData);
+          } else {
+            window.open(urlToOpen, "_blank");
+          }
+        };
+      }
+
+      // For standard_wall embeds without genuinAuth, return undefined
+      // so consumer shows auth modal
+      return undefined;
+    },
+    [isEmbed, embedData.style]
+  );
+
   return (
     <AuthContext.Provider
       value={{
@@ -157,6 +216,7 @@ export function AuthProvider({
         signIn,
         signOut,
         updateUser,
+        handleAuthCallback,
       }}
     >
       {children}

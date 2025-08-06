@@ -83,9 +83,9 @@ async function getVideoDetails(slug: string): Promise<PostDetailsType> {
       isPrivate: loopDetails.community.type === 2,
       shareUrl: loopDetails.community.shareUrl ?? "",
       userRole: "UNJOINED",
-      membersCount: null,
+      membersCount: loopDetails.noOfMembers,
       groupsCount: null,
-      postsCount: null,
+      postsCount: loopDetails.noOfVideos,
       brand: loopDetails.community.brand
         ? {
             slug: loopDetails.community.brand.slug,
@@ -154,6 +154,7 @@ export function useGetVideoDetailsAsFeed(slug: string) {
       };
     },
     enabled: !!slug,
+    retry: 1,
   });
 
   // Extract video from nested structure for easier access

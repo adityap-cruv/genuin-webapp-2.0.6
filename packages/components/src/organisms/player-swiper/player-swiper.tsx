@@ -15,6 +15,7 @@ import { SwiperImplementation } from "./swiper-implementation";
 import { ComponentProps } from "react";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { abbreviateNumber, cn } from "@genuin/ui/lib/utils";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 type PlayerListPropsType = {
   posts: PostDetailsType[];
@@ -56,6 +57,11 @@ export function PlayerList({
   const { value, toggle } = useBoolean(true);
   const { showExpandView, activeIndex } = useFeedContext();
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
+  const {
+    engagement: {
+      engagementTools: { comment: showCommentBox },
+    },
+  } = useEmbedConfigs();
 
   return (
     <div className="gencl:flex gencl:justify-center gencl:h-full gencl:w-full gencl:gap-6">
@@ -99,6 +105,7 @@ export function PlayerList({
                               loopId={post.group.id}
                               videoId={post.video.id}
                               videoSlug={post.video.slug}
+                              shareUrl={post.video.shareUrl}
                             >
                               {defaultNode}
                             </CommentsDialog>
@@ -136,7 +143,7 @@ export function PlayerList({
         {showExpandView && !isMobile && <NavigationButton />}
       </SwiperImplementation>
       {/* show this only if expand view is open  */}
-      {value && showExpandView && posts[activeIndex] && (
+      {value && showExpandView && showCommentBox && posts[activeIndex] && (
         <div className="gencl:max-w-118 gencl:w-full gencl:h-full gencl:hidden gencl:sm:block! gencl:py-6">
           <Comments
             videoId={posts[activeIndex].video.id}
@@ -147,6 +154,7 @@ export function PlayerList({
             showCloseButton={value}
             onClose={toggle}
             onCommentCountChange={onCommentCountChange}
+            shareUrl={posts[activeIndex].video.shareUrl}
           />
         </div>
       )}

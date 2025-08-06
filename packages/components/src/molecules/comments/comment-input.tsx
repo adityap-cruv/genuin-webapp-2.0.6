@@ -1,28 +1,10 @@
 import { useAuthContext } from "@genuin/components/context/auth";
-import { Avatar } from "@genuin/ui/components/avatar";
-import { Input } from "@genuin/ui/components/input";
-import { Button } from "@genuin/ui/components/button";
-import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormControl,
-  FormMessage,
-} from "@genuin/ui/components/form";
-import { ComponentProps, useCallback } from "react";
-import { cn } from "@genuin/ui/lib/utils";
 import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
-import { Toast } from "@genuin/ui/components/toaster";
-import {
-  type CommentListType,
-  useCreateCommentMutation,
-} from "@genuin/components/react-query/api/comments";
-import { convertCommentTextToArray } from "./utils";
+import { type CommentListType } from "@genuin/components/react-query/api/comments";
 import { MentionInput } from "../mention-input";
-import { Loader } from "@genuin/ui/components/loader";
+import { useMemo } from "react";
+import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
 
 const commentFormSchema = z.object({
   comment: z.string().min(1, { message: "" }),
@@ -41,6 +23,10 @@ type CommentInputProps = {
 type CommentInputBoxProps = {
   communityId: string;
   videoSlug: string;
+  /**
+   * Share url of the video to be used for sharing comments.
+   */
+  shareUrl: string;
 } & Omit<CommentInputProps, "onCommentPosted" | "videoId" | "loopId"> & {
     videoId: string;
     loopId: string;
@@ -52,12 +38,29 @@ export function CommentInputBox({
   loopId,
   communityId,
   videoSlug,
+  shareUrl,
   onCommentPosted,
   ...commentInputProps
 }: CommentInputBoxProps) {
-  const { authenticationStatus, user } = useAuthContext();
+  const { authenticationStatus, user, handleAuthCallback } = useAuthContext();
 
-  if (authenticationStatus === "unauthenticated") {
+  const returnQueryParams = useMemo(
+    () =>
+      createReturnQueryParams({
+        url: shareUrl,
+        action: "comment",
+        additionalParams: {
+          videoSlug,
+        },
+      }),
+    [shareUrl, videoSlug]
+  );
+
+  const authClickHandler = handleAuthCallback({
+    authCallbackData: { action: "comment", path: "/", returnQueryParams },
+  });
+
+  if (authenticationStatus === "unauthenticated" && !authClickHandler) {
     return (
       <AuthenticationModal
         getAppData={{
@@ -76,7 +79,6 @@ export function CommentInputBox({
             videoId={videoId}
             loopId={loopId}
             onCommentPosted={onCommentPosted}
-            authenticationStatus={authenticationStatus}
             {...commentInputProps}
           />
         </div>
@@ -89,12 +91,17 @@ export function CommentInputBox({
       videoId={videoId}
       loopId={loopId}
       onCommentPosted={onCommentPosted}
-      user={{
-        image: user?.image,
-        isAvatar: user?.isAvatar,
-        name: user?.name,
-      }}
-      authenticationStatus={authenticationStatus}
+      onClick={authClickHandler}
+      disabled={!user}
+      user={
+        user
+          ? {
+              image: user?.image,
+              isAvatar: user?.isAvatar,
+              name: user?.name,
+            }
+          : undefined
+      }
       {...commentInputProps}
     />
   );

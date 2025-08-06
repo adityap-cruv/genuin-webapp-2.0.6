@@ -10,30 +10,13 @@ import type {
   VideoTimeStateType,
 } from "./types";
 
-// import { usePlayerControlStore } from "./player-control-store";
-// import { getVideoPlayerConfigs } from "./utils";
-
-// import { type WebConfigs } from "@genuin/components/lib/stores/genuin-options";
-// import Analytics from "@/services/analytics";
-
-// Helper functions for analytics
-// function triggerAnalyticsForVideoStart(videoId: string, latency: number) {
-//   void Analytics.track({
-//     eventName: "Video Started",
-//     properties: {
-//       content_category: "loop",
-//       content_id: videoId,
-//       event_record_screen: "feed",
-//       event_target_screen: "none",
-//       latency,
-//     },
-//   });
-// }
-
-// Create a type using the return type of getVideoPlayerConfigs plus hasStarted
-// type PlayerConfig = ReturnType<typeof getVideoPlayerConfigs> & {
-//   hasStarted: boolean;
-// };
+export type AdInfoType = {
+  adId: string | null;
+  url: string | null;
+  title: string | null;
+  totalAds: number;
+  currentAdIndex: number;
+};
 
 export type PlayerContextType = {
   /**
@@ -109,32 +92,19 @@ export type PlayerContextType = {
    */
   playbackSpeed: PlaybackSpeedType;
   setPlaybackSpeed: React.Dispatch<React.SetStateAction<PlaybackSpeedType>>;
+
+  isAdPlaying: boolean;
+  adInfo?: AdInfoType;
+  /**
+   * Updates the ad information.
+   * @param isAdPlaying - Whether an ad is currently playing.
+   * @param adInfo - Information about the ad, including id, url, and title.
+   * @returns
+   */
+  updateAdInfo: (isAdPlaying: boolean, adInfo: AdInfoType) => void;
 } & ExpandViewProps;
 
-export const PlayerContext = createContext<PlayerContextType>({
-  setPlayerRef: () => {},
-  setVideoTimeState: () => {},
-  onVideoTimeStateChange: () => () => {},
-  showSeeker: false,
-  setShowSeeker: () => {},
-  playingState: "PAUSED",
-  setPlayingState: () => {},
-  feedPlayerShouldPlay: false,
-  togglePlay: () => {},
-  play: () => {},
-  pause: () => {},
-  muted: false,
-  toggleMuted: () => {},
-  mute: () => {},
-  unmute: () => {},
-  buttonAction: undefined,
-  videoId: "",
-  playerConfigRef: { current: getVideoPlayerConfigs() },
-  handleEnded: () => {},
-  showExpandView: false,
-  playbackSpeed: { speed: 1.0, isSpeedFromGesture: false },
-  setPlaybackSpeed: () => {},
-});
+export const PlayerContext = createContext<PlayerContextType | null>(null);
 
 /**
  * Custom hook to access the feed player context.

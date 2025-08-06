@@ -1,33 +1,65 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, ComponentProps } from "react";
 import { LinkCard } from "@genuin/components/molecules/linkouts/single-link-card";
 import { MultiLinkCard } from "@genuin/components/molecules/linkouts/multi-link-card";
 import { useGetLinkouts } from "@genuin/components/react-query/api/linkouts/get-linkouts";
 import { LinkoutsType } from "@genuin/components/react-query/api/linkouts/schema";
 import { cn } from "@genuin/ui/lib/utils";
 import useShowLinkouts from "@genuin/components/hooks/use-show-linkouts";
+import { useEmbedContext } from "@genuin/components/context/embed";
+import { cva, VariantProps } from "class-variance-authority";
 
-interface LinkOutContentRendererProps {
-  linkouts: LinkoutsType;
-  linkoutId: number | null | undefined;
-  className?: string;
+type Linkouts = {
+  /**
+   * Initial linkouts data to display.
+   */
+  linkouts?: LinkoutsType;
+  /**
+   * ID of the linkout to display.
+   */
+  linkoutId?: number | null;
+  /**
+   * If isActive is true, the linkouts will be displayed.
+   */
   isActive: boolean;
-}
+} & ComponentProps<"div"> &
+  VariantProps<typeof linkOutVariant>;
 
-export const LinkOutContentRenderer = ({
+export const linkOutVariant = cva("gencl:space-y-4", {
+  variants: {
+    variant: {
+      default: "",
+      embed: "",
+    },
+  },
+  defaultVariants: {
+    variant: "default",
+  },
+});
+
+//TODO: Remove the dep of framer-motion and go with css animation.
+/**
+ * Linkouts component to display a list of linkouts.
+ * @param param0 - Props for the Linkouts component.
+ * @returns JSX.Element
+ */
+export const Linkouts: React.FC<Linkouts> = ({
   linkouts: initialLinkouts,
   linkoutId,
   className,
   isActive,
-}: LinkOutContentRendererProps) => {
+  variant,
+  ...restProps
+}) => {
   const { showLinkouts } = useShowLinkouts({
     linkoutId,
     isActive,
   });
+
   const {
     data: fetchedLinkouts,
     isLoading,
     isError,
-  } = useGetLinkouts(linkoutId ?? 1, {
+  } = useGetLinkouts(linkoutId, {
     enabled: !initialLinkouts && !!linkoutId,
     staleTime: 1000 * 60, // 1 minute
   });
@@ -35,6 +67,10 @@ export const LinkOutContentRenderer = ({
   // Animation states
   const [isVisible, setIsVisible] = useState(false);
   const [shouldRender, setShouldRender] = useState(showLinkouts);
+  const { customization } = useEmbedContext();
+  // Determine if the variant is embed
+  const isEmbed = variant === "embed";
+  const isOutside = customization.links?.position === "outside";
 
   // Handle entrance and exit animations
   useEffect(() => {
@@ -77,6 +113,8 @@ export const LinkOutContentRenderer = ({
 
         return (
           <LinkCard
+            isEmbed={isEmbed}
+            isOutside={isOutside}
             key={`single-${index}`}
             link={link}
             showThumbnail={showThumbnail}
@@ -87,6 +125,8 @@ export const LinkOutContentRenderer = ({
       } else {
         return (
           <MultiLinkCard
+            isOutside={isOutside}
+            isEmbed={isEmbed}
             key={`multi-${index}`}
             links={sortedLinks}
             maxVisible={100}
@@ -112,11 +152,12 @@ export const LinkOutContentRenderer = ({
   return (
     <div
       className={cn(
-        "gencl:transition-transform gencl:duration-300 gencl:ease-out",
+        "gencl:transition-transform gencl:duration-300 gencl:ease-out gencl:w-full",
         isVisible ? "gencl:translate-y-0" : "gencl:translate-y-full",
         "gencl:space-y-4",
         className
       )}
+      {...restProps}
     >
       {renderedLinkouts}
     </div>

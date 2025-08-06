@@ -55,3 +55,4 @@ export * from "./clock-icon";
 export * from "./search-icon";
 export * from "./dot-icon";
 export * from "./upload-icon";
+export * from "./danger-icon";

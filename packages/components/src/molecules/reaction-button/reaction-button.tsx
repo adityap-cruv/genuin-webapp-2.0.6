@@ -1,13 +1,15 @@
 import { useAuthContext } from "@genuin/components/context/auth";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { Button as PrimitiveButton } from "@genuin/ui/button";
 import { Toast } from "@genuin/ui/components/toaster";
 import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
 import { useVideoReationMutation } from "@genuin/components/react-query/api/feed/spark";
-import { ComponentProps, useCallback } from "react";
+import { ComponentProps, useCallback, useEffect, useMemo } from "react";
 import { DynamicReactionIcon } from "./dynamic-reaction-icon";
 import { useBaseContext } from "@genuin/components/context/base";
 import { cn } from "@genuin/ui/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
+import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
 
 const reactionButtonVariant = cva("", {
   variants: {
@@ -45,17 +47,42 @@ type ReactionButtonProps = ComponentProps<typeof PrimitiveButton> & {
 export function ReactionButton({
   reactionCount,
   shareUrl,
+  contentId,
   videoSlug,
   reactionButtonTheme,
   showReactionCount,
+  onClick,
   ...restProps
 }: ReactionButtonProps) {
-  const { authenticationStatus } = useAuthContext();
+  const { authenticationStatus, handleAuthCallback } = useAuthContext();
   const { brandDetails } = useBaseContext();
+  const returnQueryParams = useMemo(
+    () =>
+      createReturnQueryParams({
+        url: shareUrl,
+        action: "spark",
+        additionalParams: {
+          videoSlug: videoSlug ?? undefined,
+          commentId: contentId,
+        },
+      }),
+    []
+  );
+
+  const clickHandler = handleAuthCallback({
+    authCallbackData: { path: "/", action: "spark", returnQueryParams },
+    urlToOpen: shareUrl,
+  });
+
   const button = (
     <Button
       showReactionCount={showReactionCount}
       reactionCount={reactionCount}
+      contentId={contentId}
+      onClick={(e) => {
+        onClick?.(e);
+        clickHandler?.();
+      }}
       {...restProps}
     />
   );
@@ -72,7 +99,7 @@ export function ReactionButton({
     </p>
   );
 
-  if (authenticationStatus === "unauthenticated") {
+  if (authenticationStatus === "unauthenticated" && !clickHandler) {
     return (
       <AuthenticationModal
         getAppData={{
@@ -117,7 +144,11 @@ function Button({
   ...restProps
 }: ReactionButtonProps) {
   const { user } = useAuthContext();
-  const { mutate: reactToVideo, isPending } = useVideoReationMutation({
+  const {
+    mutate: reactToVideo,
+    isPending,
+    isSuccess,
+  } = useVideoReationMutation({
     // onSuccess: (isReacted) => {},
     onError: (error) => {
       // Revert the optimistic update on error
@@ -128,35 +159,58 @@ function Button({
     },
   });
 
+  // Example usage of useSafeEmbedContext
+  // This will not throw if the provider is missing
+  const embedContext = useSafeEmbedContext();
+
+  const performReaction = useCallback(() => {
+    if (!user || isPending) {
+      return; // If user is not authenticated, do nothing
+    }
+
+    // Optimistically update the UI immediately
+    const newReactionState = !isReacted;
+    onReactionStateChange?.(newReactionState);
+
+    // Make the API call in the background
+    reactToVideo({
+      contentId,
+      type: contentType,
+      reaction: newReactionState,
+    });
+  }, [
+    reactToVideo,
+    contentId,
+    contentType,
+    isReacted,
+    user,
+    isPending,
+    onReactionStateChange,
+  ]);
+
   const handleOnClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
       onClick?.(e);
-      if (!user || isPending) {
-        return; // If user is not authenticated, do nothing
-      }
-
-      // Optimistically update the UI immediately
-      const newReactionState = !isReacted;
-      onReactionStateChange?.(newReactionState);
-
-      // Make the API call in the background
-      reactToVideo({
-        contentId,
-        type: contentType,
-        reaction: newReactionState,
-      });
+      performReaction();
     },
-    [
-      onClick,
-      reactToVideo,
-      contentId,
-      contentType,
-      isReacted,
-      user,
-      isPending,
-      onReactionStateChange,
-    ]
+    [onClick, performReaction]
   );
+
+  useEffect(() => {
+    if (!embedContext) return;
+    const action = embedContext?.embedData.autoUserInteractionToPerform;
+    // We don't need to add contentType to the dependency array
+    // because it is not changing during the component's lifecycle.
+    // If the embedData has autoUserInteractionToPerform set to "spark" or "comment-spark",
+    // we perform the reaction automatically if the user has not reacted yet.
+    const shouldAutoReact =
+      (action === "spark" && contentType === "VIDEO") ||
+      (action === "comment-spark" && contentType === "COMMENT");
+
+    if (shouldAutoReact && !isSuccess) {
+      performReaction();
+    }
+  }, [embedContext, performReaction, isSuccess]);
 
   // If withCustomChildren is true, just return the children with logic attached
   if (withCustomChildren) {

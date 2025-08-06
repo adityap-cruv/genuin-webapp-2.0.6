@@ -1,37 +1,36 @@
 import { type ComponentProps } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "@genuin/ui/lib/utils";
+import { cn, defaultSizesForIcons } from "@genuin/ui/lib/utils";
 
-// Define the playVariant function using cva to handle different styles based on props
-const playVariant = cva("", {
+// Define the iconVariant function using cva to handle different styles based on props
+const iconVariant = cva("", {
   variants: {
-    variant: {
-      dark: "gencl:fill-black", // Light variant style
-      transparent: "gencl:fill-white", // Transparent variant style
-      light: "gencl:fill-white", // Dark variant style
+    theme: {
+      dark: "gencl:fill-white", // Light variant style
+      light: "gencl:fill-dark", // Dark variant style
     },
+    size: defaultSizesForIcons(),
   },
 });
 
 // Define the Props type for the ExpandIcon component
 type ExpandIconPropsType = ComponentProps<"svg"> &
-  VariantProps<typeof playVariant> & {
-    variant?: "light" | "transparent" | "dark" | null;
-  };
+  VariantProps<typeof iconVariant>;
 
 export function ExpandIcon({
-  variant = "dark",
+  theme,
+  size,
   className,
   ...restProps
 }: ExpandIconPropsType) {
   return (
     <svg
-      className={cn(playVariant({ variant }), className)}
       xmlns="http://www.w3.org/2000/svg"
       width="24"
       height="24"
       viewBox="0 0 24 24"
       fill="none"
+      className={cn(iconVariant({ theme, size }), className)}
       {...restProps}
     >
       <path

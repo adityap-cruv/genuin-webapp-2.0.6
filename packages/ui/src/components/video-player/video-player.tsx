@@ -7,6 +7,7 @@ import {
   useEffect,
   useImperativeHandle,
   useRef,
+  useState,
 } from "react";
 
 import { cn, encodeVideoSourceUrl } from "@genuin/ui/lib/utils";
@@ -70,6 +71,7 @@ export type PlayerProps = ComponentProps<"video"> & {
   volume?: number;
   playbackSpeed?: number;
   play?: boolean;
+  adUrl?: string; // URL for video ads
   onOpenPlayerReady?: (player: OpenPlayerJS) => void;
   onPlayerLoad?: (player: OpenPlayerJS | null) => void; // Add custom event prop
   onVideoFirstQuartile?: (duration: number, currentTime: number) => void;
@@ -77,6 +79,12 @@ export type PlayerProps = ComponentProps<"video"> & {
   onVideoThirdQuartile?: (duration: number, currentTime: number) => void;
   onVideoWatched?: (duration: number, currentTime: number) => void;
   onVideoStart?: (duration: number, currentTime: number) => void; // Add onVideoStart prop
+  onAdStarted?: (adData: AdDataType) => void; // Callback when ad starts
+  onAdCompleted?: (adData: AdDataType) => void; // Callback when ad completes
+  onAdError?: (error: any) => void; // Callback when ad errors
+  onAdClicked?: (adData: AdDataType) => void; // Callback when ad is clicked
+  onAdSkipped?: (adData: AdDataType) => void; // Callback when ad is skipped
+  onAllAdsCompleted?: () => void; // Callback when all ads are completed
 };
 
 type VideoPlayerStateRef = {
@@ -84,6 +92,14 @@ type VideoPlayerStateRef = {
   midpointFired: boolean;
   thirdQuartileFired: boolean;
   videoWatchedFired: boolean;
+};
+
+type AdDataType = {
+  adId: string | null;
+  url: string | null;
+  title: string | null;
+  totalAds?: number;
+  currentAdIndex?: number;
 };
 
 export const VideoPlayer = memo(function VideoPlayer({
@@ -97,6 +113,7 @@ export const VideoPlayer = memo(function VideoPlayer({
   playbackSpeed = 1,
   play = true,
   loop = false, // loop prop is now destructured
+  adUrl,
   onVideoFirstQuartile,
   onOpenPlayerReady,
   onPlayerLoad, // Destructure new prop
@@ -104,6 +121,12 @@ export const VideoPlayer = memo(function VideoPlayer({
   onVideoThirdQuartile,
   onVideoWatched,
   onVideoStart, // Destructure onVideoStart prop
+  onAdStarted,
+  onAdCompleted,
+  onAdError,
+  onAdClicked,
+  onAdSkipped,
+  onAllAdsCompleted,
   ...props
 }: PlayerProps) {
   const internalVideoRef = useRef<HTMLVideoElement>(null);
@@ -113,6 +136,26 @@ export const VideoPlayer = memo(function VideoPlayer({
   const videoRef = internalVideoRef;
   const playerRef = useRef<OpenPlayerJS | null>(null);
   const playRef = useRef(play);
+  const [adStarted, setAdStarted] = useState(false);
+
+  // Using refs for ad tracking (no UI updates needed)
+  const adInfoRef = useRef<{
+    isPlaying: boolean;
+    currentIndex: number;
+    totalAds: number;
+    ctaInfo: {
+      url: string | null;
+      title: string | null;
+      adId: string | null;
+    } | null;
+    allCompleted: boolean;
+  }>({
+    isPlaying: false,
+    currentIndex: 0,
+    totalAds: 0,
+    ctaInfo: null,
+    allCompleted: false,
+  });
 
   const playerStateRef = useRef<
     VideoPlayerStateRef & { videoStartFired: boolean }
@@ -148,22 +191,181 @@ export const VideoPlayer = memo(function VideoPlayer({
     };
   }, [onPlayerLoad]);
 
+  const setupAdPlayerEventListeners = useCallback(
+    (player: OpenPlayerJS) => {
+      if (!player) {
+        console.warn("Player not available for event listeners");
+        return;
+      }
+
+      // Wait a bit for the player element to be ready
+      setTimeout(() => {
+        try {
+          const playerElement = player.getElement();
+          if (!playerElement || !playerElement.addEventListener) {
+            console.warn("Player element does not support addEventListener");
+            return;
+          }
+
+          // Add an event listener for when ads are loaded
+          playerElement.addEventListener("adsloaded", () => {
+            const adManager = player.getAd();
+            if (!adManager) {
+              console.error("Ad manager is not available.");
+              return;
+            }
+
+            // Use any type to avoid TypeScript errors with IMA SDK
+            const adsManager = adManager.getAdsManager() as any;
+            if (!adsManager) {
+              console.error("AdsManager is not available.");
+              return;
+            }
+
+            // Listen for the STARTED event to handle ad playback start
+            adsManager.addEventListener(
+              (window as any).google.ima.AdEvent.Type.STARTED,
+              (e: any) => {
+                try {
+                  setAdStarted(true);
+
+                  // Track ad info in ref (no UI updates)
+                  adInfoRef.current.totalAds =
+                    e.ad?.data?.adPodInfo?.totalAds || 0;
+                  adInfoRef.current.currentIndex =
+                    e.ad?.data?.adPodInfo?.adPosition || 0;
+
+                  // Extract ad details
+                  if (
+                    e.ad?.data?.clickThroughUrl &&
+                    e.ad?.data?.title &&
+                    e.ad?.data?.adId
+                  ) {
+                    adInfoRef.current.ctaInfo = {
+                      url: e.ad.data.clickThroughUrl || null,
+                      title: e.ad.data.title || null,
+                      adId: e.ad.data.adId || null,
+                    };
+                  }
+
+                  // Track that ad is playing
+                  adInfoRef.current.isPlaying = true;
+
+                  // Call the onAdStarted callback if provided
+                  onAdStarted?.({
+                    adId: adInfoRef.current.ctaInfo?.adId || null,
+                    url: adInfoRef.current.ctaInfo?.url || null,
+                    title: adInfoRef.current.ctaInfo?.title || null,
+                    currentAdIndex: adInfoRef.current.currentIndex,
+                    totalAds: adInfoRef.current.totalAds,
+                  });
+                } catch (error) {
+                  console.error("Error in ad started event:", error);
+                }
+              }
+            );
+
+            // Listen for the SKIPPED event to handle when the ad is skipped by the user
+            adsManager.addEventListener(
+              (window as any).google.ima.AdEvent.Type.SKIPPED,
+              () => {
+                onAdSkipped?.({
+                  adId: adInfoRef.current.ctaInfo?.adId || null,
+                  url: adInfoRef.current.ctaInfo?.url || null,
+                  title: adInfoRef.current.ctaInfo?.title || null,
+                  currentAdIndex: adInfoRef.current.currentIndex,
+                  totalAds: adInfoRef.current.totalAds,
+                });
+              }
+            );
+
+            // Listen for the COMPLETE event to handle when the ad finishes playing
+            adsManager.addEventListener(
+              (window as any).google.ima.AdEvent.Type.COMPLETE,
+              () => {
+                // Call onAdCompleted with the current CTA info before resetting
+                const currentCtaInfo = adInfoRef.current.ctaInfo;
+                if (currentCtaInfo) {
+                  onAdCompleted?.({
+                    adId: currentCtaInfo.adId,
+                    url: currentCtaInfo.url,
+                    title: currentCtaInfo.title,
+                  });
+                }
+
+                // Reset the ad playing state and CTA info
+                adInfoRef.current.isPlaying = false;
+                adInfoRef.current.ctaInfo = null;
+              }
+            );
+
+            // Listen for ad click events
+            adsManager.addEventListener(
+              (window as any).google.ima.AdEvent.Type.CLICK,
+              (e: any) => {
+                if (e.ad?.data?.clickThroughUrl && e.ad?.data?.title) {
+                  onAdClicked?.({
+                    url: e.ad.data.clickThroughUrl,
+                    title: e.ad.data.title,
+                    adId: e.ad.data.adId,
+                    currentAdIndex: adInfoRef.current.currentIndex,
+                    totalAds: adInfoRef.current.totalAds,
+                  });
+                }
+              }
+            );
+
+            // Listen for when all ads complete
+            adsManager.addEventListener(
+              (window as any).google.ima.AdEvent.Type.ALL_ADS_COMPLETED,
+              () => {
+                onAllAdsCompleted?.();
+                adInfoRef.current.allCompleted = true;
+              }
+            );
+
+            // Listen for ad errors
+            adsManager.addEventListener(
+              (window as any).google.ima.AdEvent.Type.AD_ERROR,
+              (e: any) => {
+                console.error("Ad error:", e.getError());
+                adInfoRef.current.isPlaying = false;
+                adInfoRef.current.ctaInfo = null;
+                onAdError?.(e.getError());
+              }
+            );
+          });
+        } catch (error) {
+          console.error("Error setting up player event listeners:", error);
+        }
+      }, 100); // Wait 100ms for player element to be ready
+    },
+    [onAdStarted, onAdCompleted, onAdClicked, onAdError]
+  );
+
   const initializePlayer = useCallback(
     async (player: OpenPlayerJS, play?: boolean) => {
       await player.init();
       await player.load();
       playerRef.current = player;
+
+      // Set up ad event listeners if ads are enabled
+      if (adUrl) {
+        setupAdPlayerEventListeners(player);
+      }
+
       // Dispatch playerLoad event after player is ready
       videoRef.current?.dispatchEvent(new Event("playerLoad"));
+
       if (play) {
         await player.play().catch((error) => {
           console.log("error in player", error);
         });
       }
+
       onOpenPlayerReady?.(player);
     },
-
-    [onOpenPlayerReady]
+    [onOpenPlayerReady, adUrl, setupAdPlayerEventListeners]
   );
 
   useEffect(() => {
@@ -172,9 +374,12 @@ export const VideoPlayer = memo(function VideoPlayer({
     if (play) {
       player?.play();
     } else {
+      if (player?.isAd()) {
+        player?.getAd()?.pause(); // Pause ad if playing
+      }
       player?.pause();
     }
-  }, [play]);
+  }, [play, adStarted]);
 
   useEffect(() => {
     if (!videoRef.current) return;
@@ -187,6 +392,12 @@ export const VideoPlayer = memo(function VideoPlayer({
       forceNative: true,
       showLoaderOnInit: true,
       hls: hlsConfigs,
+      ads: adUrl
+        ? {
+            src: adUrl,
+            sdkPath: "https://imasdk.googleapis.com/js/sdkloader/ima3.js",
+          }
+        : undefined,
     });
 
     // if (videoRef.current) {
@@ -206,8 +417,36 @@ export const VideoPlayer = memo(function VideoPlayer({
         videoWatchedFired: false,
         videoStartFired: false,
       };
+
+      // Reset ad tracking
+      adInfoRef.current = {
+        isPlaying: false,
+        currentIndex: 0,
+        totalAds: 0,
+        ctaInfo: null,
+        allCompleted: false,
+      };
+
+      // Clean up ads if any
+      if (playerRef.current) {
+        try {
+          console.log("Cleaning up ads before component unmount");
+          const ad = playerRef.current.getAd?.();
+          if (ad) {
+            const adsManager = ad.getAdsManager?.() as any;
+            if (adsManager && typeof adsManager.stop === "function") {
+              adsManager.stop();
+            }
+            if (typeof ad.destroy === "function") {
+              ad.destroy();
+            }
+          }
+        } catch (error) {
+          console.warn("Error cleaning up ads:", error);
+        }
+      }
     };
-  }, [src]);
+  }, [src, adUrl, initializePlayer, playbackSpeed]);
 
   useEffect(() => {
     const videoElement = videoRef.current;

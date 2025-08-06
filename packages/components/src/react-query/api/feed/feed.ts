@@ -1,4 +1,8 @@
-import { QueryKey, useInfiniteQuery } from "@tanstack/react-query";
+import {
+  InfiniteData,
+  QueryKey,
+  useInfiniteQuery,
+} from "@tanstack/react-query";
 
 import { getDeviceId } from "@genuin/components/lib/utils/device-id";
 import { getQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
@@ -13,6 +17,7 @@ import { parseFeed } from "./parser";
 import { queryClient } from "@genuin/components/react-query/client";
 import { API_PATHS } from "@genuin/components/react-query/paths";
 import { GroupUserStatusType } from "@genuin/components/types/roles";
+import { useGetVideoDetailsAsFeed } from "../video";
 // Mapper for FeedType to corresponding numbers
 const feedTypeToNumber: Record<FeedType, number> = {
   HOME: 1,
@@ -33,7 +38,8 @@ async function fetchFeed(
   pageParam?: {
     pageSession?: string;
     lastVideoId?: string | undefined;
-  }
+  },
+  options?: UseFeedOptionsType
 ) {
   const deviceId = getDeviceId()
     ? encodeURI(getDeviceId() as string)
@@ -45,6 +51,8 @@ async function fetchFeed(
       last_video_id: pageParam?.lastVideoId ?? undefined,
       page_session: pageParam?.pageSession ?? undefined,
       device_id: deviceId,
+      community_ids: options?.communityIds,
+      loop_ids: options?.groupIds,
     })
     .then((res) => {
       if (res.status !== 200) {
@@ -57,6 +65,7 @@ async function fetchFeed(
           endOfFeed: true,
         };
       }
+
       return {
         feed: parseFeed(res.data.data.feeds),
         pageSession: res.data.data.page_session,
@@ -68,32 +77,77 @@ async function fetchFeed(
     });
 }
 
+type UseFeedOptionsType = {
+  communityIds?: string[];
+  groupIds?: Array<{ loop_id: string; community_id: string }>;
+  startVideoSlug?: string;
+};
+
 /**
  * Return the feed data for the given feed type.
  * @param feedType
  * @returns
  */
-export const useFeed = (feedType: FeedType) => {
-  return useInfiniteQuery({
-    queryKey: getQueryKeyForFeed(feedType),
-    queryFn: async ({
-      pageParam,
-    }: {
-      pageParam?: { pageSession?: string; lastVideoId?: string };
-    }) => await fetchFeed(feedType, pageParam),
+type FeedPage = Awaited<ReturnType<typeof fetchFeed>>;
+
+export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
+  // Handle video details when startVideoSlug is provided
+  const videoDetailsQuery = options?.startVideoSlug
+    ? useGetVideoDetailsAsFeed(options.startVideoSlug)
+    : { isLoading: false, data: undefined, isError: false };
+
+  // Common query configuration with conditional overrides
+  const infiniteQueryResult = useInfiniteQuery({
+    queryKey: getQueryKeyForFeed(feedType, options),
+    queryFn: async ({ pageParam }) =>
+      await fetchFeed(feedType, pageParam, options),
     initialPageParam: undefined,
     getNextPageParam: (lastPage) => {
       if (lastPage.endOfFeed) return undefined;
       const lastPageData = lastPage.feed[lastPage.feed.length - 1];
       if (!lastPageData) return undefined;
-
       return {
         pageSession: lastPage.pageSession,
         lastVideoId: lastPageData.video.id,
       };
     },
     refetchOnMount: false,
+    // Conditional properties based on startVideoSlug
+    ...(options?.startVideoSlug &&
+      !videoDetailsQuery.isError && {
+        enabled: !videoDetailsQuery.isLoading,
+        initialData: videoDetailsQuery.data
+          ? {
+              pages: [
+                {
+                  feed: [videoDetailsQuery.data],
+                  pageSession: null,
+                  endOfFeed: false,
+                },
+              ],
+              pageParams: [{ pageSession: "", lastVideoId: "" }],
+            }
+          : undefined,
+        select: (data: InfiniteData<FeedPage>) => {
+          if (!data) return undefined;
+          return {
+            ...data,
+            pages: data.pages.map((page) => ({
+              ...page,
+              feed: page.feed.filter(
+                (video) => video.video.slug !== options.startVideoSlug
+              ),
+            })),
+          };
+        },
+      }),
   });
+
+  // Override isLoading when videoDetailsQuery is loading
+  return {
+    ...infiniteQueryResult,
+    isLoading: videoDetailsQuery.isLoading || infiniteQueryResult.isLoading,
+  };
 };
 
 type QueryData = ReturnType<typeof useFeed>["data"];

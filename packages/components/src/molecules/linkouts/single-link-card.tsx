@@ -1,9 +1,12 @@
 import { Button } from "@genuin/ui/components/button";
-import { checkAndAppendHttps } from "@genuin/ui/lib/utils";
+import { checkAndAppendHttps, cn } from "@genuin/ui/lib/utils";
 import { LinkData } from "@genuin/components/react-query/api/linkouts/schema";
 import { LinkIcon, ChevronRight } from "lucide-react";
+import { useEmbedContext } from "@genuin/components/context/embed";
 
 interface LinkCardProps {
+  isEmbed: boolean;
+  isOutside: boolean;
   link: LinkData;
   showThumbnail?: boolean;
   ctaText?: string;
@@ -11,6 +14,8 @@ interface LinkCardProps {
 }
 
 export const LinkCard: React.FC<LinkCardProps> = ({
+  isEmbed,
+  isOutside,
   link,
   showThumbnail = false,
   ctaText = "",
@@ -54,12 +59,20 @@ export const LinkCard: React.FC<LinkCardProps> = ({
   if (hasCTA) {
     return (
       <div
-        className="gencl:bg-black/50 gencl:cursor-pointer gencl:gap-2 gencl:flex gencl:flex-col gencl:backdrop-blur-md gencl:rounded-xl gencl:text-sm gencl:font-medium gencl:text-white gencl:p-2 gencl:w-full"
+        className={cn(
+          "gencl:bg-black/50 gencl:cursor-pointer gencl:gap-2 gencl:flex gencl:flex-col gencl:backdrop-blur-md gencl:rounded-xl gencl:text-sm gencl:font-medium gencl:text-white gencl:p-2 gencl:w-full",
+          isOutside && "gencl:bg-transparent gencl:hover:bg-transparent"
+        )}
         onClick={handleCardClick}
       >
         <div className="gencl:flex-1 gencl:text-start gencl:flex gencl:items-center gencl:gap-2 gencl:line-clamp-1">
           {hasImage && showThumbnail && (
-            <div className="gencl:h-16 gencl:w-16 gencl:rounded-xl gencl:bg-gray-200 gencl:shrink-0 gencl:overflow-hidden">
+            <div
+              className={cn(
+                "gencl:h-16 gencl:w-16 gencl:rounded-xl gencl:bg-gray-200 gencl:shrink-0 gencl:overflow-hidden",
+                isEmbed && "gencl:h-12 gencl:w-12 gencl:rounded-md"
+              )}
+            >
               <img
                 src={link.image ?? ""}
                 alt=""
@@ -77,16 +90,25 @@ export const LinkCard: React.FC<LinkCardProps> = ({
           {!showThumbnail && (
             <LinkIcon className="gencl:h-4 gencl:w-4 gencl:shrink-0 gencl:stroke-white" />
           )}
-          <span className="gencl:truncate gencl:text-body-1-medium">
+          <span
+            className={cn(
+              "gencl:truncate gencl:text-body-1-medium!",
+              isOutside && "gencl:text-black"
+            )}
+          >
             {displayText}
           </span>
         </div>
         <Button
-          className="gencl:w-full gencl:text-body-1-medium gencl:font-semibold gencl:transition-all gencl:bg-white gencl:hover:bg-white/90 gencl:!text-black gencl:flex gencl:justify-between gencl:items-center gencl:px-3 gencl:py-2 gencl:rounded-lg"
+          size={isEmbed ? "sm" : "md"}
+          className={cn(
+            "gencl:w-full gencl:text-body-1-medium gencl:font-semibold gencl:transition-all gencl:bg-white gencl:hover:bg-white/90 gencl:!text-black gencl:flex gencl:justify-between gencl:items-center gencl:px-3 gencl:py-2 gencl:rounded-lg",
+            isOutside && "gencl:bg-secondary-50 gencl:hover:bg-secondary-150"
+          )}
           onClick={handleCTAClick}
         >
           {ctaText}
-          <ChevronRight className="gencl:h-4 gencl:w-4 gencl:stroke-black gencl:shrink-0" />
+          <ChevronRight className="gencl:h-4 gencl:w-4 gencl:stroke-black! gencl:shrink-0" />
         </Button>
       </div>
     );
@@ -94,12 +116,20 @@ export const LinkCard: React.FC<LinkCardProps> = ({
 
   return (
     <div
-      className="gencl:bg-black/50 gencl:gap-2 gencl:flex gencl:items-center gencl:justify-between gencl:backdrop-blur-md gencl:rounded-xl gencl:text-sm gencl:font-medium gencl:text-white gencl:p-2 gencl:w-full gencl:cursor-pointer gencl:hover:bg-black/60 gencl:transition-colors"
+      className={cn(
+        "gencl:bg-black/50 gencl:gap-2 gencl:flex gencl:items-center gencl:justify-between gencl:backdrop-blur-md gencl:rounded-xl gencl:text-sm gencl:font-medium gencl:text-white gencl:p-2 gencl:w-full gencl:cursor-pointer gencl:hover:bg-black/60 gencl:transition-colors",
+        isOutside && "gencl:bg-transparent gencl:hover:bg-transparent"
+      )}
       onClick={handleCardClick}
     >
       <div className="gencl:flex-1 gencl:text-start gencl:flex gencl:items-center gencl:gap-2 gencl:line-clamp-1">
         {hasImage && showThumbnail ? (
-          <div className="gencl:h-16 gencl:w-16 gencl:rounded-xl gencl:bg-gray-200 gencl:shrink-0 gencl:overflow-hidden">
+          <div
+            className={cn(
+              "gencl:h-16 gencl:w-16 gencl:rounded-xl gencl:bg-gray-200 gencl:shrink-0 gencl:overflow-hidden",
+              isEmbed && "gencl:h-12 gencl:w-12 gencl:rounded-md"
+            )}
+          >
             <img
               src={link.image ?? ""}
               alt=""
@@ -113,11 +143,21 @@ export const LinkCard: React.FC<LinkCardProps> = ({
         ) : (
           <LinkIcon className="gencl:h-4 gencl:w-4 gencl:shrink-0 gencl:stroke-white" />
         )}
-        <span className="gencl:line-clamp-1 gencl:text-body-1-medium">
+        <span
+          className={cn(
+            "gencl:truncate gencl:text-body-1-medium!",
+            isOutside && "gencl:text-black"
+          )}
+        >
           {displayText}
         </span>
       </div>
-      <ChevronRight className="gencl:h-4 gencl:w-4 gencl:shrink-0 gencl:stroke-white" />
+      <ChevronRight
+        className={cn(
+          "gencl:h-4 gencl:w-4 gencl:shrink-0 gencl:stroke-white!",
+          isOutside && "gencl:stroke-black!"
+        )}
+      />
     </div>
   );
 };

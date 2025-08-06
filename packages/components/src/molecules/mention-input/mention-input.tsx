@@ -42,16 +42,21 @@ export interface MentionInputProps {
     isAvatar?: boolean;
     image?: string;
   };
-  authenticationStatus?: string;
   onCommentPosted?: (comment: any) => void;
+  onClick?: React.MouseEventHandler<HTMLFormElement>;
+  /**
+   * When true, disables the input functionality while still allowing onClick events
+   */
+  disabled?: boolean;
 }
 
 export function MentionInput({
   videoId,
   loopId,
   user,
-  authenticationStatus,
   onCommentPosted,
+  onClick,
+  disabled = false,
 }: MentionInputProps) {
   const form = useForm<CommentFormValues>({
     resolver: zodResolver(commentFormSchema),
@@ -106,6 +111,7 @@ export function MentionInput({
     <Form {...form} key="comment">
       <form
         onSubmit={form.handleSubmit(commentSubmit)}
+        onClick={onClick}
         className="gencl:absolute gencl:bottom-0 gencl:left-0 gencl:right-0 gencl:bg-white gencl:p-4 gencl:border-t gencl:border-secondary-150 gencl:flex gencl:justify-between"
       >
         {isMentioning && (
@@ -188,16 +194,24 @@ export function MentionInput({
                         ref={inputRef}
                         value={field.value}
                         onChange={(e) => {
-                          field.onChange(e);
-                          handleInputChange(e);
+                          if (!disabled) {
+                            field.onChange(e);
+                            handleInputChange(e);
+                          }
                         }}
-                        onKeyDown={handleMentionKeyDown}
+                        onKeyDown={!disabled ? handleMentionKeyDown : undefined}
                         selectedMentions={selectedMentions}
                         placeholder="Add a comment"
                         className="w-full"
                         aria-invalid={!!form.formState.errors.comment}
                         maxLength={500}
                         name={field.name}
+                        disabled={disabled}
+                        onFocus={(e) => {
+                          if (disabled) {
+                            e.target.blur();
+                          }
+                        }}
                       />
                     </div>
                   </FormControl>
@@ -213,9 +227,11 @@ export function MentionInput({
           theme="text"
           className={cn(
             "gencl:!text-body-1-medium",
-            isFormValid ? "gencl:text-primary" : "gencl:text-secondary-400"
+            isFormValid && !disabled
+              ? "gencl:text-primary"
+              : "gencl:text-secondary-400"
           )}
-          disabled={!isFormValid || isPending || !user}
+          disabled={!isFormValid || isPending || !user || disabled}
           aria-label="Post comment"
         >
           {isPending ? <Loader size="xs" /> : "Post"}

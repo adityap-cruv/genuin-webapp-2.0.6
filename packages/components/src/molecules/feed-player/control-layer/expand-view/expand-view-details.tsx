@@ -1,16 +1,18 @@
 "use client";
 import { Avatar } from "@genuin/ui/avatar";
 import { ReadMore } from "@genuin/ui/read-more";
-import { cn } from "@genuin/ui/utils";
+import { cn, getFormattedDuration, getMonthYear } from "@genuin/ui/utils";
 import type { ComponentProps, ReactNode } from "react";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { usePlayerContext } from "../../context";
 import { ProfileLink } from "@genuin/components/molecules/profile-link";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
-import { LinkOutContentRenderer } from "@genuin/components/organisms/linkouts/linkouts-details";
+import { Linkouts } from "@genuin/components/organisms/linkouts";
 import { Pills } from "@genuin/components/molecules/feed-player/pills";
 import { Actions } from "@genuin/components/molecules/actions";
 import { CommentsDialog } from "@genuin/components/molecules/comments";
+import { controlLayerVariant } from "../control-layer";
+import { VariantProps } from "class-variance-authority";
 
 type ExpandViewProps = ComponentProps<"div"> & {
   postDetails: PostDetailsType;
@@ -25,7 +27,7 @@ type ExpandViewProps = ComponentProps<"div"> & {
   onCommunityJoinStatusChange?: ComponentProps<
     typeof Pills
   >["onCommunityJoinStatusChange"];
-};
+} & VariantProps<typeof controlLayerVariant>;
 
 export function ExpandViewDetails({
   className,
@@ -35,6 +37,7 @@ export function ExpandViewDetails({
   onGroupSubscriptionChange,
   onCommunityJoinStatusChange,
   onReactionStateChange,
+  variant,
   ...restProps
 }: ExpandViewProps) {
   const { showSeeker } = usePlayerContext();
@@ -59,34 +62,67 @@ export function ExpandViewDetails({
               alt={postDetails.owner.name ?? ""}
               isAvatar={postDetails.owner.isAvatar}
             />
-            <ProfileLink
-              url={buildPageUrl({
-                type: !!postDetails.owner.brand ? "brand" : "profile",
-                slug: !!postDetails.owner.brand
-                  ? postDetails.owner.brand.slug
-                  : postDetails.owner.userName,
-              })}
-              userLogoType={postDetails.owner.brand?.userLogo}
-            >
-              @{postDetails.owner.userName}
-            </ProfileLink>
+            {postDetails.video.cardLayoutType === "iheart" ? (
+              <div>
+                <p className="gencl:text-body-2-semi-bold gencl:line-clamp-1">
+                  {postDetails.owner.name}
+                </p>
+                <p className="gencl:text-body-2-normal gencl:line-clamp-2">
+                  {postDetails.owner.bio}
+                </p>
+              </div>
+            ) : (
+              <ProfileLink
+                url={buildPageUrl({
+                  type: !!postDetails.owner.brand ? "brand" : "profile",
+                  slug: !!postDetails.owner.brand
+                    ? postDetails.owner.brand.slug
+                    : postDetails.owner.userName,
+                })}
+                userLogoType={postDetails.owner.brand?.userLogo}
+              >
+                @{postDetails.owner.userName}
+              </ProfileLink>
+            )}
           </div>
 
-          <LinkOutContentRenderer
+          <Linkouts
             linkouts={postDetails.video.linkouts}
             linkoutId={postDetails.video.linkoutId}
             isActive={isActive}
             className="gencl:w-full"
           />
 
-          <ReadMore
-            showExpandText={false}
-            text={postDetails.video.description}
-            maxLines={2}
-            shouldAnimate
-            position="overlay"
-            className="gencl:text-body-1-medium"
-          />
+          {postDetails.video.cardLayoutType === "iheart" ? (
+            <>
+              <p className="gencl:text-white gencl:text-body-2-semi-bold gencl:font-normal">
+                {getMonthYear(
+                  postDetails.video.attributes?.timestamp ??
+                    postDetails.video.createdAt ??
+                    0
+                )}{" "}
+                •{" "}
+                {getFormattedDuration(String(postDetails.video.duration ?? ""))}
+              </p>
+              <ReadMore
+                showExpandText={false}
+                text={postDetails.video.description}
+                maxLines={2}
+                shouldAnimate
+                position="overlay"
+                textClassName="gencl:text-body-2-normal"
+              />
+            </>
+          ) : (
+            <ReadMore
+              showExpandText={false}
+              text={postDetails.video.description}
+              maxLines={2}
+              shouldAnimate
+              position="overlay"
+              className="gencl:text-body-1-medium"
+            />
+          )}
         </div>
         <Actions
           onClick={(e) => e.stopPropagation()}
@@ -103,6 +139,7 @@ export function ExpandViewDetails({
             COMMENT: (defaultNode) => {
               return (
                 <CommentsDialog
+                  shareUrl={postDetails.video.shareUrl}
                   communityId={postDetails.community.id}
                   loopId={postDetails.group.id}
                   videoId={postDetails.video.id}

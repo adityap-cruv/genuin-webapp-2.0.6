@@ -6,8 +6,8 @@ import { cn, defaultSizesForIcons } from "@genuin/ui/lib/utils";
 const unmuteVariant = cva("", {
   variants: {
     theme: {
-      light: "gencl:fill-white", // Light variant style
-      dark: "gencl:fill-black", // Dark variant style
+      light: "gencl:fill-black", // Light variant style
+      dark: "gencl:fill-white", // Dark variant style
     },
     size: defaultSizesForIcons(),
   },
