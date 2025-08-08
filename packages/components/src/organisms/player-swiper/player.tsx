@@ -26,7 +26,7 @@ type PlayerProps = {
   onGroupSubscriptionChange: ComponentProps<
     typeof ControlLayer
   >["onGroupSubscriptionChange"];
-   index : number
+  index: number;
 };
 
 // TODO: This component is using feed context, which is not ideal. Remove this dep of FeedContext in future.
@@ -52,7 +52,7 @@ export function Player({
       const video = event.currentTarget;
       if (video.duration > 0) {
         const progress = (video.currentTime / video.duration) * 100;
-        
+
         if (activeIndex === 1 && progress >= 50) {
           showGestureOverlay("PLAY_PAUSE", muted);
         }
@@ -60,7 +60,6 @@ export function Player({
     },
     [activeIndex, muted, showGestureOverlay]
   );
-
   return (
     <PlayerProvider
       isActive={isActive}
