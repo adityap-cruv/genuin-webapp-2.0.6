@@ -55,7 +55,7 @@ export function GroupDetailsTabs({
           slug={slug}
           lazyLoad="auto"
           enableFeedView
-          postTileVariant="default"
+          postTileVariant="responsive"
           gridClassName={cn(!isDesktop && "gencl:grid-cols-2!")}
         />
       </TabsContent>

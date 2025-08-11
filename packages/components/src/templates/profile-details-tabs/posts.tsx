@@ -6,6 +6,7 @@ import { useGetProfileVideos } from "@genuin/components/react-query/api/profile/
 import type { VideoType } from "@genuin/components/react-query/api/profile/posts/schema";
 
 import { FeedViewWrapper } from "./feed-view-wrapper";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 
 export function Posts({
   profileId,
@@ -26,6 +27,7 @@ export function Posts({
   const [expandViewId, setExpandViewId] = useState<undefined | string>(
     undefined
   );
+  const {isMobile} = useDeviceDetectMediaQuery()
   const {
     data,
     isLoading,
@@ -65,6 +67,7 @@ export function Posts({
             views: video.noOfViews ?? 0,
           },
         }))}
+        postTileVariant={isMobile ? "default" : "responsive"}
         hasNextPage={hasNextPage}
         isFetchingNextPage={isFetchingNextPage}
         fetchNextPage={fetchNextPage}

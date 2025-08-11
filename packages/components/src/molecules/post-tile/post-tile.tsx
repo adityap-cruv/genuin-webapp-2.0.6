@@ -78,10 +78,10 @@ export function PostTile({
       )}
       {stats && (
         <>
-          <Stats
+         {
+          variant === "responsive" &&  <Stats
             className={cn(
               "gencl:group-hover:hidden gencl:flex gencl:gap-2 gencl:justify-between gencl:p-2 gencl:absolute gencl:bottom-0 gencl:w-full gencl:bg-linear-to-t gencl:from-black/40 gencl:to-black/0",
-              variant === "responsive" && "gencl:md:flex! gencl:hidden"
             )}
             valueClassName="gencl:text-white! gencl:text-body-2-medium"
             pairClassName="gencl:gap-1"
@@ -112,23 +112,24 @@ export function PostTile({
               },
             }}
           />
-
-          <Stats
-            className={cn(
-              "gencl:group-hover:hidden gencl:flex gencl:gap-2 gencl:justify-between gencl:p-2 gencl:absolute gencl:bottom-0 gencl:w-full gencl:bg-linear-to-b gencl:from-transparent gencl:via-black/50 gencl:to-black/50",
-              variant === "default" && "gencl:md:hidden! gencl:flex"
-            )}
-            valueClassName="gencl:text-white! gencl:text-body-2-medium"
-            pairClassName="gencl:gap-1"
-            stats={{
-              Views: {
-                value: stats.views,
-                icon: (
-                  <PlayIcon className="gencl:stroke-white gencl:stroke-2 gencl:size-3 gencl:fill-none" />
-                ),
-              },
-            }}
-          />
+         }
+          {variant === "default" && (
+            <Stats
+              className={cn(
+                "gencl:group-hover:hidden gencl:flex gencl:gap-2 gencl:justify-between gencl:p-2 gencl:absolute gencl:bottom-0 gencl:w-full gencl:bg-linear-to-b gencl:from-transparent gencl:via-black/50 gencl:to-black/50",
+              )}
+              valueClassName="gencl:text-white! gencl:text-body-2-medium"
+              pairClassName="gencl:gap-1"
+              stats={{
+                Views: {
+                  value: stats.views,
+                  icon: (
+                    <PlayIcon className="gencl:stroke-white gencl:stroke-2 gencl:size-3 gencl:fill-none" />
+                  ),
+                },
+              }}
+            />
+          )}
         </>
       )}
       {showHover && (

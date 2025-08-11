@@ -11,7 +11,7 @@ type AnimatedTextProps = {
 
 export const AnimatedText = memo(function ({
   text,
-  width = 125,
+  width = 110,
   stop,
 }: AnimatedTextProps) {
   const [animateText, setAnimateText] = useState(false);

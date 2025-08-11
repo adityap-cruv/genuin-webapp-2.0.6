@@ -78,7 +78,7 @@ export function CommentsList({
           <p className="gencl:text-body-0-semi-bold gencl:text-center">
             No Comments Yet
           </p>
-          <p className="gencl:text-secondary-300 gencl:text-body-2-medium">
+          <p className="gencl:text-secondary-600 gencl:text-body-2-medium">
             Be the first one to comment!
           </p>
         </div>
