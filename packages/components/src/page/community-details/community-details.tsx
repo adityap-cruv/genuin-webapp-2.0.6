@@ -34,6 +34,7 @@ import { CommunityBanner } from "@genuin/components/molecules/comunity-banner";
 import { mapMemberDetails } from "./utils";
 import { getSocialLinks } from "@genuin/components/lib/utils";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { useAnalytics } from "@genuin/components/context/analytics";
 
 export function CommunityDetails({
   slug,
@@ -78,6 +79,7 @@ function CommunityDetailsView({ slug }: { slug: string }) {
   } = useGetCommunityDetails(slug);
   const { isDesktop } = useDeviceDetectMediaQuery();
   const detailsId = useId();
+  const { track, EventName } = useAnalytics();
   const [storedCommunities, setStoredCommunities] = useLocalStorage<
     RecentCommunity[]
   >(RECENT_COMMUNITIES_KEY, []);
@@ -153,7 +155,15 @@ function CommunityDetailsView({ slug }: { slug: string }) {
         className="gencl:flex-grow gencl:sm:flex-grow-0!"
       />
       {!inTopBar && (
-        <ShareButton pathName={buildPageUrl({ type: "community", slug })} />
+        <ShareButton
+          pathName={buildPageUrl({ type: "community", slug })}
+          onClick={() => {
+            track(EventName.COMMUNITY_SHARED, {
+              community_id: communityDetails.community_id,
+              share_url: buildPageUrl({ type: "community", slug }),
+            });
+          }}
+        />
       )}
     </div>
   );

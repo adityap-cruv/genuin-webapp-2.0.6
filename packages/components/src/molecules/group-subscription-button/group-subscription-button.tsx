@@ -7,6 +7,7 @@ import { useSubscribeGroupMutation } from "@genuin/components/react-query/api/gr
 import { Toast } from "@genuin/ui/components/toaster";
 import { Loader } from "@genuin/ui/components/loader";
 import { cn } from "@genuin/ui/lib/utils";
+import { useAnalytics } from "@genuin/components/context/analytics";
 
 type GroupSubscriptionButtonProps = {
   groupId: string;
@@ -63,9 +64,17 @@ function Button({
   ...restProps
 }: GroupSubscriptionButtonProps) {
   const { user } = useAuthContext();
+  const { track, EventName } = useAnalytics();
   const { mutate: subscribeGroup, isPending } = useSubscribeGroupMutation({
     onSuccess(isSubscriber) {
       onSubscriptionChange?.(isSubscriber);
+      // Track subscription event
+      track(EventName.SUBSCRIPTION_CLICKED, {
+        group_id: groupId,
+        group_name: groupName,
+        is_subscribed: isSubscriber,
+      });
+
       if (isSubscriber)
         Toast.Success({
           message: "Notifications have been turned on",

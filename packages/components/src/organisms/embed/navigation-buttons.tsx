@@ -19,6 +19,17 @@ export function NavigationButtons({ totalSlides }: NavigationButtonsProps) {
     useEmbedManagerContext();
   const config = useEmbedConfigs();
 
+  // Create handlers with preventDefault
+  const handlePrevClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    goToPreviousVideo();
+  };
+
+  const handleNextClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    goToNextVideo();
+  };
+
   // Use the shared utility for embed variant
   const embedVariant = getEmbedVariant(config);
   const isCarousel = embedVariant === "carousel";
@@ -31,39 +42,40 @@ export function NavigationButtons({ totalSlides }: NavigationButtonsProps) {
   const isFirstSlide = activeIndex === 0;
   const isLastSlide = activeIndex === totalSlides - 1;
 
+  if (!config.view.showNavigation) return;
+
   if (isCarousel) {
+    if (!config.view.showCarouselIcon) return;
     // Carousel layout - buttons on left and right sides
     return (
       <div className="gencl:absolute gencl:z-20 gencl:inset-y-0 gencl:left-0 gencl:right-0 gencl:pointer-events-none">
         <div className="gencl:h-full gencl:w-full gencl:flex gencl:justify-between gencl:items-center">
           <div className="gencl:ml-2">
-            {!isFirstSlide && (
-              <Button
-                theme="overlay"
-                variant="icon"
-                size="sm"
-                onClick={goToPreviousVideo}
-                className="gencl:pointer-events-auto gencl:rounded-full gencl:bg-white gencl:hover:bg-secondary-150"
-              >
-                <ChevronLeft className="gencl:h-5 gencl:w-5 gencl:stroke-secondary-600" />
-                <span className="gencl:sr-only">Previous</span>
-              </Button>
-            )}
+            <Button
+              theme="overlay"
+              variant="icon"
+              size="sm"
+              onClick={handlePrevClick}
+              disabled={isFirstSlide}
+              className="gencl:pointer-events-auto gencl:rounded-full gencl:bg-white gencl:hover:bg-secondary-150"
+            >
+              <ChevronLeft className="gencl:h-5 gencl:w-5 gencl:stroke-secondary-600" />
+              <span className="gencl:sr-only">Previous</span>
+            </Button>
           </div>
 
           <div className="gencl:mr-2">
-            {!isLastSlide && (
-              <Button
-                theme="overlay"
-                variant="icon"
-                size="sm"
-                onClick={goToNextVideo}
-                className="gencl:pointer-events-auto gencl:rounded-full gencl:bg-white gencl:hover:bg-secondary-150"
-              >
-                <ChevronRight className="gencl:h-5 gencl:w-5 gencl:stroke-secondary-600" />
-                <span className="gencl:sr-only">Next</span>
-              </Button>
-            )}
+            <Button
+              theme="overlay"
+              variant="icon"
+              size="sm"
+              onClick={handleNextClick}
+              disabled={isLastSlide}
+              className="gencl:pointer-events-auto gencl:rounded-full gencl:bg-white gencl:hover:bg-secondary-150"
+            >
+              <ChevronRight className="gencl:h-5 gencl:w-5 gencl:stroke-secondary-600" />
+              <span className="gencl:sr-only">Next</span>
+            </Button>
           </div>
         </div>
       </div>
@@ -73,30 +85,28 @@ export function NavigationButtons({ totalSlides }: NavigationButtonsProps) {
   // Feed layout - buttons on right side with up/down arrows
   return (
     <div className="gencl:absolute gencl:z-20 gencl:right-2 gencl:top-1/2 gencl:transform gencl:-translate-y-1/2 gencl:flex gencl:flex-col gencl:gap-2">
-      {!isFirstSlide && (
-        <Button
-          theme="overlay"
-          variant="icon"
-          size="sm"
-          onClick={goToPreviousVideo}
-          className="gencl:rounded-full gencl:bg-white gencl:hover:bg-secondary-150"
-        >
-          <ChevronUp className="gencl:h-5 gencl:w-5 gencl:stroke-secondary-600" />
-          <span className="gencl:sr-only">Previous</span>
-        </Button>
-      )}
-      {!isLastSlide && (
-        <Button
-          theme="overlay"
-          variant="icon"
-          size="sm"
-          onClick={goToNextVideo}
-          className="gencl:rounded-full gencl:bg-white gencl:hover:bg-secondary-150"
-        >
-          <ChevronDown className="gencl:h-5 gencl:w-5 gencl:stroke-secondary-600" />
-          <span className="gencl:sr-only">Next</span>
-        </Button>
-      )}
+      <Button
+        theme="overlay"
+        variant="icon"
+        size="sm"
+        onClick={handlePrevClick}
+        disabled={isFirstSlide}
+        className="gencl:rounded-full gencl:bg-white gencl:hover:bg-secondary-150"
+      >
+        <ChevronUp className="gencl:h-5 gencl:w-5 gencl:stroke-secondary-600" />
+        <span className="gencl:sr-only">Previous</span>
+      </Button>
+      <Button
+        theme="overlay"
+        variant="icon"
+        size="sm"
+        onClick={handleNextClick}
+        disabled={isLastSlide}
+        className="gencl:rounded-full gencl:bg-white gencl:hover:bg-secondary-150"
+      >
+        <ChevronDown className="gencl:h-5 gencl:w-5 gencl:stroke-secondary-600" />
+        <span className="gencl:sr-only">Next</span>
+      </Button>
     </div>
   );
 }

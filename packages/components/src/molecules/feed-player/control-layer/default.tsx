@@ -118,6 +118,12 @@ export function Default({
             onGroupSubscriptionChange={onGroupSubscriptionChange}
             onReactionStateChange={onReactionStateChange}
             variant={variant}
+            layout={
+              postDetails.video.cardLayoutId === 1 ||
+              postDetails.video.cardLayoutId === 2
+                ? postDetails.video.cardLayoutId
+                : null
+            }
           />
         ) : (
           <div
@@ -161,7 +167,7 @@ export function Default({
         <Scrubber
           spriteUrl={postDetails.video.thumbnailSprite ?? ""}
           className={cn(
-            "gencl:absolute gencl:bottom-0 gencl:z-10 gencl:transition-all"
+            "gencl:absolute gencl:bottom-0 gencl:z-20 gencl:transition-all"
           )}
         />
 

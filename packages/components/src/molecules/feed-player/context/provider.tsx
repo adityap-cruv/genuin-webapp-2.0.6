@@ -87,7 +87,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
 
   const { muted, setMuted } = useBaseContext();
 
-  const Analytics = useAnalytics();
+  const { track, EventName } = useAnalytics();
 
   const videoStateRef = useRef<VideoTimeStateType>({
     currentTime: 0,
@@ -178,14 +178,9 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
             setButtonAction("PLAY");
           }
           // Track play/pause events with Analytics only if the video play pause is triggered by user.
-          Analytics.track(
-            prev
-              ? Analytics.EventName.VIDEO_PAUSED
-              : Analytics.EventName.VIDEO_PLAY,
-            {
-              content_id: videoId,
-            }
-          );
+          track(prev ? EventName.VIDEO_PAUSED : EventName.VIDEO_PLAY, {
+            content_id: videoId,
+          });
         }
         return !prev;
       });
@@ -207,7 +202,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     if (byUser) {
       setButtonAction("PLAY");
       // Track play event with Analytics only if the video play is triggered by user.
-      Analytics.track(Analytics.EventName.VIDEO_PLAY, {
+      track(EventName.VIDEO_PLAY, {
         content_id: videoId,
       });
     }
@@ -219,7 +214,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     if (byUser) {
       setButtonAction("PAUSE");
       // Track pause event with Analytics only if the video pause is triggered by user.
-      Analytics.track(Analytics.EventName.VIDEO_PAUSED, {
+      track(EventName.VIDEO_PAUSED, {
         content_id: videoId,
       });
     }
@@ -236,14 +231,9 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
             setButtonAction("MUTE");
           }
           // Track mute/unmute events with Analytics only if the video mute/unmute is triggered by user.
-          Analytics.track(
-            prev
-              ? Analytics.EventName.VIDEO_UNMUTED
-              : Analytics.EventName.VIDEO_MUTED,
-            {
-              content_id: videoId,
-            }
-          );
+          track(prev ? EventName.VIDEO_UNMUTED : EventName.VIDEO_MUTED, {
+            content_id: videoId,
+          });
         }
         return !prev;
       });

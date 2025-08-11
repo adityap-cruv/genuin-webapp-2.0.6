@@ -203,6 +203,11 @@ export type UserParam = {
   thumb: string;
 };
 
+type AuthInfoType = {
+  signInUrl: string;
+  signUpUrl: string;
+};
+
 /**
  * Type of the auto user interaction to perform.
  *
@@ -238,6 +243,7 @@ export type EmbedDataType = {
    * Type of the auto user interaction to perform.
    */
   autoUserInteractionToPerform?: AutoUserInteractionToPerformType;
+  authInfo?: AuthInfoType;
 };
 
 export type CustomizationType = {

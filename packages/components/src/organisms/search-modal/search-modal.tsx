@@ -12,6 +12,7 @@ import {
   postRecents,
   RECENT_SEARCH_CONTENT_TYPE,
 } from "@genuin/components/react-query/api/search";
+import { useAnalytics } from "@genuin/components/context/analytics";
 
 type SearchModalProps = ComponentProps<typeof CommandDialog> & {
   placeholder?: string;
@@ -32,6 +33,7 @@ export function SearchModal({
 }: SearchModalProps) {
   const [query, setQuery] = useState("");
   const [showFullResults, setShowFullResults] = useState(false);
+  const { track, EventName } = useAnalytics();
 
   // Use debounced suggestions hook with configured delay
   const {
@@ -67,8 +69,15 @@ export function SearchModal({
       setQuery(value);
       resetToSuggestions();
       onSearch?.(value);
+
+      // Track search cancel when query is cleared
+      if (value === "" && query !== "") {
+        track(EventName.KEYWORD_SEARCH_CANCEL, {
+          previous_query: query,
+        });
+      }
     },
-    [onSearch, resetToSuggestions]
+    [onSearch, resetToSuggestions, query, track, EventName]
   );
 
   const handleSearch = useCallback(
@@ -76,15 +85,25 @@ export function SearchModal({
       setQuery(searchQuery);
       resetToSuggestions();
       onSearch?.(searchQuery);
+
+      // Track when a user selects a recent search
+      track(EventName.CHECK_RECENT_SEARCH, {
+        query: searchQuery,
+      });
     },
-    [onSearch, resetToSuggestions]
+    [onSearch, resetToSuggestions, track, EventName]
   );
 
   const handleSeeAll = useCallback(() => {
     setShowFullResults(true);
     onSeeAll?.();
     postRecents(RECENT_SEARCH_CONTENT_TYPE.text, undefined, query);
-  }, [onSeeAll, query]);
+
+    // Track keyword search
+    track(EventName.KEYWORD_SEARCHED, {
+      query: query,
+    });
+  }, [onSeeAll, query, track, EventName]);
 
   // Helper component for centered messages
   const CenteredMessage = ({

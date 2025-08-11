@@ -1,5 +1,6 @@
 import { checkAndAppendHttps, cn } from "@genuin/ui/lib/utils";
 import { useBaseContext } from "@genuin/components/context/base";
+import { useAnalytics } from "@genuin/components/context/analytics/context";
 import { ComponentProps } from "react";
 import { Link } from "../link";
 import { isCheckFifthVideoType } from "@genuin/components/lib/utils";
@@ -34,6 +35,7 @@ export function EmbedHeader({
 }: EmbedHeaderPropsType) {
   const { header } = useEmbedConfigs();
   const { brandDetails } = useBaseContext();
+  const { track, EventName } = useAnalytics();
 
   // Use the header.showHeader property from our organized config
   if (!header.showHeader) return;
@@ -87,11 +89,13 @@ export function EmbedHeader({
               : "var(--primary-500)",
           }}
           onClick={() => {
-            // TODO: ADD analytics tracking for CTA click
-            // Analytics.track(Analytics.EventNames.EmbedCTAClicked, {
-            //   redirection_url: header.ctaButton?.url,
-            //   button_name: header.ctaButton?.text,
-            // });
+            // Track the EMBED_CTA_CLICKED event when the CTA button is clicked
+            track(EventName.EMBED_CTA_CLICKED, {
+              redirection_url: header.ctaButton?.url,
+              button_name: header.ctaButton?.text,
+              brand_id: brandDetails?.brand_id,
+              variant: variant,
+            });
           }}
           className="gencl:whitespace-nowrap gencl:py-2 gencl:px-4 gencl:rounded-md gencl:text-body-1-demi"
           href={checkAndAppendHttps(header.ctaButton.url)}

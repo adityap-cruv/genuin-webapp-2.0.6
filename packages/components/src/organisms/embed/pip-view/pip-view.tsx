@@ -1,5 +1,6 @@
 import { useEmbedContext } from "@genuin/components/context/embed";
 import { EmbedEventContextType } from "@genuin/components/context/embed/event-bus";
+import { useAnalytics } from "@genuin/components/context/analytics/context";
 import {
   ControlLayer,
   FeedPlayer,
@@ -30,6 +31,7 @@ export function PipView({
 }: PipViewProps) {
   const [isPipViewOpen, setIsPipViewOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
+  const { track, EventName } = useAnalytics();
   const {
     embedEventBus,
     changeActiveIndex,
@@ -45,6 +47,20 @@ export function PipView({
       if (context.activePlayerType === "pip") {
         setActiveIndex(context.activeIndex);
         setIsPipViewOpen(true);
+
+        // Track FLOATING_EMBED event when PiP mode is enabled
+        if (videos.length > context.activeIndex) {
+          const currentVideo = videos[context.activeIndex];
+          if (currentVideo) {
+            track(EventName.FLOATING_EMBED, {
+              videoId: currentVideo.video.id,
+              postSlug: currentVideo.video.slug,
+              communityId: currentVideo.community.id,
+              brandId: currentVideo.community.brand?.id,
+              creatorName: currentVideo.owner.userName,
+            });
+          }
+        }
       } else {
         setIsPipViewOpen(false);
       }

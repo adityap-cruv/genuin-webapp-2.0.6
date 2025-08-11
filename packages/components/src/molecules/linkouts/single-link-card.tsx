@@ -3,8 +3,33 @@ import { checkAndAppendHttps, cn } from "@genuin/ui/lib/utils";
 import { LinkData } from "@genuin/components/react-query/api/linkouts/schema";
 import { LinkIcon, ChevronRight } from "lucide-react";
 import { useEmbedContext } from "@genuin/components/context/embed";
+import { useAnalytics } from "@genuin/components/context/analytics/context";
+import { VariantProps, cva } from "class-variance-authority";
 
-interface LinkCardProps {
+// Combined variant for both card types
+const linkCardVariants = cva(
+  "gencl:cursor-pointer gencl:gap-2 gencl:backdrop-blur-md gencl:rounded-xl gencl:text-sm gencl:font-medium gencl:text-white gencl:p-2 gencl:w-full gencl:transition-colors",
+  {
+    variants: {
+      variant: {
+        default: "gencl:bg-black/50 gencl:hover:bg-black/60",
+        transparent: "gencl:bg-transparent gencl:hover:bg-transparent",
+        primary: "gencl:bg-primary gencl:hover:bg-primary-700",
+        secondary: "gencl:bg-secondary gencl:hover:bg-secondary-700",
+      },
+      layout: {
+        withCTA: "gencl:flex gencl:flex-col",
+        standard: "gencl:flex gencl:items-center gencl:justify-between",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      layout: "standard",
+    },
+  }
+);
+
+interface LinkCardProps extends VariantProps<typeof linkCardVariants> {
   isEmbed: boolean;
   isOutside: boolean;
   link: LinkData;
@@ -13,17 +38,19 @@ interface LinkCardProps {
   ctaLink?: string;
 }
 
-export const LinkCard: React.FC<LinkCardProps> = ({
+export const LinkCard = ({
   isEmbed,
   isOutside,
   link,
   showThumbnail = false,
   ctaText = "",
   ctaLink = "",
-}) => {
+  variant,
+}: LinkCardProps) => {
   const hasImage = link.image && link.image.trim() !== "";
   const hasTitle = link.title && link.title.trim() !== "";
   const hasCTA = ctaText && ctaText.trim() !== "";
+  const { track, EventName } = useAnalytics();
 
   const getDomain = (url: string): string => {
     try {
@@ -46,13 +73,23 @@ export const LinkCard: React.FC<LinkCardProps> = ({
     }
   };
 
-  const handleCTAClick = () => {
+  const handleCTAClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent triggering card click
     const url = checkAndAppendHttps(ctaLink);
+    track(EventName.LINKOUTS_CTA_CLICKED, {
+      linkUrl: ctaLink,
+      linkTitle: link.title || getDomain(link.link),
+    });
     window.open(url, "_blank");
   };
 
-  const handleCardClick = () => {
+  const handleCardClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     const url = checkAndAppendHttps(link.link);
+    track(EventName.LINKOUTS_CLICKED, {
+      linkUrl: link.link,
+      linkTitle: link.title || getDomain(link.link),
+    });
     window.open(url, "_blank");
   };
 
@@ -60,8 +97,10 @@ export const LinkCard: React.FC<LinkCardProps> = ({
     return (
       <div
         className={cn(
-          "gencl:bg-black/50 gencl:cursor-pointer gencl:gap-2 gencl:flex gencl:flex-col gencl:backdrop-blur-md gencl:rounded-xl gencl:text-sm gencl:font-medium gencl:text-white gencl:p-2 gencl:w-full",
-          isOutside && "gencl:bg-transparent gencl:hover:bg-transparent"
+          linkCardVariants({
+            variant: isOutside ? "transparent" : variant,
+            layout: "withCTA",
+          })
         )}
         onClick={handleCardClick}
       >
@@ -117,8 +156,10 @@ export const LinkCard: React.FC<LinkCardProps> = ({
   return (
     <div
       className={cn(
-        "gencl:bg-black/50 gencl:gap-2 gencl:flex gencl:items-center gencl:justify-between gencl:backdrop-blur-md gencl:rounded-xl gencl:text-sm gencl:font-medium gencl:text-white gencl:p-2 gencl:w-full gencl:cursor-pointer gencl:hover:bg-black/60 gencl:transition-colors",
-        isOutside && "gencl:bg-transparent gencl:hover:bg-transparent"
+        linkCardVariants({
+          variant: isOutside ? "transparent" : variant,
+          layout: "standard",
+        })
       )}
       onClick={handleCardClick}
     >

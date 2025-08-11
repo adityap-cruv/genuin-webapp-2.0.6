@@ -17,6 +17,7 @@ import { TooltipAction } from "./tooltip";
 import { cva, VariantProps } from "class-variance-authority";
 import { useBaseContext } from "@genuin/components/context/base";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { useAnalytics } from "@genuin/components/context/analytics";
 
 type ActionType = "REPOST" | "REACTION" | "COMMENT" | "SHARE" | "MORE";
 
@@ -76,6 +77,17 @@ const defaultActionWrappers: Record<
 > = {
   REPOST: (node, _context) => {
     const { authenticationStatus } = useAuthContext();
+    const { track, EventName } = useAnalytics();
+
+    // Track repost event when clicked
+    const handleRepostClick = () => {
+      track(EventName.VIDEO_REPOST, {
+        content_id: _context.contentId,
+        content_category: "loop",
+        event_record_screen: "feed",
+        event_target_screen: "none",
+      });
+    };
 
     if (authenticationStatus === "unauthenticated") {
       return (
@@ -92,54 +104,87 @@ const defaultActionWrappers: Record<
           }}
           asChild
         >
-          {node}
+          <div onClick={handleRepostClick}>{node}</div>
         </AuthenticationModal>
       );
     }
 
     return (
       <RepostModal key="repost-modal" videoId={_context.contentId} asChild>
-        {node}
+        <div onClick={handleRepostClick}>{node}</div>
       </RepostModal>
     );
   },
-  REACTION: (node, context) => (
-    <ReactionButton
-      key="reaction-button"
-      shareUrl={context.shareUrl}
-      videoSlug={context.slug}
-      isReacted={context.isReacted}
-      contentId={context.contentId}
-      reactionCount={context.reactionCount}
-      contentType="VIDEO"
-      onReactionStateChange={context.onReactionStateChange}
-      children={node}
-      reactionButtonTheme={context.variant}
-      showReactionCount
-      withCustomChildren
-      asChild
-    />
-  ),
-  COMMENT: (node, _context) => node,
-  SHARE: (node, _context) => (
-    <ShareButton
-      key="share-button"
-      pathName={_context.shareUrl}
-      withCustomChildren
-    >
-      {node}
-    </ShareButton>
-  ),
-  MORE: (node, context) => (
-    <Menu
-      key="actions-more-menu"
-      contentId={context.contentId}
-      shareUrl={context.shareUrl}
-      videoSlug={context.slug}
-      groupSlug={context.groupSlug}
-      children={node}
-    />
-  ),
+  REACTION: (node, context) => {
+    return (
+      <ReactionButton
+        key="reaction-button"
+        shareUrl={context.shareUrl}
+        videoSlug={context.slug}
+        isReacted={context.isReacted}
+        contentId={context.contentId}
+        reactionCount={context.reactionCount}
+        contentType="VIDEO"
+        onReactionStateChange={context.onReactionStateChange}
+        children={node}
+        reactionButtonTheme={context.variant}
+        showReactionCount
+        withCustomChildren
+        asChild
+      />
+    );
+  },
+  COMMENT: (node, _context) => {
+    const { track, EventName } = useAnalytics();
+
+    // Track comment event when clicked
+    const handleCommentClick = () => {
+      track(EventName.VIDEO_COMMENT, {
+        content_id: _context.contentId,
+        content_category: "loop",
+        event_record_screen: "feed",
+        event_target_screen: "none",
+      });
+    };
+
+    return <div onClick={handleCommentClick}>{node}</div>;
+  },
+  SHARE: (node, _context) => {
+    const { track, EventName } = useAnalytics();
+
+    // Track share event when clicked
+    const handleShareClick = () => {
+      track(EventName.VIDEO_SHARED, {
+        content_id: _context.contentId,
+        content_category: "loop",
+        event_record_screen: "feed",
+        event_target_screen: "none",
+      });
+    };
+
+    return (
+      <ShareButton
+        key="share-button"
+        pathName={_context.shareUrl}
+        withCustomChildren
+        onClick={handleShareClick}
+      >
+        {node}
+      </ShareButton>
+    );
+  },
+  MORE: (node, context) => {
+    return (
+      <Menu
+        key="actions-more-menu"
+        contentId={context.contentId}
+        shareUrl={context.shareUrl}
+        videoSlug={context.slug}
+        groupSlug={context.groupSlug}
+        children={node}
+      />
+    );
+  },
 };
 
 export function Actions({

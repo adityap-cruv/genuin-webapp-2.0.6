@@ -10,6 +10,7 @@ import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { Stats } from "@genuin/components/molecules/stats";
 import { Tag } from "@genuin/components/molecules/tag";
 import { compressText } from "@genuin/components/lib/utils";
+import { useAnalytics } from "@genuin/components/context/analytics";
 
 type CommunityHoverCardProps = {
   communityDetails: PostDetailsType["community"];
@@ -26,6 +27,7 @@ export function CommunityHoverCard({
 }: CommunityHoverCardProps) {
   const { name, profileImage, isPrivate, brand, id, userRole } =
     communityDetails;
+  const { track, EventName } = useAnalytics();
 
   return (
     <div
@@ -103,6 +105,15 @@ export function CommunityHoverCard({
             type: "community",
             slug: communityDetails.slug,
           })}
+          onClick={() => {
+            track(EventName.COMMUNITY_SHARED, {
+              community_id: communityDetails.id,
+              share_url: buildPageUrl({
+                type: "community",
+                slug: communityDetails.slug,
+              }),
+            });
+          }}
         />
       </div>
     </div>

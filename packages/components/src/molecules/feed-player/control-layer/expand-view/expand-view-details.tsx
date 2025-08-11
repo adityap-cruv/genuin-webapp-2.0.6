@@ -12,7 +12,102 @@ import { Pills } from "@genuin/components/molecules/feed-player/pills";
 import { Actions } from "@genuin/components/molecules/actions";
 import { CommentsDialog } from "@genuin/components/molecules/comments";
 import { controlLayerVariant } from "../control-layer";
-import { VariantProps } from "class-variance-authority";
+import { VariantProps, cva } from "class-variance-authority";
+
+/**
+ * Card Layout Types
+ * Define the different card layout variants used in the app
+ */
+export enum CardLayoutType {
+  DEFAULT = 1, // Default card layout
+  IHEART = 2, // iHeart specific layout
+  // Add other layout types as needed
+}
+
+/**
+ * Card layout variant definition
+ */
+const cardLayoutVariant = cva("", {
+  variants: {
+    layout: {
+      1: "", // Default layout (CardLayoutType.DEFAULT)
+      2: "", // iHeart layout (CardLayoutType.IHEART)
+      // Add other layout variants as needed
+    },
+  },
+  defaultVariants: {
+    layout: 1,
+  },
+});
+
+/**
+ * Default layout user profile display component
+ */
+function DefaultUserProfile({ owner }: { owner: PostDetailsType["owner"] }) {
+  return (
+    <ProfileLink
+      url={buildPageUrl({
+        type: !!owner.brand ? "brand" : "profile",
+        slug: !!owner.brand ? owner.brand.slug : owner.userName,
+      })}
+      userLogoType={owner.brand?.userLogo}
+    >
+      @{owner.userName}
+    </ProfileLink>
+  );
+}
+
+/**
+ * iHeart layout user profile display component
+ */
+function IHeartUserProfile({ owner }: { owner: PostDetailsType["owner"] }) {
+  return (
+    <div>
+      <p className="gencl:text-body-2-semi-bold gencl:line-clamp-1">
+        {owner.name}
+      </p>
+      <p className="gencl:text-body-2-normal gencl:line-clamp-2">{owner.bio}</p>
+    </div>
+  );
+}
+
+/**
+ * Default layout description display component
+ */
+function DefaultDescription({ description }: { description: any }) {
+  return (
+    <ReadMore
+      showExpandText={false}
+      text={description}
+      maxLines={2}
+      shouldAnimate
+      position="overlay"
+      className="gencl:text-body-1-medium"
+    />
+  );
+}
+
+/**
+ * iHeart layout description display component
+ */
+function IHeartDescription({ video }: { video: PostDetailsType["video"] }) {
+  return (
+    <div>
+      <p className="gencl:text-white gencl:text-body-2-semi-bold gencl:font-normal">
+        {getMonthYear(video.attributes?.timestamp ?? video.createdAt ?? 0)} •{" "}
+        {getFormattedDuration(String(video.duration ?? ""))}
+      </p>
+      <ReadMore
+        showExpandText={false}
+        text={video.description ?? ""}
+        maxLines={2}
+        shouldAnimate
+        position="overlay"
+        textClassName="gencl:text-body-2-normal"
+      />
+    </div>
+  );
+}
 
 type ExpandViewProps = ComponentProps<"div"> & {
   postDetails: PostDetailsType;
@@ -27,7 +122,8 @@ type ExpandViewProps = ComponentProps<"div"> & {
   onCommunityJoinStatusChange?: ComponentProps<
     typeof Pills
   >["onCommunityJoinStatusChange"];
-} & VariantProps<typeof controlLayerVariant>;
+} & VariantProps<typeof controlLayerVariant> &
+  VariantProps<typeof cardLayoutVariant>;
 
 export function ExpandViewDetails({
   className,
@@ -38,15 +134,24 @@ export function ExpandViewDetails({
   onCommunityJoinStatusChange,
   onReactionStateChange,
   variant,
+  layout,
   ...restProps
 }: ExpandViewProps) {
   const { showSeeker } = usePlayerContext();
+
+  // Determine the card layout based on postDetails or provided layout prop
+  // Use the layout prop if provided, otherwise use the cardLayoutId from postDetails
+  // Cast to appropriate type for the variant system (1 or 2)
+  const cardLayoutId = (layout ||
+    postDetails.video.cardLayoutId ||
+    CardLayoutType.DEFAULT) as 1 | 2;
 
   return (
     <div
       className={cn(
         "gencl:absolute gencl:gap-2 gencl:w-full gencl:z-20 gencl:right-0 gencl:bottom-0 gencl:p-4",
         "gencl:bg-gradient-to-b gencl:from-[#11111100] gencl:to-[#111111b3]",
+        cardLayoutVariant({ layout: cardLayoutId }),
         className
       )}
       {...restProps}
@@ -62,27 +167,10 @@ export function ExpandViewDetails({
               alt={postDetails.owner.name ?? ""}
               isAvatar={postDetails.owner.isAvatar}
             />
-            {postDetails.video.cardLayoutType === "iheart" ? (
-              <div>
-                <p className="gencl:text-body-2-semi-bold gencl:line-clamp-1">
-                  {postDetails.owner.name}
-                </p>
-                <p className="gencl:text-body-2-normal gencl:line-clamp-2">
-                  {postDetails.owner.bio}
-                </p>
-              </div>
+            {cardLayoutId === CardLayoutType.IHEART ? (
+              <IHeartUserProfile owner={postDetails.owner} />
             ) : (
-              <ProfileLink
-                url={buildPageUrl({
-                  type: !!postDetails.owner.brand ? "brand" : "profile",
-                  slug: !!postDetails.owner.brand
-                    ? postDetails.owner.brand.slug
-                    : postDetails.owner.userName,
-                })}
-                userLogoType={postDetails.owner.brand?.userLogo}
-              >
-                @{postDetails.owner.userName}
-              </ProfileLink>
+              <DefaultUserProfile owner={postDetails.owner} />
             )}
           </div>
 
@@ -90,38 +178,14 @@ export function ExpandViewDetails({
             linkouts={postDetails.video.linkouts}
             linkoutId={postDetails.video.linkoutId}
             isActive={isActive}
+            cardVariant={layout === 2 ? "primary" : "default"}
             className="gencl:w-full"
           />
 
-          {postDetails.video.cardLayoutType === "iheart" ? (
-            <>
-              <p className="gencl:text-white gencl:text-body-2-semi-bold gencl:font-normal">
-                {getMonthYear(
-                  postDetails.video.attributes?.timestamp ??
-                    postDetails.video.createdAt ??
-                    0
-                )}{" "}
-                •{" "}
-                {getFormattedDuration(String(postDetails.video.duration ?? ""))}
-              </p>
-              <ReadMore
-                showExpandText={false}
-                text={postDetails.video.description}
-                maxLines={2}
-                shouldAnimate
-                position="overlay"
-                textClassName="gencl:text-body-2-normal"
-              />
-            </>
+          {cardLayoutId === CardLayoutType.IHEART ? (
+            <IHeartDescription video={postDetails.video} />
           ) : (
-            <ReadMore
-              showExpandText={false}
-              text={postDetails.video.description}
-              maxLines={2}
-              shouldAnimate
-              position="overlay"
-              className="gencl:text-body-1-medium"
-            />
+            <DefaultDescription description={postDetails.video.description} />
           )}
         </div>
         <Actions

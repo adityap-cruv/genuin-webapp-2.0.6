@@ -19,6 +19,7 @@ import { SendIcon } from "@genuin/ui/icons";
 import { useContactUsMutation } from "@genuin/components/react-query/api/authentication/use-contact-us-mutation";
 import { Toast } from "@genuin/ui/components";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { useAnalytics } from "@genuin/components/context/analytics";
 
 const formSchema = z.object({
   email: z
@@ -40,6 +41,7 @@ export const ContactUs = ({ email }: { email: string }) => {
   const { isValid, isDirty } = form.formState;
   const contactUsMutation = useContactUsMutation();
   const { isDesktop } = useDeviceDetectMediaQuery();
+  const { track, EventName } = useAnalytics();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     contactUsMutation.mutate(
@@ -50,6 +52,9 @@ export const ContactUs = ({ email }: { email: string }) => {
       },
       {
         onSuccess: () => {
+          track(EventName.SETTINGS_CONTACT_US_FORM_SENT, {
+            email: values.email,
+          });
           Toast.Success({
             message:
               "Your message has been sent. Our team will get back to you shortly.",

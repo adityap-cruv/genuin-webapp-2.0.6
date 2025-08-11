@@ -16,6 +16,7 @@ import { Loader } from "@genuin/ui/components/loader";
 import { getActionText } from "@genuin/components/lib/utils";
 import { BrandLogo } from "@genuin/components/molecules/brand";
 import { Button } from "@genuin/ui/components";
+import { useAnalytics } from "@genuin/components/context/analytics";
 
 export type GetAppProps = ComponentProps<"div"> & {
   onSubmit?: (data: AppDownloadFormData) => void;
@@ -28,6 +29,15 @@ export function GetApp({ onSubmit, ...props }: GetAppProps) {
   const [deeplinkUrl, setDeeplinkUrl] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const clickAction = getAppData?.data?.type;
+  const { track, EventName } = useAnalytics();
+
+  // Track view event when component mounts
+  useEffect(() => {
+    track(EventName.DOWNLOAD_APP_VIEWED, {
+      action_type: clickAction || "get_app",
+      source: step || "standard",
+    });
+  }, [track, EventName, clickAction, step]);
 
   useEffect(() => {
     const generateDeeplink = async () => {
@@ -119,7 +129,17 @@ export function GetApp({ onSubmit, ...props }: GetAppProps) {
       )}
 
       <div>
-        <Link target="_blank" rel="noopener noreferrer" href={deeplinkUrl}>
+        <Link
+          target="_blank"
+          rel="noopener noreferrer"
+          href={deeplinkUrl}
+          onClick={() => {
+            track(EventName.DOWNLOAD_APP_CLICKED, {
+              action_type: clickAction || "get_app",
+              source: "mobile_button",
+            });
+          }}
+        >
           <Button
             theme="primary"
             className="gencl:w-full gencl:flex gencl:items-center gencl:justify-center gencl:sm:hidden!"

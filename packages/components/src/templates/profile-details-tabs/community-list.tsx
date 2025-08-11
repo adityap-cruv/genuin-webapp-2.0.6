@@ -20,6 +20,7 @@ import { CommunityUserRole } from "@genuin/components/types/post";
 import { ComponentErrorState } from "@genuin/components/organisms/error-state-component";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { Groups } from "./group-list";
+import { useAnalytics } from "@genuin/components/context/analytics";
 
 export function CommunityList({
   userId,
@@ -36,6 +37,7 @@ export function CommunityList({
     hasNextPage,
     isFetchingNextPage,
   } = useGetProfileCommunities(userId, forBrand);
+  const { track, EventName } = useAnalytics();
 
   const communities = useMemo(
     () => data?.pages.flatMap((page) => page.communities) ?? [],
@@ -130,6 +132,15 @@ export function CommunityList({
                         type: "community",
                         slug: community.slug,
                       })}
+                      onClick={() => {
+                        track(EventName.COMMUNITY_SHARED, {
+                          community_id: community.id,
+                          share_url: buildPageUrl({
+                            type: "community",
+                            slug: community.slug,
+                          }),
+                        });
+                      }}
                     />
                   </div>
                 }

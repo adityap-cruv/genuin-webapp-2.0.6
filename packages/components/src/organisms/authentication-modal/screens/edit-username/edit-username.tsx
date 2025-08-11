@@ -20,6 +20,7 @@ import { useUpdateUserMutation } from "@genuin/components/react-query/api/authen
 import { sanitizeInput } from "@genuin/components/lib/utils";
 import { Toast } from "@genuin/ui/components";
 import { useAuthenticationModalContext } from "../../context";
+import { useAnalytics } from "@genuin/components/context/analytics/context";
 
 const usernameSchema = z.object({
   username: z.string().regex(/^[a-zA-Z0-9._-]+$/, {
@@ -33,6 +34,7 @@ export function EditUserName({
 }: ComponentProps<"div">) {
   const { user, updateUser } = useAuthContext();
   const { closeModal } = useAuthenticationModalContext();
+  const { track, EventName } = useAnalytics();
 
   const form = useForm<z.infer<typeof usernameSchema>>({
     resolver: zodResolver(usernameSchema),
@@ -65,11 +67,19 @@ export function EditUserName({
     useUpdateUserMutation({
       onSuccess: ({ status }) => {
         if (status) {
+          const username = form.getValues("username");
           updateUser({
             ...user,
-            nickname: form.getValues("username"),
+            nickname: username,
             usernameSet: true,
           });
+
+          // Track username set event
+          track(EventName.KS_USERNAME_SET, {
+            username: username,
+            isNewUser: !user?.usernameSet,
+          });
+
           Toast.Success({
             message: "Your username has been updated",
             description: "",

@@ -3,6 +3,7 @@
 import { createContext, useContext } from "react";
 import { EventNameType, EventPayload } from "./types";
 
+// TODO Change the type in case of SDK
 /**
  * Defines the names of trackable events.
  * Add more event names as your application requires.
@@ -19,7 +20,40 @@ export const EventName = {
   VIDEO_WATCHED: "Video Watched",
   VIDEO_PLAY: "Video Play",
   PAGE_VIEW: "Page Viewed",
-  BECOME_CREATOR : "Become Creator Clicked"
+  BECOME_CREATOR: "Become CB Request Clicked",
+  EMBED_INITIALIZED: "Embed Initialized",
+  EMBED_VIEWED: "Embed Viewed",
+  // EMBED_MAXIMIZED: "Embed Maximized",
+  EMBED_CTA_CLICKED: "Embed CTA Clicked",
+  FLOATING_EMBED: "Floating Embed",
+  VIDEO_MAXIMIZED: "Video Maximized",
+  VIDEO_MINIMIZED: "Video Minimized",
+  VIDEO_INVIEW: "Video Inview",
+  VIDEO_REPOST: "Repost",
+  VIDEO_SPARK: "Video Sparked",
+  COMMENT_SPARK: "Comment Sparked",
+  VIDEO_COMMENT: "Comment",
+  VIDEO_SHARED: "Video Shared",
+  VIDEO_REPORT: "Video Reported",
+  COMMENT_REPORT: "Comment Reported",
+  COMMUNITY_SHARED: "Community Shared",
+  LINKOUTS_VIEWED: "Link Viewed",
+  LINKOUTS_CLICKED: "Link Clicked",
+  LINKOUTS_CTA_CLICKED: "Link CTA Button Clicked",
+  KS_USERNAME_SET: "Ks Username Set",
+  // SETTINGS_CLOSED: "Settings Closed",
+  SUBSCRIPTION_CLICKED: "Subscription Clicked",
+  LOG_OUT: "Log Out",
+  SETTINGS_CONTACT_US_FORM_SENT: "Settings Contact Us Form Sent",
+  NOTIFICATION_SETTINGS_MODIFIED: "Notification Settings Modified",
+  KEYWORD_SEARCHED: "Keyword Searched",
+  CHECK_RECENT_SEARCH: "Check Recent Search",
+  CLEAR_RECENT_SEARCH: "Clear Recent Search",
+  KEYWORD_SEARCH_CANCEL: "Keyword Search Cancel",
+  GET_APP_BUTTON_CLICKED: "Get App Button Clicked",
+  DOWNLOAD_APP_CLICKED: "Download App Clicked",
+  DOWNLOAD_APP_VIEWED: "Download App Viewed",
+  GET_APP_LINK_SENT: "Get App Link Sent",
 } as const;
 
 type AnalyticsContextType = {

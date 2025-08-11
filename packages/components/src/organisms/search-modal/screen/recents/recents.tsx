@@ -17,6 +17,7 @@ import { MemberItem } from "@genuin/components/molecules/member-item";
 import { Skeleton } from "@genuin/ui/skeleton";
 import { DialogClose } from "@genuin/ui/components/dialog";
 import { useAuthContext } from "@genuin/components/context/auth";
+import { useAnalytics } from "@genuin/components/context/analytics";
 
 export function Recents({
   className,
@@ -27,6 +28,7 @@ export function Recents({
 }) {
   const { authenticationStatus } = useAuthContext();
   const isAuthenticated = authenticationStatus === "authenticated";
+  const { track, EventName } = useAnalytics();
   const {
     data: recentSearches,
     isLoading,
@@ -51,6 +53,8 @@ export function Recents({
   const handleClearAll = async () => {
     try {
       await deleteRecentMutation.mutateAsync({ all: true });
+      // Track clear all recents event
+      track(EventName.CLEAR_RECENT_SEARCH);
     } catch (error) {
       console.error("Failed to clear all recent searches:", error);
     }
@@ -83,7 +87,7 @@ export function Recents({
         {...restProps}
       >
         <p className="gencl:text-body-1-semi-bold gencl:text-secondary-600">
-      Try searching for communities, topics, or keywords
+          Try searching for communities, topics, or keywords
         </p>
       </div>
     );
@@ -228,7 +232,7 @@ function RecentItem({
         className="gencl:opacity-0 gencl:group-hover:opacity-100 gencl:transition-opacity gencl:p-1 hover:gencl:bg-secondary gencl:rounded-xs gencl:text-secondary-600"
         aria-label="Remove from recent searches"
       >
-        <XIcon variant="default" size="md" />
+        <XIcon size="md" />
       </Button>
     </div>
   );

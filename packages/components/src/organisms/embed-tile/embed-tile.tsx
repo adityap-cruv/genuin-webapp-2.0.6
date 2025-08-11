@@ -13,10 +13,11 @@ import { useBoolean } from "usehooks-ts";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { Linkouts } from "../linkouts";
 import { Stats } from "@genuin/components/molecules/stats";
-import { CommentIcon, PlayIcon, SparkIcon } from "@genuin/ui/icons";
+import { CommentIcon, PlayIcon } from "@genuin/ui/icons";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { useCallback } from "react";
 import { useEmbedContext } from "@genuin/components/context/embed";
+import { DynamicReactionIcon } from "@genuin/components/molecules/reaction-button";
 
 const embedTileVariants = cva(
   "gencl:h-full gencl:rounded-lg gencl:overflow-clip gencl:flex gencl:flex-col",
@@ -78,42 +79,50 @@ export function EmbedTile({
         />
       </PlayerProvider>
       {config.links.showLinkOutside && (
-        <>
-          <div className="gencl:h-27 gencl:w-full gencl:flex gencl:items-center">
-            <Linkouts
-              variant="embed"
-              // className="gencl:border-b"
-              isActive={true}
-              linkouts={postDetails.video.linkouts}
-              linkoutId={postDetails.video.linkoutId}
-            />
-          </div>
-          <hr className="gencl:w-[90%] gencl:border-secondary-150 gencl:mx-auto" />
-        </>
-      )}
-      {config.engagement.showSocialInteractionData && (
-        <div className="gencl:h-10">
-          <Stats
-            className={cn(
-              "gencl:flex gencl:gap-2 gencl:justify-between gencl:p-3 gencl:w-full"
-            )}
-            valueClassName="gencl:text-black! gencl:text-body-2-medium"
-            stats={{
-              Views: {
-                value: 0,
-                icon: <PlayIcon theme="light" size="sm" />,
-              },
-              Reactions: {
-                value: postDetails.video.sparkCount,
-                icon: <SparkIcon theme="light" size="sm" />,
-              },
-              Comments: {
-                value: postDetails.video.commentCount,
-                icon: <CommentIcon theme="light" size="sm" />,
-              },
-            }}
+        <div className="gencl:h-27 gencl:w-full gencl:flex gencl:items-center">
+          <Linkouts
+            variant="embed"
+            isActive={true}
+            showImmediately
+            linkouts={postDetails.video.linkouts}
+            linkoutId={postDetails.video.linkoutId}
           />
         </div>
+      )}
+      {config.engagement.showSocialInteractionData && (
+        <>
+          <hr className="gencl:w-[90%] gencl:border-secondary-150 gencl:mx-auto" />
+          <div className="gencl:h-10">
+            <Stats
+              className={cn(
+                "gencl:flex gencl:gap-2 gencl:justify-between gencl:p-3 gencl:w-full"
+              )}
+              valueClassName="gencl:text-black! gencl:text-body-2-medium"
+              stats={{
+                Views: {
+                  value: 0,
+                  icon: <PlayIcon theme="light" size="sm" />,
+                },
+                Reactions: {
+                  value: postDetails.video.sparkCount,
+                  icon: (
+                    <DynamicReactionIcon
+                      sparkCount={0}
+                      isSparked={false}
+                      iconHeight={16}
+                      iconWidth={16}
+                      theme="light"
+                    />
+                  ),
+                },
+                Comments: {
+                  value: postDetails.video.commentCount,
+                  icon: <CommentIcon theme="light" size="sm" />,
+                },
+              }}
+            />
+          </div>
+        </>
       )}
     </div>
   );
@@ -131,6 +140,7 @@ function EmbedPlayer({
   index,
 }: EmbedPlayerProps) {
   const { isAdPlaying } = usePlayerContext();
+  const config = useEmbedConfigs();
   const { changeActivePlayerType } = useEmbedContext();
 
   const handleClickOnEmbedTile = useCallback(() => {
@@ -152,6 +162,8 @@ function EmbedPlayer({
         videoId={postDetails.video.id}
         src={postDetails.video.source}
         poster={postDetails.video.thumbnail}
+        loop={config.video.playVideoInLoop && isActive}
+        autoPlay={config.video.autoplay && isActive}
         className="gencl:h-full gencl:w-full gencl:object-cover"
       />
       <ControlLayer

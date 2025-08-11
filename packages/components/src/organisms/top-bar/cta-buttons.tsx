@@ -12,6 +12,7 @@ import { useCallback, useState } from "react";
 import { Search } from "@genuin/components/molecules/search";
 import { cva, VariantProps } from "class-variance-authority";
 import { NotificationIcon } from "@genuin/ui/icons";
+import { useAnalytics } from "@genuin/components/context/analytics";
 
 export const iconVariant = cva(
   "gencl:flex gencl:size-9 gencl:items-center gencl:justify-center gencl:rounded-full",
@@ -35,6 +36,7 @@ export const iconVariant = cva(
 export function CtaButtons({ theme }: VariantProps<typeof iconVariant>) {
   const { web_cta } = useBaseContext().brandDetails;
   const { authenticationStatus } = useAuthContext();
+  const { track, EventName } = useAnalytics();
 
   const showApp = web_cta === "app" || web_cta === "both";
   const showLogin = web_cta === "login" || web_cta === "both";
@@ -56,7 +58,13 @@ export function CtaButtons({ theme }: VariantProps<typeof iconVariant>) {
       )}
 
       {showApp && (
-        <AuthenticationModal asChild customStep="GET_APP">
+        <AuthenticationModal
+          asChild
+          customStep="GET_APP"
+          onClick={() => {
+            track(EventName.GET_APP_BUTTON_CLICKED);
+          }}
+        >
           <Button theme="outline" size="sm">
             Get app
           </Button>
@@ -116,6 +124,7 @@ function UserMenu() {
  */
 function UserMenuContent({ onClose }: { onClose: () => void }) {
   const { user, signOut } = useAuthContext();
+  const { track, EventName } = useAnalytics();
   if (!user) return null;
 
   // Profile is considered complete if all required fields are truthy
@@ -167,6 +176,7 @@ function UserMenuContent({ onClose }: { onClose: () => void }) {
         theme="custom"
         onClick={() => {
           onClose();
+          track(EventName.LOG_OUT);
           signOut(buildPageUrl({ type: "home" }));
         }}
       >

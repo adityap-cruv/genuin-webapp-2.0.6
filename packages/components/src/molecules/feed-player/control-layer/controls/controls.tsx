@@ -146,6 +146,19 @@ export const Controls = memo(function Controls({
           </div>
         )}
 
+      {isMobile && isEmbed && (
+        <div
+          onClick={toggleExpandView}
+          className="gencl:flex gencl:h-12 gencl:w-12 gencl:cursor-pointer gencl:flex-shrink-0 gencl:items-center gencl:justify-center gencl:rounded-full gencl:bg-black/40"
+        >
+          {showExpandView ? (
+            <CollapseIcon theme="dark" />
+          ) : (
+            <ExpandIcon theme="dark" />
+          )}
+        </div>
+      )}
+
       {isEmbed && (
         <div className="gencl:flex gencl:w-full gencl:items-center gencl:justify-between">
           {showUserName && ownerInfo ? (
@@ -157,6 +170,7 @@ export const Controls = memo(function Controls({
           )}
           <EmbedControls
             className={cn(spacing === "liberal" && "gencl:gap-3")}
+            size="sm"
           />
         </div>
       )}

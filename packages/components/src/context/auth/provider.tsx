@@ -17,7 +17,7 @@ import { useGetUserDataForSSOMutation } from "@genuin/components/react-query/api
 import { Toast } from "@genuin/ui/components/toaster";
 import { invalidateAllQueries } from "@genuin/components/react-query/client";
 import { useBaseContext } from "../base";
-import { useEmbedContext } from "../embed";
+import { useSafeEmbedContext } from "../embed/context";
 
 // Define global window type for genuinAuth
 declare global {
@@ -68,7 +68,7 @@ export function AuthProvider({
   const { isEmbed } = useBaseContext?.() || { isEmbed: false };
 
   // Access embedData.style from EmbedContext if available
-  const { embedData } = useEmbedContext?.() || { embedData: { style: "" } };
+  const embedData = useSafeEmbedContext?.()?.embedData;
 
   const { mutate: getUserDataForSSO } = useGetUserDataForSSOMutation({
     onSuccess: async ({ user }) => {
@@ -191,7 +191,7 @@ export function AuthProvider({
 
       // In embed environments with genuinAuth callback or non-standard_wall style,
       // return a function to handle external auth
-      if (window.genuinAuth || embedData.style !== "standard_wall") {
+      if (window.genuinAuth || embedData?.style !== "standard_wall") {
         return () => {
           if (window.genuinAuth) {
             window.genuinAuth(authCallbackData);
@@ -205,7 +205,7 @@ export function AuthProvider({
       // so consumer shows auth modal
       return undefined;
     },
-    [isEmbed, embedData.style]
+    [isEmbed, embedData?.style]
   );
 
   return (

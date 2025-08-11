@@ -1,7 +1,7 @@
 "use client";
 import { Skeleton } from "@genuin/ui/components/skeleton";
 import { cn } from "@genuin/ui/lib/utils";
-import { ComponentProps, useState } from "react";
+import { ComponentProps } from "react";
 import { cva, VariantProps } from "class-variance-authority";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { SwiperSlide } from "swiper/react";
@@ -23,7 +23,7 @@ const carouselSkeletonVariant = cva("gencl:bg-secondary-200 gencl:rounded-md", {
   variants: {
     variant: {
       carousel: "",
-      feed: "",
+      feed: "gencl:flex gencl:flex-col",
     },
     defaultVariants: {
       variant: "carousel",
@@ -37,19 +37,16 @@ type CarouselSkeletonProps = VariantProps<typeof carouselSkeletonVariant> &
 export function SdkSkeleton({
   className,
   variant,
+  containerHeight: propsContainerHeight,
+  containerWidth: propsContainerWidth,
   ...restProps
-}: CarouselSkeletonProps) {
+}: CarouselSkeletonProps & {
+  containerHeight?: number;
+  containerWidth?: number;
+}) {
   const config = useEmbedConfigs();
-  // Use shared utility for embed variant
   const embedVariant = getEmbedVariant(config, variant);
-
-  // Create a set of skeleton items (3 is a good number for initial loading)
-  const skeletonItems = Array(4).fill(null);
-
-  // Use shared hook for embed dimensions
-  const embedHeights = useEmbedDimensions(config);
-
-  // Extract values from our embedHeights
+  const skeletonItems = Array(6).fill(null);
   const {
     containerHeight,
     containerWidth,
@@ -57,7 +54,7 @@ export function SdkSkeleton({
     linkoutHeight,
     spaceBetweenVideos,
     availableHeight,
-  } = embedHeights;
+  } = useEmbedDimensions(config);
 
   return (
     <div
@@ -66,8 +63,8 @@ export function SdkSkeleton({
         className
       )}
       style={{
-        // height: containerHeight,
-        width: containerWidth,
+        height: propsContainerHeight || containerHeight,
+        width: propsContainerWidth || containerWidth,
       }}
       {...restProps}
     >
@@ -105,7 +102,17 @@ function NavigationButtons({
 }: {
   embedVariant: "feed" | "carousel";
 }) {
+  const config = useEmbedConfigs();
+
+  // Only render navigation buttons if they're enabled in config
+  if (!config.view.showNavigation) {
+    return null;
+  }
+
   if (embedVariant === "carousel") {
+    // Only show carousel navigation if carousel icons are enabled
+    if (!config.view.showCarouselIcon) return null;
+
     // Carousel layout - buttons on left and right sides
     return (
       <div className="gencl:absolute gencl:z-20 gencl:inset-y-0 gencl:left-0 gencl:right-0 gencl:pointer-events-none">
@@ -187,9 +194,9 @@ function EmbedHeaderSkeleton({
 
   return (
     <div className={cn(embedHeaderSkeletonVariants({ variant }))}>
-      <div className="gencl:flex gencl:flex-col gencl:gap-1">
+      <div className="gencl:flex gencl:flex-col gencl:gap-2">
         <Skeleton className="gencl:h-5 gencl:w-32" />
-        {header.subHeading && <Skeleton className="gencl:h-4 gencl:w-24" />}
+        {header.subHeading && <Skeleton className="gencl:h-3 gencl:w-24" />}
       </div>
       {header.ctaButton?.url && (
         <Skeleton className="gencl:h-9 gencl:w-24 gencl:rounded-md" />

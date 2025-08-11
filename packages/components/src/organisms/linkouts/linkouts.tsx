@@ -1,14 +1,37 @@
-import React, { useEffect, useState, useMemo, ComponentProps } from "react";
+import { useEffect, useState, useMemo, ComponentProps } from "react";
 import { LinkCard } from "@genuin/components/molecules/linkouts/single-link-card";
 import { MultiLinkCard } from "@genuin/components/molecules/linkouts/multi-link-card";
 import { useGetLinkouts } from "@genuin/components/react-query/api/linkouts/get-linkouts";
 import { LinkoutsType } from "@genuin/components/react-query/api/linkouts/schema";
 import { cn } from "@genuin/ui/lib/utils";
 import useShowLinkouts from "@genuin/components/hooks/use-show-linkouts";
-import { useEmbedContext } from "@genuin/components/context/embed";
+import { useAnalytics } from "@genuin/components/context/analytics/context";
 import { cva, VariantProps } from "class-variance-authority";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 
-type Linkouts = {
+export const linkOutVariant = cva("gencl:space-y-4", {
+  variants: {
+    variant: {
+      default: "",
+      embed: "",
+    },
+    cardVariant: {
+      default: "",
+      transparent: "",
+      primary: "",
+      secondary: "",
+    },
+  },
+  defaultVariants: {
+    variant: "default",
+    cardVariant: "default",
+  },
+});
+
+/**
+ * Props for the Linkouts component
+ */
+export type LinkoutsProps = {
   /**
    * Initial linkouts data to display.
    */
@@ -21,40 +44,35 @@ type Linkouts = {
    * If isActive is true, the linkouts will be displayed.
    */
   isActive: boolean;
+  /**
+   * If true, the linkouts will be shown immediately without animation.
+   */
+  showImmediately?: boolean;
 } & ComponentProps<"div"> &
   VariantProps<typeof linkOutVariant>;
 
-export const linkOutVariant = cva("gencl:space-y-4", {
-  variants: {
-    variant: {
-      default: "",
-      embed: "",
-    },
-  },
-  defaultVariants: {
-    variant: "default",
-  },
-});
-
-//TODO: Remove the dep of framer-motion and go with css animation.
 /**
  * Linkouts component to display a list of linkouts.
- * @param param0 - Props for the Linkouts component.
- * @returns JSX.Element
+ * The component supports:
+ * - Fetching linkouts data when not provided
+ * - Animated display with entrance/exit effects
+ * - Single and multi-link card rendering
+ * - Analytics tracking for linkout views
  */
-export const Linkouts: React.FC<Linkouts> = ({
+export function Linkouts({
   linkouts: initialLinkouts,
   linkoutId,
   className,
   isActive,
   variant,
+  cardVariant = "default",
+  showImmediately = false,
   ...restProps
-}) => {
+}: LinkoutsProps) {
   const { showLinkouts } = useShowLinkouts({
     linkoutId,
     isActive,
   });
-
   const {
     data: fetchedLinkouts,
     isLoading,
@@ -63,31 +81,63 @@ export const Linkouts: React.FC<Linkouts> = ({
     enabled: !initialLinkouts && !!linkoutId,
     staleTime: 1000 * 60, // 1 minute
   });
-
-  // Animation states
-  const [isVisible, setIsVisible] = useState(false);
-  const [shouldRender, setShouldRender] = useState(showLinkouts);
-  const { customization } = useEmbedContext();
-  // Determine if the variant is embed
+  const linkouts = initialLinkouts || fetchedLinkouts;
+  const { track, EventName } = useAnalytics();
+  const [isVisible, setIsVisible] = useState(showImmediately);
+  const [shouldRender, setShouldRender] = useState(
+    showImmediately || showLinkouts
+  );
+  const embedDetails = useSafeEmbedContext();
   const isEmbed = variant === "embed";
-  const isOutside = customization.links?.position === "outside";
+  const isOutside = embedDetails?.customization.links?.position === "outside";
 
-  // Handle entrance and exit animations
   useEffect(() => {
+    // Handle immediate display without animation
+    if (showImmediately) {
+      setShouldRender(true);
+      setIsVisible(true);
+
+      if (linkouts && linkouts.length > 0) {
+        track(EventName.LINKOUTS_VIEWED, {
+          linkoutId,
+          count: linkouts.length,
+        });
+      }
+      return;
+    }
+
     if (showLinkouts) {
       setShouldRender(true);
-      // Small delay to ensure DOM update before animation starts
-      const timer = setTimeout(() => setIsVisible(true), 10);
+
+      // Small delay for DOM update before animation
+      const timer = setTimeout(() => {
+        setIsVisible(true);
+
+        if (linkouts && linkouts.length > 0) {
+          track(EventName.LINKOUTS_VIEWED, {
+            linkoutId,
+            count: linkouts.length,
+          });
+        }
+      }, 10);
+
       return () => clearTimeout(timer);
     } else {
+      // Handle hiding with animation
       setIsVisible(false);
-      // Wait for exit animation to complete before removing from DOM
-      const timer = setTimeout(() => setShouldRender(false), 300); // match transition duration
+
+      // Remove from DOM after animation completes
+      const timer = setTimeout(() => setShouldRender(false), 300);
       return () => clearTimeout(timer);
     }
-  }, [showLinkouts]);
-
-  const linkouts = initialLinkouts || fetchedLinkouts;
+  }, [
+    showLinkouts,
+    linkouts,
+    linkoutId,
+    track,
+    EventName.LINKOUTS_VIEWED,
+    showImmediately,
+  ]);
 
   // Memoize rendered linkouts to avoid unnecessary re-renders
   const renderedLinkouts = useMemo(() => {
@@ -102,13 +152,16 @@ export const Linkouts: React.FC<Linkouts> = ({
         return null;
       }
 
+      // Sort links by position if available
       const sortedLinks = [...links].sort(
         (a, b) => (a.position || 0) - (b.position || 0)
       );
 
+      // Render single link card
       if (sortedLinks.length === 1) {
         const link = sortedLinks[0];
         if (!link) return null;
+
         const showThumbnail = !!(link.image && link.image.trim() !== "");
 
         return (
@@ -120,41 +173,55 @@ export const Linkouts: React.FC<Linkouts> = ({
             showThumbnail={showThumbnail}
             ctaText={cta_text ?? ""}
             ctaLink={cta_link ?? ""}
-          />
-        );
-      } else {
-        return (
-          <MultiLinkCard
-            isOutside={isOutside}
-            isEmbed={isEmbed}
-            key={`multi-${index}`}
-            links={sortedLinks}
-            maxVisible={100}
+            variant={cardVariant}
           />
         );
       }
-    });
-  }, [linkouts]);
 
+      // Render multi-link card
+      return (
+        <MultiLinkCard
+          isOutside={isOutside}
+          isEmbed={isEmbed}
+          key={`multi-${index}`}
+          links={sortedLinks}
+          maxVisible={100}
+          ctaText={cta_text ?? ""}
+          ctaLink={cta_link ?? ""}
+          variant={cardVariant}
+        />
+      );
+    });
+  }, [linkouts, isEmbed, isOutside, cardVariant]);
+
+  // Loading state
   if (isLoading) {
     return <div className="animate-pulse p-4">Loading…</div>;
   }
 
+  // Error or empty state
   if (isError || !linkouts || linkouts.length === 0) {
     return null;
   }
 
-  // Only render if shouldRender is true (controlled by animation effect)
+  // Don't render if not in DOM
   if (!shouldRender) {
     return null;
   }
 
+  // Animation classes based on visibility state
+  const animationClasses = showImmediately
+    ? "gencl:w-full"
+    : cn(
+        "gencl:transition-transform gencl:duration-300 gencl:ease-out gencl:w-full",
+        isVisible ? "gencl:translate-y-0" : "gencl:translate-y-full"
+      );
+
   return (
     <div
       className={cn(
-        "gencl:transition-transform gencl:duration-300 gencl:ease-out gencl:w-full",
-        isVisible ? "gencl:translate-y-0" : "gencl:translate-y-full",
-        "gencl:space-y-4",
+        animationClasses,
+        linkOutVariant({ variant, cardVariant }),
         className
       )}
       {...restProps}
@@ -162,4 +229,4 @@ export const Linkouts: React.FC<Linkouts> = ({
       {renderedLinkouts}
     </div>
   );
-};
+}

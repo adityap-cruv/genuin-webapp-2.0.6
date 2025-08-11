@@ -1,5 +1,6 @@
 import { SettingRow } from "@genuin/components/molecules/setting-row";
 import type { FC } from "react";
+import { useAnalytics } from "@genuin/components/context/analytics";
 
 interface NotificationSettingsProps {
   group?: boolean;
@@ -46,6 +47,15 @@ export const NotificationSettings: FC<NotificationSettingsProps> = ({
   // onToggleNewRequests,
   // onToggleAcceptedRequests,
 }) => {
+  const { track, EventName } = useAnalytics();
+
+  const handleToggleGroup = (value: boolean) => {
+    track(EventName.NOTIFICATION_SETTINGS_MODIFIED, {
+      setting: "group_notifications",
+      value: value.toString(),
+    });
+    onToggleGroup?.(value);
+  };
   return (
     <>
       <h4 className="gencl:text-headline-4-medium gencl:mb-3">General</h4>
@@ -54,7 +64,7 @@ export const NotificationSettings: FC<NotificationSettingsProps> = ({
         subLabel="Allow notifications for groups you have joined"
         toggle
         toggleValue={group}
-        onToggleChange={onToggleGroup}
+        onToggleChange={handleToggleGroup}
       />
 
       {/* <h4 className="gencl:text-headline-4-medium gencl:mt-6 gencl:mb-2">Activity</h4>

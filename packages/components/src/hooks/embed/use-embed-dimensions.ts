@@ -24,7 +24,7 @@ export function useEmbedDimensions(
     const MIN_CAROUSEL_HEIGHT = 200;
 
     const headerHeight =
-      measuredHeaderHeight || (config.header.showHeader ? 56 : 0);
+      measuredHeaderHeight || (config.header.showHeader ? config.view.isFeed ? 104 : 56 : 0);
 
     const statsHeight = config.engagement.showSocialInteractionData ? 40 : 0;
     const linkoutHeight = config.links.showLinkOutside ? 108 : 0;

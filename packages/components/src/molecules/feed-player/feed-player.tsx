@@ -5,6 +5,7 @@ import {
   useEffect,
   useId,
   useMemo,
+  useRef,
   type ComponentProps,
 } from "react";
 import { useBaseContext } from "@genuin/components/context/base";
@@ -21,6 +22,11 @@ type Props = Omit<
    * The id of the video to passed to analytics.
    */
   videoId: string;
+  /**
+   * Whether the video should autoplay when loaded.
+   * @default false
+   */
+  autoPlay?: boolean;
 };
 
 const EVENT_DURATION_PROPERTY_NAME = "video_length";
@@ -31,6 +37,7 @@ export const FeedPlayer = memo(function FeedPlayer({
   videoId,
   poster,
   className,
+  autoPlay = false,
   onOpenPlayerReady,
   onTimeUpdate,
   onEnded,
@@ -50,9 +57,10 @@ export const FeedPlayer = memo(function FeedPlayer({
     handleEnded: stateHandleEnded,
     updateAdInfo,
   } = usePlayerContext();
-  const Analytics = useAnalytics();
+  const { track, EventName } = useAnalytics();
   // const { playbackSpeed } = useFeedContext();
   const id = useId();
+  const playerRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     audioManager.register(id, () => {
@@ -72,6 +80,45 @@ export const FeedPlayer = memo(function FeedPlayer({
       mute(false);
     }
   }, [muted]);
+
+  // Handle autoplay
+  useEffect(() => {
+    if (playerRef.current && autoPlay && feedPlayerShouldPlay) {
+      audioManager.notifyPlaying(id);
+      playerRef.current.play().catch((err) => {
+        console.warn("Autoplay prevented:", err);
+      });
+    }
+  }, [autoPlay, feedPlayerShouldPlay, id]);
+
+  // Track when video comes into view using IntersectionObserver
+  useEffect(() => {
+    if (!playerRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            track(EventName.VIDEO_INVIEW, {
+              content_id: videoId,
+              event_record_screen: "feed",
+              event_target_screen: "none",
+            });
+            observer.disconnect();
+          }
+        });
+      },
+      {
+        threshold: 0.5,
+      }
+    );
+
+    observer.observe(playerRef.current);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [videoId]);
 
   // DRY: Common analytics event data (memoized)
   const analyticsEventData = useMemo(
@@ -99,67 +146,67 @@ export const FeedPlayer = memo(function FeedPlayer({
       onEnded?.(e);
       stateHandleEnded?.();
       const target = e?.target as HTMLVideoElement | undefined;
-      Analytics.track(Analytics.EventName.VIDEO_COMPLETED, {
+      track(EventName.VIDEO_COMPLETED, {
         ...analyticsEventData,
         video_length: target?.duration,
         video_view_length: target?.currentTime,
       });
     },
-    [onEnded, stateHandleEnded, Analytics, analyticsEventData]
+    [onEnded, stateHandleEnded, track, EventName, analyticsEventData]
   );
 
   const handlePlayerLoad = useCallback(
     (player: any) => {
-      if (feedPlayerShouldPlay) {
+      if (feedPlayerShouldPlay && autoPlay) {
         audioManager.notifyPlaying(id);
         player.play();
       }
     },
-    [feedPlayerShouldPlay]
+    [feedPlayerShouldPlay, autoPlay, id]
   );
 
   const handleVideoFirstQuartile = useCallback(
     (duration: number, currentTime: number) => {
-      Analytics.track(Analytics.EventName.VIDEO_FIRST_QUARTILE, {
+      track(EventName.VIDEO_FIRST_QUARTILE, {
         ...analyticsEventData,
         video_length: duration,
         video_view_length: currentTime,
       });
     },
-    [Analytics, analyticsEventData]
+    [track, EventName, analyticsEventData]
   );
 
   const handleVideoWatched = useCallback(
     (duration: number, currentTime: number) => {
-      Analytics.track(Analytics.EventName.VIDEO_WATCHED, {
+      track(EventName.VIDEO_WATCHED, {
         ...analyticsEventData,
         video_length: duration,
         video_view_length: currentTime,
       });
     },
-    [Analytics, analyticsEventData]
+    [track, EventName, analyticsEventData]
   );
 
   const handleVideoMidpoint = useCallback(
     (duration: number, currentTime: number) => {
-      Analytics.track(Analytics.EventName.VIDEO_MIDPOINT, {
+      track(EventName.VIDEO_MIDPOINT, {
         ...analyticsEventData,
         video_length: duration,
         video_view_length: currentTime,
       });
     },
-    [Analytics, analyticsEventData]
+    [track, EventName, analyticsEventData]
   );
 
   const handleVideoThirdQuartile = useCallback(
     (duration: number, currentTime: number) => {
-      Analytics.track(Analytics.EventName.VIDEO_THIRD_QUARTILE, {
+      track(EventName.VIDEO_THIRD_QUARTILE, {
         ...analyticsEventData,
         video_length: duration,
         video_view_length: currentTime,
       });
     },
-    [Analytics, analyticsEventData]
+    [track, EventName, analyticsEventData]
   );
 
   const handleOpenPlayerReady = useCallback(
@@ -188,13 +235,13 @@ export const FeedPlayer = memo(function FeedPlayer({
 
   const handleVideoStart = useCallback(
     (duration: number, currentTime: number) => {
-      Analytics.track(Analytics.EventName.VIDEO_STARTED, {
+      track(EventName.VIDEO_STARTED, {
         ...analyticsEventData,
         video_length: duration,
         video_view_length: currentTime,
       });
     },
-    [Analytics, analyticsEventData]
+    [track, EventName, analyticsEventData]
   );
 
   const handleAdStarted = useCallback((event: any) => {
@@ -228,6 +275,7 @@ export const FeedPlayer = memo(function FeedPlayer({
 
   return (
     <VideoPlayer
+      ref={playerRef}
       poster={poster}
       muted={muted}
       src={src}
@@ -236,6 +284,7 @@ export const FeedPlayer = memo(function FeedPlayer({
       className={cn("gencl:m-auto", className)}
       volume={volume}
       play={feedPlayerShouldPlay}
+      autoPlay={autoPlay}
       // playbackSpeed={playbackSpeed.speed}
       onPlayerLoad={handlePlayerLoad}
       onOpenPlayerReady={handleOpenPlayerReady}

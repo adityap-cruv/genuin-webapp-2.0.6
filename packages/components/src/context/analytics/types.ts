@@ -15,7 +15,7 @@ type AnalyticsSDK = {
 
 declare global {
   interface Window {
-    rudderanalytics?: AnalyticsSDK; // Example for RudderStack
+    rudderanalytics: AnalyticsSDK; // Example for RudderStack
   }
 }
 

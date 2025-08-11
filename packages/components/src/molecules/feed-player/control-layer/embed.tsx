@@ -29,10 +29,11 @@ export const Embed: FC<ControlLayerPropsType> = ({
         {...restProps}
       >
         <div className="gencl:absolute gencl:bottom-0 gencl:p-2 gencl:space-y-2 gencl:w-full">
-          {config.links.showLinkInside && (
+          {config.links.showLinkInside && isActive && (
             <Linkouts
               variant="embed"
               isActive={isActive}
+              showImmediately
               linkouts={postDetails.video.linkouts}
               linkoutId={postDetails.video.linkoutId}
             />
@@ -83,10 +84,13 @@ export const Embed: FC<ControlLayerPropsType> = ({
         ) : (
           <div />
         )}
-        <div className="gencl:px-3 gencl:py-4 gencl:space-y-2 gencl:bg-gradient-to-t gencl:from-black/80 gencl:to-transparent">
+        <div />
+        <div className="gencl:p-3 gencl:space-y-2 gencl:bg-gradient-to-t gencl:from-black/80 gencl:to-transparent">
           <ReadMore
             text={postDetails.video.description}
-            className="gencl:text-white! gencl:text-body-2-medium gencl:font-normal gencl:pointer-events-none"
+            textClassName="gencl:text-white! gencl:text-body-2-medium gencl:font-normal gencl:pointer-events-none"
+            viewLessText=""
+            viewMoreText=""
             maxLines={3}
           />
           <div className="gencl:flex gencl:items-center gencl:gap-2">
@@ -137,7 +141,7 @@ export const Embed: FC<ControlLayerPropsType> = ({
         ) : (
           <div />
         )}
-        <div className="gencl:px-2 gencl:py-3 gencl:space-y-2 gencl:bg-gradient-to-t gencl:from-black/80 gencl:to-transparent">
+        <div className="gencl:p-3 gencl:space-y-2 gencl:bg-gradient-to-t gencl:from-black/80 gencl:to-transparent">
           <div>
             <p className="gencl:text-white gencl:text-body-2-semi-bold gencl:font-normal">
               {getMonthYear(
@@ -154,13 +158,20 @@ export const Embed: FC<ControlLayerPropsType> = ({
               maxLines={2}
             />
           </div>
-          {isActive && (
+          <div
+            className={cn(
+              "gencl:overflow-hidden gencl:transition-all gencl:ease-in-out gencl:duration-300",
+              isActive
+                ? "gencl:max-h-12 gencl:mt-2 gencl:opacity-100"
+                : "gencl:max-h-0 gencl:mt-0 gencl:opacity-0"
+            )}
+          >
             <EmbedControls
               onClick={(e) => e.stopPropagation()}
               className={cn("gencl:gap-2 gencl:z-20")}
               size="sm"
             />
-          )}
+          </div>
         </div>
       </div>
     );

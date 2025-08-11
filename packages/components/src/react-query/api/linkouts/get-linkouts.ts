@@ -5,7 +5,7 @@ import { validateLinkouts } from "./schema";
 import { getQueryKeyForLinkouts } from "@genuin/components/react-query/keys/linkouts";
 import { API_PATHS } from "@genuin/components/react-query/paths";
 
-async function fetchLinkouts(id: number) {
+async function fetchLinkouts(id?: number | null | undefined) {
   return await axiosInstance
     .get(API_PATHS.LINKOUTS, { params: { linkouts_ids: [id] } })
     .then((res) => {
@@ -24,7 +24,7 @@ export function useGetLinkouts(
   > = {}
 ) {
   return useQuery<LinkoutsType>({
-    queryFn: id ? async () => await fetchLinkouts(id) : undefined,
+    queryFn: async () => await fetchLinkouts(id),
     queryKey: getQueryKeyForLinkouts(id),
     enabled: !!id,
     refetchOnWindowFocus: false,

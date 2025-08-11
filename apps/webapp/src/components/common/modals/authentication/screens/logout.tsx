@@ -10,13 +10,13 @@ export function Logout() {
 
   return (
     <ModalShell>
-      <h3 className="text-center text-title-1-demi sm:text-heading-3">Log out?</h3>
-      <p className="text-center text-title-3-med">
+      <h3 className="text-title-1-demi sm:text-heading-3 text-center">Log out?</h3>
+      <p className="text-title-3-med text-center">
         You won’t be able to contribute in any community or receive notifications.{' '}
       </p>
       <Button
         variant="default"
-        className="w-full text-title-3-med !text-monochrome-white"
+        className="text-title-3-med !text-monochrome-white w-full"
         onClick={() => {
           let redirectUrl = window.location.pathname
           if (checkIfUrlIncludesProtectedRoute(redirectUrl)) {

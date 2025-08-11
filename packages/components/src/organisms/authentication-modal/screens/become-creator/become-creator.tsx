@@ -32,7 +32,7 @@ export function BecomeCreator({ ...props }: BecomeCreatorProps) {
     id: user?.id || "",
   });
   const isRequested = cbStatus?.status === "Requested";
-  const Analytics = useAnalytics();
+  const { track, EventName } = useAnalytics();
   const { mutate: requestCbMutate, isPending: isRequestMutating } =
     useCbRequestMutation({
       onSuccess: (res) => {
@@ -42,7 +42,7 @@ export function BecomeCreator({ ...props }: BecomeCreatorProps) {
             ksCbRequestStatus: "Requested",
           });
           setQueryDataBecomeCreator(user?.id || "");
-          Analytics.track(Analytics.EventName.BECOME_CREATOR);
+          track(EventName.BECOME_CREATOR);
         }
       },
       onError: () => {

@@ -113,9 +113,11 @@ export function EmbedManagerProvider({
       "next"
     );
 
-    if (shouldSlide) {
-      swiper.slideNext();
-    } else {
+    // Always slide to ensure swiper navigation happens
+    swiper.slideNext();
+
+    // Only update active index if we shouldn't slide automatically
+    if (!shouldSlide) {
       setActiveIndex(targetIndex);
     }
   }, [swiper, activeIndex]);
@@ -129,9 +131,11 @@ export function EmbedManagerProvider({
       "prev"
     );
 
-    if (shouldSlide) {
-      swiper.slidePrev();
-    } else {
+    // Always slide to ensure swiper navigation happens
+    swiper.slidePrev();
+
+    // Only update active index if we shouldn't slide automatically
+    if (!shouldSlide) {
       setActiveIndex(targetIndex);
     }
   }, [swiper, activeIndex]);

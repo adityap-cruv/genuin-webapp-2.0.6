@@ -3,6 +3,11 @@ import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { Button as PrimitiveButton } from "@genuin/ui/button";
 import { Toast } from "@genuin/ui/components/toaster";
 import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@genuin/ui/components/popover/popover";
 import { useVideoReationMutation } from "@genuin/components/react-query/api/feed/spark";
 import { ComponentProps, useCallback, useEffect, useMemo } from "react";
 import { DynamicReactionIcon } from "./dynamic-reaction-icon";
@@ -10,6 +15,8 @@ import { useBaseContext } from "@genuin/components/context/base";
 import { cn } from "@genuin/ui/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
+import { useAnalytics } from "@genuin/components/context/analytics";
+import { ActionPopover } from "../actions/action-popover";
 
 const reactionButtonVariant = cva("", {
   variants: {
@@ -56,6 +63,10 @@ export function ReactionButton({
 }: ReactionButtonProps) {
   const { authenticationStatus, handleAuthCallback } = useAuthContext();
   const { brandDetails } = useBaseContext();
+  const embedDetails = useSafeEmbedContext();
+  const authInfo = embedDetails?.embedData.authInfo;
+  const brandId = brandDetails.brand_id;
+
   const returnQueryParams = useMemo(
     () =>
       createReturnQueryParams({
@@ -74,18 +85,24 @@ export function ReactionButton({
     urlToOpen: shareUrl,
   });
 
-  const button = (
+  // Create a customized button based on whether it's for the popover case or not
+  const createButton = (isPopoverCase = false) => (
     <Button
       showReactionCount={showReactionCount}
       reactionCount={reactionCount}
       contentId={contentId}
       onClick={(e) => {
+        // Only trigger clickHandler for the default case, not for popover
         onClick?.(e);
-        clickHandler?.();
+        if (!isPopoverCase) {
+          clickHandler?.();
+        }
       }}
       {...restProps}
     />
   );
+
+  const button = createButton();
   const count = (
     <p
       className={cn(
@@ -98,6 +115,32 @@ export function ReactionButton({
       {reactionCount}
     </p>
   );
+
+  // Special case for brand ID 2357, unauthenticated users with auth info
+  if (
+    authenticationStatus === "unauthenticated" &&
+    (authInfo?.signInUrl || authInfo?.signUpUrl) &&
+    brandId === 2357
+  ) {
+    const popoverButton = createButton(true); // Use the special button that won't trigger clickHandler
+
+    return (
+      <ActionPopover
+        content={
+          restProps.contentType === "COMMENT"
+            ? "to like this comment."
+            : "to like this Short."
+        }
+        children={
+          <div>
+            {popoverButton}
+            {showReactionCount && count}
+          </div>
+        }
+        params={returnQueryParams}
+      />
+    );
+  }
 
   if (authenticationStatus === "unauthenticated" && !clickHandler) {
     return (
@@ -144,12 +187,26 @@ function Button({
   ...restProps
 }: ReactionButtonProps) {
   const { user } = useAuthContext();
+  const { track, EventName } = useAnalytics();
   const {
     mutate: reactToVideo,
     isPending,
     isSuccess,
   } = useVideoReationMutation({
-    // onSuccess: (isReacted) => {},
+    onSuccess: (isReacted) => {
+      track(
+        contentType === "COMMENT"
+          ? EventName.COMMENT_SPARK
+          : EventName.VIDEO_SPARK,
+        {
+          content_id: contentId,
+          content_category: "loop",
+          event_record_screen: "feed",
+          event_target_screen: "none",
+          is_reacted: isReacted,
+        }
+      );
+    },
     onError: (error) => {
       // Revert the optimistic update on error
       onReactionStateChange?.(isReacted);

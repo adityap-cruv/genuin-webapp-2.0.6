@@ -20,6 +20,7 @@ import { Image } from "@genuin/ui/image";
 import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
 import { useAuthContext } from "@genuin/components/context/auth";
 import { MEDIA_BASE_URL } from "@genuin/components/lib/utils/env";
+import { useAnalytics } from "@genuin/components/context/analytics";
 
 type ReportProps = ComponentProps<typeof Dialog> & {
   reportFor: "VIDEO" | "COMMENT";
@@ -39,6 +40,7 @@ export function Report({
 }: ReportProps) {
   const [selectedReason, setSelectedReason] = useState<string>("");
   const { user } = useAuthContext();
+  const { track, EventName } = useAnalytics();
 
   const handleReasonChange = (value: string) => {
     setSelectedReason(value);
@@ -55,8 +57,24 @@ export function Report({
         text: selectedReason,
       },
     };
+
+    // Track report event
+    track(
+      reportFor === "COMMENT"
+        ? EventName.COMMENT_REPORT
+        : EventName.VIDEO_REPORT,
+      {
+        content_id: contentId,
+        content_category: "loop",
+        event_record_screen: "feed",
+        event_target_screen: "none",
+        report_reason: selectedReason,
+        report_type: reportFor,
+      }
+    );
+
     reportMutation.mutate(feedbackPayload);
-  }, [reportMutation]);
+  }, [reportMutation, selectedReason, contentId, reportFor, track, EventName]);
 
   if (!user)
     return (

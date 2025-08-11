@@ -2,6 +2,7 @@
 
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { PlaybackSpeedType } from "@genuin/components/molecules/feed-player/context/types";
+import { useAnalytics } from "@genuin/components/context/analytics";
 import React, {
   ComponentProps,
   createContext,
@@ -85,6 +86,7 @@ export function FeedContextProvider({
   variant,
 }: FeedContextProviderProps) {
   const { isMobile } = useDeviceDetectMediaQuery();
+  const { track, EventName } = useAnalytics();
   // State is used to track the active index of the feed.
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -102,6 +104,13 @@ export function FeedContextProvider({
   });
 
   useEffect(() => {
+    // Track when the expand view is opened or closed
+    if (showExpandView) {
+      track(EventName.VIDEO_MAXIMIZED, { activeIndex });
+    } else {
+      track(EventName.VIDEO_MINIMIZED, { activeIndex });
+    }
+
     // If the device is mobile, we do not want to request fullscreen mode. And if the fullscreen api is disabled by user.
     if (isMobile || disableNativeFullscreenApi) return;
     // Only run this effect in browser environments

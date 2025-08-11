@@ -19,6 +19,7 @@ import { cn } from "@genuin/ui/lib/utils";
 import { useSendGetAppLinkMutation } from "@genuin/components/react-query/api/get-app";
 import { Toast } from "@genuin/ui/components/toaster";
 import { useSearchParams } from "@genuin/components/hooks/use-search-params";
+import { useAnalytics } from "@genuin/components/context/analytics";
 
 // Form validation schema
 const formSchema = z
@@ -52,8 +53,9 @@ export function AppDownloadForm({
   ...props
 }: AppDownloadFormProps) {
   const { brandDetails } = useBaseContext();
-  const { searchParams } = useSearchParams();
+  const { searchParams, getSearchParams } = useSearchParams();
   const [error, setError] = useState("");
+  const { track, EventName } = useAnalytics();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -73,10 +75,18 @@ export function AppDownloadForm({
     },
     onSuccess() {
       Toast.Success({ message: "Link sent successfully!" });
+      // Track the GET_APP_LINK_SENT event on success
+      track(EventName.GET_APP_LINK_SENT);
     },
   });
 
   const handleSubmit = (data: FormData) => {
+    // Track the DOWNLOAD_APP_CLICKED event
+    track(EventName.DOWNLOAD_APP_CLICKED, {
+      method: data.email ? (data.phoneNumber ? "both" : "email") : "phone",
+      source: getSearchParams("source") || "download_form",
+    });
+
     sendAppLink({
       email: data.email,
       mobile: data.phoneNumber,

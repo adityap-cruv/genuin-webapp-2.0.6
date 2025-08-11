@@ -13,6 +13,7 @@ import {
 } from "react";
 import { EmbedSwiper } from "@genuin/components/molecules/embed-swiper/embed-swiper";
 import { EmbedTile } from "../embed-tile";
+import { useAnalytics } from "@genuin/components/context/analytics/context";
 import { SwiperSlide } from "swiper/react";
 import { cva, VariantProps } from "class-variance-authority";
 import { EmbedManagerProvider, useEmbedManagerContext } from "./context";
@@ -30,7 +31,6 @@ import {
   useEmbedDimensions,
   getEmbedVariant,
 } from "@genuin/components/hooks/embed/use-embed-dimensions";
-import { DangerIcon, PlayIcon } from "@genuin/ui/icons";
 import { SdkErrorState } from "./error-state";
 import { SdkEmptyState } from "./empty-state";
 
@@ -51,6 +51,10 @@ type Props = EmbedProps & VariantProps<typeof carouselVariant>;
 export function Embed({ className, variant, ...restProps }: Props) {
   // Use the hook to get all customization values in one place
   const { customization, embedData, embedEventBus } = useEmbedContext();
+  const { track, EventName } = useAnalytics();
+  const config = useEmbedConfigs();
+  const embedVariant = getEmbedVariant(config);
+
   const {
     isLoading,
     data: feedData,
@@ -64,44 +68,65 @@ export function Embed({ className, variant, ...restProps }: Props) {
     startVideoSlug: embedData.startVideoSlug,
     // startVideoSlug: "the-collab-has-officially-left-the-group-chat-nhl-3vjn",
   });
-  const config = useEmbedConfigs();
   const queryKey = getQueryKeyForFeed("HOME", {
     communityIds: customization.community_ids,
     groupIds: customization.community_loop_ids,
   });
   const [swiper, setSwiper] = useState<Swiper | null>(null);
-  const headerRef = useRef<HTMLDivElement>(null);
   const [measuredHeaderHeight, setMeasuredHeaderHeight] = useState(0);
-  const embedHeights = useEmbedDimensions(config, measuredHeaderHeight);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const embedRef = useRef<HTMLDivElement>(null);
 
   const videos = useMemo(
     () => feedData?.pages.flatMap((page) => page.feed) || [],
     [feedData]
   );
 
+  // Track EMBED_VIEWED event when embed is visible in viewport
   useEffect(() => {
-    const measureHeaderHeight = () => {
-      if (headerRef.current) {
-        const height = headerRef.current.getBoundingClientRect().height;
-        setMeasuredHeaderHeight(height);
-      }
-    };
+    if (!embedRef.current) return;
 
-    window.addEventListener("resize", measureHeaderHeight);
-    return () => {
-      window.removeEventListener("resize", measureHeaderHeight);
-    };
-  }, [
-    config.header.heading,
-    config.header.subHeading,
-    config.header.ctaButton?.url,
-  ]);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            track(EventName.EMBED_VIEWED, {
+              embedType: variant || getEmbedVariant(config, variant),
+              communityIds: customization.community_ids,
+              groupIds: customization.community_loop_ids,
+            });
+            observer.disconnect();
+          }
+        });
+      },
+      { threshold: 0.01 }
+    );
+
+    observer.observe(embedRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  const measureHeaderHeight = useCallback(() => {
+    if (headerRef.current) {
+      const height = headerRef.current.getBoundingClientRect().height;
+      setMeasuredHeaderHeight(height);
+    }
+  }, []);
+
+  // Measure header height on component mount and header config changes
+  useEffect(() => {
+    measureHeaderHeight();
+
+    // Track EMBED_INITIALIZED event when component mounts
+    track(EventName.EMBED_INITIALIZED, {
+      embedType: variant || getEmbedVariant(config, variant),
+      communityIds: customization.community_ids,
+      groupIds: customization.community_loop_ids,
+    });
+  }, []);
 
   useEffect(() => {
-    function handleActiveIndexChange(
-      eventData: any,
-      context: EmbedEventContextType
-    ) {
+    function handleActiveIndexChange(context: EmbedEventContextType) {
       if (
         videos.length > 0 &&
         context.activeIndex === videos.length - 3 &&
@@ -126,10 +151,7 @@ export function Embed({ className, variant, ...restProps }: Props) {
     linkoutHeight,
     spaceBetweenVideos,
     availableHeight,
-  } = useEmbedHeights(config, measuredHeaderHeight);
-
-  // Use the shared utility for embed variant
-  const embedVariant = getEmbedVariant(config, variant);
+  } = useEmbedDimensions(config, measuredHeaderHeight);
 
   if (isError) {
     return (
@@ -141,7 +163,12 @@ export function Embed({ className, variant, ...restProps }: Props) {
   }
 
   if (isLoading) {
-    return <SdkSkeleton />;
+    return (
+      <SdkSkeleton
+        containerHeight={containerHeight}
+        containerWidth={containerWidth}
+      />
+    );
   }
 
   if (videos.length === 0 && !isLoading) {
@@ -155,6 +182,7 @@ export function Embed({ className, variant, ...restProps }: Props) {
 
   return (
     <div
+      ref={embedRef}
       className={cn(
         carouselVariant({ variant: variant || embedVariant }),
         className
@@ -271,49 +299,4 @@ function EmbedItem({ index, ...restProps }: EmbedItemProps) {
       {...restProps}
     />
   );
-}
-
-// Custom hook for calculating embed heights
-function useEmbedHeights(
-  config: ReturnType<typeof useEmbedConfigs>,
-  measuredHeaderHeight: number
-) {
-  return useMemo(() => {
-    const DEFAULT_HEIGHT = 480;
-    const DEFAULT_WIDTH = 320;
-    const spaceBetweenVideos = 8;
-    const MIN_CAROUSEL_HEIGHT = 200;
-
-    const headerHeight =
-      measuredHeaderHeight || (config.header.showHeader ? 56 : 0);
-
-    const statsHeight = config.engagement.showSocialInteractionData ? 40 : 0;
-    const linkoutHeight = config.links.showLinkOutside ? 108 : 0;
-
-    const containerHeight = config.dimensions.containerHeight ?? DEFAULT_HEIGHT;
-    const containerWidth = config.dimensions.containerWidth ?? DEFAULT_WIDTH;
-
-    const availableHeight = Math.max(
-      containerHeight - headerHeight - statsHeight - linkoutHeight,
-      MIN_CAROUSEL_HEIGHT
-    );
-
-    return {
-      containerHeight,
-      containerWidth,
-      headerHeight,
-      statsHeight,
-      linkoutHeight,
-      spaceBetweenVideos,
-      availableHeight,
-    };
-  }, [
-    config.dimensions.containerHeight,
-    config.dimensions.containerWidth,
-    config.header.showHeader,
-    config.engagement.showSocialInteractionData,
-    config.links.showLinkOutside,
-    config.view.isFeed,
-    measuredHeaderHeight,
-  ]);
 }

@@ -2,8 +2,34 @@ import { checkAndAppendHttps, cn } from "@genuin/ui/lib/utils";
 import { LinkData } from "@genuin/components/react-query/api/linkouts/schema";
 import { ChevronRight, LinkIcon } from "lucide-react";
 import { Button } from "@genuin/ui/components";
+import { useAnalytics } from "@genuin/components/context/analytics/context";
+import { VariantProps, cva } from "class-variance-authority";
 
-interface MultiLinkCardProps {
+// Combined variant for both card layouts
+const multiLinkCardVariants = cva(
+  "gencl:gap-2 gencl:flex gencl:backdrop-blur-md gencl:rounded-xl gencl:text-sm gencl:font-medium gencl:text-white gencl:p-2 gencl:w-full",
+  {
+    variants: {
+      variant: {
+        default: "gencl:bg-black/50 gencl:hover:bg-black/60",
+        transparent: "gencl:bg-transparent gencl:hover:bg-transparent",
+        primary: "gencl:bg-primary gencl:hover:bg-primary-700",
+        secondary: "gencl:bg-secondary gencl:hover:bg-secondary-700",
+      },
+      layout: {
+        withCTA: "gencl:flex-col gencl:items-start gencl:justify-between",
+        standard: "gencl:items-center gencl:justify-between",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      layout: "standard",
+    },
+  }
+);
+
+interface MultiLinkCardProps
+  extends VariantProps<typeof multiLinkCardVariants> {
   isEmbed: boolean;
   isOutside: boolean;
   links: LinkData[];
@@ -12,25 +38,36 @@ interface MultiLinkCardProps {
   maxVisible?: number;
 }
 
-export const MultiLinkCard: React.FC<MultiLinkCardProps> = ({
+export const MultiLinkCard = ({
   isEmbed,
   isOutside,
   links,
   ctaText = "",
   ctaLink = "",
   maxVisible = 3,
-}) => {
+  variant,
+}: MultiLinkCardProps) => {
   const visibleLinks = links.slice(0, maxVisible);
   const hasMore = links.length > maxVisible;
   const hasCTA = ctaText && ctaText.trim() !== "";
+  const { track, EventName } = useAnalytics();
 
   const handleLinkClick = (link: LinkData) => {
     const url = checkAndAppendHttps(link.link);
+    track(EventName.LINKOUTS_CLICKED, {
+      linkUrl: link.link,
+      linkTitle: link.title || new URL(url).hostname,
+    });
     window.open(url, "_blank");
   };
 
-  const handleCTAClick = () => {
+  const handleCTAClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent triggering card click
     const url = checkAndAppendHttps(ctaLink);
+    track(EventName.LINKOUTS_CTA_CLICKED, {
+      linkUrl: ctaLink,
+      linkCount: links.length,
+    });
     window.open(url, "_blank");
   };
 
@@ -49,9 +86,14 @@ export const MultiLinkCard: React.FC<MultiLinkCardProps> = ({
     return (
       <div
         className={cn(
-          "gencl:bg-black/50 gencl:gap-2 gencl:flex gencl:flex-col gencl:items-start gencl:justify-between gencl:backdrop-blur-md gencl:rounded-xl gencl:text-sm gencl:font-medium gencl:text-white gencl:p-2 gencl:w-full",
-          isOutside && "gencl:bg-transparent"
+          multiLinkCardVariants({
+            variant: isOutside ? "transparent" : variant,
+            layout: "withCTA",
+          })
         )}
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
       >
         <div
           className={cn(
@@ -107,9 +149,14 @@ export const MultiLinkCard: React.FC<MultiLinkCardProps> = ({
   return (
     <div
       className={cn(
-        "gencl:bg-black/50 gencl:gap-2 gencl:flex gencl:items-center gencl:justify-between gencl:backdrop-blur-md gencl:rounded-xl gencl:text-sm gencl:font-medium gencl:text-white gencl:p-2 gencl:w-full",
-        isOutside && "gencl:bg-transparent"
+        multiLinkCardVariants({
+          variant: isOutside ? "transparent" : variant,
+          layout: "standard",
+        })
       )}
+      onClick={(e) => {
+        e.stopPropagation();
+      }}
     >
       <div
         className={cn(

@@ -4,10 +4,12 @@ import { useAuthenticationModalContext } from "../../context";
 import { Button } from "@genuin/ui/components";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { useAuthContext } from "@genuin/components/context/auth";
+import { useAnalytics } from "@genuin/components/context/analytics";
 
 export function SignOut({ className, ...restProps }: ComponentProps<"div">) {
   const { closeModal } = useAuthenticationModalContext();
   const { signOut } = useAuthContext();
+  const { track, EventName } = useAnalytics();
 
   return (
     <div className={cn("gencl:space-y-6", className)} {...restProps}>
@@ -31,6 +33,7 @@ export function SignOut({ className, ...restProps }: ComponentProps<"div">) {
           variant="default"
           // className="gencl:w-full gencl:mb-2"
           onClick={() => {
+            track(EventName.LOG_OUT);
             signOut(buildPageUrl({ type: "home" }));
           }}
         >

@@ -544,7 +544,7 @@ export const testEmbedData: EmbedDataType = {
   name: "carousel_example",
   style: "carousel" as const,
   type: "brand_feed" as const,
-  startVideoSlug: "Test",
+  // startVideoSlug: "Test",
   brand_id: 2922 as number,
   customization: {
     dimensions: {
