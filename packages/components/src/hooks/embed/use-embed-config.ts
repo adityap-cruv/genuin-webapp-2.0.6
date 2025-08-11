@@ -2,6 +2,7 @@ import { useEmbedContext } from "@genuin/components/context/embed";
 import { useBaseContext } from "@genuin/components/context/base";
 import { useMemo } from "react";
 import { isCheckFifthVideoType } from "@genuin/components/lib/utils";
+import { useDeviceDetectMediaQuery } from "../use-devide-detect-media-query";
 
 const MIN_EMBED_WIDTH = 232;
 const MIN_EMBED_HEIGHT = 350;
@@ -24,6 +25,7 @@ export function useEmbedConfigs() {
 
   const { customization, rootElement } = embedContextData;
   const { brandDetails } = useBaseContext();
+  const { isMobile } = useDeviceDetectMediaQuery();
 
   // ============================================================
   // Dimensions Configuration
@@ -210,6 +212,31 @@ export function useEmbedConfigs() {
     return { enable: customization?.is_popup_view };
   }, [customization]);
 
+  // ============================================================
+  // Layout configs for the standard wall component.
+  // ============================================================
+  const layoutConfig = useMemo(() => {
+    return {
+      showSideBar: customization?.show_side_panel
+        ? customization?.show_side_panel && !isMobile
+        : true,
+      showNavigationBar: customization?.show_navigation
+        ? customization?.show_navigation && !isMobile
+        : true,
+    };
+  }, [isMobile]);
+
+  //==================================================================
+  // Modal configs
+  //==================================================================
+  const modalConfig = useMemo(() => {
+    return {
+      hideModal:
+        embedContextData.embedData?.style === "carousel" ||
+        embedContextData.embedData?.style === "feed",
+    };
+  }, [embedContextData.embedData?.style]);
+
   return {
     dimensions: dimensionsConfig,
     view: viewConfig,
@@ -220,5 +247,7 @@ export function useEmbedConfigs() {
     links: linkConfig,
     styling: stylingConfig,
     expanViewConfig: expandView,
+    layoutConfig,
+    modalConfig,
   };
 }

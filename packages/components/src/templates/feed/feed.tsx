@@ -14,6 +14,7 @@ import {
   FeedViewPropsType,
   FeedWithDataPropsType,
 } from "./feed.type";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 
 /**
  * Complete feed solution with built-in data fetching and context management.
@@ -33,6 +34,7 @@ export function FeedWithData({
   onCloseExpandView,
   ...restProps
 }: FeedWithDataPropsType) {
+  const embedDetails = useSafeEmbedContext();
   const {
     data,
     isLoading,
@@ -40,7 +42,11 @@ export function FeedWithData({
     hasNextPage,
     isFetchingNextPage,
     isError,
-  } = useFeed(feedType);
+  } = useFeed(feedType, {
+    communityIds: embedDetails?.embedData?.customization.community_ids,
+    groupIds: embedDetails?.embedData?.customization.community_loop_ids,
+    startVideoSlug: embedDetails?.embedData?.startVideoSlug,
+  });
 
   const videos = useMemo(
     () => data?.pages.flatMap((page) => page.feed) ?? [],

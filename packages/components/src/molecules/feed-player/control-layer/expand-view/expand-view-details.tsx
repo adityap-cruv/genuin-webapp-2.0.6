@@ -2,7 +2,7 @@
 import { Avatar } from "@genuin/ui/avatar";
 import { ReadMore } from "@genuin/ui/read-more";
 import { cn, getFormattedDuration, getMonthYear } from "@genuin/ui/utils";
-import type { ComponentProps, ReactNode } from "react";
+import { useMemo, type ComponentProps, type ReactNode } from "react";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { usePlayerContext } from "../../context";
 import { ProfileLink } from "@genuin/components/molecules/profile-link";
@@ -13,6 +13,7 @@ import { Actions } from "@genuin/components/molecules/actions";
 import { CommentsDialog } from "@genuin/components/molecules/comments";
 import { controlLayerVariant } from "../control-layer";
 import { VariantProps, cva } from "class-variance-authority";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 
 /**
  * Card Layout Types
@@ -138,6 +139,15 @@ export function ExpandViewDetails({
   ...restProps
 }: ExpandViewProps) {
   const { showSeeker } = usePlayerContext();
+  const embedDetails = useSafeEmbedContext();
+
+  const defaultOpenCommentDialog = useMemo(() => {
+    return (
+      embedDetails?.embedData.autoUserInteractionToPerform ===
+        "comment-spark" &&
+      embedDetails.embedData.startVideoSlug === postDetails.video.slug
+    );
+  }, [embedDetails, postDetails]);
 
   // Determine the card layout based on postDetails or provided layout prop
   // Use the layout prop if provided, otherwise use the cardLayoutId from postDetails
@@ -209,6 +219,7 @@ export function ExpandViewDetails({
                   videoId={postDetails.video.id}
                   videoSlug={postDetails.video.slug}
                   commentCount={postDetails.video.commentCount}
+                  defaultOpen={defaultOpenCommentDialog}
                 >
                   {defaultNode}
                 </CommentsDialog>

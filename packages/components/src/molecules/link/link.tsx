@@ -3,13 +3,49 @@ import { cn } from "@genuin/ui/utils";
 import type { ComponentProps } from "react";
 import type { NextJSLinkProps } from "@genuin/components/context/link/type";
 import { useLinkContext } from "@genuin/components/context/link";
+import { navigate } from "@genuin/components/lib/utils/embed-router";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 type BaseLinkProps = ComponentProps<"a">;
 
 type ExtendedLinkProps = BaseLinkProps & Partial<NextJSLinkProps>;
 
-interface LinkProps extends ExtendedLinkProps {
+type LinkProps = ExtendedLinkProps & {
   enabled?: boolean;
+};
+
+/**
+ * Checks if redirection is enabled for a given path based on redirection tools configuration
+ * @param href The URL to check
+ * @param redirectionTools Configuration for different redirection tools
+ * @returns Whether redirection is enabled for the given path
+ */
+function checkRedirectionEnabled(
+  href: string | undefined,
+  redirectionTools:
+    | { user?: boolean; community?: boolean; group?: boolean }
+    | undefined
+): boolean {
+  let isEnabled = true;
+
+  if (
+    href?.startsWith("/profile") ||
+    href?.startsWith("profile") ||
+    href?.startsWith("/brand") ||
+    href?.startsWith("brand")
+  ) {
+    isEnabled = redirectionTools?.user ?? true;
+  }
+
+  if (href?.startsWith("/community") || href?.startsWith("community")) {
+    isEnabled = redirectionTools?.community ?? true;
+  }
+
+  if (href?.startsWith("/group") || href?.startsWith("group")) {
+    isEnabled = redirectionTools?.group ?? true;
+  }
+
+  return isEnabled;
 }
 
 export function Link({
@@ -29,10 +65,42 @@ export function Link({
   // Standard props
   ...restProps
 }: LinkProps) {
-  const { LinkComponent, isNextJS } = useLinkContext();
+  const { LinkComponent, isNextJS, isCustomRouting } = useLinkContext();
+  const {
+    engagement: { redirectionTools },
+  } = useEmbedConfigs();
+  const isEnabled = checkRedirectionEnabled(href, redirectionTools);
 
-  if (!href || enabled === false) {
+  if (!href || !enabled || !isEnabled) {
     return <>{children}</>;
+  }
+
+  // If it's an embed, return a placeholder or specific content
+  if (isCustomRouting) {
+    const { onClick, ...restRestProps } = restProps;
+
+    const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+      onClick?.(e);
+      if (!href) return;
+
+      e.preventDefault(); // Ensure this runs once
+      try {
+        // As we only have to pass the pathname and to navigate internally.
+        navigate(href);
+      } catch (error) {
+        console.error("Invalid URL:", error);
+      }
+    };
+
+    return (
+      <span
+        className={cn("gencl:cursor-pointer", className)}
+        onClick={handleClick}
+        {...restRestProps}
+      >
+        {children}
+      </span>
+    );
   }
 
   // Check if it's an external link

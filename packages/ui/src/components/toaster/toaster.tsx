@@ -5,7 +5,7 @@ import type { ToasterProps } from "sonner";
 import { Toaster as Sonner, toast } from "sonner";
 import { CircleCheck, X } from "lucide-react";
 import { useDeviceDetection } from "@genuin/ui/hooks/use-device-detection";
-import { cn } from "@genuin/ui/lib/utils";
+import { cn, getGenclStyles } from "@genuin/ui/lib/utils";
 import { XIcon } from "@genuin/ui/icons";
 
 type ToastVariant = "success" | "error";
@@ -31,6 +31,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
           "--normal-text": "var(--black)",
           "--normal-border": "var(--border)",
           "--width": isMobile ? "min(calc(100% - 32px), 380px)" : "auto",
+          ...getGenclStyles(),
         } as React.CSSProperties
       }
       {...props}

@@ -5,7 +5,7 @@ import { XIcon } from "lucide-react";
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn } from "@genuin/ui/lib/utils";
+import { cn, getGenclStyles } from "@genuin/ui/lib/utils";
 import { dialogManager } from "@genuin/ui/lib/dialog-manager";
 
 /**
@@ -130,6 +130,7 @@ function DialogContent({
   variant = "default",
   showClose = true,
   bgBlur = false,
+  style,
   ...props
 }: DialogContentProps) {
   return (
@@ -138,6 +139,7 @@ function DialogContent({
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(dialogContentVariants({ variant }), className)}
+        style={{ ...style, ...getGenclStyles() }}
         autoFocus={false}
         {...props}
       >

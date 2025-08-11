@@ -56,4 +56,6 @@ export * from "./search-icon";
 export * from "./dot-icon";
 export * from "./upload-icon";
 export * from "./danger-icon";
+export * from "./login-icon";
+export * from "./qr-icon";
 export * from "./anchor-icon";

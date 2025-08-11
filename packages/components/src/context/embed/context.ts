@@ -11,6 +11,10 @@ type EmbedContextType = {
   embedData: EmbedDataType;
   customization: EmbedDataType["customization"];
   /**
+   * Indicates whether the embed is running inside an iframe.
+   */
+  isInIframe: boolean;
+  /**
    * The event bus for the embed context, used to manage events.
    */
   embedEventBus: ReturnType<typeof createEmbedEventBus>;

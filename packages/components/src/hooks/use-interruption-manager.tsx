@@ -5,6 +5,7 @@ import { useAuthContext } from "../context/auth";
 import type { AuthUser } from "@genuin/components/types/auth";
 import { StepsType } from "../organisms/authentication-modal/context";
 import { dialogManager } from "@genuin/ui/lib/dialog-manager";
+import { useEmbedConfigs } from "./embed/use-embed-config";
 
 const INTERRUPTION_STEPS = [
   {
@@ -38,6 +39,7 @@ export function useInterruptionManager() {
   const [dialogType, setDialogType] = useState<StepsType | undefined>(
     undefined
   );
+  const { modalConfig } = useEmbedConfigs();
 
   // First check if get_app_popup is enabled
   const getAppConfig = brandDetails?.web_configs?.get_app_popup;
@@ -197,7 +199,7 @@ export function useInterruptionManager() {
 
   return {
     handleSwipeCount,
-    shouldShowDialog,
+    shouldShowDialog: shouldShowDialog && !modalConfig.hideModal,
     dialogType,
     closeDialog,
   };

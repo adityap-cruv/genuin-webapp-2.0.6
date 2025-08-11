@@ -15,6 +15,7 @@ import {
 } from "./context";
 import { Screens } from "./screens";
 import { useBaseContext } from "@genuin/components/context/base";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 export type AuthenticationModalProps = ComponentProps<typeof DialogTrigger> & {
   action?: AuthActionType;
@@ -23,11 +24,12 @@ export type AuthenticationModalProps = ComponentProps<typeof DialogTrigger> & {
   onOpenChange?: (open: boolean) => void;
   getAppData?: Partial<getAppDataType>;
   showClose?: boolean;
+  asChild?: boolean;
 };
 
 export function AuthenticationModal({
   children,
-  asChild,
+  asChild = true,
   action,
   open: controlledOpen,
   customStep,
@@ -65,6 +67,8 @@ export function AuthenticationModal({
 
   const isControlled = controlledOpen !== undefined;
   const isOpen = isControlled ? controlledOpen : internalOpen;
+
+  const { modalConfig } = useEmbedConfigs();
   const handleOpenChange = (open: boolean) => {
     if (!isControlled) {
       setInternalOpen(open);
@@ -80,13 +84,17 @@ export function AuthenticationModal({
     handleOpenChange(true);
   };
 
+  if (modalConfig.hideModal) {
+    return children;
+  }
+
   return (
     <Dialog
       type={`${getAppData?.data?.type}-dialog`}
       open={isOpen}
       onOpenChange={handleOpenChange}
     >
-      <DialogTrigger asChild {...restProps}>
+      <DialogTrigger asChild={asChild} {...restProps}>
         {children}
       </DialogTrigger>
       <DialogContent

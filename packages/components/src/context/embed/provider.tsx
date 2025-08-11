@@ -24,6 +24,17 @@ export function EmbedProvider({
   // Create a unique event bus for this provider instance
   const embedEventBus = useMemo(() => createEmbedEventBus(), []);
 
+  // Detect if running inside an iframe (safe for SSR)
+  const isInIframe = useMemo(() => {
+    if (typeof window === "undefined") return false;
+    try {
+      return window.self !== window.top;
+    } catch {
+      // Accessing window.top can throw due to cross-origin
+      return true;
+    }
+  }, []);
+
   const changeActiveIndex = useCallback(
     (newIndex: number) => {
       embedEventBus.emit("activeIndexChange", undefined, (currentContext) => ({
@@ -102,6 +113,7 @@ export function EmbedProvider({
         rootElement: container,
         embedData,
         customization: embedData.customization,
+        isInIframe,
         embedEventBus,
         changeActiveIndex,
         changeActivePlayerType,

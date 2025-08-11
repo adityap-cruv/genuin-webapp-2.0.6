@@ -690,6 +690,9 @@ importers:
       usehooks-ts:
         specifier: ^3.1.1
         version: 3.1.1(react@19.1.0)
+      wouter:
+        specifier: ^3.5.1
+        version: 3.7.1(react@19.1.0)
       zod:
         specifier: ^3.25.56
         version: 3.25.67
@@ -7683,6 +7686,7 @@ packages:
       estree-walker: 2.0.2
       picomatch: 4.0.2
       rollup: 3.29.5
+    dev: false
 
   /@rollup/rollup-android-arm-eabi@4.44.0:
     resolution: {integrity: sha512-xEiEE5oDW6tK4jXCAyliuntGR+amEMO7HLtdSshVuhFnKTYoeYMyXQK7pLouAJJj5KHdwdn87bfHAR2nSdNAUA==}
@@ -8809,7 +8813,7 @@ packages:
       vite: ^5.0.0 || ^6.0.0
     dependencies:
       '@joshwooding/vite-plugin-react-docgen-typescript': 0.6.0(typescript@5.8.3)(vite@6.3.5)
-      '@rollup/pluginutils': 5.2.0(rollup@3.29.5)
+      '@rollup/pluginutils': 5.2.0(rollup@2.79.2)
       '@storybook/builder-vite': 9.0.12(storybook@9.0.12)(vite@6.3.5)
       '@storybook/react': 9.0.12(react-dom@19.1.0)(react@19.1.0)(storybook@9.0.12)(typescript@5.8.3)
       find-up: 7.0.0
@@ -18116,6 +18120,7 @@ packages:
     hasBin: true
     optionalDependencies:
       fsevents: 2.3.3
+    dev: false
 
   /rollup@4.44.0:
     resolution: {integrity: sha512-qHcdEzLCiktQIfwBq420pn2dP+30uzqYxv9ETm91wdt2R9AFcWfjNAmje4NWlnCIQ5RMTzVf0ZyisOKqHR6RwA==}

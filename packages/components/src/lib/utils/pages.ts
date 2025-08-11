@@ -19,6 +19,7 @@ type BuildPageUrlOptions = {
   type: PageType;
   slug?: string;
   searchParams?: Record<string, string | string[] | undefined>;
+  asRoutePattern?: boolean; // Flag to generate wouter route patterns instead of actual URLs
 };
 
 /**
@@ -27,27 +28,29 @@ type BuildPageUrlOptions = {
  * @param param0.type - The type of page (community, group, profile, brand).
  * @param param0.slug - The slug for the page.
  * @param param0.searchParams - Optional search parameters to include in the URL.
- * @returns The constructed URL for the specified page.
+ * @param param0.asRoutePattern - When true, returns wouter route patterns (e.g., "/profile/:id") instead of actual URLs.
+ * @returns The constructed URL for the specified page or wouter route pattern.
  */
 export function buildPageUrl({
   type,
   slug,
   searchParams,
+  asRoutePattern = false,
 }: BuildPageUrlOptions): string {
   let basePath: string;
 
   switch (type) {
     case "community":
-      basePath = `/community/${slug}`;
+      basePath = asRoutePattern ? "/community/:slug" : `/community/${slug}`;
       break;
     case "group":
-      basePath = `/group/${slug}`;
+      basePath = asRoutePattern ? "/group/:slug" : `/group/${slug}`;
       break;
     case "profile":
-      basePath = `/profile/${slug}`;
+      basePath = asRoutePattern ? "/profile/:slug" : `/profile/${slug}`;
       break;
     case "brand":
-      basePath = `/brand/${slug}`;
+      basePath = asRoutePattern ? "/brand/:slug" : `/brand/${slug}`;
       break;
     case "home":
       basePath = "/home";
@@ -65,13 +68,13 @@ export function buildPageUrl({
       basePath = "/settings";
       break;
     case "video":
-      basePath = `/video/${slug}`;
+      basePath = asRoutePattern ? "/video/:slug" : `/video/${slug}`;
       break;
     case "terms":
-      basePath = `/terms`;
+      basePath = "/terms";
       break;
     case "privacy":
-      basePath = `/privacy`;
+      basePath = "/privacy";
       break;
     case "notification":
       basePath = "/notification";
@@ -81,7 +84,7 @@ export function buildPageUrl({
       throw new Error(`Unknown page type: ${type}`);
   }
 
-  if (searchParams) {
+  if (searchParams && !asRoutePattern) {
     const query = new URLSearchParams();
     for (const [key, value] of Object.entries(searchParams)) {
       if (value !== undefined) {

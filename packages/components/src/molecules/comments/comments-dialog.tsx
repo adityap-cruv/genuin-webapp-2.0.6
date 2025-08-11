@@ -9,6 +9,7 @@ import { CommentsList } from "./comments-list";
 import { CommentInputBox } from "./comment-input";
 import { setQueryDataForNewComment } from "@genuin/components/react-query/api/comments";
 import { abbreviateNumber } from "@genuin/ui/lib/utils";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 
 type CommentDialogProps = {
   communityId: string;
@@ -18,6 +19,7 @@ type CommentDialogProps = {
   children: ReactNode;
   commentCount: number;
   shareUrl: string;
+  defaultOpen: boolean;
 } & React.ComponentProps<typeof DialogTrigger>;
 
 export function CommentsDialog({
@@ -29,10 +31,19 @@ export function CommentsDialog({
   commentCount,
   shareUrl,
   className,
+  defaultOpen,
   ...props
 }: CommentDialogProps) {
+  // const embedDetails = useSafeEmbedContext();
+  // const shouldAutoOpen = Boolean(
+  //   embedDetails?.embedData.startVideoSlug &&
+  //     embedDetails.embedData.startVideoSlug === videoSlug &&
+  //     embedDetails.embedData.autoUserInteractionToPerform === "comment-spark"
+  // );
+  // console.log("Should auto open:", shouldAutoOpen);
+
   return (
-    <Dialog type="comment-dialog">
+    <Dialog type="comment-dialog" defaultOpen={defaultOpen}>
       <DialogTrigger className={className} {...props}>
         {children}
         <p className="gencl:p-0 gencl:text-center gencl:text-white gencl:text-body-2-medium">

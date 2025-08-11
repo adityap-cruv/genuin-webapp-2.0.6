@@ -24,8 +24,12 @@ export function EmbedExpandView({
   isLoading,
   queryKey,
 }: EmbedExpandViewProps) {
-  const { changeActiveIndex, embedEventBus, goBackToPreviousPlayerType } =
-    useEmbedContext();
+  const {
+    changeActiveIndex,
+    embedEventBus,
+    goBackToPreviousPlayerType,
+    isInIframe,
+  } = useEmbedContext();
   const [showExpandView, setShowExpandView] = useState(
     embedEventBus.getContext().activePlayerType === "expand-view"
   );
@@ -54,6 +58,78 @@ export function EmbedExpandView({
       embedEventBus.off("activePlayerTypeChange", handleActivePlayerTypeChange);
     };
   }, []);
+
+  // Handle entering/exiting browser fullscreen for expand-view
+  useEffect(() => {
+    if (!isInIframe) return;
+    // Helpers with WebKit fallbacks for Safari
+    const isFullscreen = (): boolean => {
+      return !!(
+        document.fullscreenElement || (document as any).webkitFullscreenElement
+      );
+    };
+
+    const requestFullscreen = async () => {
+      const el = document.documentElement as any;
+      try {
+        if (el.requestFullscreen) {
+          await el.requestFullscreen();
+        } else if (el.webkitRequestFullscreen) {
+          el.webkitRequestFullscreen();
+        }
+      } catch (e) {
+        // Silently ignore if the browser blocks without user gesture
+      }
+    };
+
+    const exitFullscreen = async () => {
+      const doc: any = document as any;
+      try {
+        if (document.exitFullscreen) {
+          await document.exitFullscreen();
+        } else if (doc.webkitExitFullscreen) {
+          doc.webkitExitFullscreen();
+        }
+      } catch (e) {
+        // Ignore
+      }
+    };
+
+    // If expand-view is shown, request fullscreen; otherwise exit it
+    if (showExpandView) {
+      if (!isFullscreen()) {
+        void requestFullscreen();
+      }
+    } else {
+      if (isFullscreen()) {
+        void exitFullscreen();
+      }
+    }
+
+    // Listen for user exiting fullscreen (e.g., ESC), then revert expand-view
+    const handleFsChange = () => {
+      const stillFs = isFullscreen();
+      if (!stillFs && showExpandView) {
+        // Only revert if our UI still thinks we're expanded
+        goBackToPreviousPlayerType();
+      }
+    };
+
+    document.addEventListener("fullscreenchange", handleFsChange);
+    document.addEventListener("webkitfullscreenchange", handleFsChange as any);
+
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFsChange);
+      document.removeEventListener(
+        "webkitfullscreenchange",
+        handleFsChange as any
+      );
+      // On cleanup, ensure we leave fullscreen if we were in expand-view
+      if (showExpandView && isFullscreen()) {
+        void exitFullscreen();
+      }
+    };
+  }, [showExpandView, goBackToPreviousPlayerType, isInIframe]);
 
   if (showExpandView)
     return (

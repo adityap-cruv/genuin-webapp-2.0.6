@@ -4,7 +4,7 @@ import * as React from "react";
 import * as SheetPrimitive from "@radix-ui/react-dialog";
 import { XIcon } from "lucide-react";
 
-import { cn } from "src/lib/utils";
+import { cn, getGenclStyles } from "src/lib/utils";
 
 function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
   return <SheetPrimitive.Root data-slot="sheet" {...props} />;
@@ -49,6 +49,7 @@ function SheetContent({
   children,
   side = "right",
   hideCloseIcon = false,
+  style,
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Content> & {
   side?: "top" | "right" | "bottom" | "left";
@@ -71,6 +72,7 @@ function SheetContent({
             "gencl:data-[state=closed]:slide-out-to-bottom gencl:data-[state=open]:slide-in-from-bottom gencl:inset-x-0 gencl:bottom-0 gencl:h-auto",
           className
         )}
+        style={{ ...style, ...getGenclStyles() }}
         {...props}
       >
         {children}

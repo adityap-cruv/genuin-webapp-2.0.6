@@ -5,7 +5,7 @@ import * as PopoverPrimitive from "@radix-ui/react-popover";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 
-import { cn } from "@genuin/ui/lib/utils";
+import { cn, getGenclStyles } from "@genuin/ui/lib/utils";
 
 function Popover({
   ...props

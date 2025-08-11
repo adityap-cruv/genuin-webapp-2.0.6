@@ -12,10 +12,11 @@ import { Comments, CommentsDialog } from "../../molecules/comments";
 
 import { Player } from "./player";
 import { SwiperImplementation } from "./swiper-implementation";
-import { ComponentProps } from "react";
+import { ComponentProps, useMemo } from "react";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { abbreviateNumber, cn } from "@genuin/ui/lib/utils";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 
 type PlayerListPropsType = {
   posts: PostDetailsType[];
@@ -63,6 +64,8 @@ export function PlayerList({
     },
   } = useEmbedConfigs();
 
+  const embedDetails = useSafeEmbedContext();
+
   return (
     <div className="gencl:flex gencl:justify-center gencl:h-full gencl:w-full gencl:gap-6">
       <SwiperImplementation
@@ -71,7 +74,7 @@ export function PlayerList({
           onActiveIndexChange?.(swiper.activeIndex);
         }}
       >
-        {posts.map((post) => {
+        {posts.map((post, index) => {
           return (
             <SwiperSlide key={post.video.id}>
               <div className="gencl:flex gencl:gap-3 gencl:h-full">
@@ -97,7 +100,14 @@ export function PlayerList({
                     isCommentBoxOpen={value}
                     actionWrapper={{
                       COMMENT: (defaultNode) => {
-                        if (!isDesktop)
+                        const defaultOpen =
+                          embedDetails?.embedData
+                            .autoUserInteractionToPerform === "comment-spark" &&
+                          post.video.slug ===
+                            embedDetails.embedData.startVideoSlug &&
+                          activeIndex === index &&
+                          !showExpandView;
+                        if (!isMobile)
                           return (
                             <CommentsDialog
                               commentCount={post.video.commentCount}
@@ -106,6 +116,7 @@ export function PlayerList({
                               videoId={post.video.id}
                               videoSlug={post.video.slug}
                               shareUrl={post.video.shareUrl}
+                              defaultOpen={defaultOpen}
                             >
                               {defaultNode}
                             </CommentsDialog>
@@ -143,21 +154,25 @@ export function PlayerList({
         {showExpandView && !isMobile && <NavigationButton />}
       </SwiperImplementation>
       {/* show this only if expand view is open  */}
-      {value && showExpandView && showCommentBox && posts[activeIndex] && (
-        <div className="gencl:max-w-118 gencl:w-full gencl:h-full gencl:hidden gencl:sm:block! gencl:py-6">
-          <Comments
-            videoId={posts[activeIndex].video.id}
-            loopId={posts[activeIndex].group.id}
-            communityId={posts[activeIndex].community?.id}
-            videoSlug={posts[activeIndex].video.slug}
-            className="gencl:h-full"
-            showCloseButton={value}
-            onClose={toggle}
-            onCommentCountChange={onCommentCountChange}
-            shareUrl={posts[activeIndex].video.shareUrl}
-          />
-        </div>
-      )}
+      {value &&
+        showExpandView &&
+        showCommentBox &&
+        posts[activeIndex] &&
+        isDesktop && (
+          <div className="gencl:max-w-118 gencl:w-full gencl:h-full gencl:hidden gencl:sm:block! gencl:py-6">
+            <Comments
+              videoId={posts[activeIndex].video.id}
+              loopId={posts[activeIndex].group.id}
+              communityId={posts[activeIndex].community?.id}
+              videoSlug={posts[activeIndex].video.slug}
+              className="gencl:h-full"
+              showCloseButton={value}
+              onClose={toggle}
+              onCommentCountChange={onCommentCountChange}
+              shareUrl={posts[activeIndex].video.shareUrl}
+            />
+          </div>
+        )}
     </div>
   );
 }

@@ -260,17 +260,17 @@ export function getMonthYear(timestamp: number): string {
   const date = new Date(timestamp * 1000);
   const currentYear = new Date().getFullYear();
   const dateYear = date.getFullYear();
-  
+
   // Format based on whether the year matches current year
   if (dateYear === currentYear) {
     // MMM dd format (e.g., "Aug 05")
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
   } else {
     // MMM dd, yyyy format (e.g., "Aug 05, 2024")
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric', 
-      // year: 'numeric' 
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      // year: 'numeric'
     });
   }
 }
@@ -282,17 +282,94 @@ export function getMonthYear(timestamp: number): string {
  */
 export function getFormattedDuration(durationString: string): string | null {
   const totalSeconds = parseInt(durationString, 10);
-  
+
   if (isNaN(totalSeconds)) {
     return null;
   }
-  
+
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
-  
+
   if (minutes > 0) {
     return seconds > 0 ? `${minutes}min ${seconds}s` : `${minutes}min`;
   } else {
     return `${seconds}s`;
   }
+}
+
+/**
+ * Extracts CSS variables starting with "--gencl" from the "gen-sdk-class" element.
+ * These variables are used for theming and styling consistency across the application.
+ * @returns Record of CSS variable names and their values
+ */
+// Constant for the gencl class name to avoid hardcoding
+const GENCL_CLASS_NAME = "gen-sdk-class";
+
+// Cache for genclVars to avoid repeated expensive lookups
+let cachedGenclVars: Record<string, string> | null = null;
+
+export function getGenclStyles(): Record<string, string> {
+  // Guard for SSR and client-side safety
+  if (typeof document === "undefined") return {};
+
+  // Return cached result if available
+  if (cachedGenclVars) return cachedGenclVars;
+
+  const element = document.getElementsByClassName(GENCL_CLASS_NAME)[0];
+  if (!element) return {};
+
+  const computedStyles = window.getComputedStyle(element);
+
+  // Get all CSS variables from style attribute directly
+  const styleAttribute = element.getAttribute("style") || "";
+
+  // Create a dictionary of all CSS custom properties (variables) that start with "--gencl"
+  const genclVars = {} as Record<string, string>;
+
+  // Most direct approach: Parse the style attribute for inline styles
+  // This captures what's explicitly set on the element
+  const styleRegex = /(--gencl[^:]+):\s*([^;]+)/g;
+  let match: RegExpExecArray | null;
+  while ((match = styleRegex.exec(styleAttribute)) !== null) {
+    const propName = match[1];
+    const value = match[2];
+    if (propName && value) {
+      genclVars[propName] = value.trim();
+    }
+  }
+
+  // Also capture CSS variables from computed styles
+  // This is the most reliable way to get all variables
+  // including those from stylesheets and parent elements
+  Array.from(computedStyles)
+    .filter((propName) => propName.startsWith("--gencl"))
+    .forEach((propName) => {
+      const value = computedStyles.getPropertyValue(propName).trim();
+      if (value) {
+        genclVars[propName] = value;
+      }
+    });
+
+  // Additional check for known CSS variable patterns
+  const cssVarPatterns = [
+    "--gencl-color-primary",
+    "--gencl-color-secondary",
+    "--gencl-color-tertiary",
+  ];
+
+  // Try all patterns with different variants (100, 200, 300, etc.)
+  for (const baseVar of cssVarPatterns) {
+    for (let i = 100; i <= 900; i += 100) {
+      const varName = `${baseVar}-${i}`;
+      const value = computedStyles.getPropertyValue(varName).trim();
+      if (value) {
+        genclVars[varName] = value;
+      }
+    }
+  }
+
+  // Cache the result for future calls
+  cachedGenclVars = genclVars;
+
+  return genclVars;
 }

@@ -11,6 +11,9 @@ import { ExpandViewDetails } from "./expand-view";
 import { PlaybackSpeedCapsule } from "@genuin/components/molecules/playback-speed/speed-capsule";
 import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
 import { Linkouts } from "@genuin/components/organisms/linkouts/linkouts";
+import { SpeedControlSideBars } from "../../playback-speed/speed-control-bars";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { useFeedContext } from "@genuin/components/templates/feed/context";
 
 export function Default({
   className,
@@ -27,7 +30,8 @@ export function Default({
   const { showExpandView, togglePlay, toggleMuted, muted } = usePlayerContext();
   const { gestureOverlayUI } = useGestureOverlayManager();
   const { showSeeker } = usePlayerContext();
-  // const { hideGestureOverlay } = useGestureOverlayManager();
+  const { isMobile } = useDeviceDetectMediaQuery();
+  const { playbackSpeed } = useFeedContext();
 
   const {
     brandDetails: {
@@ -109,7 +113,7 @@ export function Default({
          * This is the expand view details.
          * It will show the details of the post. If post is expanded.
          */}
-        {showExpandView ? (
+        {playbackSpeed.speed !== 1 ? undefined : showExpandView || isMobile ? (
           <ExpandViewDetails
             postDetails={postDetails}
             isActive={isActive}
@@ -153,12 +157,15 @@ export function Default({
 
         {/* This is the playback speed controls for the desktop. */}
         {playback_speed_enabled && (
-          <PlaybackSpeedCapsule
-            className={cn(
-              "gencl:absolute gencl:z-10 gencl:transition-all",
-              showExpandView ? "gencl:bottom-32" : "gencl:bottom-12"
-            )}
-          />
+          <>
+            <PlaybackSpeedCapsule
+              className={cn(
+                "gencl:absolute gencl:z-10 gencl:transition-all",
+                showExpandView ? "gencl:bottom-32" : "gencl:bottom-12"
+              )}
+            />
+            <SpeedControlSideBars />
+          </>
         )}
 
         {/**

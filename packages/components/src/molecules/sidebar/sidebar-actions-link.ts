@@ -4,6 +4,7 @@ import {
   ExploreIcon,
   LatestIcon,
   NotificationIcon,
+  SearchIcon,
 } from "@genuin/ui/icons";
 
 export const SideBarActionLinks = [
@@ -33,7 +34,12 @@ export const SideBarActionLinks = [
     type: "notification",
   },
   {
-    text : "Profile",
+    icon: SearchIcon,
+    text: "Search",
+    type: "search",
+  },
+  {
+    text: "Profile",
     type: "profile",
-  }
+  },
 ] as const;

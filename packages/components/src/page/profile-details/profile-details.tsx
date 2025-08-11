@@ -1,10 +1,7 @@
 "use client";
 import { useId, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { TabsSkeleton } from "@genuin/ui/tabs";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { NOT_FOUND_ERROR_CODES } from "@genuin/components/lib/constants/errors";
-
 import { BecomeCreatorButton } from "@genuin/components/molecules/become-creator-button";
 import { ErrorState } from "@genuin/components/molecules/error-state";
 import { ShareButton } from "@genuin/components/molecules/share-button";
@@ -16,7 +13,7 @@ import { DetailsPageTopbar } from "@genuin/components/organisms/details-page-top
 import { useBaseContext } from "@genuin/components/context/base";
 import { ProfileDetailsSkeleton } from "./skeleton";
 import { SideInfo } from "@genuin/components/organisms/side-info";
-import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { useRouter } from "@genuin/components/hooks/use-router";
 
 export function ProfileDetails({
   userName,
@@ -33,8 +30,7 @@ export function ProfileDetails({
   } = useGetProfileDetails(userName, forBrand);
   const detailsId = useId();
   const { brandDetails } = useBaseContext();
-  const { isMobile } = useDeviceDetectMediaQuery();
-  const router = useRouter();
+  const { replace } = useRouter();
 
   useEffect(() => {
     if (profileData && profileData.brand && !forBrand) {
@@ -43,9 +39,9 @@ export function ProfileDetails({
         type: "brand",
         slug: profileData.brand.brand_slug,
       });
-      router.replace(brandUrl);
+      replace(brandUrl);
     }
-  }, [profileData, forBrand, router]);
+  }, [profileData, forBrand]);
 
   if (isLoading) {
     return <ProfileDetailsSkeleton />;

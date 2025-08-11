@@ -1,4 +1,5 @@
-import { ComponentType, ReactNode } from "react";
+import { ComponentType } from "react";
+import { useRouter } from "next/navigation";
 import { UrlObject } from "url";
 
 type Url = string | UrlObject;
@@ -89,4 +90,12 @@ export type LinkContextValue = {
   LinkComponent?: ComponentType<any>;
   isNextJS?: boolean;
   usePathname?: () => string;
+  /**
+   * Flag to indicate if the routing is custom.
+   */
+  isCustomRouting: boolean;
+  /**
+   * Optional hook for Next.js compatibility.
+   */
+  useRouter: typeof useRouter;
 };

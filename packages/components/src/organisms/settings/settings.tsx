@@ -71,7 +71,7 @@ export function SettingsPage() {
   const [activeTab, setActiveTab] = useState("account");
   const { isDesktop } = useDeviceDetectMediaQuery();
   const [groupNotify, setGroupNotify] = useState(false);
-  const { isFetching, data: categories } = useGetCategoriesQuery();
+  const { data: categories } = useGetCategoriesQuery();
 
   const textToShow = useMemo(() => {
     if (!categories) return "Loading...";

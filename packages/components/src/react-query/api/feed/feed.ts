@@ -146,6 +146,31 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
   // Override isLoading when videoDetailsQuery is loading
   return {
     ...infiniteQueryResult,
+    data: infiniteQueryResult.data
+      ? {
+          ...infiniteQueryResult.data,
+          pages: videoDetailsQuery.data
+            ? [
+                {
+                  feed: [videoDetailsQuery.data],
+                  pageSession: null,
+                  endOfFeed: false,
+                },
+                ...infiniteQueryResult.data.pages,
+              ]
+            : infiniteQueryResult.data.pages,
+        }
+      : videoDetailsQuery.data
+        ? {
+            pages: [
+              {
+                feed: [videoDetailsQuery.data],
+                pageSession: null,
+                endOfFeed: false,
+              },
+            ],
+          }
+        : undefined,
     isLoading: videoDetailsQuery.isLoading || infiniteQueryResult.isLoading,
   };
 };

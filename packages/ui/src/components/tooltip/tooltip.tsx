@@ -5,7 +5,7 @@ import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 import * as React from "react";
 
-import { cn } from "@genuin/ui/lib/utils";
+import { cn, getGenclStyles } from "@genuin/ui/lib/utils";
 
 function TooltipProvider({
   delayDuration = 0,
@@ -79,6 +79,7 @@ function TooltipContent({
   sideOffset = 0,
   children,
   theme,
+  style,
   ...props
 }: TooltipContentProps) {
   return (
@@ -87,6 +88,7 @@ function TooltipContent({
         data-slot="tooltip-content"
         sideOffset={sideOffset}
         className={cn(className, tooltipContentVariants({ theme }))}
+        style={{ ...style, ...getGenclStyles() }}
         {...props}
       >
         {children}

@@ -1,29 +1,44 @@
 "use client";
 import { useEffect, useState } from "react";
 import type { SizeBoxType } from "@genuin/components/types/base";
+import { useEmbedConfigs } from "./embed/use-embed-config";
+import { useBaseContext } from "../context/base";
+import { useEmbedContext } from "../context/embed";
+import { useSafeEmbedContext } from "../context/embed/context";
 
 /**
  * A custom hook that returns the size of the feed video container.
  * @param considerTopBar - Whether to consider the top bar height in the calculation.
  * @returns The size of the feed video container.
  */
-export function useFeedVideoSizeBox(considerTopBar: boolean = true) {
+export function useFeedVideoSizeBox() {
+  const { isEmbed } = useBaseContext();
+  const embedDetails = useSafeEmbedContext();
+
+  const {
+    layoutConfig: { showNavigationBar: considerTopBar },
+  } = useEmbedConfigs(); // This can be parameterized if needed
   const [sizeBox, setSizeBox] = useState<SizeBoxType>(
     typeof window !== "undefined"
-      ? getSizeBox(considerTopBar)
+      ? getSizeBox(considerTopBar, embedDetails?.rootElement ?? undefined)
       : { height: 0, width: 0 }
   );
 
   useEffect(() => {
-    setSizeBox(getSizeBox(considerTopBar));
+    const elementToTrack = isEmbed ? embedDetails?.rootElement : window;
+    setSizeBox(
+      getSizeBox(considerTopBar, embedDetails?.rootElement ?? undefined)
+    );
     const handleResize = () => {
-      setSizeBox(getSizeBox(considerTopBar));
+      setSizeBox(
+        getSizeBox(considerTopBar, embedDetails?.rootElement ?? undefined)
+      );
     };
-    window.addEventListener("resize", handleResize);
+    elementToTrack?.addEventListener("resize", handleResize);
     return () => {
-      window.removeEventListener("resize", handleResize);
+      elementToTrack?.removeEventListener("resize", handleResize);
     };
-  }, [considerTopBar]);
+  }, [isEmbed]);
 
   return sizeBox;
 }
@@ -38,9 +53,14 @@ const NAVBAR_HEIGHT = 64;
  */
 const MARGIN = 16;
 
-function getSizeBox(considerTopBar: boolean = true) {
+function getSizeBox(
+  considerTopBar: boolean = true,
+  rootElement?: HTMLElement
+): SizeBoxType {
   const height =
-    window.innerHeight - (considerTopBar ? NAVBAR_HEIGHT : 0) - MARGIN;
+    (rootElement ? rootElement.clientHeight : window.innerHeight) -
+    (considerTopBar ? NAVBAR_HEIGHT : 0) -
+    MARGIN;
   const width = height * (9 / 16);
   return {
     height,

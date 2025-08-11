@@ -32,7 +32,6 @@ async function getVideoDetails(slug: string): Promise<PostDetailsType> {
   if (!metadata?.chat_id) {
     throw new Error(`Invalid metadata for slug: ${slug}`);
   }
-  console.log("metadata in getVideoDetails::", metadata);
   const [loopDetails, videoDetails] = await Promise.all([
     fetchLoopDetails(undefined, metadata.chat_id),
     fetchLoopVideo(metadata.chat_id, metadata.message_id),

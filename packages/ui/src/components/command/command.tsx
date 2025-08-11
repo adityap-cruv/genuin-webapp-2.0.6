@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@genuin/ui/components/dialog";
-import { cn } from "@genuin/ui/lib/utils";
+import { cn, getGenclStyles } from "@genuin/ui/lib/utils";
 
 function Command({
   className,
@@ -57,6 +57,7 @@ function CommandDialog({
         className={cn("gencl:overflow-hidden gencl:p-0", contentClassName)}
         showClose={showClose}
         onClick={onClick}
+        style={{ ...getGenclStyles() }}
       >
         <Command
           className={cn(

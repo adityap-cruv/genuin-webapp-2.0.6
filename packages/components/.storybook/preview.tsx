@@ -18,20 +18,25 @@ const preview: Preview = {
         context.kind.toLowerCase().includes("web-sdk") ||
         context.title.toLowerCase().includes("web-sdk")
       ) {
+        const parsedColor = parseBrandColors(testBrandDetails.brand_colors);
+
         return (
           <div
-            style={{
-              height: "600px",
-            }}
+            id="gen-sdk"
+            className="gen-sdk-class"
+            style={{ ...parsedColor }}
           >
-            <div style={{ width: "100%", height: "200vh" }}>
-              <div id="gen-sdk">
-                <ReactQueryClientProvider>
-                  <EmbedProvider
-                    container={
-                      document.getElementById("gen-sdk") as HTMLElement
-                    }
-                    embedData={testEmbedData}
+            <ReactQueryClientProvider>
+              <BaseContextProvider brandDetails={testBrandDetails} isEmbed>
+                <EmbedProvider
+                  container={document.getElementById("gen-sdk") as HTMLElement}
+                  embedData={testEmbedData}
+                >
+                  <AuthProvider
+                    onSignIn={() => {}}
+                    onSignOut={() => {}}
+                    onUpdateUser={() => {}}
+                    user={null}
                   >
                     <LinkProvider>
                       <BaseContextProvider
@@ -50,10 +55,10 @@ const preview: Preview = {
                         </AuthProvider>
                       </BaseContextProvider>
                     </LinkProvider>
-                  </EmbedProvider>
-                </ReactQueryClientProvider>
-              </div>
-            </div>
+                  </AuthProvider>
+                </EmbedProvider>
+              </BaseContextProvider>
+            </ReactQueryClientProvider>
           </div>
         );
       }
