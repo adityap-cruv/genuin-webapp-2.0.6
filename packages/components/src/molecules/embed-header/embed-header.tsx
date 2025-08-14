@@ -12,8 +12,8 @@ const embedHeaderVariants = cva(
   {
     variants: {
       variant: {
-        feed: "gencl:justify-start gencl:items-start gencl:flex-col",
-        carousel: "gencl:justify-between gencl:items-center gencl:flex-row",
+        feed: "gencl:justify-start gencl:items-start gencl:flex-col gencl:h-[104px]",
+        carousel: "gencl:justify-between gencl:items-center gencl:flex-row gencl:h-[56px]",
       },
     },
     defaultVariants: {

@@ -14,8 +14,7 @@ export interface EmbedDimensions {
 }
 
 export function useEmbedDimensions(
-  config: ReturnType<typeof useEmbedConfigs>,
-  measuredHeaderHeight: number = 0
+  config: ReturnType<typeof useEmbedConfigs>
 ): EmbedDimensions {
   return useMemo(() => {
     const DEFAULT_HEIGHT = 480;
@@ -23,9 +22,7 @@ export function useEmbedDimensions(
     const spaceBetweenVideos = 8;
     const MIN_CAROUSEL_HEIGHT = 200;
 
-    const headerHeight =
-      measuredHeaderHeight || (config.header.showHeader ? config.view.isFeed ? 104 : 56 : 0);
-
+    const headerHeight = config.header.showHeader ? (config.view.isFeed ? 104 : 56) : 0;
     const statsHeight = config.engagement.showSocialInteractionData ? 40 : 0;
     const linkoutHeight = config.links.showLinkOutside ? 108 : 0;
 
@@ -53,17 +50,5 @@ export function useEmbedDimensions(
     config.engagement.showSocialInteractionData,
     config.links.showLinkOutside,
     config.view.isFeed,
-    measuredHeaderHeight,
   ]);
-}
-
-/**
- * Utility to determine the embed variant based on config
- */
-export function getEmbedVariant(
-  config: ReturnType<typeof useEmbedConfigs>,
-  variantProp?: "feed" | "carousel" | null | undefined
-): "feed" | "carousel" {
-  const configVariant = config.view.isFeed ? "feed" : "carousel";
-  return (variantProp as "feed" | "carousel") || configVariant;
 }

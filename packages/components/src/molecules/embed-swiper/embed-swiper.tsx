@@ -5,7 +5,6 @@ import { getSlidesPerView, SWIPER_CONFIG } from "./utils";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 import "swiper/css";
 import { cn } from "@genuin/ui/lib/utils";
-import { useEmbedContext } from "@genuin/components/context/embed";
 
 type EmbedSwiperProps = {
   forFeed?: boolean;
@@ -15,6 +14,7 @@ type EmbedSwiperProps = {
     width: number;
     height: number;
   };
+  aspectRation?: string;
 } & ComponentProps<typeof Swiper>;
 
 /**
@@ -29,6 +29,7 @@ export function EmbedSwiper({
   spaceBetweenVideos,
   containerDimensions,
   className,
+  aspectRation,
   ...restProps
 }: EmbedSwiperProps) {
   const { isWindows } = useDeviceDetection();
@@ -40,7 +41,8 @@ export function EmbedSwiper({
         getSlidesPerView(
           containerDimensions?.height ?? 0,
           containerDimensions?.width ?? 0,
-          forFeed
+          forFeed,
+          aspectRation
         ) ?? 1
       }
       spaceBetween={spaceBetweenVideos}

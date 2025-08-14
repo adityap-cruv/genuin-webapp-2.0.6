@@ -27,10 +27,7 @@ import { useEmbedContext } from "@genuin/components/context/embed";
 import { EmbedEventContextType } from "@genuin/components/context/embed/event-bus";
 import { PipView } from "./pip-view";
 import { getQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
-import {
-  useEmbedDimensions,
-  getEmbedVariant,
-} from "@genuin/components/hooks/embed/use-embed-dimensions";
+import { useEmbedDimensions } from "@genuin/components/hooks/embed/use-embed-dimensions";
 import { SdkErrorState } from "./error-state";
 import { SdkEmptyState } from "./empty-state";
 
@@ -48,12 +45,12 @@ const carouselVariant = cva("gencl:bg-secondary-200 gencl:rounded-md", {
 
 type Props = EmbedProps & VariantProps<typeof carouselVariant>;
 
-export function Embed({ className, variant, ...restProps }: Props) {
+export function Embed({ className, ...restProps }: Props) {
   // Use the hook to get all customization values in one place
   const { customization, embedData, embedEventBus } = useEmbedContext();
   const { track, EventName } = useAnalytics();
   const config = useEmbedConfigs();
-  const embedVariant = getEmbedVariant(config);
+  const embedVariant = config.view.embedStyle;
 
   const {
     isLoading,
@@ -67,14 +64,13 @@ export function Embed({ className, variant, ...restProps }: Props) {
     groupIds: customization.community_loop_ids,
     startVideoSlug: embedData.startVideoSlug,
     // startVideoSlug: "the-collab-has-officially-left-the-group-chat-nhl-3vjn",
+    isEmbed: true,
   });
   const queryKey = getQueryKeyForFeed("HOME", {
     communityIds: customization.community_ids,
     groupIds: customization.community_loop_ids,
   });
   const [swiper, setSwiper] = useState<Swiper | null>(null);
-  const [measuredHeaderHeight, setMeasuredHeaderHeight] = useState(0);
-  const headerRef = useRef<HTMLDivElement>(null);
   const embedRef = useRef<HTMLDivElement>(null);
 
   const videos = useMemo(
@@ -91,7 +87,7 @@ export function Embed({ className, variant, ...restProps }: Props) {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             track(EventName.EMBED_VIEWED, {
-              embedType: variant || getEmbedVariant(config, variant),
+              embedType: embedVariant,
               communityIds: customization.community_ids,
               groupIds: customization.community_loop_ids,
             });
@@ -106,20 +102,10 @@ export function Embed({ className, variant, ...restProps }: Props) {
     return () => observer.disconnect();
   }, []);
 
-  const measureHeaderHeight = useCallback(() => {
-    if (headerRef.current) {
-      const height = headerRef.current.getBoundingClientRect().height;
-      setMeasuredHeaderHeight(height);
-    }
-  }, []);
-
-  // Measure header height on component mount and header config changes
+  // Track EMBED_INITIALIZED event when component mounts
   useEffect(() => {
-    measureHeaderHeight();
-
-    // Track EMBED_INITIALIZED event when component mounts
     track(EventName.EMBED_INITIALIZED, {
-      embedType: variant || getEmbedVariant(config, variant),
+      embedType: embedVariant,
       communityIds: customization.community_ids,
       groupIds: customization.community_loop_ids,
     });
@@ -151,7 +137,7 @@ export function Embed({ className, variant, ...restProps }: Props) {
     linkoutHeight,
     spaceBetweenVideos,
     availableHeight,
-  } = useEmbedDimensions(config, measuredHeaderHeight);
+  } = useEmbedDimensions(config);
 
   if (isError) {
     return (
@@ -184,7 +170,14 @@ export function Embed({ className, variant, ...restProps }: Props) {
     <div
       ref={embedRef}
       className={cn(
-        carouselVariant({ variant: variant || embedVariant }),
+        carouselVariant({
+          variant:
+            embedVariant === "feed" || embedVariant === "carousel"
+              ? embedVariant
+              : embedVariant === "standard_wall"
+                ? "feed"
+                : "carousel",
+        }),
         className
       )}
       style={{
@@ -193,11 +186,20 @@ export function Embed({ className, variant, ...restProps }: Props) {
       }}
       {...restProps}
     >
-      <EmbedHeader ref={headerRef} variant={variant || embedVariant} />
+      <EmbedHeader
+        variant={
+          embedVariant === "standard_wall"
+            ? "feed"
+            : embedVariant === "feed" || embedVariant === "carousel"
+              ? embedVariant
+              : undefined
+        }
+      />
       <EmbedManagerProvider swiper={swiper}>
         <div className="gencl:relative">
           <EmbedSwiper
             forFeed={config.view.isFeed}
+            aspectRation={embedData.aspect_ratio}
             spaceBetweenVideos={spaceBetweenVideos}
             containerDimensions={{
               height: config.view.isFeed

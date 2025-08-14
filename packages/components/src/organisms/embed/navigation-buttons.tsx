@@ -7,7 +7,6 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { getEmbedVariant } from "@genuin/components/hooks/embed/use-embed-dimensions";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 interface NavigationButtonsProps {
@@ -31,7 +30,7 @@ export function NavigationButtons({ totalSlides }: NavigationButtonsProps) {
   };
 
   // Use the shared utility for embed variant
-  const embedVariant = getEmbedVariant(config);
+  const embedVariant = config.view.embedStyle;
   const isCarousel = embedVariant === "carousel";
 
   // To determine first/last slide, we need to pass the total videos count as a prop

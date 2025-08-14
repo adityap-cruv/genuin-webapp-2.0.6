@@ -225,15 +225,21 @@ type AutoUserInteractionToPerformType =
   | "comment";
 
 export type EmbedDataType = {
+  _id?: string;
   name: string;
   style: ViewType;
   type: "brand_feed" | "community_feed" | "loop_feed";
   brand_id: number;
   customization: Partial<CustomizationType>;
-  embed_id: string;
-  environment: string;
+  embed_layout?: string;
+  card_layout_id?: number;
+  video_layout_id?: number;
+  __v?: number;
+  is_live?: boolean;
+  embed_id?: string;
+  environment?: string;
   contextualParams?: SDKConfig["contextualParams"];
-  elementId: string;
+  elementId?: string;
   brand_ids?: number[];
   /**
    * The slug of the video to start with in the embed view.
@@ -244,6 +250,8 @@ export type EmbedDataType = {
    */
   autoUserInteractionToPerform?: AutoUserInteractionToPerformType;
   authInfo?: AuthInfoType;
+  is_default?: boolean;
+  aspect_ratio?: string
 };
 
 export type CustomizationType = {
@@ -262,10 +270,12 @@ export type CustomizationType = {
     position: "overlay" | "outside";
   };
   autoplay: boolean;
+  feed_display_pref?: string;
   heading?: string | null;
   sub_heading?: string | null;
   is_carousel_icon: boolean;
   is_floating_view: boolean;
+  is_expanded_view?: boolean;
   is_show_username: boolean;
   is_show_view_count: boolean;
   is_loop_video: boolean;
@@ -278,15 +288,15 @@ export type CustomizationType = {
     loop_id: string;
     community_id: string;
   }[];
-  brandColors: Record<string, string>;
-  element: HTMLElement;
-  view: ViewType;
+  brandColors?: Record<string, string>;
+  element?: HTMLElement;
+  view?: ViewType;
   enable_brand_click?: boolean;
   enable_community_click?: boolean;
   show_share_icon?: boolean;
   show_view_loop_button?: boolean;
   show_comments_section?: boolean;
-  carousel_style?: "focus";
+  carousel_style?: "focus" | "default";
   is_enable_engagement_tools: boolean;
   enable_engagement_tools: {
     repost: boolean;
@@ -296,7 +306,7 @@ export type CustomizationType = {
   };
   show_side_panel: boolean;
   show_join_community_button: boolean;
-  show_navigation: boolean;
+  show_navigation?: boolean;
   show_community_share_button: boolean;
   is_enable_redirection: boolean;
   enable_redirection_tools: {
@@ -304,8 +314,9 @@ export type CustomizationType = {
     group: boolean;
     user: boolean;
   };
-  is_show_popup_by_default: boolean;
-  theme: "dark" | "light";
+  is_show_popup_by_default?: boolean;
+  theme?: "dark" | "light";
+  video_crop?: boolean;
 };
 
 export type FeedVideoType = {

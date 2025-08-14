@@ -25,15 +25,37 @@ export const SWIPER_CONFIG = {
 export function getSlidesPerView(
   clientHeight: number,
   clientWidth: number,
-  forFeed: boolean
+  forFeed: boolean,
+  aspectRatio?: string
 ) {
   const elementHeight = clientHeight;
   const elementWidth = clientWidth;
   let ratio = 1;
+  let widthRatio = 9;
+  let heightRatio = 16;
+  
+  if (aspectRatio) {
+    const parts = aspectRatio.split(':');
+    if (parts.length === 2) {
+      const firstPart = parts[0];
+      const secondPart = parts[1];
+      
+      if (firstPart && secondPart) {
+        const parsedWidth = parseInt(firstPart, 10);
+        const parsedHeight = parseInt(secondPart, 10);
+        
+        if (!isNaN(parsedWidth) && !isNaN(parsedHeight) && parsedWidth > 0 && parsedHeight > 0) {
+          widthRatio = parsedWidth;
+          heightRatio = parsedHeight;
+        }
+      }
+    }
+  }
+  
   // separate logic for feed and carousel
   if (forFeed) {
     // calculating video height based on elementWidth, because we have to control height for feed view.
-    const videoHeight = elementWidth * (16 / 9);
+    const videoHeight = elementWidth * (heightRatio / widthRatio);
     ratio = elementHeight / videoHeight;
     // if element's height is less then video height, then we have to set ratio to 1.
     if (elementHeight < videoHeight) ratio = 1;
@@ -41,7 +63,7 @@ export function getSlidesPerView(
     if (ratio < 1) ratio = 1.1;
   } else {
     // calculating width based on height.
-    let calculatedWidth = (9 / 16) * elementHeight;
+    let calculatedWidth = (widthRatio / heightRatio) * elementHeight;
     // if calculated width is greater than element width, then we have to set it to element width.
     if (calculatedWidth > elementWidth) {
       calculatedWidth = elementWidth;

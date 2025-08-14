@@ -14,10 +14,8 @@ import {
   ChevronRight,
   ChevronUp,
 } from "lucide-react";
-import {
-  useEmbedDimensions,
-  getEmbedVariant,
-} from "@genuin/components/hooks/embed/use-embed-dimensions";
+import { useEmbedDimensions } from "@genuin/components/hooks/embed/use-embed-dimensions";
+import { useEmbedContext } from "@genuin/components/context/embed";
 
 const carouselSkeletonVariant = cva("gencl:bg-secondary-200 gencl:rounded-md", {
   variants: {
@@ -44,8 +42,10 @@ export function SdkSkeleton({
   containerHeight?: number;
   containerWidth?: number;
 }) {
+  const { embedData } = useEmbedContext();
   const config = useEmbedConfigs();
-  const embedVariant = getEmbedVariant(config, variant);
+  const embedVariant: "carousel" | "feed" =
+    config.view.embedStyle === "feed" ? "feed" : "carousel";
   const skeletonItems = Array(6).fill(null);
   const {
     containerHeight,
@@ -72,6 +72,7 @@ export function SdkSkeleton({
       <div className="gencl:relative">
         <EmbedSwiper
           forFeed={config.view.isFeed}
+          aspectRation={embedData.aspect_ratio}
           spaceBetweenVideos={spaceBetweenVideos}
           containerDimensions={{
             height: config.view.isFeed
@@ -176,8 +177,9 @@ const embedHeaderSkeletonVariants = cva(
   {
     variants: {
       variant: {
-        feed: "gencl:justify-start gencl:items-start gencl:flex-col",
-        carousel: "gencl:justify-between gencl:items-center gencl:flex-row",
+        feed: "gencl:justify-start gencl:items-start gencl:flex-col gencl:h-[104px]",
+        carousel:
+          "gencl:justify-between gencl:items-center gencl:flex-row gencl:h-[56px]",
       },
     },
     defaultVariants: {
@@ -195,11 +197,11 @@ function EmbedHeaderSkeleton({
   return (
     <div className={cn(embedHeaderSkeletonVariants({ variant }))}>
       <div className="gencl:flex gencl:flex-col gencl:gap-2">
-        <Skeleton className="gencl:h-5 gencl:w-32" />
+        {header.heading && <Skeleton className="gencl:h-5 gencl:w-32" />}
         {header.subHeading && <Skeleton className="gencl:h-3 gencl:w-24" />}
       </div>
       {header.ctaButton?.url && (
-        <Skeleton className="gencl:h-9 gencl:w-24 gencl:rounded-md" />
+        <Skeleton className="gencl:h-10 gencl:w-24 gencl:rounded-md" />
       )}
     </div>
   );

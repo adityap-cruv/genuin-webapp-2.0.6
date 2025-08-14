@@ -23,7 +23,7 @@ export function useEmbedConfigs() {
     };
   }
 
-  const { customization, rootElement } = embedContextData;
+  const { customization, rootElement, embedData } = embedContextData;
   const { brandDetails } = useBaseContext();
   const { isMobile } = useDeviceDetectMediaQuery();
 
@@ -49,10 +49,11 @@ export function useEmbedConfigs() {
   // ============================================================
   const viewConfig = useMemo(
     () => ({
-      isFeed: customization?.view === "feed",
-      isCarousel: customization?.view === "carousel",
+      embedStyle: embedData?.style,
+      isFeed: embedData?.style === "feed",
+      isCarousel: embedData?.style === "carousel",
       isFocusCarouselStyle:
-        customization?.view === "carousel" &&
+        embedData?.style === "carousel" &&
         customization?.carousel_style === "focus",
       isFloatingView: !!customization?.is_floating_view,
       isPopupView: !!customization?.is_popup_view,
@@ -99,7 +100,7 @@ export function useEmbedConfigs() {
       autoplay: !!customization?.autoplay,
       showBorderAroundVideo: !(
         isCheckFifthVideoType(brandDetails.brand_id) &&
-        customization?.view === "carousel"
+        embedData?.style === "carousel"
       ),
       showViewLoopButton: !!customization?.show_view_loop_button,
     }),
@@ -132,14 +133,14 @@ export function useEmbedConfigs() {
     if (!customization || !rootElement) return false;
     // Check for feed view with minimum width requirement
     if (
-      customization?.view === "feed" &&
+      embedData?.style === "feed" &&
       rootElement.offsetWidth < MIN_EMBED_WIDTH
     ) {
       return false;
     }
     // Check for carousel view with minimum height requirement
     if (
-      customization?.view === "carousel" &&
+      embedData?.style === "carousel" &&
       rootElement.offsetHeight < MIN_EMBED_HEIGHT
     ) {
       return false;
@@ -233,7 +234,8 @@ export function useEmbedConfigs() {
     return {
       hideModal:
         embedContextData.embedData?.style === "carousel" ||
-        embedContextData.embedData?.style === "feed",
+        embedContextData.embedData?.style === "feed" ||
+        embedContextData.embedData?.card_layout_id === 6,
     };
   }, [embedContextData.embedData?.style]);
 

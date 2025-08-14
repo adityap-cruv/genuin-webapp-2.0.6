@@ -19,6 +19,51 @@ import { useCallback } from "react";
 import { useEmbedContext } from "@genuin/components/context/embed";
 import { DynamicReactionIcon } from "@genuin/components/molecules/reaction-button";
 
+/**
+ * Helper function to extract the most appropriate URL from linkouts based on priority:
+ * 1. CTA link from first linkout
+ * 2. First link from links array in first linkout
+ * 3. URL from first linkout (legacy format)
+ * 4. null if no valid URL found
+ */
+function getLinkoutUrl(linkouts: any): string | null {
+  if (!linkouts || typeof linkouts !== "object") {
+    return null;
+  }
+
+  // Handle array of linkout objects
+  if (Array.isArray(linkouts) && linkouts.length > 0) {
+    const firstLinkout = linkouts[0];
+
+    // First priority: CTA link
+    if (firstLinkout.cta_link) {
+      return firstLinkout.cta_link;
+    }
+
+    // Second priority: First link from links array
+    if (
+      firstLinkout.links &&
+      Array.isArray(firstLinkout.links) &&
+      firstLinkout.links.length > 0 &&
+      firstLinkout.links[0].link
+    ) {
+      return firstLinkout.links[0].link;
+    }
+
+    // Legacy format with url property
+    if (firstLinkout.url) {
+      return firstLinkout.url;
+    }
+  }
+
+  // Handle direct object with cta_link
+  if (!Array.isArray(linkouts) && linkouts.cta_link) {
+    return linkouts.cta_link;
+  }
+
+  return null;
+}
+
 const embedTileVariants = cva(
   "gencl:h-full gencl:rounded-lg gencl:overflow-clip gencl:flex gencl:flex-col",
   {
@@ -54,7 +99,6 @@ export function EmbedTile({
     <div
       className={cn(
         embedTileVariants({ variant }),
-        { "gencl:opacity-40": config.styling.isOpacityDown },
         {
           "gencl:border gencl:border-secondary-150":
             config.video.showBorderAroundVideo,
@@ -141,20 +185,39 @@ function EmbedPlayer({
 }: EmbedPlayerProps) {
   const { isAdPlaying } = usePlayerContext();
   const config = useEmbedConfigs();
-  const { changeActivePlayerType } = useEmbedContext();
+  const { changeActivePlayerType, embedData } = useEmbedContext();
 
   const handleClickOnEmbedTile = useCallback(() => {
     if (isAdPlaying) {
       return;
     }
 
+    if (embedData.card_layout_id === 4) {
+      // For card_layout_id 4, prioritize URLs in this order: CTA, first linkout, or no action
+      const linkoutUrl = getLinkoutUrl(postDetails.video.linkouts);
+
+      if (linkoutUrl) {
+        window.open(linkoutUrl, "_blank");
+        return;
+      }
+
+      // No expand view for card_layout_id 4(Grubhub)
+      return;
+    }
+
+    // Default behavior for other card layouts
     if (postDetails.video.clickableUrl) {
       window.open(postDetails.video.clickableUrl, "_blank");
       return;
     }
 
     changeActivePlayerType("expand-view");
-  }, [isAdPlaying, changeActivePlayerType, postDetails]);
+  }, [
+    isAdPlaying,
+    changeActivePlayerType,
+    postDetails,
+    embedData.card_layout_id,
+  ]);
 
   return (
     <div className={cn("gencl:relative gencl:flex-1 gencl:min-h-0")}>

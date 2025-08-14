@@ -45,15 +45,34 @@ async function fetchFeed(
     ? encodeURI(getDeviceId() as string)
     : undefined;
 
+  // Build request body with only defined values
+  const requestBody: Record<string, any> = {
+    type: feedTypeToNumber[feedType],
+  };
+
+  // Only add parameters if they have a value
+  if (pageParam?.lastVideoId) {
+    requestBody.last_video_id = pageParam.lastVideoId;
+  }
+
+  if (pageParam?.pageSession) {
+    requestBody.page_session = pageParam.pageSession;
+  }
+
+  if (deviceId) {
+    requestBody.device_id = deviceId;
+  }
+
+  if (options?.communityIds && options.communityIds.length > 0) {
+    requestBody.community_ids = options.communityIds;
+  }
+
+  if (options?.groupIds && options.groupIds.length > 0) {
+    requestBody.loop_ids = options.groupIds.map(group => group.loop_id);
+  }
+
   return await axiosInstance
-    .post(API_PATHS.FEED_HOME, {
-      type: feedTypeToNumber[feedType],
-      last_video_id: pageParam?.lastVideoId ?? undefined,
-      page_session: pageParam?.pageSession ?? undefined,
-      device_id: deviceId,
-      community_ids: options?.communityIds,
-      loop_ids: options?.groupIds,
-    })
+    .post(options?.isEmbed ? API_PATHS.EMBED_FEED_HOME : API_PATHS.FEED_HOME, requestBody)
     .then((res) => {
       if (res.status !== 200) {
         throw new Error("Something went wrong feed api.");
@@ -81,6 +100,7 @@ type UseFeedOptionsType = {
   communityIds?: string[];
   groupIds?: Array<{ loop_id: string; community_id: string }>;
   startVideoSlug?: string;
+  isEmbed?: boolean;
 };
 
 /**

@@ -4,6 +4,10 @@ export const API_PATHS = {
    */
   FEED_HOME: "/goservices/feed/home",
   /**
+   * Api path to fetch embed feed.
+   */
+  EMBED_FEED_HOME: '/goservices/feed/embed/home',
+  /**
    * Api to spark a video or comment.
    */
   FEED_SPARK: "/api/v3/spark",

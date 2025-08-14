@@ -59,3 +59,4 @@ export * from "./danger-icon";
 export * from "./login-icon";
 export * from "./qr-icon";
 export * from "./anchor-icon";
+export * from "./price-tag-icon";

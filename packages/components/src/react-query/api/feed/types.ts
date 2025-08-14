@@ -48,6 +48,7 @@ type VideoData = {
     image_url?: string;
     timestamp?: number;
     title?: string;
+    offer_text?: string;
     [key: string]: unknown;
   };
 };
