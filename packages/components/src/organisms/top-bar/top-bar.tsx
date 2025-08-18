@@ -1,9 +1,9 @@
+import { useRef } from "react";
 import { CtaButtons } from "./cta-buttons";
 import { BrandLogo } from "@genuin/components/molecules/brand";
 import { BrandSlogan } from "@genuin/components/molecules/brand";
 import { cn } from "@genuin/ui/utils";
 import { cva, type VariantProps } from "class-variance-authority";
-import type { ReactNode } from "react";
 import {
   Sheet,
   SheetTrigger,
@@ -13,7 +13,6 @@ import {
 import { AlignJustifyIcon, XIcon } from "@genuin/ui/icons";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { SideBar } from "../side-bar";
-import { useRef } from "react";
 
 const topbarVariants = cva(
   "playback-speed-class gencl:h-16 gencl:w-full gencl:flex gencl:px-4 gencl:sm:px-6! gencl:items-center gencl:justify-between",
@@ -31,16 +30,11 @@ const topbarVariants = cva(
   }
 );
 
-type TopBarProps = React.ComponentProps<"div"> & {
-  search: ReactNode;
-} & VariantProps<typeof topbarVariants>;
+type TopBarProps = React.ComponentProps<"div"> & {} & VariantProps<
+    typeof topbarVariants
+  >;
 
-export function TopBar({
-  className,
-  search,
-  theme,
-  ...restProps
-}: TopBarProps) {
+export function TopBar({ className, theme, ...restProps }: TopBarProps) {
   const { isMobile } = useDeviceDetectMediaQuery();
   return (
     <div className={cn(className, topbarVariants({ theme }))} {...restProps}>

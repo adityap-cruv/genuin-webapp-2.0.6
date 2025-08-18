@@ -59,13 +59,13 @@ export function BaseLayout({
       <TopBar
         theme={shouldUseDarkTheme && isMobile ? "dark" : "light"}
         style={{ zIndex: 9 }}
-        search={undefined}
       />
       <main
         className="gencl:sm:flex gencl:overflow-clip"
         style={{
           height: calculatedHeight,
         }}
+        suppressHydrationWarning
       >
         {!isMobile && <SideBar className="gencl:sm:block! gencl:hidden" />}
         <section

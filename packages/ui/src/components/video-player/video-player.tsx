@@ -200,6 +200,7 @@ export const VideoPlayer = memo(function VideoPlayer({
 
     // Set initial playback speed for the new video
     videoRef.current.playbackRate = playbackSpeed;
+    void initializePlayer(player, play);
     // Reset videoStartFired when src changes (new video)
     playerStateRef.current.videoStartFired = false;
 

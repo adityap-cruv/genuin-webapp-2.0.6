@@ -7,3 +7,11 @@ import { QueryKey } from "@tanstack/react-query";
 export function getQueryKeyForNotificationCount(): QueryKey {
   return ["notification", "count"];
 }
+
+/**
+ * This function generates a unique query key for the fetch notifications.
+ * @returns
+ */
+export function getQueryKeyForNotifications(): QueryKey {
+  return ["notification", "paginated"];
+}

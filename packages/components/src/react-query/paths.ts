@@ -199,6 +199,14 @@ export const API_PATHS = {
    */
   SEARCH_RECENT: "/api/v3/global_search/recent",
   /**
+   * Api path to fetch notifications.
+   */
+  NOTIFICATIONS: "/api/v3/notifications",
+  /**
+   * Api path to mark notifications as read.
+   */
+  NOTIFICATION_READ: "/api/v3/notification_read",
+  /**
    * Api path to fetch image upload presigned Url.
    */
   UPLOAD_URL: "/api/v3/users/video/upload/create_upload_url",
@@ -206,7 +214,6 @@ export const API_PATHS = {
    * Api path to for settings.
    */
   UPDATE_NOTIFICATION_SETTINGS: "/api/v3/users/update_notification_settings",
-
   /**
    * Api path to for delete account.
    */

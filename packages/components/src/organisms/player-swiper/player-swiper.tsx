@@ -65,7 +65,7 @@ export function PlayerList({
           onActiveIndexChange?.(swiper.activeIndex);
         }}
       >
-        {posts.map((post,index) => {
+        {posts.map((post, index) => {
           return (
             <SwiperSlide key={post.video.id}>
               <div className="gencl:flex gencl:gap-3 gencl:h-full">
@@ -107,6 +107,7 @@ export function PlayerList({
 
                         return (
                           <span
+                            key={"comment_component_" + post.video.id}
                             onClick={() => {
                               if (showExpandView) toggle();
                             }}

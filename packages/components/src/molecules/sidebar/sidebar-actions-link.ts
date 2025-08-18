@@ -28,12 +28,7 @@ export const SideBarActionLinks = [
     type: "explore",
   },
   {
-    icon: NotificationIcon,
-    text: "Notification",
-    type: "notification",
-  },
-  {
-    text : "Profile",
+    text: "Profile",
     type: "profile",
-  }
+  },
 ] as const;

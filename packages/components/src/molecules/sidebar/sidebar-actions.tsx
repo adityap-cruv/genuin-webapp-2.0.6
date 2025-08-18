@@ -1,6 +1,5 @@
 import { ThreeDotsIcon } from "@genuin/ui/icons";
 import { Popover, PopoverContent, PopoverTrigger } from "@genuin/ui/popover";
-
 import { SideBarActionLinks } from "./sidebar-actions-link";
 import { Link } from "@genuin/components/molecules/link";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
@@ -10,10 +9,6 @@ import { ComponentProps } from "react";
 import { NEXT_PUBLIC_HOST_URL } from "@genuin/components/lib/utils/env";
 import { cn } from "@genuin/ui/lib/utils";
 import { useAuthContext } from "@genuin/components/context/auth";
-import {
-  NotificationCountResponse,
-  useNotificationCount,
-} from "@genuin/components/react-query/api/notification/get-notification-count";
 import { Avatar } from "@genuin/ui/components";
 
 const sidebarActionsVariants = cva(
@@ -49,10 +44,6 @@ export function SidebarActions({
 }: SidebarActionsProps) {
   const pathName = usePathname();
   const { user } = useAuthContext();
-  const { data: notificationData } = useNotificationCount({
-    // Only enable the query if the user is logged in
-    enabled: !!user,
-  });
 
   return (
     <div
@@ -61,17 +52,9 @@ export function SidebarActions({
     >
       {SideBarActionLinks.map((links, index) => {
         // Skip notification and Profile link if user is not logged in
-        if (
-          (links.type === "notification" || links.type === "profile") &&
-          !user
-        )
-          return null;
+        if (links.type === "profile" && !user) return null;
 
         const Icon = links.type !== "profile" ? links.icon : undefined;
-        const isNotification = links.type === "notification";
-        const notificationCount =
-          (notificationData as NotificationCountResponse)?.count || 0;
-        const showNotificationCount = isNotification && notificationCount > 0;
 
         return (
           <Link
@@ -99,11 +82,6 @@ export function SidebarActions({
                     }
                   />
                 )
-              )}
-              {showNotificationCount && (
-                <span className="gencl:absolute gencl:-top-1 gencl:-right-1 gencl:inline-flex gencl:items-center gencl:justify-center gencl:w-4 gencl:h-4 gencl:text-body-2-semi-bold gencl:text-white gencl:bg-primary gencl:rounded-full">
-                  {notificationCount > 99 ? "+" : notificationCount}
-                </span>
               )}
             </div>
             <p className="gencl:text-body-1-medium">{links.text}</p>
