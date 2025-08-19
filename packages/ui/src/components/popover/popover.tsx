@@ -54,6 +54,11 @@ type PopoverContentProps = React.ComponentProps<
     showArrow?: boolean;
     customBackgroundColor?: string;
   };
+function PopoverClose({
+  ...props
+}: React.ComponentProps<typeof PopoverPrimitive.Trigger>) {
+  return <PopoverPrimitive.Close data-slot="popover-close" {...props} />;
+}
 
 function PopoverContent({
   className,
@@ -100,4 +105,4 @@ function PopoverAnchor({
   return <PopoverPrimitive.Anchor data-slot="popover-anchor" {...props} />;
 }
 
-export { Popover, PopoverTrigger, PopoverContent, PopoverAnchor };
+export { Popover, PopoverTrigger, PopoverClose, PopoverContent, PopoverAnchor };

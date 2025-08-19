@@ -118,6 +118,7 @@ export function PlayerList({
                   onReactionStateChange={(_, isReacted) => {
                     onReactionStateChange?.(post.video.id, isReacted);
                   }}
+                  index={index}
                 />
                 {!isMobile && (
                   <Actions

@@ -78,13 +78,17 @@ export type PlayerProps = ComponentProps<"video"> & {
   onVideoMidpoint?: (duration: number, currentTime: number) => void;
   onVideoThirdQuartile?: (duration: number, currentTime: number) => void;
   onVideoWatched?: (duration: number, currentTime: number) => void;
-  onVideoStart?: (duration: number, currentTime: number) => void; // Add onVideoStart prop
   onAdStarted?: (adData: AdDataType) => void; // Callback when ad starts
   onAdCompleted?: (adData: AdDataType) => void; // Callback when ad completes
   onAdError?: (error: any) => void; // Callback when ad errors
   onAdClicked?: (adData: AdDataType) => void; // Callback when ad is clicked
   onAdSkipped?: (adData: AdDataType) => void; // Callback when ad is skipped
   onAllAdsCompleted?: () => void; // Callback when all ads are completed
+  onVideoStart?: (
+    duration: number,
+    currentTime: number,
+    latency: number
+  ) => void; // Add onVideoStart prop
 };
 
 type VideoPlayerStateRef = {
@@ -127,6 +131,7 @@ export const VideoPlayer = memo(function VideoPlayer({
   onAdClicked,
   onAdSkipped,
   onAllAdsCompleted,
+  onSeeked,
   ...props
 }: PlayerProps) {
   const internalVideoRef = useRef<HTMLVideoElement>(null);
@@ -406,8 +411,9 @@ export const VideoPlayer = memo(function VideoPlayer({
 
     // Set initial playback speed for the new video
     videoRef.current.playbackRate = playbackSpeed;
-
     void initializePlayer(player, play);
+    // Reset videoStartFired when src changes (new video)
+    playerStateRef.current.videoStartFired = false;
 
     return () => {
       playerStateRef.current = {
@@ -445,50 +451,85 @@ export const VideoPlayer = memo(function VideoPlayer({
           console.warn("Error cleaning up ads:", error);
         }
       }
+      changePlayerStateRef(true);
     };
   }, [src]);
 
   useEffect(() => {
     const videoElement = videoRef.current;
     if (!videoElement) return;
-
+    let startTime: number | null = null;
     const handlePlay = () => {
+      startTime = performance.now();
+    };
+
+    const handlePlaying = () => {
       if (!playerStateRef.current.videoStartFired) {
         playerStateRef.current.videoStartFired = true;
+        const endTime = performance.now();
         onVideoStart?.(
           playerRef.current?.getMedia().duration ?? 0,
-          videoElement.currentTime
+          videoElement.currentTime,
+          typeof startTime === "number" ? endTime - startTime : 0
         );
       }
     };
 
-    const handleEnded = () => {
-      playerStateRef.current.videoStartFired = false;
-      playerStateRef.current.firstQuartileFired = false;
-      playerStateRef.current.midpointFired = false;
-      playerStateRef.current.thirdQuartileFired = false;
-      playerStateRef.current.videoWatchedFired = false;
-    };
-
     videoElement.addEventListener("play", handlePlay);
+    videoElement.addEventListener("playing", handlePlaying);
     videoElement.addEventListener("ended", handleEnded);
 
     return () => {
+      videoElement.removeEventListener("playing", handlePlaying);
       videoElement.removeEventListener("play", handlePlay);
       videoElement.removeEventListener("ended", handleEnded);
     };
-  }, [onVideoStart]);
+  }, [onVideoStart, src]);
 
+  const changePlayerStateRef = useCallback(
+    (isReset: boolean, duration?: number, currentTime?: number) => {
+      if (isReset) {
+        playerStateRef.current = {
+          firstQuartileFired: false,
+          midpointFired: false,
+          thirdQuartileFired: false,
+          videoWatchedFired: false,
+          videoStartFired: playerStateRef.current.videoStartFired,
+        };
+        return;
+      }
+      if (duration === undefined || currentTime === undefined) return;
+      const firstQuartileTime = duration / 4;
+      const midpointTime = duration / 2;
+      const thirdQuartileTime = (duration * 3) / 4;
+      if (currentTime < 3 && playerStateRef.current.videoWatchedFired) {
+        playerStateRef.current.videoWatchedFired = false;
+      }
+      if (
+        currentTime < firstQuartileTime &&
+        playerStateRef.current.firstQuartileFired
+      ) {
+        playerStateRef.current.firstQuartileFired = false;
+      }
+      if (currentTime < midpointTime && playerStateRef.current.midpointFired) {
+        playerStateRef.current.midpointFired = false;
+      }
+      if (
+        currentTime < thirdQuartileTime &&
+        playerStateRef.current.thirdQuartileFired
+      ) {
+        playerStateRef.current.thirdQuartileFired = false;
+      }
+    },
+    [playerStateRef]
+  );
+
+  const handleEnded = useCallback(() => {
+    changePlayerStateRef(true);
+  }, [changePlayerStateRef]);
   useEffect(() => {
     const videoElement = videoRef.current;
     if (!videoElement) return;
-
-    const handleEnded = () => {
-      playerStateRef.current.firstQuartileFired = false;
-      playerStateRef.current.midpointFired = false;
-      playerStateRef.current.thirdQuartileFired = false;
-      playerStateRef.current.videoWatchedFired = false;
-    };
 
     const handleTimeUpdate = () => {
       const videlElement = videoRef.current;
@@ -534,6 +575,7 @@ export const VideoPlayer = memo(function VideoPlayer({
 
     return () => {
       videoElement.removeEventListener("ended", handleEnded);
+      // Clean up the timeupdate event listener
       videoElement.removeEventListener("timeupdate", handleTimeUpdate);
     };
   }, [
@@ -544,6 +586,18 @@ export const VideoPlayer = memo(function VideoPlayer({
     onVideoWatched,
   ]);
 
+  const onVideoSeeked = useCallback(
+    (event: React.SyntheticEvent<HTMLVideoElement, Event>) => {
+      onSeeked?.(event);
+      changePlayerStateRef(
+        false,
+        videoRef.current?.duration,
+        videoRef.current?.currentTime
+      );
+    },
+    [playerStateRef, changePlayerStateRef, onSeeked]
+  );
+
   return (
     <video
       className={cn(
@@ -553,6 +607,7 @@ export const VideoPlayer = memo(function VideoPlayer({
       style={{ backgroundImage: `url(${poster})`, ...style }}
       poster={poster}
       ref={videoRef}
+      onSeeked={onVideoSeeked}
       src={encodeVideoSourceUrl(src ?? "")}
       playsInline={playsInline}
       loop={loop}

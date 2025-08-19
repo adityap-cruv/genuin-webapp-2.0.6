@@ -26,11 +26,13 @@ type PlayerProps = {
   onGroupSubscriptionChange: ComponentProps<
     typeof ControlLayer
   >["onGroupSubscriptionChange"];
+  index: number;
 };
 
 // TODO: This component is using feed context, which is not ideal. Remove this dep of FeedContext in future.
 export function Player({
   post,
+  index,
   onCommunityJoinStatusChange,
   onGroupJoinStatusChange,
   onGroupSubscriptionChange,
@@ -67,6 +69,8 @@ export function Player({
         videoId={post.video.id}
         showExpandView={showExpandView}
         toggleExpandView={toggleExpandView}
+        swiper={swiper}
+        index={index}
         onPlayerIterationEnd={swiper.slideNext}
       >
         <div

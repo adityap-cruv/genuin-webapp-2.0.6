@@ -3,8 +3,6 @@ import { BrandLogo } from "@genuin/components/molecules/brand";
 import { BrandSlogan } from "@genuin/components/molecules/brand";
 import { cn } from "@genuin/ui/utils";
 import { cva, type VariantProps } from "class-variance-authority";
-import type { ReactNode } from "react";
-
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { MobileSidebar } from "../side-bar";
 
@@ -24,16 +22,11 @@ const topbarVariants = cva(
   }
 );
 
-type TopBarProps = React.ComponentProps<"div"> & {
-  search: ReactNode;
-} & VariantProps<typeof topbarVariants>;
+type TopBarProps = React.ComponentProps<"div"> & {} & VariantProps<
+    typeof topbarVariants
+  >;
 
-export function TopBar({
-  className,
-  search,
-  theme,
-  ...restProps
-}: TopBarProps) {
+export function TopBar({ className, theme, ...restProps }: TopBarProps) {
   const { isMobile } = useDeviceDetectMediaQuery();
   return (
     <div className={cn(className, topbarVariants({ theme }))} {...restProps}>

@@ -10,6 +10,7 @@ import { EventNameType, EventPayload } from "./types";
  */
 export const EventName = {
   VIDEO_STARTED: "Video Started",
+  VIDEO_IMPRESSION: "Video Impression",
   VIDEO_FIRST_QUARTILE: "Video First Quartile",
   VIDEO_MIDPOINT: "Midpoint",
   VIDEO_THIRD_QUARTILE: "Video Third Quartile",

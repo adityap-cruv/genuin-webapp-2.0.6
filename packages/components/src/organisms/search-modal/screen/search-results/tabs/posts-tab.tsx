@@ -50,6 +50,7 @@ export function PostsTab({ posts, className, ...restProps }: PostsTabProps) {
           isFetchingNextPage={false}
           lazyLoad="manual"
           shouldCloseModal={true}
+          postTileVariant="default"
         />
       )}
     </div>

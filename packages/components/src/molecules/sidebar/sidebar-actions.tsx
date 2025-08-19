@@ -1,6 +1,5 @@
 import { ThreeDotsIcon } from "@genuin/ui/icons";
 import { Popover, PopoverContent, PopoverTrigger } from "@genuin/ui/popover";
-
 import { SideBarActionLinks } from "./sidebar-actions-link";
 import { Link } from "@genuin/components/molecules/link";
 import { buildPageUrl, PageType } from "@genuin/components/lib/utils/pages";
@@ -10,10 +9,6 @@ import { ComponentProps, useState } from "react";
 import { NEXT_PUBLIC_HOST_URL } from "@genuin/components/lib/utils/env";
 import { cn } from "@genuin/ui/lib/utils";
 import { useAuthContext } from "@genuin/components/context/auth";
-import {
-  NotificationCountResponse,
-  useNotificationCount,
-} from "@genuin/components/react-query/api/notification/get-notification-count";
 import { Avatar } from "@genuin/ui/components";
 import { SearchModal } from "@genuin/components/organisms/search-modal";
 
@@ -52,10 +47,6 @@ export function SidebarActions({
 }: SidebarActionsProps) {
   const pathname = usePathname();
   const { user } = useAuthContext();
-  const { data: notificationData } = useNotificationCount({
-    // Only enable the query if the user is logged in
-    enabled: !!user,
-  });
 
   return (
     <div
@@ -64,19 +55,9 @@ export function SidebarActions({
     >
       {SideBarActionLinks.map((links, index) => {
         // Skip notification and Profile link if user is not logged in
-        if (
-          (links.type === "notification" || links.type === "profile") &&
-          !user
-        )
-          return null;
+        if (links.type === "profile" && !user) return null;
 
-        const notificationCount =
-          (notificationData as NotificationCountResponse)?.count || 0;
-
-        if (links.type === "search") {
-          if (!showSearch) return;
-          return <SearchSidebarAction index={index} links={links} />;
-        }
+        const Icon = links.type !== "profile" ? links.icon : undefined;
 
         return (
           <Link
@@ -86,23 +67,29 @@ export function SidebarActions({
             })}
             onClick={onItemClick}
           >
-            <SidebarActionItem
-              key={index}
-              type={links.type as PageType}
-              icon={"icon" in links ? links.icon : undefined}
-              text={links.text}
-              user={user}
-              notificationCount={
-                links.type === "notification" ? notificationCount : undefined
-              }
-              isActive={
-                pathname ===
-                buildPageUrl({
-                  type: links.type as PageType,
-                  slug: user?.nickname,
-                })
-              }
-            />
+            <div className="gencl:w-6 gencl:h-6 gencl:relative">
+              {links.type === "profile" && user ? (
+                <Avatar
+                  isAvatar={user.isAvatar || false}
+                  alt={user.nickname || "profile"}
+                  imageUrl={user.image || ""}
+                  size="xs"
+                />
+              ) : (
+                Icon && (
+                  <Icon
+                    className="gencl:w-6 gencl:h-6"
+                    variant={
+                      pathname ===
+                      buildPageUrl({ type: links.type as PageType })
+                        ? "active"
+                        : "default"
+                    }
+                  />
+                )
+              )}
+            </div>
+            <p className="gencl:text-body-1-medium">{links.text}</p>
           </Link>
         );
       })}

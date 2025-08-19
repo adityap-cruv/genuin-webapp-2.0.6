@@ -14,7 +14,7 @@ export const Layout: FC<PropsWithChildren<LayoutProps>> = ({ children, isCollaps
 
   return (
     <main className="absolute inset-0 flex h-full w-full flex-col items-center overflow-clip">
-      {showNavbar && <TopBar style={{ zIndex: 9 }} search={undefined} />}
+      {showNavbar && <TopBar style={{ zIndex: 9 }} />}
       <section className={cn('flex w-full overflow-clip px-0', showNavbar ? 'h-body' : 'h-full')}>
         <SideBar />
         <section id="root-element" className="relative flex w-full min-w-0 flex-1 flex-col items-center">

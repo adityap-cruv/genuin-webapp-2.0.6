@@ -70,7 +70,6 @@ export function BaseLayout({
         <TopBar
           theme={shouldUseDarkTheme && isMobile ? "dark" : "light"}
           style={{ zIndex: 9 }}
-          search={undefined}
         />
       )}
       {!layoutConfig.showNavigationBar && isMobile && (
@@ -85,6 +84,7 @@ export function BaseLayout({
         style={{
           height: calculatedHeight,
         }}
+        suppressHydrationWarning
       >
         {!isMobile && layoutConfig.showSideBar && (
           <SideBar className="gencl:sm:block! gencl:hidden" />

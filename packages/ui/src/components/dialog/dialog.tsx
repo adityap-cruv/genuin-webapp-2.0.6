@@ -150,7 +150,7 @@ function DialogContent({
               "gencl:absolute gencl:top-4 gencl:right-4 gencl:rounded-xs gencl:p-1.5",
               "gencl:opacity-70 gencl:transition-opacity gencl:hover:opacity-100",
               "gencl:disabled:pointer-events-none gencl:[&_svg]:pointer-events-none",
-              "gencl:[&_svg]:shrink-0 gencl:[&_svg:not([class*=size-])]:size-4",
+              "gencl:[&_svg]:shrink-0 gencl:[&_svg:not([class*=size-])]:size-5",
               "gencl:cursor-pointer"
             )}
           >

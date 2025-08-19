@@ -373,3 +373,24 @@ export function getGenclStyles(): Record<string, string> {
 
   return genclVars;
 }
+
+/*
+ * This function returns past tense of given word(should be verb).
+ * @param word
+ * @returns
+ */
+export function getPastTense(word: string) {
+  if (/e$/.test(word)) {
+    // If the word already ends in 'e', just add 'd'
+    return word + "d";
+  } else if (/[^aeiou]y$/.test(word)) {
+    // If the word ends in a consonant + 'y', replace 'y' with 'ied'
+    return word.slice(0, -1) + "ied";
+  } else if (/([aeiou])([^aeiou])$/.test(word)) {
+    // If the word ends in vowel + consonant, double the consonant and add 'ed'
+    return word + word.slice(-1) + "ed";
+  } else {
+    // For most cases, just add 'ed'
+    return word + "ed";
+  }
+}

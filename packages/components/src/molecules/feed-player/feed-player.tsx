@@ -1,4 +1,4 @@
-import { VideoPlayer } from "@genuin/ui/video-player";
+import { VideoPlayer } from "@genuin/ui/components/video-player";
 import {
   memo,
   useCallback,
@@ -165,6 +165,11 @@ export const FeedPlayer = memo(function FeedPlayer({
         video_length: target?.duration,
         video_view_length: target?.currentTime,
       });
+      track(EventName.VIDEO_IMPRESSION, {
+        ...analyticsEventData,
+        video_length: target?.duration,
+        video_view_length: target?.currentTime,
+      });
     },
     [onEnded, stateHandleEnded, track, EventName, analyticsEventData]
   );
@@ -253,6 +258,7 @@ export const FeedPlayer = memo(function FeedPlayer({
         ...analyticsEventData,
         video_length: duration,
         video_view_length: currentTime,
+        // latency: latency,
       });
     },
     [track, EventName, analyticsEventData]

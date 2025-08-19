@@ -105,6 +105,7 @@ function CommunityGroups({
     isLoading,
     isError,
   } = useGetCommunityGroups(slug);
+  const {isMobile} = useDeviceDetectMediaQuery()
 
   if (isLoading) {
     return <CommunityGroupsSkeleton />;
@@ -207,6 +208,7 @@ function CommunityGroups({
             className="gencl:bg-secondary-50 gencl:p-4"
             lazyLoad="manual"
             enableFeedView
+            postTileVariant={isMobile ? "default" : "responsive"}
           />
         )}
       </GenericDetails>

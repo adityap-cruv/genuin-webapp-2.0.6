@@ -40,6 +40,8 @@ export type AvatarPropsType = React.ComponentProps<
      */
     alt: string;
     imageUrl: string;
+    imageClassName?: string;
+    fallbackClassName?: string;
     /**
      * When true, enables zoom functionality on click
      */
@@ -52,6 +54,8 @@ function Avatar({
   alt,
   isAvatar,
   size = "sm",
+  imageClassName,
+  fallbackClassName,
   shouldZoom = false,
   ...props
 }: AvatarPropsType) {
@@ -75,14 +79,20 @@ function Avatar({
     >
       <AvatarPrimitive.Image
         data-slot="avatar-image"
-        className="gencl:aspect-square gencl:rounded-full gencl:size-full"
+        className={cn(
+          "gencl:aspect-square gencl:rounded-full gencl:size-full",
+          imageClassName
+        )}
         src={isAvatar ? getAvatarUrl(imageUrl) : getWebpUrlForImage(imageUrl)}
         alt={alt}
         loading="lazy"
       />
       <AvatarPrimitive.Fallback
         data-slot="avatar-fallback"
-        className="gencl:bg-secondary-300 gencl:flex gencl:size-full gencl:items-center gencl:justify-center gencl:rounded-full"
+        className={cn(
+          "gencl:bg-secondary-300 gencl:flex gencl:size-full gencl:items-center gencl:justify-center gencl:rounded-full",
+          fallbackClassName
+        )}
       >
         {getAvatarFallback(alt)}
       </AvatarPrimitive.Fallback>

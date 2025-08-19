@@ -68,7 +68,7 @@ export const AnimatedMuteIcon = ({
       </div>
 
       {!showVolumeSlider && muted && (
-        <AnimatedText text="Tap to unmute" width={125} stop={stopAnimating} />
+        <AnimatedText text="Tap to unmute" width={110} stop={stopAnimating} />
       )}
 
       {/* Volume slider with smooth animation */}

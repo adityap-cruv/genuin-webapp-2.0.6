@@ -34,7 +34,7 @@ export function GenericDetailsMobile({
             size="2xl"
             shouldZoom
           />
-          <div>
+          <div className="gencl:space-y-1">
             {title && (
               <p className="gencl:text-headline-4-semi-bold">{title}</p>
             )}
