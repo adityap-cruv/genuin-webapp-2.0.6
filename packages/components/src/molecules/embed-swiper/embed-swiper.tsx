@@ -14,7 +14,7 @@ type EmbedSwiperProps = {
     width: number;
     height: number;
   };
-  aspectRation?: string;
+  aspectRatio?: string;
 } & ComponentProps<typeof Swiper>;
 
 /**
@@ -29,7 +29,7 @@ export function EmbedSwiper({
   spaceBetweenVideos,
   containerDimensions,
   className,
-  aspectRation,
+  aspectRatio,
   ...restProps
 }: EmbedSwiperProps) {
   const { isWindows } = useDeviceDetection();
@@ -42,7 +42,7 @@ export function EmbedSwiper({
           containerDimensions?.height ?? 0,
           containerDimensions?.width ?? 0,
           forFeed,
-          aspectRation
+          aspectRatio
         ) ?? 1
       }
       spaceBetween={spaceBetweenVideos}

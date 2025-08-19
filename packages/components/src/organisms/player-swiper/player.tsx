@@ -39,7 +39,7 @@ export function Player({
   const { showExpandView, toggleExpandView, activeIndex, variant } =
     useFeedContext();
   const { muted } = useBaseContext();
-  const { isActive } = useSwiperSlide();
+  const { isActive, isNext, isPrev, isVisible } = useSwiperSlide();
   const swiper = useSwiper();
   const { showGestureOverlay } = useGestureOverlayManager();
   const { isMobile } = useDeviceDetectMediaQuery();
@@ -58,50 +58,53 @@ export function Player({
     },
     [activeIndex, muted, showGestureOverlay]
   );
-  return (
-    <PlayerProvider
-      isActive={isActive}
-      videoId={post.video.id}
-      showExpandView={showExpandView}
-      toggleExpandView={toggleExpandView}
-      onPlayerIterationEnd={swiper.slideNext}
-    >
-      <div
-        className={cn(
-          "gencl:group gencl:relative gencl:h-full gencl:overflow-clip",
-          {
-            "gencl:sm:rounded-xl": !showExpandView,
-          }
-        )}
+
+  // load player when the post is active or previous/next post is active or the post is visible
+  if (isActive || isNext || isPrev || isVisible)
+    return (
+      <PlayerProvider
+        isActive={isActive}
+        videoId={post.video.id}
+        showExpandView={showExpandView}
+        toggleExpandView={toggleExpandView}
+        onPlayerIterationEnd={swiper.slideNext}
       >
-        <FeedPlayer
-          videoId={post.video.id}
-          src={post.video.source}
-          id={"feed-player--" + post.video.id}
-          poster={post.video.thumbnail ?? ""}
+        <div
           className={cn(
-            "gencl:bg-secondary-200 gencl:object-cover",
-            isMobile ? "gencl:w-full gencl:h-full" : "gencl:aspect-reel"
+            "gencl:group gencl:relative gencl:h-full gencl:overflow-clip",
+            {
+              "gencl:sm:rounded-xl": !showExpandView,
+            }
           )}
-          style={isMobile ? { height, width } : undefined}
-          playsInline
-          onTimeUpdate={handleTimeUpdate}
-          onEnded={() => {
-            showGestureOverlay("SWIPE");
-          }}
-        />
-        <ControlLayer
-          isActive={isActive}
-          postDetails={post}
-          onCommunityJoinStatusChange={onCommunityJoinStatusChange}
-          onGroupJoinStatusChange={onGroupJoinStatusChange}
-          onGroupSubscriptionChange={onGroupSubscriptionChange}
-          showCloseButton={variant === "expand"}
-          onReactionStateChange={onReactionStateChange}
-          // Applies GPU acceleration to prevent layer flickering on iOS devices during animations
-          className="gencl:translate-x-0"
-        />
-      </div>
-    </PlayerProvider>
-  );
+        >
+          <FeedPlayer
+            videoId={post.video.id}
+            src={post.video.source}
+            id={"feed-player--" + post.video.id}
+            poster={post.video.thumbnail ?? ""}
+            className={cn(
+              "gencl:bg-secondary-200 gencl:object-cover",
+              isMobile ? "gencl:w-full gencl:h-full" : "gencl:aspect-reel"
+            )}
+            style={isMobile ? { height, width } : undefined}
+            playsInline
+            onTimeUpdate={handleTimeUpdate}
+            onEnded={() => {
+              showGestureOverlay("SWIPE");
+            }}
+          />
+          <ControlLayer
+            isActive={isActive}
+            postDetails={post}
+            onCommunityJoinStatusChange={onCommunityJoinStatusChange}
+            onGroupJoinStatusChange={onGroupJoinStatusChange}
+            onGroupSubscriptionChange={onGroupSubscriptionChange}
+            showCloseButton={variant === "expand"}
+            onReactionStateChange={onReactionStateChange}
+            // Applies GPU acceleration to prevent layer flickering on iOS devices during animations
+            className="gencl:translate-x-0"
+          />
+        </div>
+      </PlayerProvider>
+    );
 }

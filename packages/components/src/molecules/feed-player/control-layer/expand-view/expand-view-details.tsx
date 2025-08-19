@@ -14,6 +14,7 @@ import { CommentsDialog } from "@genuin/components/molecules/comments";
 import { controlLayerVariant } from "../control-layer";
 import { VariantProps, cva } from "class-variance-authority";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 /**
  * Card Layout Types
@@ -45,12 +46,22 @@ const cardLayoutVariant = cva("", {
  * Default layout user profile display component
  */
 function DefaultUserProfile({ owner }: { owner: PostDetailsType["owner"] }) {
+  const {
+    engagement: {
+      redirectionTools: { user },
+    },
+  } = useEmbedConfigs();
+
   return (
     <ProfileLink
-      url={buildPageUrl({
-        type: !!owner.brand ? "brand" : "profile",
-        slug: !!owner.brand ? owner.brand.slug : owner.userName,
-      })}
+      url={
+        user && owner.shareUrl
+          ? owner.shareUrl
+          : buildPageUrl({
+              type: !!owner.brand ? "brand" : "profile",
+              slug: !!owner.brand ? owner.brand.slug : owner.userName,
+            })
+      }
       userLogoType={owner.brand?.userLogo}
     >
       @{owner.userName}

@@ -28,22 +28,23 @@ export function Default({
   ...restProps
 }: ControlLayerPropsType) {
   const { showExpandView, togglePlay, toggleMuted, muted } = usePlayerContext();
-  const { gestureOverlayUI } = useGestureOverlayManager();
+  const { gestureOverlayUI, hideGestureOverlay } = useGestureOverlayManager();
   const { showSeeker } = usePlayerContext();
   const { isMobile } = useDeviceDetectMediaQuery();
   const { playbackSpeed } = useFeedContext();
 
-  const {
-    brandDetails: {
-      web_configs: { tap_behavior: tapBehavior, playback_speed_enabled },
-    },
-  } = useBaseContext();
+  const { brandDetails } = useBaseContext();
+
+  // Extract properties with fallbacks to prevent undefined errors
+  const tapBehavior = brandDetails?.web_configs?.tap_behavior || 1; // Default to 1 if undefined
+  const playback_speed_enabled =
+    brandDetails?.web_configs?.playback_speed_enabled || false;
 
   // Event handlers
   const handleVideoClick = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
-      // hideGestureOverlay("PLAY_PAUSE", muted);
+      hideGestureOverlay("PLAY_PAUSE", muted);
 
       // if (isExpanded) {
       //   setIsExpanded(false);

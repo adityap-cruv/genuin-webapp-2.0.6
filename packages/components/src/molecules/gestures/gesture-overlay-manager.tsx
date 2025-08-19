@@ -131,8 +131,8 @@ function useGestureOverlayMethods({ tapBehavior }: { tapBehavior: number }) {
 const VALID_TAP_BEHAVIORS = [1, 2, 3];
 export function useGestureOverlayManager(gestureGuidance?: boolean) {
   const { brandDetails } = useBaseContext();
-  const tapBehavior = brandDetails.web_configs.tap_behavior;
-  const isGuidanceEnabled = brandDetails.web_configs.gesture_guidance;
+  const tapBehavior = brandDetails?.web_configs?.tap_behavior;
+  const isGuidanceEnabled = brandDetails?.web_configs?.gesture_guidance;
   const isValidTapBehavior =
     tapBehavior && VALID_TAP_BEHAVIORS.includes(tapBehavior);
   const pathname = usePathname();
@@ -155,5 +155,6 @@ export function useGestureOverlayManager(gestureGuidance?: boolean) {
   }
 
   // Only call useGestureOverlayMethods if guidance is enabled and tap behavior is valid
-  return useGestureOverlayMethods({ tapBehavior });
+  // Ensure we always pass a valid number (fallback to 1 if somehow tapBehavior became undefined)
+  return useGestureOverlayMethods({ tapBehavior: tapBehavior || 1 });
 }

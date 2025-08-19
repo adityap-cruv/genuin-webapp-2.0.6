@@ -97,5 +97,5 @@ export type LinkContextValue = {
   /**
    * Optional hook for Next.js compatibility.
    */
-  useRouter: typeof useRouter;
+  useRouter?: typeof useRouter;
 };

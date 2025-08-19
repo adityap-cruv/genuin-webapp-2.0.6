@@ -44,7 +44,6 @@ export function NavigationButtons({ totalSlides }: NavigationButtonsProps) {
   if (!config.view.showNavigation) return;
 
   if (isCarousel) {
-    if (!config.view.showCarouselIcon) return;
     // Carousel layout - buttons on left and right sides
     return (
       <div className="gencl:absolute gencl:z-20 gencl:inset-y-0 gencl:left-0 gencl:right-0 gencl:pointer-events-none">

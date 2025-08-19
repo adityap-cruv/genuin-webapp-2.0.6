@@ -15,7 +15,7 @@ interface WouterRouter {
 }
 
 export function useRouter() {
-  const { useRouter, isCustomRouting } = useLinkContext();
+  const { useRouter } = useLinkContext();
   return useRouter ? useRouter() : useWouterRouter();
 }
 

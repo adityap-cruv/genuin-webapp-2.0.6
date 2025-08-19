@@ -110,6 +110,7 @@ export function parseFeed(
       userName: item.owner.username,
       name: item.owner.name || null,
       bio: item.owner.bio || null,
+      shareUrl: item.owner.share_url || "",
       brand: item.owner.brand
         ? {
             id: Number(item.owner.brand.brand_id),

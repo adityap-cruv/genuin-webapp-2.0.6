@@ -60,7 +60,7 @@ export function BaseContextProvider({
         setVolume,
         brandDetails,
         isEmbed,
-        parsedBrandColors: parseBrandColors(brandDetails.brand_colors),
+        parsedBrandColors: parseBrandColors(brandDetails?.brand_colors),
       }}
     >
       {children}

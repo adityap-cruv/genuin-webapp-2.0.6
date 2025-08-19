@@ -84,8 +84,13 @@ export function CommunityPill({
 
   const pill = (
     <Link
-      href={buildPageUrl({ type: "community", slug: communityDetails.slug })}
+      href={
+        community
+          ? communityDetails.shareUrl
+          : buildPageUrl({ type: "community", slug: communityDetails.slug })
+      }
       enabled={community}
+      {...(community ? { target: "_blank", rel: "noopener noreferrer" } : {})}
     >
       <div className={communityPillVariants({ variant, className })}>
         <div className="gencl:flex gencl:gap-1 gencl:items-center gencl:line-clamp-1 gencl:break-all">

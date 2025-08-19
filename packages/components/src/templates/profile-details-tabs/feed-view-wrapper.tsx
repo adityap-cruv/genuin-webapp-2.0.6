@@ -1,14 +1,10 @@
-import { lazy, useMemo, Suspense } from "react";
+import { useMemo } from "react";
 
 import { useGetProfileFeed } from "@genuin/components/react-query/api/profile/posts";
 import { getQueryKeyForProfileFeed } from "@genuin/components/react-query/keys/profile";
 import { ErrorState } from "@genuin/components/molecules/error-state";
 
-const FeedView = lazy(() =>
-  import("@genuin/components/templates/feed").then((module) => ({
-    default: module.FeedView,
-  }))
-);
+import { FeedView } from "@genuin/components/templates/feed";
 
 export function FeedViewWrapper({
   profileId,
@@ -44,19 +40,17 @@ export function FeedViewWrapper({
   }
 
   return (
-    <Suspense>
-      <FeedView
-        defaultExpandView
-        onCloseExpandView={onCloseExpandView}
-        feedData={{
-          videos,
-          fetchNextPage,
-          hasNextPage,
-          isFetchingNextPage,
-          isLoading,
-          queryKey: getQueryKeyForProfileFeed(profileId, forBrand, videoId),
-        }}
-      />
-    </Suspense>
+    <FeedView
+      defaultExpandView
+      onCloseExpandView={onCloseExpandView}
+      feedData={{
+        videos,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+        isLoading,
+        queryKey: getQueryKeyForProfileFeed(profileId, forBrand, videoId),
+      }}
+    />
   );
 }

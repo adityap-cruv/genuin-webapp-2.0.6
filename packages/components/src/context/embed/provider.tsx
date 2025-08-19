@@ -47,11 +47,11 @@ export function EmbedProvider({
 
   const changeActivePlayerType = useCallback(
     (newActiveType: ActivePlayerType, activeIndex?: number) => {
-      if (
-        newActiveType === "expand-view" &&
-        !embedData.customization.is_popup_view
-      )
-        return;
+      // if (
+      //   newActiveType === "expand-view" &&
+      //   !embedData.customization.is_popup_view
+      // )
+      //   return;
 
       embedEventBus.emit(
         "activePlayerTypeChange",

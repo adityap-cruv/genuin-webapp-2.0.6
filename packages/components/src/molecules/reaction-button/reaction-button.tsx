@@ -149,8 +149,8 @@ export function ReactionButton({
           data: {
             type: "spark",
             payload: {
-              reactionSuffix: brandDetails.reactions.suffix,
-              reactionTitle: brandDetails.reactions.title,
+              reactionSuffix: brandDetails.reactions?.suffix,
+              reactionTitle: brandDetails.reactions?.title,
               shareUrl: shareUrl ?? "",
               videoSlug: videoSlug ?? "",
             },

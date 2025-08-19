@@ -95,7 +95,7 @@ export function Menu({
         </Link>
       ),
     },
-    brandDetails.web_configs.playback_speed_enabled && {
+    brandDetails?.web_configs?.playback_speed_enabled && {
       children: (
         <PlaybackSpeed
           type="playback-dialog"

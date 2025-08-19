@@ -12,7 +12,7 @@ import { Comments, CommentsDialog } from "../../molecules/comments";
 
 import { Player } from "./player";
 import { SwiperImplementation } from "./swiper-implementation";
-import { ComponentProps, useMemo } from "react";
+import { ComponentProps } from "react";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { abbreviateNumber, cn } from "@genuin/ui/lib/utils";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
@@ -102,11 +102,34 @@ export function PlayerList({
                       COMMENT: (defaultNode) => {
                         const defaultOpen =
                           embedDetails?.embedData
-                            .autoUserInteractionToPerform === "comment-spark" &&
+                            ?.autoUserInteractionToPerform ===
+                            "comment-spark" &&
                           post.video.slug ===
-                            embedDetails.embedData.startVideoSlug &&
+                            embedDetails.embedData?.startVideoSlug &&
                           activeIndex === index &&
                           !showExpandView;
+
+                        // Simple ui to show for comment trigger
+                        function CommentBox({
+                          children,
+                        }: {
+                          children: React.ReactNode;
+                        }) {
+                          return (
+                            <>
+                              {children}
+                              <p
+                                className={cn(
+                                  "gencl:p-0 gencl:text-center gencl:text-black gencl:text-body-2-medium",
+                                  showExpandView && "gencl:text-white!"
+                                )}
+                              >
+                                {abbreviateNumber(post.video.commentCount)}
+                              </p>
+                            </>
+                          );
+                        }
+
                         if (!isMobile)
                           return (
                             <CommentsDialog
@@ -117,26 +140,19 @@ export function PlayerList({
                               videoSlug={post.video.slug}
                               shareUrl={post.video.shareUrl}
                               defaultOpen={defaultOpen}
+                              key={"feed-comment-box" + post.video.id}
                             >
-                              {defaultNode}
+                              <CommentBox>{defaultNode}</CommentBox>
                             </CommentsDialog>
                           );
-
                         return (
                           <span
+                            key={"feed-comment-box" + post.video.id}
                             onClick={() => {
                               if (showExpandView) toggle();
                             }}
                           >
-                            {defaultNode}
-                            <p
-                              className={cn(
-                                "gencl:p-0 gencl:text-center gencl:text-black gencl:text-body-2-medium",
-                                showExpandView && "gencl:text-white!"
-                              )}
-                            >
-                              {abbreviateNumber(post.video.commentCount)}
-                            </p>
+                            <CommentBox>{defaultNode}</CommentBox>
                           </span>
                         );
                       },

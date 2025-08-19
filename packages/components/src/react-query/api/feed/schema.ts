@@ -98,6 +98,7 @@ export const ownerSchema = z.object({
   name: z.string().nullish(),
   brand: BrandUserSchema.nullish(),
   bio: z.string().nullish().optional(),
+  shareUrl: z.string().nullish()
 });
 
 // Define the PlayerVideoModal schema

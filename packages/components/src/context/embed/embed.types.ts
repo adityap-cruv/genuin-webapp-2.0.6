@@ -203,11 +203,6 @@ export type UserParam = {
   thumb: string;
 };
 
-type AuthInfoType = {
-  signInUrl: string;
-  signUpUrl: string;
-};
-
 /**
  * Type of the auto user interaction to perform.
  *
@@ -223,6 +218,11 @@ type AutoUserInteractionToPerformType =
   | "comment-spark"
   | "repost"
   | "comment";
+
+type AuthInfoType = {
+  signInUrl: string;
+  signUpUrl: string;
+};
 
 export type EmbedDataType = {
   _id?: string;
@@ -251,7 +251,7 @@ export type EmbedDataType = {
   autoUserInteractionToPerform?: AutoUserInteractionToPerformType;
   authInfo?: AuthInfoType;
   is_default?: boolean;
-  aspect_ratio?: string
+  aspect_ratio?: string;
 };
 
 export type CustomizationType = {

@@ -20,53 +20,6 @@ export const Embed: FC<ControlLayerPropsType> = ({
   const config = useEmbedConfigs();
   const embedDetails = useSafeEmbedContext();
 
-  // default embedType is 1
-  if (embedDetails?.embedData.card_layout_id === 1) {
-    return (
-      <div
-        className={cn(
-          "gencl:flex gencl:h-full gencl:flex-col gencl:justify-between",
-          className
-        )}
-        {...restProps}
-      >
-        <div className="gencl:absolute gencl:bottom-0 gencl:p-2 gencl:space-y-2 gencl:w-full">
-          {config.links.showLinkInside && isActive && (
-            <Linkouts
-              variant="embed"
-              isActive={isActive}
-              showImmediately
-              linkouts={postDetails.video.linkouts}
-              linkoutId={postDetails.video.linkoutId}
-            />
-          )}
-          {config.community.showViewCount && !isActive && (
-            <Stats
-              className="gencl:gap-1!"
-              valueClassName="gencl:text-white!"
-              stats={{
-                Views: {
-                  value: 0,
-                  icon: <PlayIcon theme="dark" size="md" />,
-                },
-              }}
-            />
-          )}
-        </div>
-
-        {isActive && (
-          <>
-            <Controls
-              variant="embed"
-              ownerInfo={{ userName: postDetails.owner.userName }}
-              showUserName={config.community.showUserName}
-            />
-          </>
-        )}
-      </div>
-    );
-  }
-
   // embedtype 2 for iheart
   if (embedDetails?.embedData.card_layout_id === 2) {
     return (
@@ -214,5 +167,47 @@ export const Embed: FC<ControlLayerPropsType> = ({
   }
 
   // fallback for unknown embedType
-  return null;
+  return (
+    <div
+      className={cn(
+        "gencl:flex gencl:h-full gencl:flex-col gencl:justify-between",
+        className
+      )}
+      {...restProps}
+    >
+      <div className="gencl:absolute gencl:bottom-0 gencl:p-2 gencl:space-y-2 gencl:w-full">
+        {config.links.showLinkInside && isActive && (
+          <Linkouts
+            variant="embed"
+            isActive={isActive}
+            showImmediately
+            linkouts={postDetails.video.linkouts}
+            linkoutId={postDetails.video.linkoutId}
+          />
+        )}
+        {config.community.showViewCount && !isActive && (
+          <Stats
+            className="gencl:gap-1!"
+            valueClassName="gencl:text-white!"
+            stats={{
+              Views: {
+                value: 0,
+                icon: <PlayIcon theme="dark" size="md" />,
+              },
+            }}
+          />
+        )}
+      </div>
+
+      {isActive && (
+        <>
+          <Controls
+            variant="embed"
+            ownerInfo={{ userName: postDetails.owner.userName }}
+            showUserName={config.community.showUserName}
+          />
+        </>
+      )}
+    </div>
+  );
 };

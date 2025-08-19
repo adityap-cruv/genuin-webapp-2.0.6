@@ -1,35 +1,74 @@
 {
-  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "baseUrl": ".",
-    "target": "ESNext",
-    "resolveJsonModule": true,
-    "module": "ES2015",
-    "strict": true,
-    "esModuleInterop": true,
+    // Target and module settings for browser compatibility
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+
+    // Allow JavaScript files and skip lib checking for faster builds
+    "allowJs": true,
     "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+
+    // Emit settings - let Rollup handle the output
+    "noEmit": false,
+    "declaration": false,
+    "declarationMap": false,
+    "sourceMap": true,
+
+    // Strict settings for our own code
+    "strict": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "exactOptionalPropertyTypes": false,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+
+    // Module resolution
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "types": [
-      "node"
-    ],
-    "noImplicitAny": true,
-    "moduleResolution": "node",
+    "isolatedModules": true,
+    "verbatimModuleSyntax": false,
+
+    // JSX settings for React
     "jsx": "react-jsx",
+    "jsxImportSource": "react",
+
+    // Path mapping for workspace packages
+    "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
-    }
+      "@genuin/ui": ["../ui/src"],
+      "@genuin/ui/*": ["../ui/src/*"],
+      "@genuin/components": ["../components/src"],
+      "@genuin/components/*": ["../components/src/*"],
+      "@/*": ["./src/*"]
+    },
+
+    // Additional helpful options
+    "resolveJsonModule": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
+
   "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "src/**/*.d.ts"
+    "src/**/*",
+    "../ui/src/**/*",
+    "../components/src/**/*",
+    "*.ts",
+    "*.tsx"
   ],
+
   "exclude": [
     "node_modules",
     "dist",
-  ]
+    "**/*.test.*",
+    "**/*.spec.*",
+    "**/*.stories.*",
+    "coverage",
+    ".turbo"
+  ],
+
+  "extends": "@genuin/typescript-config/base.json"
 }

@@ -1,18 +1,12 @@
 "use client";
 import type { ComponentProps } from "react";
-import { Suspense, useCallback, useMemo, useState, lazy } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import { PostsGrid } from "@genuin/components/organisms/posts-grid";
 import { useGetGroupFeed } from "@genuin/components/react-query/api/group/feed";
 import { getQueryKeyForGroupFeed } from "@genuin/components/react-query/keys/feed";
 
-// TODO: Not able to use dynamic import with type import
-const FeedView = lazy(
-  async () =>
-    await import("@genuin/components/templates/feed").then((mod) => ({
-      default: mod.FeedView,
-    }))
-);
+import { FeedView } from "@genuin/components/templates/feed";
 
 type GroupPostsPropsType = Omit<
   ComponentProps<typeof PostsGrid>,
@@ -111,23 +105,21 @@ export function GroupPosts({
         )}
       </PostsGrid>
       {enableFeedView && expandViewId !== null && (
-        <Suspense>
-          <FeedView
-            defaultExpandView={true}
-            startIndex={feed?.findIndex(
-              (post) => post.video.id === expandViewId
-            )}
-            feedData={{
-              videos: feed,
-              isLoading,
-              fetchNextPage,
-              hasNextPage,
-              isFetchingNextPage,
-              queryKey: getQueryKeyForGroupFeed(slug),
-            }}
-            onCloseExpandView={handleCloseExpandView}
-          />
-        </Suspense>
+        <FeedView
+          defaultExpandView={true}
+          startIndex={(feed ?? []).findIndex(
+            (post) => post.video.id === expandViewId
+          )}
+          feedData={{
+            videos: feed ?? [],
+            isLoading,
+            fetchNextPage,
+            hasNextPage,
+            isFetchingNextPage,
+            queryKey: getQueryKeyForGroupFeed(slug),
+          }}
+          onCloseExpandView={handleCloseExpandView}
+        />
       )}
     </>
   );

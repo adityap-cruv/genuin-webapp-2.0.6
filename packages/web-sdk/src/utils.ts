@@ -12,7 +12,6 @@ import { AuthUser, CommunityJoinStatusType, FeedType, SDKConfig } from '@/type'
 import CryptoJS from 'crypto-es'
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
-import { useBaseContext } from './context/base'
 import DOMPurify from 'dompurify'
 
 export function cn(...inputs: ClassValue[]) {
@@ -493,11 +492,9 @@ export function parseUserData(
 
 /**
  * Determines if redirections are enabled for specific entities (loop, profile, community) based on customization settings.
- * This function should not be used outside of the context where `useBaseContext` is available, as it relies on context-specific data.
  *
+ * @deprecated This function relied on the old base context and is no longer functional.
  * @returns An object containing boolean flags indicating whether redirections are enabled for each entity.
- *
- * @warning This function relies on the `useBaseContext` hook and should not be used outside of a component or context where `useBaseContext` isn't available.
  */
 export function getRedirectionStatusForPaths(): {
   loop?: boolean
@@ -505,25 +502,16 @@ export function getRedirectionStatusForPaths(): {
   community?: boolean
   brand?: boolean
 } {
-  const customizations = useBaseContext().customizations
-
-  const isLoopRedirectEnabled =
-    customizations?.is_enable_redirection &&
-    customizations?.enable_redirection_tools?.group
-  const isProfileRedirectEnabled =
-    customizations?.is_enable_redirection &&
-    customizations?.enable_redirection_tools?.user
-  const isCommunityRedirectEnabled =
-    customizations?.is_enable_redirection &&
-    customizations?.enable_redirection_tools?.community
-  const isBrandRedirectEnabled =
-    customizations?.is_enable_redirection && customizations.enable_brand_click
+  // This function is deprecated - returning default values
+  console.warn(
+    'getRedirectionStatusForPaths is deprecated - use shared components instead',
+  )
 
   return {
-    loop: isLoopRedirectEnabled,
-    profile: isProfileRedirectEnabled,
-    community: isCommunityRedirectEnabled,
-    brand: isBrandRedirectEnabled,
+    loop: false,
+    profile: false,
+    community: false,
+    brand: false,
   }
 }
 

@@ -14,9 +14,10 @@ export function isSlideVisible(
   swiper: SwiperType,
   targetIndex: number
 ): boolean {
-  if (!swiper) return false;
+  if (!swiper || !swiper.params) return false;
 
-  const slidesPerView = swiper.params.slidesPerView as number;
+  // Default to 1 if slidesPerView is undefined
+  const slidesPerView = (swiper.params.slidesPerView as number) || 1;
   const firstVisibleIndex = swiper.activeIndex;
   const lastVisibleIndex = firstVisibleIndex + slidesPerView - 1;
 
@@ -35,7 +36,9 @@ export function getNavigationAction(
   currentActiveIndex: number,
   direction: "next" | "prev"
 ): { shouldSlide: boolean; targetIndex: number } {
-  if (!swiper) return { shouldSlide: false, targetIndex: currentActiveIndex };
+  if (!swiper || !swiper.slides || !swiper.params) {
+    return { shouldSlide: false, targetIndex: currentActiveIndex };
+  }
 
   const totalSlides = swiper.slides.length;
   const targetIndex =
@@ -73,9 +76,10 @@ export function getVisibleSlideRange(swiper: SwiperType): {
   first: number;
   last: number;
 } {
-  if (!swiper || !swiper.slides) return { first: 0, last: 0 };
+  if (!swiper || !swiper.slides || !swiper.params) return { first: 0, last: 0 };
 
-  const slidesPerView = swiper.params?.slidesPerView as number;
+  // Default to 1 if slidesPerView is undefined
+  const slidesPerView = (swiper.params.slidesPerView as number) || 1;
   const first = swiper.activeIndex;
   const last = Math.min(first + slidesPerView - 1, swiper.slides.length - 1);
 
@@ -94,7 +98,7 @@ export function getNewActiveIndexOnSlideChange(
   currentActiveIndex: number,
   previousVisibleRange: { first: number; last: number }
 ): number {
-  if (!swiper) return 0;
+  if (!swiper || !swiper.params || !swiper.slides) return 0;
 
   const newRange = getVisibleSlideRange(swiper);
 

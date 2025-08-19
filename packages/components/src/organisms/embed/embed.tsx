@@ -36,6 +36,7 @@ const carouselVariant = cva("gencl:bg-secondary-200 gencl:rounded-md", {
     variant: {
       carousel: "",
       feed: "",
+      standard_wall: "",
     },
     defaultVariants: {
       variant: "carousel",
@@ -45,7 +46,7 @@ const carouselVariant = cva("gencl:bg-secondary-200 gencl:rounded-md", {
 
 type Props = EmbedProps & VariantProps<typeof carouselVariant>;
 
-export function Embed({ className, ...restProps }: Props) {
+export function Embed({ className, style, ...restProps }: Props) {
   // Use the hook to get all customization values in one place
   const { customization, embedData, embedEventBus } = useEmbedContext();
   const { track, EventName } = useAnalytics();
@@ -112,12 +113,16 @@ export function Embed({ className, ...restProps }: Props) {
   }, []);
 
   useEffect(() => {
-    function handleActiveIndexChange(context: EmbedEventContextType) {
+    function handleActiveIndexChange(
+      eventData: any,
+      context: EmbedEventContextType
+    ) {
       if (
         videos.length > 0 &&
         context.activeIndex === videos.length - 3 &&
         hasNextPage &&
-        !isFetchingNextPage
+        !isFetchingNextPage &&
+        context.activePlayerType !== "expand-view"
       ) {
         fetchNextPage();
       }
@@ -153,6 +158,10 @@ export function Embed({ className, ...restProps }: Props) {
       <SdkSkeleton
         containerHeight={containerHeight}
         containerWidth={containerWidth}
+        statsHeight={statsHeight}
+        linkoutHeight={linkoutHeight}
+        spaceBetweenVideos={spaceBetweenVideos}
+        availableHeight={availableHeight}
       />
     );
   }
@@ -186,20 +195,12 @@ export function Embed({ className, ...restProps }: Props) {
       }}
       {...restProps}
     >
-      <EmbedHeader
-        variant={
-          embedVariant === "standard_wall"
-            ? "feed"
-            : embedVariant === "feed" || embedVariant === "carousel"
-              ? embedVariant
-              : undefined
-        }
-      />
+      <EmbedHeader variant={embedVariant} />
       <EmbedManagerProvider swiper={swiper}>
         <div className="gencl:relative">
           <EmbedSwiper
             forFeed={config.view.isFeed}
-            aspectRation={embedData.aspect_ratio}
+            aspectRatio={embedData.aspect_ratio}
             spaceBetweenVideos={spaceBetweenVideos}
             containerDimensions={{
               height: config.view.isFeed
@@ -231,14 +232,7 @@ export function Embed({ className, ...restProps }: Props) {
         isLoading={isLoading}
         queryKey={queryKey}
       />
-      <PipView
-        videos={videos}
-        fetchNextPage={fetchNextPage}
-        hasNextPage={hasNextPage}
-        isFetchingNextPage={isFetchingNextPage}
-        isLoading={isLoading}
-        queryKey={queryKey}
-      />
+      <PipView videos={videos} isLoading={isLoading} />
     </div>
   );
 }

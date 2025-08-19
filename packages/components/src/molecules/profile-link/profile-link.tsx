@@ -30,13 +30,18 @@ export function ProfileLink({
     engagement: {
       redirectionTools: { user },
     },
+    view: { isCarousel, isFeed },
   } = useEmbedConfigs();
   return (
-    <Link href={url} enabled={!!user}>
+    <Link
+      href={url}
+      enabled={!!user}
+      {...(!!user ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+    >
       <div className="gencl:flex gencl:items-center gencl:gap-1">
         <p {...restProps}>{children}</p>
         {isOwner && <Chip>Owner</Chip>}
-        {userLogoType && (
+        {userLogoType && !(isCarousel || isFeed) && (
           <BrandBadge userLogoType={userLogoType} variant="dark" />
         )}
       </div>

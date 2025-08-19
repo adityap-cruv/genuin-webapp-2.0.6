@@ -16,20 +16,19 @@ export interface LinkProviderProps {
    * @returns {string} The current pathname.
    */
   usePathname?: () => string; // Optional, for Next.js compatibility
-  useRouter: typeof useRouter;
+  useRouter?: typeof useRouter;
 }
 
-export const LinkProvider: React.FC<LinkProviderProps> = ({
+export function LinkProvider({
   children,
   LinkComponent,
   isNextJS = false,
   usePathname,
   useRouter,
-}) => {
+}: LinkProviderProps) {
   const embedDetails = useSafeEmbedContext();
   // if embed style is standard_wall, use the custom usePathname hook
   const isCustomRouting = embedDetails?.embedData?.style === "standard_wall";
-
   const contextValue: LinkContextValue = {
     LinkComponent,
     isNextJS,
@@ -41,7 +40,7 @@ export const LinkProvider: React.FC<LinkProviderProps> = ({
   return (
     <LinkContext.Provider value={contextValue}>{children}</LinkContext.Provider>
   );
-};
+}
 
 export const useLinkContext = () => {
   const context = useContext(LinkContext);

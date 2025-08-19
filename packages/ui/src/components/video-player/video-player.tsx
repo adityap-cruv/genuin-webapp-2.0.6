@@ -428,7 +428,7 @@ export const VideoPlayer = memo(function VideoPlayer({
       };
 
       // Clean up ads if any
-      if (playerRef.current) {
+      if (playerRef.current && adUrl) {
         try {
           console.log("Cleaning up ads before component unmount");
           const ad = playerRef.current.getAd?.();
@@ -446,7 +446,7 @@ export const VideoPlayer = memo(function VideoPlayer({
         }
       }
     };
-  }, [src, adUrl, initializePlayer, playbackSpeed]);
+  }, [src]);
 
   useEffect(() => {
     const videoElement = videoRef.current;

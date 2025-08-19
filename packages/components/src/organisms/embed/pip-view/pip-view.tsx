@@ -9,26 +9,14 @@ import { PlayerProvider } from "@genuin/components/molecules/feed-player/context
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { XIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
-import { QueryKey } from "@tanstack/react-query";
 import { ComponentProps, useCallback, useEffect, useState } from "react";
 
 type PipViewProps = {
   videos: PostDetailsType[];
-  fetchNextPage: () => void;
-  hasNextPage: boolean;
-  isFetchingNextPage: boolean;
   isLoading: boolean;
-  queryKey: QueryKey;
 };
 
-export function PipView({
-  videos,
-  fetchNextPage,
-  hasNextPage,
-  isFetchingNextPage,
-  isLoading,
-  queryKey,
-}: PipViewProps) {
+export function PipView({ videos, isLoading }: PipViewProps) {
   const [isPipViewOpen, setIsPipViewOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const { track, EventName } = useAnalytics();

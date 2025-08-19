@@ -120,6 +120,7 @@ export type WebConfigsType = {
   tap_behavior: number
   gesture_guidance: boolean
   playback_speed_enabled: boolean
+  get_app_popup: PopupConfig
 }
 
 export type BrandDetailsConfigType = {
@@ -430,7 +431,7 @@ export type User = {
 }
 
 export type AuthUser = {
-  id: string
+  id?: string
   accessToken: string
   bio?: string
   email?: string
@@ -439,16 +440,21 @@ export type AuthUser = {
   name: string
   nickname: string
   image: string
+  instaId?: string
+  linkedinId?: string
+  tiktokId?: string
+  youtubeId?: string
+  xId?: string
   /**
    * Token to refresh accessToken.
    */
   refreshToken?: string
-  ksCbRequestStatus?: number
+  ksCbRequestStatus: number
   /**
    * if user is brand user.
    */
   isBrandSystemUser?: boolean
-  brandId?: string
+  brandId?: number
   brandSlug?: string
   /**
    * Checks if use has already topics.

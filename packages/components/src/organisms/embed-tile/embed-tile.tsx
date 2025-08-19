@@ -211,7 +211,7 @@ function EmbedPlayer({
       return;
     }
 
-    changeActivePlayerType("expand-view");
+    changeActivePlayerType("expand-view", index);
   }, [
     isAdPlaying,
     changeActivePlayerType,

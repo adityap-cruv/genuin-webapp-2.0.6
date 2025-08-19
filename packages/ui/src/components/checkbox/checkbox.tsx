@@ -4,7 +4,7 @@ import * as React from "react";
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
 import { Check } from "lucide-react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "../../lib/utils";
+import { cn } from "@genuin/ui/lib/utils";
 
 const checkboxVariants = cva(
   "gencl:peer gencl:h-4 gencl:w-4 gencl:shrink-0 gencl:rounded-sm gencl:border gencl:transition-all",

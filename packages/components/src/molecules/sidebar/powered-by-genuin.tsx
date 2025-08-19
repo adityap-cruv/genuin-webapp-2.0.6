@@ -4,7 +4,7 @@ import { cn } from "@genuin/ui/lib/utils";
 import { cva, VariantProps } from "class-variance-authority";
 
 const poweredByGenuinVariants = cva(
-  "gencl:border-r gencl:border-t gencl:p-4 gencl:border-secondary-150 gencl:bg-white gencl:fixed gencl:bottom-0 gencl:z-10",
+  "gencl:border-r gencl:border-t gencl:p-4 gencl:border-secondary-150 gencl:bg-white gencl:absolute gencl:bottom-0 gencl:z-10",
   {
     variants: {
       variant: {

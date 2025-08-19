@@ -1,6 +1,17 @@
 import { useDebounceValue } from "usehooks-ts";
 import { useSuggestions } from "@genuin/components/react-query/api/search";
 import { SEARCH_CONFIG } from "../constants";
+import type { UseQueryResult } from "@tanstack/react-query";
+import type { SuggestionsResponseType } from "@genuin/components/react-query/api/search/types";
+
+// Define the return type explicitly to avoid TypeScript inference issues
+export interface UseDebouncedSuggestionsResult {
+  suggestions: SuggestionsResponseType;
+  isLoading: boolean;
+  error: Error | null;
+  isDebouncing: boolean;
+  refetch: () => void;
+}
 
 /**
  * Custom hook for debounced search suggestions
@@ -11,7 +22,7 @@ import { SEARCH_CONFIG } from "../constants";
 export function useDebouncedSuggestions(
   query: string,
   debounceMs: number = SEARCH_CONFIG.DEBOUNCE_DELAY
-) {
+): UseDebouncedSuggestionsResult {
   const [debouncedQuery] = useDebounceValue(query, debounceMs);
 
   // Only make API call if query has meaningful content

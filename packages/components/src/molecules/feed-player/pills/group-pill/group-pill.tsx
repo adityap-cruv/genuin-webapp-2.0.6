@@ -96,8 +96,13 @@ export function GroupPill({
 
   const pill = (
     <Link
-      href={buildPageUrl({ type: "group", slug: groupDetails.slug })}
+      href={
+        group
+          ? groupDetails.shareUrl
+          : buildPageUrl({ type: "group", slug: groupDetails.slug })
+      }
       enabled={group}
+      {...(group ? { target: "_blank", rel: "noopener noreferrer" } : {})}
     >
       <div className={groupPillVariants({ variant, className })}>
         <div className="gencl:flex gencl:gap-1 gencl:items-center gencl:line-clamp-1 gencl:break-all">

@@ -80,11 +80,8 @@ export const Controls = memo(function Controls({
   const { showExpandView, toggleExpandView } = usePlayerContext();
   const { getSearchParams } = useSearchParams();
   const pathname = usePathname();
-  const {
-    brandDetails: {
-      web_configs: { tap_behavior: tapBehavior },
-    },
-  } = useBaseContext();
+  const { brandDetails } = useBaseContext();
+  const tapBehavior = brandDetails?.web_configs?.tap_behavior ?? 3;
 
   // Determine if the variant is embed
   const isEmbed = variant === "embed";

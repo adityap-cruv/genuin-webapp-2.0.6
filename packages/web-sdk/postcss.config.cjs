@@ -2,7 +2,7 @@
 
 module.exports = {
   plugins: [
-    require('tailwindcss'),
+    require('@tailwindcss/postcss'),
     require('autoprefixer'),
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     require('postcss-nested')({ preserveEmpty: true }),

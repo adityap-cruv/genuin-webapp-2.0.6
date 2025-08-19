@@ -14,7 +14,6 @@ import {
   ChevronRight,
   ChevronUp,
 } from "lucide-react";
-import { useEmbedDimensions } from "@genuin/components/hooks/embed/use-embed-dimensions";
 import { useEmbedContext } from "@genuin/components/context/embed";
 
 const carouselSkeletonVariant = cva("gencl:bg-secondary-200 gencl:rounded-md", {
@@ -35,26 +34,26 @@ type CarouselSkeletonProps = VariantProps<typeof carouselSkeletonVariant> &
 export function SdkSkeleton({
   className,
   variant,
-  containerHeight: propsContainerHeight,
-  containerWidth: propsContainerWidth,
+  containerHeight,
+  containerWidth,
+  statsHeight,
+  linkoutHeight,
+  spaceBetweenVideos,
+  availableHeight,
   ...restProps
 }: CarouselSkeletonProps & {
   containerHeight?: number;
   containerWidth?: number;
+  statsHeight: number;
+  linkoutHeight: number;
+  spaceBetweenVideos: number;
+  availableHeight: number;
 }) {
   const { embedData } = useEmbedContext();
   const config = useEmbedConfigs();
   const embedVariant: "carousel" | "feed" =
     config.view.embedStyle === "feed" ? "feed" : "carousel";
   const skeletonItems = Array(6).fill(null);
-  const {
-    containerHeight,
-    containerWidth,
-    statsHeight,
-    linkoutHeight,
-    spaceBetweenVideos,
-    availableHeight,
-  } = useEmbedDimensions(config);
 
   return (
     <div
@@ -63,8 +62,8 @@ export function SdkSkeleton({
         className
       )}
       style={{
-        height: propsContainerHeight || containerHeight,
-        width: propsContainerWidth || containerWidth,
+        height: containerHeight,
+        width: containerWidth,
       }}
       {...restProps}
     >
@@ -78,13 +77,13 @@ export function SdkSkeleton({
             height: config.view.isFeed
               ? availableHeight - spaceBetweenVideos
               : availableHeight + spaceBetweenVideos,
-            width: containerWidth,
+            width: containerWidth || 0,
           }}
           style={{
             height: availableHeight + linkoutHeight + statsHeight,
           }}
         >
-          {skeletonItems.map((idx) => {
+          {skeletonItems.map((_, idx) => {
             return (
               <SwiperSlide className="gencl:h-full gencl:w-full" key={idx}>
                 <Skeleton className="gencl:h-full gencl:w-full" />

@@ -9,22 +9,26 @@ import { CommunityDetails } from "../community-details";
 import { VideoPage } from "../video";
 import { SettingsPage } from "@genuin/components/organisms/settings";
 import { Explore } from "../explore";
+import { ComponentProps } from "react";
 
 type StandardWallProps = {
   /**
    * Optional prop to specify the initial path for the Standard Wall component.
    */
   startingPath?: string; // Optional prop to specify the initial path
-};
+} & ComponentProps<"div">;
 
 /**
  * Standard Wall component that serves as the main entry point for the application.
  * It sets up the routing for various pages such as home, latest, popular feeds, profile details, group details, community details, video page, and settings page.
  * It uses the `embedRouter` to handle routing and `BaseLayout` for consistent layout across the application.
  */
-export function StandardWall({ startingPath }: StandardWallProps) {
+export function StandardWall({
+  startingPath,
+  ...restProps
+}: StandardWallProps) {
   return (
-    <div className="gencl:w-screen gencl:h-full gencl:relative">
+    <div className="gencl:w-full gencl:h-full gencl:relative" {...restProps}>
       <Router hook={embedRouter.hook}>
         <BaseLayout>
           <Route path={buildPageUrl({ type: "home" })}>

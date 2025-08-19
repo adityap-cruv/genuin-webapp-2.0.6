@@ -31,7 +31,7 @@ genuin-webapp-standalone/
 
 - **Next.js**: v15.0.0+ with App Router
 - **React**: v19.0.0+
-- **TypeScript**: v5.2.2+
+- **TypeScript**: v5.2.2+ (strict mode everywhere)
 - **Node.js**: v20.12.0+
 - **Package Manager**: pnpm v8.15.3+
 - **Authentication**: NextAuth.js v5.0.0+
@@ -49,7 +49,7 @@ genuin-webapp-standalone/
 
   ```json
   "scripts": {
-    "dev": "env-cmd -f ../../.env next dev -p 4005"
+  	"dev": "env-cmd -f ../../.env next dev -p 4005"
   }
   ```
 
@@ -89,12 +89,12 @@ genuin-webapp-standalone/
   - Never commit secrets; use `.env.local` for local overrides.
 
 - **Example: Adding a New Public Env Variable**
-  1. Add to root `.env` and `.env.example`:
-     ```
-     NEXT_PUBLIC_NEW_FEATURE_FLAG=true
-     ```
-  2. Reference in your code as `process.env.NEXT_PUBLIC_NEW_FEATURE_FLAG` (Node) or `import.meta.env.NEXT_PUBLIC_NEW_FEATURE_FLAG` (Vite/Storybook).
-  3. If needed in Storybook, add to the `define` block in `.storybook/main.ts`.
+  1.  Add to root `.env` and `.env.example`:
+      ```
+      NEXT_PUBLIC_NEW_FEATURE_FLAG=true
+      ```
+  2.  Reference in your code as `process.env.NEXT_PUBLIC_NEW_FEATURE_FLAG` (Node) or `import.meta.env.NEXT_PUBLIC_NEW_FEATURE_FLAG` (Vite/Storybook).
+  3.  If needed in Storybook, add to the `define` block in `.storybook/main.ts`.
 
 ---
 
@@ -106,7 +106,7 @@ This approach ensures all apps and packages in the monorepo have a consistent, s
 
 1. Follow TypeScript best practices with strict typing
    - Use explicit return types for functions with complex logic
-   - Prefer types
+   - Prefer types and interfaces over `any`
    - Use proper generics to create reusable components and utilities
    - Define strict prop types for all components
 2. File organization
@@ -137,7 +137,6 @@ This approach ensures all apps and packages in the monorepo have a consistent, s
 2. Theme Configuration and Usage
    - The project uses a hybrid approach compatible with both Tailwind v3 and v4
    - CSS variables are defined in the Tailwind theme and accessed via utility classes
-   - Currently using `@import "tailwindcss"` along with `@config '../../tailwind.config.ts'` in globals.css
    - Use proper color opacity syntax: `bg-primary/[0.5]` instead of `bg-primary/50`
    - Configure CSS variables in the root element rather than using theme() function
 3. Utility Class Renaming
@@ -229,6 +228,8 @@ This approach ensures all apps and packages in the monorepo have a consistent, s
 - Build all packages: `pnpm build`
 - Lint all packages: `pnpm lint`
 - Format code: `pnpm format`
+- Typecheck: `pnpm typecheck`
+- Clear Turborepo cache: `pnpm turbo clean`
 
 ### When Helping With Code:
 
@@ -343,12 +344,13 @@ This approach ensures all apps and packages in the monorepo have a consistent, s
 - Versioning through package.json
 - Environment-specific builds (dev, qa, production)
 - Integration with analytics (RudderStack)
-- Custom loader system for external dependencies
+- Custom loader system for external dependencies (see `src/views/loader.tsx`)
 - Multiple embed types: standard, carousel, feed
 - Functionally equivalent to the webapp but delivered as an embeddable SDK
 - Reuses the same UI components and business components from shared packages
 - Provides identical user experience to the webapp despite different delivery method
 - Adapts shared components to work in embedded contexts across different host sites
+- S3/CloudFront publishing supported via scripts (see `README.md` in web-sdk)
 
 #### Configuration Packages
 
@@ -363,5 +365,37 @@ This approach ensures all apps and packages in the monorepo have a consistent, s
 - MONOREPO_CONVERSION.md explains the repository structure conversion
 - TAILWIND_V4_MIGRATION.md explains the migration status and approach
 - TAILWIND_V4_MIGRATION_GUIDE.md provides detailed steps for the migration
-- Package-specific README files contain detailed instructions
+- DEPENDECY_MANAGEMENT_IMPROVEMENT.md for dependency strategy
 - NODE_VERSION.md for Node.js version requirements and setup
+- Package-specific README files contain detailed instructions
+
+---
+
+If any section is unclear or incomplete, please ask for clarification or suggest improvements.
+
+# Genuin Monorepo: AI Agent Coding Guide
+
+This monorepo contains the Genuin web application and SDK, managed with Turborepo and pnpm workspaces. The architecture is designed for maximum code reuse and strict type safety across delivery formats.
+
+## Big Picture Architecture
+
+- **Monorepo**: All apps and packages are managed in a single repo using pnpm workspaces and Turborepo for builds.
+- **Apps**: `apps/webapp` (Next.js 15, App Router, SSR-first) and `packages/web-sdk` (embeddable React SDK, Rollup build).
+- **Shared Code**: UI primitives (`packages/ui`), business components (`packages/components`), and utilities are reused across both delivery methods.
+- **Atomic Design**: Components are organized as Atoms (UI), Molecules/Organisms (business logic), Templates, and Pages. See `packages/ui` and `packages/components` for examples.
+- **Strict Typing**: All code is TypeScript strict mode. Prefer explicit types and generics. No `React.FC` types.
+
+## Developer Workflows
+
+- **Install**: `pnpm install` (always run from repo root)
+- **Dev**: `pnpm dev` (starts all dev servers)
+- **Build**: `pnpm build` (builds all packages)
+- **Lint/Format**: `pnpm lint`, `pnpm format`
+- **Typecheck**: `pnpm typecheck`
+- **Clear cache**: `pnpm turbo clean`
+- **Web SDK builds**: Use `npm run build`, `npm run build:qa`, `npm run build:prod` in `packages/web-sdk` for environment-specific builds. See its README for S3 publishing and versioning.
+
+## Project-Specific Conventions
+
+- **Environment Variables**: Centralized in root `.env`. Only `NEXT_PUBLIC_*` are exposed to browser. Use `env-cmd` for app scripts; Vite/Storybook envs are injected via `viteFinal` in `.storybook/main.ts`.
+- **Component Boundaries**: Default to Server Components (Next.js) unless interactivity is required. Use `

@@ -13,7 +13,9 @@ const embedHeaderVariants = cva(
     variants: {
       variant: {
         feed: "gencl:justify-start gencl:items-start gencl:flex-col gencl:h-[104px]",
-        carousel: "gencl:justify-between gencl:items-center gencl:flex-row gencl:h-[56px]",
+        carousel:
+          "gencl:justify-between gencl:items-center gencl:flex-row gencl:h-[56px]",
+        standard_wall: "",
       },
     },
     defaultVariants: {

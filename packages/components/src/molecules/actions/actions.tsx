@@ -203,7 +203,8 @@ export function Actions({
   onClick,
   ...restProps
 }: ActionsPropsType) {
-  const { tooltip } = useBaseContext().brandDetails.reactions;
+  const baseContext = useBaseContext();
+  const tooltip = baseContext?.brandDetails?.reactions?.tooltip ?? "Spark";
   const { engagement } = useEmbedConfigs();
 
   if (!engagement.showEngagementTools) return;
