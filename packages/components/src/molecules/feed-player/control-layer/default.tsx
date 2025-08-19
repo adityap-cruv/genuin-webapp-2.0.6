@@ -34,7 +34,6 @@ export function Default({
   const { showSeeker } = usePlayerContext();
   const { playbackSpeed } = useFeedContext();
   const { isMobile } = useDeviceDetectMediaQuery();
-  const { hideGestureOverlay } = useGestureOverlayManager();
   const embedDetails = useSafeEmbedContext();
 
   const { brandDetails } = useBaseContext();
