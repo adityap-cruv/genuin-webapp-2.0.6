@@ -15,6 +15,7 @@ import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema"
 import { CommunityHoverCard } from "../community-hover-card";
 import { ComponentProps, useEffect, useState, useRef } from "react";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 
 const communityPillVariants = cva(
   "gencl:flex gencl:w-fit gencl:items-center gencl:gap-1 gencl:p-1 gencl:pr-2 gencl:rounded-full gencl:transition-all gencl:cursor-pointer",
@@ -61,6 +62,8 @@ export function CommunityPill({
     communityDetails.userRole
   );
   const prevJoinStatus = useRef<string | undefined>(communityDetails.userRole);
+  const embedDetails = useSafeEmbedContext();
+  const isWalmart = embedDetails?.embedData.card_layout_id === 6;
 
   /**
    * When the user successfully joins (userRole becomes 'MEMBER'),
@@ -80,7 +83,9 @@ export function CommunityPill({
   }, [communityDetails.userRole]);
 
   const hideButton =
-    localJoinStatus === "MEMBER" || authenticationStatus === "unauthenticated";
+    localJoinStatus === "MEMBER" ||
+    authenticationStatus === "unauthenticated" ||
+    isWalmart;
 
   const pill = (
     <Link

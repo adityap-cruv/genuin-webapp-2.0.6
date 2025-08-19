@@ -62,7 +62,7 @@ export function parseFeed(
       // cardLayoutType: mapVideoLayoutId(item.video.card_layout_id),
       // videoLayoutType: mapVideoLayoutId(item.video.video_layout_id),
       duration: item.video.duration || null,
-      attributes: item.video.attributes || null,
+      attributes: item.video.attributes || null
     },
     group: {
       id: item.loop.uuid,

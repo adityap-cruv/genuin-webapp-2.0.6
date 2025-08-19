@@ -73,7 +73,7 @@ const buttonVariants = cva(
         theme: "overlay",
         size: "xs",
         class:
-          "gencl:size-4.5 gencl:rounded-full gencl:p-0.5! gencl:bg-black/40 gencl:backdrop-blur-[1px]",
+          "gencl:size-5 gencl:rounded-full gencl:p-1! gencl:bg-black/40 gencl:backdrop-blur-[1px]",
       },
       {
         theme: "overlay",

@@ -30,6 +30,7 @@ import { getQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
 import { useEmbedDimensions } from "@genuin/components/hooks/embed/use-embed-dimensions";
 import { SdkErrorState } from "./error-state";
 import { SdkEmptyState } from "./empty-state";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 
 const carouselVariant = cva("gencl:bg-secondary-200 gencl:rounded-md", {
   variants: {
@@ -47,11 +48,22 @@ const carouselVariant = cva("gencl:bg-secondary-200 gencl:rounded-md", {
 type Props = EmbedProps & VariantProps<typeof carouselVariant>;
 
 export function Embed({ className, style, ...restProps }: Props) {
-  // Use the hook to get all customization values in one place
-  const { customization, embedData, embedEventBus } = useEmbedContext();
+  const [swiper, setSwiper] = useState<Swiper | null>(null);
+  const embedRef = useRef<HTMLDivElement>(null);
+
+  const { embedData, embedEventBus } = useEmbedContext();
   const { track, EventName } = useAnalytics();
   const config = useEmbedConfigs();
-  const embedVariant = config.view.embedStyle;
+  const embedVariant = config.embedStyle;
+  // Use the hook to get all customization values in one place
+  const rootHeight =
+    typeof style?.height === "string"
+      ? Number.parseFloat(style.height)
+      : style?.height;
+  const rootWidth =
+    typeof style?.width === "string"
+      ? Number.parseFloat(style.width)
+      : style?.width;
 
   const {
     isLoading,
@@ -61,23 +73,39 @@ export function Embed({ className, style, ...restProps }: Props) {
     hasNextPage,
     isFetchingNextPage,
   } = useFeed("HOME", {
-    communityIds: customization.community_ids,
-    groupIds: customization.community_loop_ids,
+    communityIds: config.community.communityIds,
+    groupIds: config.community.communityLoopIds,
     startVideoSlug: embedData.startVideoSlug,
-    // startVideoSlug: "the-collab-has-officially-left-the-group-chat-nhl-3vjn",
     isEmbed: true,
+    // startVideoSlug: "the-collab-has-officially-left-the-group-chat-nhl-3vjn",
   });
   const queryKey = getQueryKeyForFeed("HOME", {
-    communityIds: customization.community_ids,
-    groupIds: customization.community_loop_ids,
+    communityIds: config.community.communityIds,
+    groupIds: config.community.communityLoopIds,
+    isEmbed: true,
   });
-  const [swiper, setSwiper] = useState<Swiper | null>(null);
-  const embedRef = useRef<HTMLDivElement>(null);
 
   const videos = useMemo(
     () => feedData?.pages.flatMap((page) => page.feed) || [],
     [feedData]
   );
+
+  // Extract video titles from postDetails
+  const bucketList = useMemo(
+    () =>
+      videos.map((videoData) => videoData.video?.attributes?.bucket_name || ""),
+    [videos]
+  );
+
+  const isWalmart = embedData.card_layout_id === 6;
+
+  // Store bucketList in the embed context for use elsewhere
+  const { updateBucketList } = useEmbedContext();
+  useEffect(() => {
+    if (bucketList.length > 0) {
+      updateBucketList(bucketList);
+    }
+  }, [videos.length]);
 
   // Track EMBED_VIEWED event when embed is visible in viewport
   useEffect(() => {
@@ -89,8 +117,8 @@ export function Embed({ className, style, ...restProps }: Props) {
           if (entry.isIntersecting) {
             track(EventName.EMBED_VIEWED, {
               embedType: embedVariant,
-              communityIds: customization.community_ids,
-              groupIds: customization.community_loop_ids,
+              communityIds: config.community.communityIds,
+              groupIds: config.community.communityLoopIds,
             });
             observer.disconnect();
           }
@@ -107,8 +135,8 @@ export function Embed({ className, style, ...restProps }: Props) {
   useEffect(() => {
     track(EventName.EMBED_INITIALIZED, {
       embedType: embedVariant,
-      communityIds: customization.community_ids,
-      groupIds: customization.community_loop_ids,
+      communityIds: config.community.communityIds,
+      groupIds: config.community.communityLoopIds,
     });
   }, []);
 
@@ -134,15 +162,19 @@ export function Embed({ className, style, ...restProps }: Props) {
     };
   }, [fetchNextPage, isLoading, hasNextPage, isFetchingNextPage, videos]);
 
-  // Use the custom hook
+  // Use the custom hook with style prop to prioritize parent styles
   const {
     containerHeight,
     containerWidth,
     statsHeight,
+    headerHeight,
     linkoutHeight,
     spaceBetweenVideos,
     availableHeight,
-  } = useEmbedDimensions(config);
+  } = useEmbedDimensions(config, {
+    containerHeight: rootHeight,
+    containerWidth: rootWidth,
+  });
 
   if (isError) {
     return (
@@ -180,49 +212,64 @@ export function Embed({ className, style, ...restProps }: Props) {
       ref={embedRef}
       className={cn(
         carouselVariant({
-          variant:
-            embedVariant === "feed" || embedVariant === "carousel"
-              ? embedVariant
-              : embedVariant === "standard_wall"
-                ? "feed"
-                : "carousel",
+          variant: embedVariant,
         }),
         className
       )}
       style={{
         height: containerHeight,
         width: containerWidth,
+        ...style,
       }}
       {...restProps}
     >
-      <EmbedHeader variant={embedVariant} />
-      <EmbedManagerProvider swiper={swiper}>
-        <div className="gencl:relative">
-          <EmbedSwiper
-            forFeed={config.view.isFeed}
-            aspectRatio={embedData.aspect_ratio}
-            spaceBetweenVideos={spaceBetweenVideos}
-            containerDimensions={{
-              height: config.view.isFeed
-                ? availableHeight - spaceBetweenVideos
-                : availableHeight + spaceBetweenVideos,
-              width: containerWidth,
-            }}
-            style={{
-              height: availableHeight + linkoutHeight + statsHeight,
-            }}
-            onSwiper={(swiperInstance) => setSwiper(swiperInstance)}
-          >
-            {videos.map((videoData, idx) => {
-              return (
-                <SwiperSlide key={idx}>
-                  <EmbedItem index={idx} postDetails={videoData} />
-                </SwiperSlide>
-              );
-            })}
-          </EmbedSwiper>
-          <NavigationButtons totalSlides={videos.length} />
-        </div>
+      <EmbedHeader
+        style={{
+          height: headerHeight,
+        }}
+        variant={
+          embedVariant === "standard_wall"
+            ? "feed"
+            : embedVariant === "feed" || embedVariant === "carousel"
+              ? embedVariant
+              : undefined
+        }
+      />
+      <EmbedManagerProvider swiper={swiper} isGridLayout={isWalmart}>
+        {isWalmart ? (
+          <GridLayout videos={videos} embedEventBus={embedEventBus} />
+        ) : (
+          <div className="gencl:relative">
+            <EmbedSwiper
+              forFeed={config.view.isFeed}
+              aspectRatio={embedData.aspect_ratio}
+              spaceBetweenVideos={spaceBetweenVideos}
+              containerDimensions={{
+                height: config.view.isFeed
+                  ? availableHeight - spaceBetweenVideos
+                  : availableHeight + spaceBetweenVideos,
+                width: containerWidth,
+              }}
+              style={{
+                height: availableHeight + linkoutHeight + statsHeight,
+              }}
+              onSwiper={(swiperInstance) => setSwiper(swiperInstance)}
+            >
+              {videos.map((videoData, idx) => {
+                return (
+                  <SwiperSlide key={idx}>
+                    <EmbedItem
+                      index={idx}
+                      postDetails={videoData}
+                      bucketList={bucketList}
+                    />
+                  </SwiperSlide>
+                );
+              })}
+            </EmbedSwiper>
+            <NavigationButtons totalSlides={videos.length} />
+          </div>
+        )}
       </EmbedManagerProvider>
       <EmbedExpandView
         videos={videos}
@@ -244,9 +291,87 @@ type EmbedItemProps = Omit<
   index: number;
 };
 
+// GridLayout component that safely accesses the context
+function GridLayout({
+  videos,
+  embedEventBus,
+}: {
+  videos: any[];
+  embedEventBus: any;
+}) {
+  const { updateActiveIndex } = useEmbedManagerContext();
+  const { isMobile } = useDeviceDetectMediaQuery();
+  const [isHovering, setIsHovering] = useState(false);
+
+  // Auto-update active index every 3 seconds, but pause when hovering or in expand view
+  useEffect(() => {
+    if (videos.length === 0) return;
+
+    // Don't auto-rotate if user is hovering
+    if (isHovering) return;
+
+    const interval = setInterval(() => {
+      const context = embedEventBus.getContext();
+      // Skip auto-rotation if we're in expand view
+      if (context.activePlayerType === "expand-view") return;
+
+      const currentIndex = context.activeIndex || 0;
+      const nextIndex = (currentIndex + 1) % videos.length;
+
+      // Use the updateActiveIndex function from context instead of directly emitting events
+      updateActiveIndex(nextIndex);
+    }, 3000); // Update every 3 seconds
+
+    return () => clearInterval(interval);
+  }, [videos.length, embedEventBus, updateActiveIndex, isHovering]);
+
+  // Initial update of the context with the total number of videos
+  useEffect(() => {
+    if (videos.length > 0) {
+      // Initialize with index 0 if not already set
+      const currentIndex = embedEventBus.getContext().activeIndex || 0;
+      updateActiveIndex(currentIndex);
+    }
+  }, [videos.length, embedEventBus, updateActiveIndex]);
+
+  return (
+    <div
+      className="gencl:h-full gencl:w-full gencl:overflow-auto"
+      onMouseEnter={() => !isMobile && setIsHovering(true)}
+      onMouseLeave={() => !isMobile && setIsHovering(false)}
+    >
+      <div className="gencl:grid gencl:grid-cols-2 gencl:w-full gencl:gap-2">
+        {videos.map((videoData, index) => (
+          <div
+            key={index}
+            className={cn(
+              "gencl:aspect-reel gencl:relative gencl:overflow-hidden gencl:rounded-md",
+              "gencl:transition-all gencl:duration-300 gencl:ease-in-out",
+              "gencl:cursor-pointer"
+            )}
+            onClick={() => {
+              updateActiveIndex(index);
+              // Open expand view with this index
+              embedEventBus.emit(
+                "activePlayerTypeChange",
+                {},
+                {
+                  activePlayerType: "expand-view",
+                  activeIndex: index,
+                }
+              );
+            }}
+          >
+            <EmbedItem index={index} postDetails={videoData} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function EmbedItem({ index, ...restProps }: EmbedItemProps) {
   const { updateActiveIndex } = useEmbedManagerContext();
-  const config = useEmbedConfigs();
   const { embedEventBus } = useEmbedContext();
   const [embedIsActive, setEmbedIsActive] = useState(
     embedEventBus.getContext().activePlayerType === "embed"
@@ -283,14 +408,37 @@ function EmbedItem({ index, ...restProps }: EmbedItemProps) {
 
   return (
     <EmbedTile
-      className={cn("gencl:cursor-pointer", {
-        "gencl:opacity-50 gencl:transition-opacity":
-          activeIndex !== index && config.styling.isOpacityDown,
-      })}
+      className={cn("gencl:cursor-pointer")}
       isActive={activeIndex === index && embedIsActive}
       onPlayerIterationEnd={goToNextVideo}
       onMouseEnter={debouncedSetActiveIndex}
       onMouseLeave={handleMouseLeave}
+      onClick={() => {
+        updateActiveIndex(index);
+
+        // CHECK ANY BETTER APPROACH
+        // First update the active index
+        embedEventBus.emit(
+          "activeIndexChange",
+          {},
+          {
+            activePlayerType: embedEventBus.getContext().activePlayerType,
+            activeIndex: index,
+          }
+        );
+
+        // Then after a small delay to allow the video to start, change to expand view
+        setTimeout(() => {
+          embedEventBus.emit(
+            "activePlayerTypeChange",
+            {},
+            {
+              activePlayerType: "expand-view",
+              activeIndex: index,
+            }
+          );
+        }, 50);
+      }}
       index={index}
       {...restProps}
     />

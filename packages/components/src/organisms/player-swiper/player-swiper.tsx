@@ -12,11 +12,12 @@ import { Comments, CommentsDialog } from "../../molecules/comments";
 
 import { Player } from "./player";
 import { SwiperImplementation } from "./swiper-implementation";
-import { ComponentProps } from "react";
+import { ComponentProps, useMemo, useState } from "react";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { abbreviateNumber, cn } from "@genuin/ui/lib/utils";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import { SearchIcon } from "@genuin/ui/icons";
 
 type PlayerListPropsType = {
   posts: PostDetailsType[];
@@ -63,6 +64,7 @@ export function PlayerList({
       engagementTools: { comment: showCommentBox },
     },
   } = useEmbedConfigs();
+  const [selectedBucketIndex, setSelectedBucketIndex] = useState(0);
 
   const embedDetails = useSafeEmbedContext();
 
@@ -74,6 +76,36 @@ export function PlayerList({
           onActiveIndexChange?.(swiper.activeIndex);
         }}
       >
+        {embedDetails?.embedData.card_layout_id === 6 && (
+          <div className="gencl:absolute gencl:top-0 gencl:z-50 gencl:flex gencl:h-13 gencl:sm:h-16! gencl:w-full gencl:sm:w-[calc(100%-60px)]! gencl:gap-2 gencl:overflow-x-auto gencl:scrollbar-none gencl:p-4 gencl:pb-0!">
+            {/* <div
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+              className="gencl:flex gencl:h-9 gencl:w-9 gencl:sm:h-12! gencl:sm:w-12! gencl:cursor-pointer gencl:flex-shrink-0 gencl:items-center gencl:justify-center gencl:rounded-full gencl:bg-black/40 gencl:border gencl:border-[#FFFFFF66]"
+            >
+              <SearchIcon theme="dark" size="lg" />
+            </div> */}
+            {embedDetails?.bucketList?.map((bucket, index) => (
+              <button
+                key={index}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedBucketIndex(index);
+                }}
+                className={cn(
+                  "gencl:text-body-0-semi-bold gencl:h-9 gencl:sm:h-12! gencl:flex gencl:border gencl:items-center gencl:justify-center gencl:px-3.5 gencl:rounded-full gencl:text-white gencl:transition-colors gencl:cursor-pointer gencl:whitespace-nowrap",
+                  selectedBucketIndex === index
+                    ? "gencl:bg-white gencl:text-black gencl:border-white"
+                    : "gencl:bg-black/40 gencl:border-[#FFFFFF66]"
+                )}
+              >
+                {bucket}
+              </button>
+            ))}
+          </div>
+        )}
+
         {posts.map((post, index) => {
           return (
             <SwiperSlide key={post.video.id}>

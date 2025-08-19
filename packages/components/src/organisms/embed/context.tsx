@@ -45,11 +45,13 @@ const EmbedManagerContext = createContext<EmbedManagerContextType | undefined>(
 type EmbedManagerProviderProps = {
   children: React.ReactNode;
   swiper: SwiperType | null;
+  isGridLayout?: boolean;
 };
 
 export function EmbedManagerProvider({
   children,
   swiper,
+  isGridLayout = false,
 }: EmbedManagerProviderProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [previousVisibleRange, setPreviousVisibleRange] = useState({
@@ -65,13 +67,20 @@ export function EmbedManagerProvider({
 
   // Track visible range changes
   useEffect(() => {
+    if (isGridLayout) {
+      // For grid layout, all slides are visible
+      setPreviousVisibleRange({ first: 0, last: Number.MAX_SAFE_INTEGER });
+      return;
+    }
+
     if (!swiper) return;
 
     const range = getVisibleSlideRange(swiper);
     setPreviousVisibleRange(range);
-  }, [swiper?.activeIndex, swiper]);
+  }, [swiper?.activeIndex, swiper, isGridLayout]);
 
   useEffect(() => {
+    if (isGridLayout) return; // Skip for grid layout
     if (!swiper) return;
 
     function handleSlideChange(swiper: SwiperType) {
@@ -90,10 +99,16 @@ export function EmbedManagerProvider({
     return () => {
       swiper.off("slideChange", handleSlideChange);
     };
-  }, [swiper, activeIndex, previousVisibleRange]);
+  }, [swiper, activeIndex, previousVisibleRange, isGridLayout]);
 
   const updateActiveIndex = useCallback(
     (index: number) => {
+      if (isGridLayout) {
+        // In grid layout, all indices are valid
+        setActiveIndex(index);
+        return;
+      }
+
       if (!swiper) return;
 
       // Only update if the index is currently visible
@@ -101,10 +116,16 @@ export function EmbedManagerProvider({
         setActiveIndex(index);
       }
     },
-    [swiper]
+    [swiper, setActiveIndex, isGridLayout]
   );
 
   const goToNextVideo = useCallback(() => {
+    if (isGridLayout) {
+      // For grid layout, just increment the index
+      setActiveIndex((prevIndex) => prevIndex + 1);
+      return;
+    }
+
     if (!swiper) return;
 
     const { shouldSlide, targetIndex } = getNavigationAction(
@@ -120,9 +141,15 @@ export function EmbedManagerProvider({
     if (!shouldSlide) {
       setActiveIndex(targetIndex);
     }
-  }, [swiper, activeIndex]);
+  }, [swiper, activeIndex, isGridLayout]);
 
   const goToPreviousVideo = useCallback(() => {
+    if (isGridLayout) {
+      // For grid layout, just decrement the index
+      setActiveIndex((prevIndex) => Math.max(0, prevIndex - 1));
+      return;
+    }
+
     if (!swiper) return;
 
     const { shouldSlide, targetIndex } = getNavigationAction(
@@ -138,7 +165,7 @@ export function EmbedManagerProvider({
     if (!shouldSlide) {
       setActiveIndex(targetIndex);
     }
-  }, [swiper, activeIndex]);
+  }, [swiper, activeIndex, isGridLayout]);
 
   useEffect(() => {
     const handleActivePlayerTypeChange = (
@@ -146,7 +173,10 @@ export function EmbedManagerProvider({
       context: EmbedEventContextType
     ) => {
       if (context.activePlayerType === "embed") {
-        if (swiper) {
+        if (isGridLayout) {
+          // For grid layout, just set the active index
+          setActiveIndex(context.activeIndex);
+        } else if (swiper) {
           if (isSlideVisible(swiper, context.activeIndex)) {
             setActiveIndex(context.activeIndex);
           } else {
@@ -161,7 +191,7 @@ export function EmbedManagerProvider({
     return () => {
       embedEventBus.off("activePlayerTypeChange", handleActivePlayerTypeChange);
     };
-  }, [swiper]);
+  }, [swiper, isGridLayout]);
 
   return (
     <EmbedManagerContext.Provider

@@ -14,7 +14,8 @@ export function getQueryKeyForFeed(
   feedType: FeedType,
   options?: {
     communityIds?: string[];
-    groupIds?: Array<{ loop_id: string; community_id: string }>;
+    groupIds?: string[];
+    isEmbed?: boolean;
   }
 ): QueryKey {
   return options

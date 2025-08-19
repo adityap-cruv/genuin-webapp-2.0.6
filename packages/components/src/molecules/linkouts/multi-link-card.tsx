@@ -4,6 +4,8 @@ import { ChevronRight, LinkIcon } from "lucide-react";
 import { Button } from "@genuin/ui/components";
 import { useAnalytics } from "@genuin/components/context/analytics/context";
 import { VariantProps, cva } from "class-variance-authority";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import { useBaseContext } from "@genuin/components/context/base";
 
 // Combined variant for both card layouts
 const multiLinkCardVariants = cva(
@@ -51,6 +53,9 @@ export const MultiLinkCard = ({
   const hasMore = links.length > maxVisible;
   const hasCTA = ctaText && ctaText.trim() !== "";
   const { track, EventName } = useAnalytics();
+  const embedDetails = useSafeEmbedContext();
+  const isWalmart = embedDetails?.embedData.card_layout_id === 6;
+  const { brandDetails } = useBaseContext();
 
   const handleLinkClick = (link: LinkData) => {
     const url = checkAndAppendHttps(link.link);
@@ -97,7 +102,7 @@ export const MultiLinkCard = ({
       >
         <div
           className={cn(
-            "gencl:flex-1 gencl:text-start gencl:flex! gencl:items-center gencl:gap-2 gencl:line-clamp-1 gencl:overflow-x-auto gencl:flex-nowrap gencl:scrollbar-hide",
+            "gencl:flex-1 gencl:text-start gencl:flex! gencl:items-center gencl:gap-2 gencl:line-clamp-2 gencl:overflow-x-auto gencl:flex-nowrap gencl:scrollbar-hide",
             isEmbed && "gencl:gap-1"
           )}
         >
@@ -135,12 +140,21 @@ export const MultiLinkCard = ({
           size={isEmbed ? "sm" : "md"}
           className={cn(
             "gencl:w-full gencl:text-body-1-medium gencl:font-semibold gencl:transition-all gencl:bg-white gencl:hover:bg-white/90 gencl:!text-black gencl:flex gencl:justify-between gencl:items-center gencl:px-3 gencl:py-2 gencl:rounded-lg",
-            isOutside && "gencl:bg-secondary-50 gencl:hover:bg-secondary-150"
+            isOutside && "gencl:bg-secondary-50 gencl:hover:bg-secondary-150",
+            isWalmart &&
+              "gencl:rounded-full gencl:text-center gencl:justify-center "
           )}
+          style={{
+            borderRadius: brandDetails.cta_config?.button_radius ?? "",
+            background: brandDetails.cta_config?.button_color ?? "",
+            color: brandDetails.cta_config?.text_color ?? "",
+          }}
           onClick={handleCTAClick}
         >
           {ctaText}
-          <ChevronRight className="gencl:h-4 gencl:w-4 gencl:stroke-black! gencl:shrink-0" />
+          {!isWalmart && (
+            <ChevronRight className="gencl:h-4 gencl:w-4 gencl:stroke-black! gencl:shrink-0" />
+          )}
         </Button>
       </div>
     );
@@ -160,7 +174,7 @@ export const MultiLinkCard = ({
     >
       <div
         className={cn(
-          "gencl:flex-1 gencl:text-start gencl:flex! gencl:items-center gencl:gap-2 gencl:line-clamp-1 gencl:overflow-x-auto gencl:flex-nowrap gencl:scrollbar-hide",
+          "gencl:flex-1 gencl:text-start gencl:flex! gencl:items-center gencl:gap-2 gencl:line-clamp-2 gencl:overflow-x-auto gencl:flex-nowrap gencl:scrollbar-hide",
           isEmbed && "gencl:gap-1"
         )}
       >

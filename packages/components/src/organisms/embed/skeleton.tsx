@@ -21,6 +21,7 @@ const carouselSkeletonVariant = cva("gencl:bg-secondary-200 gencl:rounded-md", {
     variant: {
       carousel: "",
       feed: "gencl:flex gencl:flex-col",
+      grid: "",
     },
     defaultVariants: {
       variant: "carousel",
@@ -51,10 +52,44 @@ export function SdkSkeleton({
 }) {
   const { embedData } = useEmbedContext();
   const config = useEmbedConfigs();
+  const isWalmart = embedData.card_layout_id === 6;
   const embedVariant: "carousel" | "feed" =
     config.view.embedStyle === "feed" ? "feed" : "carousel";
   const skeletonItems = Array(6).fill(null);
 
+  // If variant is grid, render grid skeleton layout
+  if (isWalmart) {
+    return (
+      <div
+        className="gencl:bg-secondary-200 gencl:rounded-md"
+        style={{
+          height: containerHeight,
+          width: containerWidth,
+        }}
+        {...restProps}
+      >
+        <div className="gencl:h-full gencl:w-full gencl:overflow-auto">
+          <div className="gencl:grid gencl:grid-cols-2 gencl:w-full gencl:gap-2">
+            {Array(6)
+              .fill(0)
+              .map((_, index) => (
+                <div
+                  key={index}
+                  className={cn(
+                    "gencl:aspect-reel gencl:relative gencl:overflow-hidden gencl:rounded-md",
+                    "gencl:transition-all gencl:duration-300 gencl:ease-in-out"
+                  )}
+                >
+                  <Skeleton className="gencl:h-full gencl:w-full" />
+                </div>
+              ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Otherwise render carousel/feed skeleton layout
   return (
     <div
       className={cn(
@@ -67,7 +102,11 @@ export function SdkSkeleton({
       }}
       {...restProps}
     >
-      <EmbedHeaderSkeleton variant={variant || embedVariant} />
+      <EmbedHeaderSkeleton
+        variant={
+          variant === "carousel" || variant === "feed" ? variant : embedVariant
+        }
+      />
       <div className="gencl:relative">
         <EmbedSwiper
           forFeed={config.view.isFeed}
@@ -176,9 +215,8 @@ const embedHeaderSkeletonVariants = cva(
   {
     variants: {
       variant: {
-        feed: "gencl:justify-start gencl:items-start gencl:flex-col gencl:h-[104px]",
-        carousel:
-          "gencl:justify-between gencl:items-center gencl:flex-row gencl:h-[56px]",
+        feed: "gencl:justify-center gencl:items-start gencl:flex-col",
+        carousel: "gencl:justify-between gencl:items-center gencl:flex-row",
       },
     },
     defaultVariants: {
@@ -191,11 +229,18 @@ function EmbedHeaderSkeleton({
   variant,
 }: VariantProps<typeof embedHeaderSkeletonVariants>) {
   const { header } = useEmbedConfigs();
+  const config = useEmbedConfigs();
+  const { headerHeight } = useEmbedDimensions(config);
   if (!header.showHeader) return null;
 
   return (
-    <div className={cn(embedHeaderSkeletonVariants({ variant }))}>
-      <div className="gencl:flex gencl:flex-col gencl:gap-2">
+    <div
+      style={{
+        height: headerHeight,
+      }}
+      className={cn(embedHeaderSkeletonVariants({ variant }))}
+    >
+      <div className="gencl:flex gencl:flex-col gencl:items-center gencl:gap-2">
         {header.heading && <Skeleton className="gencl:h-5 gencl:w-32" />}
         {header.subHeading && <Skeleton className="gencl:h-3 gencl:w-24" />}
       </div>

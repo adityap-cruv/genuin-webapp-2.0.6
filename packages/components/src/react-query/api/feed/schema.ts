@@ -40,6 +40,7 @@ export const videoSchema = z.object({
       image_url: z.string().nullish(),
       timestamp: z.number().nullish(),
       title: z.string().nullish(),
+      bucket_name: z.string().nullish(),
       offer_text: z.string().nullish()
     })
     .nullish()

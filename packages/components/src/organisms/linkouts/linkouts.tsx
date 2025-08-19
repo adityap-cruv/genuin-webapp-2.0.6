@@ -8,6 +8,7 @@ import useShowLinkouts from "@genuin/components/hooks/use-show-linkouts";
 import { useAnalytics } from "@genuin/components/context/analytics/context";
 import { cva, VariantProps } from "class-variance-authority";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 export const linkOutVariant = cva("gencl:space-y-4", {
   variants: {
@@ -48,6 +49,7 @@ export type LinkoutsProps = {
    * If true, the linkouts will be shown immediately without animation.
    */
   showImmediately?: boolean;
+  isOutside?: boolean;
 } & ComponentProps<"div"> &
   VariantProps<typeof linkOutVariant>;
 
@@ -67,6 +69,7 @@ export function Linkouts({
   variant,
   cardVariant = "default",
   showImmediately = false,
+  isOutside = false,
   ...restProps
 }: LinkoutsProps) {
   const { showLinkouts } = useShowLinkouts({
@@ -89,7 +92,7 @@ export function Linkouts({
   );
   const embedDetails = useSafeEmbedContext();
   const isEmbed = variant === "embed";
-  const isOutside = embedDetails?.customization.links?.position === "outside";
+  const config = useEmbedConfigs();
 
   useEffect(() => {
     // Handle immediate display without animation

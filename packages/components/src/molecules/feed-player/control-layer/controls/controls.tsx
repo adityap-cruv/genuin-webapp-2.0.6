@@ -22,6 +22,7 @@ const controlsVariants = cva(
           "gencl:absolute gencl:top-16 gencl:sm:top-0 gencl:items-center gencl:bg-gradient-to-b gencl:from-black/50 gencl:to-transparent gencl:gap-3 gencl:p-4",
         embed:
           "gencl:absolute gencl:p-2 gencl:bg-gradient-to-b gencl:from-black/30 gencl:to-transparent",
+        custom: "",
       },
       /**
        * spacing between the control buttons.
@@ -139,7 +140,7 @@ export const Controls = memo(function Controls({
             className="gencl:p-2 gencl:rounded-full gencl:bg-black/40 gencl:cursor-pointer"
             onClick={toggleExpandView}
           >
-            <XIcon theme="dark" />
+            <CollapseIcon theme="dark" />
           </div>
         )}
 

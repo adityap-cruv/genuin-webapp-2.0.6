@@ -66,10 +66,8 @@ export function useEmbedDimensions(
       : 0;
     const statsHeight = config.engagement.showSocialInteractionData ? 40 : 0;
     const linkoutHeight = config.links.showLinkOutside ? 108 : 0;
-    const containerHeight =
-      props.containerHeight ??
-      config.dimensions.containerHeight ??
-      DEFAULT_HEIGHT;
+
+    const containerHeight = props.containerHeight ?? config.dimensions.containerHeight ?? DEFAULT_HEIGHT;
     const containerWidth = props.containerWidth ?? config.dimensions.containerWidth ?? DEFAULT_WIDTH;
 
     const availableHeight = Math.max(

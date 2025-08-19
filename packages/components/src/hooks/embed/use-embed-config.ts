@@ -3,6 +3,7 @@ import { useBaseContext } from "@genuin/components/context/base";
 import { useMemo } from "react";
 import { isCheckFifthVideoType } from "@genuin/components/lib/utils";
 import { useDeviceDetectMediaQuery } from "../use-devide-detect-media-query";
+import type { CustomizationType } from "@genuin/components/context/embed/embed.types";
 
 const MIN_EMBED_WIDTH = 232;
 const MIN_EMBED_HEIGHT = 350;
@@ -34,36 +35,34 @@ export function useEmbedConfigs() {
     () => ({
       containerHeight: customization?.dimensions?.height,
       containerWidth: customization?.dimensions?.width,
-      hasMinimumWidth: rootElement
-        ? rootElement.offsetWidth >= MIN_EMBED_WIDTH
-        : true,
-      hasMinimumHeight: rootElement
-        ? rootElement.offsetHeight >= MIN_EMBED_HEIGHT
-        : true,
+      aspectRatio: embedData?.aspect_ratio, // Add aspect ratio support from embedData
     }),
-    [customization?.dimensions, rootElement]
+    [customization?.dimensions, embedData?.aspect_ratio]
   );
 
   // ============================================================
-  // View Type Configuration (feed/carousel)
+  // View Type Configuration (feed/carousel/standard_wall)
   // ============================================================
   const viewConfig = useMemo(
     () => ({
       embedStyle: embedData?.style,
       isFeed: embedData?.style === "feed",
       isCarousel: embedData?.style === "carousel",
-      isFocusCarouselStyle:
-        embedData?.style === "carousel" &&
-        customization?.carousel_style === "focus",
+      isStandardWall: embedData?.style === "standard_wall",
+      showCarouselIcon: !!customization?.is_carousel_icon,
+      showNavigation:
+        customization?.show_navigation !== undefined
+          ? !!customization?.show_navigation
+          : true,
       isFloatingView: !!customization?.is_floating_view,
-      isPopupView: !!customization?.is_popup_view,
+      isExpandedView: !!customization?.is_expanded_view,
+      feedDisplayPreference: customization?.feed_display_pref || "default",
+      carouselStyle: customization?.carousel_style || "default",
+      showViewLoopButton: !!customization?.show_view_loop_button,
       isShowPopupByDefault: !!customization?.is_show_popup_by_default,
       theme: customization?.theme || "light",
-      carouselStyle: customization?.carousel_style,
-      showCarouselIcon: !!customization?.is_carousel_icon,
-      showNavigation: !!customization?.show_navigation,
     }),
-    [customization]
+    [customization, embedData?.style]
   );
 
   // ============================================================
@@ -96,15 +95,15 @@ export function useEmbedConfigs() {
   // ============================================================
   const videoConfig = useMemo(
     () => ({
-      playVideoInLoop: !!customization?.is_loop_video,
-      autoplay: !!customization?.autoplay,
+      embedInLoop: !!customization?.is_loop_video,
+      embedAutoplay: !!customization?.autoplay,
       showBorderAroundVideo: !(
         isCheckFifthVideoType(brandDetails.brand_id) &&
         embedData?.style === "carousel"
       ),
-      showViewLoopButton: !!customization?.show_view_loop_button,
+      videoCrop: !!customization?.video_crop,
     }),
-    [customization, brandDetails.brand_id]
+    [customization, brandDetails.brand_id, embedData?.style]
   );
 
   // ============================================================
@@ -113,15 +112,16 @@ export function useEmbedConfigs() {
   const communityConfig = useMemo(
     () => ({
       communityIds: customization?.community_ids || [],
-      communityLoopIds: customization?.community_loop_ids || [],
+      communityLoopIds: customization?.community_loop_ids
+        ? customization.community_loop_ids.map((group) => group.loop_id)
+        : [],
       showJoinCommunityButton: !!customization?.show_join_community_button,
       showCommunityShareButton: !!customization?.show_community_share_button,
       enableCommunityClick: !!customization?.enable_community_click,
       enableBrandClick: !!customization?.enable_brand_click,
       showUserName: !!customization?.is_show_username,
       showViewCount:
-        !!customization?.is_show_view_count &&
-        !customization.is_show_social_interaction_data,
+        !!customization?.is_show_view_count
     }),
     [customization]
   );
@@ -147,7 +147,7 @@ export function useEmbedConfigs() {
     }
 
     return true;
-  }, [customization, rootElement]);
+  }, [customization, rootElement, embedData?.style]);
 
   // ============================================================
   // Engagement & Interaction Configuration
@@ -174,7 +174,7 @@ export function useEmbedConfigs() {
         user: true,
       },
     };
-  }, [customization, rootElement, viewConfig, dimensionsConfig]);
+  }, [customization, rootElement, showEngagementOnRootElement]);
 
   // ============================================================
   // Link Configuration
@@ -199,18 +199,29 @@ export function useEmbedConfigs() {
   const stylingConfig = useMemo(
     () => ({
       brandColors: customization?.brandColors || {},
-      isOpacityDown: viewConfig.isFocusCarouselStyle,
+      isOpacityDown:
+        embedData?.style === "carousel" &&
+        customization?.carousel_style === "focus",
       showDataOutside:
         engagementConfig.showSocialInteractionData || linkConfig.showLinks,
+      theme: customization?.theme || "light", // Added theme support
     }),
-    [customization, viewConfig, engagementConfig, linkConfig]
+    [
+      customization,
+      embedData?.style,
+      engagementConfig.showSocialInteractionData,
+      linkConfig.showLinks,
+    ]
   );
 
   // ============================================================
   // Expand View Configuration
   // ============================================================
   const expandView = useMemo(() => {
-    return { enable: customization?.is_popup_view };
+    return {
+      enable: !!customization?.is_popup_view,
+      isShowByDefault: !!customization?.is_show_popup_by_default,
+    };
   }, [customization]);
 
   // ============================================================
@@ -218,14 +229,17 @@ export function useEmbedConfigs() {
   // ============================================================
   const layoutConfig = useMemo(() => {
     return {
-      showSideBar: customization?.show_side_panel
-        ? customization?.show_side_panel && !isMobile
-        : true,
-      showNavigationBar: customization?.show_navigation
-        ? customization?.show_navigation && !isMobile
-        : true,
+      showSideBar:
+        customization?.show_side_panel !== undefined
+          ? customization?.show_side_panel && !isMobile
+          : true,
+      showNavigationBar:
+        customization?.show_navigation !== undefined
+          ? customization?.show_navigation && !isMobile
+          : true,
+      feedDisplayPreference: customization?.feed_display_pref || "default",
     };
-  }, [isMobile]);
+  }, [customization, isMobile]);
 
   //==================================================================
   // Modal configs
@@ -237,7 +251,10 @@ export function useEmbedConfigs() {
         embedContextData.embedData?.style === "feed" ||
         embedContextData.embedData?.card_layout_id === 6,
     };
-  }, [embedContextData.embedData?.style]);
+  }, [
+    embedContextData.embedData?.style,
+    embedContextData.embedData?.card_layout_id,
+  ]);
 
   return {
     dimensions: dimensionsConfig,
@@ -248,8 +265,10 @@ export function useEmbedConfigs() {
     engagement: engagementConfig,
     links: linkConfig,
     styling: stylingConfig,
-    expanViewConfig: expandView,
+    expandViewConfig: expandView,
     layoutConfig,
     modalConfig,
+    rawCustomization: customization as CustomizationType | null,
+    embedStyle: viewConfig.embedStyle,
   };
 }

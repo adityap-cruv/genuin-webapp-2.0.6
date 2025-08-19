@@ -1,6 +1,6 @@
 import { ControlLayerPropsType } from "./control-layer.types";
 import { cn } from "@genuin/ui/lib/utils";
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { useBaseContext } from "@genuin/components/context/base";
 
 import { usePlayerContext } from "../context/context";
@@ -12,8 +12,10 @@ import { PlaybackSpeedCapsule } from "@genuin/components/molecules/playback-spee
 import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
 import { Linkouts } from "@genuin/components/organisms/linkouts/linkouts";
 import { SpeedControlSideBars } from "../../playback-speed/speed-control-bars";
-import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import { SearchIcon } from "@genuin/ui/icons";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 
 export function Default({
   className,
@@ -30,8 +32,10 @@ export function Default({
   const { showExpandView, togglePlay, toggleMuted, muted } = usePlayerContext();
   const { gestureOverlayUI, hideGestureOverlay } = useGestureOverlayManager();
   const { showSeeker } = usePlayerContext();
-  const { isMobile } = useDeviceDetectMediaQuery();
   const { playbackSpeed } = useFeedContext();
+  const { isMobile } = useDeviceDetectMediaQuery();
+  const { hideGestureOverlay } = useGestureOverlayManager();
+  const embedDetails = useSafeEmbedContext();
 
   const { brandDetails } = useBaseContext();
 
@@ -93,7 +97,13 @@ export function Default({
       >
         <Controls
           showCloseButton={showCloseButton}
-          className="gencl:group-hover:opacity-100 gencl:group-hover:pointer-events-auto gencl:opacity-0 gencl:pointer-events-none gencl:transition-opacity gencl:duration-300"
+          className={cn(
+            isMobile
+              ? "gencl:z-20"
+              : "gencl:group-hover:opacity-100 gencl:group-hover:pointer-events-auto gencl:opacity-0 gencl:pointer-events-none gencl:transition-opacity gencl:duration-300",
+            embedDetails?.embedData.card_layout_id === 6 &&
+              "gencl:from-transparent gencl:to-transparent gencl:top-12 gencl:sm:top-16"
+          )}
         />
 
         {/* this is wallet badge for wallet. */}
@@ -124,9 +134,9 @@ export function Default({
             onReactionStateChange={onReactionStateChange}
             variant={variant}
             layout={
-              postDetails.video.cardLayoutId === 1 ||
-              postDetails.video.cardLayoutId === 2
-                ? postDetails.video.cardLayoutId
+              embedDetails?.embedData.card_layout_id === 1 ||
+              embedDetails?.embedData.card_layout_id === 2
+                ? embedDetails?.embedData.card_layout_id
                 : null
             }
           />

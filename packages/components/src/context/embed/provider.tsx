@@ -2,7 +2,7 @@
 import { EmbedContext } from "./context";
 import { ActivePlayerType, createEmbedEventBus } from "./event-bus";
 import { EmbedDataType } from "./embed.types";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 type EmbedProviderProps = {
   embedData: EmbedDataType;
@@ -23,6 +23,11 @@ export function EmbedProvider({
 }: EmbedProviderProps) {
   // Create a unique event bus for this provider instance
   const embedEventBus = useMemo(() => createEmbedEventBus(), []);
+  const [bucketList, setBucketList] = useState<string[]>([]);
+
+  const updateBucketList = useCallback((newBucketList: string[]) => {
+    setBucketList(newBucketList);
+  }, []);
 
   // Detect if running inside an iframe (safe for SSR)
   const isInIframe = useMemo(() => {
@@ -118,6 +123,8 @@ export function EmbedProvider({
         changeActiveIndex,
         changeActivePlayerType,
         goBackToPreviousPlayerType,
+        bucketList,
+        updateBucketList,
       }}
     >
       {children}

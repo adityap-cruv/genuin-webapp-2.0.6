@@ -27,6 +27,11 @@ type Props = Omit<
    * @default false
    */
   autoPlay?: boolean;
+  /**
+   * Whether the video should loop when it ends.
+   * @default false
+   */
+  loop?: boolean;
 };
 
 const EVENT_DURATION_PROPERTY_NAME = "video_length";
@@ -38,6 +43,7 @@ export const FeedPlayer = memo(function FeedPlayer({
   poster,
   className,
   autoPlay = false,
+  loop = false,
   onOpenPlayerReady,
   onTimeUpdate,
   onEnded,
@@ -56,6 +62,7 @@ export const FeedPlayer = memo(function FeedPlayer({
     unmute,
     handleEnded: stateHandleEnded,
     updateAdInfo,
+    playbackSpeed,
   } = usePlayerContext();
   const { track, EventName } = useAnalytics();
   // const { playbackSpeed } = useFeedContext();
@@ -80,6 +87,13 @@ export const FeedPlayer = memo(function FeedPlayer({
       mute(false);
     }
   }, [muted]);
+
+  // Handle playback speed changes
+  useEffect(() => {
+    if (playerRef.current && playbackSpeed?.speed) {
+      playerRef.current.playbackRate = playbackSpeed.speed;
+    }
+  }, [playbackSpeed]);
 
   // Handle autoplay
   useEffect(() => {
@@ -280,12 +294,12 @@ export const FeedPlayer = memo(function FeedPlayer({
       muted={muted}
       src={src}
       playsInline
-      loop={false}
+      loop={loop}
       className={cn("gencl:m-auto", className)}
       volume={volume}
       play={feedPlayerShouldPlay}
       autoPlay={autoPlay}
-      // playbackSpeed={playbackSpeed.speed}
+      playbackSpeed={playbackSpeed?.speed || 1}
       onPlayerLoad={handlePlayerLoad}
       onOpenPlayerReady={handleOpenPlayerReady}
       onPlay={handleOnPlay}

@@ -39,21 +39,10 @@ const preview: Preview = {
                     user={null}
                   >
                     <LinkProvider>
-                      <BaseContextProvider
-                        brandDetails={testBrandDetails}
-                        isEmbed
-                      >
-                        <AuthProvider
-                          onSignIn={() => {}}
-                          onSignOut={() => {}}
-                          onUpdateUser={() => {}}
-                          user={null}
-                        >
-                          <AnalyticsProvider isWebSDK>
-                            <Story />
-                          </AnalyticsProvider>
-                        </AuthProvider>
-                      </BaseContextProvider>
+                      <AnalyticsProvider isWebSDK>
+                        <Story />
+                        <Toaster />
+                      </AnalyticsProvider>
                     </LinkProvider>
                   </AuthProvider>
                 </EmbedProvider>

@@ -92,9 +92,6 @@ export function EmbedTile({
   // Use the structured config object
   const config = useEmbedConfigs();
 
-  // Use theme from configuration
-  const isDarkTheme = config.view.theme === "dark";
-
   return (
     <div
       className={cn(
@@ -103,7 +100,6 @@ export function EmbedTile({
           "gencl:border gencl:border-secondary-150":
             config.video.showBorderAroundVideo,
         },
-        { "gencl:bg-gray-900": isDarkTheme },
         className
       )}
       {...restProps}
@@ -127,46 +123,50 @@ export function EmbedTile({
           <Linkouts
             variant="embed"
             isActive={true}
+            isOutside
             showImmediately
             linkouts={postDetails.video.linkouts}
             linkoutId={postDetails.video.linkoutId}
           />
         </div>
       )}
-      {config.engagement.showSocialInteractionData && (
-        <>
+
+      {config.links.showLinkOutside &&
+        config.engagement.showSocialInteractionData && (
           <hr className="gencl:w-[90%] gencl:border-secondary-150 gencl:mx-auto" />
-          <div className="gencl:h-10">
-            <Stats
-              className={cn(
-                "gencl:flex gencl:gap-2 gencl:justify-between gencl:p-3 gencl:w-full"
-              )}
-              valueClassName="gencl:text-black! gencl:text-body-2-medium"
-              stats={{
-                Views: {
-                  value: 0,
-                  icon: <PlayIcon theme="light" size="sm" />,
-                },
-                Reactions: {
-                  value: postDetails.video.sparkCount,
-                  icon: (
-                    <DynamicReactionIcon
-                      sparkCount={0}
-                      isSparked={false}
-                      iconHeight={16}
-                      iconWidth={16}
-                      theme="light"
-                    />
-                  ),
-                },
-                Comments: {
-                  value: postDetails.video.commentCount,
-                  icon: <CommentIcon theme="light" size="sm" />,
-                },
-              }}
-            />
-          </div>
-        </>
+        )}
+
+      {config.engagement.showSocialInteractionData && (
+        <div className="gencl:h-10">
+          <Stats
+            className={cn(
+              "gencl:flex gencl:gap-2 gencl:justify-between gencl:p-3 gencl:w-full"
+            )}
+            valueClassName="gencl:text-black! gencl:text-body-2-medium"
+            stats={{
+              Views: {
+                value: 0,
+                icon: <PlayIcon theme="light" size="sm" />,
+              },
+              Reactions: {
+                value: postDetails.video.sparkCount,
+                icon: (
+                  <DynamicReactionIcon
+                    sparkCount={0}
+                    isSparked={false}
+                    iconHeight={16}
+                    iconWidth={16}
+                    theme="light"
+                  />
+                ),
+              },
+              Comments: {
+                value: postDetails.video.commentCount,
+                icon: <CommentIcon theme="light" size="sm" />,
+              },
+            }}
+          />
+        </div>
       )}
     </div>
   );
@@ -220,14 +220,22 @@ function EmbedPlayer({
   ]);
 
   return (
-    <div className={cn("gencl:relative gencl:flex-1 gencl:min-h-0")}>
+    <div
+      className={cn("gencl:relative gencl:flex-1 gencl:min-h-0", {
+        "gencl:opacity-50 gencl:transition-opacity":
+          !isActive && config.styling.isOpacityDown,
+      })}
+    >
       <FeedPlayer
         videoId={postDetails.video.id}
         src={postDetails.video.source}
         poster={postDetails.video.thumbnail}
-        loop={config.video.playVideoInLoop && isActive}
-        autoPlay={config.video.autoplay && isActive}
-        className="gencl:h-full gencl:w-full gencl:object-cover"
+        loop={config.video.embedInLoop && isActive}
+        autoPlay={config.video.embedAutoplay && isActive}
+        className={cn(
+          "gencl:h-full",
+          !config.video.videoCrop && "gencl:object-cover gencl:w-full"
+        )}
       />
       <ControlLayer
         variant="embed"

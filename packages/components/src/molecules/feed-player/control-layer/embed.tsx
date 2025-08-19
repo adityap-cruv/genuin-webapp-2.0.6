@@ -88,7 +88,7 @@ export const Embed: FC<ControlLayerPropsType> = ({
     );
   }
 
-  // embedtype 1 for ted
+  // cardLayoutId 3 for ted
   if (embedDetails?.embedData.card_layout_id === 3) {
     return (
       <div
@@ -132,7 +132,6 @@ export const Embed: FC<ControlLayerPropsType> = ({
     );
   }
 
-  // embedtype 2 for iheart
   if (embedDetails?.embedData.card_layout_id === 4) {
     return (
       <div
@@ -161,6 +160,40 @@ export const Embed: FC<ControlLayerPropsType> = ({
               linkoutId={postDetails.video.linkoutId}
             />
           )}
+        </div>
+      </div>
+    );
+  }
+
+  // cardLayoutId 6 for Walmart
+  if (embedDetails?.embedData.card_layout_id === 6) {
+    return (
+      <div
+        className={cn(
+          "gencl:flex gencl:h-full gencl:flex-col gencl:justify-between gencl:relative",
+          className
+        )}
+        {...restProps}
+      >
+        {isActive ? (
+          <EmbedControls
+            onClick={(e) => e.stopPropagation()}
+            className={cn(
+              "gencl:gap-2 gencl:z-20 gencl:absolute gencl:right-0 gencl:p-2"
+            )}
+            size="xs"
+          />
+        ) : (
+          // <div className="gencl:absolute gencl:inset-0 gencl:m-auto gencl:h-10 gencl:w-10 gencl:bg-black/40 gencl:rounded-full gencl:flex gencl:items-center gencl:justify-center">
+          //   <PlayIcon theme="fill-dark" size="md" />
+          // </div>
+          <></>
+        )}
+
+        <div className="gencl:absolute gencl:bottom-0 gencl:p-2 gencl:space-y-2 gencl:w-full">
+          <p className="gencl:text-body-1-semi-bold gencl:text-white">
+            {postDetails.video.attributes?.bucket_name}
+          </p>
         </div>
       </div>
     );

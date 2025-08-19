@@ -68,7 +68,7 @@ async function fetchFeed(
   }
 
   if (options?.groupIds && options.groupIds.length > 0) {
-    requestBody.loop_ids = options.groupIds.map(group => group.loop_id);
+    requestBody.loop_ids = options.groupIds
   }
 
   return await axiosInstance
@@ -98,7 +98,7 @@ async function fetchFeed(
 
 type UseFeedOptionsType = {
   communityIds?: string[];
-  groupIds?: Array<{ loop_id: string; community_id: string }>;
+  groupIds?: string[];
   startVideoSlug?: string;
   isEmbed?: boolean;
 };

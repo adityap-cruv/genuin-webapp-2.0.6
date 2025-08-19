@@ -151,6 +151,7 @@ export function ExpandViewDetails({
 }: ExpandViewProps) {
   const { showSeeker } = usePlayerContext();
   const embedDetails = useSafeEmbedContext();
+  const isWalmart = embedDetails?.embedData.card_layout_id === 6;
 
   const defaultOpenCommentDialog = useMemo(() => {
     return (
@@ -164,7 +165,7 @@ export function ExpandViewDetails({
   // Use the layout prop if provided, otherwise use the cardLayoutId from postDetails
   // Cast to appropriate type for the variant system (1 or 2)
   const cardLayoutId = (layout ||
-    postDetails.video.cardLayoutId ||
+    embedDetails?.embedData.card_layout_id ||
     CardLayoutType.DEFAULT) as 1 | 2;
 
   return (
@@ -182,7 +183,11 @@ export function ExpandViewDetails({
           className="gencl:flex gencl:flex-col gencl:gap-4 gencl:sm:gap-2 gencl:w-5/6 gencl:sm:w-full gencl:transition-all"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="gencl:flex gencl:gap-2 gencl:items-center gencl:text-white gencl:text-body-0-semi-bold">
+          <div
+            className="gencl:flex gencl:gap-2 gencl:items-center gencl:text-white gencl:text-body-0-semi-bold"
+            onClick={isWalmart ? (e) => e.stopPropagation() : undefined}
+            style={isWalmart ? { pointerEvents: "none" } : undefined}
+          >
             <Avatar
               imageUrl={postDetails.owner.profileImage}
               alt={postDetails.owner.name ?? ""}
@@ -203,10 +208,16 @@ export function ExpandViewDetails({
             className="gencl:w-full"
           />
 
-          {cardLayoutId === CardLayoutType.IHEART ? (
-            <IHeartDescription video={postDetails.video} />
-          ) : (
-            <DefaultDescription description={postDetails.video.description} />
+          {!isWalmart && (
+            <>
+              {cardLayoutId === CardLayoutType.IHEART ? (
+                <IHeartDescription video={postDetails.video} />
+              ) : (
+                <DefaultDescription
+                  description={postDetails.video.description}
+                />
+              )}
+            </>
           )}
         </div>
         <Actions
@@ -244,21 +255,30 @@ export function ExpandViewDetails({
       </div>
       <div
         className="gencl:w-full gencl:overflow-x-auto gencl:scrollbar-none"
-        onClick={(e) => e.stopPropagation()}
+        onClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+        }}
         style={{
           scrollBehavior: "smooth",
-          maskImage:
-            "linear-gradient(to right, transparent, black 2%, black 98%, transparent)",
-          WebkitMaskImage:
-            "linear-gradient(to right, transparent, black 2%, black 98%, transparent)",
+          // maskImage:
+          //   "linear-gradient(to right, transparent, black 2%, black 98%, transparent)",
+          // WebkitMaskImage:
+          //   "linear-gradient(to right, transparent, black 2%, black 98%, transparent)",
         }}
       >
         <Pills
           communityDetails={postDetails.community}
           groupDetails={postDetails.group}
-          onGroupJoinStatusChange={onGroupJoinStatusChange}
-          onGroupSubscriptionChange={onGroupSubscriptionChange}
-          onCommunityJoinStatusChange={onCommunityJoinStatusChange}
+          onGroupJoinStatusChange={
+            isWalmart ? undefined : onGroupJoinStatusChange
+          }
+          onGroupSubscriptionChange={
+            isWalmart ? undefined : onGroupSubscriptionChange
+          }
+          onCommunityJoinStatusChange={
+            isWalmart ? undefined : onCommunityJoinStatusChange
+          }
           variant="fullScreen"
           className="gencl:min-w-max gencl:pt-3"
         />

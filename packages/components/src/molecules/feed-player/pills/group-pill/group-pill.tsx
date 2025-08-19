@@ -16,6 +16,7 @@ import { ComponentProps, useState, useEffect, useRef } from "react";
 import { JoinGroupButton } from "@genuin/components/molecules/join-group-button";
 import { GroupIcon } from "@genuin/ui/icons";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 
 const groupPillVariants = cva(
   "gencl:flex gencl:w-fit gencl:items-center gencl:gap-1 gencl:p-1 gencl:pr-2 gencl:rounded-full gencl:transition-all gencl:cursor-pointer",
@@ -68,6 +69,8 @@ export function GroupPill({
       redirectionTools: { group },
     },
   } = useEmbedConfigs();
+  const embedDetails = useSafeEmbedContext();
+  const isWalmart = embedDetails?.embedData.card_layout_id === 6;
 
   /**
    * When the user successfully subscribes (isSubscribed becomes true),
@@ -88,7 +91,8 @@ export function GroupPill({
 
   const hideButton =
     localSubscriptionStatus === true ||
-    authenticationStatus === "unauthenticated";
+    authenticationStatus === "unauthenticated" ||
+    isWalmart;
 
   const ldDescription = `${
     groupDetails?.description ? groupDetails.description + " | " : ""

@@ -39,6 +39,15 @@ type EmbedContextType = {
    * @returns
    */
   goBackToPreviousPlayerType: () => void;
+  /**
+   * List of video titles for the current embed
+   */
+  bucketList?: string[];
+  /**
+   * Updates the bucket list in the context
+   * @param newBucketList The new bucket list to set
+   */
+  updateBucketList: (newBucketList: string[]) => void;
 };
 
 /**
