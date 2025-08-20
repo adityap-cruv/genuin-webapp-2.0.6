@@ -233,8 +233,8 @@ function EmbedPlayer({
         loop={config.video.embedInLoop && isActive}
         autoPlay={config.video.embedAutoplay && isActive}
         className={cn(
-          "gencl:h-full",
-          !config.video.videoCrop && "gencl:object-cover gencl:w-full"
+          "gencl:h-full gencl:object-cover gencl:w-full"
+          // !config.video.videoCrop && "gencl:object-cover gencl:w-full"
         )}
       />
       <ControlLayer

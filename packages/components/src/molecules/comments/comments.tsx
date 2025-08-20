@@ -80,6 +80,7 @@ export function Comments({
       <div className="gencl:flex-1 gencl:overflow-y-auto gencl:min-h-0">
         <CommentsList
           videoId={videoId}
+          shareUrl={shareUrl}
           showCloseButton={showCloseButton}
           className="gencl:pb-24 gencl:h-full"
         />

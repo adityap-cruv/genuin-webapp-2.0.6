@@ -5,7 +5,7 @@ import {
   ThreeDotsIcon,
 } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/utils";
-import { type ComponentProps, type ReactNode } from "react";
+import { type ComponentProps, type ReactNode, useMemo } from "react";
 import { Menu } from "./menu";
 import { ReactionButton } from "@genuin/components/molecules/reaction-button";
 import { DynamicReactionIcon } from "@genuin/components/molecules/reaction-button";
@@ -18,6 +18,9 @@ import { cva, VariantProps } from "class-variance-authority";
 import { useBaseContext } from "@genuin/components/context/base";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useAnalytics } from "@genuin/components/context/analytics";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import { ActionPopover } from "./action-popover";
+import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
 
 type ActionType = "REPOST" | "REACTION" | "COMMENT" | "SHARE" | "MORE";
 
@@ -76,8 +79,31 @@ const defaultActionWrappers: Record<
   (defaultNode: ReactNode, context: ActionWrapperContextType) => ReactNode
 > = {
   REPOST: (node, _context) => {
-    const { authenticationStatus } = useAuthContext();
+    const { authenticationStatus, handleAuthCallback } = useAuthContext();
     const { track, EventName } = useAnalytics();
+    const embedDetails = useSafeEmbedContext();
+    const authInfo = embedDetails?.embedData.authInfo;
+    const { brandDetails } = useBaseContext();
+    const brandId = brandDetails.brand_id;
+
+    // Create return query params for authentication callbacks
+    const returnQueryParams = useMemo(
+      () =>
+        createReturnQueryParams({
+          url: _context.shareUrl,
+          action: "repost",
+          additionalParams: {
+            videoSlug: _context.slug ?? undefined,
+          },
+        }),
+      [_context.shareUrl, _context.slug]
+    );
+
+    // Setup authentication callback handler
+    const clickHandler = handleAuthCallback({
+      authCallbackData: { path: "/", action: "repost", returnQueryParams },
+      urlToOpen: _context.shareUrl,
+    });
 
     // Track repost event when clicked
     const handleRepostClick = () => {
@@ -89,7 +115,35 @@ const defaultActionWrappers: Record<
       });
     };
 
+    // Special case for brand ID 2357, unauthenticated users with auth info
+    if (
+      authenticationStatus === "unauthenticated" &&
+      (authInfo?.signInUrl || authInfo?.signUpUrl) &&
+      brandId === 2357
+    ) {
+      return (
+        <ActionPopover
+          content="to repost this Short."
+          children={<div onClick={handleRepostClick}>{node}</div>}
+          params={returnQueryParams}
+        />
+      );
+    }
+
     if (authenticationStatus === "unauthenticated") {
+      if (clickHandler) {
+        return (
+          <div
+            onClick={() => {
+              handleRepostClick();
+              clickHandler();
+            }}
+          >
+            {node}
+          </div>
+        );
+      }
+
       return (
         <AuthenticationModal
           key="authentication-modal"

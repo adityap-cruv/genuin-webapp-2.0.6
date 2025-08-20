@@ -57,7 +57,6 @@ export const LinkCard = ({
   const { brandDetails } = useBaseContext();
   const isWalmart = embedDetails?.embedData.card_layout_id === 6;
 
-  console.log("brandDetails", brandDetails.cta_config);
   const getDomain = (url: string): string => {
     try {
       return new URL(url).hostname;

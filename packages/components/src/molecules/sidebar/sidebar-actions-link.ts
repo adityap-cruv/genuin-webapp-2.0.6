@@ -29,11 +29,6 @@ export const SideBarActionLinks = [
     type: "explore",
   },
   {
-    icon: NotificationIcon,
-    text: "Notification",
-    type: "notification",
-  },
-  {
     icon: SearchIcon,
     text: "Search",
     type: "search",

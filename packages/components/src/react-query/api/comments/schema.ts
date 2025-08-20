@@ -7,6 +7,13 @@ const ownerSchema = z.object({
   bio: z.string().nullish(),
   isAvatar: z.boolean(),
   profileImage: z.string(),
+    brand: z
+    .object({
+      brand_id: z.number(),
+      brand_slug: z.string(),
+      brand_user_logo: z.number()
+    })
+    .optional(),
 });
 
 // Define the main schema

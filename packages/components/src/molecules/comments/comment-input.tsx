@@ -65,6 +65,7 @@ export function CommentInputBox({
 
   const authClickHandler = handleAuthCallback({
     authCallbackData: { action: "comment", path: "/", returnQueryParams },
+    urlToOpen: shareUrl,
   });
 
   // Special case for brand ID 2357, unauthenticated users with auth info
@@ -114,6 +115,22 @@ export function CommentInputBox({
           />
         </div>
       </AuthenticationModal>
+    );
+  }
+
+  // Handle case where user is unauthenticated but authClickHandler is available
+  if (authenticationStatus === "unauthenticated" && authClickHandler) {
+    return (
+      <div className="gencl:cursor-pointer">
+        <MentionInput
+          videoId={videoId}
+          loopId={loopId}
+          onCommentPosted={onCommentPosted}
+          onClick={authClickHandler}
+          // disabled={true}
+          {...commentInputProps}
+        />
+      </div>
     );
   }
 

@@ -57,39 +57,45 @@ export function SidebarActions({
         // Skip notification and Profile link if user is not logged in
         if (links.type === "profile" && !user) return null;
 
+        // Use SearchSidebarAction for search type when showSearch is true
+        if (links.type === "search") {
+          return showSearch ? (
+            <SearchSidebarAction
+              key={index}
+              index={index}
+              links={links}
+              onItemClick={onItemClick}
+            />
+          ) : null;
+        }
+
         const Icon = links.type !== "profile" ? links.icon : undefined;
 
         return (
           <Link
+            key={index}
             href={buildPageUrl({
               type: links.type as PageType,
               slug: user?.nickname,
             })}
             onClick={onItemClick}
           >
-            <div className="gencl:w-6 gencl:h-6 gencl:relative">
-              {links.type === "profile" && user ? (
-                <Avatar
-                  isAvatar={user.isAvatar || false}
-                  alt={user.nickname || "profile"}
-                  imageUrl={user.image || ""}
-                  size="xs"
-                />
-              ) : (
-                Icon && (
-                  <Icon
-                    className="gencl:w-6 gencl:h-6"
-                    variant={
-                      pathname ===
-                      buildPageUrl({ type: links.type as PageType })
-                        ? "active"
-                        : "default"
-                    }
-                  />
-                )
-              )}
-            </div>
-            <p className="gencl:text-body-1-medium">{links.text}</p>
+            <SidebarActionItem
+              type={links.type as PageType}
+              icon={"icon" in links ? links.icon : undefined}
+              text={links.text}
+              user={user}
+              // notificationCount={
+              //   links.type === "notification" ? notificationCount : undefined
+              // }
+              isActive={
+                pathname ===
+                buildPageUrl({
+                  type: links.type as PageType,
+                  slug: user?.nickname,
+                })
+              }
+            />
           </Link>
         );
       })}
@@ -190,9 +196,11 @@ export const SidebarActionItem = ({
 export const SearchSidebarAction = ({
   index,
   links,
+  onItemClick,
 }: {
   index: number;
   links: { type: string; icon?: React.ElementType; text: string };
+  onItemClick?: () => void;
 }) => {
   const [open, setOpen] = useState(false);
 
@@ -204,7 +212,10 @@ export const SearchSidebarAction = ({
         icon={"icon" in links ? links.icon : undefined}
         text={links.text}
         isActive={false}
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          setOpen(true);
+          if (onItemClick) onItemClick();
+        }}
       />
       <SearchModal
         type="search-dialog"

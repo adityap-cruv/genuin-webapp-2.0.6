@@ -163,7 +163,7 @@ export function PlayerList({
                           );
                         }
 
-                        if (!isMobile)
+                        if (isMobile)
                           return (
                             <CommentsDialog
                               commentCount={post.video.commentCount}

@@ -52,6 +52,7 @@ export function CommentsDialog({
         <CommentsList
           videoId={videoId}
           showCloseButton={false}
+          shareUrl={shareUrl}
           className="gencl:pt-4"
         />
         <CommentInputBox

@@ -11,6 +11,8 @@ import {
   AnalyticsProvider,
 } from '@genuin/components'
 import { Loader } from '@genuin/ui/components/loader'
+import { Toaster } from '@genuin/ui'
+import { FeedContextProvider } from '@genuin/components/templates/feed/context'
 
 // Lazy load the Embed component for better code splitting
 const LazyEmbed = lazy(() =>
@@ -94,14 +96,22 @@ export function loadNewEmbed(
                   : undefined
               }>
               <AnalyticsProvider isWebSDK={true}>
-                <Suspense
-                  fallback={<EmbedSkeleton containerStyle={containerStyle} />}>
-                  {embedData.style === 'standard_wall' ? (
-                    <LazyStandardWall style={containerStyle} />
-                  ) : (
-                    <LazyEmbed style={containerStyle} />
-                  )}
-                </Suspense>
+                {/* REMOVE FeedContextProvider dependency  */}
+                <FeedContextProvider
+                  defaultExpandView={false}
+                  onCloseExpandView={() => {}}>
+                  <Suspense
+                    fallback={
+                      <EmbedSkeleton containerStyle={containerStyle} />
+                    }>
+                    {embedData.style === 'standard_wall' ? (
+                      <LazyStandardWall style={containerStyle} />
+                    ) : (
+                      <LazyEmbed style={containerStyle} />
+                    )}
+                  </Suspense>
+                  <Toaster />
+                </FeedContextProvider>
               </AnalyticsProvider>
             </AuthProvider>
           </BaseContextProvider>

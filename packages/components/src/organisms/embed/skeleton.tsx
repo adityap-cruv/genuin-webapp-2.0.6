@@ -15,6 +15,7 @@ import {
   ChevronUp,
 } from "lucide-react";
 import { useEmbedContext } from "@genuin/components/context/embed";
+import { useEmbedDimensions } from "@genuin/components/hooks/embed/use-embed-dimensions";
 
 const carouselSkeletonVariant = cva("gencl:bg-secondary-200 gencl:rounded-md", {
   variants: {
@@ -110,7 +111,7 @@ export function SdkSkeleton({
       <div className="gencl:relative">
         <EmbedSwiper
           forFeed={config.view.isFeed}
-          aspectRation={embedData.aspect_ratio}
+          aspectRatio={embedData.aspect_ratio}
           spaceBetweenVideos={spaceBetweenVideos}
           containerDimensions={{
             height: config.view.isFeed

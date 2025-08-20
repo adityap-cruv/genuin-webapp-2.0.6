@@ -2,6 +2,8 @@ import { API_BASE_URL } from '../const'
 import { ErrorHandler, ErrorType } from './errors'
 import { type AuthUser } from '../type'
 import { type BrandDetailsConfigType } from '../type'
+import { encryptText } from '@genuin/components/lib/utils/encryption'
+import { getDeviceId } from '@genuin/components/lib/utils/device-id'
 
 export type BrandDetailsResponse = BrandDetailsConfigType
 
@@ -56,7 +58,11 @@ export class APIService {
       const sdkError = this.errorHandler.handleError(
         ErrorType.API_ERROR,
         `Failed to fetch brand details: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        { apiKey: apiKey.substring(0, 8) + '...', originalError: error },
+        {
+          apiKey: apiKey.substring(0, 8) + '...',
+          originalError:
+            error instanceof Error ? error : new Error(String(error)),
+        },
       )
       throw new Error(sdkError.message)
     }
@@ -82,7 +88,11 @@ export class APIService {
       const sdkError = this.errorHandler.handleError(
         ErrorType.API_ERROR,
         `Failed to fetch embed data: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        { embedId, originalError: error },
+        {
+          embedId,
+          originalError:
+            error instanceof Error ? error : new Error(String(error)),
+        },
       )
       throw new Error(sdkError.message)
     }
@@ -95,17 +105,47 @@ export class APIService {
   async getAuthenticatedUserDetails(
     token: string,
     brandId: number,
-    params?: string,
+    userParams?: Record<string, any>,
   ): Promise<AuthUser | null> {
     try {
-      // Implementation would depend on the actual auth API endpoint
-      // This is a placeholder for the legacy functionality
-      const response = await fetch(`${API_BASE_URL}/api/v3/auth/user`, {
+      const deviceId = getDeviceId()
+
+      // Build user parameters based on reference implementation
+      const userParamsBody = {
+        ...(userParams?.name && {
+          name: userParams.name,
+        }),
+        ...(userParams?.nickname && {
+          nickname: userParams.nickname,
+        }),
+        ...(userParams?.email && {
+          email: userParams.email,
+        }),
+        ...(userParams?.mobile && {
+          mobile: userParams.mobile,
+        }),
+        ...(userParams?.profileImage && {
+          profile_image: userParams.profileImage,
+        }),
+        ...(userParams?.brandUserIdentity && {
+          brand_user_identity: userParams.brandUserIdentity,
+        }),
+      }
+
+      // Implementation based on auth.ts reference
+      const response = await fetch(`${API_BASE_URL}/api/v4/sso/autologin`, {
+        method: 'POST',
         headers: {
-          Authorization: `Bearer ${token}`,
-          'X-Brand-ID': brandId.toString(),
-          ...(params && { 'X-Params': params }),
+          'Content-Type': 'application/json',
         },
+        body: JSON.stringify({
+          encrypted_device_id: encryptText(deviceId, true),
+          token,
+          brand_id: brandId,
+          device_type: 3,
+          login_source: 1,
+          ...userParamsBody,
+        }),
       })
 
       if (!response.ok) {
@@ -123,12 +163,16 @@ export class APIService {
       if (user) {
         user.autoLoginToken = token
       }
-      return user
+      return null
     } catch (error) {
       const sdkError = this.errorHandler.handleError(
         ErrorType.AUTHENTICATION_ERROR,
         `Failed to authenticate user: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        { brandId, originalError: error },
+        {
+          brandId,
+          originalError:
+            error instanceof Error ? error : new Error(String(error)),
+        },
       )
       // For auth errors, we log but don't throw - return null instead
       console.warn(sdkError.message)

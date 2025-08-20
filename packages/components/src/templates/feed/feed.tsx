@@ -44,7 +44,9 @@ export function FeedWithData({
     isError,
   } = useFeed(feedType, {
     communityIds: embedDetails?.embedData?.customization.community_ids,
-    groupIds: embedDetails?.embedData?.customization.community_loop_ids,
+    groupIds: embedDetails?.embedData?.customization.community_loop_ids?.map(
+      (item) => item.loop_id
+    ),
     startVideoSlug: embedDetails?.embedData?.startVideoSlug,
   });
 

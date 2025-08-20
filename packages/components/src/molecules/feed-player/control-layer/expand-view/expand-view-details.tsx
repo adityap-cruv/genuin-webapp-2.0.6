@@ -257,10 +257,11 @@ export function ExpandViewDetails({
         className="gencl:w-full gencl:overflow-x-auto gencl:scrollbar-none"
         onClick={(e) => {
           e.stopPropagation();
-          e.preventDefault();
+          // e.preventDefault();
         }}
         style={{
           scrollBehavior: "smooth",
+          // TODO Improve this
           // maskImage:
           //   "linear-gradient(to right, transparent, black 2%, black 98%, transparent)",
           // WebkitMaskImage:

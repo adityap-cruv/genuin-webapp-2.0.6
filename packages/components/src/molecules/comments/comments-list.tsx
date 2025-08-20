@@ -12,12 +12,14 @@ import { CommentItem, CommentsItemSkeleton } from "./comment-item";
 type CommentListProps = {
   videoId: string;
   showCloseButton: boolean;
+  shareUrl: string;
 } & ComponentProps<"div">;
 
 export function CommentsList({
   videoId,
   showCloseButton,
   className,
+  shareUrl,
   ...restProps
 }: CommentListProps) {
   const {
@@ -102,6 +104,7 @@ export function CommentsList({
             <CommentItem
               key={comment.commentId}
               comment={comment}
+              shareUrl={shareUrl}
               onReactionStateChange={(isReacted) => {
                 handleReactionStateChangeInComments(
                   videoId,

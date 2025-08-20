@@ -223,7 +223,7 @@ export class GenuinSDK {
         // Update config with brand data
         config.brand_id = brandData.brand_id
         config.subdomain = brandData.subdomain
-        config.brand_colors = JSON.stringify(brandData.brand_colors)
+        config.brand_colors = brandData.brand_colors
         config.name = brandData.name
       } catch (error) {
         console.error('Failed to fetch brand details:', error)

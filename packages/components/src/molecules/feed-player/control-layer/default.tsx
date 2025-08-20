@@ -101,7 +101,8 @@ export function Default({
               ? "gencl:z-20"
               : "gencl:group-hover:opacity-100 gencl:group-hover:pointer-events-auto gencl:opacity-0 gencl:pointer-events-none gencl:transition-opacity gencl:duration-300",
             embedDetails?.embedData.card_layout_id === 6 &&
-              "gencl:from-transparent gencl:to-transparent gencl:top-12 gencl:sm:top-16"
+              "gencl:from-transparent gencl:to-transparent gencl:top-12 gencl:sm:top-16",
+            embedDetails && showExpandView && "gencl:top-0"
           )}
         />
 
@@ -170,8 +171,8 @@ export function Default({
           <>
             <PlaybackSpeedCapsule
               className={cn(
-                "gencl:absolute gencl:z-10 gencl:transition-all",
-                showExpandView ? "gencl:bottom-32" : "gencl:bottom-12"
+                "gencl:absolute gencl:z-10 gencl:transition-all gencl:bottom-12"
+                // showExpandView ? "gencl:bottom-32" : "gencl:bottom-12"
               )}
             />
             <SpeedControlSideBars />

@@ -18,22 +18,61 @@ import { ComponentProps } from "react";
 import { useAuthContext } from "@genuin/components/context/auth";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { useBaseContext } from "@genuin/components/context";
 
 export type CommentItemProps = {
   comment: CommentListType[number];
+  shareUrl: string;
   onReactionStateChange: ComponentProps<
     typeof ReactionButton
   >["onReactionStateChange"];
 };
 
+/**
+ * Creates a URL for user or brand profile based on redirection settings
+ * @param userRedirection Whether user redirection is enabled
+ * @param whiteLabelUrl The white label URL from brand details
+ * @param ownerBrand The brand details of the owner if available
+ * @param nickname The nickname of the user
+ * @returns The appropriate URL for the profile
+ */
+function createProfileUrl(
+  userRedirection: boolean,
+  whiteLabelUrl: string | undefined,
+  ownerBrand: any | undefined,
+  nickname: string
+): string {
+  if (userRedirection && whiteLabelUrl) {
+    if (ownerBrand) {
+      return `${whiteLabelUrl}/brand/${ownerBrand.brand_slug}`;
+    } else {
+      return `${whiteLabelUrl}/profile/${nickname}`;
+    }
+  }
+
+  return buildPageUrl({
+    type: !!ownerBrand ? "brand" : "profile",
+    slug: !!ownerBrand ? ownerBrand.brand_slug : nickname,
+  });
+}
+
 // TODO: Check why brand is not handled in the comment item
 export function CommentItem({
   comment,
+  shareUrl,
   onReactionStateChange,
 }: CommentItemProps) {
   const { owner } = comment;
   const { user } = useAuthContext();
   const { isMobile } = useDeviceDetectMediaQuery();
+  const { brandDetails } = useBaseContext();
+  const {
+    engagement: {
+      redirectionTools: { user: userRedirection },
+    },
+  } = useEmbedConfigs();
+
   return (
     <div
       className="comment gencl:flex gencl:gap-2 gencl:group"
@@ -49,7 +88,12 @@ export function CommentItem({
           <div className="gencl:flex gencl:items-center">
             <ProfileLink
               className="gencl:text-body-1-semi-bold"
-              url={buildPageUrl({ type: "profile", slug: owner.nickname })}
+              url={createProfileUrl(
+                userRedirection,
+                brandDetails?.white_label_url,
+                owner.brand,
+                owner.nickname
+              )}
             >
               @{owner.nickname}
             </ProfileLink>
@@ -78,6 +122,7 @@ export function CommentItem({
             onReactionStateChange={onReactionStateChange}
             withCustomChildren
             showReactionCount={false}
+            shareUrl={shareUrl}
           >
             <div className="gencl:flex gencl:gap-1 gencl:items-center gencl:cursor-pointer">
               <DynamicReactionIcon
