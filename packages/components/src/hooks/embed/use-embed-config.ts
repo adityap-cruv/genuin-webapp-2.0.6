@@ -5,8 +5,8 @@ import { isCheckFifthVideoType } from "@genuin/components/lib/utils";
 import { useDeviceDetectMediaQuery } from "../use-devide-detect-media-query";
 import type { CustomizationType } from "@genuin/components/context/embed/embed.types";
 
-const MIN_EMBED_WIDTH = 232;
-const MIN_EMBED_HEIGHT = 350;
+const MIN_EMBED_WIDTH = 100;
+const MIN_EMBED_HEIGHT = 100;
 
 /**
  * Hook that extracts and organizes all customization values from the embed context

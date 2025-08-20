@@ -32,7 +32,7 @@ import { SdkErrorState } from "./error-state";
 import { SdkEmptyState } from "./empty-state";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 
-const carouselVariant = cva("gencl:bg-secondary-200 gencl:rounded-md", {
+const carouselVariant = cva("gencl:rounded-md", {
   variants: {
     variant: {
       carousel: "",

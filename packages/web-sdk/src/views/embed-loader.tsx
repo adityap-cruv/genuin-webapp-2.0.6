@@ -1,6 +1,7 @@
 import { AuthUser, EmbedDataType } from '@/type'
 import { getKsCbRequestStatus } from '@/utils/auth'
 import { createRoot } from 'react-dom/client'
+import type { Root } from 'react-dom/client'
 import { Suspense, lazy } from 'react'
 import {
   AuthProvider,
@@ -46,27 +47,23 @@ const EmbedSkeleton = ({
   </div>
 )
 
+// Track React roots per container to support multiple embeds
+const containerRootMap = new Map<HTMLElement, Root>()
+
 export function loadNewEmbed(
   container: HTMLElement,
   embedData: EmbedDataType,
   user?: AuthUser,
-) {
-  const root = createRoot(container)
-
-  // Convert container inline styles to React style object
-  const containerStyle: Record<string, string> = {}
-  if (container.style) {
-    for (let i = 0; i < container.style.length; i++) {
-      const propertyName = container.style[i]
-      if (propertyName) {
-        const camelCaseName = propertyName.replace(/-([a-z])/g, (_, letter) =>
-          letter.toUpperCase(),
-        )
-        containerStyle[camelCaseName] =
-          container.style.getPropertyValue(propertyName)
-      }
-    }
+): void {
+  // Unmount previous root if exists for this container
+  const prevRoot = containerRootMap.get(container)
+  if (prevRoot) {
+    prevRoot.unmount()
+    containerRootMap.delete(container)
   }
+
+  const root = createRoot(container)
+  containerRootMap.set(container, root)
 
   const rootToRender = (
     <ReactQueryClientProvider>
@@ -100,14 +97,11 @@ export function loadNewEmbed(
                 <FeedContextProvider
                   defaultExpandView={false}
                   onCloseExpandView={() => {}}>
-                  <Suspense
-                    fallback={
-                      <EmbedSkeleton containerStyle={containerStyle} />
-                    }>
+                  <Suspense fallback={<EmbedSkeleton />}>
                     {embedData.style === 'standard_wall' ? (
-                      <LazyStandardWall style={containerStyle} />
+                      <LazyStandardWall />
                     ) : (
-                      <LazyEmbed style={containerStyle} />
+                      <LazyEmbed />
                     )}
                   </Suspense>
                   <Toaster />

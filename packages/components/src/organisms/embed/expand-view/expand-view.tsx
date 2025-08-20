@@ -73,6 +73,22 @@ export function EmbedExpandView({
     };
   }, [embedEventBus]);
 
+  // Add keyboard event listener for ESC key
+  useEffect(() => {
+    if (!showExpandView) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        goBackToPreviousPlayerType();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [showExpandView, goBackToPreviousPlayerType]);
+
   // Handle entering/exiting browser fullscreen for expand-view
   useEffect(() => {
     if (!isInIframe) return;

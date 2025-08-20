@@ -54,10 +54,10 @@ export function useEmbedDimensions(
   props.containerWidth = observedDimensions.width ?? props.containerWidth;
   props.containerHeight = observedDimensions.height ?? props.containerHeight;
   return useMemo(() => {
-    const DEFAULT_HEIGHT = 480;
-    const DEFAULT_WIDTH = 320;
+    const DEFAULT_HEIGHT = 100;
+    const DEFAULT_WIDTH = 100;
     const spaceBetweenVideos = 8;
-    const MIN_CAROUSEL_HEIGHT = 200;
+    const MIN_CAROUSEL_HEIGHT = 100;
 
     const headerHeight = config.header.showHeader
       ? config.view.isFeed
@@ -67,8 +67,12 @@ export function useEmbedDimensions(
     const statsHeight = config.engagement.showSocialInteractionData ? 40 : 0;
     const linkoutHeight = config.links.showLinkOutside ? 108 : 0;
 
-    const containerHeight = props.containerHeight ?? config.dimensions.containerHeight ?? DEFAULT_HEIGHT;
-    const containerWidth = props.containerWidth ?? config.dimensions.containerWidth ?? DEFAULT_WIDTH;
+    const containerHeight =
+      props.containerHeight ??
+      config.dimensions.containerHeight ??
+      DEFAULT_HEIGHT;
+    const containerWidth =
+      props.containerWidth ?? config.dimensions.containerWidth ?? DEFAULT_WIDTH;
 
     const availableHeight = Math.max(
       containerHeight - headerHeight - statsHeight - linkoutHeight,
