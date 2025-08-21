@@ -87,12 +87,6 @@ export type PlayerContextType = {
    */
   handleEnded: () => void;
 
-  /**
-   * Current playback speed and whether it was set by a gesture
-   */
-  playbackSpeed: PlaybackSpeedType;
-  setPlaybackSpeed: React.Dispatch<React.SetStateAction<PlaybackSpeedType>>;
-
   isAdPlaying: boolean;
   adInfo?: AdInfoType;
   /**

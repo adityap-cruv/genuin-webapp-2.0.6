@@ -69,11 +69,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
    */
   const [buttonAction, setButtonAction] = useState<ButtonActionType>();
   const [playingState, setPlayingState] = useState<PlayingStateType>("LOADING");
-  // TODO: Scrap it if not used in the future.
-  const [playbackSpeed, setPlaybackSpeed] = useState<PlaybackSpeedType>({
-    speed: 1.0,
-    isSpeedFromGesture: false,
-  });
 
   /**
    * Whether to show seeker for player or not.
@@ -349,9 +344,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
 
     showExpandView,
     toggleExpandView,
-
-    playbackSpeed,
-    setPlaybackSpeed,
 
     adInfo: adInfo.adInfo,
     isAdPlaying: adInfo.isAdPlaying,

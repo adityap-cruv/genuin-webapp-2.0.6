@@ -88,7 +88,7 @@ export function EmbedProvider({
 
   // Observe the container for visibility changes to handle floating view behavior
   useEffect(() => {
-    const element = document.getElementById("gen-sdk");
+    const element = container;
     // if floating view is not enabled or element is not found, do nothing
     if (!embedData.customization.is_floating_view || !element) return;
 

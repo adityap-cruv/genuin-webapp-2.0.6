@@ -13,7 +13,6 @@ import {
 } from '@genuin/components'
 import { Loader } from '@genuin/ui/components/loader'
 import { Toaster } from '@genuin/ui'
-import { FeedContextProvider } from '@genuin/components/templates/feed/context'
 
 // Lazy load the Embed component for better code splitting
 const LazyEmbed = lazy(() =>
@@ -32,14 +31,8 @@ const LazyStandardWall = lazy(() =>
 )
 
 // Generic skeleton for embed
-const EmbedSkeleton = ({
-  containerStyle,
-}: {
-  containerStyle?: Record<string, string>
-}) => (
-  <div
-    className='gencl:flex gencl:relative gencl:h-full gencl:w-full gencl:bg-secondary-50 gencl:rounded-md'
-    style={containerStyle}>
+const EmbedSkeleton = () => (
+  <div className='gencl:flex gencl:relative gencl:h-full gencl:w-full gencl:bg-secondary-50 gencl:rounded-md'>
     <Loader
       size='md'
       className='gencl:absolute gencl:top-1/2 gencl:left-1/2 gencl:-translate-x-1/2 gencl:-translate-y-1/2'
@@ -93,19 +86,14 @@ export function loadNewEmbed(
                   : undefined
               }>
               <AnalyticsProvider isWebSDK={true}>
-                {/* REMOVE FeedContextProvider dependency  */}
-                <FeedContextProvider
-                  defaultExpandView={false}
-                  onCloseExpandView={() => {}}>
-                  <Suspense fallback={<EmbedSkeleton />}>
-                    {embedData.style === 'standard_wall' ? (
-                      <LazyStandardWall />
-                    ) : (
-                      <LazyEmbed />
-                    )}
-                  </Suspense>
-                  <Toaster />
-                </FeedContextProvider>
+                <Suspense fallback={<EmbedSkeleton />}>
+                  {embedData.style === 'standard_wall' ? (
+                    <LazyStandardWall />
+                  ) : (
+                    <LazyEmbed />
+                  )}
+                </Suspense>
+                <Toaster />
               </AnalyticsProvider>
             </AuthProvider>
           </BaseContextProvider>

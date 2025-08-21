@@ -3,12 +3,12 @@ import { Button } from "@genuin/ui/button";
 import { Slider } from "@genuin/ui/slider";
 import { useCallback } from "react";
 import { cn } from "@genuin/ui/lib/utils";
-import { useFeedContext } from "@genuin/components/templates/feed/context";
+import { useBaseContext } from "@genuin/components/context";
 
 const PLAYBACK_SPEEDS = [0.25, 1.0, 1.25, 1.5, 2.0];
 
 export default function PlaybackSpeedControlSlider() {
-  const { playbackSpeed, setPlaybackSpeed } = useFeedContext();
+  const { playbackSpeed, setPlaybackSpeed } = useBaseContext();
 
   const decreaseSpeed = useCallback(() => {
     const currentIndex = PLAYBACK_SPEEDS.indexOf(playbackSpeed.speed);

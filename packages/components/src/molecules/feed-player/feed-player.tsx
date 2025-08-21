@@ -13,7 +13,6 @@ import { audioManager } from "@genuin/components/lib/audio-manager";
 import { usePlayerContext } from "./context/context";
 import { useAnalytics } from "@genuin/components/context/analytics";
 import { cn } from "@genuin/ui/lib/utils";
-import { useFeedContext } from "@genuin/components/templates/feed/context";
 
 type Props = Omit<
   ComponentProps<typeof VideoPlayer>,
@@ -53,7 +52,7 @@ export const FeedPlayer = memo(function FeedPlayer({
   onLoadStart,
   ...props
 }: Props) {
-  const { muted, volume } = useBaseContext();
+  const { muted, volume, playbackSpeed } = useBaseContext();
   const {
     feedPlayerShouldPlay,
     setVideoTimeState,
@@ -65,7 +64,6 @@ export const FeedPlayer = memo(function FeedPlayer({
     updateAdInfo,
   } = usePlayerContext();
   const { track, EventName } = useAnalytics();
-  const { playbackSpeed } = useFeedContext();
   const id = useId();
   const playerRef = useRef<HTMLVideoElement>(null);
 

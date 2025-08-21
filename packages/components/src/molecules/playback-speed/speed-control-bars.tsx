@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useFeedContext } from "@genuin/components/templates/feed/context";
 import { cn } from "@genuin/ui/lib/utils";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { useBaseContext } from "@genuin/components/context";
 
 const LONG_PRESS_DURATION = 500; // 500ms for long press
 
 export const SpeedControlSideBars = () => {
-  const { playbackSpeed, setPlaybackSpeed } = useFeedContext();
+  const { playbackSpeed, setPlaybackSpeed } = useBaseContext();
   const { isMobile } = useDeviceDetectMediaQuery();
   const [activeBar, setActiveBar] = useState<"left" | "right" | null>(null);
 

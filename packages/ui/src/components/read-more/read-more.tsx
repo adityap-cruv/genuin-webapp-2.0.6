@@ -75,6 +75,8 @@ export const ReadMore = memo(function ReadMore({
   open,
   href,
   linkClassName,
+  whiteLabelUrl,
+  redirectionFlag,
   ...rest
 }: ReadMoreProps) {
   const textRef = useRef<HTMLParagraphElement>(null);
@@ -198,7 +200,9 @@ export const ReadMore = memo(function ReadMore({
     if (Array.isArray(input)) {
       // Convert to anchor tags format and render properly
       const anchorTags = convertUrlsToAnchorTags(input);
-      return anchorTags.map((item, idx) => renderAnchorTag(item, idx));
+      return anchorTags.map((item, idx) =>
+        renderAnchorTag(item, idx, whiteLabelUrl, redirectionFlag)
+      );
     }
     return null;
   }, []);

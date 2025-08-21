@@ -76,8 +76,12 @@ export function PipView({ videos, isLoading }: PipViewProps) {
     goBackToPreviousPlayerType();
   }, [goBackToPreviousPlayerType]);
 
-  if (isPipViewOpen && activeIndex !== -1 && videos.length > 0 && !isLoading) {
-    const videoDetails = videos[activeIndex];
+  if (isPipViewOpen && videos.length > 0 && !isLoading) {
+    // Ensure activeIndex is valid
+    const validIndex =
+      activeIndex >= 0 && activeIndex < videos.length ? activeIndex : 0;
+    const videoDetails = videos[validIndex];
+
     if (videoDetails)
       return (
         <div className="gencl:fixed gencl:bottom-4 gencl:flex gencl:right-4 gencl:h-75 gencl:w-50">

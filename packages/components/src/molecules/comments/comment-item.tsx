@@ -162,6 +162,9 @@ export function CommentContent({
   comment: CommentListType[number];
 }) {
   const { showExpandView } = useFeedContext();
+  const { brandDetails } = useBaseContext();
+  const { view } = useEmbedConfigs();
+
   return (
     <>
       {comment.type === "text" && (
@@ -173,6 +176,8 @@ export function CommentContent({
           }
           maxLines={2}
           textClassName="gencl:text-secondary-900 gencl:break-all gencl:text-body-1-medium"
+          whiteLabelUrl={brandDetails.white_label_url}
+          redirectionFlag={view.isCarousel || view.isFeed}
         />
       )}
       {comment.type === "video" && (

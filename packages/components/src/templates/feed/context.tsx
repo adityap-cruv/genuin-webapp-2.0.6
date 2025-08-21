@@ -1,7 +1,6 @@
 "use client";
 
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
-import { PlaybackSpeedType } from "@genuin/components/molecules/feed-player/context/types";
 import { useAnalytics } from "@genuin/components/context/analytics";
 import React, {
   ComponentProps,
@@ -37,10 +36,6 @@ type FeedContextType = {
    * Whether to show the expand view or not.
    */
   showExpandView: boolean;
-
-  playbackSpeed: PlaybackSpeedType;
-
-  setPlaybackSpeed: React.Dispatch<React.SetStateAction<PlaybackSpeedType>>;
 
   /**
    * The variant of the feed view.
@@ -97,11 +92,6 @@ export function FeedContextProvider({
     setTrue: openExpandView,
     toggle: toggleExpandView,
   } = useBoolean(defaultExpandView);
-
-  const [playbackSpeed, setPlaybackSpeed] = useState<PlaybackSpeedType>({
-    speed: 1.0,
-    isSpeedFromGesture: false,
-  });
 
   useEffect(() => {
     // Track when the expand view is opened or closed
@@ -193,8 +183,6 @@ export function FeedContextProvider({
         openExpandView,
         closeExpandView,
         toggleExpandView,
-        playbackSpeed,
-        setPlaybackSpeed,
         variant,
       }}
     >

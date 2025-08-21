@@ -8,14 +8,14 @@ import {
 } from "@genuin/ui/dialog";
 import React, { ComponentProps } from "react";
 import PlaybackSpeedControlSlider from "./speed-control-buttons";
-import { useFeedContext } from "@genuin/components/templates/feed/context";
+import { useBaseContext } from "@genuin/components/context";
 
 type PlaybackSpeedProps = ComponentProps<typeof Dialog> & {
   children: React.ReactNode;
 };
 
 export function PlaybackSpeed({ children, ...props }: PlaybackSpeedProps) {
-  const { playbackSpeed } = useFeedContext();
+  const { playbackSpeed } = useBaseContext();
   return (
     <Dialog modal {...props}>
       <DialogTrigger asChild>{children}</DialogTrigger>

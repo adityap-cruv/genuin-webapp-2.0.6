@@ -55,15 +55,6 @@ export function Embed({ className, style, ...restProps }: Props) {
   const { track, EventName } = useAnalytics();
   const config = useEmbedConfigs();
   const embedVariant = config.embedStyle;
-  // Use the hook to get all customization values in one place
-  const rootHeight =
-    typeof style?.height === "string"
-      ? Number.parseFloat(style.height)
-      : style?.height;
-  const rootWidth =
-    typeof style?.width === "string"
-      ? Number.parseFloat(style.width)
-      : style?.width;
 
   const {
     isLoading,
@@ -171,10 +162,7 @@ export function Embed({ className, style, ...restProps }: Props) {
     linkoutHeight,
     spaceBetweenVideos,
     availableHeight,
-  } = useEmbedDimensions(config, {
-    containerHeight: rootHeight,
-    containerWidth: rootWidth,
-  });
+  } = useEmbedDimensions(config);
 
   if (isError) {
     return (

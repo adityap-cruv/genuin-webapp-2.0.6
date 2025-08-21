@@ -3,7 +3,7 @@ import { ForwardIcon } from "@genuin/ui/icons";
 import { XIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
 import { type ComponentProps } from "react";
-import { useFeedContext } from "@genuin/components/templates/feed/context";
+import { useBaseContext } from "@genuin/components/context";
 
 type PlaybackSpeedCapsuleProps = ComponentProps<"div">;
 
@@ -11,7 +11,7 @@ export const PlaybackSpeedCapsule = ({
   className,
   ...props
 }: PlaybackSpeedCapsuleProps) => {
-  const { playbackSpeed, setPlaybackSpeed } = useFeedContext();
+  const { playbackSpeed, setPlaybackSpeed } = useBaseContext();
 
   if (playbackSpeed.speed === 1) return null;
 

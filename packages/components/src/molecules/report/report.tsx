@@ -7,7 +7,7 @@ import {
   DialogHeader,
 } from "@genuin/ui/dialog";
 import { RadioGroup, RadioItem } from "@genuin/ui/radio";
-import React, { ComponentProps, useCallback, useState } from "react";
+import React, { ComponentProps, useCallback, useMemo, useState } from "react";
 import { REPORT_HEADER_DATA, REPORT_REASON_DATA } from "./report-data";
 import { Button } from "@genuin/ui/button";
 import {
@@ -21,6 +21,7 @@ import { AuthenticationModal } from "@genuin/components/organisms/authentication
 import { useAuthContext } from "@genuin/components/context/auth";
 import { MEDIA_BASE_URL } from "@genuin/components/lib/utils/env";
 import { useAnalytics } from "@genuin/components/context/analytics";
+import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
 
 type ReportProps = ComponentProps<typeof Dialog> & {
   reportFor: "VIDEO" | "COMMENT";
@@ -41,6 +42,26 @@ export function Report({
   const [selectedReason, setSelectedReason] = useState<string>("");
   const { user } = useAuthContext();
   const { track, EventName } = useAnalytics();
+  const { handleAuthCallback } = useAuthContext();
+
+  // Create return query params for authentication callbacks
+  const returnQueryParams = useMemo(
+    () =>
+      createReturnQueryParams({
+        url: shareUrl,
+        action: "repost",
+        additionalParams: {
+          videoSlug: videoSlug ?? undefined,
+        },
+      }),
+    [shareUrl, videoSlug]
+  );
+
+  // Setup authentication callback handler
+  const clickHandler = handleAuthCallback({
+    authCallbackData: { path: "/", action: "report", returnQueryParams },
+    urlToOpen: shareUrl,
+  });
 
   const handleReasonChange = (value: string) => {
     setSelectedReason(value);
@@ -76,7 +97,19 @@ export function Report({
     reportMutation.mutate(feedbackPayload);
   }, [reportMutation, selectedReason, contentId, reportFor, track, EventName]);
 
-  if (!user)
+  if (!user) {
+    if (clickHandler) {
+      return (
+        <div
+          onClick={() => {
+            clickHandler();
+          }}
+        >
+          {children}
+        </div>
+      );
+    }
+
     return (
       <AuthenticationModal
         asChild
@@ -93,7 +126,7 @@ export function Report({
         {children}
       </AuthenticationModal>
     );
-
+  }
   return (
     <Dialog modal {...props}>
       <DialogTrigger asChild className="gencl:!border-none">

@@ -32,11 +32,10 @@ export function Default({
   const { showExpandView, togglePlay, toggleMuted, muted } = usePlayerContext();
   const { gestureOverlayUI, hideGestureOverlay } = useGestureOverlayManager();
   const { showSeeker } = usePlayerContext();
-  const { playbackSpeed } = useFeedContext();
   const { isMobile } = useDeviceDetectMediaQuery();
   const embedDetails = useSafeEmbedContext();
 
-  const { brandDetails } = useBaseContext();
+  const { brandDetails, playbackSpeed } = useBaseContext();
 
   // Extract properties with fallbacks to prevent undefined errors
   const tapBehavior = brandDetails?.web_configs?.tap_behavior || 1; // Default to 1 if undefined

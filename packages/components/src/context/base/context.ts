@@ -2,6 +2,7 @@
 import { getUrlForReaction } from "@genuin/ui/utils";
 import { createContext, useContext } from "react";
 import type { BrandDetailsConfigType } from "@genuin/components/types/brand";
+import type { PlaybackSpeedType } from "@genuin/components/molecules/feed-player/context/types";
 
 const DEFAULT_WEB_CONFIGS: BrandDetailsConfigType["web_configs"] = {
   video_autoplay: {
@@ -88,6 +89,11 @@ export type BaseContextType = {
    * Parsed brand colors for the application.
    */
   parsedBrandColors?: Record<string, string>;
+  /**
+   * Current playback speed and whether it was set by a gesture
+   */
+  playbackSpeed: PlaybackSpeedType;
+  setPlaybackSpeed: React.Dispatch<React.SetStateAction<PlaybackSpeedType>>;
 };
 
 export const BaseContext = createContext<BaseContextType | null>(null);

@@ -55,7 +55,10 @@ export function NavigationButtons({ totalSlides }: NavigationButtonsProps) {
               size="sm"
               onClick={handlePrevClick}
               disabled={isFirstSlide}
-              className="gencl:pointer-events-auto gencl:rounded-full gencl:bg-white gencl:hover:bg-secondary-150"
+              className={cn(
+                "gencl:pointer-events-auto gencl:rounded-full gencl:bg-white gencl:hover:bg-secondary-150",
+                isFirstSlide && "gencl:hidden"
+              )}
             >
               <ChevronLeft className="gencl:h-5 gencl:w-5 gencl:stroke-secondary-600" />
               <span className="gencl:sr-only">Previous</span>
@@ -69,7 +72,10 @@ export function NavigationButtons({ totalSlides }: NavigationButtonsProps) {
               size="sm"
               onClick={handleNextClick}
               disabled={isLastSlide}
-              className="gencl:pointer-events-auto gencl:rounded-full gencl:bg-white gencl:hover:bg-secondary-150"
+              className={cn(
+                "gencl:pointer-events-auto gencl:rounded-full gencl:bg-white gencl:hover:bg-secondary-150",
+                isLastSlide && "gencl:hidden"
+              )}
             >
               <ChevronRight className="gencl:h-5 gencl:w-5 gencl:stroke-secondary-600" />
               <span className="gencl:sr-only">Next</span>
@@ -89,7 +95,10 @@ export function NavigationButtons({ totalSlides }: NavigationButtonsProps) {
         size="sm"
         onClick={handlePrevClick}
         disabled={isFirstSlide}
-        className="gencl:rounded-full gencl:bg-white gencl:hover:bg-secondary-150"
+        className={cn(
+          "gencl:rounded-full gencl:bg-white gencl:hover:bg-secondary-150",
+          isFirstSlide && "gencl:hidden"
+        )}
       >
         <ChevronUp className="gencl:h-5 gencl:w-5 gencl:stroke-secondary-600" />
         <span className="gencl:sr-only">Previous</span>
@@ -100,7 +109,10 @@ export function NavigationButtons({ totalSlides }: NavigationButtonsProps) {
         size="sm"
         onClick={handleNextClick}
         disabled={isLastSlide}
-        className="gencl:rounded-full gencl:bg-white gencl:hover:bg-secondary-150"
+        className={cn(
+          "gencl:rounded-full gencl:bg-white gencl:hover:bg-secondary-150",
+          isLastSlide && "gencl:hidden"
+        )}
       >
         <ChevronDown className="gencl:h-5 gencl:w-5 gencl:stroke-secondary-600" />
         <span className="gencl:sr-only">Next</span>

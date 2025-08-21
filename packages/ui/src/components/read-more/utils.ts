@@ -30,7 +30,7 @@ export function applyLineClampStyles(
     element.style.overflow = ""; // Reset overflow
     element.style.textOverflow = ""; // Reset text-overflow
   } else {
-    element.style.display ="-webkit-box";
+    element.style.display = "-webkit-box";
     (
       element.style as unknown as {
         webkitLineClamp?: string;
@@ -120,11 +120,15 @@ export function convertUrlsToAnchorTags(
  * Renders an anchor tag based on the provided item type
  * @param item - The anchor tag item to render
  * @param index - The index of the item in the list
+ * @param whiteLabelUrl - Optional URL to use as base for community/profile links in embed mode
+ * @param redirectionFlag - Whether the component is being used in embed mode
  * @returns React node containing the rendered anchor tag
  */
 export function renderAnchorTag(
   item: AnchorTagType,
-  index: number
+  index: number,
+  whiteLabelUrl?: string,
+  redirectionFlag?: boolean
 ): React.ReactNode {
   // Handle primitive types
   if (typeof item === "string" || item === null) {
@@ -153,8 +157,10 @@ export function renderAnchorTag(
         {
           ...commonProps,
           href,
-          target: "_blank",
-          rel: "noopener noreferrer",
+          // Only add target="_blank" if redirectionFlag is not explicitly false
+          ...(redirectionFlag !== false
+            ? { target: "_blank", rel: "noopener noreferrer" }
+            : {}),
         },
         item.text
       );
@@ -162,22 +168,42 @@ export function renderAnchorTag(
 
     case "member": {
       const username = item.text.slice(1);
+      const href =
+        redirectionFlag && whiteLabelUrl
+          ? `${whiteLabelUrl.replace(/\/+$/, "")}/profile/${username}`
+          : PATH_NAME.profile(username);
+
       return React.createElement(
         "a",
         {
           ...commonProps,
-          href: PATH_NAME.profile(username),
+          href,
+          // If redirectionFlag is true and whiteLabelUrl exists, open in new tab
+          // If redirectionFlag is false, never open in new tab
+          ...(redirectionFlag && whiteLabelUrl
+            ? { target: "_blank", rel: "noopener noreferrer" }
+            : {}),
         },
         item.text
       );
     }
 
     case "community": {
+      const href =
+        redirectionFlag && whiteLabelUrl
+          ? `${whiteLabelUrl.replace(/\/+$/, "")}/community/${item.slug}`
+          : PATH_NAME.community(item.slug);
+
       return React.createElement(
         "a",
         {
           ...commonProps,
-          href: PATH_NAME.community(item.slug),
+          href,
+          // If redirectionFlag is true and whiteLabelUrl exists, open in new tab
+          // If redirectionFlag is false, never open in new tab
+          ...(redirectionFlag && whiteLabelUrl
+            ? { target: "_blank", rel: "noopener noreferrer" }
+            : {}),
         },
         item.text
       );

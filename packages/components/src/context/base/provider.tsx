@@ -7,6 +7,7 @@ import {
 } from "@genuin/components/lib/utils/device-id";
 import { setBrandIdInAxiosInstance } from "@genuin/components/react-query/axios-instance";
 import type { BrandDetailsConfigType } from "@genuin/components/types/brand";
+import type { PlaybackSpeedType } from "@genuin/components/molecules/feed-player/context/types";
 
 import { BaseContext } from "./context";
 import { parseBrandColors } from "@genuin/components/lib/utils/brand-color-parser";
@@ -41,6 +42,10 @@ export function BaseContextProvider({
   const [muted, setMuted] = useState(true);
   const [volume, setVolume] = useState(100);
   const [deviceId, setDeviceId] = useGetDeviceId();
+  const [playbackSpeed, setPlaybackSpeed] = useState<PlaybackSpeedType>({
+    speed: 1.0,
+    isSpeedFromGesture: false,
+  });
 
   useEffect(() => {
     // If deviceId is not available, get a new one.
@@ -61,6 +66,8 @@ export function BaseContextProvider({
         brandDetails,
         isEmbed,
         parsedBrandColors: parseBrandColors(brandDetails?.brand_colors),
+        playbackSpeed,
+        setPlaybackSpeed,
       }}
     >
       {children}
