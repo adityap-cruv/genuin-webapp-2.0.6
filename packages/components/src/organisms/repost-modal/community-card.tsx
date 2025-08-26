@@ -12,6 +12,7 @@ import { Toast } from "@genuin/ui/components/toaster";
 import { cn } from "@genuin/ui/lib/utils";
 import { Link } from "@genuin/components/molecules/link";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { useAnalytics } from "@genuin/components/context";
 
 export function CommunityCard({
   communityInfo,
@@ -87,12 +88,20 @@ function RepostButton({
   destinationId: string;
   videoId: string;
 }) {
+  const { track, EventName } = useAnalytics();
+
   const {
     mutate: repostVideo,
     isPending,
     isSuccess,
   } = useRepostVideoMutation({
     onSuccess: () => {
+      track(EventName.VIDEO_REPOST, {
+        content_id: videoId,
+        content_category: "loop",
+        event_record_screen: "feed",
+        event_target_screen: "none",
+      });
       Toast.Success({ message: "Video reposted successfully!" });
     },
     onError: () => {

@@ -123,7 +123,6 @@ export function Linkouts({
           });
         }
       }, 10);
-
       return () => clearTimeout(timer);
     } else {
       // Handle hiding with animation

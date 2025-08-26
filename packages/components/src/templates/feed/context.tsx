@@ -11,6 +11,7 @@ import React, {
 } from "react";
 import { useBoolean } from "usehooks-ts";
 import { FeedView } from "./feed";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 
 type VariantType = ComponentProps<typeof FeedView>["variant"];
 
@@ -84,6 +85,7 @@ export function FeedContextProvider({
   const { track, EventName } = useAnalytics();
   // State is used to track the active index of the feed.
   const [activeIndex, setActiveIndex] = useState(0);
+  const embedDetails = useSafeEmbedContext();
 
   // State is used to track whether the expand view is open or not.
   const {

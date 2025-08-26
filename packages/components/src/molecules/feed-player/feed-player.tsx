@@ -259,7 +259,7 @@ export const FeedPlayer = memo(function FeedPlayer({
         // latency: latency,
       });
     },
-    [track, EventName, analyticsEventData]
+    [track, EventName.VIDEO_STARTED, analyticsEventData]
   );
 
   const handleAdStarted = useCallback((event: any) => {

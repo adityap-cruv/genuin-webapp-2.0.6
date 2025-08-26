@@ -18,6 +18,15 @@ type DefaultAnalyticsPayload = {
   path: string;
   query_params: Record<string, string | string[]>;
   title: string;
+  // SDK-specific fields - optional
+  embed_id?: string;
+  embed_type?: string;
+  embed_style?: string;
+  content_category?: string;
+  phone_no?: string;
+  sdk_version?: string;
+  user_name?: string;
+  gen_user_name?: string;
 };
 
 class AnalyticsServiceSingleton {
@@ -68,6 +77,11 @@ class AnalyticsServiceSingleton {
         try {
           if (typeof window !== "undefined") {
             this.rudderAnalyticsInstance = new RudderAnalytics();
+            if (!RUDDERSTACK_WRITE_KEY || !RUDDERSTACK_DATAPLANE_URL) {
+              throw new Error(
+                "[AnalyticsService] RudderStack WRITE_KEY or DATAPLANE_URL is undefined. Please check your environment variables."
+              );
+            }
             this.rudderAnalyticsInstance.load(
               RUDDERSTACK_WRITE_KEY,
               RUDDERSTACK_DATAPLANE_URL,
@@ -76,6 +90,7 @@ class AnalyticsServiceSingleton {
                   type: "localStorage",
                   cookie: {},
                   entries: {
+                    // TODO check form where it comes
                     userId: { type: "localStorage" },
                     anonymousId: { type: "localStorage" },
                     sessionInfo: { type: "localStorage" },

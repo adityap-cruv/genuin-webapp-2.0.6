@@ -206,7 +206,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         return !prev;
       });
     },
-    [setFeedPlayerShouldPlay]
+    [setFeedPlayerShouldPlay, EventName.VIDEO_PAUSED, EventName.VIDEO_PLAY]
   );
 
   // setPlayerRef: Sets the player reference to the current OpenPlayerJS instance or null.
@@ -230,16 +230,19 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   }, []);
 
   // pause: Sets the feed player to pause state.
-  const pause = useCallback((byUser: boolean) => {
-    setFeedPlayerShouldPlay(false);
-    if (byUser) {
-      setButtonAction("PAUSE");
-      // Track pause event with Analytics only if the video pause is triggered by user.
-      track(EventName.VIDEO_PAUSED, {
-        content_id: videoId,
-      });
-    }
-  }, []);
+  const pause = useCallback(
+    (byUser: boolean) => {
+      setFeedPlayerShouldPlay(false);
+      if (byUser) {
+        setButtonAction("PAUSE");
+        // Track pause event with Analytics only if the video pause is triggered by user.
+        track(EventName.VIDEO_PAUSED, {
+          content_id: videoId,
+        });
+      }
+    },
+    [EventName.VIDEO_PAUSED]
+  );
 
   // toggleMuted: Toggles the muted state of the player.
   const toggleMuted = useCallback(
@@ -259,7 +262,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         return !prev;
       });
     },
-    [setMuted]
+    [setMuted, EventName.VIDEO_UNMUTED, EventName.VIDEO_MUTED]
   );
 
   // mute: Mutes the player.

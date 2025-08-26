@@ -80,7 +80,6 @@ const defaultActionWrappers: Record<
 > = {
   REPOST: (node, _context) => {
     const { authenticationStatus, handleAuthCallback } = useAuthContext();
-    const { track, EventName } = useAnalytics();
     const embedDetails = useSafeEmbedContext();
     const authInfo = embedDetails?.embedData.authInfo;
     const { brandDetails } = useBaseContext();
@@ -107,12 +106,6 @@ const defaultActionWrappers: Record<
 
     // Track repost event when clicked
     const handleRepostClick = () => {
-      track(EventName.VIDEO_REPOST, {
-        content_id: _context.contentId,
-        content_category: "loop",
-        event_record_screen: "feed",
-        event_target_screen: "none",
-      });
     };
 
     // Special case for brand ID 2357, unauthenticated users with auth info
@@ -135,7 +128,6 @@ const defaultActionWrappers: Record<
         return (
           <div
             onClick={() => {
-              handleRepostClick();
               clickHandler();
             }}
           >

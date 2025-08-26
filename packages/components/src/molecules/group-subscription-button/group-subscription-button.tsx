@@ -91,6 +91,13 @@ function Button({
   const handleClick = useCallback(
     (e: any) => {
       onClick?.(e);
+
+      track(EventName.SUBSCRIPTION_CLICKED, {
+        group_id: groupId,
+        group_name: groupName,
+        is_subscribed: isSubscriber,
+      });
+
       if (!user) return;
       subscribeGroup({ chatId: groupId, subscribe: !isSubscriber });
     },

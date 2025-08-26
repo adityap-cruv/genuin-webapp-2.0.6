@@ -77,7 +77,13 @@ export function SearchModal({
         });
       }
     },
-    [onSearch, resetToSuggestions, query, track, EventName]
+    [
+      onSearch,
+      resetToSuggestions,
+      query,
+      track,
+      EventName.KEYWORD_SEARCH_CANCEL,
+    ]
   );
 
   const handleSearch = useCallback(
@@ -91,7 +97,7 @@ export function SearchModal({
         query: searchQuery,
       });
     },
-    [onSearch, resetToSuggestions, track, EventName]
+    [onSearch, resetToSuggestions, track, EventName.CHECK_RECENT_SEARCH]
   );
 
   const handleSeeAll = useCallback(() => {
@@ -103,7 +109,7 @@ export function SearchModal({
     track(EventName.KEYWORD_SEARCHED, {
       query: query,
     });
-  }, [onSeeAll, query, track, EventName]);
+  }, [onSeeAll, query, track, EventName.KEYWORD_SEARCHED]);
 
   // Helper component for centered messages
   const CenteredMessage = ({

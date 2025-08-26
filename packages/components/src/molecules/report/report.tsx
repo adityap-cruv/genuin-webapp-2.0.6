@@ -79,22 +79,23 @@ export function Report({
       },
     };
 
-    // Track report event
-    track(
-      reportFor === "COMMENT"
-        ? EventName.COMMENT_REPORT
-        : EventName.VIDEO_REPORT,
-      {
-        content_id: contentId,
-        content_category: "loop",
-        event_record_screen: "feed",
-        event_target_screen: "none",
-        report_reason: selectedReason,
-        report_type: reportFor,
-      }
-    );
-
-    reportMutation.mutate(feedbackPayload);
+    reportMutation.mutate(feedbackPayload, {
+      onSuccess: () => {
+        track(
+          reportFor === "COMMENT"
+            ? EventName.COMMENT_REPORT
+            : EventName.VIDEO_REPORT,
+          {
+            content_id: contentId,
+            content_category: "loop",
+            event_record_screen: "feed",
+            event_target_screen: "none",
+            report_reason: selectedReason,
+            report_type: reportFor,
+          }
+        );
+      },
+    });
   }, [reportMutation, selectedReason, contentId, reportFor, track, EventName]);
 
   if (!user) {
