@@ -162,8 +162,10 @@ export class APIService {
       const user = data.data as AuthUser
       if (user) {
         user.autoLoginToken = token
+        user.accessToken = response.headers.get('Gn-Access-Token') || token
+        user.refreshToken = response.headers.get('Gn-Refresh-Token') || token
       }
-      return null
+      return user
     } catch (error) {
       const sdkError = this.errorHandler.handleError(
         ErrorType.AUTHENTICATION_ERROR,

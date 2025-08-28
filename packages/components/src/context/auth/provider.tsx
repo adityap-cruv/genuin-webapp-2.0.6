@@ -184,8 +184,8 @@ export function AuthProvider({
       authCallbackData: AuthCallbackDataType;
       urlToOpen?: string;
     }) => {
-      // For non-embed environments, always return undefined so consumer shows auth modal
-      if (!isEmbed) {
+      // For non-embed environments and authenticated user, always return undefined so consumer shows auth modal
+      if (!isEmbed || authenticationStatus === "authenticated") {
         return undefined;
       }
 
@@ -205,7 +205,7 @@ export function AuthProvider({
       // so consumer shows auth modal
       return undefined;
     },
-    [isEmbed, embedData?.style]
+    [isEmbed, embedData?.style, authenticationStatus]
   );
 
   return (

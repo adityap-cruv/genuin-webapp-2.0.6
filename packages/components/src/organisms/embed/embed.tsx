@@ -56,6 +56,14 @@ export function Embed({ className, style, ...restProps }: Props) {
   const config = useEmbedConfigs();
   const embedVariant = config.embedStyle;
 
+  const feedOptions = {
+    communityIds: config.community.communityIds,
+    groupIds: config.community.communityLoopIds,
+    startVideoSlug: embedData.startVideoSlug,
+    isEmbed: true,
+    contextualParams: embedData.contextualParams,
+  };
+
   const {
     isLoading,
     data: feedData,
@@ -63,18 +71,8 @@ export function Embed({ className, style, ...restProps }: Props) {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useFeed("HOME", {
-    communityIds: config.community.communityIds,
-    groupIds: config.community.communityLoopIds,
-    startVideoSlug: embedData.startVideoSlug,
-    isEmbed: true,
-    // startVideoSlug: "the-collab-has-officially-left-the-group-chat-nhl-3vjn",
-  });
-  const queryKey = getQueryKeyForFeed("HOME", {
-    communityIds: config.community.communityIds,
-    groupIds: config.community.communityLoopIds,
-    isEmbed: true,
-  });
+  } = useFeed("HOME", feedOptions);
+  const queryKey = getQueryKeyForFeed("HOME", feedOptions);
 
   const videos = useMemo(
     () => feedData?.pages.flatMap((page) => page.feed) || [],

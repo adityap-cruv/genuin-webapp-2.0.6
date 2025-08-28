@@ -18,6 +18,7 @@ import { queryClient } from "@genuin/components/react-query/client";
 import { API_PATHS } from "@genuin/components/react-query/paths";
 import { GroupUserStatusType } from "@genuin/components/types/roles";
 import { useGetVideoDetailsAsFeed } from "../video";
+import { EmbedDataType } from "@genuin/components/context/embed/embed.types";
 // Mapper for FeedType to corresponding numbers
 const feedTypeToNumber: Record<FeedType, number> = {
   HOME: 1,
@@ -45,6 +46,22 @@ async function fetchFeed(
     ? encodeURI(getDeviceId() as string)
     : undefined;
 
+  const contextualFeedParamsBody = {
+    ...(options?.contextualParams?.page_context && {
+      page_context: options?.contextualParams?.page_context,
+    }),
+    ...((options?.contextualParams?.geo?.lat ||
+      options?.contextualParams?.geo?.long) && {
+      geo: {
+        lat: parseFloat(options.contextualParams.geo.lat || ""),
+        long: parseFloat(options.contextualParams.geo.long || ""),
+      },
+    }),
+    ...{
+      url: window.location.href,
+    },
+  };
+
   // Build request body with only defined values
   const requestBody: Record<string, any> = {
     type: feedTypeToNumber[feedType],
@@ -68,11 +85,14 @@ async function fetchFeed(
   }
 
   if (options?.groupIds && options.groupIds.length > 0) {
-    requestBody.loop_ids = options.groupIds
+    requestBody.loop_ids = options.groupIds;
   }
 
   return await axiosInstance
-    .post(options?.isEmbed ? API_PATHS.EMBED_FEED_HOME : API_PATHS.FEED_HOME, requestBody)
+    .post(options?.isEmbed ? API_PATHS.EMBED_FEED_HOME : API_PATHS.FEED_HOME, {
+      ...requestBody,
+      ...contextualFeedParamsBody,
+    })
     .then((res) => {
       if (res.status !== 200) {
         throw new Error("Something went wrong feed api.");
@@ -101,6 +121,7 @@ type UseFeedOptionsType = {
   groupIds?: string[];
   startVideoSlug?: string;
   isEmbed?: boolean;
+  contextualParams?: EmbedDataType["contextualParams"];
 };
 
 /**

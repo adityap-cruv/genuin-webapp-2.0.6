@@ -50,21 +50,24 @@ export class GenuinSDK {
    * Legacy initialization method - handles both config objects and DOM-based initialization
    * Maintains full compatibility with existing SDK usage patterns
    */
-  async legacyInit(
-    configOrObject?: { config: LegacySDKConfig } | LegacySDKConfig,
-  ): Promise<void> {
+  async legacyInit(configOrObject?: any): Promise<void> {
     try {
       // Handle callback-based initialization (window.onGenuinReady)
       if (typeof window !== 'undefined' && (window as any).onGenuinReady) {
         return // Legacy callback handler will manage this
       }
+      const divs = document.getElementsByClassName('gen-sdk-class')
+      const singleEmbed = divs.length === 1
+      const firstDiv = divs[0] as HTMLElement | undefined
+      if (singleEmbed && configOrObject) {
+        console.group(configOrObject)
+        if (!configOrObject.embed_id) {
+          configOrObject.embed_id = firstDiv?.getAttribute('data-embed-id')
+        }
 
-      const isEmptyObject =
-        configOrObject &&
-        !Object.keys(configOrObject).includes('embed_id') &&
-        configOrObject.constructor === Object
-
-      if (configOrObject && !isEmptyObject) {
+        if (!configOrObject.api_key) {
+          configOrObject.api_key = firstDiv?.getAttribute('data-api-key')
+        }
         // Single embed initialization with config
         await this.initializeSingleEmbed(configOrObject)
       } else {
