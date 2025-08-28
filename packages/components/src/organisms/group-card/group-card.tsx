@@ -20,7 +20,7 @@ import {
   groupCardContentVariants,
   GroupCardVariant,
 } from "./group-card.cva";
-import { ReadMore } from "@genuin/ui/components/read-more";
+import { ReadMore } from "@genuin/components/molecules/read-more";
 import { CommunityPrivacyInfo } from "@genuin/components/molecules/community-privacy-info";
 import { DialogClose } from "@genuin/ui/components/dialog";
 import { GroupUserStatusType } from "@genuin/components/types/roles";

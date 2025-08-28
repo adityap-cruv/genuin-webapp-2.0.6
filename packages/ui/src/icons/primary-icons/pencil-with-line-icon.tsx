@@ -1,4 +1,4 @@
-import { cn } from "@genuin/ui/lib/utils";
+import { cn, defaultSizesForIcons } from "@genuin/ui/lib/utils";
 
 import type { SVGIconsProps } from "../type";
 import type { VariantProps } from "class-variance-authority";
@@ -12,10 +12,7 @@ const iconVariants = cva("gencl:stroke-black gencl:shrink-0", {
       secondary: "gencl:stroke-secondary-600",
     },
     variant: {},
-    size: {
-      md: "gencl:size-6",
-      sm: "gencl:size-4",
-    },
+    size: defaultSizesForIcons(),
   },
   defaultVariants: {
     theme: "light",

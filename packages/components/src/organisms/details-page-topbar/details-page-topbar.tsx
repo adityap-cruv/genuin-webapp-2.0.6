@@ -1,4 +1,5 @@
-import { ComponentProps, ReactNode, useEffect, useMemo, useState } from "react";
+"use client";
+import { ComponentProps, ReactNode, useEffect, useState } from "react";
 import { Avatar } from "@genuin/ui/components/avatar";
 import { Skeleton } from "@genuin/ui/components/skeleton";
 import { LockIcon, PublicIcon } from "@genuin/ui/icons";

@@ -1,6 +1,6 @@
 import { Avatar } from "@genuin/ui/components/avatar";
 import { Image } from "@genuin/ui/components/image";
-import { ReadMore } from "@genuin/ui/components/read-more";
+import { ReadMore } from "@genuin/components/molecules/read-more";
 import { Skeleton } from "@genuin/ui/components/skeleton";
 import { abbreviateNumber, cn } from "@genuin/ui/lib/utils";
 import React from "react";

@@ -12,8 +12,8 @@ import { Tag } from "@genuin/components/molecules/tag";
 
 import { Guidelines } from "./guide-lines";
 import { cva, VariantProps } from "class-variance-authority";
-import { ReadMore } from "@genuin/ui/components/read-more";
-import { ReadMoreTextType } from "@genuin/ui/components/read-more/read-more.types";
+import { ReadMore } from "@genuin/components/molecules/read-more";
+import { ReadMoreTextType } from "@genuin/components/molecules/read-more/read-more.types";
 import { SocialLinks } from "@genuin/components/molecules/social-links";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 
@@ -149,7 +149,7 @@ export function SideInfo({
               }
               title="Created by"
               entity={createdBy}
-              size={variant === "default" ? "md" : "sm"}
+              size={"sm"}
             />
           )}
           {createdIn && (
@@ -162,7 +162,7 @@ export function SideInfo({
               }
               title="Created in&nbsp;"
               entity={createdIn}
-              size={variant === "default" ? "md" : "sm"}
+              size={"sm"}
             />
           )}
           {stats && variant === "mobile" && (

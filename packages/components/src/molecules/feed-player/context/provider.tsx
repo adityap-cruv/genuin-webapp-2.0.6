@@ -26,8 +26,11 @@ type VideoProviderProps = {
    * Post list index - used to compare against previous index
    *
    */
-  index: number;
-  swiper: Swiper;
+  index?: number;
+  /**
+   * Swiper instance for the video player.
+   */
+  swiper?: Swiper;
   /**
    * If player is active or not.
    */
@@ -247,22 +250,22 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   // toggleMuted: Toggles the muted state of the player.
   const toggleMuted = useCallback(
     (byUser: boolean) => {
-      setMuted((prev) => {
-        if (byUser) {
-          if (prev) {
-            setButtonAction("UNMUTE");
-          } else {
-            setButtonAction("MUTE");
-          }
-          // Track mute/unmute events with Analytics only if the video mute/unmute is triggered by user.
-          track(prev ? EventName.VIDEO_UNMUTED : EventName.VIDEO_MUTED, {
+      if (byUser) {
+        if (muted) {
+          setButtonAction("UNMUTE");
+          track(EventName.VIDEO_UNMUTED, {
+            content_id: videoId,
+          });
+        } else {
+          setButtonAction("MUTE");
+          track(EventName.VIDEO_MUTED, {
             content_id: videoId,
           });
         }
-        return !prev;
-      });
+      }
+      setMuted((oldMuted) => !oldMuted);
     },
-    [setMuted, EventName.VIDEO_UNMUTED, EventName.VIDEO_MUTED]
+    [setMuted]
   );
 
   // mute: Mutes the player.

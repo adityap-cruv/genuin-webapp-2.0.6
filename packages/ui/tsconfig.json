@@ -14,10 +14,13 @@
       "node"
     ],
     "paths": {
-      "@genuin/ui": ["./src"],
-      "@genuin/ui/*": ["./src/*"]
+      "@genuin/ui": [
+        "./src"
+      ],
+      "@genuin/ui/*": [
+        "./src/*"
+      ]
     },
-
   },
   "include": [
     "src",

@@ -1,5 +1,5 @@
 import { Avatar } from "@genuin/ui/avatar";
-import { ReadMore } from "@genuin/ui/read-more";
+import { ReadMore } from "@genuin/components/molecules/read-more";
 
 import type { CommentListType } from "src/react-query/api/comments";
 import { cn, getTimeAgo } from "@genuin/ui/utils";
@@ -18,8 +18,6 @@ import { ComponentProps } from "react";
 import { useAuthContext } from "@genuin/components/context/auth";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
-import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import { useBaseContext } from "@genuin/components/context";
 
 export type CommentItemProps = {
   comment: CommentListType[number];
@@ -28,34 +26,6 @@ export type CommentItemProps = {
     typeof ReactionButton
   >["onReactionStateChange"];
 };
-
-/**
- * Creates a URL for user or brand profile based on redirection settings
- * @param userRedirection Whether user redirection is enabled
- * @param whiteLabelUrl The white label URL from brand details
- * @param ownerBrand The brand details of the owner if available
- * @param nickname The nickname of the user
- * @returns The appropriate URL for the profile
- */
-function createProfileUrl(
-  userRedirection: boolean,
-  whiteLabelUrl: string | undefined,
-  ownerBrand: any | undefined,
-  nickname: string
-): string {
-  if (userRedirection && whiteLabelUrl) {
-    if (ownerBrand) {
-      return `${whiteLabelUrl}/brand/${ownerBrand.brand_slug}`;
-    } else {
-      return `${whiteLabelUrl}/profile/${nickname}`;
-    }
-  }
-
-  return buildPageUrl({
-    type: !!ownerBrand ? "brand" : "profile",
-    slug: !!ownerBrand ? ownerBrand.brand_slug : nickname,
-  });
-}
 
 // TODO: Check why brand is not handled in the comment item
 export function CommentItem({
@@ -66,12 +36,6 @@ export function CommentItem({
   const { owner } = comment;
   const { user } = useAuthContext();
   const { isMobile } = useDeviceDetectMediaQuery();
-  const { brandDetails } = useBaseContext();
-  const {
-    engagement: {
-      redirectionTools: { user: userRedirection },
-    },
-  } = useEmbedConfigs();
 
   return (
     <div
@@ -88,12 +52,10 @@ export function CommentItem({
           <div className="gencl:flex gencl:items-center">
             <ProfileLink
               className="gencl:text-body-1-semi-bold"
-              url={createProfileUrl(
-                userRedirection,
-                brandDetails?.white_label_url,
-                owner.brand,
-                owner.nickname
-              )}
+              url={buildPageUrl({
+                type: !!owner.brand ? "brand" : "profile",
+                slug: !!owner.brand ? owner.brand.brand_slug : owner.nickname,
+              })}
             >
               @{owner.nickname}
             </ProfileLink>
@@ -162,8 +124,6 @@ export function CommentContent({
   comment: CommentListType[number];
 }) {
   const { showExpandView } = useFeedContext();
-  const { brandDetails } = useBaseContext();
-  const { view } = useEmbedConfigs();
 
   return (
     <>
@@ -176,8 +136,6 @@ export function CommentContent({
           }
           maxLines={2}
           textClassName="gencl:text-secondary-900 gencl:break-all gencl:text-body-1-medium"
-          whiteLabelUrl={brandDetails.white_label_url}
-          redirectionFlag={view.isCarousel || view.isFeed}
         />
       )}
       {comment.type === "video" && (

@@ -1,4 +1,4 @@
-import { ReadMore } from "@genuin/ui/read-more";
+import { ReadMore } from "@genuin/components/molecules/read-more";
 import { cn, getTimeAgo } from "@genuin/ui/utils";
 import { type ComponentProps } from "react";
 

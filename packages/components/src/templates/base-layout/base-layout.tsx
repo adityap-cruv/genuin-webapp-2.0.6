@@ -13,6 +13,7 @@ import { usePathname } from "@genuin/components/hooks/use-pathname";
 import { useSearchParams } from "@genuin/components/hooks/use-search-params";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useEmbedContext } from "@genuin/components/context/embed";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 
 type BaseLayoutProps = ComponentProps<"section">;
 
@@ -35,10 +36,10 @@ export function BaseLayout({
   const pathname = usePathname();
   const { searchParams, getSearchParams } = useSearchParams();
   const { layoutConfig } = useEmbedConfigs();
-  const embedDetails = useEmbedContext();
+  const embedDetails = useSafeEmbedContext();
 
   // Use rootElement height if available, otherwise fall back to window height
-  const effectiveHeight = embedDetails.rootElement?.offsetHeight ?? height;
+  const effectiveHeight = embedDetails?.rootElement?.offsetHeight ?? height;
 
   // Update shouldUseDarkTheme when searchParams or pathname changes
   const [shouldUseDarkTheme, setShouldUseDarkTheme] = useState(false);

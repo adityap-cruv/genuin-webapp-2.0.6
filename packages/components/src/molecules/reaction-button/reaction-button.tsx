@@ -1,13 +1,9 @@
+"use client";
 import { useAuthContext } from "@genuin/components/context/auth";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { Button as PrimitiveButton } from "@genuin/ui/button";
 import { Toast } from "@genuin/ui/components/toaster";
 import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@genuin/ui/components/popover/popover";
 import { useVideoReationMutation } from "@genuin/components/react-query/api/feed/spark";
 import { ComponentProps, useCallback, useEffect, useMemo } from "react";
 import { DynamicReactionIcon } from "./dynamic-reaction-icon";

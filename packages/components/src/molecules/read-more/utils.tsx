@@ -1,12 +1,8 @@
 import React from "react";
 
-import { cn, tryJsonParse } from "@genuin/ui/lib/utils";
-
-// Define PATH_NAME locally since it's used in the component
-const PATH_NAME = {
-  profile: (username: string) => `/profile/${username}`,
-  community: (slug: string) => `/community/${slug}`,
-};
+import { cn } from "@genuin/ui/lib/utils";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { Link } from "../link";
 
 // Utility function to apply line clamp styles to an element
 export function applyLineClampStyles(
@@ -126,9 +122,7 @@ export function convertUrlsToAnchorTags(
  */
 export function renderAnchorTag(
   item: AnchorTagType,
-  index: number,
-  whiteLabelUrl?: string,
-  redirectionFlag?: boolean
+  index: number
 ): React.ReactNode {
   // Handle primitive types
   if (typeof item === "string" || item === null) {
@@ -152,60 +146,30 @@ export function renderAnchorTag(
         ? item.url
         : `https://${item.url.replace(/^\/+/g, "")}`;
 
-      return React.createElement(
-        "a",
-        {
-          ...commonProps,
-          href,
-          // Only add target="_blank" if redirectionFlag is not explicitly false
-          ...(redirectionFlag !== false
-            ? { target: "_blank", rel: "noopener noreferrer" }
-            : {}),
-        },
-        item.text
+      return (
+        <Link href={href} {...commonProps}>
+          {item.text}
+        </Link>
       );
     }
 
     case "member": {
       const username = item.text.slice(1);
-      const href =
-        redirectionFlag && whiteLabelUrl
-          ? `${whiteLabelUrl.replace(/\/+$/, "")}/profile/${username}`
-          : PATH_NAME.profile(username);
+      const href = buildPageUrl({ type: "profile", slug: username });
 
-      return React.createElement(
-        "a",
-        {
-          ...commonProps,
-          href,
-          // If redirectionFlag is true and whiteLabelUrl exists, open in new tab
-          // If redirectionFlag is false, never open in new tab
-          ...(redirectionFlag && whiteLabelUrl
-            ? { target: "_blank", rel: "noopener noreferrer" }
-            : {}),
-        },
-        item.text
+      return (
+        <Link href={href} {...commonProps}>
+          {item.text}
+        </Link>
       );
     }
 
     case "community": {
-      const href =
-        redirectionFlag && whiteLabelUrl
-          ? `${whiteLabelUrl.replace(/\/+$/, "")}/community/${item.slug}`
-          : PATH_NAME.community(item.slug);
-
-      return React.createElement(
-        "a",
-        {
-          ...commonProps,
-          href,
-          // If redirectionFlag is true and whiteLabelUrl exists, open in new tab
-          // If redirectionFlag is false, never open in new tab
-          ...(redirectionFlag && whiteLabelUrl
-            ? { target: "_blank", rel: "noopener noreferrer" }
-            : {}),
-        },
-        item.text
+      const href = buildPageUrl({ type: "community", slug: item.slug });
+      return (
+        <Link href={href} {...commonProps}>
+          {item.text}
+        </Link>
       );
     }
 

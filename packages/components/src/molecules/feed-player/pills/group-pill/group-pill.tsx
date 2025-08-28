@@ -15,7 +15,6 @@ import { GroupHoverCard } from "../group-hover-card";
 import { ComponentProps, useState, useEffect, useRef } from "react";
 import { JoinGroupButton } from "@genuin/components/molecules/join-group-button";
 import { GroupIcon } from "@genuin/ui/icons";
-import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 
 const groupPillVariants = cva(
@@ -64,11 +63,6 @@ export function GroupPill({
     undefined | boolean
   >(undefined);
   const prevSubscriptionStatus = useRef<boolean | undefined>(undefined);
-  const {
-    engagement: {
-      redirectionTools: { group },
-    },
-  } = useEmbedConfigs();
   const embedDetails = useSafeEmbedContext();
   const isWalmart = embedDetails?.embedData.card_layout_id === 6;
 
@@ -99,15 +93,7 @@ export function GroupPill({
   } • Join ${groupDetails.name} to talk about it`;
 
   const pill = (
-    <Link
-      href={
-        group
-          ? groupDetails.shareUrl
-          : buildPageUrl({ type: "group", slug: groupDetails.slug })
-      }
-      enabled={group}
-      {...(group ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-    >
+    <Link href={buildPageUrl({ type: "group", slug: groupDetails.slug })}>
       <div className={groupPillVariants({ variant, className })}>
         <div className="gencl:flex gencl:gap-1 gencl:items-center gencl:line-clamp-1 gencl:break-all">
           <div className="gencl:rounded-full gencl:bg-secondary-300 gencl:p-1">

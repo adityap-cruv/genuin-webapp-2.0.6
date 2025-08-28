@@ -88,12 +88,4 @@ export type ReadMoreProps = {
    * Custom class name for the link wrapper
    */
   linkClassName?: string;
-  /**
-   * whiteLabelUrl for embed redirection
-   */
-  whiteLabelUrl?: string;
-  /**
-   * check redirectionFlag case, For comment mentions based on config we have to open it in new tab
-   */
-  redirectionFlag?: boolean;
 } & Omit<ComponentProps<"p">, "children">;

@@ -1,3 +1,4 @@
+"use client";
 import { useRef } from "react";
 import { SideBar } from "../side-bar";
 import {

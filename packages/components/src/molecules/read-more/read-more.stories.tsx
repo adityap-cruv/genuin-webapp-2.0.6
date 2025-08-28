@@ -4,7 +4,7 @@ import React from "react";
 import { ReadMore } from "./read-more";
 
 const meta: Meta<typeof ReadMore> = {
-  title: "Components/ReadMore",
+  title: "Molecules/ReadMore",
   component: ReadMore,
   parameters: {
     layout: "centered",
@@ -77,7 +77,7 @@ export const OverlayPosition: Story = {
     text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     maxLines: 2,
     position: "overlay",
-    className : "gencl:bg-black"
+    className: "gencl:bg-black",
   },
   parameters: {
     backgrounds: {

@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState, useMemo, ComponentProps } from "react";
 import { LinkCard } from "@genuin/components/molecules/linkouts/single-link-card";
 import { MultiLinkCard } from "@genuin/components/molecules/linkouts/multi-link-card";

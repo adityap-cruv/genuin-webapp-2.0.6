@@ -14,8 +14,8 @@ import { useAuthContext } from "@genuin/components/context/auth";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { CommunityHoverCard } from "../community-hover-card";
 import { ComponentProps, useEffect, useState, useRef } from "react";
-import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import { usePrevious } from "@genuin/components/hooks/use-previous";
 
 const communityPillVariants = cva(
   "gencl:flex gencl:w-fit gencl:items-center gencl:gap-1 gencl:p-1 gencl:pr-2 gencl:rounded-full gencl:transition-all gencl:cursor-pointer",
@@ -53,15 +53,10 @@ export function CommunityPill({
   className,
 }: CommunityPillProps) {
   const { authenticationStatus } = useAuthContext();
-  const {
-    engagement: {
-      redirectionTools: { community },
-    },
-  } = useEmbedConfigs();
   const [localJoinStatus, setLocalJoinStatus] = useState(
     communityDetails.userRole
   );
-  const prevJoinStatus = useRef<string | undefined>(communityDetails.userRole);
+  const prevJoinStatus = usePrevious(communityDetails.userRole);
   const embedDetails = useSafeEmbedContext();
   const isWalmart = embedDetails?.embedData.card_layout_id === 6;
 
@@ -71,15 +66,11 @@ export function CommunityPill({
    * then hide it. For all other role changes, update immediately.
    */
   useEffect(() => {
-    if (
-      prevJoinStatus.current !== "MEMBER" &&
-      communityDetails.userRole === "MEMBER"
-    ) {
+    if (prevJoinStatus !== "MEMBER" && communityDetails.userRole === "MEMBER") {
       setLocalJoinStatus("MEMBER");
     } else {
       setLocalJoinStatus(communityDetails.userRole);
     }
-    prevJoinStatus.current = communityDetails.userRole;
   }, [communityDetails.userRole]);
 
   const hideButton =
@@ -89,13 +80,7 @@ export function CommunityPill({
 
   const pill = (
     <Link
-      href={
-        community
-          ? communityDetails.shareUrl
-          : buildPageUrl({ type: "community", slug: communityDetails.slug })
-      }
-      enabled={community}
-      {...(community ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+      href={buildPageUrl({ type: "community", slug: communityDetails.slug })}
     >
       <div className={communityPillVariants({ variant, className })}>
         <div className="gencl:flex gencl:gap-1 gencl:items-center gencl:line-clamp-1 gencl:break-all">

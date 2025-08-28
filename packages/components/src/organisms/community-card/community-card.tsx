@@ -3,7 +3,7 @@ import { Stats } from "../../molecules/stats";
 import { Image } from "@genuin/ui/components/image";
 import { Skeleton } from "@genuin/ui/components/skeleton";
 import { CommunityCardProps } from "./community-card.types";
-import { ReadMore } from "@genuin/ui/components/read-more";
+import { ReadMore } from "@genuin/components/molecules/read-more";
 import { JoinCommunityButton } from "@genuin/components/molecules/join-community-button";
 import { CommunityUserRole } from "@genuin/components/types/post";
 import {

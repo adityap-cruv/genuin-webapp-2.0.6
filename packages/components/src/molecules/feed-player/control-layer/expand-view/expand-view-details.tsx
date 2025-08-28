@@ -1,8 +1,8 @@
 "use client";
 import { Avatar } from "@genuin/ui/avatar";
-import { ReadMore } from "@genuin/ui/read-more";
+import { ReadMore } from "@genuin/components/molecules/read-more";
 import { cn, getFormattedDuration, getMonthYear } from "@genuin/ui/utils";
-import { useMemo, type ComponentProps, type ReactNode } from "react";
+import { useMemo, type ComponentProps } from "react";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { usePlayerContext } from "../../context";
 import { ProfileLink } from "@genuin/components/molecules/profile-link";
@@ -14,7 +14,6 @@ import { CommentsDialog } from "@genuin/components/molecules/comments";
 import { controlLayerVariant } from "../control-layer";
 import { VariantProps, cva } from "class-variance-authority";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
-import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 /**
  * Card Layout Types
@@ -46,22 +45,12 @@ const cardLayoutVariant = cva("", {
  * Default layout user profile display component
  */
 function DefaultUserProfile({ owner }: { owner: PostDetailsType["owner"] }) {
-  const {
-    engagement: {
-      redirectionTools: { user },
-    },
-  } = useEmbedConfigs();
-
   return (
     <ProfileLink
-      url={
-        user && owner.shareUrl
-          ? owner.shareUrl
-          : buildPageUrl({
-              type: !!owner.brand ? "brand" : "profile",
-              slug: !!owner.brand ? owner.brand.slug : owner.userName,
-            })
-      }
+      url={buildPageUrl({
+        type: !!owner.brand ? "brand" : "profile",
+        slug: !!owner.brand ? owner.brand.slug : owner.userName,
+      })}
       userLogoType={owner.brand?.userLogo}
     >
       @{owner.userName}
@@ -235,6 +224,7 @@ export function ExpandViewDetails({
             COMMENT: (defaultNode) => {
               return (
                 <CommentsDialog
+                  key="comment-dialog"
                   shareUrl={postDetails.video.shareUrl}
                   communityId={postDetails.community.id}
                   loopId={postDetails.group.id}

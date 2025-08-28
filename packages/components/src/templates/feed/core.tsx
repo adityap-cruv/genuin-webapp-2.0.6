@@ -173,7 +173,7 @@ export function FeedViewCore({
       <div
         id="gencl-feed-view"
         className={cn(
-          "gencl:flex gencl:w-full gencl:sm:py-4 gencl:sm:pr-4 gencl:h-full gencl:gap-4",
+          "gencl:flex gencl:w-full gencl:pt-4! gencl:sm:pr-4 gencl:h-full gencl:gap-4",
           {
             "gencl:fixed gencl:top-0 gencl:py-0! gencl:flex gencl:items-center gencl:mt-0 gencl:z-50 gencl:left-0 gencl:h-full gencl:w-full gencl:bg-black":
               showExpandView,

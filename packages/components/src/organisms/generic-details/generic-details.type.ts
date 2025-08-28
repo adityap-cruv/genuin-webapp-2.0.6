@@ -1,5 +1,5 @@
 import { LinksType } from "@genuin/components/molecules/social-links";
-import { ReadMoreTextType } from "@genuin/ui/components/read-more";
+import { ReadMoreTextType } from "@genuin/components/molecules/read-more";
 import { ComponentProps, ReactNode } from "react";
 import { GenericDetailsVariants } from "./generic-details.cva";
 import { Stats } from "@genuin/components/molecules/stats";

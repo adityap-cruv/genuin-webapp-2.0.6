@@ -181,9 +181,9 @@ export function parseColors(colors: any) {
       const colorCode = categoryColors[shade]
       const parsedShade = shade.split('_')[1]
       if (parsedShade) {
-        parsedColors[`--${category}-${parsedShade}`] = colorCode
+        parsedColors[`--gencl-color-${category}-${parsedShade}`] = colorCode
       } else {
-        parsedColors[`--${category}`] = colorCode
+        parsedColors[`--gencl-color-${category}`] = colorCode
       }
     }
   }

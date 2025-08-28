@@ -1,3 +1,4 @@
+"use client";
 import "swiper/css";
 import { Button } from "@genuin/ui/button";
 import { ChevronDown, ChevronUp } from "lucide-react";
@@ -12,12 +13,11 @@ import { Comments, CommentsDialog } from "../../molecules/comments";
 
 import { Player } from "./player";
 import { SwiperImplementation } from "./swiper-implementation";
-import { ComponentProps, useMemo, useState } from "react";
+import { ComponentProps, useState } from "react";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { abbreviateNumber, cn } from "@genuin/ui/lib/utils";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
-import { SearchIcon } from "@genuin/ui/icons";
 
 type PlayerListPropsType = {
   posts: PostDetailsType[];

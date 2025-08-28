@@ -5,14 +5,27 @@ import type { NextJSLinkProps } from "@genuin/components/context/link/type";
 import { useLinkContext } from "@genuin/components/context/link";
 import { navigate } from "@genuin/components/lib/utils/embed-router";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { useBaseContext } from "@genuin/components/context";
 
 type BaseLinkProps = ComponentProps<"a">;
 
 type ExtendedLinkProps = BaseLinkProps & Partial<NextJSLinkProps>;
 
 type LinkProps = ExtendedLinkProps & {
+  /**
+   * Pass false if want to disable the routing.
+   */
   enabled?: boolean;
 };
+
+/**
+ * Creates a URL for external links based on whitelabel settings.
+ */
+function createExternalUrl(whiteLabelHost: string, url: string) {
+  const urlObject = new URL(url, whiteLabelHost);
+  return urlObject.href;
+}
 
 /**
  * Checks if redirection is enabled for a given path based on redirection tools configuration
@@ -25,7 +38,7 @@ function checkRedirectionEnabled(
   redirectionTools:
     | { user?: boolean; community?: boolean; group?: boolean }
     | undefined
-): boolean {
+) {
   let isEnabled = true;
 
   if (
@@ -48,6 +61,16 @@ function checkRedirectionEnabled(
   return isEnabled;
 }
 
+function checkIfExternal(href: string) {
+  return (
+    href.startsWith("http://") ||
+    href.startsWith("https://") ||
+    href.startsWith("mailto:") ||
+    href.startsWith("tel:") ||
+    href.startsWith("//")
+  );
+}
+
 export function Link({
   className,
   href,
@@ -66,17 +89,46 @@ export function Link({
   ...restProps
 }: LinkProps) {
   const { LinkComponent, isNextJS, isCustomRouting } = useLinkContext();
+
+  // Extract engagement configurations for redirection tools and link behavior
   const {
-    engagement: { redirectionTools },
+    engagement: { redirectionTools, openAllLinksInNewTab },
   } = useEmbedConfigs();
-  const isEnabled = checkRedirectionEnabled(href, redirectionTools);
+
+  // Retrieve brand details from the base context
+  const { brandDetails } = useBaseContext();
+
+  // Determine if the href is an external link
+  let isHrefExternal = typeof href === "string" && checkIfExternal(href);
+
+  // Determine if routing/redirection should be enabled for the given href
+  const isEnabled = isHrefExternal
+    ? true
+    : checkRedirectionEnabled(href, redirectionTools);
+
+  // If the link is not external, modify href based on conditions
+  if (!isHrefExternal) {
+    if (
+      isEnabled &&
+      openAllLinksInNewTab &&
+      typeof href === "string" &&
+      brandDetails.white_label_url
+    ) {
+      // Create an external URL using the white-label host and update href
+      href = createExternalUrl(brandDetails.white_label_url, href);
+      isHrefExternal = true; // Uncomment if needed to mark as external
+    }
+  }
+
+  // Final determination of whether the link is external
+  const isExternal = isHrefExternal;
 
   if (!href || !enabled || !isEnabled) {
     return <>{children}</>;
   }
 
   // If it's an embed, return a placeholder or specific content
-  if (isCustomRouting) {
+  if (isCustomRouting && !isExternal) {
     const { onClick, ...restRestProps } = restProps;
 
     const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -102,15 +154,6 @@ export function Link({
       </span>
     );
   }
-
-  // Check if it's an external link
-  const isExternal =
-    typeof href === "string" &&
-    (href.startsWith("http://") ||
-      href.startsWith("https://") ||
-      href.startsWith("mailto:") ||
-      href.startsWith("tel:") ||
-      href.startsWith("//"));
 
   // Use anchor tag for external links
   if (isExternal || !LinkComponent) {

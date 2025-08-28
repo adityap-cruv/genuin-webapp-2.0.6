@@ -27,17 +27,11 @@ export function ProfileLink({
   ...restProps
 }: ProfileLinkPropsType) {
   const {
-    engagement: {
-      redirectionTools: { user },
-    },
     view: { isCarousel, isFeed },
   } = useEmbedConfigs();
+
   return (
-    <Link
-      href={url}
-      enabled={!!user}
-      {...(!!user ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-    >
+    <Link href={url}>
       <div className="gencl:flex gencl:items-center gencl:gap-1">
         <p {...restProps}>{children}</p>
         {isOwner && <Chip>Owner</Chip>}

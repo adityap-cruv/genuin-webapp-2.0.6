@@ -9,7 +9,7 @@ import { Link } from "../link";
 import type { TagProps } from "./tag.types";
 
 const tagVariants = cva(
-  "gencl:flex gencl:bg-secondary-50 gencl:rounded-full gencl:items-center gencl:gap-1",
+  "gencl:flex gencl:bg-secondary-100 gencl:rounded-full gencl:items-center gencl:gap-1",
   {
     variants: {
       size: {

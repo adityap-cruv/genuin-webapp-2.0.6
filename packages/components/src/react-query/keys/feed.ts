@@ -16,6 +16,7 @@ export function getQueryKeyForFeed(
     communityIds?: string[];
     groupIds?: string[];
     isEmbed?: boolean;
+    startVideoSlug?: string;
   }
 ): QueryKey {
   return options

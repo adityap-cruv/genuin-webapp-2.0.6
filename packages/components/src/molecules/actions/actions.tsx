@@ -254,6 +254,7 @@ export function Actions({
   const { engagement } = useEmbedConfigs();
 
   if (!engagement.showEngagementTools) return;
+
   const {
     engagementTools: { comment, repost, share, spark },
   } = engagement;

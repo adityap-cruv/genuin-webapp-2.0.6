@@ -61,6 +61,7 @@ function Button({
   groupId,
   role = "UNJOINED",
   disabled: propDisabled,
+  isPrivate,
   onClick,
   onGroupJoinStatusChange,
   ...restProps
@@ -123,7 +124,7 @@ function Button({
       }
     >
       {isLoading ? (
-        <Loader strokeColor="white" />
+        <Loader strokeColor={role === "JOINED" ? "black" : "white"} />
       ) : (
         (buttonTexts[role] ?? DEFAULT_BUTTON_TEXT[role])
       )}

@@ -35,6 +35,13 @@ export function FeedWithData({
   ...restProps
 }: FeedWithDataPropsType) {
   const embedDetails = useSafeEmbedContext();
+  const queryOptions = {
+    communityIds: embedDetails?.embedData?.customization.community_ids,
+    groupIds: embedDetails?.embedData?.customization.community_loop_ids?.map(
+      (item) => item.loop_id
+    ),
+    startVideoSlug: embedDetails?.embedData?.startVideoSlug,
+  };
   const {
     data,
     isLoading,
@@ -42,13 +49,7 @@ export function FeedWithData({
     hasNextPage,
     isFetchingNextPage,
     isError,
-  } = useFeed(feedType, {
-    communityIds: embedDetails?.embedData?.customization.community_ids,
-    groupIds: embedDetails?.embedData?.customization.community_loop_ids?.map(
-      (item) => item.loop_id
-    ),
-    startVideoSlug: embedDetails?.embedData?.startVideoSlug,
-  });
+  } = useFeed(feedType, queryOptions);
 
   const videos = useMemo(
     () => data?.pages.flatMap((page) => page.feed) ?? [],
@@ -56,7 +57,7 @@ export function FeedWithData({
   );
 
   const feedData: FeedData = {
-    queryKey: getQueryKeyForFeed(feedType),
+    queryKey: getQueryKeyForFeed(feedType, queryOptions),
     videos,
     isLoading,
     hasNextPage: hasNextPage ?? false,

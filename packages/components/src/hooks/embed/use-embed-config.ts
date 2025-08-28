@@ -25,7 +25,7 @@ export function useEmbedConfigs() {
   }
 
   const { customization, rootElement, embedData } = embedContextData;
-  const { brandDetails } = useBaseContext();
+  const { brandDetails, isEmbed } = useBaseContext();
   const { isMobile } = useDeviceDetectMediaQuery();
 
   // ============================================================
@@ -120,8 +120,7 @@ export function useEmbedConfigs() {
       enableCommunityClick: !!customization?.enable_community_click,
       enableBrandClick: !!customization?.enable_brand_click,
       showUserName: !!customization?.is_show_username,
-      showViewCount:
-        !!customization?.is_show_view_count
+      showViewCount: !!customization?.is_show_view_count,
     }),
     [customization]
   );
@@ -155,7 +154,9 @@ export function useEmbedConfigs() {
   const engagementConfig = useMemo(() => {
     return {
       showEngagementOnRootElement,
-      showEngagementTools: !!customization?.is_enable_engagement_tools,
+      showEngagementTools: isEmbed
+        ? !!customization?.is_enable_engagement_tools
+        : true,
       engagementTools: customization?.enable_engagement_tools || {
         repost: true,
         spark: true,
@@ -173,6 +174,8 @@ export function useEmbedConfigs() {
         group: true,
         user: true,
       },
+      openAllLinksInNewTab:
+        embedData?.style === "carousel" || embedData?.style === "feed",
     };
   }, [customization, rootElement, showEngagementOnRootElement]);
 
