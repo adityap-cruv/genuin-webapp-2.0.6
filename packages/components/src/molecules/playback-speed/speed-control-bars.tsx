@@ -1,3 +1,4 @@
+"use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@genuin/ui/lib/utils";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";

@@ -1,3 +1,4 @@
+"use client";
 import { type ComponentProps, useCallback, useState, useEffect } from "react";
 import { ScrubberSlider } from "./scrubber-slider";
 import { cn } from "@genuin/ui/utils";

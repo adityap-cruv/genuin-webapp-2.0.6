@@ -1,3 +1,4 @@
+"use client";
 import { VideoPlayer } from "@genuin/ui/components/video-player";
 import {
   memo,

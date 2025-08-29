@@ -1,3 +1,4 @@
+"use client";
 import { createContext, useContext } from "react";
 import { EmbedDataType } from "./embed.types";
 import { ActivePlayerType, createEmbedEventBus } from "./event-bus";

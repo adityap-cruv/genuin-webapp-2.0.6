@@ -1,3 +1,4 @@
+"use client";
 import { useState, useCallback } from "react";
 import { Button } from "@genuin/ui/button";
 import { useBaseContext } from "@genuin/components/context/base";
