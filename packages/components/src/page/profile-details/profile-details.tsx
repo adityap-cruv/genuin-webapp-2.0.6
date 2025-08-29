@@ -14,6 +14,8 @@ import { useBaseContext } from "@genuin/components/context/base";
 import { ProfileDetailsSkeleton } from "./skeleton";
 import { SideInfo } from "@genuin/components/organisms/side-info";
 import { useRouter } from "@genuin/components/hooks/use-router";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { getSocialLinks } from "@genuin/components/lib/utils";
 
 export function ProfileDetails({
   userName,
@@ -67,6 +69,7 @@ export function ProfileDetails({
     <div className="gencl:flex gencl:gap-2">
       {(forBrand || (!forBrand && profileData && profileData.brand)) && (
         <BecomeCreatorButton
+          size={isMobile ? "sm" : "md"}
           theme="primary"
           className="gencl:flex-grow gencl:sm:flex-grow-0!"
         />
@@ -76,6 +79,7 @@ export function ProfileDetails({
           type: !!profileData?.brand ? "brand" : "profile",
           slug: profileData?.nickname,
         })}
+        size={isMobile ? "sm" : "md"}
       />
     </div>
   );
@@ -95,9 +99,10 @@ export function ProfileDetails({
         ctas={
           <div className="gencl:flex gencl:gap-2">
             {(forBrand || (!forBrand && profileData && profileData.brand)) && (
-              <BecomeCreatorButton />
+              <BecomeCreatorButton size={isMobile ? "sm" : "md"} />
             )}
             <ShareButton
+              size={isMobile ? "sm" : "md"}
               pathName={buildPageUrl({
                 type: !!profileData.brand ? "brand" : "profile",
                 slug: !!profileData.brand
@@ -125,7 +130,10 @@ export function ProfileDetails({
           title={profileData?.name ?? ""}
           profileImageDetails={{
             imageUrl:
-              profileData?.profile_image_m ?? profileData?.profile_image ?? "",
+              profileData?.profile_image_l ??
+              profileData.profile_image_m ??
+              profileData?.profile_image ??
+              "",
             isAvatar: profileData.is_avatar,
             alt: profileData.name ?? "",
           }}
@@ -188,23 +196,31 @@ function About({
   if (!profileDetails) return;
 
   // Prepare links object
-  const links = {
-    linkedin: profileDetails.linkedin_id
-      ? profileDetails.linkedin_url + profileDetails.linkedin_id
-      : undefined,
-    instagram: profileDetails.insta_id
-      ? profileDetails.insta_url + profileDetails.insta_id
-      : undefined,
-    x: profileDetails.twitter_id
-      ? profileDetails.twitter_url + profileDetails.twitter_id
-      : undefined,
-    tiktok: profileDetails.tiktok_id
-      ? profileDetails.tiktok_url + profileDetails.tiktok_id
-      : undefined,
-    ...(Number(brandDetails?.brand_id) !== profileDetails?.brand?.brand_id && {
-      custom: profileDetails.brand?.brand_url,
-    }),
-  };
+  const links = getSocialLinks({
+    social_web_url:
+      Number(brandDetails?.brand_id) !== profileDetails?.brand?.brand_id
+        ? profileDetails.brand?.brand_url
+        : undefined,
+    linkedin: {
+      id: profileDetails.linkedin_id,
+    },
+    insta: {
+      id: profileDetails.insta_id,
+      url: profileDetails.insta_url,
+    },
+    tiktok: {
+      id: profileDetails.tiktok_id,
+      url: profileDetails.tiktok_url,
+    },
+    twitter: {
+      id: profileDetails.twitter_id,
+      url: profileDetails.twitter_url,
+    },
+    youtube: {
+      id: profileDetails.youtube_id,
+      url: profileDetails.youtube_url,
+    },
+  });
 
   // Check if there's any data to display (description or links)
   const hasDescription = !!profileDetails?.bio;

@@ -97,7 +97,11 @@ function GroupMembers({ slug, ownerId }: { slug: string; ownerId?: string }) {
         name: member.name ?? "",
         profileImage: {
           isAvatar: member.is_avatar,
-          url: member.profile_image_m ?? member.profile_image ?? "",
+          url:
+            member.profile_image_s ??
+            member.profile_image_m ??
+            member.profile_image ??
+            "",
         },
         userName: member.nickname ?? member.phone ?? member.member_id,
         isOwner: member.member_id === ownerId,

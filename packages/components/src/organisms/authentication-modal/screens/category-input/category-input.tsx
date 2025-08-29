@@ -80,7 +80,7 @@ export function CategoryInput({ ...props }: CategoryInputProps) {
   return (
     <div {...props}>
       <div className="gencl:text-center gencl:flex gencl:items-center gencl:gap-3 gencl:flex-col">
-        <p className="gencl:text-headline-2-semi-bold">
+        <p className="gencl:md:text-headline-2-semi-bold gencl:text-headline-3-semi-bold">
           {isSignupFlow
             ? "What are you interested in?"
             : "Select your interests"}
@@ -146,7 +146,7 @@ export function CategoryInput({ ...props }: CategoryInputProps) {
       <Button
         onClick={handleSurpriseMe}
         theme="secondary"
-        className="gencl:w-full gencl:mt-6"
+        className="gencl:w-full gencl:mt-4 gencl:md:mt-6"
         disabled={
           isPending ||
           isSurpriseMe ||

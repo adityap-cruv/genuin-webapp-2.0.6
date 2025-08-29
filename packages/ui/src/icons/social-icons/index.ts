@@ -6,3 +6,4 @@ export * from "./apple-icon";
 export * from "./multiple-dots-icon";
 export * from "./linkedin-icon";
 export * from "./you-tube-icon";
+export * from "./reddit-icon";

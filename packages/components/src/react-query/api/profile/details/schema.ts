@@ -32,6 +32,8 @@ const ProfileDetailsSchema = z.object({
   linkedin_id: z.string().nullish(),
   tiktok_url: z.string(),
   tiktok_id: z.string().nullish(),
+  youtube_url: z.string(),
+  youtube_id: z.string().nullish(),
   marketing_subscription: z.boolean().nullish(),
   profile_image: z.string(),
   profile_image_s: z.string().nullish(),

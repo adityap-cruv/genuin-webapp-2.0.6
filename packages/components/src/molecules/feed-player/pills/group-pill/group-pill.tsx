@@ -96,7 +96,7 @@ export function GroupPill({
     <Link href={buildPageUrl({ type: "group", slug: groupDetails.slug })}>
       <div className={groupPillVariants({ variant, className })}>
         <div className="gencl:flex gencl:gap-1 gencl:items-center gencl:line-clamp-1 gencl:break-all">
-          <div className="gencl:rounded-full gencl:bg-secondary-300 gencl:p-1">
+          <div className="gencl:rounded-full gencl:bg-secondary-600 gencl:p-1">
             <GroupIcon theme="dark" size="sm" />
           </div>
           <span className="gencl:text-body-2-medium gencl:line-clamp-1">
