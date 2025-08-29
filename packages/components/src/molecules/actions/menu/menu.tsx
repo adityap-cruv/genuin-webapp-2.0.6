@@ -44,7 +44,7 @@ const menuItems = ({
       {icon && icon}
       <p
         className={cn(
-          "gencl:!text-body-1-medium gencl:text-secondary-900 gencl:!md:text-secondary-600 gencl:hover:bg-secondary-50 gencl:rounded-md gencl:p-2 gencl:cursor-pointer",
+          "gencl:!text-body-1-medium gencl:text-secondary-900 gencl:md:!text-secondary-600 gencl:hover:bg-secondary-50 gencl:rounded-md gencl:p-2 gencl:cursor-pointer",
           className
         )}
       >
@@ -135,8 +135,8 @@ export function Menu({
     return (
       <Dialog type="menu-dialog">
         <DialogTrigger asChild>{children}</DialogTrigger>
-        <DialogContent className="gencl:p-3 gencl:border gencl:border-secondary-100 gencl:!rounded-t-2xl gencl:flex gencl:flex-col gencl:gap-0.5 gencl:z-50 gencl:!bg-white gencl:focus-visible:outline-none gencl:focus-visible:ring-0">
-          <p className="gencl:text-body-0-semi-bold">More options</p>
+        <DialogContent className="gencl:p-4 gencl:border gencl:border-secondary-100 gencl:rounded-none gencl:!rounded-t-2xl gencl:flex gencl:flex-col gencl:gap-1 gencl:z-50 gencl:!bg-white gencl:focus-visible:outline-none gencl:focus-visible:ring-0">
+          <p className="gencl:text-body-0-semi-bold gencl:p-1">More options</p>
           {MenuData.map((data, index) => (
             <React.Fragment key={index}>{data.children}</React.Fragment>
           ))}

@@ -57,6 +57,7 @@ function CommandDialog({
         className={cn("gencl:overflow-hidden gencl:p-0", contentClassName)}
         showClose={showClose}
         onClick={onClick}
+        closeIconClassName="gencl:top-2"
       >
         <Command
           className={cn(
