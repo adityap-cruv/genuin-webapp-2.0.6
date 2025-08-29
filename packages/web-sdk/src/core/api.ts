@@ -228,3 +228,5 @@ export class APIService {
     }
   }
 }
+
+export const apiService = APIService.getInstance()

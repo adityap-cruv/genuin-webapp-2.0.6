@@ -119,10 +119,10 @@ export default defineConfig({
 
   build: {
     lib: {
-      entry: resolve(__dirname, 'src/index.ts'),
+      entry: resolve(__dirname, 'src/new/index.ts'),
       name: 'GenuinSDK',
       formats: ['iife'],
-      fileName: () => `genuin-sdk.js`,
+      fileName: () => `gen-sdk.min.js`,
     },
     rollupOptions: {
       external: [],

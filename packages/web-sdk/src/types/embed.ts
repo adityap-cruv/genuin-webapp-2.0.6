@@ -79,3 +79,14 @@ export type SDKConfig = Partial<EmbedConfig> & {
   embed_page?: string
   embed_id?: string
 }
+
+export type EmbedDetailsType = {
+  name: string
+  style: string
+  type: string
+  brand_id: string
+  customization: any
+  embed_id: string
+  environment: string
+  // Add other properties as needed
+}

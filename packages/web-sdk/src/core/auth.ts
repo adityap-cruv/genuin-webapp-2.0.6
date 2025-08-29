@@ -68,7 +68,7 @@ export class TokenManager {
   async getCurrentUser(config?: {
     token?: string
     brandId?: number
-    params?: string
+    params?: Record<string, any>
   }): Promise<AuthUser | null> {
     try {
       let user: AuthUser | null = null
@@ -133,7 +133,7 @@ export class TokenManager {
   async handleConfigAuth(config: {
     token?: string
     brand_id?: number
-    params?: string
+    params?: Record<string, any>
   }): Promise<AuthUser | null> {
     // Remove token if not provided (like legacy SDK)
     if (!config.token) {
