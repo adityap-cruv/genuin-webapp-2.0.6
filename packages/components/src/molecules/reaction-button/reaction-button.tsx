@@ -45,6 +45,7 @@ type ReactionButtonProps = ComponentProps<typeof PrimitiveButton> & {
    */
   withCustomChildren?: boolean;
   onReactionStateChange?: (isReacted: boolean) => void;
+  videoId?: string;
 } & VariantProps<typeof reactionButtonVariant>;
 
 export function ReactionButton({
@@ -55,6 +56,7 @@ export function ReactionButton({
   reactionButtonTheme,
   showReactionCount,
   onClick,
+  videoId,
   ...restProps
 }: ReactionButtonProps) {
   const { authenticationStatus, handleAuthCallback } = useAuthContext();
@@ -87,6 +89,7 @@ export function ReactionButton({
       showReactionCount={showReactionCount}
       reactionCount={reactionCount}
       contentId={contentId}
+      videoId={videoId}
       onClick={(e) => {
         // Only trigger clickHandler for the default case, not for popover
         onClick?.(e);
@@ -179,6 +182,7 @@ function Button({
   children,
   withCustomChildren = false,
   onClick,
+  videoId,
   onReactionStateChange,
   ...restProps
 }: ReactionButtonProps) {
@@ -192,10 +196,15 @@ function Button({
     onSuccess: (isReacted) => {
       track(
         contentType === "COMMENT"
-          ? EventName.COMMENT_SPARK
-          : EventName.VIDEO_SPARK,
+          ? isReacted
+            ? EventName.COMMENT_SPARK
+            : EventName.COMMENT_UNSPARK
+          : isReacted
+            ? EventName.VIDEO_SPARK
+            : EventName.VIDEO_UNSPARK,
         {
           content_id: contentId,
+          video_id: videoId ?? contentId,
           content_category: "loop",
           event_record_screen: "feed",
           event_target_screen: "none",
