@@ -104,6 +104,11 @@ export const API_PATHS = {
    */
   AUTH_CONSUME_OTP: "/api/v4/auth/signinup/code/consume",
   /**
+   * API endpoint to refresh and validate the authentication token.
+   */
+  AUTH_REFRESH_TOKEN: "api/v4/auth/session/refresh",
+
+  /**
    * Api path to update email or phone number.
    */
   AUTH_UPDATE_EMAIL_OF_PHONE: "/api/v4/update_email_phone",

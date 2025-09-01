@@ -9,6 +9,7 @@ import { AuthBridge } from './auth-bridge'
 import { AnalyticsProvider } from '@genuin/components/context/analytics'
 import { LinkBridge } from './link-bridge'
 import { Search } from '@genuin/components/molecules/search'
+import { TokenRefreshProvider } from '@genuin/components/context/auth'
 
 interface SiteProvidersBaseProps {
   children: React.ReactNode
@@ -25,9 +26,11 @@ function CoreProviders({ children, config, session }: SiteProvidersBaseProps) {
       <BrandDetailsProviderClient brandDetails={config}>
         <SessionProvider refetchOnWindowFocus={false} refetchInterval={3600} session={session}>
           <AuthBridge>
-            <LinkBridge>
-              <AnalyticsProvider isWebSDK={false}>{children}</AnalyticsProvider>
-            </LinkBridge>
+            <TokenRefreshProvider>
+              <LinkBridge>
+                <AnalyticsProvider isWebSDK={false}>{children}</AnalyticsProvider>
+              </LinkBridge>
+            </TokenRefreshProvider>
           </AuthBridge>
         </SessionProvider>
       </BrandDetailsProviderClient>
