@@ -62,7 +62,7 @@ export function parseFeed(
       // cardLayoutType: mapVideoLayoutId(item.video.card_layout_id),
       // videoLayoutType: mapVideoLayoutId(item.video.video_layout_id),
       duration: item.video.duration || null,
-      attributes: item.video.attributes || null
+      attributes: item.video.attributes || null,
     },
     group: {
       id: item.loop.uuid,
@@ -118,6 +118,12 @@ export function parseFeed(
             userLogo: item.owner.brand.brand_user_logo || null,
           }
         : null,
+    },
+    section: {
+      id: item.section?._id || null,
+      title: item.section?.title || null,
+      description: item.section?.description || null,
+      position: item.section?.position || null,
     },
   }));
 }

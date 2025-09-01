@@ -24,6 +24,9 @@ const feedTypeToNumber: Record<FeedType, number> = {
   HOME: 1,
   LATEST: 2,
   POPULAR: 3,
+  EMBED_HOME: 1,
+  PLACEMENT_SECTIONS: 1,
+  SECTION_FEED: 1,
 };
 
 // TODO: Suggestion unify this api with all the apis for feed in profile/group/community. So that
@@ -62,34 +65,60 @@ async function fetchFeed(
     },
   };
 
-  // Build request body with only defined values
-  const requestBody: Record<string, any> = {
-    type: feedTypeToNumber[feedType],
-  };
+  // Select URL and build requestBody based on options
+  let url: string;
+  let requestBody: Record<string, any> = {};
+  switch (true) {
+    case feedType === "EMBED_HOME":
+      url = API_PATHS.EMBED_FEED_HOME;
+      requestBody = {
+        type: feedTypeToNumber[feedType],
+        ...(deviceId && { device_id: deviceId }),
+        ...(pageParam?.lastVideoId && { last_video_id: pageParam.lastVideoId }),
+        ...(pageParam?.pageSession && { page_session: pageParam.pageSession }),
+        ...(options?.communityIds?.length && {
+          community_ids: options.communityIds,
+        }),
+        ...(options?.groupIds?.length && { loop_ids: options.groupIds }),
+      };
+      break;
 
-  // Only add parameters if they have a value
-  if (pageParam?.lastVideoId) {
-    requestBody.last_video_id = pageParam.lastVideoId;
-  }
+    case feedType === "PLACEMENT_SECTIONS":
+      url = API_PATHS.PLACEMENT_SECTIONS;
+      requestBody = {
+        ...(deviceId && { device_id: deviceId }),
+        ...(options?.placementId && { placement_id: options.placementId }),
+        ...(options?.styleId && { style_id: options.styleId }),
+      };
+      break;
 
-  if (pageParam?.pageSession) {
-    requestBody.page_session = pageParam.pageSession;
-  }
+    case feedType === "SECTION_FEED":
+      url = API_PATHS.SECTION_FEED;
+      requestBody = {
+        ...(deviceId && { device_id: deviceId }),
+        // HANDLE IT FOR PAGINATION
+        ...(options?.lastVideoId && { last_video_id: options.lastVideoId }),
+        ...(options?.pageSession && { page_session: options.pageSession }),
+        ...(options?.sectionId && { section_id: options.sectionId }),
+      };
+      break;
 
-  if (deviceId) {
-    requestBody.device_id = deviceId;
-  }
-
-  if (options?.communityIds && options.communityIds.length > 0) {
-    requestBody.community_ids = options.communityIds;
-  }
-
-  if (options?.groupIds && options.groupIds.length > 0) {
-    requestBody.loop_ids = options.groupIds;
+    default:
+      url = API_PATHS.FEED_HOME;
+      requestBody = {
+        type: feedTypeToNumber[feedType],
+        ...(deviceId && { device_id: deviceId }),
+        ...(pageParam?.lastVideoId && { last_video_id: pageParam.lastVideoId }),
+        ...(pageParam?.pageSession && { page_session: pageParam.pageSession }),
+        ...(options?.communityIds?.length && {
+          community_ids: options.communityIds,
+        }),
+        ...(options?.groupIds?.length && { loop_ids: options.groupIds }),
+      };
   }
 
   return await axiosInstance
-    .post(options?.isEmbed ? API_PATHS.EMBED_FEED_HOME : API_PATHS.FEED_HOME, {
+    .post(url, {
       ...requestBody,
       ...contextualFeedParamsBody,
     })
@@ -100,15 +129,19 @@ async function fetchFeed(
       if (!res.data || !res.data.data) {
         return {
           feed: [],
+          hasSection: false,
           pageSession: undefined,
           endOfFeed: true,
+          timestamp: 0,
         };
       }
 
       return {
         feed: parseFeed(res.data.data.feeds),
+        hasSection: res.data.data.has_section ?? false,
         pageSession: res.data.data.page_session,
         endOfFeed: res.data.data.end_of_feed,
+        timestamp: res.data.data.timestamp,
       };
     })
     .catch(() => {
@@ -120,7 +153,12 @@ type UseFeedOptionsType = {
   communityIds?: string[];
   groupIds?: string[];
   startVideoSlug?: string;
-  isEmbed?: boolean;
+  enabled?: boolean;
+  placementId?: string;
+  styleId?: string;
+  sectionId?: string;
+  pageSession?: string;
+  lastVideoId?: string;
   contextualParams?: EmbedDataType["contextualParams"];
 };
 
@@ -129,7 +167,7 @@ type UseFeedOptionsType = {
  * @param feedType
  * @returns
  */
-type FeedPage = Awaited<ReturnType<typeof fetchFeed>>;
+export type FeedPage = Awaited<ReturnType<typeof fetchFeed>>;
 
 export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
   // Handle video details when startVideoSlug is provided
@@ -142,6 +180,7 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
     queryKey: getQueryKeyForFeed(feedType, options),
     queryFn: async ({ pageParam }) =>
       await fetchFeed(feedType, pageParam, options),
+    enabled: options?.enabled,
     initialPageParam: undefined,
     getNextPageParam: (lastPage) => {
       if (lastPage.endOfFeed) return undefined;
@@ -153,6 +192,8 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
       };
     },
     refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    staleTime: 0,
     // Conditional properties based on startVideoSlug
     ...(options?.startVideoSlug &&
       !videoDetailsQuery.isError && {
@@ -162,8 +203,10 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
               pages: [
                 {
                   feed: [videoDetailsQuery.data],
+                  hasSection: false,
                   pageSession: null,
                   endOfFeed: false,
+                  timestamp: 0,
                 },
               ],
               pageParams: [{ pageSession: "", lastVideoId: "" }],
@@ -194,8 +237,10 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
             ? [
                 {
                   feed: [videoDetailsQuery.data],
+                  hasSection: false,
                   pageSession: null,
                   endOfFeed: false,
+                  timestamp: 0,
                 },
                 ...infiniteQueryResult.data.pages,
               ]
@@ -206,8 +251,10 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
             pages: [
               {
                 feed: [videoDetailsQuery.data],
+                hasSection: false,
                 pageSession: null,
                 endOfFeed: false,
+                timestamp: 0,
               },
             ],
           }

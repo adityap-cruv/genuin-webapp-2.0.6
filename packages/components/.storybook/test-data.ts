@@ -1,15 +1,15 @@
 import { EmbedDataType } from "../src/context/embed/embed.types";
 
 export const testBrandDetails = {
-  brand_id: 1441,
-  type: 1,
-  is_claimed: true,
-  website: "https://www.walmart.com/",
-  name: "Walmart",
+  brand_id: 1429,
+  type: 3,
+  is_claimed: false,
+  website: "https://www.bmw.in/en/index.html",
+  name: "BMW",
   status: 1,
-  subdomain: "walmart",
-  logo: "https://media.begenuin.com/uploads/brands/logo/brandProfileLogo_1713970089341.png",
-  created_at: 1713969597,
+  subdomain: "ehlmoceg",
+  logo: "https://media.qa.begenuin.com/uploads/brands/logo/brandProfileLogo_1745490652674.png",
+  created_at: 1745489900,
   integrations: {
     sdk: {
       web: {
@@ -17,14 +17,13 @@ export const testBrandDetails = {
         hide_navbar: true,
       },
       android: {
-        enable: true,
+        enable: false,
         playstore_link:
-          "https://play.google.com/store/apps/details?id=com.walmart.android&hl=en_US&pli=1",
+          "https://play.google.com/store/apps/details?id=de.bmw.connected.mobile20.row&hl=en_IN",
       },
       ios: {
         enable: true,
-        appstore_link:
-          "https://apps.apple.com/us/app/walmart-shopping-savings/id338137227",
+        appstore_link: "https://apps.apple.com/us/app/my-bmw/id1519457734",
       },
     },
     white_label: {
@@ -35,32 +34,32 @@ export const testBrandDetails = {
   },
   brand_colors: {
     primary: {
-      primary: "#0071ce",
-      primary_100: "#e6f1fa",
-      primary_200: "#cce3f5",
-      primary_300: "#80b8e7",
-      primary_400: "#4d9cdd",
-      primary_600: "#004f90",
-      primary_700: "#003967",
+      primary: "#0166b1",
+      primary_100: "#e6f0f7",
+      primary_200: "#cce0ef",
+      primary_300: "#80b3d8",
+      primary_400: "#4d94c8",
+      primary_600: "#01477c",
+      primary_700: "#013359",
     },
     secondary: {
-      secondary: "#111111",
-      secondary_300: "#707070",
-      secondary_400: "#414141",
-      secondary_600: "#0e0e0e",
+      secondary: "#000000",
+      secondary_300: "#666666",
+      secondary_400: "#333333",
+      secondary_600: "#000000",
     },
     tertiary: {
-      tertiary: "#949494",
-      tertiary_100: "#fafafa",
-      tertiary_200: "#f4f4f4",
-      tertiary_300: "#d4d4d4",
-      tertiary_400: "#b4b4b4",
+      tertiary: "#acacac",
+      tertiary_100: "#fbfbfb",
+      tertiary_200: "#f7f7f7",
+      tertiary_300: "#dedede",
+      tertiary_400: "#c5c5c5",
     },
   },
   brand_web_logo:
-    "https://media.begenuin.com/uploads/brands/web_logo/brandWebLogo_1718186294261.png",
+    "https://media.qa.begenuin.com/uploads/brands/web_logo/brandWebLogo_1745490382966.png",
   favicon:
-    "https://media.begenuin.com/uploads/brands/favicon/brandFavicon_1718186294262.png",
+    "https://media.qa.begenuin.com/uploads/brands/favicon/brandFavicon_1745490670049.png",
   is_wallet_enabled: false,
   global_reward_point_configs: {
     view: 1,
@@ -74,10 +73,10 @@ export const testBrandDetails = {
     brand: false,
     brand_sso_id: null,
   },
-  web_cta: "app",
+  web_cta: "both",
   is_interruption_disabled: false,
-  show_become_creator: false,
-  api_key: "8a4c63638d23c36eb19f6d8b7c89f7d784bd281074771a62",
+  show_become_creator: true,
+  api_key: "99ca94df0d557bd899758a108781a71aa608a2da6d6edf6a",
   reactions: {
     type: "like",
     title: "react",
@@ -85,30 +84,32 @@ export const testBrandDetails = {
     tooltip: "I like this!",
     keys: {
       comment_selected: {
-        png: "https://media.begenuin.com/webapp_assets/reactions/like/comment_selected.png",
-        svg: "https://media.begenuin.com/webapp_assets/reactions/like/comment_selected.svg",
+        png: "https://media.qa.begenuin.com/webapp_assets/reactions/like/comment_selected.png",
+        svg: "https://media.qa.begenuin.com/webapp_assets/reactions/like/comment_selected.svg",
       },
       comment_unselected: {
-        png: "https://media.begenuin.com/webapp_assets/reactions/like/comment_unselected.png",
-        svg: "https://media.begenuin.com/webapp_assets/reactions/like/comment_unselected.svg",
+        png: "https://media.qa.begenuin.com/webapp_assets/reactions/like/comment_unselected.png",
+        svg: "https://media.qa.begenuin.com/webapp_assets/reactions/like/comment_unselected.svg",
       },
       feed_animate: {
-        png: "https://media.begenuin.com/webapp_assets/reactions/like/feed_animate.png",
-        svg: "https://media.begenuin.com/webapp_assets/reactions/like/feed_animate.svg",
+        png: "https://media.qa.begenuin.com/webapp_assets/reactions/like/feed_animate.png",
+        svg: "https://media.qa.begenuin.com/webapp_assets/reactions/like/feed_animate.svg",
       },
       feed_selected: {
-        png: "https://media.begenuin.com/webapp_assets/reactions/like/feed_selected.png",
-        svg: "https://media.begenuin.com/webapp_assets/reactions/like/feed_selected.svg",
+        png: "https://media.qa.begenuin.com/webapp_assets/reactions/like/feed_selected.png",
+        svg: "https://media.qa.begenuin.com/webapp_assets/reactions/like/feed_selected.svg",
       },
       feed_unselected: {
-        png: "https://media.begenuin.com/webapp_assets/reactions/like/feed_unselected.png",
-        svg: "https://media.begenuin.com/webapp_assets/reactions/like/feed_unselected.svg",
+        png: "https://media.qa.begenuin.com/webapp_assets/reactions/like/feed_unselected.png",
+        svg: "https://media.qa.begenuin.com/webapp_assets/reactions/like/feed_unselected.svg",
       },
     },
   },
-  privacy_policy: null,
-  industry_type: 7,
-  terms_and_condition: null,
+  privacy_policy:
+    "https://www.bmw.in/en/footer/metanavigation/privacy-policy.html",
+  industry_type: 1,
+  terms_and_condition:
+    "https://www.bmw.in/en/footer/metanavigation/legal-disclaimer-imprint.html",
   mobile_configs: {
     video_autoplay: {
       type: 1,
@@ -118,11 +119,11 @@ export const testBrandDetails = {
     feed_video_play: {
       type: 1,
       repeat_video: 0,
-      swipe_after: 5,
+      swipe_after: 0,
     },
     linkout_delay: {
-      type: 2,
-      appear_after: 1,
+      type: 1,
+      appear_after: 10,
     },
     login_signup_popup: {
       enable: true,
@@ -165,7 +166,7 @@ export const testBrandDetails = {
       repeat_video: 0,
       swipe_after: 5,
     },
-    tap_behavior: 2,
+    tap_behavior: 3,
     linkout_delay: {
       type: 2,
       appear_after: 10,
@@ -200,8 +201,8 @@ export const testBrandDetails = {
   sitemap_configs: {
     asset_links_config: [],
   },
-  white_label_url: "https://walmart.begenuin.com",
-  protected_content: false,
+  white_label_url: "https://ehlmoceg.begenuin.com",
+  protected_content: true,
   pin_limit: {
     loop: 2,
     loop_videos: 2,
@@ -215,37 +216,15 @@ export const testBrandDetails = {
     video: true,
     audio: true,
   },
-  fonts_config: {
-    size: 0,
-    fonts: {
-      bold: "https://media.begenuin.com/webapp_assets/fonts/walmart/EverydaySansBold.otf",
-      bold_italic:
-        "https://media.begenuin.com/webapp_assets/fonts/walmart/EverydaySansBoldItalic.otf",
-      demi_bold:
-        "https://media.begenuin.com/webapp_assets/fonts/walmart/EverydaySansMedium.otf",
-      demi_bold_italic:
-        "https://media.begenuin.com/webapp_assets/fonts/walmart/EverydaySansMediumItalic.otf",
-      heavy:
-        "https://media.begenuin.com/webapp_assets/fonts/walmart/EverydaySansBlack.otf",
-      heavy_italic:
-        "https://media.begenuin.com/webapp_assets/fonts/walmart/EverydaySansBlackItalic.otf",
-      medium:
-        "https://media.begenuin.com/webapp_assets/fonts/walmart/EverydaySansRegular.otf",
-      regular:
-        "https://media.begenuin.com/webapp_assets/fonts/walmart/EverydaySansLight.otf",
-    },
-  },
   camera_enabled: true,
-  card_layout_id: 0,
-  video_layout_id: 0,
   default_embeds: [
     {
       embed_layout: "default",
-      _id: "68109f6e49520a8d125479a9",
+      _id: "680a127bf82af8fb0cb20556",
       name: "Home/Search Embed",
       style: "carousel",
       type: "brand_feed",
-      brand_id: 1441,
+      brand_id: 2910,
       is_default: true,
       customization: {
         dimensions: {
@@ -292,11 +271,11 @@ export const testBrandDetails = {
     },
     {
       embed_layout: "default",
-      _id: "68109f6e49520a8d125479aa",
+      _id: "680a127bf82af8fb0cb20557",
       name: "Blog Embed",
       style: "feed",
       type: "brand_feed",
-      brand_id: 1441,
+      brand_id: 2910,
       is_default: true,
       customization: {
         dimensions: {
@@ -344,11 +323,11 @@ export const testBrandDetails = {
     },
     {
       embed_layout: "default",
-      _id: "68109f6e49520a8d125479ab",
+      _id: "680a127bf82af8fb0cb20558",
       name: "Home/Search Embed1",
       style: "feed",
       type: "brand_feed",
-      brand_id: 1441,
+      brand_id: 2910,
       is_default: true,
       customization: {
         dimensions: {
@@ -394,11 +373,11 @@ export const testBrandDetails = {
     },
     {
       embed_layout: "default",
-      _id: "68109f6e49520a8d125479ac",
+      _id: "680a127bf82af8fb0cb20559",
       name: "Post-Sales Embed",
       style: "carousel",
       type: "brand_feed",
-      brand_id: 1441,
+      brand_id: 2910,
       is_default: true,
       customization: {
         dimensions: {
@@ -441,101 +420,11 @@ export const testBrandDetails = {
     },
     {
       embed_layout: "default",
-      _id: "68109f6e49520a8d125479ae",
-      name: "Home/Blog Embed",
-      style: "carousel",
-      type: "brand_feed",
-      brand_id: 1441,
-      is_default: true,
-      customization: {
-        dimensions: {
-          width: 1080,
-          height: 800,
-        },
-        enable_engagement_tools: {
-          repost: true,
-          spark: true,
-          comment: true,
-          share: true,
-        },
-        links: {
-          is_show_links: true,
-          position: "overlay",
-        },
-        show_navigation: false,
-        carousel_style: "default",
-        autoplay: true,
-        feed_display_pref: "default",
-        is_carousel_icon: false,
-        is_floating_view: true,
-        is_expanded_view: false,
-        is_show_username: false,
-        is_show_view_count: true,
-        is_enable_engagement_tools: true,
-        show_side_panel: false,
-        show_join_community_button: false,
-        show_community_share_button: false,
-        is_enable_redirection: false,
-        is_loop_video: false,
-        is_show_social_interaction_data: false,
-        community_ids: [],
-        is_popup_view: false,
-        video_crop: true,
-        community_loop_ids: [],
-      },
-    },
-    {
-      embed_layout: "default",
-      _id: "68109f6e49520a8d125479af",
-      name: "Home/Post Sales Embed",
-      style: "standard_wall",
-      type: "brand_feed",
-      brand_id: 1441,
-      is_default: true,
-      customization: {
-        dimensions: {
-          width: 1080,
-          height: 800,
-        },
-        enable_engagement_tools: {
-          repost: true,
-          spark: true,
-          comment: true,
-          share: true,
-        },
-        links: {
-          is_show_links: true,
-          position: "overlay",
-        },
-        show_navigation: true,
-        carousel_style: "default",
-        autoplay: false,
-        feed_display_pref: "default",
-        is_carousel_icon: false,
-        is_floating_view: false,
-        is_expanded_view: false,
-        is_show_username: false,
-        is_show_view_count: false,
-        is_enable_engagement_tools: true,
-        show_side_panel: false,
-        show_join_community_button: false,
-        show_community_share_button: false,
-        is_enable_redirection: false,
-        is_loop_video: true,
-        is_show_social_interaction_data: false,
-        community_ids: [],
-        is_popup_view: false,
-        video_crop: true,
-        community_loop_ids: [],
-      },
-    },
-    {
-      embed_layout: "default",
-      _id: "68109f6e49520a8d125479ad",
+      _id: "680a127bf82af8fb0cb2055a",
       name: "PDP Embed",
       style: "carousel",
       type: "brand_feed",
-      brand_id: 1441,
+      brand_id: 2910,
       is_default: true,
       customization: {
         dimensions: {
@@ -576,44 +465,132 @@ export const testBrandDetails = {
         community_loop_ids: [],
       },
     },
+    {
+      embed_layout: "default",
+      _id: "680a127bf82af8fb0cb2055b",
+      name: "Home/Blog Embed",
+      style: "carousel",
+      type: "brand_feed",
+      brand_id: 2910,
+      is_default: true,
+      customization: {
+        dimensions: {
+          width: 1080,
+          height: 800,
+        },
+        enable_engagement_tools: {
+          repost: true,
+          spark: true,
+          comment: true,
+          share: true,
+        },
+        links: {
+          is_show_links: true,
+          position: "overlay",
+        },
+        show_navigation: false,
+        carousel_style: "default",
+        autoplay: true,
+        feed_display_pref: "default",
+        is_carousel_icon: false,
+        is_floating_view: true,
+        is_expanded_view: false,
+        is_show_username: false,
+        is_show_view_count: true,
+        is_enable_engagement_tools: true,
+        show_side_panel: false,
+        show_join_community_button: false,
+        show_community_share_button: false,
+        is_enable_redirection: false,
+        is_loop_video: false,
+        is_show_social_interaction_data: false,
+        community_ids: [],
+        is_popup_view: false,
+        video_crop: true,
+        community_loop_ids: [],
+      },
+    },
+    {
+      embed_layout: "default",
+      _id: "680a127bf82af8fb0cb2055c",
+      name: "Home/Post Sales Embed",
+      style: "standard_wall",
+      type: "brand_feed",
+      brand_id: 2910,
+      is_default: true,
+      customization: {
+        dimensions: {
+          width: 1080,
+          height: 800,
+        },
+        enable_engagement_tools: {
+          repost: true,
+          spark: true,
+          comment: true,
+          share: true,
+        },
+        links: {
+          is_show_links: true,
+          position: "overlay",
+        },
+        show_navigation: true,
+        carousel_style: "default",
+        autoplay: false,
+        feed_display_pref: "default",
+        is_carousel_icon: false,
+        is_floating_view: false,
+        is_expanded_view: false,
+        is_show_username: false,
+        is_show_view_count: false,
+        is_enable_engagement_tools: true,
+        show_side_panel: false,
+        show_join_community_button: false,
+        show_community_share_button: false,
+        is_enable_redirection: false,
+        is_loop_video: true,
+        is_show_social_interaction_data: false,
+        community_ids: [],
+        is_popup_view: false,
+        video_crop: true,
+        community_loop_ids: [],
+      },
+    },
   ],
   slogan: {
-    text: "Save Money. Live Better.",
+    text: "Ultimate Driving Machine",
     image:
-      "https://media.begenuin.com/uploads/brands/slogan_image/20369be139801445.png",
+      "https://media.qa.begenuin.com/uploads/brands/slogan_image/1f397b1697801403.png",
     font: {
-      _id: "65fd65cf4eb212b22bcb840e",
+      _id: "65f04ccf322929c13ba07083",
       style: "normal",
       weight: "normal",
     },
   },
   environment: "PROD",
-  cta_config: {
-    button_color: "#0071ce",
-    text_color: "#FFFFFF",
-    button_radius: 20,
-  },
 };
 
 export const testEmbedData: EmbedDataType = {
-  _id: "6899e76291098466d50db763",
-  name: "Apple AirPods",
+  embed_layout: "default",
+  _id: "68ac0f803ba4058d9ec9711f",
+  name: "Carousel",
   style: "carousel",
-  type: "loop_feed",
-  brand_id: 1441,
+  placement_id: "68a70d3177806502ba2a9a57",
+  style_id: "68a70d3177806502ba2a9a58",
+  type: "brand_feed",
+  brand_id: 2910,
   customization: {
     dimensions: {
-      width:800,
+      width: 800,
       height: 600,
     },
     cta_button: {
-      text: "",
-      url: "",
       color: "#023F9A",
       text_color: "#FFFFFF",
+      text: "",
+      url: "",
     },
     enable_engagement_tools: {
-      repost: false,
+      repost: true,
       spark: true,
       comment: true,
       share: true,
@@ -623,41 +600,48 @@ export const testEmbedData: EmbedDataType = {
       group: true,
       user: true,
     },
+    // to change
     links: {
       is_show_links: false,
       position: "overlay",
     },
+
+    show_navigation: false,
     carousel_style: "default",
+
+    // key is different
     autoplay: false,
+
+    // key is missing
     feed_display_pref: "default",
-    heading: "",
+
     heading_text_color: "#212529",
-    sub_heading: "",
     sub_heading_text_color: "#6C757D",
     is_carousel_icon: false,
     is_floating_view: false,
+    is_expanded_view: false,
     is_show_username: false,
     is_show_view_count: false,
     is_enable_engagement_tools: true,
+
+    // missing
     show_side_panel: true,
+
     show_join_community_button: true,
     show_community_share_button: true,
     is_enable_redirection: true,
     is_loop_video: false,
     is_show_social_interaction_data: false,
     community_ids: [],
-    community_loop_ids: [
-      {
-        loop_id: "33e065a2-3e72-435f-bd36-63dae3d03b73",
-        community_id: "68b7eb35-822b-40b6-af2f-0d3d608ecdce",
-      },
-    ],
+
+    // missing
     is_popup_view: true,
     video_crop: true,
+
+    community_loop_ids: [],
   },
-  embed_layout: "default",
+
+  // diff key
   card_layout_id: 6,
   video_layout_id: 5,
-  __v: 0,
-  is_live: false,
 };

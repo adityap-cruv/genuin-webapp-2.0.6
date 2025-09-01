@@ -22,8 +22,4 @@ export type EmbedTileProps = {
   onPlayerIterationEnd: ComponentProps<
     typeof PlayerProvider
   >["onPlayerIterationEnd"];
-  /**
-   * Array of video titles for all videos in the grid
-   */
-  bucketList?: string[];
 } & ComponentProps<"div">;

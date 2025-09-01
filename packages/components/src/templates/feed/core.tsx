@@ -23,6 +23,8 @@ import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-d
 import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
 import { FeedViewPropsType } from "./feed.type";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+import { PlayerListWithSection } from "@genuin/components/organisms/player-swiper/player-swiper-with-sections";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 
 /**
  * Internal core presentation component for displaying feed data.
@@ -54,6 +56,8 @@ export function FeedViewCore({
   const { handleSwipeCount, dialogType, shouldShowDialog, closeDialog } =
     useInterruptionManager();
   const { isDesktop } = useDeviceDetectMediaQuery();
+  const embedDetails = useSafeEmbedContext();
+  const isSectioned = embedDetails?.embedEventBus.getContext().isSectioned;
   const showSidePanel = videos[activeIndex] && !showExpandView && isDesktop;
 
   // this useEffect is used to fetch the next page of videos when the user scrolls to the end of the list.
@@ -164,6 +168,17 @@ export function FeedViewCore({
     [setActiveIndex, hideGestureOverlay, showExpandView, videos]
   );
 
+  const playerListProps = {
+    startIndex,
+    posts: videos,
+    onActiveIndexChange: handleActiveIndexChange,
+    onReactionStateChange: handleReactionStateChange,
+    onCommunityJoinStatusChange: handleCommunityJoinStatusChange,
+    onGroupJoinStatusChange: handleGroupJoinStatusChange,
+    onGroupSubscriptionChange: handleGroupSubscriptionChange,
+    onCommentCountChange: handleCommentCountChange,
+  };
+
   if (isLoading) {
     return <FeedSkeleton variant={showExpandView ? "fullscreen" : "default"} />;
   }
@@ -182,16 +197,11 @@ export function FeedViewCore({
         )}
         {...restProps}
       >
-        <PlayerList
-          startIndex={startIndex}
-          posts={videos}
-          onActiveIndexChange={handleActiveIndexChange}
-          onReactionStateChange={handleReactionStateChange}
-          onCommunityJoinStatusChange={handleCommunityJoinStatusChange}
-          onGroupJoinStatusChange={handleGroupJoinStatusChange}
-          onGroupSubscriptionChange={handleGroupSubscriptionChange}
-          onCommentCountChange={handleCommentCountChange}
-        />
+        {isSectioned ? (
+          <PlayerListWithSection {...playerListProps} />
+        ) : (
+          <PlayerList {...playerListProps} />
+        )}
         {showSidePanel && (
           <PostSidePanel
             onGroupJoinStatusChange={handleGroupJoinStatusChange}

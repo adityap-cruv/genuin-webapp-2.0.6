@@ -16,6 +16,8 @@ const embedHeaderVariants = cva(
         carousel:
           "gencl:justify-between gencl:items-center gencl:flex-row gencl:h-[56px]",
         standard_wall: "",
+        grid: "",
+        dynamic: "",
       },
     },
     defaultVariants: {

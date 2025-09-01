@@ -13,6 +13,10 @@ import CryptoJS from 'crypto-es'
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import DOMPurify from 'dompurify'
+import {
+  EmbedDataType,
+  PlacementDataResponse,
+} from '@genuin/components/context/embed/embed.types'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -746,4 +750,89 @@ export function resolveVideoUrl(
 
   // Default behavior: prefer M3U8, fallback to MP4
   return m3u8VideoUrl || mp4VideoUrl
+}
+
+export function parsePlacementToEmbedData(
+  data: PlacementDataResponse,
+): EmbedDataType {
+  return {
+    _id: data._id,
+    name: data.name,
+    style: data.type ?? 'grid',
+    type: 'loop_feed',
+    brand_id: data.brand_id,
+    customization: {
+      dimensions: {
+        width: data.environments?.web?.configure_view?.dimensions?.width ?? 0,
+        height: data.environments?.web?.configure_view?.dimensions?.height ?? 0,
+      },
+      cta_button: {
+        text: data.environments?.web?.configure_view?.cta_button?.text ?? '',
+        url: data.environments?.web?.configure_view?.cta_button?.url ?? '',
+        color: data.environments?.web?.configure_view?.cta_button?.color ?? '',
+        text_color:
+          data.environments?.web?.configure_view?.cta_button?.text_color ?? '',
+      },
+      enable_engagement_tools: {
+        repost:
+          data.environments?.web?.expand_view?.enable_engagement_tools?.repost ?? false,
+        spark:
+          data.environments?.web?.expand_view?.enable_engagement_tools?.spark ?? false,
+        comment:
+          data.environments?.web?.expand_view?.enable_engagement_tools?.comment ?? false,
+        share:
+          data.environments?.web?.expand_view?.enable_engagement_tools?.share ?? false,
+      },
+      enable_redirection_tools: {
+        community:
+          data.environments?.web?.configure_view?.enable_redirection_tools?.community ??
+          false,
+        group:
+          data.environments?.web?.configure_view?.enable_redirection_tools?.group ??
+          false,
+        user:
+          data.environments?.web?.configure_view?.enable_redirection_tools?.user ?? false,
+      },
+      links: {
+        is_show_links:
+          data.environments?.web?.expand_view?.enable_linkout ?? false,
+        position:
+          data.environments?.web?.configure_view?.link_position ?? 'overlay',
+      },
+      carousel_style: 'default',
+      autoplay:
+        data.environments?.web?.configure_view?.media_play?.enable_autoplay,
+      feed_display_pref: 'default',
+      heading: '',
+      heading_text_color:
+        data.environments?.web?.configure_view?.heading_text_color,
+      sub_heading: '',
+      sub_heading_text_color:
+        data.environments?.web?.configure_view?.sub_heading_text_color,
+      is_carousel_icon: false,
+      is_floating_view: false,
+      is_show_username: data.environments?.web?.configure_view?.show_username,
+      is_show_view_count: false,
+      is_enable_engagement_tools:
+        data.environments?.web?.expand_view?.enable_engagement,
+      show_side_panel: false,
+      show_join_community_button: false,
+      show_community_share_button: false,
+      is_enable_redirection:
+        data.environments?.web?.expand_view?.enable_redirection,
+      is_loop_video:
+        data.environments?.web?.configure_view?.media_play?.enable_loop_video,
+      is_show_social_interaction_data:
+        data.environments?.web?.configure_view?.show_social_interaction_data,
+      community_ids: data.community_ids,
+      community_loop_ids: data.community_loop_ids,
+      is_popup_view: false,
+      video_crop: false,
+    },
+    embed_layout: 'default',
+    card_layout_id: 6,
+    video_layout_id: 5,
+    __v: data.__v,
+    is_live: data.is_live,
+  }
 }

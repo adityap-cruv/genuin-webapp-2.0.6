@@ -11,9 +11,61 @@ import { LinkProvider } from "../src/context/link";
 import { EmbedProvider } from "../src/context/embed";
 import { testBrandDetails, testEmbedData } from "./test-data";
 
+const testEmbedDataCarousel = {
+  ...testEmbedData,
+  style: "carousel",
+  customization: {
+    ...testEmbedData.customization,
+    carousel_style: "default",
+    autoplay: true,
+    dimensions: {
+      width: 800,
+      height: 500,
+    },
+  },
+};
+
+const testEmbedDataFeed = {
+  ...testEmbedData,
+  style: "feed",
+  customization: {
+    ...testEmbedData.customization,
+    feed_display_pref: "default",
+    autoplay: false,
+    dimensions: {
+      width: 300,
+      height: 600,
+    },
+  },
+};
+
+const testEmbedDataGrid = {
+  ...testEmbedData,
+  style: "grid",
+  customization: {
+    ...testEmbedData.customization,
+    dimensions: {
+      width: 300,
+      height: 600,
+    },
+  },
+};
+
 const preview: Preview = {
   decorators: [
     (Story, context) => {
+      let embedData;
+
+      if (context.name === "Embed Carousel") {
+        embedData = { ...testEmbedDataCarousel, ...context.args };
+      } else if (context.name === "Embed Feed") {
+        embedData = { ...testEmbedDataFeed, ...context.args };
+      } else if (context.name === "Embed Grid") {
+        embedData = { ...testEmbedDataGrid, ...context.args };
+      } else {
+        embedData = { ...testEmbedData, ...context.args };
+      }
+
       if (
         context.kind.toLowerCase().includes("web-sdk") ||
         context.title.toLowerCase().includes("web-sdk")
@@ -30,7 +82,7 @@ const preview: Preview = {
               <BaseContextProvider brandDetails={testBrandDetails} isEmbed>
                 <EmbedProvider
                   container={document.getElementById("gen-sdk") as HTMLElement}
-                  embedData={testEmbedData}
+                  embedData={embedData}
                 >
                   <AuthProvider
                     onSignIn={() => {}}

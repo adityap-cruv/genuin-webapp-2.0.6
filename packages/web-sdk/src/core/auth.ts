@@ -2,6 +2,7 @@ import { ACCESS_TOKEN_KEY } from '../const'
 import { APIService } from './api'
 import { AuthUser } from '../type'
 import { ErrorHandler, ErrorType } from './errors'
+import { LegacySDKConfig } from './config'
 
 export class TokenManager {
   private static instance: TokenManager
@@ -68,7 +69,7 @@ export class TokenManager {
   async getCurrentUser(config?: {
     token?: string
     brandId?: number
-    params?: string
+    params?: LegacySDKConfig['params']
   }): Promise<AuthUser | null> {
     try {
       let user: AuthUser | null = null
@@ -133,7 +134,7 @@ export class TokenManager {
   async handleConfigAuth(config: {
     token?: string
     brand_id?: number
-    params?: string
+    params?: LegacySDKConfig['params']
   }): Promise<AuthUser | null> {
     // Remove token if not provided (like legacy SDK)
     if (!config.token) {

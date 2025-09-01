@@ -4,6 +4,9 @@ export const FeedTypeSchema = z.union([
   z.literal("HOME"),
   z.literal("LATEST"),
   z.literal("POPULAR"),
+  z.literal("EMBED_HOME"),
+  z.literal("PLACEMENT_SECTIONS"),
+  z.literal("SECTION_FEED"),
 ]);
 
 export type FeedType = z.infer<typeof FeedTypeSchema>;

@@ -47,21 +47,7 @@ export function EmbedExpandView({
     ) => {
       if (context.activePlayerType === "expand-view") {
         setShowExpandView(true);
-        setStartIndex(context.activeIndex);
-
-        // CHECK ANY BETTER APPROACH
-        // When switching to expand view, emit an event to ensure videos continue playing
-        setTimeout(() => {
-          // Give a small delay to allow the DOM to update
-          embedEventBus.emit(
-            "activeIndexChange",
-            {},
-            {
-              ...context,
-              activeIndex: context.activeIndex,
-            }
-          );
-        }, 50);
+        setStartIndex(context.isSectioned ? 0 : context.activeIndex);
       } else {
         setShowExpandView(false);
       }

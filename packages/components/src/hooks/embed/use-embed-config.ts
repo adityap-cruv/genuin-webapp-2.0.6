@@ -7,6 +7,7 @@ import type { CustomizationType } from "@genuin/components/context/embed/embed.t
 
 const MIN_EMBED_WIDTH = 100;
 const MIN_EMBED_HEIGHT = 100;
+const MIN_GRID_WIDTH = 250;
 
 /**
  * Hook that extracts and organizes all customization values from the embed context
@@ -49,6 +50,7 @@ export function useEmbedConfigs() {
       isFeed: embedData?.style === "feed",
       isCarousel: embedData?.style === "carousel",
       isStandardWall: embedData?.style === "standard_wall",
+      isGrid: embedData?.style === "grid",
       showCarouselIcon: !!customization?.is_carousel_icon,
       showNavigation:
         customization?.show_navigation !== undefined
@@ -141,6 +143,13 @@ export function useEmbedConfigs() {
     if (
       embedData?.style === "carousel" &&
       rootElement.offsetHeight < MIN_EMBED_HEIGHT
+    ) {
+      return false;
+    }
+
+    if (
+      embedData?.style === "grid" &&
+      rootElement.offsetWidth < MIN_GRID_WIDTH
     ) {
       return false;
     }

@@ -14,16 +14,10 @@ export interface EmbedDimensions {
   availableHeight: number;
 }
 
-export interface EmbedDimensionsProps {
-  containerWidth?: number;
-  containerHeight?: number;
-}
-
-export function useEmbedDimensions(
-  config: ReturnType<typeof useEmbedConfigs>,
-  props: EmbedDimensionsProps = {}
-): EmbedDimensions {
+export function useEmbedDimensions() {
   const embedContext = useSafeEmbedContext();
+  const config = useEmbedConfigs();
+
   // State to hold observed dimensions as an object
   const [observedDimensions, setObservedDimensions] = useState<{
     width?: number;
@@ -51,8 +45,6 @@ export function useEmbedDimensions(
     };
   }, [embedContext?.rootElement]);
 
-  props.containerWidth = observedDimensions.width ?? props.containerWidth;
-  props.containerHeight = observedDimensions.height ?? props.containerHeight;
   return useMemo(() => {
     const DEFAULT_HEIGHT = 100;
     const DEFAULT_WIDTH = 100;
@@ -68,11 +60,13 @@ export function useEmbedDimensions(
     const linkoutHeight = config.links.showLinkOutside ? 108 : 0;
 
     const containerHeight =
-      props.containerHeight ??
+      observedDimensions.height ??
       config.dimensions.containerHeight ??
       DEFAULT_HEIGHT;
     const containerWidth =
-      props.containerWidth ?? config.dimensions.containerWidth ?? DEFAULT_WIDTH;
+      observedDimensions.width ??
+      config.dimensions.containerWidth ??
+      DEFAULT_WIDTH;
 
     const availableHeight = Math.max(
       containerHeight - headerHeight - statsHeight - linkoutHeight,
@@ -89,8 +83,6 @@ export function useEmbedDimensions(
       availableHeight,
     };
   }, [
-    props.containerHeight,
-    props.containerWidth,
     config.dimensions.containerHeight,
     config.dimensions.containerWidth,
     config.header.showHeader,

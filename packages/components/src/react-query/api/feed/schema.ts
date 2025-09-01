@@ -32,6 +32,7 @@ export const videoSchema = z.object({
   thumbnailSprite: z.string().nullish(),
   adUrl: z.string().nullish(),
   cardLayoutId: z.number().nullish(),
+  videoLayoutId: z.number().nullish(),
   duration: z.number().nullish().optional(),
   attributes: z
     .object({
@@ -41,7 +42,7 @@ export const videoSchema = z.object({
       timestamp: z.number().nullish(),
       title: z.string().nullish(),
       bucket_name: z.string().nullish(),
-      offer_text: z.string().nullish()
+      offer_text: z.string().nullish(),
     })
     .nullish()
     .optional(),
@@ -83,6 +84,7 @@ export const communitySchema = z.object({
   membersCount: z.number().nullish().default(0),
   groupsCount: z.number().nullish().default(0),
   postsCount: z.number().nullish().default(0),
+  type: z.number().nullish(),
 });
 
 export const BrandUserSchema = z.object({
@@ -99,15 +101,25 @@ export const ownerSchema = z.object({
   name: z.string().nullish(),
   brand: BrandUserSchema.nullish(),
   bio: z.string().nullish().optional(),
-  shareUrl: z.string().nullish()
+  shareUrl: z.string().nullish(),
 });
 
-// Define the PlayerVideoModal schema
+const SectionSchema = z
+  .object({
+    id: z.string().nullish(),
+    title: z.string().nullish(),
+    description: z.string().nullish(),
+    position: z.number().nullish()
+  })
+  .nullish()
+  .optional();
+
 const PostDetailsSchema = z.object({
   video: videoSchema,
   group: GroupSchema,
   community: communitySchema,
   owner: ownerSchema,
+  section: SectionSchema,
 });
 
 type PostDetailsType = z.infer<typeof PostDetailsSchema>;

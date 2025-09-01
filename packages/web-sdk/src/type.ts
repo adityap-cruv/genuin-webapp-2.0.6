@@ -39,9 +39,12 @@ export type SDKConfig = {
   }
   brand_ids?: number[]
   type?: 'brand_feed' | 'community_feed' | 'loop_feed'
-  action?: string
+  action?: ActionType
+  comment?: string
   authInfo?: AuthInfoType
 }
+
+type ActionType = 'spark' | 'comment-spark' | 'comment'
 
 type AuthInfoType = {
   signInUrl: string

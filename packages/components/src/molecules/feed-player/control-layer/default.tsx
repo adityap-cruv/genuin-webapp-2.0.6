@@ -98,11 +98,14 @@ export function Default({
           className={cn(
             isMobile
               ? "gencl:z-20"
-              : "gencl:group-hover:opacity-100 gencl:group-hover:pointer-events-auto gencl:opacity-0 gencl:pointer-events-none gencl:transition-opacity gencl:duration-300",
-            embedDetails?.embedData.card_layout_id === 6 &&
-              "gencl:from-transparent gencl:to-transparent gencl:top-12 gencl:sm:top-16",
-            embedDetails && showExpandView && "gencl:top-0"
+              : "gencl:group-hover:opacity-100 gencl:group-hover:pointer-events-auto gencl:opacity-0 gencl:pointer-events-none gencl:transition-opacity gencl:duration-300"
+            // embedDetails && showExpandView && "gencl:top-0"
           )}
+          variant={
+            embedDetails?.embedEventBus.getContext().isSectioned
+              ? "sectioned"
+              : "default"
+          }
         />
 
         {/* this is wallet badge for wallet. */}

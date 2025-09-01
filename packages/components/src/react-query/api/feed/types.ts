@@ -1,3 +1,18 @@
+type ScoreInfo = {
+  pop_score?: number;
+  rec_score?: number;
+  context_score?: number;
+  user_interest_score?: number;
+  final_score?: number;
+};
+
+type SectionInfo = {
+  _id?: string | null | undefined;
+  title?: string | null | undefined;
+  description?: string | null | undefined;
+  position?: number | null | undefined
+} | null;
+
 export type FeedResponseFromGoApi = Array<{
   uuid: string;
   type: string;
@@ -6,6 +21,8 @@ export type FeedResponseFromGoApi = Array<{
   repost?: FeedRepostInfo;
   video: VideoData;
   owner: FeedOwnerInfo;
+  score?: ScoreInfo;
+  section?: SectionInfo;
 }>;
 
 type VideoData = {
@@ -42,6 +59,7 @@ type VideoData = {
   duration?: number;
   is_transcribed?: boolean;
   linkouts_inappbrowser?: boolean;
+  owner?: FeedOwnerInfo;
   attributes?: {
     clip_type?: string;
     description?: string;
@@ -121,10 +139,15 @@ type FeedLoopInfo = {
   share_url?: string;
   member_info?: MemberInfo;
   is_subscriber?: boolean;
+  is_loop_subscriber?: boolean;
   logged_in_user_status?: number;
   is_view_allowed?: boolean;
   request_status?: number | null;
   actions: any;
+  no_of_views?: number;
+  no_of_members?: number;
+  no_of_videos?: number;
+  no_of_sparks?: number;
 };
 
 type FeedCommunityInfo = {
@@ -147,6 +170,8 @@ type FeedCommunityInfo = {
   no_of_members?: number | null;
   no_of_groups?: number | null;
   no_of_videos?: number | null;
+  no_of_views?: number;
+  no_of_sparks?: number;
   brand?: {
     brand_id: number;
     brand_slug: string;
@@ -158,7 +183,7 @@ type FeedCommunityInfo = {
 };
 
 type BrandInfo = {
-  brand_id: string;
+  brand_id: number;
   brand_slug: string;
   brand_user_logo: number;
 };

@@ -8,6 +8,14 @@ export const API_PATHS = {
    */
   EMBED_FEED_HOME: '/goservices/feed/embed/home',
   /**
+   * Api path to fetch placement sections.
+   */
+  PLACEMENT_SECTIONS: '/goservices/placement/sections',
+  /**
+   * Api path to fetch placement section feed.
+   */
+  SECTION_FEED: '/goservices/placement/feed',
+  /**
    * Api to spark a video or comment.
    */
   FEED_SPARK: "/api/v3/spark",

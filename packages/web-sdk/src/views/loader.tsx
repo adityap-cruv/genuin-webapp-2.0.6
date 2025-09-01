@@ -22,7 +22,8 @@ export function loadErrorView(container: HTMLElement): void {
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 200px;
+      height: 100%;
+      width: 100%;
       padding: 20px;
       font-family: Arial, sans-serif;
       color: #666;

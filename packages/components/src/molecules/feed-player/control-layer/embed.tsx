@@ -20,6 +20,9 @@ export const Embed: FC<ControlLayerPropsType> = ({
 }) => {
   const config = useEmbedConfigs();
   const embedDetails = useSafeEmbedContext();
+  const showLayout = config.engagement.showEngagementOnRootElement;
+
+  if (!showLayout) return;
 
   // embedtype 2 for iheart
   if (embedDetails?.embedData.card_layout_id === 2) {
@@ -192,8 +195,8 @@ export const Embed: FC<ControlLayerPropsType> = ({
         )}
 
         <div className="gencl:absolute gencl:bottom-0 gencl:p-2 gencl:space-y-2 gencl:w-full">
-          <p className="gencl:text-body-1-semi-bold gencl:text-white">
-            {postDetails.video.attributes?.bucket_name}
+          <p className="gencl:text-body-1-semi-bold gencl:text-white gencl:line-clamp-1">
+            {postDetails.section?.title}
           </p>
         </div>
       </div>
