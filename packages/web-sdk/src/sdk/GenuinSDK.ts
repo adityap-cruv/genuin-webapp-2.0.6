@@ -24,6 +24,7 @@ import { EmbedDataType } from '@genuin/components/context/embed/embed.types'
 import { BrandDetailsManager } from '@/core/brand-details-manager'
 import { loadErrorView, loadNewEmbed } from './react-utils'
 import { EmbedDetailsManager } from '@/core/embed-details-manager'
+import { AuthUser } from '@genuin/components/types/auth'
 
 export type ActionType =
   | 'spark'
@@ -34,6 +35,20 @@ export type ActionType =
   | 'join-community'
   | 'join-group'
   | 'subscribe-group'
+
+type AuthUserParams = {
+  name?: string | null
+  mobile?: string | null
+  email?: string | null
+  nickname?: string | null
+  profileImage?: string | null
+  brandUserIdentity?: string | null
+}
+
+type AuthInfoType = {
+  signInUrl: string
+  signUpUrl: string
+}
 
 /**
  * These are the config when user can pass while genuin.init or genuin.initialize.
@@ -52,7 +67,18 @@ type ConfigByUser = {
   }
   startVideoSlug?: string
   action?: ActionType
+  params?: AuthUserParams
+  authInfo: AuthInfoType
 }
+
+type SDKElementsType = Record<
+  string,
+  {
+    element: HTMLElement
+    config: Partial<SingleEmbedDataConfig>
+    isInitialzed: boolean
+  }
+>
 
 export type SingleEmbedDataConfig = {
   embedId: string
@@ -69,6 +95,8 @@ export type SingleEmbedDataConfig = {
   brand_ids?: number[]
   startVideoSlug?: string
   action?: ActionType
+  params?: AuthUserParams
+  authInfo?: AuthInfoType
 }
 
 export class GenuinSDK {
@@ -83,14 +111,7 @@ export class GenuinSDK {
   private isInitialized = false
   private embedInstances = new Map<string, any>()
   private embedDetailsManager: EmbedDetailsManager
-  private sdkElements: Record<
-    string,
-    {
-      element: HTMLElement
-      config: Partial<SingleEmbedDataConfig>
-      isInitialzed: boolean
-    }
-  > = {}
+  private sdkElements: SDKElementsType = {}
 
   private constructor() {
     this.configManager = ConfigManager.getInstance()
@@ -110,8 +131,12 @@ export class GenuinSDK {
     return GenuinSDK.instance
   }
 
+  /**
+   * Initializes the SDK with the provided configuration.
+   * This is new init method which will replace legacyInit.
+   * @param config User-provided configuration for the SDK.
+   */
   async newInit(config?: ConfigByUser) {
-    console.log('config by user.', config)
     this.getAndSetDivs(config)
 
     this.initializeAllEmbeds()
@@ -168,11 +193,24 @@ export class GenuinSDK {
         brandDetails,
       )
 
+      let user: AuthUser | undefined
+
+      if (config.token) {
+        user =
+          (await this.tokenManager.getCurrentUser({
+            token: config.token,
+            brandId: brandDetails.brand_id,
+          })) ?? undefined
+      }
+
+      console.log('loaded user id::', user)
+
       loadNewEmbed({
         container: element,
         embedData: embedDetails,
         brandDetails,
         config,
+        user,
       })
     } catch (errpr) {
       loadErrorView(element)
@@ -237,65 +275,88 @@ export class GenuinSDK {
 
     // extract one by one all data config for embed.
     for (const attr of possibleAttributeNames) {
-      const value = singleElement.getAttribute(attr)
-      if (value) {
-        switch (attr) {
-          case 'data-embed-id':
-            answerToReturn.embedId = value ?? configByUser?.embed_id
-            continue
-          case 'data-api-key':
-            answerToReturn.apiKey = value ?? configByUser?.api_key
-            continue
-          case 'data-token':
-            answerToReturn.token = value ?? configByUser?.token
-            continue
-          case 'data-lat':
-            answerToReturn.contextualParams =
-              answerToReturn.contextualParams || {}
-            answerToReturn.contextualParams.geo =
-              answerToReturn.contextualParams.geo || {}
-            answerToReturn.contextualParams.geo.lat = parseFloat(
-              value ?? configByUser?.contextualParams?.geo?.lat,
-            )
-            continue
-          case 'data-long':
-            answerToReturn.contextualParams =
-              answerToReturn.contextualParams || {}
-            answerToReturn.contextualParams.geo =
-              answerToReturn.contextualParams.geo || {}
-            answerToReturn.contextualParams.geo.long = parseFloat(
-              value ?? configByUser?.contextualParams?.geo?.long,
-            )
-            continue
-          case 'data-url':
-            answerToReturn.contextualParams =
-              answerToReturn.contextualParams || {}
-            answerToReturn.contextualParams.url =
-              value ?? configByUser?.contextualParams?.url
-            continue
-          case 'data-page-context':
-            answerToReturn.contextualParams =
-              answerToReturn.contextualParams || {}
-            answerToReturn.contextualParams.page_context =
-              value ?? configByUser?.contextualParams?.page_context
-            continue
-          case 'data-brand-ids':
+      let value = singleElement.getAttribute(attr)
+      console.log('attr, value :>> ', attr, value, configByUser)
+      switch (attr) {
+        case 'data-embed-id':
+          answerToReturn.embedId = value ?? configByUser?.embed_id
+          continue
+        case 'data-api-key':
+          answerToReturn.apiKey = value ?? configByUser?.api_key
+          continue
+        case 'data-token':
+          answerToReturn.token = value ?? configByUser?.token
+          continue
+        case 'data-lat':
+          answerToReturn.contextualParams =
+            answerToReturn.contextualParams || {}
+          answerToReturn.contextualParams.geo =
+            answerToReturn.contextualParams.geo || {}
+          value =
+            typeof value === 'string'
+              ? value
+              : typeof configByUser?.contextualParams?.geo?.lat === 'string'
+                ? configByUser?.contextualParams?.geo?.lat
+                : value !== undefined
+                  ? String(value)
+                  : null
+          if (typeof value === 'string') {
+            const parsedValue = parseFloat(value)
+            if (!isNaN(parsedValue)) {
+              answerToReturn.contextualParams.geo.lat = parsedValue
+            }
+          } else if (typeof value === 'number') {
+            answerToReturn.contextualParams.geo.lat = value
+          }
+          continue
+        case 'data-long':
+          answerToReturn.contextualParams =
+            answerToReturn.contextualParams || {}
+          answerToReturn.contextualParams.geo =
+            answerToReturn.contextualParams.geo || {}
+          const longValue = value ?? configByUser?.contextualParams?.geo?.long
+          if (typeof longValue === 'string') {
+            const parsedLong = parseFloat(longValue)
+            if (!isNaN(parsedLong)) {
+              answerToReturn.contextualParams.geo.long = parsedLong
+            }
+          } else if (typeof longValue === 'number') {
+            answerToReturn.contextualParams.geo.long = longValue
+          }
+          continue
+        case 'data-url':
+          answerToReturn.contextualParams =
+            answerToReturn.contextualParams || {}
+          answerToReturn.contextualParams.url =
+            value ?? configByUser?.contextualParams?.url
+          continue
+        case 'data-page-context':
+          answerToReturn.contextualParams =
+            answerToReturn.contextualParams || {}
+          answerToReturn.contextualParams.page_context =
+            value ?? configByUser?.contextualParams?.page_context
+          continue
+        case 'data-brand-ids':
+          if (value) {
             answerToReturn.brand_ids = value
               .split(' ')
               .map((item) => parseInt(item))
-            continue
-          case 'data-video-id':
-            answerToReturn.startVideoSlug =
-              value ?? configByUser?.startVideoSlug
-            continue
-          case 'data-action':
-            answerToReturn.action = (value ?? configByUser?.action) as
-              | ActionType
-              | undefined
-            continue
-        }
+          }
+          continue
+        case 'data-video-id':
+          answerToReturn.startVideoSlug = value ?? configByUser?.startVideoSlug
+          continue
+        case 'data-action':
+          answerToReturn.action = (value ?? configByUser?.action) as
+            | ActionType
+            | undefined
+          continue
       }
     }
+
+    // extras needed to set explicitly from user config.
+    answerToReturn.params = configByUser?.params
+    answerToReturn.authInfo = configByUser?.authInfo
 
     return answerToReturn
   }
@@ -310,156 +371,6 @@ export class GenuinSDK {
     element.setAttribute('data-instance-id', instanceId)
     return instanceId
   }
-
-  /**
-   * Legacy initialization method - handles both config objects and DOM-based initialization
-   * Maintains full compatibility with existing SDK usage patterns
-   */
-  async legacyInit(configOrObject?: any): Promise<void> {
-    try {
-      // Handle callback-based initialization (window.onGenuinReady)
-      if (typeof window !== 'undefined' && (window as any).onGenuinReady) {
-        return // Legacy callback handler will manage this
-      }
-      const divs = document.getElementsByClassName('gen-sdk-class')
-      const singleEmbed = divs.length === 1
-      const firstDiv = divs[0] as HTMLElement | undefined
-      if (singleEmbed && configOrObject) {
-        console.group(configOrObject)
-        if (!configOrObject.embed_id) {
-          configOrObject.embed_id = firstDiv?.getAttribute('data-embed-id')
-        }
-
-        if (!configOrObject.api_key) {
-          configOrObject.api_key = firstDiv?.getAttribute('data-api-key')
-        }
-        // Single embed initialization with config
-        // await this.initializeSingleEmbed(configOrObject)
-      } else {
-        // Multi-embed initialization from DOM
-        // await this.initializeFromDOM(configOrObject)
-      }
-    } catch (error) {
-      const sdkError = this.errorHandler.handleError(
-        ErrorType.INITIALIZATION_ERROR,
-        `Legacy init failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        { originalError: error instanceof Error ? error : undefined },
-      )
-      console.error(sdkError.message)
-      throw new Error(sdkError.message)
-    }
-  }
-
-  /**
-   * Initialize single embed with config object
-   */
-  // private async initializeSingleEmbed(
-  //   configOrObject: { config: LegacySDKConfig } | LegacySDKConfig,
-  // ): Promise<void> {
-  //   const div = document.getElementById('gen-sdk')
-  //   if (!div) {
-  //     throw new Error('Div element with id "gen-sdk" is required')
-  //   }
-
-  //   if (this.configManager.isContainerInitialized(div)) {
-  //     throw new Error(
-  //       'SDK is already initialized. Multiple initializations are not allowed.',
-  //     )
-  //   }
-
-  //   const config =
-  //     'config' in configOrObject ? configOrObject.config : configOrObject
-  //   const validation = this.configManager.validateLegacyConfig(config)
-
-  //   if (!validation.isValid) {
-  //     throw new Error(validation.errorMessage)
-  //   }
-
-  //   const instanceId = this.configManager.generateInstanceId()
-  //   this.configManager.markContainerInitialized(div, instanceId)
-
-  //   div.style.setProperty('display', 'block')
-  //   await this.performLegacySDKInitiation(div, config, instanceId)
-  // }
-
-  /**
-   * Initialize from DOM elements with data attributes
-   */
-  // private async initializeFromDOM(configOrObject?: any): Promise<void> {
-  //   const embedDivs = document.querySelectorAll(
-  //     '.gen-sdk-class:not([data-initialized])',
-  //   )
-
-  //   if (embedDivs.length === 0) {
-  //     throw new Error('No embed divs found')
-  //   }
-
-  //   for (const div of embedDivs) {
-  //     try {
-  //       const validation = this.configManager.validateDivAttributes(div)
-  //       if (!validation.isValid) {
-  //         console.error(`Skipping div: ${validation.errorMessage}`)
-  //         continue
-  //       }
-
-  //       const instanceId = this.configManager.generateInstanceId()
-  //       this.configManager.markContainerInitialized(
-  //         div as HTMLElement,
-  //         instanceId,
-  //       )
-
-  //       // Extract config from DOM attributes
-  //       const config = this.extractConfigFromDOM(div, configOrObject)
-  //       await this.performLegacySDKInitiation(
-  //         div as HTMLElement,
-  //         config,
-  //         instanceId,
-  //       )
-  //     } catch (error) {
-  //       console.error(`Failed to initialize embed div:`, error)
-  //     }
-  //   }
-  // }
-
-  /**
-   * Extract configuration from DOM element attributes
-   */
-  // private extractConfigFromDOM(
-  //   div: Element,
-  //   sourceConfig?: any,
-  // ): LegacySDKConfig {
-  //   const isConfigObject =
-  //     typeof sourceConfig === 'object' &&
-  //     sourceConfig !== null &&
-  //     'config' in sourceConfig
-
-  //   const source = isConfigObject ? sourceConfig.config : sourceConfig || {}
-
-  //   return {
-  //     placement_id: div.getAttribute('data-placement-id') ?? '',
-  //     style_id: div.getAttribute('data-style-id') ?? '',
-  //     embed_id: div.getAttribute('data-embed-id') ?? '',
-  //     api_key: div.getAttribute('data-api-key') ?? '',
-  //     token: source.token ?? '',
-  //     contextualParams: {
-  //       page_context: div.getAttribute('data-page-context') || null,
-  //       geo: {
-  //         lat: div.getAttribute('data-lat') || null,
-  //         long: div.getAttribute('data-long') || null,
-  //       },
-  //       url: div.getAttribute('data-url') || null,
-  //     },
-  //     brand_ids:
-  //       div
-  //         .getAttribute('data-brand-ids')
-  //         ?.split(' ')
-  //         .map((item) => parseInt(item)) || [],
-  //     params: source.params ?? '',
-  //     video: source.video ?? '',
-  //     action: source.action ?? '',
-  //     authInfo: source.authInfo,
-  //   }
-  // }
 
   /**
    * Core SDK initiation logic - handles all the critical legacy functionality

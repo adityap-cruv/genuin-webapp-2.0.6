@@ -1,6 +1,5 @@
 import { API_BASE_URL } from '../const'
 import { ErrorHandler, ErrorType } from './errors'
-import { type AuthUser } from '../type'
 import { type BrandDetailsConfigType } from '../type'
 import { encryptText } from '@genuin/components/lib/utils/encryption'
 import { getDeviceId } from '@genuin/components/lib/utils/device-id'
@@ -132,7 +131,12 @@ export class APIService {
     token: string,
     brandId: number,
     userParams?: Record<string, any>,
-  ): Promise<AuthUser | null> {
+  ): Promise<{
+    user: any
+    accessToken: string
+    refreshToken: string
+    autoLoginToken: string
+  } | null> {
     try {
       const deviceId = getDeviceId()
 
@@ -185,13 +189,13 @@ export class APIService {
       }
 
       const data = await response.json()
-      const user = data.data as AuthUser
-      if (user) {
-        user.autoLoginToken = token
-        user.accessToken = response.headers.get('Gn-Access-Token') || token
-        user.refreshToken = response.headers.get('Gn-Refresh-Token') || token
+      const user = data.data as any
+      return {
+        user,
+        accessToken: response.headers.get('Gn-Access-Token') || token,
+        refreshToken: response.headers.get('Gn-Refresh-Token') || token,
+        autoLoginToken: user.autoLoginToken,
       }
-      return user
     } catch (error) {
       const sdkError = this.errorHandler.handleError(
         ErrorType.AUTHENTICATION_ERROR,
@@ -212,7 +216,7 @@ export class APIService {
    * Get mini profile from stored access token
    * Used when user has previous session
    */
-  async getMiniProfile(): Promise<{ data: AuthUser | null }> {
+  async getMiniProfile(): Promise<{ data: any }> {
     try {
       const response = await fetch(`${API_BASE_URL}/api/v3/auth/profile`, {
         credentials: 'include', // Include cookies/session data
@@ -223,7 +227,7 @@ export class APIService {
       }
 
       const data = await response.json()
-      return { data: data.data as AuthUser }
+      return { data: data.data }
     } catch (error) {
       console.warn('Failed to get mini profile:', error)
       return { data: null }

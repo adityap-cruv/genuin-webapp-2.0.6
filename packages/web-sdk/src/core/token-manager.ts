@@ -1,8 +1,9 @@
 import { ACCESS_TOKEN_KEY } from '../const'
 import { APIService } from './api'
-import { AuthUser } from '../type'
+import { AuthUser } from '@genuin/components/types/auth'
 import { ErrorHandler, ErrorType } from './errors'
 import { LegacySDKConfig } from './config'
+import { getKsCbRequestStatus } from '@/utils/auth'
 
 export class TokenManager {
   private static instance: TokenManager
@@ -19,6 +20,41 @@ export class TokenManager {
       TokenManager.instance = new TokenManager()
     }
     return TokenManager.instance
+  }
+
+  /**
+   * Parse API user response to AuthUser type
+   */
+  private parseUserResponse({
+    apiUser,
+    accessToken,
+    refreshToken,
+    autoLoginToken,
+  }: {
+    apiUser: any
+    accessToken: string
+    refreshToken: string
+    autoLoginToken?: string
+  }): AuthUser {
+    return {
+      id: apiUser.user_id,
+      bio: apiUser.bio,
+      email: apiUser.email,
+      phoneNumber: apiUser.phone,
+      isAvatar: apiUser.is_avatar,
+      name: apiUser.name,
+      nickname: apiUser.nickname,
+      image: apiUser.profile_image,
+      accessToken,
+      ksCbRequestStatus: getKsCbRequestStatus(apiUser.ks_cb_request_status),
+      isBrandSystemUser: apiUser.is_brand_system_user,
+      brandId: apiUser.brand_id,
+      hasTopics: !apiUser.onboarding_topics,
+      usernameSet: !apiUser.is_username_generated,
+      brandGuidelines: apiUser.brand_guidelines,
+      refreshToken,
+      autoLoginToken,
+    }
   }
 
   /**
@@ -72,34 +108,41 @@ export class TokenManager {
     params?: LegacySDKConfig['params']
   }): Promise<AuthUser | null> {
     try {
-      let user: AuthUser | null = null
-
       // If explicit token provided, use it
       if (config?.token && config?.brandId) {
-        user = await this.apiService.getAuthenticatedUserDetails(
+        const apiResponse = await this.apiService.getAuthenticatedUserDetails(
           config.token,
           config.brandId,
           config.params,
         )
 
-        if (user) {
-          user.autoLoginToken = config.token
+        if (apiResponse) {
           // Store token for future use
           this.setAccessToken(config.token)
+          return this.parseUserResponse({
+            apiUser: apiResponse.user,
+            accessToken: apiResponse.accessToken,
+            refreshToken: apiResponse.refreshToken,
+            autoLoginToken: apiResponse.autoLoginToken,
+          })
         }
       }
       // Otherwise, check for existing session
       else if (this.hasAccessToken()) {
         const profileResponse = await this.apiService.getMiniProfile()
-        user = profileResponse.data
+        const token = this.getAccessToken()
+        if (profileResponse.data && token) {
+          return this.parseUserResponse({
+            apiUser: profileResponse.data,
+            accessToken: token,
+            refreshToken: token,
+          })
+        }
       }
 
       // Remove token if authentication failed
-      if (!user) {
-        this.removeAccessToken()
-      }
-
-      return user
+      this.removeAccessToken()
+      return null
     } catch (error) {
       this.errorHandler.handleError(
         ErrorType.AUTHENTICATION_ERROR,

@@ -29,14 +29,7 @@ export type SDKConfig = {
     }
     url?: string | null
   }
-  params?: {
-    name?: string | null
-    mobile?: string | null
-    email?: string | null
-    nickname?: string | null
-    profileImage?: string | null
-    brandUserIdentity?: string | null
-  }
+
   brand_ids?: number[]
   type?: 'brand_feed' | 'community_feed' | 'loop_feed'
   action?: ActionType
@@ -224,182 +217,6 @@ export type UserParam = {
   thumb: string
 }
 
-export type EmbedDataType = {
-  name: string
-  style: ViewType
-  type: 'brand_feed' | 'community_feed' | 'loop_feed'
-  brand_id: string
-  customization: Partial<CustomizationType>
-  embed_id: string
-  brandDetails: BrandDetailsConfigType
-  environment: string
-  contextualParams?: SDKConfig['contextualParams']
-  elementId: string
-  brand_ids?: number[]
-  startVideoSlug?: string
-  action?: string
-  authInfo?: AuthInfoType
-}
-
-export type CustomizationType = {
-  dimensions: {
-    width: number
-    height: number
-  }
-  cta_button?: {
-    text: string
-    url: string
-    color?: string
-    text_color?: string
-  } | null
-  links: {
-    is_show_links: boolean
-    position: 'overlay' | 'outside'
-  }
-  autoplay: boolean
-  heading?: string | null
-  sub_heading?: string | null
-  is_carousel_icon: boolean
-  is_floating_view: boolean
-  is_show_username: boolean
-  is_show_view_count: boolean
-  is_loop_video: boolean
-  is_popup_view: boolean
-  is_show_social_interaction_data: boolean
-  heading_text_color?: string
-  sub_heading_text_color?: string
-  community_ids: string[]
-  community_loop_ids: {
-    loop_id: string
-    community_id: string
-  }[]
-  brandColors: Record<string, string>
-  element: HTMLElement
-  view: ViewType
-  enable_brand_click?: boolean
-  enable_community_click?: boolean
-  show_share_icon?: boolean
-  show_view_loop_button?: boolean
-  show_comments_section?: boolean
-  carousel_style?: 'focus'
-  is_enable_engagement_tools: boolean
-  enable_engagement_tools: {
-    repost: boolean
-    spark: boolean
-    comment: boolean
-    share: boolean
-  }
-  show_side_panel: boolean
-  show_join_community_button: boolean
-  show_navigation: boolean
-  show_community_share_button: boolean
-  is_enable_redirection: boolean
-  enable_redirection_tools: {
-    community: boolean
-    group: boolean
-    user: boolean
-  }
-  is_show_popup_by_default: boolean
-  theme: 'dark' | 'light'
-}
-
-export type FeedVideoType = {
-  community: {
-    brand_id: number
-    color_code: string
-    description: string
-    handle: string
-    name: string
-    share_string: string
-    share_url: string
-    slug: string
-    text_color_code: string
-    type: number
-    uuid: string
-    dp: string
-    dp_l?: string
-    dp_m?: string
-    dp_s?: string
-    logged_in_user_role?: number
-    is_join_requested?: boolean
-    brand?: {
-      brand_id: number
-      brand_slug: string
-      brand_user_logo: number
-      brand_web_logo: string
-      name: string
-    }
-  }
-  loop: {
-    color_code: string
-    group_description: string
-    group_id: string
-    group_name: string
-    settings: {
-      discoverable: boolean
-    }
-    share_string: string
-    share_url: string
-    slug: string
-    type: number
-    uuid: string
-    is_subscriber?: boolean
-  }
-  owner: {
-    bio: string
-    brand?: {
-      brand_id: number
-      brand_slug: string
-      brand_user_logo: number
-    }
-    is_avatar: boolean
-    name: string
-    profile_image: string
-    profile_image_s?: string
-    profile_image_m?: string
-    profile_image_l?: string
-    share_url: string
-    username: string
-    uuid: string
-  }
-  uuid: string
-  video: {
-    clickable_url?: string | null
-    attached_link: string | null
-    conversation_at: number
-    description_data: string | null
-    description_text: string | null
-    linkouts: any
-    linkouts_id: string
-    linkouts_inappbrowser: boolean
-    media_url: string
-    media_url_m3u8: string
-    meta_data: {
-      aspect_ratio: string
-      contains_external_videos: boolean
-      duration: string
-      media_type: string
-      resolution: string
-      size: string
-    }
-    no_of_comments: number
-    no_of_shares: number
-    no_of_sparks: number
-    no_of_views: number
-    share_url: string
-    slug: string
-    sprite_image_url: string | null
-    thumbnail_url: string
-    thumbnail_url_l: string
-    thumbnail_url_s: string
-    uuid: string
-    video_summary: string | null
-    is_sparked?: boolean
-    is_read?: boolean
-    is_pinned?: boolean
-  }
-}
-
 export type User = {
   brand_id: number
   user_id: string
@@ -433,55 +250,38 @@ export type User = {
   autoLoginToken: string
 }
 
-export type AuthUser = {
-  id?: string
-  accessToken: string
-  bio?: string
-  email?: string
-  phoneNumber?: string
-  isAvatar: boolean
-  name: string
-  nickname: string
-  image: string
-  instaId?: string
-  linkedinId?: string
-  tiktokId?: string
-  youtubeId?: string
-  xId?: string
-  /**
-   * Token to refresh accessToken.
-   */
-  refreshToken?: string
-  ksCbRequestStatus: number
-  /**
-   * if user is brand user.
-   */
-  isBrandSystemUser?: boolean
-  brandId?: number
-  brandSlug?: string
-  /**
-   * Checks if use has already topics.
-   */
-  hasTopics?: boolean
-  birth?: string
-  usernameSet: boolean
-  autoLoginToken?: string
-  brandGuidelines?: boolean
-}
-
-export type CommunityJoinStatusType =
-  | 'unjoined'
-  | 'joined'
-  | 'requested'
-  | 'leader'
-
-export type ViewType = 'feed' | 'carousel' | 'standard_wall' | 'grid'
-
-export type SizeBoxType = { height: number; width: number }
-
-export type FeedType = 'HOME' | 'POPULAR' | 'LATEST'
-
-/**
- * Return type for fetchFeed.
- */
-export type FetchFeedReturnType = { videos: FeedVideoType[]; end: boolean }
+// export type AuthUser = {
+//   id?: string
+//   accessToken: string
+//   bio?: string
+//   email?: string
+//   phoneNumber?: string
+//   isAvatar: boolean
+//   name: string
+//   nickname: string
+//   image: string
+//   instaId?: string
+//   linkedinId?: string
+//   tiktokId?: string
+//   youtubeId?: string
+//   xId?: string
+//   /**
+//    * Token to refresh accessToken.
+//    */
+//   refreshToken?: string
+//   ksCbRequestStatus: number
+//   /**
+//    * if user is brand user.
+//    */
+//   isBrandSystemUser?: boolean
+//   brandId?: number
+//   brandSlug?: string
+//   /**
+//    * Checks if use has already topics.
+//    */
+//   hasTopics?: boolean
+//   birth?: string
+//   usernameSet: boolean
+//   autoLoginToken?: string
+//   brandGuidelines?: boolean
+// }

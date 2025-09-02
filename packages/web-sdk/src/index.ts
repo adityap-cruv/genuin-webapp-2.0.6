@@ -39,7 +39,7 @@ declare global {
       SDK?: typeof Genuin
       on?: typeof Genuin.on
       off?: typeof Genuin.off
-      init?: (config: any) => ReturnType<typeof Genuin.legacyInit>
+      init?: (config: any) => ReturnType<typeof Genuin.newInit>
       update?: (config: any) => ReturnType<typeof Genuin.legacyUpdate>
       _initQueue?: Array<() => void>
     }

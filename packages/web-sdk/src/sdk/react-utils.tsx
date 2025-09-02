@@ -1,4 +1,3 @@
-import { AuthUser } from '@/type'
 import { EmbedDataType } from '@genuin/components/context/embed/embed.types'
 import { getKsCbRequestStatus } from '@/utils/auth'
 import { createRoot } from 'react-dom/client'
@@ -16,6 +15,7 @@ import { Loader } from '@genuin/ui/components/loader'
 import { Toaster } from '@genuin/ui'
 import { BrandDetailsConfigType } from '@genuin/components/types/brand'
 import { SingleEmbedDataConfig } from './GenuinSDK'
+import { AuthUser } from '@genuin/components/types/auth'
 
 // Error view function
 export function loadErrorView(container: HTMLElement): void {
@@ -109,16 +109,7 @@ export function loadNewEmbed({
               onSignIn={() => {}}
               onSignOut={() => {}}
               onUpdateUser={() => {}}
-              user={
-                user
-                  ? {
-                      ...user,
-                      ksCbRequestStatus: getKsCbRequestStatus(
-                        user.ksCbRequestStatus,
-                      ),
-                    }
-                  : undefined
-              }>
+              user={user}>
               <AnalyticsProvider isWebSDK={true}>
                 <Suspense fallback={<EmbedSkeleton />}>
                   {embedData.style === 'standard_wall' ? (
