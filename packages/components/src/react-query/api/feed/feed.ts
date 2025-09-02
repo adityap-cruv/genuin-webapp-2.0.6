@@ -96,8 +96,11 @@ async function fetchFeed(
       url = API_PATHS.SECTION_FEED;
       requestBody = {
         ...(deviceId && { device_id: deviceId }),
-        // HANDLE IT FOR PAGINATION
-        ...(options?.lastVideoId && { last_video_id: options.lastVideoId }),
+        ...(pageParam?.lastVideoId
+          ? { last_video_id: pageParam.lastVideoId }
+          : options?.lastVideoId
+            ? { last_video_id: options.lastVideoId }
+            : {}),
         ...(options?.pageSession && { page_session: options.pageSession }),
         ...(options?.sectionId && { section_id: options.sectionId }),
       };

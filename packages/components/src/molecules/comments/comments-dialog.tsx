@@ -4,7 +4,7 @@ import {
   DialogHeader,
   DialogTrigger,
 } from "@genuin/ui/components/dialog";
-import { ReactNode } from "react";
+import { ComponentProps, ReactNode } from "react";
 import { CommentsList } from "./comments-list";
 import { CommentInputBox } from "./comment-input";
 import { setQueryDataForNewComment } from "@genuin/components/react-query/api/comments";
@@ -18,6 +18,7 @@ type CommentDialogProps = {
   commentCount: number;
   shareUrl: string;
   defaultOpen: boolean;
+  onOpenChange?: ComponentProps<typeof Dialog>["onOpenChange"];
 } & React.ComponentProps<typeof DialogTrigger>;
 
 export function CommentsDialog({
@@ -30,6 +31,7 @@ export function CommentsDialog({
   shareUrl,
   className,
   defaultOpen,
+  onOpenChange,
   ...props
 }: CommentDialogProps) {
   // const embedDetails = useSafeEmbedContext();
@@ -41,7 +43,11 @@ export function CommentsDialog({
   // console.log("Should auto open:", shouldAutoOpen);
 
   return (
-    <Dialog type="comment-dialog" defaultOpen={defaultOpen}>
+    <Dialog
+      type="comment-dialog"
+      defaultOpen={defaultOpen}
+      onOpenChange={onOpenChange}
+    >
       <DialogTrigger className={className} {...props}>
         {children}
       </DialogTrigger>

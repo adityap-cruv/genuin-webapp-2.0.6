@@ -9,6 +9,7 @@ const MIN_EMBED_WIDTH = 100;
 const MIN_EMBED_HEIGHT = 100;
 const MIN_GRID_WIDTH = 250;
 
+// TODO REMOVE UNUSED CONFIGS, USE ONLY IF REQUIRED
 /**
  * Hook that extracts and organizes all customization values from the embed context
  * @returns A comprehensive, organized object containing all customization options
@@ -51,6 +52,7 @@ export function useEmbedConfigs() {
       isCarousel: embedData?.style === "carousel",
       isStandardWall: embedData?.style === "standard_wall",
       isGrid: embedData?.style === "grid",
+      isPlacementView: !!embedData?.placement_id,
       showCarouselIcon: !!customization?.is_carousel_icon,
       showNavigation:
         customization?.show_navigation !== undefined
@@ -63,6 +65,8 @@ export function useEmbedConfigs() {
       showViewLoopButton: !!customization?.show_view_loop_button,
       isShowPopupByDefault: !!customization?.is_show_popup_by_default,
       theme: customization?.theme || "light",
+      enableAdaptiveVideo: embedData?.enable_adaptive_video || false,
+      gridLayout: embedData?.grid_layout || undefined,
     }),
     [customization, embedData?.style]
   );

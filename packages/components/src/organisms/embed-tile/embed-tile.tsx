@@ -238,7 +238,7 @@ function EmbedPlayer({
         )}
       />
       <ControlLayer
-        variant="embed"
+        variant={config.view.isPlacementView ? "placement" : "embed"}
         isActive={isActive}
         postDetails={postDetails}
         onClick={handleClickOnEmbedTile}

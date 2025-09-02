@@ -47,6 +47,7 @@ type GroupPillProps = {
   onGroupSubscriptionChange?: ComponentProps<
     typeof GroupSubscriptionButton
   >["onSubscriptionChange"];
+  hideGroupSubscriptionButton?: boolean;
 };
 
 export function GroupPill({
@@ -57,14 +58,13 @@ export function GroupPill({
   onGroupJoinStatusChange,
   onGroupSubscriptionChange,
   className,
+  hideGroupSubscriptionButton = false,
 }: GroupPillProps) {
   const { authenticationStatus } = useAuthContext();
   const [localSubscriptionStatus, setLocalSubscriptionStatus] = useState<
     undefined | boolean
   >(undefined);
   const prevSubscriptionStatus = useRef<boolean | undefined>(undefined);
-  const embedDetails = useSafeEmbedContext();
-  const isWalmart = embedDetails?.embedData.card_layout_id === 6;
 
   /**
    * When the user successfully subscribes (isSubscribed becomes true),
@@ -86,7 +86,7 @@ export function GroupPill({
   const hideButton =
     localSubscriptionStatus === true ||
     authenticationStatus === "unauthenticated" ||
-    isWalmart;
+    hideGroupSubscriptionButton;
 
   const ldDescription = `${
     groupDetails?.description ? groupDetails.description + " | " : ""

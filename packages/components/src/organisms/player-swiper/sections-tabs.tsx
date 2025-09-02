@@ -52,7 +52,7 @@ export const SectionsTabs = ({ onSectionSelect }: SectionsTabsProps) => {
             "gencl:text-body-0-semi-bold gencl:h-9 gencl:sm:h-10! gencl:flex gencl:border gencl:items-center gencl:justify-center gencl:px-3.5 gencl:rounded-full gencl:text-white gencl:transition-colors gencl:cursor-pointer gencl:whitespace-nowrap",
             selectedSection?.id === section?.id
               ? "gencl:bg-white gencl:text-black! gencl:border-white"
-              : "gencl:bg-black/40 gencl:border-secondary-200"
+              : "gencl:bg-black/40 gencl:border-white/40"
           )}
         >
           {section?.title}

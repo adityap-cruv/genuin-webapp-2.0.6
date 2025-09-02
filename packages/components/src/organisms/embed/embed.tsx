@@ -223,7 +223,13 @@ export function Embed({
       />
       <EmbedManagerProvider swiper={swiper} isGridLayout={isGridLayout}>
         {isGridLayout ? (
-          <GridView videos={videos} rows={2} cols={2} />
+          <GridView
+            videos={videos}
+            rows={config.view.gridLayout?.row ?? 2}
+            cols={config.view.gridLayout?.column ?? 2}
+            autoAdjust={config.view.gridLayout?.auto_adjust}
+            aspectRatio={embedData.aspect_ratio}
+          />
         ) : (
           <div className="gencl:relative">
             <EmbedSwiper

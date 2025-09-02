@@ -2,24 +2,32 @@ import { useEmbedContext } from "@genuin/components/context";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { useEmbedManagerContext } from "../context";
 import { useEffect, useState, ComponentProps } from "react";
-import { cn } from "@genuin/ui/lib/utils";
+import { cn, getAspectRatio } from "@genuin/ui/lib/utils";
 import { useEmbedDimensions } from "@genuin/components/hooks/embed/use-embed-dimensions";
 import { EmbedItem } from "../embed-tile-item";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 export function GridView({
   videos,
   rows = 2,
   cols = 2,
+  autoAdjust,
+  aspectRatio,
   ...restProps
 }: {
   videos: PostDetailsType[];
   rows?: number;
   cols?: number;
+  autoAdjust?: boolean;
+  aspectRatio?: string;
 } & ComponentProps<"div">) {
-  const { embedEventBus, changeActivePlayerType } = useEmbedContext();
+  const { embedEventBus } = useEmbedContext();
+  const { view } = useEmbedConfigs();
   const { updateActiveIndex } = useEmbedManagerContext();
   const [isHovering, setIsHovering] = useState(false);
   const { containerHeight, containerWidth } = useEmbedDimensions();
+  const { width: widthRatio, height: heightRatio } =
+    getAspectRatio(aspectRatio);
 
   useEffect(() => {
     if (videos.length === 0) return;
@@ -53,7 +61,10 @@ export function GridView({
       {...restProps}
     >
       <div
-        className="gencl:w-full gencl:gap-2"
+        className={cn(
+          "gencl:w-full gencl:gap-2",
+          view.enableAdaptiveVideo && "gencl:h-full"
+        )}
         style={{
           display: "grid",
           gridTemplateColumns: `repeat(${cols}, 1fr)`,
@@ -64,12 +75,19 @@ export function GridView({
           <div
             key={index}
             className={cn(
-              "gencl:aspect-reel gencl:relative gencl:overflow-hidden gencl:rounded-md",
+              view.enableAdaptiveVideo ? "gencl:h-full gencl:w-full" : "",
+              "gencl:relative gencl:overflow-hidden gencl:rounded-md",
               "gencl:transition-all gencl:duration-300 gencl:ease-in-out",
               "gencl:cursor-pointer"
             )}
+            style={
+              view.enableAdaptiveVideo
+                ? undefined
+                : {
+                    aspectRatio: `${widthRatio} / ${heightRatio}`,
+                  }
+            }
             onClick={() => {
-              // updateActiveIndex(index);
               embedEventBus.emit(
                 "activePlayerTypeChange",
                 {},

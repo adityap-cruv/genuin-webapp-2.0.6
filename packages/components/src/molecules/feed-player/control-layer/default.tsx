@@ -99,7 +99,6 @@ export function Default({
             isMobile
               ? "gencl:z-20"
               : "gencl:group-hover:opacity-100 gencl:group-hover:pointer-events-auto gencl:opacity-0 gencl:pointer-events-none gencl:transition-opacity gencl:duration-300"
-            // embedDetails && showExpandView && "gencl:top-0"
           )}
           variant={
             embedDetails?.embedEventBus.getContext().isSectioned
@@ -135,12 +134,6 @@ export function Default({
             onGroupSubscriptionChange={onGroupSubscriptionChange}
             onReactionStateChange={onReactionStateChange}
             variant={variant}
-            layout={
-              embedDetails?.embedData.card_layout_id === 1 ||
-              embedDetails?.embedData.card_layout_id === 2
-                ? embedDetails?.embedData.card_layout_id
-                : null
-            }
           />
         ) : (
           <div

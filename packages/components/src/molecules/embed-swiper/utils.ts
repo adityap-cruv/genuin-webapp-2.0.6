@@ -1,3 +1,5 @@
+import { getAspectRatio } from "@genuin/ui/lib/utils";
+
 /**
  * Swiper configuration constants.
  */
@@ -31,27 +33,9 @@ export function getSlidesPerView(
   const elementHeight = clientHeight;
   const elementWidth = clientWidth;
   let ratio = 1;
-  let widthRatio = 9;
-  let heightRatio = 16;
-  
-  if (aspectRatio) {
-    const parts = aspectRatio.split(':');
-    if (parts.length === 2) {
-      const firstPart = parts[0];
-      const secondPart = parts[1];
-      
-      if (firstPart && secondPart) {
-        const parsedWidth = parseInt(firstPart, 10);
-        const parsedHeight = parseInt(secondPart, 10);
-        
-        if (!isNaN(parsedWidth) && !isNaN(parsedHeight) && parsedWidth > 0 && parsedHeight > 0) {
-          widthRatio = parsedWidth;
-          heightRatio = parsedHeight;
-        }
-      }
-    }
-  }
-  
+  const { width: widthRatio, height: heightRatio } =
+    getAspectRatio(aspectRatio);
+
   // separate logic for feed and carousel
   if (forFeed) {
     // calculating video height based on elementWidth, because we have to control height for feed view.

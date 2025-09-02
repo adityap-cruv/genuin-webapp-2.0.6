@@ -18,6 +18,8 @@ type PillsPropsType = {
     typeof CommunityPill
   >["onCommunityJoinStatusChange"];
   isHoverable?: boolean;
+  hideCommunityJoinButton?: boolean;
+  hideGroupSubscriptionButton?: boolean;
 } & ComponentProps<"div">;
 
 export function Pills({
@@ -29,6 +31,8 @@ export function Pills({
   onCommunityJoinStatusChange,
   className,
   isHoverable = false,
+  hideCommunityJoinButton,
+  hideGroupSubscriptionButton,
   ...restProps
 }: PillsPropsType) {
   return (
@@ -38,6 +42,7 @@ export function Pills({
         variant={variant}
         onCommunityJoinStatusChange={onCommunityJoinStatusChange}
         communityDetails={communityDetails}
+        hideCommunityJoinButton={hideCommunityJoinButton}
       />
       <GroupPill
         isHoverable={isHoverable}
@@ -46,6 +51,7 @@ export function Pills({
         communityDetails={communityDetails}
         onGroupJoinStatusChange={onGroupJoinStatusChange}
         onGroupSubscriptionChange={onGroupSubscriptionChange}
+        hideGroupSubscriptionButton={hideGroupSubscriptionButton}
       />
     </div>
   );

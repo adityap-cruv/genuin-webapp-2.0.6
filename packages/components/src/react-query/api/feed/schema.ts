@@ -46,6 +46,9 @@ export const videoSchema = z.object({
     })
     .nullish()
     .optional(),
+    placement_card_layout_id: z.number().nullish().optional(),
+    placement_video_layout_id: z.number().nullish().optional(),
+    placement_card_section_layout_id: z.number().nullish().optional(),
 });
 
 // Define the loop schema

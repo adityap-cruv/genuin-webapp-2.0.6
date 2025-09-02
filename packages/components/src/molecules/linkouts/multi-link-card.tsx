@@ -139,7 +139,7 @@ export const MultiLinkCard = ({
         <Button
           size={isEmbed ? "sm" : "md"}
           className={cn(
-            "gencl:w-full gencl:text-body-1-medium gencl:font-semibold gencl:transition-all gencl:bg-white gencl:hover:bg-white/90 gencl:!text-black gencl:flex gencl:justify-between gencl:items-center gencl:px-3 gencl:py-2 gencl:rounded-lg",
+            "gencl:w-full gencl:text-body-1-medium! gencl:font-semibold gencl:transition-all gencl:bg-white gencl:hover:bg-white/90 gencl:!text-black gencl:flex gencl:justify-between gencl:items-center gencl:px-3 gencl:py-2 gencl:rounded-lg",
             isOutside && "gencl:bg-secondary-50 gencl:hover:bg-secondary-150",
             isWalmart &&
               "gencl:rounded-full gencl:text-center gencl:justify-center "

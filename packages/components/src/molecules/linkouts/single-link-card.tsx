@@ -146,7 +146,7 @@ export const LinkCard = ({
         <Button
           size={isEmbed ? "sm" : "md"}
           className={cn(
-            "gencl:w-full gencl:text-body-1-medium gencl:font-semibold gencl:transition-all gencl:text-black gencl:bg-white gencl:hover:bg-white/90 gencl:flex gencl:justify-between gencl:items-center gencl:px-3 gencl:py-2 gencl:rounded-lg",
+            "gencl:w-full gencl:text-body-1-medium! gencl:font-semibold gencl:transition-all gencl:text-black gencl:bg-white gencl:hover:bg-white/90 gencl:flex gencl:justify-between gencl:items-center gencl:px-3 gencl:py-2 gencl:rounded-lg",
             isOutside && "gencl:bg-secondary-50 gencl:hover:bg-secondary-150",
             isWalmart && "gencl:text-center gencl:justify-center"
           )}

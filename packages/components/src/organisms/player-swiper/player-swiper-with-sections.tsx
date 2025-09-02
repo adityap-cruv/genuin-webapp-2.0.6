@@ -56,9 +56,9 @@ export function PlayerListWithSection({
   onGroupSubscriptionChange,
   onCommentCountChange,
 }: PlayerListPropsType) {
-  const { value, toggle } = useBoolean(true);
   const { showExpandView, activeIndex } = useFeedContext();
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
+  const { value, toggle, setValue } = useBoolean(isDesktop);
   const {
     engagement: {
       engagementTools: { comment: showCommentBox },
@@ -196,13 +196,13 @@ export function PlayerListWithSection({
             isCommentBoxOpen={value}
             actionWrapper={{
               COMMENT: (defaultNode) => {
+                if (!showCommentBox) return;
+                //
                 const defaultOpen =
                   embedDetails?.embedData?.autoUserInteractionToPerform ===
                     "comment-spark" &&
                   posts[activeIndex]?.video.slug ===
-                    embedDetails.embedData?.startVideoSlug &&
-                  // activeIndex === index &&
-                  !showExpandView;
+                    embedDetails.embedData?.startVideoSlug;
 
                 // Simple ui to show for comment trigger
                 function CommentBox({
@@ -227,7 +227,7 @@ export function PlayerListWithSection({
                   );
                 }
 
-                if (isMobile && posts[activeIndex])
+                if (!isDesktop && posts[activeIndex] && (value || defaultOpen))
                   return (
                     <CommentsDialog
                       commentCount={posts[activeIndex]?.video.commentCount}
@@ -236,8 +236,11 @@ export function PlayerListWithSection({
                       videoId={posts[activeIndex]?.video.id}
                       videoSlug={posts[activeIndex]?.video.slug}
                       shareUrl={posts[activeIndex]?.video.shareUrl}
-                      defaultOpen={defaultOpen}
+                      defaultOpen={value}
                       key={"feed-comment-box" + posts[activeIndex]?.video.id}
+                      onOpenChange={(value) => {
+                        setValue(value);
+                      }}
                     >
                       <CommentBox>{defaultNode}</CommentBox>
                     </CommentsDialog>

@@ -60,8 +60,9 @@ export function SdkSkeleton({
 
   // If variant is grid, render grid skeleton layout
   if (isGridLayout) {
-    const rows = 2;
-    const cols = 2;
+    const rows = config.view.gridLayout?.row ?? 2;
+    const cols = config.view.gridLayout?.column ?? 2;
+    const autoAdjust = config.view.gridLayout?.auto_adjust;
     return (
       <div
         className="gencl:bg-secondary-200 gencl:rounded-md"
