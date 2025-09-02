@@ -75,7 +75,7 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
       {groupDetails.role !== "REQUESTED" && (
         <GroupSubscriptionButton
           groupSlug={groupDetails.slug}
-          className="gencl:flex-grow gencl:sm:flex-grow-0!"
+          className="gencl:flex-grow gencl:sm:flex-grow-0! gencl:p-2"
           groupId={groupDetails.id}
           isSubscriber={groupDetails.isSubscriber}
           groupName={groupDetails.name ?? ""}
