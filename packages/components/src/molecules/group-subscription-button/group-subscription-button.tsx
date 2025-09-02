@@ -8,11 +8,16 @@ import { Toast } from "@genuin/ui/components/toaster";
 import { Loader } from "@genuin/ui/components/loader";
 import { cn } from "@genuin/ui/lib/utils";
 import { useAnalytics } from "@genuin/components/context/analytics";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { Link } from "../link";
 
 type GroupSubscriptionButtonProps = {
   groupId: string;
   groupName: string;
   groupDescription: string;
+  groupSlug: string;
   shareUrl: string;
   showText?: boolean;
   isSubscriber: boolean;
@@ -22,11 +27,40 @@ type GroupSubscriptionButtonProps = {
 export function GroupSubscriptionButton({
   ...restProps
 }: GroupSubscriptionButtonProps) {
-  const { authenticationStatus } = useAuthContext();
+  const { authenticationStatus, handleAuthCallback } = useAuthContext();
+  const { modalConfig } = useEmbedConfigs();
 
   const button = <Button {...restProps} />;
 
   if (authenticationStatus === "unauthenticated") {
+    const groupUrl = buildPageUrl({
+      type: "group",
+      slug: restProps.groupSlug,
+    });
+
+    const clickHandler = handleAuthCallback({
+      authCallbackData: {
+        action: "subscribe-group",
+        path: groupUrl,
+        returnQueryParams: createReturnQueryParams({
+          url: groupUrl,
+          action: "subscribe-group",
+        }),
+      },
+    });
+
+    if (clickHandler) {
+      return <span onClick={clickHandler}>{button}</span>;
+    }
+
+    if (modalConfig.hideModal) {
+      return (
+        <Link href={groupUrl} target="_blank">
+          {button}
+        </Link>
+      );
+    }
+
     return (
       <AuthenticationModal
         getAppData={{
@@ -59,6 +93,7 @@ function Button({
   groupName,
   groupDescription,
   shareUrl,
+  groupSlug,
   onClick,
   onSubscriptionChange,
   ...restProps

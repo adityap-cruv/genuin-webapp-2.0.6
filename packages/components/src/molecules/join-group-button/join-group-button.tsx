@@ -7,6 +7,10 @@ import { Toast } from "@genuin/ui/components/toaster";
 import { useLeaveGroupMutation } from "@genuin/components/react-query/api/group/join";
 import { ComponentProps, useCallback } from "react";
 import { Loader } from "@genuin/ui/components/loader";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
+import { Link } from "../link";
 
 const DEFAULT_BUTTON_TEXT = {
   UNJOINED: "Join Group",
@@ -19,6 +23,7 @@ type JoinGroupButtonProps = {
   groupName: string;
   groupDescription: string;
   shareUrl: string;
+  groupSlug: string;
   role: GroupUserStatusType;
   isPrivate: boolean;
   /**
@@ -29,11 +34,40 @@ type JoinGroupButtonProps = {
 } & ComponentProps<typeof PrimitiveButton>;
 
 export function JoinGroupButton({ ...restProps }: JoinGroupButtonProps) {
-  const { authenticationStatus } = useAuthContext();
+  const { authenticationStatus, handleAuthCallback } = useAuthContext();
+  const { modalConfig } = useEmbedConfigs();
 
   const button = <Button {...restProps} />;
 
   if (authenticationStatus === "unauthenticated") {
+    const groupUrl = buildPageUrl({
+      slug: restProps.groupSlug,
+      type: "group",
+    });
+
+    const clickHandler = handleAuthCallback({
+      authCallbackData: {
+        action: "join-group",
+        path: groupUrl,
+        returnQueryParams: createReturnQueryParams({
+          url: groupUrl,
+          action: "join-group",
+        }),
+      },
+    });
+
+    if (clickHandler) {
+      return <span onClick={clickHandler}>{button}</span>;
+    }
+
+    if (modalConfig.hideModal) {
+      return (
+        <Link href={groupUrl} target="_blank">
+          {button}
+        </Link>
+      );
+    }
+
     return (
       <AuthenticationModal
         getAppData={{

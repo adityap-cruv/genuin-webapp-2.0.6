@@ -10,7 +10,7 @@ export function applyLineClampStyles(
   maxLines: number | null
 ) {
   if (maxLines === null) {
-    element.style.display = ""; // Reset display
+    element.style.display = "-webkit-box"; // Reset display
     (
       element.style as unknown as {
         webkitLineClamp?: string;
@@ -22,9 +22,9 @@ export function applyLineClampStyles(
         webkitLineClamp?: string;
         webkitBoxOrient?: string;
       }
-    ).webkitBoxOrient = "";
-    element.style.overflow = ""; // Reset overflow
-    element.style.textOverflow = ""; // Reset text-overflow
+    ).webkitBoxOrient = "vertical";
+    element.style.overflow = "hidden"; // Reset overflow
+    element.style.textOverflow = "ellipsis"; // Reset text-overflow
   } else {
     element.style.display = "-webkit-box";
     (

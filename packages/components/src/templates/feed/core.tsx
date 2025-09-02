@@ -23,6 +23,8 @@ import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-d
 import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
 import { FeedViewPropsType } from "./feed.type";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+import { PlayerListWithSection } from "@genuin/components/organisms/player-swiper/player-swiper-with-sections";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 
 /**
  * Internal core presentation component for displaying feed data.
@@ -39,6 +41,7 @@ export function FeedViewCore({
   variant,
   onActiveIndexChange,
   embedOptions,
+  isSectioned,
   ...restProps
 }: FeedViewPropsType) {
   const {
@@ -164,6 +167,17 @@ export function FeedViewCore({
     [setActiveIndex, hideGestureOverlay, showExpandView, videos]
   );
 
+  const playerListProps = {
+    startIndex,
+    posts: videos,
+    onActiveIndexChange: handleActiveIndexChange,
+    onReactionStateChange: handleReactionStateChange,
+    onCommunityJoinStatusChange: handleCommunityJoinStatusChange,
+    onGroupJoinStatusChange: handleGroupJoinStatusChange,
+    onGroupSubscriptionChange: handleGroupSubscriptionChange,
+    onCommentCountChange: handleCommentCountChange,
+  };
+
   if (isLoading) {
     return <FeedSkeleton variant={showExpandView ? "fullscreen" : "default"} />;
   }
@@ -173,7 +187,7 @@ export function FeedViewCore({
       <div
         id="gencl-feed-view"
         className={cn(
-          "gencl:flex gencl:w-full gencl:pt-4! gencl:sm:pr-4 gencl:h-full gencl:gap-4",
+          "gencl:flex gencl:w-full gencl:sm:pr-4 gencl:h-full gencl:gap-4",
           {
             "gencl:fixed gencl:top-0 gencl:py-0! gencl:flex gencl:items-center gencl:mt-0 gencl:z-50 gencl:left-0 gencl:h-full gencl:w-full gencl:bg-black":
               showExpandView,
@@ -182,16 +196,14 @@ export function FeedViewCore({
         )}
         {...restProps}
       >
-        <PlayerList
-          startIndex={startIndex}
-          posts={videos}
-          onActiveIndexChange={handleActiveIndexChange}
-          onReactionStateChange={handleReactionStateChange}
-          onCommunityJoinStatusChange={handleCommunityJoinStatusChange}
-          onGroupJoinStatusChange={handleGroupJoinStatusChange}
-          onGroupSubscriptionChange={handleGroupSubscriptionChange}
-          onCommentCountChange={handleCommentCountChange}
-        />
+        {isSectioned ? (
+          <PlayerListWithSection
+            isSectioned={isSectioned}
+            {...playerListProps}
+          />
+        ) : (
+          <PlayerList {...playerListProps} />
+        )}
         {showSidePanel && (
           <PostSidePanel
             onGroupJoinStatusChange={handleGroupJoinStatusChange}

@@ -4,19 +4,12 @@ import { type AuthUser } from '../type'
 import { type BrandDetailsConfigType } from '../type'
 import { encryptText } from '@genuin/components/lib/utils/encryption'
 import { getDeviceId } from '@genuin/components/lib/utils/device-id'
+import {
+  EmbedDataType,
+  PlacementDataResponse,
+} from '@genuin/components/context/embed/embed.types'
 
 export type BrandDetailsResponse = BrandDetailsConfigType
-
-export interface EmbedDataResponse {
-  name: string
-  style: string
-  type: string
-  brand_id: string
-  customization: any
-  embed_id: string
-  environment: string
-  // Add other properties as needed
-}
 
 export class APIService {
   private static instance: APIService
@@ -72,7 +65,7 @@ export class APIService {
    * Fetch embed configuration data
    * Required for embed customization and display settings
    */
-  async fetchEmbedData(embedId: string): Promise<EmbedDataResponse> {
+  async fetchEmbedData(embedId: string): Promise<EmbedDataType> {
     try {
       const response = await fetch(`${API_BASE_URL}/api/v3/embed?id=${embedId}`)
 
@@ -83,13 +76,46 @@ export class APIService {
       }
 
       const data = await response.json()
-      return data.data as EmbedDataResponse
+      return data.data as EmbedDataType
     } catch (error) {
       const sdkError = this.errorHandler.handleError(
         ErrorType.API_ERROR,
         `Failed to fetch embed data: ${error instanceof Error ? error.message : 'Unknown error'}`,
         {
           embedId,
+          originalError:
+            error instanceof Error ? error : new Error(String(error)),
+        },
+      )
+      throw new Error(sdkError.message)
+    }
+  }
+
+  /**
+   * Fetch placement configuration data
+   * Required for embed customization and display settings
+   */
+  async fetchPlacementData(
+    placementId: string,
+  ): Promise<PlacementDataResponse> {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/goservices/placement?placement_id=${placementId}`,
+      )
+
+      if (!response.ok) {
+        throw new Error(
+          `Placement API failed: ${response.status} ${response.statusText}`,
+        )
+      }
+      const data = await response.json()
+      return data.data as PlacementDataResponse
+    } catch (error) {
+      const sdkError = this.errorHandler.handleError(
+        ErrorType.API_ERROR,
+        `Failed to fetch placement data: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        {
+          embedId: placementId,
           originalError:
             error instanceof Error ? error : new Error(String(error)),
         },

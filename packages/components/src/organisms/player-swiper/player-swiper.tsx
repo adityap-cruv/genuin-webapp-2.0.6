@@ -1,7 +1,6 @@
 "use client";
 import "swiper/css";
 import { Button } from "@genuin/ui/button";
-import { ChevronDown, ChevronUp } from "lucide-react";
 import { SwiperSlide, useSwiper } from "swiper/react";
 import { useBoolean } from "usehooks-ts";
 
@@ -18,6 +17,7 @@ import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-d
 import { abbreviateNumber, cn } from "@genuin/ui/lib/utils";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import { ChevronDownIcon, ChevronUpIcon } from "@genuin/ui/icons";
 
 type PlayerListPropsType = {
   posts: PostDetailsType[];
@@ -64,8 +64,6 @@ export function PlayerList({
       engagementTools: { comment: showCommentBox },
     },
   } = useEmbedConfigs();
-  const [selectedBucketIndex, setSelectedBucketIndex] = useState(0);
-
   const embedDetails = useSafeEmbedContext();
 
   return (
@@ -76,126 +74,104 @@ export function PlayerList({
           onActiveIndexChange?.(swiper.activeIndex);
         }}
       >
-        {embedDetails?.embedData.card_layout_id === 6 && (
-          <div className="gencl:absolute gencl:top-0 gencl:z-50 gencl:flex gencl:h-13 gencl:sm:h-16! gencl:w-full gencl:sm:w-[calc(100%-60px)]! gencl:gap-2 gencl:overflow-x-auto gencl:scrollbar-none gencl:p-4 gencl:pb-0!">
-            {/* <div
-              onClick={(e) => {
-                e.stopPropagation();
-              }}
-              className="gencl:flex gencl:h-9 gencl:w-9 gencl:sm:h-12! gencl:sm:w-12! gencl:cursor-pointer gencl:flex-shrink-0 gencl:items-center gencl:justify-center gencl:rounded-full gencl:bg-black/40 gencl:border gencl:border-[#FFFFFF66]"
-            >
-              <SearchIcon theme="dark" size="lg" />
-            </div> */}
-            {embedDetails?.bucketList?.map((bucket, index) => (
-              <button
-                key={index}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSelectedBucketIndex(index);
-                }}
-                className={cn(
-                  "gencl:text-body-0-semi-bold gencl:h-9 gencl:sm:h-12! gencl:flex gencl:border gencl:items-center gencl:justify-center gencl:px-3.5 gencl:rounded-full gencl:text-white gencl:transition-colors gencl:cursor-pointer gencl:whitespace-nowrap",
-                  selectedBucketIndex === index
-                    ? "gencl:bg-white gencl:text-black gencl:border-white"
-                    : "gencl:bg-black/40 gencl:border-[#FFFFFF66]"
-                )}
-              >
-                {bucket}
-              </button>
-            ))}
-          </div>
-        )}
-
         {posts.map((post, index) => {
           return (
             <SwiperSlide key={post.video.id}>
-              <div className="gencl:flex gencl:gap-3 gencl:h-full">
-                <Player
-                  post={post}
-                  onCommunityJoinStatusChange={onCommunityJoinStatusChange}
-                  onGroupJoinStatusChange={onGroupJoinStatusChange}
-                  onGroupSubscriptionChange={onGroupSubscriptionChange}
-                  onReactionStateChange={(_, isReacted) => {
-                    onReactionStateChange?.(post.video.id, isReacted);
-                  }}
-                  index={index}
-                />
-                {!isMobile && (
-                  <Actions
-                    shareUrl={post.video.shareUrl}
-                    isReacted={post.video.isSparked ?? false}
-                    contentId={post.video.id}
-                    groupSlug={post.group.slug}
-                    slug={post.video.slug}
-                    reactionCount={post.video.sparkCount}
-                    theme={showExpandView ? "dark" : "light"}
-                    className="gencl:shrink-0 gencl:pb-4"
-                    isCommentBoxOpen={value}
-                    actionWrapper={{
-                      COMMENT: (defaultNode) => {
-                        const defaultOpen =
-                          embedDetails?.embedData
-                            ?.autoUserInteractionToPerform ===
-                            "comment-spark" &&
-                          post.video.slug ===
-                            embedDetails.embedData?.startVideoSlug &&
-                          activeIndex === index &&
-                          !showExpandView;
+              {({ isActive, isNext, isPrev, isVisible }) => {
+                return (
+                  <div className="gencl:flex gencl:gap-3 gencl:h-full">
+                    <Player
+                      isActive={isActive}
+                      isNext={isNext}
+                      isPrev={isPrev}
+                      isVisible={isVisible}
+                      post={post}
+                      onCommunityJoinStatusChange={onCommunityJoinStatusChange}
+                      onGroupJoinStatusChange={onGroupJoinStatusChange}
+                      onGroupSubscriptionChange={onGroupSubscriptionChange}
+                      onReactionStateChange={(_, isReacted) => {
+                        onReactionStateChange?.(post.video.id, isReacted);
+                      }}
+                      index={index}
+                    />
+                    {!isMobile && (
+                      <Actions
+                        shareUrl={post.video.shareUrl}
+                        isReacted={post.video.isSparked ?? false}
+                        contentId={post.video.id}
+                        groupSlug={post.group.slug}
+                        slug={post.video.slug}
+                        reactionCount={post.video.sparkCount}
+                        theme={showExpandView ? "dark" : "light"}
+                        className="gencl:shrink-0 gencl:pb-4"
+                        isCommentBoxOpen={value}
+                        actionWrapper={{
+                          COMMENT: (defaultNode) => {
+                            const defaultOpen =
+                              embedDetails?.embedData
+                                ?.autoUserInteractionToPerform ===
+                                "comment-spark" &&
+                              post.video.slug ===
+                                embedDetails.embedData?.startVideoSlug &&
+                              activeIndex === index &&
+                              !showExpandView;
 
-                        // Simple ui to show for comment trigger
-                        function CommentBox({
-                          children,
-                        }: {
-                          children: React.ReactNode;
-                        }) {
-                          return (
-                            <>
-                              {children}
-                              <p
-                                className={cn(
-                                  "gencl:p-0 gencl:text-center gencl:text-black gencl:text-body-2-medium",
-                                  showExpandView && "gencl:text-white!"
-                                )}
+                            // Simple ui to show for comment trigger
+                            function CommentBox({
+                              children,
+                            }: {
+                              children: React.ReactNode;
+                            }) {
+                              return (
+                                <>
+                                  {children}
+                                  <p
+                                    className={cn(
+                                      "gencl:p-0 gencl:text-center gencl:text-black gencl:text-body-2-medium",
+                                      showExpandView && "gencl:text-white!"
+                                    )}
+                                  >
+                                    {abbreviateNumber(post.video.commentCount)}
+                                  </p>
+                                </>
+                              );
+                            }
+
+                            if (isMobile)
+                              return (
+                                <CommentsDialog
+                                  commentCount={post.video.commentCount}
+                                  communityId={post.community.id}
+                                  loopId={post.group.id}
+                                  videoId={post.video.id}
+                                  videoSlug={post.video.slug}
+                                  shareUrl={post.video.shareUrl}
+                                  defaultOpen={defaultOpen}
+                                  key={"feed-comment-box" + post.video.id}
+                                >
+                                  <CommentBox>{defaultNode}</CommentBox>
+                                </CommentsDialog>
+                              );
+                            return (
+                              <span
+                                key={"feed-comment-box" + post.video.id}
+                                onClick={() => {
+                                  if (showExpandView) toggle();
+                                }}
                               >
-                                {abbreviateNumber(post.video.commentCount)}
-                              </p>
-                            </>
-                          );
-                        }
-
-                        if (isMobile)
-                          return (
-                            <CommentsDialog
-                              commentCount={post.video.commentCount}
-                              communityId={post.community.id}
-                              loopId={post.group.id}
-                              videoId={post.video.id}
-                              videoSlug={post.video.slug}
-                              shareUrl={post.video.shareUrl}
-                              defaultOpen={defaultOpen}
-                              key={"feed-comment-box" + post.video.id}
-                            >
-                              <CommentBox>{defaultNode}</CommentBox>
-                            </CommentsDialog>
-                          );
-                        return (
-                          <span
-                            key={"feed-comment-box" + post.video.id}
-                            onClick={() => {
-                              if (showExpandView) toggle();
-                            }}
-                          >
-                            <CommentBox>{defaultNode}</CommentBox>
-                          </span>
-                        );
-                      },
-                    }}
-                    onReactionStateChange={(isReacted) => {
-                      onReactionStateChange?.(post.video.id, isReacted);
-                    }}
-                  />
-                )}
-              </div>
+                                <CommentBox>{defaultNode}</CommentBox>
+                              </span>
+                            );
+                          },
+                        }}
+                        onReactionStateChange={(isReacted) => {
+                          onReactionStateChange?.(post.video.id, isReacted);
+                        }}
+                      />
+                    )}
+                  </div>
+                );
+              }}
             </SwiperSlide>
           );
         })}
@@ -235,14 +211,14 @@ function NavigationButton() {
         disabled={swiper.isBeginning}
         onClick={() => swiper.slidePrev()}
       >
-        <ChevronUp className="gencl:stroke-white gencl:size-5" />
+        <ChevronUpIcon />
       </Button>
       <Button
         theme="navigation"
         disabled={swiper.isEnd}
         onClick={() => swiper.slideNext()}
       >
-        <ChevronDown className="gencl:stroke-white gencl:size-5" />
+        <ChevronDownIcon />
       </Button>
     </div>
   );

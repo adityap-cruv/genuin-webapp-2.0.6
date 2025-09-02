@@ -10,7 +10,6 @@ export { ErrorHandler, ErrorType, type SDKError } from './errors'
 export {
   APIService,
   type BrandDetailsResponse,
-  type EmbedDataResponse,
 } from './api'
 export { TokenManager } from './auth'
 export { ThemeManager, type BrandTheme } from './theme'

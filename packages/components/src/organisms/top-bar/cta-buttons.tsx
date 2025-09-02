@@ -1,3 +1,4 @@
+"use client";
 import { useState, useCallback } from "react";
 import { Button } from "@genuin/ui/button";
 import { useBaseContext } from "@genuin/components/context/base";
@@ -33,7 +34,7 @@ import { cva, VariantProps } from "class-variance-authority";
 import { useAnalytics } from "@genuin/components/context/analytics";
 
 export const iconVariant = cva(
-  "gencl:flex gencl:size-9 gencl:items-center gencl:justify-center gencl:rounded-full",
+  "gencl:flex gencl:size-9 gencl:items-center gencl:justify-center gencl:rounded-full gencl:sm:rounded-lg!",
   {
     variants: {
       theme: {

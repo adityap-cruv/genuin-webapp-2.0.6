@@ -8,6 +8,7 @@ export function mapMemberDetails(
     is_avatar: boolean;
     profile_image_m?: string | null;
     profile_image?: string | null;
+    profile_image_s?: string | null;
     name?: string | null;
     nickname: string;
     brand?: {
@@ -24,7 +25,11 @@ export function mapMemberDetails(
     memberId: member.member_id,
     profileImage: {
       isAvatar: member.is_avatar,
-      url: member.profile_image_m ?? member.profile_image ?? "",
+      url:
+        member.profile_image_s ??
+        member.profile_image_m ??
+        member.profile_image ??
+        "",
     },
     name: member.name ?? "",
     url: buildPageUrl({

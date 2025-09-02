@@ -1,4 +1,4 @@
-import { EmbedConfig, EmbedStyle } from '../types/embed'
+import { EmbedConfig } from '../types/embed'
 import {
   ConfigManager,
   type LegacySDKConfig,
@@ -9,15 +9,17 @@ import {
   ErrorType,
   APIService,
   type BrandDetailsResponse,
-  type EmbedDataResponse,
   TokenManager,
   ThemeManager,
 } from '../core'
-import { type AuthUser, type SDKConfig } from '../type'
-import { ACCESS_TOKEN_KEY } from '../const'
 import { loadEmbedView, loadErrorView, loadRudderStack } from '../views/loader'
 import loadIframeIntoDiv from '../iframeLoader'
-import { generateConfiguredUrl, generatePathFromConfig } from '../utils'
+import {
+  generateConfiguredUrl,
+  generatePathFromConfig,
+  parsePlacementToEmbedData,
+} from '../utils'
+import { EmbedDataType } from '@genuin/components/context/embed/embed.types'
 
 export class GenuinSDK {
   private static instance: GenuinSDK
@@ -171,6 +173,8 @@ export class GenuinSDK {
     const source = isConfigObject ? sourceConfig.config : sourceConfig || {}
 
     return {
+      placement_id: div.getAttribute('data-placement-id') ?? '',
+      style_id: div.getAttribute('data-style-id') ?? '',
       embed_id: div.getAttribute('data-embed-id') ?? '',
       api_key: div.getAttribute('data-api-key') ?? '',
       token: source.token ?? '',
@@ -245,20 +249,27 @@ export class GenuinSDK {
     }
 
     // Fetch embed data
-    let embedData: any = {
-      name: '',
-      style: 'carousel',
-      type: 'brand_feed',
-      brand_id: config.brand_id?.toString() || '',
-      customization: {},
-      embed_id: 'preview',
-      environment: '',
-      contextualParams: config.contextualParams || {},
-      brand_ids: config.brand_ids || [],
-      elementId: container.id || `embed-${config.embed_id}`,
+    let embedData: Partial<EmbedDataType> = {
+      embed_id: config.embed_id,
+      placement_id: config.placement_id,
+      style_id: config.style_id,
     }
 
-    if (config.embed_id && config.embed_id !== 'preview') {
+    if (config.placement_id) {
+      try {
+        const fetchedPlacementData = await this.apiService.fetchPlacementData(
+          config.placement_id,
+        )
+        embedData = {
+          ...embedData,
+          ...parsePlacementToEmbedData(fetchedPlacementData),
+        }
+      } catch (error) {
+        console.error('Failed to fetch placement data:', error)
+        loadErrorView(container)
+        return
+      }
+    } else if (config.embed_id && config.embed_id !== 'preview') {
       try {
         const fetchedEmbedData = await this.apiService.fetchEmbedData(
           config.embed_id,
@@ -279,7 +290,9 @@ export class GenuinSDK {
     if (
       embedData.style === 'carousel' ||
       embedData.style === 'feed' ||
-      embedData.style === 'standard_wall'
+      embedData.style === 'standard_wall' ||
+      embedData.style === 'grid' ||
+      embedData.style === 'dynamic'
     ) {
       await this.setupEmbedView(
         container,
@@ -379,7 +392,7 @@ export class GenuinSDK {
     loadIframeIntoDiv(
       container,
       generateConfiguredUrl(
-        generatePathFromConfig(config as SDKConfig, path),
+        generatePathFromConfig(config as LegacySDKConfig, path),
         params,
         config.subdomain || '',
       ),

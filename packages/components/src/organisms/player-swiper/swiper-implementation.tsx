@@ -28,14 +28,15 @@ type SwiperImplementationProps = {
 
 export function SwiperImplementation({
   children,
+  direction = "vertical",
   ...restProps
 }: SwiperImplementationProps) {
-  const { height } = useFeedVideoSizeBox();
+  // const { height } = useFeedVideoSizeBox();
   const { showExpandView } = useFeedContext();
   const { isWindows } = useDeviceDetection();
   const { isMobile } = useDeviceDetectMediaQuery();
 
-  const swiperHeight = showExpandView ? "100%" : isMobile ? "100%" : height;
+  // const swiperHeight = showExpandView ? "100%" : isMobile ? "100%" : height;
   const swiperSpaceBetween = showExpandView || isMobile ? 0 : 16;
   const swiperSlidesPerView =
     showExpandView || isMobile ? 1 : isWindows ? 1.06 : 1.03;
@@ -47,25 +48,22 @@ export function SwiperImplementation({
   );
 
   useEffect(() => {
-    // Subscribe to modal open/close changes
-    const unsubscribe = dialogManager.subscribe(() => {
-      setModalOpen(dialogManager.getRegisteredDialogs().length > 0);
-    });
+    // Subscribe to modal open/close changes and update swiper controls
+    const updateModalState = () => {
+      const isOpen = dialogManager.getRegisteredDialogs().length > 0;
+      setModalOpen(isOpen);
+      if (swiperRef.current) {
+        swiperRef.current.allowSlideNext = !isOpen;
+        swiperRef.current.allowSlidePrev = !isOpen;
+      }
+    };
+    const unsubscribe = dialogManager.subscribe(updateModalState);
+    // Run once on mount to sync swiper state
+    updateModalState();
     return () => {
       unsubscribe();
     };
   }, []);
-
-  // Disable any swiping event when modal is open
-  useEffect(() => {
-    if (swiperRef.current) {
-      if (modalOpen) {
-        swiperRef.current.disable();
-      } else {
-        swiperRef.current.enable();
-      }
-    }
-  }, [modalOpen]);
 
   return (
     <Swiper
@@ -74,12 +72,9 @@ export function SwiperImplementation({
         swiperRef.current = swiper;
       }}
       className="gencl:mx-0!"
-      style={{
-        height: swiperHeight,
-      }}
       enabled
       spaceBetween={swiperSpaceBetween}
-      direction="vertical"
+      direction={direction}
       slidesPerView={swiperSlidesPerView}
       speed={CONFIG.SCROLL_DELAY}
       modules={[Mousewheel, Keyboard]}

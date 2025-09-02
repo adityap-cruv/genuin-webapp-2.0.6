@@ -59,6 +59,7 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
   const createCtas = ({ inTopBar = false }: { inTopBar?: boolean }) => (
     <>
       <JoinGroupButton
+        groupSlug={groupDetails.slug}
         buttonTexts={{ UNJOINED: inTopBar ? "Join" : "Join Group" }}
         isPrivate={groupDetails.isPrivate}
         className="gencl:flex-grow gencl:sm:flex-grow-0!"
@@ -73,7 +74,8 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
       />
       {groupDetails.role !== "REQUESTED" && (
         <GroupSubscriptionButton
-          className="gencl:flex-grow gencl:sm:flex-grow-0!"
+          groupSlug={groupDetails.slug}
+          className="gencl:flex-grow gencl:sm:flex-grow-0! gencl:p-2"
           groupId={groupDetails.id}
           isSubscriber={groupDetails.isSubscriber}
           groupName={groupDetails.name ?? ""}

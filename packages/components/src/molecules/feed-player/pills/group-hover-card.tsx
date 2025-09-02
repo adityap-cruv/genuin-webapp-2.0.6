@@ -81,6 +81,7 @@ export function GroupHoverCard({
             isPrivate={groupDetails.isPrivate}
             role={groupDetails.role}
             onGroupJoinStatusChange={onGroupJoinStatusChange}
+            groupSlug={groupDetails.slug}
           />
           <GroupSubscriptionButton
             size="sm"
@@ -90,6 +91,7 @@ export function GroupHoverCard({
             shareUrl={groupDetails.shareUrl ?? ""}
             isSubscriber={groupDetails.isSubscribed ?? false}
             onSubscriptionChange={onGroupSubscriptionChange}
+            groupSlug={groupDetails.slug}
           />
         </>
         <ShareButton

@@ -1,3 +1,18 @@
+type ScoreInfo = {
+  pop_score?: number;
+  rec_score?: number;
+  context_score?: number;
+  user_interest_score?: number;
+  final_score?: number;
+};
+
+type SectionInfo = {
+  _id?: string | null | undefined;
+  title?: string | null | undefined;
+  description?: string | null | undefined;
+  position?: number | null | undefined
+} | null;
+
 export type FeedResponseFromGoApi = Array<{
   uuid: string;
   type: string;
@@ -6,6 +21,8 @@ export type FeedResponseFromGoApi = Array<{
   repost?: FeedRepostInfo;
   video: VideoData;
   owner: FeedOwnerInfo;
+  score?: ScoreInfo;
+  section?: SectionInfo;
 }>;
 
 type VideoData = {
@@ -14,7 +31,11 @@ type VideoData = {
   description_text?: string;
   description?: string;
   media_url: string;
-  meta_data?: unknown;
+  meta_data?: {
+    video_source?: string;
+    size?: string;
+    [key: string]: unknown;
+  };
   share_url: string;
   slug: string;
   thumbnail_url: string;
@@ -23,25 +44,32 @@ type VideoData = {
   thumbnail_url_m: string;
   uuid: string;
   attached_link?: string | null;
-  media_url_m3u8?: string;
+  media_url_m3u8?: string | null;
   no_of_views?: number;
   no_of_sparks?: number;
   no_of_comments?: number;
   video_summary?: string | null;
   sprite_image_url?: string | null;
   no_of_shares?: number;
-  linkouts?: Linkout[];
+  linkouts?: Linkout[] | null;
   is_sparked?: boolean;
   is_read?: boolean;
-  clickable_url?: string;
+  clickable_url?: string | null;
   is_pinned?: boolean;
-  linkouts_id?: number;
+  linkouts_id?: number | null;
   ads_config?: AdsConfig;
   card_layout_id?: number;
   video_layout_id?: number;
   duration?: number;
   is_transcribed?: boolean;
   linkouts_inappbrowser?: boolean;
+  owner?: FeedOwnerInfo;
+  
+  // Placement layout fields from the JSON response
+  placement_card_layout_id?: number;
+  placement_video_layout_id?: number;
+  placement_card_section_layout_id?: number;
+  
   attributes?: {
     clip_type?: string;
     description?: string;
@@ -104,16 +132,16 @@ type MemberInfo = {
 };
 
 type FeedLoopInfo = {
-  group_id: string;
+  group_id?: string;
   group_name?: string;
   group_description?: string;
-  dp: string;
-  dp_s: string;
-  dp_m: string;
-  dp_l: string;
+  dp?: string;
+  dp_s?: string;
+  dp_m?: string;
+  dp_l?: string;
   color_code?: string;
   text_color_code?: string;
-  uuid: string;
+  uuid?: string;
   settings?: unknown; // json.RawMessage equivalent
   slug?: string;
   share_string?: string;
@@ -121,10 +149,15 @@ type FeedLoopInfo = {
   share_url?: string;
   member_info?: MemberInfo;
   is_subscriber?: boolean;
+  is_loop_subscriber?: boolean;
   logged_in_user_status?: number;
   is_view_allowed?: boolean;
   request_status?: number | null;
-  actions: any;
+  actions?: any;
+  no_of_views?: number;
+  no_of_members?: number;
+  no_of_videos?: number;
+  no_of_sparks?: number;
 };
 
 type FeedCommunityInfo = {
@@ -135,10 +168,10 @@ type FeedCommunityInfo = {
   description?: string;
   color_code?: string;
   text_color_code?: string;
-  dp: string;
-  dp_s: string;
-  dp_m: string;
-  dp_l: string;
+  dp?: string;
+  dp_s?: string;
+  dp_m?: string;
+  dp_l?: string;
   share_string?: string;
   brand_id?: number;
   type?: number;
@@ -147,6 +180,8 @@ type FeedCommunityInfo = {
   no_of_members?: number | null;
   no_of_groups?: number | null;
   no_of_videos?: number | null;
+  no_of_views?: number;
+  no_of_sparks?: number;
   brand?: {
     brand_id: number;
     brand_slug: string;
@@ -158,9 +193,13 @@ type FeedCommunityInfo = {
 };
 
 type BrandInfo = {
-  brand_id: string;
+  brand_id: number;
   brand_slug: string;
   brand_user_logo: number;
 };
 
-type FeedRepostInfo = object;
+type FeedRepostInfo = {
+  id?: number;
+  is_deleted?: boolean;
+  owner?: FeedOwnerInfo;
+};

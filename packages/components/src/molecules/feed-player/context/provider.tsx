@@ -1,11 +1,10 @@
+"use client";
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import OpenPlayerJS from "openplayerjs";
 import { getVideoPlayerConfigs } from "../utils";
 import {
   ButtonActionType,
   ExpandViewProps,
-  PlaybackSpeedType,
-  // PlaybackSpeedType,
   PlayingStateType,
   VideoTimeStateType,
 } from "./types";

@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, memo } from "react";
 import type { CommunityUserRole } from "@genuin/components/types/post";
 import { useAuthContext } from "@genuin/components/context/auth";
 import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
@@ -9,6 +9,10 @@ import {
 } from "@genuin/components/react-query/api/community/join/join";
 import { Loader } from "@genuin/ui/components/loader";
 import { Toast } from "@genuin/ui/toaster";
+import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { Link } from "../link";
 
 // TODO: lazy load authentication modal.
 type JoinCommunityButtonProps = {
@@ -32,7 +36,7 @@ const DEFAULT_ROLE_TEXTS: Record<CommunityUserRole, string> = {
   MODERATOR: "",
 };
 
-export function JoinCommunityButton({
+export const JoinCommunityButton = memo(function JoinCommunityButton({
   role,
   communityHandle,
   communityId,
@@ -41,7 +45,8 @@ export function JoinCommunityButton({
   onCommunityJoinStatusChange,
   ...restProps
 }: JoinCommunityButtonProps) {
-  const { authenticationStatus } = useAuthContext();
+  const { authenticationStatus, handleAuthCallback } = useAuthContext();
+  const { modalConfig } = useEmbedConfigs();
 
   // If user is leader or moderator of the community, then don't show the join button.
   if (role === "LEADER" || role === "MODERATOR") return;
@@ -59,6 +64,36 @@ export function JoinCommunityButton({
   );
 
   if (authenticationStatus === "unauthenticated") {
+    const communityUrl = buildPageUrl({ type: "community", slug: slug });
+    const clickHandler = handleAuthCallback({
+      authCallbackData: {
+        action: "join-community",
+        path: communityUrl,
+        returnQueryParams: createReturnQueryParams({
+          url: communityUrl,
+          action: "join-community",
+        }),
+      },
+    });
+
+    // In case of embed if auth handler is configured than clickHandler will be called no need to open the authentication modal.
+    // default clickHandler will be undefined in case of non-embed or if auth handler is not configured.
+    if (clickHandler) {
+      return <span onClick={clickHandler}>{button}</span>;
+    }
+
+    // In case of embed hideModal will come true for that case open link in new tab.
+    if (modalConfig.hideModal) {
+      return (
+        <Link
+          href={buildPageUrl({ type: "community", slug: slug })}
+          target="_blank"
+        >
+          {button}
+        </Link>
+      );
+    }
+
     return (
       <AuthenticationModal
         getAppData={{
@@ -84,7 +119,7 @@ export function JoinCommunityButton({
   }
 
   return button;
-}
+});
 
 function Button({
   role = "UNJOINED",

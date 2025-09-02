@@ -3,7 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 
 import type { SVGIconsProps } from "../type";
 
-const iconsVariant = cva("gencl:fill-black", {
+const iconsVariant = cva("gencl:fill-black gencl:cursor-pointer", {
   variants: {
     theme: {
       default: "gencl:fill-black",

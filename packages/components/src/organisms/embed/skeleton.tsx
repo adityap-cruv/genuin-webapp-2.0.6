@@ -53,32 +53,43 @@ export function SdkSkeleton({
 }) {
   const { embedData } = useEmbedContext();
   const config = useEmbedConfigs();
-  const isWalmart = embedData.card_layout_id === 6;
+  const isGridLayout = config.view.isGrid;
   const embedVariant: "carousel" | "feed" =
     config.view.embedStyle === "feed" ? "feed" : "carousel";
   const skeletonItems = Array(6).fill(null);
 
   // If variant is grid, render grid skeleton layout
-  if (isWalmart) {
+  if (isGridLayout) {
+    const rows = config.view.gridLayout?.row ?? 2;
+    const cols = config.view.gridLayout?.column ?? 2;
+    const autoAdjust = config.view.gridLayout?.auto_adjust;
     return (
       <div
         className="gencl:bg-secondary-200 gencl:rounded-md"
         style={{
-          height: containerHeight,
-          width: containerWidth,
+          height: Math.max(0, containerHeight || 0),
+          width: Math.max(0, containerWidth || 0),
         }}
         {...restProps}
       >
         <div className="gencl:h-full gencl:w-full gencl:overflow-auto">
-          <div className="gencl:grid gencl:grid-cols-2 gencl:w-full gencl:gap-2">
-            {Array(6)
+          <div
+            className={cn("gencl:w-full gencl:gap-2")}
+            style={{
+              display: "grid",
+              gridTemplateColumns: `repeat(${cols}, 1fr)`,
+              gridTemplateRows: `repeat(${rows}, 1fr)`,
+            }}
+          >
+            {Array(rows * cols)
               .fill(0)
               .map((_, index) => (
                 <div
                   key={index}
                   className={cn(
                     "gencl:aspect-reel gencl:relative gencl:overflow-hidden gencl:rounded-md",
-                    "gencl:transition-all gencl:duration-300 gencl:ease-in-out"
+                    "gencl:transition-all gencl:duration-300 gencl:ease-in-out",
+                    "gencl:cursor-pointer"
                   )}
                 >
                   <Skeleton className="gencl:h-full gencl:w-full" />
@@ -230,8 +241,7 @@ function EmbedHeaderSkeleton({
   variant,
 }: VariantProps<typeof embedHeaderSkeletonVariants>) {
   const { header } = useEmbedConfigs();
-  const config = useEmbedConfigs();
-  const { headerHeight } = useEmbedDimensions(config);
+  const { headerHeight } = useEmbedDimensions();
   if (!header.showHeader) return null;
 
   return (

@@ -47,6 +47,7 @@ type GroupPillProps = {
   onGroupSubscriptionChange?: ComponentProps<
     typeof GroupSubscriptionButton
   >["onSubscriptionChange"];
+  hideGroupSubscriptionButton?: boolean;
 };
 
 export function GroupPill({
@@ -57,14 +58,13 @@ export function GroupPill({
   onGroupJoinStatusChange,
   onGroupSubscriptionChange,
   className,
+  hideGroupSubscriptionButton = false,
 }: GroupPillProps) {
   const { authenticationStatus } = useAuthContext();
   const [localSubscriptionStatus, setLocalSubscriptionStatus] = useState<
     undefined | boolean
   >(undefined);
   const prevSubscriptionStatus = useRef<boolean | undefined>(undefined);
-  const embedDetails = useSafeEmbedContext();
-  const isWalmart = embedDetails?.embedData.card_layout_id === 6;
 
   /**
    * When the user successfully subscribes (isSubscribed becomes true),
@@ -86,7 +86,7 @@ export function GroupPill({
   const hideButton =
     localSubscriptionStatus === true ||
     authenticationStatus === "unauthenticated" ||
-    isWalmart;
+    hideGroupSubscriptionButton;
 
   const ldDescription = `${
     groupDetails?.description ? groupDetails.description + " | " : ""
@@ -96,7 +96,7 @@ export function GroupPill({
     <Link href={buildPageUrl({ type: "group", slug: groupDetails.slug })}>
       <div className={groupPillVariants({ variant, className })}>
         <div className="gencl:flex gencl:gap-1 gencl:items-center gencl:line-clamp-1 gencl:break-all">
-          <div className="gencl:rounded-full gencl:bg-secondary-300 gencl:p-1">
+          <div className="gencl:rounded-full gencl:bg-secondary-600 gencl:p-1">
             <GroupIcon theme="dark" size="sm" />
           </div>
           <span className="gencl:text-body-2-medium gencl:line-clamp-1">
@@ -113,6 +113,7 @@ export function GroupPill({
           variant="icon"
           shape="pill"
           size="sm"
+          groupSlug={groupDetails.slug}
           groupId={groupDetails.id}
           groupName={groupDetails.name ?? ""}
           groupDescription={ldDescription}

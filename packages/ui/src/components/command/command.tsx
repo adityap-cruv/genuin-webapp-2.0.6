@@ -58,6 +58,7 @@ function CommandDialog({
         showClose={showClose}
         onClick={onClick}
         style={{ ...getGenclStyles() }}
+        closeIconClassName="gencl:top-2"
       >
         <Command
           className={cn(

@@ -22,7 +22,7 @@ export function SdkErrorState({
       }}
     >
       <DangerIcon size="xl" />
-      <p className="gencl:text-body-1-medium gencl:text-secondary-600">
+      <p className="gencl:text-body-1-medium gencl:text-secondary-600 gencl:text-center">
         {message}
       </p>
     </div>

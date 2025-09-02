@@ -43,6 +43,7 @@ type CommunityPillProps = {
   onCommunityJoinStatusChange?: ComponentProps<
     typeof JoinCommunityButton
   >["onCommunityJoinStatusChange"];
+  hideCommunityJoinButton?: boolean;
 };
 
 export function CommunityPill({
@@ -51,14 +52,13 @@ export function CommunityPill({
   communityDetails,
   onCommunityJoinStatusChange,
   className,
+  hideCommunityJoinButton = false,
 }: CommunityPillProps) {
   const { authenticationStatus } = useAuthContext();
   const [localJoinStatus, setLocalJoinStatus] = useState(
     communityDetails.userRole
   );
   const prevJoinStatus = usePrevious(communityDetails.userRole);
-  const embedDetails = useSafeEmbedContext();
-  const isWalmart = embedDetails?.embedData.card_layout_id === 6;
 
   /**
    * When the user successfully joins (userRole becomes 'MEMBER'),
@@ -76,7 +76,7 @@ export function CommunityPill({
   const hideButton =
     localJoinStatus === "MEMBER" ||
     authenticationStatus === "unauthenticated" ||
-    isWalmart;
+    hideCommunityJoinButton;
 
   const pill = (
     <Link

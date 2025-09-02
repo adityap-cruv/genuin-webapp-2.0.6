@@ -15,8 +15,11 @@ export function getQueryKeyForFeed(
   options?: {
     communityIds?: string[];
     groupIds?: string[];
-    isEmbed?: boolean;
     startVideoSlug?: string;
+    enabled?: boolean;
+    placementId?: string;
+    styleId?: string;
+    sectionId?: string;
   }
 ): QueryKey {
   return options

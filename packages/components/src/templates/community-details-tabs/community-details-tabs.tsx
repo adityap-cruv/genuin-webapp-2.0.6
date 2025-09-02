@@ -105,7 +105,7 @@ function CommunityGroups({
     isLoading,
     isError,
   } = useGetCommunityGroups(slug);
-  const {isMobile} = useDeviceDetectMediaQuery()
+  const { isMobile } = useDeviceDetectMediaQuery();
 
   if (isLoading) {
     return <CommunityGroupsSkeleton />;
@@ -154,6 +154,7 @@ function CommunityGroups({
               size="sm"
               buttonTexts={{ UNJOINED: "Join" }}
               groupId={group.chat_id}
+              groupSlug={group.slug}
               groupName={group.group.group_name ?? ""}
               groupDescription={`${
                 group.group.group_description
@@ -175,6 +176,7 @@ function CommunityGroups({
             <GroupSubscriptionButton
               size="sm"
               groupId={group.chat_id}
+              groupSlug={group.slug}
               groupName={group.group.group_name ?? ""}
               groupDescription={`${
                 group.group.group_description
@@ -243,7 +245,10 @@ function CommunityMembers({
     name: member.name ?? "",
     profileImage: {
       isAvatar: member.is_avatar,
-      url: member.profile_image,
+      url:
+        member.profile_image_s ??
+        member.profile_image_m ??
+        member.profile_image,
     },
     url: buildPageUrl({
       type: !!member.brand ? "brand" : "profile",

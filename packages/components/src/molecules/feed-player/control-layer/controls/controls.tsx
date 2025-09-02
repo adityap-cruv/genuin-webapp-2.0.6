@@ -19,10 +19,12 @@ const controlsVariants = cva(
     variants: {
       variant: {
         default:
-          "gencl:absolute gencl:top-16 gencl:sm:top-0 gencl:items-center gencl:bg-gradient-to-b gencl:from-black/50 gencl:to-transparent gencl:gap-3 gencl:p-4",
+          "gencl:absolute gencl:top-16 gencl:sm:top-0 gencl:items-center gencl:gap-3 gencl:p-4",
         embed:
           "gencl:absolute gencl:p-2 gencl:bg-gradient-to-b gencl:from-black/30 gencl:to-transparent",
         custom: "",
+        sectioned:
+          "gencl:absolute gencl:top-16 gencl:sm:top-0 gencl:items-center gencl:bg-gradient-to-b gencl:from-black/50 gencl:to-transparent gencl:gap-3 gencl:p-4 gencl:from-transparent gencl:to-transparent gencl:top-12 gencl:sm:top-14!",
       },
       /**
        * spacing between the control buttons.

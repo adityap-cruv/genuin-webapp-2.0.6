@@ -3,6 +3,8 @@ import {
   TwitterIcon,
   TiktokIcon,
   LinkedInIcon,
+  YouTubeIcon,
+  RedditIcon,
 } from "@genuin/ui/icons";
 import { LinkIcon } from "lucide-react";
 
@@ -12,7 +14,7 @@ import { cn } from "@genuin/ui/lib/utils";
 
 export type LinksType = Partial<
   Record<
-    "x" | "instagram" | "tiktok" | "custom" | "linkedin" | "reddit",
+    "x" | "instagram" | "tiktok" | "custom" | "linkedin" | "reddit" | "youtube",
     string | undefined
   >
 >;
@@ -96,6 +98,22 @@ export function SocialLinks({ links, variant, iconSize }: LinkProps) {
           <LinkedInIcon className="gencl:fill-secondary-600" />
           {links.linkedin && variant === "detailed" && (
             <p className={textClassName}>{links.linkedin}</p>
+          )}
+        </Link>
+      )}
+      {links.youtube && (
+        <Link href={links.youtube} target="_blank" className={itemClassName}>
+          <YouTubeIcon className="gencl:fill-secondary-600" />
+          {links.youtube && variant === "detailed" && (
+            <p className={textClassName}>{links.youtube}</p>
+          )}
+        </Link>
+      )}
+      {links.reddit && (
+        <Link href={links.reddit} target="_blank" className={itemClassName}>
+          <RedditIcon className="gencl:fill-secondary-600" />
+          {links.reddit && variant === "detailed" && (
+            <p className={textClassName}>{links.reddit}</p>
           )}
         </Link>
       )}

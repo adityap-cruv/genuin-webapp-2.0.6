@@ -25,6 +25,7 @@ export type CommentItemProps = {
   onReactionStateChange: ComponentProps<
     typeof ReactionButton
   >["onReactionStateChange"];
+  videoId: string;
 };
 
 // TODO: Check why brand is not handled in the comment item
@@ -32,6 +33,7 @@ export function CommentItem({
   comment,
   shareUrl,
   onReactionStateChange,
+  videoId,
 }: CommentItemProps) {
   const { owner } = comment;
   const { user } = useAuthContext();
@@ -78,6 +80,7 @@ export function CommentItem({
         <div className="gencl:flex gencl:items-center">
           <ReactionButton
             contentId={comment.commentId}
+            videoId={videoId}
             contentType="COMMENT"
             isReacted={comment.isSparked}
             reactionCount={comment.noOfSparks}

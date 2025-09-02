@@ -1,3 +1,4 @@
+"use client";
 import { cn } from "@genuin/ui/utils";
 import { useEffect, useState, type ComponentProps } from "react";
 

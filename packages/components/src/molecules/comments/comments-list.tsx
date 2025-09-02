@@ -105,6 +105,7 @@ export function CommentsList({
               key={comment.commentId}
               comment={comment}
               shareUrl={shareUrl}
+              videoId={videoId}
               onReactionStateChange={(isReacted) => {
                 handleReactionStateChangeInComments(
                   videoId,

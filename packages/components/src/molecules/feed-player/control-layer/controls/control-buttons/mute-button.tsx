@@ -1,3 +1,4 @@
+"use client";
 import { useCallback, useEffect, useState } from "react";
 import { cn } from "@genuin/ui/utils";
 import { UnmuteIcon } from "@genuin/ui/icons";

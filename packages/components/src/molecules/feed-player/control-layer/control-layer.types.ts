@@ -9,6 +9,7 @@ export type ControlLayerPropsType = ComponentProps<"div"> & {
   isInModal?: boolean;
   isActive: boolean;
   showCloseButton?: boolean;
+  isSectioned?: boolean;
   onReactionStateChange?: ComponentProps<
     typeof ExpandViewDetails
   >["onReactionStateChange"];

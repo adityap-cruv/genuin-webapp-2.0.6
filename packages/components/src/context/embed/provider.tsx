@@ -3,6 +3,7 @@ import { EmbedContext } from "./context";
 import { ActivePlayerType, createEmbedEventBus } from "./event-bus";
 import { EmbedDataType } from "./embed.types";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 type EmbedProviderProps = {
   embedData: EmbedDataType;
@@ -22,12 +23,53 @@ export function EmbedProvider({
   container,
 }: EmbedProviderProps) {
   // Create a unique event bus for this provider instance
-  const embedEventBus = useMemo(() => createEmbedEventBus(), []);
-  const [bucketList, setBucketList] = useState<string[]>([]);
+  const embedEventBus = useMemo(
+    () =>
+      createEmbedEventBus({
+        activePlayerType: "embed",
+        activeIndex: 0,
+        sectionList: [],
+        isSectioned: false,
+      }),
+    []
+  );
 
-  const updateBucketList = useCallback((newBucketList: string[]) => {
-    setBucketList(newBucketList);
-  }, []);
+  const updateSectionList = useCallback(
+    // Updates the section list in the embed context and emits a sectionListChange event
+    (newSectionList: PostDetailsType["section"][]) => {
+      embedEventBus.emit("sectionListChange", undefined, (currentContext) => ({
+        ...currentContext,
+        sectionList: newSectionList,
+      }));
+    },
+    [embedEventBus]
+  );
+
+  const updateIsSectioned = useCallback(
+    // Updates the isSectioned flag in the embed context and emits an isSectionedChange event
+    (sectioned: boolean) => {
+      embedEventBus.emit("isSectionedChange", undefined, (currentContext) => ({
+        ...currentContext,
+        isSectioned: sectioned,
+      }));
+    },
+    [embedEventBus]
+  );
+
+  const updateSelectedSection = useCallback(
+    // Updates the selected section in the embed context and emits a selectedSectionChange event
+    (section: PostDetailsType["section"] | null) => {
+      embedEventBus.emit(
+        "selectedSectionChange",
+        undefined,
+        (currentContext) => ({
+          ...currentContext,
+          selectedSection: section,
+        })
+      );
+    },
+    [embedEventBus]
+  );
 
   // Detect if running inside an iframe (safe for SSR)
   const isInIframe = useMemo(() => {
@@ -123,8 +165,9 @@ export function EmbedProvider({
         changeActiveIndex,
         changeActivePlayerType,
         goBackToPreviousPlayerType,
-        bucketList,
-        updateBucketList,
+        updateSectionList,
+        updateIsSectioned,
+        updateSelectedSection,
       }}
     >
       {children}

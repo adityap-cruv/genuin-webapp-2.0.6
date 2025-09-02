@@ -35,6 +35,7 @@ import { mapMemberDetails } from "./utils";
 import { getSocialLinks } from "@genuin/components/lib/utils";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { useAnalytics } from "@genuin/components/context/analytics";
+import { useLinkContext } from "@genuin/components/context";
 
 export function CommunityDetails({
   slug,
@@ -80,9 +81,11 @@ function CommunityDetailsView({ slug }: { slug: string }) {
   const { isDesktop } = useDeviceDetectMediaQuery();
   const detailsId = useId();
   const { track, EventName } = useAnalytics();
-  const [storedCommunities, setStoredCommunities] = useLocalStorage<
-    RecentCommunity[]
-  >(RECENT_COMMUNITIES_KEY, []);
+  const { createExternalLink } = useLinkContext();
+  const [, setStoredCommunities] = useLocalStorage<RecentCommunity[]>(
+    RECENT_COMMUNITIES_KEY,
+    []
+  );
 
   const handleCommunityJoinStatusChange = useCallback(
     (newRole: CommunityUserRole) => {
@@ -156,11 +159,15 @@ function CommunityDetailsView({ slug }: { slug: string }) {
       />
       {!inTopBar && (
         <ShareButton
-          pathName={buildPageUrl({ type: "community", slug })}
+          pathName={createExternalLink(
+            buildPageUrl({ type: "community", slug })
+          )}
           onClick={() => {
             track(EventName.COMMUNITY_SHARED, {
               community_id: communityDetails.community_id,
-              share_url: buildPageUrl({ type: "community", slug }),
+              share_url: createExternalLink(
+                buildPageUrl({ type: "community", slug })
+              ),
             });
           }}
         />
@@ -195,7 +202,12 @@ function CommunityDetailsView({ slug }: { slug: string }) {
           />
           <Avatar
             alt={communityDetails?.name ?? ""}
-            imageUrl={communityDetails?.dp_m ?? communityDetails.dp ?? ""}
+            imageUrl={
+              communityDetails?.dp_l ??
+              communityDetails.dp_m ??
+              communityDetails.dp ??
+              ""
+            }
             size="xl"
             isAvatar={false}
             className="gencl:absolute gencl:bottom-0 gencl:translate-y-1/2 gencl:left-4 gencl:sm:hidden! gencl:block gencl:border gencl:border-white"
@@ -264,7 +276,11 @@ function About({
         links: getSocialLinks(communityDetails.social_links),
         createdBy: {
           profileImage: {
-            url: communityDetails.leader.profile_image ?? "",
+            url:
+              communityDetails.leader.profile_image_s ??
+              communityDetails.leader.profile_image_m ??
+              communityDetails.leader.profile_image ??
+              "",
             isAvatar: communityDetails.leader.is_avatar,
           },
           url: buildPageUrl({
@@ -275,7 +291,7 @@ function About({
           }),
           userName: communityDetails.leader.nickname ?? "",
           name: communityDetails.leader.name ?? "",
-          userLogoType: communityDetails.brand?.brand_user_logo,
+          userLogoType: communityDetails.leader.brand?.brand_user_logo ?? null,
         },
         createdIn: {
           profileImage: {
@@ -343,7 +359,11 @@ function Details({
       id={detailsId}
       title={communityDetails?.name ?? ""}
       profileImageDetails={{
-        imageUrl: communityDetails?.dp_m ?? communityDetails.dp ?? "",
+        imageUrl:
+          communityDetails?.dp_l ??
+          communityDetails.dp_m ??
+          communityDetails.dp ??
+          "",
         isAvatar: false,
         alt: communityDetails?.name ?? "",
       }}

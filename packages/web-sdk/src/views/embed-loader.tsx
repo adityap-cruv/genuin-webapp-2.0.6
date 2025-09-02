@@ -67,10 +67,10 @@ export function loadNewEmbed(
           brand_id: embedData.brandDetails.brand_id,
           autoUserInteractionToPerform: embedData.action as any,
         }}>
-        <LinkProvider>
-          <BaseContextProvider
-            brandDetails={embedData.brandDetails}
-            isEmbed>
+        <BaseContextProvider
+          brandDetails={embedData.brandDetails}
+          isEmbed>
+          <LinkProvider>
             <AuthProvider
               onSignIn={() => {}}
               onSignOut={() => {}}
@@ -96,8 +96,8 @@ export function loadNewEmbed(
                 <Toaster />
               </AnalyticsProvider>
             </AuthProvider>
-          </BaseContextProvider>
-        </LinkProvider>
+          </LinkProvider>
+        </BaseContextProvider>
       </EmbedProvider>
     </ReactQueryClientProvider>
   )

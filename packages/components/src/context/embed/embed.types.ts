@@ -352,6 +352,8 @@ export type EmbedDataType = {
   __v?: number;
   is_live?: boolean;
   embed_id?: string;
+  placement_id?: string;
+  style_id?: string;
   environment?: string;
   contextualParams?: SDKConfig["contextualParams"];
   elementId?: string;
@@ -367,10 +369,53 @@ export type EmbedDataType = {
   authInfo?: AuthInfoType;
   is_default?: boolean;
   aspect_ratio?: string;
+  enable_adaptive_video?: boolean;
+  
+  // Additional fields from PlacementDataResponse
+  feed_type?: string;
+  created_at?: string;
+  updated_at?: string;
+  styles?: PlacementStyle[];
+  grid_layout?: {
+    auto_adjust: boolean;
+    column: number;
+    row: number;
+  };
+  implementation_guide?: {
+    is_on_page_context_fetch?: boolean;
+    is_real_time_context_fetch?: boolean;
+    show_brand_id?: boolean;
+    show_community_group_id?: boolean;
+    show_custom_context?: boolean;
+    show_location?: boolean;
+    show_pdp_url?: boolean;
+    show_place?: boolean;
+    show_posted_by_user?: boolean;
+    show_style_id?: boolean;
+    show_time?: boolean;
+    show_user_interests?: boolean;
+    show_user_segmentation?: boolean;
+  };
+  report_options?: {
+    inappropriate_content?: boolean;
+    non_professional_content?: boolean;
+    other?: boolean;
+    spam?: boolean;
+    threatening_violent?: boolean;
+  };
+  enable_report?: boolean;
+  enable_style_fallback?: boolean;
+  is_show_video_thumbnail?: boolean;
+  show_video_duration?: boolean;
+  is_show_metrics?: boolean;
+  placement_card_section_layout_id?: number;
+  placement_card_layout_id?: number
+  placement_video_layout_id?: number
 };
 
 export type CustomizationType = {
   dimensions: {
+    auto_fit_height?: boolean
     width: number;
     height: number;
   };
@@ -595,13 +640,235 @@ export type AuthUser = {
   brandGuidelines?: boolean;
 };
 
+export type PlacementDataResponse = {
+  __v: number;
+  _id: string;
+  brand_id: number;
+  community_ids: string[];
+  community_loop_ids: string[];
+  created_at: string;
+  environments: {
+    app: PlacementEnvironmentConfig;
+    web: PlacementEnvironmentConfig;
+  };
+  feed_type: string;
+  is_live: boolean;
+  name: string;
+  placement_brand_ids: number[];
+  styles: PlacementStyle[];
+  type: "grid" | "carousel" | "feed" | "standard_wall" | "dynamic";
+  updated_at: string;
+};
+
+export type PlacementEnvironmentConfig = {
+  configure_view: {
+    aspect_ratio: string;
+    card_layout_id: number;
+    carousel_style: "default" | "focus";
+    dimensions: {
+      auto_fit_height: boolean;
+      height: number;
+      width: number;
+    };
+    enable_adaptive_video: boolean;
+    enable_style_fallback: boolean;
+    grid_layout: {
+      auto_adjust: boolean;
+      column: number;
+      row: number;
+    };
+    heading_text_color: string;
+    is_carousel_icon: boolean;
+    is_expanded_view: boolean;
+    is_floating_view: boolean;
+    is_show_metrics: boolean;
+    is_show_social_interaction_data: boolean;
+    is_show_username: boolean;
+    is_show_video_thumbnail: boolean;
+    is_show_view_count: boolean;
+    media_play: {
+      enable_autoplay: boolean;
+    };
+    placement_card_layout_id: number;
+    placement_card_section_layout_id: number;
+    placement_video_layout_id: number;
+    show_community_share_button: boolean;
+    show_join_community_button: boolean;
+    show_links: boolean;
+    show_navigation: boolean;
+    show_social_interaction_data: boolean;
+    show_username: boolean;
+    show_video_duration: boolean;
+    sub_heading_text_color: string;
+    video_layout_id: number;
+  };
+  expand_view: {
+    enable_engagement_tools: {
+      comment: boolean;
+      repost: boolean;
+      share: boolean;
+      spark: boolean;
+    };
+    enable_linkout: boolean;
+    enable_redirection_tools: {
+      community: boolean;
+      group: boolean;
+      user: boolean;
+    };
+    enable_report: boolean;
+    is_enable_engagement_tools: boolean;
+    is_enable_redirection: boolean;
+    report_options: {
+      inappropriate_content: boolean;
+      non_professional_content: boolean;
+      other: boolean;
+      spam: boolean;
+      threatening_violent: boolean;
+    };
+  };
+  implementation_guide: {
+    is_on_page_context_fetch: boolean;
+    is_real_time_context_fetch: boolean;
+    show_brand_id: boolean;
+    show_community_group_id: boolean;
+    show_custom_context: boolean;
+    show_location: boolean;
+    show_pdp_url: boolean;
+    show_place: boolean;
+    show_posted_by_user: boolean;
+    show_style_id: boolean;
+    show_time: boolean;
+    show_user_interests: boolean;
+    show_user_segmentation: boolean;
+  };
+};
+
+export type PlacementStyle = {
+  _id: string;
+  categories: string[];
+  consumer_journey_ids: string[];
+  content_mapping: {
+    unique_linkout_videos: boolean;
+    unique_videos_to_sections: boolean;
+  };
+  content_restrictions: {
+    pinned_videos: boolean;
+    recommendation_engine: boolean;
+    same_brand_videos: boolean;
+    same_url_linkouts_videos: boolean;
+  };
+  is_adaptive_styling_enabled: boolean;
+  sections: PlacementSection[];
+  sub_title: string | null;
+  title: string;
+};
+
+export type PlacementSection = {
+  _id: string;
+  description: string;
+  position: number;
+  title: string;
+};
+
+export type EnvironmentConfig = {
+  configure_view: {
+    dimensions: {
+      auto_fit_height: boolean;
+      height: number;
+      width: number;
+    };
+    enable_adaptive_video: boolean;
+    enable_style_fallback: boolean;
+    grid_layout: {
+      auto_adjust: boolean;
+      height: number;
+      width: number;
+    };
+    heading_text_color: string;
+    media_play: {
+      enable_autoplay: boolean;
+    };
+    show_links: boolean;
+    show_social_interaction_data: boolean;
+    show_username: boolean;
+    show_video_duration: boolean;
+    social_metrics: string;
+    sub_heading_text_color: string;
+  };
+  expand_view: {
+    enable_engagement: boolean;
+    enable_linkout: boolean;
+    enable_redirection: boolean;
+    enable_report: boolean;
+    redirection_tools: {
+      community: boolean;
+      group: boolean;
+      user: boolean;
+    };
+    report_options: {
+      inappropriate_content: boolean;
+      non_professional_content: boolean;
+      other: boolean;
+      spam: boolean;
+      threatening_violent: boolean;
+    };
+    social_counts: {
+      comment: boolean;
+      reaction: boolean;
+      repost: boolean;
+      share: boolean;
+    };
+  };
+  implementation_guide: {
+    show_brand_id: boolean;
+    show_community_group_id: boolean;
+    show_custom_context: boolean;
+    show_location: boolean;
+    show_pdp_url: boolean;
+    show_place: boolean;
+    show_posted_by_user: boolean;
+    show_style_id: boolean;
+    show_time: boolean;
+    show_user_interests: boolean;
+    show_user_segmentation: boolean;
+  };
+};
+export type Style = {
+  _id: string;
+  categories: string[];
+  consumer_journey_ids: string[];
+  content_mapping: {
+    unique_linkout_videos: boolean;
+    unique_videos_to_sections: boolean;
+  };
+  content_restrictions: {
+    pinned_videos: boolean;
+    recommendation_engine: boolean;
+    same_brand_videos: boolean;
+    same_url_linkouts_videos: boolean;
+  };
+  is_adaptive_styling_enabled: boolean;
+  sections: Section[];
+  title: string;
+};
+export type Section = {
+  description: string;
+  position: number;
+  title: string;
+};
+
 export type CommunityJoinStatusType =
   | "unjoined"
   | "joined"
   | "requested"
   | "leader";
 
-export type ViewType = "feed" | "carousel" | "standard_wall";
+export type ViewType =
+  | "feed"
+  | "carousel"
+  | "standard_wall"
+  | "grid"
+  | "dynamic";
 
 export type SizeBoxType = { height: number; width: number };
 

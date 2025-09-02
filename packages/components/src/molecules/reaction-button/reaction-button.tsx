@@ -11,8 +11,10 @@ import { useBaseContext } from "@genuin/components/context/base";
 import { cn } from "@genuin/ui/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
+import { Link } from "../link";
 import { useAnalytics } from "@genuin/components/context/analytics";
 import { ActionPopover } from "../actions/action-popover";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 const reactionButtonVariant = cva("", {
   variants: {
@@ -45,6 +47,7 @@ type ReactionButtonProps = ComponentProps<typeof PrimitiveButton> & {
    */
   withCustomChildren?: boolean;
   onReactionStateChange?: (isReacted: boolean) => void;
+  videoId?: string;
 } & VariantProps<typeof reactionButtonVariant>;
 
 export function ReactionButton({
@@ -55,11 +58,13 @@ export function ReactionButton({
   reactionButtonTheme,
   showReactionCount,
   onClick,
+  videoId,
   ...restProps
 }: ReactionButtonProps) {
   const { authenticationStatus, handleAuthCallback } = useAuthContext();
   const { brandDetails } = useBaseContext();
   const embedDetails = useSafeEmbedContext();
+  const { modalConfig } = useEmbedConfigs();
   const authInfo = embedDetails?.embedData.authInfo;
   const brandId = brandDetails.brand_id;
 
@@ -87,6 +92,7 @@ export function ReactionButton({
       showReactionCount={showReactionCount}
       reactionCount={reactionCount}
       contentId={contentId}
+      videoId={videoId}
       onClick={(e) => {
         // Only trigger clickHandler for the default case, not for popover
         onClick?.(e);
@@ -139,6 +145,13 @@ export function ReactionButton({
   }
 
   if (authenticationStatus === "unauthenticated" && !clickHandler) {
+    if (modalConfig.hideModal && shareUrl) {
+      return (
+        <Link href={shareUrl} target="_blank">
+          {button}
+        </Link>
+      );
+    }
     return (
       <AuthenticationModal
         getAppData={{
@@ -179,6 +192,7 @@ function Button({
   children,
   withCustomChildren = false,
   onClick,
+  videoId,
   onReactionStateChange,
   ...restProps
 }: ReactionButtonProps) {
@@ -192,10 +206,15 @@ function Button({
     onSuccess: (isReacted) => {
       track(
         contentType === "COMMENT"
-          ? EventName.COMMENT_SPARK
-          : EventName.VIDEO_SPARK,
+          ? isReacted
+            ? EventName.COMMENT_SPARK
+            : EventName.COMMENT_UNSPARK
+          : isReacted
+            ? EventName.VIDEO_SPARK
+            : EventName.VIDEO_UNSPARK,
         {
           content_id: contentId,
+          video_id: videoId ?? contentId,
           content_category: "loop",
           event_record_screen: "feed",
           event_target_screen: "none",

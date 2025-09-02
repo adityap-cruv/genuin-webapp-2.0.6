@@ -4,6 +4,7 @@ import { createPortal } from "react-dom";
 
 type RootPortalProps = {
   children: React.ReactNode;
+  className?: string;
 };
 
 /**
@@ -11,7 +12,7 @@ type RootPortalProps = {
  * @param param0 RootPortalProps - The props for the RootPortal component.
  * @returns
  */
-export function RootPortal({ children }: RootPortalProps) {
+export function RootPortal({ children, className }: RootPortalProps) {
   // SSR guard: don't render on server
   if (typeof window === "undefined") return null;
   const [mounted, setMounted] = React.useState(false);
@@ -25,7 +26,9 @@ export function RootPortal({ children }: RootPortalProps) {
 
   if (!mounted) return null;
   const elementToRender = (
-    <div style={{ ...parsedBrandColors, zIndex: 20 }}>{children}</div>
+    <div style={{ ...parsedBrandColors, zIndex: 20 }} className={className}>
+      {children}
+    </div>
   );
   return createPortal(elementToRender, document.body);
 }

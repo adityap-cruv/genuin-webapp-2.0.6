@@ -60,7 +60,9 @@ function Avatar({
   ...props
 }: AvatarPropsType) {
   const [isOpen, setIsOpen] = useState(false);
-  const finalImageSrc = isAvatar ? getAvatarUrl(imageUrl) : imageUrl;
+  const finalImageSrc = isAvatar
+    ? getAvatarUrl(imageUrl)
+    : getWebpUrlForImage(imageUrl);
   // Generate a unique ID for this Avatar instance
   const uniqueId = React.useId();
   const layoutId = `avatar-zoom-${uniqueId}`;
@@ -83,7 +85,7 @@ function Avatar({
           "gencl:aspect-square gencl:rounded-full gencl:size-full",
           imageClassName
         )}
-        src={isAvatar ? getAvatarUrl(imageUrl) : getWebpUrlForImage(imageUrl)}
+        src={finalImageSrc}
         alt={alt}
         loading="lazy"
       />

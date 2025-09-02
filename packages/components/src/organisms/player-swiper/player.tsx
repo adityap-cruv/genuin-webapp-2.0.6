@@ -27,6 +27,11 @@ type PlayerProps = {
     typeof ControlLayer
   >["onGroupSubscriptionChange"];
   index: number;
+  isSectioned?: boolean;
+  isActive: boolean;
+  isNext: boolean;
+  isPrev: boolean;
+  isVisible: boolean;
 };
 
 // TODO: This component is using feed context, which is not ideal. Remove this dep of FeedContext in future.
@@ -37,11 +42,16 @@ export function Player({
   onGroupJoinStatusChange,
   onGroupSubscriptionChange,
   onReactionStateChange,
+  isSectioned,
+  isActive,
+  isNext,
+  isPrev,
+  isVisible,
 }: PlayerProps) {
   const { showExpandView, toggleExpandView, activeIndex, variant } =
     useFeedContext();
   const { muted } = useBaseContext();
-  const { isActive, isNext, isPrev, isVisible } = useSwiperSlide();
+  // const { isActive, isNext, isPrev, isVisible } = useSwiperSlide();
   const swiper = useSwiper();
   const { showGestureOverlay } = useGestureOverlayManager();
   const { isMobile } = useDeviceDetectMediaQuery();
@@ -100,6 +110,7 @@ export function Player({
           <ControlLayer
             isActive={isActive}
             postDetails={post}
+            isSectioned={isSectioned}
             onCommunityJoinStatusChange={onCommunityJoinStatusChange}
             onGroupJoinStatusChange={onGroupJoinStatusChange}
             onGroupSubscriptionChange={onGroupSubscriptionChange}

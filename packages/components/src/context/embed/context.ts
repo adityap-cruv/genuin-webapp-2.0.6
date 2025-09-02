@@ -1,6 +1,11 @@
+"use client";
 import { createContext, useContext } from "react";
 import { EmbedDataType } from "./embed.types";
-import { ActivePlayerType, createEmbedEventBus } from "./event-bus";
+import {
+  ActivePlayerType,
+  createEmbedEventBus,
+} from "./event-bus";
+import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 /**
  * Type definition for the Embed context.
@@ -39,15 +44,23 @@ type EmbedContextType = {
    * @returns
    */
   goBackToPreviousPlayerType: () => void;
+
   /**
-   * List of video titles for the current embed
+   * Updates the section list in the context
+   * @param newSectionList The new section list to set
    */
-  bucketList?: string[];
+  updateSectionList: (newSectionList: PostDetailsType['section'][]) => void;
+
   /**
-   * Updates the bucket list in the context
-   * @param newBucketList The new bucket list to set
+   * Updates the sectioned status in the context
+   * @param isSectioned Whether the feed is sectioned
    */
-  updateBucketList: (newBucketList: string[]) => void;
+  updateIsSectioned: (isSectioned: boolean) => void;
+
+  /**
+   * Updates the currently selected section
+   */
+  updateSelectedSection: (section: PostDetailsType['section']) => void;
 };
 
 /**

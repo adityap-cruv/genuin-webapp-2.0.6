@@ -3,26 +3,16 @@ import { useFeed } from "@genuin/components/react-query/api/feed";
 import { EmbedProps } from "./embed.types";
 import { SdkSkeleton } from "./skeleton";
 import { cn } from "@genuin/ui/lib/utils";
-import {
-  ComponentProps,
-  useMemo,
-  useState,
-  useRef,
-  useEffect,
-  useCallback,
-} from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
 import { EmbedSwiper } from "@genuin/components/molecules/embed-swiper/embed-swiper";
-import { EmbedTile } from "../embed-tile";
 import { useAnalytics } from "@genuin/components/context/analytics/context";
 import { SwiperSlide } from "swiper/react";
-import { cva, VariantProps } from "class-variance-authority";
-import { EmbedManagerProvider, useEmbedManagerContext } from "./context";
+import { EmbedManagerProvider } from "./context";
 import { Swiper } from "swiper/types";
-import { useDebounceCallback } from "usehooks-ts";
 import { EmbedHeader } from "@genuin/components/molecules/embed-header";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { NavigationButtons } from "./navigation-buttons";
-import { EmbedExpandView } from "./expand-view";
+import { EmbedExpandSectionedView } from "./embed-expand-sectioned-view";
 import { useEmbedContext } from "@genuin/components/context/embed";
 import { EmbedEventContextType } from "@genuin/components/context/embed/event-bus";
 import { PipView } from "./pip-view";
@@ -30,69 +20,90 @@ import { getQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
 import { useEmbedDimensions } from "@genuin/components/hooks/embed/use-embed-dimensions";
 import { SdkErrorState } from "./error-state";
 import { SdkEmptyState } from "./empty-state";
-import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { GridView } from "./grid-view/grid-view";
+import { EmbedExpandView } from "./expand-view";
+import { cva, VariantProps } from "class-variance-authority";
+import { EmbedItem } from "./embed-tile-item";
 
-const carouselVariant = cva("gencl:rounded-md", {
+const embedVariants = cva("gencl:rounded-md gencl:overflow-auto", {
   variants: {
     variant: {
-      carousel: "",
       feed: "",
+      carousel: "",
       standard_wall: "",
+      grid: "",
+      dynamic: "",
     },
-    defaultVariants: {
-      variant: "carousel",
-    },
+  },
+  defaultVariants: {
+    variant: "carousel",
   },
 });
 
-type Props = EmbedProps & VariantProps<typeof carouselVariant>;
-
-export function Embed({ className, style, ...restProps }: Props) {
+export function Embed({
+  className,
+  style,
+  feedData: externalFeedData,
+  ...restProps
+}: EmbedProps & VariantProps<typeof embedVariants>) {
   const [swiper, setSwiper] = useState<Swiper | null>(null);
   const embedRef = useRef<HTMLDivElement>(null);
 
-  const { embedData, embedEventBus } = useEmbedContext();
+  const { embedData, embedEventBus, updateIsSectioned, updateSectionList } =
+    useEmbedContext();
+  // Local state for isSectioned synced with event bus
+  const [isSectioned, setIsSectioned] = useState(
+    embedEventBus.getContext().isSectioned
+  );
   const { track, EventName } = useAnalytics();
   const config = useEmbedConfigs();
   const embedVariant = config.embedStyle;
+  const isGridLayout = config.view.isGrid;
 
-  const feedOptions = {
+  // Data fetching
+  const feedType = embedData.placement_id ? "PLACEMENT_SECTIONS" : "EMBED_HOME";
+  const feedParams = {
     communityIds: config.community.communityIds,
     groupIds: config.community.communityLoopIds,
     startVideoSlug: embedData.startVideoSlug,
-    isEmbed: true,
+    placementId: embedData.placement_id,
+    styleId: embedData.style_id,
     contextualParams: embedData.contextualParams,
   };
 
   const {
     isLoading,
-    data: feedData,
+    data: apiFeedData,
     isError,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useFeed("HOME", feedOptions);
-  const queryKey = getQueryKeyForFeed("HOME", feedOptions);
+  } = useFeed(feedType, feedParams);
+  const queryKey = getQueryKeyForFeed(feedType, feedParams);
+  const feedData = externalFeedData ?? apiFeedData;
 
   const videos = useMemo(
-    () => feedData?.pages.flatMap((page) => page.feed) || [],
+    () => feedData?.pages?.flatMap((page) => page.feed) || [],
     [feedData]
   );
 
   // Extract video titles from postDetails
-  const bucketList = useMemo(
-    () =>
-      videos.map((videoData) => videoData.video?.attributes?.bucket_name || ""),
+  const sectionList = useMemo(
+    () => videos.map((videoData) => videoData.section || null),
     [videos]
   );
 
-  const isWalmart = embedData.card_layout_id === 6;
-
-  // Store bucketList in the embed context for use elsewhere
-  const { updateBucketList } = useEmbedContext();
+  // Extract sectioned property from feedData and update the context
   useEffect(() => {
-    if (bucketList.length > 0) {
-      updateBucketList(bucketList);
+    if (feedData?.pages && feedData.pages.length > 0) {
+      const sectioned = feedData.pages[0]?.hasSection || false;
+      if (updateIsSectioned) {
+        updateIsSectioned(sectioned);
+        setIsSectioned(sectioned);
+      }
+    }
+    if (sectionList.length > 0 && updateSectionList) {
+      updateSectionList(sectionList);
     }
   }, [videos.length]);
 
@@ -160,7 +171,7 @@ export function Embed({ className, style, ...restProps }: Props) {
     linkoutHeight,
     spaceBetweenVideos,
     availableHeight,
-  } = useEmbedDimensions(config);
+  } = useEmbedDimensions();
 
   if (isError) {
     return (
@@ -196,12 +207,7 @@ export function Embed({ className, style, ...restProps }: Props) {
   return (
     <div
       ref={embedRef}
-      className={cn(
-        carouselVariant({
-          variant: embedVariant,
-        }),
-        className
-      )}
+      className={cn(embedVariants({ variant: embedVariant }), className)}
       style={{
         height: containerHeight,
         width: containerWidth,
@@ -213,17 +219,17 @@ export function Embed({ className, style, ...restProps }: Props) {
         style={{
           height: headerHeight,
         }}
-        variant={
-          embedVariant === "standard_wall"
-            ? "feed"
-            : embedVariant === "feed" || embedVariant === "carousel"
-              ? embedVariant
-              : undefined
-        }
+        variant={embedVariant}
       />
-      <EmbedManagerProvider swiper={swiper} isGridLayout={isWalmart}>
-        {isWalmart ? (
-          <GridLayout videos={videos} embedEventBus={embedEventBus} />
+      <EmbedManagerProvider swiper={swiper} isGridLayout={isGridLayout}>
+        {isGridLayout ? (
+          <GridView
+            videos={videos}
+            rows={config.view.gridLayout?.row ?? 2}
+            cols={config.view.gridLayout?.column ?? 2}
+            autoAdjust={config.view.gridLayout?.auto_adjust}
+            aspectRatio={embedData.aspect_ratio}
+          />
         ) : (
           <div className="gencl:relative">
             <EmbedSwiper
@@ -241,192 +247,36 @@ export function Embed({ className, style, ...restProps }: Props) {
               }}
               onSwiper={(swiperInstance) => setSwiper(swiperInstance)}
             >
-              {videos.map((videoData, idx) => {
+              {videos?.map((videoData, idx) => {
                 return (
                   <SwiperSlide key={idx}>
-                    <EmbedItem
-                      index={idx}
-                      postDetails={videoData}
-                      bucketList={bucketList}
-                    />
+                    <EmbedItem index={idx} postDetails={videoData} />
                   </SwiperSlide>
                 );
               })}
             </EmbedSwiper>
-            <NavigationButtons totalSlides={videos.length} />
+            <NavigationButtons totalSlides={videos?.length} />
           </div>
         )}
       </EmbedManagerProvider>
-      <EmbedExpandView
-        videos={videos}
-        fetchNextPage={fetchNextPage}
-        hasNextPage={hasNextPage}
-        isFetchingNextPage={isFetchingNextPage}
-        isLoading={isLoading}
-        queryKey={queryKey}
-      />
-      <PipView videos={videos} isLoading={isLoading} />
+
+      {isSectioned ? (
+        <EmbedExpandSectionedView
+          videos={videos}
+          pageSession={feedData?.pages[0]?.pageSession}
+        />
+      ) : (
+        <EmbedExpandView
+          videos={videos}
+          fetchNextPage={fetchNextPage}
+          hasNextPage={hasNextPage}
+          isFetchingNextPage={isFetchingNextPage}
+          isLoading={isLoading}
+          queryKey={queryKey}
+        />
+      )}
+
+      <PipView videos={videos ?? []} isLoading={isLoading} />
     </div>
-  );
-}
-
-type EmbedItemProps = Omit<
-  ComponentProps<typeof EmbedTile>,
-  "onPlayerIterationEnd" | "isActive"
-> & {
-  index: number;
-};
-
-// GridLayout component that safely accesses the context
-function GridLayout({
-  videos,
-  embedEventBus,
-}: {
-  videos: any[];
-  embedEventBus: any;
-}) {
-  const { updateActiveIndex } = useEmbedManagerContext();
-  const { isMobile } = useDeviceDetectMediaQuery();
-  const [isHovering, setIsHovering] = useState(false);
-
-  // Auto-update active index every 3 seconds, but pause when hovering or in expand view
-  useEffect(() => {
-    if (videos.length === 0) return;
-
-    // Don't auto-rotate if user is hovering
-    if (isHovering) return;
-
-    const interval = setInterval(() => {
-      const context = embedEventBus.getContext();
-      // Skip auto-rotation if we're in expand view
-      if (context.activePlayerType === "expand-view") return;
-
-      const currentIndex = context.activeIndex || 0;
-      const nextIndex = (currentIndex + 1) % videos.length;
-
-      // Use the updateActiveIndex function from context instead of directly emitting events
-      updateActiveIndex(nextIndex);
-    }, 3000); // Update every 3 seconds
-
-    return () => clearInterval(interval);
-  }, [videos.length, embedEventBus, updateActiveIndex, isHovering]);
-
-  // Initial update of the context with the total number of videos
-  useEffect(() => {
-    if (videos.length > 0) {
-      // Initialize with index 0 if not already set
-      const currentIndex = embedEventBus.getContext().activeIndex || 0;
-      updateActiveIndex(currentIndex);
-    }
-  }, [videos.length, embedEventBus, updateActiveIndex]);
-
-  return (
-    <div
-      className="gencl:h-full gencl:w-full gencl:overflow-auto"
-      onMouseEnter={() => !isMobile && setIsHovering(true)}
-      onMouseLeave={() => !isMobile && setIsHovering(false)}
-    >
-      <div className="gencl:grid gencl:grid-cols-2 gencl:w-full gencl:gap-2">
-        {videos.map((videoData, index) => (
-          <div
-            key={index}
-            className={cn(
-              "gencl:aspect-reel gencl:relative gencl:overflow-hidden gencl:rounded-md",
-              "gencl:transition-all gencl:duration-300 gencl:ease-in-out",
-              "gencl:cursor-pointer"
-            )}
-            onClick={() => {
-              updateActiveIndex(index);
-              // Open expand view with this index
-              embedEventBus.emit(
-                "activePlayerTypeChange",
-                {},
-                {
-                  activePlayerType: "expand-view",
-                  activeIndex: index,
-                }
-              );
-            }}
-          >
-            <EmbedItem index={index} postDetails={videoData} />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function EmbedItem({ index, ...restProps }: EmbedItemProps) {
-  const { updateActiveIndex } = useEmbedManagerContext();
-  const { embedEventBus } = useEmbedContext();
-  const [embedIsActive, setEmbedIsActive] = useState(
-    embedEventBus.getContext().activePlayerType === "embed"
-  );
-
-  const debouncedSetActiveIndex = useDebounceCallback(() => {
-    updateActiveIndex(index);
-  }, 700);
-
-  // Attach to onMouseEnter
-  const { goToNextVideo, activeIndex } = useEmbedManagerContext();
-
-  useEffect(() => {
-    const handleActivePlayerTypeChange = (
-      eventData: any,
-      context: EmbedEventContextType
-    ) => {
-      if (context.activePlayerType === "embed") {
-        setEmbedIsActive(true);
-      } else {
-        setEmbedIsActive(false);
-      }
-    };
-
-    embedEventBus.on("activePlayerTypeChange", handleActivePlayerTypeChange);
-    return () => {
-      embedEventBus.off("activePlayerTypeChange", handleActivePlayerTypeChange);
-    };
-  }, []);
-
-  const handleMouseLeave = useCallback(() => {
-    debouncedSetActiveIndex.cancel();
-  }, [debouncedSetActiveIndex]);
-
-  return (
-    <EmbedTile
-      className={cn("gencl:cursor-pointer")}
-      isActive={activeIndex === index && embedIsActive}
-      onPlayerIterationEnd={goToNextVideo}
-      onMouseEnter={debouncedSetActiveIndex}
-      onMouseLeave={handleMouseLeave}
-      onClick={() => {
-        updateActiveIndex(index);
-
-        // CHECK ANY BETTER APPROACH
-        // First update the active index
-        embedEventBus.emit(
-          "activeIndexChange",
-          {},
-          {
-            activePlayerType: embedEventBus.getContext().activePlayerType,
-            activeIndex: index,
-          }
-        );
-
-        // Then after a small delay to allow the video to start, change to expand view
-        setTimeout(() => {
-          embedEventBus.emit(
-            "activePlayerTypeChange",
-            {},
-            {
-              activePlayerType: "expand-view",
-              activeIndex: index,
-            }
-          );
-        }, 50);
-      }}
-      index={index}
-      {...restProps}
-    />
   );
 }

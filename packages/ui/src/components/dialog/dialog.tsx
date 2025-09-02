@@ -122,6 +122,7 @@ interface DialogContentProps
     VariantProps<typeof dialogContentVariants> {
   showClose?: boolean;
   bgBlur?: boolean;
+  closeIconClassName?: string;
 }
 
 function DialogContent({
@@ -131,6 +132,7 @@ function DialogContent({
   showClose = true,
   bgBlur = false,
   style,
+  closeIconClassName,
   ...props
 }: DialogContentProps) {
   return (
@@ -151,7 +153,8 @@ function DialogContent({
               "gencl:opacity-70 gencl:transition-opacity gencl:hover:opacity-100",
               "gencl:disabled:pointer-events-none gencl:[&_svg]:pointer-events-none",
               "gencl:[&_svg]:shrink-0 gencl:[&_svg:not([class*=size-])]:size-5",
-              "gencl:cursor-pointer"
+              "gencl:cursor-pointer",
+              closeIconClassName
             )}
           >
             <XIcon className="gencl:stroke-secondary-600" />

@@ -217,6 +217,8 @@ export function getSocialLinks(socialLinks: {
   insta?: { url?: string | null; id?: string | null } | null;
   linkedin?: { id?: string | null } | null;
   reddit_id?: { id?: string | null; url?: string | null } | null;
+  tiktok?: { id?: string | null; url?: string | null } | null;
+  youtube?: { id?: string | null; url?: string | null } | null;
 }) {
   const links: Record<string, string | undefined> = {};
 
@@ -238,6 +240,14 @@ export function getSocialLinks(socialLinks: {
 
   if (socialLinks.reddit_id?.id && socialLinks.reddit_id?.url) {
     links.reddit = socialLinks.reddit_id.url + socialLinks.reddit_id.url;
+  }
+
+  if (socialLinks.tiktok?.id && socialLinks.tiktok.url) {
+    links.tiktok = socialLinks.tiktok.url + socialLinks.tiktok.id;
+  }
+
+  if (socialLinks.youtube?.id && socialLinks.youtube.url) {
+    links.youtube = socialLinks.youtube.url + socialLinks.youtube.id;
   }
 
   return links;

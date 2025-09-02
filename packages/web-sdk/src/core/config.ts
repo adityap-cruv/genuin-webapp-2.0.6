@@ -1,12 +1,22 @@
 import { EmbedConfig, EmbedStyle } from '../types/embed'
 
 export interface LegacySDKConfig {
-  embed_id: string
-  api_key: string
-  token?: string
+  embed?: number
   brand_id?: number
+  hide_navbar?: number
+  api_key?: string
+  community?: string
+  loop?: string
+  video?: string
+  style?: 'carousel' | 'feed'
   subdomain?: string
-  brand_colors?: string
+  embed_page?: string
+  embed_id?: string
+  placement_id?: string
+  style_id?: string
+  brand_colors?: any
+  live_customization_data?: any
+  token?: string
   name?: string
   contextualParams?: {
     page_context?: string | null
@@ -16,17 +26,27 @@ export interface LegacySDKConfig {
     }
     url?: string | null
   }
+  params?: {
+    name?: string | null
+    mobile?: string | null
+    email?: string | null
+    nickname?: string | null
+    profileImage?: string | null
+    brandUserIdentity?: string | null
+  }
   brand_ids?: number[]
-  params?: string
-  video?: string
-  action?: string
-  authInfo?: any
-  style?: string
-  type?: string
-  live_customization_data?: any
-  embed?: number
+  type?: 'brand_feed' | 'community_feed' | 'loop_feed'
+  action?: ActionType
+  comment?: string
+  authInfo?: AuthInfoType
 }
 
+type ActionType = 'spark' | 'comment-spark' | 'comment'
+
+type AuthInfoType = {
+  signInUrl: string
+  signUpUrl: string
+}
 export class ConfigManager {
   private static instance: ConfigManager
   private config: EmbedConfig | null = null
@@ -42,22 +62,29 @@ export class ConfigManager {
   }
 
   // Legacy validation from original SDK
-  validateLegacyConfig(config: { embed_id?: string; api_key?: string }): {
+  validateLegacyConfig(config: {
+    embed_id?: string
+    api_key?: string
+    placement_id?: string
+  }): {
     isValid: boolean
     missingFields: string[]
     errorMessage?: string
   } {
     const missingFields = []
-    if (!config.embed_id) missingFields.push('embed_id')
+    // Require either embed_id or placement_id
+    if (!config.embed_id && !config.placement_id) {
+      missingFields.push('embed_id or placement_id')
+    }
     if (!config.api_key) missingFields.push('api_key')
 
     return {
       isValid: missingFields.length === 0,
       missingFields,
       errorMessage: missingFields.length
-        ? `Missing required fields: ${missingFields.join(', ')}. Please pass the config object this format:
+        ? `Missing required fields: ${missingFields.join(', ')}. Please pass the config object in this format:
         window.genuin.init({
-          embed_id: 'your_embed_id',
+          embed_id: 'your_embed_id' OR placement_id: 'your_placement_id',
           api_key: 'your_api_key',
           token: 'your_token' (optional)
         })`
@@ -72,10 +99,14 @@ export class ConfigManager {
     errorMessage?: string
   } {
     const missingFields = []
+    const placementId = div.getAttribute('data-placement-id')
     const embedId = div.getAttribute('data-embed-id')
     const apiKey = div.getAttribute('data-api-key')
 
-    if (!embedId) missingFields.push('data-embed-id')
+    // Require either embedId or placementId
+    if (!embedId && !placementId) {
+      missingFields.push('data-embed-id or data-placement-id')
+    }
     if (!apiKey) missingFields.push('data-api-key')
 
     return {
@@ -84,8 +115,8 @@ export class ConfigManager {
       errorMessage: missingFields.length
         ? `Missing required fields: ${missingFields.join(', ')}.
         Required attributes:
-        - data-embed-id="your_embed_id"
-        - data-api-key="your_api_key"`
+          - data-embed-id="your_embed_id" or data-placement-id="your_placement_id"
+          - data-api-key="your_api_key"`
         : undefined,
     }
   }

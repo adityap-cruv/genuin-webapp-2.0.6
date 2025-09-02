@@ -189,14 +189,12 @@ export function AuthProvider({
         return undefined;
       }
 
-      // In embed environments with genuinAuth callback or non-standard_wall style,
+      // In embed environments with genuinAuth.
       // return a function to handle external auth
-      if (window.genuinAuth || embedData?.style !== "standard_wall") {
+      if (window.genuinAuth) {
         return () => {
           if (window.genuinAuth) {
             window.genuinAuth(authCallbackData);
-          } else {
-            window.open(urlToOpen, "_blank");
           }
         };
       }

@@ -56,6 +56,7 @@ type BaseFeedPropsType = {
 type FeedWithDataPropsType = {
   /** Type of feed to display (HOME, POPULAR, LATEST) */
   feedType: FeedType;
+  isSectioned?: boolean
 } & BaseFeedPropsType &
   ComponentProps<"div">;
 
@@ -98,6 +99,7 @@ type FeedViewPropsType = {
    * @returns
    */
   onActiveIndexChange?: (index: number) => void;
+  isSectioned?: boolean
 } & BaseFeedPropsType &
   ComponentProps<"div">;
 

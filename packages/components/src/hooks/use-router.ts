@@ -1,5 +1,10 @@
 import { useLinkContext } from "../context/link";
-import { embedRouter, goBack, goForward } from "../lib/utils/embed-router";
+import {
+  embedRouter,
+  goBack,
+  goForward,
+  canGoBack as primitiveCanGoBack,
+} from "../lib/utils/embed-router";
 
 // Type definition for the router object that mimics Next.js router
 interface WouterRouter {
@@ -12,11 +17,14 @@ interface WouterRouter {
   ) => Promise<void>;
   back: () => void;
   forward: () => void;
+  canGoBack: () => boolean;
 }
 
 export function useRouter() {
   const { useRouter } = useLinkContext();
-  return useRouter ? useRouter() : useWouterRouter();
+  return useRouter
+    ? { ...useRouter(), canGoBack: () => true }
+    : useWouterRouter();
 }
 
 function useWouterRouter(): WouterRouter {
@@ -44,9 +52,7 @@ function useWouterRouter(): WouterRouter {
      * @param options - Navigation options
      */
     replace: (href: string, options?: { scroll?: boolean }) => {
-      // Note: wouter's memory location doesn't distinguish between push and replace
-      // This would need custom implementation for true replace behavior
-      embedRouter.navigate(href);
+      embedRouter.replace(href);
       if (options?.scroll !== false) {
         if (typeof window !== "undefined") {
           window.scrollTo(0, 0);
@@ -80,6 +86,10 @@ function useWouterRouter(): WouterRouter {
      */
     back: () => {
       goBack();
+    },
+
+    canGoBack: () => {
+      return primitiveCanGoBack();
     },
 
     /**

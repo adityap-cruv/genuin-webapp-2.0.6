@@ -1,6 +1,7 @@
+"use client";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { Popover, PopoverContent, PopoverTrigger } from "@genuin/ui/components";
-import { AnchorIcon, XIcon } from "@genuin/ui/icons";
+import { XIcon } from "@genuin/ui/icons";
 import { ReactNode, useEffect, useState } from "react";
 import { Link } from "../link";
 

@@ -394,3 +394,43 @@ export function getPastTense(word: string) {
     return word + "ed";
   }
 }
+
+/**
+ * Parses an aspect ratio string (e.g. "9:16") and returns width and height values.
+ * If the input is invalid or missing, defaults to 9:16.
+ *
+ * @param ratio - Aspect ratio string in the format "width:height" (e.g. "16:9", "4:3").
+ * @returns An object with numeric width and height values.
+ *
+ * @example
+ * getAspectRatio("16:9") // { width: 16, height: 9 }
+ * getAspectRatio() // { width: 9, height: 16 }
+ */
+export function getAspectRatio(ratio?: string): {
+  width: number;
+  height: number;
+} {
+  let width = 9;
+  let height = 16;
+  if (ratio) {
+    const parts = ratio.split(":");
+    if (
+      parts.length === 2 &&
+      parts[0] !== undefined &&
+      parts[1] !== undefined
+    ) {
+      const parsedWidth = parseInt(parts[0] as string, 10);
+      const parsedHeight = parseInt(parts[1] as string, 10);
+      if (
+        !isNaN(parsedWidth) &&
+        !isNaN(parsedHeight) &&
+        parsedWidth > 0 &&
+        parsedHeight > 0
+      ) {
+        width = parsedWidth;
+        height = parsedHeight;
+      }
+    }
+  }
+  return { width, height };
+}

@@ -7,6 +7,7 @@ import { ControlLayerPropsType } from "./control-layer.types";
 import { EmbedPip } from "./embed-pip";
 import { usePlayerContext } from "../context";
 import { Ad } from "./ad";
+import { Placement } from "./placement";
 
 export const controlLayerVariant = cva(
   "gencl:absolute gencl:inset-0 gencl:h-full gencl:w-full gencl:overflow-clip gencl:transition-all",
@@ -16,6 +17,7 @@ export const controlLayerVariant = cva(
         default: "",
         embed: "",
         "embed-pip": "",
+        placement: "",
       },
     },
     defaultVariants: {
@@ -57,6 +59,20 @@ export const ControlLayer = memo(function ControlLayer(
     const { className, variant, ...restProps } = props;
     return (
       <Embed
+        className={cn(controlLayerVariant({ variant }), className)}
+        {...restProps}
+      />
+    );
+  }
+
+  /**
+   * Render the placement control layer.
+   */
+
+  if (props.variant === "placement") {
+    const { className, variant, ...restProps } = props;
+    return (
+      <Placement
         className={cn(controlLayerVariant({ variant }), className)}
         {...restProps}
       />

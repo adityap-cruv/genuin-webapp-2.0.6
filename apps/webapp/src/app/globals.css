@@ -266,6 +266,15 @@
     height: 100vh;
   }
 
+  /* More specific rule for body element to ensure fixed positioning is applied */
+  body.important-fixed {
+    position: fixed !important;
+  }
+
+  body[data-scroll-locked] {
+    position: fixed !important;
+  }
+
   .hide-scrollbar::-webkit-scrollbar {
     -webkit-appearance: none;
     appearance: none;
