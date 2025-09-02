@@ -73,6 +73,7 @@ export function SdkSkeleton({
         {...restProps}
       >
         <div className="gencl:h-full gencl:w-full gencl:overflow-auto">
+          <EmbedHeaderSkeleton variant="grid" />
           <div
             className={cn("gencl:w-full gencl:gap-2")}
             style={{
@@ -229,6 +230,7 @@ const embedHeaderSkeletonVariants = cva(
       variant: {
         feed: "gencl:justify-center gencl:items-start gencl:flex-col",
         carousel: "gencl:justify-between gencl:items-center gencl:flex-row",
+        grid: "gencl:justify-between gencl:items-center gencl:flex-row",
       },
     },
     defaultVariants: {

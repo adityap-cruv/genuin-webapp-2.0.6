@@ -411,6 +411,8 @@ export type EmbedDataType = {
   placement_card_section_layout_id?: number;
   placement_card_layout_id?: number
   placement_video_layout_id?: number
+  grid_auto_advance_playback?: number
+  grid_enable_loop_video?: boolean
 };
 
 export type CustomizationType = {
@@ -688,6 +690,8 @@ export type PlacementEnvironmentConfig = {
     is_show_view_count: boolean;
     media_play: {
       enable_autoplay: boolean;
+      enable_loop_video?: boolean;
+      auto_advance_playback?: number
     };
     placement_card_layout_id: number;
     placement_card_section_layout_id: number;

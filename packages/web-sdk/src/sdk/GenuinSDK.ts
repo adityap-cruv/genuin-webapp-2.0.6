@@ -257,12 +257,20 @@ export class GenuinSDK {
 
     if (config.placement_id) {
       try {
-        const fetchedPlacementData = await this.apiService.fetchPlacementData(
-          config.placement_id,
-        )
+        let fetchedPlacementData
+
+        // Apply live customization
+        if (config.live_customization_data) {
+          fetchedPlacementData = config.live_customization_data
+        } else {
+          fetchedPlacementData = await this.apiService.fetchPlacementData(
+            config.placement_id,
+          )
+        }
+
         embedData = {
           ...embedData,
-          ...parsePlacementToEmbedData(fetchedPlacementData),
+          ...parsePlacementToEmbedData(fetchedPlacementData, config.style_id ?? ''),
         }
       } catch (error) {
         console.error('Failed to fetch placement data:', error)
@@ -275,6 +283,11 @@ export class GenuinSDK {
           config.embed_id,
         )
         embedData = { ...embedData, ...fetchedEmbedData }
+
+        // Apply live customization
+        if (config.live_customization_data && embedData.customization) {
+          Object.assign(embedData.customization, config.live_customization_data)
+        }
       } catch (error) {
         console.error('Failed to fetch embed data:', error)
         loadErrorView(container)
@@ -317,11 +330,6 @@ export class GenuinSDK {
     brandData: BrandDetailsResponse | null,
     instanceId: string,
   ): Promise<void> {
-    // Apply live customization
-    if (config.live_customization_data) {
-      Object.assign(embedData.customization, config.live_customization_data)
-    }
-
     // Apply special brand customizations
     if (config.brand_id) {
       embedData.customization =
