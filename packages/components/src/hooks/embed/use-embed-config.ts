@@ -23,9 +23,9 @@ export function useEmbedConfigs() {
     embedContextData = {
       customization: null,
       rootElement: null,
+      embedData: null,
     };
   }
-
   const { customization, rootElement, embedData } = embedContextData;
   const { brandDetails, isEmbed } = useBaseContext();
   const { isMobile } = useDeviceDetectMediaQuery();
@@ -170,7 +170,7 @@ export function useEmbedConfigs() {
       showEngagementTools: isEmbed
         ? !!customization?.is_enable_engagement_tools
         : true,
-      engagementTools: customization?.enable_engagement_tools || {
+      engagementTools: customization?.enable_engagement_tools ?? {
         repost: true,
         spark: true,
         comment: true,
@@ -182,13 +182,12 @@ export function useEmbedConfigs() {
       showCommentsSection: !!customization?.show_comments_section,
       showSidePanel: !!customization?.show_side_panel,
       isEnableRedirection: !!customization?.is_enable_redirection,
-      redirectionTools: customization?.enable_redirection_tools || {
+      redirectionTools: {
         community: true,
         group: true,
         user: true,
       },
-      openAllLinksInNewTab:
-        embedData?.style === "carousel" || embedData?.style === "feed",
+      openAllLinksInNewTab: false,
     };
   }, [customization, rootElement, showEngagementOnRootElement]);
 
@@ -247,12 +246,27 @@ export function useEmbedConfigs() {
     return {
       showSideBar:
         customization?.show_side_panel !== undefined
-          ? customization?.show_side_panel && !isMobile
+          ? embedData?.style === "standard_wall"
+            ? customization?.show_side_panel && !isMobile
+            : false
           : true,
-      showNavigationBar:
-        customization?.show_navigation !== undefined
-          ? customization?.show_navigation && !isMobile
-          : true,
+      /**
+       * In case of standard wall and embed show navigation bar based on customization.
+       * If it's not embed show the navigation bar.
+       */
+      showNavigationBar: isEmbed
+        ? customization?.show_navigation && embedData?.style === "standard_wall"
+        : true,
+      /**
+       * In case of embed show back and forward buttons.
+       * In case of standard-wall we want to show back button and close button.
+       * In case of embed if it's mobile view we want to show back/close button. In desktop cases embed component will handle the buttons.
+       */
+      showBackAndCloseButton: isEmbed,
+      /**
+       * In case of embed show close button.
+       */
+      showCloseButton: isEmbed ? embedData?.style !== "standard_wall" : false,
       feedDisplayPreference: customization?.feed_display_pref || "default",
     };
   }, [customization, isMobile]);

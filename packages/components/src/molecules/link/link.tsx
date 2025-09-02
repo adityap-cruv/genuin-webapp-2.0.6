@@ -5,7 +5,6 @@ import type { NextJSLinkProps } from "@genuin/components/context/link/type";
 import { useLinkContext } from "@genuin/components/context/link";
 import { navigate } from "@genuin/components/lib/utils/embed-router";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { useBaseContext } from "@genuin/components/context";
 
 type BaseLinkProps = ComponentProps<"a">;
@@ -17,15 +16,11 @@ type LinkProps = ExtendedLinkProps & {
    * Pass false if want to disable the routing.
    */
   enabled?: boolean;
+  /**
+   * The URL to navigate to when the link is clicked.
+   */
+  href: string;
 };
-
-/**
- * Creates a URL for external links based on whitelabel settings.
- */
-function createExternalUrl(whiteLabelHost: string, url: string) {
-  const urlObject = new URL(url, whiteLabelHost);
-  return urlObject.href;
-}
 
 /**
  * Checks if redirection is enabled for a given path based on redirection tools configuration
@@ -85,10 +80,13 @@ export function Link({
   prefetch,
   locale,
   legacyBehavior,
+  target,
   // Standard props
   ...restProps
 }: LinkProps) {
-  const { LinkComponent, isNextJS, isCustomRouting } = useLinkContext();
+  const { LinkComponent, isNextJS, isCustomRouting, createExternalLink } =
+    useLinkContext();
+  const wantsToOpenInNewTab = target === "_blank";
 
   // Extract engagement configurations for redirection tools and link behavior
   const {
@@ -100,6 +98,13 @@ export function Link({
 
   // Determine if the href is an external link
   let isHrefExternal = typeof href === "string" && checkIfExternal(href);
+
+  // If the link is intended to open in a new tab and is not already external, convert it to an external URL
+  // This is necessary for internal links that should open in a new tab.
+  if (wantsToOpenInNewTab && href && !isHrefExternal) {
+    href = createExternalLink(href);
+    isHrefExternal = true;
+  }
 
   // Determine if routing/redirection should be enabled for the given href
   const isEnabled = isHrefExternal
@@ -115,7 +120,7 @@ export function Link({
       brandDetails.white_label_url
     ) {
       // Create an external URL using the white-label host and update href
-      href = createExternalUrl(brandDetails.white_label_url, href);
+      href = createExternalLink(href);
       isHrefExternal = true; // Uncomment if needed to mark as external
     }
   }

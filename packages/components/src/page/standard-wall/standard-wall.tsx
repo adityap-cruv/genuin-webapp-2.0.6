@@ -9,13 +9,16 @@ import { CommunityDetails } from "../community-details";
 import { VideoPage } from "../video";
 import { SettingsPage } from "@genuin/components/organisms/settings";
 import { Explore } from "../explore";
-import { ComponentProps } from "react";
+import { ComponentProps, useEffect } from "react";
+import { useRouter } from "@genuin/components/hooks/use-router";
 
 type StandardWallProps = {
   /**
    * Optional prop to specify the initial path for the Standard Wall component.
    */
   startingPath?: string; // Optional prop to specify the initial path
+  defaultComponent?: React.ReactNode;
+  baseLayoutVariant?: ComponentProps<typeof BaseLayout>["variant"];
 } & ComponentProps<"div">;
 
 /**
@@ -25,12 +28,22 @@ type StandardWallProps = {
  */
 export function StandardWall({
   startingPath,
+  defaultComponent,
+  baseLayoutVariant,
   ...restProps
 }: StandardWallProps) {
+  const router = useRouter();
+
+  useEffect(() => {
+    if (defaultComponent) {
+      router.replace("/default-comp");
+    }
+  }, []);
+
   return (
     <div className="gencl:w-full gencl:h-full gencl:relative" {...restProps}>
       <Router hook={embedRouter.hook}>
-        <BaseLayout>
+        <BaseLayout variant={baseLayoutVariant}>
           <Route path={buildPageUrl({ type: "home" })}>
             <Feed feedType="HOME" />
           </Route>
@@ -83,6 +96,7 @@ export function StandardWall({
           <Route path={buildPageUrl({ type: "explore" })}>
             <Explore />
           </Route>
+          <Route path="/default-comp">{defaultComponent}</Route>
         </BaseLayout>
       </Router>
     </div>

@@ -146,6 +146,7 @@ export function GroupCard({
                 <div className="gencl:flex gencl:gap-2">
                   <JoinGroupButton
                     size="sm"
+                    groupSlug={group.slug}
                     groupId={group.chat_id}
                     groupName={group.name}
                     groupDescription={group.description || ""}
@@ -193,6 +194,7 @@ export function GroupCard({
                 <div className="gencl:flex gencl:items-center gencl:gap-2">
                   <JoinGroupButton
                     size="sm"
+                    groupSlug={group.slug}
                     groupId={group.chat_id}
                     groupName={group.name}
                     groupDescription={group.description || ""}
@@ -236,10 +238,7 @@ export function GroupCard({
           // Recent variant - without stats, similar to community card
           <>
             <div className="gencl:rounded-full gencl:bg-secondary-50 gencl:p-2">
-              <GroupIcon
-                variant="filled"
-                className="gencl:h-6 gencl:w-6 gencl:text-secondary-600"
-              />
+              <GroupIcon className="gencl:h-6 gencl:w-6 gencl:text-secondary-600" />
             </div>
             <div className="gencl:flex gencl:flex-col gencl:gap-1 gencl:flex-1 gencl:min-w-0">
               <div className="gencl:flex gencl:items-center gencl:gap-2 gencl:w-full">
@@ -269,10 +268,7 @@ export function GroupCard({
           // Suggestion variant
           <>
             <div className="gencl:rounded-full gencl:bg-secondary-50 gencl:p-1">
-              <GroupIcon
-                variant="filled"
-                className="gencl:h-8 gencl:w-8 gencl:text-secondary-600"
-              />
+              <GroupIcon className="gencl:h-8 gencl:w-8 gencl:text-secondary-600" />
             </div>
             <div className="gencl:flex gencl:flex-col gencl:gap-1 gencl:flex-1 gencl:min-w-0">
               <div className="gencl:flex gencl:items-center gencl:gap-2 gencl:w-full">

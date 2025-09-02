@@ -16,6 +16,7 @@ import { SideInfo } from "@genuin/components/organisms/side-info";
 import { useRouter } from "@genuin/components/hooks/use-router";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { getSocialLinks } from "@genuin/components/lib/utils";
+import { useLinkContext } from "@genuin/components/context";
 
 export function ProfileDetails({
   userName,
@@ -33,6 +34,8 @@ export function ProfileDetails({
   const detailsId = useId();
   const { brandDetails } = useBaseContext();
   const { replace } = useRouter();
+  const { isMobile } = useDeviceDetectMediaQuery();
+  const { createExternalLink } = useLinkContext();
 
   useEffect(() => {
     if (profileData && profileData.brand && !forBrand) {
@@ -65,6 +68,15 @@ export function ProfileDetails({
     return <ErrorState type="NO_USER" />;
   }
 
+  const shareUrl = createExternalLink(
+    buildPageUrl({
+      type: !!profileData.brand ? "brand" : "profile",
+      slug: !!profileData.brand
+        ? profileData.brand.brand_slug
+        : profileData.nickname,
+    })
+  );
+
   const ctas = (
     <div className="gencl:flex gencl:gap-2">
       {(forBrand || (!forBrand && profileData && profileData.brand)) && (
@@ -72,15 +84,13 @@ export function ProfileDetails({
           size={isMobile ? "sm" : "md"}
           theme="primary"
           className="gencl:flex-grow gencl:sm:flex-grow-0!"
+          shareUrl={buildPageUrl({
+            type: "brand",
+            slug: profileData.brand?.brand_slug,
+          })}
         />
       )}
-      <ShareButton
-        pathName={buildPageUrl({
-          type: !!profileData?.brand ? "brand" : "profile",
-          slug: profileData?.nickname,
-        })}
-        size={isMobile ? "sm" : "md"}
-      />
+      <ShareButton pathName={shareUrl} size={isMobile ? "sm" : "md"} />
     </div>
   );
 
@@ -99,17 +109,15 @@ export function ProfileDetails({
         ctas={
           <div className="gencl:flex gencl:gap-2">
             {(forBrand || (!forBrand && profileData && profileData.brand)) && (
-              <BecomeCreatorButton size={isMobile ? "sm" : "md"} />
+              <BecomeCreatorButton
+                size={isMobile ? "sm" : "md"}
+                shareUrl={buildPageUrl({
+                  type: "brand",
+                  slug: profileData.brand?.brand_slug,
+                })}
+              />
             )}
-            <ShareButton
-              size={isMobile ? "sm" : "md"}
-              pathName={buildPageUrl({
-                type: !!profileData.brand ? "brand" : "profile",
-                slug: !!profileData.brand
-                  ? profileData.brand.brand_slug
-                  : profileData.nickname,
-              })}
-            />
+            <ShareButton size={isMobile ? "sm" : "md"} pathName={shareUrl} />
           </div>
         }
       />

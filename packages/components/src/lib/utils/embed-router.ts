@@ -1,10 +1,13 @@
 import { memoryLocation } from "wouter/memory-location";
 import { buildPageUrl } from "./pages";
 
-export const embedRouter = memoryLocation({
-  path: buildPageUrl({ type: "home" }),
-  record: true,
-});
+export const embedRouter = {
+  ...memoryLocation({
+    path: buildPageUrl({ type: "home" }),
+    record: true,
+  }),
+  replace,
+};
 
 // History manager to track current position for back/forward navigation
 class HistoryManager {
@@ -67,6 +70,16 @@ class HistoryManager {
       // If it's a new path, it will be added to the end of history
       this.currentIndex = embedRouter.history.length - 1;
     }
+  }
+
+  // Replace the current history entry with a new path
+  replace(path: string): void {
+    // Replace the current history entry
+    if (embedRouter.history.length > 0) {
+      embedRouter.history[this.currentIndex] = path;
+    }
+    // Navigate to the new path without adding to history
+    embedRouter.navigate(path);
   }
 }
 
@@ -131,4 +144,20 @@ export function canGoBack(): boolean {
  */
 export function canGoForward(): boolean {
   return historyManager.canGoForward();
+}
+
+/**
+ * Replace the current history entry with a new route without adding to history
+ * @param url - The URL or path to replace the current entry with
+ */
+export function replace(url: string) {
+  let route: string = "";
+  try {
+    route = new URL(url).pathname;
+  } catch (e) {
+    route = url;
+  }
+
+  // Replace the current history entry and navigate
+  historyManager.replace(route);
 }

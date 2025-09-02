@@ -36,6 +36,8 @@ const buttonVariants = cva(
       shape: {
         default: "gencl:rounded-lg",
         pill: "gencl:rounded-full",
+        square: "gencl:p-2.5",
+        circle: "gencl:rounded-full gencl:p-1.5 gencl:aspect-square",
       },
     },
     compoundVariants: [
@@ -80,6 +82,11 @@ const buttonVariants = cva(
         size: "sm",
         class:
           "gencl:size-8 gencl:rounded-full gencl:p-0.5! gencl:bg-black/40 gencl:backdrop-blur-[1px]",
+      },
+      {
+        theme: "overlay",
+        shape: "circle",
+        class: "gencl:p-1.5! gencl:size-8 gencl:bg-black/40",
       },
     ],
     defaultVariants: {

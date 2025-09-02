@@ -44,6 +44,7 @@ type PlayerListPropsType = {
    * @param increment - true to increment, false to decrement
    */
   onCommentCountChange?: (videoId: string, increment?: boolean) => void;
+  isSectioned?: boolean;
 };
 
 export function PlayerListWithSection({
@@ -55,6 +56,7 @@ export function PlayerListWithSection({
   onGroupJoinStatusChange,
   onGroupSubscriptionChange,
   onCommentCountChange,
+  isSectioned,
 }: PlayerListPropsType) {
   const { showExpandView, activeIndex } = useFeedContext();
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
@@ -65,7 +67,6 @@ export function PlayerListWithSection({
     },
   } = useEmbedConfigs();
   const embedDetails = useSafeEmbedContext();
-  const isSectioned = embedDetails?.embedEventBus.getContext().isSectioned;
   const sectionList = embedDetails?.embedEventBus.getContext().sectionList;
 
   // Ref for outer swiper
@@ -112,13 +113,9 @@ export function PlayerListWithSection({
           )}
           {sectionList?.map((item, sectionIdx) => (
             <SwiperSlide key={item?.id || sectionIdx}>
-              {({
-                isActive: isHorizontalActive,
-                isNext: isHorizontalNext,
-                isPrev: isHorizontalPrev,
-                isVisible: isHorizontalVisible,
-              }) => (
+              {({ isActive: isHorizontalActive }) => (
                 <SwiperImplementation
+                  className="gencl:h-full"
                   initialSlide={startIndex}
                   onActiveIndexChange={(swiper) => {
                     onActiveIndexChange?.(swiper.activeIndex);
@@ -151,6 +148,7 @@ export function PlayerListWithSection({
                                 isPrev={isTrulyPrev}
                                 isVisible={isTrulyVisible}
                                 post={post}
+                                isSectioned={isSectioned}
                                 onCommunityJoinStatusChange={
                                   onCommunityJoinStatusChange
                                 }

@@ -11,8 +11,10 @@ import { useBaseContext } from "@genuin/components/context/base";
 import { cn } from "@genuin/ui/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
+import { Link } from "../link";
 import { useAnalytics } from "@genuin/components/context/analytics";
 import { ActionPopover } from "../actions/action-popover";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 const reactionButtonVariant = cva("", {
   variants: {
@@ -62,6 +64,7 @@ export function ReactionButton({
   const { authenticationStatus, handleAuthCallback } = useAuthContext();
   const { brandDetails } = useBaseContext();
   const embedDetails = useSafeEmbedContext();
+  const { modalConfig } = useEmbedConfigs();
   const authInfo = embedDetails?.embedData.authInfo;
   const brandId = brandDetails.brand_id;
 
@@ -142,6 +145,13 @@ export function ReactionButton({
   }
 
   if (authenticationStatus === "unauthenticated" && !clickHandler) {
+    if (modalConfig.hideModal && shareUrl) {
+      return (
+        <Link href={shareUrl} target="_blank">
+          {button}
+        </Link>
+      );
+    }
     return (
       <AuthenticationModal
         getAppData={{

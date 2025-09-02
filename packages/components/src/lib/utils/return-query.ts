@@ -5,7 +5,16 @@
 /**
  * Valid action types for query parameters
  */
-export type ActionType = "spark" | "comment-spark" | "repost" | "comment" | "report";
+export type ActionType =
+  | "spark"
+  | "comment-spark"
+  | "repost"
+  | "comment"
+  | "report"
+  | "join-community"
+  | "join-group"
+  | "subscribe-group"
+  | "become-a-creator";
 
 /**
  * Parameters for creating query parameters

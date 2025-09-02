@@ -98,4 +98,10 @@ export type LinkContextValue = {
    * Optional hook for Next.js compatibility.
    */
   useRouter?: typeof useRouter;
+  /**
+   * Creates an external link with brand subdomain/white-label for the given URL.
+   * @param url - The URL to create an external link for.
+   * @returns The external link.
+   */
+  createExternalLink: (url: string) => string;
 };

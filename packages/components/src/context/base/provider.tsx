@@ -39,6 +39,7 @@ export function BaseContextProvider({
     }
   }, [brandDetails]);
 
+  // TODO: move this states to event based states.
   const [muted, setMuted] = useState(true);
   const [volume, setVolume] = useState(100);
   const [deviceId, setDeviceId] = useGetDeviceId();

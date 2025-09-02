@@ -113,6 +113,7 @@ export function GroupPill({
           variant="icon"
           shape="pill"
           size="sm"
+          groupSlug={groupDetails.slug}
           groupId={groupDetails.id}
           groupName={groupDetails.name ?? ""}
           groupDescription={ldDescription}

@@ -32,6 +32,7 @@ export function FeedWithData({
   feedType,
   defaultExpandView,
   onCloseExpandView,
+  isSectioned,
   ...restProps
 }: FeedWithDataPropsType) {
   const embedDetails = useSafeEmbedContext();
@@ -79,7 +80,12 @@ export function FeedWithData({
       onCloseExpandView={onCloseExpandView}
     >
       <GestureProvider>
-        <FeedViewCore variant="page" feedData={feedData} {...restProps} />
+        <FeedViewCore
+          isSectioned={isSectioned}
+          variant="page"
+          feedData={feedData}
+          {...restProps}
+        />
       </GestureProvider>
     </FeedContextProvider>
   );
@@ -106,6 +112,7 @@ export function FeedView({
   defaultExpandView,
   disableNativeFullscreenApi,
   onCloseExpandView,
+  isSectioned,
   ...restProps
 }: FeedViewPropsType) {
   return (
@@ -116,7 +123,11 @@ export function FeedView({
       disableNativeFullscreenApi={disableNativeFullscreenApi}
     >
       <GestureProvider>
-        <FeedViewCore feedData={feedData} {...restProps} />
+        <FeedViewCore
+          isSectioned={isSectioned}
+          feedData={feedData}
+          {...restProps}
+        />
       </GestureProvider>
     </FeedContextProvider>
   );

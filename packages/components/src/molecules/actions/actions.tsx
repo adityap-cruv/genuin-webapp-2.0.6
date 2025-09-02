@@ -21,6 +21,7 @@ import { useAnalytics } from "@genuin/components/context/analytics";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { ActionPopover } from "./action-popover";
 import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
+import { Link } from "../link";
 
 type ActionType = "REPOST" | "REACTION" | "COMMENT" | "SHARE" | "MORE";
 
@@ -83,6 +84,7 @@ const defaultActionWrappers: Record<
     const embedDetails = useSafeEmbedContext();
     const authInfo = embedDetails?.embedData.authInfo;
     const { brandDetails } = useBaseContext();
+    const { modalConfig } = useEmbedConfigs();
     const brandId = brandDetails.brand_id;
 
     // Create return query params for authentication callbacks
@@ -105,8 +107,7 @@ const defaultActionWrappers: Record<
     });
 
     // Track repost event when clicked
-    const handleRepostClick = () => {
-    };
+    const handleRepostClick = () => {};
 
     // Special case for brand ID 2357, unauthenticated users with auth info
     if (
@@ -133,6 +134,14 @@ const defaultActionWrappers: Record<
           >
             {node}
           </div>
+        );
+      }
+
+      if (modalConfig.hideModal) {
+        return (
+          <Link href={_context.shareUrl} target="_blank">
+            {node}
+          </Link>
         );
       }
 

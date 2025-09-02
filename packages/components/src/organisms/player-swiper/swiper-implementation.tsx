@@ -31,12 +31,12 @@ export function SwiperImplementation({
   direction = "vertical",
   ...restProps
 }: SwiperImplementationProps) {
-  const { height } = useFeedVideoSizeBox();
+  // const { height } = useFeedVideoSizeBox();
   const { showExpandView } = useFeedContext();
   const { isWindows } = useDeviceDetection();
   const { isMobile } = useDeviceDetectMediaQuery();
 
-  const swiperHeight = showExpandView ? "100%" : isMobile ? "100%" : height;
+  // const swiperHeight = showExpandView ? "100%" : isMobile ? "100%" : height;
   const swiperSpaceBetween = showExpandView || isMobile ? 0 : 16;
   const swiperSlidesPerView =
     showExpandView || isMobile ? 1 : isWindows ? 1.06 : 1.03;
@@ -72,9 +72,6 @@ export function SwiperImplementation({
         swiperRef.current = swiper;
       }}
       className="gencl:mx-0!"
-      style={{
-        height: swiperHeight,
-      }}
       enabled
       spaceBetween={swiperSpaceBetween}
       direction={direction}

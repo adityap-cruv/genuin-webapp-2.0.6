@@ -96,6 +96,7 @@ function ProxyComponent({
     brandDetails.web_cta === "login" || brandDetails.web_cta === "both";
   const showApp =
     brandDetails.web_cta === "app" || brandDetails.web_cta === "both";
+
   return (
     <div className={cn(proxyComponentVariant({ variant }))}>
       {!isAuthenticated && showLogin && (

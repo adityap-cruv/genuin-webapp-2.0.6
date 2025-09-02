@@ -8,6 +8,8 @@ import { MentionInput } from "../mention-input";
 import { useMemo } from "react";
 import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
 import { ActionPopover } from "../actions/action-popover";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { Link } from "../link";
 
 const commentFormSchema = z.object({
   comment: z.string().min(1, { message: "" }),
@@ -48,6 +50,7 @@ export function CommentInputBox({
   const { authenticationStatus, user, handleAuthCallback } = useAuthContext();
   const { brandDetails } = useBaseContext();
   const embedDetails = useSafeEmbedContext();
+  const { modalConfig } = useEmbedConfigs();
   const authInfo = embedDetails?.embedData.authInfo;
   const brandId = brandDetails.brand_id;
 
@@ -92,7 +95,33 @@ export function CommentInputBox({
     );
   }
 
-  if (authenticationStatus === "unauthenticated" && !authClickHandler) {
+  if (authenticationStatus === "unauthenticated") {
+    if (authClickHandler) {
+      return (
+        <div className="gencl:cursor-pointer">
+          <MentionInput
+            videoId={videoId}
+            loopId={loopId}
+            onCommentPosted={onCommentPosted}
+            onClick={authClickHandler}
+            // disabled={true}
+            {...commentInputProps}
+          />
+        </div>
+      );
+    }
+
+    if (modalConfig.hideModal) {
+      return (
+        <Link href={shareUrl} target="_blank">
+          <MentionInput
+            videoId={videoId}
+            loopId={loopId}
+            {...commentInputProps}
+          />
+        </Link>
+      );
+    }
     return (
       <AuthenticationModal
         getAppData={{
@@ -115,22 +144,6 @@ export function CommentInputBox({
           />
         </div>
       </AuthenticationModal>
-    );
-  }
-
-  // Handle case where user is unauthenticated but authClickHandler is available
-  if (authenticationStatus === "unauthenticated" && authClickHandler) {
-    return (
-      <div className="gencl:cursor-pointer">
-        <MentionInput
-          videoId={videoId}
-          loopId={loopId}
-          onCommentPosted={onCommentPosted}
-          onClick={authClickHandler}
-          // disabled={true}
-          {...commentInputProps}
-        />
-      </div>
     );
   }
 

@@ -1,6 +1,6 @@
 import { ControlLayerPropsType } from "./control-layer.types";
 import { cn } from "@genuin/ui/lib/utils";
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import { useBaseContext } from "@genuin/components/context/base";
 
 import { usePlayerContext } from "../context/context";
@@ -12,9 +12,7 @@ import { PlaybackSpeedCapsule } from "@genuin/components/molecules/playback-spee
 import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
 import { Linkouts } from "@genuin/components/organisms/linkouts/linkouts";
 import { SpeedControlSideBars } from "../../playback-speed/speed-control-bars";
-import { useFeedContext } from "@genuin/components/templates/feed/context";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
-import { SearchIcon } from "@genuin/ui/icons";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 
 export function Default({
@@ -27,6 +25,7 @@ export function Default({
   onGroupSubscriptionChange,
   onReactionStateChange,
   variant,
+  isSectioned,
   ...restProps
 }: ControlLayerPropsType) {
   const { showExpandView, togglePlay, toggleMuted, muted } = usePlayerContext();
@@ -100,11 +99,7 @@ export function Default({
               ? "gencl:z-20"
               : "gencl:group-hover:opacity-100 gencl:group-hover:pointer-events-auto gencl:opacity-0 gencl:pointer-events-none gencl:transition-opacity gencl:duration-300"
           )}
-          variant={
-            embedDetails?.embedEventBus.getContext().isSectioned
-              ? "sectioned"
-              : "default"
-          }
+          variant={isSectioned ? "sectioned" : "default"}
         />
 
         {/* this is wallet badge for wallet. */}

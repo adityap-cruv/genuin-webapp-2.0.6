@@ -1,5 +1,5 @@
+import { EventManager } from "@genuin/components/lib/utils/event-manager";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
-import { EventManager } from "../../lib/utils/event-bus-class";
 
 export type ActivePlayerType = "embed" | "expand-view" | "pip";
 
@@ -22,7 +22,7 @@ export type EmbedEventContextType = {
   /**
    * List of all available sections in the feed (used for sectioned views)
    */
-  sectionList: PostDetailsType['section'][];
+  sectionList: PostDetailsType["section"][];
   /**
    * Indicates if the feed is currently sectioned (true = sectioned, false = flat)
    */
@@ -30,7 +30,7 @@ export type EmbedEventContextType = {
   /**
    * Currently selected section (nullable)
    */
-  selectedSection?: PostDetailsType['section'] | null;
+  selectedSection?: PostDetailsType["section"] | null;
 };
 
 type EmbedEventNameType =

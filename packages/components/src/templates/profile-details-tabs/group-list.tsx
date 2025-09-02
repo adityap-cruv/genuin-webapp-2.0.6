@@ -98,6 +98,7 @@ export function Groups({
                       UNJOINED: "Join",
                     }}
                     groupId={group.id}
+                    groupSlug={group.slug}
                     groupName={group.name ?? ""}
                     groupDescription={""}
                     shareUrl={group.shareUrl ?? ""}
@@ -115,6 +116,7 @@ export function Groups({
                   />
                   <GroupSubscriptionButton
                     groupId={group.id}
+                    groupSlug={group.slug}
                     groupName={group.name ?? ""}
                     groupDescription={""}
                     shareUrl={group.shareUrl ?? ""}

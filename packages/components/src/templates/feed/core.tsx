@@ -41,6 +41,7 @@ export function FeedViewCore({
   variant,
   onActiveIndexChange,
   embedOptions,
+  isSectioned,
   ...restProps
 }: FeedViewPropsType) {
   const {
@@ -56,8 +57,6 @@ export function FeedViewCore({
   const { handleSwipeCount, dialogType, shouldShowDialog, closeDialog } =
     useInterruptionManager();
   const { isDesktop } = useDeviceDetectMediaQuery();
-  const embedDetails = useSafeEmbedContext();
-  const isSectioned = embedDetails?.embedEventBus.getContext().isSectioned;
   const showSidePanel = videos[activeIndex] && !showExpandView && isDesktop;
 
   // this useEffect is used to fetch the next page of videos when the user scrolls to the end of the list.
@@ -188,7 +187,7 @@ export function FeedViewCore({
       <div
         id="gencl-feed-view"
         className={cn(
-          "gencl:flex gencl:w-full gencl:pt-4! gencl:sm:pr-4 gencl:h-full gencl:gap-4",
+          "gencl:flex gencl:w-full gencl:sm:pr-4 gencl:sm:pt-4 gencl:h-full gencl:gap-4",
           {
             "gencl:fixed gencl:top-0 gencl:py-0! gencl:flex gencl:items-center gencl:mt-0 gencl:z-50 gencl:left-0 gencl:h-full gencl:w-full gencl:bg-black":
               showExpandView,
@@ -198,7 +197,10 @@ export function FeedViewCore({
         {...restProps}
       >
         {isSectioned ? (
-          <PlayerListWithSection {...playerListProps} />
+          <PlayerListWithSection
+            isSectioned={isSectioned}
+            {...playerListProps}
+          />
         ) : (
           <PlayerList {...playerListProps} />
         )}

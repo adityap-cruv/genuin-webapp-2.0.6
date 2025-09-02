@@ -1,21 +1,26 @@
 "use client";
 import { cn } from "@genuin/ui/utils";
 import { useEffect, useState, type ComponentProps } from "react";
-import { useWindowSize } from "usehooks-ts";
 
 import { TopBar } from "@genuin/components/organisms/top-bar";
-import { MobileSidebar, SideBar } from "@genuin/components/organisms/side-bar";
-import { TOP_BAR_HEIGHT } from "@genuin/components/lib/constants";
+import { SideBar } from "@genuin/components/organisms/side-bar";
 import { Toaster } from "@genuin/ui/toaster";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { usePathname } from "@genuin/components/hooks/use-pathname";
 import { useSearchParams } from "@genuin/components/hooks/use-search-params";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import { useEmbedContext } from "@genuin/components/context/embed";
-import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import { cva, VariantProps } from "class-variance-authority";
 
 type BaseLayoutProps = ComponentProps<"section">;
+
+const baseLayoutVariant = cva("", {
+  variants: {
+    variant: {
+      "embed-expand-view": "",
+    },
+  },
+});
 
 /**
  * routes that should have dark top bar variant.
@@ -28,18 +33,14 @@ const topBarDarkVariantRoutes = [
 
 export function BaseLayout({
   children,
+  variant,
   className,
   ...restProps
-}: BaseLayoutProps) {
-  const { height } = useWindowSize();
+}: BaseLayoutProps & VariantProps<typeof baseLayoutVariant>) {
   const { isMobile } = useDeviceDetectMediaQuery();
   const pathname = usePathname();
   const { searchParams, getSearchParams } = useSearchParams();
   const { layoutConfig } = useEmbedConfigs();
-  const embedDetails = useSafeEmbedContext();
-
-  // Use rootElement height if available, otherwise fall back to window height
-  const effectiveHeight = embedDetails?.rootElement?.offsetHeight ?? height;
 
   // Update shouldUseDarkTheme when searchParams or pathname changes
   const [shouldUseDarkTheme, setShouldUseDarkTheme] = useState(false);
@@ -53,38 +54,26 @@ export function BaseLayout({
     setShouldUseDarkTheme(isDarkTheme);
   }, [pathname, searchParams]);
 
-  // Calculate height value with fallback that accounts for top bar
-  const calculatedHeight =
-    typeof effectiveHeight === "number" && !isNaN(effectiveHeight)
-      ? shouldUseDarkTheme && isMobile
-        ? effectiveHeight
-        : layoutConfig.showNavigationBar
-          ? effectiveHeight - TOP_BAR_HEIGHT
-          : effectiveHeight
-      : layoutConfig.showNavigationBar
-        ? `calc(100vh - ${TOP_BAR_HEIGHT}px)`
-        : "100vh";
-
   return (
     <>
-      {layoutConfig.showNavigationBar && (
+      {(layoutConfig.showNavigationBar ||
+        layoutConfig.showBackAndCloseButton) && (
         <TopBar
           theme={shouldUseDarkTheme && isMobile ? "dark" : "light"}
           style={{ zIndex: 9 }}
+          variant={variant}
         />
       )}
-      {!layoutConfig.showNavigationBar && isMobile && (
-        <div className="gencl:fixed gencl:top-4 gencl:left-4 gencl:z-10">
-          <MobileSidebar
-            theme={shouldUseDarkTheme && isMobile ? "dark" : undefined}
-          />
-        </div>
-      )}
       <main
-        className="gencl:sm:flex gencl:overflow-clip"
-        style={{
-          height: calculatedHeight,
-        }}
+        className={cn(
+          "gencl:sm:flex gencl:overflow-clip gencl:relative",
+          layoutConfig.showNavigationBar && !isMobile
+            ? "gencl:h-[calc(100%_-_64px)]"
+            : "gencl:h-full"
+        )}
+        // style={{
+        //   height: calculatedHeight,
+        // }}
         suppressHydrationWarning
       >
         {!isMobile && layoutConfig.showSideBar && (
@@ -93,6 +82,7 @@ export function BaseLayout({
         <section
           className={cn(
             "gencl:w-full gencl:flex-grow gencl:!h-full gencl:relative",
+            variant === "embed-expand-view" && "gencl:xl:px-15",
             className
           )}
           {...restProps}

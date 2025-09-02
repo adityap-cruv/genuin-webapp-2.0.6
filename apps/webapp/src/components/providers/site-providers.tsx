@@ -8,7 +8,6 @@ import { BaseLayout } from '@genuin/components/templates/base-layout/base-layout
 import { AuthBridge } from './auth-bridge'
 import { AnalyticsProvider } from '@genuin/components/context/analytics'
 import { LinkBridge } from './link-bridge'
-import { Search } from '@genuin/components/molecules/search'
 
 interface SiteProvidersBaseProps {
   children: React.ReactNode

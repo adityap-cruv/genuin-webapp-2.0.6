@@ -25,10 +25,6 @@ export function Search({
     setIsModalOpen(true);
   };
 
-  const handleModalClose = () => {
-    setIsModalOpen(false);
-  };
-
   const handleSearch = (query: string) => {
     onSearch?.(query);
   };
@@ -43,7 +39,7 @@ export function Search({
         onClick={handleInputClick}
         {...restProps}
       >
-        <div className="gencl:relative gencl:w-xs gencl:hidden gencl:md:block!">
+        <div className="gencl:relative gencl:w-xs gencl:hidden gencl:lg:block!">
           <div
             className={cn(
               "gencl:flex gencl:h-10 gencl:text-body-1-medium gencl:w-full gencl:px-4 gencl:py-3",
@@ -63,7 +59,7 @@ export function Search({
         </div>
 
         <div
-          className={cn("gencl:flex gencl:md:hidden!", iconVariant({ theme }))}
+          className={cn("gencl:flex gencl:lg:hidden!", iconVariant({ theme }))}
         >
           <SearchIcon size="md" theme={theme} />
         </div>

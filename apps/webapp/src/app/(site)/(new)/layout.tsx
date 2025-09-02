@@ -9,7 +9,7 @@ import SiteProviders from '@components/providers/site-providers'
 import { cookies } from 'next/headers'
 import { getEmbedConfig } from '@lib/api/config'
 import { type ConfigType } from '@lib/stores/genuin-options'
-import { parseBrandColors } from '@lib/utils'
+import { cn, parseBrandColors } from '@lib/utils'
 import { auth } from '../../../../auth'
 import { type Session } from 'next-auth'
 import Error from '../../error'
@@ -77,12 +77,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {/* Add any other head elements here */}
       </head>
       <body
-        className={inter.className}
+        className={cn(inter.className, 'important-fixed')}
         style={{
           ...brandColors,
           /* iOS Safari specific fixes */
           // WebkitOverflowScrolling: 'touch',
-          position: 'fixed',
           width: '100%',
           height: '100%',
         }}>

@@ -59,13 +59,15 @@ const FullScreenCommentBox = ({ videos, currentIndex, isMobileCommentView }: Exp
       <div
         ref={scrollDivRef}
         className="hide-scrollbar flex h-full flex-col overflow-hidden overflow-y-scroll rounded-2xl">
-        <CommentsLayout
-          community={videos[currentIndex].community}
-          loop={videos[currentIndex].loop}
-          video={videos[currentIndex].video}
-          owner={videos[currentIndex].owner}
-          scrollDivRef={scrollDivRef}
-        />
+        {videos[currentIndex] && (
+          <CommentsLayout
+            community={videos[currentIndex].community}
+            loop={videos[currentIndex].loop}
+            video={videos[currentIndex].video}
+            owner={videos[currentIndex].owner}
+            scrollDivRef={scrollDivRef}
+          />
+        )}
       </div>
     ),
     [videos, currentIndex]

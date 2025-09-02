@@ -27,6 +27,7 @@ type PlayerProps = {
     typeof ControlLayer
   >["onGroupSubscriptionChange"];
   index: number;
+  isSectioned?: boolean;
   isActive: boolean;
   isNext: boolean;
   isPrev: boolean;
@@ -41,6 +42,7 @@ export function Player({
   onGroupJoinStatusChange,
   onGroupSubscriptionChange,
   onReactionStateChange,
+  isSectioned,
   isActive,
   isNext,
   isPrev,
@@ -108,6 +110,7 @@ export function Player({
           <ControlLayer
             isActive={isActive}
             postDetails={post}
+            isSectioned={isSectioned}
             onCommunityJoinStatusChange={onCommunityJoinStatusChange}
             onGroupJoinStatusChange={onGroupJoinStatusChange}
             onGroupSubscriptionChange={onGroupSubscriptionChange}

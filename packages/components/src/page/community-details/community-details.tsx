@@ -35,6 +35,7 @@ import { mapMemberDetails } from "./utils";
 import { getSocialLinks } from "@genuin/components/lib/utils";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { useAnalytics } from "@genuin/components/context/analytics";
+import { useLinkContext } from "@genuin/components/context";
 
 export function CommunityDetails({
   slug,
@@ -80,9 +81,11 @@ function CommunityDetailsView({ slug }: { slug: string }) {
   const { isDesktop } = useDeviceDetectMediaQuery();
   const detailsId = useId();
   const { track, EventName } = useAnalytics();
-  const [storedCommunities, setStoredCommunities] = useLocalStorage<
-    RecentCommunity[]
-  >(RECENT_COMMUNITIES_KEY, []);
+  const { createExternalLink } = useLinkContext();
+  const [, setStoredCommunities] = useLocalStorage<RecentCommunity[]>(
+    RECENT_COMMUNITIES_KEY,
+    []
+  );
 
   const handleCommunityJoinStatusChange = useCallback(
     (newRole: CommunityUserRole) => {
@@ -156,11 +159,15 @@ function CommunityDetailsView({ slug }: { slug: string }) {
       />
       {!inTopBar && (
         <ShareButton
-          pathName={buildPageUrl({ type: "community", slug })}
+          pathName={createExternalLink(
+            buildPageUrl({ type: "community", slug })
+          )}
           onClick={() => {
             track(EventName.COMMUNITY_SHARED, {
               community_id: communityDetails.community_id,
-              share_url: buildPageUrl({ type: "community", slug }),
+              share_url: createExternalLink(
+                buildPageUrl({ type: "community", slug })
+              ),
             });
           }}
         />
@@ -352,7 +359,11 @@ function Details({
       id={detailsId}
       title={communityDetails?.name ?? ""}
       profileImageDetails={{
-        imageUrl: communityDetails?.dp_l ?? communityDetails.dp_m ?? communityDetails.dp ?? "",
+        imageUrl:
+          communityDetails?.dp_l ??
+          communityDetails.dp_m ??
+          communityDetails.dp ??
+          "",
         isAvatar: false,
         alt: communityDetails?.name ?? "",
       }}
