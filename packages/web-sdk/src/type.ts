@@ -44,13 +44,13 @@ type AuthInfoType = {
   signUpUrl: string
 }
 
-export type SDKInitConfig = {
-  embed_id?: string
-  api_key?: string
-  token?: string
-  params?: SDKConfig['params']
-  authInfo?: AuthInfoType
-}
+// export type SDKInitConfig = {
+//   embed_id?: string
+//   api_key?: string
+//   token?: string
+//   params?: SDKConfig['params']
+//   authInfo?: AuthInfoType
+// }
 
 type ReactionKey = {
   png: string

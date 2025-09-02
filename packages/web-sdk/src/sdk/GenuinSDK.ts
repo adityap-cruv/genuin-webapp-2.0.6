@@ -50,6 +50,8 @@ type AuthInfoType = {
   signUpUrl: string
 }
 
+type InitializationStatus = 'pending' | 'progress' | 'done'
+
 /**
  * These are the config when user can pass while genuin.init or genuin.initialize.
  */
@@ -76,7 +78,7 @@ type SDKElementsType = Record<
   {
     element: HTMLElement
     config: Partial<SingleEmbedDataConfig>
-    isInitialzed: boolean
+    status: InitializationStatus
   }
 >
 
@@ -152,21 +154,29 @@ export class GenuinSDK {
 
     for (const instanceId in sdkElements) {
       const elementObject = sdkElements[instanceId]
-      if (elementObject) {
+      if (
+        elementObject &&
+        this.getInitializationStatus(elementObject.element) === 'pending'
+      ) {
+        this.setInitializationStatus(elementObject.element, 'progress')
+        elementObject.status = 'progress'
         const isSdkLoaded = await this.initializeSingleEmbedById(
           elementObject.element,
           elementObject.config,
         )
 
         if (isSdkLoaded) {
-          elementObject.element.setAttribute('data-initialized', 'true')
-          elementObject.isInitialzed = true
+          this.setInitializationStatus(elementObject.element, 'done')
+          elementObject.status = 'done'
         } else {
-          elementObject.element.setAttribute('data-initialized', 'false')
-          elementObject.isInitialzed = false
+          this.setInitializationStatus(elementObject.element, 'pending')
+          elementObject.status = 'pending'
         }
       } else {
-        console.log('No valid object found for element:', instanceId)
+        console.log(
+          'No valid object found for element or already initialized::',
+          instanceId,
+        )
       }
     }
   }
@@ -203,8 +213,6 @@ export class GenuinSDK {
           })) ?? undefined
       }
 
-      console.log('loaded user id::', user)
-
       loadNewEmbed({
         container: element,
         embedData: embedDetails,
@@ -231,10 +239,12 @@ export class GenuinSDK {
     // Deduplicate using a Set to track element references
     const uniqueElements = new Set<HTMLElement>()
     elements.forEach((element) => {
-      uniqueElements.add(element as HTMLElement)
+      if (this.getInitializationStatus(element as HTMLElement) === 'pending') {
+        uniqueElements.add(element as HTMLElement)
+      } else {
+        console.log('Embed already initialized in element:', element)
+      }
     })
-
-    this.sdkElements = {}
 
     Array.from(uniqueElements).forEach((element) => {
       const instanceId = this.setInstanceId(element)
@@ -242,7 +252,7 @@ export class GenuinSDK {
       this.sdkElements[instanceId] = {
         element,
         config: extractedData,
-        isInitialzed: false,
+        status: 'pending',
       }
     })
 
@@ -276,7 +286,6 @@ export class GenuinSDK {
     // extract one by one all data config for embed.
     for (const attr of possibleAttributeNames) {
       let value = singleElement.getAttribute(attr)
-      console.log('attr, value :>> ', attr, value, configByUser)
       switch (attr) {
         case 'data-embed-id':
           answerToReturn.embedId = value ?? configByUser?.embed_id
@@ -362,6 +371,31 @@ export class GenuinSDK {
   }
 
   /**
+   * Checks the initialization status of the element.
+   * @param element The HTML element to check.
+   * @returns The initialization status: 'pending', 'progress', or 'done'.
+   */
+  private getInitializationStatus(element: HTMLElement): InitializationStatus {
+    const status = element.getAttribute('data-status')
+    if (status === 'pending' || status === 'progress' || status === 'done') {
+      return status
+    }
+    return 'pending' // Default to pending if not set or invalid
+  }
+
+  /**
+   * Sets the initialization status of the element.
+   * @param element The HTML element to set the status on.
+   * @param status The initialization status to set: 'pending', 'progress', or 'done'.
+   */
+  private setInitializationStatus(
+    element: HTMLElement,
+    status: InitializationStatus,
+  ): void {
+    element.setAttribute('data-status', status)
+  }
+
+  /**
    * Sets a unique instance ID on the element.
    * @param element The HTML element to set the instance ID on.
    * @returns The generated instance ID.
@@ -370,6 +404,18 @@ export class GenuinSDK {
     const instanceId = `sdk-instance-${Date.now()}-${getRandomNumber(1, 1000000)}`
     element.setAttribute('data-instance-id', instanceId)
     return instanceId
+  }
+
+  /**
+   * Checks if the embed is already initialized in the container.
+   * @param container The HTML element container to check for initialization.
+   * @returns True if the embed is initialized, false otherwise.
+   */
+  private checkIfEmbedIsInitializedAlready(container: HTMLElement): boolean {
+    return (
+      !!container.querySelector('[data-instance-id]') ||
+      !!container.querySelector('[data-initialized]')
+    )
   }
 
   /**
