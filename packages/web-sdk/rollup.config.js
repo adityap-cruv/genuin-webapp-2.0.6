@@ -12,7 +12,7 @@ const isProduction = process.env.NODE_ENV === 'production'
 const env = process.env.BUILD_ENV || 'development'
 
 module.exports = {
-  input: 'src/new/index.ts',
+  input: 'src/index.ts',
 
   output: {
     file: `dist/genuin-sdk.${env}.js`,

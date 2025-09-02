@@ -22,17 +22,17 @@ import { getAuthenticatedUserDetails, miniProfile } from '../views/api/auth'
 import PubSub from 'pubsub-js'
 
 // Expose both initialization methods to window
-declare global {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
-  interface Window {
-    onGenuinReady?: (sdk: SDKAPI) => void
-    genuinAuth?: (data: any) => void
-    genuin?: {
-      init: typeof init
-      update: typeof update
-    }
-  }
-}
+// declare global {
+//   // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+//   interface Window {
+//     onGenuinReady?: (sdk: SDKAPI) => void
+//     genuinAuth?: (data: any) => void
+//     genuin?: {
+//       init: typeof init
+//       update: typeof update
+//     }
+//   }
+// }
 
 window.genuin = {
   init,

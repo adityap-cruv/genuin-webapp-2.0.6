@@ -51,25 +51,6 @@ class SDKManager {
   }
 
   /**
-   * Get and set elements with id "gen-sdk", starting with "gen-sdk-", or having gen-sdk-class, and dedupe them.
-   */
-  private getAndSetDivs() {
-    // Get elements with ID exactly "gen-sdk", starting with "gen-sdk-", or class "gen-sdk-class"
-    const elements = document.querySelectorAll(
-      '[id="gen-sdk"], [id^="gen-sdk-"], .gen-sdk-class',
-    )
-
-    console.log('Elements found:', elements)
-    // Deduplicate using a Set to track element references
-    const uniqueElements = new Set<HTMLElement>()
-    elements.forEach((element) => {
-      uniqueElements.add(element as HTMLElement)
-    })
-
-    this.sdkElements = Array.from(uniqueElements)
-  }
-
-  /**
    * Set data for different embed instances.
    */
   private setDataForDifferentEmbeds() {}

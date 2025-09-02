@@ -31,13 +31,29 @@ export {
   type SDKError,
 } from './core'
 
+// Extend the global Window interface for TypeScript
+declare global {
+  interface Window {
+    GenuinSDK?: typeof Genuin
+    genuin?: {
+      SDK?: typeof Genuin
+      on?: typeof Genuin.on
+      off?: typeof Genuin.off
+      init?: (config: any) => ReturnType<typeof Genuin.legacyInit>
+      update?: (config: any) => ReturnType<typeof Genuin.legacyUpdate>
+      _initQueue?: Array<() => void>
+    }
+    onGenuinReady?: (sdk: typeof Genuin) => void
+  }
+}
+
 // Set up global API for browser usage
 if (typeof window !== 'undefined') {
   // Modern global API
-  ;(window as any).GenuinSDK = Genuin
+  window.GenuinSDK = Genuin
 
   // Enhanced global API with both legacy and new methods
-  ;(window as any).genuin = {
+  window.genuin = {
     // Main SDK instance
     SDK: Genuin,
 
@@ -47,7 +63,7 @@ if (typeof window !== 'undefined') {
 
     // Legacy methods - now properly connected to new architecture
     init: (config: any) => {
-      return Genuin.legacyInit(config)
+      return Genuin.newInit(config)
     },
     update: (config: any) => {
       return Genuin.legacyUpdate(config)
@@ -55,13 +71,13 @@ if (typeof window !== 'undefined') {
   }
 
   // Setup DOM initialization like legacy SDK
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      initializeLegacyEmbeds()
-    })
-  } else {
-    initializeLegacyEmbeds()
-  }
+  // if (document.readyState === 'loading') {
+  //   document.addEventListener('DOMContentLoaded', () => {
+  //     initializeLegacyEmbeds()
+  //   })
+  // } else {
+  //   initializeLegacyEmbeds()
+  // }
 
   console.log('Genuin SDK loaded', window)
   // Handle window.onGenuinReady callback.
@@ -118,21 +134,21 @@ if (typeof window !== 'undefined') {
     })
   }
 
-  function initializeLegacyEmbeds() {
-    const embedDivs = document.querySelectorAll(
-      '.gen-sdk-class:not([data-initialized])',
-    )
-    if (embedDivs.length > 0) {
-      // Initialize without config to trigger DOM-based initialization
-      Genuin.legacyInit()
-    }
+  // function initializeLegacyEmbeds() {
+  //   const embedDivs = document.querySelectorAll(
+  //     '.gen-sdk-class:not([data-initialized])',
+  //   )
+  //   if (embedDivs.length > 0) {
+  //     // Initialize without config to trigger DOM-based initialization
+  //     Genuin.newInit()
+  //   }
 
-    // Setup iframe message handling
-    window.addEventListener('message', (event) => {
-      const receivedObj = event.data
-      if (receivedObj?.action === 'open_link') {
-        window.open(receivedObj.link, '_blank')
-      }
-    })
-  }
+  //   // Setup iframe message handling
+  //   window.addEventListener('message', (event) => {
+  //     const receivedObj = event.data
+  //     if (receivedObj?.action === 'open_link') {
+  //       window.open(receivedObj.link, '_blank')
+  //     }
+  //   })
+  // }
 }

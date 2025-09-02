@@ -119,7 +119,7 @@ export default defineConfig({
 
   build: {
     lib: {
-      entry: resolve(__dirname, 'src/new/index.ts'),
+      entry: resolve(__dirname, 'src/index.ts'),
       name: 'GenuinSDK',
       formats: ['iife'],
       fileName: () => `gen-sdk.min.js`,

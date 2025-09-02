@@ -12,16 +12,67 @@ import {
   TokenManager,
   ThemeManager,
 } from '../core'
-import { loadEmbedView, loadErrorView, loadRudderStack } from '../views/loader'
+import { loadEmbedView, loadRudderStack } from '../views/loader'
 import loadIframeIntoDiv from '../iframeLoader'
 import {
   generateConfiguredUrl,
   generatePathFromConfig,
+  getRandomNumber,
   parsePlacementToEmbedData,
 } from '../utils'
 import { EmbedDataType } from '@genuin/components/context/embed/embed.types'
+import { BrandDetailsManager } from '@/core/brand-details-manager'
+import { loadErrorView } from './react-utils'
+import { EmbedDetailsManager } from '@/core/embed-details-manager'
+
+export type ActionType =
+  | 'spark'
+  | 'comment-spark'
+  | 'repost'
+  | 'comment'
+  | 'report'
+  | 'join-community'
+  | 'join-group'
+  | 'subscribe-group'
+
+/**
+ * These are the config when user can pass while genuin.init or genuin.initialize.
+ */
+type ConfigByUser = {
+  embed_id?: string
+  api_key?: string
+  token?: string
+  contextualParams?: {
+    page_context?: string
+    geo?: {
+      lat?: number
+      long?: number
+    }
+    url?: string
+  }
+  startVideoSlug?: string
+  action?: ActionType
+}
+
+type SingleEmbedDataConfig = {
+  embedId: string
+  apiKey: string
+  token?: string
+  contextualParams?: {
+    page_context?: string
+    geo?: {
+      lat?: number
+      long?: number
+    }
+    url?: string
+  }
+  brand_ids?: number[]
+  startVideoSlug?: string
+  action?: ActionType
+}
 
 export class GenuinSDK {
+  private brandDetailsManager: BrandDetailsManager
   private static instance: GenuinSDK
   private configManager: ConfigManager
   private eventManager: EventManager
@@ -31,6 +82,15 @@ export class GenuinSDK {
   private themeManager: ThemeManager
   private isInitialized = false
   private embedInstances = new Map<string, any>()
+  private embedDetailsManager: EmbedDetailsManager
+  private sdkElements: Record<
+    string,
+    {
+      element: HTMLElement
+      config: Partial<SingleEmbedDataConfig>
+      isInitialzed: boolean
+    }
+  > = {}
 
   private constructor() {
     this.configManager = ConfigManager.getInstance()
@@ -39,6 +99,8 @@ export class GenuinSDK {
     this.apiService = APIService.getInstance()
     this.tokenManager = TokenManager.getInstance()
     this.themeManager = ThemeManager.getInstance()
+    this.brandDetailsManager = BrandDetailsManager.getInstance()
+    this.embedDetailsManager = EmbedDetailsManager.getInstance()
   }
 
   static getInstance(): GenuinSDK {
@@ -46,6 +108,196 @@ export class GenuinSDK {
       GenuinSDK.instance = new GenuinSDK()
     }
     return GenuinSDK.instance
+  }
+
+  async newInit(config?: ConfigByUser) {
+    console.log('config by user.', config)
+    this.getAndSetDivs(config)
+
+    this.initializeAllEmbeds()
+  }
+
+  private async initializeAllEmbeds() {
+    const sdkElements = this.sdkElements
+
+    if (Object.keys(sdkElements).length === 0) {
+      console.warn('No valid SDK elements found for initialization.')
+      return
+    }
+
+    for (const instanceId in sdkElements) {
+      const elementObject = sdkElements[instanceId]
+      if (elementObject) {
+        const isSdkLoaded = await this.initializeSingleEmbedById(
+          elementObject.element,
+          elementObject.config,
+        )
+
+        if (isSdkLoaded) {
+          elementObject.element.setAttribute('data-initialized', 'true')
+          elementObject.isInitialzed = true
+        } else {
+          elementObject.element.setAttribute('data-initialized', 'false')
+          elementObject.isInitialzed = false
+        }
+      } else {
+        console.log('No valid object found for element:', instanceId)
+      }
+    }
+  }
+
+  async initializeSingleEmbedById(
+    element: HTMLElement,
+    config: Partial<SingleEmbedDataConfig>,
+  ) {
+    if (!config.apiKey || !config.embedId) {
+      console.warn('Missing required config properties: embedId or apiKey')
+      loadErrorView(element)
+      return false
+    }
+
+    const brandDetails = await this.brandDetailsManager.getBrandDetails(
+      config.apiKey,
+    )
+
+    const embedDetails = await this.embedDetailsManager.getEmbedDetails(
+      config.embedId,
+      brandDetails,
+    )
+
+    console.log('embedDetails :>> ', embedDetails, brandDetails)
+
+    return true
+  }
+
+  /**
+   * Get and set elements with id "gen-sdk", starting with "gen-sdk-", or having gen-sdk-class, and dedupe them.
+   */
+  private getAndSetDivs(configByUser?: ConfigByUser) {
+    // Get elements with ID exactly "gen-sdk", starting with "gen-sdk-", or class "gen-sdk-class"
+    const elements = document.querySelectorAll(
+      '[id="gen-sdk"], [id^="gen-sdk-"], .gen-sdk-class',
+    )
+
+    // Deduplicate using a Set to track element references
+    const uniqueElements = new Set<HTMLElement>()
+    elements.forEach((element) => {
+      uniqueElements.add(element as HTMLElement)
+    })
+
+    this.sdkElements = {}
+
+    Array.from(uniqueElements).forEach((element) => {
+      const instanceId = this.setInstanceId(element)
+      const extractedData = this.extractDataFromSingleDiv(element, configByUser)
+      this.sdkElements[instanceId] = {
+        element,
+        config: extractedData,
+        isInitialzed: false,
+      }
+    })
+
+    return this.sdkElements
+  }
+
+  /**
+   * Extracts data from a single embed element.
+   * @param singleElement The HTML element to extract data from.
+   * @param configByUser User-provided configuration.
+   * @returns The extracted data.
+   */
+  private extractDataFromSingleDiv(
+    singleElement: HTMLElement,
+    configByUser?: ConfigByUser,
+  ): Partial<SingleEmbedDataConfig> {
+    const possibleAttributeNames = [
+      'data-embed-id',
+      'data-api-key',
+      'data-token',
+      'data-lat',
+      'data-long',
+      'data-url',
+      'data-page-context',
+      'data-brand-ids',
+      'data-video-id',
+      'data-action',
+    ]
+    const answerToReturn: Partial<SingleEmbedDataConfig> = {}
+
+    // extract one by one all data config for embed.
+    for (const attr of possibleAttributeNames) {
+      const value = singleElement.getAttribute(attr)
+      if (value) {
+        switch (attr) {
+          case 'data-embed-id':
+            answerToReturn.embedId = value ?? configByUser?.embed_id
+            continue
+          case 'data-api-key':
+            answerToReturn.apiKey = value ?? configByUser?.api_key
+            continue
+          case 'data-token':
+            answerToReturn.token = value ?? configByUser?.token
+            continue
+          case 'data-lat':
+            answerToReturn.contextualParams =
+              answerToReturn.contextualParams || {}
+            answerToReturn.contextualParams.geo =
+              answerToReturn.contextualParams.geo || {}
+            answerToReturn.contextualParams.geo.lat = parseFloat(
+              value ?? configByUser?.contextualParams?.geo?.lat,
+            )
+            continue
+          case 'data-long':
+            answerToReturn.contextualParams =
+              answerToReturn.contextualParams || {}
+            answerToReturn.contextualParams.geo =
+              answerToReturn.contextualParams.geo || {}
+            answerToReturn.contextualParams.geo.long = parseFloat(
+              value ?? configByUser?.contextualParams?.geo?.long,
+            )
+            continue
+          case 'data-url':
+            answerToReturn.contextualParams =
+              answerToReturn.contextualParams || {}
+            answerToReturn.contextualParams.url =
+              value ?? configByUser?.contextualParams?.url
+            continue
+          case 'data-page-context':
+            answerToReturn.contextualParams =
+              answerToReturn.contextualParams || {}
+            answerToReturn.contextualParams.page_context =
+              value ?? configByUser?.contextualParams?.page_context
+            continue
+          case 'data-brand-ids':
+            answerToReturn.brand_ids = value
+              .split(' ')
+              .map((item) => parseInt(item))
+            continue
+          case 'data-video-id':
+            answerToReturn.startVideoSlug =
+              value ?? configByUser?.startVideoSlug
+            continue
+          case 'data-action':
+            answerToReturn.action = (value ?? configByUser?.action) as
+              | ActionType
+              | undefined
+            continue
+        }
+      }
+    }
+
+    return answerToReturn
+  }
+
+  /**
+   * Sets a unique instance ID on the element.
+   * @param element The HTML element to set the instance ID on.
+   * @returns The generated instance ID.
+   */
+  private setInstanceId(element: HTMLElement) {
+    const instanceId = `sdk-instance-${Date.now()}-${getRandomNumber(1, 1000000)}`
+    element.setAttribute('data-instance-id', instanceId)
+    return instanceId
   }
 
   /**
@@ -71,10 +323,10 @@ export class GenuinSDK {
           configOrObject.api_key = firstDiv?.getAttribute('data-api-key')
         }
         // Single embed initialization with config
-        await this.initializeSingleEmbed(configOrObject)
+        // await this.initializeSingleEmbed(configOrObject)
       } else {
         // Multi-embed initialization from DOM
-        await this.initializeFromDOM(configOrObject)
+        // await this.initializeFromDOM(configOrObject)
       }
     } catch (error) {
       const sdkError = this.errorHandler.handleError(
@@ -90,113 +342,113 @@ export class GenuinSDK {
   /**
    * Initialize single embed with config object
    */
-  private async initializeSingleEmbed(
-    configOrObject: { config: LegacySDKConfig } | LegacySDKConfig,
-  ): Promise<void> {
-    const div = document.getElementById('gen-sdk')
-    if (!div) {
-      throw new Error('Div element with id "gen-sdk" is required')
-    }
+  // private async initializeSingleEmbed(
+  //   configOrObject: { config: LegacySDKConfig } | LegacySDKConfig,
+  // ): Promise<void> {
+  //   const div = document.getElementById('gen-sdk')
+  //   if (!div) {
+  //     throw new Error('Div element with id "gen-sdk" is required')
+  //   }
 
-    if (this.configManager.isContainerInitialized(div)) {
-      throw new Error(
-        'SDK is already initialized. Multiple initializations are not allowed.',
-      )
-    }
+  //   if (this.configManager.isContainerInitialized(div)) {
+  //     throw new Error(
+  //       'SDK is already initialized. Multiple initializations are not allowed.',
+  //     )
+  //   }
 
-    const config =
-      'config' in configOrObject ? configOrObject.config : configOrObject
-    const validation = this.configManager.validateLegacyConfig(config)
+  //   const config =
+  //     'config' in configOrObject ? configOrObject.config : configOrObject
+  //   const validation = this.configManager.validateLegacyConfig(config)
 
-    if (!validation.isValid) {
-      throw new Error(validation.errorMessage)
-    }
+  //   if (!validation.isValid) {
+  //     throw new Error(validation.errorMessage)
+  //   }
 
-    const instanceId = this.configManager.generateInstanceId()
-    this.configManager.markContainerInitialized(div, instanceId)
+  //   const instanceId = this.configManager.generateInstanceId()
+  //   this.configManager.markContainerInitialized(div, instanceId)
 
-    div.style.setProperty('display', 'block')
-    await this.performLegacySDKInitiation(div, config, instanceId)
-  }
+  //   div.style.setProperty('display', 'block')
+  //   await this.performLegacySDKInitiation(div, config, instanceId)
+  // }
 
   /**
    * Initialize from DOM elements with data attributes
    */
-  private async initializeFromDOM(configOrObject?: any): Promise<void> {
-    const embedDivs = document.querySelectorAll(
-      '.gen-sdk-class:not([data-initialized])',
-    )
+  // private async initializeFromDOM(configOrObject?: any): Promise<void> {
+  //   const embedDivs = document.querySelectorAll(
+  //     '.gen-sdk-class:not([data-initialized])',
+  //   )
 
-    if (embedDivs.length === 0) {
-      throw new Error('No embed divs found')
-    }
+  //   if (embedDivs.length === 0) {
+  //     throw new Error('No embed divs found')
+  //   }
 
-    for (const div of embedDivs) {
-      try {
-        const validation = this.configManager.validateDivAttributes(div)
-        if (!validation.isValid) {
-          console.error(`Skipping div: ${validation.errorMessage}`)
-          continue
-        }
+  //   for (const div of embedDivs) {
+  //     try {
+  //       const validation = this.configManager.validateDivAttributes(div)
+  //       if (!validation.isValid) {
+  //         console.error(`Skipping div: ${validation.errorMessage}`)
+  //         continue
+  //       }
 
-        const instanceId = this.configManager.generateInstanceId()
-        this.configManager.markContainerInitialized(
-          div as HTMLElement,
-          instanceId,
-        )
+  //       const instanceId = this.configManager.generateInstanceId()
+  //       this.configManager.markContainerInitialized(
+  //         div as HTMLElement,
+  //         instanceId,
+  //       )
 
-        // Extract config from DOM attributes
-        const config = this.extractConfigFromDOM(div, configOrObject)
-        await this.performLegacySDKInitiation(
-          div as HTMLElement,
-          config,
-          instanceId,
-        )
-      } catch (error) {
-        console.error(`Failed to initialize embed div:`, error)
-      }
-    }
-  }
+  //       // Extract config from DOM attributes
+  //       const config = this.extractConfigFromDOM(div, configOrObject)
+  //       await this.performLegacySDKInitiation(
+  //         div as HTMLElement,
+  //         config,
+  //         instanceId,
+  //       )
+  //     } catch (error) {
+  //       console.error(`Failed to initialize embed div:`, error)
+  //     }
+  //   }
+  // }
 
   /**
    * Extract configuration from DOM element attributes
    */
-  private extractConfigFromDOM(
-    div: Element,
-    sourceConfig?: any,
-  ): LegacySDKConfig {
-    const isConfigObject =
-      typeof sourceConfig === 'object' &&
-      sourceConfig !== null &&
-      'config' in sourceConfig
+  // private extractConfigFromDOM(
+  //   div: Element,
+  //   sourceConfig?: any,
+  // ): LegacySDKConfig {
+  //   const isConfigObject =
+  //     typeof sourceConfig === 'object' &&
+  //     sourceConfig !== null &&
+  //     'config' in sourceConfig
 
-    const source = isConfigObject ? sourceConfig.config : sourceConfig || {}
+  //   const source = isConfigObject ? sourceConfig.config : sourceConfig || {}
 
-    return {
-      placement_id: div.getAttribute('data-placement-id') ?? '',
-      style_id: div.getAttribute('data-style-id') ?? '',
-      embed_id: div.getAttribute('data-embed-id') ?? '',
-      api_key: div.getAttribute('data-api-key') ?? '',
-      token: source.token ?? '',
-      contextualParams: {
-        page_context: div.getAttribute('data-page-context') || null,
-        geo: {
-          lat: div.getAttribute('data-lat') || null,
-          long: div.getAttribute('data-long') || null,
-        },
-        url: div.getAttribute('data-url') || null,
-      },
-      brand_ids:
-        div
-          .getAttribute('data-brand-ids')
-          ?.split(' ')
-          .map((item) => parseInt(item)) || [],
-      params: source.params ?? '',
-      video: source.video ?? '',
-      action: source.action ?? '',
-      authInfo: source.authInfo,
-    }
-  }
+  //   return {
+  //     placement_id: div.getAttribute('data-placement-id') ?? '',
+  //     style_id: div.getAttribute('data-style-id') ?? '',
+  //     embed_id: div.getAttribute('data-embed-id') ?? '',
+  //     api_key: div.getAttribute('data-api-key') ?? '',
+  //     token: source.token ?? '',
+  //     contextualParams: {
+  //       page_context: div.getAttribute('data-page-context') || null,
+  //       geo: {
+  //         lat: div.getAttribute('data-lat') || null,
+  //         long: div.getAttribute('data-long') || null,
+  //       },
+  //       url: div.getAttribute('data-url') || null,
+  //     },
+  //     brand_ids:
+  //       div
+  //         .getAttribute('data-brand-ids')
+  //         ?.split(' ')
+  //         .map((item) => parseInt(item)) || [],
+  //     params: source.params ?? '',
+  //     video: source.video ?? '',
+  //     action: source.action ?? '',
+  //     authInfo: source.authInfo,
+  //   }
+  // }
 
   /**
    * Core SDK initiation logic - handles all the critical legacy functionality

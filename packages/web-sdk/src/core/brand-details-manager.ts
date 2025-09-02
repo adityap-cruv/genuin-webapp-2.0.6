@@ -1,17 +1,17 @@
 import { BrandDetailsConfigType } from '@/type'
-import { apiService, APIService } from './api'
+import { apiService } from './api'
 
-class BrandDetails {
-  private static instance: BrandDetails
+export class BrandDetailsManager {
+  private static instance: BrandDetailsManager
   private brandDetailsList: Record<string, BrandDetailsConfigType> = {}
 
   private constructor() {}
 
-  public static getInstance(): BrandDetails {
-    if (!BrandDetails.instance) {
-      BrandDetails.instance = new BrandDetails()
+  public static getInstance(): BrandDetailsManager {
+    if (!BrandDetailsManager.instance) {
+      BrandDetailsManager.instance = new BrandDetailsManager()
     }
-    return BrandDetails.instance
+    return BrandDetailsManager.instance
   }
 
   public async getBrandDetails(apiKey: string) {
@@ -30,4 +30,4 @@ class BrandDetails {
 /**
  * Singleton instance of BrandDetails.
  */
-export const brandDetails = BrandDetails.getInstance()
+export const brandDetailsManager = BrandDetailsManager.getInstance()

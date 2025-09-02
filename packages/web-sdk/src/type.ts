@@ -475,7 +475,7 @@ export type CommunityJoinStatusType =
   | 'requested'
   | 'leader'
 
-export type ViewType = 'feed' | 'carousel' | 'standard_wall'
+export type ViewType = 'feed' | 'carousel' | 'standard_wall' | 'grid'
 
 export type SizeBoxType = { height: number; width: number }
 
