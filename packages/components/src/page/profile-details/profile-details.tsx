@@ -33,7 +33,6 @@ export function ProfileDetails({
   } = useGetProfileDetails(userName, forBrand);
   const detailsId = useId();
   const { brandDetails } = useBaseContext();
-  const { isMobile } = useDeviceDetectMediaQuery();
   const { replace } = useRouter();
   const { isMobile } = useDeviceDetectMediaQuery();
   const { createExternalLink } = useLinkContext();
@@ -60,7 +59,7 @@ export function ProfileDetails({
 
     if (error.message === NOT_FOUND_ERROR_CODES.brand) {
       return <ErrorState type="NO_BRAND_USER" />;
-    } 
+    }
 
     return <ErrorState type="ERROR" />;
   }
