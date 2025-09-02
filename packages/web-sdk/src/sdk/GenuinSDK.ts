@@ -22,7 +22,7 @@ import {
 } from '../utils'
 import { EmbedDataType } from '@genuin/components/context/embed/embed.types'
 import { BrandDetailsManager } from '@/core/brand-details-manager'
-import { loadErrorView } from './react-utils'
+import { loadErrorView, loadNewEmbed } from './react-utils'
 import { EmbedDetailsManager } from '@/core/embed-details-manager'
 
 export type ActionType =
@@ -54,7 +54,7 @@ type ConfigByUser = {
   action?: ActionType
 }
 
-type SingleEmbedDataConfig = {
+export type SingleEmbedDataConfig = {
   embedId: string
   apiKey: string
   token?: string
@@ -156,16 +156,27 @@ export class GenuinSDK {
       return false
     }
 
-    const brandDetails = await this.brandDetailsManager.getBrandDetails(
-      config.apiKey,
-    )
+    // Handle error at single embed level so that other embeds doesn't get affected.
+    try {
+      // This is where we get the brand details
+      const brandDetails = await this.brandDetailsManager.getBrandDetails(
+        config.apiKey,
+      )
 
-    const embedDetails = await this.embedDetailsManager.getEmbedDetails(
-      config.embedId,
-      brandDetails,
-    )
+      const embedDetails = await this.embedDetailsManager.getEmbedDetails(
+        config.embedId,
+        brandDetails,
+      )
 
-    console.log('embedDetails :>> ', embedDetails, brandDetails)
+      loadNewEmbed({
+        container: element,
+        embedData: embedDetails,
+        brandDetails,
+        config,
+      })
+    } catch (errpr) {
+      loadErrorView(element)
+    }
 
     return true
   }

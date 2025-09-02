@@ -370,7 +370,7 @@ export type EmbedDataType = {
   is_default?: boolean;
   aspect_ratio?: string;
   enable_adaptive_video?: boolean;
-  
+
   // Additional fields from PlacementDataResponse
   feed_type?: string;
   created_at?: string;
@@ -409,13 +409,13 @@ export type EmbedDataType = {
   show_video_duration?: boolean;
   is_show_metrics?: boolean;
   placement_card_section_layout_id?: number;
-  placement_card_layout_id?: number
-  placement_video_layout_id?: number
+  placement_card_layout_id?: number;
+  placement_video_layout_id?: number;
 };
 
 export type CustomizationType = {
   dimensions: {
-    auto_fit_height?: boolean
+    auto_fit_height?: boolean;
     width: number;
     height: number;
   };

@@ -2,7 +2,7 @@
 import { EmbedContext } from "./context";
 import { ActivePlayerType, createEmbedEventBus } from "./event-bus";
 import { EmbedDataType } from "./embed.types";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 type EmbedProviderProps = {
