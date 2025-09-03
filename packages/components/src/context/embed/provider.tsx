@@ -38,7 +38,7 @@ export function EmbedProvider({
   useEffect(() => {
     if (!window.genuin) return;
 
-    window.genuin.on("sdk:updateContextualParams", (props: any) => {
+    const handleUpdateContextualParams = (props: any) => {
       const payload = props.payload;
       if (
         payload.embedId === stateEmbedData.embed_id &&
@@ -49,7 +49,18 @@ export function EmbedProvider({
           contextualParams: payload.contextualParams,
         }));
       }
-    });
+    };
+
+    window.genuin.on(
+      "sdk:updateContextualParams",
+      handleUpdateContextualParams
+    );
+    return () => {
+      window.genuin?.off(
+        "sdk:updateContextualParams",
+        handleUpdateContextualParams
+      );
+    };
   }, [stateEmbedData]);
 
   const updateSectionList = useCallback(

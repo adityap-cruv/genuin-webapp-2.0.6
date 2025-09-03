@@ -91,10 +91,16 @@ export function AuthProvider({
   useLayoutEffect(() => {
     if (!window.genuin) return;
 
-    window.genuin.on("sdk:authenticateUser", (authCallbackData: any) => {
+    const handleAuthenticaeUser = (authCallbackData: any) => {
       setAuthenticatedUser(authCallbackData.payload);
       setAuthenticationStatus("authenticated");
-    });
+    };
+
+    window.genuin.on("sdk:authenticateUser", handleAuthenticaeUser);
+
+    return () => {
+      window.genuin.off("sdk:authenticateUser", handleAuthenticaeUser);
+    };
   }, []);
 
   // Synchronously manage the authentication token in Axios instance when the external 'user' prop changes.
