@@ -110,12 +110,89 @@ async function getS3Config(): Promise<S3Config | null> {
 }
 
 /**
- * Uploads a single file to S3
+ * Recursively get all files from a directory with relative paths
+ */
+function getFilesRecursively(dir: string, basePath: string = dir): string[] {
+  const files: string[] = []
+
+  if (!fs.existsSync(dir)) {
+    return files
+  }
+
+  const items = fs.readdirSync(dir)
+
+  for (const item of items) {
+    const fullPath = path.join(dir, item)
+    const relativePath = path.relative(basePath, fullPath)
+
+    if (fs.statSync(fullPath).isDirectory()) {
+      files.push(...getFilesRecursively(fullPath, basePath))
+    } else {
+      files.push(relativePath)
+    }
+  }
+
+  return files
+}
+
+/**
+ * Get all build files that need to be uploaded
+ * Includes chunks, source maps (for QA), and main build files
+ */
+function getBuildFiles(): string[] {
+  const NODE_ENV = process.env.NODE_ENV || 'qa'
+  const isProduction = NODE_ENV === 'production'
+
+  // Get all files from dist directory
+  const allFiles = getFilesRecursively('dist').map((file) =>
+    path.join('dist', file),
+  )
+
+  // Filter files based on environment
+  const buildFiles = allFiles.filter((file) => {
+    const filename = path.basename(file)
+    const ext = path.extname(file)
+
+    // Always include main build files
+    if (
+      filename === 'gen_sdk.min.js' ||
+      filename === 'genuin-sdk.js' ||
+      filename === 'genuin-sdk-legacy.js' ||
+      filename === 'web-sdk.css'
+    ) {
+      return true
+    }
+
+    // Include all chunk files (.js files in chunks directory)
+    if (file.includes('chunks/') && ext === '.js') {
+      return true
+    }
+
+    // Include source maps for QA environment (for debugging)
+    if (!isProduction && ext === '.map') {
+      return true
+    }
+
+    // Include CSS files from assets
+    if (file.includes('assets/') && ext === '.css') {
+      return true
+    }
+
+    return false
+  })
+
+  console.log(chalk.blue(`\nDiscovered ${buildFiles.length} files to upload:`))
+  buildFiles.forEach((file) => console.log(chalk.gray(`  • ${file}`)))
+
+  return buildFiles
+}
+/**
+ * Uploads a single file to S3 with proper directory structure
  *
  * @param {S3Client} client - Initialized S3 client
  * @param {string} bucketName - Target S3 bucket name
  * @param {string} filePath - Local path of file to upload
- * @param {string} s3Path - Target path in S3 bucket
+ * @param {string} s3BasePath - Target base path in S3 bucket
  * @param {cliProgress.SingleBar} progressBar - Progress bar instance
  * @returns {Promise<void>}
  */
@@ -123,28 +200,42 @@ async function uploadFile(
   client: S3Client,
   bucketName: string,
   filePath: string,
-  s3Path: string,
+  s3BasePath: string,
   progressBar: cliProgress.SingleBar,
 ): Promise<void> {
   const fileContent = fs.readFileSync(filePath)
-  const fileName = path.basename(filePath)
-  const s3Key = `${s3Path.replace(/^\//, '')}/${fileName}`
+
+  // Preserve directory structure relative to dist/
+  const relativePath = path.relative('dist', filePath)
+  const s3Key = `${s3BasePath.replace(/^\//, '')}/${relativePath}`
+
+  // Determine content type based on file extension
+  const ext = path.extname(filePath).toLowerCase()
+  let contentType = 'application/octet-stream'
+
+  if (ext === '.js') {
+    contentType = 'application/javascript'
+  } else if (ext === '.css') {
+    contentType = 'text/css'
+  } else if (ext === '.map') {
+    contentType = 'application/json'
+  }
 
   const command = new PutObjectCommand({
     Bucket: bucketName,
     Key: s3Key,
     Body: fileContent,
-    ContentType: fileName.endsWith('.js')
-      ? 'application/javascript'
-      : 'text/css',
+    ContentType: contentType,
   })
 
   try {
     await client.send(command)
     progressBar.increment()
-    console.log(chalk.green(`✓ Successfully uploaded ${fileName} to ${s3Key}`))
+    console.log(
+      chalk.green(`✓ Successfully uploaded ${relativePath} to ${s3Key}`),
+    )
   } catch (error) {
-    console.error(chalk.red(`✗ Failed to upload ${fileName} to ${s3Key}`))
+    console.error(chalk.red(`✗ Failed to upload ${relativePath} to ${s3Key}`))
     throw error
   }
 }
@@ -253,7 +344,14 @@ export async function uploadBuildsToS3(): Promise<void> {
   const s3Client = new S3Client({ region, credentials })
   const cloudFrontClient = new CloudFrontClient({ region, credentials })
 
-  const buildFiles = ['dist/gen_sdk.min.js', 'dist/gen-sdk.css']
+  // Dynamically discover all build files
+  const buildFiles = getBuildFiles()
+
+  if (buildFiles.length === 0) {
+    console.log(chalk.yellow('⚠ No build files found to upload'))
+    return
+  }
+
   const totalUploads = buildFiles.length * selectedPaths.length
 
   // Create progress bar
