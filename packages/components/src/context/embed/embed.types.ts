@@ -328,11 +328,17 @@ export type UserParam = {
  *
  * Use these types to specify which automatic user interaction should be performed in the embed context.
  */
-type AutoUserInteractionToPerformType =
+export type ActionType =
   | "spark"
   | "comment-spark"
   | "repost"
-  | "comment";
+  | "comment"
+  | "report"
+  | "join-community"
+  | "join-group"
+  | "subscribe-group";
+
+type AutoUserInteractionToPerformType = ActionType;
 
 type AuthInfoType = {
   signInUrl: string;

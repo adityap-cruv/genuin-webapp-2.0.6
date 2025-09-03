@@ -1,15 +1,8 @@
-import { EmbedDataType } from '@genuin/components/context/embed/embed.types'
+import {
+  EmbedDataType,
+  ActionType,
+} from '@genuin/components/context/embed/embed.types'
 import { BrandDetailsConfigType } from '@genuin/components/types/brand'
-
-export type ActionType =
-  | 'spark'
-  | 'comment-spark'
-  | 'repost'
-  | 'comment'
-  | 'report'
-  | 'join-community'
-  | 'join-group'
-  | 'subscribe-group'
 
 type AuthUserParams = {
   name?: string | null
@@ -68,8 +61,8 @@ export type ConfigByUser = {
   placement_id?: string
   style_id?: string
   token?: string
-  contextualParams?: ContextualParamsType
-  startVideoSlug?: string
+  contextual_params?: ContextualParamsType
+  start_video_slug?: string
   action?: ActionType
   params?: AuthUserParams
   authInfo: AuthInfoType
@@ -77,9 +70,11 @@ export type ConfigByUser = {
 
 export type UpdateConfigByUserType = {
   token: string
-  userParams: Record<string, any>
-  contextualParams?: ContextualParamsType
-  embedId: string
+  user_params: Record<string, any>
+  contextual_params?: ContextualParamsType
+  embed_id: string
+  action?: ActionType
+  start_video_slug?: string
 }
 
 export type SDKElementsType = Record<

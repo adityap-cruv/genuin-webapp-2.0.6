@@ -17,8 +17,8 @@ import { AuthUser } from '@genuin/components/types/auth'
 import { EmbedDataType } from '@genuin/components/context/embed/embed.types'
 import { CallbackQueueManager } from '@/core/callback-queue-manager'
 import { PlacementManager } from '@/core/placement-manager'
+import { ActionType } from '@genuin/components/context/embed/embed.types'
 import {
-  ActionType,
   ConfigByUser,
   ContextualParamsType,
   InitializationStatus,
@@ -83,6 +83,15 @@ export class GenuinSDK {
   }
 
   /**
+   * This function is used for backward compatibility.
+   * @param config
+   * @deprecated
+   */
+  initialize(config?: ConfigByUser): void {
+    this.newInit(config)
+  }
+
+  /**
    * Initializes the SDK with the provided configuration.
    * This is new init method which will replace legacyInit.
    * @param config User-provided configuration for the SDK.
@@ -113,15 +122,23 @@ export class GenuinSDK {
     if (config?.token) {
       await this.authenticateUser({
         token: config.token,
-        userParams: config.userParams,
+        userParams: config.user_params,
       })
     }
 
     // Update contextual params in the embed, if embedId is passed then only in that embed otherwise in all the embeds.
-    if (config?.contextualParams) {
-      this.updateContextualParamsInEmbed({
-        contextualParams: config.contextualParams,
-        embedId: config.embedId,
+    if (config?.contextual_params) {
+      await this.updateContextualParamsInEmbed({
+        contextualParams: config.contextual_params,
+        embedId: config.embed_id,
+      })
+    }
+
+    if (config?.start_video_slug) {
+      await this.updateStartVideoId({
+        startVideoSlug: config.start_video_slug,
+        embedId: config.embed_id,
+        action: config.action,
       })
     }
   }
@@ -204,7 +221,7 @@ export class GenuinSDK {
 
       // Apply brand colors to the element
       this.themeManager.applyBrandColors(element, brandDetails.brand_colors)
-
+      console.log('onfig::', config)
       loadNewEmbed({
         container: element,
         embedData: embedDetails,
@@ -259,8 +276,10 @@ export class GenuinSDK {
     }
 
     if (embedDetails) {
-      // Add authentication info to embed details
+      // Add all the other params to embedDetails
       embedDetails.authInfo = config.authInfo
+      embedDetails.startVideoSlug = config.startVideoSlug
+      embedDetails.autoUserInteractionToPerform = config.action
       // Store the embed details in the config for later use
       config.embedDetails = embedDetails
     } else {
@@ -269,6 +288,39 @@ export class GenuinSDK {
     }
   }
 
+  private async updateStartVideoId({
+    startVideoSlug,
+    embedId,
+    action,
+  }: {
+    startVideoSlug: string
+    embedId?: string
+    action?: ActionType
+  }) {
+    if (!embedId && !this.isSingleEmbed()) {
+      console.warn(
+        'Embed id is required to update the start video slug in multi-embed scenario',
+      )
+      return
+    }
+
+    if (!embedId && this.isSingleEmbed()) {
+      const firstEmbedId = Object.keys(this.sdkElements)[0]
+      if (firstEmbedId)
+        embedId = this.sdkElements[firstEmbedId]?.config.embedDetails?.embed_id
+    }
+
+    this.eventManager.emit(SDKEventType.SDK_UPDATE_START_VIDEO_SLUG, {
+      embedId,
+      startVideoSlug,
+      action,
+    })
+  }
+
+  /**
+   * Updates the contextual parameters in the specified embed.
+   * @param param0 The parameters for updating the embed.
+   */
   private async updateContextualParamsInEmbed({
     contextualParams,
     embedId,
@@ -487,7 +539,8 @@ export class GenuinSDK {
           answerToReturn.token = value ?? configByUser?.token
           break
         case 'data-video-id':
-          answerToReturn.startVideoSlug = value ?? configByUser?.startVideoSlug
+          answerToReturn.startVideoSlug =
+            value ?? configByUser?.start_video_slug
           break
         case 'data-action':
           answerToReturn.action = (value ?? configByUser?.action) as
@@ -502,8 +555,8 @@ export class GenuinSDK {
           value =
             typeof value === 'string'
               ? value
-              : typeof configByUser?.contextualParams?.geo?.lat === 'string'
-                ? configByUser?.contextualParams?.geo?.lat
+              : typeof configByUser?.contextual_params?.geo?.lat === 'string'
+                ? configByUser?.contextual_params?.geo?.lat
                 : value !== undefined
                   ? String(value)
                   : null
@@ -521,7 +574,7 @@ export class GenuinSDK {
             answerToReturn.contextualParams || {}
           answerToReturn.contextualParams.geo =
             answerToReturn.contextualParams.geo || {}
-          const longValue = value ?? configByUser?.contextualParams?.geo?.long
+          const longValue = value ?? configByUser?.contextual_params?.geo?.long
           if (typeof longValue === 'string') {
             const parsedLong = parseFloat(longValue)
             if (!isNaN(parsedLong)) {
@@ -535,25 +588,25 @@ export class GenuinSDK {
           answerToReturn.contextualParams =
             answerToReturn.contextualParams || {}
           answerToReturn.contextualParams.url =
-            value ?? configByUser?.contextualParams?.url
+            value ?? configByUser?.contextual_params?.url
           break
         case 'data-page-context':
           answerToReturn.contextualParams =
             answerToReturn.contextualParams || {}
           answerToReturn.contextualParams.page_context =
-            value ?? configByUser?.contextualParams?.page_context
+            value ?? configByUser?.contextual_params?.page_context
           break
         case 'data-previous-page-context':
           answerToReturn.contextualParams =
             answerToReturn.contextualParams || {}
           answerToReturn.contextualParams.previous_page_context =
-            value ?? configByUser?.contextualParams?.previous_page_context
+            value ?? configByUser?.contextual_params?.previous_page_context
           break
         case 'data-user-context':
           answerToReturn.contextualParams =
             answerToReturn.contextualParams || {}
           answerToReturn.contextualParams.user_context =
-            value ?? configByUser?.contextualParams?.user_context
+            value ?? configByUser?.contextual_params?.user_context
           break
         case 'data-geo':
           answerToReturn.contextualParams =
@@ -569,7 +622,7 @@ export class GenuinSDK {
           } else {
             answerToReturn.contextualParams.geo = {
               ...answerToReturn.contextualParams.geo,
-              ...configByUser?.contextualParams?.geo,
+              ...configByUser?.contextual_params?.geo,
             }
           }
           break
@@ -580,7 +633,7 @@ export class GenuinSDK {
           answerToReturn.contextualParams.place =
             placeParsed && typeof placeParsed === 'object'
               ? placeParsed
-              : configByUser?.contextualParams?.place
+              : configByUser?.contextual_params?.place
           break
         case 'data-time':
           answerToReturn.contextualParams =
@@ -592,7 +645,7 @@ export class GenuinSDK {
               : parsedTime
           } else {
             answerToReturn.contextualParams.time =
-              configByUser?.contextualParams?.time
+              configByUser?.contextual_params?.time
           }
           break
         case 'data-user-segments':
@@ -602,7 +655,7 @@ export class GenuinSDK {
           answerToReturn.contextualParams.user_segments =
             userSegmentsParsed && typeof userSegmentsParsed === 'object'
               ? userSegmentsParsed
-              : configByUser?.contextualParams?.user_segments
+              : configByUser?.contextual_params?.user_segments
           break
         case 'data-brands-ids':
           answerToReturn.contextualParams =
@@ -612,7 +665,7 @@ export class GenuinSDK {
             brandsIdsParsed,
           )
             ? brandsIdsParsed
-            : configByUser?.contextualParams?.brands_ids
+            : configByUser?.contextual_params?.brands_ids
           break
         case 'data-user-interests':
           answerToReturn.contextualParams =
@@ -622,7 +675,7 @@ export class GenuinSDK {
             userInterestsParsed,
           )
             ? userInterestsParsed
-            : configByUser?.contextualParams?.user_interests
+            : configByUser?.contextual_params?.user_interests
           break
         case 'data-posted-by-user-ids':
           answerToReturn.contextualParams =
@@ -632,7 +685,7 @@ export class GenuinSDK {
             postedByUserIdsParsed,
           )
             ? postedByUserIdsParsed
-            : configByUser?.contextualParams?.posted_by_user_ids
+            : configByUser?.contextual_params?.posted_by_user_ids
           break
         case 'data-community-ids':
           answerToReturn.contextualParams =
@@ -642,7 +695,7 @@ export class GenuinSDK {
             communityIdsParsed,
           )
             ? communityIdsParsed
-            : configByUser?.contextualParams?.community_ids
+            : configByUser?.contextual_params?.community_ids
           break
         case 'data-loop-ids':
           answerToReturn.contextualParams =
@@ -652,7 +705,7 @@ export class GenuinSDK {
             loopIdsParsed,
           )
             ? loopIdsParsed
-            : configByUser?.contextualParams?.loop_ids
+            : configByUser?.contextual_params?.loop_ids
           break
         default:
           break
@@ -700,6 +753,14 @@ export class GenuinSDK {
     const instanceId = `sdk-instance-${Date.now()}-${getRandomNumber(1, 1000000)}`
     element.setAttribute('data-instance-id', instanceId)
     return instanceId
+  }
+
+  /**
+   * Checks if the current embed is a single instance.
+   * @returns True if it's a single embed, false otherwise.
+   */
+  private isSingleEmbed() {
+    return Object.keys(this.sdkElements).length === 1
   }
 
   /**

@@ -9,6 +9,7 @@ export enum SDKEventType {
   NAVIGATION = 'navigation',
   SDK_AUTHENTICATE_USER = 'sdk:authenticateUser',
   SDK_UPDATE_CONTEXTUAL_PARAMS = 'sdk:updateContextualParams',
+  SDK_UPDATE_START_VIDEO_SLUG = 'sdk:updateStartVideoSlug',
 }
 
 export interface SDKEvent {

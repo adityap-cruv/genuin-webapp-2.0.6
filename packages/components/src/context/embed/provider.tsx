@@ -51,14 +51,34 @@ export function EmbedProvider({
       }
     };
 
+    const handleUpdateStartVideoSlug = (props: any) => {
+      const payload = props.payload;
+      if (
+        payload &&
+        payload.embedId === stateEmbedData.embed_id &&
+        payload.startVideoSlug
+      ) {
+        setStateEmbedData((prev) => ({
+          ...prev,
+          startVideoSlug: payload.startVideoSlug,
+          autoUserInteractionToPerform: payload.action,
+        }));
+      }
+    };
+
     window.genuin.on(
       "sdk:updateContextualParams",
       handleUpdateContextualParams
     );
+    window.genuin.on("sdk:updateStartVideoSlug", handleUpdateStartVideoSlug);
     return () => {
       window.genuin?.off(
         "sdk:updateContextualParams",
         handleUpdateContextualParams
+      );
+      window.genuin?.off(
+        "sdk:updateStartVideoSlug",
+        handleUpdateStartVideoSlug
       );
     };
   }, [stateEmbedData]);
@@ -123,12 +143,7 @@ export function EmbedProvider({
 
   const changeActivePlayerType = useCallback(
     (newActiveType: ActivePlayerType, activeIndex?: number) => {
-      // if (
-      //   newActiveType === "expand-view" &&
-      //   !embedData.customization.is_popup_view
-      // )
-      //   return;
-
+      if (newActiveType === embedEventBus.getContext().activePlayerType) return;
       embedEventBus.emit(
         "activePlayerTypeChange",
         undefined,
