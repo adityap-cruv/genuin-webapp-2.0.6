@@ -1,5 +1,5 @@
-import { BrandDetailsConfigType } from '@/type'
 import { EmbedDataType } from '@genuin/components/context/embed/embed.types'
+import { BrandDetailsConfigType } from '@genuin/components/context/embed/embed.types'
 import { apiService } from './api'
 
 export class EmbedDetailsManager {

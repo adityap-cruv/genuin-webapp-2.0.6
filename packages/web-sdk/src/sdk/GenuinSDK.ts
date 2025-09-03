@@ -14,122 +14,18 @@ import { BrandDetailsManager } from '@/core/brand-details-manager'
 import { loadErrorView, loadNewEmbed } from './react-utils'
 import { EmbedDetailsManager } from '@/core/embed-details-manager'
 import { AuthUser } from '@genuin/components/types/auth'
-import {
-  BrandDetailsConfigType,
-  EmbedDataType,
-} from '@genuin/components/context/embed/embed.types'
+import { EmbedDataType } from '@genuin/components/context/embed/embed.types'
 import { CallbackQueueManager } from '@/core/callback-queue-manager'
 import { PlacementManager } from '@/core/placement-manager'
-import { config } from 'zod/v4/core'
-
-export type ActionType =
-  | 'spark'
-  | 'comment-spark'
-  | 'repost'
-  | 'comment'
-  | 'report'
-  | 'join-community'
-  | 'join-group'
-  | 'subscribe-group'
-
-type AuthUserParams = {
-  name?: string | null
-  mobile?: string | null
-  email?: string | null
-  nickname?: string | null
-  profileImage?: string | null
-  brandUserIdentity?: string | null
-}
-
-type AuthInfoType = {
-  signInUrl: string
-  signUpUrl: string
-}
-
-type InitializationStatus = 'pending' | 'loading' | 'done'
-
-type ContextualParamsType = {
-  page_context?: string
-  geo?: {
-    lat?: number
-    long?: number
-    radius_limit?: number
-  }
-  url?: string
-  previous_page_context?: string
-  user_context?: string
-  place?: {
-    country?: string
-    state?: string
-    city?: string
-    zipcode?: string | number
-  }
-  time?: string | number
-  user_segments?: {
-    age?: number
-    min_age?: number
-    max_age?: number
-    segment?: string
-    gender?: string
-    race?: string
-  }
-  brands_ids?: number[]
-  user_interests?: string[]
-  posted_by_user_ids?: string[]
-  community_ids?: string[]
-  loop_ids?: string[]
-}
-
-/**
- * These are the config when user can pass while genuin.init or genuin.initialize.
- */
-type ConfigByUser = {
-  embed_id?: string
-  api_key?: string
-  placement_id?: string
-  style_id?: string
-  token?: string
-  contextualParams?: ContextualParamsType
-  startVideoSlug?: string
-  action?: ActionType
-  params?: AuthUserParams
-  authInfo: AuthInfoType
-}
-
-type UpdateConfigByUserType = {
-  token: string
-  userParams: Record<string, any>
-  contextualParams?: ContextualParamsType
-  embedId: string
-}
-
-type SDKElementsType = Record<
-  string,
-  {
-    element: HTMLElement
-    config: Partial<SingleEmbedDataConfig>
-    status: InitializationStatus
-  }
->
-
-export type SingleEmbedDataConfig = {
-  embedId: string
-  apiKey: string
-  placementId?: string
-  styleId?: string
-  /**
-   * Brand id of the embed.
-   */
-  token?: string
-  contextualParams?: ContextualParamsType
-  brandIds?: number[]
-  startVideoSlug?: string
-  action?: ActionType
-  params?: AuthUserParams
-  authInfo?: AuthInfoType
-  embedDetails?: EmbedDataType
-  brandDetails?: BrandDetailsConfigType
-}
+import {
+  ActionType,
+  ConfigByUser,
+  ContextualParamsType,
+  InitializationStatus,
+  SDKElementsType,
+  SingleEmbedDataConfig,
+  UpdateConfigByUserType,
+} from '@/type'
 
 export class GenuinSDK {
   private brandDetailsManager: BrandDetailsManager
@@ -179,12 +75,8 @@ export class GenuinSDK {
       return
     }
 
-    const instanceId = this.configManager.generateInstanceId()
-    div.setAttribute('data-instance-id', instanceId)
-
     callback({
       initialize: (sdkconfig: ConfigByUser) => {
-        div.style.setProperty('display', 'block')
         this.newInit(sdkconfig)
       },
     })
@@ -207,7 +99,10 @@ export class GenuinSDK {
   async newUpdate(config?: UpdateConfigByUserType) {
     // if sdk is not initialized then queue the update call.
     if (!this.isInitialized) {
-      this.callbackQueueManager.enqueue(() => this._performUpdate(config))
+      this.callbackQueueManager.enqueue(
+        () => this._performUpdate(config),
+        config,
+      )
       return
     }
     await this._performUpdate(config)
@@ -348,15 +243,11 @@ export class GenuinSDK {
     if (config.placementId && config.styleId) {
       embedDetails = await this.placementManager.getPlacementData(
         config.placementId,
+        config.styleId,
       )
 
-      if (embedDetails) {
-        // Set the style and placement IDs from config
-        embedDetails.style_id = config.styleId
-        embedDetails.placement_id = config.placementId
-      } else {
+      if (!embedDetails)
         throw new Error('No embed details found for placement configuration.')
-      }
     } else if (!config.embedId) {
       // Neither embedId nor placementId/styleId provided - invalid configuration
       console.warn(
@@ -387,17 +278,33 @@ export class GenuinSDK {
   }) {
     const isSingleEmbed = Object.keys(this.sdkElements).length === 1
 
+    // in case of single embed no need of the the embedId so find that embed_id and trigger the emit.
     if (isSingleEmbed) {
       const firstEmbedId = Object.keys(this.sdkElements)[0]
       if (firstEmbedId) {
-        const embedId =
-          this.sdkElements[firstEmbedId]?.config.embedDetails?.embed_id
+        embedId = this.sdkElements[firstEmbedId]?.config.embedDetails?.embed_id
+        // assign old contextual params to new contextual params.
+        Object.assign(
+          contextualParams,
+          this.sdkElements[firstEmbedId]?.config.contextualParams,
+        )
       }
+
+      this.eventManager.emit(SDKEventType.SDK_UPDATE_CONTEXTUAL_PARAMS, {
+        embedId,
+        contextualParams,
+      })
     }
 
     if (!embedId) {
       console.warn('Embed id is not provided to update the contextual params')
     }
+
+    const oldContextualParams = Object.values(this.sdkElements).find(
+      (element) => element.config.embedDetails?.embed_id === embedId,
+    )?.config.contextualParams
+
+    Object.assign(contextualParams, oldContextualParams)
 
     this.eventManager.emit(SDKEventType.SDK_UPDATE_CONTEXTUAL_PARAMS, {
       embedId,

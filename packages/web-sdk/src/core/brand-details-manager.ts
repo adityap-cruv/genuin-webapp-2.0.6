@@ -1,6 +1,5 @@
-import { BrandDetailsConfigType } from '@/type'
 import { apiService } from './api'
-import { th } from 'zod/v4/locales'
+import { BrandDetailsConfigType } from '@genuin/components/types/brand'
 
 export class BrandDetailsManager {
   private static instance: BrandDetailsManager

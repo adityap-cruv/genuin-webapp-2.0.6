@@ -1,7 +1,7 @@
 import { API_BASE_URL } from '../const'
 import { ErrorHandler, ErrorType } from './errors'
-import { type BrandDetailsConfigType } from '../type'
 import { encryptText } from '@genuin/components/lib/utils/encryption'
+import { BrandDetailsConfigType } from '@genuin/components/types/brand'
 import { getDeviceId } from '@genuin/components/lib/utils/device-id'
 import {
   EmbedDataType,
@@ -66,7 +66,9 @@ export class APIService {
    */
   async fetchEmbedData(embedId: string): Promise<EmbedDataType> {
     try {
-      const response = await fetch(`${API_BASE_URL}/goservices/embed?id=${embedId}`)
+      const response = await fetch(
+        `${API_BASE_URL}/goservices/embed?id=${embedId}`,
+      )
 
       if (!response.ok) {
         throw new Error(

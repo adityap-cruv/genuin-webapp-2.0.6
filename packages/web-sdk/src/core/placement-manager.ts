@@ -1,7 +1,4 @@
-import {
-  EmbedDataType,
-  PlacementDataResponse,
-} from '@genuin/components/context/embed/embed.types'
+import { EmbedDataType } from '@genuin/components/context/embed/embed.types'
 import { apiService } from './api'
 import { parsePlacementToEmbedData } from '@/utils'
 
@@ -18,13 +15,19 @@ export class PlacementManager {
     return PlacementManager.instance
   }
 
-  async getPlacementData(placementId: string): Promise<EmbedDataType | null> {
+  async getPlacementData(
+    placementId: string,
+    styleId: string,
+  ): Promise<EmbedDataType | null> {
     if (this.placements.has(placementId)) {
       return this.placements.get(placementId) || null
     }
 
     const placementData = await apiService.getPlacementData(placementId)
-    const parsedPlacementData = parsePlacementToEmbedData(placementData)
+    const parsedPlacementData = parsePlacementToEmbedData(
+      placementData,
+      styleId,
+    )
 
     if (parsedPlacementData) {
       this.placements.set(placementId, parsedPlacementData)
