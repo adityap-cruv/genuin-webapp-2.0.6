@@ -34,7 +34,6 @@ export function ProfileDetails({
   const detailsId = useId();
   const { brandDetails } = useBaseContext();
   const { replace } = useRouter();
-  const { isMobile } = useDeviceDetectMediaQuery();
   const { createExternalLink } = useLinkContext();
 
   useEffect(() => {
