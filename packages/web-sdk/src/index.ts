@@ -40,7 +40,7 @@ declare global {
       on?: typeof Genuin.on
       off?: typeof Genuin.off
       init?: (config: any) => ReturnType<typeof Genuin.newInit>
-      update?: (config: any) => ReturnType<typeof Genuin.legacyUpdate>
+      update?: (config: any) => ReturnType<typeof Genuin.newUpdate>
       _initQueue?: Array<() => void>
     }
     onGenuinReady?: (sdk: typeof Genuin) => void
@@ -91,8 +91,8 @@ if (typeof window !== 'undefined') {
       if (typeof cb === 'function') {
         // If there's a gen-sdk div, prefer initializing via the helper
         const div = document.getElementById('gen-sdk')
-        if (div && typeof Genuin.initializeDivWithCallback === 'function') {
-          Genuin.initializeDivWithCallback(div, cb)
+        if (div && typeof Genuin.newInitWithCallback === 'function') {
+          Genuin.newInitWithCallback(div, cb)
         } else {
           // Fallback: directly call the callback with the SDK instance
           cb(Genuin)

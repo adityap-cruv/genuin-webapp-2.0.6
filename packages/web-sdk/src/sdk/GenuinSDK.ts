@@ -20,6 +20,7 @@ import {
 } from '@genuin/components/context/embed/embed.types'
 import { CallbackQueueManager } from '@/core/callback-queue-manager'
 import { PlacementManager } from '@/core/placement-manager'
+import { config } from 'zod/v4/core'
 
 export type ActionType =
   | 'spark'
@@ -164,6 +165,29 @@ export class GenuinSDK {
       GenuinSDK.instance = new GenuinSDK()
     }
     return GenuinSDK.instance
+  }
+
+  /**
+   * Initialize div with callback (for window.onGenuinReady support)
+   * @param div The div element to initialize.
+   * @param callback The callback to execute once initialization is complete.
+   * @deprecated
+   */
+  newInitWithCallback(div: HTMLElement, callback: (sdk: any) => void): void {
+    if (!callback || !div) {
+      console.error('Invalid callback or div for instance')
+      return
+    }
+
+    const instanceId = this.configManager.generateInstanceId()
+    div.setAttribute('data-instance-id', instanceId)
+
+    callback({
+      initialize: (sdkconfig: ConfigByUser) => {
+        div.style.setProperty('display', 'block')
+        this.newInit(sdkconfig)
+      },
+    })
   }
 
   /**
@@ -500,33 +524,69 @@ export class GenuinSDK {
     ] as const
     const answerToReturn: Partial<SingleEmbedDataConfig> = {}
 
-    // extract one by one all data config for embed.
+    // Extract core configuration attributes from the HTML element
+    const dataEmbedId = singleElement.getAttribute('data-embed-id')
+    const dataStyleId = singleElement.getAttribute('data-style-id')
+    const dataPlacementId = singleElement.getAttribute('data-placement-id')
+
+    // Priority 1: If both placement and style IDs are provided via data attributes,
+    // use placement-based configuration (placement takes precedence over embed)
+    if (dataPlacementId && dataStyleId) {
+      answerToReturn.placementId = dataPlacementId
+      answerToReturn.styleId = dataStyleId
+      answerToReturn.embedId = undefined
+      answerToReturn.apiKey = undefined
+    }
+
+    // Priority 2: If only embed ID is provided (and no placement/style),
+    // use embed-based configuration
+    if (dataEmbedId && !dataPlacementId && !dataStyleId) {
+      answerToReturn.embedId = dataEmbedId
+    }
+
+    // Priority 3: If no configuration found from data attributes,
+    // fall back to user-provided configuration
+    if (
+      !answerToReturn.embedId &&
+      !answerToReturn.placementId &&
+      !answerToReturn.styleId
+    ) {
+      if (configByUser?.placement_id && configByUser.style_id) {
+        answerToReturn.placementId = configByUser.placement_id
+        answerToReturn.styleId = configByUser.style_id
+      } else {
+        answerToReturn.embedId = configByUser?.embed_id
+      }
+    }
+
+    // Extract additional configuration attributes from the element
     for (const attr of possibleAttributeNames) {
       let value = singleElement.getAttribute(attr)
       switch (attr) {
-        case 'data-embed-id':
-          answerToReturn.embedId = value ?? configByUser?.embed_id
-          continue
+        // case 'data-embed-id':
+        //   answerToReturn.embedId = value ?? configByUser?.embed_id
+        //   continue
+        //   continue
         case 'data-api-key':
           answerToReturn.apiKey = value ?? configByUser?.api_key
-          continue
+          break
+        // case 'data-placement-id':
+        //   answerToReturn.placementId = value ?? configByUser?.placement_id
+        //   continue
+        // case 'data-style-id':
+        //   answerToReturn.styleId = value ?? configByUser?.style_id
+        //   continue
         case 'data-token':
           answerToReturn.token = value ?? configByUser?.token
-          continue
-        case 'data-placement-id':
-          answerToReturn.placementId = value ?? configByUser?.placement_id
-          continue
-        case 'data-style-id':
-          answerToReturn.styleId = value ?? configByUser?.style_id
-          continue
+          break
         case 'data-video-id':
           answerToReturn.startVideoSlug = value ?? configByUser?.startVideoSlug
-          continue
+          break
         case 'data-action':
           answerToReturn.action = (value ?? configByUser?.action) as
             | ActionType
             | undefined
-          continue
+          break
         case 'data-lat':
           answerToReturn.contextualParams =
             answerToReturn.contextualParams || {}
@@ -548,7 +608,7 @@ export class GenuinSDK {
           } else if (typeof value === 'number') {
             answerToReturn.contextualParams.geo.lat = value
           }
-          continue
+          break
         case 'data-long':
           answerToReturn.contextualParams =
             answerToReturn.contextualParams || {}
@@ -563,31 +623,31 @@ export class GenuinSDK {
           } else if (typeof longValue === 'number') {
             answerToReturn.contextualParams.geo.long = longValue
           }
-          continue
+          break
         case 'data-url':
           answerToReturn.contextualParams =
             answerToReturn.contextualParams || {}
           answerToReturn.contextualParams.url =
             value ?? configByUser?.contextualParams?.url
-          continue
+          break
         case 'data-page-context':
           answerToReturn.contextualParams =
             answerToReturn.contextualParams || {}
           answerToReturn.contextualParams.page_context =
             value ?? configByUser?.contextualParams?.page_context
-          continue
+          break
         case 'data-previous-page-context':
           answerToReturn.contextualParams =
             answerToReturn.contextualParams || {}
           answerToReturn.contextualParams.previous_page_context =
             value ?? configByUser?.contextualParams?.previous_page_context
-          continue
+          break
         case 'data-user-context':
           answerToReturn.contextualParams =
             answerToReturn.contextualParams || {}
           answerToReturn.contextualParams.user_context =
             value ?? configByUser?.contextualParams?.user_context
-          continue
+          break
         case 'data-geo':
           answerToReturn.contextualParams =
             answerToReturn.contextualParams || {}
@@ -605,7 +665,7 @@ export class GenuinSDK {
               ...configByUser?.contextualParams?.geo,
             }
           }
-          continue
+          break
         case 'data-place':
           answerToReturn.contextualParams =
             answerToReturn.contextualParams || {}
@@ -614,7 +674,7 @@ export class GenuinSDK {
             placeParsed && typeof placeParsed === 'object'
               ? placeParsed
               : configByUser?.contextualParams?.place
-          continue
+          break
         case 'data-time':
           answerToReturn.contextualParams =
             answerToReturn.contextualParams || {}
@@ -627,7 +687,7 @@ export class GenuinSDK {
             answerToReturn.contextualParams.time =
               configByUser?.contextualParams?.time
           }
-          continue
+          break
         case 'data-user-segments':
           answerToReturn.contextualParams =
             answerToReturn.contextualParams || {}
@@ -636,7 +696,7 @@ export class GenuinSDK {
             userSegmentsParsed && typeof userSegmentsParsed === 'object'
               ? userSegmentsParsed
               : configByUser?.contextualParams?.user_segments
-          continue
+          break
         case 'data-brands-ids':
           answerToReturn.contextualParams =
             answerToReturn.contextualParams || {}
@@ -646,7 +706,7 @@ export class GenuinSDK {
           )
             ? brandsIdsParsed
             : configByUser?.contextualParams?.brands_ids
-          continue
+          break
         case 'data-user-interests':
           answerToReturn.contextualParams =
             answerToReturn.contextualParams || {}
@@ -656,7 +716,7 @@ export class GenuinSDK {
           )
             ? userInterestsParsed
             : configByUser?.contextualParams?.user_interests
-          continue
+          break
         case 'data-posted-by-user-ids':
           answerToReturn.contextualParams =
             answerToReturn.contextualParams || {}
@@ -666,7 +726,7 @@ export class GenuinSDK {
           )
             ? postedByUserIdsParsed
             : configByUser?.contextualParams?.posted_by_user_ids
-          continue
+          break
         case 'data-community-ids':
           answerToReturn.contextualParams =
             answerToReturn.contextualParams || {}
@@ -676,7 +736,7 @@ export class GenuinSDK {
           )
             ? communityIdsParsed
             : configByUser?.contextualParams?.community_ids
-          continue
+          break
         case 'data-loop-ids':
           answerToReturn.contextualParams =
             answerToReturn.contextualParams || {}
@@ -686,7 +746,9 @@ export class GenuinSDK {
           )
             ? loopIdsParsed
             : configByUser?.contextualParams?.loop_ids
-          continue
+          break
+        default:
+          break
       }
     }
 
@@ -1004,41 +1066,6 @@ export class GenuinSDK {
   // private getLastElementId(): string {
   //   const instances = Array.from(this.embedInstances.keys())
   //   return instances[instances.length - 1] || ''
-  // }
-
-  /**
-   * Initialize div with callback (for window.onGenuinReady support)
-   */
-  // initializeDivWithCallback(
-  //   div: HTMLElement,
-  //   callback: (sdk: any) => void,
-  // ): void {
-  //   if (!callback || !div) {
-  //     console.error('Invalid callback or div for instance')
-  //     return
-  //   }
-
-  //   const instanceId = this.configManager.generateInstanceId()
-  //   div.setAttribute('data-instance-id', instanceId)
-  //   let gConfig: LegacySDKConfig
-
-  //   callback({
-  //     initialize: (sdkconfig: LegacySDKConfig) => {
-  //       gConfig = {
-  //         api_key: sdkconfig.api_key || '',
-  //         embed_id: sdkconfig.embed_id || '',
-  //         ...sdkconfig,
-  //       }
-  //       div.style.setProperty('display', 'block')
-  //       this.performLegacySDKInitiation(div, gConfig, instanceId)
-  //     },
-  //     loadPage: (page: string) => {
-  //       this.loadPageByPage(div, page, gConfig?.subdomain)
-  //     },
-  //     setUser: (user: any) => {
-  //       console.log('user :>> ', user)
-  //     },
-  //   })
   // }
 
   /**
