@@ -19,7 +19,7 @@ export class ThemeManager {
   /**
    * Apply brand colors to container (like legacy SDK)
    */
-  applyBrandColors(container: HTMLElement, brandColors?: string): void {
+  applyBrandColors(container: HTMLElement, brandColors?: any): void {
     if (!brandColors) return
 
     try {

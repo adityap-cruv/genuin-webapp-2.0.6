@@ -7,6 +7,7 @@ import {
   ErrorHandler,
   ErrorType,
   TokenManager,
+  ThemeManager,
 } from '../core'
 import { getRandomNumber } from '../utils'
 import { BrandDetailsManager } from '@/core/brand-details-manager'
@@ -114,14 +115,12 @@ export class GenuinSDK {
   private configManager: ConfigManager
   private eventManager: EventManager
   private errorHandler: ErrorHandler
-  // private apiService: APIService
   private tokenManager: TokenManager
-  // private themeManager: ThemeManager
+  private themeManager: ThemeManager
   /**
    * This variable is used to track if the SDK has been initialized.
    */
   private isInitialized = false
-  // private embedInstances = new Map<string, any>()
   private embedDetailsManager: EmbedDetailsManager
   private sdkElements: SDKElementsType = {}
   private callbackQueueManager: CallbackQueueManager
@@ -130,9 +129,8 @@ export class GenuinSDK {
     this.configManager = ConfigManager.getInstance()
     this.eventManager = EventManager.getInstance()
     this.errorHandler = ErrorHandler.getInstance()
-    // this.apiService = APIService.getInstance()
     this.tokenManager = TokenManager.getInstance()
-    // this.themeManager = ThemeManager.getInstance()
+    this.themeManager = ThemeManager.getInstance()
     this.brandDetailsManager = BrandDetailsManager.getInstance()
     this.embedDetailsManager = EmbedDetailsManager.getInstance()
     this.callbackQueueManager = new CallbackQueueManager()
@@ -272,6 +270,9 @@ export class GenuinSDK {
             userParams: config.params,
           })) ?? undefined
       }
+
+      // Apply brand colors to the element
+      this.themeManager.applyBrandColors(element, brandDetails.brand_colors)
 
       loadNewEmbed({
         container: element,

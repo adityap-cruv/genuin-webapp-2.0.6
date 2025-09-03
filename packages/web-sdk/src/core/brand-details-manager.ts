@@ -1,7 +1,5 @@
 import { BrandDetailsConfigType } from '@/type'
 import { apiService } from './api'
-import { ErrorType } from './errors'
-import { error } from 'console'
 
 export class BrandDetailsManager {
   private static instance: BrandDetailsManager
