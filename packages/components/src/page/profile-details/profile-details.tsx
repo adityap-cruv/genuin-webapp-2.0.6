@@ -33,6 +33,7 @@ export function ProfileDetails({
   } = useGetProfileDetails(userName, forBrand);
   const detailsId = useId();
   const { brandDetails } = useBaseContext();
+  const { isMobile } = useDeviceDetectMediaQuery();
   const { replace } = useRouter();
   const { createExternalLink } = useLinkContext();
 
