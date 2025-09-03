@@ -67,7 +67,7 @@ export function useEmbedConfigs() {
       theme: customization?.theme || "light",
       enableAdaptiveVideo: embedData?.enable_adaptive_video || false,
       gridLayout: embedData?.grid_layout || undefined,
-      gridAutoAdvancePlayback: embedData?.grid_auto_advance_playback || 3,
+      gridAutoAdvancePlayback: embedData?.grid_auto_advance_playback || 0,
       gridEnableLoopVideo: embedData?.grid_enable_loop_video || false,
     }),
     [customization, embedData?.style]
@@ -199,6 +199,7 @@ export function useEmbedConfigs() {
   const linkConfig = useMemo(
     () => ({
       showLinks: customization?.links?.is_show_links || false,
+      showLinksInExpand: embedData?.show_linkout_in_expand || true,
       linkPosition: customization?.links?.position || "outside",
       showLinkOutside:
         customization?.links?.is_show_links &&

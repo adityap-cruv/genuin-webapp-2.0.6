@@ -275,10 +275,7 @@ export class GenuinSDK {
 
         embedData = {
           ...embedData,
-          ...parsePlacementToEmbedData(
-            fetchedPlacementData,
-            config.style_id ?? '',
-          ),
+          ...parsePlacementToEmbedData(fetchedPlacementData, config.style_id ?? ''),
         }
       } catch (error) {
         console.error('Failed to fetch placement data:', error)

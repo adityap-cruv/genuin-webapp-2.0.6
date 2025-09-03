@@ -770,7 +770,7 @@ export function resolveVideoUrl(
  */
 export function parsePlacementToEmbedData(
   data: PlacementDataResponse,
-  styleId: string
+  styleId: string,
 ): EmbedDataType {
   const webConfig = data.environments?.web
   const configureView = webConfig?.configure_view
@@ -791,9 +791,6 @@ export function parsePlacementToEmbedData(
 
     // Map aspect ratio from configure_view
     aspect_ratio: configureView?.aspect_ratio,
-
-    // Map adaptive video setting
-    enable_adaptive_video: configureView?.enable_adaptive_video,
 
     // Map layout IDs properly
     card_layout_id: configureView?.card_layout_id ?? 1,
@@ -846,9 +843,11 @@ export function parsePlacementToEmbedData(
       feed_display_pref: 'default',
 
       // Heading and sub-heading from styles
-      heading: data.styles?.find(style => style._id === styleId)?.title || null,
+      heading:
+        data.styles?.find((style) => style._id === styleId)?.title || null,
       heading_text_color: configureView?.heading_text_color,
-      sub_heading: data.styles?.find(style => style._id === styleId)?.sub_title || null,
+      sub_heading:
+        data.styles?.find((style) => style._id === styleId)?.sub_title || null,
       sub_heading_text_color: configureView?.sub_heading_text_color,
 
       // UI element visibility
@@ -860,7 +859,7 @@ export function parsePlacementToEmbedData(
         // configureView?.show_username ??
         false,
       is_show_view_count:
-        // configureView?.is_show_view_count ?? 
+        // configureView?.is_show_view_count ??
         false,
       is_show_social_interaction_data:
         // configureView?.is_show_social_interaction_data ??
@@ -870,7 +869,7 @@ export function parsePlacementToEmbedData(
       // Video settings
       is_loop_video: false, // Not directly available in PlacementDataResponse
       is_popup_view: false, // Not available in PlacementDataResponse
-      video_crop: false, // Not available in PlacementDataResponse
+      video_crop: configureView?.video_crop,
 
       // Engagement and redirection flags
       is_enable_engagement_tools:
@@ -929,9 +928,9 @@ export function parsePlacementToEmbedData(
         row: configureView.grid_layout.row,
       }
       : undefined,
-    grid_auto_advance_playback: configureView.media_play.auto_advance_playback ?? 3 ,
-    grid_enable_loop_video: configureView.media_play.enable_loop_video ?? false ,
-
+    grid_auto_advance_playback:
+      configureView.media_play.auto_advance_playback ?? 0,
+    grid_enable_loop_video: configureView.media_play.enable_loop_video ?? false,
 
     // Implementation guide settings
     implementation_guide: webConfig?.implementation_guide
@@ -977,5 +976,6 @@ export function parsePlacementToEmbedData(
     is_show_video_thumbnail: configureView?.is_show_video_thumbnail,
     show_video_duration: configureView?.show_video_duration,
     is_show_metrics: configureView?.is_show_metrics,
+    show_linkout_in_expand: expandView?.enable_linkout
   }
 }

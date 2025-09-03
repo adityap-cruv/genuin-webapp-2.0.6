@@ -20,8 +20,7 @@ export function EmbedExpandSectionedView({
     PostDetailsType["section"]
   >(embedEventBus.getContext().selectedSection);
 
-  // TODO IMPROVE API CALLS
-  // Create feed options object for better memoization
+  // Create feed options object for better memoization and caching
   const feedOptions = useMemo(
     () => ({
       enabled: isSectioned && !!selectedSection?.id,
@@ -31,11 +30,16 @@ export function EmbedExpandSectionedView({
         videos.length > 0
           ? (videos[videos.length - 1]?.video?.id ?? undefined)
           : undefined,
+      // caching configuration
+      staleTime: 5 * 60 * 1000,
+      gcTime: 30 * 60 * 1000,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
     }),
     [isSectioned, selectedSection?.id, pageSession, videos]
   );
 
-  // Use the correct feed type and options for the query
+  // Use the correct feed type and options for the query with caching
   const {
     isLoading,
     data: sectionFeedData,

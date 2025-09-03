@@ -163,12 +163,25 @@ type UseFeedOptionsType = {
   pageSession?: string;
   lastVideoId?: string;
   contextualParams?: EmbedDataType["contextualParams"];
+  // Caching options
+  staleTime?: number;
+  gcTime?: number;
+  refetchOnMount?: boolean;
+  refetchOnWindowFocus?: boolean;
 };
 
 /**
  * Return the feed data for the given feed type.
- * @param feedType
- * @returns
+ *
+ * This hook supports configurable caching behavior:
+ * - By default, no caching is applied (staleTime: 0) to maintain real-time data
+ * - Components can override caching options via the options parameter
+ * - When caching is enabled, it prevents unnecessary API calls with same parameters
+ * - Real-time updates are still possible through the helper functions for reactions, comments, etc.
+ *
+ * @param feedType - Type of feed (HOME, LATEST, POPULAR, etc.)
+ * @param options - Optional configuration including filter parameters and caching options
+ * @returns TanStack Query result with feed data and pagination
  */
 export type FeedPage = Awaited<ReturnType<typeof fetchFeed>>;
 
@@ -194,9 +207,11 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
         lastVideoId: lastPageData.video.id,
       };
     },
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    staleTime: 0,
+    // Use custom caching options if provided, otherwise use default behavior
+    refetchOnMount: options?.refetchOnMount ?? false,
+    refetchOnWindowFocus: options?.refetchOnWindowFocus ?? false,
+    staleTime: options?.staleTime ?? 0,
+    gcTime: options?.gcTime ?? 0,
     // Conditional properties based on startVideoSlug
     ...(options?.startVideoSlug &&
       !videoDetailsQuery.isError && {

@@ -14,6 +14,7 @@ import { controlLayerVariant } from "../control-layer";
 import { VariantProps } from "class-variance-authority";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { Linkouts } from "@genuin/components/organisms";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 type ExpandViewProps = ComponentProps<"div"> & {
   postDetails: PostDetailsType;
@@ -78,12 +79,15 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
   showSeeker: boolean;
   hideCommunityJoinButton: boolean;
   hideGroupSubscriptionButton: boolean;
+  showLinkoutInExpand: boolean;
 } {
   const { showSeeker } = usePlayerContext();
   const embedDetails = useSafeEmbedContext();
+  const embedConfig = useEmbedConfigs();
 
   const videoLayoutId = postDetails.video.videoLayoutId;
   const placementVideoLayoutId = postDetails.video.placement_video_layout_id;
+  const showLinkoutInExpand = embedConfig.links.showLinksInExpand ?? true;
 
   // Determine layout config
   let config = LAYOUT_CONFIGS.default;
@@ -110,6 +114,7 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
     showSeeker,
     hideCommunityJoinButton: shouldHideButtons,
     hideGroupSubscriptionButton: shouldHideButtons,
+    showLinkoutInExpand,
   };
 }
 
@@ -271,6 +276,7 @@ export function ExpandViewDetails({
     showSeeker,
     hideCommunityJoinButton,
     hideGroupSubscriptionButton,
+    showLinkoutInExpand,
   } = useExpandViewConfig(postDetails);
 
   return (
@@ -302,13 +308,15 @@ export function ExpandViewDetails({
             />
           </div>
 
-          <Linkouts
-            linkouts={postDetails.video.linkouts}
-            linkoutId={postDetails.video.linkoutId}
-            isActive={isActive}
-            className="gencl:w-full"
-            cardVariant={config.linkouts.cardVariant}
-          />
+          {showLinkoutInExpand && (
+            <Linkouts
+              linkouts={postDetails.video.linkouts}
+              linkoutId={postDetails.video.linkoutId}
+              isActive={isActive}
+              className="gencl:w-full"
+              cardVariant={config.linkouts.cardVariant}
+            />
+          )}
 
           <AdaptiveDescription
             video={postDetails.video}

@@ -51,6 +51,7 @@ export function useEmbedDimensions() {
     const spaceBetweenVideos = 8;
     const MIN_CAROUSEL_HEIGHT = 100;
 
+    // Calculate feed header height based on CTA button and subheading presence
     const feedHeaderHeight = !config.header.ctaButton?.url
       ? config.header.subHeading
         ? 64
