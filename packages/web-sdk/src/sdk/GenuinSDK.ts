@@ -19,6 +19,7 @@ import {
   EmbedDataType,
 } from '@genuin/components/context/embed/embed.types'
 import { CallbackQueueManager } from '@/core/callback-queue-manager'
+import { Context } from 'vm'
 
 export type ActionType =
   | 'spark'
@@ -51,8 +52,31 @@ type ContextualParamsType = {
   geo?: {
     lat?: number
     long?: number
+    radius_limit?: number
   }
   url?: string
+  previous_page_context?: string
+  user_context?: string
+  place?: {
+    country?: string
+    state?: string
+    city?: string
+    zipcode?: string | number
+  }
+  time?: string | number
+  user_segments?: {
+    age?: number
+    min_age?: number
+    max_age?: number
+    segment?: string
+    gender?: string
+    race?: string
+  }
+  brands_ids?: number[]
+  user_interests?: string[]
+  posted_by_user_ids?: string[]
+  community_ids?: string[]
+  loop_ids?: string[]
 }
 
 /**
@@ -92,14 +116,7 @@ export type SingleEmbedDataConfig = {
    * Brand id of the embed.
    */
   token?: string
-  contextualParams?: {
-    page_context?: string
-    geo?: {
-      lat?: number
-      long?: number
-    }
-    url?: string
-  }
+  contextualParams?: ContextualParamsType
   brandIds?: number[]
   startVideoSlug?: string
   action?: ActionType
@@ -152,7 +169,6 @@ export class GenuinSDK {
     this.getAndSetDivs(config)
 
     await this.initializeAllEmbeds()
-    console.log('SDK initialized with config:', config)
 
     this.isInitialized = true
     this.callbackQueueManager.executeAllCallbacks()
@@ -384,6 +400,20 @@ export class GenuinSDK {
   }
 
   /**
+   * Attempts to parse a JSON string, returns the parsed object or the original value if parsing fails.
+   * @param value The string value to parse.
+   * @returns The parsed JSON object or the original value.
+   */
+  private tryJsonParse(value: string | null): any {
+    if (!value) return null
+    try {
+      return JSON.parse(value)
+    } catch {
+      return null
+    }
+  }
+
+  /**
    * Extracts data from a single embed element.
    * @param singleElement The HTML element to extract data from.
    * @param configByUser User-provided configuration.
@@ -396,6 +426,7 @@ export class GenuinSDK {
     const possibleAttributeNames = [
       'data-embed-id',
       'data-api-key',
+      'data-placement-id',
       'data-token',
       'data-lat',
       'data-long',
@@ -404,6 +435,17 @@ export class GenuinSDK {
       'data-brand-ids',
       'data-video-id',
       'data-action',
+      'data-previous-page-context',
+      'data-user-context',
+      'data-geo',
+      'data-place',
+      'data-time',
+      'data-user-segments',
+      'data-brands-ids',
+      'data-user-interests',
+      'data-posted-by-user-ids',
+      'data-community-ids',
+      'data-loop-ids',
     ]
     const answerToReturn: Partial<SingleEmbedDataConfig> = {}
 
@@ -419,6 +461,21 @@ export class GenuinSDK {
           continue
         case 'data-token':
           answerToReturn.token = value ?? configByUser?.token
+          continue
+        // case 'data-brand-ids':
+        //   if (value) {
+        //     answerToReturn.brandIds = value
+        //       .split(' ')
+        //       .map((item) => parseInt(item))
+        //   }
+        //   continue
+        case 'data-video-id':
+          answerToReturn.startVideoSlug = value ?? configByUser?.startVideoSlug
+          continue
+        case 'data-action':
+          answerToReturn.action = (value ?? configByUser?.action) as
+            | ActionType
+            | undefined
           continue
         case 'data-lat':
           answerToReturn.contextualParams =
@@ -469,20 +526,116 @@ export class GenuinSDK {
           answerToReturn.contextualParams.page_context =
             value ?? configByUser?.contextualParams?.page_context
           continue
-        case 'data-brand-ids':
-          if (value) {
-            answerToReturn.brandIds = value
-              .split(' ')
-              .map((item) => parseInt(item))
+        case 'data-previous-page-context':
+          answerToReturn.contextualParams =
+            answerToReturn.contextualParams || {}
+          answerToReturn.contextualParams.previous_page_context =
+            value ?? configByUser?.contextualParams?.previous_page_context
+          continue
+        case 'data-user-context':
+          answerToReturn.contextualParams =
+            answerToReturn.contextualParams || {}
+          answerToReturn.contextualParams.user_context =
+            value ?? configByUser?.contextualParams?.user_context
+          continue
+        case 'data-geo':
+          answerToReturn.contextualParams =
+            answerToReturn.contextualParams || {}
+          answerToReturn.contextualParams.geo =
+            answerToReturn.contextualParams.geo || {}
+          const geoParsed = this.tryJsonParse(value)
+          if (geoParsed && typeof geoParsed === 'object') {
+            answerToReturn.contextualParams.geo = {
+              ...answerToReturn.contextualParams.geo,
+              ...geoParsed,
+            }
+          } else {
+            answerToReturn.contextualParams.geo = {
+              ...answerToReturn.contextualParams.geo,
+              ...configByUser?.contextualParams?.geo,
+            }
           }
           continue
-        case 'data-video-id':
-          answerToReturn.startVideoSlug = value ?? configByUser?.startVideoSlug
+        case 'data-place':
+          answerToReturn.contextualParams =
+            answerToReturn.contextualParams || {}
+          const placeParsed = this.tryJsonParse(value)
+          answerToReturn.contextualParams.place =
+            placeParsed && typeof placeParsed === 'object'
+              ? placeParsed
+              : configByUser?.contextualParams?.place
           continue
-        case 'data-action':
-          answerToReturn.action = (value ?? configByUser?.action) as
-            | ActionType
-            | undefined
+        case 'data-time':
+          answerToReturn.contextualParams =
+            answerToReturn.contextualParams || {}
+          if (value) {
+            const parsedTime = parseFloat(value)
+            answerToReturn.contextualParams.time = isNaN(parsedTime)
+              ? value
+              : parsedTime
+          } else {
+            answerToReturn.contextualParams.time =
+              configByUser?.contextualParams?.time
+          }
+          continue
+        case 'data-user-segments':
+          answerToReturn.contextualParams =
+            answerToReturn.contextualParams || {}
+          const userSegmentsParsed = this.tryJsonParse(value)
+          answerToReturn.contextualParams.user_segments =
+            userSegmentsParsed && typeof userSegmentsParsed === 'object'
+              ? userSegmentsParsed
+              : configByUser?.contextualParams?.user_segments
+          continue
+        case 'data-brands-ids':
+          answerToReturn.contextualParams =
+            answerToReturn.contextualParams || {}
+          const brandsIdsParsed = this.tryJsonParse(value)
+          answerToReturn.contextualParams.brands_ids = Array.isArray(
+            brandsIdsParsed,
+          )
+            ? brandsIdsParsed
+            : configByUser?.contextualParams?.brands_ids
+          continue
+        case 'data-user-interests':
+          answerToReturn.contextualParams =
+            answerToReturn.contextualParams || {}
+          const userInterestsParsed = this.tryJsonParse(value)
+          answerToReturn.contextualParams.user_interests = Array.isArray(
+            userInterestsParsed,
+          )
+            ? userInterestsParsed
+            : configByUser?.contextualParams?.user_interests
+          continue
+        case 'data-posted-by-user-ids':
+          answerToReturn.contextualParams =
+            answerToReturn.contextualParams || {}
+          const postedByUserIdsParsed = this.tryJsonParse(value)
+          answerToReturn.contextualParams.posted_by_user_ids = Array.isArray(
+            postedByUserIdsParsed,
+          )
+            ? postedByUserIdsParsed
+            : configByUser?.contextualParams?.posted_by_user_ids
+          continue
+        case 'data-community-ids':
+          answerToReturn.contextualParams =
+            answerToReturn.contextualParams || {}
+          const communityIdsParsed = this.tryJsonParse(value)
+          answerToReturn.contextualParams.community_ids = Array.isArray(
+            communityIdsParsed,
+          )
+            ? communityIdsParsed
+            : configByUser?.contextualParams?.community_ids
+          continue
+        case 'data-loop-ids':
+          answerToReturn.contextualParams =
+            answerToReturn.contextualParams || {}
+          const loopIdsParsed = this.tryJsonParse(value)
+          answerToReturn.contextualParams.loop_ids = Array.isArray(
+            loopIdsParsed,
+          )
+            ? loopIdsParsed
+            : configByUser?.contextualParams?.loop_ids
           continue
       }
     }
