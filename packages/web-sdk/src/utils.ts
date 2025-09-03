@@ -177,23 +177,6 @@ export function getGifLink(name: string) {
   return `${MEDIA_BASE_URL}/web-sdk/v1/icons/${name}.gif`
 }
 
-export function parseColors(colors: any) {
-  const parsedColors: Record<string, string> = {}
-  for (const category in colors) {
-    const categoryColors = colors[category]
-    for (const shade in categoryColors) {
-      const colorCode = categoryColors[shade]
-      const parsedShade = shade.split('_')[1]
-      if (parsedShade) {
-        parsedColors[`--gencl-color-${category}-${parsedShade}`] = colorCode
-      } else {
-        parsedColors[`--gencl-color-${category}`] = colorCode
-      }
-    }
-  }
-  return parsedColors
-}
-
 export function formatNumber(num: number) {
   if (!num) return '0'
   if (num >= 1000000) {

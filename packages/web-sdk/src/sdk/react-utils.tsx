@@ -79,7 +79,7 @@ export function loadNewEmbed({
   embedData: EmbedDataType
   brandDetails: BrandDetailsConfigType
   config: Partial<SingleEmbedDataConfig>
-  user?: AuthUser
+  user?: AuthUser | null
 }): void {
   // Unmount previous root if exists for this container
   const prevRoot = containerRootMap.get(container)

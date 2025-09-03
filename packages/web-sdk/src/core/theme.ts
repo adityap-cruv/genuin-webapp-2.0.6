@@ -1,5 +1,3 @@
-import { parseColors } from '../utils'
-
 export interface BrandTheme {
   colors: Record<string, string>
   theme: 'light' | 'dark'
@@ -25,11 +23,13 @@ export class ThemeManager {
     if (!brandColors) return
 
     try {
-      const parsedColors = parseColors(brandColors)
+      const parsedColors = this.parseColors(brandColors)
 
       // Apply CSS custom properties to container
       Object.keys(parsedColors).forEach((key) => {
-        container.style.setProperty(key, parsedColors[key])
+        if (parsedColors[key]) {
+          container.style.setProperty(key, parsedColors[key])
+        }
       })
 
       // Store theme for later use
@@ -40,6 +40,23 @@ export class ThemeManager {
     } catch (error) {
       console.warn('Failed to apply brand colors:', error)
     }
+  }
+
+  parseColors(colors: any) {
+    const parsedColors: Record<string, string> = {}
+    for (const category in colors) {
+      const categoryColors = colors[category]
+      for (const shade in categoryColors) {
+        const colorCode = categoryColors[shade]
+        const parsedShade = shade.split('_')[1]
+        if (parsedShade) {
+          parsedColors[`--gencl-color-${category}-${parsedShade}`] = colorCode
+        } else {
+          parsedColors[`--gencl-color-${category}`] = colorCode
+        }
+      }
+    }
+    return parsedColors
   }
 
   /**

@@ -5,11 +5,14 @@ import { ErrorHandler, ErrorType } from './errors'
 import { LegacySDKConfig } from './config'
 import { getKsCbRequestStatus } from '@/utils/auth'
 
+/**
+ * This class will only manage single user toke for its lifetime.
+ */
 export class TokenManager {
   private static instance: TokenManager
   private apiService: APIService
   private errorHandler: ErrorHandler
-  private cachedUsers: Map<string, AuthUser> = new Map()
+  private cachedUser: AuthUser | null = null
 
   private constructor() {
     this.apiService = APIService.getInstance()
@@ -65,7 +68,7 @@ export class TokenManager {
     try {
       const currentToken = this.getAccessToken()
       if (currentToken && currentToken !== token) {
-        this.cachedUsers.delete(currentToken)
+        this.cachedUser = null
       }
       localStorage.setItem(ACCESS_TOKEN_KEY, token)
     } catch (error) {
@@ -93,7 +96,7 @@ export class TokenManager {
       const token = this.getAccessToken()
       localStorage.removeItem(ACCESS_TOKEN_KEY)
       if (token) {
-        this.cachedUsers.delete(token)
+        this.cachedUser = null
       }
     } catch (error) {
       console.warn('Failed to remove access token:', error)
@@ -117,13 +120,11 @@ export class TokenManager {
     params?: LegacySDKConfig['params']
   }): Promise<AuthUser | null> {
     try {
+      if (this.cachedUser) {
+        return this.cachedUser
+      }
       // If explicit token provided, check cache first
       if (config?.token && config?.brandId) {
-        const cachedUser = this.cachedUsers.get(config.token)
-        if (cachedUser) {
-          return cachedUser
-        }
-
         const apiResponse = await this.apiService.getAuthenticatedUserDetails(
           config.token,
           config.brandId,
@@ -140,7 +141,7 @@ export class TokenManager {
             autoLoginToken: apiResponse.autoLoginToken,
           })
           // Cache the user
-          this.cachedUsers.set(config.token, parsedUser)
+          this.cachedUser = parsedUser
           return parsedUser
         }
       }
@@ -148,11 +149,6 @@ export class TokenManager {
       else if (this.hasAccessToken()) {
         const token = this.getAccessToken()
         if (token) {
-          const cachedUser = this.cachedUsers.get(token)
-          if (cachedUser) {
-            return cachedUser
-          }
-
           const profileResponse = await this.apiService.getMiniProfile()
           if (profileResponse.data && token) {
             const parsedUser = this.parseUserResponse({
@@ -161,7 +157,7 @@ export class TokenManager {
               refreshToken: token,
             })
             // Cache the user
-            this.cachedUsers.set(token, parsedUser)
+            this.cachedUser = parsedUser
             return parsedUser
           }
         }
@@ -183,6 +179,10 @@ export class TokenManager {
     }
   }
 
+  getCachedUser() {
+    return this.cachedUser
+  }
+
   /**
    * Validate current session
    */
@@ -196,7 +196,7 @@ export class TokenManager {
    */
   clearAuth(): void {
     this.removeAccessToken()
-    this.cachedUsers.clear()
+    this.cachedUser = null
   }
 
   /**

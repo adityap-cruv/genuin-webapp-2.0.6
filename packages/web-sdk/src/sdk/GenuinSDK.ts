@@ -1,25 +1,14 @@
 import { EmbedConfig } from '../types/embed'
 import {
   ConfigManager,
-  type LegacySDKConfig,
   EventManager,
   SDKEventType,
   type EventListener,
   ErrorHandler,
   ErrorType,
-  APIService,
-  type BrandDetailsResponse,
   TokenManager,
-  ThemeManager,
 } from '../core'
-import { loadEmbedView, loadRudderStack } from '../views/loader'
-import loadIframeIntoDiv from '../iframeLoader'
-import {
-  generateConfiguredUrl,
-  generatePathFromConfig,
-  getRandomNumber,
-  parsePlacementToEmbedData,
-} from '../utils'
+import { getRandomNumber } from '../utils'
 import { BrandDetailsManager } from '@/core/brand-details-manager'
 import { loadErrorView, loadNewEmbed } from './react-utils'
 import { EmbedDetailsManager } from '@/core/embed-details-manager'
@@ -28,6 +17,7 @@ import {
   BrandDetailsConfigType,
   EmbedDataType,
 } from '@genuin/components/context/embed/embed.types'
+import { CallbackQueueManager } from '@/core/callback-queue-manager'
 
 export type ActionType =
   | 'spark'
@@ -127,10 +117,14 @@ export class GenuinSDK {
   // private apiService: APIService
   private tokenManager: TokenManager
   // private themeManager: ThemeManager
+  /**
+   * This variable is used to track if the SDK has been initialized.
+   */
   private isInitialized = false
   // private embedInstances = new Map<string, any>()
   private embedDetailsManager: EmbedDetailsManager
   private sdkElements: SDKElementsType = {}
+  private callbackQueueManager: CallbackQueueManager
 
   private constructor() {
     this.configManager = ConfigManager.getInstance()
@@ -141,6 +135,7 @@ export class GenuinSDK {
     // this.themeManager = ThemeManager.getInstance()
     this.brandDetailsManager = BrandDetailsManager.getInstance()
     this.embedDetailsManager = EmbedDetailsManager.getInstance()
+    this.callbackQueueManager = new CallbackQueueManager()
   }
 
   static getInstance(): GenuinSDK {
@@ -158,10 +153,23 @@ export class GenuinSDK {
   async newInit(config?: ConfigByUser) {
     this.getAndSetDivs(config)
 
-    this.initializeAllEmbeds()
+    await this.initializeAllEmbeds()
+    console.log('SDK initialized with config:', config)
+
+    this.isInitialized = true
+    this.callbackQueueManager.executeAllCallbacks()
   }
 
   async newUpdate(config?: UpdateConfigByUserType) {
+    // if sdk is not initialized then queue the update call.
+    if (!this.isInitialized) {
+      this.callbackQueueManager.enqueue(() => this._performUpdate(config))
+      return
+    }
+    await this._performUpdate(config)
+  }
+
+  private async _performUpdate(config?: UpdateConfigByUserType) {
     // In case of token comes authenticateUser, this function will authenticate user in all the embeds.
     if (config?.token) {
       await this.authenticateUser({
@@ -190,7 +198,7 @@ export class GenuinSDK {
       return
     }
 
-    for (const instanceId in sdkElements) {
+    for await (const instanceId of Object.keys(sdkElements)) {
       const elementObject = sdkElements[instanceId]
       if (
         elementObject &&
@@ -247,11 +255,15 @@ export class GenuinSDK {
         brandDetails,
       )
 
+      // Extra configuration needed for embed.
+      embedDetails.authInfo = config.authInfo
+
       // set the brand-details and embed-details to the sdkElements for future reference.
       config.brandDetails = brandDetails
       config.embedDetails = embedDetails
 
-      let user: AuthUser | undefined
+      // If there is user already then use that authed user.
+      let user: AuthUser | undefined | null = this.tokenManager.getCachedUser()
 
       if (config.token) {
         user =
