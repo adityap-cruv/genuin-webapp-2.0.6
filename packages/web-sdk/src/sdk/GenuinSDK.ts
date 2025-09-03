@@ -93,7 +93,12 @@ export class GenuinSDK {
   private async initializeSingleEmbed(
     configOrObject: { config: LegacySDKConfig } | LegacySDKConfig,
   ): Promise<void> {
-    const div = document.getElementById('gen-sdk')
+    // Find the div with id 'gen-sdk' or 'gen-sdk-<number>'
+    const div =
+      document.getElementById('gen-sdk') ||
+      (Array.from(document.querySelectorAll('[id^="gen-sdk-"]')).find((el) =>
+        /^gen-sdk-\d+$/.test(el.id),
+      ) as HTMLElement | undefined)
     if (!div) {
       throw new Error('Div element with id "gen-sdk" is required')
     }
@@ -270,7 +275,10 @@ export class GenuinSDK {
 
         embedData = {
           ...embedData,
-          ...parsePlacementToEmbedData(fetchedPlacementData, config.style_id ?? ''),
+          ...parsePlacementToEmbedData(
+            fetchedPlacementData,
+            config.style_id ?? '',
+          ),
         }
       } catch (error) {
         console.error('Failed to fetch placement data:', error)

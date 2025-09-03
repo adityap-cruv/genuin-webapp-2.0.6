@@ -1,33 +1,45 @@
+import * as React from 'react'
 import { AuthUser, EmbedDataType } from '@/type'
 import { getKsCbRequestStatus } from '@/utils/auth'
 import { createRoot } from 'react-dom/client'
 import type { Root } from 'react-dom/client'
 import { Suspense, lazy } from 'react'
-import {
-  AuthProvider,
-  BaseContextProvider,
-  EmbedProvider,
-  LinkProvider,
-  ReactQueryClientProvider,
-  AnalyticsProvider,
-} from '@genuin/components'
+// Import providers directly from their specific paths to avoid loading entire components package
+import { AuthProvider } from '@genuin/components/context/auth'
+import { BaseContextProvider } from '@genuin/components/context/base'
+import { EmbedProvider } from '@genuin/components/context/embed'
+import { LinkProvider } from '@genuin/components/context/link'
+import { ReactQueryClientProvider } from '@genuin/components/react-query/react-query-provider'
+import { AnalyticsProvider } from '@genuin/components/context/analytics'
 import { Loader } from '@genuin/ui/components/loader'
 import { Toaster } from '@genuin/ui'
 
 // Lazy load the Embed component for better code splitting
 const LazyEmbed = lazy(() =>
-  import('@genuin/components').then((module) => ({
-    default: module.Embed,
-  })),
+  import('@genuin/components/organisms/embed/embed')
+    .then((module) => ({
+      default: module.Embed,
+    }))
+    .catch((error) => {
+      console.error('Failed to load Embed component:', error)
+      // Fallback to a basic error component
+      return { default: () => <div>Failed to load embed component</div> }
+    }),
 )
 
 // Lazy load the StandardWall component for better code splitting
 const LazyStandardWall = lazy(() =>
-  import('@genuin/components/page/standard-wall/standard-wall').then(
-    (module) => ({
+  import('@genuin/components/page/standard-wall/standard-wall')
+    .then((module) => ({
       default: module.StandardWall,
+    }))
+    .catch((error) => {
+      console.error('Failed to load StandardWall component:', error)
+      // Fallback to a basic error component
+      return {
+        default: () => <div>Failed to load standard wall component</div>,
+      }
     }),
-  ),
 )
 
 // Generic skeleton for embed
