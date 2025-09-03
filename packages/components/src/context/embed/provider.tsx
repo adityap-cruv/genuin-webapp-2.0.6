@@ -2,7 +2,7 @@
 import { EmbedContext } from "./context";
 import { ActivePlayerType, createEmbedEventBus } from "./event-bus";
 import { EmbedDataType } from "./embed.types";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 type EmbedProviderProps = {
@@ -22,6 +22,7 @@ export function EmbedProvider({
   children,
   container,
 }: EmbedProviderProps) {
+  const [stateEmbedData, setStateEmbedData] = useState(embedData);
   // Create a unique event bus for this provider instance
   const embedEventBus = useMemo(
     () =>
@@ -33,6 +34,23 @@ export function EmbedProvider({
       }),
     []
   );
+
+  useEffect(() => {
+    if (!window.genuin) return;
+
+    window.genuin.on("sdk:updateContextualParams", (props: any) => {
+      const payload = props.payload;
+      if (
+        payload.embedId === stateEmbedData.embed_id &&
+        payload.contextualParams
+      ) {
+        setStateEmbedData((prev) => ({
+          ...prev,
+          contextualParams: payload.contextualParams,
+        }));
+      }
+    });
+  }, [stateEmbedData]);
 
   const updateSectionList = useCallback(
     // Updates the section list in the embed context and emits a sectionListChange event
@@ -113,6 +131,7 @@ export function EmbedProvider({
     },
     [embedEventBus]
   );
+
   useEffect(() => {
     if (embedData.startVideoSlug) changeActivePlayerType("expand-view");
   }, [changeActivePlayerType, embedData.startVideoSlug]);
@@ -158,8 +177,8 @@ export function EmbedProvider({
     <EmbedContext.Provider
       value={{
         rootElement: container,
-        embedData,
-        customization: embedData.customization,
+        embedData: stateEmbedData,
+        customization: stateEmbedData.customization,
         isInIframe,
         embedEventBus,
         changeActiveIndex,

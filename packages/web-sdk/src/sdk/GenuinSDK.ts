@@ -20,11 +20,14 @@ import {
   getRandomNumber,
   parsePlacementToEmbedData,
 } from '../utils'
-import { EmbedDataType } from '@genuin/components/context/embed/embed.types'
 import { BrandDetailsManager } from '@/core/brand-details-manager'
 import { loadErrorView, loadNewEmbed } from './react-utils'
 import { EmbedDetailsManager } from '@/core/embed-details-manager'
 import { AuthUser } from '@genuin/components/types/auth'
+import {
+  BrandDetailsConfigType,
+  EmbedDataType,
+} from '@genuin/components/context/embed/embed.types'
 
 export type ActionType =
   | 'spark'
@@ -50,7 +53,16 @@ type AuthInfoType = {
   signUpUrl: string
 }
 
-type InitializationStatus = 'pending' | 'progress' | 'done'
+type InitializationStatus = 'pending' | 'loading' | 'done'
+
+type ContextualParamsType = {
+  page_context?: string
+  geo?: {
+    lat?: number
+    long?: number
+  }
+  url?: string
+}
 
 /**
  * These are the config when user can pass while genuin.init or genuin.initialize.
@@ -59,18 +71,18 @@ type ConfigByUser = {
   embed_id?: string
   api_key?: string
   token?: string
-  contextualParams?: {
-    page_context?: string
-    geo?: {
-      lat?: number
-      long?: number
-    }
-    url?: string
-  }
+  contextualParams?: ContextualParamsType
   startVideoSlug?: string
   action?: ActionType
   params?: AuthUserParams
   authInfo: AuthInfoType
+}
+
+type UpdateConfigByUserType = {
+  token: string
+  userParams: Record<string, any>
+  contextualParams?: ContextualParamsType
+  embedId: string
 }
 
 type SDKElementsType = Record<
@@ -85,6 +97,9 @@ type SDKElementsType = Record<
 export type SingleEmbedDataConfig = {
   embedId: string
   apiKey: string
+  /**
+   * Brand id of the embed.
+   */
   token?: string
   contextualParams?: {
     page_context?: string
@@ -94,11 +109,13 @@ export type SingleEmbedDataConfig = {
     }
     url?: string
   }
-  brand_ids?: number[]
+  brandIds?: number[]
   startVideoSlug?: string
   action?: ActionType
   params?: AuthUserParams
   authInfo?: AuthInfoType
+  embedDetails?: EmbedDataType
+  brandDetails?: BrandDetailsConfigType
 }
 
 export class GenuinSDK {
@@ -107,11 +124,11 @@ export class GenuinSDK {
   private configManager: ConfigManager
   private eventManager: EventManager
   private errorHandler: ErrorHandler
-  private apiService: APIService
+  // private apiService: APIService
   private tokenManager: TokenManager
-  private themeManager: ThemeManager
+  // private themeManager: ThemeManager
   private isInitialized = false
-  private embedInstances = new Map<string, any>()
+  // private embedInstances = new Map<string, any>()
   private embedDetailsManager: EmbedDetailsManager
   private sdkElements: SDKElementsType = {}
 
@@ -119,9 +136,9 @@ export class GenuinSDK {
     this.configManager = ConfigManager.getInstance()
     this.eventManager = EventManager.getInstance()
     this.errorHandler = ErrorHandler.getInstance()
-    this.apiService = APIService.getInstance()
+    // this.apiService = APIService.getInstance()
     this.tokenManager = TokenManager.getInstance()
-    this.themeManager = ThemeManager.getInstance()
+    // this.themeManager = ThemeManager.getInstance()
     this.brandDetailsManager = BrandDetailsManager.getInstance()
     this.embedDetailsManager = EmbedDetailsManager.getInstance()
   }
@@ -144,6 +161,27 @@ export class GenuinSDK {
     this.initializeAllEmbeds()
   }
 
+  async newUpdate(config?: UpdateConfigByUserType) {
+    // In case of token comes authenticateUser, this function will authenticate user in all the embeds.
+    if (config?.token) {
+      await this.authenticateUser({
+        token: config.token,
+        userParams: config.userParams,
+      })
+    }
+
+    // Update contextual params in the embed, if embedId is passed then only in that embed otherwise in all the embeds.
+    if (config?.contextualParams) {
+      this.updateContextualParamsInEmbed({
+        contextualParams: config.contextualParams,
+        embedId: config.embedId,
+      })
+    }
+  }
+
+  /**
+   * To initialize all embeds found on the page.
+   */
   private async initializeAllEmbeds() {
     const sdkElements = this.sdkElements
 
@@ -158,8 +196,8 @@ export class GenuinSDK {
         elementObject &&
         this.getInitializationStatus(elementObject.element) === 'pending'
       ) {
-        this.setInitializationStatus(elementObject.element, 'progress')
-        elementObject.status = 'progress'
+        this.setInitializationStatus(elementObject.element, 'loading')
+        elementObject.status = 'loading'
         const isSdkLoaded = await this.initializeSingleEmbedById(
           elementObject.element,
           elementObject.config,
@@ -181,6 +219,12 @@ export class GenuinSDK {
     }
   }
 
+  /**
+   * Initializes a single embed instance.
+   * @param element The HTML element to initialize.
+   * @param config The configuration for the embed.
+   * @returns A promise that resolves to a boolean indicating success or failure.
+   */
   async initializeSingleEmbedById(
     element: HTMLElement,
     config: Partial<SingleEmbedDataConfig>,
@@ -203,13 +247,17 @@ export class GenuinSDK {
         brandDetails,
       )
 
+      // set the brand-details and embed-details to the sdkElements for future reference.
+      config.brandDetails = brandDetails
+      config.embedDetails = embedDetails
+
       let user: AuthUser | undefined
 
       if (config.token) {
         user =
-          (await this.tokenManager.getCurrentUser({
+          (await this.authenticateUser({
             token: config.token,
-            brandId: brandDetails.brand_id,
+            userParams: config.params,
           })) ?? undefined
       }
 
@@ -225,6 +273,69 @@ export class GenuinSDK {
     }
 
     return true
+  }
+
+  private async updateContextualParamsInEmbed({
+    contextualParams,
+    embedId,
+  }: {
+    contextualParams: ContextualParamsType
+    embedId?: string
+  }) {
+    const isSingleEmbed = Object.keys(this.sdkElements).length === 1
+
+    if (isSingleEmbed) {
+      const firstEmbedId = Object.keys(this.sdkElements)[0]
+      if (firstEmbedId) {
+        const embedId =
+          this.sdkElements[firstEmbedId]?.config.embedDetails?.embed_id
+      }
+    }
+
+    if (!embedId) {
+      console.warn('Embed id is not provided to update the contextual params')
+    }
+
+    this.eventManager.emit(SDKEventType.SDK_UPDATE_CONTEXTUAL_PARAMS, {
+      embedId,
+      contextualParams,
+    })
+  }
+
+  /**
+   * Authenticates a user with the provided token and user parameters.
+   * @param token The authentication token.
+   * @param userParams Additional user parameters.
+   * @returns The authenticated user or null if authentication fails.
+   */
+  private async authenticateUser({
+    token,
+    userParams,
+  }: {
+    token: string
+    userParams?: Record<string, any>
+  }) {
+    try {
+      const brandId = Object.values(this.sdkElements)[0]?.config?.brandDetails
+        ?.brand_id
+
+      let user: AuthUser | null
+      // without brandId we can't authenticate the user.
+      if (brandId) {
+        user = await this.tokenManager.getCurrentUser({
+          token,
+          params: userParams,
+          // There won't be multiple brands embeds on one page So by default taking first embed's brandId.
+          brandId,
+        })
+        this.eventManager.emit(SDKEventType.SDK_AUTHENTICATE_USER, user)
+        return user
+      }
+    } catch (error) {
+      console.error('Failed to authenticate user:', error)
+    }
+
+    return
   }
 
   /**
@@ -347,7 +458,7 @@ export class GenuinSDK {
           continue
         case 'data-brand-ids':
           if (value) {
-            answerToReturn.brand_ids = value
+            answerToReturn.brandIds = value
               .split(' ')
               .map((item) => parseInt(item))
           }
@@ -373,11 +484,11 @@ export class GenuinSDK {
   /**
    * Checks the initialization status of the element.
    * @param element The HTML element to check.
-   * @returns The initialization status: 'pending', 'progress', or 'done'.
+   * @returns The initialization status: 'pending', 'loading', or 'done'.
    */
   private getInitializationStatus(element: HTMLElement): InitializationStatus {
     const status = element.getAttribute('data-status')
-    if (status === 'pending' || status === 'progress' || status === 'done') {
+    if (status === 'pending' || status === 'loading' || status === 'done') {
       return status
     }
     return 'pending' // Default to pending if not set or invalid
@@ -386,7 +497,7 @@ export class GenuinSDK {
   /**
    * Sets the initialization status of the element.
    * @param element The HTML element to set the status on.
-   * @param status The initialization status to set: 'pending', 'progress', or 'done'.
+   * @param status The initialization status to set: 'pending', 'loading', or 'done'.
    */
   private setInitializationStatus(
     element: HTMLElement,
@@ -407,344 +518,332 @@ export class GenuinSDK {
   }
 
   /**
-   * Checks if the embed is already initialized in the container.
-   * @param container The HTML element container to check for initialization.
-   * @returns True if the embed is initialized, false otherwise.
-   */
-  private checkIfEmbedIsInitializedAlready(container: HTMLElement): boolean {
-    return (
-      !!container.querySelector('[data-instance-id]') ||
-      !!container.querySelector('[data-initialized]')
-    )
-  }
-
-  /**
    * Core SDK initiation logic - handles all the critical legacy functionality
    */
-  private async performLegacySDKInitiation(
-    container: HTMLElement,
-    config: LegacySDKConfig,
-    instanceId: string,
-  ): Promise<void> {
-    // Set legacy config for API compatibility
-    this.configManager.setLegacyConfig(config)
+  // private async performLegacySDKInitiation(
+  //   container: HTMLElement,
+  //   config: LegacySDKConfig,
+  //   instanceId: string,
+  // ): Promise<void> {
+  //   // Set legacy config for API compatibility
+  //   this.configManager.setLegacyConfig(config)
 
-    // Critical validation: API key required
-    if (config.embed_id && !config.api_key) {
-      console.log('API key is required for initializing the SDK')
-      this.showApiKeyError(container)
-      return
-    }
+  //   // Critical validation: API key required
+  //   if (config.embed_id && !config.api_key) {
+  //     console.log('API key is required for initializing the SDK')
+  //     this.showApiKeyError(container)
+  //     return
+  //   }
 
-    if (!config.api_key) {
-      console.warn('Missing API key for', instanceId)
-    }
+  //   if (!config.api_key) {
+  //     console.warn('Missing API key for', instanceId)
+  //   }
 
-    let brandData: BrandDetailsResponse | null = null
+  //   let brandData: BrandDetailsResponse | null = null
 
-    // Fetch brand details if API key provided
-    if (config.api_key) {
-      try {
-        brandData = await this.apiService.fetchBrandDetails(config.api_key)
+  //   // Fetch brand details if API key provided
+  //   if (config.api_key) {
+  //     try {
+  //       brandData = await this.apiService.fetchBrandDetails(config.api_key)
 
-        // Update config with brand data
-        config.brand_id = brandData.brand_id
-        config.subdomain = brandData.subdomain
-        config.brand_colors = brandData.brand_colors
-        config.name = brandData.name
-      } catch (error) {
-        console.error('Failed to fetch brand details:', error)
-        loadErrorView(container)
-        return
-      }
-    } else {
-      config.subdomain = 'app'
-    }
+  //       // Update config with brand data
+  //       config.brand_id = brandData.brand_id
+  //       config.subdomain = brandData.subdomain
+  //       config.brand_colors = brandData.brand_colors
+  //       config.name = brandData.name
+  //     } catch (error) {
+  //       console.error('Failed to fetch brand details:', error)
+  //       loadErrorView(container)
+  //       return
+  //     }
+  //   } else {
+  //     config.subdomain = 'app'
+  //   }
 
-    config.embed = 1
+  //   config.embed = 1
 
-    // Initialize analytics
-    if (config.embed_id) {
-      loadRudderStack()
-    }
+  //   // Initialize analytics
+  //   if (config.embed_id) {
+  //     loadRudderStack()
+  //   }
 
-    // Fetch embed data
-    let embedData: Partial<EmbedDataType> = {
-      embed_id: config.embed_id,
-      placement_id: config.placement_id,
-      style_id: config.style_id,
-    }
+  //   // Fetch embed data
+  //   let embedData: Partial<EmbedDataType> = {
+  //     embed_id: config.embed_id,
+  //     placement_id: config.placement_id,
+  //     style_id: config.style_id,
+  //   }
 
-    if (config.placement_id) {
-      try {
-        const fetchedPlacementData = await this.apiService.fetchPlacementData(
-          config.placement_id,
-        )
-        embedData = {
-          ...embedData,
-          ...parsePlacementToEmbedData(fetchedPlacementData),
-        }
-      } catch (error) {
-        console.error('Failed to fetch placement data:', error)
-        loadErrorView(container)
-        return
-      }
-    } else if (config.embed_id && config.embed_id !== 'preview') {
-      try {
-        const fetchedEmbedData = await this.apiService.fetchEmbedData(
-          config.embed_id,
-        )
-        embedData = { ...embedData, ...fetchedEmbedData }
-      } catch (error) {
-        console.error('Failed to fetch embed data:', error)
-        loadErrorView(container)
-        return
-      }
-    }
+  //   if (config.placement_id) {
+  //     try {
+  //       const fetchedPlacementData = await this.apiService.fetchPlacementData(
+  //         config.placement_id,
+  //       )
+  //       embedData = {
+  //         ...embedData,
+  //         ...parsePlacementToEmbedData(fetchedPlacementData),
+  //       }
+  //     } catch (error) {
+  //       console.error('Failed to fetch placement data:', error)
+  //       loadErrorView(container)
+  //       return
+  //     }
+  //   } else if (config.embed_id && config.embed_id !== 'preview') {
+  //     try {
+  //       const fetchedEmbedData = await this.apiService.fetchEmbedData(
+  //         config.embed_id,
+  //       )
+  //       embedData = { ...embedData, ...fetchedEmbedData }
+  //     } catch (error) {
+  //       console.error('Failed to fetch embed data:', error)
+  //       loadErrorView(container)
+  //       return
+  //     }
+  //   }
 
-    // Override style and type if specified in config
-    if (config.style) embedData.style = config.style
-    if (config.type) embedData.type = config.type
+  //   // Override style and type if specified in config
+  //   if (config.style) embedData.style = config.style
+  //   if (config.type) embedData.type = config.type
 
-    // Handle supported embed styles
-    if (
-      embedData.style === 'carousel' ||
-      embedData.style === 'feed' ||
-      embedData.style === 'standard_wall' ||
-      embedData.style === 'grid' ||
-      embedData.style === 'dynamic'
-    ) {
-      await this.setupEmbedView(
-        container,
-        config,
-        embedData,
-        brandData,
-        instanceId,
-      )
-    } else {
-      // Fallback to iframe mode for unsupported styles
-      this.setupIframeMode(container, config)
-    }
-  }
+  //   // Handle supported embed styles
+  //   if (
+  //     embedData.style === 'carousel' ||
+  //     embedData.style === 'feed' ||
+  //     embedData.style === 'standard_wall' ||
+  //     embedData.style === 'grid' ||
+  //     embedData.style === 'dynamic'
+  //   ) {
+  //     await this.setupEmbedView(
+  //       container,
+  //       config,
+  //       embedData,
+  //       brandData,
+  //       instanceId,
+  //     )
+  //   } else {
+  //     // Fallback to iframe mode for unsupported styles
+  //     this.setupIframeMode(container, config)
+  //   }
+  // }
 
   /**
    * Setup embed view with React components
    */
-  private async setupEmbedView(
-    container: HTMLElement,
-    config: LegacySDKConfig,
-    embedData: any,
-    brandData: BrandDetailsResponse | null,
-    instanceId: string,
-  ): Promise<void> {
-    // Apply live customization
-    if (config.live_customization_data) {
-      Object.assign(embedData.customization, config.live_customization_data)
-    }
+  // private async setupEmbedView(
+  //   container: HTMLElement,
+  //   config: LegacySDKConfig,
+  //   embedData: any,
+  //   brandData: BrandDetailsResponse | null,
+  //   instanceId: string,
+  // ): Promise<void> {
+  //   // Apply live customization
+  //   if (config.live_customization_data) {
+  //     Object.assign(embedData.customization, config.live_customization_data)
+  //   }
 
-    // Apply special brand customizations
-    if (config.brand_id) {
-      embedData.customization =
-        this.themeManager.applySpecialBrandCustomizations(
-          config.brand_id,
-          embedData.customization,
-        )
-    }
+  //   // Apply special brand customizations
+  //   if (config.brand_id) {
+  //     embedData.customization =
+  //       this.themeManager.applySpecialBrandCustomizations(
+  //         config.brand_id,
+  //         embedData.customization,
+  //       )
+  //   }
 
-    // Apply brand colors and theme
-    this.themeManager.applyBrandColors(container, config.brand_colors)
-    this.themeManager.applyTheme(container, embedData.customization)
+  //   // Apply brand colors and theme
+  //   this.themeManager.applyBrandColors(container, config.brand_colors)
+  //   this.themeManager.applyTheme(container, embedData.customization)
 
-    // Handle authentication
-    const user = await this.tokenManager.handleConfigAuth({
-      token: config.token,
-      brand_id: config.brand_id,
-      params: config.params,
-    })
+  //   // Handle authentication
+  //   const user = await this.tokenManager.handleConfigAuth({
+  //     token: config.token,
+  //     brand_id: config.brand_id,
+  //     params: config.params,
+  //   })
 
-    // Set additional embed data
-    embedData.embed_id = config.embed_id
-    embedData.brandDetails = brandData || {}
-    embedData.startVideoSlug =
-      container.getAttribute('data-video-id') ?? config.video
-    embedData.action = container.getAttribute('data-action') ?? config.action
+  //   // Set additional embed data
+  //   embedData.embed_id = config.embed_id
+  //   embedData.brandDetails = brandData || {}
+  //   embedData.startVideoSlug =
+  //     container.getAttribute('data-video-id') ?? config.video
+  //   embedData.action = container.getAttribute('data-action') ?? config.action
 
-    if (config.authInfo) {
-      embedData.authInfo = config.authInfo
-    }
+  //   if (config.authInfo) {
+  //     embedData.authInfo = config.authInfo
+  //   }
 
-    // Store embed instance
-    this.embedInstances.set(instanceId, {
-      embedData,
-      container,
-      user,
-      brandName: config.name,
-    })
+  //   // Store embed instance
+  //   this.embedInstances.set(instanceId, {
+  //     embedData,
+  //     container,
+  //     user,
+  //     brandName: config.name,
+  //   })
 
-    // Load the embed view
-    loadEmbedView(container, embedData, user ?? undefined, config.name)
+  //   // Load the embed view
+  //   loadEmbedView(container, embedData, user ?? undefined, config.name)
 
-    // Emit events
-    this.eventManager.emit(SDKEventType.EMBED_LOADED, {
-      embedId: config.embed_id,
-      instanceId,
-      config,
-    })
-  }
+  //   // Emit events
+  //   this.eventManager.emit(SDKEventType.EMBED_LOADED, {
+  //     embedId: config.embed_id,
+  //     instanceId,
+  //     config,
+  //   })
+  // }
 
   /**
    * Setup iframe mode for unsupported embed styles
    */
-  private setupIframeMode(
-    container: HTMLElement,
-    config: LegacySDKConfig,
-  ): void {
-    const path = '/'
-    const params: Record<string, string | boolean | number> = {}
+  // private setupIframeMode(
+  //   container: HTMLElement,
+  //   config: LegacySDKConfig,
+  // ): void {
+  //   const path = '/'
+  //   const params: Record<string, string | boolean | number> = {}
 
-    for (const key in config) {
-      const value = config[key as keyof LegacySDKConfig]
-      if (value !== undefined) {
-        params[key] = value
-      }
-    }
+  //   for (const key in config) {
+  //     const value = config[key as keyof LegacySDKConfig]
+  //     if (value !== undefined) {
+  //       params[key] = value
+  //     }
+  //   }
 
-    loadIframeIntoDiv(
-      container,
-      generateConfiguredUrl(
-        generatePathFromConfig(config as LegacySDKConfig, path),
-        params,
-        config.subdomain || '',
-      ),
-    )
-  }
+  //   loadIframeIntoDiv(
+  //     container,
+  //     generateConfiguredUrl(
+  //       generatePathFromConfig(config as LegacySDKConfig, path),
+  //       params,
+  //       config.subdomain || '',
+  //     ),
+  //   )
+  // }
 
   /**
    * Show API key error message
    */
-  private showApiKeyError(container: HTMLElement): void {
-    const errorElement = document.createElement('div')
-    errorElement.style.display = 'flex'
-    errorElement.style.justifyContent = 'center'
-    errorElement.style.alignItems = 'center'
-    errorElement.style.height = '100%'
-    errorElement.style.width = '100%'
-    errorElement.textContent = 'API Key is Required'
-    container.appendChild(errorElement)
-  }
+  // private showApiKeyError(container: HTMLElement): void {
+  //   const errorElement = document.createElement('div')
+  //   errorElement.style.display = 'flex'
+  //   errorElement.style.justifyContent = 'center'
+  //   errorElement.style.alignItems = 'center'
+  //   errorElement.style.height = '100%'
+  //   errorElement.style.width = '100%'
+  //   errorElement.textContent = 'API Key is Required'
+  //   container.appendChild(errorElement)
+  // }
 
   /**
    * Update contextual parameters (legacy update method)
    */
-  legacyUpdate(params: {
-    contextualParams: LegacySDKConfig['contextualParams']
-    id?: string | null
-  }): void {
-    try {
-      // Find the target embed instance
-      const instanceId = params.id || this.getLastElementId()
-      const embed = this.embedInstances.get(instanceId)
+  // legacyUpdate(params: {
+  //   contextualParams: LegacySDKConfig['contextualParams']
+  //   id?: string | null
+  // }): void {
+  //   try {
+  //     // Find the target embed instance
+  //     const instanceId = params.id || this.getLastElementId()
+  //     const embed = this.embedInstances.get(instanceId)
 
-      if (!embed) return
-      if (!embed.container?.getAttribute('data-initialized')) return
-      if (!embed.embedData) return
+  //     if (!embed) return
+  //     if (!embed.container?.getAttribute('data-initialized')) return
+  //     if (!embed.embedData) return
 
-      // Validate that new contextual parameters are provided
-      if (
-        !params.contextualParams ||
-        (!params.contextualParams.page_context &&
-          !params.contextualParams.url &&
-          !params.contextualParams.geo?.lat &&
-          !params.contextualParams.geo?.long)
-      ) {
-        return
-      }
+  //     // Validate that new contextual parameters are provided
+  //     if (
+  //       !params.contextualParams ||
+  //       (!params.contextualParams.page_context &&
+  //         !params.contextualParams.url &&
+  //         !params.contextualParams.geo?.lat &&
+  //         !params.contextualParams.geo?.long)
+  //     ) {
+  //       return
+  //     }
 
-      // Merge new contextual parameters
-      embed.embedData.contextualParams = {
-        ...embed.embedData.contextualParams,
-        ...params.contextualParams,
-      }
+  //     // Merge new contextual parameters
+  //     embed.embedData.contextualParams = {
+  //       ...embed.embedData.contextualParams,
+  //       ...params.contextualParams,
+  //     }
 
-      // Reload the embed view
-      loadEmbedView(
-        embed.container,
-        embed.embedData,
-        embed.user,
-        embed.brandName,
-      )
+  //     // Reload the embed view
+  //     loadEmbedView(
+  //       embed.container,
+  //       embed.embedData,
+  //       embed.user,
+  //       embed.brandName,
+  //     )
 
-      this.eventManager.emit(SDKEventType.CONTENT_UPDATED, {
-        instanceId,
-        contextualParams: params.contextualParams,
-      })
-    } catch (error) {
-      console.error('Failed to update embed:', error)
-    }
-  }
+  //     this.eventManager.emit(SDKEventType.CONTENT_UPDATED, {
+  //       instanceId,
+  //       contextualParams: params.contextualParams,
+  //     })
+  //   } catch (error) {
+  //     console.error('Failed to update embed:', error)
+  //   }
+  // }
 
   /**
    * Get the last element ID (for backwards compatibility)
    */
-  private getLastElementId(): string {
-    const instances = Array.from(this.embedInstances.keys())
-    return instances[instances.length - 1] || ''
-  }
+  // private getLastElementId(): string {
+  //   const instances = Array.from(this.embedInstances.keys())
+  //   return instances[instances.length - 1] || ''
+  // }
 
   /**
    * Initialize div with callback (for window.onGenuinReady support)
    */
-  initializeDivWithCallback(
-    div: HTMLElement,
-    callback: (sdk: any) => void,
-  ): void {
-    if (!callback || !div) {
-      console.error('Invalid callback or div for instance')
-      return
-    }
+  // initializeDivWithCallback(
+  //   div: HTMLElement,
+  //   callback: (sdk: any) => void,
+  // ): void {
+  //   if (!callback || !div) {
+  //     console.error('Invalid callback or div for instance')
+  //     return
+  //   }
 
-    const instanceId = this.configManager.generateInstanceId()
-    div.setAttribute('data-instance-id', instanceId)
-    let gConfig: LegacySDKConfig
+  //   const instanceId = this.configManager.generateInstanceId()
+  //   div.setAttribute('data-instance-id', instanceId)
+  //   let gConfig: LegacySDKConfig
 
-    callback({
-      initialize: (sdkconfig: LegacySDKConfig) => {
-        gConfig = {
-          api_key: sdkconfig.api_key || '',
-          embed_id: sdkconfig.embed_id || '',
-          ...sdkconfig,
-        }
-        div.style.setProperty('display', 'block')
-        this.performLegacySDKInitiation(div, gConfig, instanceId)
-      },
-      loadPage: (page: string) => {
-        this.loadPageByPage(div, page, gConfig?.subdomain)
-      },
-      setUser: (user: any) => {
-        console.log('user :>> ', user)
-      },
-    })
-  }
+  //   callback({
+  //     initialize: (sdkconfig: LegacySDKConfig) => {
+  //       gConfig = {
+  //         api_key: sdkconfig.api_key || '',
+  //         embed_id: sdkconfig.embed_id || '',
+  //         ...sdkconfig,
+  //       }
+  //       div.style.setProperty('display', 'block')
+  //       this.performLegacySDKInitiation(div, gConfig, instanceId)
+  //     },
+  //     loadPage: (page: string) => {
+  //       this.loadPageByPage(div, page, gConfig?.subdomain)
+  //     },
+  //     setUser: (user: any) => {
+  //       console.log('user :>> ', user)
+  //     },
+  //   })
+  // }
 
   /**
    * Load a page into the container (legacy method)
    */
-  private loadPageByPage(
-    container: HTMLElement,
-    page: string,
-    subdomain?: string,
-  ): void {
-    const param = {
-      embed: 1,
-      subdomain: subdomain,
-      hide_navbar: 0,
-      api_key: '',
-    }
-    loadIframeIntoDiv(
-      container,
-      generateConfiguredUrl(page, param, subdomain ?? ''),
-    )
-  }
+  // private loadPageByPage(
+  //   container: HTMLElement,
+  //   page: string,
+  //   subdomain?: string,
+  // ): void {
+  //   const param = {
+  //     embed: 1,
+  //     subdomain: subdomain,
+  //     hide_navbar: 0,
+  //     api_key: '',
+  //   }
+  //   loadIframeIntoDiv(
+  //     container,
+  //     generateConfiguredUrl(page, param, subdomain ?? ''),
+  //   )
+  // }
 
   /**
    * Initialize the SDK with configuration

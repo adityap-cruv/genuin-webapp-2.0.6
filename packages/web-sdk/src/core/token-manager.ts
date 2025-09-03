@@ -9,6 +9,7 @@ export class TokenManager {
   private static instance: TokenManager
   private apiService: APIService
   private errorHandler: ErrorHandler
+  private cachedUsers: Map<string, AuthUser> = new Map()
 
   private constructor() {
     this.apiService = APIService.getInstance()
@@ -62,6 +63,10 @@ export class TokenManager {
    */
   setAccessToken(token: string): void {
     try {
+      const currentToken = this.getAccessToken()
+      if (currentToken && currentToken !== token) {
+        this.cachedUsers.delete(currentToken)
+      }
       localStorage.setItem(ACCESS_TOKEN_KEY, token)
     } catch (error) {
       console.warn('Failed to store access token:', error)
@@ -85,7 +90,11 @@ export class TokenManager {
    */
   removeAccessToken(): void {
     try {
+      const token = this.getAccessToken()
       localStorage.removeItem(ACCESS_TOKEN_KEY)
+      if (token) {
+        this.cachedUsers.delete(token)
+      }
     } catch (error) {
       console.warn('Failed to remove access token:', error)
     }
@@ -104,12 +113,17 @@ export class TokenManager {
    */
   async getCurrentUser(config?: {
     token?: string
-    brandId?: number
+    brandId: number
     params?: LegacySDKConfig['params']
   }): Promise<AuthUser | null> {
     try {
-      // If explicit token provided, use it
+      // If explicit token provided, check cache first
       if (config?.token && config?.brandId) {
+        const cachedUser = this.cachedUsers.get(config.token)
+        if (cachedUser) {
+          return cachedUser
+        }
+
         const apiResponse = await this.apiService.getAuthenticatedUserDetails(
           config.token,
           config.brandId,
@@ -119,24 +133,37 @@ export class TokenManager {
         if (apiResponse) {
           // Store token for future use
           this.setAccessToken(config.token)
-          return this.parseUserResponse({
+          const parsedUser = this.parseUserResponse({
             apiUser: apiResponse.user,
             accessToken: apiResponse.accessToken,
             refreshToken: apiResponse.refreshToken,
             autoLoginToken: apiResponse.autoLoginToken,
           })
+          // Cache the user
+          this.cachedUsers.set(config.token, parsedUser)
+          return parsedUser
         }
       }
       // Otherwise, check for existing session
       else if (this.hasAccessToken()) {
-        const profileResponse = await this.apiService.getMiniProfile()
         const token = this.getAccessToken()
-        if (profileResponse.data && token) {
-          return this.parseUserResponse({
-            apiUser: profileResponse.data,
-            accessToken: token,
-            refreshToken: token,
-          })
+        if (token) {
+          const cachedUser = this.cachedUsers.get(token)
+          if (cachedUser) {
+            return cachedUser
+          }
+
+          const profileResponse = await this.apiService.getMiniProfile()
+          if (profileResponse.data && token) {
+            const parsedUser = this.parseUserResponse({
+              apiUser: profileResponse.data,
+              accessToken: token,
+              refreshToken: token,
+            })
+            // Cache the user
+            this.cachedUsers.set(token, parsedUser)
+            return parsedUser
+          }
         }
       }
 
@@ -169,27 +196,28 @@ export class TokenManager {
    */
   clearAuth(): void {
     this.removeAccessToken()
+    this.cachedUsers.clear()
   }
 
   /**
    * Handle authentication from config (like legacy SDK)
    */
-  async handleConfigAuth(config: {
-    token?: string
-    brand_id?: number
-    params?: LegacySDKConfig['params']
-  }): Promise<AuthUser | null> {
-    // Remove token if not provided (like legacy SDK)
-    if (!config.token) {
-      this.removeAccessToken()
-      return null
-    }
+  // async handleConfigAuth(config: {
+  //   token?: string
+  //   brand_id?: number
+  //   params?: LegacySDKConfig['params']
+  // }): Promise<AuthUser | null> {
+  //   // Remove token if not provided (like legacy SDK)
+  //   if (!config.token) {
+  //     this.removeAccessToken()
+  //     return null
+  //   }
 
-    // Get user with provided config
-    return await this.getCurrentUser({
-      token: config.token,
-      brandId: config.brand_id,
-      params: config.params,
-    })
-  }
+  //   // Get user with provided config
+  //   return await this.getCurrentUser({
+  //     token: config.token,
+  //     brandId: config.brand_id,
+  //     params: config.params,
+  //   })
+  // }
 }

@@ -7,6 +7,8 @@ export enum SDKEventType {
   AUTHENTICATION_REQUIRED = 'auth:required',
   AUTHENTICATION_SUCCESS = 'auth:success',
   NAVIGATION = 'navigation',
+  SDK_AUTHENTICATE_USER = 'sdk:authenticateUser',
+  SDK_UPDATE_CONTEXTUAL_PARAMS = 'sdk:updateContextualParams',
 }
 
 export interface SDKEvent {

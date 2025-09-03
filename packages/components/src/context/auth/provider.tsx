@@ -88,6 +88,15 @@ export function AuthProvider({
       !!user ? "authenticated" : "unauthenticated"
     );
 
+  useLayoutEffect(() => {
+    if (!window.genuin) return;
+
+    window.genuin.on("sdk:authenticateUser", (authCallbackData: any) => {
+      setAuthenticatedUser(authCallbackData.payload);
+      setAuthenticationStatus("authenticated");
+    });
+  }, []);
+
   // Synchronously manage the authentication token in Axios instance when the external 'user' prop changes.
   // This ensures the token is set/removed before any subsequent network requests.
   useLayoutEffect(() => {

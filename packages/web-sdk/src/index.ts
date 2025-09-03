@@ -66,7 +66,7 @@ if (typeof window !== 'undefined') {
       return Genuin.newInit(config)
     },
     update: (config: any) => {
-      return Genuin.legacyUpdate(config)
+      return Genuin.newUpdate(config)
     },
   }
 

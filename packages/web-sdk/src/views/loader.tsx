@@ -1,8 +1,6 @@
 // Bridge file to maintain compatibility with legacy index
 // This file provides the functions that legacy index expects
 
-import { AuthUser, EmbedDataType } from '../type'
-
 // Main embed loading function - bridges to the new embed loader
 export function loadEmbedView(
   container: HTMLElement,

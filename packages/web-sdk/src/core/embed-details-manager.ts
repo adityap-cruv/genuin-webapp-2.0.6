@@ -25,7 +25,7 @@ export class EmbedDetailsManager {
     const embedDetails = await apiService.fetchEmbedData(embedId)
 
     this.embedDetailsList[embedId] = Object.assign(embedDetails, {
-      brandDetails,
+      embed_id: embedId,
     })
 
     return embedDetails
