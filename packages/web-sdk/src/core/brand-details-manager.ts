@@ -1,5 +1,6 @@
 import { BrandDetailsConfigType } from '@/type'
 import { apiService } from './api'
+import { th } from 'zod/v4/locales'
 
 export class BrandDetailsManager {
   private static instance: BrandDetailsManager
@@ -14,7 +15,10 @@ export class BrandDetailsManager {
     return BrandDetailsManager.instance
   }
 
-  public async getBrandDetails(apiKey: string) {
+  public async getBrandDetails(apiKey?: string) {
+    if (!apiKey) {
+      throw new Error('API key is required to fetch brand details.')
+    }
     if (this.brandDetailsList[apiKey]) {
       return this.brandDetailsList[apiKey]
     }

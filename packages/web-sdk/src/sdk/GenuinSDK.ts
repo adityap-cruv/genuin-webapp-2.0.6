@@ -19,7 +19,7 @@ import {
   EmbedDataType,
 } from '@genuin/components/context/embed/embed.types'
 import { CallbackQueueManager } from '@/core/callback-queue-manager'
-import { Context } from 'vm'
+import { PlacementManager } from '@/core/placement-manager'
 
 export type ActionType =
   | 'spark'
@@ -85,6 +85,8 @@ type ContextualParamsType = {
 type ConfigByUser = {
   embed_id?: string
   api_key?: string
+  placement_id?: string
+  style_id?: string
   token?: string
   contextualParams?: ContextualParamsType
   startVideoSlug?: string
@@ -112,6 +114,8 @@ type SDKElementsType = Record<
 export type SingleEmbedDataConfig = {
   embedId: string
   apiKey: string
+  placementId?: string
+  styleId?: string
   /**
    * Brand id of the embed.
    */
@@ -141,6 +145,7 @@ export class GenuinSDK {
   private embedDetailsManager: EmbedDetailsManager
   private sdkElements: SDKElementsType = {}
   private callbackQueueManager: CallbackQueueManager
+  private placementManager: PlacementManager
 
   private constructor() {
     this.configManager = ConfigManager.getInstance()
@@ -151,6 +156,7 @@ export class GenuinSDK {
     this.brandDetailsManager = BrandDetailsManager.getInstance()
     this.embedDetailsManager = EmbedDetailsManager.getInstance()
     this.callbackQueueManager = new CallbackQueueManager()
+    this.placementManager = PlacementManager.getInstance()
   }
 
   static getInstance(): GenuinSDK {
@@ -251,12 +257,6 @@ export class GenuinSDK {
     element: HTMLElement,
     config: Partial<SingleEmbedDataConfig>,
   ) {
-    if (!config.apiKey || !config.embedId) {
-      console.warn('Missing required config properties: embedId or apiKey')
-      loadErrorView(element)
-      return false
-    }
-
     // Handle error at single embed level so that other embeds doesn't get affected.
     try {
       // This is where we get the brand details
@@ -264,17 +264,13 @@ export class GenuinSDK {
         config.apiKey,
       )
 
-      const embedDetails = await this.embedDetailsManager.getEmbedDetails(
-        config.embedId,
-        brandDetails,
-      )
+      // Get embed details based on configuration
+      await this.getEmbedDetails(config, brandDetails)
 
-      // Extra configuration needed for embed.
-      embedDetails.authInfo = config.authInfo
+      const embedDetails = config.embedDetails!
 
       // set the brand-details and embed-details to the sdkElements for future reference.
       config.brandDetails = brandDetails
-      config.embedDetails = embedDetails
 
       // If there is user already then use that authed user.
       let user: AuthUser | undefined | null = this.tokenManager.getCachedUser()
@@ -297,11 +293,65 @@ export class GenuinSDK {
         config,
         user,
       })
-    } catch (errpr) {
+    } catch (error) {
+      console.error('Error initializing embed:', error)
       loadErrorView(element)
     }
 
     return true
+  }
+
+  /**
+   * Retrieves embed details based on the provided configuration and configures them.
+   * @param config The configuration for the embed.
+   * @param brandDetails The brand details.
+   */
+  private async getEmbedDetails(
+    config: Partial<SingleEmbedDataConfig>,
+    brandDetails: any,
+  ): Promise<void> {
+    let embedDetails: EmbedDataType | null = null
+
+    // If embedId is provided, fetch embed details directly
+    if (config.embedId) {
+      embedDetails = await this.embedDetailsManager.getEmbedDetails(
+        config.embedId,
+        brandDetails,
+      )
+    }
+
+    // If placementId and styleId are provided, fetch placement data and configure it
+    if (config.placementId && config.styleId) {
+      embedDetails = await this.placementManager.getPlacementData(
+        config.placementId,
+      )
+
+      if (embedDetails) {
+        // Set the style and placement IDs from config
+        embedDetails.style_id = config.styleId
+        embedDetails.placement_id = config.placementId
+      } else {
+        throw new Error('No embed details found for placement configuration.')
+      }
+    } else if (!config.embedId) {
+      // Neither embedId nor placementId/styleId provided - invalid configuration
+      console.warn(
+        'Placement ID or Style ID is missing, and no embed ID provided',
+      )
+      throw new Error(
+        'Placement ID or Style ID is missing, and no embed ID provided',
+      )
+    }
+
+    if (embedDetails) {
+      // Add authentication info to embed details
+      embedDetails.authInfo = config.authInfo
+      // Store the embed details in the config for later use
+      config.embedDetails = embedDetails
+    } else {
+      console.warn('No embed details found for configuration.')
+      throw new Error('No embed details found for configuration.')
+    }
   }
 
   private async updateContextualParamsInEmbed({
@@ -426,6 +476,7 @@ export class GenuinSDK {
     const possibleAttributeNames = [
       'data-embed-id',
       'data-api-key',
+      'data-style-id',
       'data-placement-id',
       'data-token',
       'data-lat',
@@ -446,7 +497,7 @@ export class GenuinSDK {
       'data-posted-by-user-ids',
       'data-community-ids',
       'data-loop-ids',
-    ]
+    ] as const
     const answerToReturn: Partial<SingleEmbedDataConfig> = {}
 
     // extract one by one all data config for embed.
@@ -462,13 +513,12 @@ export class GenuinSDK {
         case 'data-token':
           answerToReturn.token = value ?? configByUser?.token
           continue
-        // case 'data-brand-ids':
-        //   if (value) {
-        //     answerToReturn.brandIds = value
-        //       .split(' ')
-        //       .map((item) => parseInt(item))
-        //   }
-        //   continue
+        case 'data-placement-id':
+          answerToReturn.placementId = value ?? configByUser?.placement_id
+          continue
+        case 'data-style-id':
+          answerToReturn.styleId = value ?? configByUser?.style_id
+          continue
         case 'data-video-id':
           answerToReturn.startVideoSlug = value ?? configByUser?.startVideoSlug
           continue

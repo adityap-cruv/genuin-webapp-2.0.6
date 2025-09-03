@@ -94,9 +94,7 @@ export class APIService {
    * Fetch placement configuration data
    * Required for embed customization and display settings
    */
-  async fetchPlacementData(
-    placementId: string,
-  ): Promise<PlacementDataResponse> {
+  async getPlacementData(placementId: string): Promise<PlacementDataResponse> {
     try {
       const response = await fetch(
         `${API_BASE_URL}/goservices/placement?placement_id=${placementId}`,
