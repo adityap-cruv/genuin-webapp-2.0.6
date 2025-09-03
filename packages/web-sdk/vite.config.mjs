@@ -105,12 +105,48 @@ const genuinResolver = () => ({
   },
 })
 
+// Custom plugin to copy loader file after build
+const copyLoaderPlugin = () => ({
+  name: 'copy-loader',
+  async writeBundle() {
+    // Copy the loader file after each build
+    const sourceFile = resolve(__dirname, 'src/loader.js')
+    const isDevelopment = process.env.NODE_ENV === 'development'
+    const targetFile = resolve(
+      __dirname,
+      'dist',
+      isDevelopment ? 'gen_sdk.js' : 'gen_sdk.min.js',
+    )
+
+    try {
+      fs.copyFileSync(sourceFile, targetFile)
+      console.log(
+        `✓ Copied loader to ${isDevelopment ? 'gen_sdk.js' : 'gen_sdk.min.js'}`,
+      )
+    } catch (error) {
+      console.error('Failed to copy loader file:', error)
+    }
+  },
+})
+
 export default defineConfig({
-  plugins: [react(), genuinResolver()],
+  plugins: [react(), genuinResolver(), copyLoaderPlugin()],
+
+  // Set base path for chunk resolution
+  base: './',
+
+  // Optimize dependencies for better chunking
+  optimizeDeps: {
+    include: ['react', 'react-dom'],
+    exclude: ['@genuin/ui', '@genuin/components'],
+  },
 
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),
+      // Ensure React resolves to a single instance - CRITICAL for vendor chunks
+      react: resolve(__dirname, '../../node_modules/react'),
+      'react-dom': resolve(__dirname, '../../node_modules/react-dom'),
     },
     extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
     mainFields: ['browser', 'module', 'main'],
@@ -120,20 +156,148 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
+      formats: ['es', 'iife'],
       name: 'GenuinSDK',
-      formats: ['iife'],
-      fileName: () => `gen-sdk.min.js`,
+      fileName: (format) =>
+        format === 'es' ? 'genuin-sdk.js' : 'genuin-sdk-legacy.js',
     },
     rollupOptions: {
+      // Don't externalize anything for the web SDK build
+      // We want to bundle everything for standalone usage
       external: [],
-      output: {
-        globals: {},
-        inlineDynamicImports: true,
-        format: 'iife',
-      },
+      output: [
+        {
+          // Main ES module bundle that supports code splitting
+          format: 'es',
+          entryFileNames: 'genuin-sdk.js',
+          chunkFileNames: 'chunks/[name]-[hash].js',
+          assetFileNames: (assetInfo) => {
+            // Use consistent naming for CSS files, hash-based for others
+            if (assetInfo.name && assetInfo.name.endsWith('.css')) {
+              return 'assets/web-sdk.css'
+            }
+            return 'assets/[name]-[hash][extname]'
+          },
+          // Set the base path for dynamic imports
+          inlineDynamicImports: false,
+          // Ensure exports are preserved
+          exports: 'named',
+          // Configure manual chunks for lazy-loaded components and vendor libraries
+          manualChunks: (id) => {
+            // DON'T manually chunk standard-wall - let lazy loading handle it naturally
+            // This prevents eager loading of the standard-wall chunk
+
+            // === VENDOR LIBRARY CHUNKS ===
+
+            // NOTE: React and React-DOM are intentionally NOT separated into vendor chunks
+            // to avoid createContext timing issues. They stay in the main bundle for proper module resolution.
+
+            // React Query - Keep separate for performance
+            if (
+              id.includes('react-query') ||
+              id.includes('@tanstack/react-query')
+            ) {
+              return 'vendor-react-query'
+            }
+
+            // Radix UI components - Large UI primitive library
+            if (id.includes('node_modules/@radix-ui/')) {
+              return 'vendor-radix'
+            }
+
+            // Animation and media libraries
+            if (
+              id.includes('node_modules/motion/') ||
+              id.includes('node_modules/swiper/') ||
+              id.includes('node_modules/embla-carousel') ||
+              id.includes('node_modules/openplayerjs/')
+            ) {
+              return 'vendor-animation'
+            }
+
+            // Form and input libraries
+            if (
+              id.includes('node_modules/react-hook-form/') ||
+              id.includes('node_modules/input-otp/') ||
+              id.includes('node_modules/react-phone-number-input/') ||
+              id.includes('node_modules/zod/')
+            ) {
+              return 'vendor-forms'
+            }
+
+            // Utility libraries
+            if (
+              id.includes('node_modules/axios/') ||
+              id.includes('node_modules/crypto-es/') ||
+              id.includes('node_modules/dompurify/') ||
+              id.includes('node_modules/uuid/') ||
+              id.includes('node_modules/ua-parser-js/')
+            ) {
+              return 'vendor-utils'
+            }
+
+            // Router and navigation
+            if (id.includes('node_modules/wouter/')) {
+              return 'vendor-router'
+            }
+
+            // Other large third-party libraries
+            if (
+              id.includes('node_modules/@fingerprintjs/') ||
+              id.includes('node_modules/@rudderstack/') ||
+              id.includes('node_modules/next/')
+            ) {
+              return 'vendor-external'
+            }
+
+            // === APPLICATION CHUNKS ===
+
+            // Split other page components (but not standard-wall)
+            if (
+              id.includes('components/page/') &&
+              !id.includes('standard-wall')
+            ) {
+              return 'app-embed-components'
+            }
+
+            // Split large UI libraries into separate chunks
+            if (id.includes('@genuin/ui') && !id.includes('src/index')) {
+              return 'app-ui-components'
+            }
+
+            // Keep core SDK functionality in main bundle
+            if (
+              id.includes('src/core') ||
+              id.includes('src/sdk') ||
+              id.includes('src/index')
+            ) {
+              return undefined // Goes to main bundle
+            }
+
+            // Let Rollup handle other chunks automatically
+            return null
+          },
+        },
+        {
+          // Legacy IIFE bundle for backward compatibility (single file)
+          format: 'iife',
+          name: 'GenuinSDK',
+          entryFileNames: 'genuin-sdk-legacy.js',
+          assetFileNames: (assetInfo) => {
+            // Use consistent naming for CSS files, hash-based for others
+            if (assetInfo.name && assetInfo.name.endsWith('.css')) {
+              return 'assets/web-sdk.css'
+            }
+            return 'assets/[name]-[hash][extname]'
+          },
+          inlineDynamicImports: true, // Required for IIFE single file
+        },
+      ],
     },
     sourcemap: true,
     target: 'es2020',
+    // Optimize chunk sizes
+    chunkSizeWarningLimit: 1000, // Warn for chunks over 1MB
   },
 
   define: {

@@ -51,10 +51,17 @@ export function useEmbedDimensions() {
     const spaceBetweenVideos = 8;
     const MIN_CAROUSEL_HEIGHT = 100;
 
+    const feedHeaderHeight = !config.header.ctaButton?.url
+      ? config.header.subHeading
+        ? 64
+        : 40
+      : 104;
+    const carouselHeaderHeight = 56;
+
     const headerHeight = config.header.showHeader
       ? config.view.isFeed
-        ? 104
-        : 56
+        ? feedHeaderHeight
+        : carouselHeaderHeight
       : 0;
     const statsHeight = config.engagement.showSocialInteractionData ? 40 : 0;
     const linkoutHeight = config.links.showLinkOutside ? 108 : 0;

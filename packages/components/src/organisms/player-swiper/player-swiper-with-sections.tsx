@@ -11,7 +11,7 @@ import { Comments, CommentsDialog } from "../../molecules/comments";
 
 import { Player } from "./player";
 import { SwiperImplementation } from "./swiper-implementation";
-import { ComponentProps, useMemo, useState } from "react";
+import { ComponentProps, useState } from "react";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { abbreviateNumber, cn } from "@genuin/ui/lib/utils";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
@@ -43,7 +43,7 @@ type PlayerListPropsType = {
    * @param videoId - The video id
    * @param increment - true to increment, false to decrement
    */
-  onCommentCountChange?: (videoId: string, increment?: boolean) => void;
+  onCommentCountChange?: ComponentProps<typeof Player>["onCommentCountChange"];
   isSectioned?: boolean;
 };
 
@@ -158,12 +158,8 @@ export function PlayerListWithSection({
                                 onGroupSubscriptionChange={
                                   onGroupSubscriptionChange
                                 }
-                                onReactionStateChange={(_, isReacted) => {
-                                  onReactionStateChange?.(
-                                    post.video.id,
-                                    isReacted
-                                  );
-                                }}
+                                onReactionStateChange={onReactionStateChange}
+                                onCommentCountChange={onCommentCountChange}
                                 index={index}
                               />
                             </div>

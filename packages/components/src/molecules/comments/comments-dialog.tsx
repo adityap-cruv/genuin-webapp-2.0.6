@@ -19,6 +19,11 @@ type CommentDialogProps = {
   shareUrl: string;
   defaultOpen: boolean;
   onOpenChange?: ComponentProps<typeof Dialog>["onOpenChange"];
+  /**
+   * @param videoId - The video id
+   * @param increment - true to increment, false to decrement
+   */
+  onCommentCountChange?: (videoId: string, increment?: boolean) => void;
 } & React.ComponentProps<typeof DialogTrigger>;
 
 export function CommentsDialog({
@@ -32,6 +37,7 @@ export function CommentsDialog({
   className,
   defaultOpen,
   onOpenChange,
+  onCommentCountChange,
   ...props
 }: CommentDialogProps) {
   // const embedDetails = useSafeEmbedContext();
@@ -70,6 +76,7 @@ export function CommentsDialog({
           videoSlug={videoSlug}
           onCommentPosted={(comments) => {
             setQueryDataForNewComment(videoId, comments);
+            onCommentCountChange?.(videoId);
           }}
         />
       </DialogContent>

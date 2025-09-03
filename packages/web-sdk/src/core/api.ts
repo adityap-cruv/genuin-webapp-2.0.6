@@ -35,7 +35,7 @@ export class APIService {
       searchParams.set('api_key', apiKey)
 
       const response = await fetch(
-        `${API_BASE_URL}/api/v3/brand/detail?${searchParams}`,
+        `${API_BASE_URL}/goservices/brand/details?${searchParams}`,
       )
 
       if (!response.ok) {
@@ -66,7 +66,7 @@ export class APIService {
    */
   async fetchEmbedData(embedId: string): Promise<EmbedDataType> {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/v3/embed?id=${embedId}`)
+      const response = await fetch(`${API_BASE_URL}/goservices/embed?id=${embedId}`)
 
       if (!response.ok) {
         throw new Error(

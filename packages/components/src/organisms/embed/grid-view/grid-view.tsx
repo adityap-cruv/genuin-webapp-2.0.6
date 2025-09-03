@@ -13,6 +13,8 @@ export function GridView({
   cols = 2,
   autoAdjust,
   aspectRatio,
+  moveToNext,
+  moveToNextTime,
   ...restProps
 }: {
   videos: PostDetailsType[];
@@ -20,6 +22,8 @@ export function GridView({
   cols?: number;
   autoAdjust?: boolean;
   aspectRatio?: string;
+  moveToNext: boolean;
+  moveToNextTime: number;
 } & ComponentProps<"div">) {
   const { embedEventBus } = useEmbedContext();
   const { view } = useEmbedConfigs();
@@ -32,15 +36,17 @@ export function GridView({
   useEffect(() => {
     if (videos.length === 0) return;
     if (isHovering) return;
+    if (!moveToNext) return;
+
     const interval = setInterval(() => {
       const context = embedEventBus.getContext();
       if (context.activePlayerType === "expand-view") return;
       const currentIndex = context.activeIndex || 0;
       const nextIndex = (currentIndex + 1) % videos.length;
       updateActiveIndex(nextIndex);
-    }, 3000);
+    }, moveToNextTime * 1000);
     return () => clearInterval(interval);
-  }, [videos.length, embedEventBus, updateActiveIndex, isHovering]);
+  }, [videos.length, embedEventBus, updateActiveIndex, isHovering, moveToNext]);
 
   useEffect(() => {
     if (videos.length > 0) {

@@ -16,7 +16,7 @@
     "lint": "turbo run lint",
     "dev:web": "npx concurrently \"pnpm  --filter=@genuin/ui dev:styles\" \"pnpm --filter=@genuin/components dev:styles\" \"pnpm dev --filter=@genuin/webapp -- --turbo\"",
     "dev:sdk": "npx concurrently \"pnpm  --filter=@genuin/ui dev:styles\" \"pnpm --filter=@genuin/components dev:styles\" \"pnpm dev --filter=@genuin/web-sdk\"",
-    "build:web": "npx concurrently \"pnpm  --filter=@genuin/ui dev:styles\" \"pnpm --filter=@genuin/components dev:styles\" \"pnpm build --filter=@genuin/webapp\"",
+    "build:web": "npx concurrently \"pnpm  --filter=@genuin/ui build:styles\" \"pnpm --filter=@genuin/components build:styles\" \"pnpm build --filter=@genuin/webapp\"",
     "cache:clear": "rm -rf .turbo node_modules/.cache/turbo",
     "modules:clear": "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
     "components": "npx concurrently \"pnpm --filter @genuin/ui storybook\" \"pnpm --filter @genuin/components storybook\" \"pnpm  --filter @genuin/ui dev:styles\" \"pnpm --filter @genuin/components dev:styles\"",

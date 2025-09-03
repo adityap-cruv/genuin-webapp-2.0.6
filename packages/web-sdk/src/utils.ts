@@ -527,9 +527,8 @@ export function getUrlForReaction(
   forComment: boolean = false,
   theme: string = 'light',
 ) {
-  return `${MEDIA_BASE_URL}/webapp_assets/reactions/${reaction}/${theme === 'dark' ? 'dark/' : ''}${forComment ? 'comment_' : 'feed_'}${
-    isReacted ? 'selected' : 'unselected'
-  }.svg`
+  return `${MEDIA_BASE_URL}/webapp_assets/reactions/${reaction}/${theme === 'dark' ? 'dark/' : ''}${forComment ? 'comment_' : 'feed_'}${isReacted ? 'selected' : 'unselected'
+    }.svg`
 }
 
 /**
@@ -754,6 +753,7 @@ export function resolveVideoUrl(
  */
 export function parsePlacementToEmbedData(
   data: PlacementDataResponse,
+  styleId: string
 ): EmbedDataType {
   const webConfig = data.environments?.web
   const configureView = webConfig?.configure_view
@@ -828,10 +828,10 @@ export function parsePlacementToEmbedData(
       // Display preferences
       feed_display_pref: 'default',
 
-      // Heading and sub-heading (empty as not in PlacementDataResponse)
-      heading: null,
+      // Heading and sub-heading from styles
+      heading: data.styles?.find(style => style._id === styleId)?.title || null,
       heading_text_color: configureView?.heading_text_color,
-      sub_heading: null,
+      sub_heading: data.styles?.find(style => style._id === styleId)?.sub_title || null,
       sub_heading_text_color: configureView?.sub_heading_text_color,
 
       // UI element visibility
@@ -839,13 +839,15 @@ export function parsePlacementToEmbedData(
       is_floating_view: configureView?.is_floating_view ?? false,
       is_expanded_view: configureView?.is_expanded_view ?? false,
       is_show_username:
-        configureView?.is_show_username ??
-        configureView?.show_username ??
+        // configureView?.is_show_username ??
+        // configureView?.show_username ??
         false,
-      is_show_view_count: configureView?.is_show_view_count ?? false,
+      is_show_view_count:
+        // configureView?.is_show_view_count ?? 
+        false,
       is_show_social_interaction_data:
-        configureView?.is_show_social_interaction_data ??
-        configureView?.show_social_interaction_data ??
+        // configureView?.is_show_social_interaction_data ??
+        // configureView?.show_social_interaction_data ??
         false,
 
       // Video settings
@@ -905,49 +907,52 @@ export function parsePlacementToEmbedData(
     // Grid layout configuration
     grid_layout: configureView?.grid_layout
       ? {
-          auto_adjust: configureView.grid_layout.auto_adjust,
-          column: configureView.grid_layout.column,
-          row: configureView.grid_layout.row,
-        }
+        auto_adjust: configureView.grid_layout.auto_adjust,
+        column: configureView.grid_layout.column,
+        row: configureView.grid_layout.row,
+      }
       : undefined,
+    grid_auto_advance_playback: configureView.media_play.auto_advance_playback ?? 3 ,
+    grid_enable_loop_video: configureView.media_play.enable_loop_video ?? false ,
+
 
     // Implementation guide settings
     implementation_guide: webConfig?.implementation_guide
       ? {
-          is_on_page_context_fetch:
-            webConfig.implementation_guide.is_on_page_context_fetch,
-          is_real_time_context_fetch:
-            webConfig.implementation_guide.is_real_time_context_fetch,
-          show_brand_id: webConfig.implementation_guide.show_brand_id,
-          show_community_group_id:
-            webConfig.implementation_guide.show_community_group_id,
-          show_custom_context:
-            webConfig.implementation_guide.show_custom_context,
-          show_location: webConfig.implementation_guide.show_location,
-          show_pdp_url: webConfig.implementation_guide.show_pdp_url,
-          show_place: webConfig.implementation_guide.show_place,
-          show_posted_by_user:
-            webConfig.implementation_guide.show_posted_by_user,
-          show_style_id: webConfig.implementation_guide.show_style_id,
-          show_time: webConfig.implementation_guide.show_time,
-          show_user_interests:
-            webConfig.implementation_guide.show_user_interests,
-          show_user_segmentation:
-            webConfig.implementation_guide.show_user_segmentation,
-        }
+        is_on_page_context_fetch:
+          webConfig.implementation_guide.is_on_page_context_fetch,
+        is_real_time_context_fetch:
+          webConfig.implementation_guide.is_real_time_context_fetch,
+        show_brand_id: webConfig.implementation_guide.show_brand_id,
+        show_community_group_id:
+          webConfig.implementation_guide.show_community_group_id,
+        show_custom_context:
+          webConfig.implementation_guide.show_custom_context,
+        show_location: webConfig.implementation_guide.show_location,
+        show_pdp_url: webConfig.implementation_guide.show_pdp_url,
+        show_place: webConfig.implementation_guide.show_place,
+        show_posted_by_user:
+          webConfig.implementation_guide.show_posted_by_user,
+        show_style_id: webConfig.implementation_guide.show_style_id,
+        show_time: webConfig.implementation_guide.show_time,
+        show_user_interests:
+          webConfig.implementation_guide.show_user_interests,
+        show_user_segmentation:
+          webConfig.implementation_guide.show_user_segmentation,
+      }
       : undefined,
 
     // Report options and settings
     report_options: expandView?.report_options
       ? {
-          inappropriate_content:
-            expandView.report_options.inappropriate_content,
-          non_professional_content:
-            expandView.report_options.non_professional_content,
-          other: expandView.report_options.other,
-          spam: expandView.report_options.spam,
-          threatening_violent: expandView.report_options.threatening_violent,
-        }
+        inappropriate_content:
+          expandView.report_options.inappropriate_content,
+        non_professional_content:
+          expandView.report_options.non_professional_content,
+        other: expandView.report_options.other,
+        spam: expandView.report_options.spam,
+        threatening_violent: expandView.report_options.threatening_violent,
+      }
       : undefined,
 
     enable_report: expandView?.enable_report,

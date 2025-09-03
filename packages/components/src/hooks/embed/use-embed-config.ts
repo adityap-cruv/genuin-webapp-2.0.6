@@ -67,6 +67,8 @@ export function useEmbedConfigs() {
       theme: customization?.theme || "light",
       enableAdaptiveVideo: embedData?.enable_adaptive_video || false,
       gridLayout: embedData?.grid_layout || undefined,
+      gridAutoAdvancePlayback: embedData?.grid_auto_advance_playback || 3,
+      gridEnableLoopVideo: embedData?.grid_enable_loop_video || false,
     }),
     [customization, embedData?.style]
   );

@@ -10,7 +10,7 @@ export * from './types'
 export { SDKProvider, useSDK, useSDKConfig } from './core/context'
 
 // Main SDK class for vanilla JS and React
-export { GenuinSDK, Genuin } from './sdk'
+export { GenuinSDK } from './sdk'
 
 // Import for browser global setup
 import { Genuin } from './sdk'
@@ -152,3 +152,13 @@ if (typeof window !== 'undefined') {
   //   })
   // }
 }
+
+// Only initialize browser globals for IIFE builds
+// ES module imports will get the exports directly
+// if (typeof window !== 'undefined' && !(window as any).__GENUIN_ES_MODULE__) {
+//   initializeBrowserGlobals()
+// }
+
+// Export at the end to ensure it appears in the compiled ES module
+export { Genuin }
+export default Genuin
