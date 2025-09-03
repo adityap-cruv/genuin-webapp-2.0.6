@@ -26,6 +26,9 @@ type PlayerProps = {
   onGroupSubscriptionChange: ComponentProps<
     typeof ControlLayer
   >["onGroupSubscriptionChange"];
+  onCommentCountChange: ComponentProps<
+    typeof ControlLayer
+  >["onCommentCountChange"];
   index: number;
   isSectioned?: boolean;
   isActive: boolean;
@@ -42,6 +45,7 @@ export function Player({
   onGroupJoinStatusChange,
   onGroupSubscriptionChange,
   onReactionStateChange,
+  onCommentCountChange,
   isSectioned,
   isActive,
   isNext,
@@ -116,6 +120,7 @@ export function Player({
             onGroupSubscriptionChange={onGroupSubscriptionChange}
             showCloseButton={variant === "expand"}
             onReactionStateChange={onReactionStateChange}
+            onCommentCountChange={onCommentCountChange}
             // Applies GPU acceleration to prevent layer flickering on iOS devices during animations
             className="gencl:translate-x-0"
           />

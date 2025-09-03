@@ -12,7 +12,6 @@ import { PlaybackSpeedCapsule } from "@genuin/components/molecules/playback-spee
 import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
 import { Linkouts } from "@genuin/components/organisms/linkouts/linkouts";
 import { SpeedControlSideBars } from "../../playback-speed/speed-control-bars";
-import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 
 export function Default({
@@ -20,19 +19,19 @@ export function Default({
   postDetails,
   isActive,
   showCloseButton,
+  isSectioned,
+  variant,
   onCommunityJoinStatusChange,
   onGroupJoinStatusChange,
   onGroupSubscriptionChange,
   onReactionStateChange,
-  variant,
-  isSectioned,
+  onCommentCountChange,
   ...restProps
 }: ControlLayerPropsType) {
   const { showExpandView, togglePlay, toggleMuted, muted } = usePlayerContext();
   const { gestureOverlayUI, hideGestureOverlay } = useGestureOverlayManager();
   const { showSeeker } = usePlayerContext();
   const { isMobile } = useDeviceDetectMediaQuery();
-  const embedDetails = useSafeEmbedContext();
 
   const { brandDetails, playbackSpeed } = useBaseContext();
 
@@ -128,6 +127,7 @@ export function Default({
             onGroupJoinStatusChange={onGroupJoinStatusChange}
             onGroupSubscriptionChange={onGroupSubscriptionChange}
             onReactionStateChange={onReactionStateChange}
+            onCommentCountChange={onCommentCountChange}
             variant={variant}
           />
         ) : (

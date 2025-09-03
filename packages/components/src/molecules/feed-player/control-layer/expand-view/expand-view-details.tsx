@@ -2,7 +2,7 @@
 import { Avatar } from "@genuin/ui/avatar";
 import { ReadMore } from "@genuin/components/molecules/read-more";
 import { cn, getFormattedDuration, getMonthYear } from "@genuin/ui/utils";
-import { useMemo, type ComponentProps, type ReactNode } from "react";
+import { useMemo, type ComponentProps } from "react";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { usePlayerContext } from "../../context";
 import { ProfileLink } from "@genuin/components/molecules/profile-link";
@@ -11,7 +11,7 @@ import { Pills } from "@genuin/components/molecules/feed-player/pills";
 import { Actions } from "@genuin/components/molecules/actions";
 import { CommentsDialog } from "@genuin/components/molecules/comments";
 import { controlLayerVariant } from "../control-layer";
-import { VariantProps, cva } from "class-variance-authority";
+import { VariantProps } from "class-variance-authority";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { Linkouts } from "@genuin/components/organisms";
 
@@ -28,6 +28,9 @@ type ExpandViewProps = ComponentProps<"div"> & {
   onCommunityJoinStatusChange?: ComponentProps<
     typeof Pills
   >["onCommunityJoinStatusChange"];
+  onCommentCountChange?: ComponentProps<
+    typeof CommentsDialog
+  >["onCommentCountChange"];
 } & VariantProps<typeof controlLayerVariant>;
 
 // Layout configuration interface
@@ -198,9 +201,13 @@ function SharedActions({
   postDetails,
   defaultOpenCommentDialog,
   onReactionStateChange,
+  onCommentCountChange,
 }: {
   postDetails: PostDetailsType;
   defaultOpenCommentDialog: boolean;
+  onCommentCountChange?: ComponentProps<
+    typeof CommentsDialog
+  >["onCommentCountChange"];
   onReactionStateChange?: (videoId: string, isReacted: boolean) => void;
 }) {
   return (
@@ -227,8 +234,14 @@ function SharedActions({
               videoSlug={postDetails.video.slug}
               commentCount={postDetails.video.commentCount}
               defaultOpen={defaultOpenCommentDialog}
+              onCommentCountChange={(videoId, increment) => {
+                onCommentCountChange?.(videoId, increment);
+              }}
             >
               {defaultNode}
+              <p className="gencl:text-body-2-medium gencl:text-white!">
+                {postDetails.video.commentCount}
+              </p>
             </CommentsDialog>
           );
         },
@@ -244,11 +257,12 @@ export function ExpandViewDetails({
   className,
   postDetails,
   isActive,
+  variant,
   onGroupJoinStatusChange,
   onGroupSubscriptionChange,
   onCommunityJoinStatusChange,
   onReactionStateChange,
-  variant,
+  onCommentCountChange,
   ...restProps
 }: ExpandViewProps) {
   const {
@@ -306,6 +320,7 @@ export function ExpandViewDetails({
           postDetails={postDetails}
           defaultOpenCommentDialog={defaultOpenCommentDialog}
           onReactionStateChange={onReactionStateChange}
+          onCommentCountChange={onCommentCountChange}
         />
       </div>
 

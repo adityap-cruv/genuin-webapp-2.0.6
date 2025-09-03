@@ -56,7 +56,9 @@ const actionVariants = cva("", {
 type ActionsPropsType = ComponentProps<"div"> & {
   isReacted: boolean;
   reactionCount: number;
-  onReactionStateChange?: (isReacted: boolean) => void;
+  onReactionStateChange?: ComponentProps<
+    typeof ReactionButton
+  >["onReactionStateChange"];
   contentId: string;
   shareUrl: string;
   slug: string;

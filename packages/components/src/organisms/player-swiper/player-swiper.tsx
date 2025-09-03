@@ -42,7 +42,9 @@ type PlayerListPropsType = {
    * @param videoId - The video id
    * @param increment - true to increment, false to decrement
    */
-  onCommentCountChange?: (videoId: string, increment?: boolean) => void;
+  onCommentCountChange?: ComponentProps<
+    typeof Comments
+  >["onCommentCountChange"];
 };
 
 // TODO: This component is using feed context, which is not ideal. Remove this dep of FeedContext in future.
@@ -89,9 +91,8 @@ export function PlayerList({
                       onCommunityJoinStatusChange={onCommunityJoinStatusChange}
                       onGroupJoinStatusChange={onGroupJoinStatusChange}
                       onGroupSubscriptionChange={onGroupSubscriptionChange}
-                      onReactionStateChange={(_, isReacted) => {
-                        onReactionStateChange?.(post.video.id, isReacted);
-                      }}
+                      onReactionStateChange={onReactionStateChange}
+                      onCommentCountChange={onCommentCountChange}
                       index={index}
                     />
                     {!isMobile && (
@@ -148,6 +149,7 @@ export function PlayerList({
                                   shareUrl={post.video.shareUrl}
                                   defaultOpen={defaultOpen}
                                   key={"feed-comment-box" + post.video.id}
+                                  onCommentCountChange={onCommentCountChange}
                                 >
                                   <CommentBox>{defaultNode}</CommentBox>
                                 </CommentsDialog>

@@ -22,4 +22,7 @@ export type ControlLayerPropsType = ComponentProps<"div"> & {
   onCommunityJoinStatusChange?: ComponentProps<
     typeof ExpandViewDetails
   >["onCommunityJoinStatusChange"];
+  onCommentCountChange: ComponentProps<
+    typeof ExpandViewDetails
+  >["onCommentCountChange"];
 } & VariantProps<typeof controlLayerVariant>;
