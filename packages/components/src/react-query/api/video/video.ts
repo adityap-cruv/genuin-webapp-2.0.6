@@ -140,6 +140,10 @@ export function useGetVideoDetailsAsFeed(slug: string) {
   const query = useQuery({
     queryKey: getQueryKeyForVideoDetails(slug),
     queryFn: async () => {
+      // Only fetch if slug is non-empty
+      if (!slug) {
+        throw new Error("Slug is required to fetch video details");
+      }
       const video = await getVideoDetails(slug);
       return {
         pages: [
@@ -152,7 +156,8 @@ export function useGetVideoDetailsAsFeed(slug: string) {
         pageParams: [null],
       };
     },
-    enabled: !!slug,
+    // Don't run the query if slug is empty
+    enabled: !!slug && slug !== "",
     retry: 1,
   });
 

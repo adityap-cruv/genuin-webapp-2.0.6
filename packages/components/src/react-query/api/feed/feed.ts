@@ -173,17 +173,27 @@ type UseFeedOptionsType = {
 export type FeedPage = Awaited<ReturnType<typeof fetchFeed>>;
 
 export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
-  // Handle video details when startVideoSlug is provided
-  const videoDetailsQuery = options?.startVideoSlug
-    ? useGetVideoDetailsAsFeed(options.startVideoSlug)
-    : { isLoading: false, data: undefined, isError: false };
+  // Always call the hook but control its behavior through the enabled flag
+  // This ensures consistent hook call order regardless of options changes
+  const startVideoSlug = options?.startVideoSlug;
+  const videoDetailsQuery = useGetVideoDetailsAsFeed(startVideoSlug || "");
+
+  // Emulate the old conditional behavior while keeping hook call order consistent
+  const videoQueryResult = {
+    isLoading: startVideoSlug ? videoDetailsQuery.isLoading : false,
+    data: startVideoSlug ? videoDetailsQuery.data : undefined,
+    isError: startVideoSlug ? videoDetailsQuery.isError : false,
+  };
 
   // Common query configuration with conditional overrides
   const infiniteQueryResult = useInfiniteQuery({
     queryKey: getQueryKeyForFeed(feedType, options),
     queryFn: async ({ pageParam }) =>
       await fetchFeed(feedType, pageParam, options),
-    enabled: options?.enabled,
+    // Calculate the enabled state based on both options.enabled and videoQueryResult if startVideoSlug exists
+    enabled: options?.startVideoSlug
+      ? !videoQueryResult.isLoading && options?.enabled !== false
+      : options?.enabled,
     initialPageParam: undefined,
     getNextPageParam: (lastPage) => {
       if (lastPage.endOfFeed) return undefined;
@@ -197,49 +207,56 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     staleTime: 0,
-    // Conditional properties based on startVideoSlug
-    ...(options?.startVideoSlug &&
-      !videoDetailsQuery.isError && {
-        enabled: !videoDetailsQuery.isLoading,
-        initialData: videoDetailsQuery.data
-          ? {
-              pages: [
-                {
-                  feed: [videoDetailsQuery.data],
-                  hasSection: false,
-                  pageSession: null,
-                  endOfFeed: false,
-                  timestamp: 0,
-                },
-              ],
-              pageParams: [{ pageSession: "", lastVideoId: "" }],
-            }
-          : undefined,
-        select: (data: InfiniteData<FeedPage>) => {
-          if (!data) return undefined;
-          return {
-            ...data,
-            pages: data.pages.map((page) => ({
-              ...page,
-              feed: page.feed.filter(
-                (video) => video.video.slug !== options.startVideoSlug
-              ),
-            })),
-          };
-        },
-      }),
+    // Apply these properties regardless of startVideoSlug, but their behavior is controlled by startVideoSlug
+    initialData: () => {
+      // Only provide initialData if we have a startVideoSlug and valid videoQueryResult.data
+      if (
+        options?.startVideoSlug &&
+        videoQueryResult.data &&
+        !videoQueryResult.isError
+      ) {
+        return {
+          pages: [
+            {
+              feed: [videoQueryResult.data],
+              hasSection: false,
+              pageSession: null,
+              endOfFeed: false,
+              timestamp: 0,
+            },
+          ],
+          pageParams: [{ pageSession: "", lastVideoId: "" }],
+        };
+      }
+      return undefined;
+    },
+    select: (data: InfiniteData<FeedPage>) => {
+      // Only filter if we have a startVideoSlug
+      if (options?.startVideoSlug && !videoQueryResult.isError && data) {
+        return {
+          ...data,
+          pages: data.pages.map((page) => ({
+            ...page,
+            feed: page.feed.filter(
+              (video) => video.video.slug !== options.startVideoSlug
+            ),
+          })),
+        };
+      }
+      return data;
+    },
   });
 
-  // Override isLoading when videoDetailsQuery is loading
+  // Override isLoading when videoQueryResult is loading
   return {
     ...infiniteQueryResult,
     data: infiniteQueryResult.data
       ? {
           ...infiniteQueryResult.data,
-          pages: videoDetailsQuery.data
+          pages: videoQueryResult.data
             ? [
                 {
-                  feed: [videoDetailsQuery.data],
+                  feed: [videoQueryResult.data],
                   hasSection: false,
                   pageSession: null,
                   endOfFeed: false,
@@ -249,11 +266,11 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
               ]
             : infiniteQueryResult.data.pages,
         }
-      : videoDetailsQuery.data
+      : videoQueryResult.data
         ? {
             pages: [
               {
-                feed: [videoDetailsQuery.data],
+                feed: [videoQueryResult.data],
                 hasSection: false,
                 pageSession: null,
                 endOfFeed: false,
@@ -262,7 +279,7 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
             ],
           }
         : undefined,
-    isLoading: videoDetailsQuery.isLoading || infiniteQueryResult.isLoading,
+    isLoading: videoQueryResult.isLoading || infiniteQueryResult.isLoading,
   };
 };
 
