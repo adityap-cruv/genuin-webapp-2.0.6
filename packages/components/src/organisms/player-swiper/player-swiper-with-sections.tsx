@@ -203,8 +203,10 @@ export function PlayerListWithSection({
                 if (!showCommentBox) return;
                 //
                 const defaultOpen =
-                  embedDetails?.embedData?.autoUserInteractionToPerform ===
-                    "comment-spark" &&
+                  (embedDetails?.embedData?.autoUserInteractionToPerform ===
+                    "comment-spark" ||
+                    embedDetails?.embedData?.autoUserInteractionToPerform ===
+                      "comment") &&
                   posts[activeIndex]?.video.slug ===
                     embedDetails.embedData?.startVideoSlug;
 

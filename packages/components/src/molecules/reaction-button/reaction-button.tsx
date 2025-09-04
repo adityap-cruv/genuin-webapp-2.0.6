@@ -124,6 +124,7 @@ export function ReactionButton({
     (authInfo?.signInUrl || authInfo?.signUpUrl) &&
     brandId === 2357
   ) {
+    console.log("Rendering popover reaction button", authInfo);
     const popoverButton = createButton(true); // Use the special button that won't trigger clickHandler
 
     return (

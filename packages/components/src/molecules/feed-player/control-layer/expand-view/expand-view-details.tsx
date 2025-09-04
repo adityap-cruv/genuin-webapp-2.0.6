@@ -102,8 +102,9 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
 
   const defaultOpenCommentDialog = useMemo(() => {
     return (
-      embedDetails?.embedData.autoUserInteractionToPerform ===
-        "comment-spark" &&
+      (embedDetails?.embedData.autoUserInteractionToPerform ===
+        "comment-spark" ||
+        embedDetails?.embedData.autoUserInteractionToPerform === "comment") &&
       embedDetails.embedData.startVideoSlug === postDetails.video.slug
     );
   }, [embedDetails, postDetails]);

@@ -109,9 +109,12 @@ export function PlayerList({
                         actionWrapper={{
                           COMMENT: (defaultNode) => {
                             const defaultOpen =
-                              embedDetails?.embedData
+                              (embedDetails?.embedData
                                 ?.autoUserInteractionToPerform ===
-                                "comment-spark" &&
+                                "comment-spark" ||
+                                embedDetails?.embedData
+                                  .autoUserInteractionToPerform ===
+                                  "comment") &&
                               post.video.slug ===
                                 embedDetails.embedData?.startVideoSlug &&
                               activeIndex === index &&
