@@ -104,7 +104,7 @@ export function ActionPopover({
             <Link
               href={
                 embedDetails?.embedData?.authInfo?.signInUrl +
-                `${embedDetails?.embedData?.authInfo?.signInUrl.includes("?") ? "&" : "?"}${params}`
+                `${embedDetails?.embedData?.authInfo?.signInUrl?.includes("?") ? "&" : "?"}${params}`
               }
               className="gencl:font-bold gencl:underline"
             >
@@ -114,7 +114,7 @@ export function ActionPopover({
             <Link
               href={
                 embedDetails?.embedData?.authInfo?.signUpUrl +
-                `${embedDetails?.embedData?.authInfo?.signUpUrl.includes("?") ? "&" : "?"}${params}`
+                `${embedDetails?.embedData?.authInfo?.signUpUrl?.includes("?") ? "&" : "?"}${params}`
               }
               className="gencl:font-bold gencl:underline"
             >
