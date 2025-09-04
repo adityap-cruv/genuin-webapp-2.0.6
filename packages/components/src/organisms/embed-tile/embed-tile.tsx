@@ -185,7 +185,7 @@ function EmbedPlayer({
 }: EmbedPlayerProps) {
   const { isAdPlaying } = usePlayerContext();
   const config = useEmbedConfigs();
-  const { changeActivePlayerType, embedData } = useEmbedContext();
+  const { changeActivePlayerType, embedData, rootElement } = useEmbedContext();
 
   const handleClickOnEmbedTile = useCallback(() => {
     if (isAdPlaying) {
@@ -219,6 +219,19 @@ function EmbedPlayer({
     embedData.card_layout_id,
   ]);
 
+  // Determine sizing based on rootElement dimensions
+  const getAdaptiveSizing = () => {
+    if (!rootElement) return "gencl:h-full"; // fallback
+
+    const containerHeight =
+      rootElement.offsetHeight || rootElement.clientHeight;
+    const containerWidth = rootElement.offsetWidth || rootElement.clientWidth;
+
+    // If container is taller than wide (portrait), use w-full to fit width
+    // If container is wider than tall (landscape), use h-full to fit height
+    return containerHeight > containerWidth ? "gencl:w-full" : "gencl:h-full";
+  };
+
   return (
     <div
       className={cn("gencl:relative gencl:flex-1 gencl:min-h-0", {
@@ -233,8 +246,10 @@ function EmbedPlayer({
         loop={config.video.embedInLoop && isActive}
         autoPlay={config.video.embedAutoplay && isActive}
         className={cn(
-          "gencl:h-full gencl:object-cover gencl:w-full"
-          // !config.video.videoCrop && "gencl:object-cover gencl:w-full"
+          // Adaptive sizing based on rootElement dimensions
+          getAdaptiveSizing(),
+          !config.video.videoCrop &&
+            "gencl:object-cover gencl:h-full gencl:w-full"
         )}
       />
       <ControlLayer

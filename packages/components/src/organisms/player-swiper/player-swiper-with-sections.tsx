@@ -1,6 +1,6 @@
 import "swiper/css";
 import { Button } from "@genuin/ui/button";
-import { SwiperSlide, useSwiper } from "swiper/react";
+import { SwiperSlide } from "swiper/react";
 import { useBoolean } from "usehooks-ts";
 
 import { Actions } from "@genuin/components/molecules/actions";
@@ -11,7 +11,7 @@ import { Comments, CommentsDialog } from "../../molecules/comments";
 
 import { Player } from "./player";
 import { SwiperImplementation } from "./swiper-implementation";
-import { ComponentProps, useState } from "react";
+import { ComponentProps, useMemo, useState, useEffect } from "react";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { abbreviateNumber, cn } from "@genuin/ui/lib/utils";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
@@ -72,6 +72,12 @@ export function PlayerListWithSection({
   // Ref for outer swiper
   const [outerSwiper, setOuterSwiper] = useState<Swiper | null>(null);
 
+  // State to track vertical swipers for each section
+  const [verticalSwipers, setVerticalSwipers] = useState<
+    Record<number, Swiper>
+  >({});
+  const [activeHorizontalIndex, setActiveHorizontalIndex] = useState(0);
+
   // Handler for section tab click
   const handleSectionSelect = (section: any) => {
     if (!sectionList) return;
@@ -101,6 +107,7 @@ export function PlayerListWithSection({
           )}
           onSwiper={setOuterSwiper}
           onActiveIndexChange={(swiper) => {
+            setActiveHorizontalIndex(swiper.activeIndex);
             if (sectionList) {
               embedDetails?.updateSelectedSection(
                 sectionList[swiper.activeIndex]
@@ -117,6 +124,12 @@ export function PlayerListWithSection({
                 <SwiperImplementation
                   className="gencl:h-full"
                   initialSlide={startIndex}
+                  onSwiper={(swiper) => {
+                    setVerticalSwipers((prev) => ({
+                      ...prev,
+                      [sectionIdx]: swiper,
+                    }));
+                  }}
                   onActiveIndexChange={(swiper) => {
                     onActiveIndexChange?.(swiper.activeIndex);
                   }}
@@ -168,9 +181,6 @@ export function PlayerListWithSection({
                       </SwiperSlide>
                     );
                   })}
-
-                  {/* in case of expand view show navigation buttons. in case of mobile view don't show navigation. */}
-                  {/* {showExpandView && !isMobile && <NavigationButton />} */}
                 </SwiperImplementation>
               )}
             </SwiperSlide>
@@ -261,6 +271,14 @@ export function PlayerListWithSection({
         )}
       </div>
 
+      {/* in case of expand view show navigation buttons. in case of mobile view don't show navigation. */}
+      {showExpandView && !isMobile && (
+        <NavigationButton
+          verticalSwiper={verticalSwipers[activeHorizontalIndex]}
+          postsLength={posts.length}
+        />
+      )}
+
       {/* show this only if expand view is open  */}
       {value &&
         showExpandView &&
@@ -285,8 +303,27 @@ export function PlayerListWithSection({
   );
 }
 
-function NavigationButton() {
-  const swiper = useSwiper();
+function NavigationButton({
+  verticalSwiper,
+  postsLength,
+}: {
+  verticalSwiper?: Swiper;
+  postsLength?: number;
+}) {
+  const swiper = verticalSwiper;
+
+  // State to force re-render when swiper state changes
+  const [, forceUpdate] = useState({});
+
+  useEffect(() => {
+    if (swiper && swiper.update) {
+      swiper.update();
+      forceUpdate({});
+    }
+  }, [postsLength, swiper]);
+
+  if (!swiper) return null;
+
   return (
     <div className="gencl:z-50 gencl:text-white gencl:space-y-4 gencl:fixed gencl:right-7.5 gencl:top-1/2 gencl:-translate-y-1/2">
       <Button
@@ -294,14 +331,14 @@ function NavigationButton() {
         disabled={swiper.isBeginning}
         onClick={() => swiper.slidePrev()}
       >
-        <ChevronUpIcon className="gencl:stroke-white gencl:size-5" />
+        <ChevronUpIcon theme="dark" size="xs" />
       </Button>
       <Button
         theme="navigation"
         disabled={swiper.isEnd}
         onClick={() => swiper.slideNext()}
       >
-        <ChevronDownIcon className="gencl:stroke-white gencl:size-5" />
+        <ChevronDownIcon theme="dark" size="xs" />
       </Button>
     </div>
   );

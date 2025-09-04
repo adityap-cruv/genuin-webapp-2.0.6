@@ -72,9 +72,6 @@ export function parsePlacementToEmbedData(
     // Map aspect ratio from configure_view
     aspect_ratio: configureView?.aspect_ratio,
 
-    // Map adaptive video setting
-    enable_adaptive_video: configureView?.enable_adaptive_video,
-
     // Map layout IDs properly
     card_layout_id: configureView?.card_layout_id ?? 1,
     video_layout_id: configureView?.video_layout_id ?? 1,
@@ -152,7 +149,7 @@ export function parsePlacementToEmbedData(
       // Video settings
       is_loop_video: false, // Not directly available in PlacementDataResponse
       is_popup_view: false, // Not available in PlacementDataResponse
-      video_crop: false, // Not available in PlacementDataResponse
+      video_crop: configureView?.video_crop,
 
       // Engagement and redirection flags
       is_enable_engagement_tools:
@@ -212,7 +209,7 @@ export function parsePlacementToEmbedData(
         }
       : undefined,
     grid_auto_advance_playback:
-      configureView.media_play.auto_advance_playback ?? 3,
+      configureView.media_play.auto_advance_playback ?? 0,
     grid_enable_loop_video: configureView.media_play.enable_loop_video ?? false,
 
     // Implementation guide settings
@@ -259,6 +256,7 @@ export function parsePlacementToEmbedData(
     is_show_video_thumbnail: configureView?.is_show_video_thumbnail,
     show_video_duration: configureView?.show_video_duration,
     is_show_metrics: configureView?.is_show_metrics,
+    show_linkout_in_expand: expandView?.enable_linkout,
   }
 }
 

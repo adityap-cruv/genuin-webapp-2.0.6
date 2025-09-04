@@ -419,6 +419,7 @@ export type EmbedDataType = {
   placement_video_layout_id?: number;
   grid_auto_advance_playback?: number;
   grid_enable_loop_video?: boolean;
+  show_linkout_in_expand?: boolean;
 };
 
 export type CustomizationType = {
@@ -678,7 +679,7 @@ export type PlacementEnvironmentConfig = {
       height: number;
       width: number;
     };
-    enable_adaptive_video: boolean;
+    video_crop?: boolean;
     enable_style_fallback: boolean;
     grid_layout: {
       auto_adjust: boolean;

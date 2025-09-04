@@ -1,15 +1,9 @@
 import { useBaseContext } from "@genuin/components/context/base";
 import {
-  Carousel,
-  CarouselContent,
-  CarouselDots,
-  CarouselItem,
-} from "@genuin/ui/carousel";
-import {
   BecomeCreatorData,
   BecomeCreatorDataItem,
 } from "./become-creator-data";
-import { ComponentProps, useCallback, useEffect } from "react";
+import { ComponentProps, useCallback } from "react";
 import { Button } from "@genuin/ui/components/button";
 import { DialogClose } from "@genuin/ui/components/dialog";
 import {
@@ -22,6 +16,13 @@ import { useAnalytics } from "@genuin/components/context/analytics";
 import { useAuthContext } from "@genuin/components/context/auth";
 import { Toast } from "@genuin/ui/components/toaster";
 import { AuthenticationModal } from "../../authentication-modal";
+
+// Swiper imports
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
+import { Pagination, Mousewheel, Keyboard, Autoplay } from "swiper/modules";
 
 type BecomeCreatorProps = ComponentProps<"div">;
 
@@ -89,37 +90,42 @@ export function BecomeCreator({ ...props }: BecomeCreatorProps) {
     </>
   );
 
+  const slides = BecomeCreatorData(brandDetails.name);
+
   return (
-    <div className="gencl:text-center gencl:w-full" {...props}>
-      <Carousel opts={{ align: "start", slidesToScroll: 1 }}>
-        <CarouselContent className="gencl:w-full">
-          {BecomeCreatorData(brandDetails.name).map(
-            (data: BecomeCreatorDataItem, index: number) => {
-              const Icon = data.src;
-              return (
-                <CarouselItem
-                  key={index}
-                  className="gencl:shrink-0 gencl:flex gencl:flex-col gencl:gap-4 gencl:items-center"
-                >
-                  <Icon
-                    key={index}
-                    className="gencl:w-full gencl:h-auto gencl:object-contain gencl:fill-primary"
-                  />
-                  <div className="gencl:flex gencl:gap-4 gencl:flex-col gencl:text-center">
-                    <p className="gencl:text-headline-2-semi-bold">
-                      {data.title}
-                    </p>
-                    <p className="gencl:text-body-1-medium gencl:text-secondary-600">
-                      {data.subtitle}
-                    </p>
-                  </div>
-                </CarouselItem>
-              );
-            }
-          )}
-        </CarouselContent>
-        <CarouselDots />
-      </Carousel>
+    <div className="gencl:text-center gencl:w-full gencl:h-fit" {...props}>
+      <Swiper
+        mousewheel={true}
+        keyboard={true}
+        modules={[Autoplay, Pagination, Mousewheel, Keyboard]}
+        autoplay={{
+          delay: 2500,
+          pauseOnMouseEnter: true,
+        }}
+        pagination={{ clickable: true }}
+        spaceBetween={24}
+        slidesPerView={1}
+        className="gencl:w-full gencl:h-fit"
+      >
+        {slides.map((data: BecomeCreatorDataItem, index: number) => {
+          const Icon = data.src;
+          return (
+            <SwiperSlide key={index}>
+              <div className="gencl:flex gencl:flex-col gencl:gap-4 gencl:items-center gencl:h-fit gencl:mb-8">
+                <Icon className="gencl:w-full gencl:h-auto gencl:object-contain gencl:fill-primary" />
+                <div className="gencl:flex gencl:gap-4 gencl:flex-col gencl:text-center">
+                  <p className="gencl:text-headline-2-semi-bold">
+                    {data.title}
+                  </p>
+                  <p className="gencl:text-body-1-medium gencl:text-secondary-600">
+                    {data.subtitle}
+                  </p>
+                </div>
+              </div>
+            </SwiperSlide>
+          );
+        })}
+      </Swiper>
       <div className="gencl:flex gencl:flex-col gencl:gap-4 gencl:mt-6">
         {cbStatus?.status !== "Accepted" && renderButton()}
         <DialogClose asChild>

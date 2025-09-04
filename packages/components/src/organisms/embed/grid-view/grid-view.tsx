@@ -36,7 +36,7 @@ export function GridView({
   useEffect(() => {
     if (videos.length === 0) return;
     if (isHovering) return;
-    if (!moveToNext) return;
+    if (!moveToNext || moveToNextTime) return;
 
     const interval = setInterval(() => {
       const context = embedEventBus.getContext();
