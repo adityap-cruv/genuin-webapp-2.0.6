@@ -110,24 +110,25 @@ export class GenuinSDK {
    * @private
    */
   private setupEmbedProviderReadyHandler(): void {
+    //TODO: Think about the placement feature.
     // Set up a handler for the embedProviderReady event
     const readyEmbeds: Array<string> = []
-    const totalEmbeds = Object.keys(this.sdkElements).length
+    const totalEmbeds = Object.values(this.sdkElements).filter(
+      (val) => !!val.config.embedId,
+    ).length
 
     // Listen for ready signals from embed providers
     const handleProviderReady = (event: any) => {
       const { embedId } = event.payload || {}
-      if (embedId) {
-        readyEmbeds.add(embedId)
-
-        // Execute callbacks once all embed providers are ready
-        if (readyEmbeds.length >= totalEmbeds) {
-          this.callbackQueueManager.executeAllCallbacks()
-          this.eventManager.off(
-            SDKEventType.SDK_EMBED_PROVIDER_READY,
-            handleProviderReady,
-          )
-        }
+      readyEmbeds.push(embedId)
+      console.log('Embed provider ready:', embedId, readyEmbeds, totalEmbeds)
+      // Execute callbacks once all embed providers are ready
+      if (readyEmbeds.length >= totalEmbeds) {
+        this.callbackQueueManager.executeAllCallbacks()
+        this.eventManager.off(
+          SDKEventType.SDK_EMBED_PROVIDER_READY,
+          handleProviderReady,
+        )
       }
     }
 

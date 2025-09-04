@@ -31,6 +31,7 @@ export function ProfileDetails({
     error,
     data: profileData,
   } = useGetProfileDetails(userName, forBrand);
+  const { isMobile } = useDeviceDetectMediaQuery();
   const detailsId = useId();
   const { brandDetails } = useBaseContext();
   const { replace } = useRouter();
