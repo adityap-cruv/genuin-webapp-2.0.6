@@ -72,7 +72,8 @@ export type UpdateConfigByUserType = {
   token: string
   user_params: Record<string, any>
   contextual_params?: ContextualParamsType
-  embed_id: string
+  embed_id?: string
+  placement_id?: string
   action?: ActionType
   start_video_slug?: string
 }

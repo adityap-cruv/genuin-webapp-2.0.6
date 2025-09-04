@@ -59,6 +59,7 @@ export function parsePlacementToEmbedData(
   return {
     // Direct mapping from PlacementDataResponse
     _id: data._id,
+    placement_id: data._id,
     name: data.name,
     style: data.type ?? 'grid',
     type: (data.feed_type as EmbedDataType['type']) ?? 'loop_feed',

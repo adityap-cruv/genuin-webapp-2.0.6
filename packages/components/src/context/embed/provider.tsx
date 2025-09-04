@@ -49,7 +49,8 @@ export function EmbedProvider({
       const payload = props.payload;
       if (
         payload &&
-        payload.embedId === stateEmbedData.embed_id &&
+        (payload.embedId === stateEmbedData.embed_id ||
+          payload.placementId === stateEmbedData.placement_id) &&
         payload.contextualParams
       ) {
         setStateEmbedData((prev) => ({
@@ -63,7 +64,8 @@ export function EmbedProvider({
       const payload = props.payload;
       if (
         payload &&
-        payload.embedId === stateEmbedData.embed_id &&
+        (payload.embedId === stateEmbedData.embed_id ||
+          payload.placementId === stateEmbedData.placement_id) &&
         payload.startVideoSlug
       ) {
         setStateEmbedData((prev) => ({
@@ -98,6 +100,7 @@ export function EmbedProvider({
     // Signal that the embed provider is ready to receive events
     window.genuin?.emit("sdk:embedProviderReady", {
       embedId: stateEmbedData.embed_id,
+      placementId: stateEmbedData.placement_id,
     });
   }, []);
 
