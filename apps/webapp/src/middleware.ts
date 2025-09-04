@@ -204,7 +204,7 @@ export function getConfig(host: string): { domain?: string; subdomain?: string }
     process.env.NEXT_PUBLIC_CURRENT_ENV === 'local' || process.env.NEXT_PUBLIC_CURRENT_ENV === 'qa'
   const subdomain = isDevEnvironment
     ? host.replace('.qa.begenuin.com', '').replace('.uat.begenuin.com', '')
-    : host.replace('.begenuin.com', '')
+    : host.replace('.test.begenuin.com', '').replace('.begenuin.com', '')
 
   // Special case for root domain
   if (subdomain === 'begenuin.com') {

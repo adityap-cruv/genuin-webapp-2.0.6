@@ -41,7 +41,10 @@ export function parseGroupDetails(
       userName: data.owner.username,
       phone: data.owner.phone,
       isAvatar: data.owner.is_avatar,
-      profileImage: data.owner.profile_image,
+      profileImage:
+        data.owner.profile_image_s ??
+        data.owner.profile_image_m ??
+        data.owner.profile_image,
       profileImageM: data.owner.profile_image_m,
       brand: data.owner.brand
         ? {
@@ -57,7 +60,7 @@ export function parseGroupDetails(
       handle: data.community.handle,
       name: data.community.name,
       description: data.community.description,
-      dp: data.community.dp,
+      dp: data.community.dp_s ?? data.community.dp_m ?? data.community.dp,
       dpM: data.community.dp_m,
       shareUrl: data.community.share_url,
       type: data.community.type,
@@ -72,7 +75,7 @@ export function parseGroupDetails(
             favicon: data.community.brand.favicon,
             brandSystemUserId: data.community.brand.brand_system_user_id,
             slug: data.community.brand.brand_slug,
-            handle: data.community.brand.handle
+            handle: data.community.brand.handle,
           }
         : undefined,
     },

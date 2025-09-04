@@ -82,7 +82,8 @@ export function parseFeed(
       userRole: mapCommunityUserRole(item.community.logged_in_user_role),
       type: item.community.type || null,
       name: item.community.name || null,
-      profileImage: item.community.dp_m || null,
+      profileImage:
+        item.community.dp_s || item.community.dp_m || item.community.dp || null,
       membersCount: item.community.no_of_members || 0,
       groupsCount: item.community.no_of_groups || 0,
       postsCount: item.community.no_of_videos || 0,
@@ -98,7 +99,10 @@ export function parseFeed(
       }),
     },
     owner: {
-      profileImage: item.owner.profile_image,
+      profileImage:
+        item.owner.profile_image_s ??
+        item.owner.profile_image_m ??
+        item.owner.profile_image,
       isAvatar: item.owner.is_avatar,
       userName: item.owner.username,
       name: item.owner.name || null,

@@ -133,7 +133,10 @@ export function ProfileDetails({
           title={profileData?.name ?? ""}
           profileImageDetails={{
             imageUrl:
-              profileData?.profile_image_l ?? profileData.profile_image_m  ?? profileData?.profile_image ?? "",
+              profileData?.profile_image_l ??
+              profileData.profile_image_m ??
+              profileData?.profile_image ??
+              "",
             isAvatar: profileData.is_avatar,
             alt: profileData.name ?? "",
           }}

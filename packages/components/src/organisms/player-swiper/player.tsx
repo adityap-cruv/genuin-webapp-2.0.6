@@ -1,4 +1,4 @@
-import { cn } from "@genuin/ui/utils";
+import { cn, getWebpUrlForImage } from "@genuin/ui/utils";
 import { useBaseContext } from "@genuin/components/context/base";
 import {
   ControlLayer,
@@ -82,7 +82,7 @@ export function Player({
           postDetails={post}
           src={post.video.source}
           id={post.video.id}
-          poster={post.video.thumbnail ?? ""}
+          poster={getWebpUrlForImage(post.video.thumbnail ?? "")}
           className={cn(
             "gencl:bg-secondary-200 gencl:object-cover",
             isMobile ? "gencl:w-full gencl:h-full" : "gencl:aspect-reel"
