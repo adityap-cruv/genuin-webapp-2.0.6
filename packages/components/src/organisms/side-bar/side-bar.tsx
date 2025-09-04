@@ -23,7 +23,7 @@ type SideBarProps = ComponentProps<"aside"> &
   };
 
 const sidebarVariants = cva(
-  "gencl:relative gencl:h-full gencl:flex gencl:flex-col gencl:overflow-y-auto",
+  "gencl:relative gencl:h-full gencl:bg-white gencl:flex gencl:flex-col gencl:overflow-y-auto",
   {
     variants: {
       variant: {

@@ -66,7 +66,7 @@ export function BaseLayout({
       )}
       <main
         className={cn(
-          "gencl:sm:flex gencl:overflow-clip gencl:relative",
+          "gencl:sm:flex gencl:overflow-clip gencl:relative gencl:bg-white",
           (layoutConfig.showNavigationBar ||
             layoutConfig.showBackAndCloseButton) &&
             !isMobile

@@ -41,6 +41,8 @@ declare global {
       off?: typeof Genuin.off
       init?: (config: any) => ReturnType<typeof Genuin.newInit>
       update?: (config: any) => ReturnType<typeof Genuin.newUpdate>
+      emit?: typeof Genuin.emit
+      onAll?: typeof Genuin.onAll
       _initQueue?: Array<() => void>
     }
     onGenuinReady?: (sdk: typeof Genuin) => void
@@ -60,6 +62,8 @@ if (typeof window !== 'undefined') {
     // Event handling methods
     on: Genuin.on.bind(Genuin),
     off: Genuin.off.bind(Genuin),
+    emit: Genuin.emit.bind(Genuin),
+    onAll: Genuin.onAll.bind(Genuin),
 
     // Legacy methods - now properly connected to new architecture
     init: (config: any) => {

@@ -2,7 +2,13 @@
 import { EmbedContext } from "./context";
 import { ActivePlayerType, createEmbedEventBus } from "./event-bus";
 import { EmbedDataType } from "./embed.types";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useInsertionEffect,
+  useMemo,
+  useState,
+} from "react";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 type EmbedProviderProps = {
@@ -35,12 +41,14 @@ export function EmbedProvider({
     []
   );
 
-  useEffect(() => {
+  // Mount event listeners and handlers
+  useInsertionEffect(() => {
     if (!window.genuin) return;
 
     const handleUpdateContextualParams = (props: any) => {
       const payload = props.payload;
       if (
+        payload &&
         payload.embedId === stateEmbedData.embed_id &&
         payload.contextualParams
       ) {
@@ -71,6 +79,7 @@ export function EmbedProvider({
       handleUpdateContextualParams
     );
     window.genuin.on("sdk:updateStartVideoSlug", handleUpdateStartVideoSlug);
+
     return () => {
       window.genuin?.off(
         "sdk:updateContextualParams",
@@ -81,7 +90,16 @@ export function EmbedProvider({
         handleUpdateStartVideoSlug
       );
     };
-  }, [stateEmbedData]);
+  }, []);
+
+  // Notify that the embed provider is ready
+  useEffect(() => {
+    if (!window.genuin) return;
+    // Signal that the embed provider is ready to receive events
+    window.genuin?.emit("sdk:embedProviderReady", {
+      embedId: stateEmbedData.embed_id,
+    });
+  }, []);
 
   const updateSectionList = useCallback(
     // Updates the section list in the embed context and emits a sectionListChange event

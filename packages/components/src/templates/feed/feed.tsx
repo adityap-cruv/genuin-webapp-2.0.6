@@ -36,13 +36,18 @@ export function FeedWithData({
   ...restProps
 }: FeedWithDataPropsType) {
   const embedDetails = useSafeEmbedContext();
-  const queryOptions = {
-    communityIds: embedDetails?.embedData?.customization.community_ids,
-    groupIds: embedDetails?.embedData?.customization.community_loop_ids?.map(
-      (item) => item.loop_id
-    ),
-    startVideoSlug: embedDetails?.embedData?.startVideoSlug,
-  };
+  const queryOptions = useMemo(
+    () => ({
+      communityIds: embedDetails?.embedData?.customization.community_ids,
+      groupIds: embedDetails?.embedData?.customization.community_loop_ids?.map(
+        (item) => item.loop_id
+      ),
+      startVideoSlug: embedDetails?.embedData?.startVideoSlug,
+      contextualParams: embedDetails?.embedData?.contextualParams,
+    }),
+    [embedDetails]
+  );
+
   const {
     data,
     isLoading,
