@@ -1,6 +1,7 @@
 import { memoryLocation } from "wouter/memory-location";
 import { buildPageUrl } from "./pages";
 
+// TODO: This singleton object is  interfering with other embeds in ase of multiple embeds on the same page. consider moving it to embed provider.
 export const embedRouter = {
   ...memoryLocation({
     path: buildPageUrl({ type: "home" }),

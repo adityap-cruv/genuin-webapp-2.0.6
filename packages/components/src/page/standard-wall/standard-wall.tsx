@@ -11,7 +11,6 @@ import { SettingsPage } from "@genuin/components/organisms/settings";
 import { Explore } from "../explore";
 import { ComponentProps, useEffect } from "react";
 import { useRouter } from "@genuin/components/hooks/use-router";
-import { ErrorState } from "@genuin/components/molecules/error-state";
 import ErrorBoundary from "./error-boundary";
 
 type StandardWallProps = {
@@ -40,6 +39,10 @@ export function StandardWall({
     if (defaultComponent) {
       router.replace("/default-comp");
     }
+
+    return () => {
+      if (defaultComponent) router.replace(buildPageUrl({ type: "home" }));
+    };
   }, []);
 
   return (
