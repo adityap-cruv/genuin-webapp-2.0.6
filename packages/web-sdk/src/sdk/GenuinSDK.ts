@@ -111,7 +111,7 @@ export class GenuinSDK {
    */
   private setupEmbedProviderReadyHandler(): void {
     // Set up a handler for the embedProviderReady event
-    const readyEmbeds = new Set<string>()
+    const readyEmbeds: Array<string> = []
     const totalEmbeds = Object.keys(this.sdkElements).length
 
     // Listen for ready signals from embed providers
@@ -121,7 +121,7 @@ export class GenuinSDK {
         readyEmbeds.add(embedId)
 
         // Execute callbacks once all embed providers are ready
-        if (readyEmbeds.size >= totalEmbeds) {
+        if (readyEmbeds.length >= totalEmbeds) {
           this.callbackQueueManager.executeAllCallbacks()
           this.eventManager.off(
             SDKEventType.SDK_EMBED_PROVIDER_READY,
@@ -164,7 +164,7 @@ export class GenuinSDK {
     }
 
     // Update contextual params in the embed, if embedId is passed then only in that embed otherwise in all the embeds.
-    if (config?.contextual_params) {
+    if (config?.contextual_params && config.embed_id) {
       await this.updateContextualParamsInEmbed({
         contextualParams: config.contextual_params,
         embedId: config.embed_id,
@@ -258,7 +258,6 @@ export class GenuinSDK {
 
       // Apply brand colors to the element
       this.themeManager.applyBrandColors(element, brandDetails.brand_colors)
-      console.log('onfig::', config)
       loadNewEmbed({
         container: element,
         embedData: embedDetails,
@@ -400,10 +399,11 @@ export class GenuinSDK {
       contextualParams || {},
     )
 
-    this.eventManager.emit(SDKEventType.SDK_UPDATE_CONTEXTUAL_PARAMS, {
-      embedId,
-      contextualParams,
-    })
+    if (embedId)
+      this.eventManager.emit(SDKEventType.SDK_UPDATE_CONTEXTUAL_PARAMS, {
+        embedId,
+        contextualParams,
+      })
   }
 
   /**
