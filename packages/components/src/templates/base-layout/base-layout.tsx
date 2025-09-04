@@ -67,7 +67,9 @@ export function BaseLayout({
       <main
         className={cn(
           "gencl:sm:flex gencl:overflow-clip gencl:relative",
-          layoutConfig.showNavigationBar && !isMobile
+          (layoutConfig.showNavigationBar ||
+            layoutConfig.showBackAndCloseButton) &&
+            !isMobile
             ? "gencl:h-[calc(100%_-_64px)]"
             : "gencl:h-full"
         )}
