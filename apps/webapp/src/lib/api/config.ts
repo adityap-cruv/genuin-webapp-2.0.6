@@ -1,7 +1,7 @@
 import { type ConfigType } from '@lib/stores/genuin-options'
 
 export async function getEmbedConfig(params: Record<string, string>) {
-  const url = new URL(process.env.NEXT_PUBLIC_API_URL + '/api/v3/brand/detail')
+  const url = new URL(process.env.NEXT_PUBLIC_GO_API_URL + '/brand/details')
   Object.keys(params).forEach((key) => {
     url.searchParams.append(key, params[key])
   })

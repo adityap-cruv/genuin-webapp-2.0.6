@@ -84,7 +84,7 @@ async function handleApiRewrite(request: NextRequest, path: string, host: string
     pathParams = pathParams?.split('/').slice(handler.pathParamsSlice).join('/')
 
     // Create a server-side fetch to the API
-    const apiUrl = `${process.env.NEXT_PUBLIC_GO_API_URL}/${
+    const apiUrl = `${process.env.NEXT_PUBLIC_GO_API_URL}/sitemap/${
       config?.brand_id ?? 'genuin'
     }/${effectiveHost}/${pathParams}${request.nextUrl.search}`
 
