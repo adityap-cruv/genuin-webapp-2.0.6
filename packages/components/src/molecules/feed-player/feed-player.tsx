@@ -23,16 +23,6 @@ type Props = Omit<
    * The id of the video to passed to analytics.
    */
   videoId: string;
-  /**
-   * Whether the video should autoplay when loaded.
-   * @default false
-   */
-  autoPlay?: boolean;
-  /**
-   * Whether the video should loop when it ends.
-   * @default false
-   */
-  loop?: boolean;
 };
 
 const EVENT_DURATION_PROPERTY_NAME = "video_length";
@@ -43,8 +33,6 @@ export const FeedPlayer = memo(function FeedPlayer({
   videoId,
   poster,
   className,
-  autoPlay = false,
-  loop = false,
   onOpenPlayerReady,
   onTimeUpdate,
   onEnded,
@@ -93,16 +81,6 @@ export const FeedPlayer = memo(function FeedPlayer({
       playerRef.current.playbackRate = playbackSpeed.speed;
     }
   }, [playbackSpeed]);
-
-  // Handle autoplay
-  useEffect(() => {
-    if (playerRef.current && autoPlay && feedPlayerShouldPlay) {
-      audioManager.notifyPlaying(id);
-      playerRef.current.play().catch((err) => {
-        console.warn("Autoplay prevented:", err);
-      });
-    }
-  }, [autoPlay, feedPlayerShouldPlay, id]);
 
   // Track when video comes into view using IntersectionObserver
   useEffect(() => {
@@ -175,12 +153,12 @@ export const FeedPlayer = memo(function FeedPlayer({
 
   const handlePlayerLoad = useCallback(
     (player: any) => {
-      if (feedPlayerShouldPlay && autoPlay) {
+      if (feedPlayerShouldPlay) {
         audioManager.notifyPlaying(id);
         player.play();
       }
     },
-    [feedPlayerShouldPlay, autoPlay, id]
+    [feedPlayerShouldPlay, id]
   );
 
   const handleVideoFirstQuartile = useCallback(
@@ -299,11 +277,9 @@ export const FeedPlayer = memo(function FeedPlayer({
       muted={muted}
       src={src}
       playsInline
-      loop={loop}
       className={cn("gencl:m-auto", className)}
       volume={volume}
       play={feedPlayerShouldPlay}
-      autoPlay={autoPlay}
       playbackSpeed={playbackSpeed?.speed || 1}
       onPlayerLoad={handlePlayerLoad}
       onOpenPlayerReady={handleOpenPlayerReady}

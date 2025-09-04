@@ -1,7 +1,6 @@
 import { useEmbedContext } from "@genuin/components/context/embed";
 import { useBaseContext } from "@genuin/components/context/base";
 import { useMemo } from "react";
-import { isCheckFifthVideoType } from "@genuin/components/lib/utils";
 import { useDeviceDetectMediaQuery } from "../use-devide-detect-media-query";
 import type { CustomizationType } from "@genuin/components/context/embed/embed.types";
 
@@ -67,8 +66,6 @@ export function useEmbedConfigs() {
       theme: customization?.theme || "light",
       enableAdaptiveVideo: embedData?.enable_adaptive_video || false,
       gridLayout: embedData?.grid_layout || undefined,
-      gridAutoAdvancePlayback: embedData?.grid_auto_advance_playback || 0,
-      gridEnableLoopVideo: embedData?.grid_enable_loop_video || false,
     }),
     [customization, embedData?.style]
   );
@@ -103,12 +100,19 @@ export function useEmbedConfigs() {
   // ============================================================
   const videoConfig = useMemo(
     () => ({
-      embedInLoop: !!customization?.is_loop_video,
-      embedAutoplay: !!customization?.autoplay,
-      showBorderAroundVideo: !(
-        isCheckFifthVideoType(brandDetails.brand_id) &&
-        embedData?.style === "carousel"
-      ),
+      videoLoop: !!embedData?.placement_id
+        ? embedData?.media_play?.enable_loop_video
+        : !!customization?.is_loop_video,
+      videoAutoplay: !!embedData?.placement_id
+        ? embedData?.media_play?.enable_autoplay
+        : !!customization?.autoplay,
+      moveToNextTime: embedData?.media_play?.auto_advance_playback ?? 0,
+      showBorderAroundVideo:
+        !!customization?.is_enable_engagement_tools ||
+        (customization?.links?.is_show_links &&
+          customization?.links?.position === "outside")
+          ? true
+          : false,
       videoCrop: !!customization?.video_crop,
     }),
     [customization, brandDetails.brand_id, embedData?.style]
@@ -184,7 +188,7 @@ export function useEmbedConfigs() {
       showCommentsSection: !!customization?.show_comments_section,
       showSidePanel: !!customization?.show_side_panel,
       isEnableRedirection: !!customization?.is_enable_redirection,
-      redirectionTools: {
+      redirectionTools: customization?.enable_redirection_tools ?? {
         community: true,
         group: true,
         user: true,
@@ -282,7 +286,7 @@ export function useEmbedConfigs() {
       hideModal:
         embedContextData.embedData?.style === "carousel" ||
         embedContextData.embedData?.style === "feed" ||
-        embedContextData.embedData?.card_layout_id === 6,
+        embedContextData.embedData?.style === "grid",
     };
   }, [
     embedContextData.embedData?.style,

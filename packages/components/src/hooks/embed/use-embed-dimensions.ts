@@ -51,19 +51,42 @@ export function useEmbedDimensions() {
     const spaceBetweenVideos = 8;
     const MIN_CAROUSEL_HEIGHT = 100;
 
-    // Calculate feed header height based on CTA button and subheading presence
-    const feedHeaderHeight = !config.header.ctaButton?.url
-      ? config.header.subHeading
-        ? 64
-        : 40
-      : 104;
-    const carouselHeaderHeight = 56;
+    // Header height constants for different view types
+    const HEADER_HEIGHTS = {
+      feed: {
+        withCtaButton: 104,
+        withSubHeading: 64,
+        basic: 40,
+      },
+      carousel: 56,
+      grid: 48,
+    } as const;
 
-    const headerHeight = config.header.showHeader
-      ? config.view.isFeed
-        ? feedHeaderHeight
-        : carouselHeaderHeight
-      : 0;
+    // Calculate header height based on view type and configuration
+    const getHeaderHeight = (): number => {
+      if (!config.header.showHeader) return 0;
+
+      if (config.view.isFeed) {
+        if (config.header.ctaButton?.url) {
+          return HEADER_HEIGHTS.feed.withCtaButton;
+        }
+        return config.header.subHeading
+          ? HEADER_HEIGHTS.feed.withSubHeading
+          : HEADER_HEIGHTS.feed.basic;
+      }
+
+      if (config.view.isCarousel) {
+        return HEADER_HEIGHTS.carousel;
+      }
+
+      if (config.view.isGrid) {
+        return HEADER_HEIGHTS.grid;
+      }
+
+      return 0;
+    };
+
+    const headerHeight = getHeaderHeight();
     const statsHeight = config.engagement.showSocialInteractionData ? 40 : 0;
     const linkoutHeight = config.links.showLinkOutside ? 108 : 0;
 

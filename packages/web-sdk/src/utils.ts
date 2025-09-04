@@ -544,8 +544,9 @@ export function getUrlForReaction(
   forComment: boolean = false,
   theme: string = 'light',
 ) {
-  return `${MEDIA_BASE_URL}/webapp_assets/reactions/${reaction}/${theme === 'dark' ? 'dark/' : ''}${forComment ? 'comment_' : 'feed_'}${isReacted ? 'selected' : 'unselected'
-    }.svg`
+  return `${MEDIA_BASE_URL}/webapp_assets/reactions/${reaction}/${theme === 'dark' ? 'dark/' : ''}${forComment ? 'comment_' : 'feed_'}${
+    isReacted ? 'selected' : 'unselected'
+  }.svg`
 }
 
 /**
@@ -703,24 +704,6 @@ function readFileAsArrayBuffer(file: Blob): Promise<ArrayBuffer> {
 }
 
 /**
- * Determines if the provided brand ID corresponds to a "fifth video type" brand.
- *
- * @param params - An object containing the brand ID to check.
- * @param params.brandId - The brand ID to evaluate. Can be a number or undefined.
- * @returns `true` if the brand ID is either 2883 or 2922; otherwise, `false`.
- */
-export function isCheckFifthVideoType(
-  brandId: number | string | undefined,
-): boolean {
-  const parsedBrandId = Number(brandId)
-
-  if (!isNaN(parsedBrandId) && [2883, 2922, 2357].includes(parsedBrandId)) {
-    return true
-  }
-  return false
-}
-
-/**
  * Resolves the appropriate video URL based on brand preferences and availability.
  *
  * Certain brands prefer MP4 format over M3U8. For these brands, MP4 URL is returned
@@ -829,8 +812,8 @@ export function parsePlacementToEmbedData(
 
       // Links configuration
       links: {
-        is_show_links: configureView?.show_links ?? false,
-        position: 'overlay' as const, // Default as PlacementDataResponse doesn't have position
+        is_show_links: configureView?.links.is_show_links ?? false,
+        position: configureView?.links.position,
       },
 
       // Carousel style mapping
@@ -923,52 +906,50 @@ export function parsePlacementToEmbedData(
     // Grid layout configuration
     grid_layout: configureView?.grid_layout
       ? {
-        auto_adjust: configureView.grid_layout.auto_adjust,
-        column: configureView.grid_layout.column,
-        row: configureView.grid_layout.row,
-      }
+          auto_adjust: configureView.grid_layout.auto_adjust,
+          column: configureView.grid_layout.column,
+          row: configureView.grid_layout.row,
+        }
       : undefined,
-    grid_auto_advance_playback:
-      configureView.media_play.auto_advance_playback ?? 0,
-    grid_enable_loop_video: configureView.media_play.enable_loop_video ?? false,
+    media_play: configureView.media_play,
 
     // Implementation guide settings
     implementation_guide: webConfig?.implementation_guide
       ? {
-        is_on_page_context_fetch:
-          webConfig.implementation_guide.is_on_page_context_fetch,
-        is_real_time_context_fetch:
-          webConfig.implementation_guide.is_real_time_context_fetch,
-        show_brand_id: webConfig.implementation_guide.show_brand_id,
-        show_community_group_id:
-          webConfig.implementation_guide.show_community_group_id,
-        show_custom_context:
-          webConfig.implementation_guide.show_custom_context,
-        show_location: webConfig.implementation_guide.show_location,
-        show_pdp_url: webConfig.implementation_guide.show_pdp_url,
-        show_place: webConfig.implementation_guide.show_place,
-        show_posted_by_user:
-          webConfig.implementation_guide.show_posted_by_user,
-        show_style_id: webConfig.implementation_guide.show_style_id,
-        show_time: webConfig.implementation_guide.show_time,
-        show_user_interests:
-          webConfig.implementation_guide.show_user_interests,
-        show_user_segmentation:
-          webConfig.implementation_guide.show_user_segmentation,
-      }
+          is_on_page_context_fetch:
+            webConfig.implementation_guide.is_on_page_context_fetch,
+          is_real_time_context_fetch:
+            webConfig.implementation_guide.is_real_time_context_fetch,
+          show_brand_id: webConfig.implementation_guide.show_brand_id,
+          show_community_group_id:
+            webConfig.implementation_guide.show_community_group_id,
+          show_custom_context:
+            webConfig.implementation_guide.show_custom_context,
+          show_location: webConfig.implementation_guide.show_location,
+          show_pdp_url: webConfig.implementation_guide.show_pdp_url,
+          show_place: webConfig.implementation_guide.show_place,
+          show_posted_by_user:
+            webConfig.implementation_guide.show_posted_by_user,
+          show_style_id: webConfig.implementation_guide.show_style_id,
+          show_time: webConfig.implementation_guide.show_time,
+          show_user_interests:
+            webConfig.implementation_guide.show_user_interests,
+          show_user_segmentation:
+            webConfig.implementation_guide.show_user_segmentation,
+        }
       : undefined,
 
     // Report options and settings
     report_options: expandView?.report_options
       ? {
-        inappropriate_content:
-          expandView.report_options.inappropriate_content,
-        non_professional_content:
-          expandView.report_options.non_professional_content,
-        other: expandView.report_options.other,
-        spam: expandView.report_options.spam,
-        threatening_violent: expandView.report_options.threatening_violent,
-      }
+          inappropriate_content:
+            expandView.report_options.inappropriate_content,
+          non_professional_content:
+            expandView.report_options.non_professional_content,
+          other: expandView.report_options.other,
+          spam: expandView.report_options.spam,
+          threatening_violent: expandView.report_options.threatening_violent,
+        }
       : undefined,
 
     enable_report: expandView?.enable_report,
@@ -976,6 +957,6 @@ export function parsePlacementToEmbedData(
     is_show_video_thumbnail: configureView?.is_show_video_thumbnail,
     show_video_duration: configureView?.show_video_duration,
     is_show_metrics: configureView?.is_show_metrics,
-    show_linkout_in_expand: expandView?.enable_linkout
+    show_linkout_in_expand: expandView?.enable_linkout,
   }
 }

@@ -253,7 +253,7 @@ function EmbedHeaderSkeleton({
       }}
       className={cn(embedHeaderSkeletonVariants({ variant }))}
     >
-      <div className="gencl:flex gencl:flex-col gencl:items-center gencl:gap-2">
+      <div className="gencl:flex gencl:flex-col gencl:items-start gencl:gap-2">
         {header.heading && <Skeleton className="gencl:h-5 gencl:w-32" />}
         {header.subHeading && <Skeleton className="gencl:h-3 gencl:w-24" />}
       </div>

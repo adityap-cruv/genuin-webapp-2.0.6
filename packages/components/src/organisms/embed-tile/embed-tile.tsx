@@ -111,6 +111,9 @@ export function EmbedTile({
         showExpandView={value}
         toggleExpandView={toggle}
         onPlayerIterationEnd={onPlayerIterationEnd}
+        isEmbed
+        explicitAutoPlay={config.video.videoAutoplay && isActive}
+        explicitLoop={config.video.videoLoop && isActive}
       >
         <EmbedPlayer
           postDetails={postDetails}
@@ -243,8 +246,6 @@ function EmbedPlayer({
         videoId={postDetails.video.id}
         src={postDetails.video.source}
         poster={postDetails.video.thumbnail}
-        loop={config.video.embedInLoop && isActive}
-        autoPlay={config.video.embedAutoplay && isActive}
         className={cn(
           // Adaptive sizing based on rootElement dimensions
           getAdaptiveSizing(),
@@ -257,6 +258,7 @@ function EmbedPlayer({
         isActive={isActive}
         postDetails={postDetails}
         onClick={handleClickOnEmbedTile}
+        onCommentCountChange={undefined}
       />
     </div>
   );

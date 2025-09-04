@@ -16,6 +16,7 @@ import { Swiper } from "swiper/types";
 
 type VideoProviderProps = {
   children: React.ReactNode;
+  isEmbed?: boolean;
   videoId: string;
   /**
    * Function to be called when the player completes it's iteration and is ready to play the next video.
@@ -34,11 +35,27 @@ type VideoProviderProps = {
    * If player is active or not.
    */
   isActive: boolean;
+  /**
+   * Explicit autoplay control that overrides web config autoplay settings
+   * When set to false, video will not autoplay regardless of config
+   */
+  explicitAutoPlay?: boolean;
+  /**
+   * Explicit loop control that overrides web config repeat settings
+   * When set to false, video will not loop regardless of config
+   */
+  explicitLoop?: boolean;
 } & ExpandViewProps;
 
 type PlayerConfigType = ReturnType<typeof getVideoPlayerConfigs>;
 
-function getInitialShouldPlayState(playerConfig: PlayerConfigType) {
+function getInitialShouldPlayState(
+  playerConfig: PlayerConfigType,
+  explicitAutoPlay?: boolean
+) {
+  // If explicit autoplay is provided (false), it should override config
+  if (!explicitAutoPlay) return false;
+
   if (playerConfig) {
     if (playerConfig.autoplay) {
       return true;
@@ -57,6 +74,9 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   toggleExpandView,
   index,
   swiper,
+  isEmbed,
+  explicitAutoPlay,
+  explicitLoop,
 }) => {
   const { brandDetails } = useBaseContext();
   const playerRef = useRef<OpenPlayerJS | null>(null);
@@ -81,7 +101,10 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
    * This state is used to play or pause the video player.
    */
   const [feedPlayerShouldPlay, setFeedPlayerShouldPlay] = useState(
-    getInitialShouldPlayState(getVideoPlayerConfigs(brandDetails?.web_configs))
+    getInitialShouldPlayState(
+      getVideoPlayerConfigs(brandDetails?.web_configs),
+      explicitAutoPlay
+    )
   );
   // event emitter for time updates
   // Use mitt with unknown for browser compatibility and type safety
@@ -108,6 +131,13 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       if (playerConfig.unmuteVideo) {
         unmute(false);
       }
+
+      // Check if explicit autoplay is set to false - if so, don't autoplay
+      if (!explicitAutoPlay) {
+        setFeedPlayerShouldPlay(false);
+        return;
+      }
+
       if (playerConfig.autoplay) {
         // autoplay after sometime is true, so play the video after timeout.
         if (playerConfig.autoplayAfter) {
@@ -126,7 +156,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         ...getVideoPlayerConfigs(brandDetails.web_configs),
       };
     }
-  }, [isActive]);
+  }, [isActive, explicitAutoPlay]);
 
   /**
    * In case of user action only we need to show seeker.
@@ -290,6 +320,18 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   );
 
   const handleEnded = useCallback(() => {
+    // If explicit loop is set to true, just replay the video indefinitely
+    if (explicitLoop) {
+      playerRef.current?.play();
+      return;
+    }
+
+    // In case of embed regardless of shouldSwipeNext it should go to next
+    if (isEmbed) {
+      onPlayerIterationEnd();
+      return;
+    }
+
     const { repeatCount, shouldSwipeNext } = playerConfigRef.current;
 
     // Check if repeatCount is greater than 0
@@ -307,7 +349,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     if (shouldSwipeNext) {
       onPlayerIterationEnd();
     }
-  }, []);
+  }, [isEmbed, onPlayerIterationEnd, explicitLoop]);
 
   const updateAdInfo = useCallback(
     (isAdPlaying: boolean, adInfo: AdInfoType) => {
