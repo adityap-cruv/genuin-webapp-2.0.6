@@ -450,8 +450,12 @@ export class GenuinSDK {
           // There won't be multiple brands embeds on one page So by default taking first embed's brandId.
           brandId,
         })
-        this.eventManager.emit(SDKEventType.SDK_AUTHENTICATE_USER, user)
-        return user
+        if (user) {
+          this.eventManager.emit(SDKEventType.SDK_AUTHENTICATE_USER, user)
+          return user
+        }
+
+        return null
       }
     } catch (error) {
       console.error('Failed to authenticate user:', error)
