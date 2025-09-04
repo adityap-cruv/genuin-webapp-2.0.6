@@ -18,9 +18,9 @@ import { EmbedDataType } from '@genuin/components/context/embed/embed.types'
 import { CallbackQueueManager } from '@/core/callback-queue-manager'
 import { PlacementManager } from '@/core/placement-manager'
 import { ActionType } from '@genuin/components/context/embed/embed.types'
+import { ContextualParamsType } from '@genuin/components/context/embed/embed.types'
 import {
   ConfigByUser,
-  ContextualParamsType,
   InitializationStatus,
   SDKElementsType,
   SingleEmbedDataConfig,
@@ -165,7 +165,7 @@ export class GenuinSDK {
     }
 
     // Update contextual params in the embed, if embedId is passed then only in that embed otherwise in all the embeds.
-    if (config?.contextual_params && (config.embed_id || config.placement_id)) {
+    if (config?.contextual_params) {
       await this.updateContextualParamsInEmbed({
         contextualParams: config.contextual_params,
         embedId: config.embed_id,
@@ -319,6 +319,8 @@ export class GenuinSDK {
       embedDetails.authInfo = config.authInfo
       embedDetails.startVideoSlug = config.startVideoSlug
       embedDetails.autoUserInteractionToPerform = config.action
+      if (config.contextualParams)
+        embedDetails.contextualParams = config.contextualParams
       // Store the embed details in the config for later use
       config.embedDetails = embedDetails
     } else {
@@ -651,8 +653,14 @@ export class GenuinSDK {
         case 'data-page-context':
           answerToReturn.contextualParams =
             answerToReturn.contextualParams || {}
+          console.log('page context value::', value)
           answerToReturn.contextualParams.page_context =
             value ?? configByUser?.contextual_params?.page_context
+          console.log(
+            'page context set to::',
+            answerToReturn.contextualParams.page_context,
+            configByUser?.contextual_params?.page_context,
+          )
           break
         case 'data-previous-page-context':
           answerToReturn.contextualParams =
@@ -769,6 +777,8 @@ export class GenuinSDK {
           break
       }
     }
+
+    console.log('Final contextual params for embed:', answerToReturn)
 
     // extras needed to set explicitly from user config.
     answerToReturn.params = configByUser?.params

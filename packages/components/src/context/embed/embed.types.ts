@@ -5,6 +5,38 @@ export type SDKAPI = {
   setUser: (user: UserParam) => void;
 };
 
+export type ContextualParamsType = {
+  page_context?: string;
+  geo?: {
+    lat?: number;
+    long?: number;
+    radius_limit?: number;
+  };
+  url?: string;
+  previous_page_context?: string;
+  user_context?: string;
+  place?: {
+    country?: string;
+    state?: string;
+    city?: string;
+    zipcode?: string | number;
+  };
+  time?: string | number;
+  user_segments?: {
+    age?: number;
+    min_age?: number;
+    max_age?: number;
+    segment?: string;
+    gender?: string;
+    race?: string;
+  };
+  brands_ids?: number[];
+  user_interests?: string[];
+  posted_by_user_ids?: string[];
+  community_ids?: string[];
+  loop_ids?: string[];
+};
+
 export type SDKConfig = {
   embed?: number;
   brand_id?: number;
@@ -21,14 +53,7 @@ export type SDKConfig = {
   live_customization_data?: any;
   token?: string;
   name?: string;
-  contextualParams?: {
-    page_context?: string | null;
-    geo?: {
-      lat?: string | null;
-      long?: string | null;
-    };
-    url?: string | null;
-  };
+  contextualParams?: ContextualParamsType;
   brand_ids?: number[];
   type?: "brand_feed" | "community_feed" | "loop_feed";
 };

@@ -1,6 +1,7 @@
 import {
   EmbedDataType,
   ActionType,
+  ContextualParamsType,
 } from '@genuin/components/context/embed/embed.types'
 import { BrandDetailsConfigType } from '@genuin/components/types/brand'
 
@@ -19,38 +20,6 @@ type AuthInfoType = {
 }
 
 export type InitializationStatus = 'pending' | 'loading' | 'done'
-
-export type ContextualParamsType = {
-  page_context?: string
-  geo?: {
-    lat?: number
-    long?: number
-    radius_limit?: number
-  }
-  url?: string
-  previous_page_context?: string
-  user_context?: string
-  place?: {
-    country?: string
-    state?: string
-    city?: string
-    zipcode?: string | number
-  }
-  time?: string | number
-  user_segments?: {
-    age?: number
-    min_age?: number
-    max_age?: number
-    segment?: string
-    gender?: string
-    race?: string
-  }
-  brands_ids?: number[]
-  user_interests?: string[]
-  posted_by_user_ids?: string[]
-  community_ids?: string[]
-  loop_ids?: string[]
-}
 
 /**
  * These are the config when user can pass while genuin.init or genuin.initialize.
