@@ -1,10 +1,5 @@
+import { useSafeEmbedContext } from "../context/embed/context";
 import { useLinkContext } from "../context/link";
-import {
-  embedRouter,
-  goBack,
-  goForward,
-  canGoBack as primitiveCanGoBack,
-} from "../lib/utils/embed-router";
 
 // Type definition for the router object that mimics Next.js router
 interface WouterRouter {
@@ -22,12 +17,18 @@ interface WouterRouter {
 
 export function useRouter() {
   const { useRouter } = useLinkContext();
+  const embedContext = useSafeEmbedContext();
+
   return useRouter
     ? { ...useRouter(), canGoBack: () => true }
-    : useWouterRouter();
+    : (() => useWouterRouter(embedContext?.embedRouter))();
 }
 
-function useWouterRouter(): WouterRouter {
+function useWouterRouter(
+  embedRouter?: NonNullable<
+    ReturnType<typeof useSafeEmbedContext>
+  >["embedRouter"]
+): WouterRouter {
   return {
     /**
      * Navigate to a new route by adding a new entry to the browser's history stack
@@ -35,7 +36,7 @@ function useWouterRouter(): WouterRouter {
      * @param options - Navigation options
      */
     push: (href: string, options?: { scroll?: boolean }) => {
-      embedRouter.navigate(href);
+      embedRouter?.navigate(href);
       // Note: Scroll behavior would need to be implemented separately
       // as wouter's memory location doesn't handle scrolling
       if (options?.scroll !== false) {
@@ -52,7 +53,7 @@ function useWouterRouter(): WouterRouter {
      * @param options - Navigation options
      */
     replace: (href: string, options?: { scroll?: boolean }) => {
-      embedRouter.replace(href);
+      embedRouter?.replace(href);
       if (options?.scroll !== false) {
         if (typeof window !== "undefined") {
           window.scrollTo(0, 0);
@@ -66,8 +67,8 @@ function useWouterRouter(): WouterRouter {
      * but forces a re-render by navigating to the same location
      */
     refresh: () => {
-      const currentLocation = embedRouter.hook()[0];
-      embedRouter.navigate(currentLocation);
+      const currentLocation = embedRouter?.hook()[0];
+      embedRouter?.navigate(currentLocation);
     },
 
     /**
@@ -85,18 +86,18 @@ function useWouterRouter(): WouterRouter {
      * Navigate back to the previous route in the browser's history stack
      */
     back: () => {
-      goBack();
+      embedRouter?.goBack();
     },
 
     canGoBack: () => {
-      return primitiveCanGoBack();
+      return embedRouter?.canGoBack() ?? false;
     },
 
     /**
      * Navigate forward to the next page in the browser's history stack
      */
     forward: () => {
-      goForward();
+      embedRouter?.goForward();
     },
   };
 }

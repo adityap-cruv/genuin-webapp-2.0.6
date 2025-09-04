@@ -1,10 +1,7 @@
 "use client";
 import { createContext, useContext } from "react";
 import { EmbedDataType } from "./embed.types";
-import {
-  ActivePlayerType,
-  createEmbedEventBus,
-} from "./event-bus";
+import { ActivePlayerType, createEmbedEventBus } from "./event-bus";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 /**
@@ -23,6 +20,21 @@ type EmbedContextType = {
    * The event bus for the embed context, used to manage events.
    */
   embedEventBus: ReturnType<typeof createEmbedEventBus>;
+  /**
+   * The router for the embed context, used for navigation.
+   */
+  embedRouter: {
+    navigate: (url: string) => void;
+    goBack: () => boolean;
+    goForward: () => boolean;
+    canGoBack: () => boolean;
+    canGoForward: () => boolean;
+    replace: (url: string) => void;
+    hook: any;
+    searchHook: any;
+    history: string[];
+    reset: () => void;
+  };
   /**
    * Changes the active index in the embed context.
    * @param newIndex The new active index.
@@ -49,7 +61,7 @@ type EmbedContextType = {
    * Updates the section list in the context
    * @param newSectionList The new section list to set
    */
-  updateSectionList: (newSectionList: PostDetailsType['section'][]) => void;
+  updateSectionList: (newSectionList: PostDetailsType["section"][]) => void;
 
   /**
    * Updates the sectioned status in the context
@@ -60,7 +72,7 @@ type EmbedContextType = {
   /**
    * Updates the currently selected section
    */
-  updateSelectedSection: (section: PostDetailsType['section']) => void;
+  updateSelectedSection: (section: PostDetailsType["section"]) => void;
 };
 
 /**

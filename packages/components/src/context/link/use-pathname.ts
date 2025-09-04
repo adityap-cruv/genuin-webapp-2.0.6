@@ -1,4 +1,4 @@
-import { embedRouter } from "@genuin/components/lib/utils/embed-router";
+import { useSafeEmbedContext } from "../embed/context";
 
 /**
  * Custom hook that mimics Next.js usePathname() using wouter's memory location.
@@ -7,8 +7,9 @@ import { embedRouter } from "@genuin/components/lib/utils/embed-router";
  * @returns {string} The current pathname
  */
 export function usePathnameFromEmbedRouter(): string {
+  const embedContext = useSafeEmbedContext();
   // Use the embedRouter's hook directly to get the current location
-  const [location] = embedRouter.hook();
+  const [location] = embedContext?.embedRouter.hook();
 
   return location;
 }

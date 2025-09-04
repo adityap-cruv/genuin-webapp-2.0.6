@@ -10,6 +10,7 @@ import {
   useState,
 } from "react";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+import { createEmbedRouter } from "./embed-router";
 
 type EmbedProviderProps = {
   embedData: EmbedDataType;
@@ -40,6 +41,9 @@ export function EmbedProvider({
       }),
     []
   );
+
+  // Create a unique router for this provider instance
+  const embedRouter = useMemo(() => createEmbedRouter(), []);
 
   // Mount event listeners and handlers
   useInsertionEffect(() => {
@@ -228,6 +232,7 @@ export function EmbedProvider({
         customization: stateEmbedData.customization,
         isInIframe,
         embedEventBus,
+        embedRouter,
         changeActiveIndex,
         changeActivePlayerType,
         goBackToPreviousPlayerType,

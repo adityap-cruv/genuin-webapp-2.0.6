@@ -1,4 +1,3 @@
-import { embedRouter } from "@genuin/components/lib/utils/embed-router";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { BaseLayout } from "@genuin/components/templates/base-layout";
 import { Feed } from "@genuin/components/templates/feed";
@@ -12,6 +11,7 @@ import { Explore } from "../explore";
 import { ComponentProps, useEffect } from "react";
 import { useRouter } from "@genuin/components/hooks/use-router";
 import ErrorBoundary from "./error-boundary";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 
 type StandardWallProps = {
   /**
@@ -34,20 +34,21 @@ export function StandardWall({
   ...restProps
 }: StandardWallProps) {
   const router = useRouter();
+  const embedRouter = useSafeEmbedContext()?.embedRouter;
 
   useEffect(() => {
     if (defaultComponent) {
-      router.replace("/default-comp");
+      router?.replace("/default-comp");
     }
 
-    return () => {
-      if (defaultComponent) router.replace(buildPageUrl({ type: "home" }));
-    };
+    // return () => {
+    //   if (defaultComponent) router.replace(buildPageUrl({ type: "home" }));
+    // };
   }, []);
 
   return (
     <div className="gencl:w-full gencl:h-full gencl:relative" {...restProps}>
-      <Router hook={embedRouter.hook}>
+      <Router hook={embedRouter?.hook}>
         <ErrorBoundary>
           <BaseLayout variant={baseLayoutVariant}>
             <Route path={buildPageUrl({ type: "home" })}>

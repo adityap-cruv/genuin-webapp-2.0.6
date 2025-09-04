@@ -12,8 +12,8 @@ import { AnalyticsProvider } from '@genuin/components/context/analytics'
 import { Loader } from '@genuin/ui/components/loader'
 import { Toaster } from '@genuin/ui'
 import { BrandDetailsConfigType } from '@genuin/components/types/brand'
-import { SingleEmbedDataConfig } from './GenuinSDK'
 import { AuthUser } from '@genuin/components/types/auth'
+import { SingleEmbedDataConfig } from '@/type'
 
 // Error view function
 export function loadErrorView(container: HTMLElement): void {

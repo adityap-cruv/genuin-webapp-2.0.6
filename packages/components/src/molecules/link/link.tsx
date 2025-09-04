@@ -3,9 +3,9 @@ import { cn } from "@genuin/ui/utils";
 import type { ComponentProps } from "react";
 import type { NextJSLinkProps } from "@genuin/components/context/link/type";
 import { useLinkContext } from "@genuin/components/context/link";
-import { navigate } from "@genuin/components/lib/utils/embed-router";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import { useBaseContext } from "@genuin/components/context";
+import { useBaseContext, useEmbedContext } from "@genuin/components/context";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 
 type BaseLinkProps = ComponentProps<"a">;
 
@@ -96,6 +96,8 @@ export function Link({
   // Retrieve brand details from the base context
   const { brandDetails } = useBaseContext();
 
+  const embedContext = useSafeEmbedContext();
+
   // Determine if the href is an external link
   let isHrefExternal = typeof href === "string" && checkIfExternal(href);
 
@@ -143,7 +145,7 @@ export function Link({
       e.preventDefault(); // Ensure this runs once
       try {
         // As we only have to pass the pathname and to navigate internally.
-        navigate(href);
+        embedContext?.embedRouter.navigate(href);
       } catch (error) {
         console.error("Invalid URL:", error);
       }
