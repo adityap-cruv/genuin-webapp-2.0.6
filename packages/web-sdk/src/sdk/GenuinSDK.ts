@@ -26,6 +26,7 @@ import {
   SingleEmbedDataConfig,
   UpdateConfigByUserType,
 } from '@/type'
+import { config } from 'zod/v4/core'
 
 export class GenuinSDK {
   private brandDetailsManager: BrandDetailsManager
@@ -580,6 +581,16 @@ export class GenuinSDK {
       } else {
         answerToReturn.embedId = configByUser?.embed_id
       }
+    }
+
+    // This code is for backward compatibility
+    if (configByUser && !configByUser?.contextual_params) {
+      configByUser.contextual_params = configByUser?.contextualParams
+    }
+
+    // This code is for backward compatibility
+    if (configByUser && !configByUser?.auth_info) {
+      configByUser.auth_info = configByUser?.authInfo
     }
 
     // Extract additional configuration attributes from the element

@@ -31,10 +31,18 @@ export type ConfigByUser = {
   style_id?: string
   token?: string
   contextual_params?: ContextualParamsType
+  /**
+   * @deprecated use contextual_params instead
+   */
+  contextualParams?: ContextualParamsType
   start_video_slug?: string
   action?: ActionType
   params?: AuthUserParams
-  authInfo: AuthInfoType
+  /**
+   * @deprecated use auth_info instead
+   */
+  authInfo?: AuthInfoType
+  auth_info?: AuthInfoType
 }
 
 export type UpdateConfigByUserType = {
