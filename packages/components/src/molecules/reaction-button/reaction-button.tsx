@@ -5,7 +5,7 @@ import { Button as PrimitiveButton } from "@genuin/ui/button";
 import { Toast } from "@genuin/ui/components/toaster";
 import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
 import { useVideoReationMutation } from "@genuin/components/react-query/api/feed/spark";
-import { ComponentProps, useCallback, useEffect, useMemo } from "react";
+import React, { ComponentProps, useCallback, useEffect, useMemo } from "react";
 import { DynamicReactionIcon } from "./dynamic-reaction-icon";
 import { useBaseContext } from "@genuin/components/context/base";
 import { cn } from "@genuin/ui/lib/utils";
@@ -50,7 +50,7 @@ type ReactionButtonProps = ComponentProps<typeof PrimitiveButton> & {
   videoId?: string;
 } & VariantProps<typeof reactionButtonVariant>;
 
-export function ReactionButton({
+export const ReactionButton = React.memo(function ReactionButton({
   reactionCount,
   shareUrl,
   contentId,
@@ -93,6 +93,7 @@ export function ReactionButton({
       reactionCount={reactionCount}
       contentId={contentId}
       videoId={videoId}
+      videoSlug={videoSlug}
       onClick={(e) => {
         // Only trigger clickHandler for the default case, not for popover
         onClick?.(e);
@@ -124,7 +125,6 @@ export function ReactionButton({
     (authInfo?.signInUrl || authInfo?.signUpUrl) &&
     brandId === 2357
   ) {
-    console.log("Rendering popover reaction button", authInfo);
     const popoverButton = createButton(true); // Use the special button that won't trigger clickHandler
 
     return (
@@ -182,7 +182,7 @@ export function ReactionButton({
       {showReactionCount && count}
     </div>
   );
-}
+});
 
 function Button({
   isReacted,
@@ -194,11 +194,13 @@ function Button({
   withCustomChildren = false,
   onClick,
   videoId,
+  videoSlug,
   onReactionStateChange,
   ...restProps
 }: ReactionButtonProps) {
   const { user } = useAuthContext();
   const { track, EventName } = useAnalytics();
+
   const {
     mutate: reactToVideo,
     isPending,
@@ -245,7 +247,7 @@ function Button({
     const newReactionState = !isReacted;
     onReactionStateChange?.(newReactionState);
 
-    // Make the API call in the background
+    // Make the API call
     reactToVideo({
       contentId,
       type: contentType,
@@ -270,20 +272,46 @@ function Button({
   );
 
   useEffect(() => {
-    if (!embedContext) return;
     const action = embedContext?.embedData.autoUserInteractionToPerform;
+    const startVideoSlug = embedContext?.embedData.startVideoSlug;
+
+    const autoInteractionActionDone =
+      embedContext?.embedEventBus.getContext().autoInteractionActionDone;
+
+    const shouldAutoSparkForVideo =
+      action === "spark" &&
+      startVideoSlug === videoSlug &&
+      contentType === "VIDEO";
+
+    const shouldAutoSparkForComment =
+      action === "comment-spark" &&
+      embedContext?.embedData.commentId === contentId &&
+      contentType === "COMMENT";
+
+    if (
+      !embedContext ||
+      autoInteractionActionDone ||
+      isSuccess ||
+      isPending ||
+      !(shouldAutoSparkForComment || shouldAutoSparkForVideo)
+    )
+      return;
+
+    embedContext.markAutoInteractionActionDone();
+
     // We don't need to add contentType to the dependency array
     // because it is not changing during the component's lifecycle.
     // If the embedData has autoUserInteractionToPerform set to "spark" or "comment-spark",
     // we perform the reaction automatically if the user has not reacted yet.
-    const shouldAutoReact =
-      (action === "spark" && contentType === "VIDEO") ||
-      (action === "comment-spark" && contentType === "COMMENT");
-
-    if (shouldAutoReact && !isSuccess) {
+    if (shouldAutoSparkForVideo) {
       performReaction();
     }
-  }, [embedContext, performReaction, isSuccess]);
+
+    // Auto spark comment in case of commentId match
+    if (shouldAutoSparkForComment) {
+      performReaction();
+    }
+  }, [performReaction]);
 
   // If withCustomChildren is true, just return the children with logic attached
   if (withCustomChildren) {

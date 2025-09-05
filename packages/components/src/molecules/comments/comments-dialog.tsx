@@ -40,14 +40,6 @@ export function CommentsDialog({
   onCommentCountChange,
   ...props
 }: CommentDialogProps) {
-  // const embedDetails = useSafeEmbedContext();
-  // const shouldAutoOpen = Boolean(
-  //   embedDetails?.embedData.startVideoSlug &&
-  //     embedDetails.embedData.startVideoSlug === videoSlug &&
-  //     embedDetails.embedData.autoUserInteractionToPerform === "comment-spark"
-  // );
-  // console.log("Should auto open:", shouldAutoOpen);
-
   return (
     <Dialog
       type="comment-dialog"
@@ -62,6 +54,7 @@ export function CommentsDialog({
           Comments({commentCount})
         </DialogHeader>
         <CommentsList
+          videoSlug={videoSlug}
           videoId={videoId}
           showCloseButton={false}
           shareUrl={shareUrl}

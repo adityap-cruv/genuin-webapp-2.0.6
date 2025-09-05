@@ -397,6 +397,10 @@ export type EmbedDataType = {
    * Type of the auto user interaction to perform.
    */
   autoUserInteractionToPerform?: AutoUserInteractionToPerformType;
+  /**
+   * The ID of the comment to focus on when the embed is loaded.
+   */
+  commentId?: string;
   authInfo?: AuthInfoType;
   is_default?: boolean;
   aspect_ratio?: string;

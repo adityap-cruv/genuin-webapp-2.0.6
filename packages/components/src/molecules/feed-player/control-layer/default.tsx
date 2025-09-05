@@ -46,11 +46,6 @@ export function Default({
       e.stopPropagation();
       hideGestureOverlay("PLAY_PAUSE", muted);
 
-      // if (isExpanded) {
-      //   setIsExpanded(false);
-      //   return;
-      // }
-
       if (postDetails.video.clickableUrl) {
         window.open(postDetails.video.clickableUrl, "_blank");
         return;

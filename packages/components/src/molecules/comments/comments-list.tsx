@@ -1,5 +1,5 @@
 import { InfiniteScroll } from "@genuin/ui/infinite-scroll";
-import { CommentIcon, ErrorIcon, XIcon } from "@genuin/ui/icons";
+import { CommentIcon, ErrorIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/utils";
 import { ComponentProps, useMemo } from "react";
 
@@ -13,10 +13,12 @@ type CommentListProps = {
   videoId: string;
   showCloseButton: boolean;
   shareUrl: string;
+  videoSlug: string;
 } & ComponentProps<"div">;
 
 export function CommentsList({
   videoId,
+  videoSlug,
   showCloseButton,
   className,
   shareUrl,
@@ -104,6 +106,7 @@ export function CommentsList({
             <CommentItem
               key={comment.commentId}
               comment={comment}
+              videoSlug={videoSlug}
               shareUrl={shareUrl}
               videoId={videoId}
               onReactionStateChange={(isReacted) => {

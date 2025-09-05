@@ -26,6 +26,7 @@ export type InitializationStatus = 'pending' | 'loading' | 'done'
  */
 export type ConfigByUser = {
   embed_id?: string
+  comment_id?: string
   api_key?: string
   placement_id?: string
   style_id?: string
@@ -81,4 +82,5 @@ export type SingleEmbedDataConfig = {
   authInfo?: AuthInfoType
   embedDetails?: EmbedDataType
   brandDetails?: BrandDetailsConfigType
+  commentId?: string
 }

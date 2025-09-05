@@ -14,31 +14,30 @@ import {
   DynamicReactionIcon,
   ReactionButton,
 } from "@genuin/components/molecules/reaction-button";
-import { ComponentProps } from "react";
+import { ComponentProps, memo } from "react";
 import { useAuthContext } from "@genuin/components/context/auth";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 
 export type CommentItemProps = {
   comment: CommentListType[number];
+  videoId: string;
   shareUrl: string;
-  onReactionStateChange: ComponentProps<
+  onReactionStateChange?: ComponentProps<
     typeof ReactionButton
   >["onReactionStateChange"];
-  videoId: string;
 };
 
 // TODO: Check why brand is not handled in the comment item
-export function CommentItem({
+export const CommentItem = memo(function CommentItem({
   comment,
   shareUrl,
-  onReactionStateChange,
   videoId,
+  onReactionStateChange,
 }: CommentItemProps) {
   const { owner } = comment;
   const { user } = useAuthContext();
   const { isMobile } = useDeviceDetectMediaQuery();
-
   return (
     <div
       className="comment gencl:flex gencl:gap-2 gencl:group"
@@ -106,7 +105,7 @@ export function CommentItem({
       </div>
     </div>
   );
-}
+});
 
 export function CommentsItemSkeleton() {
   return (

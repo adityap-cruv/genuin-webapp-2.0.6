@@ -31,6 +31,10 @@ export type EmbedEventContextType = {
    * Currently selected section (nullable)
    */
   selectedSection?: PostDetailsType["section"] | null;
+  /**
+   * Indicates if the auto interaction action (like auto play) has been done
+   */
+  autoInteractionActionDone?: boolean;
 };
 
 type EmbedEventNameType =
@@ -51,5 +55,6 @@ export const createEmbedEventBus = (context?: EmbedEventContextType) =>
     sectionList: [],
     isSectioned: false,
     selectedSection: null,
+    autoInteractionActionDone: false,
     ...context,
   });

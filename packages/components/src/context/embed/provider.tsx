@@ -198,6 +198,14 @@ export function EmbedProvider({
     );
   }, [embedEventBus]);
 
+  const markAutoInteractionActionDone = useCallback(() => {
+    const oldContext = embedEventBus.getContext();
+    embedEventBus.updateContext({
+      ...oldContext,
+      autoInteractionActionDone: true,
+    });
+  }, [embedEventBus]);
+
   // Observe the container for visibility changes to handle floating view behavior
   useEffect(() => {
     const element = container;
@@ -239,6 +247,7 @@ export function EmbedProvider({
         updateSectionList,
         updateIsSectioned,
         updateSelectedSection,
+        markAutoInteractionActionDone,
       }}
     >
       {children}

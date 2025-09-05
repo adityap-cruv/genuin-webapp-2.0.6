@@ -320,6 +320,7 @@ export class GenuinSDK {
       embedDetails.authInfo = config.authInfo
       embedDetails.startVideoSlug = config.startVideoSlug
       embedDetails.autoUserInteractionToPerform = config.action
+      embedDetails.commentId = config.commentId
       if (config.contextualParams)
         embedDetails.contextualParams = config.contextualParams
       // Store the embed details in the config for later use
@@ -528,6 +529,7 @@ export class GenuinSDK {
       'data-placement-id',
       'data-token',
       'data-lat',
+      'data-comment-id',
       'data-long',
       'data-url',
       'data-page-context',
@@ -610,6 +612,9 @@ export class GenuinSDK {
         // case 'data-style-id':
         //   answerToReturn.styleId = value ?? configByUser?.style_id
         //   continue
+        case 'data-comment-id':
+          answerToReturn.commentId = value ?? configByUser?.comment_id
+          break
         case 'data-token':
           answerToReturn.token = value ?? configByUser?.token
           break
@@ -917,9 +922,11 @@ export class GenuinSDK {
    * @private
    */
   private deepMergeObjects<T extends Record<string, any>>(
-    target: T,
-    source: Record<string, any>,
+    target?: T,
+    source?: Record<string, any>,
   ): T {
+    if (!target) return source as T
+    if (!source) return target as T
     // Create a new object to avoid mutating either input
     const result = { ...target } as Record<string, any>
 
