@@ -601,7 +601,7 @@ export const VideoPlayer = memo(function VideoPlayer({
   return (
     <video
       className={cn(
-        "gencl:h-full gencl:bg-cover gencl:bg-center gencl:bg-no-repeat gencl:object-cover",
+        "gencl:h-auto gencl:w-auto gencl:bg-cover gencl:bg-center gencl:bg-no-repeat gencl:object-cover",
         className
       )}
       style={{ backgroundImage: `url(${poster})`, ...style }}

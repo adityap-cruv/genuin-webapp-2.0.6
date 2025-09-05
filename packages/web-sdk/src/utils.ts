@@ -816,7 +816,7 @@ export function parsePlacementToEmbedData(
       // Links configuration
       links: {
         is_show_links: configureView?.links.is_show_links ?? false,
-        position: configureView?.links.position,
+        position: configureView?.links.position ?? 'overlay',
       },
 
       // Carousel style mapping
@@ -830,10 +830,10 @@ export function parsePlacementToEmbedData(
 
       // Heading and sub-heading from styles
       heading:
-        data.styles?.find((style) => style._id === styleId)?.title || null,
+        data.styles?.find((style) => style._id === styleId)?.title ?? null,
       heading_text_color: configureView?.heading_text_color,
       sub_heading:
-        data.styles?.find((style) => style._id === styleId)?.sub_title || null,
+        data.styles?.find((style) => style._id === styleId)?.sub_title ?? null,
       sub_heading_text_color: configureView?.sub_heading_text_color,
 
       // UI element visibility

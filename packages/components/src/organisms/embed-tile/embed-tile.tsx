@@ -226,21 +226,22 @@ function EmbedPlayer({
   const getAdaptiveSizing = () => {
     if (!rootElement) return "gencl:h-full"; // fallback
 
-    const containerHeight =
-      rootElement.offsetHeight || rootElement.clientHeight;
-    const containerWidth = rootElement.offsetWidth || rootElement.clientWidth;
+    const containerHeight = rootElement.clientHeight;
+    const containerWidth = rootElement.clientWidth;
 
-    // If container is taller than wide (portrait), use w-full to fit width
     // If container is wider than tall (landscape), use h-full to fit height
     return containerHeight > containerWidth ? "gencl:w-full" : "gencl:h-full";
   };
 
   return (
     <div
-      className={cn("gencl:relative gencl:flex-1 gencl:min-h-0", {
-        "gencl:opacity-50 gencl:transition-opacity":
-          !isActive && config.styling.isOpacityDown,
-      })}
+      className={cn(
+        "gencl:relative gencl:bg-black gencl:flex-1 gencl:min-h-0 gencl:flex gencl:items-center gencl:justify-center",
+        {
+          "gencl:opacity-50 gencl:transition-opacity":
+            !isActive && config.styling.isOpacityDown,
+        }
+      )}
     >
       <FeedPlayer
         videoId={postDetails.video.id}
