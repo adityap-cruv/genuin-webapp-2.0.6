@@ -4,8 +4,8 @@ import { useMemo } from "react";
 import { useDeviceDetectMediaQuery } from "../use-devide-detect-media-query";
 import type { CustomizationType } from "@genuin/components/context/embed/embed.types";
 
-const MIN_EMBED_WIDTH = 100;
-const MIN_EMBED_HEIGHT = 100;
+const MIN_EMBED_WIDTH = 130;
+const MIN_EMBED_HEIGHT = 230; // Based on 9:16 aspect ratio for 130 width
 const MIN_GRID_WIDTH = 250;
 
 // TODO REMOVE UNUSED CONFIGS, USE ONLY IF REQUIRED
@@ -142,29 +142,29 @@ export function useEmbedConfigs() {
   // ============================================================
   const showEngagementOnRootElement = useMemo(() => {
     if (!customization || !rootElement) return false;
-    // Check for feed view with minimum width requirement
-    if (
-      embedData?.style === "feed" &&
-      rootElement.offsetWidth < MIN_EMBED_WIDTH
-    ) {
-      return false;
-    }
-    // Check for carousel view with minimum height requirement
-    if (
-      embedData?.style === "carousel" &&
-      rootElement.offsetHeight < MIN_EMBED_HEIGHT
-    ) {
-      return false;
-    }
 
-    if (
-      embedData?.style === "grid" &&
-      rootElement.offsetWidth < MIN_GRID_WIDTH
-    ) {
-      return false;
-    }
+    const currentWidth = rootElement.offsetWidth;
+    const currentHeight = rootElement.offsetHeight;
+    const currentStyle = embedData?.style;
 
-    return true;
+    // Check if the current embed style has minimum size requirements
+    switch (currentStyle) {
+      case "feed":
+        return (
+          currentWidth >= MIN_EMBED_WIDTH && currentHeight >= MIN_EMBED_HEIGHT
+        );
+
+      case "carousel":
+        return (
+          currentWidth >= MIN_EMBED_WIDTH && currentHeight >= MIN_EMBED_HEIGHT
+        );
+
+      case "grid":
+        return currentWidth >= MIN_GRID_WIDTH;
+
+      default:
+        return true;
+    }
   }, [customization, rootElement, embedData?.style]);
 
   // ============================================================
@@ -202,9 +202,9 @@ export function useEmbedConfigs() {
   // ============================================================
   const linkConfig = useMemo(
     () => ({
-      showLinks: customization?.links?.is_show_links || false,
-      showLinksInExpand: embedData?.show_linkout_in_expand || true,
-      linkPosition: customization?.links?.position || "outside",
+      showLinks: customization?.links?.is_show_links ?? false,
+      showLinksInExpand: embedData?.show_linkout_in_expand ?? true,
+      linkPosition: customization?.links?.position ?? "outside",
       showLinkOutside:
         customization?.links?.is_show_links &&
         customization?.links?.position === "outside",
@@ -212,7 +212,7 @@ export function useEmbedConfigs() {
         customization?.links?.is_show_links &&
         customization?.links?.position === "overlay",
     }),
-    [customization]
+    [customization, embedData]
   );
 
   // ============================================================

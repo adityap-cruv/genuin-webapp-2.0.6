@@ -88,7 +88,7 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
 
   const videoLayoutId = postDetails.video.videoLayoutId;
   const placementVideoLayoutId = postDetails.video.placement_video_layout_id;
-  const showLinkoutInExpand = embedConfig.links.showLinksInExpand ?? true;
+  const showLinkoutInExpand = embedConfig.links.showLinksInExpand;
   const hideGroupPill = postDetails.video.videoLayoutId === 3;
 
   // Determine layout config

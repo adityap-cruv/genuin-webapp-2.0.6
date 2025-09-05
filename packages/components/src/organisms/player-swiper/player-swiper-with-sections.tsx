@@ -11,7 +11,7 @@ import { Comments, CommentsDialog } from "../../molecules/comments";
 
 import { Player } from "./player";
 import { SwiperImplementation } from "./swiper-implementation";
-import { ComponentProps, useMemo, useState, useEffect } from "react";
+import { ComponentProps, useState, useEffect } from "react";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { abbreviateNumber, cn } from "@genuin/ui/lib/utils";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
@@ -68,9 +68,26 @@ export function PlayerListWithSection({
   } = useEmbedConfigs();
   const embedDetails = useSafeEmbedContext();
   const sectionList = embedDetails?.embedEventBus.getContext().sectionList;
+  const selectedSection =
+    embedDetails?.embedEventBus.getContext().selectedSection;
 
   // Ref for outer swiper
   const [outerSwiper, setOuterSwiper] = useState<Swiper | null>(null);
+
+  // Effect to navigate to selected section when it changes
+  useEffect(() => {
+    if (outerSwiper && selectedSection && sectionList) {
+      const selectedSectionIndex = sectionList.findIndex(
+        (section: any) => section.id === selectedSection.id
+      );
+      if (
+        selectedSectionIndex !== -1 &&
+        selectedSectionIndex !== outerSwiper.activeIndex
+      ) {
+        outerSwiper.slideTo(selectedSectionIndex);
+      }
+    }
+  }, [outerSwiper, selectedSection, sectionList]);
 
   // State to track vertical swipers for each section
   const [verticalSwipers, setVerticalSwipers] = useState<
@@ -80,12 +97,6 @@ export function PlayerListWithSection({
 
   // Handler for section tab click
   const handleSectionSelect = (section: any) => {
-    if (!sectionList) return;
-    const sectionIndex = sectionList.findIndex((s: any) => s.id === section.id);
-    if (outerSwiper && sectionIndex !== -1) {
-      outerSwiper.slideTo(sectionIndex);
-    }
-    // Also update selectedSection in embed context
     if (embedDetails) {
       embedDetails.updateSelectedSection(section);
     }
@@ -334,14 +345,14 @@ function NavigationButton({
         disabled={swiper.isBeginning}
         onClick={() => swiper.slidePrev()}
       >
-        <ChevronUpIcon theme="dark" size="xs" />
+        <ChevronUpIcon theme="dark" size="sm" />
       </Button>
       <Button
         theme="navigation"
         disabled={swiper.isEnd}
         onClick={() => swiper.slideNext()}
       >
-        <ChevronDownIcon theme="dark" size="xs" />
+        <ChevronDownIcon theme="dark" size="sm" />
       </Button>
     </div>
   );

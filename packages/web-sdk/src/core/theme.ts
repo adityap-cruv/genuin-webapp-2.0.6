@@ -29,7 +29,7 @@ export class ThemeManager {
 
       // Apply CSS custom properties to container
       Object.keys(parsedColors).forEach((key) => {
-        container.style.setProperty(key, parsedColors[key])
+        container.style.setProperty(key, parsedColors[key] ?? '')
       })
 
       // Store theme for later use

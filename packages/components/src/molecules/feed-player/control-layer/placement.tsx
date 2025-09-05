@@ -52,6 +52,7 @@ export const Placement: FC<ControlLayerPropsType> = ({
                 "gencl:gap-2 gencl:z-20 gencl:absolute gencl:right-0 gencl:p-2"
               )}
               size="xs"
+              section={postDetails.section}
             />
           ) : (
             <></>

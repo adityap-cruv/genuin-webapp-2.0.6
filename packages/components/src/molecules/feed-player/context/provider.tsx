@@ -53,8 +53,8 @@ function getInitialShouldPlayState(
   playerConfig: PlayerConfigType,
   explicitAutoPlay?: boolean
 ) {
-  // If explicit autoplay is provided (false), it should override config
-  if (!explicitAutoPlay) return false;
+  // If explicit autoplay is provided and set to false, it should override config
+  if (explicitAutoPlay === false) return false;
 
   if (playerConfig) {
     if (playerConfig.autoplay) {
@@ -128,12 +128,13 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     const player = playerRef.current;
     if (!player) return;
     if (isActive) {
+      // Check if explicit unmute is set to false - if so, don't unmute
       if (playerConfig.unmuteVideo) {
         unmute(false);
       }
 
       // Check if explicit autoplay is set to false - if so, don't autoplay
-      if (!explicitAutoPlay) {
+      if (explicitAutoPlay === false) {
         setFeedPlayerShouldPlay(false);
         return;
       }

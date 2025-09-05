@@ -213,14 +213,14 @@ function NavigationButton() {
         disabled={swiper.isBeginning}
         onClick={() => swiper.slidePrev()}
       >
-        <ChevronUpIcon />
+        <ChevronUpIcon theme="dark" size="sm" />
       </Button>
       <Button
         theme="navigation"
         disabled={swiper.isEnd}
         onClick={() => swiper.slideNext()}
       >
-        <ChevronDownIcon />
+        <ChevronDownIcon theme="dark" size="sm" />
       </Button>
     </div>
   );
