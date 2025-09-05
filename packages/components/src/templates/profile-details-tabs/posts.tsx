@@ -27,7 +27,7 @@ export function Posts({
   const [expandViewId, setExpandViewId] = useState<undefined | string>(
     undefined
   );
-  const {isMobile} = useDeviceDetectMediaQuery()
+  const { isMobile } = useDeviceDetectMediaQuery();
   const {
     data,
     isLoading,

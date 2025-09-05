@@ -20,6 +20,8 @@ type GroupMemberInfoType = {
   name: string;
   username: string;
   profile_image: string;
+  profile_image_s?: string;
+  profile_image_m?: string;
   is_avatar: boolean;
 };
 
@@ -36,6 +38,8 @@ type GroupInfoType = {
   };
   latest_messages: {
     thumbnail_url: string;
+    thumbnail_url_s?: string;
+    thumbnail_url_l?: string;
     slug: string;
   }[];
 };
@@ -67,8 +71,8 @@ export function TrendingGroupsDesktopView({
         {groupsToDisplay.map(
           ({ chat_id, group, slug, latest_messages }: GroupInfoType) => {
             const formattedPostThumbnails = latest_messages?.map(
-              ({ thumbnail_url, slug }) => ({
-                imageUrl: thumbnail_url,
+              ({ thumbnail_url, thumbnail_url_l, thumbnail_url_s, slug }) => ({
+                imageUrl: thumbnail_url_l ?? thumbnail_url,
                 alt: "Post Thumbnail",
                 slug: slug,
               })
@@ -77,7 +81,10 @@ export function TrendingGroupsDesktopView({
             const formattedMembersAvatars = group.members.map((member) => ({
               userName: member.username,
               name: member.name,
-              imageUrl: member.profile_image,
+              imageUrl:
+                member.profile_image_s ??
+                member.profile_image_m ??
+                member.profile_image,
               isAvatar: member.is_avatar,
               alt: member.name,
             }));
@@ -146,8 +153,8 @@ function TrendingGroupsMobileView({
           {data.groups.map(
             ({ chat_id, group, latest_messages, slug }: GroupInfoType) => {
               const formattedPostThumbnails = latest_messages?.map(
-                ({ thumbnail_url, slug }) => ({
-                  imageUrl: thumbnail_url,
+                ({ thumbnail_url, thumbnail_url_l, slug }) => ({
+                  imageUrl: thumbnail_url_l ?? thumbnail_url,
                   alt: "Post Thumbnail",
                   slug: slug,
                 })
@@ -156,7 +163,10 @@ function TrendingGroupsMobileView({
               const formattedMembersAvatars = group.members.map((member) => ({
                 userName: member.username,
                 name: member.name,
-                imageUrl: member.profile_image,
+                imageUrl:
+                  member.profile_image_s ??
+                  member.profile_image_m ??
+                  member.profile_image,
                 isAvatar: member.is_avatar,
                 alt: member.name,
               }));

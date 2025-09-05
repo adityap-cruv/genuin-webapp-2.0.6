@@ -253,7 +253,7 @@ export function CommunityCard({
               <div className="gencl:flex gencl:justify-between gencl:items-start gencl:gap-3">
                 <div className="gencl:flex gencl:items-center gencl:gap-2">
                   <Avatar
-                    imageUrl={community.dp}
+                    imageUrl={community.dp_s ?? community.dp_m ?? community.dp}
                     alt={community.name}
                     isAvatar={false}
                     size="lg"

@@ -78,45 +78,45 @@ export function PostTile({
       )}
       {stats && (
         <>
-         {
-          variant === "responsive" &&  <Stats
-            className={cn(
-              "gencl:group-hover:hidden gencl:flex gencl:gap-2 gencl:justify-between gencl:p-2 gencl:absolute gencl:bottom-0 gencl:w-full gencl:bg-linear-to-t gencl:from-black/40 gencl:to-black/0",
-            )}
-            valueClassName="gencl:text-white! gencl:text-body-2-medium"
-            pairClassName="gencl:gap-1"
-            stats={{
-              Views: {
-                value: stats.views,
-                icon: (
-                  <PlayIcon className="gencl:stroke-white gencl:stroke-2 gencl:size-3 gencl:fill-none" />
-                ),
-              },
-              Reactions: {
-                value: stats.reactions,
-                icon: (
-                  <DynamicReactionIcon
-                    sparkCount={0}
-                    isSparked={false}
-                    iconHeight={16}
-                    iconWidth={16}
-                    theme="dark"
-                  />
-                ),
-              },
-              Comments: {
-                value: stats.comments,
-                icon: (
-                  <CommentIcon className="gencl:stroke-white! gencl:stroke-2 gencl:size-4" />
-                ),
-              },
-            }}
-          />
-         }
+          {variant === "responsive" && (
+            <Stats
+              className={cn(
+                "gencl:group-hover:hidden gencl:flex gencl:gap-2 gencl:justify-between gencl:p-2 gencl:absolute gencl:bottom-0 gencl:w-full gencl:bg-linear-to-t gencl:from-black/40 gencl:to-black/0"
+              )}
+              valueClassName="gencl:text-white! gencl:text-body-2-medium"
+              pairClassName="gencl:gap-1"
+              stats={{
+                Views: {
+                  value: stats.views,
+                  icon: (
+                    <PlayIcon className="gencl:stroke-white gencl:stroke-2 gencl:size-3 gencl:fill-none" />
+                  ),
+                },
+                Reactions: {
+                  value: stats.reactions,
+                  icon: (
+                    <DynamicReactionIcon
+                      sparkCount={0}
+                      isSparked={false}
+                      iconHeight={16}
+                      iconWidth={16}
+                      theme="dark"
+                    />
+                  ),
+                },
+                Comments: {
+                  value: stats.comments,
+                  icon: (
+                    <CommentIcon className="gencl:stroke-white! gencl:stroke-2 gencl:size-4" />
+                  ),
+                },
+              }}
+            />
+          )}
           {variant === "default" && (
             <Stats
               className={cn(
-                "gencl:group-hover:hidden gencl:flex gencl:gap-2 gencl:justify-between gencl:p-2 gencl:absolute gencl:bottom-0 gencl:w-full gencl:bg-linear-to-b gencl:from-transparent gencl:via-black/50 gencl:to-black/50",
+                "gencl:group-hover:hidden gencl:flex gencl:gap-2 gencl:justify-between gencl:p-2 gencl:absolute gencl:bottom-0 gencl:w-full gencl:bg-linear-to-b gencl:from-transparent gencl:via-black/50 gencl:to-black/50"
               )}
               valueClassName="gencl:text-white! gencl:text-body-2-medium"
               pairClassName="gencl:gap-1"

@@ -254,6 +254,7 @@ export type ConfigType = {
   show_become_creator: boolean
   reactions: ReactionType
   web_configs?: WebConfigs
+  protected_content?: boolean
 }
 
 export type User = {
@@ -380,7 +381,7 @@ export const useGenuinOptions = create(
         // Add a specific method to clear user data
         clearUserData() {
           set((state) => ({ ...state, user: undefined }))
-        }
+        },
       }
     },
     { name: 'genuin-options', storage: createJSONStorage(() => sessionStorage) }
