@@ -488,10 +488,12 @@ export class GenuinSDK {
     Array.from(uniqueElements).forEach((element) => {
       const instanceId = this.setInstanceId(element)
       const extractedData = this.extractDataFromSingleDiv(element, configByUser)
-      this.sdkElements[instanceId] = {
-        element,
-        config: extractedData,
-        status: 'pending',
+      if (extractedData) {
+        this.sdkElements[instanceId] = {
+          element,
+          config: extractedData,
+          status: 'pending',
+        }
       }
     })
 
@@ -521,7 +523,11 @@ export class GenuinSDK {
   private extractDataFromSingleDiv(
     singleElement: HTMLElement,
     configByUser?: ConfigByUser,
-  ): Partial<SingleEmbedDataConfig> {
+  ): Partial<SingleEmbedDataConfig> | undefined {
+    if (configByUser?.live) {
+      console.warn('The "live" config is deprecated and will be ignored.')
+      return
+    }
     const possibleAttributeNames = [
       'data-embed-id',
       'data-api-key',
