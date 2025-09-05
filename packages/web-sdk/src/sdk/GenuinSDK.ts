@@ -9,7 +9,7 @@ import {
   TokenManager,
   ThemeManager,
 } from '../core'
-import { getRandomNumber } from '../utils'
+import { getRandomNumber, parsePlacementToEmbedData } from '../utils'
 import { BrandDetailsManager } from '@/core/brand-details-manager'
 import { loadErrorView, loadNewEmbed } from './react-utils'
 import { EmbedDetailsManager } from '@/core/embed-details-manager'
@@ -98,12 +98,19 @@ export class GenuinSDK {
    * @param config User-provided configuration for the SDK.
    */
   async newInit(config?: ConfigByUser) {
-    this.getAndSetDivs(config)
-    this.setupEmbedProviderReadyHandler()
+    try {
+      this.getAndSetDivs(config)
+      this.setupEmbedProviderReadyHandler()
 
-    await this.initializeAllEmbeds()
+      await this.initializeAllEmbeds()
 
-    this.isInitialized = true
+      this.isInitialized = true
+    } catch (error) {
+      console.error(
+        'Error during SDK initialization please contact admin:',
+        error,
+      )
+    }
   }
 
   /**
@@ -203,6 +210,7 @@ export class GenuinSDK {
       ) {
         this.setInitializationStatus(elementObject.element, 'loading')
         elementObject.status = 'loading'
+
         const isSdkLoaded = await this.initializeSingleEmbedById(
           elementObject.element,
           elementObject.config,
@@ -234,8 +242,13 @@ export class GenuinSDK {
     element: HTMLElement,
     config: Partial<SingleEmbedDataConfig>,
   ) {
-    // Handle error at single embed level so that other embeds doesn't get affected.
     try {
+      // Handle live embed initialization
+      if (config.live) {
+        await this.initializeLiveEmbed(element, config)
+        return
+      }
+
       // This is where we get the brand details
       const brandDetails = await this.brandDetailsManager.getBrandDetails(
         config.apiKey,
@@ -275,6 +288,54 @@ export class GenuinSDK {
     }
 
     return true
+  }
+
+  /**
+   * Initializes a live embed by fetching brand details, embed details if available, applying brand colors, and loading the embed.
+   * @param element The HTML element to initialize the embed in.
+   * @param config The configuration for the embed.
+   * @private
+   */
+  private async initializeLiveEmbed(
+    element: HTMLElement,
+    config: Partial<SingleEmbedDataConfig>,
+  ): Promise<void> {
+    const brandDetails = await this.brandDetailsManager.getBrandDetails(
+      config.apiKey,
+    )
+
+    if (config.embedId) {
+      let embedDetails = await this.embedDetailsManager.getEmbedDetails(
+        config.embedId,
+        brandDetails as any,
+      )
+
+      embedDetails = { ...embedDetails, ...config.live }
+
+      Object.assign(
+        embedDetails.customization,
+        config.live.live_customization_data || {},
+      )
+
+      config.embedDetails = embedDetails
+    }
+
+    this.themeManager.applyBrandColors(element, brandDetails.brand_colors)
+
+    // if embedDetails is not found then we can't load the embed.
+    if (!config.embedDetails) {
+      console.warn(
+        'No embed details or placement details found for live embed configuration.',
+      )
+      return
+    }
+
+    loadNewEmbed({
+      container: element,
+      embedData: config.embedDetails,
+      brandDetails,
+      config,
+    })
   }
 
   /**
@@ -523,11 +584,14 @@ export class GenuinSDK {
   private extractDataFromSingleDiv(
     singleElement: HTMLElement,
     configByUser?: ConfigByUser,
-  ): Partial<SingleEmbedDataConfig> | undefined {
+  ): Partial<SingleEmbedDataConfig> {
+    const answerToReturn: Partial<SingleEmbedDataConfig> = {}
+
+    // In case of live embed, we don't need to check for any other attribute.
     if (configByUser?.live) {
-      console.warn('The "live" config is deprecated and will be ignored.')
-      return
+      return this.extractLiveEmbedData(answerToReturn, configByUser)
     }
+
     const possibleAttributeNames = [
       'data-embed-id',
       'data-api-key',
@@ -554,7 +618,6 @@ export class GenuinSDK {
       'data-community-ids',
       'data-loop-ids',
     ] as const
-    const answerToReturn: Partial<SingleEmbedDataConfig> = {}
 
     // Extract core configuration attributes from the HTML element
     const dataEmbedId = singleElement.getAttribute('data-embed-id')
@@ -804,11 +867,48 @@ export class GenuinSDK {
       }
     }
 
-    console.log('Final contextual params for embed:', answerToReturn)
-
     // extras needed to set explicitly from user config.
     answerToReturn.params = configByUser?.params
     answerToReturn.authInfo = configByUser?.authInfo
+
+    return answerToReturn
+  }
+
+  /**
+   * Extracts and configures data for live embed scenarios.
+   * Handles both embed_id and placement_id/style_id configurations.
+   * @param answerToReturn The partial configuration object to update.
+   * @param configByUser The user-provided configuration containing live data.
+   * @returns The updated configuration object with live embed data.
+   * @private
+   */
+  private extractLiveEmbedData(
+    answerToReturn: Partial<SingleEmbedDataConfig>,
+    configByUser: ConfigByUser,
+  ): Partial<SingleEmbedDataConfig> {
+    const liveData = configByUser.live
+
+    if (liveData?.embed_id) {
+      answerToReturn.embedId = liveData.embed_id
+    }
+
+    if (liveData.placement_id && liveData.style_id) {
+      answerToReturn.placementId = liveData.placement_id
+      answerToReturn.styleId = liveData.style_id
+      answerToReturn.embedId = undefined
+      answerToReturn.apiKey = undefined
+
+      // Parse the placement to get embed details
+      if (answerToReturn.styleId) {
+        answerToReturn.embedDetails = parsePlacementToEmbedData(
+          liveData,
+          answerToReturn.styleId,
+        )
+      }
+    }
+
+    answerToReturn.apiKey = liveData.api_key
+    answerToReturn.live = liveData
 
     return answerToReturn
   }

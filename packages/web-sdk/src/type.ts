@@ -25,9 +25,7 @@ export type InitializationStatus = 'pending' | 'loading' | 'done'
  * These are the config when user can pass while genuin.init or genuin.initialize.
  */
 export type ConfigByUser = {
-  live: {
-    data: any
-  }
+  live: any
   embed_id?: string
   comment_id?: string
   api_key?: string
@@ -86,7 +84,5 @@ export type SingleEmbedDataConfig = {
   embedDetails?: EmbedDataType
   brandDetails?: BrandDetailsConfigType
   commentId?: string
-  live?: {
-    data: any
-  }
+  live?: any
 }
