@@ -54,7 +54,6 @@ export function CommentsDialog({
           Comments({commentCount})
         </DialogHeader>
         <CommentsList
-          videoSlug={videoSlug}
           videoId={videoId}
           showCloseButton={false}
           shareUrl={shareUrl}
