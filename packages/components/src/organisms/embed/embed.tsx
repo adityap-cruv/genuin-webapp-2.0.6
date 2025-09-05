@@ -110,7 +110,6 @@ export function Embed({
   // Track EMBED_VIEWED event when embed is visible in viewport
   useEffect(() => {
     if (!embedRef.current) return;
-    console.log("Setting up IntersectionObserver for embed view tracking");
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -129,7 +128,7 @@ export function Embed({
 
     observer.observe(embedRef.current);
     return () => observer.disconnect();
-  }, [embedRef.current]);
+  }, []);
 
   // Track EMBED_INITIALIZED event when component mounts
   useEffect(() => {
@@ -182,7 +181,9 @@ export function Embed({
     );
   }
 
-  if (isLoading) {
+  const isActivePlayerTypeEmbed =
+    embedEventBus.getContext().activePlayerType === "embed";
+  if (isLoading && isActivePlayerTypeEmbed) {
     return (
       <SdkSkeleton
         containerHeight={containerHeight}
