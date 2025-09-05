@@ -136,9 +136,13 @@ export const Embed: FC<ControlLayerPropsType> = ({
               textClassName="gencl:text-white! gencl:text-body-2-medium gencl:font-normal gencl:pointer-events-none"
               viewLessText=""
               viewMoreText=""
+              maxChars={500}
               maxLines={3}
             />
-            <div className="gencl:flex gencl:items-center gencl:gap-2">
+            <div
+              className="gencl:flex gencl:items-center gencl:gap-2"
+              onClick={(e) => e.stopPropagation()}
+            >
               <Avatar
                 size="xs"
                 imageUrl={postDetails.community.profileImage ?? ""}

@@ -99,6 +99,16 @@ export function PlayerListWithSection({
           isMobile && "gencl:h-full gencl:w-full"
         )}
       >
+        <div
+          className={cn(
+            "gencl:h-full gencl:aspect-reel gencl:absolute",
+            isMobile && "gencl:h-full gencl:w-full"
+          )}
+        >
+          {isSectioned && (
+            <SectionsTabs onSectionSelect={handleSectionSelect} />
+          )}
+        </div>
         <SwiperImplementation
           direction="horizontal"
           className={cn(
@@ -115,9 +125,6 @@ export function PlayerListWithSection({
             }
           }}
         >
-          {isSectioned && (
-            <SectionsTabs onSectionSelect={handleSectionSelect} />
-          )}
           {sectionList?.map((item, sectionIdx) => (
             <SwiperSlide key={item?.id || sectionIdx}>
               {({ isActive: isHorizontalActive }) => (
@@ -186,90 +193,86 @@ export function PlayerListWithSection({
             </SwiperSlide>
           ))}
         </SwiperImplementation>
+      </div>
 
-        {!isMobile && posts[activeIndex] && (
-          <Actions
-            shareUrl={posts[activeIndex]?.video.shareUrl ?? ""}
-            isReacted={posts[activeIndex]?.video.isSparked ?? false}
-            contentId={posts[activeIndex]?.video.id}
-            groupSlug={posts[activeIndex]?.group.slug}
-            slug={posts[activeIndex]?.video.slug}
-            reactionCount={posts[activeIndex]?.video.sparkCount}
-            theme={showExpandView ? "dark" : "light"}
-            className="gencl:shrink-0 gencl:pb-4"
-            isCommentBoxOpen={value}
-            actionWrapper={{
-              COMMENT: (defaultNode) => {
-                if (!showCommentBox) return;
-                //
-                const defaultOpen =
-                  embedDetails?.embedData?.autoUserInteractionToPerform ===
-                    "comment-spark" &&
-                  posts[activeIndex]?.video.slug ===
-                    embedDetails.embedData?.startVideoSlug;
+      {!isMobile && posts[activeIndex] && (
+        <Actions
+          shareUrl={posts[activeIndex]?.video.shareUrl ?? ""}
+          isReacted={posts[activeIndex]?.video.isSparked ?? false}
+          contentId={posts[activeIndex]?.video.id}
+          groupSlug={posts[activeIndex]?.group.slug}
+          slug={posts[activeIndex]?.video.slug}
+          reactionCount={posts[activeIndex]?.video.sparkCount}
+          theme={showExpandView ? "dark" : "light"}
+          className="gencl:shrink-0 gencl:pb-4"
+          isCommentBoxOpen={value}
+          actionWrapper={{
+            COMMENT: (defaultNode) => {
+              if (!showCommentBox) return;
+              //
+              const defaultOpen =
+                embedDetails?.embedData?.autoUserInteractionToPerform ===
+                  "comment-spark" &&
+                posts[activeIndex]?.video.slug ===
+                  embedDetails.embedData?.startVideoSlug;
 
-                // Simple ui to show for comment trigger
-                function CommentBox({
-                  children,
-                }: {
-                  children: React.ReactNode;
-                }) {
-                  return (
-                    <>
-                      {children}
-                      <p
-                        className={cn(
-                          "gencl:p-0 gencl:text-center gencl:text-black gencl:text-body-2-medium",
-                          showExpandView && "gencl:text-white!"
-                        )}
-                      >
-                        {abbreviateNumber(
-                          posts[activeIndex]?.video.commentCount ?? 0
-                        )}
-                      </p>
-                    </>
-                  );
-                }
-
-                if (!isDesktop && posts[activeIndex] && (value || defaultOpen))
-                  return (
-                    <CommentsDialog
-                      commentCount={posts[activeIndex]?.video.commentCount}
-                      communityId={posts[activeIndex]?.community.id}
-                      loopId={posts[activeIndex]?.group.id}
-                      videoId={posts[activeIndex]?.video.id}
-                      videoSlug={posts[activeIndex]?.video.slug}
-                      shareUrl={posts[activeIndex]?.video.shareUrl}
-                      defaultOpen={value}
-                      key={"feed-comment-box" + posts[activeIndex]?.video.id}
-                      onOpenChange={(value) => {
-                        setValue(value);
-                      }}
-                    >
-                      <CommentBox>{defaultNode}</CommentBox>
-                    </CommentsDialog>
-                  );
+              // Simple ui to show for comment trigger
+              function CommentBox({ children }: { children: React.ReactNode }) {
                 return (
-                  <span
+                  <>
+                    {children}
+                    <p
+                      className={cn(
+                        "gencl:p-0 gencl:text-center gencl:text-black gencl:text-body-2-medium",
+                        showExpandView && "gencl:text-white!"
+                      )}
+                    >
+                      {abbreviateNumber(
+                        posts[activeIndex]?.video.commentCount ?? 0
+                      )}
+                    </p>
+                  </>
+                );
+              }
+
+              if (!isDesktop && posts[activeIndex] && (value || defaultOpen))
+                return (
+                  <CommentsDialog
+                    commentCount={posts[activeIndex]?.video.commentCount}
+                    communityId={posts[activeIndex]?.community.id}
+                    loopId={posts[activeIndex]?.group.id}
+                    videoId={posts[activeIndex]?.video.id}
+                    videoSlug={posts[activeIndex]?.video.slug}
+                    shareUrl={posts[activeIndex]?.video.shareUrl}
+                    defaultOpen={value}
                     key={"feed-comment-box" + posts[activeIndex]?.video.id}
-                    onClick={() => {
-                      if (showExpandView) toggle();
+                    onOpenChange={(value) => {
+                      setValue(value);
                     }}
                   >
                     <CommentBox>{defaultNode}</CommentBox>
-                  </span>
+                  </CommentsDialog>
                 );
-              },
-            }}
-            onReactionStateChange={(isReacted) => {
-              const videoId = posts[activeIndex]?.video.id;
-              if (videoId) {
-                onReactionStateChange?.(videoId, isReacted);
-              }
-            }}
-          />
-        )}
-      </div>
+              return (
+                <span
+                  key={"feed-comment-box" + posts[activeIndex]?.video.id}
+                  onClick={() => {
+                    if (showExpandView) toggle();
+                  }}
+                >
+                  <CommentBox>{defaultNode}</CommentBox>
+                </span>
+              );
+            },
+          }}
+          onReactionStateChange={(isReacted) => {
+            const videoId = posts[activeIndex]?.video.id;
+            if (videoId) {
+              onReactionStateChange?.(videoId, isReacted);
+            }
+          }}
+        />
+      )}
 
       {/* in case of expand view show navigation buttons. in case of mobile view don't show navigation. */}
       {showExpandView && !isMobile && (

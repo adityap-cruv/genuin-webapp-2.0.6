@@ -2,10 +2,8 @@ import { Button } from "@genuin/ui/components/button";
 import { checkAndAppendHttps, cn } from "@genuin/ui/lib/utils";
 import { LinkData } from "@genuin/components/react-query/api/linkouts/schema";
 import { LinkIcon, ChevronRight } from "lucide-react";
-import { useEmbedContext } from "@genuin/components/context/embed";
 import { useAnalytics } from "@genuin/components/context/analytics/context";
 import { VariantProps, cva } from "class-variance-authority";
-import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { useBaseContext } from "@genuin/components/context/base";
 
 // Combined variant for both card types
@@ -53,9 +51,7 @@ export const LinkCard = ({
   const hasTitle = link.title && link.title.trim() !== "";
   const hasCTA = ctaText && ctaText.trim() !== "";
   const { track, EventName } = useAnalytics();
-  const embedDetails = useSafeEmbedContext();
   const { brandDetails } = useBaseContext();
-  const isWalmart = embedDetails?.embedData.card_layout_id === 6;
 
   const getDomain = (url: string): string => {
     try {
@@ -148,7 +144,8 @@ export const LinkCard = ({
           className={cn(
             "gencl:w-full gencl:text-body-1-medium! gencl:font-semibold gencl:transition-all gencl:text-black gencl:bg-white gencl:hover:bg-white/90 gencl:flex gencl:justify-between gencl:items-center gencl:px-3 gencl:py-2 gencl:rounded-lg",
             isOutside && "gencl:bg-secondary-50 gencl:hover:bg-secondary-150",
-            isWalmart && "gencl:text-center gencl:justify-center"
+            !brandDetails.cta_config?.show_arrow_icon &&
+              "gencl:text-center gencl:justify-center"
           )}
           style={{
             borderRadius: brandDetails.cta_config?.button_radius ?? "",
@@ -157,8 +154,10 @@ export const LinkCard = ({
           }}
           onClick={handleCTAClick}
         >
-          {ctaText}
-          {!isWalmart && (
+          {brandDetails.cta_config?.default_button_text
+            ? brandDetails.cta_config?.default_button_text
+            : ctaText}
+          {brandDetails.cta_config?.show_arrow_icon && (
             <ChevronRight className="gencl:h-4 gencl:w-4 gencl:stroke-black! gencl:shrink-0" />
           )}
         </Button>

@@ -278,6 +278,8 @@ type CTAConfigType = {
   button_color: string;
   text_color: string;
   button_radius: number;
+  show_arrow_icon?: boolean
+  default_button_text?: string
 };
 
 type ViewType = "feed" | "carousel" | "standard_wall";

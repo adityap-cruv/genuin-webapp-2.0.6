@@ -80,6 +80,7 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
   hideCommunityJoinButton: boolean;
   hideGroupSubscriptionButton: boolean;
   showLinkoutInExpand: boolean;
+  hideGroupPill: boolean;
 } {
   const { showSeeker } = usePlayerContext();
   const embedDetails = useSafeEmbedContext();
@@ -88,6 +89,7 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
   const videoLayoutId = postDetails.video.videoLayoutId;
   const placementVideoLayoutId = postDetails.video.placement_video_layout_id;
   const showLinkoutInExpand = embedConfig.links.showLinksInExpand ?? true;
+  const hideGroupPill = postDetails.video.videoLayoutId === 3;
 
   // Determine layout config
   let config = LAYOUT_CONFIGS.default;
@@ -115,6 +117,7 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
     hideCommunityJoinButton: shouldHideButtons,
     hideGroupSubscriptionButton: shouldHideButtons,
     showLinkoutInExpand,
+    hideGroupPill,
   };
 }
 
@@ -277,6 +280,7 @@ export function ExpandViewDetails({
     hideCommunityJoinButton,
     hideGroupSubscriptionButton,
     showLinkoutInExpand,
+    hideGroupPill,
   } = useExpandViewConfig(postDetails);
 
   return (
@@ -351,6 +355,7 @@ export function ExpandViewDetails({
           className="gencl:min-w-max gencl:pt-3"
           hideCommunityJoinButton={hideCommunityJoinButton}
           hideGroupSubscriptionButton={hideGroupSubscriptionButton}
+          hideGroupPill={hideGroupPill}
         />
       </div>
 
