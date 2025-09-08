@@ -8,8 +8,6 @@ import { cn } from "@genuin/ui/lib/utils";
 import useShowLinkouts from "@genuin/components/hooks/use-show-linkouts";
 import { useAnalytics } from "@genuin/components/context/analytics/context";
 import { cva, VariantProps } from "class-variance-authority";
-import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
-import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 export const linkOutVariant = cva("gencl:space-y-4", {
   variants: {
@@ -91,9 +89,7 @@ export function Linkouts({
   const [shouldRender, setShouldRender] = useState(
     showImmediately || showLinkouts
   );
-  const embedDetails = useSafeEmbedContext();
   const isEmbed = variant === "embed";
-  const config = useEmbedConfigs();
 
   useEffect(() => {
     // Handle immediate display without animation

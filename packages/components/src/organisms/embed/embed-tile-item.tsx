@@ -5,7 +5,6 @@ import { EmbedEventContextType } from "@genuin/components/context/embed/event-bu
 import { useEmbedManagerContext } from "./context";
 import { useDebounceCallback } from "usehooks-ts";
 import { useEmbedContext } from "@genuin/components/context";
-import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 type EmbedItemProps = Omit<
   ComponentProps<typeof EmbedTile>,

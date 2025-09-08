@@ -98,7 +98,11 @@ function CommunityDetailsView({ slug }: { slug: string }) {
     if (!communityDetails) return;
 
     const newCommunity: RecentCommunity = {
-      dp: communityDetails.dp ?? communityDetails.dp_s ?? "",
+      dp:
+        communityDetails.dp_s ??
+        communityDetails.dp_m ??
+        communityDetails.dp ??
+        "",
       community_name: communityDetails.name ?? "",
       slug: communityDetails.slug,
     };
@@ -183,7 +187,11 @@ function CommunityDetailsView({ slug }: { slug: string }) {
         className="gencl:pl-4 gencl:pr-6 gencl:py-4"
         title={communityDetails?.name ?? ""}
         profileImageDetails={{
-          imageUrl: communityDetails?.dp_m ?? communityDetails.dp ?? "",
+          imageUrl:
+            communityDetails?.dp_s ??
+            communityDetails.dp_m ??
+            communityDetails.dp ??
+            "",
           isAvatar: false,
           alt: communityDetails?.name ?? "",
         }}

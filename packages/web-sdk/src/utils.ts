@@ -110,8 +110,8 @@ export function parsePlacementToEmbedData(
 
       // Links configuration
       links: {
-        is_show_links: configureView?.show_links ?? false,
-        position: 'overlay' as const, // Default as PlacementDataResponse doesn't have position
+        is_show_links: configureView?.links.is_show_links ?? false,
+        position: configureView?.links.position ?? 'overlay',
       },
 
       // Carousel style mapping
@@ -125,10 +125,10 @@ export function parsePlacementToEmbedData(
 
       // Heading and sub-heading from styles
       heading:
-        data.styles?.find((style) => style._id === styleId)?.title || null,
+        data.styles?.find((style) => style._id === styleId)?.title ?? null,
       heading_text_color: configureView?.heading_text_color,
       sub_heading:
-        data.styles?.find((style) => style._id === styleId)?.sub_title || null,
+        data.styles?.find((style) => style._id === styleId)?.sub_title ?? null,
       sub_heading_text_color: configureView?.sub_heading_text_color,
 
       // UI element visibility
@@ -209,9 +209,7 @@ export function parsePlacementToEmbedData(
           row: configureView.grid_layout.row,
         }
       : undefined,
-    grid_auto_advance_playback:
-      configureView.media_play.auto_advance_playback ?? 0,
-    grid_enable_loop_video: configureView.media_play.enable_loop_video ?? false,
+    media_play: configureView.media_play,
 
     // Implementation guide settings
     implementation_guide: webConfig?.implementation_guide

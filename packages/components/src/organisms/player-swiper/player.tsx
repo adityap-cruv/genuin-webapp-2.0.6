@@ -1,4 +1,4 @@
-import { cn } from "@genuin/ui/utils";
+import { cn, getWebpUrlForImage } from "@genuin/ui/utils";
 import { useBaseContext } from "@genuin/components/context/base";
 import {
   ControlLayer,

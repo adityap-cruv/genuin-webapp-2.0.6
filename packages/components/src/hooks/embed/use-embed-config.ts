@@ -1,12 +1,11 @@
 import { useEmbedContext } from "@genuin/components/context/embed";
 import { useBaseContext } from "@genuin/components/context/base";
 import { useMemo } from "react";
-import { isCheckFifthVideoType } from "@genuin/components/lib/utils";
 import { useDeviceDetectMediaQuery } from "../use-devide-detect-media-query";
 import type { CustomizationType } from "@genuin/components/context/embed/embed.types";
 
-const MIN_EMBED_WIDTH = 100;
-const MIN_EMBED_HEIGHT = 100;
+const MIN_EMBED_WIDTH = 130;
+const MIN_EMBED_HEIGHT = 230; // Based on 9:16 aspect ratio for 130 width
 const MIN_GRID_WIDTH = 250;
 
 // TODO REMOVE UNUSED CONFIGS, USE ONLY IF REQUIRED
@@ -67,8 +66,6 @@ export function useEmbedConfigs() {
       theme: customization?.theme || "light",
       enableAdaptiveVideo: embedData?.enable_adaptive_video || false,
       gridLayout: embedData?.grid_layout || undefined,
-      gridAutoAdvancePlayback: embedData?.grid_auto_advance_playback || 0,
-      gridEnableLoopVideo: embedData?.grid_enable_loop_video || false,
     }),
     [customization, embedData?.style]
   );
@@ -103,12 +100,19 @@ export function useEmbedConfigs() {
   // ============================================================
   const videoConfig = useMemo(
     () => ({
-      embedInLoop: !!customization?.is_loop_video,
-      embedAutoplay: !!customization?.autoplay,
-      showBorderAroundVideo: !(
-        isCheckFifthVideoType(brandDetails.brand_id) &&
-        embedData?.style === "carousel"
-      ),
+      videoLoop: !!embedData?.placement_id
+        ? embedData?.media_play?.enable_loop_video
+        : !!customization?.is_loop_video,
+      videoAutoplay: !!embedData?.placement_id
+        ? embedData?.media_play?.enable_autoplay
+        : !!customization?.autoplay,
+      moveToNextTime: embedData?.media_play?.auto_advance_playback ?? 0,
+      showBorderAroundVideo:
+        !!customization?.is_enable_engagement_tools ||
+        (customization?.links?.is_show_links &&
+          customization?.links?.position === "outside")
+          ? true
+          : false,
       videoCrop: !!customization?.video_crop,
     }),
     [customization, brandDetails.brand_id, embedData?.style]
@@ -138,29 +142,29 @@ export function useEmbedConfigs() {
   // ============================================================
   const showEngagementOnRootElement = useMemo(() => {
     if (!customization || !rootElement) return false;
-    // Check for feed view with minimum width requirement
-    if (
-      embedData?.style === "feed" &&
-      rootElement.offsetWidth < MIN_EMBED_WIDTH
-    ) {
-      return false;
-    }
-    // Check for carousel view with minimum height requirement
-    if (
-      embedData?.style === "carousel" &&
-      rootElement.offsetHeight < MIN_EMBED_HEIGHT
-    ) {
-      return false;
-    }
 
-    if (
-      embedData?.style === "grid" &&
-      rootElement.offsetWidth < MIN_GRID_WIDTH
-    ) {
-      return false;
-    }
+    const currentWidth = rootElement.offsetWidth;
+    const currentHeight = rootElement.offsetHeight;
+    const currentStyle = embedData?.style;
 
-    return true;
+    // Check if the current embed style has minimum size requirements
+    switch (currentStyle) {
+      case "feed":
+        return (
+          currentWidth >= MIN_EMBED_WIDTH && currentHeight >= MIN_EMBED_HEIGHT
+        );
+
+      case "carousel":
+        return (
+          currentWidth >= MIN_EMBED_WIDTH && currentHeight >= MIN_EMBED_HEIGHT
+        );
+
+      case "grid":
+        return currentWidth >= MIN_GRID_WIDTH;
+
+      default:
+        return true;
+    }
   }, [customization, rootElement, embedData?.style]);
 
   // ============================================================
@@ -184,7 +188,7 @@ export function useEmbedConfigs() {
       showCommentsSection: !!customization?.show_comments_section,
       showSidePanel: !!customization?.show_side_panel,
       isEnableRedirection: !!customization?.is_enable_redirection,
-      redirectionTools: {
+      redirectionTools: customization?.enable_redirection_tools ?? {
         community: true,
         group: true,
         user: true,
@@ -198,9 +202,9 @@ export function useEmbedConfigs() {
   // ============================================================
   const linkConfig = useMemo(
     () => ({
-      showLinks: customization?.links?.is_show_links || false,
-      showLinksInExpand: embedData?.show_linkout_in_expand || true,
-      linkPosition: customization?.links?.position || "outside",
+      showLinks: customization?.links?.is_show_links ?? false,
+      showLinksInExpand: embedData?.show_linkout_in_expand ?? true,
+      linkPosition: customization?.links?.position ?? "outside",
       showLinkOutside:
         customization?.links?.is_show_links &&
         customization?.links?.position === "outside",
@@ -208,7 +212,7 @@ export function useEmbedConfigs() {
         customization?.links?.is_show_links &&
         customization?.links?.position === "overlay",
     }),
-    [customization]
+    [customization, embedData]
   );
 
   // ============================================================
@@ -282,7 +286,7 @@ export function useEmbedConfigs() {
       hideModal:
         embedContextData.embedData?.style === "carousel" ||
         embedContextData.embedData?.style === "feed" ||
-        embedContextData.embedData?.card_layout_id === 6,
+        embedContextData.embedData?.style === "grid",
     };
   }, [
     embedContextData.embedData?.style,

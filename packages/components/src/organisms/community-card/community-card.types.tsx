@@ -4,6 +4,9 @@ export type CommunityInfoType = {
   id: string;
   name: string;
   dp: string;
+  dp_s?: string;
+  dp_m?: string;
+  dp_l?: string;
   banner: string;
   description: string;
   handle?: string;

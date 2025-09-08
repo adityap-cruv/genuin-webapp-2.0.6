@@ -14,6 +14,7 @@ import { Button } from "@genuin/ui/components";
 import { usePlayerContext } from "../../context";
 import { useEmbedContext } from "@genuin/components/context/embed";
 import { EmbedEventContextType } from "@genuin/components/context/embed/event-bus";
+import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 type EmbedControlsProps = ComponentProps<"div"> & {
   /**
@@ -21,15 +22,18 @@ type EmbedControlsProps = ComponentProps<"div"> & {
    * @default "xs"
    */
   size?: "xs" | "sm" | "md" | "lg";
+  section?: PostDetailsType["section"];
 };
 
 export function EmbedControls({
   className,
   size = "xs",
+  section,
   ...restProps
 }: EmbedControlsProps) {
   const { playingState, togglePlay, muted, toggleMuted } = usePlayerContext();
-  const { changeActivePlayerType, embedEventBus } = useEmbedContext();
+  const { changeActivePlayerType, updateSelectedSection, embedEventBus } =
+    useEmbedContext();
   const [isExpandView, setIsExpandView] = useState(false);
 
   useEffect(() => {
@@ -73,6 +77,9 @@ export function EmbedControls({
         size={size}
         onClick={() => {
           changeActivePlayerType("expand-view");
+          if (section) {
+            updateSelectedSection(section);
+          }
         }}
       >
         {!isExpandView ? (

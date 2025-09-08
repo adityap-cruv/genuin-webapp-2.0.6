@@ -264,22 +264,22 @@ export function Actions({
   const tooltip = baseContext?.brandDetails?.reactions?.tooltip ?? "Spark";
   const { engagement } = useEmbedConfigs();
 
-  if (!engagement.showEngagementTools) return;
-
   const {
     engagementTools: { comment, repost, share, spark },
+    showEngagementTools,
   } = engagement;
 
   // Only include actions if enabled in engagementTools config
+  // If showEngagementTools is false, only show the MORE action
   const actions = [
-    repost
+    showEngagementTools && repost
       ? {
           icon: <RepostIcon theme={theme} />, // fallback to light for mobile
           actionType: "REPOST" as const,
           tooltipText: "Repost",
         }
       : null,
-    spark
+    showEngagementTools && spark
       ? {
           icon: (
             <DynamicReactionIcon
@@ -292,14 +292,14 @@ export function Actions({
           tooltipText: tooltip,
         }
       : null,
-    comment
+    showEngagementTools && comment
       ? {
           icon: <CommentIcon theme={theme} />,
           actionType: "COMMENT" as const,
           tooltipText: "Add a comment",
         }
       : null,
-    share
+    showEngagementTools && share
       ? {
           icon: <ShareIcon theme={theme} />,
           actionType: "SHARE" as const,

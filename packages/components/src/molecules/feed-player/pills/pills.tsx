@@ -20,6 +20,8 @@ type PillsPropsType = {
   isHoverable?: boolean;
   hideCommunityJoinButton?: boolean;
   hideGroupSubscriptionButton?: boolean;
+  hideGroupPill?: boolean;
+  hideCommunityPill?: boolean;
 } & ComponentProps<"div">;
 
 export function Pills({
@@ -33,26 +35,32 @@ export function Pills({
   isHoverable = false,
   hideCommunityJoinButton,
   hideGroupSubscriptionButton,
+  hideGroupPill,
+  hideCommunityPill,
   ...restProps
 }: PillsPropsType) {
   return (
     <div className={cn("gencl:flex gencl:gap-2", className)} {...restProps}>
-      <CommunityPill
-        isHoverable={isHoverable}
-        variant={variant}
-        onCommunityJoinStatusChange={onCommunityJoinStatusChange}
-        communityDetails={communityDetails}
-        hideCommunityJoinButton={hideCommunityJoinButton}
-      />
-      <GroupPill
-        isHoverable={isHoverable}
-        variant={variant}
-        groupDetails={groupDetails}
-        communityDetails={communityDetails}
-        onGroupJoinStatusChange={onGroupJoinStatusChange}
-        onGroupSubscriptionChange={onGroupSubscriptionChange}
-        hideGroupSubscriptionButton={hideGroupSubscriptionButton}
-      />
+      {!hideCommunityPill && (
+        <CommunityPill
+          isHoverable={isHoverable}
+          variant={variant}
+          onCommunityJoinStatusChange={onCommunityJoinStatusChange}
+          communityDetails={communityDetails}
+          hideCommunityJoinButton={hideCommunityJoinButton}
+        />
+      )}
+      {!hideGroupPill && (
+        <GroupPill
+          isHoverable={isHoverable}
+          variant={variant}
+          groupDetails={groupDetails}
+          communityDetails={communityDetails}
+          onGroupJoinStatusChange={onGroupJoinStatusChange}
+          onGroupSubscriptionChange={onGroupSubscriptionChange}
+          hideGroupSubscriptionButton={hideGroupSubscriptionButton}
+        />
+      )}
     </div>
   );
 }

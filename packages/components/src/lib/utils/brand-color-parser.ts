@@ -18,18 +18,21 @@
  * @returns An object mapping CSS variable names to color codes.
  */
 export function parseBrandColors(colors: any) {
-  const parsedColors: any = {};
-  for (const category in colors) {
-    const categoryColors = colors[category];
+  const parsedColors: Record<string, string> = {}
+
+  // Only parse primary category
+  if (colors.primary) {
+    const categoryColors = colors.primary;
     for (const shade in categoryColors) {
       const colorCode = categoryColors[shade];
       const parsedShade = shade.split("_")[1];
       if (parsedShade) {
-        parsedColors[`--gencl-color-${category}-${parsedShade}`] = colorCode;
+        parsedColors[`--gencl-color-primary-${parsedShade}`] = colorCode;
       } else {
-        parsedColors[`--gencl-color-${category}`] = colorCode;
+        parsedColors[`--gencl-color-primary`] = colorCode;
       }
     }
   }
+
   return parsedColors;
 }

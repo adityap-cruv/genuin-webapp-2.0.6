@@ -65,6 +65,24 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       )
     }
   }
+  // if in case brand not found render inactive page
+  if (
+    !config ||
+    (typeof config === 'object' && Object.keys(config).length === 0) ||
+    config.brand_id === undefined ||
+    config.brand_id === ''
+  ) {
+    return (
+      <html lang="en">
+        <head>
+          <meta charSet="utf-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <meta httpEquiv="refresh" content="0; url=/inactive" />
+        </head>
+        <body className={inter.className}></body>
+      </html>
+    )
+  }
   const favicon = config?.favicon
   const brandColors = parseBrandColors(config?.brand_colors || {})
 

@@ -216,12 +216,6 @@ export function Embed({
       }}
       {...restProps}
     >
-      <EmbedHeader
-        style={{
-          height: headerHeight,
-        }}
-        variant={embedVariant}
-      />
       <EmbedManagerProvider swiper={swiper} isGridLayout={isGridLayout}>
         {isGridLayout ? (
           <GridView
@@ -230,11 +224,17 @@ export function Embed({
             cols={config.view.gridLayout?.column ?? 2}
             autoAdjust={config.view.gridLayout?.auto_adjust}
             aspectRatio={embedData.aspect_ratio}
-            moveToNext={!config.view.gridEnableLoopVideo}
-            moveToNextTime={config.view.gridAutoAdvancePlayback}
+            moveToNext={!config.video.videoLoop}
+            moveToNextTime={config.video.moveToNextTime}
           />
         ) : (
           <div className="gencl:relative">
+            <EmbedHeader
+              style={{
+                height: headerHeight,
+              }}
+              variant={embedVariant}
+            />
             <EmbedSwiper
               forFeed={config.view.isFeed}
               aspectRatio={embedData.aspect_ratio}

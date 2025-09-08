@@ -7,7 +7,10 @@ export function parseComments(data: CommentsResponseType): CommentListType {
       memberId: comment.owner.member_id,
       nickname: comment.owner.nickname,
       isAvatar: comment.owner.is_avatar,
-      profileImage: comment.owner.profile_image,
+      profileImage:
+        comment.owner.profile_image_s ??
+        comment.owner.profile_image_m ??
+        comment.owner.profile_image,
       name: comment.owner.name ?? null,
       bio: comment.owner.bio ?? null,
     },

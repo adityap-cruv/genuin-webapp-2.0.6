@@ -23,16 +23,6 @@ type Props = Omit<
    * The id of the video to passed to analytics.
    */
   videoId: string;
-  /**
-   * Whether the video should autoplay when loaded.
-   * @default false
-   */
-  autoPlay?: boolean;
-  /**
-   * Whether the video should loop when it ends.
-   * @default false
-   */
-  loop?: boolean;
 };
 
 const EVENT_DURATION_PROPERTY_NAME = "video_length";
@@ -43,8 +33,6 @@ export const FeedPlayer = memo(function FeedPlayer({
   videoId,
   poster,
   className,
-  autoPlay = false,
-  loop = false,
   onOpenPlayerReady,
   onTimeUpdate,
   onEnded,
@@ -93,16 +81,6 @@ export const FeedPlayer = memo(function FeedPlayer({
       playerRef.current.playbackRate = playbackSpeed.speed;
     }
   }, [playbackSpeed]);
-
-  // Handle autoplay
-  useEffect(() => {
-    if (playerRef.current && autoPlay && feedPlayerShouldPlay) {
-      audioManager.notifyPlaying(id);
-      playerRef.current.play().catch((err) => {
-        console.warn("Autoplay prevented:", err);
-      });
-    }
-  }, [autoPlay, feedPlayerShouldPlay, id]);
 
   // Track when video comes into view using IntersectionObserver
   useEffect(() => {
@@ -175,12 +153,12 @@ export const FeedPlayer = memo(function FeedPlayer({
 
   const handlePlayerLoad = useCallback(
     (player: any) => {
-      if (feedPlayerShouldPlay && autoPlay) {
+      if (feedPlayerShouldPlay) {
         audioManager.notifyPlaying(id);
         player.play();
       }
     },
-    [feedPlayerShouldPlay, autoPlay, id]
+    [feedPlayerShouldPlay, id]
   );
 
   const handleVideoFirstQuartile = useCallback(
@@ -300,11 +278,9 @@ export const FeedPlayer = memo(function FeedPlayer({
       // adUrl="https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/vmap_ad_samples&sz=640x480&cust_params=sample_ar%3Dpostonly&ciu_szs=300x250&gdfp_req=1&ad_rule=1&output=vmap&unviewed_position_start=1&env=vp&correlator="
       src={src}
       playsInline
-      loop={loop}
       className={cn("gencl:m-auto", className)}
       volume={volume}
       play={feedPlayerShouldPlay}
-      autoPlay={autoPlay}
       playbackSpeed={playbackSpeed?.speed || 1}
       onPlayerLoad={handlePlayerLoad}
       onOpenPlayerReady={handleOpenPlayerReady}

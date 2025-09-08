@@ -252,19 +252,3 @@ export function getSocialLinks(socialLinks: {
 
   return links;
 }
-
-/**
- * Determines if the provided brand ID corresponds to a "fifth video type" brand.
- *
- * NOTE: This funtion is only used in embed scrap it whenever front-end dep is removed.
- *
- * @param params - An object containing the brand ID to check.
- * @param params.brandId - The brand ID to evaluate. Can be a number or undefined.
- * @returns `true` if the brand ID is either 2883 or 2922; otherwise, `false`.
- */
-export function isCheckFifthVideoType(brandId: number | undefined): boolean {
-  if (brandId != undefined && [2883, 2922, 2357].includes(brandId)) {
-    return true;
-  }
-  return false;
-}

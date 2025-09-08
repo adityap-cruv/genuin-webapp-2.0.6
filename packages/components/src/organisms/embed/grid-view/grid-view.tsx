@@ -1,11 +1,12 @@
 import { useEmbedContext } from "@genuin/components/context";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { useEmbedManagerContext } from "../context";
-import { useEffect, useState, ComponentProps } from "react";
+import { useEffect, useState, ComponentProps, useMemo } from "react";
 import { cn, getAspectRatio } from "@genuin/ui/lib/utils";
 import { useEmbedDimensions } from "@genuin/components/hooks/embed/use-embed-dimensions";
 import { EmbedItem } from "../embed-tile-item";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { EmbedHeader } from "@genuin/components/molecules/embed-header";
 
 export function GridView({
   videos,
@@ -29,14 +30,17 @@ export function GridView({
   const { view } = useEmbedConfigs();
   const { updateActiveIndex } = useEmbedManagerContext();
   const [isHovering, setIsHovering] = useState(false);
-  const { containerHeight, containerWidth } = useEmbedDimensions();
-  const { width: widthRatio, height: heightRatio } =
-    getAspectRatio(aspectRatio);
+  const { containerHeight, containerWidth, headerHeight } =
+    useEmbedDimensions();
 
   useEffect(() => {
-    if (videos.length === 0) return;
-    if (isHovering) return;
-    if (!moveToNext || moveToNextTime) return;
+    if (
+      videos.length === 0 ||
+      isHovering ||
+      !moveToNext ||
+      moveToNextTime === 0
+    )
+      return;
 
     const interval = setInterval(() => {
       const context = embedEventBus.getContext();
@@ -46,7 +50,14 @@ export function GridView({
       updateActiveIndex(nextIndex);
     }, moveToNextTime * 1000);
     return () => clearInterval(interval);
-  }, [videos.length, embedEventBus, updateActiveIndex, isHovering, moveToNext]);
+  }, [
+    videos.length,
+    embedEventBus,
+    updateActiveIndex,
+    isHovering,
+    moveToNext,
+    moveToNextTime,
+  ]);
 
   useEffect(() => {
     if (videos.length > 0) {
@@ -54,6 +65,22 @@ export function GridView({
       updateActiveIndex(currentIndex);
     }
   }, [videos.length, embedEventBus, updateActiveIndex]);
+
+  const { width: widthRatio, height: heightRatio } = useMemo(
+    () => getAspectRatio(aspectRatio),
+    [aspectRatio]
+  );
+
+  // Memoize sorted and limited videos
+  const sortedAndLimitedVideos = useMemo(() => {
+    return videos
+      .sort((a, b) => {
+        const posA = a.section?.position ?? Infinity;
+        const posB = b.section?.position ?? Infinity;
+        return posA - posB;
+      })
+      .slice(0, rows * cols);
+  }, [videos, rows, cols]);
 
   return (
     <div
@@ -66,6 +93,12 @@ export function GridView({
       onMouseLeave={() => setIsHovering(false)}
       {...restProps}
     >
+      <EmbedHeader
+        style={{
+          height: headerHeight,
+        }}
+        variant="grid"
+      />
       <div
         className={cn(
           "gencl:w-full gencl:gap-2",
@@ -77,7 +110,7 @@ export function GridView({
           gridTemplateRows: `repeat(${rows}, 1fr)`,
         }}
       >
-        {videos.map((videoData, index) => (
+        {sortedAndLimitedVideos.map((videoData, index) => (
           <div
             key={index}
             className={cn(

@@ -11,7 +11,7 @@ import { Comments, CommentsDialog } from "../../molecules/comments";
 
 import { Player } from "./player";
 import { SwiperImplementation } from "./swiper-implementation";
-import { ComponentProps, useMemo, useState, useEffect } from "react";
+import { ComponentProps, useState, useEffect } from "react";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { abbreviateNumber, cn } from "@genuin/ui/lib/utils";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
@@ -68,9 +68,26 @@ export function PlayerListWithSection({
   } = useEmbedConfigs();
   const embedDetails = useSafeEmbedContext();
   const sectionList = embedDetails?.embedEventBus.getContext().sectionList;
+  const selectedSection =
+    embedDetails?.embedEventBus.getContext().selectedSection;
 
   // Ref for outer swiper
   const [outerSwiper, setOuterSwiper] = useState<Swiper | null>(null);
+
+  // Effect to navigate to selected section when it changes
+  useEffect(() => {
+    if (outerSwiper && selectedSection && sectionList) {
+      const selectedSectionIndex = sectionList.findIndex(
+        (section: any) => section.id === selectedSection.id
+      );
+      if (
+        selectedSectionIndex !== -1 &&
+        selectedSectionIndex !== outerSwiper.activeIndex
+      ) {
+        outerSwiper.slideTo(selectedSectionIndex);
+      }
+    }
+  }, [outerSwiper, selectedSection, sectionList]);
 
   // State to track vertical swipers for each section
   const [verticalSwipers, setVerticalSwipers] = useState<
@@ -80,12 +97,6 @@ export function PlayerListWithSection({
 
   // Handler for section tab click
   const handleSectionSelect = (section: any) => {
-    if (!sectionList) return;
-    const sectionIndex = sectionList.findIndex((s: any) => s.id === section.id);
-    if (outerSwiper && sectionIndex !== -1) {
-      outerSwiper.slideTo(sectionIndex);
-    }
-    // Also update selectedSection in embed context
     if (embedDetails) {
       embedDetails.updateSelectedSection(section);
     }
@@ -99,6 +110,16 @@ export function PlayerListWithSection({
           isMobile && "gencl:h-full gencl:w-full"
         )}
       >
+        <div
+          className={cn(
+            "gencl:h-full gencl:aspect-reel gencl:absolute",
+            isMobile && "gencl:h-full gencl:w-full"
+          )}
+        >
+          {isSectioned && (
+            <SectionsTabs onSectionSelect={handleSectionSelect} />
+          )}
+        </div>
         <SwiperImplementation
           direction="horizontal"
           className={cn(
@@ -115,9 +136,6 @@ export function PlayerListWithSection({
             }
           }}
         >
-          {isSectioned && (
-            <SectionsTabs onSectionSelect={handleSectionSelect} />
-          )}
           {sectionList?.map((item, sectionIdx) => (
             <SwiperSlide key={item?.id || sectionIdx}>
               {({ isActive: isHorizontalActive }) => (
@@ -186,92 +204,86 @@ export function PlayerListWithSection({
             </SwiperSlide>
           ))}
         </SwiperImplementation>
+      </div>
 
-        {!isMobile && posts[activeIndex] && (
-          <Actions
-            shareUrl={posts[activeIndex]?.video.shareUrl ?? ""}
-            isReacted={posts[activeIndex]?.video.isSparked ?? false}
-            contentId={posts[activeIndex]?.video.id}
-            groupSlug={posts[activeIndex]?.group.slug}
-            slug={posts[activeIndex]?.video.slug}
-            reactionCount={posts[activeIndex]?.video.sparkCount}
-            theme={showExpandView ? "dark" : "light"}
-            className="gencl:shrink-0 gencl:pb-4"
-            isCommentBoxOpen={value}
-            actionWrapper={{
-              COMMENT: (defaultNode) => {
-                if (!showCommentBox) return;
-                //
-                const defaultOpen =
-                  (embedDetails?.embedData?.autoUserInteractionToPerform ===
-                    "comment-spark" ||
-                    embedDetails?.embedData?.autoUserInteractionToPerform ===
-                      "comment") &&
-                  posts[activeIndex]?.video.slug ===
-                    embedDetails.embedData?.startVideoSlug;
+      {!isMobile && posts[activeIndex] && (
+        <Actions
+          shareUrl={posts[activeIndex]?.video.shareUrl ?? ""}
+          isReacted={posts[activeIndex]?.video.isSparked ?? false}
+          contentId={posts[activeIndex]?.video.id}
+          groupSlug={posts[activeIndex]?.group.slug}
+          slug={posts[activeIndex]?.video.slug}
+          reactionCount={posts[activeIndex]?.video.sparkCount}
+          theme={showExpandView ? "dark" : "light"}
+          className="gencl:shrink-0 gencl:pb-4"
+          isCommentBoxOpen={value}
+          actionWrapper={{
+            COMMENT: (defaultNode) => {
+              if (!showCommentBox) return;
+              //
+              const defaultOpen =
+                embedDetails?.embedData?.autoUserInteractionToPerform ===
+                  "comment-spark" &&
+                posts[activeIndex]?.video.slug ===
+                  embedDetails.embedData?.startVideoSlug;
 
-                // Simple ui to show for comment trigger
-                function CommentBox({
-                  children,
-                }: {
-                  children: React.ReactNode;
-                }) {
-                  return (
-                    <>
-                      {children}
-                      <p
-                        className={cn(
-                          "gencl:p-0 gencl:text-center gencl:text-black gencl:text-body-2-medium",
-                          showExpandView && "gencl:text-white!"
-                        )}
-                      >
-                        {abbreviateNumber(
-                          posts[activeIndex]?.video.commentCount ?? 0
-                        )}
-                      </p>
-                    </>
-                  );
-                }
-
-                if (!isDesktop && posts[activeIndex] && (value || defaultOpen))
-                  return (
-                    <CommentsDialog
-                      commentCount={posts[activeIndex]?.video.commentCount}
-                      communityId={posts[activeIndex]?.community.id}
-                      loopId={posts[activeIndex]?.group.id}
-                      videoId={posts[activeIndex]?.video.id}
-                      videoSlug={posts[activeIndex]?.video.slug}
-                      shareUrl={posts[activeIndex]?.video.shareUrl}
-                      defaultOpen={value}
-                      key={"feed-comment-box" + posts[activeIndex]?.video.id}
-                      onOpenChange={(value) => {
-                        setValue(value);
-                      }}
-                    >
-                      <CommentBox>{defaultNode}</CommentBox>
-                    </CommentsDialog>
-                  );
+              // Simple ui to show for comment trigger
+              function CommentBox({ children }: { children: React.ReactNode }) {
                 return (
-                  <span
+                  <>
+                    {children}
+                    <p
+                      className={cn(
+                        "gencl:p-0 gencl:text-center gencl:text-black gencl:text-body-2-medium",
+                        showExpandView && "gencl:text-white!"
+                      )}
+                    >
+                      {abbreviateNumber(
+                        posts[activeIndex]?.video.commentCount ?? 0
+                      )}
+                    </p>
+                  </>
+                );
+              }
+
+              if (!isDesktop && posts[activeIndex] && (value || defaultOpen))
+                return (
+                  <CommentsDialog
+                    commentCount={posts[activeIndex]?.video.commentCount}
+                    communityId={posts[activeIndex]?.community.id}
+                    loopId={posts[activeIndex]?.group.id}
+                    videoId={posts[activeIndex]?.video.id}
+                    videoSlug={posts[activeIndex]?.video.slug}
+                    shareUrl={posts[activeIndex]?.video.shareUrl}
+                    defaultOpen={value}
                     key={"feed-comment-box" + posts[activeIndex]?.video.id}
-                    onClick={() => {
-                      if (showExpandView) toggle();
+                    onOpenChange={(value) => {
+                      setValue(value);
                     }}
                   >
                     <CommentBox>{defaultNode}</CommentBox>
-                  </span>
+                  </CommentsDialog>
                 );
-              },
-            }}
-            onReactionStateChange={(isReacted) => {
-              const videoId = posts[activeIndex]?.video.id;
-              if (videoId) {
-                onReactionStateChange?.(videoId, isReacted);
-              }
-            }}
-          />
-        )}
-      </div>
+              return (
+                <span
+                  key={"feed-comment-box" + posts[activeIndex]?.video.id}
+                  onClick={() => {
+                    if (showExpandView) toggle();
+                  }}
+                >
+                  <CommentBox>{defaultNode}</CommentBox>
+                </span>
+              );
+            },
+          }}
+          onReactionStateChange={(isReacted) => {
+            const videoId = posts[activeIndex]?.video.id;
+            if (videoId) {
+              onReactionStateChange?.(videoId, isReacted);
+            }
+          }}
+        />
+      )}
 
       {/* in case of expand view show navigation buttons. in case of mobile view don't show navigation. */}
       {showExpandView && !isMobile && (
@@ -333,14 +345,14 @@ function NavigationButton({
         disabled={swiper.isBeginning}
         onClick={() => swiper.slidePrev()}
       >
-        <ChevronUpIcon theme="dark" size="xs" />
+        <ChevronUpIcon theme="dark" size="sm" />
       </Button>
       <Button
         theme="navigation"
         disabled={swiper.isEnd}
         onClick={() => swiper.slideNext()}
       >
-        <ChevronDownIcon theme="dark" size="xs" />
+        <ChevronDownIcon theme="dark" size="sm" />
       </Button>
     </div>
   );

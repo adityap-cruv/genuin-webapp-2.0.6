@@ -3,7 +3,6 @@ import { useBaseContext } from "@genuin/components/context/base";
 import { useAnalytics } from "@genuin/components/context/analytics/context";
 import { ComponentProps } from "react";
 import { Link } from "../link";
-import { isCheckFifthVideoType } from "@genuin/components/lib/utils";
 import { cva, VariantProps } from "class-variance-authority";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
@@ -45,24 +44,16 @@ export function EmbedHeader({
 
   return (
     <div
-      className={cn(
-        embedHeaderVariants({ variant }),
-        // isCheckFifthVideoType(brandDetails?.brand_id) && variant === "carousel"
-        //   ? "gencl:!p-0 gencl:!pb-3"
-        //   : "gencl:p-2"
-        "gencl:p-2"
-      )}
+      className={cn(embedHeaderVariants({ variant }), "gencl:p-2")}
       {...restProps}
     >
       <div>
         {header.heading && (
           <p
             style={{ color: header.headingTextColor }}
-            className={cn("gencl:font-semibold gencl:line-clamp-1", {
-              "gencl:!font-bold gencl:!text-[14px] gencl:!leading-[150%] gencl:!tracking-wide gencl:!uppercase":
-                isCheckFifthVideoType(brandDetails?.brand_id) &&
-                variant === "carousel",
-            })}
+            className={cn(
+              "gencl:font-semibold gencl:line-clamp-1 gencl:!text-[14px] gencl:!leading-[150%] gencl:!tracking-wide gencl:!uppercase"
+            )}
           >
             {header.heading}
           </p>

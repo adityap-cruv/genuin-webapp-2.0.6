@@ -215,96 +215,100 @@ export async function RedirectHandler({
         }
         return permanentRedirect(targetDomain + pathParamStr + searchParamStr)
       }
-    }
-  } else {
-    // Skip auth check if running on localhost or if loaded in an iframe from BCC_URL
-    const host = headersList.get('host') ?? ''
-    const referer = headersList.get('referer') ?? ''
-    const secFetchDest = headersList.get('sec-fetch-dest') ?? ''
-    const bccUrl = process.env.NEXT_PUBLIC_BCC_URL || 'https://brands.qa.begenuin.com'
-
-    // Check if the app is running locally, is embedded in an iframe from BCC_URL,
-    // or explicitly has the sec-fetch-dest header set to 'iframe'
-    if (
-      host.includes('localhost') ||
-      host.includes('127.0.0.1') ||
-      host.startsWith('192.168.') ||
-      (secFetchDest === 'iframe' && referer && referer.includes(bccUrl))
-    ) {
-      return children
-    }
-
-    if (config && config?.brand_id.toString() === '99') {
-      // Skip auth check for the begenuin brand
-      return children
-    }
-
-    if (config) {
-      // Skip auth check for the dlk page itself to avoid redirect loops
-      const pathParamStr = headersList.get('x-path-params') ?? ''
-      if (pathParamStr === '/dlk/') {
+    } else {
+      if (!config?.protected_content) {
+        // If protected_content is false, skip auth check
         return children
       }
+      // Skip auth check if running on localhost or if loaded in an iframe from BCC_URL
+      const host = headersList.get('host') ?? ''
+      const referer = headersList.get('referer') ?? ''
+      const secFetchDest = headersList.get('sec-fetch-dest') ?? ''
+      const bccUrl = process.env.NEXT_PUBLIC_BCC_URL || 'https://brands.qa.begenuin.com'
 
-      // Check if this is a return from Google auth (contains provider=google and code parameters)
-      const searchParams = headersList.get('x-search-params') ?? ''
+      // Check if the app is running locally, is embedded in an iframe from BCC_URL,
+      // or explicitly has the sec-fetch-dest header set to 'iframe'
       if (
-        (searchParams.includes('provider=google') && searchParams.includes('code=')) ||
-        (searchParams.includes('provider=apple') && searchParams.includes('code=')) ||
-        (searchParams.includes('provider=auth') && searchParams.includes('code='))
+        host.includes('localhost') ||
+        host.includes('127.0.0.1') ||
+        host.startsWith('192.168.') ||
+        (secFetchDest === 'iframe' && referer && referer.includes(bccUrl))
       ) {
-        // This is a auth callback, allow access without checking session
-        // The session will be established during the callback processing
-        // Detected auth callback, allowing access
         return children
       }
 
-      // Check if user is authenticated with our custom auth wall
-      const cookieHeader = headersList.get('cookie') ?? ''
-      let hasAuthCookie = false
-
-      if (cookieHeader) {
-        // Just check if the secure cookie exists at all
-        // The actual value is a hash that we don't need to verify here
-        // Since it's HTTP-only, if it exists, it means it was set by our server
-        const authCookie = cookieHeader
-          .split(';')
-          .map((cookie) => cookie.trim())
-          .find((cookie) => cookie.startsWith('gn_bx_acc='))
-
-        hasAuthCookie = !!authCookie
+      if (config && config?.brand_id.toString() === '99') {
+        // Skip auth check for the begenuin brand
+        return children
       }
 
-      // Special logic for /auth-wall: if already authenticated, redirect to returnUrl or /home
-      if (pathParamStr === '/auth-wall') {
-        if (hasAuthCookie) {
-          const searchParams = headersList.get('x-search-params') ?? ''
-          // Try to extract returnUrl from searchParams
-          let returnUrl = '/home'
-          const match = searchParams.match(/returnUrl=([^&]*)/)
-          if (match?.[1]) {
-            try {
-              returnUrl = decodeURIComponent(match[1])
-            } catch (error) {
-              console.error('[RedirectHandler] Error decoding returnUrl:', error)
-            }
-          }
-          permanentRedirect(returnUrl)
-        } else {
-          console.log('[RedirectHandler] No auth cookie, showing auth wall')
+      if (config) {
+        // Skip auth check for the dlk page itself to avoid redirect loops
+        const pathParamStr = headersList.get('x-path-params') ?? ''
+        if (pathParamStr === '/dlk/') {
           return children
         }
-      }
 
-      // If not authenticated, redirect to auth wall
-      if (!hasAuthCookie) {
-        // Store the intended destination URL to redirect back after authentication
-        const currentPath = pathParamStr
+        // Check if this is a return from Google auth (contains provider=google and code parameters)
         const searchParams = headersList.get('x-search-params') ?? ''
-        const destinationUrl = currentPath + searchParams
+        if (
+          (searchParams.includes('provider=google') && searchParams.includes('code=')) ||
+          (searchParams.includes('provider=apple') && searchParams.includes('code=')) ||
+          (searchParams.includes('provider=auth') && searchParams.includes('code='))
+        ) {
+          // This is a auth callback, allow access without checking session
+          // The session will be established during the callback processing
+          // Detected auth callback, allowing access
+          return children
+        }
 
-        // Redirect to auth wall with the return URL as a parameter
-        permanentRedirect(`/auth-wall?returnUrl=${encodeURIComponent(destinationUrl)}`)
+        // Check if user is authenticated with our custom auth wall
+        const cookieHeader = headersList.get('cookie') ?? ''
+        let hasAuthCookie = false
+
+        if (cookieHeader) {
+          // Just check if the secure cookie exists at all
+          // The actual value is a hash that we don't need to verify here
+          // Since it's HTTP-only, if it exists, it means it was set by our server
+          const authCookie = cookieHeader
+            .split(';')
+            .map((cookie) => cookie.trim())
+            .find((cookie) => cookie.startsWith('gn_bx_acc='))
+
+          hasAuthCookie = !!authCookie
+        }
+
+        // Special logic for /auth-wall: if already authenticated, redirect to returnUrl or /home
+        if (pathParamStr === '/auth-wall') {
+          if (hasAuthCookie) {
+            const searchParams = headersList.get('x-search-params') ?? ''
+            // Try to extract returnUrl from searchParams
+            let returnUrl = '/home'
+            const match = searchParams.match(/returnUrl=([^&]*)/)
+            if (match?.[1]) {
+              try {
+                returnUrl = decodeURIComponent(match[1])
+              } catch (error) {
+                console.error('[RedirectHandler] Error decoding returnUrl:', error)
+              }
+            }
+            permanentRedirect(returnUrl)
+          } else {
+            console.log('[RedirectHandler] No auth cookie, showing auth wall')
+            return children
+          }
+        }
+
+        // If not authenticated, redirect to auth wall
+        if (!hasAuthCookie) {
+          // Store the intended destination URL to redirect back after authentication
+          const currentPath = pathParamStr
+          const searchParams = headersList.get('x-search-params') ?? ''
+          const destinationUrl = currentPath + searchParams
+
+          // Redirect to auth wall with the return URL as a parameter
+          permanentRedirect(`/auth-wall?returnUrl=${encodeURIComponent(destinationUrl)}`)
+        }
       }
     }
   }
