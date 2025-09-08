@@ -172,7 +172,7 @@ export function PlayerListWithSection({
                             isVerticalVisible && isHorizontalActive;
 
                           return (
-                            <div className="gencl:flex gencl:gap-3 gencl:h-full">
+                            <div className="gencl:h-full gencl:w-full">
                               <Player
                                 isActive={isTrulyActive}
                                 isNext={isTrulyNext}
