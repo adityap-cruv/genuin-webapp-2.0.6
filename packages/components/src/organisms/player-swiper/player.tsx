@@ -89,7 +89,7 @@ export function Player({
       >
         <div
           className={cn(
-            "gencl:group gencl:relative gencl:h-full gencl:overflow-clip",
+            "gencl:group gencl:relative gencl:h-full gencl:w-full gencl:overflow-clip",
             {
               "gencl:sm:rounded-xl": !showExpandView,
             }
