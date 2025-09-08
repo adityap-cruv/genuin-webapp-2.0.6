@@ -189,6 +189,20 @@ export function useEmbedConfigs() {
           share: false,
         };
 
+    const isEnableRedirection = !!customization?.is_enable_redirection;
+
+    const redirectionTools = isEnableRedirection
+      ? (customization?.enable_redirection_tools ?? {
+          community: true,
+          group: true,
+          user: true,
+        })
+      : {
+          community: false,
+          group: false,
+          user: false,
+        };
+
     return {
       showEngagementOnRootElement,
       showEngagementTools,
@@ -198,12 +212,8 @@ export function useEmbedConfigs() {
       showShareIcon: !!customization?.show_share_icon,
       showCommentsSection: !!customization?.show_comments_section,
       showSidePanel: !!customization?.show_side_panel,
-      isEnableRedirection: !!customization?.is_enable_redirection,
-      redirectionTools: customization?.enable_redirection_tools ?? {
-        community: true,
-        group: true,
-        user: true,
-      },
+      isEnableRedirection,
+      redirectionTools,
       openAllLinksInNewTab: false,
     };
   }, [customization, rootElement, showEngagementOnRootElement]);

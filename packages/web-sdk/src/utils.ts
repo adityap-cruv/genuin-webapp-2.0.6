@@ -816,7 +816,7 @@ export function parsePlacementToEmbedData(
       // Links configuration
       links: {
         is_show_links: configureView?.links.is_show_links ?? false,
-        position: configureView?.links.position ?? 'overlay',
+        position: 'overlay',
       },
 
       // Carousel style mapping
