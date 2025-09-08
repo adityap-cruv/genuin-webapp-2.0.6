@@ -100,9 +100,11 @@ export class ErrorHandler {
 
   // Get the last error
   getLastError(): SDKError | null {
-    return this.errorHistory.length > 0
-      ? this.errorHistory[this.errorHistory.length - 1]
-      : null
+    if (this.errorHistory.length === 0) {
+      return null
+    }
+    const lastError = this.errorHistory[this.errorHistory.length - 1]
+    return lastError ?? null
   }
 
   // Check if there are any errors of a specific type

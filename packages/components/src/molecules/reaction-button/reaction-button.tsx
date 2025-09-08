@@ -303,12 +303,7 @@ function Button({
     // because it is not changing during the component's lifecycle.
     // If the embedData has autoUserInteractionToPerform set to "spark" or "comment-spark",
     // we perform the reaction automatically if the user has not reacted yet.
-    if (shouldAutoSparkForVideo) {
-      performReaction();
-    }
-
-    // Auto spark comment in case of commentId match
-    if (shouldAutoSparkForComment) {
+    if (shouldAutoSparkForVideo || shouldAutoSparkForComment) {
       performReaction();
     }
   }, [performReaction]);
