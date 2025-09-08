@@ -1,11 +1,8 @@
-import { EmbedConfig } from '../types/embed'
 import {
-  ConfigManager,
   EventManager,
   SDKEventType,
   type EventListener,
   ErrorHandler,
-  ErrorType,
   TokenManager,
   ThemeManager,
 } from '../core'
@@ -26,12 +23,10 @@ import {
   SingleEmbedDataConfig,
   UpdateConfigByUserType,
 } from '@/type'
-import { config } from 'zod/v4/core'
 
 export class GenuinSDK {
   private brandDetailsManager: BrandDetailsManager
   private static instance: GenuinSDK
-  private configManager: ConfigManager
   private eventManager: EventManager
   private errorHandler: ErrorHandler
   private tokenManager: TokenManager
@@ -46,7 +41,6 @@ export class GenuinSDK {
   private placementManager: PlacementManager
 
   private constructor() {
-    this.configManager = ConfigManager.getInstance()
     this.eventManager = EventManager.getInstance()
     this.errorHandler = ErrorHandler.getInstance()
     this.tokenManager = TokenManager.getInstance()
@@ -958,41 +952,6 @@ export class GenuinSDK {
   }
 
   /**
-   * Initialize the SDK with configuration
-   */
-  init(config: EmbedConfig): void {
-    try {
-      this.configManager.setConfig(config)
-      this.isInitialized = true
-      this.eventManager.emit(SDKEventType.EMBED_LOADED, { config })
-    } catch (error) {
-      const sdkError = this.errorHandler.handleError(
-        ErrorType.INITIALIZATION_ERROR,
-        `Failed to initialize SDK: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        { originalError: error instanceof Error ? error : undefined },
-      )
-      throw new Error(sdkError.message)
-    }
-  }
-
-  /**
-   * Update embed configuration
-   */
-  updateConfig(updates: Partial<EmbedConfig>): void {
-    try {
-      this.configManager.updateConfig(updates)
-      this.eventManager.emit(SDKEventType.CONTENT_UPDATED, { updates })
-    } catch (error) {
-      const sdkError = this.errorHandler.handleError(
-        ErrorType.CONFIGURATION_ERROR,
-        `Failed to update config: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        { originalError: error instanceof Error ? error : undefined },
-      )
-      throw new Error(sdkError.message)
-    }
-  }
-
-  /**
    * Subscribe to SDK events
    */
   on(eventType: SDKEventType, listener: EventListener): () => void {
@@ -1011,13 +970,6 @@ export class GenuinSDK {
    */
   onAll(listener: EventListener): () => void {
     return this.eventManager.onAll(listener)
-  }
-
-  /**
-   * Get current configuration
-   */
-  getConfig(): EmbedConfig {
-    return this.configManager.getConfig()
   }
 
   /**
@@ -1103,7 +1055,6 @@ export class GenuinSDK {
     // Clear all listeners and state
     this.eventManager.removeAllListeners()
     this.errorHandler.clearErrors()
-    this.configManager.reset()
     this.isInitialized = false
 
     this.eventManager.emit(SDKEventType.EMBED_LOADED, { destroyed: true })

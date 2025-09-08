@@ -1,4 +1,4 @@
-import { ACCESS_TOKEN_KEY } from '../const'
+import { ACCESS_TOKEN_KEY } from '../constants'
 import { APIService } from './api'
 import { AuthUser } from '@genuin/components/types/auth'
 import { ErrorHandler, ErrorType } from './errors'

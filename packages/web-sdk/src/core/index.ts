@@ -1,5 +1,4 @@
 export { SDKProvider, useSDK, useSDKConfig } from './context'
-export { ConfigManager, type LegacySDKConfig } from './config'
 export {
   EventManager,
   SDKEventType,

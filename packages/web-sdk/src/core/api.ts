@@ -1,4 +1,4 @@
-import { API_BASE_URL } from '../const'
+import { API_BASE_URL } from '../constants'
 import { ErrorHandler, ErrorType } from './errors'
 import { encryptText } from '@genuin/components/lib/utils/encryption'
 import { BrandDetailsConfigType } from '@genuin/components/types/brand'
