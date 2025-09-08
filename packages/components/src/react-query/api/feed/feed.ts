@@ -185,6 +185,9 @@ type UseFeedOptionsType = {
  */
 export type FeedPage = Awaited<ReturnType<typeof fetchFeed>>;
 
+// This variable is used to ensure that the start video is only appended once
+let firstTimeAppended = false;
+
 export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
   // Always call the hook but control its behavior through the enabled flag
   // This ensures consistent hook call order regardless of options changes
@@ -241,15 +244,61 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
             }
           : undefined,
         select: (data: InfiniteData<FeedPage>) => {
-          if (!data) return undefined;
+          if (firstTimeAppended) return data;
+          if (!data) {
+            // If no infinite data but video data exists, return it as a single page
+            if (videoQueryResult.data) {
+              return {
+                pages: [
+                  {
+                    feed: [videoQueryResult.data],
+                    hasSection: false,
+                    pageSession: null,
+                    endOfFeed: false,
+                    timestamp: 0,
+                  },
+                ],
+              };
+            }
+            return undefined;
+          }
+
+          let pages = data.pages;
+
+          // Prepend video data if available
+          if (videoQueryResult.data) {
+            pages = [
+              {
+                feed: [videoQueryResult.data],
+                hasSection: false,
+                pageSession: null,
+                endOfFeed: false,
+                timestamp: 0,
+              },
+              ...data.pages,
+            ];
+          }
+
+          // Filter out the start video from subsequent pages if startVideoSlug is provided
+          if (options?.startVideoSlug) {
+            pages = pages.map((page, index) => {
+              if (index === 0 && videoQueryResult.data) {
+                // Don't filter the prepended page
+                return page;
+              }
+              return {
+                ...page,
+                feed: page.feed.filter(
+                  (video) => video.video.slug !== options.startVideoSlug
+                ),
+              };
+            });
+          }
+
+          firstTimeAppended = true;
           return {
             ...data,
-            pages: data.pages.map((page) => ({
-              ...page,
-              feed: page.feed.filter(
-                (video) => video.video.slug !== options.startVideoSlug
-              ),
-            })),
+            pages,
           };
         },
       }),
@@ -258,35 +307,6 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
   // Override isLoading when videoQueryResult is loading
   return {
     ...infiniteQueryResult,
-    data: infiniteQueryResult.data
-      ? {
-          ...infiniteQueryResult.data,
-          pages: videoQueryResult.data
-            ? [
-                {
-                  feed: [videoQueryResult.data],
-                  hasSection: false,
-                  pageSession: null,
-                  endOfFeed: false,
-                  timestamp: 0,
-                },
-                ...infiniteQueryResult.data.pages,
-              ]
-            : infiniteQueryResult.data.pages,
-        }
-      : videoQueryResult.data
-        ? {
-            pages: [
-              {
-                feed: [videoQueryResult.data],
-                hasSection: false,
-                pageSession: null,
-                endOfFeed: false,
-                timestamp: 0,
-              },
-            ],
-          }
-        : undefined,
     isLoading: videoQueryResult.isLoading || infiniteQueryResult.isLoading,
   };
 };
