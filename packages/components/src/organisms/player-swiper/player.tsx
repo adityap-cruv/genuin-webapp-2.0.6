@@ -7,8 +7,8 @@ import {
 import { PlayerProvider } from "@genuin/components/molecules/feed-player/context";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
-import { useSwiper, useSwiperSlide } from "swiper/react";
-import { useCallback, useEffect, useState } from "react";
+import { useSwiper } from "swiper/react";
+import { useCallback } from "react";
 import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
 import { ComponentProps } from "react";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
@@ -89,7 +89,7 @@ export function Player({
       >
         <div
           className={cn(
-            "gencl:group gencl:relative gencl:h-full gencl:overflow-clip",
+            "gencl:group gencl:relative gencl:aspect-reel gencl:h-full gencl:overflow-clip",
             {
               "gencl:sm:rounded-xl": !showExpandView,
             }
