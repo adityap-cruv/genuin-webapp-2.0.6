@@ -1,8 +1,7 @@
-import { ACCESS_TOKEN_KEY } from '../constants'
+import { ACCESS_TOKEN_KEY } from '@/constants'
 import { APIService } from './api'
 import { AuthUser } from '@genuin/components/types/auth'
 import { ErrorHandler, ErrorType } from './errors'
-import { LegacySDKConfig } from './config'
 import { getKsCbRequestStatus } from '@/utils/auth'
 
 /**
@@ -117,7 +116,7 @@ export class TokenManager {
   async getCurrentUser(config?: {
     token?: string
     brandId: number
-    params?: LegacySDKConfig['params']
+    params?: any
   }): Promise<AuthUser | null> {
     try {
       if (this.cachedUser) {

@@ -22,13 +22,13 @@ export function encryptText(text?: string, appendString?: boolean): string {
   //   "[encryptText] Encrypting text with AES",
   //   NEXT_PUBLIC_SECRET_STRING
   // );
-  const textToEncrypt = appendString ? text + "fg&t8W+d" : text;
+  const textToEncrypt = appendString ? text + NEXT_PUBLIC_SECRET_STRING : text;
 
   const encrypted = CryptoJS.AES.encrypt(
     textToEncrypt,
-    CryptoJS.enc.Utf8.parse("Z42F5Sv8Fh4laR06QoU5F78S2c5BXV6Y"),
+    CryptoJS.enc.Utf8.parse(NEXT_PUBLIC_AES_KEY),
     {
-      iv: CryptoJS.enc.Utf8.parse("NdAaKumC4ZCInAFy"),
+      iv: CryptoJS.enc.Utf8.parse(NEXT_PUBLIC_AES_IV),
     }
   );
   return encrypted.toString();
