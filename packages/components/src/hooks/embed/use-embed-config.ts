@@ -171,17 +171,28 @@ export function useEmbedConfigs() {
   // Engagement & Interaction Configuration
   // ============================================================
   const engagementConfig = useMemo(() => {
+    const showEngagementTools = isEmbed
+      ? !!customization?.is_enable_engagement_tools
+      : true;
+
+    const engagementTools = showEngagementTools
+      ? (customization?.enable_engagement_tools ?? {
+          repost: true,
+          spark: true,
+          comment: true,
+          share: true,
+        })
+      : {
+          repost: false,
+          spark: false,
+          comment: false,
+          share: false,
+        };
+
     return {
       showEngagementOnRootElement,
-      showEngagementTools: isEmbed
-        ? !!customization?.is_enable_engagement_tools
-        : true,
-      engagementTools: customization?.enable_engagement_tools ?? {
-        repost: true,
-        spark: true,
-        comment: true,
-        share: true,
-      },
+      showEngagementTools,
+      engagementTools,
       showSocialInteractionData:
         !!customization?.is_show_social_interaction_data,
       showShareIcon: !!customization?.show_share_icon,
