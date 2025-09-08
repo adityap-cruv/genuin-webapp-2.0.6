@@ -377,11 +377,16 @@ export const VideoPlayer = memo(function VideoPlayer({
     const player = playerRef.current;
     playRef.current = play;
     if (play) {
-      player?.play();
+      const active = player?.activeElement();
+      active?.play()
     } else {
+      // try everything to pause the video and ad.
       if (player?.isAd()) {
         player?.getAd()?.pause(); // Pause ad if playing
+      } else {
+        player?.getMedia().pause();
       }
+
       player?.pause();
     }
   }, [play, adStarted]);

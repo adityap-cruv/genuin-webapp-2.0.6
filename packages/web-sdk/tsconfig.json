@@ -1,22 +1,24 @@
 {
+  "extends": "@genuin/typescript-config/base.json",
   "compilerOptions": {
     // Target and module settings for browser compatibility
     "target": "ES2020",
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
-
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable"
+    ],
     // Allow JavaScript files and skip lib checking for faster builds
     "allowJs": true,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
-
     // Emit settings - let Rollup handle the output
     "noEmit": false,
     "declaration": false,
     "declarationMap": false,
     "sourceMap": true,
-
     // Strict settings for our own code
     "strict": true,
     "noUnusedLocals": false,
@@ -24,34 +26,39 @@
     "exactOptionalPropertyTypes": false,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-
     // Module resolution
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
     "verbatimModuleSyntax": false,
-
     // JSX settings for React
     "jsx": "react-jsx",
     "jsxImportSource": "react",
-
     // Path mapping for workspace packages
     "baseUrl": ".",
     "paths": {
-      "@genuin/ui": ["../ui/src"],
-      "@genuin/ui/*": ["../ui/src/*"],
-      "@genuin/components": ["../components/src"],
-      "@genuin/components/*": ["../components/src/*"],
-      "@/*": ["./src/*"]
+      "@genuin/ui": [
+        "../ui/src"
+      ],
+      "@genuin/ui/*": [
+        "../ui/src/*"
+      ],
+      "@genuin/components": [
+        "../components/src"
+      ],
+      "@genuin/components/*": [
+        "../components/src/*"
+      ],
+      "@/*": [
+        "./src/*"
+      ]
     },
-
     // Additional helpful options
     "resolveJsonModule": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-
   "include": [
     "src/**/*",
     "../ui/src/**/*",
@@ -59,7 +66,6 @@
     "*.ts",
     "*.tsx"
   ],
-
   "exclude": [
     "node_modules",
     "dist",
@@ -69,6 +75,4 @@
     "coverage",
     ".turbo"
   ],
-
-  "extends": "@genuin/typescript-config/base.json"
 }

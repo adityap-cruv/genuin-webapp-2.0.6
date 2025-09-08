@@ -14,7 +14,12 @@ export type AdProps = ControlLayerPropsType;
 //   },
 // };
 
-export function Ad({ className, ...restProps }: AdProps) {
+export function Ad({
+  className,
+  postDetails,
+  isActive,
+  ...restProps
+}: AdProps) {
   const { adInfo } = usePlayerContext();
 
   return (
