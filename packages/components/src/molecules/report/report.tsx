@@ -22,6 +22,8 @@ import { useAuthContext } from "@genuin/components/context/auth";
 import { MEDIA_BASE_URL } from "@genuin/components/lib/utils/env";
 import { useAnalytics } from "@genuin/components/context/analytics";
 import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { Link } from "../link";
 
 type ReportProps = ComponentProps<typeof Dialog> & {
   reportFor: "VIDEO" | "COMMENT";
@@ -43,6 +45,7 @@ export function Report({
   const { user } = useAuthContext();
   const { track, EventName } = useAnalytics();
   const { handleAuthCallback } = useAuthContext();
+  const { modalConfig } = useEmbedConfigs();
 
   // Create return query params for authentication callbacks
   const returnQueryParams = useMemo(
@@ -108,6 +111,14 @@ export function Report({
         >
           {children}
         </div>
+      );
+    }
+
+    if (modalConfig.hideModal) {
+      return (
+        <Link href={shareUrl ?? "/home"} target="_blank">
+          {children}
+        </Link>
       );
     }
 

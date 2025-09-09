@@ -89,7 +89,7 @@ export function Player({
       >
         <div
           className={cn(
-            "gencl:group gencl:relative gencl:aspect-reel gencl:h-full gencl:overflow-clip",
+            "gencl:group gencl:relative gencl:h-full gencl:w-full gencl:overflow-clip",
             {
               "gencl:sm:rounded-xl": !showExpandView,
             }
@@ -101,10 +101,8 @@ export function Player({
             id={"feed-player--" + post.video.id}
             poster={post.video.thumbnail ?? ""}
             className={cn(
-              "gencl:bg-secondary-200 gencl:object-cover",
-              isMobile ? "gencl:w-full gencl:h-full" : "gencl:aspect-reel"
+              "gencl:bg-secondary-200 gencl:object-cover gencl:w-full gencl:h-full"
             )}
-            style={isMobile ? { height, width } : undefined}
             playsInline
             onTimeUpdate={handleTimeUpdate}
             onEnded={() => {

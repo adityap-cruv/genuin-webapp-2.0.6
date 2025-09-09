@@ -106,7 +106,7 @@ export function PlayerListWithSection({
     <div className="gencl:h-full gencl:w-full gencl:flex gencl:gap-6 gencl:justify-center">
       <div
         className={cn(
-          "gencl:flex gencl:justify-center gencl:gap-6",
+          "gencl:flex gencl:justify-center gencl:gap-6 gencl:h-full",
           isMobile && "gencl:h-full gencl:w-full"
         )}
       >
@@ -172,7 +172,7 @@ export function PlayerListWithSection({
                             isVerticalVisible && isHorizontalActive;
 
                           return (
-                            <div className="gencl:flex gencl:gap-3 gencl:h-full">
+                            <div className="gencl:h-full gencl:w-full">
                               <Player
                                 isActive={isTrulyActive}
                                 isNext={isTrulyNext}
