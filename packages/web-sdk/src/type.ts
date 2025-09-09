@@ -51,6 +51,10 @@ export type UpdateConfigByUserType = {
   token: string
   user_params: Record<string, any>
   contextual_params?: ContextualParamsType
+  /**
+   * @deprecated use contextual_params instead
+   */
+  contextualParams?: ContextualParamsType
   embed_id?: string
   placement_id?: string
   action?: ActionType

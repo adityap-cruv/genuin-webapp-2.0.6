@@ -15,6 +15,7 @@ import { VariantProps } from "class-variance-authority";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { Linkouts } from "@genuin/components/organisms";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 
 type ExpandViewProps = ComponentProps<"div"> & {
   postDetails: PostDetailsType;
@@ -85,7 +86,7 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
   const { showSeeker } = usePlayerContext();
   const embedDetails = useSafeEmbedContext();
   const embedConfig = useEmbedConfigs();
-
+  const { isDesktop } = useDeviceDetectMediaQuery();
   const videoLayoutId = postDetails.video.videoLayoutId;
   const placementVideoLayoutId = postDetails.video.placement_video_layout_id;
   const showLinkoutInExpand = embedConfig.links.showLinksInExpand;
@@ -107,9 +108,10 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
       (embedDetails?.embedData.autoUserInteractionToPerform ===
         "comment-spark" ||
         embedDetails?.embedData.autoUserInteractionToPerform === "comment") &&
-      embedDetails.embedData.startVideoSlug === postDetails.video.slug
+      embedDetails.embedData.startVideoSlug === postDetails.video.slug &&
+      !isDesktop
     );
-  }, [embedDetails, postDetails]);
+  }, [embedDetails, postDetails, isDesktop]);
 
   return {
     config,

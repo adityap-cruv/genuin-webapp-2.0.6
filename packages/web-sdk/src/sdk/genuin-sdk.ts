@@ -167,9 +167,11 @@ export class GenuinSDK {
     }
 
     // Update contextual params in the embed, if embedId is passed then only in that embed otherwise in all the embeds.
-    if (config?.contextual_params) {
+    const contextualParams: ContextualParamsType | undefined =
+      config?.contextual_params ?? config?.contextualParams
+    if (contextualParams && config) {
       await this.updateContextualParamsInEmbed({
-        contextualParams: config.contextual_params,
+        contextualParams: contextualParams,
         embedId: config.embed_id,
         placementId: config.placement_id,
       })

@@ -58,9 +58,9 @@ export function PlayerList({
   onGroupSubscriptionChange,
   onCommentCountChange,
 }: PlayerListPropsType) {
-  const { value, toggle } = useBoolean(true);
   const { showExpandView, activeIndex } = useFeedContext();
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
+  const { value, toggle, setValue } = useBoolean(isDesktop);
   const {
     engagement: {
       engagementTools: { comment: showCommentBox },
@@ -117,8 +117,7 @@ export function PlayerList({
                                   "comment") &&
                               post.video.slug ===
                                 embedDetails.embedData?.startVideoSlug &&
-                              activeIndex === index &&
-                              !showExpandView;
+                              activeIndex === index
 
                             // Simple ui to show for comment trigger
                             function CommentBox({
