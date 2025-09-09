@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Avatar } from "@genuin/ui/components/avatar";
 import { Button } from "@genuin/ui/components/button";
 import { useForm } from "react-hook-form";
@@ -17,6 +17,7 @@ import { useCommentMentions } from "../../hooks/use-comment-mentions";
 import { useCommentInputHandlers } from "../../hooks/use-comment-input-handlers";
 import HighlightedInput from "./highlighted-field";
 import { Loader } from "@genuin/ui/components/loader";
+import { useAnalytics } from "@genuin/components/context/analytics";
 
 // Types for props
 export type SelectedMention = {
@@ -63,6 +64,7 @@ export function MentionInput({
   const [selectedMentions, setSelectedMentions] = useState<SelectedMention[]>(
     []
   );
+  const { track, EventName } = useAnalytics();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [commentValue, setCommentValue] = useState("");
   const { formState } = form;
@@ -83,6 +85,20 @@ export function MentionInput({
     form,
   });
 
+  const handleCommentPostSuccess = useCallback(
+    (commentData: any) => {
+      if (commentData.comment_id) {
+        track(EventName.VIDEO_COMMENTED, {
+          video_id: videoId,
+          content_id: commentData.comment_id,
+          content_category: "comment",
+        });
+      }
+      onCommentPosted?.(commentData);
+    },
+    [track, EventName.VIDEO_COMMENTED, videoId, onCommentPosted]
+  );
+
   const { handleInputChange, commentSubmit, isPending } =
     useCommentInputHandlers({
       form,
@@ -90,7 +106,7 @@ export function MentionInput({
       setSelectedMentions,
       videoId,
       loopId,
-      onCommentPosted,
+      handleCommentPostSuccess,
     });
 
   useEffect(() => {

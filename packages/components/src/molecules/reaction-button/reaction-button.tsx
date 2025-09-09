@@ -8,6 +8,7 @@ import { DynamicReactionIcon } from "./dynamic-reaction-icon";
 import { useBaseContext } from "@genuin/components/context/base";
 import { cn } from "@genuin/ui/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
+import { useAnalytics } from "@genuin/components/context/analytics";
 
 const reactionButtonVariant = cva("", {
   variants: {
@@ -40,6 +41,7 @@ type ReactionButtonProps = ComponentProps<typeof PrimitiveButton> & {
    */
   withCustomChildren?: boolean;
   onReactionStateChange?: (isReacted: boolean) => void;
+  videoId?: string;
 } & VariantProps<typeof reactionButtonVariant>;
 
 export function ReactionButton({
@@ -48,6 +50,7 @@ export function ReactionButton({
   videoSlug,
   reactionButtonTheme,
   showReactionCount,
+  videoId,
   ...restProps
 }: ReactionButtonProps) {
   const { authenticationStatus } = useAuthContext();
@@ -56,6 +59,7 @@ export function ReactionButton({
     <Button
       showReactionCount={showReactionCount}
       reactionCount={reactionCount}
+      videoId={videoId}
       {...restProps}
     />
   );
@@ -113,12 +117,32 @@ function Button({
   children,
   withCustomChildren = false,
   onClick,
+  videoId,
   onReactionStateChange,
   ...restProps
 }: ReactionButtonProps) {
   const { user } = useAuthContext();
+  const { track, EventName } = useAnalytics();
   const { mutate: reactToVideo, isPending } = useVideoReationMutation({
-    // onSuccess: (isReacted) => {},
+    onSuccess: (isReacted) => {
+      track(
+        contentType === "COMMENT"
+          ? isReacted
+            ? EventName.COMMENT_SPARK
+            : EventName.COMMENT_UNSPARK
+          : isReacted
+            ? EventName.VIDEO_SPARK
+            : EventName.VIDEO_UNSPARK,
+        {
+          content_id: contentId,
+          video_id: videoId ?? contentId,
+          content_category: "loop",
+          event_record_screen: "feed",
+          event_target_screen: "none",
+          is_reacted: isReacted,
+        }
+      );
+    },
     onError: (error) => {
       // Revert the optimistic update on error
       onReactionStateChange?.(isReacted);

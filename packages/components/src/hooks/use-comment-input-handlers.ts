@@ -22,21 +22,21 @@ export function useCommentInputHandlers({
   setSelectedMentions,
   videoId,
   loopId,
-  onCommentPosted,
+  handleCommentPostSuccess,
 }: {
   form: ReturnType<typeof useForm<CommentFormValues>>;
   selectedMentions: SelectedMention[];
   setSelectedMentions: Dispatch<SetStateAction<SelectedMention[]>>;
   videoId: string;
   loopId: string;
-  onCommentPosted?: (comment: CommentListType) => void;
+  handleCommentPostSuccess?: (comment: CommentListType) => void;
 }) {
   const REGEX_FOR_URLS =
     /(?:https?:\/\/)?(?:www\.)?[\w-]+(\.[\w-]+)+(\/[\S]*)?/g;
   const { mutate: postComment, isPending } = useCreateCommentMutation({
     onSuccess: (response) => {
       if (response.commentData) {
-        onCommentPosted?.(response.commentData);
+        handleCommentPostSuccess?.(response.commentData);
       }
       setSelectedMentions([]);
       form.reset();

@@ -20,7 +20,12 @@ export const EventName = {
   VIDEO_WATCHED: "Video Watched",
   VIDEO_PLAY: "Video Play",
   PAGE_VIEW: "Page Viewed",
-  BECOME_CREATOR : "Become Creator Clicked"
+  BECOME_CREATOR: "Become Creator Clicked",
+  VIDEO_SPARK: "Video Sparked",
+  VIDEO_UNSPARK: "Video Unsparked",
+  VIDEO_COMMENTED: "Commented On Video",
+  COMMENT_SPARK: "Comment Sparked",
+  COMMENT_UNSPARK: "Comment Unsparked",
 } as const;
 
 type AnalyticsContextType = {

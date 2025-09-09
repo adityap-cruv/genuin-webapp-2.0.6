@@ -102,6 +102,7 @@ export function CommentsList({
             <CommentItem
               key={comment.commentId}
               comment={comment}
+              videoId={videoId}
               onReactionStateChange={(isReacted) => {
                 handleReactionStateChangeInComments(
                   videoId,
