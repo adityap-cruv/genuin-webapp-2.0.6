@@ -141,7 +141,8 @@ export function useGestureOverlayManager(gestureGuidance?: boolean) {
   if (
     !isGuidanceEnabled ||
     !isValidTapBehavior ||
-    pathname.includes("/video")
+    pathname.includes("/video") ||
+    pathname.includes("/posts")
   ) {
     return {
       gestureOverlayUI: null,

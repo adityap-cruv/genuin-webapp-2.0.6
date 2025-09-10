@@ -11,6 +11,7 @@ import { ExpandViewDetails } from "./expand-view";
 import { PlaybackSpeedCapsule } from "@genuin/components/molecules/playback-speed/speed-capsule";
 import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
 import { LinkOutContentRenderer } from "@genuin/components/organisms/linkouts/linkouts-details";
+import { VideoEditActionButtons } from "./control-buttons/video-edit-buttons";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
 import { SpeedControlSideBars } from "../../playback-speed/speed-control-bars";
@@ -19,6 +20,12 @@ type ControlLayerPropsType = ComponentProps<"div"> & {
   postDetails: PostDetailsType;
   isInModal?: boolean;
   isActive: boolean;
+  showExpand?: boolean;
+  expandViewDetails?: boolean;
+  clipVideo?: boolean;
+  editCover?: boolean;
+  editClipVideo?: (url: string) => void;
+  editCoverImage?: (url: string) => void;
   showCloseButton?: boolean;
   onReactionStateChange?: (videoId: string, isReacted: boolean) => void;
   onGroupJoinStatusChange?: ComponentProps<
@@ -39,6 +46,12 @@ export const ControlLayer = memo(function ControlLayer({
   postDetails,
   className,
   isActive,
+  showExpand = true,
+  expandViewDetails = true,
+  clipVideo,
+  editCover,
+  editClipVideo,
+  editCoverImage,
   showCloseButton,
   onCommunityJoinStatusChange,
   onGroupJoinStatusChange,
@@ -107,6 +120,7 @@ export const ControlLayer = memo(function ControlLayer({
         <Controls
           className={cn({ "gencl:group-hover:flex gencl:hidden": !isMobile })}
           showCloseButton={showCloseButton}
+          showExpand={showExpand}
         />
         {/* this is wallet badge for wallet. */}
         {/* {isInModal && (
@@ -124,8 +138,9 @@ export const ControlLayer = memo(function ControlLayer({
          * It will show the details of the post. If post is expanded.
          * iIf Playback speed is not 1 then it will not show the expand view details.
          */}
-        {playbackSpeed.speed !== 1 ? undefined : showExpandView ||
-          !isDesktop ? (
+        {(playbackSpeed.speed !== 1
+          ? undefined
+          : showExpandView || !isDesktop) && expandViewDetails ? (
           <ExpandViewDetails
             postDetails={postDetails}
             isActive={isActive}
@@ -141,6 +156,22 @@ export const ControlLayer = memo(function ControlLayer({
               showSeeker && "gencl:bottom-4"
             )}
           >
+            {/**
+             * This section renders the video interaction buttons:
+             * - "Trim" button if `clipVideo` is enabled
+             * - "Edit Cover" button if `editCover` is enabled
+             *
+             * Both buttons trigger the same `editClipVideo` callback with the source URL
+             */}
+            <VideoEditActionButtons
+              clipVideo={clipVideo}
+              editCover={editCover}
+              onClickClip={() => editClipVideo?.(postDetails.video.source)}
+              onClickEditCover={() =>
+                editCoverImage?.(postDetails.video.source)
+              }
+            />
+
             <LinkOutContentRenderer
               isActive={isActive}
               linkouts={postDetails.video.linkouts}

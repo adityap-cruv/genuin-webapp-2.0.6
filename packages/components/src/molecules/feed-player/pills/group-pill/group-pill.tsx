@@ -26,6 +26,8 @@ const groupPillVariants = cva(
         dark: "gencl:bg-black/40 gencl:text-white",
         fullScreen:
           "gencl:!bg-black/40 gencl:backdrop-blur-lg gencl:text-white gencl:border-none",
+        compact:
+          "gencl:bg-secondary-50! gencl:text-default gencl:border-none gencl:hover:bg-secondary-150!",
       },
     },
     defaultVariants: {
@@ -36,7 +38,7 @@ const groupPillVariants = cva(
 
 type GroupPillProps = {
   isHoverable?: boolean;
-  variant?: "light" | "dark" | "fullScreen";
+  variant?: "light" | "dark" | "fullScreen" | "compact";
   groupDetails: PostDetailsType["group"];
   communityDetails: PostDetailsType["community"];
   className?: string;
@@ -84,6 +86,12 @@ export function GroupPill({
     localSubscriptionStatus === true ||
     authenticationStatus === "unauthenticated";
 
+  // Truncate name to 24 characters for compact variant
+  const displayName =
+    variant === "compact" && groupDetails.name && groupDetails.name.length > 24
+      ? `${groupDetails.name.substring(0, 24)}...`
+      : groupDetails.name;
+
   const ldDescription = `${
     groupDetails?.description ? groupDetails.description + " | " : ""
   } • Join ${groupDetails.name} to talk about it`;
@@ -96,35 +104,36 @@ export function GroupPill({
             <GroupIcon theme="dark" size="sm" />
           </div>
           <span className="gencl:text-body-2-medium gencl:line-clamp-1">
-            {groupDetails.name}
+            {displayName}
           </span>
         </div>
-
-        <GroupSubscriptionButton
-          className={`gencl:px-2 gencl:overflow-hidden gencl:shrink-0 gencl:transition-all gencl:duration-500 gencl:h-6 ${
-            hideButton
-              ? "gencl:max-w-0 gencl:opacity-0 gencl:ml-0 gencl:px-0!"
-              : "gencl:max-w-24 gencl:opacity-100 gencl:ml-1"
-          }`}
-          variant="icon"
-          shape="pill"
-          size="sm"
-          groupId={groupDetails.id}
-          groupName={groupDetails.name ?? ""}
-          groupDescription={ldDescription}
-          shareUrl={groupDetails.shareUrl ?? ""}
-          isSubscriber={groupDetails.isSubscribed ?? false}
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-          }}
-          onSubscriptionChange={onGroupSubscriptionChange}
-        />
+        {authenticationStatus === "authenticated" && variant !== "compact" && (
+          <GroupSubscriptionButton
+            className={`gencl:px-2 gencl:overflow-hidden gencl:shrink-0 gencl:transition-all gencl:duration-500 gencl:h-6 ${
+              hideButton
+                ? "gencl:max-w-0 gencl:opacity-0 gencl:ml-0 gencl:px-0!"
+                : "gencl:max-w-24 gencl:opacity-100 gencl:ml-1"
+            }`}
+            variant="icon"
+            shape="pill"
+            size="sm"
+            groupId={groupDetails.id}
+            groupName={groupDetails.name ?? ""}
+            groupDescription={ldDescription}
+            shareUrl={groupDetails.shareUrl ?? ""}
+            isSubscriber={groupDetails.isSubscribed ?? false}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+            onSubscriptionChange={onGroupSubscriptionChange}
+          />
+        )}
       </div>
     </Link>
   );
 
-  if (!isHoverable) {
+  if (!isHoverable || variant === "compact") {
     return pill;
   }
 

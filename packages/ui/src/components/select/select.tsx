@@ -50,8 +50,15 @@ function SelectContent({
   className,
   children,
   position = "popper",
+  showScrollUpButton = true,
+  showScrollDownButton = true,
+  viewportClassName,
   ...props
-}: React.ComponentProps<typeof SelectPrimitive.Content>) {
+}: React.ComponentProps<typeof SelectPrimitive.Content> & {
+  showScrollUpButton?: boolean;
+  showScrollDownButton?: boolean;
+  viewportClassName?: string;
+}) {
   return (
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content
@@ -65,17 +72,18 @@ function SelectContent({
         position={position}
         {...props}
       >
-        <SelectScrollUpButton />
+        {showScrollUpButton && <SelectScrollUpButton />}
         <SelectPrimitive.Viewport
           className={cn(
             "gencl:p-1",
             position === "popper" &&
-              "gencl:h-[var(--radix-select-trigger-height)] gencl:w-full gencl:min-w-[var(--radix-select-trigger-width)] gencl:scroll-my-1"
+              "gencl:h-[var(--radix-select-trigger-height)] gencl:w-full gencl:min-w-[var(--radix-select-trigger-width)] gencl:scroll-my-1",
+            viewportClassName
           )}
         >
           {children}
         </SelectPrimitive.Viewport>
-        <SelectScrollDownButton />
+        {showScrollDownButton && <SelectScrollDownButton />}
       </SelectPrimitive.Content>
     </SelectPrimitive.Portal>
   );

@@ -90,6 +90,11 @@ export const LinkOutContentRenderer = ({
             key={`multi-${index}`}
             links={sortedLinks}
             maxVisible={100}
+            ctaText={cta_text ?? ""}
+            ctaLink={cta_link ?? ""}
+            isEmbed={false}
+            isOutside={false}
+            layout={cta_link ? "withCTA" : "standard"}
           />
         );
       }

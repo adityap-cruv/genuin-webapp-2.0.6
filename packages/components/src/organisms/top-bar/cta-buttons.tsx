@@ -14,7 +14,7 @@ import { ChevronLeft, LogOutIcon, SettingsIcon } from "lucide-react";
 import { Link } from "@genuin/components/molecules/link";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { cn } from "@genuin/ui/lib/utils";
-import { NotificationIcon, XIcon } from "@genuin/ui/icons";
+import { NotificationIcon, XIcon, PlusIcon } from "@genuin/ui/icons";
 import { NotificationList } from "@genuin/components/organisms/notification-list";
 import {
   NotificationCountResponse,
@@ -68,6 +68,18 @@ export function CtaButtons({ theme }: VariantProps<typeof iconVariant>) {
             Get app
           </Button>
         </AuthenticationModal>
+      )}
+
+      {isAuthenticated && (
+        <Link
+          className="gencl:hidden gencl:md:block!"
+          href={buildPageUrl({ type: "posts-create" })}
+        >
+          <Button theme="outline" size="sm">
+            <PlusIcon className="gencl:size-6" />
+            Create
+          </Button>
+        </Link>
       )}
 
       {showLogin && (

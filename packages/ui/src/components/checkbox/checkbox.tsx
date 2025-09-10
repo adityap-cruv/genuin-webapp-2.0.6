@@ -11,7 +11,8 @@ const checkboxVariants = cva(
   {
     variants: {
       variant: {
-        default: "gencl:border-primary gencl:data-[state=checked]:bg-primary",
+        default:
+          "gencl:border-secondary-300 gencl:data-[state=checked]:bg-primary gencl:data-[state=checked]:border-primary",
         secondary:
           "gencl:border-secondary-300 gencl:data-[state=checked]:bg-secondary-600",
       },

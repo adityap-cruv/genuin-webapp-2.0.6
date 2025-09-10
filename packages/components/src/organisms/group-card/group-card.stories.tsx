@@ -54,7 +54,6 @@ export const Default: Story = {
         posts: 346,
         views: 8920,
       },
-      slug: ""
     },
   },
 };
@@ -80,7 +79,6 @@ export const Pinned: Story = {
         posts: 1200,
         views: 15400,
       },
-      slug: ""
     },
   },
 };
@@ -172,7 +170,6 @@ export const PrivateGroup: Story = {
         posts: 89,
         views: 1250,
       },
-      slug: ""
     },
   },
 };
@@ -198,7 +195,6 @@ export const PinnedPrivateGroup: Story = {
         posts: 25,
         views: 340,
       },
-      slug: ""
     },
   },
 };
@@ -224,7 +220,6 @@ export const LargeGroup: Story = {
         posts: 12600,
         views: 1250000,
       },
-      slug: ""
     },
   },
 };
@@ -250,7 +245,6 @@ export const SmallGroup: Story = {
         posts: 1,
         views: 15,
       },
-      slug: ""
     },
   },
 };
@@ -276,7 +270,6 @@ export const LongNameGroup: Story = {
         posts: 234,
         views: 5670,
       },
-      slug: ""
     },
   },
 };

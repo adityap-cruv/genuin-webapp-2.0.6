@@ -18,10 +18,12 @@ type ControlButtonsPropsType = ComponentProps<"div"> & {
    * This is useful for mobile players where the close button is needed to exit the expand view.
    */
   showCloseButton?: boolean;
+  showExpand?: boolean;
 };
 
 export const Controls = memo(function Controls({
   showCloseButton = false,
+  showExpand = false,
   className,
   onClick,
   ...restProps
@@ -71,7 +73,7 @@ export const Controls = memo(function Controls({
         )}
       </div>
 
-      {!isMobile && (
+      {!isMobile && showExpand && (
         <div
           onClick={toggleExpandView}
           className="gencl:flex gencl:h-12 gencl:w-12 gencl:cursor-pointer gencl:flex-shrink-0 gencl:items-center gencl:justify-center gencl:rounded-full gencl:bg-black/40"

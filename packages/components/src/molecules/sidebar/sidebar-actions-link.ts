@@ -3,7 +3,7 @@ import {
   PopularIcon,
   ExploreIcon,
   LatestIcon,
-  NotificationIcon,
+  VideoIcon,
 } from "@genuin/ui/icons";
 
 export const SideBarActionLinks = [
@@ -30,5 +30,10 @@ export const SideBarActionLinks = [
   {
     text: "Profile",
     type: "profile",
+  },
+  {
+    icon: VideoIcon,
+    text: "My Videos",
+    type: "posts",
   },
 ] as const;

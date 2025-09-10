@@ -104,6 +104,7 @@ export function useCommentInputHandlers({
 
   return {
     handleInputChange,
+    handleInputBlur: undefined,
     commentSubmit,
     isPending,
   };

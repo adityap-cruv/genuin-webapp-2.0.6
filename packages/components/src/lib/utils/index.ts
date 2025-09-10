@@ -30,6 +30,47 @@ export function formateDateToLocaleString(isoString: string): string {
   return date.toLocaleDateString("en-US", options);
 }
 
+/**
+ * This function formats a date string to a relative time format.
+ * Less than 1 minute - "Just now"
+ * 1–59 minutes - "X min ago"
+ * 1–23 hours - "X hrs ago"
+ * 24+ hours - "MM DD YYYY"
+ * @param dateString - The date string or Date object to format.
+ * @returns Formatted relative time string
+ */
+export function formatRelativeTime(dateString: string | Date): string {
+  const date =
+    typeof dateString === "string" ? new Date(dateString) : dateString;
+  const now = new Date();
+  const diffInMs = now.getTime() - date.getTime();
+  const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+  const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+
+  // Less than 1 minute
+  if (diffInMinutes < 1) {
+    return "Just now";
+  }
+
+  // 1-59 minutes
+  if (diffInMinutes < 60) {
+    return `${diffInMinutes} min ago`;
+  }
+
+  // 1-23 hours
+  if (diffInHours < 24) {
+    return `${diffInHours} hrs ago`;
+  }
+
+  // 24+ hours - format as MM DD YYYY
+  const options: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  };
+  return date.toLocaleDateString("en-US", options);
+}
+
 /*
  * This function maps the role of the user in the community.
  * @param role - Role of the user in the community.

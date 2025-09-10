@@ -3,7 +3,7 @@ import {
   BecomeCreatorData,
   BecomeCreatorDataItem,
 } from "./become-creator-data";
-import { ComponentProps, useCallback } from "react";
+import { ComponentProps, useCallback, useEffect } from "react";
 import { Button } from "@genuin/ui/components/button";
 import { DialogClose } from "@genuin/ui/components/dialog";
 import {
@@ -56,6 +56,15 @@ export function BecomeCreator({ ...props }: BecomeCreatorProps) {
       requestCbMutate();
     }
   }, [user, requestCbMutate]);
+
+  useEffect(() => {
+    if (user?.ksCbRequestStatus !== cbStatus?.status) {
+      updateUser({
+        ...user,
+        ksCbRequestStatus: cbStatus?.status,
+      });
+    }
+  }, [cbStatus]);
 
   const renderButton = () => (
     <>
@@ -127,7 +136,7 @@ export function BecomeCreator({ ...props }: BecomeCreatorProps) {
         })}
       </Swiper>
       <div className="gencl:flex gencl:flex-col gencl:gap-4 gencl:mt-6">
-        {cbStatus?.status !== "Accepted" && renderButton()}
+        {renderButton()}
         <DialogClose asChild>
           <Button
             className="gencl:w-full gencl:text-body-0-semi-bold"

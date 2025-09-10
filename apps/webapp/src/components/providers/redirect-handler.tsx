@@ -15,6 +15,9 @@ const PROTECTED_ROUTES = [
       return user?.isBrandSystemUser === false
     },
   },
+  {
+    path: '/posts',
+  },
   // Add more protected routes as needed
   // Example: { path: '/create-post', additionalCheck: (user) => user?.subscription === 'active' }
 ]
@@ -121,6 +124,7 @@ export async function RedirectHandler({
             '/profile',
             '/video',
             '/settings',
+            '/posts',
           ]
           // This is the case where share link is from mobile web of ted.com and if the user tries to open it up on
           // desktop web, we will redirect them to the video page of the webapp and show the app popup

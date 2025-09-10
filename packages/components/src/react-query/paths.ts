@@ -227,4 +227,53 @@ export const API_PATHS = {
    * Api path to for fetch image.
    */
   FETCH_IMAGE: "/api/v3/redirect_media",
+
+  /**
+   * Api path to for paginated posts.
+   */
+  PAGINATED_POSTS: "/api/v3/paginated_user_posts",
+  /**
+   * Api path to for video statistics.
+   */
+  VIDEO_STATISTICS: "/api/v3/video_statistics",
+  /*
+   * Api path to fetch communities with groups for post
+   */
+  COMMUNITY_GROUP_FOR_POST: "/api/v3/loops-for-post",
+  /**
+   * Api path to for fetch location list.
+   */
+  LOCATIONS_SEARCH: "/api/v3/locations/search",
+  /**
+   * Api path to delete drafts.
+   */
+  DELETE_DRAFT: "/api/v3/video/draft",
+  /**
+   * Api path to delete posts.
+   */
+  DELETE_POST: "/api/v3/conversation/videos",
+  /**
+   * Api path to video draft for the post video.
+   */
+  DRAFT_POST: "/api/v3/video/draft",
+  /**
+   * Api path to move draft to active post for the post video.
+   */
+  DRAFT_TO_ACTIVE_POST: "/api/v3/video/draft/post",
+  /**
+   * Api path to active post for the post video.
+   */
+  ACTIVE_POST: "/api/v3/video",
+  /**
+   * Api path to edit active post for the post video.
+   */
+  EDIT_ACTIVE_POST: "/api/v3/edit_post",
+  /**
+   * Api path to edit active post for the post video.
+   */
+  FETCH_META_DATA: "/api/v3/fetch_meta_data",
+  /**
+   * Api path to get user IP info for the post video.
+   */
+  FETCH_IP_INFO: "/goservices/data/ip_info",
 } as const;

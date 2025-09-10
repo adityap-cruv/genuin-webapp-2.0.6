@@ -25,8 +25,8 @@ type VideoProviderProps = {
    * Post list index - used to compare against previous index
    *
    */
-  index: number;
-  swiper: Swiper;
+  index?: number;
+  swiper?: Swiper;
   /**
    * If player is active or not.
    */
@@ -140,6 +140,8 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   useEffect(() => {
     // Skip if current index doesn't match previous index
     // Skip impression event if video was viewed for less than 2 seconds
+    if (!swiper || !index) return;
+
     if (index !== swiper.previousIndex || videoStateRef.current.duration < 0.2)
       return;
 
@@ -148,7 +150,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       video_length: videoStateRef.current.duration,
       video_view_length: videoStateRef.current.currentTime,
     });
-  }, [swiper.previousIndex]);
+  }, [swiper]);
 
   const setVideoTimeState = useCallback((timeState: VideoTimeStateType) => {
     videoStateRef.current = {

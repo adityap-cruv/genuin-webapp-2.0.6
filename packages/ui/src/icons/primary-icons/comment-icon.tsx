@@ -14,6 +14,7 @@ const repostIconVariants = cva("", {
   },
   defaultVariants: {
     theme: "light",
+    size: "md",
   },
 });
 

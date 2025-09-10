@@ -25,6 +25,8 @@ const communityPillVariants = cva(
         dark: "gencl:bg-black/40 gencl:text-white",
         fullScreen:
           "gencl:bg-black/40 gencl:backdrop-blur-lg gencl:text-white gencl:border-none",
+        compact:
+          "gencl:bg-secondary-50! gencl:text-default gencl:border-none gencl:hover:bg-secondary-150!",
       },
     },
     defaultVariants: {
@@ -35,7 +37,7 @@ const communityPillVariants = cva(
 
 type CommunityPillProps = {
   isHoverable?: boolean;
-  variant?: "light" | "dark" | "fullScreen";
+  variant?: "light" | "dark" | "fullScreen" | "compact";
   communityDetails: PostDetailsType["community"];
   className?: string;
   onCommunityJoinStatusChange?: ComponentProps<
@@ -51,6 +53,15 @@ export function CommunityPill({
   className,
 }: CommunityPillProps) {
   const { authenticationStatus } = useAuthContext();
+
+  // Truncate name to 24 characters for compact variant
+  const displayName =
+    variant === "compact" &&
+    communityDetails.name &&
+    communityDetails.name.length > 24
+      ? `${communityDetails.name.substring(0, 24)}...`
+      : communityDetails.name;
+
   const [localJoinStatus, setLocalJoinStatus] = useState(
     communityDetails.userRole
   );
@@ -89,47 +100,48 @@ export function CommunityPill({
             size="xs"
           />
           <span className="gencl:text-body-2-medium gencl:line-clamp-1">
-            {communityDetails.name}
+            {displayName}
           </span>
         </div>
-
-        <JoinCommunityButton
-          className={`gencl:overflow-hidden gencl:shrink-0 gencl:transition-all gencl:duration-500 gencl:h-6 ${
-            hideButton
-              ? "gencl:max-w-0 gencl:opacity-0 gencl:ml-0 gencl:px-0!"
-              : "gencl:max-w-24 gencl:opacity-100 gencl:ml-1"
-          }`}
-          size="sm"
-          roleTexts={{
-            UNJOINED: "Join",
-          }}
-          communityId={communityDetails.id}
-          communityHandle={communityDetails.handle}
-          communityName={communityDetails.name ?? ""}
-          slug={communityDetails.slug}
-          isPrivate={communityDetails.isPrivate}
-          role={communityDetails.userRole}
-          shape="pill"
-          theme={
-            variant === "fullScreen"
-              ? "secondary"
-              : communityDetails.userRole === "MEMBER"
-                ? "outline"
-                : communityDetails.userRole === "REQUESTED"
-                  ? "secondary"
-                  : "primary"
-          }
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-          }}
-          onCommunityJoinStatusChange={onCommunityJoinStatusChange}
-        />
+        {authenticationStatus === "authenticated" && variant !== "compact" && (
+          <JoinCommunityButton
+            className={`gencl:overflow-hidden gencl:shrink-0 gencl:transition-all gencl:duration-500 gencl:h-6 ${
+              hideButton
+                ? "gencl:max-w-0 gencl:opacity-0 gencl:ml-0 gencl:px-0!"
+                : "gencl:max-w-24 gencl:opacity-100 gencl:ml-1"
+            }`}
+            size="sm"
+            roleTexts={{
+              UNJOINED: "Join",
+            }}
+            communityId={communityDetails.id}
+            communityHandle={communityDetails.handle}
+            communityName={communityDetails.name ?? ""}
+            slug={communityDetails.slug}
+            isPrivate={communityDetails.isPrivate}
+            role={communityDetails.userRole}
+            shape="pill"
+            theme={
+              variant === "fullScreen"
+                ? "secondary"
+                : communityDetails.userRole === "MEMBER"
+                  ? "outline"
+                  : communityDetails.userRole === "REQUESTED"
+                    ? "secondary"
+                    : "primary"
+            }
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+            onCommunityJoinStatusChange={onCommunityJoinStatusChange}
+          />
+        )}
       </div>
     </Link>
   );
 
-  if (!isHoverable) {
+  if (!isHoverable || variant === "compact") {
     return pill;
   }
 
