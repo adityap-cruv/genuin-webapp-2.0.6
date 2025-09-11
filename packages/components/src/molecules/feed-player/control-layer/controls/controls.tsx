@@ -43,6 +43,7 @@ const controlsVariants = cva(
 
 type ControlButtonsPropsType = ComponentProps<"div"> & {
   showCloseButton?: boolean;
+  showExpand?: boolean;
 } & VariantProps<typeof controlsVariants> &
   (
     | {
@@ -77,6 +78,7 @@ export const Controls = memo(function Controls({
   ownerInfo,
   showCloseButton,
   onClick,
+  showExpand,
   ...restProps
 }: ControlButtonsPropsType) {
   const { isMobile } = useDeviceDetectMediaQuery();
@@ -122,7 +124,7 @@ export const Controls = memo(function Controls({
         </div>
       )}
 
-      {!isMobile && !isEmbed && (
+      {!isMobile && !isEmbed && showExpand && (
         <div
           onClick={toggleExpandView}
           className="gencl:flex gencl:h-12 gencl:w-12 gencl:cursor-pointer gencl:flex-shrink-0 gencl:items-center gencl:justify-center gencl:rounded-full gencl:bg-black/40"

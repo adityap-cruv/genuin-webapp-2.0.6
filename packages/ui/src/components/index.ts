@@ -20,3 +20,4 @@ export * from "./toaster";
 export * from "./sheet";
 export * from "./textarea";
 export * from "./select";
+export * from "./table";

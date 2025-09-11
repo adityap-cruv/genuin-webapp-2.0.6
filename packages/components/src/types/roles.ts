@@ -14,7 +14,8 @@ export type GroupUserStatusType = z.infer<typeof GroupUserStatusSchema>;
 export const ksCbRequestStatusSchema = z.union([
   z.literal("Pending"),
   z.literal("Requested"),
-  z.literal("Accepted")
+  z.literal("Accepted"),
+  z.literal("Success"),
 ]);
 
 export type ksCbRequestStatusType  = z.infer<typeof ksCbRequestStatusSchema>;

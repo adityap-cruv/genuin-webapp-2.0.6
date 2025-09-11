@@ -4,15 +4,24 @@ import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
 import { uploadProfileImage } from "@genuin/components/react-query/api/profile/image";
 import { Button } from "@genuin/ui/components";
+import { cn } from "@genuin/ui/lib/utils";
 
 export function ImageCropper({
   image,
   setImage,
   onCancel,
+  uploadPath = "uploads/profile_images",
+  fileNamePrefix = "user",
+  aspectRatio = 1,
+  roundCrop = true,
 }: {
   image: string;
-  setImage: ({ fileName, url }: { fileName: string; url: string }) => void;
+  setImage: (args: { file: File; url: string }) => void;
   onCancel: () => void;
+  uploadPath: string;
+  fileNamePrefix: string;
+  aspectRatio: number;
+  roundCrop: boolean;
 }) {
   const cropperRef = createRef<any>();
   const [error, setError] = useState("");
@@ -46,21 +55,26 @@ export function ImageCropper({
 
   const getCropData = async () => {
     if (typeof cropperRef.current?.cropper !== "undefined") {
-      const canvas = getRoundedCanvas(
-        cropperRef.current?.cropper.getCroppedCanvas()
-      );
+      const rawCanvas = cropperRef.current?.cropper.getCroppedCanvas();
+
+      // Use circle or rectangle depending on roundCrop
+      const canvas = roundCrop ? getRoundedCanvas(rawCanvas) : rawCanvas;
       if (canvas) {
         canvas.toBlob((blob: any) => {
           if (blob) {
             const timeStamp = Date.now();
-            const file = new File([blob], `${timeStamp}.png`, {
-              type: "image/png",
-            });
+            const file = new File(
+              [blob],
+              `${fileNamePrefix}_${timeStamp}.png`,
+              {
+                type: "image/png",
+              }
+            );
             setUploadingImage(true);
-            uploadProfileImage(file)
+            uploadProfileImage(file, uploadPath)
               .then((res) => {
                 if (res) {
-                  setImage({ fileName: file.name, url: res });
+                  setImage({ file, url: res });
                 } else {
                   setError("Something went wrong. Please try again.");
                 }
@@ -78,8 +92,12 @@ export function ImageCropper({
   };
 
   return (
-    <div>
-      <div className="gencl:pb-5">
+    <div className="gencl:m-0">
+      <div
+        className={cn("gencl:pb-5", {
+          "round-crop": !roundCrop,
+        })}
+      >
         <Cropper
           viewMode={1}
           minCropBoxHeight={10}
@@ -91,7 +109,7 @@ export function ImageCropper({
           checkOrientation={false}
           zoomable={true}
           zoomOnWheel
-          initialAspectRatio={1}
+          initialAspectRatio={aspectRatio}
           ref={cropperRef}
           src={
             typeof image === "string"
@@ -99,15 +117,20 @@ export function ImageCropper({
               : URL.createObjectURL(image as any)
           }
           cropBoxMovable
-          aspectRatio={1}
+          aspectRatio={aspectRatio}
           style={{ maxHeight: "400px", maxWidth: "900px" }}
         />
       </div>
       <div className="gencl:flex gencl:justify-end gencl:gap-3">
-        <Button theme="text" onClick={onCancel} disabled={uploadingImage}>
+        <Button
+          theme="custom"
+          size="sm"
+          onClick={onCancel}
+          disabled={uploadingImage}
+        >
           Cancel
         </Button>
-        <Button disabled={uploadingImage} onClick={getCropData}>
+        <Button size="sm" disabled={uploadingImage} onClick={getCropData}>
           {uploadingImage ? <p>Uploading...</p> : "Done"}
         </Button>
       </div>

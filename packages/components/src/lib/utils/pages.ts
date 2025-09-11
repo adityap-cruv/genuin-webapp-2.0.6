@@ -13,7 +13,11 @@ export type PageType =
   | "video"
   | "terms"
   | "privacy"
-  | "notification";
+  | "notification"
+  | "posts"
+  | "post"
+  | "posts-create"
+  | "posts-draft";
 
 type BuildPageUrlOptions = {
   type: PageType;
@@ -78,6 +82,24 @@ export function buildPageUrl({
       break;
     case "notification":
       basePath = "/notification";
+      break;
+    case "posts-create":
+      basePath = "/posts/create";
+      break;
+    case "posts":
+      basePath = `/posts`;
+      break;
+    case "post":
+      basePath = `/posts/${slug}`;
+      break;
+    case "posts-draft":
+      basePath = `/posts/drafts/${slug}`;
+      break;
+    case "post":
+      basePath = `/posts/${slug}`;
+      break;
+    case "posts-draft":
+      basePath = `/posts/drafts/${slug}`;
       break;
     default:
       // Optional: handle unknown type, though TypeScript should prevent this

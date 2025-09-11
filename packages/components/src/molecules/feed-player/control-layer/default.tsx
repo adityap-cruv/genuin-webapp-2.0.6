@@ -4,7 +4,7 @@ import React, { useCallback } from "react";
 import { useBaseContext } from "@genuin/components/context/base";
 
 import { usePlayerContext } from "../context/context";
-import { Controls } from "./controls/controls";
+import { Controls } from "./controls";
 import { PlayingState } from "./playing-state";
 import { Scrubber } from "./scrubber";
 import { ExpandViewDetails } from "./expand-view";
@@ -13,6 +13,7 @@ import { useGestureOverlayManager } from "@genuin/components/molecules/gestures"
 import { Linkouts } from "@genuin/components/organisms/linkouts/linkouts";
 import { SpeedControlSideBars } from "../../playback-speed/speed-control-bars";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { VideoEditActionButtons } from "./controls/control-buttons";
 
 export function Default({
   className,
@@ -26,6 +27,11 @@ export function Default({
   onGroupSubscriptionChange,
   onReactionStateChange,
   onCommentCountChange,
+  clipVideo,
+  editCover,
+  showExpand,
+  editClipVideo,
+  editCoverImage,
   ...restProps
 }: ControlLayerPropsType) {
   const { showExpandView, togglePlay, toggleMuted, muted } = usePlayerContext();
@@ -93,6 +99,7 @@ export function Default({
       >
         <Controls
           showCloseButton={showCloseButton}
+          showExpand={showExpand}
           className={cn(
             isMobile
               ? "gencl:z-20"
@@ -137,6 +144,22 @@ export function Default({
               showSeeker && "gencl:bottom-4"
             )}
           >
+            {/**
+             * This section renders the video interaction buttons:
+             * - "Trim" button if `clipVideo` is enabled
+             * - "Edit Cover" button if `editCover` is enabled
+             *
+             * Both buttons trigger the same `editClipVideo` callback with the source URL
+             */}
+            <VideoEditActionButtons
+              clipVideo={clipVideo}
+              editCover={editCover}
+              onClickClip={() => editClipVideo?.(postDetails.video.source)}
+              onClickEditCover={() =>
+                editCoverImage?.(postDetails.video.source)
+              }
+            />
+
             <Linkouts
               isActive={isActive}
               linkouts={postDetails.video.linkouts}

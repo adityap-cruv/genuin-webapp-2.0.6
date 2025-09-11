@@ -10,6 +10,11 @@ export type ControlLayerPropsType = ComponentProps<"div"> & {
   isActive: boolean;
   showCloseButton?: boolean;
   isSectioned?: boolean;
+  clipVideo?: boolean;
+  editCover?: boolean;
+  showExpand?: boolean
+  editClipVideo?: (url: string) => void;
+  editCoverImage?: (url: string) => void;
   onReactionStateChange?: ComponentProps<
     typeof ExpandViewDetails
   >["onReactionStateChange"];

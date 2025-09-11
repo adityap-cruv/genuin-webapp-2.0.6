@@ -16,7 +16,6 @@ import {
 } from "@genuin/components/react-query/api/report";
 import { Loader } from "@genuin/ui/loader";
 import { UseMutationResult } from "@tanstack/react-query";
-import { Image } from "@genuin/ui/image";
 import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
 import { useAuthContext } from "@genuin/components/context/auth";
 import { MEDIA_BASE_URL } from "@genuin/components/lib/utils/env";
@@ -24,6 +23,7 @@ import { useAnalytics } from "@genuin/components/context/analytics";
 import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { Link } from "../link";
+import { Success } from "@genuin/components/molecules/success";
 
 type ReportProps = ComponentProps<typeof Dialog> & {
   reportFor: "VIDEO" | "COMMENT";
@@ -146,7 +146,10 @@ export function Report({
       </DialogTrigger>
       <DialogContent className="gencl:max-w-xl gencl:rounded-2xl gencl:space-y-4">
         {reportMutation.isSuccess ? (
-          <ReportSuccess />
+          <Success
+            text="Thanks for your Feedback"
+            description="Our team will review and act on your report."
+          />
         ) : (
           <ReportContent
             reportMutation={reportMutation}
@@ -209,26 +212,5 @@ function ReportContent({
         )}
       </Button>
     </>
-  );
-}
-
-// TODO: put a path for success image after hosting it.
-function ReportSuccess() {
-  return (
-    <div className="gencl:flex gencl:flex-col gencl:items-center gencl:justify-center gencl:text-center gencl:gap-5">
-      <Image
-        alt="Success"
-        src={`${MEDIA_BASE_URL}/web-sdk/v1/icons/success.gif`}
-        className="gencl:h-36"
-      />
-      <div className="gencl:flex gencl:flex-col gencl:gap-2">
-        <p className="gencl:text-headline-4-semi-bold">
-          Thanks for your Feedback
-        </p>
-        <p className="gencl:text-body-1-semi-bold gencl:text-secondary-500">
-          Our team will review and act on your report.
-        </p>
-      </div>
-    </div>
   );
 }

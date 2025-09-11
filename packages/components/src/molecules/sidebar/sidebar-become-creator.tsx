@@ -1,9 +1,12 @@
-import { type ComponentProps } from "react";
+import { useState, type ComponentProps } from "react";
 import { cn } from "@genuin/ui/utils";
 import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
 import { useAuthContext } from "@genuin/components/context/auth";
 import { cva, type VariantProps } from "class-variance-authority";
 import { useBaseContext } from "@genuin/components/context/base";
+import { Success } from "@genuin/components/molecules/success";
+import { Dialog, DialogContent } from "@genuin/ui/components";
+import { AuthUser } from "@genuin/components/types/auth";
 
 const sideBarBecomeCreatorVariants = cva(
   "gencl:px-4 gencl:py-3 gencl:border-b gencl:border-secondary-100 gencl:cursor-pointer",
@@ -23,14 +26,24 @@ const sideBarBecomeCreatorVariants = cva(
 export type SideBarBecomeCreatorProps = ComponentProps<"div"> &
   VariantProps<typeof sideBarBecomeCreatorVariants>;
 
+type CreatorSuccessProps = {
+  user: AuthUser | null;
+  onUserUpdate: (updates: Partial<AuthUser>) => void;
+};
+
 export function SideBarBecomeCreator({
   className,
   variant,
   ...restProps
 }: SideBarBecomeCreatorProps) {
-  const { user } = useAuthContext();
+  const { user, updateUser } = useAuthContext();
   const { name } = useBaseContext().brandDetails;
-  if (user?.ksCbRequestStatus === "Accepted") return null;
+
+  if (user?.ksCbRequestStatus === "Success") {
+    return null;
+  }
+  if (user?.ksCbRequestStatus === "Accepted")
+    return <BecomeCreatorSuccess user={user} onUserUpdate={updateUser} />;
 
   return (
     <>
@@ -87,5 +100,33 @@ export function SideBarBecomeCreator({
         `}
       </style>
     </>
+  );
+}
+
+function BecomeCreatorSuccess({ user, onUserUpdate }: CreatorSuccessProps) {
+  const isDialogOpen = user?.ksCbRequestStatus === "Accepted";
+
+  const handleDialogClose = () => {
+    if (user) {
+      onUserUpdate({ ksCbRequestStatus: "Success" });
+    }
+  };
+
+  return (
+    <Dialog
+      type="become-creator-success"
+      open={isDialogOpen}
+      onOpenChange={handleDialogClose}
+      modal
+    >
+      <DialogContent>
+        <Success
+          text="You're a Creator Now!"
+          description="Start creating content for brands!"
+          button={{ label: "Create Post", href: "/posts" }}
+          onClose={handleDialogClose}
+        />
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -1,4 +1,5 @@
 import { ComponentProps, useState } from "react";
+import "cropperjs/dist/cropper.css";
 import { FileUploader } from "react-drag-drop-files";
 import { useForm } from "react-hook-form";
 import { ArrowLeft } from "lucide-react";

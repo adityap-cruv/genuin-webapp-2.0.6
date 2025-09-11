@@ -9,7 +9,7 @@ import { AuthUser } from "@genuin/components/types/auth";
  * @returns The parsed user object.
  */
 
-const KsCbStatus = ["Pending", "Requested", "Accepted"] as const;
+const KsCbStatus = ["Pending", "Requested", "Success"] as const;
 
 export function parseUserData(
   data: any,
