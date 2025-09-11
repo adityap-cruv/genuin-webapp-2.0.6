@@ -95,12 +95,6 @@ export function buildPageUrl({
     case "posts-draft":
       basePath = `/posts/drafts/${slug}`;
       break;
-    case "post":
-      basePath = `/posts/${slug}`;
-      break;
-    case "posts-draft":
-      basePath = `/posts/drafts/${slug}`;
-      break;
     default:
       // Optional: handle unknown type, though TypeScript should prevent this
       throw new Error(`Unknown page type: ${type}`);
