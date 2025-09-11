@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { cn } from "@genuin/ui/lib/utils";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
@@ -9,12 +9,18 @@ type SectionsTabsProps = {
 
 export const SectionsTabs = ({ onSectionSelect }: SectionsTabsProps) => {
   const embedDetails = useSafeEmbedContext();
+  const containerRef = useRef<HTMLDivElement>(null);
   const [sectionList, setSectionList] = useState(
     embedDetails?.embedEventBus.getContext().sectionList ?? []
   );
   const [selectedSection, setSelectedSection] = useState<
     PostDetailsType["section"]
   >(embedDetails?.embedEventBus.getContext().selectedSection ?? null);
+
+  // Drag scrolling state
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
 
   useEffect(() => {
     if (!embedDetails) return;
@@ -33,13 +39,51 @@ export const SectionsTabs = ({ onSectionSelect }: SectionsTabsProps) => {
     }
   }, [embedDetails]);
 
+  // Drag scroll handlers
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!containerRef.current) return;
+    setIsDragging(true);
+    setStartX(e.pageX - containerRef.current.offsetLeft);
+    setScrollLeft(containerRef.current.scrollLeft);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !containerRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - containerRef.current.offsetLeft;
+    const walk = (x - startX) * 1; // 1:1 ratio for natural scrolling
+    containerRef.current.scrollLeft = scrollLeft - walk;
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseLeave = () => {
+    setIsDragging(false);
+  };
+
   return (
-    <div className="swiper-no-swiping gencl:absolute gencl:top-0 gencl:z-50 gencl:flex gencl:h-13 gencl:sm:h-16! gencl:w-full gencl:gap-2 gencl:overflow-x-auto gencl:scrollbar-none gencl:p-4 gencl:pb-0!">
+    <div
+      ref={containerRef}
+      className={cn(
+        "swiper-no-swiping gencl:absolute gencl:top-0 gencl:z-50 gencl:flex gencl:h-13 gencl:sm:h-16! gencl:w-full gencl:gap-2 gencl:overflow-x-auto gencl:scrollbar-none gencl:p-4 gencl:pb-0!",
+        isDragging ? "gencl:cursor-grabbing" : "gencl:cursor-grab"
+      )}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseLeave}
+      style={{ userSelect: isDragging ? "none" : "auto" }}
+    >
       {sectionList?.map((section, index) => (
         <div
           key={section?.id ?? index}
           onClick={(e) => {
             e.stopPropagation();
+            // Prevent click during drag
+            if (isDragging) return;
+
             if (onSectionSelect) {
               onSectionSelect(section);
             }

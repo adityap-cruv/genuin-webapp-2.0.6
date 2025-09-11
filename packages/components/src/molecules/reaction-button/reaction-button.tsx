@@ -149,6 +149,7 @@ export function ReactionButton({
       return (
         <Link href={shareUrl} target="_blank">
           {button}
+          {showReactionCount && count}
         </Link>
       );
     }

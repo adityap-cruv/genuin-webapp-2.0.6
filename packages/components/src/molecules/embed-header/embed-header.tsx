@@ -51,9 +51,7 @@ export function EmbedHeader({
         {header.heading && (
           <p
             style={{ color: header.headingTextColor }}
-            className={cn(
-              "gencl:font-semibold gencl:line-clamp-1 gencl:!text-[14px] gencl:!leading-[150%] gencl:!tracking-wide gencl:!uppercase"
-            )}
+            className={cn("gencl:text-body-1-semi-bold gencl:line-clamp-1")}
           >
             {header.heading}
           </p>

@@ -23,8 +23,6 @@ import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-d
 import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
 import { FeedViewPropsType } from "./feed.type";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
-import { PlayerListWithSection } from "@genuin/components/organisms/player-swiper/player-swiper-with-sections";
-import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 
 /**
  * Internal core presentation component for displaying feed data.
@@ -196,14 +194,7 @@ export function FeedViewCore({
         )}
         {...restProps}
       >
-        {isSectioned ? (
-          <PlayerListWithSection
-            isSectioned={isSectioned}
-            {...playerListProps}
-          />
-        ) : (
-          <PlayerList {...playerListProps} />
-        )}
+        <PlayerList isSectioned={isSectioned} {...playerListProps} />
         {showSidePanel && (
           <PostSidePanel
             onGroupJoinStatusChange={handleGroupJoinStatusChange}
