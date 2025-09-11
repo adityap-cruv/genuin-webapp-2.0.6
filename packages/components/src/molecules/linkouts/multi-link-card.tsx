@@ -8,7 +8,7 @@ import { useBaseContext } from "@genuin/components/context/base";
 
 // Combined variant for both card layouts
 const multiLinkCardVariants = cva(
-  "gencl:gap-2 gencl:flex gencl:backdrop-blur-md gencl:rounded-xl gencl:text-sm gencl:font-medium gencl:text-white gencl:p-2 gencl:w-full",
+  "gencl:gap-2 gencl:flex gencl:backdrop-blur-md gencl:rounded-xl gencl:text-sm gencl:font-medium gencl:text-white gencl:p-2 gencl:w-full gencl:overflow-hidden",
   {
     variants: {
       variant: {
@@ -99,7 +99,7 @@ export const MultiLinkCard = ({
       >
         <div
           className={cn(
-            "gencl:flex-1 gencl:text-start gencl:flex! gencl:items-center gencl:gap-2 gencl:line-clamp-2 gencl:overflow-x-auto gencl:flex-nowrap gencl:scrollbar-hide",
+            "gencl:w-full gencl:flex-1 gencl:text-start gencl:flex! gencl:items-center gencl:gap-2 gencl:line-clamp-2 gencl:overflow-auto gencl:flex-nowrap gencl:scrollbar-hide",
             isEmbed && "gencl:gap-1"
           )}
         >
@@ -139,7 +139,7 @@ export const MultiLinkCard = ({
             "gencl:w-full gencl:text-body-1-medium! gencl:font-semibold gencl:transition-all gencl:bg-white gencl:hover:bg-white/90 gencl:!text-black gencl:flex gencl:justify-between gencl:items-center gencl:px-3 gencl:py-2 gencl:rounded-lg",
             isOutside && "gencl:bg-secondary-50 gencl:hover:bg-secondary-150",
             !brandDetails.cta_config?.show_arrow_icon &&
-              "gencl:rounded-full gencl:text-center gencl:justify-center "
+              "gencl:text-center gencl:justify-center "
           )}
           style={{
             borderRadius: brandDetails.cta_config?.button_radius ?? "",
@@ -148,9 +148,11 @@ export const MultiLinkCard = ({
           }}
           onClick={handleCTAClick}
         >
-          {brandDetails.cta_config?.default_button_text
-            ? brandDetails.cta_config?.default_button_text
-            : ctaText}
+          <p className="gencl:line-clamp-1 gencl:truncate gencl:w-fit">
+            {brandDetails.cta_config?.default_button_text
+              ? brandDetails.cta_config?.default_button_text
+              : ctaText}
+          </p>
           {brandDetails.cta_config?.show_arrow_icon && (
             <ChevronRight className="gencl:h-4 gencl:w-4 gencl:stroke-black! gencl:shrink-0" />
           )}
@@ -173,7 +175,7 @@ export const MultiLinkCard = ({
     >
       <div
         className={cn(
-          "gencl:flex-1 gencl:text-start gencl:flex! gencl:items-center gencl:gap-2 gencl:line-clamp-2 gencl:overflow-x-auto gencl:flex-nowrap gencl:scrollbar-hide",
+          "gencl:w-full gencl:flex-1 gencl:text-start gencl:flex! gencl:items-center gencl:gap-2 gencl:line-clamp-2 gencl:overflow-auto gencl:flex-nowrap gencl:scrollbar-hide",
           isEmbed && "gencl:gap-1"
         )}
       >
