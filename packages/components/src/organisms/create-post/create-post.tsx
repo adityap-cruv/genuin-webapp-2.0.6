@@ -470,7 +470,8 @@ export const CreatePost = ({ postId, draftId }: CreatePostProps) => {
           </div>
           <div className="gencl:pt-4 gencl:px-6">
             <div className="gencl:flex gencl:gap-3 gencl:text-body-0-semi-bold gencl:mb-4">
-              Upload <DiamondIconComponent />
+              Upload
+              {/* <DiamondIconComponent /> */}
             </div>
             <FileSelectDropzone
               onFileChange={handleFileChange}
@@ -522,7 +523,8 @@ export const CreatePost = ({ postId, draftId }: CreatePostProps) => {
                 </div>
                 <div>
                   <h4 className="gencl:text-body-1-semi-bold gencl:mb-1 gencl:flex gencl:items-center gencl:gap-2">
-                    {item.title} <DiamondIconComponent />
+                    {item.title}
+                    {/* <DiamondIconComponent /> */}
                   </h4>
                   <p className="gencl:text-body-2-medium gencl:text-secondary-600">
                     {item.description}

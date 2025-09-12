@@ -206,14 +206,12 @@ export default function VideosTableBase({
 
   if (error) {
     return (
-      <div className="gencl:container gencl:mx-auto gencl:py-10">
-        <NoDataState
-          title={noDataTitle}
-          description={noDataDescription}
-          buttonLabel="Create Post"
-          // onButtonClick={onButtonClick}
-        />
-      </div>
+      <NoDataState
+        title={noDataTitle}
+        description={noDataDescription}
+        buttonLabel="Create Post"
+        // onButtonClick={onButtonClick}
+      />
     );
   }
 

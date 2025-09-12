@@ -99,10 +99,10 @@ export function MentionInput({
 
   const handleCommentPostSuccess = useCallback(
     (commentData: any) => {
-      if (commentData.comment_id) {
+      if (commentData[0].commentId) {
         track(EventName.VIDEO_COMMENTED, {
           video_id: videoId,
-          content_id: commentData.comment_id,
+          content_id: commentData[0].commentId,
           content_category: "comment",
         });
       }

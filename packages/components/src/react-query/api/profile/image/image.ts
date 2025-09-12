@@ -33,7 +33,7 @@ export async function fetchImageBlob(url: string): Promise<string> {
   }
 }
 
-export async function uploadProfileImage(file: File, path:string) {
+export async function uploadProfileImage(file: File, path: string) {
   try {
     const getUrlResponse = await axiosInstance.post(API_PATHS.UPLOAD_URL, {
       contentType: file.type,

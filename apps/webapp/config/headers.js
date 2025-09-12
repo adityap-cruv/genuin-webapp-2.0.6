@@ -54,7 +54,7 @@ const HOSTS = {
    * Production uses us-east-1 region while QA uses us-west-2
    */
   s3Media: isProd
-    ? 'https://genuin-media.s3.us-east-1.amazonaws.com'
+    ? 'https://genuin-media.s3.us-east-1.amazonaws.com https://genuin-media.s3-accelerate.amazonaws.com'
     : 'https://genuin-qa-media.s3.us-west-2.amazonaws.com',
 
   /**

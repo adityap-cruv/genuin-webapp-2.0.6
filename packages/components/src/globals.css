@@ -3,7 +3,8 @@
 
 
 /* Use for file uploader component */
-.drop_area, .drop_zone {
+.drop_area,
+.drop_zone {
   width: 100%;
 }
 
@@ -15,7 +16,7 @@
   outline: none !important;
 }
 
-.custom_style input { 
+.custom_style input {
   display: none;
 }
 
@@ -30,16 +31,18 @@
 
 }
 
-.drop_area .sc-hvigdm{
+.drop_area .sc-hvigdm {
   background-color: transparent !important;
   border: none;
 }
 
-label.is-required, label span.is-required{
+label.is-required,
+label span.is-required {
   display: block;
 }
 
-label.is-required::after, label span.is-required::after{
+label.is-required::after,
+label span.is-required::after {
   position: absolute;
   content: '*';
   color: red;
