@@ -173,7 +173,10 @@ function About({
           userName: groupDetails.owner.userName,
           url: buildPageUrl({
             type: !!groupDetails.owner.brand ? "brand" : "profile",
-            slug: groupDetails.owner.userName,
+            slug:
+              !!groupDetails.owner.brand && groupDetails.owner.brand.slug
+                ? groupDetails.owner.brand.slug
+                : groupDetails.owner.userName,
           }),
           userLogoType: groupDetails.owner.brand?.brandUserLogo,
         },
