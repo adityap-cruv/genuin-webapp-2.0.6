@@ -51,7 +51,7 @@ export function PostPlayer({
           <ControlLayer
             isActive={true}
             postDetails={post}
-            showExpand={false}
+            enableExpand={false}
             expandViewDetails={false}
             clipVideo={showClipVideoBtn}
             editCover={showEditCoverBtn}

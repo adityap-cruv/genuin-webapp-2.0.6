@@ -29,7 +29,7 @@ export function Default({
   onCommentCountChange,
   clipVideo,
   editCover,
-  showExpand,
+  enableExpand = true,
   editClipVideo,
   editCoverImage,
   ...restProps
@@ -99,7 +99,7 @@ export function Default({
       >
         <Controls
           showCloseButton={showCloseButton}
-          showExpand={showExpand}
+          enableExpand={enableExpand}
           className={cn(
             isMobile
               ? "gencl:z-20"

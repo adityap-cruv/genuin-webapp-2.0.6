@@ -11,6 +11,8 @@ import { SettingsPage } from "@genuin/components/organisms/settings";
 import { Explore } from "../explore";
 import { ComponentProps, useEffect } from "react";
 import { useRouter } from "@genuin/components/hooks/use-router";
+import { MyVideos } from "@genuin/components/organisms/my-videos";
+import { CreatePost } from "@genuin/components/organisms/create-post";
 
 type StandardWallProps = {
   /**
@@ -95,6 +97,24 @@ export function StandardWall({
           </Route>
           <Route path={buildPageUrl({ type: "explore" })}>
             <Explore />
+          </Route>
+          <Route path={buildPageUrl({ type: "posts-create" })}>
+            <CreatePost />
+          </Route>
+          <Route path={buildPageUrl({ type: "posts" })}>
+            <MyVideos />
+          </Route>
+          <Route path={buildPageUrl({ type: "post", asRoutePattern: true })}>
+            {(params) => {
+              return <CreatePost postId={(params as any).slug} />;
+            }}
+          </Route>
+          <Route
+            path={buildPageUrl({ type: "posts-draft", asRoutePattern: true })}
+          >
+            {(params) => {
+              return <CreatePost draftId={(params as any).slug} />;
+            }}
           </Route>
           <Route path="/default-comp">{defaultComponent}</Route>
         </BaseLayout>

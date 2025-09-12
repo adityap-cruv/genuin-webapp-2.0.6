@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@genuin/components/hooks/use-router";
 import { v4 as uuid } from "uuid";
 import { Avatar, Button, Toast } from "@genuin/ui/components";
 import {
