@@ -63,15 +63,8 @@ export class GenuinSDK {
       const firstDiv = divs[0] as HTMLElement | undefined
       if (singleEmbed && configOrObject) {
         console.group(configOrObject)
-        if (!configOrObject.embed_id) {
-          configOrObject.embed_id = firstDiv?.getAttribute('data-embed-id')
-        }
-
-        if (!configOrObject.api_key) {
-          configOrObject.api_key = firstDiv?.getAttribute('data-api-key')
-        }
         // Single embed initialization with config
-        await this.initializeSingleEmbed(configOrObject)
+        await this.initializeSingleEmbed(configOrObject, firstDiv)
       } else {
         // Multi-embed initialization from DOM
         await this.initializeFromDOM(configOrObject)
@@ -92,9 +85,11 @@ export class GenuinSDK {
    */
   private async initializeSingleEmbed(
     configOrObject: { config: LegacySDKConfig } | LegacySDKConfig,
+    domElement?: HTMLElement,
   ): Promise<void> {
     // Find the div with id 'gen-sdk' or 'gen-sdk-<number>'
     const div =
+      domElement ||
       document.getElementById('gen-sdk') ||
       (Array.from(document.querySelectorAll('[id^="gen-sdk-"]')).find((el) =>
         /^gen-sdk-\d+$/.test(el.id),
@@ -109,8 +104,43 @@ export class GenuinSDK {
       )
     }
 
-    const config =
+    // Extract config from DOM attributes and merge with provided config
+    const baseConfig =
       'config' in configOrObject ? configOrObject.config : configOrObject
+    const domConfig = this.extractConfigFromDOM(div, baseConfig)
+    
+    // Merge configs with provided config taking precedence over DOM config
+    const config: LegacySDKConfig = {
+      ...domConfig,
+      ...baseConfig,
+      // Ensure critical fields are not empty strings - prefer DOM values if config has empty strings
+      placement_id: baseConfig.placement_id || domConfig.placement_id,
+      style_id: baseConfig.style_id || domConfig.style_id,
+      embed_id: baseConfig.embed_id || domConfig.embed_id,
+      api_key: baseConfig.api_key || domConfig.api_key,
+      token: baseConfig.token || domConfig.token,
+      // Merge contextual params deeply
+      contextualParams: {
+        ...domConfig.contextualParams,
+        ...baseConfig.contextualParams,
+        // Handle nested objects
+        geo: {
+          ...domConfig.contextualParams?.geo,
+          ...baseConfig.contextualParams?.geo,
+        },
+        place: {
+          ...domConfig.contextualParams?.place,
+          ...baseConfig.contextualParams?.place,
+        },
+        user_segments: {
+          ...domConfig.contextualParams?.user_segments,
+          ...baseConfig.contextualParams?.user_segments,
+        },
+      },
+      // Merge arrays (prefer config values if they exist)
+      brand_ids: baseConfig.brand_ids?.length ? baseConfig.brand_ids : domConfig.brand_ids,
+    }
+
     const validation = this.configManager.validateLegacyConfig(config)
 
     if (!validation.isValid) {
@@ -177,6 +207,54 @@ export class GenuinSDK {
 
     const source = isConfigObject ? sourceConfig.config : sourceConfig || {}
 
+    // Helper function to safely parse JSON attributes
+    const parseJSONAttribute = (attrValue: string | null): any => {
+      if (!attrValue) return undefined
+      try {
+        return JSON.parse(attrValue)
+      } catch {
+        return undefined
+      }
+    }
+
+    // Helper function to parse number arrays from string
+    const parseNumberArray = (attrValue: string | null): number[] => {
+      if (!attrValue) return []
+      try {
+        const parsed = JSON.parse(attrValue)
+        return Array.isArray(parsed) ? parsed.filter(item => typeof item === 'number') : []
+      } catch {
+        return []
+      }
+    }
+
+    // Helper function to parse string arrays from string
+    const parseStringArray = (attrValue: string | null): string[] => {
+      if (!attrValue) return []
+      try {
+        const parsed = JSON.parse(attrValue)
+        return Array.isArray(parsed) ? parsed.filter(item => typeof item === 'string') : []
+      } catch {
+        return []
+      }
+    }
+
+    // Helper function to convert string to number or undefined
+    const parseNumber = (value: string | null): number | undefined => {
+      if (!value) return undefined
+      const num = Number(value)
+      return isNaN(num) ? undefined : num
+    }
+
+    // Extract geo data
+    const geoData = parseJSONAttribute(div.getAttribute('data-geo'))
+    
+    // Extract place data
+    const placeData = parseJSONAttribute(div.getAttribute('data-place'))
+    
+    // Extract user segments data
+    const userSegmentsData = parseJSONAttribute(div.getAttribute('data-user-segments'))
+
     return {
       placement_id: div.getAttribute('data-placement-id') ?? '',
       style_id: div.getAttribute('data-style-id') ?? '',
@@ -184,14 +262,40 @@ export class GenuinSDK {
       api_key: div.getAttribute('data-api-key') ?? '',
       token: source.token ?? '',
       contextualParams: {
-        page_context: div.getAttribute('data-page-context') || null,
-        geo: {
-          lat: div.getAttribute('data-lat') || null,
-          long: div.getAttribute('data-long') || null,
+        page_context: div.getAttribute('data-page-context') || undefined,
+        previous_page_context: div.getAttribute('data-previous-page-context') || undefined,
+        user_context: div.getAttribute('data-user-context') || undefined,
+        geo: geoData ? {
+          lat: parseNumber(geoData.lat?.toString()),
+          long: parseNumber(geoData.long?.toString()),
+          radius_limit: parseNumber(geoData.radius_limit?.toString()),
+        } : {
+          lat: parseNumber(div.getAttribute('data-lat')),
+          long: parseNumber(div.getAttribute('data-long')),
         },
-        url: div.getAttribute('data-url') || null,
+        url: div.getAttribute('data-url') || undefined,
+        place: placeData ? {
+          country: placeData.country || undefined,
+          state: placeData.state || undefined,
+          city: placeData.city || undefined,
+          zipcode: placeData.zipcode || undefined,
+        } : undefined,
+        time: div.getAttribute('data-time') || undefined,
+        user_segments: userSegmentsData ? {
+          age: parseNumber(userSegmentsData.age?.toString()),
+          min_age: parseNumber(userSegmentsData.min_age?.toString()),
+          max_age: parseNumber(userSegmentsData.max_age?.toString()),
+          segment: userSegmentsData.segment || undefined,
+          gender: userSegmentsData.gender || undefined,
+          race: userSegmentsData.race || undefined,
+        } : undefined,
+        brands_ids: parseNumberArray(div.getAttribute('data-brands-ids')),
+        user_interests: parseStringArray(div.getAttribute('data-user-interests')),
+        posted_by_user_ids: parseStringArray(div.getAttribute('data-posted-by-user-ids')),
+        community_ids: parseStringArray(div.getAttribute('data-community-ids')),
+        loop_ids: parseStringArray(div.getAttribute('data-loop-ids')),
       },
-      brand_ids:
+      brand_ids: parseNumberArray(div.getAttribute('data-brands-ids')) || 
         div
           .getAttribute('data-brand-ids')
           ?.split(' ')
@@ -361,6 +465,11 @@ export class GenuinSDK {
     embedData.startVideoSlug =
       container.getAttribute('data-video-id') ?? config.video
     embedData.action = container.getAttribute('data-action') ?? config.action
+    
+    // Set contextual parameters from config
+    if (config.contextualParams) {
+      embedData.contextualParams = config.contextualParams
+    }
 
     if (config.authInfo) {
       embedData.authInfo = config.authInfo
