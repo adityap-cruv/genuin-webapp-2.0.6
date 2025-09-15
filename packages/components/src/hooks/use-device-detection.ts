@@ -1,3 +1,4 @@
+'use client'
 import { useEffect, useState } from "react";
 import { UAParser } from "ua-parser-js";
 

@@ -26,6 +26,7 @@ interface HighlightedInputProps
     input?: string;
     highlight?: string;
   };
+  inputType: "text" | "textarea";
 }
 
 const HighlightedInput = forwardRef<HTMLInputElement, HighlightedInputProps>(
@@ -38,6 +39,7 @@ const HighlightedInput = forwardRef<HTMLInputElement, HighlightedInputProps>(
       name = "",
       selectedMentions = [],
       classes = {},
+      inputType = "text",
       ...props
     },
     ref
@@ -144,35 +146,62 @@ const HighlightedInput = forwardRef<HTMLInputElement, HighlightedInputProps>(
     };
 
     return (
-      <div className={`gencl:relative ${className}`}>
-        {/* Highlight layer */}
-        <div
-          ref={highlightRef}
-          className={cn(
-            "gencl:absolute gencl:top-0 gencl:left-0 gencl:w-full gencl:h-full gencl:pointer-events-none gencl:overflow-hidden gencl:whitespace-pre-wrap gencl:z-0 gencl:leading-normal gencl:border gencl:border-transparent gencl:rounded-md",
-            classes.highlight
-          )}
-          dangerouslySetInnerHTML={{ __html: getHighlightedText() }}
-        />
-
-        {/* Input field */}
-        <input
-          ref={ref || inputRef}
-          type="text"
-          name={name}
-          value={inputValue}
-          onChange={handleInputChange}
-          onScroll={handleScroll}
-          onKeyUp={handleKeyUp}
-          onClick={handleClick}
-          // placeholder={placeholder}
-          className={cn(
-            "gencl:w-full gencl:caret-secondary-500 gencl:border gencl:border-gray-300 gencl:rounded-md gencl:focus:outline-none gencl:focus:ring-2 gencl:focus:ring-blue-500 gencl:focus:border-transparent gencl:bg-transparent gencl:relative gencl:z-10 gencl:text-transparent gencl:overflow-x-auto gencl:selection:bg-blue-200",
-            classes.input
-          )}
-          {...props}
-        />
-      </div>
+      <>
+        {inputType === "text" ? (
+          <div className={`gencl:relative ${className}`}>
+            {/* Highlight layer */}
+            <div
+              ref={highlightRef}
+              className={cn(
+                "gencl:absolute gencl:top-0 gencl:left-0 gencl:w-full gencl:h-full gencl:pointer-events-none gencl:overflow-hidden gencl:whitespace-pre-wrap gencl:z-0 gencl:leading-normal gencl:border gencl:border-transparent gencl:rounded-md",
+                classes.highlight
+              )}
+              dangerouslySetInnerHTML={{ __html: getHighlightedText() }}
+            />
+            <input
+              ref={ref || inputRef}
+              type="text"
+              name={name}
+              value={inputValue}
+              onChange={handleInputChange}
+              onScroll={handleScroll}
+              onKeyUp={handleKeyUp}
+              onClick={handleClick}
+              className={cn(
+                "gencl:w-full gencl:caret-secondary-500 gencl:border gencl:border-gray-300 gencl:rounded-md gencl:focus:outline-none gencl:focus:ring-2 gencl:focus:ring-blue-500 gencl:focus:border-transparent gencl:bg-transparent gencl:relative gencl:z-10 gencl:text-transparent gencl:overflow-x-auto gencl:selection:bg-blue-200",
+                classes.input
+              )}
+              {...props}
+            />
+          </div>
+        ) : (
+          <textarea
+            placeholder="Add description"
+            ref={
+              (ref as React.RefObject<HTMLTextAreaElement>) ||
+              (inputRef as React.RefObject<HTMLTextAreaElement>)
+            }
+            name={name}
+            value={inputValue}
+            onChange={
+              handleInputChange as React.ChangeEventHandler<HTMLTextAreaElement>
+            }
+            onScroll={handleScroll as React.UIEventHandler<HTMLTextAreaElement>}
+            onKeyUp={
+              handleKeyUp as React.KeyboardEventHandler<HTMLTextAreaElement>
+            }
+            onClick={
+              handleClick as React.MouseEventHandler<HTMLTextAreaElement>
+            }
+            className={cn(
+              "gencl:w-full gencl:caret-secondary-500 gencl:rounded-md gencl:focus:border-transparent gencl:bg-transparent gencl:relative gencl:z-10 gencl:overflow-y-auto gencl:selection:bg-blue-200 gencl:focus-visible:outline-hidden",
+              classes.input
+            )}
+            rows={5}
+            {...(props as React.TextareaHTMLAttributes<HTMLTextAreaElement>)}
+          />
+        )}
+      </>
     );
   }
 );

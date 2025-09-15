@@ -15,6 +15,10 @@
   outline: none !important;
 }
 
+.custom_style input { 
+  display: none;
+}
+
 .drop_area:hover {
   background-color: transparent !important;
 }
@@ -30,11 +34,11 @@
   border: none;
 }
 
-label.is-required {
+label.is-required, label span.is-required{
   display: block;
 }
 
-label.is-required::after {
+label.is-required::after, label span.is-required::after{
   position: absolute;
   content: "*";
   color: red;
@@ -43,4 +47,8 @@ label.is-required::after {
 
 .op-ads > div {
   top: 0 !important;
+}
+.round-crop .cropper-view-box,
+.round-crop .cropper-face {
+  border-radius: 0 !important;
 }

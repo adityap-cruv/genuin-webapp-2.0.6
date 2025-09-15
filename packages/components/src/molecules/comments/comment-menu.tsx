@@ -8,14 +8,25 @@ import { ThreeDotsIcon } from "@genuin/ui/icons";
 import { Button } from "@genuin/ui/button";
 import { ComponentProps } from "react";
 import { cn } from "@genuin/ui/lib/utils";
+import { DeleteComment } from "../delete-comment";
 
 type CommentMenuPropsType = ComponentProps<typeof PopoverTrigger> & {
   contentId: string;
+  ownerId?: string;
+  userId?: string;
+  videoId: string;
+  onCommentCountChange?: ComponentProps<
+    typeof DeleteComment
+  >["onCommentCountChange"];
 };
 
 export function CommentMenu({
   contentId,
   className,
+  ownerId,
+  userId,
+  videoId,
+  onCommentCountChange,
   ...restProps
 }: CommentMenuPropsType) {
   return (
@@ -33,16 +44,38 @@ export function CommentMenu({
         className="gencl:p-0 gencl:border-secondary-150 gencl:w-fit gencl:rounded-xl"
         align="end"
       >
-        <Report reportFor="COMMENT" contentId={contentId} type={""}>
-          <div className="gencl:p-3 gencl:rounded-xl gencl:border-secondary-100 gencl:bg-white gencl:cursor-pointer gencl:text-primary">
-            <Button
-              theme="text"
-              className="gencl:!text-error-status gencl:text-body-1-medium gencl:p-2 gencl:hover:bg-secondary-100 gencl:h-fit gencl:px-0"
-            >
-              Report
-            </Button>
-          </div>
-        </Report>
+        {ownerId !== userId ? (
+          <Report
+            reportFor="COMMENT"
+            contentId={contentId}
+            type="report-comment-dialog"
+          >
+            <div className="gencl:p-3 gencl:rounded-xl gencl:border-secondary-100 gencl:bg-white gencl:cursor-pointer gencl:text-primary">
+              <Button
+                theme="text"
+                className="gencl:!text-error-status gencl:text-body-1-medium gencl:p-2 gencl:hover:bg-secondary-100 gencl:h-fit gencl:px-0"
+              >
+                Report
+              </Button>
+            </div>
+          </Report>
+        ) : (
+          <DeleteComment
+            contentId={contentId}
+            videoId={videoId}
+            onCommentCountChange={onCommentCountChange}
+            type="delete-comment-dialog"
+          >
+            <div className="gencl:p-3 gencl:rounded-xl gencl:border-secondary-100 gencl:bg-white gencl:cursor-pointer gencl:text-primary">
+              <Button
+                theme="text"
+                className="gencl:!text-error-status gencl:text-body-1-medium gencl:p-2 gencl:hover:bg-secondary-100 gencl:h-fit gencl:px-0"
+              >
+                Delete
+              </Button>
+            </div>
+          </DeleteComment>
+        )}
       </PopoverContent>
     </Popover>
   );

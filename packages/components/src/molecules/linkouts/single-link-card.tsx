@@ -8,7 +8,7 @@ import { useBaseContext } from "@genuin/components/context/base";
 
 // Combined variant for both card types
 const linkCardVariants = cva(
-  "gencl:cursor-pointer gencl:gap-2 gencl:backdrop-blur-md gencl:rounded-xl gencl:text-sm gencl:font-medium gencl:text-white gencl:p-2 gencl:w-full gencl:transition-colors",
+  "gencl:cursor-pointer gencl:gap-2 gencl:backdrop-blur-md gencl:rounded-xl gencl:text-sm gencl:font-medium gencl:text-white gencl:p-2 gencl:w-full gencl:transition-colors gencl:overflow-hidden",
   {
     variants: {
       variant: {
@@ -154,9 +154,11 @@ export const LinkCard = ({
           }}
           onClick={handleCTAClick}
         >
-          {brandDetails.cta_config?.default_button_text
-            ? brandDetails.cta_config?.default_button_text
-            : ctaText}
+          <p className="gencl:line-clamp-1 gencl:truncate gencl:w-fit">
+            {brandDetails.cta_config?.default_button_text
+              ? brandDetails.cta_config?.default_button_text
+              : ctaText}
+          </p>
           {brandDetails.cta_config?.show_arrow_icon && (
             <ChevronRight className="gencl:h-4 gencl:w-4 gencl:stroke-black! gencl:shrink-0" />
           )}

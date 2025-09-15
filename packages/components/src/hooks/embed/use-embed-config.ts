@@ -4,9 +4,9 @@ import { useMemo } from "react";
 import { useDeviceDetectMediaQuery } from "../use-devide-detect-media-query";
 import type { CustomizationType } from "@genuin/components/context/embed/embed.types";
 
-const MIN_EMBED_WIDTH = 130;
-const MIN_EMBED_HEIGHT = 230; // Based on 9:16 aspect ratio for 130 width
-const MIN_GRID_WIDTH = 250;
+const MIN_EMBED_WIDTH = 150;
+const MIN_EMBED_HEIGHT = 268; // Based on 9:16 aspect ratio for 150 width
+const MIN_GRID_VIDEO_WIDTH = 150;
 
 // TODO REMOVE UNUSED CONFIGS, USE ONLY IF REQUIRED
 /**
@@ -146,6 +146,7 @@ export function useEmbedConfigs() {
     const currentWidth = rootElement.offsetWidth;
     const currentHeight = rootElement.offsetHeight;
     const currentStyle = embedData?.style;
+    const gridColumn = embedData?.grid_layout?.column ?? 0;
 
     // Check if the current embed style has minimum size requirements
     switch (currentStyle) {
@@ -160,12 +161,19 @@ export function useEmbedConfigs() {
         );
 
       case "grid":
-        return currentWidth >= MIN_GRID_WIDTH;
+        return (
+          !!gridColumn && currentWidth / gridColumn >= MIN_GRID_VIDEO_WIDTH
+        );
 
       default:
         return true;
     }
-  }, [customization, rootElement, embedData?.style]);
+  }, [
+    customization,
+    rootElement,
+    embedData?.style,
+    embedData?.grid_layout?.column,
+  ]);
 
   // ============================================================
   // Engagement & Interaction Configuration

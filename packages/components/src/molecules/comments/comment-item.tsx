@@ -18,6 +18,7 @@ import { ComponentProps, memo } from "react";
 import { useAuthContext } from "@genuin/components/context/auth";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { DeleteComment } from "../delete-comment";
 
 export type CommentItemProps = {
   comment: CommentListType[number];
@@ -26,6 +27,9 @@ export type CommentItemProps = {
   onReactionStateChange?: ComponentProps<
     typeof ReactionButton
   >["onReactionStateChange"];
+  onCommentCountChange?: ComponentProps<
+    typeof DeleteComment
+  >["onCommentCountChange"];
 };
 
 // TODO: Check why brand is not handled in the comment item
@@ -34,6 +38,7 @@ export const CommentItem = memo(function CommentItem({
   shareUrl,
   videoId,
   onReactionStateChange,
+  onCommentCountChange,
 }: CommentItemProps) {
   const { owner } = comment;
   const { user } = useAuthContext();
@@ -64,9 +69,14 @@ export const CommentItem = memo(function CommentItem({
               &nbsp; {comment.createdAt && getTimeAgo(comment.createdAt)}
             </span>
           </div>
-          {owner.memberId !== user?.id && (
+
+          {user && (
             <CommentMenu
               contentId={comment.commentId}
+              ownerId={owner.memberId}
+              userId={user?.id}
+              videoId={videoId}
+              onCommentCountChange={onCommentCountChange}
               className={cn(
                 "gencl:block",
                 !isMobile &&

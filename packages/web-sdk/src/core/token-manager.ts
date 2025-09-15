@@ -124,24 +124,30 @@ export class TokenManager {
       }
       // If explicit token provided, check cache first
       if (config?.token && config?.brandId) {
-        const apiResponse = await this.apiService.getAuthenticatedUserDetails(
+        const userData = await this.apiService.getAuthenticatedUserDetails(
           config.token,
           config.brandId,
           config.params,
         )
 
-        if (apiResponse) {
+        if (userData) {
           // Store token for future use
           this.setAccessToken(config.token)
-          const parsedUser = this.parseUserResponse({
-            apiUser: apiResponse.user,
-            accessToken: apiResponse.accessToken,
-            refreshToken: apiResponse.refreshToken,
-            autoLoginToken: apiResponse.autoLoginToken,
-          })
+          // const parsedUser = this.parseUserResponse({
+          //   apiUser: apiResponse.user,
+          //   accessToken: apiResponse.accessToken,
+          //   refreshToken: apiResponse.refreshToken,
+          //   autoLoginToken: apiResponse.autoLoginToken,
+          // })
           // Cache the user
-          this.cachedUser = parsedUser
-          return parsedUser
+          this.cachedUser = userData.user
+
+          if (this.cachedUser) {
+            this.cachedUser.accessToken = userData.accessToken
+            this.cachedUser.refreshToken = userData.refreshToken
+            this.cachedUser.autoLoginToken = userData.autoLoginToken
+          }
+          return this.cachedUser
         }
       }
       // Otherwise, check for existing session

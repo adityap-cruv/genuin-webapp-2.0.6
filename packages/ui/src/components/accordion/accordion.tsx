@@ -14,9 +14,8 @@ type AccordionItemProps = {
 type AccordionTriggerProps = {
   className?: string;
   children: React.ReactNode;
-  openIcon?: React.ReactNode;
-  closedIcon?: React.ReactNode;
-} & React.ComponentProps<typeof AccordionPrimitive.Trigger>;
+  openCloseIcon?: React.ReactNode;
+} & React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger>;
 
 type AccordionContentProps = {
   className?: string;
@@ -33,8 +32,7 @@ AccordionItem.displayName = "AccordionItem";
 const AccordionTrigger = ({
   className,
   children,
-  openIcon,
-  closedIcon,
+  openCloseIcon,
   ...props
 }: AccordionTriggerProps) => (
   <AccordionPrimitive.Header className="gencl:flex">
@@ -46,7 +44,11 @@ const AccordionTrigger = ({
       {...props}
     >
       {children}
-      <ChevronDown className="gencl:h-4 gencl:w-4 gencl:shrink-0 gencl:transition-transform gencl:duration-200" />
+      {openCloseIcon ? (
+        openCloseIcon
+      ) : (
+        <ChevronDown className="gencl:h-4 gencl:w-4 gencl:shrink-0 gencl:transition-transform gencl:duration-200" />
+      )}
     </AccordionPrimitive.Trigger>
   </AccordionPrimitive.Header>
 );

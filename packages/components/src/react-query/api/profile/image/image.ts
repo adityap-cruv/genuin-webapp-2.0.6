@@ -33,18 +33,18 @@ export async function fetchImageBlob(url: string): Promise<string> {
   }
 }
 
-export async function uploadProfileImage(file: File) {
+export async function uploadProfileImage(file: File, path:string) {
   try {
     const getUrlResponse = await axiosInstance.post(API_PATHS.UPLOAD_URL, {
       contentType: file.type,
-      path: `uploads/profile_images/${file.name}`,
+      path: `${path}/${file.name}`,
     });
     const uploadUrl = getUrlResponse.data.data.uploadURL;
     const uploadResponse = await axios.put(uploadUrl, file, {
       headers: { "Content-Type": file.type },
     });
     if (uploadResponse.status === 200) {
-      const imageUrl = `${MEDIA_BASE_URL}/uploads/profile_images/${file.name}`;
+      const imageUrl = `${MEDIA_BASE_URL}/${path}/${file.name}`;
       return imageUrl;
     }
     return null;

@@ -11,12 +11,13 @@ import {
   FormField,
   FormControl,
 } from "@genuin/ui/components/form";
+import { Loader } from "@genuin/ui/components/loader";
 import { cn } from "@genuin/ui/lib/utils";
 import { Command, CommandList, CommandItem } from "@genuin/ui/components";
 import { useCommentMentions } from "../../hooks/use-comment-mentions";
 import { useCommentInputHandlers } from "../../hooks/use-comment-input-handlers";
+import { useCommentTextareaHandlers } from "../../hooks/use-description-textarea-handlers";
 import HighlightedInput from "./highlighted-field";
-import { Loader } from "@genuin/ui/components/loader";
 import { useAnalytics } from "@genuin/components/context/analytics";
 
 // Types for props
@@ -49,6 +50,11 @@ export interface MentionInputProps {
    * When true, disables the input functionality while still allowing onClick events
    */
   disabled?: boolean;
+  onPayload?: (payload: any) => void;
+  inputType: "text" | "textarea";
+  maxLength: number;
+  defaultValue?: string;
+  postId?: string;
 }
 
 export function MentionInput({
@@ -58,37 +64,28 @@ export function MentionInput({
   onCommentPosted,
   onClick,
   disabled = false,
+  onPayload,
+  inputType = "text",
+  maxLength = 500,
+  defaultValue,
+  postId,
 }: MentionInputProps) {
   const form = useForm<CommentFormValues>({
     resolver: zodResolver(commentFormSchema),
     mode: "onChange",
-    defaultValues: { comment: "" },
+    defaultValues: { comment: defaultValue ?? "" },
     criteriaMode: "firstError",
   });
   const { track, EventName } = useAnalytics();
 
-  const handleCommentPostSuccess = useCallback(
-    (commentData: any) => {
-      if (commentData.comment_id) {
-        track(EventName.VIDEO_COMMENTED, {
-          video_id: videoId,
-          content_id: commentData.comment_id,
-          content_category: "comment",
-        });
-      }
-      onCommentPosted?.(commentData);
-    },
-    [track, EventName.VIDEO_COMMENTED, videoId, onCommentPosted]
-  );
-
   const [selectedMentions, setSelectedMentions] = useState<SelectedMention[]>(
     []
   );
-
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [commentValue, setCommentValue] = useState("");
   const { formState } = form;
   const isFormValid = formState.isValid && commentValue.trim().length > 0;
+  const [description, setDescription] = useState(defaultValue ?? "");
 
   const {
     filteredMentions,
@@ -105,15 +102,40 @@ export function MentionInput({
     form,
   });
 
-  const { handleInputChange, commentSubmit, isPending } =
-    useCommentInputHandlers({
-      form,
-      selectedMentions,
-      setSelectedMentions,
-      videoId,
-      loopId,
-      handleCommentPostSuccess,
-    });
+  const handleCommentPostSuccess = useCallback(
+    (commentData: any) => {
+      if (commentData.comment_id) {
+        track(EventName.VIDEO_COMMENTED, {
+          video_id: videoId,
+          content_id: commentData.comment_id,
+          content_category: "comment",
+        });
+      }
+      onCommentPosted?.(commentData);
+    },
+    [track, EventName.VIDEO_COMMENTED, videoId, onCommentPosted]
+  );
+
+  const handlePayloadTextArea = (payload: any) => {
+    onPayload?.(payload);
+  };
+
+  const { handleInputChange, handleInputBlur, commentSubmit, isPending } =
+    inputType === "textarea"
+      ? useCommentTextareaHandlers({
+          form,
+          selectedMentions,
+          setSelectedMentions,
+          onPayload: handlePayloadTextArea,
+        })
+      : useCommentInputHandlers({
+          form,
+          selectedMentions,
+          setSelectedMentions,
+          videoId,
+          loopId,
+          handleCommentPostSuccess,
+        });
 
   useEffect(() => {
     const unSub = form.watch(({ comment }) => {
@@ -129,10 +151,24 @@ export function MentionInput({
       <form
         onSubmit={form.handleSubmit(commentSubmit)}
         onClick={onClick}
-        className="gencl:absolute gencl:bottom-0 gencl:left-0 gencl:right-0 gencl:bg-white gencl:p-4 gencl:border-t gencl:border-secondary-150 gencl:flex gencl:justify-between"
+        className={cn(
+          "gencl:left-0 gencl:right-0 gencl:bg-white gencl:border-secondary-150 gencl:flex gencl:justify-between",
+          {
+            "gencl:absolute gencl:p-4 gencl:bottom-0 gencl:border-t":
+              inputType === "text",
+          }
+        )}
       >
         {isMentioning && (
-          <div className="gencl:absolute gencl:left-0 gencl:w-full gencl:z-50 gencl:bottom-18.25">
+          <div
+            className={cn(
+              "gencl:absolute gencl:left-0 gencl:w-full gencl:z-50 ",
+              {
+                "gencl:bottom-18.25": inputType === "text",
+                "gencl:top-36": inputType === "textarea",
+              }
+            )}
+          >
             <Command className="gencl:bg-white gencl:rounded-t-2xl gencl:max-h-60 gencl:overflow-y-auto gencl:shadow-[0px_-4px_15px_0px_#3F3F3F0D]">
               <CommandList>
                 {filteredMentions.map((mention: any, idx: number) => {
@@ -190,8 +226,20 @@ export function MentionInput({
             </Command>
           </div>
         )}
-        <div className="gencl:flex-1 gencl:relative">
-          <div className="gencl:border gencl:border-secondary-150 gencl:rounded-lg gencl:py-2 gencl:px-3 gencl:flex gencl:gap-3 gencl:w-full gencl:min-h-10">
+        <div
+          className={cn("gencl:flex-1 gencl:relative", {
+            "gencl:mt-7": inputType === "textarea",
+          })}
+        >
+          <div
+            className={cn(
+              "gencl:border gencl:border-secondary-150 gencl:rounded-lg gencl:py-2 gencl:px-3 gencl:flex gencl:gap-3 gencl:w-full gencl:min-h-10",
+              {
+                "gencl:border-red-400":
+                  description.length === maxLength && inputType === "textarea",
+              }
+            )}
+          >
             {!!user && (
               <Avatar
                 alt={user.name || ""}
@@ -199,6 +247,27 @@ export function MentionInput({
                 imageUrl={user.image || ""}
                 size="xs"
               />
+            )}
+            {inputType === "textarea" && (
+              <div
+                className="gencl:flex gencl:justify-between gencl:text-body-1-medium gencl:absolute gencl:left-0 gencl:right-0"
+                style={{
+                  marginTop: "-35px",
+                }}
+              >
+                Description
+                <span
+                  className={cn(
+                    "gencl:text-secondary-500 gencl:text-body-2-medium",
+                    {
+                      "gencl:text-error-status":
+                        description.length === maxLength,
+                    }
+                  )}
+                >
+                  {description.length}/{maxLength}
+                </span>
+              </div>
             )}
             <div className="gencl:flex-1 gencl:relative">
               <FormField
@@ -214,6 +283,24 @@ export function MentionInput({
                           if (!disabled) {
                             field.onChange(e);
                             handleInputChange(e);
+                            setDescription?.(e.target.value);
+                            if (
+                              inputType === "textarea" &&
+                              description.length <= maxLength &&
+                              postId
+                            ) {
+                              handleInputBlur?.();
+                            }
+                          }
+                        }}
+                        onBlur={(e) => {
+                          field.onBlur();
+                          if (
+                            inputType === "textarea" &&
+                            description.length <= maxLength &&
+                            !postId
+                          ) {
+                            handleInputBlur?.();
                           }
                         }}
                         onKeyDown={!disabled ? handleMentionKeyDown : undefined}
@@ -221,7 +308,7 @@ export function MentionInput({
                         placeholder="Add a comment"
                         className="w-full"
                         aria-invalid={!!form.formState.errors.comment}
-                        maxLength={500}
+                        maxLength={maxLength}
                         name={field.name}
                         disabled={disabled}
                         onFocus={(e) => {
@@ -229,6 +316,7 @@ export function MentionInput({
                             e.target.blur();
                           }
                         }}
+                        inputType={inputType}
                       />
                     </div>
                   </FormControl>
@@ -236,23 +324,27 @@ export function MentionInput({
               />
             </div>
           </div>
+          {description.length === maxLength && inputType === "textarea" && (
+            <p className="gencl:text-body-1-medium gencl:text-error-status gencl:mt-1">
+              You've reached the 2000 character limit.
+            </p>
+          )}
           <FormMessage />
         </div>
-
-        <Button
-          type="submit"
-          theme="text"
-          className={cn(
-            "gencl:!text-body-1-medium",
-            isFormValid && !disabled
-              ? "gencl:text-primary"
-              : "gencl:text-secondary-400"
-          )}
-          disabled={!isFormValid || isPending || !user || disabled}
-          aria-label="Post comment"
-        >
-          {isPending ? <Loader size="xs" /> : "Post"}
-        </Button>
+        {inputType === "text" && (
+          <Button
+            type="submit"
+            theme="text"
+            className={cn(
+              "gencl:!text-body-1-medium",
+              isFormValid ? "gencl:text-primary" : "gencl:text-secondary-400"
+            )}
+            disabled={!isFormValid || isPending || !user}
+            aria-label="Post comment"
+          >
+            {isPending ? <Loader size="xs" /> : "Post"}
+          </Button>
+        )}
       </form>
     </Form>
   );

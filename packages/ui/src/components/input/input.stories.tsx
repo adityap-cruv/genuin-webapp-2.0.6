@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { Input } from "./input";
+import { SearchIcon } from "@genuin/ui/icons";
 
 const meta: Meta<typeof Input> = {
   title: "Components/Input",
@@ -71,5 +72,14 @@ export const Required: Story = {
   args: {
     required: true,
     placeholder: "Required field",
+  },
+};
+
+export const WithIcon: Story = {
+  args: {
+    required: true,
+    placeholder: "Required field",
+    icon: <SearchIcon />,
+    iconPlacement: "right",
   },
 };

@@ -40,6 +40,7 @@ export const EventName = {
   VIDEO_SHARED: "Video Shared",
   VIDEO_REPORT: "Video Reported",
   COMMENT_REPORT: "Comment Reported",
+  COMMENT_DELETE: "Comment Deleted",
   COMMUNITY_SHARED: "Community Shared",
   LINKOUTS_VIEWED: "Link Viewed",
   LINKOUTS_CLICKED: "Link Clicked",

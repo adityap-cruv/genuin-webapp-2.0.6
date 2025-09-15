@@ -55,7 +55,8 @@ export function SidebarActions({
     >
       {SideBarActionLinks.map((links, index) => {
         // Skip notification and Profile link if user is not logged in
-        if (links.type === "profile" && !user) return null;
+        if ((links.type === "profile" || links.type === "posts") && !user)
+          return null;
 
         // Use SearchSidebarAction for search type when showSearch is true
         if (links.type === "search") {

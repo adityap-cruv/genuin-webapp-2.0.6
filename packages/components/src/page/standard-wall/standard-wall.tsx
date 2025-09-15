@@ -10,8 +10,10 @@ import { SettingsPage } from "@genuin/components/organisms/settings";
 import { Explore } from "../explore";
 import { ComponentProps, useEffect } from "react";
 import { useRouter } from "@genuin/components/hooks/use-router";
-import ErrorBoundary from "./error-boundary";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+
+import { MyVideos } from "@genuin/components/organisms/my-videos";
+import { CreatePost } from "@genuin/components/organisms/create-post";
 
 type StandardWallProps = {
   /**
@@ -49,65 +51,79 @@ export function StandardWall({
   return (
     <div className="gencl:w-full gencl:h-full gencl:relative" {...restProps}>
       <Router hook={embedRouter?.hook}>
-        <ErrorBoundary>
-          <BaseLayout variant={baseLayoutVariant}>
-            <Route path={buildPageUrl({ type: "home" })}>
-              <Feed feedType="HOME" />
-            </Route>
-            <Route path={buildPageUrl({ type: "latest" })}>
-              <Feed feedType="LATEST" />
-            </Route>
-            <Route path={buildPageUrl({ type: "popular" })}>
-              <Feed feedType="POPULAR" />
-            </Route>
-            <Route
-              path={buildPageUrl({ type: "profile", asRoutePattern: true })}
-            >
-              {(params) => {
-                return (
-                  <ProfileDetails
-                    userName={(params as any).slug}
-                    forBrand={false}
-                  />
-                );
-              }}
-            </Route>
-            <Route path={buildPageUrl({ type: "brand", asRoutePattern: true })}>
-              {(params) => {
-                return (
-                  <ProfileDetails
-                    userName={(params as any).slug}
-                    forBrand={true}
-                  />
-                );
-              }}
-            </Route>
-            <Route path={buildPageUrl({ type: "group", asRoutePattern: true })}>
-              {(params) => {
-                return <GroupDetailsPage slug={(params as any).slug} />;
-              }}
-            </Route>
-            <Route
-              path={buildPageUrl({ type: "community", asRoutePattern: true })}
-            >
-              {(params) => {
-                return <CommunityDetails slug={(params as any).slug} />;
-              }}
-            </Route>
-            <Route path={buildPageUrl({ type: "video", asRoutePattern: true })}>
-              {(params) => {
-                return <VideoPage videoId={(params as any).slug} />;
-              }}
-            </Route>
-            <Route path={buildPageUrl({ type: "settings" })}>
-              <SettingsPage />
-            </Route>
-            <Route path={buildPageUrl({ type: "explore" })}>
-              <Explore />
-            </Route>
-            <Route path="/default-comp">{defaultComponent}</Route>
-          </BaseLayout>
-        </ErrorBoundary>
+        <BaseLayout variant={baseLayoutVariant}>
+          <Route path={buildPageUrl({ type: "home" })}>
+            <Feed feedType="HOME" />
+          </Route>
+          <Route path={buildPageUrl({ type: "latest" })}>
+            <Feed feedType="LATEST" />
+          </Route>
+          <Route path={buildPageUrl({ type: "popular" })}>
+            <Feed feedType="POPULAR" />
+          </Route>
+          <Route path={buildPageUrl({ type: "profile", asRoutePattern: true })}>
+            {(params) => {
+              return (
+                <ProfileDetails
+                  userName={(params as any).slug}
+                  forBrand={false}
+                />
+              );
+            }}
+          </Route>
+          <Route path={buildPageUrl({ type: "brand", asRoutePattern: true })}>
+            {(params) => {
+              return (
+                <ProfileDetails
+                  userName={(params as any).slug}
+                  forBrand={true}
+                />
+              );
+            }}
+          </Route>
+          <Route path={buildPageUrl({ type: "group", asRoutePattern: true })}>
+            {(params) => {
+              return <GroupDetailsPage slug={(params as any).slug} />;
+            }}
+          </Route>
+          <Route
+            path={buildPageUrl({ type: "community", asRoutePattern: true })}
+          >
+            {(params) => {
+              return <CommunityDetails slug={(params as any).slug} />;
+            }}
+          </Route>
+          <Route path={buildPageUrl({ type: "video", asRoutePattern: true })}>
+            {(params) => {
+              return <VideoPage videoId={(params as any).slug} />;
+            }}
+          </Route>
+          <Route path={buildPageUrl({ type: "settings" })}>
+            <SettingsPage />
+          </Route>
+          <Route path={buildPageUrl({ type: "explore" })}>
+            <Explore />
+          </Route>
+          <Route path={buildPageUrl({ type: "posts-create" })}>
+            <CreatePost />
+          </Route>
+          <Route path={buildPageUrl({ type: "posts" })}>
+            <MyVideos />
+          </Route>
+          <Route path={buildPageUrl({ type: "post", asRoutePattern: true })}>
+            {(params) => {
+              return <CreatePost postId={(params as any).slug} />;
+            }}
+          </Route>
+          <Route
+            path={buildPageUrl({ type: "posts-draft", asRoutePattern: true })}
+          >
+            {(params) => {
+              return <CreatePost draftId={(params as any).slug} />;
+            }}
+          </Route>
+          <Route path="/default-comp">{defaultComponent}</Route>
+        </BaseLayout>
       </Router>
     </div>
   );

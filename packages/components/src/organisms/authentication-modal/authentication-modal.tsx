@@ -48,7 +48,7 @@ export function AuthenticationModal({
 
   const compactSteps = ["DELETE_CONFIRMATION", "SIGN_OUT", "REMOVE_PICTURE"]; // Steps that use reduced padding and width
 
-  const expandedSteps = ["EDIT_PROFILE_PICTURE"]; // Steps that use expand width
+  const expandedSteps = ["EDIT_PROFILE_PICTURE", "MEDIA_UPLOAD"]; // Steps that use expand width
 
   const variant = compactSteps.includes(step)
     ? "compact"

@@ -121,6 +121,34 @@ export function setQueryDataForNewComment(
   );
 }
 
+/**
+ * This function removes the deleted comment from the query data.
+ * @param videoId
+ * @param contentId
+ */
+export function deleteCommentFromQueryData({
+  videoId,
+  commentId,
+}: {
+  videoId: string;
+  commentId: string;
+}) {
+  // Update the cached comments data by removing the deleted comment
+  queryClient.setQueryData(getQueryKeyForComments(videoId), (oldData: any) => {
+    if (!oldData) return oldData;
+
+    return {
+      ...oldData,
+      pages: oldData.pages.map((page: any) => ({
+        ...page,
+        comments: page.comments.filter(
+          (comment: any) => comment.commentId !== commentId
+        ),
+      })),
+    };
+  });
+}
+
 async function fetchMentionUser(
   chatId: string,
   queryString: string,

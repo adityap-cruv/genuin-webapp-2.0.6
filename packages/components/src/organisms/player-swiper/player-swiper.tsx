@@ -1,7 +1,7 @@
 "use client";
 import "swiper/css";
 import { Button } from "@genuin/ui/button";
-import { SwiperSlide, useSwiper } from "swiper/react";
+import { SwiperSlide } from "swiper/react";
 import { useBoolean } from "usehooks-ts";
 
 import { Actions } from "@genuin/components/molecules/actions";
@@ -12,12 +12,14 @@ import { Comments, CommentsDialog } from "../../molecules/comments";
 
 import { Player } from "./player";
 import { SwiperImplementation } from "./swiper-implementation";
-import { ComponentProps, useState } from "react";
+import { SectionsTabs } from "./sections-tabs";
+import { ComponentProps, useEffect, useState } from "react";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { abbreviateNumber, cn } from "@genuin/ui/lib/utils";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { ChevronDownIcon, ChevronUpIcon } from "@genuin/ui/icons";
+import { Swiper } from "swiper/types";
 
 type PlayerListPropsType = {
   posts: PostDetailsType[];
@@ -42,9 +44,8 @@ type PlayerListPropsType = {
    * @param videoId - The video id
    * @param increment - true to increment, false to decrement
    */
-  onCommentCountChange?: ComponentProps<
-    typeof Comments
-  >["onCommentCountChange"];
+  onCommentCountChange?: ComponentProps<typeof Player>["onCommentCountChange"];
+  isSectioned?: boolean;
 };
 
 // TODO: This component is using feed context, which is not ideal. Remove this dep of FeedContext in future.
@@ -57,6 +58,7 @@ export function PlayerList({
   onGroupJoinStatusChange,
   onGroupSubscriptionChange,
   onCommentCountChange,
+  isSectioned = false,
 }: PlayerListPropsType) {
   const { showExpandView, activeIndex } = useFeedContext();
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
@@ -68,55 +70,193 @@ export function PlayerList({
   } = useEmbedConfigs();
   const embedDetails = useSafeEmbedContext();
 
+  // Section-related state
+  const sectionList = embedDetails?.embedEventBus.getContext().sectionList;
+  const selectedSection =
+    embedDetails?.embedEventBus.getContext().selectedSection;
+
+  // Swiper state management
+  const [horizontalSwiper, setHorizontalSwiper] = useState<Swiper | null>(null);
+  const [verticalSwipers, setVerticalSwipers] = useState<
+    Record<number, Swiper>
+  >({});
+  const [activeHorizontalIndex, setActiveHorizontalIndex] = useState(0);
+
+  // Effect to navigate to selected section when it changes (only for sectioned mode)
+  useEffect(() => {
+    if (isSectioned && horizontalSwiper && selectedSection && sectionList) {
+      const selectedSectionIndex = sectionList.findIndex(
+        (section: any) => section.id === selectedSection.id
+      );
+      if (
+        selectedSectionIndex !== -1 &&
+        selectedSectionIndex !== horizontalSwiper.activeIndex
+      ) {
+        horizontalSwiper.slideTo(selectedSectionIndex);
+      }
+    }
+  }, [isSectioned, horizontalSwiper, selectedSection, sectionList]);
+
+  // Handler for section tab click
+  const handleSectionSelect = (section: any) => {
+    if (embedDetails) {
+      embedDetails.updateSelectedSection(section);
+    }
+  };
+
+  // Get the active swiper for navigation buttons
+  const activeSwiper = isSectioned
+    ? verticalSwipers[activeHorizontalIndex]
+    : verticalSwipers[0];
+
+  // Render sectioned swiper content
+  const renderSectionedContent = () => (
+    <SwiperImplementation
+      direction="horizontal"
+      className={cn(
+        "gencl:h-full gencl:aspect-reel",
+        isMobile && "gencl:h-full gencl:w-full"
+      )}
+      onSwiper={setHorizontalSwiper}
+      onActiveIndexChange={(swiper) => {
+        setActiveHorizontalIndex(swiper.activeIndex);
+        if (sectionList) {
+          embedDetails?.updateSelectedSection(sectionList[swiper.activeIndex]);
+        }
+      }}
+    >
+      {sectionList?.map((item, sectionIdx) => (
+        <SwiperSlide key={item?.id || sectionIdx}>
+          {({ isActive: isHorizontalActive }) => (
+            <SwiperImplementation
+              className="gencl:h-full"
+              initialSlide={startIndex}
+              onSwiper={(swiper) => {
+                setVerticalSwipers((prev) => ({
+                  ...prev,
+                  [sectionIdx]: swiper,
+                }));
+              }}
+              onActiveIndexChange={(swiper) => {
+                onActiveIndexChange?.(swiper.activeIndex);
+              }}
+            >
+              {posts.map((post, index) => (
+                <SwiperSlide key={post.video.id}>
+                  {({
+                    isActive: isVerticalActive,
+                    isNext: isVerticalNext,
+                    isPrev: isVerticalPrev,
+                    isVisible: isVerticalVisible,
+                  }) => {
+                    // Combine both swiper states to determine true active state
+                    const isTrulyActive =
+                      isVerticalActive && isHorizontalActive;
+                    const isTrulyNext = isVerticalNext && isHorizontalActive;
+                    const isTrulyPrev = isVerticalPrev && isHorizontalActive;
+                    const isTrulyVisible =
+                      isVerticalVisible && isHorizontalActive;
+
+                    return (
+                      <div className="gencl:h-full gencl:w-full">
+                        <Player
+                          isActive={isTrulyActive}
+                          isNext={isTrulyNext}
+                          isPrev={isTrulyPrev}
+                          isVisible={isTrulyVisible}
+                          post={post}
+                          isSectioned={isSectioned}
+                          onCommunityJoinStatusChange={
+                            onCommunityJoinStatusChange
+                          }
+                          onGroupJoinStatusChange={onGroupJoinStatusChange}
+                          onGroupSubscriptionChange={onGroupSubscriptionChange}
+                          onReactionStateChange={onReactionStateChange}
+                          onCommentCountChange={onCommentCountChange}
+                          index={index}
+                        />
+                      </div>
+                    );
+                  }}
+                </SwiperSlide>
+              ))}
+            </SwiperImplementation>
+          )}
+        </SwiperSlide>
+      ))}
+    </SwiperImplementation>
+  );
+
+  // Render non-sectioned swiper content
+  const renderNonSectionedContent = () => (
+    <SwiperImplementation
+      initialSlide={startIndex}
+      className={cn(
+        "gencl:h-full gencl:aspect-reel",
+        isMobile && "gencl:h-full gencl:w-full"
+      )}
+      onSwiper={(swiper) => {
+        setVerticalSwipers((prev) => ({
+          ...prev,
+          [0]: swiper,
+        }));
+      }}
+      onActiveIndexChange={(swiper) => {
+        onActiveIndexChange?.(swiper.activeIndex);
+      }}
+    >
+      {posts.map((post, index) => (
+        <SwiperSlide key={post.video.id}>
+          {({ isActive, isNext, isPrev, isVisible }) => (
+            <div className="gencl:h-full gencl:w-full">
+              <Player
+                isActive={isActive}
+                isNext={isNext}
+                isPrev={isPrev}
+                isVisible={isVisible}
+                post={post}
+                isSectioned={isSectioned}
+                onCommunityJoinStatusChange={onCommunityJoinStatusChange}
+                onGroupJoinStatusChange={onGroupJoinStatusChange}
+                onGroupSubscriptionChange={onGroupSubscriptionChange}
+                onReactionStateChange={onReactionStateChange}
+                onCommentCountChange={onCommentCountChange}
+                index={index}
+              />
+            </div>
+          )}
+        </SwiperSlide>
+      ))}
+    </SwiperImplementation>
+  );
+
   return (
-    <div className="gencl:flex gencl:justify-center gencl:h-full gencl:w-full gencl:gap-6">
+    <div className="gencl:h-full gencl:w-full gencl:flex gencl:gap-6 gencl:justify-center">
       <div
         className={cn(
-          "gencl:flex gencl:justify-center gencl:gap-6",
-          isMobile && "gencl:h-full gencl:w-full"
+          "gencl:flex gencl:justify-center gencl:gap-6 gencl:h-full gencl:w-full gencl:sm:w-fit!"
         )}
       >
-        <SwiperImplementation
-          initialSlide={startIndex}
+        <div
           className={cn(
-            "gencl:h-full gencl:aspect-reel",
+            "gencl:h-full gencl:aspect-reel gencl:relative",
             isMobile && "gencl:h-full gencl:w-full"
           )}
-          onActiveIndexChange={(swiper) => {
-            onActiveIndexChange?.(swiper.activeIndex);
-          }}
         >
-          {posts.map((post, index) => {
-            return (
-              <SwiperSlide key={post.video.id}>
-                {({ isActive, isNext, isPrev, isVisible }) => {
-                  return (
-                    <div className="gencl:h-full gencl:w-full">
-                      <Player
-                        isActive={isActive}
-                        isNext={isNext}
-                        isPrev={isPrev}
-                        isVisible={isVisible}
-                        post={post}
-                        onCommunityJoinStatusChange={
-                          onCommunityJoinStatusChange
-                        }
-                        onGroupJoinStatusChange={onGroupJoinStatusChange}
-                        onGroupSubscriptionChange={onGroupSubscriptionChange}
-                        onReactionStateChange={onReactionStateChange}
-                        onCommentCountChange={onCommentCountChange}
-                        index={index}
-                      />
-                    </div>
-                  );
-                }}
-              </SwiperSlide>
-            );
-          })}
-          {/* in case of expand view show navigation buttons. in case of mobile view don't show navigation. */}
-          {showExpandView && !isMobile && <NavigationButton />}
-        </SwiperImplementation>
+          {isSectioned && (
+            <SectionsTabs onSectionSelect={handleSectionSelect} />
+          )}
+          {isSectioned ? renderSectionedContent() : renderNonSectionedContent()}
+        </div>
       </div>
+
+      {/* Navigation buttons for expand view (not on mobile) */}
+      {showExpandView && !isMobile && (
+        <NavigationButton
+          swiper={activeSwiper ?? undefined}
+          postsLength={posts.length}
+        />
+      )}
 
       {!isMobile && posts[activeIndex] && (
         <Actions
@@ -169,6 +309,7 @@ export function PlayerList({
                     shareUrl={posts[activeIndex]?.video.shareUrl}
                     defaultOpen={value}
                     key={"feed-comment-box" + posts[activeIndex]?.video.id}
+                    onCommentCountChange={onCommentCountChange}
                     onOpenChange={(value) => {
                       setValue(value);
                     }}
@@ -221,8 +362,25 @@ export function PlayerList({
   );
 }
 
-function NavigationButton() {
-  const swiper = useSwiper();
+function NavigationButton({
+  swiper,
+  postsLength,
+}: {
+  swiper?: Swiper;
+  postsLength?: number;
+}) {
+  // State to force re-render when swiper state changes
+  const [, forceUpdate] = useState({});
+
+  useEffect(() => {
+    if (swiper && swiper.update) {
+      swiper.update();
+      forceUpdate({});
+    }
+  }, [postsLength, swiper]);
+
+  if (!swiper) return null;
+
   return (
     <div className="gencl:z-50 gencl:text-white gencl:space-y-4 gencl:fixed gencl:right-7.5 gencl:top-1/2 gencl:-translate-y-1/2">
       <Button

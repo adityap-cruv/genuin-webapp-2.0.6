@@ -150,6 +150,7 @@ export const ReactionButton = React.memo(function ReactionButton({
       return (
         <Link href={shareUrl} target="_blank">
           {button}
+          {showReactionCount && count}
         </Link>
       );
     }

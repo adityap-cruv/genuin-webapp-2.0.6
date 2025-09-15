@@ -23,8 +23,6 @@ import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-d
 import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
 import { FeedViewPropsType } from "./feed.type";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
-import { PlayerListWithSection } from "@genuin/components/organisms/player-swiper/player-swiper-with-sections";
-import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 
 /**
  * Internal core presentation component for displaying feed data.
@@ -187,7 +185,7 @@ export function FeedViewCore({
       <div
         id="gencl-feed-view"
         className={cn(
-          "gencl:flex gencl:w-full gencl:sm:pr-4 gencl:h-full gencl:gap-4",
+          "gencl:flex gencl:w-full gencl:sm:pr-4! gencl:pt-0 gencl:sm:pt-4! gencl:h-full gencl:gap-4",
           {
             "gencl:fixed gencl:top-0 gencl:py-0! gencl:flex gencl:items-center gencl:mt-0 gencl:z-50 gencl:left-0 gencl:h-full gencl:w-full gencl:bg-black":
               showExpandView,
@@ -196,14 +194,7 @@ export function FeedViewCore({
         )}
         {...restProps}
       >
-        {isSectioned ? (
-          <PlayerListWithSection
-            isSectioned={isSectioned}
-            {...playerListProps}
-          />
-        ) : (
-          <PlayerList {...playerListProps} />
-        )}
+        <PlayerList isSectioned={isSectioned} {...playerListProps} />
         {showSidePanel && (
           <PostSidePanel
             onGroupJoinStatusChange={handleGroupJoinStatusChange}

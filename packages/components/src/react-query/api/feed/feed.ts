@@ -49,21 +49,113 @@ async function fetchFeed(
     ? encodeURI(getDeviceId() as string)
     : undefined;
 
-  const contextualFeedParamsBody = {
-    ...(options?.contextualParams?.page_context && {
-      page_context: options?.contextualParams?.page_context,
-    }),
-    ...((options?.contextualParams?.geo?.lat ||
-      options?.contextualParams?.geo?.long) && {
-      geo: {
-        lat: parseFloat(options.contextualParams.geo.lat || ""),
-        long: parseFloat(options.contextualParams.geo.long || ""),
+    const contextualFeedParamsBody = {
+      // Basic context
+      ...(options?.contextualParams?.page_context && {
+        page_context: options?.contextualParams?.page_context,
+      }),
+      ...(options?.contextualParams?.previous_page_context && {
+        previous_page_context: options?.contextualParams?.previous_page_context,
+      }),
+      ...(options?.contextualParams?.user_context && {
+        user_context: options?.contextualParams?.user_context,
+      }),
+      
+      // Geographic context
+      ...((options?.contextualParams?.geo?.lat ||
+        options?.contextualParams?.geo?.long) && {
+        geo: {
+          lat: typeof options.contextualParams.geo.lat === 'number' 
+            ? options.contextualParams.geo.lat 
+            : parseFloat(String(options.contextualParams.geo.lat || '')),
+          long: typeof options.contextualParams.geo.long === 'number' 
+            ? options.contextualParams.geo.long 
+            : parseFloat(String(options.contextualParams.geo.long || '')),
+          ...(options.contextualParams.geo.radius_limit && {
+            radius_limit: options.contextualParams.geo.radius_limit,
+          }),
+        },
+      }),
+      
+      // Place context
+      ...(options?.contextualParams?.place && 
+        (options.contextualParams.place.country || 
+         options.contextualParams.place.state || 
+         options.contextualParams.place.city || 
+         options.contextualParams.place.zipcode) && {
+        place: {
+          ...(options.contextualParams.place.country && {
+            country: options.contextualParams.place.country,
+          }),
+          ...(options.contextualParams.place.state && {
+            state: options.contextualParams.place.state,
+          }),
+          ...(options.contextualParams.place.city && {
+            city: options.contextualParams.place.city,
+          }),
+          ...(options.contextualParams.place.zipcode && {
+            zipcode: options.contextualParams.place.zipcode,
+          }),
+        },
+      }),
+      
+      // User segmentation
+      ...(options?.contextualParams?.user_segments && 
+        (options.contextualParams.user_segments.age || 
+         options.contextualParams.user_segments.min_age || 
+         options.contextualParams.user_segments.max_age || 
+         options.contextualParams.user_segments.segment || 
+         options.contextualParams.user_segments.gender || 
+         options.contextualParams.user_segments.race) && {
+        user_segments: {
+          ...(options.contextualParams.user_segments.age && {
+            age: options.contextualParams.user_segments.age,
+          }),
+          ...(options.contextualParams.user_segments.min_age && {
+            min_age: options.contextualParams.user_segments.min_age,
+          }),
+          ...(options.contextualParams.user_segments.max_age && {
+            max_age: options.contextualParams.user_segments.max_age,
+          }),
+          ...(options.contextualParams.user_segments.segment && {
+            segment: options.contextualParams.user_segments.segment,
+          }),
+          ...(options.contextualParams.user_segments.gender && {
+            gender: options.contextualParams.user_segments.gender,
+          }),
+          ...(options.contextualParams.user_segments.race && {
+            race: options.contextualParams.user_segments.race,
+          }),
+        },
+      }),
+      
+      // Targeting arrays
+      ...(options?.contextualParams?.brands_ids?.length && {
+        brands_ids: options.contextualParams.brands_ids,
+      }),
+      ...(options?.contextualParams?.user_interests?.length && {
+        user_interests: options.contextualParams.user_interests,
+      }),
+      ...(options?.contextualParams?.posted_by_user_ids?.length && {
+        posted_by_user_ids: options.contextualParams.posted_by_user_ids,
+      }),
+      ...(options?.contextualParams?.community_ids?.length && {
+        community_ids: options.contextualParams.community_ids,
+      }),
+      ...(options?.contextualParams?.loop_ids?.length && {
+        loop_ids: options.contextualParams.loop_ids,
+      }),
+      
+      // Time context
+      ...(options?.contextualParams?.time && {
+        time: options.contextualParams.time,
+      }),
+      
+      // URL context (always include current URL)
+      ...{
+        url: window.location.href,
       },
-    }),
-    ...{
-      url: window.location.href,
-    },
-  };
+    }
 
   // Select URL and build requestBody based on options
   let url: string;

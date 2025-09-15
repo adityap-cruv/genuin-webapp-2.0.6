@@ -9,12 +9,13 @@ import { AuthUser } from "@genuin/components/types/auth";
  * @returns The parsed user object.
  */
 
-const KsCbStatus = ["Pending", "Requested", "Accepted"] as const;
+const KsCbStatus = ["Pending", "Requested", "Success"] as const;
 
 export function parseUserData(
   data: any,
   accessToken: string,
-  refreshToken: string
+  refreshToken: string,
+  autoLoginToken?: string
 ): AuthUser {
   return {
     id: data.user_id,
@@ -38,5 +39,6 @@ export function parseUserData(
     refreshToken,
     birth: data.birthday,
     usernameSet: !data.is_username_generated,
+    autoLoginToken
   };
 }
