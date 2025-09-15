@@ -49,7 +49,10 @@ export function CommentsDialog({
       <DialogTrigger className={className} {...props}>
         {children}
       </DialogTrigger>
-      <DialogContent className="gencl:max-h-[80vh] gencl:flex gencl:flex-col gencl:overflow-clip gencl:h-full gencl:p-0 gencl:gap-0">
+      <DialogContent
+        onOpenAutoFocus={(e) => e.preventDefault()}
+        className="gencl:max-h-[80vh] gencl:flex gencl:flex-col gencl:overflow-clip gencl:h-full gencl:p-0 gencl:gap-0"
+      >
         <DialogHeader className="gencl:py-4 gencl:text-body-0-semi-bold">
           Comments({commentCount})
         </DialogHeader>
