@@ -8,7 +8,7 @@ export { auth }
 
 // Export middleware configuration using the updated format for Next.js 15
 // This replaces the deprecated export const config = { ... }
-export const matcher = ['/((?!api|_next/static|_next/image|favicon.ico|sellers.json).*)']
+export const matcher = ['/((?!api|_next/static|_next/image|favicon.ico|sellers.json|ads.txt).*)']
 
 /**
  * Gets the effective host to use, checking for an override in environment variables
