@@ -128,7 +128,7 @@
       const GenuinClass = sdk.default || sdk.Genuin
 
       if (GenuinClass) {
-        return GenuinClass.legacyInit(config)
+        return GenuinClass.newInit(config)
       }
       throw new Error('Genuin SDK not properly loaded')
     })

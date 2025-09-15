@@ -89,6 +89,7 @@ export type PlayerProps = ComponentProps<"video"> & {
     currentTime: number,
     latency: number
   ) => void; // Add onVideoStart prop
+  onMutedChange?: (muted: boolean) => void;
 };
 
 type VideoPlayerStateRef = {
@@ -132,6 +133,7 @@ export const VideoPlayer = memo(function VideoPlayer({
   onAdSkipped,
   onAllAdsCompleted,
   onSeeked,
+  onMutedChange,
   ...props
 }: PlayerProps) {
   const internalVideoRef = useRef<HTMLVideoElement>(null);
@@ -373,12 +375,34 @@ export const VideoPlayer = memo(function VideoPlayer({
     [onOpenPlayerReady, adUrl, setupAdPlayerEventListeners]
   );
 
+  const updatePlayerMutedState = useCallback(
+    (muted: boolean) => {
+      if (videoRef.current) {
+        videoRef.current.muted = muted;
+        onMutedChange?.(muted);
+      }
+    },
+    [onMutedChange, videoRef]
+  );
+
   useEffect(() => {
     const player = playerRef.current;
     playRef.current = play;
     if (play) {
       const active = player?.activeElement();
-      active?.play()
+      active
+        ?.play()
+        .then(() => {
+          // Auto-play started
+        })
+        .catch((error) => {
+          if (error?.name === "NotAllowedError") {
+            updatePlayerMutedState(true);
+            active.play().catch((err: any) => {
+              console.warn("Could not autoplay video:", err);
+            });
+          }
+        });
     } else {
       // try everything to pause the video and ad.
       if (player?.isAd()) {

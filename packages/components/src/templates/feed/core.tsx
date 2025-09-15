@@ -139,28 +139,28 @@ export function FeedViewCore({
       hideGestureOverlay("SWIPE");
       handleSwipeCount(newIndex);
 
-      // CHECK ANY BETTER APPROACH
-      // Ensure video plays in expand view
-      if (showExpandView && videos && videos[newIndex]) {
-        // Give a small delay to allow DOM to update
-        setTimeout(() => {
-          const videoId = videos[newIndex]?.video?.id;
-          if (videoId) {
-            const playerElement = document.getElementById(
-              `feed-player--${videoId}`
-            );
-            if (
-              playerElement &&
-              playerElement instanceof HTMLVideoElement &&
-              playerElement.paused
-            ) {
-              playerElement
-                .play()
-                .catch((err) => console.warn("Could not autoplay video:", err));
-            }
-          }
-        }, 100);
-      }
+      // // CHECK ANY BETTER APPROACH
+      // // Ensure video plays in expand view
+      // if (showExpandView && videos && videos[newIndex]) {
+      //   // Give a small delay to allow DOM to update
+      //   setTimeout(() => {
+      //     const videoId = videos[newIndex]?.video?.id;
+      //     if (videoId) {
+      //       const playerElement = document.getElementById(
+      //         `feed-player--${videoId}`
+      //       );
+      //       if (
+      //         playerElement &&
+      //         playerElement instanceof HTMLVideoElement &&
+      //         playerElement.paused
+      //       ) {
+      //         playerElement
+      //           .play()
+      //           .catch((err) => console.warn("Could not autoplay video:", err));
+      //       }
+      //     }
+      //   }, 100);
+      // }
     },
     [setActiveIndex, hideGestureOverlay, showExpandView, videos]
   );

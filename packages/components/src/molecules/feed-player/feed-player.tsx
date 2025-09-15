@@ -122,6 +122,18 @@ export const FeedPlayer = memo(function FeedPlayer({
     [videoId]
   );
 
+  const handleMutedChange = useCallback(
+    (isMuted: boolean) => {
+      if (isMuted) {
+        mute(false);
+      } else {
+        unmute(false);
+        audioManager.notifyPlaying(id);
+      }
+    },
+    [mute, unmute, id]
+  );
+
   const handleTimeUpdate = useCallback((event: any) => {
     onTimeUpdate?.(event);
     const target = event.target as HTMLVideoElement;
@@ -298,6 +310,7 @@ export const FeedPlayer = memo(function FeedPlayer({
       onAdSkipped={handleAdSkipped}
       onAdError={handleAdError}
       onAdClicked={handleAdClicked}
+      onMutedChange={handleMutedChange}
       {...props}
     />
   );
