@@ -1,0 +1,70 @@
+{
+  "version": "1.0",
+  "contact_email": "development@begenuin.com",
+  "contact_address": "Genuin, 450 Lexington Ave, New York, NY 10017, United States",
+  "sellers": [
+    {
+      "seller_id": "2314",
+      "seller_type": "PUBLISHER",
+      "name": "Carlistmy",
+      "domain": "carlist.my",
+      "is_confidential": 0
+    },
+    {
+      "seller_id": "2556",
+      "seller_type": "PUBLISHER",
+      "name": "Mobil123",
+      "domain": "mobil123.com",
+      "is_confidential": 0
+    },
+    {
+      "seller_id": "2557",
+      "seller_type": "PUBLISHER",
+      "name": "one2car",
+      "domain": "one2car.com",
+      "is_confidential": 0
+    },
+    {
+      "seller_id": "2558",
+      "seller_type": "PUBLISHER",
+      "name": "Carmudi",
+      "domain": "carmudi.co.id",
+      "is_confidential": 0
+    },
+    {
+      "seller_id": "2357",
+      "seller_type": "PUBLISHER",
+      "name": "TED",
+      "domain": "ted.com",
+      "is_confidential": 0
+    },
+    {
+      "seller_id": "2023",
+      "seller_type": "PUBLISHER",
+      "name": "Buzz Continuum",
+      "domain": "buzz.skyscape.com",
+      "is_confidential": 0
+    },
+    {
+      "seller_id": "2793",
+      "seller_type": "PUBLISHER",
+      "name": "Indian Express",
+      "domain": "indianexpress.com",
+      "is_confidential": 0
+    },
+    {
+      "seller_id": "2790",
+      "seller_type": "PUBLISHER",
+      "name": "Price",
+      "domain": "price.com",
+      "is_confidential": 0
+    },
+    {
+      "seller_id": "99",
+      "seller_type": "PUBLISHER",
+      "name": "Genuin Video Network",
+      "domain": "genuin.com",
+      "is_confidential": 0
+    }
+  ]
+}
