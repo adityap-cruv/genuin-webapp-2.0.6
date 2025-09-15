@@ -32,6 +32,10 @@ export const API_PATHS = {
    */
   FEED_CREATE_COMMENT: "/api/v3/comment/create",
   /**
+   * Api path to delete a comment.
+   */
+  FEED_DELETE_COMMENT: "/api/v3/conversation/video/comment",
+  /**
    * Api path to fetch group details.
    */
   GROUP_DETAILS: "/api/v3/conversation/details",

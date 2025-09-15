@@ -87,16 +87,7 @@ export function loadNewEmbed(
               onSignIn={() => {}}
               onSignOut={() => {}}
               onUpdateUser={() => {}}
-              user={
-                user
-                  ? {
-                      ...user,
-                      ksCbRequestStatus: getKsCbRequestStatus(
-                        user.ksCbRequestStatus,
-                      ),
-                    }
-                  : undefined
-              }>
+              user={user ?? undefined}>
               <AnalyticsProvider isWebSDK={true}>
                 <Suspense fallback={<EmbedSkeleton />}>
                   {embedData.style === 'standard_wall' ? (

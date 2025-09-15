@@ -18,6 +18,7 @@ import { ComponentProps } from "react";
 import { useAuthContext } from "@genuin/components/context/auth";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { DeleteComment } from "../delete-comment";
 
 export type CommentItemProps = {
   comment: CommentListType[number];
@@ -25,6 +26,9 @@ export type CommentItemProps = {
   onReactionStateChange: ComponentProps<
     typeof ReactionButton
   >["onReactionStateChange"];
+  onCommentCountChange?: ComponentProps<
+    typeof DeleteComment
+  >["onCommentCountChange"];
   videoId: string;
 };
 
@@ -33,6 +37,7 @@ export function CommentItem({
   comment,
   shareUrl,
   onReactionStateChange,
+  onCommentCountChange,
   videoId,
 }: CommentItemProps) {
   const { owner } = comment;
@@ -65,9 +70,14 @@ export function CommentItem({
               &nbsp; {comment.createdAt && getTimeAgo(comment.createdAt)}
             </span>
           </div>
-          {owner.memberId !== user?.id && (
+
+          {user && (
             <CommentMenu
               contentId={comment.commentId}
+              ownerId={owner.memberId}
+              userId={user?.id}
+              videoId={videoId}
+              onCommentCountChange={onCommentCountChange}
               className={cn(
                 "gencl:block",
                 !isMobile &&

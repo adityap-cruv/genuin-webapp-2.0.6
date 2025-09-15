@@ -1,3 +1,5 @@
+import { ksCbRequestStatusType } from '@genuin/components/types/roles'
+
 // Define a type for the SDK API
 export type SDKAPI = {
   initialize: (config: SDKConfig) => void
@@ -434,7 +436,7 @@ export type User = {
 }
 
 export type AuthUser = {
-  id?: string
+  id?: string  
   accessToken: string
   bio?: string
   email?: string
@@ -452,7 +454,7 @@ export type AuthUser = {
    * Token to refresh accessToken.
    */
   refreshToken?: string
-  ksCbRequestStatus: number
+  ksCbRequestStatus: ksCbRequestStatusType
   /**
    * if user is brand user.
    */

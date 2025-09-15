@@ -7,12 +7,17 @@ import {
   handleReactionStateChangeInComments,
   useComments,
 } from "@genuin/components/react-query/api/comments";
+
 import { CommentItem, CommentsItemSkeleton } from "./comment-item";
+import { DeleteComment } from "../delete-comment";
 
 type CommentListProps = {
   videoId: string;
   showCloseButton: boolean;
   shareUrl: string;
+  onCommentCountChange?: ComponentProps<
+    typeof DeleteComment
+  >["onCommentCountChange"];
 } & ComponentProps<"div">;
 
 export function CommentsList({
@@ -20,6 +25,7 @@ export function CommentsList({
   showCloseButton,
   className,
   shareUrl,
+  onCommentCountChange,
   ...restProps
 }: CommentListProps) {
   const {
@@ -106,6 +112,7 @@ export function CommentsList({
               comment={comment}
               shareUrl={shareUrl}
               videoId={videoId}
+              onCommentCountChange={onCommentCountChange}
               onReactionStateChange={(isReacted) => {
                 handleReactionStateChangeInComments(
                   videoId,

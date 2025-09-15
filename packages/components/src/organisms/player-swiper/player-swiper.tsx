@@ -309,6 +309,7 @@ export function PlayerList({
                     shareUrl={posts[activeIndex]?.video.shareUrl}
                     defaultOpen={value}
                     key={"feed-comment-box" + posts[activeIndex]?.video.id}
+                    onCommentCountChange={onCommentCountChange}
                     onOpenChange={(value) => {
                       setValue(value);
                     }}

@@ -82,6 +82,7 @@ export function Comments({
           videoId={videoId}
           shareUrl={shareUrl}
           showCloseButton={showCloseButton}
+          onCommentCountChange={onCommentCountChange}
           className="gencl:pb-24 gencl:h-full"
         />
       </div>

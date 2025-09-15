@@ -45,4 +45,5 @@ export type AuthUser = {
    * Checks if user has accepted brand guidelines.
    */
   brandGuidelines?: boolean;
+  autoLoginToken?: string
 };

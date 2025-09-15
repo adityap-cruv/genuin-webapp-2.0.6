@@ -8,6 +8,7 @@ import {
   EmbedDataType,
   PlacementDataResponse,
 } from '@genuin/components/context/embed/embed.types'
+import { parseUserData } from '@genuin/components/react-query/api/authentication/parser'
 
 export type BrandDetailsResponse = BrandDetailsConfigType
 
@@ -185,13 +186,13 @@ export class APIService {
       }
 
       const data = await response.json()
-      const user = data.data as AuthUser
-      if (user) {
-        user.autoLoginToken = token
-        user.accessToken = response.headers.get('Gn-Access-Token') || token
-        user.refreshToken = response.headers.get('Gn-Refresh-Token') || token
+      const accessToken = response.headers.get('Gn-Access-Token') || token
+      const refreshToken = response.headers.get('Gn-Refresh-Token') || token
+      let user;
+      if (data) {
+        user = parseUserData(data.data, accessToken, refreshToken, token);
       }
-      return user
+      return user as AuthUser
     } catch (error) {
       const sdkError = this.errorHandler.handleError(
         ErrorType.AUTHENTICATION_ERROR,

@@ -66,6 +66,7 @@ export function CommentsDialog({
           showCloseButton={false}
           shareUrl={shareUrl}
           className="gencl:pt-4"
+          onCommentCountChange={onCommentCountChange}
         />
         <CommentInputBox
           className="gencl:absolute gencl:bottom-0"
