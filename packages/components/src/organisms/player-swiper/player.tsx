@@ -94,6 +94,7 @@ export function Player({
           <FeedPlayer
             videoId={post.video.id}
             src={post.video.source}
+            adUrl={post.video.adUrl ?? undefined}
             id={"feed-player--" + post.video.id}
             poster={post.video.thumbnail ?? ""}
             className={cn(

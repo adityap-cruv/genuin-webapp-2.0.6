@@ -38,6 +38,8 @@ export function EmbedProvider({
         activeIndex: 0,
         sectionList: [],
         isSectioned: false,
+        userIsFocused: true,
+        containerInView: true,
       }),
     []
   );
@@ -220,19 +222,36 @@ export function EmbedProvider({
     });
   }, [embedEventBus]);
 
-  // Observe the container for visibility changes to handle floating view behavior
+  // Observe the container for visibility changes to handle floating view behavior and track in-view status
   useEffect(() => {
     const element = container;
-    // if floating view is not enabled or element is not found, do nothing
-    if (!embedData.customization.is_floating_view || !element) return;
+    if (!element) return;
 
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
-        if (!entry.isIntersecting && embedData.customization.is_floating_view) {
+        const inView = entry.isIntersecting;
+        const currentContext = embedEventBus.getContext();
+
+        // Emit event if container in-view status changed
+        if (inView !== currentContext.containerInView) {
+          embedEventBus.emit(
+            "containerInViewChange",
+            undefined,
+            (currentContext) => ({
+              ...currentContext,
+              containerInView: inView,
+            })
+          );
+        }
+
+        // Handle floating view behavior only if enabled
+        if (!embedData.customization.is_floating_view) return;
+
+        if (!entry.isIntersecting) {
           changeActivePlayerType("pip");
         } else {
           const embedContext = embedEventBus.getContext();
-          // In case of new player-type is expand view don't close the the pip view yet. because intersection observer will be triggered again if expand-view opens.
+          // In case of new player-type is expand view don't close the pip view yet. because intersection observer will be triggered again if expand-view opens.
           if (embedContext.activePlayerType === "expand-view") return;
           changeActivePlayerType("embed");
         }
@@ -244,7 +263,32 @@ export function EmbedProvider({
     return () => {
       observer.disconnect();
     };
-  }, [container, changeActivePlayerType, embedData]);
+  }, [container, changeActivePlayerType, embedData, embedEventBus]);
+
+  // Track window focus state and update userIsFocused in embedEventBus
+  useEffect(() => {
+    const handleWindowFocus = () => {
+      embedEventBus.emit("userFocusChange", undefined, (currentContext) => ({
+        ...currentContext,
+        userIsFocused: true,
+      }));
+    };
+
+    const handleWindowBlur = () => {
+      embedEventBus.emit("userFocusChange", undefined, (currentContext) => ({
+        ...currentContext,
+        userIsFocused: false,
+      }));
+    };
+
+    window.addEventListener("focus", handleWindowFocus);
+    window.addEventListener("blur", handleWindowBlur);
+
+    return () => {
+      window.removeEventListener("focus", handleWindowFocus);
+      window.removeEventListener("blur", handleWindowBlur);
+    };
+  }, [embedEventBus]);
 
   return (
     <EmbedContext.Provider

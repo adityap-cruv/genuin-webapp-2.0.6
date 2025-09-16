@@ -97,6 +97,8 @@ type VideoPlayerStateRef = {
   midpointFired: boolean;
   thirdQuartileFired: boolean;
   videoWatchedFired: boolean;
+  videoStartFired: boolean;
+  shouldPlay: boolean;
 };
 
 type AdDataType = {
@@ -142,7 +144,6 @@ export const VideoPlayer = memo(function VideoPlayer({
   ]);
   const videoRef = internalVideoRef;
   const playerRef = useRef<OpenPlayerJS | null>(null);
-  const playRef = useRef(play);
   const [adStarted, setAdStarted] = useState(false);
 
   // Using refs for ad tracking (no UI updates needed)
@@ -164,9 +165,8 @@ export const VideoPlayer = memo(function VideoPlayer({
     allCompleted: false,
   });
 
-  const playerStateRef = useRef<
-    VideoPlayerStateRef & { videoStartFired: boolean }
-  >({
+  const playerStateRef = useRef<VideoPlayerStateRef>({
+    shouldPlay: play,
     firstQuartileFired: false,
     midpointFired: false,
     thirdQuartileFired: false,
@@ -204,6 +204,22 @@ export const VideoPlayer = memo(function VideoPlayer({
         console.warn("Player not available for event listeners");
         return;
       }
+
+      player.getElement().addEventListener("playererror", (e: any) => {
+        if (e.detail?.type === "Ads") {
+          const adsManager = player.getAd();
+          if (adsManager) {
+            adsManager.destroy();
+          }
+
+          if (playerStateRef.current.shouldPlay) {
+            playThePlayer();
+          } else {
+            // wait for all the callback stack in event loop to clear and then pause.
+            setTimeout(pauseThePlayer, 0);
+          }
+        }
+      });
 
       // Wait a bit for the player element to be ready
       setTimeout(() => {
@@ -385,35 +401,44 @@ export const VideoPlayer = memo(function VideoPlayer({
     [onMutedChange, videoRef]
   );
 
-  useEffect(() => {
+  const playThePlayer = useCallback(() => {
     const player = playerRef.current;
-    playRef.current = play;
-    if (play) {
-      const active = player?.activeElement();
-      active
-        ?.play()
-        .then(() => {
-          // Auto-play started
-        })
-        .catch((error) => {
-          if (error?.name === "NotAllowedError") {
-            updatePlayerMutedState(true);
-            active.play().catch((err: any) => {
-              console.warn("Could not autoplay video:", err);
-            });
-          }
-        });
-    } else {
-      // try everything to pause the video and ad.
-      if (player?.isAd()) {
-        player?.getAd()?.pause(); // Pause ad if playing
-      } else {
-        player?.getMedia().pause();
-      }
+    const active = player?.activeElement();
+    active
+      ?.play()
+      .then(() => {
+        // Auto-play started
+      })
+      .catch((error) => {
+        if (error?.name === "NotAllowedError") {
+          updatePlayerMutedState(true);
+          active.play().catch((err: any) => {
+            console.warn("Could not autoplay video:", err);
+          });
+        }
+      });
+  }, [updatePlayerMutedState]);
 
-      player?.pause();
+  const pauseThePlayer = useCallback(() => {
+    const player = playerRef.current;
+    // try everything to pause the video and ad.
+    if (player?.isAd()) {
+      player?.getAd()?.pause(); // Pause ad if playing
+    } else {
+      player?.getMedia().pause();
     }
-  }, [play, adStarted]);
+
+    player?.pause();
+  }, []);
+
+  useEffect(() => {
+    playerStateRef.current.shouldPlay = play;
+    if (play) {
+      playThePlayer();
+    } else {
+      pauseThePlayer();
+    }
+  }, [play, adStarted, playThePlayer, pauseThePlayer]);
 
   useEffect(() => {
     if (!videoRef.current) return;
@@ -451,6 +476,7 @@ export const VideoPlayer = memo(function VideoPlayer({
         thirdQuartileFired: false,
         videoWatchedFired: false,
         videoStartFired: false,
+        shouldPlay: false,
       };
 
       // Reset ad tracking
@@ -524,6 +550,7 @@ export const VideoPlayer = memo(function VideoPlayer({
           thirdQuartileFired: false,
           videoWatchedFired: false,
           videoStartFired: playerStateRef.current.videoStartFired,
+          shouldPlay: playerStateRef.current.shouldPlay,
         };
         return;
       }

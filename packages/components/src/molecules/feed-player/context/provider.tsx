@@ -12,6 +12,7 @@ import { AdInfoType, PlayerContext, PlayerContextType } from "./context";
 import mitt from "mitt";
 import { useBaseContext } from "@genuin/components/context/base";
 import { useAnalytics } from "@genuin/components/context/analytics";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { Swiper } from "swiper/types";
 
 type VideoProviderProps = {
@@ -79,6 +80,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   explicitLoop,
 }) => {
   const { brandDetails } = useBaseContext();
+  const embedDetails = useSafeEmbedContext();
   const playerRef = useRef<OpenPlayerJS | null>(null);
   /**
    * Player configuration reference. contains the player configuration.
@@ -106,6 +108,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       explicitAutoPlay
     )
   );
+  const [userHasFocus, setuserHasFocus] = useState(true);
   // event emitter for time updates
   // Use mitt with unknown for browser compatibility and type safety
   const timeUpdateEventEmitterRef = useRef(mitt());
@@ -185,6 +188,39 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       video_view_length: videoStateRef.current.currentTime,
     });
   }, [swiper]);
+
+  useEffect(() => {
+    if (!embedDetails) return;
+    const { embedEventBus } = embedDetails;
+
+    function handleUserFocusChange() {
+      const context = embedEventBus.getContext();
+
+      if (!context.userIsFocused) {
+        setuserHasFocus(false);
+      } else {
+        setuserHasFocus(true);
+      }
+    }
+
+    function handleContainerInViewChange() {
+      const context = embedEventBus.getContext();
+
+      if (!context.containerInView) {
+        setuserHasFocus(false);
+      } else {
+        setuserHasFocus(true);
+      }
+    }
+
+    embedEventBus.on("userFocusChange", handleUserFocusChange);
+    embedEventBus.on("containerInViewChange", handleContainerInViewChange);
+
+    return () => {
+      embedEventBus.off("userFocusChange", handleUserFocusChange);
+      embedEventBus.off("containerInViewChange", handleContainerInViewChange);
+    };
+  }, []);
 
   const setVideoTimeState = useCallback((timeState: VideoTimeStateType) => {
     videoStateRef.current = {
@@ -366,7 +402,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     showSeeker,
     setShowSeeker,
 
-    feedPlayerShouldPlay: isActive && feedPlayerShouldPlay,
+    feedPlayerShouldPlay: isActive && feedPlayerShouldPlay && userHasFocus,
     togglePlay,
     play,
     pause,

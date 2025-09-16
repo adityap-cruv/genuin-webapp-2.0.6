@@ -31,6 +31,7 @@ const EVENT_VIEW_LENGTH_PROPERTY_NAME = "video_view_length";
 export const FeedPlayer = memo(function FeedPlayer({
   src,
   videoId,
+  adUrl,
   poster,
   className,
   onOpenPlayerReady,
@@ -287,6 +288,7 @@ export const FeedPlayer = memo(function FeedPlayer({
       ref={playerRef}
       poster={poster}
       muted={muted}
+      adUrl={adUrl}
       // adUrl="https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/vmap_ad_samples&sz=640x480&cust_params=sample_ar%3Dpostonly&ciu_szs=300x250&gdfp_req=1&ad_rule=1&output=vmap&unviewed_position_start=1&env=vp&correlator="
       src={src}
       playsInline

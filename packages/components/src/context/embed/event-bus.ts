@@ -39,6 +39,14 @@ export type EmbedEventContextType = {
    * Indicates if the auto interaction action (like auto play) has been done
    */
   autoInteractionActionDone?: boolean;
+  /**
+   * Indicates if the user is currently focused on current tab..
+   */
+  userIsFocused: boolean;
+  /**
+   * Indicates if the embed container is currently in view.
+   */
+  containerInView: boolean;
 };
 
 type EmbedEventNameType =
@@ -46,7 +54,9 @@ type EmbedEventNameType =
   | "activePlayerTypeChange"
   | "sectionListChange"
   | "isSectionedChange"
-  | "selectedSectionChange";
+  | "selectedSectionChange"
+  | "userFocusChange"
+  | "containerInViewChange";
 
 /**
  * Creates a new event bus instance for embed functionality
@@ -61,5 +71,7 @@ export const createEmbedEventBus = (context?: EmbedEventContextType) =>
     selectedSection: null,
     previousMuteState: null,
     autoInteractionActionDone: false,
+    userIsFocused: true,
+    containerInView: true,
     ...context,
   });

@@ -245,6 +245,7 @@ function EmbedPlayer({
     >
       <FeedPlayer
         videoId={postDetails.video.id}
+        adUrl={postDetails.video.adUrl ?? undefined}
         src={postDetails.video.source}
         poster={postDetails.video.thumbnail}
         className={cn(
