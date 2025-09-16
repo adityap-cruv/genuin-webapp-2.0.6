@@ -2,7 +2,7 @@ import { cn, getFormattedDuration, getMonthYear } from "@genuin/ui/lib/utils";
 import { ControlLayerPropsType } from "./control-layer.types";
 import { Controls } from "./controls/controls";
 import { Linkouts } from "@genuin/components/organisms/linkouts";
-import { type FC } from "react";
+import { type FC, useEffect, useState } from "react";
 import { Avatar } from "@genuin/ui/components";
 import { ReadMore } from "@genuin/components/molecules/read-more";
 import { Image } from "@genuin/ui/components/image";
@@ -10,7 +10,7 @@ import { PlayIcon, PriceTagIcon } from "@genuin/ui/icons";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { Stats } from "../../stats";
 import { EmbedControls } from "./controls/embed";
-import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import { useEmbedDimensions } from "@genuin/components/hooks/embed/use-embed-dimensions";
 
 export const Embed: FC<ControlLayerPropsType> = ({
   postDetails,
@@ -20,6 +20,7 @@ export const Embed: FC<ControlLayerPropsType> = ({
 }) => {
   const config = useEmbedConfigs();
   const showLayout = config.engagement.showEngagementOnRootElement;
+  const { containerHeight } = useEmbedDimensions();
 
   if (!showLayout) return;
 
@@ -113,31 +114,27 @@ export const Embed: FC<ControlLayerPropsType> = ({
 
     case "ted":
       return (
-        <div
-          className={cn(
-            "gencl:flex gencl:flex-col gencl:justify-between gencl:h-full",
-            className
+        <div className={cn(className)} {...restProps}>
+          {isActive && (
+            <div
+              className="gencl:absolute gencl:top-0 gencl:right-0 gencl:py-2 gencl:px-3"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <EmbedControls className={cn("gencl:gap-3")} size="xs" />
+            </div>
           )}
-          {...restProps}
-        >
-          {isActive ? (
-            <Controls
-              className="gencl:justify-end"
-              variant="embed"
-              spacing="liberal"
-            />
-          ) : (
-            <div />
-          )}
-          <div />
-          <div className="gencl:p-3 gencl:space-y-2 gencl:bg-gradient-to-t gencl:from-black/80 gencl:to-transparent">
+
+          <div className="gencl:px-3 gencl:py-4 gencl:absolute gencl:space-y-2 gencl:bottom-0 gencl:bg-gradient-to-t gencl:from-black/80 gencl:to-transparent">
             <ReadMore
               text={postDetails.video.description}
-              textClassName="gencl:text-white! gencl:text-body-2-medium gencl:font-normal gencl:pointer-events-none"
+              position="overlay"
               viewLessText=""
               viewMoreText=""
               maxChars={500}
-              maxLines={3}
+              shouldAnimate
+              className="gencl:overflow-y-auto gencl:text-body-2-normal! gencl:[&_span]:leading-[125%]! gencl:tracking-[-0.042px]!"
+              expandedHeight={`${containerHeight * 0.35}px`}
+              maxLines={containerHeight < 400 ? 1 : 2}
             />
             <div
               className="gencl:flex gencl:items-center gencl:gap-2"
@@ -149,7 +146,7 @@ export const Embed: FC<ControlLayerPropsType> = ({
                 isAvatar={false}
                 alt={postDetails.community.name ?? ""}
               />
-              <p className="gencl:text-white! gencl:text-body-1-bold gencl:line-clamp-1">
+              <p className="gencl:text-white! gencl:text-body-1-bold gencl:line-clamp-1 gencl:tracking-[-0.21px]! gencl:leading-[130%]!">
                 {postDetails.community.name}
               </p>
             </div>

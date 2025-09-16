@@ -68,13 +68,15 @@ export const ReadMore = memo(function ReadMore({
   buttonClassName,
   viewMoreText = "View More",
   viewLessText = "View Less",
-  expandedHeight = "500px",
+  expandedHeight = "40vh",
   onClick,
   defaultExpand = false,
   onExpandChange,
   open,
   href,
   linkClassName,
+  showOverlay = false,
+  overlayClassName,
   ...rest
 }: ReadMoreProps) {
   const textRef = useRef<HTMLParagraphElement>(null);
@@ -260,6 +262,18 @@ export const ReadMore = memo(function ReadMore({
     });
   }, [onExpandChange]);
 
+  // Handle overlay click - only close if expanded
+  const handleOverlayClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (isExpanded) {
+        setIsExpanded(false);
+        onExpandChange?.(false);
+      }
+    },
+    [isExpanded, onExpandChange]
+  );
+
   // Memoize height calculations
   const heights = useMemo(
     () => ({
@@ -391,13 +405,14 @@ export const ReadMore = memo(function ReadMore({
         style={{
           maxHeight: shouldAnimate
             ? isExpanded
-              ? "40vh"
+              ? heights.expanded
               : heights.collapsed
             : undefined,
           overflow: shouldAnimate ? "auto" : undefined,
           transition: shouldAnimate
             ? "max-height 0.5s cubic-bezier(0.4,0,0.2,1)"
             : undefined,
+          ...rest.style,
         }}
         onClick={(e) => {
           e.stopPropagation();
@@ -426,20 +441,43 @@ export const ReadMore = memo(function ReadMore({
     </div>
   );
 
-  // If href is provided, wrap the content in a link
-  if (href) {
-    return (
-      <a
-        href={href}
-        className={cn(
-          "gencl:cursor-pointer hover:gencl:underline focus:gencl:outline-none",
-          linkClassName
-        )}
-      >
-        {content}
-      </a>
-    );
-  }
+  // Wrap content in link if href is provided
+  const finalContent = href ? (
+    <a
+      href={href}
+      className={cn(
+        "gencl:cursor-pointer hover:gencl:underline focus:gencl:outline-none",
+        linkClassName
+      )}
+    >
+      {content}
+    </a>
+  ) : (
+    content
+  );
 
-  return content;
+  return (
+    <div
+      className={cn(
+        "gencl:relative"
+        // showOverlay && isExpanded && "gencl:z-10"
+      )}
+    >
+      {/* Overlay backdrop */}
+      {showOverlay && (
+        <div
+          className={cn(
+            "gencl:fixed gencl:inset-0 gencl:bg-black/60 gencl:transition-opacity gencl:duration-300",
+            isExpanded
+              ? "gencl:opacity-100 gencl:pointer-events-auto"
+              : "gencl:opacity-0 gencl:pointer-events-none",
+            overlayClassName
+          )}
+          onClick={handleOverlayClick}
+        />
+      )}
+
+      {finalContent}
+    </div>
+  );
 });

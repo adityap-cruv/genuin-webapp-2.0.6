@@ -50,6 +50,7 @@ export function CommentsDialog({
         {children}
       </DialogTrigger>
       <DialogContent
+        autoFocus={false}
         onOpenAutoFocus={(e) => e.preventDefault()}
         className="gencl:max-h-[80vh] gencl:flex gencl:flex-col gencl:overflow-clip gencl:h-full gencl:p-0 gencl:gap-0"
       >

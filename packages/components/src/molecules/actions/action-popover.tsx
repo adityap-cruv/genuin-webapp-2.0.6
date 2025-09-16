@@ -96,10 +96,15 @@ export function ActionPopover({
         showArrow={showArrow}
         align={align}
         customBackgroundColor={backgroundColor}
-        className={`gencl:border-none gencl:bg-[${backgroundColor}] gencl:duration-700 gencl:p-4 gencl:w-screen gencl:sm:max-w-sm ${contentClassName}`}
+        className={`gencl:border-none gencl:bg-transparent! gencl:duration-700 gencl:p-0 gencl:w-screen gencl:shadow-none gencl:sm:max-w-sm ${contentClassName}`}
         onInteractOutside={() => handleOpenChange(false)}
       >
-        <div className="gencl:flex gencl:justify-between gencl:items-center gencl:px-2">
+        <div
+          className="gencl:flex gencl:justify-between gencl:items-center gencl:p-4 gencl:bg-red gencl:mx-4 gencl:rounded-md"
+          style={{
+            backgroundColor: backgroundColor,
+          }}
+        >
           <p className="gencl:text-white gencl:text-body-1-normal gencl:tracking-wide">
             <Link
               href={

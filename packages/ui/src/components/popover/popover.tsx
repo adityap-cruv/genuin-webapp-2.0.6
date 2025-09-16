@@ -70,9 +70,9 @@ function PopoverContent({
   children,
   ...props
 }: PopoverContentProps) {
-  const customColorStyle = customBackgroundColor
-    ? { backgroundColor: customBackgroundColor }
-    : {};
+  // const customColorStyle = customBackgroundColor
+  //   ? { backgroundColor: customBackgroundColor }
+  //   : {};
   const arrowStyle = customBackgroundColor
     ? { fill: customBackgroundColor }
     : {};
@@ -83,7 +83,7 @@ function PopoverContent({
         data-slot="popover-content"
         align={align}
         sideOffset={sideOffset}
-        style={customColorStyle}
+        // style={customColorStyle}
         className={cn(popoverContentVariants({ theme }), className)}
         {...props}
       >

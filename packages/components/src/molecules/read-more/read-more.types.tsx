@@ -88,4 +88,13 @@ export type ReadMoreProps = {
    * Custom class name for the link wrapper
    */
   linkClassName?: string;
+  /**
+   * Whether to show a dark overlay behind the expanded content
+   * @default false
+   */
+  showOverlay?: boolean;
+  /**
+   * Custom class name for the overlay
+   */
+  overlayClassName?: string;
 } & Omit<ComponentProps<"p">, "children">;

@@ -16,6 +16,7 @@ import { CommunityHoverCard } from "../community-hover-card";
 import { ComponentProps, useEffect, useState, useRef } from "react";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { usePrevious } from "@genuin/components/hooks/use-previous";
+import { useBaseContext } from "@genuin/components/context";
 
 const communityPillVariants = cva(
   "gencl:flex gencl:w-fit gencl:items-center gencl:gap-1 gencl:p-1 gencl:pr-2 gencl:rounded-full gencl:transition-all gencl:cursor-pointer",
@@ -57,6 +58,7 @@ export function CommunityPill({
   hideCommunityJoinButton = false,
 }: CommunityPillProps) {
   const { authenticationStatus } = useAuthContext();
+  const { brandDetails } = useBaseContext();
 
   // Truncate name to 24 characters for compact variant
   const displayName =
@@ -101,7 +103,12 @@ export function CommunityPill({
             isAvatar={false}
             size="xs"
           />
-          <span className="gencl:text-body-2-medium gencl:line-clamp-1">
+          <span
+            className="gencl:text-body-2-medium gencl:line-clamp-1"
+            style={
+              brandDetails.brand_id === 2357 ? { lineHeight: "18.2px" } : {}
+            }
+          >
             {displayName}
           </span>
         </div>

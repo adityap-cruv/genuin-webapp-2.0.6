@@ -66,6 +66,7 @@ export function Menu({
   const { brandDetails } = useBaseContext();
   const [isOpen, setIsOpen] = useState(false);
   const { activeIndex } = useFeedContext();
+  const brandId = brandDetails.brand_id;
 
   useEffect(() => {
     if (isOpen) {
@@ -85,16 +86,17 @@ export function Menu({
           </ShareButton>
         ),
       },
-    isMobile && {
-      children: (
-        <Link href={buildPageUrl({ type: "group", slug: groupSlug })}>
-          {menuItems({
-            text: "Group Details",
-            ...(isMobile && { icon: <GroupIcon size="lg" /> }),
-          })}
-        </Link>
-      ),
-    },
+    isMobile &&
+      brandId !== 2357 && {
+        children: (
+          <Link href={buildPageUrl({ type: "group", slug: groupSlug })}>
+            {menuItems({
+              text: "Group Details",
+              ...(isMobile && { icon: <GroupIcon size="lg" /> }),
+            })}
+          </Link>
+        ),
+      },
     brandDetails?.web_configs?.playback_speed_enabled && {
       children: (
         <PlaybackSpeed
@@ -107,22 +109,23 @@ export function Menu({
       ),
     },
     // Feature not implemented yet: "Group Details" and "Not interested" menu items are pending design.
-    contentId && {
-      children: (
-        <Report
-          type="report-dialog"
-          reportFor="VIDEO"
-          contentId={contentId}
-          shareUrl={shareUrl ?? ""}
-          videoSlug={videoSlug ?? ""}
-          children={menuItems({
-            text: "Report Post",
-            className: "gencl:text-error-status",
-            ...(isMobile && { icon: <FlagIcon theme="danger" size="lg" /> }),
-          })}
-        />
-      ),
-    },
+    contentId &&
+      brandId !== 2357 && {
+        children: (
+          <Report
+            type="report-dialog"
+            reportFor="VIDEO"
+            contentId={contentId}
+            shareUrl={shareUrl ?? ""}
+            videoSlug={videoSlug ?? ""}
+            children={menuItems({
+              text: "Report Post",
+              className: "gencl:text-error-status",
+              ...(isMobile && { icon: <FlagIcon theme="danger" size="lg" /> }),
+            })}
+          />
+        ),
+      },
   ].filter(
     (item): item is { children: React.ReactElement } =>
       !!item &&

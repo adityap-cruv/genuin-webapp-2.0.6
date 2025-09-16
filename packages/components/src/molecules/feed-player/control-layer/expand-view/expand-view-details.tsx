@@ -37,8 +37,8 @@ type ExpandViewProps = ComponentProps<"div"> & {
 
 // Layout configuration interface
 interface LayoutConfig {
-  userProfile: "default" | "iheart";
-  description: "default" | "iheart";
+  userProfile: "default" | "iheart" | "ted";
+  description: "default" | "iheart" | "ted";
   linkouts: {
     cardVariant?: "default" | "primary";
   };
@@ -61,6 +61,14 @@ const LAYOUT_CONFIGS: Record<number | "default", LayoutConfig> = {
       cardVariant: "primary",
     },
   },
+  3: {
+    // TED
+    userProfile: "ted",
+    description: "ted",
+    linkouts: {
+      cardVariant: "default",
+    },
+  },
   6: {
     // Walmart
     userProfile: "default",
@@ -76,6 +84,7 @@ const LAYOUT_CONFIGS: Record<number | "default", LayoutConfig> = {
  */
 function useExpandViewConfig(postDetails: PostDetailsType): {
   config: LayoutConfig;
+  layoutType: "default" | "iheart" | "ted" | "walmart";
   defaultOpenCommentDialog: boolean;
   showSeeker: boolean;
   hideCommunityJoinButton: boolean;
@@ -92,12 +101,29 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
   const showLinkoutInExpand = embedConfig.links.showLinksInExpand;
   const hideGroupPill = postDetails.video.videoLayoutId === 3;
 
-  // Determine layout config
+  // Determine layout type and config
+  let layoutType: "default" | "iheart" | "ted" | "walmart" = "default";
   let config = LAYOUT_CONFIGS.default;
+
   if (videoLayoutId && LAYOUT_CONFIGS[videoLayoutId]) {
     config = LAYOUT_CONFIGS[videoLayoutId];
+    switch (videoLayoutId) {
+      case 2:
+        layoutType = "iheart";
+        break;
+      case 3:
+        layoutType = "ted";
+        break;
+      case 6:
+        layoutType = "walmart";
+        break;
+      default:
+        layoutType = "default";
+        break;
+    }
   } else if (placementVideoLayoutId === 1) {
     config = LAYOUT_CONFIGS[6]!; // Use Walmart config for placement layout 1
+    layoutType = "walmart";
   }
 
   // Determine button visibility based on layout IDs
@@ -115,6 +141,7 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
 
   return {
     config,
+    layoutType,
     defaultOpenCommentDialog,
     showSeeker,
     hideCommunityJoinButton: shouldHideButtons,
@@ -132,32 +159,48 @@ function AdaptiveUserProfile({
   type,
 }: {
   owner: PostDetailsType["owner"];
-  type: "default" | "iheart";
+  type: "default" | "iheart" | "ted";
 }) {
   switch (type) {
     case "iheart":
       return (
-        <div>
-          <p className="gencl:text-body-2-semi-bold gencl:line-clamp-1">
-            {owner.name}
-          </p>
-          <p className="gencl:text-body-2-normal gencl:line-clamp-2">
-            {owner.bio}
-          </p>
+        <div className="gencl:flex gencl:gap-2 gencl:items-center gencl:text-white gencl:text-body-0-semi-bold">
+          <Avatar
+            imageUrl={owner.profileImage}
+            alt={owner.name ?? ""}
+            isAvatar={owner.isAvatar}
+          />
+          <div>
+            <p className="gencl:text-body-2-semi-bold gencl:line-clamp-1">
+              {owner.name}
+            </p>
+            <p className="gencl:text-body-2-normal gencl:line-clamp-2">
+              {owner.bio}
+            </p>
+          </div>
         </div>
       );
+    case "ted":
+      return null;
     case "default":
     default:
       return (
-        <ProfileLink
-          url={buildPageUrl({
-            type: !!owner.brand ? "brand" : "profile",
-            slug: !!owner.brand ? owner.brand.slug : owner.userName,
-          })}
-          userLogoType={owner.brand?.userLogo}
-        >
-          @{owner.userName}
-        </ProfileLink>
+        <div className="gencl:flex gencl:gap-2 gencl:items-center gencl:text-white gencl:text-body-0-semi-bold">
+          <Avatar
+            imageUrl={owner.profileImage}
+            alt={owner.name ?? ""}
+            isAvatar={owner.isAvatar}
+          />
+          <ProfileLink
+            url={buildPageUrl({
+              type: !!owner.brand ? "brand" : "profile",
+              slug: !!owner.brand ? owner.brand.slug : owner.userName,
+            })}
+            userLogoType={owner.brand?.userLogo}
+          >
+            @{owner.userName}
+          </ProfileLink>
+        </div>
       );
   }
 }
@@ -170,7 +213,7 @@ function AdaptiveDescription({
   type,
 }: {
   video: PostDetailsType["video"];
-  type: "default" | "iheart";
+  type: "default" | "iheart" | "ted";
 }) {
   switch (type) {
     case "iheart":
@@ -187,8 +230,21 @@ function AdaptiveDescription({
             shouldAnimate
             position="overlay"
             textClassName="gencl:text-body-2-normal"
+            showOverlay={true}
           />
         </div>
+      );
+    case "ted":
+      return (
+        <ReadMore
+          showExpandText={false}
+          text={video.description}
+          maxLines={2}
+          shouldAnimate
+          position="overlay"
+          className="gencl:text-body-2-normal! gencl:[&_span]:leading-[125%]! gencl:tracking-[-0.042px]!"
+          showOverlay={true}
+        />
       );
     case "default":
     default:
@@ -200,6 +256,7 @@ function AdaptiveDescription({
           shouldAnimate
           position="overlay"
           className="gencl:text-body-1-medium"
+          showOverlay={true}
         />
       );
   }
@@ -278,6 +335,7 @@ export function ExpandViewDetails({
 }: ExpandViewProps) {
   const {
     config,
+    layoutType,
     defaultOpenCommentDialog,
     showSeeker,
     hideCommunityJoinButton,
@@ -295,20 +353,20 @@ export function ExpandViewDetails({
       )}
       {...restProps}
     >
-      <div className="gencl:flex gencl:w-full gencl:gap-4 gencl:justify-between gencl:items-end">
+      <div
+        className={cn(
+          "gencl:flex gencl:w-full gencl:gap-4 gencl:justify-between gencl:items-end",
+          layoutType === "ted" && "gencl:gap-3"
+        )}
+      >
         <div
-          className="gencl:flex gencl:flex-col gencl:gap-4 gencl:sm:gap-2 gencl:w-5/6 gencl:sm:w-full gencl:transition-all"
+          className={cn(
+            "gencl:flex gencl:flex-col gencl:gap-4 gencl:sm:gap-2 gencl:w-5/6 gencl:sm:w-full gencl:transition-all",
+            layoutType === "ted" && "gencl:gap-3"
+          )}
           onClick={(e) => e.stopPropagation()}
         >
-          <div
-            className="gencl:flex gencl:gap-2 gencl:items-center gencl:text-white gencl:text-body-0-semi-bold"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <Avatar
-              imageUrl={postDetails.owner.profileImage}
-              alt={postDetails.owner.name ?? ""}
-              isAvatar={postDetails.owner.isAvatar}
-            />
+          <div onClick={(e) => e.stopPropagation()}>
             <AdaptiveUserProfile
               owner={postDetails.owner}
               type={config.userProfile}

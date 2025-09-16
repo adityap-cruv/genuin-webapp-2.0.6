@@ -61,6 +61,24 @@ export const GestureProvider: React.FC<{ children: ReactNode }> = ({
   ) => {
     setGestureOverlays((prev) => {
       if (prev[gesture].hasShown && isVisible) return prev;
+
+      // If showing a new gesture, hide all other gestures first
+      if (isVisible) {
+        const newState = { ...DEFAULT_GESTURE_STATE };
+        // Set all gestures to not visible but preserve hasShown state
+        Object.keys(prev).forEach((key) => {
+          const gestureKey = key as GestureOverlayKeysType;
+          newState[gestureKey] = {
+            isVisible: false,
+            hasShown: prev[gestureKey].hasShown,
+          };
+        });
+        // Now show only the requested gesture
+        newState[gesture] = { isVisible: true, hasShown: true };
+        return newState;
+      }
+
+      // If hiding a gesture, just update that specific gesture
       return { ...prev, [gesture]: { isVisible, hasShown: true } };
     });
   };

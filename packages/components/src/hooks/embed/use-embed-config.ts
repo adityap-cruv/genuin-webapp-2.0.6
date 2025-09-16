@@ -53,10 +53,7 @@ export function useEmbedConfigs() {
       isGrid: embedData?.style === "grid",
       isPlacementView: !!embedData?.placement_id,
       showCarouselIcon: !!customization?.is_carousel_icon,
-      showNavigation:
-        customization?.show_navigation !== undefined
-          ? !!customization?.show_navigation
-          : true,
+      showNavigation: brandDetails.brand_id !== 2357,
       isFloatingView: !!customization?.is_floating_view,
       isExpandedView: !!customization?.is_expanded_view,
       feedDisplayPreference: customization?.feed_display_pref || "default",

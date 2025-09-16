@@ -41,7 +41,7 @@ export function NavigationButtons({ totalSlides }: NavigationButtonsProps) {
   const isFirstSlide = activeIndex === 0;
   const isLastSlide = activeIndex === totalSlides - 1;
 
-  // if (!config.view.showNavigation) return;
+  if (!config.view.showNavigation) return;
 
   if (isCarousel) {
     // Carousel layout - buttons on left and right sides

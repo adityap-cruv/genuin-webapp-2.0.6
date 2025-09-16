@@ -9,6 +9,7 @@ import { RootPortal } from "@genuin/components/molecules/root-portal";
 import { StandardWall } from "@genuin/components/page/standard-wall/standard-wall";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { cn } from "@genuin/ui/lib/utils";
+import { useBaseContext } from "@genuin/components/context/base";
 
 type EmbedExpandViewProps = {
   videos: PostDetailsType[];
@@ -32,7 +33,9 @@ export function EmbedExpandView({
     embedEventBus,
     goBackToPreviousPlayerType,
     isInIframe,
+    setPreviousMuteState,
   } = useEmbedContext();
+  const { muted, setMuted, brandDetails } = useBaseContext();
   const isSectioned = embedEventBus.getContext().isSectioned;
   const [showExpandView, setShowExpandView] = useState(
     embedEventBus.getContext().activePlayerType === "expand-view"
@@ -45,16 +48,41 @@ export function EmbedExpandView({
   } = useEmbedConfigs();
   const { isMobile } = useDeviceDetectMediaQuery();
 
+  // Function to handle closing expand view - restores mute state and goes back
+  const handleCloseExpandView = () => {
+    const context = embedEventBus.getContext();
+    // Restore previous mute state if available
+    if (
+      context.previousMuteState !== null &&
+      context.previousMuteState !== undefined
+    ) {
+      setMuted(context.previousMuteState);
+    }
+    goBackToPreviousPlayerType();
+  };
+
   useEffect(() => {
     const handleActivePlayerTypeChange = (
       eventData: any,
       context: EmbedEventContextType
     ) => {
       if (context.activePlayerType === "expand-view") {
+        // Store current mute state when entering expand view
+        setPreviousMuteState(muted);
         setShowExpandView(true);
         setStartIndex(context.isSectioned ? 0 : context.activeIndex);
+
+        // Unmute player if brand_id is 2357
+        if (brandDetails?.brand_id === 2357) {
+          // wait till player get init so setMuted update the value::
+          setTimeout(() => {
+            setMuted(false);
+          }, 300);
+        }
       } else {
         setShowExpandView(false);
+        // Clear previous mute state when exiting
+        setPreviousMuteState(null);
       }
     };
 
@@ -62,7 +90,7 @@ export function EmbedExpandView({
     return () => {
       embedEventBus.off("activePlayerTypeChange", handleActivePlayerTypeChange);
     };
-  }, [embedEventBus]);
+  }, [embedEventBus, muted, setPreviousMuteState]);
 
   // Add keyboard event listener for ESC key
   useEffect(() => {
@@ -70,7 +98,7 @@ export function EmbedExpandView({
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        goBackToPreviousPlayerType();
+        handleCloseExpandView();
       }
     };
 
@@ -78,7 +106,7 @@ export function EmbedExpandView({
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [showExpandView, goBackToPreviousPlayerType]);
+  }, [showExpandView, handleCloseExpandView]);
 
   // Handle entering/exiting browser fullscreen for expand-view
   useEffect(() => {
@@ -132,7 +160,7 @@ export function EmbedExpandView({
       const stillFs = isFullscreen();
       if (!stillFs && showExpandView) {
         // Only revert if our UI still thinks we're expanded
-        goBackToPreviousPlayerType();
+        handleCloseExpandView();
       }
     };
 
@@ -150,13 +178,13 @@ export function EmbedExpandView({
         void exitFullscreen();
       }
     };
-  }, [showExpandView, goBackToPreviousPlayerType, isInIframe]);
+  }, [showExpandView, handleCloseExpandView, isInIframe]);
 
   const defaultComponent = (
     <FeedView
       startIndex={startIndex}
       defaultExpandView
-      onCloseExpandView={goBackToPreviousPlayerType}
+      onCloseExpandView={handleCloseExpandView}
       variant="expand"
       isSectioned={isSectioned}
       feedData={{

@@ -1,4 +1,4 @@
-import { cn, getWebpUrlForImage } from "@genuin/ui/utils";
+import { cn } from "@genuin/ui/utils";
 import { useBaseContext } from "@genuin/components/context/base";
 import {
   ControlLayer,
@@ -11,8 +11,6 @@ import { useSwiper } from "swiper/react";
 import { useCallback } from "react";
 import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
 import { ComponentProps } from "react";
-import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
-import { useWindowSize } from "usehooks-ts";
 
 type PlayerProps = {
   post: PostDetailsType;
@@ -58,8 +56,6 @@ export function Player({
   // const { isActive, isNext, isPrev, isVisible } = useSwiperSlide();
   const swiper = useSwiper();
   const { showGestureOverlay } = useGestureOverlayManager();
-  const { isMobile } = useDeviceDetectMediaQuery();
-  const { height, width } = useWindowSize();
 
   const handleTimeUpdate = useCallback(
     (event: React.SyntheticEvent<HTMLVideoElement>) => {

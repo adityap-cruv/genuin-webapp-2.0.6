@@ -32,6 +32,10 @@ export type EmbedEventContextType = {
    */
   selectedSection?: PostDetailsType["section"] | null;
   /**
+   * Previous mute state before entering expand-view
+   */
+  previousMuteState?: boolean | null;
+  /**
    * Indicates if the auto interaction action (like auto play) has been done
    */
   autoInteractionActionDone?: boolean;
@@ -55,6 +59,7 @@ export const createEmbedEventBus = (context?: EmbedEventContextType) =>
     sectionList: [],
     isSectioned: false,
     selectedSection: null,
+    previousMuteState: null,
     autoInteractionActionDone: false,
     ...context,
   });

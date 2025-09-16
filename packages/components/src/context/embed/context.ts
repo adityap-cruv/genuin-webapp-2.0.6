@@ -72,7 +72,13 @@ type EmbedContextType = {
   /**
    * Updates the currently selected section
    */
-  updateSelectedSection: (section: PostDetailsType["section"]) => void;
+  updateSelectedSection: (section: PostDetailsType['section']) => void;
+
+  /**
+   * Sets the previous mute state in the embed context
+   * @param muteState The mute state to store
+   */
+  setPreviousMuteState: (muteState: boolean | null) => void;
 
   /**
    * Marks that the auto interaction action (spark, comment-spark) has been done

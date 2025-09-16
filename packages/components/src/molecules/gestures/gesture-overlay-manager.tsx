@@ -38,11 +38,12 @@ function useGestureOverlayMethods({ tapBehavior }: { tapBehavior: number }) {
     (step: GestureOverlayKeysType, muted?: boolean) => {
       if (gestureOverlays[step].hasShown) return;
 
-      if (step === "PLAY_PAUSE" && shouldHandlePlayPause(muted)) {
-        setGestureOverlay(step, true);
-      }
+      // Check conditions for each gesture type
+      const shouldShow =
+        (step === "PLAY_PAUSE" && shouldHandlePlayPause(muted)) ||
+        step === "SWIPE";
 
-      if (step === "SWIPE") {
+      if (shouldShow) {
         setGestureOverlay(step, true);
       }
     },
@@ -51,11 +52,12 @@ function useGestureOverlayMethods({ tapBehavior }: { tapBehavior: number }) {
 
   const hideGestureOverlay = useCallback(
     (step: GestureOverlayKeysType, muted?: boolean) => {
-      if (step === "PLAY_PAUSE" && shouldHandlePlayPause(muted)) {
-        setGestureOverlay(step, false);
-      }
+      // Check conditions for each gesture type
+      const shouldHide =
+        (step === "PLAY_PAUSE" && shouldHandlePlayPause(muted)) ||
+        step === "SWIPE";
 
-      if (step === "SWIPE") {
+      if (shouldHide) {
         setGestureOverlay(step, false);
       }
     },
