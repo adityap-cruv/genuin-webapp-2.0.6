@@ -99,6 +99,7 @@ type VideoPlayerStateRef = {
   videoWatchedFired: boolean;
   videoStartFired: boolean;
   shouldPlay: boolean;
+  isAdErrored?: boolean;
 };
 
 type AdDataType = {
@@ -172,6 +173,7 @@ export const VideoPlayer = memo(function VideoPlayer({
     thirdQuartileFired: false,
     videoWatchedFired: false,
     videoStartFired: false,
+    isAdErrored: false,
   });
 
   useEffect(() => {
@@ -207,6 +209,7 @@ export const VideoPlayer = memo(function VideoPlayer({
 
       player.getElement().addEventListener("playererror", (e: any) => {
         if (e.detail?.type === "Ads") {
+          playerStateRef.current.isAdErrored = true;
           const adsManager = player.getAd();
           if (adsManager) {
             adsManager.destroy();
@@ -404,23 +407,40 @@ export const VideoPlayer = memo(function VideoPlayer({
   const playThePlayer = useCallback(() => {
     const player = playerRef.current;
     const active = player?.activeElement();
-    active
-      ?.play()
-      .then(() => {
-        // Auto-play started
-      })
-      .catch((error) => {
-        if (error?.name === "NotAllowedError") {
-          updatePlayerMutedState(true);
-          active.play().catch((err: any) => {
-            console.warn("Could not autoplay video:", err);
-          });
-        }
-      });
+
+    // If an ad error occurred, try to play the main content directly
+    if (playerStateRef.current.isAdErrored) {
+      player
+        ?.getElement()
+        .play()
+        .catch((err: any) => {
+          console.warn("Could not autoplay video after ad error:", err);
+        });
+    } else {
+      active
+        ?.play()
+        .then(() => {
+          // Auto-play started
+        })
+        .catch((error) => {
+          if (error?.name === "NotAllowedError") {
+            updatePlayerMutedState(true);
+            active.play().catch((err: any) => {
+              console.warn("Could not autoplay video:", err);
+            });
+          }
+        });
+    }
   }, [updatePlayerMutedState]);
 
   const pauseThePlayer = useCallback(() => {
     const player = playerRef.current;
+
+    // If an ad error occurred, just pause the main content
+    if (playerStateRef.current.isAdErrored) {
+      player?.getElement().pause();
+      return;
+    }
     // try everything to pause the video and ad.
     if (player?.isAd()) {
       player?.getAd()?.pause(); // Pause ad if playing
