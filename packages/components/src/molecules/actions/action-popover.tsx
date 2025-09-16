@@ -2,7 +2,7 @@
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { Popover, PopoverContent, PopoverTrigger } from "@genuin/ui/components";
 import { XIcon } from "@genuin/ui/icons";
-import { ReactNode, useEffect, useState } from "react";
+import { memo, ReactNode, useEffect, useState } from "react";
 import { Link } from "../link";
 
 interface ActionPopoverProps {
@@ -52,7 +52,7 @@ interface ActionPopoverProps {
   contentClassName?: string;
 }
 
-export function ActionPopover({
+export const ActionPopover = memo(function ActionPopover({
   children,
   content,
   params,
@@ -88,6 +88,54 @@ export function ActionPopover({
     onOpenChange?.(open);
   };
 
+  // Parse URL parameters into a structured object
+  const parseUrlParameters = (paramString: string) => {
+    return paramString
+      .split("&")
+      .map((pair) => pair.split("="))
+      .reduce<Record<string, string>>((acc, [key, value]) => {
+        if (key) acc[key] = value || "";
+        return acc;
+      }, {});
+  };
+
+  // Generate authentication URL based on configuration
+  const generateAuthUrl = (
+    baseUrl: string | Function | undefined,
+    queryParams: Record<string, string>,
+    rawParamString: string
+  ): string | Function => {
+    if (!baseUrl) return "";
+
+    if (typeof baseUrl === "function") {
+      return () => {
+        return baseUrl(
+          queryParams.video,
+          queryParams.action,
+          queryParams.commentId
+        );
+      };
+    }
+
+    const separator = baseUrl.includes("?") ? "&" : "?";
+    return `${baseUrl}${separator}${rawParamString}`;
+  };
+
+  const parsedParameters = parseUrlParameters(params);
+  const authInfo = embedDetails?.embedData?.authInfo;
+
+  // Generate auth URLs efficiently - avoid multiple function calls if URLs are functions
+  const signInUrl: string | Function = generateAuthUrl(
+    authInfo?.signInUrl,
+    parsedParameters,
+    params
+  );
+  const signUpUrl: string | Function = generateAuthUrl(
+    authInfo?.signUpUrl,
+    parsedParameters,
+    params
+  );
+
   return (
     <Popover open={isOpen} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>{children}</PopoverTrigger>
@@ -106,25 +154,29 @@ export function ActionPopover({
           }}
         >
           <p className="gencl:text-white gencl:text-body-1-normal gencl:tracking-wide">
-            <Link
-              href={
-                embedDetails?.embedData?.authInfo?.signInUrl +
-                `${embedDetails?.embedData?.authInfo?.signInUrl?.includes("?") ? "&" : "?"}${params}`
-              }
+            <span
               className="gencl:font-bold gencl:underline"
+              onClick={(e) => {
+                e.stopPropagation();
+                window.location.assign(
+                  typeof signInUrl === "function" ? signInUrl() : signInUrl
+                );
+              }}
             >
               Sign-in
-            </Link>
+            </span>
             <span className="gencl:text-white"> or </span>
-            <Link
-              href={
-                embedDetails?.embedData?.authInfo?.signUpUrl +
-                `${embedDetails?.embedData?.authInfo?.signUpUrl?.includes("?") ? "&" : "?"}${params}`
-              }
+            <span
               className="gencl:font-bold gencl:underline"
+              onClick={(e) => {
+                e.stopPropagation();
+                window.location.assign(
+                  typeof signUpUrl === "function" ? signUpUrl() : signUpUrl
+                );
+              }}
             >
               sign-up
-            </Link>
+            </span>
             <span className="gencl:text-white"> {content}</span>
           </p>
           <XIcon
@@ -137,4 +189,4 @@ export function ActionPopover({
       </PopoverContent>
     </Popover>
   );
-}
+});

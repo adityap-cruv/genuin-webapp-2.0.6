@@ -366,8 +366,8 @@ export type ActionType =
 type AutoUserInteractionToPerformType = ActionType;
 
 type AuthInfoType = {
-  signInUrl: string;
-  signUpUrl: string;
+  signInUrl: string | Function;
+  signUpUrl: string | Function;
 };
 
 export type EmbedDataType = {
