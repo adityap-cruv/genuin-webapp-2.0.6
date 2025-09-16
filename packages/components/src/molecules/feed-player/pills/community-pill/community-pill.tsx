@@ -58,7 +58,7 @@ export function CommunityPill({
   hideCommunityJoinButton = false,
 }: CommunityPillProps) {
   const { authenticationStatus } = useAuthContext();
-  const { brandDetails } = useBaseContext();
+  const embedDetails = useSafeEmbedContext();
 
   // Truncate name to 24 characters for compact variant
   const displayName =
@@ -106,7 +106,9 @@ export function CommunityPill({
           <span
             className="gencl:text-body-2-medium gencl:line-clamp-1"
             style={
-              brandDetails.brand_id === 2357 ? { lineHeight: "18.2px" } : {}
+              embedDetails?.embedData.card_layout_id === 3
+                ? { lineHeight: "18.2px" }
+                : {}
             }
           >
             {displayName}

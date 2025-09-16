@@ -147,20 +147,6 @@ export function EmbedProvider({
     [embedEventBus]
   );
 
-  const setPreviousMuteState = useCallback(
-    (muteState: boolean | null) => {
-      embedEventBus.emit(
-        "activePlayerTypeChange",
-        undefined,
-        (currentContext) => ({
-          ...currentContext,
-          previousMuteState: muteState,
-        })
-      );
-    },
-    [embedEventBus]
-  );
-
   // Detect if running inside an iframe (safe for SSR)
   const isInIframe = useMemo(() => {
     if (typeof window === "undefined") return false;
@@ -305,7 +291,6 @@ export function EmbedProvider({
         updateSectionList,
         updateIsSectioned,
         updateSelectedSection,
-        setPreviousMuteState,
         markAutoInteractionActionDone,
       }}
     >

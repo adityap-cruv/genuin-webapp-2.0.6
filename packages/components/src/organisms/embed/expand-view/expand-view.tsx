@@ -10,6 +10,7 @@ import { StandardWall } from "@genuin/components/page/standard-wall/standard-wal
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { cn } from "@genuin/ui/lib/utils";
 import { useBaseContext } from "@genuin/components/context/base";
+import { usePrevious } from "@genuin/components/hooks/use-previous";
 
 type EmbedExpandViewProps = {
   videos: PostDetailsType[];
@@ -33,9 +34,10 @@ export function EmbedExpandView({
     embedEventBus,
     goBackToPreviousPlayerType,
     isInIframe,
-    setPreviousMuteState,
+    embedData,
   } = useEmbedContext();
-  const { muted, setMuted, brandDetails } = useBaseContext();
+  const { muted, setMuted } = useBaseContext();
+  const previousMuteState = usePrevious(muted);
   const isSectioned = embedEventBus.getContext().isSectioned;
   const [showExpandView, setShowExpandView] = useState(
     embedEventBus.getContext().activePlayerType === "expand-view"
@@ -50,13 +52,8 @@ export function EmbedExpandView({
 
   // Function to handle closing expand view - restores mute state and goes back
   const handleCloseExpandView = () => {
-    const context = embedEventBus.getContext();
-    // Restore previous mute state if available
-    if (
-      context.previousMuteState !== null &&
-      context.previousMuteState !== undefined
-    ) {
-      setMuted(context.previousMuteState);
+    if (typeof previousMuteState === "boolean") {
+      setMuted(previousMuteState);
     }
     goBackToPreviousPlayerType();
   };
@@ -68,12 +65,11 @@ export function EmbedExpandView({
     ) => {
       if (context.activePlayerType === "expand-view") {
         // Store current mute state when entering expand view
-        setPreviousMuteState(muted);
         setShowExpandView(true);
         setStartIndex(context.isSectioned ? 0 : context.activeIndex);
 
         // Unmute player if brand_id is 2357
-        if (brandDetails?.brand_id === 2357) {
+        if (embedData?.card_layout_id === 3) {
           // wait till player get init so setMuted update the value::
           setTimeout(() => {
             setMuted(false);
@@ -81,8 +77,6 @@ export function EmbedExpandView({
         }
       } else {
         setShowExpandView(false);
-        // Clear previous mute state when exiting
-        setPreviousMuteState(null);
       }
     };
 
@@ -90,7 +84,7 @@ export function EmbedExpandView({
     return () => {
       embedEventBus.off("activePlayerTypeChange", handleActivePlayerTypeChange);
     };
-  }, [embedEventBus, muted, setPreviousMuteState]);
+  }, [embedEventBus]);
 
   // Add keyboard event listener for ESC key
   useEffect(() => {

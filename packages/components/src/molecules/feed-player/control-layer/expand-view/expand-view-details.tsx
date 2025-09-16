@@ -96,10 +96,11 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
   const embedDetails = useSafeEmbedContext();
   const embedConfig = useEmbedConfigs();
   const { isDesktop } = useDeviceDetectMediaQuery();
-  const videoLayoutId = postDetails.video.videoLayoutId;
+  const videoLayoutId =
+    postDetails.video.videoLayoutId ?? embedDetails?.embedData.video_layout_id;
   const placementVideoLayoutId = postDetails.video.placement_video_layout_id;
   const showLinkoutInExpand = embedConfig.links.showLinksInExpand;
-  const hideGroupPill = postDetails.video.videoLayoutId === 3;
+  const hideGroupPill = videoLayoutId === 3;
 
   // Determine layout type and config
   let layoutType: "default" | "iheart" | "ted" | "walmart" = "default";

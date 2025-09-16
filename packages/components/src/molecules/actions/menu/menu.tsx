@@ -19,6 +19,7 @@ import { Link } from "../../link";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { FlagIcon, GroupIcon, PlayIcon } from "@genuin/ui/icons";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 
 type MenuProps = {
   children?: React.ReactNode;
@@ -64,6 +65,7 @@ export function Menu({
 }: MenuProps) {
   const { isMobile } = useDeviceDetectMediaQuery();
   const { brandDetails } = useBaseContext();
+  const embedDetails = useSafeEmbedContext();
   const [isOpen, setIsOpen] = useState(false);
   const { activeIndex } = useFeedContext();
   const brandId = brandDetails.brand_id;
@@ -87,7 +89,7 @@ export function Menu({
         ),
       },
     isMobile &&
-      brandId !== 2357 && {
+      embedDetails?.embedData.card_layout_id !== 3 && {
         children: (
           <Link href={buildPageUrl({ type: "group", slug: groupSlug })}>
             {menuItems({
@@ -110,7 +112,7 @@ export function Menu({
     },
     // Feature not implemented yet: "Group Details" and "Not interested" menu items are pending design.
     contentId &&
-      brandId !== 2357 && {
+      embedDetails?.embedData.card_layout_id !== 3 && {
         children: (
           <Report
             type="report-dialog"

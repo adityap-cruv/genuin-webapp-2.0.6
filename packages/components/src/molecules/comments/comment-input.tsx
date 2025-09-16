@@ -75,7 +75,7 @@ export function CommentInputBox({
   if (
     authenticationStatus === "unauthenticated" &&
     (authInfo?.signInUrl || authInfo?.signUpUrl) &&
-    brandId === 2357
+    embedDetails?.embedData.card_layout_id === 3
   ) {
     return (
       <ActionPopover

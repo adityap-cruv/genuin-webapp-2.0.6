@@ -380,6 +380,15 @@ export class GenuinSDK {
       embedDetails.commentId = config.commentId
       if (config.contextualParams)
         embedDetails.contextualParams = config.contextualParams
+      
+      // Use brandDetails layout IDs as fallback if not present in embedDetails
+      if (!embedDetails.card_layout_id && brandDetails.card_layout_id) {
+        embedDetails.card_layout_id = brandDetails.card_layout_id
+      }
+      if (!embedDetails.video_layout_id && brandDetails.video_layout_id) {
+        embedDetails.video_layout_id = brandDetails.video_layout_id
+      }
+      
       // Store the embed details in the config for later use
       config.embedDetails = embedDetails
     } else {
