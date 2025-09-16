@@ -140,7 +140,7 @@
     return new Promise((resolve, reject) => {
       const link = document.createElement('link')
       link.rel = 'stylesheet'
-      link.href = `./dist/assets/web-sdk.css` // or use `${MEDIA_BASE_URL}/sdk/gen-sdk_1.5.15.css` if defined
+      link.href = `./assets/web-sdk.css` // or use `${MEDIA_BASE_URL}/sdk/gen-sdk_1.5.15.css` if defined
 
       link.onload = () => {
         console.log('CSS file loaded')
