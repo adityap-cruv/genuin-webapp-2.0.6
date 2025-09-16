@@ -399,7 +399,7 @@ export const ReadMore = memo(function ReadMore({
       <p
         {...rest}
         className={cn(
-          "gencl:transition-all gencl:relative gencl:duration-500 gencl:ease-in-out",
+          "gencl:transition-all gencl:relative gencl:duration-500 gencl:ease-in-out gencl:overflow-auto gencl:scrollbar-none",
           className
         )}
         style={{

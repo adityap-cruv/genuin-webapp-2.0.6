@@ -1,4 +1,4 @@
-import { useLinkContext } from "@genuin/components/context";
+import { useBaseContext, useLinkContext } from "@genuin/components/context";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { Button } from "@genuin/ui/button";
 import { Toast } from "@genuin/ui/components/toaster";
@@ -45,12 +45,23 @@ export function ShareButton({
   const [, copy] = useCopyToClipboard();
   const { isMobile } = useDeviceDetectMediaQuery();
   const { createExternalLink } = useLinkContext();
+  const { brandDetails } = useBaseContext();
 
   const handleClick = useCallback(
     async (e: any) => {
       onClick?.(e);
+      // TODO : remove temporary check.
+      const baseShareUrl = pathName ? pathName.split("/video") : [];
+      const shareUrl =
+        baseShareUrl.length === 2
+          ? `${
+              brandDetails && brandDetails.brand_id === 2357
+                ? `${window.location.href}?video=${baseShareUrl[1]?.slice(1).replace("?", "&")}`
+                : pathName
+            }`
+          : pathName || "";
       // Append UTM source parameter for tracking
-      const url = new URL(createExternalLink(pathName));
+      const url = new URL(createExternalLink(shareUrl));
       url.searchParams.append("utm_source", "web");
       let fullUrl = url.href;
 

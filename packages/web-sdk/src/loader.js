@@ -123,14 +123,35 @@
    * Initialize SDK and create embed based on configuration
    */
   function init(config) {
-    return loadSDK().then((sdk) => {
-      // Use the default export of the module
-      const GenuinClass = sdk.default || sdk.Genuin
+    return loadMainCSS().then(() => {
+      return loadSDK().then((sdk) => {
+        // Use the default export of the module
+        const GenuinClass = sdk.default || sdk.Genuin
 
-      if (GenuinClass) {
-        return GenuinClass.newInit(config)
+        if (GenuinClass) {
+          return GenuinClass.newInit(config)
+        }
+        throw new Error('Genuin SDK not properly loaded')
+      })
+    })
+  }
+
+  function loadMainCSS() {
+    return new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = `./dist/assets/web-sdk.css` // or use `${MEDIA_BASE_URL}/sdk/gen-sdk_1.5.15.css` if defined
+
+      link.onload = () => {
+        console.log('CSS file loaded')
+        resolve(true)
       }
-      throw new Error('Genuin SDK not properly loaded')
+
+      link.onerror = () => {
+        reject(new Error('Failed to load the CSS file.'))
+      }
+
+      document.head.appendChild(link)
     })
   }
 
