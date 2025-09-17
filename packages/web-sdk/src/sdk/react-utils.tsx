@@ -1,3 +1,5 @@
+import * as React from 'react'
+import { getKsCbRequestStatus } from '@/utils/auth'
 import { EmbedDataType } from '@genuin/components/context/embed/embed.types'
 import { createRoot } from 'react-dom/client'
 import type { Root } from 'react-dom/client'
@@ -107,19 +109,25 @@ export function loadNewEmbed({
         container={container}
         embedData={{
           ...embedData,
-          brand_id: brandDetails.brand_id,
-          // TODO: Check for other actions.
-          autoUserInteractionToPerform: config.action as any,
+          brand_id: embedData.brand_id,
+          autoUserInteractionToPerform: embedData.action,
         }}>
         <BaseContextProvider
-          brandDetails={brandDetails}
+          brandDetails={embedData.brandDetails as BrandDetailsConfigType}
           isEmbed>
           <LinkProvider>
             <AuthProvider
               onSignIn={() => {}}
               onSignOut={() => {}}
               onUpdateUser={() => {}}
-              user={user}>
+              user={
+                user
+                  ? {
+                      ...user,
+                      ksCbRequestStatus: user.ksCbRequestStatus,
+                    }
+                  : undefined
+              }>
               <AnalyticsProvider isWebSDK={true}>
                 <Suspense fallback={<EmbedSkeleton />}>
                   {embedData.style === 'standard_wall' ? (

@@ -7,6 +7,6 @@ export const getKsCbRequestStatus = (status: number): ksCbRequestStatusType => {
     case 2:
       return 'Requested'
     default:
-      return 'Accepted'
+      return 'Success'
   }
 }

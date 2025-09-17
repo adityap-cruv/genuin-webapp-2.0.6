@@ -20,6 +20,7 @@ import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { ChevronDownIcon, ChevronUpIcon } from "@genuin/ui/icons";
 import { Swiper } from "swiper/types";
+import { useAnalytics } from "@genuin/components/context";
 
 type PlayerListPropsType = {
   posts: PostDetailsType[];
@@ -63,6 +64,7 @@ export function PlayerList({
   const { showExpandView, activeIndex } = useFeedContext();
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
   const { value, toggle, setValue } = useBoolean(isDesktop);
+  const { track, EventName } = useAnalytics();
   const {
     engagement: {
       engagementTools: { comment: showCommentBox },
@@ -139,6 +141,10 @@ export function PlayerList({
               }}
               onActiveIndexChange={(swiper) => {
                 onActiveIndexChange?.(swiper.activeIndex);
+                // track the event while changing the section by clicking on it
+                track(EventName.SECTION_CHANGES, {
+                  section_id: item?.id,
+                });
               }}
             >
               {posts.map((post, index) => (

@@ -1,15 +1,7 @@
 // Bridge file to maintain compatibility with legacy index
 // This file provides the functions that legacy index expects
 
-// Main embed loading function - bridges to the new embed loader
-export function loadEmbedView(
-  container: HTMLElement,
-  embedData: EmbedDataType,
-  user?: AuthUser,
-  brandName?: string,
-): void {
-  // Use the new embed loader which uses shared components
-}
+import { EmbedDataType } from '@genuin/components/context/embed/embed.types'
 
 // RudderStack analytics loading function
 export function loadRudderStack(): void {

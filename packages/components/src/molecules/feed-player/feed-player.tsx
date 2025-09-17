@@ -14,6 +14,7 @@ import { audioManager } from "@genuin/components/lib/audio-manager";
 import { usePlayerContext } from "./context/context";
 import { useAnalytics } from "@genuin/components/context/analytics";
 import { cn } from "@genuin/ui/lib/utils";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 
 type Props = Omit<
   ComponentProps<typeof VideoPlayer>,
@@ -42,7 +43,8 @@ export const FeedPlayer = memo(function FeedPlayer({
   onLoadStart,
   ...props
 }: Props) {
-  const { muted, volume, playbackSpeed } = useBaseContext();
+  const { muted, volume, playbackSpeed, brandDetails } = useBaseContext();
+  const embedDetails = useSafeEmbedContext();
   const {
     feedPlayerShouldPlay,
     setVideoTimeState,
@@ -83,6 +85,16 @@ export const FeedPlayer = memo(function FeedPlayer({
     }
   }, [playbackSpeed]);
 
+  // DRY: Common analytics event data (memoized)
+  const analyticsEventData = useMemo(() => {
+    return {
+      content_category: "loop",
+      content_id: videoId,
+      event_record_screen: "feed",
+      event_target_screen: "none",
+    };
+  }, [videoId]);
+
   // Track when video comes into view using IntersectionObserver
   useEffect(() => {
     if (!playerRef.current) return;
@@ -91,11 +103,7 @@ export const FeedPlayer = memo(function FeedPlayer({
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            track(EventName.VIDEO_INVIEW, {
-              content_id: videoId,
-              event_record_screen: "feed",
-              event_target_screen: "none",
-            });
+            track(EventName.VIDEO_INVIEW, analyticsEventData);
             observer.disconnect();
           }
         });
@@ -111,17 +119,6 @@ export const FeedPlayer = memo(function FeedPlayer({
       observer.disconnect();
     };
   }, [videoId]);
-
-  // DRY: Common analytics event data (memoized)
-  const analyticsEventData = useMemo(
-    () => ({
-      content_category: "loop",
-      content_id: videoId,
-      event_record_screen: "feed",
-      event_target_screen: "none",
-    }),
-    [videoId]
-  );
 
   const handleMutedChange = useCallback(
     (isMuted: boolean) => {

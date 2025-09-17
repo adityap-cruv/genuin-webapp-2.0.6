@@ -3,7 +3,7 @@ import { useFeed } from "@genuin/components/react-query/api/feed";
 import { EmbedProps } from "./embed.types";
 import { SdkSkeleton } from "./skeleton";
 import { cn } from "@genuin/ui/lib/utils";
-import { useMemo, useState, useRef, useEffect } from "react";
+import { useMemo, useState, useRef, useEffect, useCallback } from "react";
 import { EmbedSwiper } from "@genuin/components/molecules/embed-swiper/embed-swiper";
 import { useAnalytics } from "@genuin/components/context/analytics/context";
 import { SwiperSlide } from "swiper/react";
@@ -24,6 +24,7 @@ import { GridView } from "./grid-view/grid-view";
 import { EmbedExpandView } from "./expand-view";
 import { cva, VariantProps } from "class-variance-authority";
 import { EmbedItem } from "./embed-tile-item";
+import { AnalyticsService } from "@genuin/components/context/analytics/service";
 
 const embedVariants = cva("gencl:rounded-md gencl:overflow-auto", {
   variants: {
@@ -47,8 +48,6 @@ export function Embed({
   ...restProps
 }: EmbedProps & VariantProps<typeof embedVariants>) {
   const [swiper, setSwiper] = useState<Swiper | null>(null);
-  const embedRef = useRef<HTMLDivElement>(null);
-
   const { embedData, embedEventBus, updateIsSectioned, updateSectionList } =
     useEmbedContext();
   // Local state for isSectioned synced with event bus
@@ -57,6 +56,8 @@ export function Embed({
   );
   const { track, EventName } = useAnalytics();
   const config = useEmbedConfigs();
+  // check that does it is embed or placement
+  const isEmbed: boolean = !config.view.isPlacementView;
   const embedVariant = config.embedStyle;
   const isGridLayout = config.view.isGrid;
 
@@ -81,7 +82,6 @@ export function Embed({
   } = useFeed(feedType, feedParams);
   const queryKey = getQueryKeyForFeed(feedType, feedParams);
   const feedData = externalFeedData ?? apiFeedData;
-
   const videos = useMemo(
     () => feedData?.pages?.flatMap((page) => page.feed) || [],
     [feedData]
@@ -104,21 +104,36 @@ export function Embed({
     }
     if (sectionList.length > 0 && updateSectionList) {
       updateSectionList(sectionList);
+      AnalyticsService.updatePayload(
+        "section_name",
+        sectionList.filter(
+          (section) => section?.title !== null && section?.title !== undefined
+        )
+      );
+    } else {
+      AnalyticsService.updatePayload("section_name", []);
     }
   }, [videos.length]);
 
-  // Track EMBED_VIEWED event when embed is visible in viewport
-  useEffect(() => {
-    if (!embedRef.current) return;
+  // Callback ref to know when element is mounted
+  // Track EMBED_VIEWED/PLACEMENT_VIEWED event when embed is visible in viewport
+  const embedRefCallback = useCallback((node: HTMLDivElement | null) => {
+    if (!node) return;
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            track(EventName.EMBED_VIEWED, {
-              embedType: embedVariant,
-              communityIds: config.community.communityIds,
-              groupIds: config.community.communityLoopIds,
-            });
+            track(
+              isEmbed ? EventName.EMBED_VIEWED : EventName.PLACEMENT_VIEWED,
+              {
+                community_id: config.community.communityIds,
+                group_id: config.community.communityLoopIds,
+                ...(!isEmbed && {
+                  has_sections: isSectioned,
+                  section_count: sectionList.length,
+                }),
+              }
+            );
             observer.disconnect();
           }
         });
@@ -126,18 +141,31 @@ export function Embed({
       { threshold: 0.01 }
     );
 
-    observer.observe(embedRef.current);
+    observer.observe(node);
     return () => observer.disconnect();
   }, []);
 
-  // Track EMBED_INITIALIZED event when component mounts
+  // Track EMBED_INITIALIZED or PLACEMENT_INITIALIZED event when component mounts
   useEffect(() => {
-    track(EventName.EMBED_INITIALIZED, {
-      embedType: embedVariant,
-      communityIds: config.community.communityIds,
-      groupIds: config.community.communityLoopIds,
-    });
-  }, []);
+    if (isEmbed) {
+      track(EventName.EMBED_INITIALIZED, {
+        community_id: config.community.communityIds,
+        group_id: config.community.communityLoopIds,
+      });
+    }
+  }, [isEmbed]);
+
+  // Track PLACEMENT_INITIALIZED event when component mounts
+  useEffect(() => {
+    if (!isEmbed && !isLoading) {
+      track(EventName.PLACEMENT_INITIALIZED, {
+        community_id: config.community.communityIds,
+        group_id: config.community.communityLoopIds,
+        has_sections: isSectioned,
+        section_count: sectionList.length,
+      });
+    }
+  }, [isEmbed, isLoading]);
 
   useEffect(() => {
     function handleActiveIndexChange(
@@ -207,7 +235,7 @@ export function Embed({
 
   return (
     <div
-      ref={embedRef}
+      ref={embedRefCallback}
       className={cn(embedVariants({ variant: embedVariant }), className)}
       style={{
         height: containerHeight,

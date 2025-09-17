@@ -6,6 +6,7 @@ import {
 import { LazyGestureGuideOverlay } from "@genuin/components/molecules/gestures/gesture-guide-overlay";
 import { useBaseContext } from "@genuin/components/context/base";
 import { usePathname } from "@genuin/components/hooks/use-pathname";
+import { useAnalytics } from "@genuin/components/context";
 
 function useGestureOverlayMethods({ tapBehavior }: { tapBehavior: number }) {
   const {
@@ -14,6 +15,7 @@ function useGestureOverlayMethods({ tapBehavior }: { tapBehavior: number }) {
     resetAllGestures,
     resetGestureOverlay,
   } = useGestureContext();
+  const { track, EventName } = useAnalytics();
 
   /**
    * Determines whether play/pause gesture handling should be active based on tap behavior and mute state
@@ -59,6 +61,15 @@ function useGestureOverlayMethods({ tapBehavior }: { tapBehavior: number }) {
 
       if (shouldHide) {
         setGestureOverlay(step, false);
+        // track event of the swipe up gesture
+        track(
+          step === "SWIPE"
+            ? EventName.SWIPE_UP_GESTURE
+            : EventName.PLAY_PAUSE_GESTURE,
+          {
+            value: true,
+          }
+        );
       }
     },
     [setGestureOverlay, tapBehavior]

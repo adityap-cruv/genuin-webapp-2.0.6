@@ -85,6 +85,7 @@ export function FeedContextProvider({
   const { track, EventName } = useAnalytics();
   // State is used to track the active index of the feed.
   const [activeIndex, setActiveIndex] = useState(0);
+  const embedDetails = useSafeEmbedContext();
 
   // State is used to track whether the expand view is open or not.
   const {
@@ -96,10 +97,43 @@ export function FeedContextProvider({
 
   useEffect(() => {
     // Track when the expand view is opened or closed
+    const isEmbed: boolean = embedDetails
+      ? !!embedDetails.embedData.embed_id
+      : false;
     if (showExpandView) {
-      track(EventName.VIDEO_MAXIMIZED, { activeIndex });
+      track(
+        embedDetails
+          ? isEmbed
+            ? EventName.EMBED_MAXIMIZED
+            : EventName.PLACEMENT_MAXIMIZED
+          : EventName.VIDEO_MAXIMIZED,
+        {
+          activeIndex,
+          ...(!isEmbed &&
+            embedDetails && {
+              has_sections: embedDetails.embedEventBus.getContext().isSectioned,
+              section_count:
+                embedDetails.embedEventBus.getContext().sectionList.length,
+            }),
+        }
+      );
     } else {
-      track(EventName.VIDEO_MINIMIZED, { activeIndex });
+      track(
+        embedDetails
+          ? isEmbed
+            ? EventName.EMBED_MINIMIZED
+            : EventName.PLACEMENT_MINIMIZED
+          : EventName.VIDEO_MINIMIZED,
+        {
+          activeIndex,
+          ...(!isEmbed &&
+            embedDetails && {
+              has_sections: embedDetails.embedEventBus.getContext().isSectioned,
+              section_count:
+                embedDetails.embedEventBus.getContext().sectionList.length,
+            }),
+        }
+      );
     }
 
     // If the device is mobile, we do not want to request fullscreen mode. And if the fullscreen api is disabled by user.

@@ -78,6 +78,20 @@ export function MentionInput({
   });
   const { track, EventName } = useAnalytics();
 
+  const handleCommentPostSuccess = useCallback(
+    (commentData: any) => {
+      if (commentData[0].commentId) {
+        track(EventName.VIDEO_COMMENTED, {
+          video_id: videoId,
+          content_id: commentData[0].commentId,
+          content_category: "comment",
+        });
+      }
+      onCommentPosted?.(commentData);
+    },
+    [track, EventName.VIDEO_COMMENTED, videoId, onCommentPosted]
+  );
+
   const [selectedMentions, setSelectedMentions] = useState<SelectedMention[]>(
     []
   );
@@ -101,20 +115,6 @@ export function MentionInput({
     selectedMentions,
     form,
   });
-
-  const handleCommentPostSuccess = useCallback(
-    (commentData: any) => {
-      if (commentData.comment_id) {
-        track(EventName.VIDEO_COMMENTED, {
-          video_id: videoId,
-          content_id: commentData.comment_id,
-          content_category: "comment",
-        });
-      }
-      onCommentPosted?.(commentData);
-    },
-    [track, EventName.VIDEO_COMMENTED, videoId, onCommentPosted]
-  );
 
   const handlePayloadTextArea = (payload: any) => {
     onPayload?.(payload);

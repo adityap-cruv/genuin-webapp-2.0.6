@@ -14,6 +14,7 @@ import { useBaseContext } from "@genuin/components/context/base";
 import { useAnalytics } from "@genuin/components/context/analytics";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { Swiper } from "swiper/types";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 
 type VideoProviderProps = {
   children: React.ReactNode;
@@ -179,11 +180,14 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     // Skip impression event if video was viewed for less than 2 seconds
     if (!swiper || !index) return;
 
-    if (index !== swiper.previousIndex || videoStateRef.current.duration < 0.2)
+    if (index !== swiper.previousIndex)
       return;
 
     track(EventName.VIDEO_IMPRESSION, {
+      content_category: "loop",
       content_id: videoId,
+      event_record_screen: "feed",
+      event_target_screen: "none",
       video_length: videoStateRef.current.duration,
       video_view_length: videoStateRef.current.currentTime,
     });

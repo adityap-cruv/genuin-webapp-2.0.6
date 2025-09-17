@@ -5,6 +5,14 @@ import {
 import { EventNameType, EventPayload, QueuedEvent } from "./types";
 import { RudderAnalytics } from "@rudderstack/analytics-js";
 import { UAParser } from "ua-parser-js";
+import {
+  getLinkDelay,
+  getTapBehaviour,
+  getVideoAutoplay,
+  getVideoPlayInFeed,
+} from "./utils";
+import { BrandDetailsConfigType } from "@genuin/components/types/brand";
+import { EmbedDataType } from "../embed/embed.types";
 
 // Define an interface for the default payload.
 // You can customize this based on your specific default payload structure.
@@ -27,6 +35,21 @@ type DefaultAnalyticsPayload = {
   sdk_version?: string;
   user_name?: string;
   gen_user_name?: string;
+  browser_name?: string;
+  browser_version?: string;
+  device_name?: string;
+};
+
+type DefaultVideoEventPayload = {
+  tap_behaviour: string;
+  video_autoplay: string;
+  autoplay_config: number;
+  video_starts_with_sound_on: boolean;
+  video_play_in_feed: string;
+  in_feed_reaction: string;
+  link_delay: string;
+  should_card_autoplay?: boolean;
+  should_card_video_loop?: boolean;
 };
 
 class AnalyticsServiceSingleton {
@@ -35,8 +58,9 @@ class AnalyticsServiceSingleton {
   private eventQueue: QueuedEvent[] = [];
   private initializationPromise: Promise<void> | null = null;
   private defaultPayload: DefaultAnalyticsPayload | null = null;
+  private defaultVideoEventPayload: DefaultVideoEventPayload | null = null;
   private rudderAnalyticsInstance: RudderAnalytics | null = null; // Added RudderAnalytics instance
-  private os = new UAParser().getResult().os.name;
+  private uaParser = new UAParser().getResult();
   private constructor() {
     // Private constructor to prevent direct instantiation
   }
@@ -48,7 +72,11 @@ class AnalyticsServiceSingleton {
     return AnalyticsServiceSingleton.instance;
   }
 
-  public initialize(defaultPayload: DefaultAnalyticsPayload): Promise<void> {
+  public initialize(
+    defaultPayload: DefaultAnalyticsPayload,
+    brandDetails?: BrandDetailsConfigType,
+    embedData?: EmbedDataType
+  ): Promise<void> {
     if (this.initializationPromise) {
       return this.initializationPromise;
     }
@@ -60,7 +88,14 @@ class AnalyticsServiceSingleton {
       // Optionally, throw an error here if you want to enforce it strictly
       // throw new Error("defaultPayload is required for AnalyticsService.initialize");
     }
-    this.defaultPayload = defaultPayload;
+    this.defaultPayload = {
+      ...defaultPayload,
+      browser_name: this.uaParser.browser.name,
+      browser_version: this.uaParser.browser.version,
+      device_name: this.uaParser.device.model,
+    };
+
+    this.setVideoEventsPayload(brandDetails, embedData);
 
     this.initializationPromise = new Promise<void>((resolve, reject) => {
       if (this.isInitialized) {
@@ -169,13 +204,56 @@ class AnalyticsServiceSingleton {
     return this.initializationPromise;
   }
 
+  private setVideoEventsPayload(
+    brandDetails?: BrandDetailsConfigType,
+    embedData?: EmbedDataType
+  ) {
+    if (this.defaultVideoEventPayload || !brandDetails) return;
+    const { web_configs, reactions } = brandDetails;
+    const isCarousel = embedData?.style === "carousel";
+    this.defaultVideoEventPayload = {
+      tap_behaviour: getTapBehaviour(web_configs),
+      video_autoplay: getVideoAutoplay(web_configs),
+      autoplay_config: web_configs.video_autoplay.auto_play_after,
+      video_starts_with_sound_on: web_configs.is_start_with_sound,
+      video_play_in_feed: getVideoPlayInFeed(web_configs),
+      in_feed_reaction: reactions.type,
+      link_delay: getLinkDelay(web_configs),
+      ...(isCarousel && {
+        should_card_autoplay: embedData.media_play?.enable_autoplay,
+        should_card_video_loop: embedData.media_play?.enable_loop_video,
+      }),
+    };
+  }
+
+  public updatePayload(key: string, value: any) {
+    this.defaultPayload = {
+      ...(this.defaultPayload ?? {
+        user_id: undefined,
+        gen_user_id: undefined,
+        brand_id: undefined,
+        channel: "",
+        environment: "",
+        path: "",
+        query_params: {},
+        title: "",
+      }),
+      [key]: value,
+    } as DefaultAnalyticsPayload;
+  }
+
   public async track(
     eventName: EventNameType,
     payload?: EventPayload
   ): Promise<void> {
+    const remainingVideoEvents = ["Muted", "Unmuted", "Midpoint"];
     const mergedPayload = {
       ...(this.defaultPayload || {}),
       ...(payload || {}),
+      ...(eventName.startsWith("Video") ||
+      remainingVideoEvents.includes(eventName)
+        ? this.defaultVideoEventPayload
+        : {}),
     };
 
     const eventData: QueuedEvent = {
@@ -197,7 +275,7 @@ class AnalyticsServiceSingleton {
       //   mergedPayload
       // );
       this.rudderAnalyticsInstance.track(eventName, mergedPayload, {
-        os: { name: this.os },
+        os: { name: this.uaParser.os.name, version: this.uaParser.os.version },
       });
     } else if (this.isInitialized) {
       // SDK initialized (possibly simulated after error) but rudderAnalyticsInstance is not available

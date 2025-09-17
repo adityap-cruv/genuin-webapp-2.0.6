@@ -1,4 +1,4 @@
-import { EmbedDataType } from "../src/context/embed/embed.types";
+import { BrandDetailsConfigType, EmbedDataType } from "../src/context/embed/embed.types";
 
 export const testBrandDetails = {
   brand_id: 1429,
@@ -577,7 +577,9 @@ export const testEmbedData: EmbedDataType = {
   placement_id: "68a70d3177806502ba2a9a57",
   style_id: "68a70d3177806502ba2a9a58",
   type: "brand_feed",
+  action : undefined,
   brand_id: 2910,
+  brandDetails : {} as BrandDetailsConfigType,
   customization: {
     dimensions: {
       width: 800,

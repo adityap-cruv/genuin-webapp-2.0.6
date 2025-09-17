@@ -603,6 +603,7 @@ export const VideoPlayer = memo(function VideoPlayer({
   const handleEnded = useCallback(() => {
     changePlayerStateRef(true);
   }, [changePlayerStateRef]);
+
   useEffect(() => {
     const videoElement = videoRef.current;
     if (!videoElement) return;

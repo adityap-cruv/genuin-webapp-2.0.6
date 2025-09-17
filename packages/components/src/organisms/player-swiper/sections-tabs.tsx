@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { cn } from "@genuin/ui/lib/utils";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+import { useAnalytics } from "@genuin/components/context";
 
 type SectionsTabsProps = {
   onSectionSelect?: (section: PostDetailsType["section"]) => void;
@@ -9,6 +10,7 @@ type SectionsTabsProps = {
 
 export const SectionsTabs = ({ onSectionSelect }: SectionsTabsProps) => {
   const embedDetails = useSafeEmbedContext();
+  const { track, EventName } = useAnalytics();
   const containerRef = useRef<HTMLDivElement>(null);
   const [sectionList, setSectionList] = useState(
     embedDetails?.embedEventBus.getContext().sectionList ?? []
@@ -88,6 +90,10 @@ export const SectionsTabs = ({ onSectionSelect }: SectionsTabsProps) => {
               onSectionSelect(section);
             }
             if (embedDetails) {
+              // track the event while changing the section by clicking on it
+              track(EventName.SECTION_CHANGES, {
+                section_id: section?.id,
+              });
               embedDetails.updateSelectedSection(section);
               setSelectedSection(section);
             }

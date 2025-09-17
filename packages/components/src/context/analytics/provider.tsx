@@ -2,7 +2,6 @@
 
 import {
   useEffect, // Keep useEffect for the initial service initialization call
-  // useState, // No longer needed for isInitialized
   useCallback,
   ReactNode,
 } from "react";
@@ -14,6 +13,7 @@ import { useAuthContext } from "../auth";
 import { getDeviceId } from "@genuin/components/lib/utils/device-id";
 import { GENUIN_BRAND_ID } from "@genuin/components/lib/constants";
 import { usePathname } from "@genuin/components/hooks/use-pathname";
+import { EmbedDataType } from "@genuin/components/context/embed/embed.types";
 import { useSafeEmbedContext } from "../embed/context";
 
 type AnalyticsProviderProps = {
@@ -26,16 +26,7 @@ type AnalyticsProviderProps = {
   /**
    * Optional analytics data for SDK initialization
    */
-  embedData?: {
-    embed_id?: string;
-    embed_type?: string;
-    embed_style?: string;
-    content_category?: string;
-    phone_no?: string;
-    sdk_version?: string;
-    user_name?: string;
-    gen_user_name?: string;
-  };
+  embedData?: EmbedDataType;
 };
 
 enum Channel {
@@ -55,12 +46,12 @@ export function AnalyticsProvider({
   embedData,
 }: AnalyticsProviderProps) {
   const { brandDetails } = useBaseContext();
-  const embedDetails = useSafeEmbedContext();
   const { user } = useAuthContext();
+  const embedDetails = useSafeEmbedContext();
   const pathname = usePathname();
   useEffect(() => {
-    if (!embedDetails) AnalyticsService.track(EventName.PAGE_VIEW);
-  }, [pathname, embedDetails]);
+    if (!isWebSDK) AnalyticsService.track(EventName.PAGE_VIEW);
+  }, [pathname]);
 
   // Updated polyfill for requestIdleCallback
   const requestIdleCallbackPolyfill =
@@ -105,31 +96,56 @@ export function AnalyticsProvider({
         title: document.title,
       };
 
-      // TODO Separate the objects based on embed
-
       // If isWebSDK is true, override with embedData values if available
-      if (isWebSDK && embedData) {
+      if (isWebSDK && (embedData?.embed_id || embedData?.placement_id)) {
         // Create SDK payload with only non-empty values
         const sdkPayload: Record<string, string | undefined> = {};
+        // Payload of embed specific values
+        if (embedData.embed_id) {
+          sdkPayload.embed_id = embedData.embed_id;
+          if (embedData.type) sdkPayload.embed_type = embedData.style;
+          if (embedData.style) sdkPayload.embed_style = embedData.style;
+        }
 
-        if (embedData.embed_id) sdkPayload.embed_id = embedData.embed_id;
-        if (embedData.embed_type) sdkPayload.embed_type = embedData.embed_type;
-        if (embedData.embed_style)
-          sdkPayload.embed_style = embedData.embed_style;
-        // Set default value for content_category if not provided
-        sdkPayload.content_category = embedData.content_category || "loop";
-        if (embedData.phone_no) sdkPayload.phone_no = embedData.phone_no;
-        if (embedData.sdk_version)
-          sdkPayload.sdk_version = embedData.sdk_version;
-        if (embedData.user_name) sdkPayload.user_name = embedData.user_name;
-        if (embedData.gen_user_name)
-          sdkPayload.gen_user_name = embedData.gen_user_name;
+        // Payload of placement specific values
+        if (embedData.placement_id) {
+          sdkPayload.placement_id = embedData.placement_id;
+          if (embedData.style_id) sdkPayload.style_id = embedData.style_id;
+          if (embedData.feed_type) sdkPayload.feed_style = embedData.feed_type;
+          if (embedData.style) sdkPayload.placement_layout = embedData.style;
+          if (embedData.type)
+            sdkPayload.feed_style = embedData.type.split("_")[0];
+
+          // TODO : from where it should pass?
+          /*
+ user_city,
+user_region,
+user_country,
+user_location,
+user_postal,
+user_timezone,
+user_latitude,
+user_longitude
+ */
+        }
+
+        // Common payload for embed and placement
+        sdkPayload.content_category = "loop";
+
+        // TODO : need to change sdk version
+        sdkPayload.sdk_version = "2.0.0";
+        if (user) {
+          if (user.phoneNumber) sdkPayload.phone_no = user.phoneNumber;
+          if (user.nickname) {
+            sdkPayload.user_name = user.nickname;
+            sdkPayload.gen_user_name = user.nickname;
+          }
+        }
 
         // Add non-empty SDK values to the main payload
         Object.assign(initPayload, sdkPayload);
       }
-
-      AnalyticsService.initialize(initPayload)
+      AnalyticsService.initialize(initPayload,brandDetails,embedDetails?.embedData)
         .then(() => {
           // console.log(
           //   "[AnalyticsProvider] AnalyticsService.initialize() called and promise resolved."

@@ -374,10 +374,12 @@ export type EmbedDataType = {
   _id?: string;
   name: string;
   style: ViewType;
+  action: "comment" | "spark" | "comment-spark" | undefined;
   type: "brand_feed" | "community_feed" | "loop_feed";
   brand_id: number;
   customization: Partial<CustomizationType>;
   embed_layout?: string;
+  brandDetails: BrandDetailsConfigType;
   card_layout_id?: number;
   video_layout_id?: number;
   __v?: number;
@@ -452,6 +454,8 @@ export type EmbedDataType = {
     auto_advance_playback?: number;
   };
   show_linkout_in_expand?: boolean;
+  grid_auto_advance_playback?: number;
+  grid_enable_loop_video?: boolean;
 };
 
 export type CustomizationType = {
