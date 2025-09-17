@@ -40,7 +40,7 @@ export const CommentItem = memo(function CommentItem({
   videoId,
   onReactionStateChange,
   onCommentCountChange,
-  videoSlug
+  videoSlug,
 }: CommentItemProps) {
   const { owner } = comment;
   const { user } = useAuthContext();

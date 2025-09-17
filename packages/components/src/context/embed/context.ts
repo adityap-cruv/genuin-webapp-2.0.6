@@ -72,7 +72,7 @@ type EmbedContextType = {
   /**
    * Updates the currently selected section
    */
-  updateSelectedSection: (section: PostDetailsType['section']) => void;
+  updateSelectedSection: (section: PostDetailsType["section"]) => void;
 
   /**
    * Marks that the auto interaction action (spark, comment-spark) has been done
