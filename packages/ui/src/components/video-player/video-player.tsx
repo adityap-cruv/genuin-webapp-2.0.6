@@ -311,13 +311,17 @@ export const VideoPlayer = memo(function VideoPlayer({
               () => {
                 // Call onAdCompleted with the current CTA info before resetting
                 const currentCtaInfo = adInfoRef.current.ctaInfo;
-                if (currentCtaInfo) {
-                  onAdCompleted?.({
-                    adId: currentCtaInfo.adId,
-                    url: currentCtaInfo.url,
-                    title: currentCtaInfo.title,
-                  });
-                }
+                // if (currentCtaInfo) {
+                onAdCompleted?.(
+                  currentCtaInfo
+                    ? {
+                        adId: currentCtaInfo.adId,
+                        url: currentCtaInfo.url,
+                        title: currentCtaInfo.title,
+                      }
+                    : { adId: null, url: null, title: null }
+                );
+                // }
 
                 // Reset the ad playing state and CTA info
                 adInfoRef.current.isPlaying = false;

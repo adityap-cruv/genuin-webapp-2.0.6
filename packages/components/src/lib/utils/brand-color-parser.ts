@@ -18,7 +18,7 @@
  * @returns An object mapping CSS variable names to color codes.
  */
 export function parseBrandColors(colors: any) {
-  const parsedColors: Record<string, string> = {}
+  const parsedColors: Record<string, string> = {};
 
   // Only parse primary category
   if (colors.primary) {

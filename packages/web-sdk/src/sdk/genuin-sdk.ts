@@ -8,7 +8,12 @@ import {
 } from '../core'
 import { getRandomNumber, parsePlacementToEmbedData } from '../utils'
 import { BrandDetailsManager } from '@/core/brand-details-manager'
-import { loadErrorView, loadNewEmbed } from './react-utils'
+import {
+  loadErrorView,
+  loadExpandView,
+  loadLoadingView,
+  loadNewEmbed,
+} from './react-utils'
 import { EmbedDetailsManager } from '@/core/embed-details-manager'
 import { AuthUser } from '@genuin/components/types/auth'
 import { EmbedDataType } from '@genuin/components/context/embed/embed.types'
@@ -553,7 +558,12 @@ export class GenuinSDK {
 
     Array.from(uniqueElements).forEach((element) => {
       const instanceId = this.setInstanceId(element)
+      // Show loading view immediately
+      loadLoadingView(element)
       const extractedData = this.extractDataFromSingleDiv(element, configByUser)
+      if (extractedData.startVideoSlug) {
+        loadExpandView(element)
+      }
       if (extractedData) {
         this.sdkElements[instanceId] = {
           element,

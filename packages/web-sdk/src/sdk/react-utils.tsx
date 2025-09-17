@@ -1,5 +1,3 @@
-import * as React from 'react'
-import { getKsCbRequestStatus } from '@/utils/auth'
 import { EmbedDataType } from '@genuin/components/context/embed/embed.types'
 import { createRoot } from 'react-dom/client'
 import type { Root } from 'react-dom/client'
@@ -16,6 +14,10 @@ import { Toaster } from '@genuin/ui'
 import { BrandDetailsConfigType } from '@genuin/components/types/brand'
 import { AuthUser } from '@genuin/components/types/auth'
 import { SingleEmbedDataConfig } from '@/type'
+import { FeedSkeleton } from '@genuin/components/templates/feed'
+
+// Track React roots per container to support multiple embeds
+const containerRootMap = new Map<HTMLElement, Root>()
 
 // Error view function
 export function loadErrorView(container: HTMLElement): void {
@@ -37,6 +39,36 @@ export function loadErrorView(container: HTMLElement): void {
       </div>
     </div>
   `
+}
+
+// Loading view function
+export function loadLoadingView(container: HTMLElement): void {
+  // Unmount previous root if exists for this container
+  const prevRoot = containerRootMap.get(container)
+  if (prevRoot) {
+    prevRoot.unmount()
+    containerRootMap.delete(container)
+  }
+
+  const root = createRoot(container)
+  containerRootMap.set(container, root)
+
+  root.render(<EmbedSkeleton />)
+}
+
+// Expand view function
+export function loadExpandView(container: HTMLElement): void {
+  // Unmount previous root if exists for this container
+  const prevRoot = containerRootMap.get(container)
+  if (prevRoot) {
+    prevRoot.unmount()
+    containerRootMap.delete(container)
+  }
+
+  const root = createRoot(container)
+  containerRootMap.set(container, root)
+
+  root.render(<ExpandViewSkeleton />)
 }
 
 // Lazy load the Embed component for better code splitting
@@ -77,8 +109,13 @@ const EmbedSkeleton = () => (
   </div>
 )
 
-// Track React roots per container to support multiple embeds
-const containerRootMap = new Map<HTMLElement, Root>()
+const ExpandViewSkeleton = () => {
+  return (
+    <div className='gencl:fixed gencl:inset-0 gencl:h-full gencl:w-full gencl:z-50'>
+      <FeedSkeleton variant='fullscreen' />
+    </div>
+  )
+}
 
 export function loadNewEmbed({
   container,
@@ -113,7 +150,7 @@ export function loadNewEmbed({
           autoUserInteractionToPerform: embedData.action,
         }}>
         <BaseContextProvider
-          brandDetails={embedData.brandDetails as BrandDetailsConfigType}
+          brandDetails={brandDetails}
           isEmbed>
           <LinkProvider>
             <AuthProvider

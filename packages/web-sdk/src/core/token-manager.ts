@@ -140,7 +140,7 @@ export class TokenManager {
           //   autoLoginToken: apiResponse.autoLoginToken,
           // })
           // Cache the user
-          this.cachedUser = userData.user
+          this.cachedUser = userData
 
           if (this.cachedUser) {
             this.cachedUser.accessToken = userData.accessToken

@@ -44,19 +44,20 @@ export class ThemeManager {
 
   parseColors(colors: any) {
     const parsedColors: Record<string, string> = {}
-    for (const category in colors) {
-      const categoryColors = colors[category]
+    const categoryColors = colors['primary']
+
+    if (categoryColors) {
       for (const shade in categoryColors) {
-        if (!shade.startsWith('primary')) break
         const colorCode = categoryColors[shade]
         const parsedShade = shade.split('_')[1]
         if (parsedShade) {
-          parsedColors[`--gencl-color-${category}-${parsedShade}`] = colorCode
+          parsedColors[`--gencl-color-primary-${parsedShade}`] = colorCode
         } else {
-          parsedColors[`--gencl-color-${category}`] = colorCode
+          parsedColors[`--gencl-color-primary`] = colorCode
         }
       }
     }
+
     return parsedColors
   }
 

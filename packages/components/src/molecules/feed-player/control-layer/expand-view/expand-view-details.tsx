@@ -101,6 +101,12 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
   const placementVideoLayoutId = postDetails.video.placement_video_layout_id;
   const showLinkoutInExpand = embedConfig.links.showLinksInExpand;
   const hideGroupPill = videoLayoutId === 3;
+  const hideCommunityJoinButton =
+    videoLayoutId === 3 ||
+    (videoLayoutId === 5 && placementVideoLayoutId === 1);
+  const hideGroupSubscriptionButton =
+    videoLayoutId === 3 ||
+    (videoLayoutId === 5 && placementVideoLayoutId === 1);
 
   // Determine layout type and config
   let layoutType: "default" | "iheart" | "ted" | "walmart" = "default";
@@ -127,9 +133,6 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
     layoutType = "walmart";
   }
 
-  // Determine button visibility based on layout IDs
-  const shouldHideButtons = videoLayoutId === 5 && placementVideoLayoutId === 1;
-
   const defaultOpenCommentDialog = useMemo(() => {
     return (
       (embedDetails?.embedData.autoUserInteractionToPerform ===
@@ -145,8 +148,8 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
     layoutType,
     defaultOpenCommentDialog,
     showSeeker,
-    hideCommunityJoinButton: shouldHideButtons,
-    hideGroupSubscriptionButton: shouldHideButtons,
+    hideCommunityJoinButton,
+    hideGroupSubscriptionButton,
     showLinkoutInExpand,
     hideGroupPill,
   };
