@@ -110,7 +110,7 @@ export const ActionPopover = memo(function ActionPopover({
     if (typeof baseUrl === "function") {
       return () => {
         return baseUrl(
-          queryParams.video,
+          queryParams.videoSlug,
           queryParams.action,
           queryParams.commentId
         );

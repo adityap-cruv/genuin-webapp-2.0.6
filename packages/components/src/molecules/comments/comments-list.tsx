@@ -15,6 +15,7 @@ type CommentListProps = {
   videoId: string;
   showCloseButton: boolean;
   shareUrl: string;
+  videoSlug: string;
   onCommentCountChange?: ComponentProps<
     typeof DeleteComment
   >["onCommentCountChange"];
@@ -26,6 +27,7 @@ export function CommentsList({
   className,
   shareUrl,
   onCommentCountChange,
+  videoSlug,
   ...restProps
 }: CommentListProps) {
   const {
@@ -112,6 +114,7 @@ export function CommentsList({
               comment={comment}
               shareUrl={shareUrl}
               videoId={videoId}
+              videoSlug={videoSlug}
               onCommentCountChange={onCommentCountChange}
               onReactionStateChange={(isReacted) => {
                 handleReactionStateChangeInComments(

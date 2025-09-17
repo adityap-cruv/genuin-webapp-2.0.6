@@ -62,6 +62,7 @@ export function CommentsDialog({
           showCloseButton={false}
           shareUrl={shareUrl}
           className="gencl:pt-4"
+          videoSlug={videoSlug}
           onCommentCountChange={onCommentCountChange}
         />
         <CommentInputBox

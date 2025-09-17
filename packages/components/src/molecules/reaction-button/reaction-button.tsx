@@ -59,6 +59,7 @@ export const ReactionButton = React.memo(function ReactionButton({
   showReactionCount,
   onClick,
   videoId,
+  contentType,
   ...restProps
 }: ReactionButtonProps) {
   const { authenticationStatus, handleAuthCallback } = useAuthContext();
@@ -72,13 +73,13 @@ export const ReactionButton = React.memo(function ReactionButton({
     () =>
       createReturnQueryParams({
         url: shareUrl,
-        action: "spark",
+        action: contentType === "COMMENT" ? "comment-spark" : "spark",
         additionalParams: {
           videoSlug: videoSlug ?? undefined,
-          commentId: contentId,
+          ...(contentType === "COMMENT" && { commentId: contentId }),
         },
       }),
-    []
+    [contentType]
   );
 
   const clickHandler = handleAuthCallback({
@@ -94,6 +95,7 @@ export const ReactionButton = React.memo(function ReactionButton({
       contentId={contentId}
       videoId={videoId}
       videoSlug={videoSlug}
+      contentType={contentType}
       onClick={(e) => {
         // Only trigger clickHandler for the default case, not for popover
         onClick?.(e);
@@ -130,7 +132,7 @@ export const ReactionButton = React.memo(function ReactionButton({
     return (
       <ActionPopover
         content={
-          restProps.contentType === "COMMENT"
+          contentType === "COMMENT"
             ? "to like this comment."
             : "to like this Short."
         }

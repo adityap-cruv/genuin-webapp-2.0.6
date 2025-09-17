@@ -24,6 +24,7 @@ export type CommentItemProps = {
   comment: CommentListType[number];
   videoId: string;
   shareUrl: string;
+  videoSlug: string;
   onReactionStateChange?: ComponentProps<
     typeof ReactionButton
   >["onReactionStateChange"];
@@ -39,6 +40,7 @@ export const CommentItem = memo(function CommentItem({
   videoId,
   onReactionStateChange,
   onCommentCountChange,
+  videoSlug
 }: CommentItemProps) {
   const { owner } = comment;
   const { user } = useAuthContext();
@@ -97,6 +99,7 @@ export const CommentItem = memo(function CommentItem({
             withCustomChildren
             showReactionCount={false}
             shareUrl={shareUrl}
+            videoSlug={videoSlug}
           >
             <div className="gencl:flex gencl:gap-1 gencl:items-center gencl:cursor-pointer">
               <DynamicReactionIcon
