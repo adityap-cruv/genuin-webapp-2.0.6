@@ -11,6 +11,7 @@ import {
 import { tryJsonParse } from "@genuin/ui/lib/utils";
 import type { ReadMoreProps, ReadMoreTextType } from "./read-more.types";
 import { memo } from "react";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 
 /**
  * ReadMore Component
@@ -57,7 +58,7 @@ import { memo } from "react";
  */
 export const ReadMore = memo(function ReadMore({
   text,
-  maxChars = 100,
+  maxChars,
   maxLines = 2,
   maxWidth = "100%",
   showExpandText = true,
@@ -79,10 +80,14 @@ export const ReadMore = memo(function ReadMore({
   overlayClassName,
   ...rest
 }: ReadMoreProps) {
+  const { isMobile } = useDeviceDetectMediaQuery();
   const textRef = useRef<HTMLParagraphElement>(null);
   const [isExpanded, setIsExpanded] = useState(defaultExpand);
   // For smooth collapse: delay reducing chars until after animation
   const [showCollapsed, setShowCollapsed] = useState(!defaultExpand);
+
+  // set maximum char limit as per the device
+  const maxCharacter = maxChars ?? (isMobile ? 80 : 100);
 
   // Memoize parsed text processing
   const parsedText = useMemo(() => {
@@ -122,7 +127,7 @@ export const ReadMore = memo(function ReadMore({
 
   // Memoize text splitting for performance
   const textParts = useMemo(() => {
-    if (!parsedText || flattenedText.length <= maxChars) {
+    if (!parsedText || flattenedText.length <= maxCharacter) {
       return { teaser: parsedText, remaining: null, shouldTruncate: false };
     }
 
@@ -135,7 +140,7 @@ export const ReadMore = memo(function ReadMore({
       for (; i < words.length; i++) {
         const word = words[i] ?? "";
         const wordLen = word.length + (i === 0 ? 0 : 1);
-        if (teaserLen + wordLen > maxChars) break;
+        if (teaserLen + wordLen > maxCharacter) break;
         teaserWords.push(word);
         teaserLen += wordLen;
       }
@@ -169,8 +174,8 @@ export const ReadMore = memo(function ReadMore({
               ? item.text
               : "";
 
-        if (charCount + itemText.length > maxChars) {
-          const remainingChars = maxChars - charCount;
+        if (charCount + itemText.length > maxCharacter) {
+          const remainingChars = maxCharacter - charCount;
           if (remainingChars > 0 && typeof item === "string") {
             teaserArr.push(item.slice(0, remainingChars));
             remainingArr.push(item.slice(remainingChars));

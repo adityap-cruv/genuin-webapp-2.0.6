@@ -47,6 +47,7 @@ export class ThemeManager {
     for (const category in colors) {
       const categoryColors = colors[category]
       for (const shade in categoryColors) {
+        if (!shade.startsWith('primary')) break
         const colorCode = categoryColors[shade]
         const parsedShade = shade.split('_')[1]
         if (parsedShade) {
