@@ -6,28 +6,28 @@
     {
       "seller_id": "2314",
       "seller_type": "PUBLISHER",
-      "name": "Carlistmy",
+      "name": "Carlist.my",
       "domain": "carlist.my",
       "is_confidential": 0
     },
     {
       "seller_id": "2556",
       "seller_type": "PUBLISHER",
-      "name": "Mobil123",
+      "name": "Mobil123.com",
       "domain": "mobil123.com",
       "is_confidential": 0
     },
     {
       "seller_id": "2557",
       "seller_type": "PUBLISHER",
-      "name": "one2car",
+      "name": "One2car",
       "domain": "one2car.com",
       "is_confidential": 0
     },
     {
       "seller_id": "2558",
       "seller_type": "PUBLISHER",
-      "name": "Carmudi",
+      "name": "Carmudi Indonesia",
       "domain": "carmudi.co.id",
       "is_confidential": 0
     },
@@ -62,8 +62,8 @@
     {
       "seller_id": "99",
       "seller_type": "PUBLISHER",
-      "name": "Genuin Video Network",
-      "domain": "genuin.com",
+      "name": "Genuin Studio",
+      "domain": "begenuin.com",
       "is_confidential": 0
     }
   ]
