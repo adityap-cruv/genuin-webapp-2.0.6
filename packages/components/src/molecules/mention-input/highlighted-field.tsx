@@ -86,14 +86,6 @@ const HighlightedInput = forwardRef<HTMLInputElement, HighlightedInputProps>(
       }
     };
 
-    const handleKeyUp = (e: React.KeyboardEvent<HTMLInputElement>): void => {
-      const target = e.target as HTMLInputElement;
-    };
-
-    const handleClick = (e: React.MouseEvent<HTMLInputElement>): void => {
-      const target = e.target as HTMLInputElement;
-    };
-
     // Helper to escape regex special characters
     const escapeRegExp = (string: string) =>
       string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -165,10 +157,8 @@ const HighlightedInput = forwardRef<HTMLInputElement, HighlightedInputProps>(
               value={inputValue}
               onChange={handleInputChange}
               onScroll={handleScroll}
-              onKeyUp={handleKeyUp}
-              onClick={handleClick}
               className={cn(
-                "gencl:w-full gencl:caret-secondary-500 gencl:p-0.5 gencl:rounded-md gencl:focus:outline-none gencl:focus:ring-2 gencl:focus:ring-blue-500 gencl:focus:border-transparent gencl:bg-transparent gencl:relative gencl:z-10 gencl:text-transparent gencl:overflow-x-auto gencl:selection:bg-blue-200",
+                "gencl:w-full gencl:caret-secondary-500 gencl:p-0.5 gencl:rounded-md gencl:focus:outline-none gencl:ring-0! gencl:focus:border-transparent gencl:bg-transparent gencl:relative gencl:z-10 gencl:text-transparent gencl:overflow-x-auto",
                 classes.input
               )}
               {...props}

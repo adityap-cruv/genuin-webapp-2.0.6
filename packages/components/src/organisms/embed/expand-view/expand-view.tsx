@@ -174,6 +174,30 @@ export function EmbedExpandView({
     };
   }, [showExpandView, handleCloseExpandView, isInIframe]);
 
+  // Store scroll position before expand view, thingdu.
+  const [savedScrollY, setSavedScrollY] = useState<number | null>(null);
+  const prevShowExpandView = usePrevious(showExpandView);
+
+  // Capture scroll position BEFORE expand view is shown
+  useEffect(() => {
+    if (!prevShowExpandView && showExpandView) {
+      setSavedScrollY(window.scrollY);
+    }
+    if (!showExpandView) {
+      setSavedScrollY(null);
+    }
+  }, [showExpandView, prevShowExpandView]);
+
+  // Restore scroll position AFTER expand view is rendered
+  useEffect(() => {
+    if (showExpandView && savedScrollY !== null) {
+      // Use setTimeout to ensure portal/modal is rendered first
+      setTimeout(() => {
+        window.scrollTo({ top: savedScrollY, behavior: "auto" });
+      }, 0);
+    }
+  }, [showExpandView, savedScrollY]);
+
   const defaultComponent = (
     <FeedView
       startIndex={startIndex}
