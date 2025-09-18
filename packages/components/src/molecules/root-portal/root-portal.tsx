@@ -26,7 +26,7 @@ export function RootPortal({ children, className }: RootPortalProps) {
 
   if (!mounted) return null;
   const elementToRender = (
-    <div style={{ ...parsedBrandColors, zIndex: 20 }} className={className}>
+    <div style={{ ...parsedBrandColors, zIndex: 30 }} className={className}>
       {children}
     </div>
   );

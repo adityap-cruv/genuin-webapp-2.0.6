@@ -3,6 +3,9 @@ import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
 import { fileURLToPath } from 'url'
 import fs from 'fs'
+import postcss from 'postcss'
+import autoprefixer from 'autoprefixer'
+import postcssNested from 'postcss-nested'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
@@ -129,8 +132,89 @@ const copyLoaderPlugin = () => ({
   },
 })
 
+const renameTwVars = () => ({
+  postcssPlugin: 'postcss-rename-tw-vars',
+  Once(root) {
+    // Handle normal declarations
+    root.walkDecls((decl) => {
+      if (decl.prop.startsWith('--tw-')) {
+        decl.prop = decl.prop.replace(/^--tw-/, '--gencl-')
+      }
+      if (decl.value && decl.value.includes('--tw-')) {
+        decl.value = decl.value.replace(/--tw-/g, '--gencl-')
+      }
+    })
+
+    // Handle @property rules (CSS Houdini)
+    root.walkAtRules('property', (rule) => {
+      if (rule.params.startsWith('--tw-')) {
+        rule.params = rule.params.replace(/^--tw-/, '--gencl-')
+      }
+    })
+  },
+})
+renameTwVars.postcss = true
+
+// PostCSS plugin to add !important to specific gencl properties
+const addImportantToGenclProps = () => ({
+  postcssPlugin: 'postcss-add-important-gencl',
+  Once(root) {
+    root.walkRules((rule) => {
+      // Check if any selector in the rule contains gencl:bg- or gencl:border-
+      const hasGenclBgOrBorder = rule.selectors.some(
+        (selector) =>
+          selector.includes('gencl\\:bg-') ||
+          selector.includes('gencl\\:border') ||
+          selector.includes('.gencl\\:bg-') ||
+          selector.includes('.gencl\\:border'),
+      )
+
+      if (hasGenclBgOrBorder) {
+        // Add !important to all declarations in this rule
+        rule.walkDecls((decl) => {
+          if (!decl.important) {
+            decl.important = true
+            console.log(
+              `Adding !important to ${rule.selector} -> ${decl.prop}: ${decl.value}`,
+            )
+          }
+        })
+      }
+    })
+  },
+})
+addImportantToGenclProps.postcss = true
+
+// Post-build CSS processor
+const postBuildCssPlugin = () => ({
+  name: 'postbuild-css',
+  async writeBundle() {
+    const cssPath = resolve(__dirname, 'dist/assets/web-sdk.css')
+    if (fs.existsSync(cssPath)) {
+      const css = fs.readFileSync(cssPath, 'utf8')
+      const result = await postcss([
+        autoprefixer(),
+        postcssNested({ preserveEmpty: true }),
+        renameTwVars,
+        addImportantToGenclProps,
+      ]).process(css, { from: cssPath, to: cssPath })
+      fs.writeFileSync(cssPath, result.css)
+      console.log(
+        '✓ PostCSS applied on generated CSS (variables renamed, !important added to gencl properties)',
+      )
+    } else {
+      console.warn('⚠️ No web-sdk.css found in dist/assets')
+    }
+  },
+})
+
 export default defineConfig({
-  plugins: [react(), genuinResolver(), copyLoaderPlugin()],
+  plugins: [
+    react(),
+    genuinResolver(),
+    copyLoaderPlugin(),
+    postBuildCssPlugin(),
+  ],
 
   // Set base path for chunk resolution
   base: './',
