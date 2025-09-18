@@ -149,7 +149,7 @@ export function parsePlacementToEmbedData(
 
       // Video settings
       is_loop_video: false, // Not directly available in PlacementDataResponse
-      is_popup_view: false, // Not available in PlacementDataResponse
+      is_popup_view: true, // Not available in PlacementDataResponse
       video_crop: configureView?.video_crop,
 
       // Engagement and redirection flags
