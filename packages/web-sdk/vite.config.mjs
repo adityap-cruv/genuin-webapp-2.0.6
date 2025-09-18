@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url'
 import fs from 'fs'
 import postcss from 'postcss'
 import autoprefixer from 'autoprefixer'
-import postcssNested from 'postcss-nested'
+// import postcssNested from 'postcss-nested'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
@@ -165,7 +165,13 @@ const addImportantToGenclProps = () => ({
         (selector) =>
           selector.includes('.gencl\\:bg-') ||
           selector.includes('.gencl\\:border') ||
-          selector.includes('.gencl\\:p-'),
+          selector.includes('.gencl\\:p-') ||
+          selector.includes('.gencl\\:pt') ||
+          selector.includes('.gencl\\:pb') ||
+          selector.includes('.gencl\\:pl') ||
+          selector.includes('.gencl\\:pr') ||
+          selector.includes('.gencl\\:px') ||
+          selector.includes('.gencl\\:py'),
       )
 
       if (hasGenclBgOrBorder) {
@@ -193,7 +199,7 @@ const postBuildCssPlugin = () => ({
       const css = fs.readFileSync(cssPath, 'utf8')
       const result = await postcss([
         autoprefixer(),
-        postcssNested({ preserveEmpty: true }),
+        // postcssNested({ preserveEmpty: true }),
         renameTwVars,
         addImportantToGenclProps,
       ]).process(css, { from: cssPath, to: cssPath })

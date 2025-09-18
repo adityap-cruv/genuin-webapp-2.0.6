@@ -320,7 +320,7 @@ export function Actions({
   return (
     <div
       className={cn(
-        "gencl:space-y-2 gencl:flex gencl:flex-col gencl:justify-end gencl:[&_svg]:size-8 gencl:[&_img]:size-8! gencl:z-10",
+        "gencl:gap-4 gencl:flex gencl:flex-col gencl:justify-end gencl:[&_svg]:size-8 gencl:[&_img]:size-8! gencl:z-10",
         className
       )}
       onClick={(e) => {
