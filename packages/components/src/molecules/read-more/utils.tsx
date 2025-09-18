@@ -201,3 +201,39 @@ export function safeJsonParse(input: string): any {
     return input;
   }
 }
+
+/**
+ * Calculate maximum character limit based on device type and position
+ * @param {boolean} isMobile - Whether the device is mobile
+ * @param {string} position - Position type ('overlay' or other)
+ * @param {number} maxChars - Optional override for max characters
+ * @returns {number} Maximum character limit
+ */
+export const calculateMaxCharacterLimit = (
+  isMobile: boolean,
+  position: "overlay" | "outside",
+  maxChars = null
+) => {
+  // If maxChars is provided, use it directly
+  if (maxChars) {
+    return maxChars;
+  }
+
+  // Define character limits for different scenarios
+  const characterLimits = {
+    mobile: {
+      overlay: 100,
+      default: 80,
+    },
+    desktop: {
+      overlay: 180,
+      default: 90,
+    },
+  };
+
+  const deviceType = isMobile ? "mobile" : "desktop";
+
+  const positionType = position === "overlay" ? "overlay" : "default";
+
+  return characterLimits[deviceType][positionType];
+};

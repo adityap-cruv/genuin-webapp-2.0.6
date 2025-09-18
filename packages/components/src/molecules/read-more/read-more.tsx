@@ -5,6 +5,7 @@ import { cn } from "@genuin/ui/lib/utils";
 
 import {
   applyLineClampStyles,
+  calculateMaxCharacterLimit,
   convertUrlsToAnchorTags,
   renderAnchorTag,
 } from "./utils";
@@ -87,7 +88,8 @@ export const ReadMore = memo(function ReadMore({
   const [showCollapsed, setShowCollapsed] = useState(!defaultExpand);
 
   // set maximum char limit as per the device
-  const maxCharacter = maxChars ?? (isMobile ? 80 : 100);
+  const maxCharacter =
+    maxChars ?? calculateMaxCharacterLimit(isMobile, position);
 
   // Memoize parsed text processing
   const parsedText = useMemo(() => {

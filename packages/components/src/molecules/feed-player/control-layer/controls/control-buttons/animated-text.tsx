@@ -47,7 +47,7 @@ export const AnimatedText = memo(function ({
     <div
       className="gencl:text-body-1-medium gencl:flex gencl:min-w-0 gencl:overflow-hidden gencl:whitespace-nowrap gencl:transition-[width,opacity] gencl:duration-500 gencl:ease-in-out"
       style={{
-        width: animateText ? width : "0px",
+        maxWidth: animateText ? width : "0px",
         opacity: animateText ? 1 : 0,
       }}
     >
