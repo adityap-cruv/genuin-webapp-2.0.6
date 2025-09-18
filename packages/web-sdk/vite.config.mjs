@@ -163,10 +163,9 @@ const addImportantToGenclProps = () => ({
       // Check if any selector in the rule contains gencl:bg- or gencl:border-
       const hasGenclBgOrBorder = rule.selectors.some(
         (selector) =>
-          selector.includes('gencl\\:bg-') ||
-          selector.includes('gencl\\:border') ||
           selector.includes('.gencl\\:bg-') ||
-          selector.includes('.gencl\\:border'),
+          selector.includes('.gencl\\:border') ||
+          selector.includes('.gencl\\:p-'),
       )
 
       if (hasGenclBgOrBorder) {
