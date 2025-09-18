@@ -148,7 +148,7 @@ export const ActionPopover = memo(function ActionPopover({
         onInteractOutside={() => handleOpenChange(false)}
       >
         <div
-          className="gencl:flex gencl:justify-between gencl:items-center gencl:p-4 gencl:bg-red gencl:mx-4 gencl:rounded-md"
+          className="gencl:flex gencl:justify-between gencl:items-center gencl:p-4 gencl:mx-4 gencl:rounded-md"
           style={{
             backgroundColor: backgroundColor,
           }}

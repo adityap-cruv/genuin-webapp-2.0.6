@@ -87,9 +87,7 @@ export function CommunityPill({
   }, [communityDetails.userRole]);
 
   const hideButton =
-    localJoinStatus === "MEMBER" ||
-    authenticationStatus === "unauthenticated" ||
-    hideCommunityJoinButton;
+    localJoinStatus === "MEMBER" || authenticationStatus === "unauthenticated";
 
   const pill = (
     <Link
@@ -114,40 +112,42 @@ export function CommunityPill({
             {displayName}
           </span>
         </div>
-        {authenticationStatus === "authenticated" && variant !== "compact" && (
-          <JoinCommunityButton
-            className={`gencl:overflow-hidden gencl:shrink-0 gencl:transition-all gencl:duration-500 gencl:h-6 ${
-              hideButton
-                ? "gencl:max-w-0 gencl:opacity-0 gencl:ml-0 gencl:px-0!"
-                : "gencl:max-w-24 gencl:opacity-100 gencl:ml-1"
-            }`}
-            size="sm"
-            roleTexts={{
-              UNJOINED: "Join",
-            }}
-            communityId={communityDetails.id}
-            communityHandle={communityDetails.handle}
-            communityName={communityDetails.name ?? ""}
-            slug={communityDetails.slug}
-            isPrivate={communityDetails.isPrivate}
-            role={communityDetails.userRole}
-            shape="pill"
-            theme={
-              variant === "fullScreen"
-                ? "secondary"
-                : communityDetails.userRole === "MEMBER"
-                  ? "outline"
-                  : communityDetails.userRole === "REQUESTED"
-                    ? "secondary"
-                    : "primary"
-            }
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
-            onCommunityJoinStatusChange={onCommunityJoinStatusChange}
-          />
-        )}
+        {authenticationStatus === "authenticated" &&
+          variant !== "compact" &&
+          !hideCommunityJoinButton && (
+            <JoinCommunityButton
+              className={`gencl:overflow-hidden gencl:shrink-0 gencl:transition-all gencl:duration-500 gencl:h-6 ${
+                hideButton
+                  ? "gencl:max-w-0 gencl:opacity-0 gencl:ml-0 gencl:px-0!"
+                  : "gencl:max-w-24 gencl:opacity-100 gencl:ml-1"
+              }`}
+              size="sm"
+              roleTexts={{
+                UNJOINED: "Join",
+              }}
+              communityId={communityDetails.id}
+              communityHandle={communityDetails.handle}
+              communityName={communityDetails.name ?? ""}
+              slug={communityDetails.slug}
+              isPrivate={communityDetails.isPrivate}
+              role={communityDetails.userRole}
+              shape="pill"
+              theme={
+                variant === "fullScreen"
+                  ? "secondary"
+                  : communityDetails.userRole === "MEMBER"
+                    ? "outline"
+                    : communityDetails.userRole === "REQUESTED"
+                      ? "secondary"
+                      : "primary"
+              }
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+              onCommunityJoinStatusChange={onCommunityJoinStatusChange}
+            />
+          )}
       </div>
     </Link>
   );

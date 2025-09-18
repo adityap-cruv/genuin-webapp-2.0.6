@@ -89,6 +89,7 @@ export function CommentInputBox({
             loopId={loopId}
             onCommentPosted={onCommentPosted}
             {...commentInputProps}
+            disabled={true}
           />
         </div>
       </ActionPopover>

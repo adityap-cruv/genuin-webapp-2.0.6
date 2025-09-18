@@ -101,7 +101,7 @@ export function DeleteComment({
           </Button>
           <Button
             theme="primary"
-            className="gencl:text-body-0-semi-bold! gencl:text-white"
+            className="gencl:text-body-0-semi-bold! gencl:!text-white"
             onClick={handleDelete}
             disabled={deleteCommentMutation.isPending}
           >
