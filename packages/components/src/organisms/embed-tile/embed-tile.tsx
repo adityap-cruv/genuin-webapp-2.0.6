@@ -253,9 +253,9 @@ function EmbedPlayer({
         className={cn(
           // Adaptive sizing based on rootElement dimensions
           getAdaptiveSizing(),
-          !config.video.videoCrop &&
-            "gencl:object-cover gencl:h-full gencl:w-full"
+          !config.video.videoCrop && "gencl:object-cover gencl:w-full"
         )}
+        style={{ height: !config.video.videoCrop ? "inherit" : "" }}
       />
       <ControlLayer
         variant={config.view.isPlacementView ? "placement" : "embed"}

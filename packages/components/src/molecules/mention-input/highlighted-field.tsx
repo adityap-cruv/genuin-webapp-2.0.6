@@ -153,7 +153,7 @@ const HighlightedInput = forwardRef<HTMLInputElement, HighlightedInputProps>(
             <div
               ref={highlightRef}
               className={cn(
-                "gencl:absolute gencl:top-0 gencl:left-0 gencl:w-full gencl:h-full gencl:pointer-events-none gencl:overflow-hidden gencl:whitespace-pre-wrap gencl:z-0 gencl:leading-normal gencl:border gencl:border-transparent gencl:rounded-md",
+                "gencl:absolute gencl:top-0 gencl:left-0 gencl:w-full gencl:p-0.5 gencl:h-full gencl:pointer-events-none gencl:overflow-hidden gencl:whitespace-pre-wrap gencl:z-0 gencl:leading-normal gencl:border gencl:border-transparent gencl:rounded-md",
                 classes.highlight
               )}
               dangerouslySetInnerHTML={{ __html: getHighlightedText() }}
@@ -168,7 +168,7 @@ const HighlightedInput = forwardRef<HTMLInputElement, HighlightedInputProps>(
               onKeyUp={handleKeyUp}
               onClick={handleClick}
               className={cn(
-                "gencl:w-full gencl:caret-secondary-500 gencl:border gencl:border-gray-300 gencl:rounded-md gencl:focus:outline-none gencl:focus:ring-2 gencl:focus:ring-blue-500 gencl:focus:border-transparent gencl:bg-transparent gencl:relative gencl:z-10 gencl:text-transparent gencl:overflow-x-auto gencl:selection:bg-blue-200",
+                "gencl:w-full gencl:caret-secondary-500 gencl:p-0.5 gencl:rounded-md gencl:focus:outline-none gencl:focus:ring-2 gencl:focus:ring-blue-500 gencl:focus:border-transparent gencl:bg-transparent gencl:relative gencl:z-10 gencl:text-transparent gencl:overflow-x-auto gencl:selection:bg-blue-200",
                 classes.input
               )}
               {...props}

@@ -54,7 +54,12 @@ export function EmbedControls({
 
   return (
     <div className={cn("gencl:flex gencl:gap-1", className)} {...restProps}>
-      <Button theme="overlay" size={size} onClick={() => toggleMuted(true)}>
+      <Button
+        theme="overlay"
+        className="gencl:px-0"
+        size={size}
+        onClick={() => toggleMuted(true)}
+      >
         {muted ? (
           <MuteIcon theme="dark" size={size} />
         ) : (
@@ -63,6 +68,7 @@ export function EmbedControls({
       </Button>
       <Button
         theme="overlay"
+        className="gencl:px-0"
         size={size}
         onClick={() => {
           togglePlay(true);
@@ -77,6 +83,7 @@ export function EmbedControls({
       {config.expandViewConfig.enable && (
         <Button
           theme="overlay"
+          className="gencl:px-0"
           size={size}
           onClick={() => {
             changeActivePlayerType("expand-view");
