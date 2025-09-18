@@ -8,7 +8,7 @@ const poweredByGenuinVariants = cva(
   {
     variants: {
       variant: {
-        default: "gencl:xl:!w-60 gencl:w-16 gencl:mr-2",
+        default: "gencl:w-16 gencl:xl:!w-full gencl:mr-2",
         mobile: "gencl:flex gencl:w-fit",
       },
     },

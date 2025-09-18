@@ -112,25 +112,28 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
   let layoutType: "default" | "iheart" | "ted" | "walmart" = "default";
   let config = LAYOUT_CONFIGS.default;
 
-  if (videoLayoutId && LAYOUT_CONFIGS[videoLayoutId]) {
-    config = LAYOUT_CONFIGS[videoLayoutId];
-    switch (videoLayoutId) {
-      case 2:
-        layoutType = "iheart";
-        break;
-      case 3:
-        layoutType = "ted";
-        break;
-      case 6:
-        layoutType = "walmart";
-        break;
-      default:
-        layoutType = "default";
-        break;
+  // Only determine layout type/config when running inside SDK
+  if (embedDetails) {
+    if (videoLayoutId && LAYOUT_CONFIGS[videoLayoutId]) {
+      config = LAYOUT_CONFIGS[videoLayoutId];
+
+      layoutType = (() => {
+        switch (videoLayoutId) {
+          case 2:
+            return "iheart";
+          case 3:
+            return "ted";
+          case 6:
+            return "walmart";
+          default:
+            return "default";
+        }
+      })();
+    } else if (placementVideoLayoutId === 1) {
+      // Fallback: use Walmart config when placement layout is 1
+      config = LAYOUT_CONFIGS[6]!;
+      layoutType = "walmart";
     }
-  } else if (placementVideoLayoutId === 1) {
-    config = LAYOUT_CONFIGS[6]!; // Use Walmart config for placement layout 1
-    layoutType = "walmart";
   }
 
   const defaultOpenCommentDialog = useMemo(() => {

@@ -14,7 +14,6 @@ import { useBaseContext } from "@genuin/components/context/base";
 import { useAnalytics } from "@genuin/components/context/analytics";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { Swiper } from "swiper/types";
-import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 
 type VideoProviderProps = {
   children: React.ReactNode;

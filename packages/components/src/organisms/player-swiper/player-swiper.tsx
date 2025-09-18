@@ -273,7 +273,7 @@ export function PlayerList({
           slug={posts[activeIndex]?.video.slug}
           reactionCount={posts[activeIndex]?.video.sparkCount}
           theme={showExpandView ? "dark" : "light"}
-          className="gencl:shrink-0 gencl:pb-4"
+          className={cn("gencl:shrink-0", !showExpandView && "gencl:pb-7")}
           isCommentBoxOpen={value}
           actionWrapper={{
             COMMENT: (defaultNode) => {

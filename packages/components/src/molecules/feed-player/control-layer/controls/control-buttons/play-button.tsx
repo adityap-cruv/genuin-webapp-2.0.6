@@ -40,7 +40,7 @@ export const AnimatedPlayButton = memo(function PlayButton({
           />
         )}
       </div>
-      {playingState !== "PAUSED" && (
+      {playingState === "PAUSED" && (
         <AnimatedText text="Tap to play" width={110} stop={stopAnimating} />
       )}
     </div>
