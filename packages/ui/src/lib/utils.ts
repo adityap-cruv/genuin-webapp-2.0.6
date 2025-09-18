@@ -48,10 +48,21 @@ export function getWebpUrlForImage(url?: string | null): string {
  * "3h" for 3 hours, "2d" for 2 days, or "1w" for 1 week.
  */
 export function getTimeAgo(createdAt: number): string {
-  const currentDate = new Date();
-  const createdAtDate = new Date(Number(createdAt));
+  // Normalize the input to a number of milliseconds
+  const createdAtNum = Number(createdAt);
 
-  const timeDifference = currentDate.getTime() - createdAtDate.getTime();
+  // If createdAt cannot be parsed, return an empty string to avoid showing invalid values
+  if (isNaN(createdAtNum)) return "0m";
+
+  const now = Date.now();
+  const createdAtTime = new Date(createdAtNum).getTime();
+
+  // If createdAt is invalid as a date, return an empty string
+  if (isNaN(createdAtTime)) return "0m";
+
+  // Compute difference in milliseconds. If createdAt is in the future, clamp to 0 so we don't show negative times like '-1m'
+  let timeDifference = now - createdAtTime;
+  if (timeDifference < 0) timeDifference = 0;
   const minutes = Math.floor(timeDifference / (1000 * 60));
   const hours = Math.floor(minutes / 60);
   const days = Math.floor(hours / 24);

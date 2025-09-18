@@ -374,7 +374,7 @@ export type EmbedDataType = {
   _id?: string;
   name: string;
   style: ViewType;
-  action: "comment" | "spark" | "comment-spark" | undefined;
+  action: ActionType | undefined;
   type: "brand_feed" | "community_feed" | "loop_feed";
   brand_id: number;
   customization: Partial<CustomizationType>;

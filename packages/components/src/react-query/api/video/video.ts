@@ -4,9 +4,10 @@ import { fetchLoopDetails } from "@genuin/components/react-query/api/group/detai
 import { API_PATHS } from "@genuin/components/react-query/paths";
 import { PostDetailsType } from "../feed/schema";
 import { getQueryKeyForVideoDetails } from "../../keys/video";
-import { useQuery } from "@tanstack/react-query";
+import { QueryKey, useQuery } from "@tanstack/react-query";
 import { tryJsonParse } from "@genuin/ui/lib/utils";
 import { parseVideo } from "./parser";
+import { queryClient } from "@genuin/components/react-query/client";
 
 async function fetchVideoMetadata(videoSlug: string) {
   return await axiosInstance
@@ -169,3 +170,73 @@ export function useGetVideoDetailsAsFeed(slug: string) {
     data,
   };
 }
+
+// Type definition for the structure of video details stored in the query cache
+type VideoDetailsData = {
+  pages: {
+    feed: PostDetailsType[];
+  }[];
+  pageParams: any[];
+};
+
+/**
+ * Updates the video reaction state (spark/un-spark) for a single video in the video details cache.
+ * 
+ * This is used when displaying a single video page (like when a video is opened via a startVideoSlug),
+ * where the video details are cached in the same structure as the feed data.
+ * It ensures that reaction-related updates (isSparked and sparkCount) are reflected correctly in the cache.
+ * 
+ * @param queryKey - The query key associated with this video's details in the cache.
+ * @param isReacted - The new reaction state (true if reacted/sparked, false if un-reacted/unsparked).
+ */
+export function setQueryDataForVideoDetails({
+  queryKey,
+  isReacted,
+}: {
+  queryKey: QueryKey;
+  isReacted: boolean;
+}) {
+  queryClient.setQueryData<VideoDetailsData>(queryKey, (oldData) => {
+    // Validate that the cached data exists and contains at least one page with at least one feed item
+    if (
+      !oldData ||
+      !oldData.pages.length ||
+      (oldData.pages[0] && !oldData.pages[0].feed.length)
+    ) {
+      return oldData;
+    }
+
+    // Create a new data structure with the updated reaction state
+    const updatedData = {
+      ...oldData,
+      pages: oldData.pages.map((page, pageIndex) => {
+        // Only update the first page
+        if (pageIndex !== 0) return page;
+
+        return {
+          ...page,
+          feed: page.feed.map((feedItem, feedIndex) => {
+            // Only update the first feed item
+            if (feedIndex !== 0) return feedItem;
+
+            return {
+              ...feedItem,
+              video: {
+                ...feedItem.video,
+                isSparked: isReacted,
+                sparkCount: isReacted
+                  ? (feedItem.video.sparkCount ?? 0) + 1
+                  : feedItem.video.sparkCount > 0
+                    ? feedItem.video.sparkCount - 1
+                    : 0,
+              },
+            };
+          }),
+        };
+      }),
+    };
+
+    return updatedData;
+  });
+}
+

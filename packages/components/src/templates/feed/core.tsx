@@ -23,6 +23,9 @@ import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-d
 import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
 import { FeedViewPropsType } from "./feed.type";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import { setQueryDataForVideoDetails } from "@genuin/components/react-query/api/video";
+import { getQueryKeyForVideoDetails } from "@genuin/components/react-query/keys/video";
 
 /**
  * Internal core presentation component for displaying feed data.
@@ -54,6 +57,7 @@ export function FeedViewCore({
   const { hideGestureOverlay } = useGestureOverlayManager();
   const { handleSwipeCount, dialogType, shouldShowDialog, closeDialog } =
     useInterruptionManager();
+  const embedDetails = useSafeEmbedContext();
   const { isDesktop } = useDeviceDetectMediaQuery();
   const showSidePanel = videos[activeIndex] && !showExpandView && isDesktop;
 
@@ -112,13 +116,23 @@ export function FeedViewCore({
 
   const handleReactionStateChange = useCallback(
     (videoId: string, isReacted: boolean) => {
-      setQueryDataForReactionInFeed({
-        queryKey,
-        videoId,
-        isReacted,
-      });
+      // If the video is from embed details (i.e., a single video page opened via startVideoSlug),
+      // update the video details using its slug as the query key.
+      if (embedDetails && embedDetails.embedData.startVideoSlug === videoId) {
+        setQueryDataForVideoDetails({
+          queryKey: getQueryKeyForVideoDetails(videoId),
+          isReacted,
+        });
+      } else {
+        // Otherwise, for videos in the feed, update the reaction state in the feed's cached data.
+        setQueryDataForReactionInFeed({
+          queryKey,
+          videoId,
+          isReacted,
+        });
+      }
     },
-    [queryKey]
+    [queryKey, getQueryKeyForVideoDetails]
   );
 
   const handleCommentCountChange = useCallback(

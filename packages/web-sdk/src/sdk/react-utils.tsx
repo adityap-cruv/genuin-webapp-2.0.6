@@ -147,7 +147,7 @@ export function loadNewEmbed({
         embedData={{
           ...embedData,
           brand_id: embedData.brand_id,
-          autoUserInteractionToPerform: embedData.action,
+          action: embedData.autoUserInteractionToPerform,
         }}>
         <BaseContextProvider
           brandDetails={brandDetails}

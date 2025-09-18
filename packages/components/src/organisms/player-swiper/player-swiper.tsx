@@ -336,7 +336,11 @@ export function PlayerList({
             },
           }}
           onReactionStateChange={(isReacted) => {
-            const videoId = posts[activeIndex]?.video.id;
+            const videoId =
+              posts[activeIndex]?.video.slug ===
+              embedDetails?.embedData.startVideoSlug
+                ? posts[activeIndex]?.video.slug
+                : posts[activeIndex]?.video.id;
             if (videoId) {
               onReactionStateChange?.(videoId, isReacted);
             }

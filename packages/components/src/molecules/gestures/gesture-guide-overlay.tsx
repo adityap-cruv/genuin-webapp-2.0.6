@@ -2,6 +2,7 @@ import { type ComponentProps, type ReactNode } from "react";
 import { type GestureOverlayKeysType } from "./context";
 import { cn } from "@genuin/ui/lib/utils";
 import { getGifLink, getIconLink } from "@genuin/components/lib/utils";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 // import { Image } from "@genuin/ui/components/image";
 
 type GestureConfig = {
@@ -60,6 +61,7 @@ export function LazyGestureGuideOverlay({
   className,
   ...props
 }: LazyGestureGuideOverlayProps) {
+  const { isMobile } = useDeviceDetectMediaQuery();
   const gestureData = GESTURE_CONFIG[gestureStep];
   if (!gestureData) return null;
 
@@ -79,20 +81,23 @@ export function LazyGestureGuideOverlay({
           className
         )}
       >
-        <img
-          src={gestureData.desktopImage}
-          alt="gesture"
-          // height={80}
-          // width={80}
-          className="sm:gencl:hidden gencl:h-20 gencl:shrink-0"
-        />
-        <img
-          src={gestureData.mobileImage}
-          alt="gesture"
-          // height={80}
-          // width={80}
-          className="gencl:hidden sm:gencl:block gencl:shrink-0 gencl:h-20"
-        />
+        {isMobile ? (
+          <img
+            src={gestureData.mobileImage}
+            alt="gesture"
+            // height={80}
+            // width={80}
+            className="gencl:hidden sm:gencl:block gencl:shrink-0 gencl:h-20"
+          />
+        ) : (
+          <img
+            src={gestureData.desktopImage}
+            alt="gesture"
+            // height={80}
+            // width={80}
+            className="sm:gencl:hidden gencl:h-20 gencl:shrink-0"
+          />
+        )}
         <p className="gencl:text-center gencl:text-body-1-bold gencl:text-white">
           {gestureText}
         </p>
