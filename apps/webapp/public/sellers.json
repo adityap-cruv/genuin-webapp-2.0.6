@@ -5,63 +5,63 @@
   "sellers": [
     {
       "seller_id": "2314",
-      "seller_type": "BOTH",
+      "seller_type": "PUBLISHER",
       "name": "Carlist.my",
       "domain": "carlist.my",
       "is_confidential": 0
     },
     {
       "seller_id": "2556",
-      "seller_type": "BOTH",
+      "seller_type": "PUBLISHER",
       "name": "Mobil123.com",
       "domain": "mobil123.com",
       "is_confidential": 0
     },
     {
       "seller_id": "2557",
-      "seller_type": "BOTH",
+      "seller_type": "PUBLISHER",
       "name": "One2car",
       "domain": "one2car.com",
       "is_confidential": 0
     },
     {
       "seller_id": "2558",
-      "seller_type": "BOTH",
+      "seller_type": "PUBLISHER",
       "name": "Carmudi Indonesia",
       "domain": "carmudi.co.id",
       "is_confidential": 0
     },
     {
       "seller_id": "2357",
-      "seller_type": "BOTH",
+      "seller_type": "PUBLISHER",
       "name": "TED",
       "domain": "ted.com",
       "is_confidential": 0
     },
     {
       "seller_id": "2023",
-      "seller_type": "BOTH",
+      "seller_type": "PUBLISHER",
       "name": "Buzz Continuum",
       "domain": "buzz.skyscape.com",
       "is_confidential": 0
     },
     {
       "seller_id": "2793",
-      "seller_type": "BOTH",
+      "seller_type": "PUBLISHER",
       "name": "Indian Express",
       "domain": "indianexpress.com",
       "is_confidential": 0
     },
     {
       "seller_id": "2790",
-      "seller_type": "BOTH",
+      "seller_type": "PUBLISHER",
       "name": "Price",
       "domain": "price.com",
       "is_confidential": 0
     },
     {
       "seller_id": "99",
-      "seller_type": "BOTH",
+      "seller_type": "PUBLISHER",
       "name": "Genuin Studio",
       "domain": "begenuin.com",
       "is_confidential": 0
