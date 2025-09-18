@@ -20,6 +20,12 @@ export function EmbedExpandSectionedView({
     PostDetailsType["section"]
   >(embedEventBus.getContext().selectedSection);
 
+  // Memoize selectedSectionVideos calculation
+  const filteredSelectedSectionVideos = useMemo(() => {
+    if (!selectedSection?.id) return [];
+    return videos.filter((video) => video.section?.id === selectedSection.id);
+  }, [videos, selectedSection?.id]);
+
   // Create feed options object for better memoization and caching
   const feedOptions = useMemo(
     () => ({
@@ -27,16 +33,37 @@ export function EmbedExpandSectionedView({
       sectionId: selectedSection?.id ?? undefined,
       pageSession: pageSession,
       lastVideoId:
-        videos.length > 0
-          ? (videos[videos.length - 1]?.video?.id ?? undefined)
+        filteredSelectedSectionVideos.length > 0
+          ? (filteredSelectedSectionVideos[
+              filteredSelectedSectionVideos.length - 1
+            ]?.video?.id ?? undefined)
+          : videos.length > 0
+            ? (videos[videos.length - 1]?.video?.id ?? undefined)
+            : undefined,
+      // Pass filtered section videos as initial data
+      initialData:
+        filteredSelectedSectionVideos.length > 0
+          ? {
+              pages: [
+                {
+                  feed: filteredSelectedSectionVideos,
+                  hasSection: true,
+                  pageSession: pageSession,
+                  endOfFeed: false,
+                  timestamp: 0,
+                },
+              ],
+              pageParams: [{ pageSession: "", lastVideoId: "" }],
+            }
           : undefined,
-      // caching configuration
-      staleTime: 5 * 60 * 1000,
-      gcTime: 30 * 60 * 1000,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
     }),
-    [isSectioned, selectedSection?.id, pageSession, videos]
+    [
+      isSectioned,
+      selectedSection?.id,
+      pageSession,
+      videos,
+      filteredSelectedSectionVideos,
+    ]
   );
 
   // Use the correct feed type and options for the query with caching
@@ -55,12 +82,6 @@ export function EmbedExpandSectionedView({
     () => sectionFeedData?.pages?.flatMap((page) => page.feed) || [],
     [sectionFeedData]
   );
-
-  // Memoize selectedSectionVideos calculation
-  const filteredSelectedSectionVideos = useMemo(() => {
-    if (!selectedSection?.id) return [];
-    return videos.filter((video) => video.section?.id === selectedSection.id);
-  }, [videos, selectedSection?.id]);
 
   useEffect(() => {
     const handleSelectionChange = () => {
@@ -84,39 +105,9 @@ export function EmbedExpandSectionedView({
     };
   }, [embedEventBus, selectedSection?.id]);
 
-  // Combine videos: local filtered videos first, then API fetched videos when available
-  const finalVideos = useMemo(() => {
-    if (!isSectioned) return videos;
-
-    const localVideos = filteredSelectedSectionVideos;
-
-    // If API is still loading or no data yet, return only local videos
-    if (isLoading || !sectionFeedData || sectionVideos.length === 0) {
-      return localVideos;
-    }
-
-    // When API data is available, combine local videos with API videos
-    // Avoid duplicates by filtering out API videos that already exist in local videos
-    const uniqueApiVideos = sectionVideos.filter(
-      (apiVideo) =>
-        !localVideos.some(
-          (localVideo) => localVideo.video.id === apiVideo.video.id
-        )
-    );
-
-    return [...localVideos, ...uniqueApiVideos];
-  }, [
-    isSectioned,
-    videos,
-    filteredSelectedSectionVideos,
-    sectionVideos,
-    isLoading,
-    sectionFeedData,
-  ]);
-
   return (
     <EmbedExpandView
-      videos={finalVideos}
+      videos={sectionVideos}
       fetchNextPage={fetchNextPage}
       hasNextPage={hasNextPage}
       isFetchingNextPage={isFetchingNextPage}

@@ -291,20 +291,24 @@ export function Embed({
         )}
       </EmbedManagerProvider>
 
-      {isSectioned ? (
-        <EmbedExpandSectionedView
-          videos={videos}
-          pageSession={feedData?.pages[0]?.pageSession}
-        />
-      ) : (
-        <EmbedExpandView
-          videos={videos}
-          fetchNextPage={fetchNextPage}
-          hasNextPage={hasNextPage}
-          isFetchingNextPage={isFetchingNextPage}
-          isLoading={isLoading}
-          queryKey={queryKey}
-        />
+      {config.expandViewConfig.enable && (
+        <>
+          {isSectioned ? (
+            <EmbedExpandSectionedView
+              videos={videos}
+              pageSession={feedData?.pages[0]?.pageSession}
+            />
+          ) : (
+            <EmbedExpandView
+              videos={videos}
+              fetchNextPage={fetchNextPage}
+              hasNextPage={hasNextPage}
+              isFetchingNextPage={isFetchingNextPage}
+              isLoading={isLoading}
+              queryKey={queryKey}
+            />
+          )}
+        </>
       )}
 
       <PipView videos={videos ?? []} isLoading={isLoading} />

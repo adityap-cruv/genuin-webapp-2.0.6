@@ -289,7 +289,7 @@ export function useEmbedConfigs() {
   // ============================================================
   const expandView = useMemo(() => {
     return {
-      enable: !!customization?.is_popup_view,
+      enable: customization?.is_popup_view ?? true,
       isShowByDefault: !!customization?.is_show_popup_by_default,
     };
   }, [customization]);

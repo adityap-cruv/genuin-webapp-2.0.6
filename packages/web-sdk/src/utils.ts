@@ -193,7 +193,7 @@ export function parsePlacementToEmbedData(
     // environment: 'web', // Since we're using web config
 
     // Styles information (first style if available)
-    // style_id: data.styles?.[0]?._id,
+    style_id: styleId,
 
     // New fields mapped from PlacementDataResponse
     feed_type: data.feed_type,

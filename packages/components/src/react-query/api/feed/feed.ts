@@ -257,11 +257,11 @@ type UseFeedOptionsType = {
   pageSession?: string;
   lastVideoId?: string;
   contextualParams?: EmbedDataType["contextualParams"];
-  // Caching options
-  staleTime?: number;
-  gcTime?: number;
-  refetchOnMount?: boolean;
-  refetchOnWindowFocus?: boolean;
+  // Initial data for the query - must match the FeedPage structure
+  initialData?: {
+    pages: FeedPage[];
+    pageParams: (undefined | { pageSession?: string; lastVideoId?: string })[];
+  };
 };
 
 /**
@@ -284,6 +284,7 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
   // This ensures consistent hook call order regardless of options changes
   const startVideoSlug = options?.startVideoSlug;
   const videoDetailsQuery = useGetVideoDetailsAsFeed(startVideoSlug || "");
+  const queryKey = getQueryKeyForFeed(feedType, options);
 
   // Emulate the old conditional behavior while keeping hook call order consistent
   const videoQueryResult = {
@@ -294,7 +295,7 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
 
   // Common query configuration with conditional overrides
   const infiniteQueryResult = useInfiniteQuery({
-    queryKey: getQueryKeyForFeed(feedType, options),
+    queryKey,
     queryFn: async ({ pageParam }) =>
       await fetchFeed(feedType, pageParam, options),
     // Calculate the enabled state based on both options.enabled and videoQueryResult if startVideoSlug exists
@@ -312,10 +313,68 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
       };
     },
     // Use custom caching options if provided, otherwise use default behavior
-    refetchOnMount: options?.refetchOnMount ?? false,
-    refetchOnWindowFocus: options?.refetchOnWindowFocus ?? false,
-    staleTime: options?.staleTime ?? 0,
-    gcTime: options?.gcTime ?? 0,
+    refetchOnMount: false,
+    refetchOnWindowFocus:  false,
+
+    // Use select to merge initial data with API data when both are available
+    ...(options?.initialData &&
+      !options?.startVideoSlug && {
+        initialData: options?.initialData,
+        select: (data: InfiniteData<FeedPage>) => {
+          if (!data || !options?.initialData) return data;
+
+          const initialPage = options.initialData.pages[0];
+          const initialVideos = initialPage?.feed || [];
+
+          // If we only have the initial data, return as is
+          if (
+            data.pages.length === 1 &&
+            data.pages[0]?.feed?.length === initialVideos.length
+          ) {
+            return data;
+          }
+
+          // If we have API data, merge it with initial data
+          const allApiVideos = data.pages.flatMap((page) => page.feed || []);
+
+          // Check if initial videos are already in the API data
+          const apiVideoIds = new Set(allApiVideos.map((v) => v.video.id));
+          const hasInitialVideosInApi = initialVideos.some((v) =>
+            apiVideoIds.has(v.video.id)
+          );
+
+          // If initial videos are already in API, return API data as is
+          if (hasInitialVideosInApi) {
+            return data;
+          }
+
+          const mergedPage: FeedPage = {
+            feed: [...initialVideos, ...allApiVideos],
+            hasSection:
+              data.pages[0]?.hasSection || initialPage?.hasSection || false,
+            pageSession:
+              data.pages[data.pages.length - 1]?.pageSession ||
+              initialPage?.pageSession,
+            endOfFeed: data.pages[data.pages.length - 1]?.endOfFeed || false,
+            timestamp:
+              data.pages[data.pages.length - 1]?.timestamp ||
+              initialPage?.timestamp ||
+              0,
+          };
+
+          // Update cache with merged data for other components to access
+          queryClient.setQueryData(queryKey, {
+            pages: [mergedPage],
+            pageParams: [undefined],
+          });
+
+          return {
+            pages: [mergedPage],
+            pageParams: [undefined],
+          };
+        },
+      }),
+
     // Conditional properties based on startVideoSlug
     ...(options?.startVideoSlug &&
       !videoDetailsQuery.isError && {

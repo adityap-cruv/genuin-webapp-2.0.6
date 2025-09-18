@@ -15,6 +15,7 @@ import { usePlayerContext } from "../../context";
 import { useEmbedContext } from "@genuin/components/context/embed";
 import { EmbedEventContextType } from "@genuin/components/context/embed/event-bus";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 type EmbedControlsProps = ComponentProps<"div"> & {
   /**
@@ -32,6 +33,7 @@ export function EmbedControls({
   ...restProps
 }: EmbedControlsProps) {
   const { playingState, togglePlay, muted, toggleMuted } = usePlayerContext();
+  const config = useEmbedConfigs();
   const { changeActivePlayerType, updateSelectedSection, embedEventBus } =
     useEmbedContext();
   const [isExpandView, setIsExpandView] = useState(false);
@@ -72,22 +74,24 @@ export function EmbedControls({
           <PlayIcon theme="fill-dark" size={size} />
         )}
       </Button>
-      <Button
-        theme="overlay"
-        size={size}
-        onClick={() => {
-          changeActivePlayerType("expand-view");
-          if (section) {
-            updateSelectedSection(section);
-          }
-        }}
-      >
-        {!isExpandView ? (
-          <ExpandIcon theme="dark" size={size} />
-        ) : (
-          <CollapseIcon theme="dark" size={size} />
-        )}
-      </Button>
+      {config.expandViewConfig.enable && (
+        <Button
+          theme="overlay"
+          size={size}
+          onClick={() => {
+            changeActivePlayerType("expand-view");
+            if (section) {
+              updateSelectedSection(section);
+            }
+          }}
+        >
+          {!isExpandView ? (
+            <ExpandIcon theme="dark" size={size} />
+          ) : (
+            <CollapseIcon theme="dark" size={size} />
+          )}
+        </Button>
+      )}
     </div>
   );
 }

@@ -88,10 +88,10 @@ function Default({
             <div className="gencl:space-y-2">
               {title && (
                 <div>
-                  <Link href={url}>
+                  <Link href={url ?? ""}>
                     <p
                       className={cn(
-                        "gencl:line-clamp-2 gencl:text-headline-2-semi-bold",
+                        "gencl:line-clamp-2 gencl:text-headline-2-semi-bold gencl:py-0.5",
                         {
                           "gencl:text-body-0-semi-bold  gencl:sm:!text-headline-3-semi-bold":
                             variant === "list",
@@ -108,8 +108,8 @@ function Default({
                 <ReadMore
                   className="gencl:text-secondary-600! gencl:text-body-1-medium"
                   text={description}
-                  viewLessText=""
-                  viewMoreText=""
+                  viewLessText="View more"
+                  viewMoreText="View less"
                   maxLines={1}
                 />
               )}

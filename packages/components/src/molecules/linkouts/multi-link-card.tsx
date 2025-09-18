@@ -8,7 +8,7 @@ import { useBaseContext } from "@genuin/components/context/base";
 
 // Combined variant for both card layouts
 const multiLinkCardVariants = cva(
-  "gencl:gap-2 gencl:flex gencl:backdrop-blur-md gencl:rounded-xl gencl:text-sm gencl:font-medium gencl:text-white gencl:p-2 gencl:w-full gencl:overflow-hidden",
+  "gencl:gap-2 gencl:flex gencl:backdrop-blur-md gencl:rounded-xl gencl:text-sm gencl:font-medium gencl:text-white gencl:p-2 gencl:w-full gencl:overflow-hidden gencl:scrollbar-none",
   {
     variants: {
       variant: {
@@ -99,7 +99,7 @@ export const MultiLinkCard = ({
       >
         <div
           className={cn(
-            "gencl:w-full gencl:flex-1 gencl:text-start gencl:flex! gencl:items-center gencl:gap-2 gencl:line-clamp-2 gencl:overflow-auto gencl:flex-nowrap gencl:scrollbar-hide",
+            "gencl:w-full gencl:flex-1 gencl:text-start gencl:flex! gencl:items-center gencl:gap-2 gencl:line-clamp-2 gencl:overflow-auto gencl:flex-nowrap gencl:scrollbar-none",
             isEmbed && "gencl:gap-1"
           )}
         >

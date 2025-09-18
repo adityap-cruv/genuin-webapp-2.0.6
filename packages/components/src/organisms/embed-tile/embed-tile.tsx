@@ -214,7 +214,9 @@ function EmbedPlayer({
       return;
     }
 
-    changeActivePlayerType("expand-view", index);
+    if (config.expandViewConfig.enable) {
+      changeActivePlayerType("expand-view", index);
+    }
   }, [
     isAdPlaying,
     changeActivePlayerType,

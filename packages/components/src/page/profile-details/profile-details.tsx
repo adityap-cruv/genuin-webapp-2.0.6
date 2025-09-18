@@ -84,10 +84,7 @@ export function ProfileDetails({
           size={isMobile ? "sm" : "md"}
           theme="primary"
           className="gencl:flex-grow gencl:sm:flex-grow-0!"
-          shareUrl={buildPageUrl({
-            type: "brand",
-            slug: profileData.brand?.brand_slug,
-          })}
+          shareUrl={shareUrl}
         />
       )}
       <ShareButton pathName={shareUrl} size={isMobile ? "sm" : "md"} />
@@ -106,20 +103,7 @@ export function ProfileDetails({
           isAvatar: profileData.is_avatar,
           alt: profileData.name ?? "",
         }}
-        ctas={
-          <div className="gencl:flex gencl:gap-2">
-            {(forBrand || (!forBrand && profileData && profileData.brand)) && (
-              <BecomeCreatorButton
-                size={isMobile ? "sm" : "md"}
-                shareUrl={buildPageUrl({
-                  type: "brand",
-                  slug: profileData.brand?.brand_slug,
-                })}
-              />
-            )}
-            <ShareButton size={isMobile ? "sm" : "md"} pathName={shareUrl} />
-          </div>
-        }
+        ctas={ctas}
       />
       <div className="gencl:w-full gencl:overflow-auto gencl:h-full gencl:sm:p-6">
         <GenericDetails

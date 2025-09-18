@@ -65,7 +65,7 @@ export function PostsGrid({
 
   if (isLoading) {
     return (
-      <div className={cn("gencl:w-full gencl:h-full", className)}>
+      <div className={cn("gencl:w-full gencl:h-fit", className)}>
         <PostsGridSkeleton
           noOfPosts={6}
           gridClassName={gridClassName}
@@ -111,7 +111,7 @@ export function PostsGrid({
   }
 
   return (
-    <div className={cn("gencl:w-full gencl:h-full", className)} {...restProps}>
+    <div className={cn("gencl:w-full gencl:h-fit", className)} {...restProps}>
       {lazyLoad === "auto" ? (
         <div className={gridStyles}>
           <InfiniteScroll

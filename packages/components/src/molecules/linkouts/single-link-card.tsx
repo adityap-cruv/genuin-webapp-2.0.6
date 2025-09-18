@@ -8,7 +8,7 @@ import { useBaseContext } from "@genuin/components/context/base";
 
 // Combined variant for both card types
 const linkCardVariants = cva(
-  "gencl:cursor-pointer gencl:gap-2 gencl:backdrop-blur-md gencl:rounded-xl gencl:text-sm gencl:font-medium gencl:text-white gencl:p-2 gencl:w-full gencl:transition-colors gencl:overflow-hidden",
+  "gencl:cursor-pointer gencl:gap-2 gencl:backdrop-blur-md gencl:rounded-xl gencl:text-sm gencl:font-medium gencl:text-white gencl:p-2 gencl:w-full gencl:transition-colors gencl:overflow-hidden gencl:scrollbar-none",
   {
     variants: {
       variant: {
@@ -109,7 +109,7 @@ export const LinkCard = ({
           {hasImage && showThumbnail && (
             <div
               className={cn(
-                "gencl:h-16 gencl:w-16 gencl:rounded-xl gencl:bg-gray-200 gencl:shrink-0 gencl:overflow-hidden",
+                "gencl:h-16 gencl:w-16 gencl:rounded-xl gencl:bg-gray-200 gencl:shrink-0 gencl:overflow-hidden gencl:scrollbar-none",
                 isEmbed && "gencl:h-12 gencl:w-12 gencl:rounded-md"
               )}
             >
@@ -181,7 +181,7 @@ export const LinkCard = ({
         {hasImage && showThumbnail ? (
           <div
             className={cn(
-              "gencl:h-16 gencl:w-16 gencl:rounded-xl gencl:bg-gray-200 gencl:shrink-0 gencl:overflow-hidden",
+              "gencl:h-16 gencl:w-16 gencl:rounded-xl gencl:bg-gray-200 gencl:shrink-0 gencl:overflow-hidden gencl:scrollbar-none",
               isEmbed && "gencl:h-12 gencl:w-12 gencl:rounded-md"
             )}
           >
