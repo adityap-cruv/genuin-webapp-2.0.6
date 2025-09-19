@@ -21,6 +21,14 @@ type AuthInfoType = {
 
 export type InitializationStatus = 'pending' | 'loading' | 'done'
 
+type ErrorHandlerFn = ({
+  isError,
+  isNoContent,
+}: {
+  isError: boolean
+  isNoContent: boolean
+}) => void
+
 /**
  * These are the config when user can pass while genuin.init or genuin.initialize.
  */
@@ -45,6 +53,11 @@ export type ConfigByUser = {
    */
   authInfo?: AuthInfoType
   auth_info?: AuthInfoType
+  /**
+   * @deprecated use error_handler instead
+   */
+  errorHandler?: ErrorHandlerFn
+  error_handler?: ErrorHandlerFn
 }
 
 export type UpdateConfigByUserType = {

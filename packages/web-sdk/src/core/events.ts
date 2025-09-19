@@ -11,6 +11,8 @@ export enum SDKEventType {
   SDK_UPDATE_CONTEXTUAL_PARAMS = 'sdk:updateContextualParams',
   SDK_UPDATE_START_VIDEO_SLUG = 'sdk:updateStartVideoSlug',
   SDK_EMBED_PROVIDER_READY = 'sdk:embedProviderReady',
+  SDK_EMBED_ERROR = 'sdk:error',
+  SDK_EMBED_NO_CONTENT = 'sdk:noContent'
 }
 
 export interface SDKEvent {

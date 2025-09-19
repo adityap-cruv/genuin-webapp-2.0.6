@@ -1,6 +1,7 @@
 "use client";
 
 import { DangerIcon } from "@genuin/ui/icons";
+import { useEffect } from "react";
 
 interface ErrorStateProps {
   containerHeight?: number | string;
@@ -13,6 +14,15 @@ export function SdkErrorState({
   containerWidth,
   message = "We're unable to load videos, refresh and try again.",
 }: ErrorStateProps) {
+
+  useEffect(() => {
+    if (!window.genuin) return;
+    window.genuin.emit("sdk:error", {
+      isError: true,
+      isNoContent: false,
+    });
+  }, []);
+  
   return (
     <div
       className="gencl:bg-secondary-200 gencl:flex gencl:flex-col gencl:items-center gencl:justify-center gencl:rounded-md gencl:gap-4"

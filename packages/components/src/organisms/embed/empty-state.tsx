@@ -1,6 +1,7 @@
 "use client";
 
 import { PlayIcon } from "@genuin/ui/icons";
+import { useEffect } from "react";
 
 interface EmptyStateProps {
   containerHeight?: number | string;
@@ -13,6 +14,15 @@ export function SdkEmptyState({
   containerWidth,
   message = "No content available",
 }: EmptyStateProps) {
+
+  useEffect(() => {
+    if (!window.genuin) return;
+    window.genuin.emit("sdk:noContent", {
+      isError: false,
+      isNoContent: true,
+    });
+  }, []);
+
   return (
     <div
       className="gencl:bg-secondary-200 gencl:flex gencl:flex-col gencl:items-center gencl:justify-center gencl:rounded-md gencl:gap-4"

@@ -285,6 +285,10 @@ export class GenuinSDK {
       })
     } catch (error) {
       console.error('Error initializing embed:', error)
+      this.eventManager.emit(SDKEventType.SDK_EMBED_ERROR, {
+        isError: true,
+        isNoContent: false,
+      })
       loadErrorView(element)
     }
 
@@ -572,6 +576,17 @@ export class GenuinSDK {
         }
       }
     })
+
+    const userErrorHandler =
+      configByUser?.error_handler || configByUser?.errorHandler
+    if (userErrorHandler) {
+      this.eventManager.on(SDKEventType.SDK_EMBED_ERROR, ({ payload }) => {
+        userErrorHandler(payload)
+      })
+      this.eventManager.on(SDKEventType.SDK_EMBED_NO_CONTENT, ({ payload }) => {
+        userErrorHandler(payload)
+      })
+    }
 
     return this.sdkElements
   }
