@@ -12,7 +12,10 @@ import { Actions } from "@genuin/components/molecules/actions";
 import { CommentsDialog } from "@genuin/components/molecules/comments";
 import { controlLayerVariant } from "../control-layer";
 import { VariantProps } from "class-variance-authority";
-import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import {
+  useEmbedContext,
+  useSafeEmbedContext,
+} from "@genuin/components/context/embed/context";
 import { Linkouts } from "@genuin/components/organisms";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
@@ -137,15 +140,17 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
   }
 
   const defaultOpenCommentDialog = useMemo(() => {
-      const openCommentDialog =  (embedDetails?.embedData.autoUserInteractionToPerform ===
+    const openCommentDialog =
+      (embedDetails?.embedData.autoUserInteractionToPerform ===
         "comment-spark" ||
         embedDetails?.embedData.autoUserInteractionToPerform === "comment") &&
       embedDetails.embedData.startVideoSlug === postDetails.video.slug &&
-      !isDesktop && !embedDetails?.embedEventBus.getContext().autoInteractionActionDone;
-      if(openCommentDialog){
-        embedDetails.markAutoInteractionActionDone();
-      }
-    return openCommentDialog ?? false
+      !isDesktop &&
+      !embedDetails?.embedEventBus.getContext().autoInteractionActionDone;
+    if (openCommentDialog) {
+      embedDetails.markAutoInteractionActionDone();
+    }
+    return openCommentDialog ?? false;
   }, [embedDetails, postDetails, isDesktop]);
 
   return {
@@ -287,6 +292,7 @@ function SharedActions({
   >["onCommentCountChange"];
   onReactionStateChange?: (videoId: string, isReacted: boolean) => void;
 }) {
+  const embedDetails = useEmbedContext();
   return (
     <Actions
       onClick={(e) => e.stopPropagation()}
@@ -324,7 +330,11 @@ function SharedActions({
         },
       }}
       onReactionStateChange={(isReacted) => {
-        onReactionStateChange?.(postDetails.video.id, isReacted);
+        const videoId =
+          postDetails.video.slug === embedDetails?.embedData.startVideoSlug
+            ? postDetails.video.slug
+            : postDetails.video.id;
+        onReactionStateChange?.(videoId, isReacted);
       }}
     />
   );
