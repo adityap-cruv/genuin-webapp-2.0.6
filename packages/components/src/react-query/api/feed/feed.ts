@@ -200,7 +200,7 @@ async function fetchFeed(
       };
       break;
 
-    default:
+    case feedType === "HOME":
       url = API_PATHS.FEED_HOME;
       requestBody = {
         type: feedTypeToNumber[feedType],
@@ -211,6 +211,15 @@ async function fetchFeed(
           community_ids: options.communityIds,
         }),
         ...(options?.groupIds?.length && { loop_ids: options.groupIds }),
+      };
+
+    default:
+      return {
+        feed: [],
+        hasSection: false,
+        pageSession: undefined,
+        endOfFeed: true,
+        timestamp: 0,
       };
   }
 
@@ -257,11 +266,19 @@ type UseFeedOptionsType = {
   pageSession?: string;
   lastVideoId?: string;
   contextualParams?: EmbedDataType["contextualParams"];
-  // Initial data for the query - must match the FeedPage structure
-  initialData?: {
+  // Placeholder data for the query - must match the FeedPage structure
+  placeholderData?: {
     pages: FeedPage[];
     pageParams: (undefined | { pageSession?: string; lastVideoId?: string })[];
   };
+  // Caching options
+  staleTime?: number;
+  gcTime?: number;
+  refetchOnMount?: boolean;
+  refetchOnWindowFocus?: boolean;
+  refetchOnReconnect?: boolean;
+  refetchInterval?: number;
+  refetchIntervalInBackground?: boolean;
 };
 
 /**
@@ -312,18 +329,34 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
         lastVideoId: lastPageData.video.id,
       };
     },
+
     // Use custom caching options if provided, otherwise use default behavior
-    refetchOnMount: false,
-    refetchOnWindowFocus:  false,
+    ...(options?.staleTime !== undefined && { staleTime: options.staleTime }),
+    ...(options?.gcTime !== undefined && { gcTime: options.gcTime }),
+    ...(options?.refetchOnMount !== undefined && {
+      refetchOnMount: options.refetchOnMount,
+    }),
+    ...(options?.refetchOnWindowFocus !== undefined && {
+      refetchOnWindowFocus: options.refetchOnWindowFocus,
+    }),
+    ...(options?.refetchOnReconnect !== undefined && {
+      refetchOnReconnect: options.refetchOnReconnect,
+    }),
+    ...(options?.refetchInterval !== undefined && {
+      refetchInterval: options.refetchInterval,
+    }),
+    ...(options?.refetchIntervalInBackground !== undefined && {
+      refetchIntervalInBackground: options.refetchIntervalInBackground,
+    }),
 
-    // Use select to merge initial data with API data when both are available
-    ...(options?.initialData &&
+    // Use select to merge placeholder data with API data when both are available
+    ...(options?.placeholderData &&
       !options?.startVideoSlug && {
-        initialData: options?.initialData,
+        placeholderData: options?.placeholderData,
         select: (data: InfiniteData<FeedPage>) => {
-          if (!data || !options?.initialData) return data;
+          if (!data || !options?.placeholderData) return data;
 
-          const initialPage = options.initialData.pages[0];
+          const initialPage = options.placeholderData.pages[0];
           const initialVideos = initialPage?.feed || [];
 
           // If we only have the initial data, return as is

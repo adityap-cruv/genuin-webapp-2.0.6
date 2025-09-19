@@ -40,8 +40,8 @@ export function EmbedExpandSectionedView({
           : videos.length > 0
             ? (videos[videos.length - 1]?.video?.id ?? undefined)
             : undefined,
-      // Pass filtered section videos as initial data
-      initialData:
+      // Pass filtered section videos as placeholder data
+      placeholderData:
         filteredSelectedSectionVideos.length > 0
           ? {
               pages: [
@@ -56,6 +56,12 @@ export function EmbedExpandSectionedView({
               pageParams: [{ pageSession: "", lastVideoId: "" }],
             }
           : undefined,
+      // Caching configuration for better performance
+      staleTime: 5 * 60 * 1000, // 5 minutes - data is fresh for 5 minutes
+      gcTime: 30 * 60 * 1000, // 30 minutes - keep in cache for 30 minutes
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: true,
     }),
     [
       isSectioned,
