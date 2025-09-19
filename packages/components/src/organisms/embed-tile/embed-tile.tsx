@@ -252,10 +252,10 @@ function EmbedPlayer({
         poster={postDetails.video.thumbnail}
         className={cn(
           // Adaptive sizing based on rootElement dimensions
-          getAdaptiveSizing(),
-          !config.video.videoCrop && "gencl:object-cover gencl:w-full"
+          config.video.videoCrop
+            ? getAdaptiveSizing()
+            : "gencl:object-cover gencl:h-full gencl:w-full"
         )}
-        style={{ height: !config.video.videoCrop ? "inherit" : "" }}
       />
       <ControlLayer
         variant={config.view.isPlacementView ? "placement" : "embed"}

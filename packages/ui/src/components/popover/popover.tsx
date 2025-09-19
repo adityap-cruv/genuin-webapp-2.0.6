@@ -27,6 +27,8 @@ const popoverContentVariants = cva(
         light:
           "gencl:bg-white gencl:border gencl:border-border gencl:w-72 gencl:p-4 gencl:shadow-md",
         dark: "gencl:bg-secondary-900 gencl:border gencl:border-secondary-700 gencl:text-white gencl:w-72 gencl:p-4 gencl:shadow-md",
+        auth:
+          "gencl:border gencl:border-border gencl:w-72 gencl:p-4 gencl:shadow-md",
       },
     },
     defaultVariants: {
@@ -40,6 +42,7 @@ const popoverArrowVariants = cva("gencl:z-50 gencl:size-3.5 gencl:w-5", {
     theme: {
       light: "gencl:fill-white",
       dark: "gencl:bg-secondary-900 gencl:border-secondary-700",
+      auth : "gencl:fill-white"
     },
   },
   defaultVariants: {

@@ -55,6 +55,7 @@ export interface MentionInputProps {
   maxLength: number;
   defaultValue?: string;
   postId?: string;
+  readonly? : boolean
 }
 
 export function MentionInput({
@@ -69,6 +70,7 @@ export function MentionInput({
   maxLength = 500,
   defaultValue,
   postId,
+  readonly = false
 }: MentionInputProps) {
   const form = useForm<CommentFormValues>({
     resolver: zodResolver(commentFormSchema),
@@ -317,6 +319,7 @@ export function MentionInput({
                           }
                         }}
                         inputType={inputType}
+                        readOnly={readonly}
                       />
                     </div>
                   </FormControl>

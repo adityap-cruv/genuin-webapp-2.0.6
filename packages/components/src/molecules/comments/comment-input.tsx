@@ -87,9 +87,9 @@ export function CommentInputBox({
           <MentionInput
             videoId={videoId}
             loopId={loopId}
+            readonly={true}
             onCommentPosted={onCommentPosted}
             {...commentInputProps}
-            disabled={true}
           />
         </div>
       </ActionPopover>

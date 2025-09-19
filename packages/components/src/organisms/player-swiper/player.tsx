@@ -98,13 +98,14 @@ export function Player({
             id={"feed-player--" + post.video.id}
             poster={post.video.thumbnail ?? ""}
             className={cn(
-              "gencl:bg-secondary-200 gencl:object-cover gencl:w-full gencl:h-full"
+              "gencl:bg-secondary-200 gencl:object-cover gencl:w-full"
             )}
             playsInline
             onTimeUpdate={handleTimeUpdate}
             onEnded={() => {
               showGestureOverlay("SWIPE");
             }}
+            style={{ height: "inherit" }}
           />
           <ControlLayer
             isActive={isActive}

@@ -50,18 +50,24 @@ export function ShareButton({
   const handleClick = useCallback(
     async (e: any) => {
       onClick?.(e);
-      // TODO : remove temporary check.
+      // TODO : remove temporary check of ted brand id.
       const baseShareUrl = pathName ? pathName.split("/video") : [];
       const shareUrl =
+        (brandDetails.brand_id === 2357 &&
+        baseShareUrl &&
         baseShareUrl.length === 2
-          ? `${
-              brandDetails && brandDetails.brand_id === 2357
-                ? `${window.location.href}?video=${baseShareUrl[1]?.slice(1).replace("?", "&")}`
-                : pathName
-            }`
-          : pathName || "";
+          ? window.location.href
+          : pathName) ?? pathName;
+
       // Append UTM source parameter for tracking
       const url = new URL(createExternalLink(shareUrl));
+      url.search = "";
+      if (brandDetails.brand_id === 2357) {
+        url.searchParams.set(
+          "video",
+          baseShareUrl[1]?.slice(1).replace("?", "&") ?? ""
+        );
+      }
       url.searchParams.append("utm_source", "web");
       let fullUrl = url.href;
 

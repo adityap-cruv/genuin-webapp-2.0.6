@@ -141,6 +141,7 @@ export const ActionPopover = memo(function ActionPopover({
       <PopoverTrigger asChild>{children}</PopoverTrigger>
       <PopoverContent
         side={side}
+        theme="auth"
         showArrow={showArrow}
         align={align}
         customBackgroundColor={backgroundColor}
