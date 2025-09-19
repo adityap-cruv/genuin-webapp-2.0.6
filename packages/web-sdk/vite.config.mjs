@@ -171,7 +171,8 @@ const addImportantToGenclProps = () => ({
           selector.includes('.gencl\\:pl') ||
           selector.includes('.gencl\\:pr') ||
           selector.includes('.gencl\\:px') ||
-          selector.includes('.gencl\\:py'),
+          selector.includes('.gencl\\:py') ||
+          selector.includes('.gencl\\:text-'),
       )
 
       if (hasGenclBgOrBorder) {
