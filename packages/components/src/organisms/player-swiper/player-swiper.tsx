@@ -283,10 +283,18 @@ export function PlayerList({
               if (!showCommentBox) return;
               //
               const defaultOpen =
-                embedDetails?.embedData?.autoUserInteractionToPerform ===
-                  "comment-spark" &&
+                (embedDetails?.embedData?.autoUserInteractionToPerform ===
+                  "comment-spark" ||
+                  embedDetails?.embedData.autoUserInteractionToPerform ===
+                    "comment") &&
                 posts[activeIndex]?.video.slug ===
-                  embedDetails.embedData?.startVideoSlug;
+                  embedDetails.embedData?.startVideoSlug &&
+                !embedDetails.embedEventBus.getContext()
+                  .autoInteractionActionDone;
+
+              if (defaultOpen) {
+                embedDetails.markAutoInteractionActionDone();
+              }
 
               // Simple ui to show for comment trigger
               function CommentBox({ children }: { children: React.ReactNode }) {

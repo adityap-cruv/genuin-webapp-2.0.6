@@ -30,7 +30,7 @@ export default function PlaybackSpeedControlSlider() {
 
   return (
     <div className="gencl:flex gencl:flex-col gencl:gap-5 gencl:items-center gencl:justify-center">
-      <div className="gencl:flex gencl:items-center gencl:space-x-4 gencl:w-full">
+      <div className="gencl:flex gencl:items-center gencl:gap-x-4 gencl:w-full">
         <Button
           theme="secondary"
           onClick={decreaseSpeed}

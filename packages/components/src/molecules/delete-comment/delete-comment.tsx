@@ -79,7 +79,7 @@ export function DeleteComment({
       <DialogTrigger asChild className="gencl:!border-none">
         {children}
       </DialogTrigger>
-      <DialogContent className="gencl:max-w-xl gencl:rounded-2xl gencl:flex gencl:flex-col gencl:gap-4 gencl:sm:gap-5!">
+      <DialogContent className="gencl:max-w-xl gencl:rounded-t-2xl! gencl:md:rounded-2xl! gencl:flex gencl:flex-col gencl:gap-4 gencl:sm:gap-5!">
         <DialogHeader className="gencl:border-none gencl:text-center gencl:sm:text-start! gencl:gap-3 gencl:sm:gap-6!">
           <p className="gencl:text-headline-3-semi-bold gencl:text-black">
             Delete comment?

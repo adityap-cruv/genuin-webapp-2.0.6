@@ -137,13 +137,15 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
   }
 
   const defaultOpenCommentDialog = useMemo(() => {
-    return (
-      (embedDetails?.embedData.autoUserInteractionToPerform ===
+      const openCommentDialog =  (embedDetails?.embedData.autoUserInteractionToPerform ===
         "comment-spark" ||
         embedDetails?.embedData.autoUserInteractionToPerform === "comment") &&
       embedDetails.embedData.startVideoSlug === postDetails.video.slug &&
-      !isDesktop
-    );
+      !isDesktop && !embedDetails?.embedEventBus.getContext().autoInteractionActionDone;
+      if(openCommentDialog){
+        embedDetails.markAutoInteractionActionDone();
+      }
+    return openCommentDialog ?? false
   }, [embedDetails, postDetails, isDesktop]);
 
   return {

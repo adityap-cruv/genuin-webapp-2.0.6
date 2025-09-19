@@ -144,7 +144,7 @@ export function Report({
       <DialogTrigger asChild className="gencl:!border-none">
         {children}
       </DialogTrigger>
-      <DialogContent className="gencl:max-w-xl gencl:rounded-2xl gencl:space-y-4">
+      <DialogContent className="gencl:max-w-xl gencl:!rounded-t-2xl gencl:md:rounded-2xl gencl:flex gencl:flex-col gencl:gap-y-4">
         {reportMutation.isSuccess ? (
           <Success
             text="Thanks for your Feedback"

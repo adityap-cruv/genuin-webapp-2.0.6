@@ -158,7 +158,7 @@ const HighlightedInput = forwardRef<HTMLInputElement, HighlightedInputProps>(
               onChange={handleInputChange}
               onScroll={handleScroll}
               className={cn(
-                "gencl:w-full gencl:caret-secondary-500 gencl:p-0.5 gencl:rounded-md gencl:focus:outline-none gencl:ring-0! gencl:focus:border-transparent gencl:bg-transparent gencl:relative gencl:z-10 gencl:!text-transparent gencl:overflow-x-auto",
+                "gencl:w-full gencl:caret-secondary-500 gencl:p-0.5 gencl:rounded-md gencl:focus:outline-none gencl:ring-0! gencl:focus:border-transparent gencl:bg-transparent gencl:relative gencl:z-10 gencl:text-transparent gencl:overflow-x-auto",
                 classes.input
               )}
               {...props}
