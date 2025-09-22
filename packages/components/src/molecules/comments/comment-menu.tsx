@@ -53,7 +53,7 @@ export function CommentMenu({
             <div className="gencl:p-3 gencl:rounded-xl gencl:border-secondary-100 gencl:bg-white gencl:cursor-pointer gencl:text-primary">
               <Button
                 theme="text"
-                className="gencl:!text-error-status gencl:text-body-1-medium gencl:p-2 gencl:hover:bg-secondary-100 gencl:h-fit gencl:px-0"
+                className="gencl:!text-error-status gencl:text-body-1-medium gencl:hover:bg-secondary-100 gencl:h-fit gencl:px-0"
               >
                 Report
               </Button>
@@ -69,7 +69,7 @@ export function CommentMenu({
             <div className="gencl:p-3 gencl:rounded-xl gencl:border-secondary-100 gencl:bg-white gencl:cursor-pointer gencl:text-primary">
               <Button
                 theme="text"
-                className="gencl:!text-error-status gencl:text-body-1-medium gencl:p-2 gencl:hover:bg-secondary-100 gencl:h-fit gencl:px-0"
+                className="gencl:!text-error-status gencl:text-body-1-medium gencl:hover:bg-secondary-100 gencl:h-fit gencl:px-0"
               >
                 Delete
               </Button>

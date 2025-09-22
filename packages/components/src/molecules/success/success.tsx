@@ -35,8 +35,10 @@ export function Success({
         className="gencl:h-36"
       />
       <div className="gencl:flex gencl:flex-col gencl:gap-2">
-        <p className="gencl:text-headline-4-semi-bold">{text}</p>
-        <p className="gencl:text-body-1-semi-bold gencl:text-secondary-500">
+        <p className="gencl:text-body-0-semi-bold gencl:sm:text-headline-4-semi-bold!">
+          {text}
+        </p>
+        <p className="gencl:text-body-1-medium gencl:sm:text-body-1-semi-bold! gencl:text-secondary-500">
           {description}
         </p>
       </div>
@@ -49,7 +51,9 @@ export function Success({
             href={button.href}
             className="gencl:w-full"
           >
-            <Button theme="primary" className="gencl:w-full">{button.label}</Button>
+            <Button theme="primary" className="gencl:w-full">
+              {button.label}
+            </Button>
           </Link>
         </DialogClose>
       )}

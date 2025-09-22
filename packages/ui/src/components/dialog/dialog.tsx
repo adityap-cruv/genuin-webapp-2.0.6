@@ -98,7 +98,7 @@ const dialogContentVariants = cva(
     "gencl:data-[state=open]:animate-in gencl:data-[state=closed]:animate-out gencl:outline-none",
     "gencl:data-[state=closed]:fade-out-0 gencl:data-[state=open]:fade-in-0",
     "gencl:data-[state=closed]:zoom-out-95 gencl:data-[state=open]:zoom-in-95",
-    "gencl:z-50 gencl:w-full gencl:gap-4 gencl:!rounded-t-xl gencl:md:rounded-lg",
+    "gencl:z-50 gencl:w-full gencl:gap-4 gencl:!rounded-t-xl gencl:sm:!rounded-2xl",
     "gencl:bg-white gencl:p-6 gencl:shadow-lg gencl:duration-200 gencl:sm:max-w-lg",
   ],
   {

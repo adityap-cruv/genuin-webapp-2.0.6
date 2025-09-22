@@ -225,27 +225,13 @@ export const ReadMore = memo(function ReadMore({
 
     const textElement = textRef.current;
 
-    // Remove line clamp before animating both expand and collapse
-    applyLineClampStyles(textElement, null);
-
-    let timeout: NodeJS.Timeout | undefined;
-    if (!isExpanded) {
-      // Wait for animation, then re-apply clamp and reduce chars
-      timeout = setTimeout(() => {
-        if (!isExpanded && textRef.current) {
-          applyLineClampStyles(textRef.current, maxLines);
-          setShowCollapsed(true);
-        }
-      }, 500);
-      // During animation, keep full text visible
+    if (textElement && !isExpanded) {
+      applyLineClampStyles(textElement, maxLines);
       setShowCollapsed(false);
     } else {
-      // On expand, immediately show full text
-      setShowCollapsed(false);
+      applyLineClampStyles(textElement, null);
+      setShowCollapsed(true);
     }
-    return () => {
-      if (timeout) clearTimeout(timeout);
-    };
   }, [shouldAnimate, isExpanded, maxLines]);
 
   useEffect(() => {

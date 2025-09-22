@@ -144,7 +144,7 @@ export function Report({
       <DialogTrigger asChild className="gencl:!border-none">
         {children}
       </DialogTrigger>
-      <DialogContent className="gencl:max-w-xl gencl:!rounded-t-2xl gencl:md:rounded-2xl gencl:flex gencl:flex-col gencl:gap-y-4">
+      <DialogContent className="gencl:max-w-xl gencl:rounded-t-2xl! gencl:sm:rounded-t-none gencl:sm:rounded-2xl! gencl:flex gencl:flex-col gencl:gap-y-4">
         {reportMutation.isSuccess ? (
           <Success
             text="Thanks for your Feedback"
@@ -180,14 +180,14 @@ function ReportContent({
   return (
     <>
       <DialogHeader className="gencl:border-none">
-        <p className="gencl:text-headline-2-semi-bold gencl:text-black">
+        <p className="gencl:text-headline-3-semi-bold gencl:sm:!text-headline-2-semi-bold gencl:text-black">
           {REPORT_HEADER_DATA[reportFor].title}
         </p>
       </DialogHeader>
-      <p className="gencl:text-headline-4-semi-bold gencl:text-black">
+      <p className="gencl:text-body-0-semi-bold gencl:sm:!text-headline-4-semi-bold gencl:text-black">
         {REPORT_HEADER_DATA[reportFor].subtitle}
       </p>
-      <p className="gencl:text-body-1-semi-bold gencl:text-secondary-500">
+      <p className="gencl:text-body-1-medium gencl:sm:!text-body-1-semi-bold gencl:text-secondary-500">
         Your report is anonymous.
       </p>
       <RadioGroup

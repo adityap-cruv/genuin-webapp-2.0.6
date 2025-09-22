@@ -11,6 +11,7 @@ import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config
 import { Stats } from "../../stats";
 import { EmbedControls } from "./controls/embed";
 import { useEmbedDimensions } from "@genuin/components/hooks/embed/use-embed-dimensions";
+import { useBaseContext } from "@genuin/components/context";
 
 export const Embed: FC<ControlLayerPropsType> = ({
   postDetails,
@@ -19,6 +20,7 @@ export const Embed: FC<ControlLayerPropsType> = ({
   ...restProps
 }) => {
   const config = useEmbedConfigs();
+  const { brandDetails } = useBaseContext();
   const showLayout = config.engagement.showEngagementOnRootElement;
   const { containerHeight } = useEmbedDimensions();
 
@@ -41,7 +43,8 @@ export const Embed: FC<ControlLayerPropsType> = ({
     }
   };
 
-  const layoutType = getEmbedLayoutType();
+  const layoutType =
+    brandDetails.brand_id === 2357 ? "ted" : getEmbedLayoutType();
 
   switch (layoutType) {
     case "iheart":

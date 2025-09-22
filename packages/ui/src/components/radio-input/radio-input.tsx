@@ -70,7 +70,7 @@ function RadioItem({
     >
       <label
         htmlFor={`radio-${value}`}
-        className="gencl:cursor-pointer gencl:text-body-1-bold"
+        className="gencl:cursor-pointer gencl:text-body-1-medium gencl:sm:text-body-1-bold!"
       >
         {label}
       </label>

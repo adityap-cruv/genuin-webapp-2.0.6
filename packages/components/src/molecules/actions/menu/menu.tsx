@@ -68,7 +68,6 @@ export function Menu({
   const embedDetails = useSafeEmbedContext();
   const [isOpen, setIsOpen] = useState(false);
   const { activeIndex } = useFeedContext();
-  const brandId = brandDetails.brand_id;
 
   useEffect(() => {
     if (isOpen) {
