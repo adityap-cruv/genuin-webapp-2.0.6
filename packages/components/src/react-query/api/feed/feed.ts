@@ -320,6 +320,7 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
         lastVideoId: lastPageData.video.id,
       };
     },
+    refetchOnWindowFocus: false, // Default to false for better UX
 
     // Use custom caching options if provided, otherwise use default behavior
     ...(options?.staleTime !== undefined && { staleTime: options.staleTime }),
