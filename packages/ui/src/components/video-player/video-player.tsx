@@ -11,7 +11,6 @@ import {
 } from "react";
 
 import { cn, encodeVideoSourceUrl } from "@genuin/ui/lib/utils";
-
 const hlsConfigs = {
   // debug: true,
   /**
@@ -112,6 +111,7 @@ type AdDataType = {
 
 export const VideoPlayer = memo(function VideoPlayer({
   src,
+  id,
   poster,
   className,
   style,
@@ -681,6 +681,7 @@ export const VideoPlayer = memo(function VideoPlayer({
 
   return (
     <video
+      id={id}
       className={cn(
         "gencl:h-auto gencl:w-auto gencl:bg-cover gencl:bg-center gencl:bg-no-repeat gencl:object-cover",
         className

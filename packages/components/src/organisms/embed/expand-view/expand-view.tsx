@@ -11,6 +11,7 @@ import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-d
 import { cn } from "@genuin/ui/lib/utils";
 import { useBaseContext } from "@genuin/components/context/base";
 import { usePrevious } from "@genuin/components/hooks/use-previous";
+import { RemoveScroll } from "react-remove-scroll";
 
 type EmbedExpandViewProps = {
   videos: PostDetailsType[];
@@ -174,30 +175,6 @@ export function EmbedExpandView({
     };
   }, [showExpandView, handleCloseExpandView, isInIframe]);
 
-  // Store scroll position before expand view, thingdu.
-  const [savedScrollY, setSavedScrollY] = useState<number | null>(null);
-  const prevShowExpandView = usePrevious(showExpandView);
-
-  // Capture scroll position BEFORE expand view is shown
-  useEffect(() => {
-    if (!prevShowExpandView && showExpandView) {
-      setSavedScrollY(window.scrollY);
-    }
-    if (!showExpandView) {
-      setSavedScrollY(null);
-    }
-  }, [showExpandView, prevShowExpandView]);
-
-  // Restore scroll position AFTER expand view is rendered
-  useEffect(() => {
-    if (showExpandView && savedScrollY !== null) {
-      // Use setTimeout to ensure portal/modal is rendered first
-      setTimeout(() => {
-        window.scrollTo({ top: savedScrollY, behavior: "auto" });
-      }, 0);
-    }
-  }, [showExpandView, savedScrollY]);
-
   const defaultComponent = (
     <FeedView
       startIndex={startIndex}
@@ -228,17 +205,24 @@ export function EmbedExpandView({
 
   if (showExpandView)
     return (
-      <RootPortal
-        className={cn(
-          "gencl:fixed gencl:flex gencl:justify-center gencl:gap-6 gencl:h-screen gencl:w-screen gencl:inset-0 gencl:z-50 gencl:bg-white",
-          isMobile && "gencl:flex-col"
-        )}
-      >
-        <StandardWall
-          className="gencl:bg-white gencl:h-full gencl:w-full"
-          defaultComponent={defaultComponent}
-          baseLayoutVariant="embed-expand-view"
-        />
-      </RootPortal>
+      <RemoveScroll>
+        <RootPortal
+          className={cn(
+            "gencl:fixed gencl:flex gencl:justify-center gencl:gap-6 gencl:h-screen gencl:w-screen gencl:inset-0 gencl:z-50 gencl:bg-white",
+            isMobile && "gencl:flex-col"
+          )}
+        >
+          {/** for ted internal routing is not enabled. */}
+          {embedData.video_layout_id === 3 ? (
+            defaultComponent
+          ) : (
+            <StandardWall
+              className="gencl:bg-white gencl:h-full gencl:w-full"
+              defaultComponent={defaultComponent}
+              baseLayoutVariant="embed-expand-view"
+            />
+          )}
+        </RootPortal>
+      </RemoveScroll>
     );
 }

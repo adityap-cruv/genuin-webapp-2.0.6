@@ -39,10 +39,11 @@
     "react-drag-drop-files": "^3.0.1",
     "react-phone-number-input": "^3.4.12",
     "react-qr-code": "^2.0.16",
+    "react-remove-scroll": "^2.7.1",
     "swiper": "^11.2.7",
     "usehooks-ts": "^3.1.1",
-    "wouter": "^3.5.1",
     "uuid": "^11.0.5",
+    "wouter": "^3.5.1",
     "zod": "^3.25.56"
   },
   "devDependencies": {

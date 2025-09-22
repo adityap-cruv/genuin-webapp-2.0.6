@@ -179,8 +179,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     // Skip impression event if video was viewed for less than 2 seconds
     if (!swiper || !index) return;
 
-    if (index !== swiper.previousIndex)
-      return;
+    if (index !== swiper.previousIndex) return;
 
     track(EventName.VIDEO_IMPRESSION, {
       content_category: "loop",
@@ -197,23 +196,13 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     const { embedEventBus } = embedDetails;
 
     function handleUserFocusChange() {
-      const context = embedEventBus.getContext();
-
-      if (!context.userIsFocused) {
-        setuserHasFocus(false);
-      } else {
-        setuserHasFocus(true);
-      }
+      const { userIsFocused, containerInView } = embedEventBus.getContext();
+      setuserHasFocus(userIsFocused && containerInView);
     }
 
     function handleContainerInViewChange() {
-      const context = embedEventBus.getContext();
-
-      if (!context.containerInView) {
-        setuserHasFocus(false);
-      } else {
-        setuserHasFocus(true);
-      }
+      const { userIsFocused, containerInView } = embedEventBus.getContext();
+      setuserHasFocus(userIsFocused && containerInView);
     }
 
     embedEventBus.on("userFocusChange", handleUserFocusChange);

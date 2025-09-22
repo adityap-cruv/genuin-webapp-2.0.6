@@ -43,8 +43,8 @@ export const FeedPlayer = memo(function FeedPlayer({
   onLoadStart,
   ...props
 }: Props) {
-  const { muted, volume, playbackSpeed, brandDetails } = useBaseContext();
-  const embedDetails = useSafeEmbedContext();
+  const { muted, volume, playbackSpeed } = useBaseContext();
+  // const embedDetails = useSafeEmbedContext();
   const {
     feedPlayerShouldPlay,
     setVideoTimeState,
