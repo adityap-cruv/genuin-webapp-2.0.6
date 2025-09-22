@@ -69,7 +69,7 @@ export const SectionsTabs = ({ onSectionSelect }: SectionsTabsProps) => {
     <div
       ref={containerRef}
       className={cn(
-        "swiper-no-swiping gencl:absolute gencl:top-0 gencl:z-50 gencl:flex gencl:h-13 gencl:sm:h-16! gencl:w-full gencl:gap-2 gencl:overflow-x-auto gencl:scrollbar-none gencl:p-4 gencl:pb-0!",
+        "swiper-no-swiping gencl:absolute gencl:top-0 gencl:z-50 gencl:flex gencl:w-full gencl:gap-2 gencl:overflow-x-auto gencl:scrollbar-none gencl:p-4 gencl:pb-0!",
         isDragging ? "gencl:cursor-grabbing" : "gencl:cursor-grab"
       )}
       onMouseDown={handleMouseDown}
@@ -99,10 +99,10 @@ export const SectionsTabs = ({ onSectionSelect }: SectionsTabsProps) => {
             }
           }}
           className={cn(
-            "gencl:text-body-0-semi-bold gencl:h-9 gencl:sm:h-10! gencl:flex gencl:border gencl:items-center gencl:justify-center gencl:px-3.5 gencl:rounded-full gencl:text-white gencl:transition-colors gencl:cursor-pointer gencl:whitespace-nowrap",
+            "gencl:text-body-0-semi-bold! gencl:h-9 gencl:sm:h-10! gencl:flex gencl:border gencl:items-center gencl:justify-center gencl:px-3.5 gencl:rounded-full gencl:text-white! gencl:transition-colors gencl:cursor-pointer gencl:whitespace-nowrap",
             selectedSection?.id === section?.id
-              ? "gencl:bg-white gencl:text-black! gencl:border-white"
-              : "gencl:bg-black/40 gencl:border-white/40"
+              ? "gencl:bg-white gencl:border-white gencl:text-black!"
+              : "gencl:bg-black/40 gencl:border-white/40 gencl:text-white!"
           )}
         >
           {section?.title}

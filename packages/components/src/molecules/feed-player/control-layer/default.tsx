@@ -97,7 +97,7 @@ export function Default({
           enableExpand={enableExpand}
           className={cn(
             isMobile
-              ? "gencl:z-20 gencl:top-0"
+              ? `gencl:z-20 ${showExpandView && "gencl:top-0"}`
               : "gencl:group-hover:opacity-100 gencl:group-hover:pointer-events-auto gencl:opacity-0 gencl:pointer-events-none gencl:transition-opacity gencl:duration-300"
           )}
           variant={isSectioned ? "sectioned" : "default"}
@@ -121,7 +121,7 @@ export function Default({
          * This is the expand view details.
          * It will show the details of the post. If post is expanded.
          */}
-        {playbackSpeed.speed !== 1 ? undefined : showExpandView || isMobile ? (
+        {showExpandView || isMobile ? (
           <ExpandViewDetails
             postDetails={postDetails}
             isActive={isActive}
@@ -131,6 +131,7 @@ export function Default({
             onReactionStateChange={onReactionStateChange}
             onCommentCountChange={onCommentCountChange}
             variant={variant}
+            className={cn(playbackSpeed.speed !== 1 && "gencl:invisible")}
           />
         ) : (
           <div

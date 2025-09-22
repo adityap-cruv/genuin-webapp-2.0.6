@@ -17,9 +17,14 @@ export type SelectedMention = {
 };
 
 interface HighlightedInputProps
-  extends Omit<InputHTMLAttributes<HTMLInputElement>, "onChange"> {
+  extends Omit<
+    InputHTMLAttributes<HTMLInputElement | HTMLTextAreaElement>,
+    "onChange"
+  > {
   value?: string;
-  onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => void;
   selectedMentions?: SelectedMention[];
   name: string;
   classes?: {
@@ -29,7 +34,10 @@ interface HighlightedInputProps
   inputType: "text" | "textarea";
 }
 
-const HighlightedInput = forwardRef<HTMLInputElement, HighlightedInputProps>(
+const HighlightedInput = forwardRef<
+  HTMLInputElement | HTMLTextAreaElement,
+  HighlightedInputProps
+>(
   (
     {
       value = "",
@@ -45,7 +53,7 @@ const HighlightedInput = forwardRef<HTMLInputElement, HighlightedInputProps>(
     ref
   ) => {
     const [inputValue, setInputValue] = useState<string>(value);
-    const inputRef = useRef<HTMLInputElement>(null);
+    const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
     const highlightRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -60,7 +68,9 @@ const HighlightedInput = forwardRef<HTMLInputElement, HighlightedInputProps>(
       }
     }, [inputValue]);
 
-    const handleInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
+    const handleInputChange = (
+      e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ): void => {
       const newValue = e.target.value;
       setInputValue(newValue);
 
@@ -72,15 +82,17 @@ const HighlightedInput = forwardRef<HTMLInputElement, HighlightedInputProps>(
             ...e.target,
             value: newValue,
           },
-        } as ChangeEvent<HTMLInputElement>;
+        } as ChangeEvent<HTMLInputElement | HTMLTextAreaElement>;
 
         onChange(syntheticEvent);
       }
     };
 
-    const handleScroll = (e: React.UIEvent<HTMLInputElement>): void => {
+    const handleScroll = (
+      e: React.UIEvent<HTMLInputElement | HTMLTextAreaElement>
+    ): void => {
       if (highlightRef.current) {
-        const target = e.target as HTMLInputElement;
+        const target = e.target as HTMLInputElement | HTMLTextAreaElement;
         highlightRef.current.scrollLeft = target.scrollLeft;
         highlightRef.current.scrollTop = target.scrollTop;
       }
@@ -112,7 +124,7 @@ const HighlightedInput = forwardRef<HTMLInputElement, HighlightedInputProps>(
       if (!inputValue) {
         // Show placeholder in highlight layer if input is empty
         if (placeholder) {
-          return `<span class=\"gencl:text-secondary-600 gencl:text-body-1-medium gencl:opacity-100\">${preserveSpaces(placeholder)}</span>`;
+          return `<span class=\"gencl:text-secondary-600 gencl:opacity-100\">${preserveSpaces(placeholder)}</span>`;
         }
         return "";
       }
@@ -145,22 +157,36 @@ const HighlightedInput = forwardRef<HTMLInputElement, HighlightedInputProps>(
             <div
               ref={highlightRef}
               className={cn(
-                "gencl:absolute gencl:top-0 gencl:left-0 gencl:w-full gencl:p-0.5 gencl:h-full gencl:pointer-events-none gencl:overflow-hidden gencl:whitespace-pre-wrap gencl:z-0 gencl:leading-normal gencl:border gencl:border-transparent gencl:rounded-md",
+                "gencl:absolute gencl:top-0 gencl:left-0 gencl:w-full gencl:p-0.5 gencl:h-full gencl:pointer-events-none gencl:overflow-auto gencl:whitespace-pre-wrap gencl:z-0 gencl:border gencl:border-transparent gencl:rounded-md",
                 classes.highlight
               )}
+              style={{
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
+                WebkitOverflowScrolling: "touch",
+                transform: "translateZ(0)", // Force hardware acceleration for iOS
+              }}
               dangerouslySetInnerHTML={{ __html: getHighlightedText() }}
             />
             <input
-              ref={ref || inputRef}
+              ref={
+                (ref as React.Ref<HTMLInputElement>) ||
+                (inputRef as React.RefObject<HTMLInputElement>)
+              }
               type="text"
               name={name}
               value={inputValue}
               onChange={handleInputChange}
               onScroll={handleScroll}
               className={cn(
-                "gencl:w-full gencl:caret-secondary-500 gencl:p-0.5 gencl:rounded-md gencl:focus:outline-none gencl:ring-0! gencl:focus:border-transparent gencl:bg-transparent gencl:relative gencl:z-10 gencl:text-transparent gencl:overflow-x-auto",
+                "gencl:w-full gencl:caret-secondary-500 gencl:rounded-md gencl:focus:outline-none gencl:ring-0! gencl:focus:border-transparent gencl:bg-transparent gencl:relative gencl:z-10 gencl:text-transparent gencl:overflow-x-auto",
                 classes.input
               )}
+              style={{
+                WebkitOverflowScrolling: "touch",
+                transform: "translateZ(0)", // Force hardware acceleration for iOS
+                WebkitAppearance: "none", // Remove iOS Safari input styling
+              }}
               {...props}
             />
           </div>
@@ -173,20 +199,17 @@ const HighlightedInput = forwardRef<HTMLInputElement, HighlightedInputProps>(
             }
             name={name}
             value={inputValue}
-            onChange={
-              handleInputChange as React.ChangeEventHandler<HTMLTextAreaElement>
-            }
-            onScroll={handleScroll as React.UIEventHandler<HTMLTextAreaElement>}
-            onKeyUp={
-              handleKeyUp as React.KeyboardEventHandler<HTMLTextAreaElement>
-            }
-            onClick={
-              handleClick as React.MouseEventHandler<HTMLTextAreaElement>
-            }
+            onChange={handleInputChange}
+            onScroll={handleScroll}
             className={cn(
               "gencl:w-full gencl:caret-secondary-500 gencl:rounded-md gencl:focus:border-transparent gencl:bg-transparent gencl:relative gencl:z-10 gencl:overflow-y-auto gencl:selection:bg-blue-200 gencl:focus-visible:outline-hidden",
               classes.input
             )}
+            style={{
+              WebkitOverflowScrolling: "touch",
+              transform: "translateZ(0)", // Force hardware acceleration for iOS
+              WebkitAppearance: "none", // Remove iOS Safari textarea styling
+            }}
             rows={5}
             {...(props as React.TextareaHTMLAttributes<HTMLTextAreaElement>)}
           />
