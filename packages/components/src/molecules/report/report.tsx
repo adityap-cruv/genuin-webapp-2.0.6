@@ -140,11 +140,9 @@ export function Report({
     );
   }
   return (
-    <Dialog modal {...props}>
-      <DialogTrigger asChild className="gencl:!border-none">
-        {children}
-      </DialogTrigger>
-      <DialogContent className="gencl:max-w-xl gencl:rounded-t-2xl! gencl:sm:rounded-t-none gencl:sm:rounded-2xl! gencl:flex gencl:flex-col gencl:gap-y-4">
+    <Dialog {...props}>
+      <DialogTrigger className="gencl:!border-none">{children}</DialogTrigger>
+      <DialogContent className="gencl:max-w-xl gencl:!rounded-t-2xl gencl:md:rounded-2xl gencl:flex gencl:flex-col gencl:gap-y-4">
         {reportMutation.isSuccess ? (
           <Success
             text="Thanks for your Feedback"

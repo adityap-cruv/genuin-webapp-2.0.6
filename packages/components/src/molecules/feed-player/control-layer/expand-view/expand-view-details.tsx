@@ -297,7 +297,7 @@ const SharedActions = memo(function SharedActions({
   >["onCommentCountChange"];
   onReactionStateChange?: (videoId: string, isReacted: boolean) => void;
 }) {
-  const embedDetails = useEmbedContext();
+  const embedDetails = useSafeEmbedContext();
   return (
     <Actions
       onClick={(e) => e.stopPropagation()}
