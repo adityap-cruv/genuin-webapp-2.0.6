@@ -200,7 +200,7 @@ async function fetchFeed(
       };
       break;
 
-    case feedType === "HOME":
+    default:
       url = API_PATHS.FEED_HOME;
       requestBody = {
         type: feedTypeToNumber[feedType],
@@ -211,15 +211,6 @@ async function fetchFeed(
           community_ids: options.communityIds,
         }),
         ...(options?.groupIds?.length && { loop_ids: options.groupIds }),
-      };
-
-    default:
-      return {
-        feed: [],
-        hasSection: false,
-        pageSession: undefined,
-        endOfFeed: true,
-        timestamp: 0,
       };
   }
 
