@@ -62,7 +62,7 @@ export const TrendingGroupCard = ({
               />
             )}
             <span className="gencl:text-gray-500 gencl:text-body-2-bold">
-              {memberCount && (
+              {memberCount > 0 && (
                 <>
                   <span className="gencl:text-secondary-900">
                     {abbreviateNumber(memberCount)}
@@ -70,10 +70,10 @@ export const TrendingGroupCard = ({
                   <span className="gencl:text-secondary-600">members</span>
                 </>
               )}
-              {memberCount && postCount && (
+              {memberCount > 0 && postCount > 0 && (
                 <span className="gencl:mx-2 gencl:text-secondary-600">•</span>
               )}
-              {postCount && (
+              {postCount > 0 && (
                 <>
                   <span className="gencl:text-secondary-900">
                     {abbreviateNumber(postCount)}

@@ -72,7 +72,7 @@ export function GroupDetailsPage({ slug }: { slug: string }) {
           setQueryDataForJoinGroupInGroupDetails(slug, newRole);
         }}
       />
-      {groupDetails.role !== "REQUESTED" && (
+      {!showPrivateGroupAccess && (
         <GroupSubscriptionButton
           groupSlug={groupDetails.slug}
           className="gencl:flex-grow gencl:sm:flex-grow-0! gencl:p-2"
@@ -175,7 +175,9 @@ function About({
           userName: groupDetails.owner.userName,
           url: buildPageUrl({
             type: !!groupDetails.owner.brand ? "brand" : "profile",
-            slug: groupDetails.owner.userName,
+            slug: !!groupDetails.owner.brand
+              ? (groupDetails.owner.brand.slug ?? undefined)
+              : (groupDetails.owner.userName ?? undefined),
           }),
           userLogoType: groupDetails.owner.brand?.brandUserLogo,
         },

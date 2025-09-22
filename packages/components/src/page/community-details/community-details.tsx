@@ -5,6 +5,7 @@ import {
   useEffect,
   ReactNode,
   ComponentProps,
+  useState,
 } from "react";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 
@@ -36,6 +37,11 @@ import { getSocialLinks } from "@genuin/components/lib/utils";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { useAnalytics } from "@genuin/components/context/analytics";
 import { useLinkContext } from "@genuin/components/context";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  getQueryKeyForCommunityGroups,
+  getQueryKeyForCommunityMembers,
+} from "@genuin/components/react-query/keys/community";
 
 export function CommunityDetails({
   slug,
@@ -86,12 +92,37 @@ function CommunityDetailsView({ slug }: { slug: string }) {
     RECENT_COMMUNITIES_KEY,
     []
   );
+  const queryClient = useQueryClient();
+  const [currentTab, setCurrentTab] = useState<string>("groups");
+
+  // Handle tab changes, considering desktop/mobile
+  const handleTabChange = useCallback(
+    (newTab: string) => {
+      if (isDesktop && newTab === "about") {
+        setCurrentTab("groups");
+      } else {
+        setCurrentTab(newTab);
+      }
+    },
+    [isDesktop]
+  );
 
   const handleCommunityJoinStatusChange = useCallback(
     (newRole: CommunityUserRole) => {
       setQueryDataForCommunityRoleChange(slug, newRole);
+
+      // Invalidate based on current tab
+      if (currentTab === "groups") {
+        queryClient.invalidateQueries({
+          queryKey: getQueryKeyForCommunityGroups(slug),
+        });
+      } else if (currentTab === "members") {
+        queryClient.invalidateQueries({
+          queryKey: getQueryKeyForCommunityMembers(slug),
+        });
+      }
     },
-    [slug]
+    [slug, currentTab, queryClient]
   );
 
   useEffect(() => {
@@ -238,6 +269,8 @@ function CommunityDetailsView({ slug }: { slug: string }) {
                 slug={slug}
                 className="gencl:pt-3 gencl:sm:pt-6"
                 communityOwnerId={communityDetails.leader.member_id}
+                value={currentTab}
+                onValueChange={handleTabChange}
                 aboutComponent={
                   <About
                     communityDetails={communityDetails}
@@ -335,6 +368,7 @@ function Details({
   detailsId: string;
   ctas: ReactNode;
 }) {
+  const { isMobile } = useDeviceDetectMediaQuery();
   if (!communityDetails) return;
 
   const metadata = (
@@ -355,7 +389,7 @@ function Details({
         Posts: communityDetails.no_of_videos,
       }}
       separatorConfig={{
-        afterHandle: false,
+        afterHandle: !isMobile,
       }}
     />
   );

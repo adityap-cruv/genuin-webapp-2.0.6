@@ -41,7 +41,9 @@ export function CommunityHoverCard({
         size="2xl"
       />
       <div className="gencl:space-y-1">
-        <p className="gencl:text-body-1-semi-bold gencl:line-clamp-2">{name}</p>
+        <p className="gencl:text-body-1-semi-bold gencl:line-clamp-2 gencl:truncate">
+          {name}
+        </p>
         <GenericDetailsMetadata
           className="gencl:items-center"
           privacyInfo={{ isPrivate, showPrivacyText: false }}

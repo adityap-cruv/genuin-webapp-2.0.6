@@ -37,6 +37,14 @@ type CommunityDetailsTabsPropsType = Omit<
     ownerInfo: {
       userName: string;
     };
+    /**
+     * Current tab value
+     */
+    value?: string;
+    /**
+     * Callback when tab changes
+     */
+    onValueChange?: (value: string) => void;
   } & React.ComponentProps<typeof Tabs>,
   "defaultValue" | "defaultChecked" | "children"
 >;
@@ -47,28 +55,27 @@ export function CommunityDetailsTabs({
   communityOwnerId,
   aboutComponent,
   ownerInfo,
+  value,
+  onValueChange,
   ...restProps
 }: CommunityDetailsTabsPropsType) {
   const { isDesktop } = useDeviceDetectMediaQuery();
   const contentClassName = "gencl:px-4 gencl:sm:px-0!";
 
-  // Track the current tab value
-  const [tabValue, setTabValue] = useState<string>("groups");
-
   // Sync tab value when isDesktop changes
   useEffect(() => {
-    if (isDesktop && tabValue === "about") {
-      setTabValue("groups");
-    } else if (!isDesktop && tabValue === "posts") {
+    if (isDesktop && value === "about") {
+      onValueChange?.("groups");
+    } else if (!isDesktop && value === "posts") {
       // Optionally, keep the current tab or switch to 'about' if you want
-      // setTabValue("about");
+      // handleValueChange("about");
     }
-  }, [isDesktop, tabValue]);
+  }, [isDesktop, value]);
 
   return (
     <Tabs
-      value={tabValue}
-      onValueChange={setTabValue}
+      value={value}
+      onValueChange={onValueChange}
       className={cn("gencl:w-full gencl:h-full", className)}
       {...restProps}
     >
