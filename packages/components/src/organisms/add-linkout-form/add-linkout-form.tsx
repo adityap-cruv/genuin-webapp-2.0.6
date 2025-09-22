@@ -98,6 +98,13 @@ export const AddLinks: React.FC<AddLinksProps> = ({
     });
 
   const convertImageUrlToBlob = async (imageUrl: string) => {
+    // Check if imageUrl is not provided (null, undefined, or empty).
+    // If not, clear the file URL state and exit the function early.
+    if (!imageUrl) {
+      setFileUrl("");
+      return;
+    }
+
     try {
       const response = await fetch(imageUrl);
       const blob = await response.blob();
@@ -113,6 +120,7 @@ export const AddLinks: React.FC<AddLinksProps> = ({
         setFileUrl(uploadedUrl);
       }
     } catch (error) {
+      setFileUrl("");
       console.error("Error converting image URL to Blob:", error);
     }
   };
