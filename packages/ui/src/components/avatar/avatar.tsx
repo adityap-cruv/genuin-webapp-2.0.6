@@ -48,7 +48,7 @@ export type AvatarPropsType = React.ComponentProps<
     shouldZoom?: boolean;
   };
 
-function Avatar({
+const Avatar = React.memo(function Avatar({
   className,
   imageUrl,
   alt,
@@ -159,7 +159,7 @@ function Avatar({
       </AnimatePresence>
     </>
   );
-}
+});
 
 export { Avatar };
 

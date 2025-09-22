@@ -1,7 +1,7 @@
 "use client";
 import { cn } from "@genuin/ui/utils";
 import { CommunityUserRole } from "@genuin/components/types/post";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, memo } from "react";
 import "swiper/css";
 
 import { PlayerList } from "@genuin/components/organisms/player-swiper";
@@ -34,7 +34,7 @@ import { getQueryKeyForVideoDetails } from "@genuin/components/react-query/keys/
  *
  * @internal
  */
-export function FeedViewCore({
+export const FeedViewCore = memo(function FeedViewCore({
   feedData,
   className,
   startIndex = 0,
@@ -232,4 +232,4 @@ export function FeedViewCore({
       </div>
     );
   }
-}
+});

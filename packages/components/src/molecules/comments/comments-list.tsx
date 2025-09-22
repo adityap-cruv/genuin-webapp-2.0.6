@@ -1,7 +1,7 @@
 import { InfiniteScroll } from "@genuin/ui/infinite-scroll";
 import { CommentIcon, ErrorIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/utils";
-import { ComponentProps, useMemo } from "react";
+import { ComponentProps, memo, useCallback, useMemo } from "react";
 
 import {
   handleReactionStateChangeInComments,
@@ -21,7 +21,7 @@ type CommentListProps = {
   >["onCommentCountChange"];
 } & ComponentProps<"div">;
 
-export function CommentsList({
+export const CommentsList = memo(function CommentsList({
   videoId,
   showCloseButton,
   className,
@@ -39,25 +39,39 @@ export function CommentsList({
     isError,
   } = useComments(videoId);
 
+  const handleReactionStateChange = useCallback(
+    (commentId: string, isReacted: boolean) => {
+      handleReactionStateChangeInComments(videoId, commentId, isReacted);
+    },
+    [videoId]
+  );
+
   const comments = useMemo(
     () => data?.pages.flatMap((page) => page.comments),
     [data]
   );
 
-  // Helper to render root div with consistent className/restProps
-  function RootDiv({
-    children,
-    className: extraClass,
-  }: {
-    children: React.ReactNode;
-    className?: string;
-  }) {
-    return (
-      <div className={cn(extraClass, className)} {...restProps}>
+  // Memoize the root div props to prevent recreation
+  const rootDivProps = useMemo(
+    () => ({ className: cn(className), ...restProps }),
+    [className, restProps]
+  );
+
+  // Helper to render root div with consistent props
+  const RootDiv = useCallback(
+    ({
+      children,
+      className: extraClass,
+    }: {
+      children: React.ReactNode;
+      className?: string;
+    }) => (
+      <div className={cn(extraClass, rootDivProps.className)} {...restProps}>
         {children}
       </div>
-    );
-  }
+    ),
+    [rootDivProps, restProps]
+  );
 
   if (isError) {
     return (
@@ -96,37 +110,29 @@ export function CommentsList({
     );
   }
 
-  if (comments && comments.length !== 0) {
-    return (
-      <RootDiv
-        className={cn(
-          "gencl:h-full gencl:w-full gencl:overflow-auto gencl:p-4 gencl:space-y-4 gencl:!pb-16"
-        )}
+  return (
+    <RootDiv
+      className={cn(
+        "gencl:h-full gencl:w-full gencl:overflow-auto gencl:p-4 gencl:space-y-4 gencl:!pb-16"
+      )}
+    >
+      <InfiniteScroll
+        isLoadingNextPage={isFetchingNextPage}
+        hasNextPage={hasNextPage}
+        getNextPage={fetchNextPage}
       >
-        <InfiniteScroll
-          isLoadingNextPage={isFetchingNextPage}
-          hasNextPage={hasNextPage}
-          getNextPage={fetchNextPage}
-        >
-          {comments.map((comment) => (
-            <CommentItem
-              key={comment.commentId}
-              comment={comment}
-              shareUrl={shareUrl}
-              videoId={videoId}
-              videoSlug={videoSlug}
-              onCommentCountChange={onCommentCountChange}
-              onReactionStateChange={(isReacted) => {
-                handleReactionStateChangeInComments(
-                  videoId,
-                  comment.commentId,
-                  isReacted
-                );
-              }}
-            />
-          ))}
-        </InfiniteScroll>
-      </RootDiv>
-    );
-  }
-}
+        {comments.map((comment) => (
+          <CommentItem
+            key={comment.commentId}
+            comment={comment}
+            shareUrl={shareUrl}
+            videoId={videoId}
+            videoSlug={videoSlug}
+            onCommentCountChange={onCommentCountChange}
+            onReactionStateChange={handleReactionStateChange}
+          />
+        ))}
+      </InfiniteScroll>
+    </RootDiv>
+  );
+});

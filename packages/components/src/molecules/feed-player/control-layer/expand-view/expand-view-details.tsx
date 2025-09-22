@@ -2,7 +2,7 @@
 import { Avatar } from "@genuin/ui/avatar";
 import { ReadMore } from "@genuin/components/molecules/read-more";
 import { cn, getFormattedDuration, getMonthYear } from "@genuin/ui/utils";
-import { useMemo, type ComponentProps } from "react";
+import { useMemo, memo, type ComponentProps } from "react";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { usePlayerContext } from "../../context";
 import { ProfileLink } from "@genuin/components/molecules/profile-link";
@@ -279,7 +279,7 @@ function AdaptiveDescription({
 /**
  * Shared actions component
  */
-function SharedActions({
+const SharedActions = memo(function SharedActions({
   postDetails,
   defaultOpenCommentDialog,
   onReactionStateChange,
@@ -338,7 +338,7 @@ function SharedActions({
       }}
     />
   );
-}
+});
 
 export function ExpandViewDetails({
   className,

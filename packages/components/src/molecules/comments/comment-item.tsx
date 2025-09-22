@@ -25,9 +25,7 @@ export type CommentItemProps = {
   videoId: string;
   shareUrl: string;
   videoSlug: string;
-  onReactionStateChange?: ComponentProps<
-    typeof ReactionButton
-  >["onReactionStateChange"];
+  onReactionStateChange?: (commentId: string, isReacted: boolean) => void;
   onCommentCountChange?: ComponentProps<
     typeof DeleteComment
   >["onCommentCountChange"];
@@ -95,7 +93,9 @@ export const CommentItem = memo(function CommentItem({
             contentType="COMMENT"
             isReacted={comment.isSparked}
             reactionCount={comment.noOfSparks}
-            onReactionStateChange={onReactionStateChange}
+            onReactionStateChange={(isReacted) => {
+              onReactionStateChange?.(comment.commentId, isReacted);
+            }}
             withCustomChildren
             showReactionCount={false}
             shareUrl={shareUrl}
