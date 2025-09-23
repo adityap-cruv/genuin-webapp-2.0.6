@@ -7,12 +7,12 @@ import { cn } from "@genuin/ui/lib/utils";
 import { GestureProvider } from "@genuin/components/molecules/gestures/context";
 import { PlayerProvider } from "@genuin/components/molecules/feed-player/context";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
-import { PostData } from "../create-post/types";
+import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 type PostPlayerProps = ComponentProps<"div"> & {
   editClipVideo?: (url: string) => void;
   editCoverImage?: (url: string) => void;
-  post: PostData;
+  post: PostDetailsType;
   showClipVideoBtn?: boolean;
   showEditCoverBtn?: boolean;
 };
@@ -26,6 +26,8 @@ export function PostPlayer({
   showEditCoverBtn = true,
   ...restProps
 }: PostPlayerProps) {
+  const { showExpandView, toggleExpandView } = useFeedContext();
+
   return (
     <div
       className={cn(
@@ -37,13 +39,14 @@ export function PostPlayer({
       <PlayerProvider
         isActive={true}
         videoId={post.video.id}
-        swipeNext={() => null}
+        showExpandView={showExpandView}
+        toggleExpandView={toggleExpandView}
+        onPlayerIterationEnd={() => null}
       >
         <GestureProvider>
           <FeedPlayer
-            postDetails={post}
             src={post.video.source}
-            id={post.video.id}
+            videoId={post.video.id}
             poster={post.video.thumbnail ?? ""}
             // className="gencl:bg-secondary-200 gencl:object-cover gencl:aspect-reel"
             playsInline

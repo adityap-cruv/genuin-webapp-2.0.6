@@ -87,7 +87,15 @@ export function ProfileDetails({
           shareUrl={shareUrl}
         />
       )}
-      <ShareButton pathName={shareUrl} size={isMobile ? "sm" : "md"} />
+      <ShareButton
+        pathName={buildPageUrl({
+          type: !!profileData?.brand ? "brand" : "profile",
+          slug: !!profileData.brand
+            ? profileData.brand.brand_slug
+            : profileData?.nickname,
+        })}
+        size={isMobile ? "sm" : "md"}
+      />
     </div>
   );
 

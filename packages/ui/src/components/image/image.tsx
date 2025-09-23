@@ -1,5 +1,6 @@
+"use client";
 import { cva, type VariantProps } from "class-variance-authority";
-import { type ComponentProps } from "react";
+import { type ComponentProps, useState } from "react";
 import { cn } from "@genuin/ui/lib/utils";
 import { getWebpUrlForImage } from "@genuin/ui/lib/utils";
 
@@ -56,14 +57,20 @@ export function Image({
   useWebp = true,
   ...props
 }: ImageProps) {
+  const [hasError, setHasError] = useState(false);
   const imageSrc =
     typeof src === "string" && useWebp ? getWebpUrlForImage(src) : src;
+
+  if (hasError || !src) {
+    return null;
+  }
 
   return (
     <img
       loading="lazy"
       className={cn(imageVariants({ aspectRatio, radius, scale }), className)}
       src={imageSrc}
+      onError={() => setHasError(true)}
       {...props}
     />
   );

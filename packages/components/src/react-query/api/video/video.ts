@@ -37,7 +37,6 @@ async function getVideoDetails(slug: string): Promise<PostDetailsType> {
     fetchLoopDetails(undefined, metadata.chat_id),
     fetchLoopVideo(metadata.chat_id, metadata.message_id),
   ]);
-
   if (!loopDetails || !videoDetails) {
     throw new Error("Failed to fetch loop details or video details.");
   }
@@ -59,6 +58,7 @@ async function getVideoDetails(slug: string): Promise<PostDetailsType> {
         ? tryJsonParse(videoDetails.description_data)
         : null,
       linkouts: null, // Map if available
+      linkoutId: videoDetails?.linkouts_id ?? null,
       isPinned: videoDetails.is_pinned ?? false,
       thumbnailSprite: null, // Map if available
       viewCount: videoDetails.no_of_views ?? 0,

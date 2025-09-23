@@ -83,7 +83,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </html>
     )
   }
-  const favicon = config?.favicon
+  const favicon = !config?.protected_content ? config?.favicon : undefined
   const brandColors = parseBrandColors(config?.brand_colors || {})
 
   return (

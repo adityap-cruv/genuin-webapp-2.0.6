@@ -57,7 +57,7 @@ export default async function RootLayout(props: any) {
     return <RootHTML>{props.children}</RootHTML>
   }
   const brandColors = parseColors(config?.brand_colors)
-  const favicon = config?.favicon
+  const favicon = !config?.protected_content ? config?.favicon : undefined
   const isIheartDemo = IHEART_BRAND_URL.includes(Number(config?.brand_id) ?? '')
 
   return (

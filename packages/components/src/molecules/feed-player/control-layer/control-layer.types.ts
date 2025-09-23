@@ -12,7 +12,8 @@ export type ControlLayerPropsType = ComponentProps<"div"> & {
   isSectioned?: boolean;
   clipVideo?: boolean;
   editCover?: boolean;
-  enableExpand?: boolean
+  enableExpand?: boolean;
+  expandViewDetails?: boolean;
   editClipVideo?: (url: string) => void;
   editCoverImage?: (url: string) => void;
   onReactionStateChange?: ComponentProps<
@@ -27,7 +28,7 @@ export type ControlLayerPropsType = ComponentProps<"div"> & {
   onCommunityJoinStatusChange?: ComponentProps<
     typeof ExpandViewDetails
   >["onCommunityJoinStatusChange"];
-  onCommentCountChange: ComponentProps<
+  onCommentCountChange?: ComponentProps<
     typeof ExpandViewDetails
   >["onCommentCountChange"];
 } & VariantProps<typeof controlLayerVariant>;

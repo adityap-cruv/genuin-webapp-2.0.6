@@ -90,10 +90,10 @@ export function buildPageUrl({
       basePath = `/posts`;
       break;
     case "post":
-      basePath = asRoutePattern ? "/posts/:slug" : `/posts/${slug}`;
+      basePath = `/posts/${slug}`;
       break;
     case "posts-draft":
-      basePath = asRoutePattern ? "/posts/drafts/:slug" : `/posts/drafts/${slug}`;
+      basePath = `/posts/drafts/${slug}`;
       break;
     default:
       // Optional: handle unknown type, though TypeScript should prevent this

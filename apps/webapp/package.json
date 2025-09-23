@@ -7,6 +7,7 @@
   },
   "scripts": {
     "dev": "env-cmd -f ../../.env next dev -p 4005",
+    "dev:prod": "env-cmd -f ../../.env.production next dev -p 4005",
     "dev:turbo": "env-cmd -f ../../.env NEXT_TURBO=true next dev --turbo -p 4005",
     "build": "next build",
     "start": "next start -p 4000",

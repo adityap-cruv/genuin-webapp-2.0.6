@@ -15,7 +15,7 @@
   outline: none !important;
 }
 
-.custom_style input { 
+.custom_style input {
   display: none;
 }
 
@@ -34,20 +34,23 @@
   border: none;
 }
 
-label.is-required, label span.is-required{
+label.is-required,
+label span.is-required {
   display: block;
 }
 
-label.is-required::after, label span.is-required::after{
+label.is-required::after,
+label span.is-required::after {
   position: absolute;
   content: "*";
   color: red;
   margin-left: 2px;
 }
 
-.op-ads > div {
+.op-ads>div {
   top: 0 !important;
 }
+
 .round-crop .cropper-view-box,
 .round-crop .cropper-face {
   border-radius: 0 !important;

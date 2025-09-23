@@ -32,6 +32,7 @@ export function Default({
   enableExpand = true,
   editClipVideo,
   editCoverImage,
+  expandViewDetails = true,
   ...restProps
 }: ControlLayerPropsType) {
   const { showExpandView, togglePlay, toggleMuted, muted } = usePlayerContext();
@@ -121,7 +122,7 @@ export function Default({
          * This is the expand view details.
          * It will show the details of the post. If post is expanded.
          */}
-        {showExpandView || isMobile ? (
+        {(showExpandView || isMobile) && expandViewDetails ? (
           <ExpandViewDetails
             postDetails={postDetails}
             isActive={isActive}
