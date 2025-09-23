@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 
 import {
   getNewDeviceId,
@@ -11,6 +11,7 @@ import type { PlaybackSpeedType } from "@genuin/components/molecules/feed-player
 
 import { BaseContext } from "./context";
 import { parseBrandColors } from "@genuin/components/lib/utils/brand-color-parser";
+import { createBaseEventBus } from "./event-bus";
 
 type BaseContextProviderProps = {
   children: React.ReactNode;
@@ -38,6 +39,7 @@ export function BaseContextProvider({
       setBrandIdInAxiosInstance(brandDetails.brand_id);
     }
   }, [brandDetails]);
+  const baseEventBus = useMemo(() => createBaseEventBus(), []);
 
   // TODO: move this states to event based states.
   const [muted, setMuted] = useState(true);
@@ -57,6 +59,33 @@ export function BaseContextProvider({
     }
   }, [deviceId]);
 
+  // Track window focus state and update userIsFocused in embedEventBus
+  useEffect(() => {
+    const handleWindowFocus = () => {
+      console.log("window focused");
+      baseEventBus.emit("userFocusChange", undefined, (currentContext) => ({
+        ...currentContext,
+        userIsFocused: true,
+      }));
+    };
+
+    const handleWindowBlur = () => {
+      console.log("window blurred");
+      baseEventBus.emit("userFocusChange", undefined, (currentContext) => ({
+        ...currentContext,
+        userIsFocused: false,
+      }));
+    };
+
+    window.addEventListener("focus", handleWindowFocus);
+    window.addEventListener("blur", handleWindowBlur);
+
+    return () => {
+      window.removeEventListener("focus", handleWindowFocus);
+      window.removeEventListener("blur", handleWindowBlur);
+    };
+  }, [baseEventBus]);
+
   return (
     <BaseContext.Provider
       value={{
@@ -69,6 +98,7 @@ export function BaseContextProvider({
         parsedBrandColors: parseBrandColors(brandDetails?.brand_colors),
         playbackSpeed,
         setPlaybackSpeed,
+        baseEventBus,
       }}
     >
       {children}

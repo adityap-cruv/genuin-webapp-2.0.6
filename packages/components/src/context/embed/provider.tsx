@@ -38,7 +38,6 @@ export function EmbedProvider({
         activeIndex: 0,
         sectionList: [],
         isSectioned: false,
-        userIsFocused: true,
         containerInView: true,
       }),
     []
@@ -250,32 +249,6 @@ export function EmbedProvider({
       observer.disconnect();
     };
   }, [container, changeActivePlayerType, embedData, embedEventBus]);
-
-  // Track window focus state and update userIsFocused in embedEventBus
-  useEffect(() => {
-    const handleWindowFocus = () => {
-      embedEventBus.emit("userFocusChange", undefined, (currentContext) => ({
-        ...currentContext,
-        userIsFocused: true,
-      }));
-    };
-
-    const handleWindowBlur = () => {
-      embedEventBus.emit("userFocusChange", undefined, (currentContext) => ({
-        ...currentContext,
-        userIsFocused: false,
-      }));
-    };
-
-    window.addEventListener("focus", handleWindowFocus);
-    window.addEventListener("blur", handleWindowBlur);
-
-    return () => {
-      window.removeEventListener("focus", handleWindowFocus);
-      window.removeEventListener("blur", handleWindowBlur);
-    };
-  }, [embedEventBus]);
-
   return (
     <EmbedContext.Provider
       value={{

@@ -36,10 +36,6 @@ export type EmbedEventContextType = {
    */
   autoInteractionActionDone?: boolean;
   /**
-   * Indicates if the user is currently focused on current tab..
-   */
-  userIsFocused: boolean;
-  /**
    * Indicates if the embed container is currently in view.
    */
   containerInView: boolean;
@@ -51,7 +47,6 @@ type EmbedEventNameType =
   | "sectionListChange"
   | "isSectionedChange"
   | "selectedSectionChange"
-  | "userFocusChange"
   | "containerInViewChange";
 
 /**
@@ -66,7 +61,6 @@ export const createEmbedEventBus = (context?: EmbedEventContextType) =>
     isSectioned: false,
     selectedSection: null,
     autoInteractionActionDone: false,
-    userIsFocused: true,
     containerInView: true,
     ...context,
   });

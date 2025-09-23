@@ -79,7 +79,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   explicitAutoPlay,
   explicitLoop,
 }) => {
-  const { brandDetails } = useBaseContext();
+  const { brandDetails, baseEventBus } = useBaseContext();
   const embedDetails = useSafeEmbedContext();
   const playerRef = useRef<OpenPlayerJS | null>(null);
   /**
@@ -195,22 +195,28 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     if (!embedDetails) return;
     const { embedEventBus } = embedDetails;
 
-    function handleUserFocusChange() {
-      const { userIsFocused, containerInView } = embedEventBus.getContext();
-      setuserHasFocus(userIsFocused && containerInView);
-    }
-
     function handleContainerInViewChange() {
-      const { userIsFocused, containerInView } = embedEventBus.getContext();
-      setuserHasFocus(userIsFocused && containerInView);
+      const context = embedEventBus.getContext();
+      setuserHasFocus(context.containerInView);
     }
 
-    embedEventBus.on("userFocusChange", handleUserFocusChange);
     embedEventBus.on("containerInViewChange", handleContainerInViewChange);
+    return () => {
+      embedEventBus.off("containerInViewChange", handleContainerInViewChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    function handleUserFocusChange() {
+      const context = baseEventBus.getContext();
+
+      setuserHasFocus(context.userIsFocused);
+    }
+
+    baseEventBus.on("userFocusChange", handleUserFocusChange);
 
     return () => {
-      embedEventBus.off("userFocusChange", handleUserFocusChange);
-      embedEventBus.off("containerInViewChange", handleContainerInViewChange);
+      baseEventBus.off("userFocusChange", handleUserFocusChange);
     };
   }, []);
 

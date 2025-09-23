@@ -3,6 +3,7 @@ import { getUrlForReaction } from "@genuin/ui/utils";
 import { createContext, useContext } from "react";
 import type { BrandDetailsConfigType } from "@genuin/components/types/brand";
 import type { PlaybackSpeedType } from "@genuin/components/molecules/feed-player/context/types";
+import { createBaseEventBus } from "./event-bus";
 
 const DEFAULT_WEB_CONFIGS: BrandDetailsConfigType["web_configs"] = {
   video_autoplay: {
@@ -94,6 +95,10 @@ export type BaseContextType = {
    */
   playbackSpeed: PlaybackSpeedType;
   setPlaybackSpeed: React.Dispatch<React.SetStateAction<PlaybackSpeedType>>;
+  /**
+   * Event bus for base context to communicate between components
+   */
+  baseEventBus: ReturnType<typeof createBaseEventBus>;
 };
 
 export const BaseContext = createContext<BaseContextType | null>(null);
