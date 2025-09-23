@@ -153,7 +153,7 @@ export function Report({
   }
   return (
     <Dialog modal open={open} onOpenChange={setOpen} {...props}>
-      <DialogTrigger asChild className="gencl:!border-none">
+      <DialogTrigger className="gencl:!border-none">
         {children}
       </DialogTrigger>
       <DialogContent className="gencl:max-w-xl gencl:rounded-t-2xl! gencl:sm:rounded-t-none gencl:sm:rounded-2xl! gencl:flex gencl:flex-col gencl:gap-y-4">

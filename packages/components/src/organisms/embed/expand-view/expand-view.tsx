@@ -37,7 +37,7 @@ export function EmbedExpandView({
     isInIframe,
     embedData,
   } = useEmbedContext();
-  const { muted, setMuted } = useBaseContext();
+  const { muted, setMuted,setPlaybackSpeed } = useBaseContext();
   const previousMuteState = usePrevious(muted);
   const isSectioned = embedEventBus.getContext().isSectioned;
   const [showExpandView, setShowExpandView] = useState(
@@ -54,8 +54,15 @@ export function EmbedExpandView({
   // Function to handle closing expand view - restores mute state and goes back
   const handleCloseExpandView = () => {
     if (typeof previousMuteState === "boolean") {
-      setMuted(previousMuteState);
+      // TODO : 
+      // setMuted(previousMuteState);
     }
+    setPlaybackSpeed(x => {
+      if(x.speed !== 1) {
+        return {...x, speed: 1};
+      }
+      return x;
+    })
     goBackToPreviousPlayerType();
   };
 
