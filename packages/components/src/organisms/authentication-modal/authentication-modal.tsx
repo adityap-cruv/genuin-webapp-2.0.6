@@ -16,6 +16,7 @@ import {
 import { Screens } from "./screens";
 import { useBaseContext } from "@genuin/components/context/base";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { useAuthContext } from "@genuin/components/context";
 
 export type AuthenticationModalProps = ComponentProps<typeof DialogTrigger> & {
   action?: AuthActionType;
@@ -41,6 +42,7 @@ export function AuthenticationModal({
   const {
     brandDetails: { web_cta },
   } = useBaseContext();
+  const { user } = useAuthContext();
 
   const [internalOpen, setInternalOpen] = useState(false);
 
@@ -84,7 +86,7 @@ export function AuthenticationModal({
     handleOpenChange(true);
   };
 
-  if (modalConfig.hideModal) {
+  if (modalConfig.hideModal && !user) {
     return children;
   }
 

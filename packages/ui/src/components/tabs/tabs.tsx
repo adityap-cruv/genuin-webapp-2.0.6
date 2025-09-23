@@ -44,7 +44,7 @@ function TabsTrigger({
     <TabsPrimitive.Trigger
       data-slot="tabs-trigger"
       className={cn(
-        "gencl:data-[state=active]:border-b-2 gencl:border-b-2 gencl:border-transparent gencl:data-[state=active]:border-primary ",
+        "gencl:data-[state=active]:border-b-2 gencl:border-b-2 gencl:border-transparent gencl:data-[state=active]:border-primary! ",
         "gencl:inline-flex gencl:cursor-pointer gencl:h-[calc(100%-1px)] gencl:flex-1 gencl:items-center gencl:justify-center ",
         "gencl:gap-1.5 gencl:p-2 gencl:whitespace-nowrap gencl:transition-[color,box-shadow]",
         "gencl:disabled:pointer-events-none gencl:disabled:opacity-50 gencl:[&_svg]:pointer-events-none",

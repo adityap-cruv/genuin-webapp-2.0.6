@@ -16,7 +16,7 @@ import { SideInfo } from "@genuin/components/organisms/side-info";
 import { useRouter } from "@genuin/components/hooks/use-router";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { getSocialLinks } from "@genuin/components/lib/utils";
-import { useLinkContext } from "@genuin/components/context";
+import { useAuthContext, useLinkContext } from "@genuin/components/context";
 
 export function ProfileDetails({
   userName,
@@ -36,6 +36,7 @@ export function ProfileDetails({
   const { brandDetails } = useBaseContext();
   const { replace } = useRouter();
   const { createExternalLink } = useLinkContext();
+  const { user } = useAuthContext();
 
   useEffect(() => {
     if (profileData && profileData.brand && !forBrand) {
@@ -79,23 +80,16 @@ export function ProfileDetails({
 
   const ctas = (
     <div className="gencl:flex gencl:gap-2">
-      {(forBrand || (!forBrand && profileData && profileData.brand)) && (
-        <BecomeCreatorButton
-          size={isMobile ? "sm" : "md"}
-          theme="primary"
-          className="gencl:flex-grow gencl:sm:flex-grow-0!"
-          shareUrl={shareUrl}
-        />
-      )}
-      <ShareButton
-        pathName={buildPageUrl({
-          type: !!profileData?.brand ? "brand" : "profile",
-          slug: !!profileData.brand
-            ? profileData.brand.brand_slug
-            : profileData?.nickname,
-        })}
-        size={isMobile ? "sm" : "md"}
-      />
+      {(forBrand || (!forBrand && profileData && profileData.brand)) &&
+        user?.ksCbRequestStatus !== "Accepted" && (
+          <BecomeCreatorButton
+            size={isMobile ? "sm" : "md"}
+            theme="primary"
+            className="gencl:flex-grow gencl:sm:flex-grow-0!"
+            shareUrl={shareUrl}
+          />
+        )}
+      <ShareButton pathName={shareUrl} size={isMobile ? "sm" : "md"} />
     </div>
   );
 

@@ -19,7 +19,7 @@ export function BecomeCreatorButton({
   shareUrl,
   ...restProps
 }: BecomeCreatorButtonPropsType) {
-  const { handleAuthCallback } = useAuthContext();
+  const { handleAuthCallback, user } = useAuthContext();
   const { modalConfig } = useEmbedConfigs();
 
   const button = (
@@ -28,7 +28,7 @@ export function BecomeCreatorButton({
     </Button>
   );
 
-  if (modalConfig.hideModal) {
+  if (modalConfig.hideModal && !user) {
     const clickHandler = handleAuthCallback({
       authCallbackData: {
         action: "become-a-creator",

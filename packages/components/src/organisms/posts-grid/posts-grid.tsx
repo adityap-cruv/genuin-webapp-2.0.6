@@ -95,11 +95,11 @@ export function PostsGrid({
     return (
       <div
         className={cn(
-          "gencl:w-full gencl:flex gencl:flex-col gencl:gap-4 gencl:justify-center gencl:items-center gencl:h-45 gencl:sm:!h-60",
+          "gencl:w-full gencl:flex gencl:flex-col gencl:gap-4 gencl:justify-center gencl:items-center gencl:h-45 gencl:sm:!h-60 gencl:bg-secondary-50",
           className
         )}
       >
-        <PlayIcon theme="light" />
+        <PlayIcon theme="light" size="xl" />
         <div className="gencl:space-y-1 gencl:flex-center gencl:flex-col">
           <p className="gencl:text-body-0-semi-bold">No Posts Yet</p>
           <p className="gencl:text-body-1-medium gencl:text-secondary-600">

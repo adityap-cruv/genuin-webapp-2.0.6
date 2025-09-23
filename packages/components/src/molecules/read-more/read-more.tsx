@@ -249,11 +249,12 @@ export const ReadMore = memo(function ReadMore({
 
   // Memoize toggle function
   const toggleExpand = useCallback(() => {
+    if (!textParts.shouldTruncate) return;
     setIsExpanded((prevValue: boolean) => {
       onExpandChange?.(!prevValue);
       return !prevValue;
     });
-  }, [onExpandChange]);
+  }, [onExpandChange, textParts.shouldTruncate]);
 
   // Handle overlay click - only close if expanded
   const handleOverlayClick = useCallback(
@@ -457,7 +458,7 @@ export const ReadMore = memo(function ReadMore({
       )}
     >
       {/* Overlay backdrop */}
-      {showOverlay && (
+      {showOverlay && textParts.shouldTruncate && isExpanded && (
         <div
           className={cn(
             "gencl:fixed gencl:inset-0 gencl:bg-black/60 gencl:transition-opacity gencl:duration-300",

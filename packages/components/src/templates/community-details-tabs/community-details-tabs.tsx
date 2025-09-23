@@ -22,6 +22,8 @@ import type { MembersSchemaType } from "@genuin/components/react-query/api/commu
 import { ComponentErrorState } from "@genuin/components/organisms/error-state-component";
 import { GroupPosts } from "@genuin/components/organisms/group-posts";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { setQueryDataForCommunityRoleChange } from "@genuin/components/react-query/api/community/details/details";
+import { CommunityUserRole } from "@genuin/components/types/post";
 
 type CommunityDetailsTabsPropsType = Omit<
   {
@@ -37,6 +39,7 @@ type CommunityDetailsTabsPropsType = Omit<
     ownerInfo: {
       userName: string;
     };
+    communityUserRole: CommunityUserRole;
     /**
      * Current tab value
      */
@@ -56,6 +59,7 @@ export function CommunityDetailsTabs({
   aboutComponent,
   ownerInfo,
   value,
+  communityUserRole,
   onValueChange,
   ...restProps
 }: CommunityDetailsTabsPropsType) {
@@ -85,7 +89,11 @@ export function CommunityDetailsTabs({
         {!isDesktop && <TabsTrigger value="about">About</TabsTrigger>}
       </TabsList>
       <TabsContent value="groups" className={contentClassName}>
-        <CommunityGroups slug={slug} ownerInfo={ownerInfo} />
+        <CommunityGroups
+          slug={slug}
+          ownerInfo={ownerInfo}
+          communityUserRole={communityUserRole}
+        />
       </TabsContent>
       <TabsContent value="members" className={contentClassName}>
         <CommunityMembers slug={slug} communityOwnerId={communityOwnerId} />
@@ -101,11 +109,13 @@ export function CommunityDetailsTabs({
 function CommunityGroups({
   slug,
   ownerInfo,
+  communityUserRole,
 }: {
   slug: string;
   ownerInfo: {
     userName: string;
   };
+  communityUserRole: CommunityUserRole;
 }) {
   const {
     data: communityGroups,
@@ -178,6 +188,14 @@ function CommunityGroups({
                   slug,
                   newRole
                 );
+
+                // If joining a group and community is not joined, join the community as well
+                if (
+                  newRole !== "UNJOINED" &&
+                  communityUserRole === "UNJOINED"
+                ) {
+                  setQueryDataForCommunityRoleChange(slug, "MEMBER");
+                }
               }}
             />
             <GroupSubscriptionButton

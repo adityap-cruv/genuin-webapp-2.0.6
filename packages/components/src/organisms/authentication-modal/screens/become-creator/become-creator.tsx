@@ -68,7 +68,7 @@ export function BecomeCreator({ ...props }: BecomeCreatorProps) {
 
   const renderButton = () => (
     <>
-      {user ? (
+      {user && cbStatus?.status !== "Accepted" ? (
         <Button
           className="gencl:w-full gencl:text-body-0-semi-bold"
           theme="primary"
@@ -114,7 +114,7 @@ export function BecomeCreator({ ...props }: BecomeCreatorProps) {
         pagination={{ clickable: true }}
         spaceBetween={24}
         slidesPerView={1}
-        className="gencl:w-full gencl:h-fit"
+        className="gencl:w-full gencl:h-fit gencl:mt-4"
       >
         {slides.map((data: BecomeCreatorDataItem, index: number) => {
           const Icon = data.src;

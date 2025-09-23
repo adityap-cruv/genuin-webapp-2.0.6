@@ -271,6 +271,7 @@ function CommunityDetailsView({ slug }: { slug: string }) {
                 communityOwnerId={communityDetails.leader.member_id}
                 value={currentTab}
                 onValueChange={handleTabChange}
+                communityUserRole={communityDetails.logged_in_user_role}
                 aboutComponent={
                   <About
                     communityDetails={communityDetails}

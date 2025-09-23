@@ -40,7 +40,7 @@ export function useKsCbStatus({ id }: { id: string }) {
   return useQuery({
     queryKey: getQueryKeyForksCbStatus(id),
     queryFn: fetchKsCbRequestStatus,
-    staleTime: 1000 * 60 * 5,
+    // staleTime: 1000 * 60 * 5,
     retry: 0,
   });
 }

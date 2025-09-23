@@ -12,10 +12,7 @@ import { Actions } from "@genuin/components/molecules/actions";
 import { CommentsDialog } from "@genuin/components/molecules/comments";
 import { controlLayerVariant } from "../control-layer";
 import { VariantProps } from "class-variance-authority";
-import {
-  useEmbedContext,
-  useSafeEmbedContext,
-} from "@genuin/components/context/embed/context";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { Linkouts } from "@genuin/components/organisms";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
@@ -390,7 +387,7 @@ export function ExpandViewDetails({
           )}
           onClick={(e) => e.stopPropagation()}
         >
-          <div onClick={(e) => e.stopPropagation()}>
+          <div onClick={(e) => e.stopPropagation()} className="gencl:z-10">
             <AdaptiveUserProfile
               owner={postDetails.owner}
               type={config.userProfile}

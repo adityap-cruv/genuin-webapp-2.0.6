@@ -7,7 +7,13 @@ import {
   DialogHeader,
 } from "@genuin/ui/dialog";
 import { RadioGroup, RadioItem } from "@genuin/ui/radio";
-import React, { ComponentProps, useCallback, useMemo, useState } from "react";
+import React, {
+  ComponentProps,
+  useCallback,
+  useMemo,
+  useState,
+  useEffect,
+} from "react";
 import { REPORT_HEADER_DATA, REPORT_REASON_DATA } from "./report-data";
 import { Button } from "@genuin/ui/button";
 import {
@@ -42,6 +48,7 @@ export function Report({
   ...props
 }: ReportProps) {
   const [selectedReason, setSelectedReason] = useState<string>("");
+  const [open, setOpen] = useState(false);
   const { user } = useAuthContext();
   const { track, EventName } = useAnalytics();
   const { handleAuthCallback } = useAuthContext();
@@ -84,6 +91,11 @@ export function Report({
 
     reportMutation.mutate(feedbackPayload, {
       onSuccess: () => {
+        setSelectedReason("");
+        setTimeout(() => {
+          reportMutation.reset();
+          setOpen(false);
+        }, 5000);
         track(
           reportFor === "COMMENT"
             ? EventName.COMMENT_REPORT
@@ -140,9 +152,11 @@ export function Report({
     );
   }
   return (
-    <Dialog {...props}>
-      <DialogTrigger className="gencl:!border-none">{children}</DialogTrigger>
-      <DialogContent className="gencl:max-w-xl gencl:!rounded-t-2xl gencl:md:rounded-2xl gencl:flex gencl:flex-col gencl:gap-y-4">
+    <Dialog modal open={open} onOpenChange={setOpen} {...props}>
+      <DialogTrigger asChild className="gencl:!border-none">
+        {children}
+      </DialogTrigger>
+      <DialogContent className="gencl:max-w-xl gencl:rounded-t-2xl! gencl:sm:rounded-t-none gencl:sm:rounded-2xl! gencl:flex gencl:flex-col gencl:gap-y-4">
         {reportMutation.isSuccess ? (
           <Success
             text="Thanks for your Feedback"
