@@ -70,7 +70,6 @@ export function handleReactionStateChangeInComments(
     getQueryKeyForComments(videoId),
     (oldData) => {
       if (!oldData) return oldData;
-      console.log("Old data:", oldData);
       return {
         ...oldData,
         pages: oldData.pages.map((page) => ({

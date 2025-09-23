@@ -1,7 +1,7 @@
 import { InfiniteScroll } from "@genuin/ui/infinite-scroll";
 import { CommentIcon, ErrorIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/utils";
-import { ComponentProps, memo, useCallback, useMemo } from "react";
+import React, { ComponentProps, memo, useCallback, useMemo } from "react";
 
 import {
   handleReactionStateChangeInComments,
@@ -46,57 +46,46 @@ export const CommentsList = memo(function CommentsList({
     [videoId]
   );
 
-  const comments = useMemo(
-    () => data?.pages.flatMap((page) => page.comments),
-    [data]
-  );
+  const comments = useMemo(() => {
+    return data?.pages.flatMap((page) => page.comments);
+  }, [data]);
 
-  // Memoize the root div props to prevent recreation
-  const rootDivProps = useMemo(
-    () => ({ className: cn(className), ...restProps }),
-    [className, restProps]
-  );
-
-  // Helper to render root div with consistent props
-  const RootDiv = useCallback(
-    ({
-      children,
-      className: extraClass,
-    }: {
-      children: React.ReactNode;
-      className?: string;
-    }) => (
-      <div className={cn(extraClass, rootDivProps.className)} {...restProps}>
-        {children}
-      </div>
-    ),
-    [rootDivProps, restProps]
+  const Wrapper = ({
+    children,
+    wrapperClassName,
+  }: {
+    children: React.ReactNode;
+    wrapperClassName: string;
+  }) => (
+    <div className={cn(wrapperClassName, className)} {...restProps}>
+      {children}
+    </div>
   );
 
   if (isError) {
     return (
-      <RootDiv className="gencl:flex gencl:items-center gencl:justify-center gencl:h-full gencl:flex-col gencl:gap-4">
+      <Wrapper wrapperClassName="gencl:flex gencl:items-center gencl:justify-center gencl:h-full gencl:flex-col gencl:gap-4">
         <ErrorIcon className="gencl:w-8 gencl:h-8" />
         <p className="gencl:text-body-2-medium gencl:text-secondary-300">
           We’re unable to load comments.
         </p>
-      </RootDiv>
+      </Wrapper>
     );
   }
 
   if (isLoading) {
     return (
-      <RootDiv className="gencl:w-full gencl:h-full gencl:flex gencl:flex-col gencl:shrink-0 gencl:p-4">
+      <Wrapper wrapperClassName="gencl:w-full gencl:h-full gencl:flex gencl:flex-col gencl:shrink-0 gencl:p-4">
         {Array.from({ length: 7 }).map((_, i) => (
           <CommentsItemSkeleton key={i} />
         ))}
-      </RootDiv>
+      </Wrapper>
     );
   }
 
   if (!comments || comments.length === 0) {
     return (
-      <RootDiv className="gencl:w-full gencl:h-full gencl:flex gencl:flex-col gencl:gap-4 gencl:items-center gencl:justify-center">
+      <Wrapper wrapperClassName="gencl:w-full gencl:h-full gencl:flex gencl:flex-col gencl:gap-4 gencl:items-center gencl:justify-center">
         <CommentIcon size="xl" />
         <div className="gencl:space-y-1">
           <p className="gencl:text-body-0-semi-bold gencl:text-center">
@@ -106,16 +95,12 @@ export const CommentsList = memo(function CommentsList({
             Be the first one to comment!
           </p>
         </div>
-      </RootDiv>
+      </Wrapper>
     );
   }
 
   return (
-    <RootDiv
-      className={cn(
-        "gencl:h-full gencl:w-full gencl:overflow-auto gencl:p-4 gencl:space-y-4 gencl:!pb-16"
-      )}
-    >
+    <Wrapper wrapperClassName="gencl:h-full gencl:w-full gencl:overflow-auto gencl:p-4 gencl:space-y-4 gencl:!pb-16">
       <InfiniteScroll
         isLoadingNextPage={isFetchingNextPage}
         hasNextPage={hasNextPage}
@@ -133,6 +118,6 @@ export const CommentsList = memo(function CommentsList({
           />
         ))}
       </InfiniteScroll>
-    </RootDiv>
+    </Wrapper>
   );
 });
