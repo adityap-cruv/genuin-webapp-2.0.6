@@ -70,6 +70,7 @@ export function Embed({
     placementId: embedData.placement_id,
     styleId: embedData.style_id,
     contextualParams: embedData.contextualParams,
+    embedId: embedData.embed_id,
   };
 
   const {

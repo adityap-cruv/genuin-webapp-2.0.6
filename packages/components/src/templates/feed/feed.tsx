@@ -44,6 +44,7 @@ export function FeedWithData({
       ),
       startVideoSlug: embedDetails?.embedData?.startVideoSlug,
       contextualParams: embedDetails?.embedData?.contextualParams,
+      embed_id: embedDetails?.embedData?.embed_id,
     }),
     [embedDetails]
   );

@@ -6,15 +6,19 @@ export const API_PATHS = {
   /**
    * Api path to fetch embed feed.
    */
-  EMBED_FEED_HOME: '/goservices/feed/embed/home',
+  EMBED_FEED_HOME: "/goservices/feed/embed/home",
   /**
    * Api path to fetch placement sections.
    */
-  PLACEMENT_SECTIONS: '/goservices/placement/sections',
+  PLACEMENT_SECTIONS: "/goservices/placement/sections",
   /**
    * Api path to fetch placement section feed.
    */
-  SECTION_FEED: '/goservices/placement/feed',
+  SECTION_FEED: "/goservices/placement/feed",
+  /**
+   * Video details response will come as feed's response.
+   */
+  VIDEO_DETAILS: "/goservices/feed/video",
   /**
    * Api to spark a video or comment.
    */
@@ -184,15 +188,6 @@ export const API_PATHS = {
    * API path to create a deeplink.
    */
   GENERATE_DYNAMIC_LINK: "/goservices/links/dynamic_link",
-  /**
-   * Api path to fetch metadata for a video deep link.
-   */
-  VIDEO_META_DATA: "/api/v3/deep_link/meta_data",
-  /**
-   * Api path to fetch loop and video conversation
-   */
-  LOOP_VIDEO: "/api/v3/conversation/messages",
-
   /**
    * Api path to Checks the status of the become creator request.
    * */

@@ -270,6 +270,7 @@ type UseFeedOptionsType = {
   refetchOnReconnect?: boolean;
   refetchInterval?: number;
   refetchIntervalInBackground?: boolean;
+  embedId?: string;
 };
 
 /**
@@ -291,7 +292,10 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
   // Always call the hook but control its behavior through the enabled flag
   // This ensures consistent hook call order regardless of options changes
   const startVideoSlug = options?.startVideoSlug;
-  const videoDetailsQuery = useGetVideoDetailsAsFeed(startVideoSlug || "");
+  const videoDetailsQuery = useGetVideoDetailsAsFeed(
+    startVideoSlug || "",
+    options?.embedId
+  );
   const queryKey = getQueryKeyForFeed(feedType, options);
 
   // Emulate the old conditional behavior while keeping hook call order consistent
@@ -408,7 +412,7 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
           ? {
               pages: [
                 {
-                  feed: [videoDetailsQuery.data],
+                  feed: videoDetailsQuery.data,
                   hasSection: false,
                   pageSession: null,
                   endOfFeed: false,
@@ -435,7 +439,7 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
           // Prepend video data if available
           pages = [
             {
-              feed: [videoQueryResult.data],
+              feed: videoQueryResult.data,
               hasSection: false,
               pageSession: null,
               endOfFeed: false,

@@ -14,7 +14,7 @@ export function EmbedExpandSectionedView({
   videos,
   pageSession,
 }: EmbedExpandViewProps) {
-  const { embedEventBus } = useEmbedContext();
+  const { embedEventBus, embedData } = useEmbedContext();
   const isSectioned = embedEventBus.getContext().isSectioned;
   const [selectedSection, setSelectedSection] = useState<
     PostDetailsType["section"]
@@ -31,6 +31,7 @@ export function EmbedExpandSectionedView({
     () => ({
       enabled: isSectioned && !!selectedSection?.id,
       sectionId: selectedSection?.id ?? undefined,
+      embedId: embedData.embed_id,
       pageSession: pageSession,
       lastVideoId:
         filteredSelectedSectionVideos.length > 0

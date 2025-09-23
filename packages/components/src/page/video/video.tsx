@@ -14,7 +14,9 @@ export function VideoPage({ videoId }: { videoId: string }) {
   const { data, isLoading, isError } = useGetVideoDetailsAsFeed(videoId);
   const queryKey = getQueryKeyForVideoDetails(videoId);
   const { brandDetails } = useBaseContext();
+
   const { isMobile } = useDeviceDetection();
+
   useEffect(() => {
     // This feature is used to show the get app screen to ted(2357) and lululemon(2922)
     if (
@@ -38,7 +40,7 @@ export function VideoPage({ videoId }: { videoId: string }) {
           isFetchingNextPage: false,
           isLoading,
           queryKey,
-          videos: data ? [data] : [],
+          videos: data ?? [],
         }}
       />
       {showGetApp && (
