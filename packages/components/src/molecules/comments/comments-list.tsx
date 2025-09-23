@@ -50,42 +50,48 @@ export const CommentsList = memo(function CommentsList({
     return data?.pages.flatMap((page) => page.comments);
   }, [data]);
 
-  const Wrapper = ({
-    children,
-    wrapperClassName,
-  }: {
-    children: React.ReactNode;
-    wrapperClassName: string;
-  }) => (
-    <div className={cn(wrapperClassName, className)} {...restProps}>
-      {children}
-    </div>
-  );
-
   if (isError) {
     return (
-      <Wrapper wrapperClassName="gencl:flex gencl:items-center gencl:justify-center gencl:h-full gencl:flex-col gencl:gap-4">
+      <div
+        className={cn(
+          "gencl:flex gencl:items-center gencl:justify-center gencl:h-full gencl:flex-col gencl:gap-4",
+          className
+        )}
+        {...restProps}
+      >
         <ErrorIcon className="gencl:w-8 gencl:h-8" />
         <p className="gencl:text-body-2-medium gencl:text-secondary-300">
           We’re unable to load comments.
         </p>
-      </Wrapper>
+      </div>
     );
   }
 
   if (isLoading) {
     return (
-      <Wrapper wrapperClassName="gencl:w-full gencl:h-full gencl:flex gencl:flex-col gencl:shrink-0 gencl:p-4">
+      <div
+        className={cn(
+          "gencl:w-full gencl:h-full gencl:flex gencl:flex-col gencl:shrink-0 gencl:p-4",
+          className
+        )}
+        {...restProps}
+      >
         {Array.from({ length: 7 }).map((_, i) => (
           <CommentsItemSkeleton key={i} />
         ))}
-      </Wrapper>
+      </div>
     );
   }
 
   if (!comments || comments.length === 0) {
     return (
-      <Wrapper wrapperClassName="gencl:w-full gencl:h-full gencl:flex gencl:flex-col gencl:gap-4 gencl:items-center gencl:justify-center">
+      <div
+        className={cn(
+          "gencl:w-full gencl:h-full gencl:flex gencl:flex-col gencl:gap-4 gencl:items-center gencl:justify-center",
+          className
+        )}
+        {...restProps}
+      >
         <CommentIcon size="xl" />
         <div className="gencl:space-y-1">
           <p className="gencl:text-body-0-semi-bold gencl:text-center">
@@ -95,12 +101,18 @@ export const CommentsList = memo(function CommentsList({
             Be the first one to comment!
           </p>
         </div>
-      </Wrapper>
+      </div>
     );
   }
 
   return (
-    <Wrapper wrapperClassName="gencl:h-full gencl:w-full gencl:overflow-auto gencl:p-4 gencl:space-y-4 gencl:!pb-16">
+    <div
+      className={cn(
+        "gencl:h-full gencl:w-full gencl:overflow-auto gencl:p-4 gencl:space-y-4 gencl:!pb-16",
+        className
+      )}
+      {...restProps}
+    >
       <InfiniteScroll
         isLoadingNextPage={isFetchingNextPage}
         hasNextPage={hasNextPage}
@@ -118,6 +130,6 @@ export const CommentsList = memo(function CommentsList({
           />
         ))}
       </InfiniteScroll>
-    </Wrapper>
+    </div>
   );
 });
