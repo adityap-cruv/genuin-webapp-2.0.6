@@ -25,7 +25,7 @@ export function useTopResults(query: string) {
     queryKey: getQueryKeyForTopResults(query),
     queryFn: () => fetchTopResults(query),
     enabled: query.trim().length >= 2, // Only fetch when query has meaningful content
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
+    // staleTime: 5 * 60 * 1000, // 5 minutes
+    // gcTime: 10 * 60 * 1000, // 10 minutes
   });
 }

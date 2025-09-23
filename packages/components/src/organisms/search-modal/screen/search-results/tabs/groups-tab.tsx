@@ -1,4 +1,5 @@
 import { ComponentProps } from "react";
+import { usePathname } from "next/navigation";
 import { cn } from "@genuin/ui/lib/utils";
 import { GroupCard } from "@genuin/components/organisms/group-card";
 import { LoopTopResultType } from "@genuin/components/react-query/api/search";
@@ -20,6 +21,8 @@ export function GroupsTab({
   className,
   ...restProps
 }: GroupsTabProps) {
+  const pathname = usePathname();
+
   if (groups.length === 0) {
     return (
       <div
@@ -65,7 +68,14 @@ export function GroupsTab({
           shouldCloseModal={true}
           onGroupJoinStatusChange={(newRole: GroupUserStatusType) => {
             // Update the group join status in search results
-            updateGroupJoinStatusInSearchResults(query, group.chat_id, newRole);
+            updateGroupJoinStatusInSearchResults({
+              communityId: group.community_id ?? "",
+              groupId: group.chat_id,
+              newRole,
+              query,
+              pathname,
+              slug: group.slug ?? "",
+            });
           }}
         />
       ))}

@@ -82,10 +82,12 @@ type CommunityInfoType = {
   dp_l: string;
   color_code: string;
   text_color_code: string;
-  no_of_members: number;
   slug: string;
   banner: string;
   description: string;
+  no_of_members?: number;
+  no_of_videos?: number;
+  no_of_loops?: number;
 };
 
 // Add interface for community with join status
@@ -182,9 +184,9 @@ export function TrendingCommunitiesDesktopView({
                 logged_in_user_role: community.roleNumber,
                 is_community_join_requested: community.isRequested,
                 stats: {
-                  members: community.no_of_members,
-                  groups: 0,
-                  posts: 0,
+                  members: community.no_of_members ?? 0,
+                  groups: community.no_of_loops ?? 0,
+                  posts: community.no_of_videos ?? 0,
                 },
               }}
             />
@@ -285,9 +287,9 @@ export function TrendingCommunitiesMobileView({
                           logged_in_user_role: community.roleNumber,
                           is_community_join_requested: community.isRequested,
                           stats: {
-                            members: community.no_of_members,
-                            groups: 0,
-                            posts: 0,
+                            members: community.no_of_members ?? 0,
+                            groups: community.no_of_loops ?? 0,
+                            posts: community.no_of_videos ?? 0,
                           },
                         }}
                       />

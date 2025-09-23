@@ -198,6 +198,7 @@ export const LoopTopResultSchema = z.object({
       discoverable: z.boolean().default(false),
     })
     .nullish(),
+  community_id: z.string().optional(),
 });
 
 // Video Schema for Top Results

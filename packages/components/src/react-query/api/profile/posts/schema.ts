@@ -47,6 +47,7 @@ const loopSchema = z.object({
   logged_in_user_status: z.number().nullish(),
   messages: z.array(messageSchema),
   actions: actionsSchema,
+  request_status: z.number().optional(),
 });
 
 const BrandSchema = z
@@ -192,7 +193,7 @@ export function parseGroupResponse(
       })),
       isSubscriber: loop.is_subscriber ?? false,
       shareUrl: loop.share_url ?? "",
-      role: mapGroupJoinStatus(loop.logged_in_user_status),
+      role: mapGroupJoinStatus(loop.request_status),
     };
   });
 }

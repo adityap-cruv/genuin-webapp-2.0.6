@@ -11,6 +11,7 @@ import {
   urlGenerators,
 } from "../../../shared";
 import { CommunityUserRole } from "@genuin/components/types/post";
+import { usePathname } from "@genuin/components/hooks/use-pathname";
 
 type CommunitiesTabProps = {
   communities: CommunityTopResultType[];
@@ -23,6 +24,8 @@ export function CommunitiesTab({
   className,
   ...restProps
 }: CommunitiesTabProps) {
+  const pathname = usePathname();
+
   // Memoize processed communities to avoid re-processing on every render
   const processedCommunities = useMemo(() => {
     return communities.map((community) => ({
@@ -53,8 +56,13 @@ export function CommunitiesTab({
           url={url}
           shouldCloseModal={true}
           onCommunityJoinStatusChange={(newRole: CommunityUserRole) => {
-            // Update the community join status in search results
-            updateCommunityJoinStatusInSearchResults(query, key, newRole);
+            updateCommunityJoinStatusInSearchResults({
+              communityId: community.id,
+              newRole: newRole,
+              query,
+              pathname,
+              slug: community.slug,
+            });
           }}
         />
       ))}

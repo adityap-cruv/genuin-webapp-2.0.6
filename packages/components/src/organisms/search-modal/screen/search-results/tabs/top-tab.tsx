@@ -16,6 +16,7 @@ import {
 } from "@genuin/components/react-query/api/search";
 import { GroupUserStatusType } from "@genuin/components/types/roles";
 import { CommunityUserRole } from "@genuin/components/types/post";
+import { usePathname } from "@genuin/components/hooks/use-pathname";
 
 type SectionHeaderProps = {
   title: string;
@@ -50,6 +51,8 @@ export function TopTab({
   onSeeAll,
   ...restProps
 }: TopTabProps) {
+  const pathname = usePathname();
+
   // Create sections map for easy access
   const sectionsMap = {
     videos: topResults.videos.length > 0 && (
@@ -121,11 +124,14 @@ export function TopTab({
                 className="gencl:min-h-34"
                 onGroupJoinStatusChange={(newRole: GroupUserStatusType) => {
                   // Update the group join status in search results
-                  updateGroupJoinStatusInSearchResults(
+                  updateGroupJoinStatusInSearchResults({
+                    communityId: loop.community_id ?? "",
+                    groupId: loop.chat_id,
+                    newRole,
                     query,
-                    loop.chat_id,
-                    newRole
-                  );
+                    pathname,
+                    slug: loop.slug ?? "",
+                  });
                 }}
               />
             </div>
@@ -173,11 +179,13 @@ export function TopTab({
                 }}
                 onCommunityJoinStatusChange={(newRole: CommunityUserRole) => {
                   // Update the community join status in search results
-                  updateCommunityJoinStatusInSearchResults(
+                  updateCommunityJoinStatusInSearchResults({
+                    communityId: community.community_id,
+                    newRole,
                     query,
-                    community.community_id,
-                    newRole
-                  );
+                    pathname,
+                    slug: community.slug,
+                  });
                 }}
               />
             </div>
