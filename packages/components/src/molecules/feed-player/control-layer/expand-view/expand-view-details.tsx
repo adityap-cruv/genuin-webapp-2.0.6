@@ -16,7 +16,6 @@ import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { Linkouts } from "@genuin/components/organisms";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
-import { useBaseContext } from "@genuin/components/context";
 
 type ExpandViewProps = ComponentProps<"div"> & {
   postDetails: PostDetailsType;
@@ -93,7 +92,6 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
   showLinkoutInExpand: boolean;
   hideGroupPill: boolean;
 } {
-  const { brandDetails } = useBaseContext();
   const { showSeeker } = usePlayerContext();
   const embedDetails = useSafeEmbedContext();
   const embedConfig = useEmbedConfigs();
@@ -119,21 +117,18 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
     if (videoLayoutId && LAYOUT_CONFIGS[videoLayoutId]) {
       config = LAYOUT_CONFIGS[videoLayoutId];
 
-      layoutType =
-        brandDetails.brand_id === 2357
-          ? "ted"
-          : (() => {
-              switch (videoLayoutId) {
-                case 2:
-                  return "iheart";
-                case 3:
-                  return "ted";
-                case 6:
-                  return "walmart";
-                default:
-                  return "default";
-              }
-            })();
+      layoutType = (() => {
+        switch (videoLayoutId) {
+          case 2:
+            return "iheart";
+          case 3:
+            return "ted";
+          case 6:
+            return "walmart";
+          default:
+            return "default";
+        }
+      })();
     } else if (placementVideoLayoutId === 1) {
       // Fallback: use Walmart config when placement layout is 1
       config = LAYOUT_CONFIGS[6]!;

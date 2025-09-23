@@ -67,7 +67,7 @@ export const ReactionButton = React.memo(function ReactionButton({
   const embedDetails = useSafeEmbedContext();
   const { modalConfig } = useEmbedConfigs();
   const authInfo = embedDetails?.embedData.authInfo;
-  const brandId = brandDetails.brand_id;
+  const cardLayoutId = brandDetails.card_layout_id;
 
   const returnQueryParams = useMemo(
     () =>
@@ -125,7 +125,7 @@ export const ReactionButton = React.memo(function ReactionButton({
   if (
     authenticationStatus === "unauthenticated" &&
     (authInfo?.signInUrl || authInfo?.signUpUrl) &&
-    brandId === 2357
+    cardLayoutId === 3
   ) {
     const popoverButton = createButton(true); // Use the special button that won't trigger clickHandler
 
