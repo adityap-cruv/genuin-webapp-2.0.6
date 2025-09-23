@@ -1,5 +1,6 @@
 "use client";
 import {
+  axiosInstance,
   clearAuthTokenInterceptor,
   removeAllAuthToken,
   setAuthTokenInAxiosInstance,
@@ -18,12 +19,23 @@ import { Toast } from "@genuin/ui/components/toaster";
 import { invalidateAllQueries } from "@genuin/components/react-query/client";
 import { useBaseContext } from "../base";
 import { useSafeEmbedContext } from "../embed/context";
+import { AxiosError, InternalAxiosRequestConfig } from "axios";
+import {
+  emitCachedUserUpdateEvent,
+  emitRefreshFailedEvent,
+  performTokenRefresh,
+} from "./token-refresh";
 
 // Define global window type for genuinAuth
 declare global {
   interface Window {
     genuinAuth?: (authCallbackData: AuthCallbackDataType) => void;
   }
+}
+
+// Extend the axios config type to include our custom retry property
+interface ExtendedAxiosRequestConfig extends InternalAxiosRequestConfig {
+  _retry?: boolean;
 }
 
 // Define the props type for the AuthProvider component.
@@ -91,15 +103,17 @@ export function AuthProvider({
   useLayoutEffect(() => {
     if (!window.genuin) return;
 
-    const handleAuthenticaeUser = (authCallbackData: any) => {
+    const handleAuthenticateUser = (authCallbackData: any) => {
       setAuthenticatedUser(authCallbackData.payload);
       setAuthenticationStatus("authenticated");
     };
 
-    window.genuin.on("sdk:authenticateUser", handleAuthenticaeUser);
+    window.genuin.on("sdk:authenticateUser", handleAuthenticateUser);
 
     return () => {
-      window.genuin.off("sdk:authenticateUser", handleAuthenticaeUser);
+      if (window.genuin) {
+        window.genuin.off("sdk:authenticateUser", handleAuthenticateUser);
+      }
     };
   }, []);
 
@@ -220,6 +234,60 @@ export function AuthProvider({
     },
     [isEmbed, embedData?.style, authenticationStatus]
   );
+
+  useEffect(() => {
+    // Response interceptor to handle token refresh
+    const responseInterceptor = axiosInstance.interceptors.response.use(
+      (response) => response,
+      async (error: AxiosError) => {
+        const originalRequest = error.config as ExtendedAxiosRequestConfig;
+
+        // If the error is 401 and we haven't already tried to refresh
+        if (
+          error.response?.status === 401 &&
+          originalRequest &&
+          !originalRequest._retry
+        ) {
+          originalRequest._retry = true;
+
+          try {
+            const newTokens = await performTokenRefresh(
+              user?.accessToken,
+              user?.refreshToken
+            );
+
+            if (newTokens) {
+              const updatedUser = { ...user, ...newTokens };
+
+              if (isEmbed) emitCachedUserUpdateEvent(updatedUser);
+
+              updateUser(updatedUser);
+              setAuthTokenInAxiosInstance(newTokens.accessToken);
+              return axiosInstance(originalRequest);
+            }
+          } catch (refreshError) {
+            if (isEmbed) {
+              removeAllAuthToken();
+              emitRefreshFailedEvent({
+                autoLoginToken: user?.autoLoginToken,
+                brandId: user?.brandId,
+                params: {},
+              });
+            } else {
+              signOut("/home");
+            }
+            return Promise.reject(refreshError);
+          }
+        }
+
+        return Promise.reject(error);
+      }
+    );
+
+    return () => {
+      axiosInstance.interceptors.response.eject(responseInterceptor);
+    };
+  }, []);
 
   return (
     <AuthContext.Provider

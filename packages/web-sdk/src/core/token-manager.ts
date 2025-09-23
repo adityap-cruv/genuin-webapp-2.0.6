@@ -1,8 +1,9 @@
-import { ACCESS_TOKEN_KEY } from '@/constants'
+import { USER_DATA_KEY } from '@/constants'
 import { APIService } from './api'
 import { AuthUser } from '@genuin/components/types/auth'
 import { ErrorHandler, ErrorType } from './errors'
 import { getKsCbRequestStatus } from '@/utils/auth'
+import { EventManager, SDKEventType } from './events'
 
 /**
  * This class will only manage single user toke for its lifetime.
@@ -11,11 +12,66 @@ export class TokenManager {
   private static instance: TokenManager
   private apiService: APIService
   private errorHandler: ErrorHandler
+  private eventManager: EventManager
   private cachedUser: AuthUser | null = null
 
   private constructor() {
     this.apiService = APIService.getInstance()
     this.errorHandler = ErrorHandler.getInstance()
+    this.eventManager = EventManager.getInstance()
+    this.setupAuthEventListeners()
+  }
+
+  /**
+   * Sets up event listeners for authentication-related events
+   * @private
+   */
+  private setupAuthEventListeners(): void {
+    // Listen for authentication refresh failures
+    this.eventManager.on(
+      SDKEventType.AUTHENTICATION_REFRESH_FAILED,
+      async (event) => {
+        try {
+          if (event.payload && typeof event.payload === 'object') {
+            // Clear user from local storage
+            this.clearAuth()
+
+            // Attempt to get fresh user details using the autoLoginToken
+            const freshUserData = await this.getCurrentUser(event.payload)
+
+            // Set user back to the provider
+            if (freshUserData) {
+              this.eventManager.emit(
+                SDKEventType.SDK_AUTHENTICATE_USER,
+                freshUserData,
+              )
+            }
+          }
+        } catch (error) {
+          console.error(
+            'TokenManager: Error during auto re-authentication after refresh failure:',
+            error,
+          )
+        }
+      },
+    )
+
+    // Listen for authentication user updates
+    this.eventManager.on(
+      SDKEventType.AUTHENTICATION_CACHED_USER_UPDATE,
+      (event) => {
+        try {
+          if (event.payload && typeof event.payload === 'object') {
+            this.setUserData(event.payload)
+          }
+        } catch (error) {
+          console.error(
+            'TokenManager: Error handling AUTHENTICATION_CACHED_USER_UPDATE event:',
+            error,
+          )
+        }
+      },
+    )
   }
 
   static getInstance(): TokenManager {
@@ -61,57 +117,57 @@ export class TokenManager {
   }
 
   /**
-   * Store access token in localStorage
+   * Store user data in localStorage
    */
-  setAccessToken(token: string): void {
+  setUserData(userData: AuthUser): void {
     try {
-      const currentToken = this.getAccessToken()
-      if (currentToken && currentToken !== token) {
+      const currentUserData = this.getUserData()
+      // Clear cached user if the user data has changed
+      if (currentUserData && currentUserData.id !== userData.id) {
         this.cachedUser = null
       }
-      localStorage.setItem(ACCESS_TOKEN_KEY, token)
+      localStorage.setItem(USER_DATA_KEY, JSON.stringify(userData))
     } catch (error) {
-      console.warn('Failed to store access token:', error)
+      console.warn('Failed to store user data:', error)
     }
   }
 
   /**
-   * Get access token from localStorage
+   * Get user data from localStorage
    */
-  getAccessToken(): string | null {
+  getUserData(): AuthUser | null {
     try {
-      return localStorage.getItem(ACCESS_TOKEN_KEY)
+      const userData = localStorage.getItem(USER_DATA_KEY)
+      return userData ? JSON.parse(userData) : null
     } catch (error) {
-      console.warn('Failed to get access token:', error)
+      console.warn('Failed to get user data:', error)
       return null
     }
   }
 
   /**
-   * Remove access token from localStorage
+   * Remove user data from localStorage
    */
-  removeAccessToken(): void {
+  removeUserData(): void {
     try {
-      const token = this.getAccessToken()
-      localStorage.removeItem(ACCESS_TOKEN_KEY)
-      if (token) {
-        this.cachedUser = null
-      }
+      localStorage.removeItem(USER_DATA_KEY)
+      this.cachedUser = null
     } catch (error) {
-      console.warn('Failed to remove access token:', error)
+      console.warn('Failed to remove user data:', error)
     }
   }
 
   /**
-   * Check if user has a stored access token
+   * Check if user data exists in localStorage
    */
-  hasAccessToken(): boolean {
-    return this.getAccessToken() !== null
+  hasUserData(): boolean {
+    return this.getUserData() !== null
   }
 
   /**
    * Get current authenticated user
    * Handles both token-based and session-based authentication
+   * Now checks local storage first to skip API calls when possible
    */
   async getCurrentUser(config?: {
     token?: string
@@ -119,10 +175,30 @@ export class TokenManager {
     params?: any
   }): Promise<AuthUser | null> {
     try {
+      // Return cached user if available
       if (this.cachedUser) {
         return this.cachedUser
       }
-      // If explicit token provided, check cache first
+
+      // Check local storage for user data first
+      const storedUserData = this.getUserData()
+
+      if (storedUserData) {
+        // remove stored data and fetch fresh data
+        if (config?.token && storedUserData.autoLoginToken !== config.token) {
+          console.log(
+            'Token mismatch detected, removing stored data and fetching fresh',
+          )
+          this.removeUserData()
+        } else {
+          // Set cached user and return it
+          this.cachedUser = storedUserData
+          console.log('Using stored user data, skipping API call')
+          return this.cachedUser
+        }
+      }
+
+      // If explicit token provided, fetch user data from API
       if (config?.token && config?.brandId) {
         const userData = await this.apiService.getAuthenticatedUserDetails(
           config.token,
@@ -131,28 +207,17 @@ export class TokenManager {
         )
 
         if (userData) {
-          // Store token for future use
-          this.setAccessToken(config.token)
-          // const parsedUser = this.parseUserResponse({
-          //   apiUser: apiResponse.user,
-          //   accessToken: apiResponse.accessToken,
-          //   refreshToken: apiResponse.refreshToken,
-          //   autoLoginToken: apiResponse.autoLoginToken,
-          // })
+          // Store user data in local storage
+          this.setUserData(userData)
+
           // Cache the user
           this.cachedUser = userData
-
-          if (this.cachedUser) {
-            this.cachedUser.accessToken = userData.accessToken
-            this.cachedUser.refreshToken = userData.refreshToken
-            this.cachedUser.autoLoginToken = userData.autoLoginToken
-          }
           return this.cachedUser
         }
       }
-      // Otherwise, check for existing session
-      else if (this.hasAccessToken()) {
-        const token = this.getAccessToken()
+      // Otherwise, check for existing session using mini profile
+      else if (this.hasUserData()) {
+        const token = this.getUserData()?.accessToken
         if (token) {
           const profileResponse = await this.apiService.getMiniProfile()
           if (profileResponse.data && token) {
@@ -161,6 +226,10 @@ export class TokenManager {
               accessToken: token,
               refreshToken: token,
             })
+
+            // Store user data in local storage
+            this.setUserData(parsedUser)
+
             // Cache the user
             this.cachedUser = parsedUser
             return parsedUser
@@ -168,8 +237,8 @@ export class TokenManager {
         }
       }
 
-      // Remove token if authentication failed
-      this.removeAccessToken()
+      // Remove token and user data if authentication failed
+      this.removeUserData()
       return null
     } catch (error) {
       this.errorHandler.handleError(
@@ -178,8 +247,8 @@ export class TokenManager {
         { originalError: error instanceof Error ? error : undefined },
       )
 
-      // Remove invalid token
-      this.removeAccessToken()
+      // Remove invalid token and user data
+      this.removeUserData()
       return null
     }
   }
@@ -200,29 +269,7 @@ export class TokenManager {
    * Clear all authentication data
    */
   clearAuth(): void {
-    this.removeAccessToken()
+    this.removeUserData()
     this.cachedUser = null
   }
-
-  /**
-   * Handle authentication from config (like legacy SDK)
-   */
-  // async handleConfigAuth(config: {
-  //   token?: string
-  //   brand_id?: number
-  //   params?: LegacySDKConfig['params']
-  // }): Promise<AuthUser | null> {
-  //   // Remove token if not provided (like legacy SDK)
-  //   if (!config.token) {
-  //     this.removeAccessToken()
-  //     return null
-  //   }
-
-  //   // Get user with provided config
-  //   return await this.getCurrentUser({
-  //     token: config.token,
-  //     brandId: config.brand_id,
-  //     params: config.params,
-  //   })
-  // }
 }

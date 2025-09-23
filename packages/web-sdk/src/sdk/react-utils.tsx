@@ -3,7 +3,10 @@ import { createRoot } from 'react-dom/client'
 import type { Root } from 'react-dom/client'
 import { Suspense, lazy } from 'react'
 // Import providers directly from their specific paths to avoid loading entire components package
-import { AuthProvider } from '@genuin/components/context/auth'
+import {
+  AuthProvider,
+  TokenRefreshProvider,
+} from '@genuin/components/context/auth'
 import { BaseContextProvider } from '@genuin/components/context/base'
 import { EmbedProvider } from '@genuin/components/context/embed'
 import { LinkProvider } from '@genuin/components/context/link'
@@ -157,14 +160,7 @@ export function loadNewEmbed({
               onSignIn={() => {}}
               onSignOut={() => {}}
               onUpdateUser={() => {}}
-              user={
-                user
-                  ? {
-                      ...user,
-                      ksCbRequestStatus: user.ksCbRequestStatus,
-                    }
-                  : undefined
-              }>
+              user={user}>
               <AnalyticsProvider isWebSDK={true}>
                 <Suspense fallback={<EmbedSkeleton />}>
                   {embedData.style === 'standard_wall' ? (

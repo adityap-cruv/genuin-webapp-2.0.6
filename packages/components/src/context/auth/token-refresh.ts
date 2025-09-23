@@ -1,48 +1,19 @@
-import { API_PATHS } from "@genuin/components/react-query/paths";
 import axios from "axios";
+import { API_PATHS } from "@genuin/components/react-query/paths";
+import { NEXT_PUBLIC_API_URL } from "@genuin/components/lib/utils/env";
 
-let refreshInProgress: Promise<{
-  accessToken: string;
-  refreshToken: string;
-} | null> | null = null;
-
-export async function refreshTokens(
-  updateUser: (tokens: {
-    accessToken: string;
-    refreshToken: string;
-  }) => Promise<void>,
+export async function performTokenRefresh(
   accessToken?: string,
   refreshToken?: string
 ): Promise<{ accessToken: string; refreshToken: string } | null> {
-  if (refreshInProgress) return refreshInProgress;
-
-  refreshInProgress = performTokenRefresh(
-    updateUser,
-    accessToken,
-    refreshToken
-  ).finally(() => {
-    refreshInProgress = null;
-  });
-
-  return refreshInProgress;
-}
-
-async function performTokenRefresh(
-  updateUser: (tokens: {
-    accessToken: string;
-    refreshToken: string;
-  }) => Promise<void>,
-  accessToken?: string,
-  refreshToken?: string
-): Promise<{ accessToken: string; refreshToken: string } | null> {
-  if (!accessToken || !refreshToken || !process.env.NEXT_PUBLIC_API_URL) {
+  if (!accessToken || !refreshToken || !NEXT_PUBLIC_API_URL) {
     return null;
   }
 
   try {
     const response = await axios
       .create({
-        baseURL: process.env.NEXT_PUBLIC_API_URL,
+        baseURL: NEXT_PUBLIC_API_URL,
         timeout: 10000,
       })
       .post(
@@ -61,13 +32,34 @@ async function performTokenRefresh(
 
     if (!newAccessToken || !newRefreshToken) return null;
 
-    await updateUser({
-      accessToken: newAccessToken,
-      refreshToken: newRefreshToken,
-    });
-
     return { accessToken: newAccessToken, refreshToken: newRefreshToken };
-  } catch {
-    return null;
+  } catch (error) {
+    throw new Error(String(error));
+  }
+}
+
+// Utility function to emit refresh failure event
+export function emitRefreshFailedEvent(payload?: {
+  autoLoginToken?: string;
+  brandId?: number;
+  params?: any;
+}): void {
+  if (typeof window !== "undefined" && window.genuin?.emit) {
+    try {
+      window.genuin.emit("auth:refresh_failed", payload);
+    } catch (eventError) {
+      console.warn("Failed to emit refresh failed event:", eventError);
+    }
+  }
+}
+
+// Utility function to emit user update event
+export function emitCachedUserUpdateEvent(userData: any): void {
+  if (typeof window !== "undefined" && window.genuin?.emit) {
+    try {
+      window.genuin.emit("auth:cached_user_update", userData);
+    } catch (eventError) {
+      console.warn("Failed to emit user update event:", eventError);
+    }
   }
 }

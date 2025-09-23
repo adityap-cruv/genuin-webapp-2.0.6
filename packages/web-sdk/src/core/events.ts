@@ -6,6 +6,8 @@ export enum SDKEventType {
   CONTENT_UPDATED = 'content:updated',
   AUTHENTICATION_REQUIRED = 'auth:required',
   AUTHENTICATION_SUCCESS = 'auth:success',
+  AUTHENTICATION_REFRESH_FAILED = 'auth:refresh_failed',
+  AUTHENTICATION_CACHED_USER_UPDATE = 'auth:cached_user_update',
   NAVIGATION = 'navigation',
   SDK_AUTHENTICATE_USER = 'sdk:authenticateUser',
   SDK_UPDATE_CONTEXTUAL_PARAMS = 'sdk:updateContextualParams',
