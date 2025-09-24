@@ -180,9 +180,6 @@ const addImportantToGenclProps = () => ({
         rule.walkDecls((decl) => {
           if (!decl.important) {
             decl.important = true
-            console.log(
-              `Adding !important to ${rule.selector} -> ${decl.prop}: ${decl.value}`,
-            )
           }
         })
       }
