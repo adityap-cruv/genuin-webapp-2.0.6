@@ -23,7 +23,7 @@ type SideBarProps = ComponentProps<"aside"> &
   };
 
 const sidebarVariants = cva(
-  "gencl:relative gencl:h-full gencl:bg-white gencl:flex gencl:flex-col gencl:overflow-y-auto",
+  "gencl:relative gencl:h-full gencl:bg-white gencl:flex gencl:flex-col gencl:overflow-hidden",
   {
     variants: {
       variant: {
@@ -53,18 +53,24 @@ export function SideBar({
       className={cn(sidebarVariants({ variant }), className)}
       {...restProps}
     >
-      <SidebarActions
-        brandConfiguredTerms={brandDetails.terms_and_condition ?? ""}
-        brandConfiguredPrivacy={brandDetails.privacy_policy ?? ""}
-        variant={variant}
-        onItemClick={onItemClick}
-        showSearch={!layoutConfig.showNavigationBar}
-      />
-      {!layoutConfig.showNavigationBar && <ProxyComponent variant={variant} />}
-      {showBecomeACreator && <SideBarBecomeCreator variant={variant} />}
-      <Category variant={variant} onItemClick={onItemClick} />
-      <Recent variant={variant} onItemClick={onItemClick} />
-      <PoweredByGenuin variant={variant} />
+      <div className="gencl:flex-1 gencl:h-full gencl:overflow-y-auto gencl:pb-16">
+        <SidebarActions
+          brandConfiguredTerms={brandDetails.terms_and_condition ?? ""}
+          brandConfiguredPrivacy={brandDetails.privacy_policy ?? ""}
+          variant={variant}
+          onItemClick={onItemClick}
+          showSearch={!layoutConfig.showNavigationBar}
+        />
+        {!layoutConfig.showNavigationBar && (
+          <ProxyComponent variant={variant} />
+        )}
+        {showBecomeACreator && <SideBarBecomeCreator variant={variant} />}
+        <Category variant={variant} onItemClick={onItemClick} />
+        <Recent variant={variant} onItemClick={onItemClick} />
+      </div>
+      <div className="gencl:absolute gencl:bottom-0 gencl:left-0 gencl:right-0">
+        <PoweredByGenuin variant={variant} />
+      </div>
     </aside>
   );
 }

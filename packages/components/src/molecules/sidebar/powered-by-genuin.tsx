@@ -4,11 +4,11 @@ import { cn } from "@genuin/ui/lib/utils";
 import { cva, VariantProps } from "class-variance-authority";
 
 const poweredByGenuinVariants = cva(
-  "gencl:border-r gencl:border-t gencl:p-4 gencl:border-secondary-150 gencl:bg-white gencl:z-10 gencl:absolute gencl:bottom-0",
+  "gencl:border-t gencl:p-4 gencl:border-secondary-150 gencl:bg-white gencl:z-10",
   {
     variants: {
       variant: {
-        default: "gencl:w-16 gencl:xl:!w-full gencl:mr-2",
+        default: "gencl:xl:!w-full",
         mobile: "gencl:flex gencl:w-fit",
       },
     },
