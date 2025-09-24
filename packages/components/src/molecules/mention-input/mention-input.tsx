@@ -154,10 +154,9 @@ export function MentionInput({
         onSubmit={form.handleSubmit(commentSubmit)}
         onClick={onClick}
         className={cn(
-          "gencl:left-0 gencl:right-0 gencl:bg-white gencl:border-secondary-150 gencl:flex gencl:justify-between gencl:items-center",
+          "gencl:bg-white gencl:border-secondary-150 gencl:flex gencl:justify-between gencl:items-center",
           {
-            "gencl:absolute gencl:p-4 gencl:bottom-0 gencl:border-t":
-              inputType === "text",
+            "gencl:p-4 gencl:border-t": inputType === "text",
           }
         )}
       >

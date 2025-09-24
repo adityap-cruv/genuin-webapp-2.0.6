@@ -66,7 +66,6 @@ export function CommentsDialog({
           onCommentCountChange={onCommentCountChange}
         />
         <CommentInputBox
-          className="gencl:absolute gencl:bottom-0"
           communityId={communityId}
           shareUrl={shareUrl}
           loopId={loopId}

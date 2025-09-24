@@ -87,19 +87,17 @@ export function Comments({
           className="gencl:pb-24 gencl:h-full"
         />
       </div>
-      <div className="gencl:sticky gencl:bottom-0 gencl:left-0 gencl:w-full gencl:bg-white gencl:z-10 gencl:pt-2 gencl:pb-4 gencl:px-0">
-        <CommentInputBox
-          videoId={videoId}
-          loopId={loopId}
-          communityId={communityId}
-          videoSlug={videoSlug}
-          shareUrl={shareUrl}
-          onCommentPosted={(comments) => {
-            setQueryDataForNewComment(videoId, comments);
-            onCommentCountChange?.(videoId);
-          }}
-        />
-      </div>
+      <CommentInputBox
+        videoId={videoId}
+        loopId={loopId}
+        communityId={communityId}
+        videoSlug={videoSlug}
+        shareUrl={shareUrl}
+        onCommentPosted={(comments) => {
+          setQueryDataForNewComment(videoId, comments);
+          onCommentCountChange?.(videoId);
+        }}
+      />
     </div>
   );
 }

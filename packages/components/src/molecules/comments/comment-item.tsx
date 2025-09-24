@@ -45,7 +45,7 @@ export const CommentItem = memo(function CommentItem({
   const { isMobile } = useDeviceDetectMediaQuery();
   return (
     <div
-      className="comment gencl:flex gencl:gap-2 gencl:group"
+      className="comment gencl:last:pb-16 gencl:flex gencl:gap-2 gencl:group"
       key={comment.commentId}
     >
       <Avatar
