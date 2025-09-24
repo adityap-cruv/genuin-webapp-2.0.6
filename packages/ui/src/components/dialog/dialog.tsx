@@ -98,15 +98,15 @@ const dialogContentVariants = cva(
     "gencl:data-[state=open]:animate-in gencl:data-[state=closed]:animate-out gencl:outline-none",
     "gencl:data-[state=closed]:fade-out-0 gencl:data-[state=open]:fade-in-0",
     "gencl:data-[state=closed]:zoom-out-95 gencl:data-[state=open]:zoom-in-95",
-    "gencl:z-50 gencl:w-full gencl:gap-4 gencl:!rounded-t-xl gencl:sm:!rounded-2xl",
-    "gencl:bg-white gencl:p-6 gencl:shadow-lg gencl:duration-200 gencl:sm:max-w-lg",
+    "gencl:z-50 gencl:w-full gencl:gap-4 gencl:!rounded-t-xl gencl:sm:rounded-2xl!",
+    "gencl:bg-white gencl:p-6 gencl:shadow-lg gencl:duration-200 gencl:sm:max-w-lg!",
   ],
   {
     variants: {
       variant: {
         default: [
-          "gencl:fixed gencl:bottom-0 gencl:sm:bottom-auto gencl:sm:top-1/2 gencl:sm:left-1/2 gencl:sm:-translate-y-1/2",
-          "gencl:sm:-translate-x-1/2",
+          "gencl:fixed gencl:bottom-0 gencl:sm:bottom-auto! gencl:sm:top-1/2! gencl:sm:left-1/2! gencl:sm:-translate-y-1/2!",
+          "gencl:sm:-translate-x-1/2!",
         ],
         top: ["gencl:fixed gencl:top-8 gencl:left-1/2 gencl:-translate-x-1/2"],
       },
@@ -184,7 +184,7 @@ function DialogFooter({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="dialog-footer"
       className={cn(
-        "gencl:flex gencl:flex-col-reverse gencl:gap-2 gencl:sm:flex-row gencl:sm:justify-end",
+        "gencl:flex gencl:flex-col-reverse gencl:gap-2 gencl:sm:flex-row! gencl:sm:justify-end!",
         className
       )}
       {...props}

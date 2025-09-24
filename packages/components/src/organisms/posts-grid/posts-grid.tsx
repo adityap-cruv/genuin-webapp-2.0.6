@@ -95,7 +95,7 @@ export function PostsGrid({
     return (
       <div
         className={cn(
-          "gencl:w-full gencl:flex gencl:flex-col gencl:gap-4 gencl:justify-center gencl:items-center gencl:h-45 gencl:sm:!h-60 gencl:bg-secondary-50",
+          "gencl:w-full gencl:flex gencl:flex-col gencl:gap-4 gencl:justify-center gencl:items-center gencl:h-45 gencl:sm:h-96! gencl:bg-secondary-50",
           className
         )}
       >
