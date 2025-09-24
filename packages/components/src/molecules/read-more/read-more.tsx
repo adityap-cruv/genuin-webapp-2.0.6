@@ -411,7 +411,7 @@ export const ReadMore = memo(function ReadMore({
         onClick={(e) => {
           e.stopPropagation();
           onClick?.(e);
-          setIsExpanded((prev) => !prev);
+          if (textParts.shouldTruncate) setIsExpanded((prev) => !prev);
         }}
       >
         <span

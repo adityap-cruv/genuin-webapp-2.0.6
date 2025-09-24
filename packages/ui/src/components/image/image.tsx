@@ -46,6 +46,7 @@ export interface ImageProps
   extends ComponentProps<"img">,
     VariantProps<typeof imageVariants> {
   useWebp?: boolean;
+  handleError?: boolean;
 }
 
 export function Image({
@@ -55,6 +56,7 @@ export function Image({
   scale,
   src,
   useWebp = true,
+  handleError = false,
   ...props
 }: ImageProps) {
   const [hasError, setHasError] = useState(false);
@@ -70,7 +72,7 @@ export function Image({
       loading="lazy"
       className={cn(imageVariants({ aspectRatio, radius, scale }), className)}
       src={imageSrc}
-      onError={() => setHasError(true)}
+      onError={handleError ? () => setHasError(true) : undefined}
       {...props}
     />
   );

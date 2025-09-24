@@ -85,10 +85,7 @@ export function GroupPill({
     prevSubscriptionStatus.current = groupDetails.isSubscribed;
   }, [groupDetails.isSubscribed]);
 
-  const hideButton =
-    localSubscriptionStatus === true ||
-    authenticationStatus === "unauthenticated" ||
-    hideGroupSubscriptionButton;
+  const hideButton = localSubscriptionStatus === true;
 
   // Truncate name to 24 characters for compact variant
   const displayName =
@@ -111,29 +108,35 @@ export function GroupPill({
             {displayName}
           </span>
         </div>
-        {authenticationStatus === "authenticated" && variant !== "compact" && (
-          <GroupSubscriptionButton
-            className={`gencl:px-2 gencl:overflow-hidden gencl:shrink-0 gencl:transition-all gencl:duration-500 gencl:h-6 ${
-              hideButton
-                ? "gencl:max-w-0 gencl:opacity-0 gencl:ml-0 gencl:px-0!"
-                : "gencl:max-w-24 gencl:opacity-100 gencl:ml-1"
-            }`}
-            variant="icon"
-            shape="pill"
-            size="sm"
-            groupId={groupDetails.id}
-            groupName={groupDetails.name ?? ""}
-            groupDescription={ldDescription}
-            groupSlug={groupDetails.slug}
-            shareUrl={groupDetails.shareUrl ?? ""}
-            isSubscriber={groupDetails.isSubscribed ?? false}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
-            onSubscriptionChange={onGroupSubscriptionChange}
-          />
-        )}
+        {authenticationStatus === "authenticated" &&
+          variant !== "compact" &&
+          !hideGroupSubscriptionButton && (
+            <div
+              className={`gencl:overflow-hidden gencl:shrink-0 gencl:transition-all gencl:duration-500 ${
+                hideButton
+                  ? "gencl:max-w-0 gencl:opacity-0 gencl:ml-0 gencl:px-0!"
+                  : "gencl:max-w-24 gencl:opacity-100 gencl:ml-1"
+              }`}
+            >
+              <GroupSubscriptionButton
+                className="gencl:px-2 gencl:h-6"
+                variant="icon"
+                shape="pill"
+                size="sm"
+                groupId={groupDetails.id}
+                groupName={groupDetails.name ?? ""}
+                groupDescription={ldDescription}
+                groupSlug={groupDetails.slug}
+                shareUrl={groupDetails.shareUrl ?? ""}
+                isSubscriber={groupDetails.isSubscribed ?? false}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+                onSubscriptionChange={onGroupSubscriptionChange}
+              />
+            </div>
+          )}
       </div>
     </Link>
   );

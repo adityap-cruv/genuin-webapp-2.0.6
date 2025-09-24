@@ -30,6 +30,7 @@ export function BrandSlogan({ ...props }: BrandSloganProps) {
           className="gencl:w-fit gencl:max-w-full"
           alt="Brand slogan"
           useWebp={false}
+          handleError
           {...props}
         />
       ) : (

@@ -36,6 +36,7 @@ export function BrandLogo({ className, logoType, ...props }: BrandLogoProps) {
         src={logoSrc}
         alt="Brand Logo"
         useWebp={false}
+        handleError
         className={cn(
           "gencl:h-10 gencl:w-auto gencl:max-w-40 gencl:object-contain",
           className

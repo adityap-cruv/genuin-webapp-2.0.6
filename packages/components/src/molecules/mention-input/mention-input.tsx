@@ -234,7 +234,7 @@ export function MentionInput({
         >
           <div
             className={cn(
-              "gencl:border gencl:border-secondary-150 gencl:rounded-lg gencl:py-2 gencl:px-3 gencl:items-center gencl:flex gencl:gap-3 gencl:w-full gencl:min-h-10",
+              "gencl:border gencl:border-secondary-150 gencl:rounded-lg gencl:py-2 gencl:px-3 gencl:flex gencl:gap-3 gencl:w-full gencl:min-h-10",
               {
                 "gencl:border-red-400":
                   description.length === maxLength && inputType === "textarea",
