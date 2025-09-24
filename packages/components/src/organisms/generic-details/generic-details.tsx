@@ -108,8 +108,8 @@ function Default({
                 <ReadMore
                   className="gencl:text-secondary-600! gencl:text-body-1-medium"
                   text={description}
-                  viewLessText="View more"
-                  viewMoreText="View less"
+                  viewLessText="View less"
+                  viewMoreText="View more"
                   maxLines={1}
                 />
               )}

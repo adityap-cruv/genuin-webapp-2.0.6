@@ -233,7 +233,7 @@ function CommunityDetailsView({ slug }: { slug: string }) {
           </div>
         }
       />
-      <div className="gencl:w-full gencl:overflow-auto gencl:h-full gencl:px-0 gencl:sm:px-6">
+      <div className="gencl:w-full gencl:overflow-auto gencl:h-full gencl:px-0 gencl:sm:px-6!">
         <div className="gencl:h-auto gencl:relative">
           <CommunityBanner
             src={communityDetails?.banner ?? ""}
@@ -267,7 +267,7 @@ function CommunityDetailsView({ slug }: { slug: string }) {
             ) : (
               <CommunityDetailsTabs
                 slug={slug}
-                className="gencl:pt-3 gencl:sm:pt-6"
+                className="gencl:pt-3 gencl:sm:pt-6!"
                 communityOwnerId={communityDetails.leader.member_id}
                 value={currentTab}
                 onValueChange={handleTabChange}

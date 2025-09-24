@@ -11,14 +11,18 @@ export function CommunityBanner({
   ...restProps
 }: ComponentProps<typeof Image>) {
   return (
-    <Image
-      src={src}
-      alt={undefined}
+    <div
       className={cn(
-        "gencl:w-full gencl:h-15 gencl:sm:h-40 gencl:bg-secondary-300 gencl:rounded-none gencl:sm:rounded-b-lg!",
+        "gencl:w-full gencl:h-15 gencl:sm:h-40! gencl:bg-secondary-300 gencl:rounded-none gencl:sm:rounded-b-lg!",
         className
       )}
-      {...restProps}
-    />
+    >
+      <Image
+        src={src}
+        className="gencl:h-full gencl:w-full"
+        alt={undefined}
+        {...restProps}
+      />
+    </div>
   );
 }
