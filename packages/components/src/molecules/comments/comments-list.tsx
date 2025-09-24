@@ -26,8 +26,9 @@ export const CommentsList = memo(function CommentsList({
   showCloseButton,
   className,
   shareUrl,
-  onCommentCountChange,
+  style,
   videoSlug,
+  onCommentCountChange,
   ...restProps
 }: CommentListProps) {
   const {
@@ -57,6 +58,7 @@ export const CommentsList = memo(function CommentsList({
           "gencl:flex gencl:items-center gencl:justify-center gencl:h-full gencl:flex-col gencl:gap-4",
           className
         )}
+        style={style}
         {...restProps}
       >
         <ErrorIcon className="gencl:w-8 gencl:h-8" />
@@ -74,6 +76,7 @@ export const CommentsList = memo(function CommentsList({
           "gencl:w-full gencl:h-full gencl:flex gencl:flex-col gencl:shrink-0 gencl:p-4",
           className
         )}
+        style={style}
         {...restProps}
       >
         {Array.from({ length: 7 }).map((_, i) => (
@@ -90,6 +93,7 @@ export const CommentsList = memo(function CommentsList({
           "gencl:w-full gencl:h-full gencl:flex gencl:flex-col gencl:gap-4 gencl:items-center gencl:justify-center",
           className
         )}
+        style={style}
         {...restProps}
       >
         <CommentIcon size="xl" />
@@ -111,6 +115,7 @@ export const CommentsList = memo(function CommentsList({
         "gencl:h-full gencl:w-full gencl:overflow-auto gencl:p-4 gencl:space-y-4 gencl:!pb-16",
         className
       )}
+      style={{ marginBottom: 64, ...style }}
       {...restProps}
     >
       <InfiniteScroll
