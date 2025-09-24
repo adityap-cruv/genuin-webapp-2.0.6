@@ -108,7 +108,17 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       explicitAutoPlay
     )
   );
-  const [userHasFocus, setuserHasFocus] = useState(true);
+  // State to track user focus and container visibility for controlling video playback
+  // isFocused: whether the user is actively focused on the page/tab
+  // containerInView: whether the video container is visible (for embed scenarios)
+  const [focusState, setFocusState] = useState({
+    isFocused: baseEventBus.getContext().userIsFocused,
+    containerInView: embedDetails
+      ? !!embedDetails.embedData.startVideoSlug
+        ? true // If there's a start video slug, assume container is in view
+        : embedDetails?.embedEventBus.getContext().containerInView
+      : true, // For non-embed, always consider in view
+  });
   // event emitter for time updates
   // Use mitt with unknown for browser compatibility and type safety
   const timeUpdateEventEmitterRef = useRef(mitt());
@@ -136,7 +146,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         unmute(false);
       }
 
-      // Check if explicit autoplay is set to false - if so, don't autoplay
       if (explicitAutoPlay === false) {
         setFeedPlayerShouldPlay(false);
         return;
@@ -197,7 +206,10 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
 
     function handleContainerInViewChange() {
       const context = embedEventBus.getContext();
-      setuserHasFocus(context.containerInView);
+      setFocusState((prev) => ({
+        ...prev,
+        containerInView: context.containerInView,
+      }));
     }
 
     embedEventBus.on("containerInViewChange", handleContainerInViewChange);
@@ -209,8 +221,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   useEffect(() => {
     function handleUserFocusChange() {
       const context = baseEventBus.getContext();
-
-      setuserHasFocus(context.userIsFocused);
+      setFocusState((prev) => ({ ...prev, isFocused: context.userIsFocused }));
     }
 
     baseEventBus.on("userFocusChange", handleUserFocusChange);
@@ -400,7 +411,11 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     showSeeker,
     setShowSeeker,
 
-    feedPlayerShouldPlay: isActive && feedPlayerShouldPlay && userHasFocus,
+    feedPlayerShouldPlay:
+      isActive &&
+      feedPlayerShouldPlay &&
+      focusState.isFocused &&
+      focusState.containerInView,
     togglePlay,
     play,
     pause,
