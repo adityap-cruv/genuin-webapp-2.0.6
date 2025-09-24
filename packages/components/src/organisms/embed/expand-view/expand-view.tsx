@@ -54,8 +54,7 @@ export function EmbedExpandView({
   // Function to handle closing expand view - restores mute state and goes back
   const handleCloseExpandView = () => {
     if (typeof previousMuteState === "boolean") {
-      // TODO : 
-      // setMuted(previousMuteState);
+      setMuted(true);
     }
     setPlaybackSpeed(x => {
       if(x.speed !== 1) {

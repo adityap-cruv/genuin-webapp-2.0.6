@@ -63,10 +63,8 @@ export function ShareButton({
       const url = new URL(createExternalLink(shareUrl));
       url.search = "";
       if (brandDetails.brand_id === 2357) {
-        url.searchParams.set(
-          "video",
-          baseShareUrl[1]?.slice(1).replace("?", "&") ?? ""
-        );
+        const shareUrl = baseShareUrl[1]?.split("?");
+        url.searchParams.set("video", shareUrl?.[0]?.slice(1) ?? "");
       }
       url.searchParams.append("utm_source", "web");
       let fullUrl = url.href;
