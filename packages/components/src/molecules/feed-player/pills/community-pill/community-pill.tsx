@@ -116,7 +116,7 @@ export function CommunityPill({
           variant !== "compact" &&
           !hideCommunityJoinButton && (
             <div
-              className={`gencl:overflow-hidden gencl:shrink-0 gencl:transition-all gencl:duration-500 gencl:h-6 ${
+              className={`gencl:overflow-hidden gencl:!flex gencl:shrink-0 gencl:transition-all gencl:duration-500 ${
                 hideButton
                   ? "gencl:max-w-0 gencl:opacity-0 gencl:ml-0 gencl:px-0!"
                   : "gencl:max-w-24 gencl:opacity-100 gencl:ml-1"
@@ -127,6 +127,7 @@ export function CommunityPill({
                 roleTexts={{
                   UNJOINED: "Join",
                 }}
+                className="gencl:h-6"
                 communityId={communityDetails.id}
                 communityHandle={communityDetails.handle}
                 communityName={communityDetails.name ?? ""}

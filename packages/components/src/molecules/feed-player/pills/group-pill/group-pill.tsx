@@ -112,7 +112,7 @@ export function GroupPill({
           variant !== "compact" &&
           !hideGroupSubscriptionButton && (
             <div
-              className={`gencl:overflow-hidden gencl:shrink-0 gencl:transition-all gencl:duration-500 ${
+              className={`gencl:overflow-hidden gencl:!flex gencl:shrink-0 gencl:transition-all gencl:duration-500 ${
                 hideButton
                   ? "gencl:max-w-0 gencl:opacity-0 gencl:ml-0 gencl:px-0!"
                   : "gencl:max-w-24 gencl:opacity-100 gencl:ml-1"

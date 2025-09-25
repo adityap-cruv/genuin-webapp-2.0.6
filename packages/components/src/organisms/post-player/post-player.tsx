@@ -43,7 +43,8 @@ export function PostPlayer({
             src={post.video.source}
             videoId={post.video.id}
             poster={post.video.thumbnail ?? ""}
-            // className="gencl:bg-secondary-200 gencl:object-cover gencl:aspect-reel"
+            className="gencl:bg-secondary-200 gencl:w-full"
+            style={{ height: "inherit" }}
             playsInline
           />
           <ControlLayer
