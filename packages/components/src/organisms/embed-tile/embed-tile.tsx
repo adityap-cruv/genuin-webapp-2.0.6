@@ -15,7 +15,7 @@ import { Linkouts } from "../linkouts";
 import { Stats } from "@genuin/components/molecules/stats";
 import { CommentIcon, PlayIcon } from "@genuin/ui/icons";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useEmbedContext } from "@genuin/components/context/embed";
 import { DynamicReactionIcon } from "@genuin/components/molecules/reaction-button";
 
@@ -225,7 +225,7 @@ function EmbedPlayer({
   ]);
 
   // Determine sizing based on rootElement dimensions
-  const getAdaptiveSizing = () => {
+  const adaptiveSizing = useMemo(() => {
     if (!rootElement) return "gencl:h-full"; // fallback
 
     const containerHeight = rootElement.clientHeight;
@@ -233,7 +233,7 @@ function EmbedPlayer({
 
     // If container is wider than tall (landscape), use h-full to fit height
     return containerHeight > containerWidth ? "gencl:w-full" : "gencl:h-full";
-  };
+  }, [rootElement]);
 
   return (
     <div
@@ -250,12 +250,11 @@ function EmbedPlayer({
         adUrl={postDetails.video.adUrl ?? undefined}
         src={postDetails.video.source}
         poster={postDetails.video.thumbnail}
-        className={cn(
-          // Adaptive sizing based on rootElement dimensions
-          config.video.videoCrop
-            ? getAdaptiveSizing()
+        className={
+          !config.video.videoCrop
+            ? adaptiveSizing
             : "gencl:object-cover gencl:h-full gencl:w-full"
-        )}
+        }
       />
       <ControlLayer
         variant={config.view.isPlacementView ? "placement" : "embed"}
