@@ -328,6 +328,14 @@ export class GenuinSDK {
       config.embedDetails = embedDetails
     }
 
+    if (config.placementId && config.styleId) {
+      let embedDetails = parsePlacementToEmbedData(
+        config.live.live_customization_data,
+        config.styleId,
+      )
+      config.embedDetails = embedDetails
+    }
+
     this.themeManager.applyBrandColors(element, brandDetails.brand_colors)
 
     // if embedDetails is not found then we can't load the embed.
