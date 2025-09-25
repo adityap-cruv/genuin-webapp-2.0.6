@@ -1,5 +1,6 @@
 import FingerPringJS from "@fingerprintjs/fingerprintjs";
 import { useLocalStorage } from "usehooks-ts";
+import internalStorage from "@genuin/components/lib/utils/internal-storage-manager";
 
 /**
  * Key for storing the device ID in local storage.
@@ -23,12 +24,14 @@ export async function getNewDeviceId(onDeviceId?: (deviceId: string) => void) {
  * Get the device ID from local storage.
  * @returns The device ID or undefined if not found.
  */
-export function getDeviceId() {
-  const deviceId = localStorage.getItem(DEVICE_ID_KEY_FOR_LOCAL_STORAGE);
+export function getDeviceId(isInIframe: boolean) {
+  const deviceId = isInIframe
+    ? internalStorage.getItem(DEVICE_ID_KEY_FOR_LOCAL_STORAGE)
+    : localStorage.getItem(DEVICE_ID_KEY_FOR_LOCAL_STORAGE);
   if (!deviceId || deviceId.trim() === "" || deviceId === "undefined") {
     return undefined;
   }
-  return JSON.parse(deviceId.trim());
+  return isInIframe ? deviceId.trim() : JSON.parse(deviceId);
 }
 
 export function useGetDeviceId() {

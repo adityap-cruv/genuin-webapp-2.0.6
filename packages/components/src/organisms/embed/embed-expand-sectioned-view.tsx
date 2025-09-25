@@ -1,6 +1,6 @@
 import { EmbedExpandView } from "./expand-view";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
-import { useEmbedContext } from "@genuin/components/context";
+import { useBaseContext, useEmbedContext } from "@genuin/components/context";
 import { useEffect, useMemo, useState } from "react";
 import { useFeed } from "@genuin/components/react-query/api/feed";
 import { getQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
@@ -15,6 +15,7 @@ export function EmbedExpandSectionedView({
   pageSession,
 }: EmbedExpandViewProps) {
   const { embedEventBus, embedData } = useEmbedContext();
+  const {isInIframe} = useBaseContext();
   const isSectioned = embedEventBus.getContext().isSectioned;
   const [selectedSection, setSelectedSection] = useState<
     PostDetailsType["section"]
@@ -33,6 +34,7 @@ export function EmbedExpandSectionedView({
       sectionId: selectedSection?.id ?? undefined,
       embedId: embedData.embed_id,
       pageSession: pageSession,
+      isInIframe,
       lastVideoId:
         filteredSelectedSectionVideos.length > 0
           ? (filteredSelectedSectionVideos[
@@ -62,7 +64,7 @@ export function EmbedExpandSectionedView({
       gcTime: 30 * 60 * 1000, // 30 minutes - keep in cache for 30 minutes
       refetchOnMount: false,
       refetchOnWindowFocus: false,
-      refetchOnReconnect: true,
+      refetchOnReconnect: true
     }),
     [
       isSectioned,
@@ -70,6 +72,7 @@ export function EmbedExpandSectionedView({
       pageSession,
       videos,
       filteredSelectedSectionVideos,
+      isInIframe
     ]
   );
 

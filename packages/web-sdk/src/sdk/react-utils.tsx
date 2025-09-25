@@ -5,7 +5,6 @@ import { Suspense, lazy } from 'react'
 // Import providers directly from their specific paths to avoid loading entire components package
 import {
   AuthProvider,
-  TokenRefreshProvider,
 } from '@genuin/components/context/auth'
 import { BaseContextProvider } from '@genuin/components/context/base'
 import { EmbedProvider } from '@genuin/components/context/embed'

@@ -2,6 +2,7 @@
 import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 
 import {
+  DEVICE_ID_KEY_FOR_LOCAL_STORAGE,
   getNewDeviceId,
   useGetDeviceId,
 } from "@genuin/components/lib/utils/device-id";
@@ -12,6 +13,7 @@ import type { PlaybackSpeedType } from "@genuin/components/molecules/feed-player
 import { BaseContext } from "./context";
 import { parseBrandColors } from "@genuin/components/lib/utils/brand-color-parser";
 import { createBaseEventBus } from "./event-bus";
+import internalStorageManager from "@genuin/components/lib/utils/internal-storage-manager";
 
 type BaseContextProviderProps = {
   children: React.ReactNode;
@@ -44,6 +46,16 @@ export function BaseContextProvider({
   // TODO: move this states to event based states.
   const [muted, setMuted] = useState(true);
   const [volume, setVolume] = useState(100);
+  // Detect if running inside an iframe (safe for SSR)
+  const isInIframe = useMemo(() => {
+    if (typeof window === "undefined") return false;
+    try {
+      return window.self !== window.top;
+    } catch {
+      // Accessing window.top can throw due to cross-origin
+      return true;
+    }
+  }, []);
   const [deviceId, setDeviceId] = useGetDeviceId();
   const [playbackSpeed, setPlaybackSpeed] = useState<PlaybackSpeedType>({
     speed: 1.0,
@@ -54,10 +66,17 @@ export function BaseContextProvider({
     // If deviceId is not available, get a new one.
     if (!deviceId) {
       getNewDeviceId((deviceId) => {
-        setDeviceId(deviceId);
+        if (isInIframe) {
+          internalStorageManager.setItem(
+            DEVICE_ID_KEY_FOR_LOCAL_STORAGE,
+            deviceId
+          );
+        } else {
+          setDeviceId(deviceId);
+        }
       });
     }
-  }, [deviceId]);
+  }, [deviceId, isInIframe]);
 
   // Track window focus state and update userIsFocused in embedEventBus
   useEffect(() => {
@@ -99,6 +118,7 @@ export function BaseContextProvider({
         playbackSpeed,
         setPlaybackSpeed,
         baseEventBus,
+        isInIframe,
       }}
     >
       {children}

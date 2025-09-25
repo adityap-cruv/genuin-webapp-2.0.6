@@ -1,4 +1,5 @@
 "use client";
+import internalStorage from "@genuin/components/lib/utils/internal-storage-manager";
 import React, {
   createContext,
   useContext,
@@ -31,29 +32,37 @@ const DEFAULT_GESTURE_STATE: Record<
 
 const GestureContext = createContext<GestureContextType | undefined>(undefined);
 
-export const GestureProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
+export const GestureProvider: React.FC<{
+  children: ReactNode;
+  isInIframe: boolean;
+}> = ({ children, isInIframe }) => {
   const [gestureOverlays, setGestureOverlays] = useState(DEFAULT_GESTURE_STATE);
 
   // Load from localStorage on mount
   useEffect(() => {
-    const stored = localStorage.getItem("_ks_gestures_");
+    const stored = isInIframe
+      ? internalStorage.getItem("_ks_gestures_")
+      : localStorage.getItem("_ks_gestures_");
     if (stored) {
       const parsed = JSON.parse(stored);
       setGestureOverlays(
         parsed.state?.gestureOverlays || DEFAULT_GESTURE_STATE
       );
     }
-  }, []);
+  }, [isInIframe]);
 
   // Save to localStorage when state changes
   useEffect(() => {
-    localStorage.setItem(
-      "_ks_gestures_",
-      JSON.stringify({ state: { gestureOverlays } })
-    );
-  }, [gestureOverlays]);
+    isInIframe
+      ? internalStorage.setItem(
+          "_ks_gestures_",
+          JSON.stringify({ state: { gestureOverlays } })
+        )
+      : localStorage.setItem(
+          "_ks_gestures_",
+          JSON.stringify({ state: { gestureOverlays } })
+        );
+  }, [gestureOverlays, isInIframe]);
 
   const setGestureOverlay = (
     gesture: GestureOverlayKeysType,

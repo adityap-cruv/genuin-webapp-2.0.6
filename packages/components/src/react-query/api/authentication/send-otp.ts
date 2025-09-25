@@ -6,10 +6,11 @@ import { useMutation } from "@tanstack/react-query";
 
 type SendOtpProps = Partial<{ email: string; phoneNumber: string }> & {
   isUpdate?: boolean;
+  isInIframe : boolean
 };
 
-export async function sendOtp({ email, phoneNumber, isUpdate }: SendOtpProps) {
-  const deviceId = getDeviceId();
+export async function sendOtp({ email, phoneNumber, isUpdate,isInIframe }: SendOtpProps) {
+  const deviceId = getDeviceId(isInIframe);
   return await axiosInstance
     .post(API_PATHS.AUTH_SEND_OTP, {
       phoneNumber: phoneNumber ? encryptText(phoneNumber, false) : undefined,

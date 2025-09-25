@@ -21,6 +21,7 @@ import { getActionText, sanitizeInput } from "@genuin/components/lib/utils";
 import { useAuthenticationModalContext } from "../../context";
 import { useAuthContext } from "@genuin/components/context/auth";
 import { SubmitButton } from "../../submit-button";
+import { useBaseContext } from "@genuin/components/context";
 
 type SignInProps = React.ComponentProps<"div"> & {
   onSubmit?: (value: string, type: "email" | "phone") => void;
@@ -46,6 +47,7 @@ export function SignIn({
   ...props
 }: SignInProps) {
   const { user } = useAuthContext();
+  const { isInIframe } = useBaseContext();
   const {
     setFormData,
     formData: { flowType },
@@ -103,7 +105,7 @@ export function SignIn({
   const handleEmailSubmit = useCallback(
     ({ email }: { email: string }) => {
       setFormData({ email: sanitizeInput(email) }); // Store sanitized email in context
-      sendOtp({ email: sanitizeInput(email), isUpdate: false });
+      sendOtp({ email: sanitizeInput(email), isUpdate: false, isInIframe });
     },
     [sendOtp]
   );
@@ -112,7 +114,11 @@ export function SignIn({
   const handlePhoneSubmit = useCallback(
     ({ phone }: { phone: string }) => {
       setFormData({ phone: sanitizeInput(phone) }); // Store sanitized phone in context
-      sendOtp({ phoneNumber: sanitizeInput(phone), isUpdate: false });
+      sendOtp({
+        phoneNumber: sanitizeInput(phone),
+        isUpdate: false,
+        isInIframe,
+      });
     },
     [sendOtp]
   );

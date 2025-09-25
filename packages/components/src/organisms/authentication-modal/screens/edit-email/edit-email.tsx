@@ -17,6 +17,7 @@ import { useSendOtpMutation } from "@genuin/components/react-query/api/authentic
 import { useAuthenticationModalContext } from "../../context";
 import { sanitizeInput } from "@genuin/components/lib/utils";
 import { cn } from "@genuin/ui/lib/utils";
+import { useBaseContext } from "@genuin/components/context";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
@@ -24,6 +25,7 @@ const formSchema = z.object({
 
 export function EditEmail({ className, ...restProps }: ComponentProps<"div">) {
   const { user } = useAuthContext();
+  const { isInIframe } = useBaseContext();
   const { setStep, setFormData } = useAuthenticationModalContext();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -52,7 +54,11 @@ export function EditEmail({ className, ...restProps }: ComponentProps<"div">) {
   });
 
   const onSubmit = useCallback(() => {
-    sendOtp({ isUpdate: true, email: sanitizeInput(form.getValues("email")) });
+    sendOtp({
+      isUpdate: true,
+      email: sanitizeInput(form.getValues("email")),
+      isInIframe,
+    });
   }, []);
 
   return (

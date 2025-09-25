@@ -4,6 +4,7 @@ import { AuthUser } from '@genuin/components/types/auth'
 import { ErrorHandler, ErrorType } from './errors'
 import { getKsCbRequestStatus } from '@/utils/auth'
 import { EventManager, SDKEventType } from './events'
+import internalStorage from '@genuin/components/lib/utils/internal-storage-manager'
 
 /**
  * This class will only manage single user toke for its lifetime.
@@ -14,12 +15,14 @@ export class TokenManager {
   private errorHandler: ErrorHandler
   private eventManager: EventManager
   private cachedUser: AuthUser | null = null
+  private isInIframe: boolean = false
 
   private constructor() {
     this.apiService = APIService.getInstance()
     this.errorHandler = ErrorHandler.getInstance()
     this.eventManager = EventManager.getInstance()
     this.setupAuthEventListeners()
+    this.isInIframe = window.self !== window.top
   }
 
   /**
@@ -126,7 +129,9 @@ export class TokenManager {
       if (currentUserData && currentUserData.id !== userData.id) {
         this.cachedUser = null
       }
-      localStorage.setItem(USER_DATA_KEY, JSON.stringify(userData))
+      this.isInIframe
+        ? internalStorage.setItem(USER_DATA_KEY, JSON.stringify(userData))
+        : localStorage.setItem(USER_DATA_KEY, JSON.stringify(userData))
     } catch (error) {
       console.warn('Failed to store user data:', error)
     }
@@ -137,7 +142,9 @@ export class TokenManager {
    */
   getUserData(): AuthUser | null {
     try {
-      const userData = localStorage.getItem(USER_DATA_KEY)
+      const userData = this.isInIframe
+        ? internalStorage.getItem(USER_DATA_KEY)
+        : localStorage.getItem(USER_DATA_KEY)
       return userData ? JSON.parse(userData) : null
     } catch (error) {
       console.warn('Failed to get user data:', error)
@@ -150,7 +157,9 @@ export class TokenManager {
    */
   removeUserData(): void {
     try {
-      localStorage.removeItem(USER_DATA_KEY)
+      this.isInIframe
+        ? internalStorage.removeItem(USER_DATA_KEY)
+        : localStorage.removeItem(USER_DATA_KEY)
       this.cachedUser = null
     } catch (error) {
       console.warn('Failed to remove user data:', error)
@@ -203,6 +212,7 @@ export class TokenManager {
         const userData = await this.apiService.getAuthenticatedUserDetails(
           config.token,
           config.brandId,
+          window.self !== window.top,
           config.params,
         )
 

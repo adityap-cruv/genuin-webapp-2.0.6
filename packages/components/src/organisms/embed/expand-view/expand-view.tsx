@@ -34,10 +34,9 @@ export function EmbedExpandView({
     changeActiveIndex,
     embedEventBus,
     goBackToPreviousPlayerType,
-    isInIframe,
     embedData,
   } = useEmbedContext();
-  const { muted, setMuted,setPlaybackSpeed } = useBaseContext();
+  const { setMuted, muted, setPlaybackSpeed, isInIframe } = useBaseContext();
   const previousMuteState = usePrevious(muted);
   const isSectioned = embedEventBus.getContext().isSectioned;
   const [showExpandView, setShowExpandView] = useState(
@@ -56,12 +55,12 @@ export function EmbedExpandView({
     if (typeof previousMuteState === "boolean") {
       setMuted(true);
     }
-    setPlaybackSpeed(x => {
-      if(x.speed !== 1) {
-        return {...x, speed: 1};
+    setPlaybackSpeed((x) => {
+      if (x.speed !== 1) {
+        return { ...x, speed: 1 };
       }
       return x;
-    })
+    });
     goBackToPreviousPlayerType();
   };
 
@@ -179,7 +178,7 @@ export function EmbedExpandView({
         void exitFullscreen();
       }
     };
-  }, [showExpandView, handleCloseExpandView, isInIframe]);
+  }, [showExpandView, isInIframe]);
 
   const defaultComponent = (
     <FeedView

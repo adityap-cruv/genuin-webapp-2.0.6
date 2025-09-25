@@ -45,8 +45,8 @@ async function fetchFeed(
   },
   options?: UseFeedOptionsType
 ) {
-  const deviceId = getDeviceId()
-    ? encodeURI(getDeviceId() as string)
+  const deviceId = getDeviceId(options?.isInIframe || false)
+    ? encodeURI(getDeviceId(options?.isInIframe || false) as string)
     : undefined;
 
   const contextualFeedParamsBody = {
@@ -271,6 +271,7 @@ type UseFeedOptionsType = {
   refetchInterval?: number;
   refetchIntervalInBackground?: boolean;
   embedId?: string;
+  isInIframe: boolean;
 };
 
 /**

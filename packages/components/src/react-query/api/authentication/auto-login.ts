@@ -56,11 +56,13 @@ export function useGetRedirectionUrlForSSOMutation({
 export async function getUserDataForSSO({
   code,
   provider,
+  isInIframe,
 }: {
   code: string;
   provider: string;
+  isInIframe: boolean;
 }) {
-  const deviceId = getDeviceId();
+  const deviceId = getDeviceId(isInIframe);
   // TODO: Update the deviceId to a dynamic one if needed
   return await axiosInstance
     .post(API_PATHS.AUTH_AUTO_LOGIN, {

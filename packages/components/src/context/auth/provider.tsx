@@ -77,7 +77,7 @@ export function AuthProvider({
     useSearchParams();
 
   // Access isEmbed from BaseContext
-  const { isEmbed } = useBaseContext?.() || { isEmbed: false };
+  const { isEmbed, isInIframe } = useBaseContext?.() || { isEmbed: false };
 
   // Access embedData.style from EmbedContext if available
   const embedData = useSafeEmbedContext?.()?.embedData;
@@ -137,7 +137,7 @@ export function AuthProvider({
       return;
     }
 
-    getUserDataForSSO({ code, provider });
+    getUserDataForSSO({ code, provider, isInIframe });
   }, [searchParams, removeSearchParams, getSearchParams, authenticatedUser]);
 
   const signIn = useCallback(

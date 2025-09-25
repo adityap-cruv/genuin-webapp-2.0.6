@@ -20,6 +20,7 @@ import {
 import { useAuthContext } from "@genuin/components/context/auth";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { SubmitButton } from "../../submit-button";
+import { useBaseContext } from "@genuin/components/context";
 
 const OTPSchema = z.object({
   otp: z.string().min(6, { message: "OTP must be 6 digits." }),
@@ -44,6 +45,7 @@ export function OtpVerificationDeleteAccount({
     // setStep,
     closeModal,
   } = useAuthenticationModalContext();
+  const { isInIframe } = useBaseContext();
   const { user } = useAuthContext();
   const { signOut } = useAuthContext();
 
@@ -106,12 +108,16 @@ export function OtpVerificationDeleteAccount({
       phoneNumber: phone,
       preAuthSessionId,
       responseDeviceId,
+      isInIframe,
     });
   }
 
   function resentOtp() {
-    let otpPayload: ResentOtpType & { isUpdate?: boolean } = {};
-    otpPayload = { email: user?.email, isUpdate: true };
+    let otpPayload: ResentOtpType & {
+      isInIframe: boolean;
+      isUpdate?: boolean;
+    } = { isInIframe };
+    otpPayload = { email: user?.email, isUpdate: true, isInIframe };
     sendOtp(otpPayload);
   }
 

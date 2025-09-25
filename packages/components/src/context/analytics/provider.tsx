@@ -45,7 +45,7 @@ export function AnalyticsProvider({
   isWebSDK,
   embedData,
 }: AnalyticsProviderProps) {
-  const { brandDetails } = useBaseContext();
+  const { brandDetails,isInIframe } = useBaseContext();
   const { user } = useAuthContext();
   const embedDetails = useSafeEmbedContext();
   const pathname = usePathname();
@@ -74,7 +74,7 @@ export function AnalyticsProvider({
 
   useEffect(() => {
     const idleCallbackHandle = requestIdleCallbackPolyfill(() => {
-      const deviceId = getDeviceId();
+      const deviceId = getDeviceId(isInIframe);
       const userIdToPass = user?.id ?? deviceId;
       const channel = isWebSDK
         ? Channel.WEB_SDK

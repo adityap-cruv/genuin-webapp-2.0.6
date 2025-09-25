@@ -132,10 +132,11 @@ export class APIService {
   async getAuthenticatedUserDetails(
     token: string,
     brandId: number,
+    isInIframe : boolean,
     userParams?: Record<string, any>,
   ): Promise<AuthUser | null> {
     try {
-      const deviceId = getDeviceId()
+      const deviceId = getDeviceId(isInIframe)
 
       // Build user parameters based on reference implementation
       const userParamsBody = {

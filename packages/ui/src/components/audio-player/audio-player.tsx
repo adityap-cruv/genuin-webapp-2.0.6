@@ -1,4 +1,9 @@
-import React, { ComponentProps, useEffect, useRef, useImperativeHandle } from "react";
+import React, {
+  ComponentProps,
+  useEffect,
+  useRef,
+  useImperativeHandle,
+} from "react";
 
 type Props = ComponentProps<"audio"> & {
   shouldPlay?: boolean;
@@ -7,20 +12,17 @@ type Props = ComponentProps<"audio"> & {
 
 export const AudioPlayer = React.forwardRef<HTMLAudioElement, Props>(
   (
-    {
-      src,
-      shouldPlay = false,
-      onProgress,
-      onLoad,
-      onEnded,
-      ...restProps
-    },
+    { src, shouldPlay = false, onProgress, onLoad, onEnded, ...restProps },
     ref
   ) => {
     const internalAudioRef = useRef<HTMLAudioElement>(null);
 
     // Expose the audio element to parent if ref is provided
-    useImperativeHandle(ref, () => internalAudioRef.current as HTMLAudioElement, [internalAudioRef.current]);
+    useImperativeHandle(
+      ref,
+      () => internalAudioRef.current as HTMLAudioElement,
+      [internalAudioRef.current]
+    );
     const audioRef = internalAudioRef;
 
     useEffect(() => {

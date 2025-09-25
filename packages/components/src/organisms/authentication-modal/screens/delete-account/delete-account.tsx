@@ -6,13 +6,14 @@ import { Button } from "@genuin/ui/components";
 import { useAuthContext } from "@genuin/components/context/auth";
 import { useForm } from "react-hook-form";
 import { useSendOtpMutation } from "@genuin/components/react-query/api/authentication";
+import { useBaseContext } from "@genuin/components/context";
 
 export function DeleteAccount({
   className,
   ...restProps
 }: ComponentProps<"div">) {
   const { closeModal, setFormData, setStep } = useAuthenticationModalContext();
-
+  const {isInIframe} = useBaseContext();
   const { user } = useAuthContext();
 
   const {
@@ -56,7 +57,7 @@ export function DeleteAccount({
   const handleEmailSubmit = useCallback(() => {
     const sanitizedEmail = sanitizeInput(user?.email);
     setFormData({ email: sanitizedEmail });
-    sendOtp({ email: sanitizedEmail, isUpdate: false });
+    sendOtp({ email: sanitizedEmail, isUpdate: false, isInIframe });
   }, [sendOtp, setFormData, user?.email]);
 
   return (

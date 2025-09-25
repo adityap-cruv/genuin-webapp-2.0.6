@@ -23,6 +23,7 @@ import {
 import { useAuthenticationModalContext } from "../../context";
 import { TimerMessage } from "./timer";
 import { SubmitButton } from "../../submit-button";
+import { useBaseContext } from "@genuin/components/context";
 
 const OTPSchema = z.object({
   otp: z.string().min(6, { message: "OTP must be 6 digits." }),
@@ -53,6 +54,7 @@ export function OtpVerification({
     setStep,
     closeModal,
   } = useAuthenticationModalContext();
+  const { isInIframe } = useBaseContext();
 
   const { signIn, updateUser } = useAuthContext();
 
@@ -157,12 +159,14 @@ export function OtpVerification({
         phoneNumber: phone,
         preAuthSessionId,
         responseDeviceId,
+        isInIframe,
       });
     } else {
       updateEmailOrPhone({
         code: data.otp,
         preAuthSessionId,
         responseDeviceId: responseDeviceId,
+        isInIframe
       });
     }
   }
@@ -171,14 +175,17 @@ export function OtpVerification({
     const isLoginFlow = step === "LOGIN_OTP_INPUT";
     const isEmailFlow = flowType === "EMAIL";
 
-    let otpPayload: ResentOtpType & { isUpdate?: boolean } = {};
+    let otpPayload: ResentOtpType & {
+      isUpdate?: boolean;
+      isInIframe: boolean;
+    } = { isInIframe };
 
     if (isLoginFlow) {
-      otpPayload = { email, phoneNumber: phone };
+      otpPayload = { email, phoneNumber: phone, isInIframe };
     } else if (isEmailFlow) {
-      otpPayload = { email, isUpdate: true };
+      otpPayload = { email, isUpdate: true, isInIframe };
     } else {
-      otpPayload = { phoneNumber: phone, isUpdate: true };
+      otpPayload = { phoneNumber: phone, isUpdate: true, isInIframe };
     }
 
     sendOtp(otpPayload);

@@ -25,6 +25,7 @@ import { EmbedExpandView } from "./expand-view";
 import { cva, VariantProps } from "class-variance-authority";
 import { EmbedItem } from "./embed-tile-item";
 import { AnalyticsService } from "@genuin/components/context/analytics/service";
+import { useBaseContext } from "@genuin/components/context";
 
 const embedVariants = cva("gencl:rounded-md gencl:overflow-auto", {
   variants: {
@@ -48,6 +49,7 @@ export function Embed({
   ...restProps
 }: EmbedProps & VariantProps<typeof embedVariants>) {
   const [swiper, setSwiper] = useState<Swiper | null>(null);
+  const {isInIframe} = useBaseContext()
   const { embedData, embedEventBus, updateIsSectioned, updateSectionList } =
     useEmbedContext();
   // Local state for isSectioned synced with event bus
@@ -71,6 +73,7 @@ export function Embed({
     styleId: embedData.style_id,
     contextualParams: embedData.contextualParams,
     embedId: embedData.embed_id,
+    isInIframe
   };
 
   const {

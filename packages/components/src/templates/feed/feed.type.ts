@@ -100,6 +100,7 @@ type FeedViewPropsType = {
    */
   onActiveIndexChange?: (index: number) => void;
   isSectioned?: boolean
+  isInIframe? : boolean
 } & BaseFeedPropsType &
   ComponentProps<"div">;
 

@@ -7,8 +7,15 @@ import { LazyGestureGuideOverlay } from "@genuin/components/molecules/gestures/g
 import { useBaseContext } from "@genuin/components/context/base";
 import { usePathname } from "@genuin/components/hooks/use-pathname";
 import { useAnalytics } from "@genuin/components/context";
+import internalStorage from "@genuin/components/lib/utils/internal-storage-manager";
 
-function useGestureOverlayMethods({ tapBehavior }: { tapBehavior: number }) {
+function useGestureOverlayMethods({
+  tapBehavior,
+  isInIframe,
+}: {
+  tapBehavior: number;
+  isInIframe: boolean;
+}) {
   const {
     gestureOverlays,
     setGestureOverlay,
@@ -98,7 +105,9 @@ function useGestureOverlayMethods({ tapBehavior }: { tapBehavior: number }) {
 
   const checkAndResetGestures = useCallback(() => {
     try {
-      const storedGestures = localStorage.getItem("_ks_gestures_");
+      const storedGestures = isInIframe
+        ? internalStorage.getItem("_ks_gestures_")
+        : localStorage.getItem("_ks_gestures_");
       if (!storedGestures) return;
 
       const parsed = JSON.parse(storedGestures);
@@ -117,7 +126,7 @@ function useGestureOverlayMethods({ tapBehavior }: { tapBehavior: number }) {
     } catch (error) {
       console.error("Failed to parse _ks_gestures_:", error);
     }
-  }, [resetGestureOverlay]);
+  }, [resetGestureOverlay, isInIframe]);
 
   return {
     gestureOverlayUI,
@@ -143,7 +152,7 @@ function useGestureOverlayMethods({ tapBehavior }: { tapBehavior: number }) {
  */
 const VALID_TAP_BEHAVIORS = [1, 2, 3];
 export function useGestureOverlayManager(gestureGuidance?: boolean) {
-  const { brandDetails } = useBaseContext();
+  const { brandDetails, isInIframe } = useBaseContext();
   const tapBehavior = brandDetails?.web_configs?.tap_behavior;
   const isGuidanceEnabled = brandDetails?.web_configs?.gesture_guidance;
   const isValidTapBehavior =
@@ -170,5 +179,8 @@ export function useGestureOverlayManager(gestureGuidance?: boolean) {
 
   // Only call useGestureOverlayMethods if guidance is enabled and tap behavior is valid
   // Ensure we always pass a valid number (fallback to 1 if somehow tapBehavior became undefined)
-  return useGestureOverlayMethods({ tapBehavior: tapBehavior || 1 });
+  return useGestureOverlayMethods({
+    tapBehavior: tapBehavior || 1,
+    isInIframe,
+  });
 }

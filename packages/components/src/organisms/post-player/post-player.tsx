@@ -7,6 +7,7 @@ import { cn } from "@genuin/ui/lib/utils";
 import { GestureProvider } from "@genuin/components/molecules/gestures/context";
 import { PlayerProvider } from "@genuin/components/molecules/feed-player/context";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+import { useBaseContext } from "@genuin/components/context";
 
 type PostPlayerProps = ComponentProps<"div"> & {
   editClipVideo?: (url: string) => void;
@@ -25,6 +26,7 @@ export function PostPlayer({
   showEditCoverBtn = true,
   ...restProps
 }: PostPlayerProps) {
+  const { isInIframe } = useBaseContext();
   return (
     <div
       className={cn(
@@ -38,7 +40,7 @@ export function PostPlayer({
         videoId={post.video.id}
         onPlayerIterationEnd={() => null}
       >
-        <GestureProvider>
+        <GestureProvider isInIframe={isInIframe}>
           <FeedPlayer
             src={post.video.source}
             videoId={post.video.id}

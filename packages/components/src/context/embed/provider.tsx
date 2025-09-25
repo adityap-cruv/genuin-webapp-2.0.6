@@ -146,17 +146,6 @@ export function EmbedProvider({
     [embedEventBus]
   );
 
-  // Detect if running inside an iframe (safe for SSR)
-  const isInIframe = useMemo(() => {
-    if (typeof window === "undefined") return false;
-    try {
-      return window.self !== window.top;
-    } catch {
-      // Accessing window.top can throw due to cross-origin
-      return true;
-    }
-  }, []);
-
   const changeActiveIndex = useCallback(
     (newIndex: number) => {
       embedEventBus.emit("activeIndexChange", undefined, (currentContext) => ({
@@ -255,7 +244,6 @@ export function EmbedProvider({
         rootElement: container,
         embedData: stateEmbedData,
         customization: stateEmbedData.customization,
-        isInIframe,
         embedEventBus,
         embedRouter,
         changeActiveIndex,

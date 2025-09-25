@@ -16,6 +16,7 @@ type ConsumeOtpProps = Partial<{ email: string; phoneNumber: string }> & {
    * The device ID that was returned from the sendOtp API.
    */
   responseDeviceId: string;
+  isInIframe : boolean
 };
 
 /**
@@ -28,8 +29,9 @@ export async function consumeOtp({
   code,
   preAuthSessionId,
   responseDeviceId: resDeviceId,
+  isInIframe
 }: ConsumeOtpProps) {
-  const deviceId = getDeviceId();
+  const deviceId = getDeviceId(isInIframe);
   return await axiosInstance
     .post(API_PATHS.AUTH_CONSUME_OTP, {
       userInputCode: code,

@@ -99,6 +99,11 @@ export type BaseContextType = {
    * Event bus for base context to communicate between components
    */
   baseEventBus: ReturnType<typeof createBaseEventBus>;
+   /**
+   * Indicates whether the embed is running inside an iframe.
+   */
+  isInIframe: boolean;
+
 };
 
 export const BaseContext = createContext<BaseContextType | null>(null);
