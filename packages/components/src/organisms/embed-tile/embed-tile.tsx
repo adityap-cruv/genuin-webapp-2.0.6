@@ -225,15 +225,15 @@ function EmbedPlayer({
   ]);
 
   // Determine sizing based on rootElement dimensions
-  const adaptiveSizing = useMemo(() => {
-    if (!rootElement) return "gencl:h-full"; // fallback
+  // const adaptiveSizing = useMemo(() => {
+  //   if (!rootElement) return "gencl:h-full"; // fallback
 
-    const containerHeight = rootElement.clientHeight;
-    const containerWidth = rootElement.clientWidth;
+  //   const containerHeight = rootElement.clientHeight;
+  //   const containerWidth = rootElement.clientWidth;
 
-    // If container is wider than tall (landscape), use h-full to fit height
-    return containerHeight > containerWidth ? "gencl:w-full" : "gencl:h-full";
-  }, [rootElement]);
+  //   // If container is wider than tall (landscape), use h-full to fit height
+  //   return containerHeight > containerWidth ? "gencl:w-full" : "gencl:h-full";
+  // }, [rootElement]);
 
   return (
     <div
@@ -252,7 +252,7 @@ function EmbedPlayer({
         poster={postDetails.video.thumbnail}
         className={
           !config.video.videoCrop
-            ? adaptiveSizing
+            ? "gencl:h-full"
             : "gencl:object-cover gencl:h-full gencl:w-full"
         }
       />

@@ -121,7 +121,7 @@ export function Menu({
             videoSlug={videoSlug ?? ""}
             children={menuItems({
               text: "Report Post",
-              className: "gencl:text-error-status",
+              className: "gencl:text-red",
               ...(isMobile && { icon: <FlagIcon theme="danger" size="lg" /> }),
             })}
           />
