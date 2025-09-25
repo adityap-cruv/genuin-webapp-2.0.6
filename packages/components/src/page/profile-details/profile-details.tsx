@@ -159,10 +159,7 @@ export function ProfileDetails({
             tiktok: profileData.tiktok_id
               ? profileData.tiktok_url + profileData.tiktok_id
               : undefined,
-            ...(Number(brandDetails?.brand_id) !==
-              profileData?.brand?.brand_id && {
-              custom: profileData.brand?.website,
-            }),
+            custom: profileData.brand?.website,
           }}
           ctas={ctas}
         />
@@ -186,15 +183,11 @@ function About({
 }: {
   profileDetails: ReturnType<typeof useGetProfileDetails>["data"];
 }) {
-  const { brandDetails } = useBaseContext();
   if (!profileDetails) return;
 
   // Prepare links object
   const links = getSocialLinks({
-    social_web_url:
-      Number(brandDetails?.brand_id) !== profileDetails?.brand?.brand_id
-        ? profileDetails.brand?.brand_url
-        : undefined,
+    social_web_url: profileDetails.brand?.website,
     linkedin: {
       id: profileDetails.linkedin_id,
     },
