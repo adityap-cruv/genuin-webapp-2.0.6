@@ -379,7 +379,7 @@ export type EmbedDataType = {
   brand_id: number;
   customization: Partial<CustomizationType>;
   embed_layout?: string;
-  brandDetails: BrandDetailsConfigType;
+  brandDetails?: BrandDetailsConfigType;
   card_layout_id?: number;
   video_layout_id?: number;
   __v?: number;

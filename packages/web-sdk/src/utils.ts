@@ -10,24 +10,24 @@ export function parseUserData(
   refreshToken?: string,
 ): AuthUser {
   return {
-    id: userData.user_id,
-    isAvatar: userData.is_avatar,
-    phoneNumber: userData.phone,
-    nickname: userData.nickname,
-    image: userData.profile_image,
-    email: userData.email,
-    bio: userData.bio,
-    name: userData.name,
-    ksCbRequestStatus: userData.ks_cb_request_status,
-    isBrandSystemUser: userData.is_brand_system_user,
-    brandId: userData.brand_id ?? userData.brand?.brand_id,
+    id: userData?.user_id,
+    isAvatar: userData?.is_avatar,
+    phoneNumber: userData?.phone,
+    nickname: userData?.nickname,
+    image: userData?.profile_image,
+    email: userData?.email,
+    bio: userData?.bio,
+    name: userData?.name,
+    ksCbRequestStatus: userData?.ks_cb_request_status,
+    isBrandSystemUser: userData?.is_brand_system_user,
+    brandId: userData?.brand_id ?? userData?.brand?.brand_id,
     accessToken,
     brandSlug: userData?.brand?.brand_slug ? userData?.brand?.brand_slug : null,
-    hasTopics: userData.onboarding_topics,
+    hasTopics: userData?.onboarding_topics,
     // brandGuidelines: userData.brand_guidelines,
     refreshToken,
-    birth: userData.birthday,
-    usernameSet: !userData.is_username_generated,
+    birth: userData?.birthday,
+    usernameSet: !userData?.is_username_generated,
   }
 }
 
@@ -61,11 +61,12 @@ export function parsePlacementToEmbedData(
     _id: data._id,
     placement_id: data._id,
     name: data.name,
-    style: data.type ?? 'grid',
+    style: data.type,
     type: (data.feed_type as EmbedDataType['type']) ?? 'loop_feed',
     brand_id: data.brand_id,
     __v: data.__v,
     is_live: data.is_live,
+    action: undefined,
 
     // Map brand_ids from placement_brand_ids
     brand_ids: data.placement_brand_ids,
@@ -85,7 +86,7 @@ export function parsePlacementToEmbedData(
     customization: {
       // Dimensions mapping
       dimensions: {
-        auto_fit_height: configureView?.dimensions.auto_fit_height,
+        auto_fit_height: configureView?.dimensions?.auto_fit_height,
         width: configureView?.dimensions?.width ?? 0,
         height: configureView?.dimensions?.height ?? 0,
       },
@@ -110,7 +111,7 @@ export function parsePlacementToEmbedData(
 
       // Links configuration
       links: {
-        is_show_links: configureView?.links.is_show_links ?? false,
+        is_show_links: configureView?.links?.is_show_links ?? false,
         position: 'overlay',
       },
 
@@ -179,19 +180,17 @@ export function parsePlacementToEmbedData(
 
       // Theme setting (not available in PlacementDataResponse)
       // theme: 'light' as const,
-
       // Community data
       community_ids: data.community_ids,
-      community_loop_ids: data.community_loop_ids.map((id) => ({
+      community_loop_ids: data.community_loop_ids?.map((id) => ({
         loop_id: id,
         community_id: id, // Assuming same ID, adjust if different structure
-      })),
+      })) ?? [],
     },
 
     // Additional placement-specific data that might be useful
     // placement_id: data._id, // Store original placement ID
     // environment: 'web', // Since we're using web config
-
     // Styles information (first style if available)
     style_id: styleId,
 
@@ -204,36 +203,36 @@ export function parsePlacementToEmbedData(
     // Grid layout configuration
     grid_layout: configureView?.grid_layout
       ? {
-          auto_adjust: configureView.grid_layout.auto_adjust,
-          column: configureView.grid_layout.column,
-          row: configureView.grid_layout.row,
+          auto_adjust: configureView?.grid_layout?.auto_adjust,
+          column: configureView?.grid_layout?.column,
+          row: configureView?.grid_layout?.row,
         }
       : undefined,
-    media_play: configureView.media_play,
+    media_play: configureView?.media_play,
 
     // Implementation guide settings
     implementation_guide: webConfig?.implementation_guide
       ? {
           is_on_page_context_fetch:
-            webConfig.implementation_guide.is_on_page_context_fetch,
+            webConfig?.implementation_guide?.is_on_page_context_fetch,
           is_real_time_context_fetch:
-            webConfig.implementation_guide.is_real_time_context_fetch,
-          show_brand_id: webConfig.implementation_guide.show_brand_id,
+            webConfig?.implementation_guide?.is_real_time_context_fetch,
+          show_brand_id: webConfig?.implementation_guide?.show_brand_id,
           show_community_group_id:
-            webConfig.implementation_guide.show_community_group_id,
+            webConfig?.implementation_guide?.show_community_group_id,
           show_custom_context:
-            webConfig.implementation_guide.show_custom_context,
-          show_location: webConfig.implementation_guide.show_location,
-          show_pdp_url: webConfig.implementation_guide.show_pdp_url,
-          show_place: webConfig.implementation_guide.show_place,
+            webConfig?.implementation_guide?.show_custom_context,
+          show_location: webConfig?.implementation_guide?.show_location,
+          show_pdp_url: webConfig?.implementation_guide?.show_pdp_url,
+          show_place: webConfig?.implementation_guide?.show_place,
           show_posted_by_user:
-            webConfig.implementation_guide.show_posted_by_user,
-          show_style_id: webConfig.implementation_guide.show_style_id,
-          show_time: webConfig.implementation_guide.show_time,
+            webConfig?.implementation_guide?.show_posted_by_user,
+          show_style_id: webConfig?.implementation_guide?.show_style_id,
+          show_time: webConfig?.implementation_guide?.show_time,
           show_user_interests:
-            webConfig.implementation_guide.show_user_interests,
+            webConfig?.implementation_guide?.show_user_interests,
           show_user_segmentation:
-            webConfig.implementation_guide.show_user_segmentation,
+            webConfig?.implementation_guide?.show_user_segmentation,
         }
       : undefined,
 
@@ -241,12 +240,12 @@ export function parsePlacementToEmbedData(
     report_options: expandView?.report_options
       ? {
           inappropriate_content:
-            expandView.report_options.inappropriate_content,
+            expandView?.report_options?.inappropriate_content,
           non_professional_content:
-            expandView.report_options.non_professional_content,
-          other: expandView.report_options.other,
-          spam: expandView.report_options.spam,
-          threatening_violent: expandView.report_options.threatening_violent,
+            expandView?.report_options?.non_professional_content,
+          other: expandView?.report_options?.other,
+          spam: expandView?.report_options?.spam,
+          threatening_violent: expandView?.report_options?.threatening_violent,
         }
       : undefined,
 
