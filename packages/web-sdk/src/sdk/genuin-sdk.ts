@@ -310,10 +310,13 @@ export class GenuinSDK {
     )
 
     if (config.embedId) {
-      let embedDetails = await this.embedDetailsManager.getEmbedDetails(
-        config.embedId,
-        brandDetails as any,
-      )
+      let embedDetails = { customization: {} } as EmbedDataType
+      if (config.embedId !== 'preview') {
+        embedDetails = await this.embedDetailsManager.getEmbedDetails(
+          config.embedId,
+          brandDetails as any,
+        )
+      }
 
       embedDetails = { ...embedDetails, ...config.live }
 
