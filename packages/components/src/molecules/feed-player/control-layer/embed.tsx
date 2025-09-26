@@ -22,8 +22,6 @@ export const Embed: FC<ControlLayerPropsType> = ({
   const showLayout = config.engagement.showEngagementOnRootElement;
   const { containerHeight } = useEmbedDimensions();
 
-  if (!showLayout) return;
-
   // Determine embed layout type
   const getEmbedLayoutType = () => {
     const cardLayoutId = postDetails.video.cardLayoutId;
@@ -41,7 +39,7 @@ export const Embed: FC<ControlLayerPropsType> = ({
     }
   };
 
-  const layoutType = getEmbedLayoutType();
+  const layoutType = !showLayout ? "responsiveness" : getEmbedLayoutType();
 
   switch (layoutType) {
     case "iheart":
@@ -212,6 +210,16 @@ export const Embed: FC<ControlLayerPropsType> = ({
               {postDetails.section?.title}
             </p>
           </div>
+        </div>
+      );
+
+    case "responsiveness":
+      return (
+        <div
+          className={cn("gencl:h-full gencl:w-full", className)}
+          {...restProps}
+        >
+          {isActive && <EmbedControls onClick={(e) => e.stopPropagation()} className="gencl:justify-end gencl:p-1" />}
         </div>
       );
 

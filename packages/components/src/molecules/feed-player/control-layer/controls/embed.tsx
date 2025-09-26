@@ -70,9 +70,7 @@ export function EmbedControls({
         theme="overlay"
         className="gencl:px-0"
         size={size}
-        onClick={() => {
-          togglePlay(true);
-        }}
+        onClick={() => togglePlay(true)}
       >
         {playingState === "PLAYING" ? (
           <PauseIcon theme="dark" size={size} />
