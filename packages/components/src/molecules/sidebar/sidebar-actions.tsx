@@ -11,6 +11,8 @@ import { cn } from "@genuin/ui/lib/utils";
 import { useAuthContext } from "@genuin/components/context/auth";
 import { Avatar } from "@genuin/ui/components";
 import { SearchModal } from "@genuin/components/organisms/search-modal";
+import { useBaseContext } from "@genuin/components/context/base";
+import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 
 const sidebarActionsVariants = cva(
   "gencl:px-3 gencl:py-4 gencl:!w-full gencl:border-b gencl:border-secondary-100",
@@ -47,6 +49,8 @@ export function SidebarActions({
 }: SidebarActionsProps) {
   const pathname = usePathname();
   const { user } = useAuthContext();
+  const { camera_enabled } = useBaseContext().brandDetails;
+  const { isMobile } = useDeviceDetection();
 
   return (
     <div
@@ -68,6 +72,10 @@ export function SidebarActions({
               onItemClick={onItemClick}
             />
           ) : null;
+        }
+        // For posts menu, don't show on mobile devices or if camera_enabled is false
+        if (links.type === "posts" && (isMobile || !camera_enabled)) {
+          return null;
         }
 
         const Icon = links.type !== "profile" ? links.icon : undefined;

@@ -53,7 +53,7 @@ export const iconVariant = cva(
  * Handles login, app download, notifications, and user menu.
  */
 export function CtaButtons({ theme }: VariantProps<typeof iconVariant>) {
-  const { web_cta } = useBaseContext().brandDetails;
+  const { web_cta, camera_enabled } = useBaseContext().brandDetails;
   const { authenticationStatus } = useAuthContext();
   const { track, EventName } = useAnalytics();
 
@@ -79,7 +79,7 @@ export function CtaButtons({ theme }: VariantProps<typeof iconVariant>) {
         </AuthenticationModal>
       )}
 
-      {isAuthenticated && (
+      {isAuthenticated && camera_enabled && (
         <Link
           className="gencl:hidden gencl:md:block!"
           href={buildPageUrl({ type: "posts-create" })}

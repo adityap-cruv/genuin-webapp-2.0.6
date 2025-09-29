@@ -17,13 +17,23 @@ const PROTECTED_ROUTES = [
   },
   {
     path: '/posts',
+    additionalCheck: (user: any, config: any, isMobile: boolean) => {
+      // Check if camera_enabled is true and device is not mobile
+      const cameraEnabled = config?.camera_enabled || false
+      return cameraEnabled && !isMobile
+    },
   },
   // Add more protected routes as needed
   // Example: { path: '/create-post', additionalCheck: (user) => user?.subscription === 'active' }
 ]
 
 // Helper function to check if a route is protected and meets additional conditions
-function checkProtectedRoute(path: string, user: any): { isProtected: boolean; hasAccess: boolean; reason?: string } {
+function checkProtectedRoute(
+  path: string,
+  user: any,
+  config?: any,
+  isMobile: boolean = false
+): { isProtected: boolean; hasAccess: boolean; reason?: string } {
   const route = PROTECTED_ROUTES.find((route) => path.startsWith(route.path))
 
   if (!route) {
@@ -32,7 +42,7 @@ function checkProtectedRoute(path: string, user: any): { isProtected: boolean; h
 
   // Route is protected, check additional conditions if any
   if (route.additionalCheck) {
-    const hasAdditionalAccess = route.additionalCheck(user)
+    const hasAdditionalAccess = route.additionalCheck(user, config, isMobile)
     if (!hasAdditionalAccess) {
       return {
         isProtected: true,
@@ -60,7 +70,8 @@ export async function RedirectHandler({
   // Check for actual user login session (NextAuth)
   const hasUserLogin = !!session?.user
   const pathParamStr = headersList.get('x-path-params') ?? ''
-  const protectedRouteCheck = checkProtectedRoute(pathParamStr, session?.user)
+  const isMobile = (await cookies()).get('device_type')?.value === 'mobile'
+  const protectedRouteCheck = checkProtectedRoute(pathParamStr, session?.user, config, isMobile)
   if (config && Object.keys(config).length === 0) {
     if (pathParamStr === '/inactive') {
       return children
