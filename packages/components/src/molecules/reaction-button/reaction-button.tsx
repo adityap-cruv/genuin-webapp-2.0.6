@@ -79,7 +79,7 @@ export const ReactionButton = React.memo(function ReactionButton({
           ...(contentType === "COMMENT" && { commentId: contentId }),
         },
       }),
-    [contentType]
+    [contentType, videoSlug]
   );
 
   const clickHandler = handleAuthCallback({
