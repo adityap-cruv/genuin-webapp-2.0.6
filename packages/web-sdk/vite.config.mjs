@@ -5,9 +5,29 @@ import { fileURLToPath } from 'url'
 import fs from 'fs'
 import postcss from 'postcss'
 import autoprefixer from 'autoprefixer'
+import dotenv from 'dotenv'
 // import postcssNested from 'postcss-nested'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
+
+// Load environment variables based on NODE_ENV
+const nodeEnv = process.env.NODE_ENV || 'development'
+const envFile = resolve(__dirname, `.env.${nodeEnv}`)
+const commonEnvFile = resolve(__dirname, '.env.common')
+
+// Load environment variables from the appropriate file
+if (fs.existsSync(commonEnvFile)) {
+  dotenv.config({ path: commonEnvFile })
+  console.log(`✓ Loaded common environment variables from .env.common`)
+}
+
+if (fs.existsSync(envFile)) {
+  dotenv.config({ path: envFile, override: true })
+  console.log(`✓ Loaded environment variables from .env.${nodeEnv}`)
+  console.log(`DEBUG: NEXT_PUBLIC_API_URL = ${process.env.NEXT_PUBLIC_API_URL}`)
+} else {
+  console.warn(`⚠️ Environment file .env.${nodeEnv} not found`)
+}
 
 // Custom plugin to resolve @genuin/* imports
 const genuinResolver = () => ({
@@ -389,6 +409,14 @@ export default defineConfig({
 
   define: {
     global: 'globalThis',
+    // Force process to be undefined to ensure import.meta.env is used
+    process: 'undefined',
+    'process.env': 'undefined',
+
+    // Debug logging
+    __DEBUG_API_URL: JSON.stringify(
+      process.env.NEXT_PUBLIC_API_URL || 'NOT_FOUND',
+    ),
     // Basic environment variables (for direct use in web-sdk)
     'process.env.NODE_ENV': JSON.stringify(
       process.env.NODE_ENV || 'development',
@@ -432,6 +460,49 @@ export default defineConfig({
     'process.env.BRAND_ID_KEY': JSON.stringify(process.env.BRAND_ID_KEY || ''),
     'process.env.NEXT_PUBLIC_BCC_URL': JSON.stringify(
       process.env.NEXT_PUBLIC_BCC_URL || 'https://brands.qa.begenuin.com',
+    ),
+
+    // NEXT_PUBLIC_* environment variables for process.env access (components package compatibility)
+    'process.env.NEXT_PUBLIC_RUDDERSTACK_KEY': JSON.stringify(
+      process.env.NEXT_PUBLIC_RUDDERSTACK_KEY ||
+        process.env.RUDDERSTACK_API_KEY ||
+        '',
+    ),
+    'process.env.NEXT_PUBLIC_RUDDERSTACK_URL': JSON.stringify(
+      process.env.NEXT_PUBLIC_RUDDERSTACK_URL ||
+        process.env.RUDDERSTACK_URL ||
+        'https://rudderstack.qa.begenuin.com',
+    ),
+    'process.env.NEXT_PUBLIC_MEDIA_BASE_URL': JSON.stringify(
+      process.env.NEXT_PUBLIC_MEDIA_BASE_URL ||
+        process.env.MEDIA_BASE_URL ||
+        'https://media.qa.begenuin.com',
+    ),
+    'process.env.NEXT_PUBLIC_HOST_URL': JSON.stringify(
+      process.env.NEXT_PUBLIC_HOST_URL ||
+        process.env.BASE_URL ||
+        'https://app.qa.begenuin.com',
+    ),
+    'process.env.NEXT_PUBLIC_API_URL': JSON.stringify(
+      process.env.NEXT_PUBLIC_API_URL ||
+        process.env.API_BASE_URL ||
+        'https://api.qa.begenuin.com',
+    ),
+    'process.env.NEXT_PUBLIC_AES_IV': JSON.stringify(
+      process.env.NEXT_PUBLIC_AES_IV || process.env.ENCRYPTION_IV || '',
+    ),
+    'process.env.NEXT_PUBLIC_AES_KEY': JSON.stringify(
+      process.env.NEXT_PUBLIC_AES_KEY || process.env.ENCRYPTION_KEY || '',
+    ),
+    'process.env.NEXT_PUBLIC_SECRET_STRING': JSON.stringify(
+      process.env.NEXT_PUBLIC_SECRET_STRING ||
+        process.env.ENCRYPTION_SALT ||
+        '',
+    ),
+    'process.env.NEXT_PUBLIC_REDIRECT_URI': JSON.stringify(
+      process.env.NEXT_PUBLIC_REDIRECT_URI ||
+        process.env.BASE_URL ||
+        'https://app.qa.begenuin.com',
     ),
 
     // Components package environment variables (using import.meta.env format)
