@@ -2,6 +2,10 @@
 @import '@genuin/ui/styles';
 @import '@genuin/components/styles';
 
+.gen-sdk-class button {
+    border-radius: revert-layer;
+}
+
 /* Web SDK specific styles */
 /* .web-sdk-container {
     all: initial;
