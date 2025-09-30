@@ -195,9 +195,24 @@ export function useEmbedConfigs() {
       share: false,
     };
     // Use customized engagement tools if provided, otherwise fallback to defaults
-    const engagementTools = showEngagementTools
+    let engagementTools = showEngagementTools
       ? (customization?.enable_engagement_tools ?? defaultEngagementTools)
       : disabledEngagementTools;
+
+    // Apply camera_enabled logic to repost functionality
+    // Prioritize embed configuration over brand details camera_enabled
+    if (
+      !isEmbed ||
+      (isEmbed && customization?.enable_engagement_tools?.repost === undefined)
+    ) {
+      // Only apply camera_enabled check if not in embed context or if embed doesn't explicitly configure repost
+      if (!brandDetails.camera_enabled) {
+        engagementTools = {
+          ...engagementTools,
+          repost: false,
+        };
+      }
+    }
 
     // Generalized redirection tools logic
     const isEnableRedirection = !!customization?.is_enable_redirection;
