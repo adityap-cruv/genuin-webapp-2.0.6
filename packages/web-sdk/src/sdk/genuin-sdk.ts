@@ -217,6 +217,15 @@ export class GenuinSDK {
           elementObject.config,
         )
 
+        console.log(
+          '[gen-sdk]: Initialization with start video slug:',
+          elementObject.config.startVideoSlug,
+        )
+        console.log(
+          '[gen-sdk]: Initialization with actions',
+          elementObject.config.action,
+        )
+
         if (isSdkLoaded) {
           this.setInitializationStatus(elementObject.element, 'done')
           elementObject.status = 'done'
@@ -285,6 +294,7 @@ export class GenuinSDK {
       })
     } catch (error) {
       console.error('Error initializing embed:', error)
+      console.log('[gen-sdk]: Calling user error handler with:')
       this.eventManager.emit(SDKEventType.SDK_EMBED_ERROR, {
         isError: true,
         isNoContent: false,
@@ -592,9 +602,11 @@ export class GenuinSDK {
       configByUser?.error_handler || configByUser?.errorHandler
     if (userErrorHandler) {
       this.eventManager.on(SDKEventType.SDK_EMBED_ERROR, ({ payload }) => {
+        console.log('[gen-sdk]: Calling user error handler with:', payload)
         userErrorHandler(payload)
       })
       this.eventManager.on(SDKEventType.SDK_EMBED_NO_CONTENT, ({ payload }) => {
+        console.log('[gen-sdk]: Calling user error handler with:', payload)
         userErrorHandler(payload)
       })
     }

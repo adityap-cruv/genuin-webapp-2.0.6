@@ -389,7 +389,17 @@ export const VideoPlayer = memo(function VideoPlayer({
 
       if (play) {
         await player.play().catch((error) => {
-          console.log("error in player", error);
+          if (error?.name === "NotAllowedError") {
+            updatePlayerMutedState(true);
+            player
+              .play()
+              .then(() => {
+                // Autoplay started with muted
+              })
+              .catch((err: any) => {
+                console.warn("Could not autoplay video:");
+              });
+          }
         });
       }
 
@@ -413,25 +423,29 @@ export const VideoPlayer = memo(function VideoPlayer({
     const active = player?.activeElement();
 
     // If an ad error occurred, try to play the main content directly
-    if (playerStateRef.current.isAdErrored) {
+    if (player?.isAd() && !playerStateRef.current.isAdErrored) {
       player
-        ?.getElement()
+        ?.getAd()
         .play()
         .catch((err: any) => {
           console.warn("Could not autoplay video after ad error:", err);
         });
     } else {
-      active
-        ?.play()
+      player
+        ?.getMedia()
+        .play()
         .then(() => {
           // Auto-play started
         })
         .catch((error) => {
           if (error?.name === "NotAllowedError") {
             updatePlayerMutedState(true);
-            active.play().catch((err: any) => {
-              console.warn("Could not autoplay video:", err);
-            });
+            player
+              ?.getMedia()
+              ?.play()
+              .catch((err: any) => {
+                console.warn("Could not autoplay video:", err);
+              });
           }
         });
     }
