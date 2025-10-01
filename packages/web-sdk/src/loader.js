@@ -136,11 +136,18 @@
     })
   }
 
+  /**
+   * Load the main CSS file from the CDN
+   * URL format: {MEDIA_BASE_URL}/sdk/{VERSION_PATH}assets/web-sdk.css
+   * - MEDIA_BASE_URL: Environment-specific CDN URL (replaced at build time)
+   * - VERSION_PATH: Optional version-specific path (e.g., "2.0.0/" or empty)
+   */
   function loadMainCSS() {
     return new Promise((resolve, reject) => {
       const link = document.createElement('link')
       link.rel = 'stylesheet'
-      link.href = `https://media.begenuin.com/sdk/assets/web-sdk.css` // or use `${MEDIA_BASE_URL}/sdk/gen-sdk_1.5.15.css` if defined
+      // Use environment-specific media URL with optional version path, replaced during build
+      link.href = `__MEDIA_BASE_URL__/sdk/__SDK_VERSION_PATH__assets/web-sdk.css`
 
       link.onload = () => {
         console.log('CSS file loaded')

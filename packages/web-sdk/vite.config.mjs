@@ -14,6 +14,7 @@ const __dirname = fileURLToPath(new URL('.', import.meta.url))
 const nodeEnv = process.env.NODE_ENV || 'development'
 const envFile = resolve(__dirname, `.env.${nodeEnv}`)
 const commonEnvFile = resolve(__dirname, '.env.common')
+const deployTempEnvFile = resolve(__dirname, '.env.deploy.tmp')
 
 // Load environment variables from the appropriate file
 if (fs.existsSync(commonEnvFile)) {
@@ -27,6 +28,12 @@ if (fs.existsSync(envFile)) {
   console.log(`DEBUG: NEXT_PUBLIC_API_URL = ${process.env.NEXT_PUBLIC_API_URL}`)
 } else {
   console.warn(`⚠️ Environment file .env.${nodeEnv} not found`)
+}
+
+// Load deploy-time environment variables (SDK_VERSION_PATH, etc.)
+if (fs.existsSync(deployTempEnvFile)) {
+  dotenv.config({ path: deployTempEnvFile, override: true })
+  console.log(`✓ Loaded deploy-time environment variables from .env.deploy.tmp`)
 }
 
 // Custom plugin to resolve @genuin/* imports
@@ -142,10 +149,46 @@ const copyLoaderPlugin = () => ({
     )
 
     try {
-      fs.copyFileSync(sourceFile, targetFile)
+      // Read the loader file and replace environment placeholders
+      let loaderContent = fs.readFileSync(sourceFile, 'utf8')
+
+      // Replace __MEDIA_BASE_URL__ with the actual environment-specific media URL
+      const mediaBaseUrl =
+        process.env.MEDIA_BASE_URL ||
+        process.env.NEXT_PUBLIC_MEDIA_BASE_URL ||
+        'https://media.qa.begenuin.com'
+      loaderContent = loaderContent.replace(/__MEDIA_BASE_URL__/g, mediaBaseUrl)
+
+      // Replace __SDK_VERSION_PATH__ with version path if provided
+      const sdkVersionPath = process.env.SDK_VERSION_PATH
+      if (sdkVersionPath && sdkVersionPath.trim()) {
+        const versionPath = `${sdkVersionPath.trim()}/`
+        loaderContent = loaderContent.replace(
+          /__SDK_VERSION_PATH__/g,
+          versionPath,
+        )
+        console.log(
+          `  - SDK_VERSION_PATH: ${versionPath} (versioned path enabled)`,
+        )
+      } else {
+        // Remove the version path placeholder (keeps default /sdk/assets/ path)
+        loaderContent = loaderContent.replace(/__SDK_VERSION_PATH__/g, '')
+        console.log(`  - SDK_VERSION_PATH: (none - using default path)`)
+      }
+
+      // Write the processed loader file
+      fs.writeFileSync(targetFile, loaderContent)
       console.log(
-        `✓ Copied loader to ${isDevelopment ? 'gen_sdk.js' : 'gen_sdk.min.js'}`,
+        `✓ Copied and processed loader to ${isDevelopment ? 'gen_sdk.js' : 'gen_sdk.min.js'}`,
       )
+      console.log(`  - MEDIA_BASE_URL: ${mediaBaseUrl}`)
+      if (process.env.SDK_VERSION_PATH && process.env.SDK_VERSION_PATH.trim()) {
+        console.log(
+          `  - SDK_VERSION_PATH: ${process.env.SDK_VERSION_PATH.trim()}/ (versioned path enabled)`,
+        )
+      } else {
+        console.log(`  - SDK_VERSION_PATH: (none - using default path)`)
+      }
     } catch (error) {
       console.error('Failed to copy loader file:', error)
     }

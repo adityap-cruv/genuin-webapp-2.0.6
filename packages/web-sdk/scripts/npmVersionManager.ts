@@ -97,6 +97,42 @@ async function promptVersion() {
     console.log('\n\x1b[36mℹ Version bump skipped\x1b[0m\n')
   }
 
+  // Prompt for CSS path version
+  console.log('\x1b[36m=== CSS Path Configuration ===\x1b[0m')
+  console.log('Configure CSS path for this deployment:')
+  console.log('• Leave empty for default path: /sdk/assets/')
+  console.log('• Enter version for versioned path: /sdk/{version}/assets/')
+  console.log('• Example: entering "2.0.0" will use /sdk/2.0.0/assets/\n')
+
+  const cssPathVersion = await createPrompt(
+    rl,
+    'Enter CSS path version (or press Enter to skip): ',
+  )
+
+  if (cssPathVersion && cssPathVersion.trim()) {
+    // Set environment variable for the build process
+    const versionPath = cssPathVersion.trim()
+    process.env.SDK_VERSION_PATH = versionPath
+
+    // Also write to a temporary file that can be sourced by the build process
+    const tempEnvFile = path.resolve(process.cwd(), '.env.deploy.tmp')
+    fs.writeFileSync(tempEnvFile, `SDK_VERSION_PATH=${versionPath}\n`)
+
+    console.log(`\n\x1b[32m✓ CSS path version set to: ${versionPath}\x1b[0m`)
+    console.log(
+      `CSS will be loaded from: \x1b[36m/sdk/${versionPath}/assets/web-sdk.css\x1b[0m\n`,
+    )
+  } else {
+    // Remove any existing temp env file
+    const tempEnvFile = path.resolve(process.cwd(), '.env.deploy.tmp')
+    if (fs.existsSync(tempEnvFile)) {
+      fs.unlinkSync(tempEnvFile)
+    }
+    console.log(
+      '\n\x1b[36mℹ Using default CSS path: /sdk/assets/web-sdk.css\x1b[0m\n',
+    )
+  }
+
   rl.close()
 }
 
