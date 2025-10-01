@@ -140,7 +140,11 @@ function DialogContent({
       <DialogOverlay className={cn({ "gencl:backdrop-blur-lg": bgBlur })} />
       <DialogPrimitive.Content
         data-slot="dialog-content"
-        className={cn(dialogContentVariants({ variant }), className)}
+        className={cn(
+          dialogContentVariants({ variant }),
+          className,
+          "gen-sdk-class"
+        )}
         style={{ ...style, ...getGenclStyles() }}
         autoFocus={false}
         {...props}

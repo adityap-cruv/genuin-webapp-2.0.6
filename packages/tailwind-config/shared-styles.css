@@ -146,13 +146,45 @@
   --text-body-2-medium--line-height: 16px;
   --text-body-2-medium--font-weight: 500;
 
+  /**
+  * Theme variable for spacing
+  */
   --spacing-*: initial;
   --spacing: 4px;
+
+  /**
+  * Theme variable for breakpoints.
+  */
+  --breakpoint-*: initial;
+  --breakpoint-xs: 540px;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
+  /**
+  * Theme variable for container
+  */
+  --container-*: initial;
+  --container-3xs: 256px;
+  --container-2xs: 288px;
+  --container-xs: 320px;
+  --container-sm: 384px;
+  --container-md: 448px;
+  --container-lg: 512px;
+  --container-xl: 576px;
+  --container-2xl: 672px;
+  --container-3xl: 768px;
+  --container-4xl: 896px;
+  --container-5xl: 1024px;
+  --container-6xl: 1152px;
+  --container-7xl: 1280px;
+  --container-8xl: 1536px;
 
   /*
   * Theme variable for color
   */
-
   --color-*: initial;
 
   --color-white: var(--white);
