@@ -10,6 +10,7 @@ import { Stats } from "../stats";
 
 import type { PostTileProps } from "./post-tile.type";
 import { DynamicReactionIcon } from "../reaction-button";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 
 export const postTileVariants = cva(
   "gencl:group gencl:relative gencl:rounded-md gencl:overflow-hidden gencl:aspect-reel",
@@ -54,6 +55,7 @@ export function PostTile({
   shouldCloseModal = false,
   ...restProps
 }: PostTileProps & { shouldCloseModal?: boolean }) {
+  const { isLargeDesktop, isDesktop } = useDeviceDetectMediaQuery();
   const content = (
     <div
       className={cn(postTileVariants({ size, variant }), className)}
@@ -89,7 +91,7 @@ export function PostTile({
                 Views: {
                   value: stats.views,
                   icon: (
-                    <PlayIcon className="gencl:stroke-white gencl:stroke-2 gencl:size-3 gencl:fill-none" />
+                    <PlayIcon className="gencl:stroke-white gencl:shrink-0 gencl:stroke-2 gencl:size-4 gencl:fill-none" />
                   ),
                 },
                 Reactions: {
@@ -104,12 +106,14 @@ export function PostTile({
                     />
                   ),
                 },
-                Comments: {
-                  value: stats.comments,
-                  icon: (
-                    <CommentIcon className="gencl:stroke-white! gencl:stroke-2 gencl:size-4" />
-                  ),
-                },
+                ...((isLargeDesktop || isDesktop) && {
+                  Comments: {
+                    value: stats.comments,
+                    icon: (
+                      <CommentIcon className="gencl:stroke-white! gencl:shrink-0 gencl:stroke-2 gencl:size-4" />
+                    ),
+                  },
+                }),
               }}
             />
           )}

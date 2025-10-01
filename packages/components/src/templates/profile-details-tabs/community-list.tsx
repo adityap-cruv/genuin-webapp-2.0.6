@@ -107,6 +107,7 @@ export function CommunityList({
                         })}
                         profileImage={{ url: community.brand.logo }}
                         userName={community.brand?.name}
+                        truncateLength={21}
                       />
                     )}
                     {community.isPrivate && (

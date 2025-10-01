@@ -29,7 +29,7 @@ export function PostsGrid({
 }: PostsGridProps & { shouldCloseModal?: boolean }) {
   // Default grid styles
   const defaultGridStyles =
-    "gencl:grid gencl:gap-2 gencl:grid-cols-4! gencl:lg:grid-cols-5! gencl:xl:grid-cols-6! gencl:2xl:grid-cols-7!";
+    "gencl:grid gencl:gap-2 gencl:grid-cols-2 gencl:sm:grid-cols-3! gencl:md:grid-cols-4! gencl:xl:grid-cols-5! gencl:2xl:grid-cols-6!";
 
   // Use custom grid styles if provided, or default if not
   const gridStyles = cn(defaultGridStyles, gridClassName);
@@ -147,7 +147,7 @@ export function PostsGridSkeleton({
 }) {
   // Default grid styles
   const defaultGridStyles =
-    "gencl:grid gencl:gap-2 gencl:grid-cols-4! gencl:lg:grid-cols-5! gencl:xl:grid-cols-6! gencl:2xl:grid-cols-8!";
+    "gencl:grid gencl:gap-2 gencl:grid-cols-2 gencl:sm:grid-cols-3! gencl:md:grid-cols-4! gencl:xl:grid-cols-5! gencl:2xl:grid-cols-6!";
 
   // Use custom grid styles if provided, or default if not
   const gridStyles = cn(defaultGridStyles, gridClassName);

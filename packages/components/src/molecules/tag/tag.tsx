@@ -61,12 +61,11 @@ export function Tag({
   title,
   size = "md",
   className,
+  truncateLength,
   ...restProps
 }: TagProps) {
   const hasProfileImage = profileImage;
   const avatarSize = size === "sm" ? "xs" : "sm";
-  const maxLength = size === "sm" ? 16 : 24;
-  const truncateLength = size === "sm" ? 13 : 21;
 
   return (
     <Link href={url}>
@@ -89,7 +88,7 @@ export function Tag({
         )}
         <p title={userName} className={tagTextVariants({ size })}>
           {/* Truncate username based on size */}
-          {userName.length > maxLength
+          {truncateLength
             ? `${userName.slice(0, truncateLength)}...`
             : userName}
         </p>

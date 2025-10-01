@@ -31,4 +31,9 @@ export type TagProps = {
    * @default "md"
    */
   size?: "sm" | "md";
+  /**
+   * truncateLength handled for the short text
+   * @default 0
+   */
+  truncateLength?: number;
 } & ComponentProps<"div">;
