@@ -403,7 +403,7 @@ function NavigationButton({
   if (!swiper) return null;
 
   return (
-    <div className="gencl:z-50 gencl:text-white gencl:space-y-4 gencl:fixed gencl:right-7.5 gencl:top-1/2 gencl:-translate-y-1/2">
+    <div className="gencl:z-50 gencl:text-white gencl:flex gencl:flex-col gencl:gap-4 gencl:fixed gencl:right-7.5 gencl:top-1/2 gencl:-translate-y-1/2">
       <Button
         theme="navigation"
         disabled={swiper.isBeginning}
