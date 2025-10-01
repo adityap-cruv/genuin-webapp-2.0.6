@@ -217,15 +217,6 @@ export class GenuinSDK {
           elementObject.config,
         )
 
-        console.log(
-          '[gen-sdk]: Initialization with start video slug:',
-          elementObject.config.startVideoSlug,
-        )
-        console.log(
-          '[gen-sdk]: Initialization with actions',
-          elementObject.config.action,
-        )
-
         if (isSdkLoaded) {
           this.setInitializationStatus(elementObject.element, 'done')
           elementObject.status = 'done'
@@ -589,6 +580,17 @@ export class GenuinSDK {
       if (extractedData.startVideoSlug) {
         loadExpandView(element)
       }
+      console.log('[gen-sdk]: element Initialization', element)
+      console.log('[gen-sdk]: sdk embed id:', extractedData.embedId)
+      console.log('[gen-sdk]: sdk api key:', extractedData.apiKey)
+      console.log(
+        '[gen-sdk]: Initialization with start video slug:',
+        extractedData.startVideoSlug,
+      )
+      console.log(
+        '[gen-sdk]: Initialization with actions',
+        extractedData.action,
+      )
       if (extractedData) {
         this.sdkElements[instanceId] = {
           element,
