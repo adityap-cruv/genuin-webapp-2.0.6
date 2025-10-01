@@ -590,7 +590,7 @@ export class GenuinSDK {
       )
       console.log(
         '[gen-sdk]: Initialization with actions',
-        extractedData.action,
+        element.getAttribute('data-video-id'),
       )
       if (extractedData) {
         this.sdkElements[instanceId] = {
