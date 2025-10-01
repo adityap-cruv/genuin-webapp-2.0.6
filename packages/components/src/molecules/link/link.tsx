@@ -4,7 +4,7 @@ import type { ComponentProps } from "react";
 import type { NextJSLinkProps } from "@genuin/components/context/link/type";
 import { useLinkContext } from "@genuin/components/context/link";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import { useBaseContext, useEmbedContext } from "@genuin/components/context";
+import { useBaseContext } from "@genuin/components/context";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 
 type BaseLinkProps = ComponentProps<"a">;

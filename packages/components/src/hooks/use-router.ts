@@ -54,11 +54,6 @@ function useWouterRouter(
      */
     replace: (href: string, options?: { scroll?: boolean }) => {
       embedRouter?.replace(href);
-      if (options?.scroll !== false) {
-        if (typeof window !== "undefined") {
-          window.scrollTo(0, 0);
-        }
-      }
     },
 
     /**

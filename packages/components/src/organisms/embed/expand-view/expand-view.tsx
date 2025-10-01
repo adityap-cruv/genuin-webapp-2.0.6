@@ -30,6 +30,7 @@ export function EmbedExpandView({
   isLoading,
   queryKey,
 }: EmbedExpandViewProps) {
+  const [startIndex, setStartIndex] = useState(0);
   const {
     changeActiveIndex,
     embedEventBus,
@@ -42,10 +43,10 @@ export function EmbedExpandView({
   const [showExpandView, setShowExpandView] = useState(
     embedEventBus.getContext().activePlayerType === "expand-view"
   );
-  const [startIndex, setStartIndex] = useState(0);
   const {
     engagement: {
       engagementTools: { comment, share, repost, spark },
+      redirectionTools: { community, group, user },
     },
   } = useEmbedConfigs();
   const { isMobile } = useDeviceDetectMediaQuery();
@@ -218,7 +219,7 @@ export function EmbedExpandView({
           )}
         >
           {/** for ted internal routing is not enabled. */}
-          {embedData.video_layout_id === 3 ? (
+          {!(community || group || user) ? (
             defaultComponent
           ) : (
             <StandardWall
