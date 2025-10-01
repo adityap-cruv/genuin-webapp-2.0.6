@@ -581,6 +581,7 @@ export class GenuinSDK {
         loadExpandView(element)
       }
       console.log('[gen-sdk]: element Initialization', element)
+      console.log('[gen-sdk]: url', window.location.href)
       console.log('[gen-sdk]: sdk embed id:', extractedData.embedId)
       console.log('[gen-sdk]: sdk api key:', extractedData.apiKey)
       console.log(
