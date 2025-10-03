@@ -1,11 +1,10 @@
 import { EmbedDataType } from '@genuin/components/context/embed/embed.types'
 import { createRoot } from 'react-dom/client'
+import ReactDOMServer from 'react-dom/server'
 import type { Root } from 'react-dom/client'
 import { Suspense, lazy } from 'react'
 // Import providers directly from their specific paths to avoid loading entire components package
-import {
-  AuthProvider,
-} from '@genuin/components/context/auth'
+import { AuthProvider } from '@genuin/components/context/auth'
 import { BaseContextProvider } from '@genuin/components/context/base'
 import { EmbedProvider } from '@genuin/components/context/embed'
 import { LinkProvider } from '@genuin/components/context/link'
@@ -17,6 +16,7 @@ import { BrandDetailsConfigType } from '@genuin/components/types/brand'
 import { AuthUser } from '@genuin/components/types/auth'
 import { SingleEmbedDataConfig } from '@/type'
 import { FeedSkeleton } from '@genuin/components/templates/feed'
+import { SDKEventType } from '@/core'
 
 // Track React roots per container to support multiple embeds
 const containerRootMap = new Map<HTMLElement, Root>()
@@ -60,16 +60,26 @@ export function loadLoadingView(container: HTMLElement): void {
 
 // Expand view function
 export function loadExpandView(container: HTMLElement): void {
-  // Unmount previous root if exists for this container
-  const prevRoot = containerRootMap.get(container)
-  if (prevRoot) {
-    prevRoot.unmount()
-    containerRootMap.delete(container)
+  // Check if loader div already exists, if not, create it
+  let loaderDiv = document.getElementById(
+    'gen-sdk-expand-view-loader',
+  ) as HTMLElement | null
+
+  if (!loaderDiv) {
+    loaderDiv = document.createElement('div')
+    loaderDiv.id = 'gen-sdk-expand-view-loader'
+    loaderDiv.classList.add('loader') // optional class
+    document.body.appendChild(loaderDiv)
   }
 
-  const root = createRoot(container)
-  containerRootMap.set(container, root)
-
+  // Create a React root inside the loader div
+  const root = createRoot(loaderDiv)
+  window.genuin?.on?.(SDKEventType.SDK_EXPAND_VIEW_LOADED, () => {
+    if (loaderDiv) {
+      document.body.removeChild(loaderDiv)
+      root.unmount()
+    }
+  })
   root.render(<ExpandViewSkeleton />)
 }
 
@@ -134,10 +144,8 @@ export function loadNewEmbed({
 }): void {
   // Unmount previous root if exists for this container
   const prevRoot = containerRootMap.get(container)
-  if (prevRoot) {
-    prevRoot.unmount()
-    containerRootMap.delete(container)
-  }
+  prevRoot?.unmount()
+  containerRootMap.delete(container)
 
   const root = createRoot(container)
   containerRootMap.set(container, root)

@@ -181,6 +181,12 @@ export function EmbedExpandView({
     };
   }, [showExpandView, isInIframe]);
 
+  useEffect(() => {
+    if (showExpandView) {
+      window.genuin?.emit?.("sdk:expand-view-loaded", true);
+    }
+  }, [showExpandView]);
+
   const defaultComponent = (
     <FeedView
       startIndex={startIndex}
