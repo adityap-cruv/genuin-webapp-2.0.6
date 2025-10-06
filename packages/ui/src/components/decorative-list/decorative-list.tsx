@@ -80,7 +80,7 @@ export function DecorativeList({
           top: 0,
           width: "1px",
           height: "100%",
-          background: `linear-gradient(to bottom, var(--secondary-150) ${stopY}px, transparent ${stopY + 1}px)`,
+          background: `linear-gradient(to bottom, var(--gencl-secondary-150) ${stopY}px, transparent ${stopY + 1}px)`,
           pointerEvents: "none",
         }}
       />

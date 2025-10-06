@@ -62,7 +62,7 @@ export function EmbedHeader({
             style={{
               color: header.subHeadingTextColor
                 ? header.subHeadingTextColor
-                : "var(--secondary-300)",
+                : "var(--gencl-secondary-300)",
             }}
           >
             {header.subHeading}
@@ -78,7 +78,7 @@ export function EmbedHeader({
               : "white",
             backgroundColor: header.ctaButton.color
               ? header.ctaButton.color
-              : "var(--primary-500)",
+              : "var(--gencl-primary-500)",
           }}
           onClick={() => {
             // Track the EMBED_CTA_CLICKED event when the CTA button is clicked

@@ -251,6 +251,99 @@ const addImportantToGenclProps = () => ({
 })
 addImportantToGenclProps.postcss = true
 
+// PostCSS plugin to scope Tailwind preflight CSS to .gen-sdk-class
+const scopePreflightCss = () => ({
+  postcssPlugin: 'postcss-scope-preflight',
+  Once(root) {
+    root.walkRules((rule) => {
+      // Check if selector is :root - scope it to .gen-sdk-class
+      const hasRootSelector = rule.selectors.some((selector) => selector === ':root')
+
+      if (hasRootSelector) {
+        rule.selectors = rule.selectors.map((selector) => {
+          if (selector === ':root') {
+            return '.gen-sdk-class'
+          }
+          return selector
+        })
+        return
+      }
+
+      // Check if this is a preflight rule (typically base styles applied to html, body, *, etc.)
+      const isPreflightRule = rule.selectors.some((selector) => {
+        // Preflight selectors include: *, ::before, ::after, html, body, hr, abbr, etc.
+        const preflightPatterns = [
+          /^\*$/,                           // Universal selector
+          /^::?before$/,                    // ::before, :before
+          /^::?after$/,                     // ::after, :after
+          /^\*::?before$/,                  // *::before, *:before
+          /^\*::?after$/,                   // *::after, *:after
+          /^html$/,                         // html
+          /^body$/,                         // body
+          /^hr$/,                           // hr
+          /^h[1-6]$/,                       // h1-h6
+          /^p$/,                            // p
+          /^a$/,                            // a
+          /^abbr$/,                         // abbr
+          /^b$/,                            // b
+          /^code$/,                         // code
+          /^kbd$/,                          // kbd
+          /^pre$/,                          // pre
+          /^small$/,                        // small
+          /^sub$/,                          // sub
+          /^sup$/,                          // sup
+          /^table$/,                        // table
+          /^button$/,                       // button
+          /^input$/,                        // input
+          /^optgroup$/,                     // optgroup
+          /^select$/,                       // select
+          /^textarea$/,                     // textarea
+          /^fieldset$/,                     // fieldset
+          /^legend$/,                       // legend
+          /^img$/,                          // img
+          /^svg$/,                          // svg
+          /^video$/,                        // video
+          /^canvas$/,                       // canvas
+          /^audio$/,                        // audio
+          /^iframe$/,                       // iframe
+          /^embed$/,                        // embed
+          /^object$/,                       // object
+          /^blockquote$/,                   // blockquote
+          /^dl$/,                           // dl
+          /^dd$/,                           // dd
+          /^ol$/,                           // ol
+          /^ul$/,                           // ul
+          /^li$/,                           // li
+        ]
+
+        return preflightPatterns.some((pattern) => pattern.test(selector.trim()))
+      })
+
+      if (isPreflightRule) {
+        // Scope each selector to .gen-sdk-class
+        rule.selectors = rule.selectors.map((selector) => {
+          // For *, ::before, ::after selectors, scope to .gen-sdk-class
+          if (selector.match(/^\*(::|:)?(before|after)?$/)) {
+            if (selector === '*') {
+              return '.gen-sdk-class *'
+            }
+            if (selector === '*::before' || selector === '*:before') {
+              return '.gen-sdk-class *::before'
+            }
+            if (selector === '*::after' || selector === '*:after') {
+              return '.gen-sdk-class *::after'
+            }
+          }
+
+          // For element selectors, scope to .gen-sdk-class
+          return `.gen-sdk-class ${selector}`
+        })
+      }
+    })
+  },
+})
+scopePreflightCss.postcss = true
+
 // Post-build CSS processor
 const postBuildCssPlugin = () => ({
   name: 'postbuild-css',
@@ -261,12 +354,13 @@ const postBuildCssPlugin = () => ({
       const result = await postcss([
         autoprefixer(),
         // postcssNested({ preserveEmpty: true }),
+        scopePreflightCss,
         renameTwVars,
         addImportantToGenclProps,
       ]).process(css, { from: cssPath, to: cssPath })
       fs.writeFileSync(cssPath, result.css)
       console.log(
-        '✓ PostCSS applied on generated CSS (variables renamed, !important added to gencl properties)',
+        '✓ PostCSS applied on generated CSS (preflight scoped, variables renamed, !important added to gencl properties)',
       )
     } else {
       console.warn('⚠️ No web-sdk.css found in dist/assets')

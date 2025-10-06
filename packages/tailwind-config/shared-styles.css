@@ -3,41 +3,41 @@
 @custom-variant dark (&: is(.dark *));
 
 :root {
-  --white: #ffffff;
-  --black: #131415;
+  --gencl-white: #ffffff;
+  --gencl-black: #131415;
 
-  --primary: #0645ff;
-  --primary-foreground: 0 0% 100%;
-  --primary-100: #e6ecff;
-  --primary-200: #cddaff;
-  --primary-300: #83a2ff;
-  --primary-400: #517dff;
-  --primary: #0645ff;
-  --primary-600: #0430b3;
-  --primary-700: #032380;
+  --gencl-primary: #0645ff;
+  --gencl-primary-foreground: 0 0% 100%;
+  --gencl-primary-100: #e6ecff;
+  --gencl-primary-200: #cddaff;
+  --gencl-primary-300: #83a2ff;
+  --gencl-primary-400: #517dff;
+  --gencl-primary: #0645ff;
+  --gencl-primary-600: #0430b3;
+  --gencl-primary-700: #032380;
 
-  --secondary-900: #1d1f20;
-  --secondary-800: #3b3e40;
-  --secondary-700: #585c61;
-  --secondary-600: #767b81;
-  --secondary-500: #939aa1;
-  --secondary-400: #a9aeb4;
-  --secondary-300: #bec2c7;
-  --secondary-200: #d4d7d9;
-  --secondary-150: #dfe1e3;
-  --secondary-100: #e9ebec;
-  --secondary-50: #f4f5f6;
+  --gencl-secondary-900: #1d1f20;
+  --gencl-secondary-800: #3b3e40;
+  --gencl-secondary-700: #585c61;
+  --gencl-secondary-600: #767b81;
+  --gencl-secondary-500: #939aa1;
+  --gencl-secondary-400: #a9aeb4;
+  --gencl-secondary-300: #bec2c7;
+  --gencl-secondary-200: #d4d7d9;
+  --gencl-secondary-150: #dfe1e3;
+  --gencl-secondary-100: #e9ebec;
+  --gencl-secondary-50: #f4f5f6;
 
-  --red-100: #fbe9e8;
-  --red-200: #f7d2d1;
-  --red-300: #ec8f8c;
-  --red-400: #e4625d;
-  --red: #d91e18;
-  --red-600: #981511;
-  --red-700: #6d0f0c;
+  --gencl-red-100: #fbe9e8;
+  --gencl-red-200: #f7d2d1;
+  --gencl-red-300: #ec8f8c;
+  --gencl-red-400: #e4625d;
+  --gencl-red: #d91e18;
+  --gencl-red-600: #981511;
+  --gencl-red-700: #6d0f0c;
 
-  --error-status: #f35421;
-  --success-status: #77ce1a;
+  --gencl-error-status: #f35421;
+  --gencl-success-status: #77ce1a;
 
   font-family:
     "Inter",
@@ -187,49 +187,49 @@
   */
   --color-*: initial;
 
-  --color-white: var(--white);
-  --color-black: var(--black);
+  --color-white: var(--gencl-white);
+  --color-black: var(--gencl-black);
   --color-blue: #0645ff;
 
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary-100: var(--primary-100);
-  --color-primary-200: var(--primary-200);
-  --color-primary-300: var(--primary-300);
-  --color-primary-400: var(--primary-400);
-  --color-primary-600: var(--primary-600);
-  --color-primary-700: var(--primary-700);
+  --color-primary: var(--gencl-primary);
+  --color-primary-foreground: var(--gencl-primary-foreground);
+  --color-primary-100: var(--gencl-primary-100);
+  --color-primary-200: var(--gencl-primary-200);
+  --color-primary-300: var(--gencl-primary-300);
+  --color-primary-400: var(--gencl-primary-400);
+  --color-primary-600: var(--gencl-primary-600);
+  --color-primary-700: var(--gencl-primary-700);
 
-  --color-secondary-900: var(--secondary-900);
-  --color-secondary-800: var(--secondary-800);
-  --color-secondary-700: var(--secondary-700);
-  --color-secondary-600: var(--secondary-600);
-  --color-secondary-500: var(--secondary-500);
-  --color-secondary-400: var(--secondary-400);
-  --color-secondary-300: var(--secondary-300);
-  --color-secondary-200: var(--secondary-200);
-  --color-secondary-150: var(--secondary-150);
-  --color-secondary-100: var(--secondary-100);
-  --color-secondary-50: var(--secondary-50);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary-900: var(--gencl-secondary-900);
+  --color-secondary-800: var(--gencl-secondary-800);
+  --color-secondary-700: var(--gencl-secondary-700);
+  --color-secondary-600: var(--gencl-secondary-600);
+  --color-secondary-500: var(--gencl-secondary-500);
+  --color-secondary-400: var(--gencl-secondary-400);
+  --color-secondary-300: var(--gencl-secondary-300);
+  --color-secondary-200: var(--gencl-secondary-200);
+  --color-secondary-150: var(--gencl-secondary-150);
+  --color-secondary-100: var(--gencl-secondary-100);
+  --color-secondary-50: var(--gencl-secondary-50);
+  --color-secondary: var(--gencl-secondary);
+  --color-secondary-foreground: var(--gencl-secondary-foreground);
 
-  --color-tertiary-100: var(--tertiary-100);
-  --color-tertiary-200: var(--tertiary-200);
-  --color-tertiary-300: var(--tertiary-300);
-  --color-tertiary-400: var(--tertiary-400);
-  --color-tertiary-50: var(--tertiary-50);
+  --color-tertiary-100: var(--gencl-tertiary-100);
+  --color-tertiary-200: var(--gencl-tertiary-200);
+  --color-tertiary-300: var(--gencl-tertiary-300);
+  --color-tertiary-400: var(--gencl-tertiary-400);
+  --color-tertiary-50: var(--gencl-tertiary-50);
 
-  --color-red-100: var(--red-100);
-  --color-red-200: var(--red-200);
-  --color-red-300: var(--red-300);
-  --color-red-400: var(--red-400);
-  --color-red: var(--red);
-  --color-red-600: var(--red-600);
-  --color-red-700: var(--red-700);
+  --color-red-100: var(--gencl-red-100);
+  --color-red-200: var(--gencl-red-200);
+  --color-red-300: var(--gencl-red-300);
+  --color-red-400: var(--gencl-red-400);
+  --color-red: var(--gencl-red);
+  --color-red-600: var(--gencl-red-600);
+  --color-red-700: var(--gencl-red-700);
 
-  --color-error-status: var(--error-status);
-  --color-success-status: var(--success-status);
+  --color-error-status: var(--gencl-error-status);
+  --color-success-status: var(--gencl-success-status);
 
   --aspect-reel: 9/16;
 

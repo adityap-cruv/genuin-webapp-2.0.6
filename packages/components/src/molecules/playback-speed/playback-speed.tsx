@@ -19,7 +19,7 @@ export function PlaybackSpeed({ children, ...props }: PlaybackSpeedProps) {
   return (
     <Dialog modal {...props}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="gencl:text-center gencl:bg-white gencl:sm:min-w-lg! gencl:sm:p-10! gencl:md:min-w-xl! gencl:rounded-t-2xl! gencl:md:rounded-2xl! gencl:space-y-4">
+      <DialogContent className="gencl:text-center gencl:bg-white gencl:sm:min-w-lg! gencl:md:p-10! gencl:md:min-w-xl! gencl:rounded-t-2xl! gencl:md:rounded-2xl! gencl:flex gencl:flex-col gencl:gap-4">
         <DialogHeader className="gencl:text-secondary-900 gencl:text-body-0-semi-bold gencl:md:text-headline-2-semi-bold! gencl:border-0">
           Playback Speed
         </DialogHeader>
