@@ -24,7 +24,7 @@ export const FeedSkeleton: FC<FeedSkeletonProps> = ({
               : "gencl:aspect-reel gencl:h-full"
           )}
         >
-          <Skeleton className="gencl:w-full gencl:h-full gencl:bg-secondary-500 gencl:sm:bg-secondary-100!" />
+          <Skeleton className="gencl:w-full gencl:h-full gencl:bg-secondary-900 gencl:sm:bg-secondary-900!" />
 
           <div className="gencl:flex gencl:sm:hidden! gencl:absolute gencl:bottom-0 gencl:left-1/2 gencl:-translate-x-1/2 gencl:p-4 gencl:justify-between gencl:items-end gencl:gap-4 gencl:w-screen gencl:max-w-full">
             <div className="gencl:w-full">
