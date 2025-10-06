@@ -182,9 +182,50 @@ export function EmbedExpandView({
   }, [showExpandView, isInIframe]);
 
   useEffect(() => {
+    /**
+     * useEffect to manage the HTML `<html>` element's `overflow` style when the expand view is active.
+     *
+     * - Purpose: Prevents background scrolling when the expand view is open by setting `overflow: hidden` on the `<html>` element.
+     * - Behavior:
+     *   - On mount, stores the original `overflow` value of the `<html>` element.
+     *   - When `showExpandView` is `true`, sets `overflow` to `hidden` to disable scrolling.
+     *   - When `showExpandView` is `false`, restores the original `overflow` value to retain any pre-existing styles.
+     *   - On cleanup (component unmount), always restores the original `overflow` value.
+     *
+     * This ensures that any custom styles related to scrolling or overflow applied to the `<html>` element are preserved and restored after the expand view is closed.
+     */
+    const htmlElement = document.querySelector("html");
+    if (!htmlElement) return;
+
+    // Store the original overflow value on mount
+    const originalOverflow =
+      htmlElement.style.overflow || getComputedStyle(htmlElement).overflow;
+
     if (showExpandView) {
+      /**
+       * EmbedExpandView component for displaying an expanded video feed view in an embedded context.
+       *
+       * @remarks
+       * - When the expand view is successfully opened, it emits the `"sdk:expand-view-loaded"` event
+       *   via `window.genuin?.emit?.("sdk:expand-view-loaded", true)`. This event is used to signal
+       *   that the expand view UI is ready, allowing to close any skeleton loaders or overlays
+       *   that may have been shown while waiting for the expand view to initialize (such as those triggered
+       *   by a "start video slug" pass-through).
+       *
+       * @param props - EmbedExpandViewProps containing video feed data, pagination, loading state, and context handlers.
+       *
+       * @fires window.genuin.emit("sdk:expand-view-loaded", true) when expand view is loaded.
+       */
       window.genuin?.emit?.("sdk:expand-view-loaded", true);
+      htmlElement.style.overflow = "hidden";
+    } else {
+      htmlElement.style.overflow = originalOverflow;
     }
+
+    // Cleanup: restore original overflow when component unmounts
+    return () => {
+      htmlElement.style.overflow = originalOverflow;
+    };
   }, [showExpandView]);
 
   const defaultComponent = (
