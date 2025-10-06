@@ -5,6 +5,9 @@ import { Button } from "@genuin/ui/components";
 import { useAnalytics } from "@genuin/components/context/analytics/context";
 import { VariantProps, cva } from "class-variance-authority";
 import { useBaseContext } from "@genuin/components/context/base";
+import { useState } from "react";
+import { Loader } from "@genuin/ui/components/loader";
+import { getRedirectUrl } from "./utils";
 
 // Combined variant for both card layouts
 const multiLinkCardVariants = cva(
@@ -53,24 +56,39 @@ export const MultiLinkCard = ({
   const hasCTA = ctaText && ctaText.trim() !== "";
   const { track, EventName } = useAnalytics();
   const { brandDetails } = useBaseContext();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLinkClick = (link: LinkData) => {
-    const url = checkAndAppendHttps(link.link);
-    track(EventName.LINKOUTS_CLICKED, {
-      linkUrl: link.link,
-      linkTitle: link.title || new URL(url).hostname,
-    });
-    window.open(url, "_blank");
+  const handleLinkClick = async (link: LinkData) => {
+    setIsLoading(true);
+    try {
+      const url = checkAndAppendHttps(link.link);
+      const finalUrl = await getRedirectUrl(url, brandDetails.brand_id);
+
+      track(EventName.LINKOUTS_CLICKED, {
+        linkUrl: link.link,
+        linkTitle: link.title || new URL(url).hostname,
+      });
+      window.open(finalUrl, "_blank");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleCTAClick = (e: React.MouseEvent) => {
+  const handleCTAClick = async (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent triggering card click
-    const url = checkAndAppendHttps(ctaLink);
-    track(EventName.LINKOUTS_CTA_CLICKED, {
-      linkUrl: ctaLink,
-      linkCount: links.length,
-    });
-    window.open(url, "_blank");
+    setIsLoading(true);
+    try {
+      const url = checkAndAppendHttps(ctaLink);
+      const finalUrl = await getRedirectUrl(url, brandDetails.brand_id);
+
+      track(EventName.LINKOUTS_CTA_CLICKED, {
+        linkUrl: ctaLink,
+        linkCount: links.length,
+      });
+      window.open(finalUrl, "_blank");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleImageError = (
@@ -153,9 +171,12 @@ export const MultiLinkCard = ({
               ? brandDetails.cta_config?.default_button_text
               : ctaText}
           </p>
-          {brandDetails.cta_config?.show_arrow_icon && (
-            <ChevronRight className="gencl:h-4 gencl:w-4 gencl:stroke-black! gencl:shrink-0" />
-          )}
+          {brandDetails.cta_config?.show_arrow_icon &&
+            (isLoading ? (
+              <Loader className="gencl:h-4 gencl:w-4 gencl:stroke-black! gencl:shrink-0 gencl:animate-spin" />
+            ) : (
+              <ChevronRight className="gencl:h-4 gencl:w-4 gencl:stroke-black! gencl:shrink-0" />
+            ))}
         </Button>
       </div>
     );
