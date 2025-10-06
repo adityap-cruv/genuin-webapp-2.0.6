@@ -179,7 +179,7 @@ const HighlightedInput = forwardRef<
               onChange={handleInputChange}
               onScroll={handleScroll}
               className={cn(
-                "gencl:w-full gencl:text-body-0-medium gencl:caret-secondary-500 gencl:rounded-md gencl:focus:outline-none gencl:ring-0! gencl:focus:border-transparent gencl:bg-transparent gencl:relative gencl:z-10 gencl:text-transparent gencl:overflow-x-auto",
+                "gencl:w-full gencl:text-body-0-medium! gencl:caret-secondary-500 gencl:rounded-md gencl:focus:outline-none gencl:ring-0! gencl:focus:border-transparent gencl:bg-transparent gencl:relative gencl:z-10 gencl:text-transparent gencl:overflow-x-auto",
                 classes.input
               )}
               style={{
@@ -202,7 +202,7 @@ const HighlightedInput = forwardRef<
             onChange={handleInputChange}
             onScroll={handleScroll}
             className={cn(
-              "gencl:w-full gencl:caret-secondary-500 gencl:rounded-md gencl:focus:border-transparent gencl:bg-transparent gencl:relative gencl:z-10 gencl:overflow-y-auto gencl:selection:bg-blue-200 gencl:focus-visible:outline-hidden",
+              "gencl:w-full gencl:text-body-0-medium gencl:caret-secondary-500 gencl:rounded-md gencl:focus:border-transparent gencl:bg-transparent gencl:relative gencl:z-10 gencl:overflow-y-auto gencl:selection:bg-blue-200 gencl:focus-visible:outline-hidden",
               classes.input
             )}
             style={{
