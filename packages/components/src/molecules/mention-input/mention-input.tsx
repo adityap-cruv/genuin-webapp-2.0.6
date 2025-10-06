@@ -51,8 +51,8 @@ export interface MentionInputProps {
    */
   disabled?: boolean;
   onPayload?: (payload: any) => void;
-  inputType: "text" | "textarea";
-  maxLength: number;
+  inputType?: "text" | "textarea";
+  maxLength?: number;
   defaultValue?: string;
   postId?: string;
   readonly?: boolean;
@@ -283,7 +283,7 @@ export function MentionInput({
                         onChange={(e) => {
                           if (!disabled) {
                             field.onChange(e);
-                            handleInputChange(e);
+                            handleInputChange(e as any);
                             setDescription?.(e.target.value);
                             if (
                               inputType === "textarea" &&

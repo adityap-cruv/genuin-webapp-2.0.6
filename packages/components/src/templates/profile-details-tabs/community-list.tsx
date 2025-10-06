@@ -83,7 +83,7 @@ export function CommunityList({
           return (
             <div className="gencl:w-full" key={community.id}>
               <GenericDetails
-                className="gencl:border-none gencl:[&>div]:p-0"
+                className="gencl:border-none gencl:pb-0 gencl:[&>div]:p-0"
                 title={community.name}
                 url={buildPageUrl({
                   type: "community",
@@ -153,7 +153,7 @@ export function CommunityList({
                   className="gencl:rounded-xl gencl:mt-4"
                 />
               ) : (
-                <DecorativeList className="gencl:sm:ml-7! gencl:ml-4 gencl:[&_li]:sm:!mb-6 gencl:[&_li]:mb-3">
+                <DecorativeList className="gencl:sm:ml-10.5! gencl:ml-4 gencl:[&_li]:sm:!mb-6 gencl:[&_li]:mb-3">
                   <div className="gencl:sm:!h-6 gencl:h-3" />
                   <Groups
                     profileId={userId}

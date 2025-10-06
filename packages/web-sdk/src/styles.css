@@ -3,7 +3,17 @@
 @import '@genuin/components/styles';
 
 .gen-sdk-class button {
-    border-radius: revert-layer;
+  border-radius: revert-layer;
+}
+
+.gen-sdk-class p {
+  margin-bottom: 0px;
+}
+
+.gen-sdk-class a {
+  color: inherit;
+  -webkit-text-decoration: inherit !important;
+  text-decoration: inherit !important;
 }
 
 /* Web SDK specific styles */

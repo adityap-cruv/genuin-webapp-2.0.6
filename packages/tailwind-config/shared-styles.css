@@ -265,21 +265,15 @@
 }
 
 @layer base {
-  body {
+  /* body {
     padding: 0px !important;
-  }
+  } */
 
   .op-ads {
     position: absolute;
     top: 0;
     height: 100%;
     width: 100%;
-  }
-
-  a {
-    color: inherit;
-    -webkit-text-decoration: inherit !important;
-    text-decoration: inherit !important;
   }
 }
 

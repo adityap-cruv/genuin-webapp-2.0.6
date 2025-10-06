@@ -1,7 +1,5 @@
 import { useAuthContext } from "@genuin/components/context/auth";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
-import { useBaseContext } from "@genuin/components/context/base";
-import { z } from "zod";
 import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
 import { type CommentListType } from "@genuin/components/react-query/api/comments";
 import { MentionInput } from "../mention-input";
@@ -11,11 +9,11 @@ import { ActionPopover } from "../actions/action-popover";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { Link } from "../link";
 
-const commentFormSchema = z.object({
-  comment: z.string().min(1, { message: "" }),
-});
+// const commentFormSchema = z.object({
+//   comment: z.string().min(1, { message: "" }),
+// });
 
-type CommentFormValues = z.infer<typeof commentFormSchema>;
+// type CommentFormValues = z.infer<typeof commentFormSchema>;
 
 type CommentInputProps = {
   videoId: string;
@@ -23,6 +21,7 @@ type CommentInputProps = {
   onCommentPosted?: (comment: CommentListType) => void;
   className?: string;
   disabled?: boolean;
+  defaultValue?: string;
 } & React.FormHTMLAttributes<HTMLFormElement>;
 
 type CommentInputBoxProps = {
@@ -48,11 +47,10 @@ export function CommentInputBox({
   ...commentInputProps
 }: CommentInputBoxProps) {
   const { authenticationStatus, user, handleAuthCallback } = useAuthContext();
-  const { brandDetails } = useBaseContext();
+  // const { brandDetails } = useBaseContext();
   const embedDetails = useSafeEmbedContext();
   const { modalConfig } = useEmbedConfigs();
   const authInfo = embedDetails?.embedData.authInfo;
-  const brandId = brandDetails.brand_id;
 
   const returnQueryParams = useMemo(
     () =>
