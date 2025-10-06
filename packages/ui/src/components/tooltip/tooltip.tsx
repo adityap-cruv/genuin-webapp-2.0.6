@@ -87,8 +87,12 @@ function TooltipContent({
       <TooltipPrimitive.Content
         data-slot="tooltip-content"
         sideOffset={sideOffset}
-        className={cn(className, tooltipContentVariants({ theme }))}
-        style={{ ...style, ...getGenclStyles() }}
+        className={cn(
+          "gen-sdk-class",
+          className,
+          tooltipContentVariants({ theme })
+        )}
+        style={{ fontSize: "16px", ...style, ...getGenclStyles() }}
         {...props}
       >
         {children}

@@ -9,6 +9,8 @@ import {
 import React, { ComponentProps } from "react";
 import PlaybackSpeedControlSlider from "./speed-control-buttons";
 import { useBaseContext } from "@genuin/components/context";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { cn } from "@genuin/ui";
 
 type PlaybackSpeedProps = ComponentProps<typeof Dialog> & {
   children: React.ReactNode;
@@ -16,11 +18,24 @@ type PlaybackSpeedProps = ComponentProps<typeof Dialog> & {
 
 export function PlaybackSpeed({ children, ...props }: PlaybackSpeedProps) {
   const { playbackSpeed } = useBaseContext();
+  const { isTablet } = useDeviceDetectMediaQuery();
   return (
     <Dialog modal {...props}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="gencl:text-center gencl:bg-white gencl:sm:min-w-lg! gencl:md:p-10! gencl:md:min-w-xl! gencl:rounded-t-2xl! gencl:md:rounded-2xl! gencl:flex gencl:flex-col gencl:gap-4">
-        <DialogHeader className="gencl:text-secondary-900 gencl:text-body-0-semi-bold gencl:md:text-headline-2-semi-bold! gencl:border-0">
+      <DialogContent
+        className={cn(
+          "gencl:text-center gencl:bg-white gencl:sm:min-w-lg! gencl:md:min-w-xl! gencl:rounded-t-2xl! gencl:md:rounded-2xl! gencl:flex gencl:flex-col gencl:gap-4",
+          isTablet ? "gencl:p-10" : "gencl:p-6"
+        )}
+      >
+        <DialogHeader
+          className={cn(
+            "gencl:text-secondary-900 gencl:border-0",
+            isTablet
+              ? "gencl:text-headline-2-semi-bold!"
+              : "gencl:text-body-0-semi-bold"
+          )}
+        >
           Playback Speed
         </DialogHeader>
         <p className="gencl:text-headline-4-semi-bold gencl:text-secondary-900">
