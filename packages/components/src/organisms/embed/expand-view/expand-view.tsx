@@ -217,7 +217,7 @@ export function EmbedExpandView({
        * @fires window.genuin.emit("sdk:expand-view-loaded", true) when expand view is loaded.
        */
       window.genuin?.emit?.("sdk:expand-view-loaded", true);
-      htmlElement.style.overflow = "hidden";
+      htmlElement.style.overflow = "hidden !important";
     } else {
       htmlElement.style.overflow = originalOverflow;
     }
