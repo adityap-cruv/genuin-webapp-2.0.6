@@ -287,4 +287,8 @@ export const API_PATHS = {
    * Api path to get user IP info for the post video.
    */
   FETCH_IP_INFO: "/goservices/data/ip_info",
+  /**
+   * Api path to fetch HTML content.
+   */
+  FETCH_HTML: "/goservices/resolve-html",
 } as const;
