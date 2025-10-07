@@ -290,5 +290,5 @@ export const API_PATHS = {
   /**
    * Api path to fetch HTML content.
    */
-  FETCH_HTML: "/goservices/resolve-html",
+  FETCH_HTML: "/goservices/links/resolve-html",
 } as const;
