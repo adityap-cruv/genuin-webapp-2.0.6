@@ -105,7 +105,7 @@ const dialogContentVariants = cva(
     variants: {
       variant: {
         default: [
-          "gencl:fixed gencl:bottom-0 gencl:sm:bottom-auto! gencl:sm:top-1/2! gencl:sm:left-1/2! gencl:sm:-translate-y-1/2!",
+          "gencl:fixed gencl:left-0 gencl:bottom-0 gencl:sm:bottom-auto! gencl:sm:top-1/2! gencl:sm:left-1/2! gencl:sm:-translate-y-1/2!",
           "gencl:sm:-translate-x-1/2!",
         ],
         top: ["gencl:fixed gencl:top-8 gencl:left-1/2 gencl:-translate-x-1/2"],
