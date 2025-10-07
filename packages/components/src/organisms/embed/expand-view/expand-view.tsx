@@ -197,9 +197,14 @@ export function EmbedExpandView({
     const htmlElement = document.querySelector("html");
     if (!htmlElement) return;
 
-    // Store the original overflow value on mount
-    const originalOverflow =
-      htmlElement.style.overflow || getComputedStyle(htmlElement).overflow;
+    // Check if there's an inline style first
+    const hasInlineStyle = htmlElement.style.overflow !== "";
+    const originalOverflow = hasInlineStyle
+      ? htmlElement.style.overflow
+      : getComputedStyle(htmlElement).overflow;
+    const originalPriority = hasInlineStyle
+      ? htmlElement.style.getPropertyPriority("overflow")
+      : ""; // Computed styles don't have priority info
 
     if (showExpandView) {
       /**
@@ -217,14 +222,26 @@ export function EmbedExpandView({
        * @fires window.genuin.emit("sdk:expand-view-loaded", true) when expand view is loaded.
        */
       window.genuin?.emit?.("sdk:expand-view-loaded", true);
-      htmlElement.style.overflow = "hidden !important";
+      htmlElement.style.setProperty("overflow", "hidden", "important");
     } else {
-      htmlElement.style.overflow = originalOverflow;
+      htmlElement.style.setProperty(
+        "overflow",
+        originalOverflow,
+        originalPriority
+      );
     }
 
-    // Cleanup: restore original overflow when component unmounts
     return () => {
-      htmlElement.style.overflow = originalOverflow;
+      if (hasInlineStyle) {
+        htmlElement.style.setProperty(
+          "overflow",
+          originalOverflow,
+          originalPriority
+        );
+      } else {
+        // Remove inline style to let CSS cascade take over
+        htmlElement.style.removeProperty("overflow");
+      }
     };
   }, [showExpandView]);
 
