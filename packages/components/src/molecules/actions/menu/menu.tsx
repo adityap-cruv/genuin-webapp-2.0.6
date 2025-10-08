@@ -12,7 +12,7 @@ import {
   DialogTrigger,
 } from "@genuin/ui/components/dialog/dialog";
 import { cn } from "@genuin/ui/lib/utils";
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useMemo, useState } from "react";
 import { ShareButton } from "@genuin/components/molecules/share-button";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { Link } from "../../link";
@@ -78,9 +78,16 @@ export function Menu({
     };
   }, [activeIndex]);
 
+  // Indian Express specific condition to hide some menu items
+  // As per the request from the Indian Express team
+  const isIndianExpress = useMemo(() => {
+    return brandDetails.brand_id === 2793;
+  }, []);
+
   const MenuData = [
     shareUrl &&
-      !isMobile && {
+      !isMobile &&
+      !isIndianExpress && {
         children: (
           <ShareButton pathName={shareUrl} withCustomChildren>
             {menuItems({ text: "Copy Link" })}
@@ -88,7 +95,8 @@ export function Menu({
         ),
       },
     isMobile &&
-      embedDetails?.embedData.card_layout_id !== 3 && {
+      embedDetails?.embedData.card_layout_id !== 3 &&
+      !isIndianExpress && {
         children: (
           <Link href={buildPageUrl({ type: "group", slug: groupSlug })}>
             {menuItems({
@@ -109,9 +117,10 @@ export function Menu({
         />
       ),
     },
-    // Feature not implemented yet: "Group Details" and "Not interested" menu items are pending design.
+    // Feature not implemented yet: "Not interested" menu items are pending design.
     contentId &&
-      embedDetails?.embedData.card_layout_id !== 3 && {
+      embedDetails?.embedData.card_layout_id !== 3 &&
+      !isIndianExpress && {
         children: (
           <Report
             type="report-dialog"
