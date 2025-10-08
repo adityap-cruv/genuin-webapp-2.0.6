@@ -56,7 +56,7 @@ export function SdkSkeleton({
   const isGridLayout = config.view.isGrid;
   const embedVariant: "carousel" | "feed" =
     config.view.embedStyle === "feed" ? "feed" : "carousel";
-  const skeletonItems = Array(6).fill(null);
+  const skeletonItems = Array(12).fill(null);
 
   // If variant is grid, render grid skeleton layout
   if (isGridLayout) {

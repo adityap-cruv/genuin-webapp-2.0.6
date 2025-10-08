@@ -121,56 +121,59 @@ export function EmbedTile({
           index={index}
         />
       </PlayerProvider>
-      {config.links.showLinkOutside && (
-        <div className="gencl:h-27 gencl:w-full gencl:flex gencl:items-center">
-          <Linkouts
-            variant="embed"
-            isActive={true}
-            isOutside
-            showImmediately
-            linkouts={postDetails.video.linkouts}
-            linkoutId={postDetails.video.linkoutId}
-          />
-        </div>
-      )}
+      {config.links.showLinkOutside &&
+        config.engagement.showEngagementOnRootElement && (
+          <div className="gencl:h-27 gencl:w-full gencl:flex gencl:items-center">
+            <Linkouts
+              variant="embed"
+              isActive={true}
+              isOutside
+              showImmediately
+              linkouts={postDetails.video.linkouts}
+              linkoutId={postDetails.video.linkoutId}
+            />
+          </div>
+        )}
 
       {config.links.showLinkOutside &&
-        config.engagement.showSocialInteractionData && (
+        config.engagement.showSocialInteractionData &&
+        config.engagement.showEngagementOnRootElement && (
           <hr className="gencl:w-[90%] gencl:border-secondary-150 gencl:mx-auto" />
         )}
 
-      {config.engagement.showSocialInteractionData && (
-        <div className="gencl:h-10">
-          <Stats
-            className={cn(
-              "gencl:flex gencl:gap-2 gencl:justify-between gencl:p-3 gencl:w-full"
-            )}
-            valueClassName="gencl:text-black! gencl:text-body-2-medium"
-            stats={{
-              Views: {
-                value: 0,
-                icon: <PlayIcon theme="light" size="sm" />,
-              },
-              Reactions: {
-                value: postDetails.video.sparkCount,
-                icon: (
-                  <DynamicReactionIcon
-                    sparkCount={0}
-                    isSparked={false}
-                    iconHeight={16}
-                    iconWidth={16}
-                    theme="light"
-                  />
-                ),
-              },
-              Comments: {
-                value: postDetails.video.commentCount,
-                icon: <CommentIcon theme="light" size="sm" />,
-              },
-            }}
-          />
-        </div>
-      )}
+      {config.engagement.showSocialInteractionData &&
+        config.engagement.showEngagementOnRootElement && (
+          <div className="gencl:h-10">
+            <Stats
+              className={cn(
+                "gencl:flex gencl:gap-2 gencl:justify-between gencl:p-3 gencl:w-full"
+              )}
+              valueClassName="gencl:text-black! gencl:text-body-2-medium"
+              stats={{
+                Views: {
+                  value: 0,
+                  icon: <PlayIcon theme="light" size="sm" />,
+                },
+                Reactions: {
+                  value: postDetails.video.sparkCount,
+                  icon: (
+                    <DynamicReactionIcon
+                      sparkCount={0}
+                      isSparked={false}
+                      iconHeight={16}
+                      iconWidth={16}
+                      theme="light"
+                    />
+                  ),
+                },
+                Comments: {
+                  value: postDetails.video.commentCount,
+                  icon: <CommentIcon theme="light" size="sm" />,
+                },
+              }}
+            />
+          </div>
+        )}
     </div>
   );
 }

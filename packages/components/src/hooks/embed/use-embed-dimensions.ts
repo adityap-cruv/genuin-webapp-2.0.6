@@ -87,8 +87,16 @@ export function useEmbedDimensions() {
     };
 
     const headerHeight = getHeaderHeight();
-    const statsHeight = config.engagement.showSocialInteractionData ? 40 : 0;
-    const linkoutHeight = config.links.showLinkOutside ? 108 : 0;
+    const statsHeight =
+      config.engagement.showSocialInteractionData &&
+      config.engagement.showEngagementOnRootElement
+        ? 40
+        : 0;
+    const linkoutHeight =
+      config.links.showLinkOutside &&
+      config.engagement.showEngagementOnRootElement
+        ? 108
+        : 0;
 
     const containerHeight =
       observedDimensions.height ??
@@ -118,6 +126,7 @@ export function useEmbedDimensions() {
     config.dimensions.containerWidth,
     config.header.showHeader,
     config.engagement.showSocialInteractionData,
+    config.engagement.showEngagementOnRootElement,
     config.links.showLinkOutside,
     config.view.isFeed,
     observedDimensions.width,
