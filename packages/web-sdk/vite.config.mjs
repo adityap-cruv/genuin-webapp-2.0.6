@@ -354,7 +354,7 @@ const postBuildCssPlugin = () => ({
       const result = await postcss([
         autoprefixer(),
         // postcssNested({ preserveEmpty: true }),
-        scopePreflightCss,
+        // scopePreflightCss,
         renameTwVars,
         addImportantToGenclProps,
       ]).process(css, { from: cssPath, to: cssPath })
