@@ -126,6 +126,12 @@ export function EmbedExpandView({
           await el.requestFullscreen();
         } else if (el.webkitRequestFullscreen) {
           el.webkitRequestFullscreen();
+        } else if (isInIframe) {
+          const videoShareUrl = videos[startIndex]?.video.shareUrl;
+          if (videoShareUrl) {
+            window.open(videoShareUrl, "_blank");
+          }
+          handleCloseExpandView();
         }
       } catch (e) {
         // Silently ignore if the browser blocks without user gesture
