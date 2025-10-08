@@ -157,7 +157,7 @@ const HighlightedInput = forwardRef<
             <div
               ref={highlightRef}
               className={cn(
-                "gencl:absolute gencl:top-0 gencl:text-body-0-medium gencl:left-0 gencl:pointer-events-none gencl:overflow-auto gencl:whitespace-pre-wrap gencl:z-0 gencl:border gencl:border-transparent gencl:rounded-md",
+                "gencl:absolute gencl:top-0 gencl:text-body-0-medium gencl:left-0 gencl:pointer-events-none gencl:overflow-auto gencl:whitespace-pre-wrap gencl:z-0 gencl:border gencl:border-transparent gencl:rounded-md gencl:w-full",
                 classes.highlight
               )}
               style={{
