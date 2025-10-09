@@ -97,7 +97,7 @@ export function EditProfilePicture({
           image={selectedImage as string}
           setImage={(image) => {
             updateUserDetails({
-              profile_image: image.fileName,
+              profile_image: image.file.name,
               is_avatar: false,
             });
             setNewProfileImage(image.url);
