@@ -2,6 +2,7 @@ import axios from "axios";
 import { NEXT_PUBLIC_API_URL } from "../lib/utils/env";
 
 let authTokenInterceptorId: number | null = null;
+let brandIdInterceptorId: number | null = null;
 
 /**
  * This is the axios instance that will be used for all requests.
@@ -42,15 +43,23 @@ export function clearAuthTokenInterceptor() {
 }
 
 export function setBrandIdInAxiosInstance(brandId?: number) {
-  axiosInstance.interceptors.request.use((config) => {
-    if (brandId) config.headers["x-brand-id"] = brandId;
-    return config;
-  });
+  // Eject previous interceptor if it exists
+  if (brandIdInterceptorId !== null) {
+    axiosInstance.interceptors.request.eject(brandIdInterceptorId);
+    brandIdInterceptorId = null;
+  }
+  if (brandId) {
+    brandIdInterceptorId = axiosInstance.interceptors.request.use((config) => {
+      config.headers["x-brand-id"] = brandId;
+      return config;
+    });
+  }
 }
 
+/**
+ * Removes all authentication tokens by clearing the auth interceptor.
+ * This properly removes the interceptor instead of adding a new one that overrides headers.
+ */
 export function removeAllAuthToken() {
-  axiosInstance.interceptors.request.use((config) => {
-    config.headers.Authorization = undefined;
-    return config;
-  });
+  clearAuthTokenInterceptor();
 }

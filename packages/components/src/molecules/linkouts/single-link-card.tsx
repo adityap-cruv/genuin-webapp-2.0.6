@@ -1,5 +1,5 @@
 import { Button } from "@genuin/ui/components/button";
-import { checkAndAppendHttps, cn } from "@genuin/ui/lib/utils";
+import { checkAndAppendHttps, cn, openUrlInNewTab } from "@genuin/ui/lib/utils";
 import { LinkData } from "@genuin/components/react-query/api/linkouts/schema";
 import { LinkIcon, ChevronRight } from "lucide-react";
 import { useAnalytics } from "@genuin/components/context/analytics/context";
@@ -90,7 +90,7 @@ export const LinkCard = ({
         linkTitle: link.title || getDomain(link.link),
       });
 
-      window.open(finalUrl, "_blank");
+      openUrlInNewTab(finalUrl);
     } finally {
       setIsLoading(false);
     }
@@ -108,7 +108,7 @@ export const LinkCard = ({
         linkTitle: link.title || getDomain(link.link),
       });
 
-      window.open(finalUrl, "_blank");
+      openUrlInNewTab(finalUrl);
     } finally {
       setIsLoading(false);
     }

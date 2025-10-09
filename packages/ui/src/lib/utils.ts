@@ -10,6 +10,31 @@ export function isValidHTTPS(link: string) {
   return link.startsWith("http") || link.startsWith("https") ? link : null;
 }
 
+/**
+ * Opens a URL with maximum compatibility across browsers and iOS.
+ * Uses a programmatic <a> tag click to bypass popup blockers reliably.
+ */
+export function openUrlInNewTab(url: string, target: "_blank" | "_self" = "_blank"): void {
+  // Create a temporary anchor element
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.target = target;
+  
+  // Only add noopener noreferrer for new tabs (security best practice)
+  if (target === "_blank") {
+    anchor.rel = "noopener noreferrer";
+  }
+  
+  // Append to body (required for Firefox)
+  document.body.appendChild(anchor);
+  
+  // Trigger click programmatically
+  anchor.click();
+  
+  // Clean up by removing the element
+  document.body.removeChild(anchor);
+}
+
 export function tryJsonParse<T = unknown>(data: string): T | null {
   try {
     return JSON.parse(data) as T;

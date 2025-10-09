@@ -40,8 +40,8 @@ export async function performTokenRefresh(
 
 // Utility function to emit refresh failure event
 export function emitRefreshFailedEvent(payload?: {
-  autoLoginToken?: string;
-  brandId?: number;
+  token?: string;
+  brandId: number;
   params?: any;
 }): void {
   if (typeof window !== "undefined" && window.genuin?.emit) {

@@ -120,7 +120,8 @@ export function AuthProvider({
   // Synchronously manage the authentication token in Axios instance when the external 'user' prop changes.
   // This ensures the token is set/removed before any subsequent network requests.
   useLayoutEffect(() => {
-    const token = user?.accessToken ?? authenticatedUser?.accessToken;
+    // Use authenticatedUser first as it reflects the most current state (including refreshed tokens)
+    const token = authenticatedUser?.accessToken ?? user?.accessToken;
     if (!!token) {
       setAuthTokenInAxiosInstance(token);
       invalidateAllQueries();
@@ -128,7 +129,7 @@ export function AuthProvider({
       clearAuthTokenInterceptor();
       invalidateAllQueries();
     }
-  }, [user, authenticatedUser]);
+  }, [authenticatedUser, user]);
 
   useEffect(() => {
     const code = getSearchParams("code") as string;
@@ -261,7 +262,7 @@ export function AuthProvider({
 
               if (isEmbed) emitCachedUserUpdateEvent(updatedUser);
 
-              updateUser(updatedUser);
+              await updateUser(updatedUser);
               setAuthTokenInAxiosInstance(newTokens.accessToken);
               return axiosInstance(originalRequest);
             }
@@ -269,8 +270,9 @@ export function AuthProvider({
             if (isEmbed) {
               removeAllAuthToken();
               emitRefreshFailedEvent({
-                autoLoginToken: user?.autoLoginToken,
-                brandId: user?.brandId,
+                token:
+                  authenticatedUser?.autoLoginToken || user?.autoLoginToken,
+                brandId: authenticatedUser?.brandId ?? user?.brandId ?? 0,
                 params: {},
               });
             } else {

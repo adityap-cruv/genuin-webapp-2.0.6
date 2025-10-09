@@ -1,4 +1,4 @@
-import { checkAndAppendHttps, cn } from "@genuin/ui/lib/utils";
+import { checkAndAppendHttps, cn, openUrlInNewTab } from "@genuin/ui/lib/utils";
 import { LinkData } from "@genuin/components/react-query/api/linkouts/schema";
 import { ChevronRight, LinkIcon } from "lucide-react";
 import { Button } from "@genuin/ui/components";
@@ -68,7 +68,7 @@ export const MultiLinkCard = ({
         linkUrl: link.link,
         linkTitle: link.title || new URL(url).hostname,
       });
-      window.open(finalUrl, "_blank");
+      openUrlInNewTab(finalUrl);
     } finally {
       setIsLoading(false);
     }
@@ -85,7 +85,7 @@ export const MultiLinkCard = ({
         linkUrl: ctaLink,
         linkCount: links.length,
       });
-      window.open(finalUrl, "_blank");
+      openUrlInNewTab(finalUrl);
     } finally {
       setIsLoading(false);
     }
