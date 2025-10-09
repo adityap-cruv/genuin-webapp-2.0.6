@@ -35,6 +35,10 @@
   text-decoration: inherit !important;
 }
 
+.gen-sdk-class, .gen-sdk-class * {
+  box-sizing: border-box;
+}
+
 /* Web SDK specific styles */
 /* .web-sdk-container {
     all: initial;

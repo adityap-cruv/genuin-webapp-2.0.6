@@ -145,7 +145,7 @@ function DialogContent({
           className,
           "gen-sdk-class"
         )}
-        style={{ ...style, ...getGenclStyles() }}
+        style={{ ...style, ...getGenclStyles()}}
         autoFocus={false}
         {...props}
       >
