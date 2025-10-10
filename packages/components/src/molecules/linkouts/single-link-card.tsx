@@ -1,13 +1,14 @@
 import { Button } from "@genuin/ui/components/button";
-import { checkAndAppendHttps, cn, openUrlInNewTab } from "@genuin/ui/lib/utils";
+import { cn } from "@genuin/ui/lib/utils";
 import { LinkData } from "@genuin/components/react-query/api/linkouts/schema";
 import { LinkIcon, ChevronRight } from "lucide-react";
 import { useAnalytics } from "@genuin/components/context/analytics/context";
 import { VariantProps, cva } from "class-variance-authority";
 import { useBaseContext } from "@genuin/components/context/base";
-import { useState } from "react";
 import { Loader } from "@genuin/ui/components/loader";
-import { getRedirectUrl } from "./utils";
+import { useSafeRedirect } from "./use-safe-redirect";
+import { Link } from "../link/link";
+import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 
 // Combined variant for both card types
 const linkCardVariants = cva(
@@ -55,7 +56,8 @@ export const LinkCard = ({
   const hasCTA = ctaText && ctaText.trim() !== "";
   const { track, EventName } = useAnalytics();
   const { brandDetails } = useBaseContext();
-  const [isLoading, setIsLoading] = useState(false);
+  const { isLoading, handleRedirect } = useSafeRedirect();
+  const { isMobile } = useDeviceDetection();
 
   const getDomain = (url: string): string => {
     try {
@@ -80,47 +82,43 @@ export const LinkCard = ({
 
   const handleCTAClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    setIsLoading(true);
-    try {
-      const url = checkAndAppendHttps(ctaLink);
-      const finalUrl = await getRedirectUrl(url, brandDetails.brand_id);
 
-      track(EventName.LINKOUTS_CTA_CLICKED, {
-        linkUrl: ctaLink,
-        linkTitle: link.title || getDomain(link.link),
-      });
+    track(EventName.LINKOUTS_CTA_CLICKED, {
+      linkUrl: ctaLink,
+      linkTitle: link.title || getDomain(link.link),
+    });
 
-      openUrlInNewTab(finalUrl);
-    } finally {
-      setIsLoading(false);
+    // this condition is specifically for brand_id 2790(price) to handle safe redirects
+    if (brandDetails.brand_id === 2790 && isMobile) {
+      e.preventDefault();
+      await handleRedirect(ctaLink);
     }
   };
 
   const handleCardClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    setIsLoading(true);
-    try {
-      const url = checkAndAppendHttps(link.link);
-      const finalUrl = await getRedirectUrl(url, brandDetails.brand_id);
 
-      track(EventName.LINKOUTS_CLICKED, {
-        linkUrl: link.link,
-        linkTitle: link.title || getDomain(link.link),
-      });
+    track(EventName.LINKOUTS_CLICKED, {
+      linkUrl: link.link,
+      linkTitle: link.title || getDomain(link.link),
+    });
 
-      openUrlInNewTab(finalUrl);
-    } finally {
-      setIsLoading(false);
+    // this condition is specifically for brand_id 2790(price) to handle safe redirects
+    if (brandDetails.brand_id === 2790 && isMobile) {
+      e.preventDefault();
+      await handleRedirect(link.link);
     }
   };
 
   if (hasCTA) {
     return (
-      <div
+      <Link
+        href={link.link}
+        target="_blank"
+        rel="noopener noreferrer"
         className={cn(
           linkCardVariants({
             variant: isOutside ? "transparent" : variant,
-            layout: "withCTA",
           })
         )}
         onClick={handleCardClick}
@@ -159,39 +157,49 @@ export const LinkCard = ({
             {displayText}
           </span>
         </div>
-        <Button
-          size={isEmbed ? "sm" : "md"}
-          className={cn(
-            "gencl:w-full gencl:text-body-1-medium! gencl:font-semibold gencl:transition-all gencl:text-black gencl:bg-white gencl:hover:bg-white/90 gencl:flex gencl:justify-between gencl:items-center gencl:px-3 gencl:py-2 gencl:rounded-lg",
-            isOutside && "gencl:bg-secondary-50 gencl:hover:bg-secondary-150",
-            !brandDetails.cta_config?.show_arrow_icon &&
-              "gencl:text-center gencl:justify-center"
-          )}
-          style={{
-            borderRadius: brandDetails.cta_config?.button_radius ?? "",
-            background: brandDetails.cta_config?.button_color ?? "",
-            color: brandDetails.cta_config?.text_color ?? "",
-          }}
-          onClick={handleCTAClick}
+        <Link
+          href={ctaLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => e.stopPropagation()}
         >
-          <p className="gencl:line-clamp-1 gencl:truncate gencl:w-fit">
-            {brandDetails.cta_config?.default_button_text
-              ? brandDetails.cta_config?.default_button_text
-              : ctaText}
-          </p>
-          {brandDetails.cta_config?.show_arrow_icon &&
-            (isLoading ? (
-              <Loader className="gencl:h-4 gencl:w-4 gencl:stroke-black! gencl:shrink-0 gencl:animate-spin" />
-            ) : (
-              <ChevronRight className="gencl:h-4 gencl:w-4 gencl:stroke-black! gencl:shrink-0" />
-            ))}
-        </Button>
-      </div>
+          <Button
+            size={isEmbed ? "sm" : "md"}
+            className={cn(
+              "gencl:w-full gencl:text-body-1-medium! gencl:font-semibold gencl:transition-all gencl:text-black gencl:bg-white gencl:hover:bg-white/90 gencl:flex gencl:justify-between gencl:items-center gencl:px-3 gencl:py-2 gencl:rounded-lg",
+              isOutside && "gencl:bg-secondary-50 gencl:hover:bg-secondary-150",
+              !brandDetails.cta_config?.show_arrow_icon &&
+                "gencl:text-center gencl:justify-center"
+            )}
+            style={{
+              borderRadius: brandDetails.cta_config?.button_radius ?? "",
+              background: brandDetails.cta_config?.button_color ?? "",
+              color: brandDetails.cta_config?.text_color ?? "",
+            }}
+            onClick={handleCTAClick}
+          >
+            <p className="gencl:line-clamp-1 gencl:truncate gencl:w-fit">
+              {brandDetails.cta_config?.default_button_text
+                ? brandDetails.cta_config?.default_button_text
+                : ctaText}
+            </p>
+            {brandDetails.cta_config?.show_arrow_icon &&
+              (isLoading ? (
+                <Loader className="gencl:h-4 gencl:w-4 gencl:stroke-black! gencl:shrink-0 gencl:animate-spin" />
+              ) : (
+                <ChevronRight className="gencl:h-4 gencl:w-4 gencl:stroke-black! gencl:shrink-0" />
+              ))}
+          </Button>
+        </Link>
+      </Link>
     );
   }
 
   return (
-    <div
+    <Link
+      href={link.link}
+      target="_blank"
+      rel="noopener noreferrer"
       className={cn(
         linkCardVariants({
           variant: isOutside ? "transparent" : variant,
@@ -245,6 +253,6 @@ export const LinkCard = ({
           )}
         />
       )}
-    </div>
+    </Link>
   );
 };

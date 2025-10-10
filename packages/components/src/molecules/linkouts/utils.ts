@@ -5,12 +5,7 @@ import { fetchHtml } from "@genuin/components/react-query/api/fetch-html";
  */
 export const getRedirectUrl = async (
   url: string,
-  brandId: number
 ): Promise<string> => {
-  if (brandId !== 2790) {
-    return url;
-  }
-
   try {
     const response = await fetchHtml({ url });
 
