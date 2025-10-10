@@ -182,10 +182,10 @@ export function parsePlacementToEmbedData(
       // theme: 'light' as const,
       // Community data
       community_ids: data.community_ids,
-      community_loop_ids: data.community_loop_ids?.map((id) => ({
-        loop_id: id,
-        community_id: id, // Assuming same ID, adjust if different structure
-      })) ?? [],
+      community_loop_ids: data.community_loop_ids,
+      scroll_behavior: configureView?.scroll_behavior,
+      is_navigation_control_enabled:
+        configureView?.is_navigation_control_enabled,
     },
 
     // Additional placement-specific data that might be useful
@@ -255,6 +255,11 @@ export function parsePlacementToEmbedData(
     show_video_duration: configureView?.show_video_duration,
     is_show_metrics: configureView?.is_show_metrics,
     show_linkout_in_expand: expandView?.enable_linkout,
+
+    section_details: configureView?.section_details,
+    show_style_details: configureView?.show_style_details,
+    video_details: configureView?.video_details,
+    social_interaction_counts: configureView?.social_interaction_counts,
   }
 }
 

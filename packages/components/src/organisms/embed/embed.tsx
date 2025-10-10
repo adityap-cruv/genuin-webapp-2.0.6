@@ -49,7 +49,7 @@ export function Embed({
   ...restProps
 }: EmbedProps & VariantProps<typeof embedVariants>) {
   const [swiper, setSwiper] = useState<Swiper | null>(null);
-  const {isInIframe} = useBaseContext()
+  const { isInIframe } = useBaseContext();
   const { embedData, embedEventBus, updateIsSectioned, updateSectionList } =
     useEmbedContext();
   // Local state for isSectioned synced with event bus
@@ -73,7 +73,7 @@ export function Embed({
     styleId: embedData.style_id,
     contextualParams: embedData.contextualParams,
     embedId: embedData.embed_id,
-    isInIframe
+    isInIframe,
   };
 
   const {
@@ -248,7 +248,12 @@ export function Embed({
       }}
       {...restProps}
     >
-      <EmbedManagerProvider swiper={swiper} isGridLayout={isGridLayout}>
+      <EmbedManagerProvider
+        swiper={swiper}
+        isGridLayout={isGridLayout}
+        moveToNext={!config.video.videoLoop}
+        moveToNextTime={config.video.moveToNextTime}
+      >
         {isGridLayout ? (
           <GridView
             videos={videos}
@@ -278,7 +283,7 @@ export function Embed({
                 width: containerWidth,
               }}
               style={{
-                height: availableHeight + linkoutHeight + statsHeight,
+                height: availableHeight,
               }}
               onSwiper={(swiperInstance) => setSwiper(swiperInstance)}
             >

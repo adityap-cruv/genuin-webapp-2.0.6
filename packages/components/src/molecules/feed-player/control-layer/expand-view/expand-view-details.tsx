@@ -394,7 +394,7 @@ export function ExpandViewDetails({
               linkouts={postDetails.video.linkouts}
               linkoutId={postDetails.video.linkoutId}
               isActive={isActive}
-              className="gencl:w-full"
+              className="gencl:w-full gencl:z-10"
               cardVariant={config.linkouts.cardVariant}
             />
           )}

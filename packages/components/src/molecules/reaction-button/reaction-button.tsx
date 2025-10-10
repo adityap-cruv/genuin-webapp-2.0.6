@@ -334,6 +334,7 @@ function Button({
         iconHeight={24}
         iconWidth={24}
         sparkCount={reactionCount}
+        type="feed"
       />
     </PrimitiveButton>
   );

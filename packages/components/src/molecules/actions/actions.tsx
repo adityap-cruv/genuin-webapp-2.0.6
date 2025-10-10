@@ -269,7 +269,6 @@ export function Actions({
     showEngagementTools,
   } = engagement;
 
-  const { camera_enabled } = baseContext?.brandDetails;
   // Only include actions if enabled in engagementTools config
   // If showEngagementTools is false, only show the MORE action
   const actions = [
@@ -287,6 +286,7 @@ export function Actions({
               isSparked={isReacted}
               sparkCount={reactionCount}
               theme={theme}
+              type={theme === "light" ? "comment" : "feed"}
             />
           ),
           actionType: "REACTION" as const,
@@ -318,14 +318,6 @@ export function Actions({
     tooltipText: string;
   }>;
 
-  // Filter out REPOST action when camera_enabled is false
-  const filteredActions = actions.filter((action) => {
-    if (action.actionType === "REPOST" && !camera_enabled) {
-      return false;
-    }
-    return true;
-  });
-
   return (
     <div
       className={cn(
@@ -338,7 +330,7 @@ export function Actions({
       }}
       {...restProps}
     >
-      {filteredActions.map((action, index) => {
+      {actions.map((action, index) => {
         const context = {
           contentId,
           isReacted,

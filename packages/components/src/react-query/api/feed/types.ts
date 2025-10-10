@@ -10,7 +10,10 @@ type SectionInfo = {
   _id?: string | null | undefined;
   title?: string | null | undefined;
   description?: string | null | undefined;
-  position?: number | null | undefined
+  position?: number | null | undefined;
+  thumbnail_url?: string | null | undefined;
+  cover_url?: string | null | undefined;
+  no_of_clips?: number | null | undefined;
 } | null;
 
 export type FeedResponseFromGoApi = Array<{
@@ -34,6 +37,11 @@ type VideoData = {
   meta_data?: {
     video_source?: string;
     size?: string;
+    aspect_ratio?: string;
+    contains_external_videos?: boolean;
+    duration?: string;
+    media_type?: string;
+    resolution?: string;
     [key: string]: unknown;
   };
   share_url: string;
@@ -64,12 +72,12 @@ type VideoData = {
   is_transcribed?: boolean;
   linkouts_inappbrowser?: boolean;
   owner?: FeedOwnerInfo;
-  
+
   // Placement layout fields from the JSON response
   placement_card_layout_id?: number;
   placement_video_layout_id?: number;
   placement_card_section_layout_id?: number;
-  
+
   attributes?: {
     clip_type?: string;
     description?: string;

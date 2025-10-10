@@ -19,7 +19,7 @@ export const Embed: FC<ControlLayerPropsType> = ({
   ...restProps
 }) => {
   const config = useEmbedConfigs();
-  const showLayout = config.engagement.showEngagementOnRootElement;
+  const showLayout = config.responsive.canShowEngagement;
   const { containerHeight } = useEmbedDimensions();
 
   // Determine embed layout type

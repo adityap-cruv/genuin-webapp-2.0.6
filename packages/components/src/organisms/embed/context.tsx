@@ -36,6 +36,11 @@ type EmbedManagerContextType = {
    * @returns void
    */
   goToPreviousVideo: () => void;
+  /**
+   * Whether to automatically move to the next video.
+   * When false, videos will loop but manual navigation is still allowed.
+   */
+  moveToNext: boolean;
 };
 
 const EmbedManagerContext = createContext<EmbedManagerContextType | undefined>(
@@ -46,12 +51,16 @@ type EmbedManagerProviderProps = {
   children: React.ReactNode;
   swiper: SwiperType | null;
   isGridLayout?: boolean;
+  moveToNext?: boolean;
+  moveToNextTime?: number;
 };
 
 export function EmbedManagerProvider({
   children,
   swiper,
   isGridLayout = false,
+  moveToNext = true,
+  moveToNextTime = 0,
 }: EmbedManagerProviderProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [previousVisibleRange, setPreviousVisibleRange] = useState({
@@ -193,6 +202,35 @@ export function EmbedManagerProvider({
     };
   }, [swiper, isGridLayout]);
 
+  // Auto-advance logic: Move to next video after moveToNextTime seconds
+  useEffect(() => {
+    // Only auto-advance if:
+    // 1. moveToNextTime is greater than 0
+    // 2. moveToNext is true (video looping is disabled)
+    // 3. activePlayerType is "embed" (not in expand view)
+    if (
+      moveToNextTime === 0 ||
+      !moveToNext ||
+      embedEventBus.getContext().activePlayerType !== "embed"
+    ) {
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      goToNextVideo();
+    }, moveToNextTime * 1000);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [
+    activeIndex,
+    moveToNextTime,
+    moveToNext,
+    goToNextVideo,
+    embedEventBus,
+  ]);
+
   return (
     <EmbedManagerContext.Provider
       value={{
@@ -200,6 +238,7 @@ export function EmbedManagerProvider({
         updateActiveIndex,
         goToNextVideo,
         goToPreviousVideo,
+        moveToNext,
       }}
     >
       {children}

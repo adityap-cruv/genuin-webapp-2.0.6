@@ -53,7 +53,6 @@ export function useEmbedConfigs() {
       isGrid: embedData?.style === "grid",
       isPlacementView: !!embedData?.placement_id,
       showCarouselIcon: !!customization?.is_carousel_icon,
-      showNavigation: embedData?.card_layout_id !== 3,
       isFloatingView: !!customization?.is_floating_view,
       isExpandedView: !!customization?.is_expanded_view,
       feedDisplayPreference: customization?.feed_display_pref || "default",
@@ -61,8 +60,11 @@ export function useEmbedConfigs() {
       showViewLoopButton: !!customization?.show_view_loop_button,
       isShowPopupByDefault: !!customization?.is_show_popup_by_default,
       theme: customization?.theme || "light",
-      enableAdaptiveVideo: embedData?.enable_adaptive_video || false,
       gridLayout: embedData?.grid_layout || undefined,
+      scrollBehavior: customization?.scroll_behavior || "paging",
+      isNavigationControlEnabled:
+        customization?.is_navigation_control_enabled ||
+        embedData?.card_layout_id !== 3,
     }),
     [customization, embedData?.style]
   );
@@ -110,9 +112,66 @@ export function useEmbedConfigs() {
           customization?.links?.position === "outside")
           ? true
           : false,
-      videoCrop: !!customization?.video_crop,
+      videoCrop: customization?.video_crop,
     }),
     [customization, brandDetails.brand_id, embedData?.style]
+  );
+
+  // ============================================================
+  // Content Display Configuration
+  // ============================================================
+  const contentDisplayConfig = useMemo(
+    () => ({
+      sectionDetails: embedData?.section_details || {
+        cover: false,
+        no_of_clips: false,
+        position: "overlay_on_top",
+        sub_title: false,
+        thumbnail: false,
+        title: false,
+      },
+      videoDetails: embedData?.video_details || {
+        position: "overlay_on_bottom",
+        post_date: false,
+        post_description: false,
+        show_linkouts: false,
+        video_duration: false,
+      },
+      socialInteractionCounts: embedData?.social_interaction_counts || {
+        position: "overlay_on_bottom",
+        comments: false,
+        reactions: false,
+        views: false
+      },
+      showStyleDetails: embedData?.show_style_details ?? false,
+      socialMetrics: embedData?.social_metrics || "views",
+      showSectionCover: embedData?.section_details?.cover ?? false,
+      showSectionTitle: embedData?.section_details?.title ?? false,
+      showSectionSubTitle: embedData?.section_details?.sub_title ?? false,
+      showSectionThumbnail: embedData?.section_details?.thumbnail ?? false,
+      showClipsCount: embedData?.section_details?.no_of_clips ?? false,
+      sectionDetailsPosition:
+        embedData?.section_details?.position || "overlay_on_top",
+      showPostDate: embedData?.video_details?.post_date ?? false,
+      showPostDescription: embedData?.video_details?.post_description ?? false,
+      showVideoLinkouts: embedData?.video_details?.show_linkouts ?? false,
+      showVideoDuration: embedData?.video_details?.video_duration ?? false,
+      videoDetailsPosition:
+        embedData?.video_details?.position || "overlay_on_bottom",
+      socialInteractionCountsPosition:
+        embedData?.social_interaction_counts?.position || "overlay_on_bottom",
+      showCommentCount: embedData?.social_interaction_counts?.comments ?? false,
+      showReactionCount:
+        embedData?.social_interaction_counts?.reactions ?? false,
+      showViewCount: embedData?.social_interaction_counts?.views ?? false,
+    }),
+    [
+      embedData?.section_details,
+      embedData?.video_details,
+      embedData?.show_style_details,
+      embedData?.social_metrics,
+      embedData?.social_interaction_counts,
+    ]
   );
 
   // ============================================================
@@ -133,44 +192,6 @@ export function useEmbedConfigs() {
     }),
     [customization]
   );
-
-  // ============================================================
-  // Compute showEngagementOnRootElement once, used in both the flattened return and engagementConfig
-  // ============================================================
-  const showEngagementOnRootElement = useMemo(() => {
-    if (!customization || !rootElement) return false;
-
-    const currentWidth = rootElement.offsetWidth;
-    const currentHeight = rootElement.offsetHeight;
-    const currentStyle = embedData?.style;
-    const gridColumn = embedData?.grid_layout?.column ?? 0;
-
-    // Check if the current embed style has minimum size requirements
-    switch (currentStyle) {
-      case "feed":
-        return (
-          currentWidth >= MIN_EMBED_WIDTH && currentHeight >= MIN_EMBED_HEIGHT
-        );
-
-      case "carousel":
-        return (
-          currentWidth >= MIN_EMBED_WIDTH && currentHeight >= MIN_EMBED_HEIGHT
-        );
-
-      case "grid":
-        return (
-          !!gridColumn && currentWidth / gridColumn >= MIN_GRID_VIDEO_WIDTH
-        );
-
-      default:
-        return true;
-    }
-  }, [
-    customization,
-    rootElement,
-    embedData?.style,
-    embedData?.grid_layout?.column,
-  ]);
 
   // ============================================================
   // Engagement & Interaction Configuration
@@ -246,7 +267,6 @@ export function useEmbedConfigs() {
     }
 
     return {
-      showEngagementOnRootElement,
       showEngagementTools,
       engagementTools,
       showSocialInteractionData:
@@ -258,7 +278,7 @@ export function useEmbedConfigs() {
       redirectionTools,
       openAllLinksInNewTab: false,
     };
-  }, [customization, rootElement, showEngagementOnRootElement]);
+  }, [customization, rootElement]);
 
   // ============================================================
   // Link Configuration
@@ -356,11 +376,89 @@ export function useEmbedConfigs() {
     embedContextData.embedData?.card_layout_id,
   ]);
 
+  //==================================================================
+  // Responsive breakpoints configuration
+  //==================================================================
+  const responsiveConfig = useMemo(() => {
+    const containerWidth = rootElement?.offsetWidth || 0;
+    const containerHeight = rootElement?.offsetHeight || 0;
+    const currentStyle = embedData?.style;
+    const gridColumn = embedData?.grid_layout?.column ?? 1;
+
+    // Define breakpoints for responsive behavior
+    const breakpoints = {
+      xs: 120,
+      sm: 140,
+      md: 184,
+      lg: 240,
+    } as const;
+
+    // Calculate effective video width based on embed style
+    const getEffectiveVideoWidth = () => {
+      switch (currentStyle) {
+        case "grid":
+          return gridColumn > 0 ? containerWidth / gridColumn : containerWidth;
+        case "carousel":
+        case "feed":
+        case "standard_wall":
+        default:
+          return containerWidth;
+      }
+    };
+
+    const effectiveVideoWidth = getEffectiveVideoWidth();
+
+    const canShowEngagement = () => {
+      if (!customization || !rootElement) return false;
+
+      switch (currentStyle) {
+        case "feed":
+          return (
+            containerWidth >= MIN_EMBED_WIDTH &&
+            containerHeight >= MIN_EMBED_HEIGHT
+          );
+        case "carousel":
+          return (
+            containerWidth >= MIN_EMBED_WIDTH &&
+            containerHeight >= MIN_EMBED_HEIGHT
+          );
+        case "grid":
+          return (
+            gridColumn > 0 &&
+            containerWidth / gridColumn >= MIN_GRID_VIDEO_WIDTH
+          );
+        default:
+          return true;
+      }
+    };
+
+    // Create responsive utilities based on effective video width
+    const responsive = {
+      breakpoints,
+      containerWidth,
+      containerHeight,
+      effectiveVideoWidth,
+      isXs: effectiveVideoWidth <= breakpoints.xs,
+      isSm: effectiveVideoWidth <= breakpoints.sm,
+      isMd: effectiveVideoWidth <= breakpoints.md,
+      isLg: effectiveVideoWidth <= breakpoints.lg,
+      canShowEngagement: canShowEngagement(),
+    };
+
+    return responsive;
+  }, [
+    rootElement,
+    embedData?.style,
+    embedData?.grid_layout?.column,
+    customization,
+  ]);
+
   return {
     dimensions: dimensionsConfig,
     view: viewConfig,
     header: headerConfig,
     video: videoConfig,
+    contentDisplay: contentDisplayConfig,
     community: communityConfig,
     engagement: engagementConfig,
     links: linkConfig,
@@ -368,6 +466,7 @@ export function useEmbedConfigs() {
     expandViewConfig: expandView,
     layoutConfig,
     modalConfig,
+    responsive: responsiveConfig,
     rawCustomization: customization as CustomizationType | null,
     embedStyle: viewConfig.embedStyle,
   };

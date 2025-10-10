@@ -46,9 +46,9 @@ export const videoSchema = z.object({
     })
     .nullish()
     .optional(),
-    placement_card_layout_id: z.number().nullish().optional(),
-    placement_video_layout_id: z.number().nullish().optional(),
-    placement_card_section_layout_id: z.number().nullish().optional(),
+  placement_card_layout_id: z.number().nullish().optional(),
+  placement_video_layout_id: z.number().nullish().optional(),
+  placement_card_section_layout_id: z.number().nullish().optional(),
 });
 
 // Define the loop schema
@@ -112,7 +112,10 @@ const SectionSchema = z
     id: z.string().nullish(),
     title: z.string().nullish(),
     description: z.string().nullish(),
-    position: z.number().nullish()
+    position: z.number().nullish(),
+    thumbnail_url: z.string().nullish(),
+    cover_url: z.string().nullish(),
+    no_of_clips: z.number().nullish(),
   })
   .nullish()
   .optional();

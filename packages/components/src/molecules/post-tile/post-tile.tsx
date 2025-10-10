@@ -103,6 +103,7 @@ export function PostTile({
                       iconHeight={16}
                       iconWidth={16}
                       theme="dark"
+                      type="feed"
                     />
                   ),
                 },

@@ -193,6 +193,8 @@ type ReactionKeys = {
   comment_unselected: ReactionKey;
   feed_selected: ReactionKey;
   feed_unselected: ReactionKey;
+  social_count_white: ReactionKey;
+  social_count_black: ReactionKey
   // feed_animate: ReactionKey
 };
 

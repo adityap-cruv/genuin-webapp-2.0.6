@@ -952,15 +952,14 @@ export class GenuinSDK {
       answerToReturn.placementId = liveData.placement_id
       answerToReturn.styleId = liveData.style_id
       answerToReturn.embedId = undefined
-      answerToReturn.apiKey = undefined
 
       // Parse the placement to get embed details
-      if (answerToReturn.styleId) {
-        answerToReturn.embedDetails = parsePlacementToEmbedData(
-          liveData,
-          answerToReturn.styleId,
-        )
-      }
+      // if (answerToReturn.styleId) {
+      //   answerToReturn.embedDetails = parsePlacementToEmbedData(
+      //     liveData,
+      //     answerToReturn.styleId,
+      //   )
+      // }
     }
 
     answerToReturn.apiKey = liveData.api_key

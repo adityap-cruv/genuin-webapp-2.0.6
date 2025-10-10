@@ -61,7 +61,11 @@ export function parseFeed(
       videoLayoutId: item.video.video_layout_id || null,
       // cardLayoutType: mapVideoLayoutId(item.video.card_layout_id),
       // videoLayoutType: mapVideoLayoutId(item.video.video_layout_id),
-      duration: item.video.duration || null,
+      duration: typeof item.video.duration === "number"
+        ? item.video.duration
+        : typeof item.video.meta_data?.duration === "number"
+        ? item.video.meta_data.duration
+        : null,
       attributes: item.video.attributes || null,
       placement_card_layout_id: item.video.placement_card_layout_id || null,
       placement_video_layout_id: item.video.placement_video_layout_id || null,
@@ -132,6 +136,9 @@ export function parseFeed(
       title: item.section?.title || null,
       description: item.section?.description || null,
       position: item.section?.position || null,
+      cover_url: item.section?.cover_url || null,
+      thumbnail_url: item.section?.thumbnail_url || null,
+      no_of_clips: item.section?.no_of_clips || null,
     },
   }));
 }

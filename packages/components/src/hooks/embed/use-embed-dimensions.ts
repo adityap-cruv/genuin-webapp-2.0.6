@@ -108,7 +108,7 @@ export function useEmbedDimensions() {
       DEFAULT_WIDTH;
 
     const availableHeight = Math.max(
-      containerHeight - headerHeight - statsHeight - linkoutHeight,
+      containerHeight - headerHeight,
       MIN_CAROUSEL_HEIGHT
     );
 

@@ -5,7 +5,6 @@ import { useEffect, useState, ComponentProps, useMemo } from "react";
 import { cn, getAspectRatio } from "@genuin/ui/lib/utils";
 import { useEmbedDimensions } from "@genuin/components/hooks/embed/use-embed-dimensions";
 import { EmbedItem } from "../embed-tile-item";
-import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { EmbedHeader } from "@genuin/components/molecules/embed-header";
 
 export function GridView({
@@ -27,7 +26,6 @@ export function GridView({
   moveToNextTime: number;
 } & ComponentProps<"div">) {
   const { embedEventBus } = useEmbedContext();
-  const { view } = useEmbedConfigs();
   const { updateActiveIndex } = useEmbedManagerContext();
   const [isHovering, setIsHovering] = useState(false);
   const { containerHeight, containerWidth, headerHeight } =
@@ -100,10 +98,7 @@ export function GridView({
         variant="grid"
       />
       <div
-        className={cn(
-          "gencl:w-full gencl:gap-2",
-          view.enableAdaptiveVideo && "gencl:h-full"
-        )}
+        className={cn("gencl:w-full gencl:gap-2")}
         style={{
           display: "grid",
           gridTemplateColumns: `repeat(${cols}, 1fr)`,
@@ -114,18 +109,13 @@ export function GridView({
           <div
             key={index}
             className={cn(
-              view.enableAdaptiveVideo ? "gencl:h-full gencl:w-full" : "",
               "gencl:relative gencl:overflow-hidden gencl:rounded-md",
               "gencl:transition-all gencl:duration-300 gencl:ease-in-out",
               "gencl:cursor-pointer"
             )}
-            style={
-              view.enableAdaptiveVideo
-                ? undefined
-                : {
-                    aspectRatio: `${widthRatio} / ${heightRatio}`,
-                  }
-            }
+            style={{
+              aspectRatio: `${widthRatio} / ${heightRatio}`,
+            }}
             onClick={() => {
               embedEventBus.emit(
                 "activePlayerTypeChange",

@@ -44,8 +44,8 @@ export function SdkSkeleton({
   availableHeight,
   ...restProps
 }: CarouselSkeletonProps & {
-  containerHeight?: number;
-  containerWidth?: number;
+  containerHeight: number;
+  containerWidth: number;
   statsHeight: number;
   linkoutHeight: number;
   spaceBetweenVideos: number;
@@ -132,7 +132,7 @@ export function SdkSkeleton({
             width: containerWidth || 0,
           }}
           style={{
-            height: availableHeight + linkoutHeight + statsHeight,
+            height: availableHeight,
           }}
         >
           {skeletonItems.map((_, idx) => {
@@ -157,7 +157,7 @@ function NavigationButtons({
   const config = useEmbedConfigs();
 
   // Only render navigation buttons if they're enabled in config
-  if (!config.view.showNavigation) {
+  if (!config.view.isNavigationControlEnabled) {
     return null;
   }
 
@@ -242,9 +242,14 @@ const embedHeaderSkeletonVariants = cva(
 function EmbedHeaderSkeleton({
   variant,
 }: VariantProps<typeof embedHeaderSkeletonVariants>) {
-  const { header } = useEmbedConfigs();
+  const { header, view, contentDisplay } = useEmbedConfigs();
   const { headerHeight } = useEmbedDimensions();
-  if (!header.showHeader) return null;
+
+  if (
+    !header.showHeader ||
+    (view.isPlacementView && !contentDisplay.showStyleDetails)
+  )
+    return;
 
   return (
     <div

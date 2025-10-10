@@ -5,6 +5,7 @@ import { EmbedEventContextType } from "@genuin/components/context/embed/event-bu
 import { useEmbedManagerContext } from "./context";
 import { useDebounceCallback } from "usehooks-ts";
 import { useEmbedContext } from "@genuin/components/context";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 type EmbedItemProps = Omit<
   ComponentProps<typeof EmbedTile>,
@@ -18,8 +19,9 @@ export function EmbedItem({
   postDetails,
   ...restProps
 }: EmbedItemProps) {
-  const { updateActiveIndex, goToNextVideo, activeIndex } =
+  const { updateActiveIndex, goToNextVideo, activeIndex, moveToNext } =
     useEmbedManagerContext();
+  const config = useEmbedConfigs();
   const { embedEventBus, updateSelectedSection } = useEmbedContext();
   const [embedIsActive, setEmbedIsActive] = useState(
     embedEventBus.getContext().activePlayerType === "embed"
@@ -52,12 +54,19 @@ export function EmbedItem({
     debouncedSetActiveIndex.cancel();
   }, [debouncedSetActiveIndex]);
 
+  // Handle automatic progression when video ends
+  const handlePlayerIterationEnd = useCallback(() => {
+    if (!(moveToNext && config.view.isPlacementView)) return;
+
+    goToNextVideo();
+  }, [moveToNext, goToNextVideo, config]);
+
   return (
     <EmbedTile
       className={cn("gencl:cursor-pointer")}
       postDetails={postDetails}
       isActive={activeIndex === index && embedIsActive}
-      onPlayerIterationEnd={goToNextVideo}
+      onPlayerIterationEnd={handlePlayerIterationEnd}
       onMouseEnter={debouncedSetActiveIndex}
       onMouseLeave={handleMouseLeave}
       onClick={() => {

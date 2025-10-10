@@ -24,20 +24,20 @@ type Story = StoryObj<typeof Embed>;
 export const Carousel: Story = {
   name: "Embed Carousel",
   args: {
-    feedData: testFeedData,
+    // feedData: testFeedData,
   },
 };
 
 export const Feed: Story = {
   name: "Embed Feed",
   args: {
-    feedData: testFeedData,
+    // feedData: testFeedData,
   },
 };
 
 export const Grid: Story = {
   name: "Embed Grid",
   args: {
-    feedData: testFeedData,
+    // feedData: testFeedData,
   },
 };

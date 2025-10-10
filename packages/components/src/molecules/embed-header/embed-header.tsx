@@ -35,12 +35,16 @@ export function EmbedHeader({
   variant,
   ...restProps
 }: EmbedHeaderPropsType) {
-  const { header } = useEmbedConfigs();
+  const { header, view, contentDisplay } = useEmbedConfigs();
   const { brandDetails } = useBaseContext();
   const { track, EventName } = useAnalytics();
 
   // Use the header.showHeader property from our organized config
-  if (!header.showHeader) return;
+  if (
+    !header.showHeader ||
+    (view.isPlacementView && !contentDisplay.showStyleDetails)
+  )
+    return;
 
   return (
     <div

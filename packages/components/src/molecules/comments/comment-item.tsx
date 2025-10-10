@@ -108,6 +108,7 @@ export const CommentItem = memo(function CommentItem({
                 theme="light"
                 iconHeight={16}
                 iconWidth={16}
+                type="comment"
               />
               <p className="gencl:text-body-2-medium gencl:text-secondary-600">
                 {comment.noOfSparks}

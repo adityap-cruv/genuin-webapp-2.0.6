@@ -23,6 +23,7 @@ type DynamicReactionIconProps = {
   iconHeight?: number;
   iconWidth?: number;
   className?: string;
+  type: "feed" | "comment" | "social_count";
 } & VariantProps<typeof reactionButtonVariant>;
 
 export function DynamicReactionIcon({
@@ -33,27 +34,35 @@ export function DynamicReactionIcon({
   // sparkCount = 0,
   iconWidth = 32,
   className,
+  type = "feed",
 }: DynamicReactionIconProps) {
   const {
     brandDetails: { reactions },
   } = useBaseContext();
   const iconToShow = useMemo(() => {
     const reaction = reactions;
-    const forComment = theme === "light";
 
     // In case there is no reactions in config then we will show the spark icon.
-    if (!reaction) return getUrlForReaction("spark", isSparked, forComment);
+    if (!reaction)
+      return getUrlForReaction("spark", isSparked, theme === "light");
 
-    if (forComment) {
-      return isSparked
-        ? reaction?.keys.comment_selected.svg
-        : reaction?.keys.comment_unselected.svg;
-    } else {
-      return isSparked
-        ? reaction?.keys.feed_selected.svg
-        : reaction?.keys.feed_unselected.svg;
+    switch (type) {
+      case "comment":
+        return isSparked
+          ? reaction?.keys.comment_selected.svg
+          : reaction?.keys.comment_unselected.svg;
+      case "feed":
+        return isSparked
+          ? reaction?.keys.feed_selected.svg
+          : reaction?.keys.feed_unselected.svg;
+      case "social_count":
+        return theme === "dark"
+          ? reaction?.keys.social_count_white.svg
+          : reaction?.keys.social_count_black.svg;
+      default:
+        return getUrlForReaction("spark", isSparked, theme === "light");
     }
-  }, [reactions, isSparked, theme]);
+  }, [reactions, isSparked, theme, type]);
 
   return (
     <>
