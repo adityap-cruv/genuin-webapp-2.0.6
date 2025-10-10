@@ -285,6 +285,7 @@ export function Embed({
               style={{
                 height: availableHeight,
               }}
+              // freeMode={true}
               onSwiper={(swiperInstance) => setSwiper(swiperInstance)}
             >
               {videos?.map((videoData, idx) => {

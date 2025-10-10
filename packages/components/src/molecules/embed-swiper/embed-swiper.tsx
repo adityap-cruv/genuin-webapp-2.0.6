@@ -1,6 +1,6 @@
 import { ComponentProps, type ReactNode } from "react";
 import { Swiper } from "swiper/react";
-import { Mousewheel } from "swiper/modules";
+import { Mousewheel, FreeMode } from "swiper/modules";
 import { getSlidesPerView, SWIPER_CONFIG } from "./utils";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 import "swiper/css";
@@ -15,6 +15,7 @@ type EmbedSwiperProps = {
     height: number;
   };
   aspectRatio?: string;
+  freeMode?: boolean;
 } & ComponentProps<typeof Swiper>;
 
 /**
@@ -30,6 +31,7 @@ export function EmbedSwiper({
   containerDimensions,
   className,
   aspectRatio,
+  freeMode = false,
   ...restProps
 }: EmbedSwiperProps) {
   const { isWindows } = useDeviceDetection();
@@ -47,7 +49,8 @@ export function EmbedSwiper({
       }
       spaceBetween={spaceBetweenVideos}
       speed={SWIPER_CONFIG.SCROLL_DELAY}
-      modules={[Mousewheel]}
+      modules={freeMode ? [Mousewheel, FreeMode] : [Mousewheel]}
+      freeMode={freeMode}
       mousewheel={{
         forceToAxis: true,
         releaseOnEdges: true,

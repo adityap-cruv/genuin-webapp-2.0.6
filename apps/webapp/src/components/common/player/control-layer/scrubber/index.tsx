@@ -23,6 +23,7 @@ export function Scrubber({ spriteUrl, className, value, ...restProps }: Scrubber
   // Handle touch event for seeking
   const handleSeek = useCallback(
     (value: number[]) => {
+      if (!value[0]) return
       setProgressValue(value[0])
       setShowScrubber(true)
     },
@@ -31,7 +32,7 @@ export function Scrubber({ spriteUrl, className, value, ...restProps }: Scrubber
 
   const handleValueCommit = useCallback(
     (value: number[]) => {
-      if (!duration) return
+      if (!duration || !value[0]) return
 
       const seekPosition = value[0]
       const seekTime = (seekPosition / 100) * duration

@@ -8,6 +8,9 @@ import { Stats } from "../../stats";
 import { CommentIcon, PlayIcon } from "@genuin/ui";
 import { DynamicReactionIcon } from "../../reaction-button";
 import { Image } from "@genuin/ui/components/image";
+import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import { IHeartControlLayer } from "./iheart";
 
 // Helper function to process video description
 const processVideoDescription = (description: any) => {
@@ -30,12 +33,19 @@ export const Placement: FC<ControlLayerPropsType> = ({
   postDetails,
   className,
   isActive,
+  onReactionStateChange,
   ...restProps
 }) => {
+  const embedDetails = useSafeEmbedContext();
   const { contentDisplay, responsive } = useEmbedConfigs();
   const { isXs, isMd, isSm, isLg } = responsive;
   const shouldHideOnSmall = isXs;
   const shouldUseCompactText = isMd;
+
+  const layoutType = getBrandType(
+    embedDetails?.embedData.placement_card_layout_id,
+    embedDetails?.embedData.placement_video_layout_id
+  );
 
   // Memoize expensive computations and element creation
   const sectionDetails = useMemo(
@@ -279,44 +289,59 @@ export const Placement: FC<ControlLayerPropsType> = ({
     ]
   );
 
-  return (
-    <div
-      className={cn("gencl:h-full gencl:relative", className)}
-      {...restProps}
-    >
-      <div
-        className="gencl:absolute gencl:w-full gencl:flex gencl:justify-between gencl:items-start gencl:gap-2 gencl:text-white gencl:top-0 gencl:p-2 gencl:bg-gradient-to-b gencl:from-black/50 gencl:to-transparent"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Top Layout */}
-        {!(isLg && isActive) ? (
-          <div className="gencl:space-y-2">
-            {layoutSections.top.map((element, index) => (
-              <div key={index}>{element}</div>
-            ))}
-          </div>
-        ) : (
-          <div />
-        )}
+  switch (layoutType) {
+    case "iheart":
+      return (
+        <IHeartControlLayer
+          postDetails={postDetails}
+          className={className}
+          isActive={isActive}
+          onReactionStateChange={onReactionStateChange}
+          {...restProps}
+        />
+      );
 
-        {isActive && (
-          <div>
-            <EmbedControls
-              size={isXs ? "xs" : "sm"}
-              section={postDetails.section}
-            />
-          </div>
-        )}
-      </div>
+    case "default":
+    default:
+      return (
+        <div
+          className={cn("gencl:h-full gencl:relative", className)}
+          {...restProps}
+        >
+          <div
+            className="gencl:absolute gencl:w-full gencl:flex gencl:justify-between gencl:items-start gencl:gap-2 gencl:text-white gencl:top-0 gencl:p-2 gencl:bg-gradient-to-b gencl:from-black/50 gencl:to-transparent"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Top Layout */}
+            {!(isLg && isActive) ? (
+              <div className="gencl:space-y-2">
+                {layoutSections.top.map((element, index) => (
+                  <div key={index}>{element}</div>
+                ))}
+              </div>
+            ) : (
+              <div />
+            )}
 
-      {/* Bottom Layout */}
-      <div className="gencl:absolute gencl:bottom-0 gencl:p-2 gencl:text-white gencl:w-full gencl:bg-gradient-to-t gencl:from-black/50 gencl:to-transparent">
-        <div className="gencl:space-y-2">
-          {layoutSections.bottom.map((element, index) => (
-            <div key={index}>{element}</div>
-          ))}
+            {isActive && (
+              <div>
+                <EmbedControls
+                  size={isXs ? "xs" : "sm"}
+                  section={postDetails.section}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Bottom Layout */}
+          <div className="gencl:absolute gencl:bottom-0 gencl:p-2 gencl:text-white gencl:w-full gencl:bg-gradient-to-t gencl:from-black/50 gencl:to-transparent">
+            <div className="gencl:space-y-2">
+              {layoutSections.bottom.map((element, index) => (
+                <div key={index}>{element}</div>
+              ))}
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  );
+      );
+  }
 };

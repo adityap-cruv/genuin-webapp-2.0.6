@@ -289,13 +289,26 @@ export function encodeVideoSourceUrl(videoSource: string) {
 
 /**
  * Formats a timestamp into a month-day or month-day-year string
+ * If the date is today, returns "Today"
  * If the year matches the current year, only month and day are shown
  * @param timestamp Unix timestamp in seconds
- * @returns Formatted date string
+ * @returns Formatted date string or "Today"
  */
 export function getMonthYear(timestamp: number): string {
   const date = new Date(timestamp * 1000);
-  const currentYear = new Date().getFullYear();
+  const now = new Date();
+
+  // Check if the date is today
+  const isToday =
+    date.getDate() === now.getDate() &&
+    date.getMonth() === now.getMonth() &&
+    date.getFullYear() === now.getFullYear();
+
+  if (isToday) {
+    return "Today";
+  }
+
+  const currentYear = now.getFullYear();
   const dateYear = date.getFullYear();
 
   // Format based on whether the year matches current year

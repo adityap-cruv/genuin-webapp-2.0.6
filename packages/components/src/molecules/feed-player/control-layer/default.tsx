@@ -2,6 +2,7 @@ import { ControlLayerPropsType } from "./control-layer.types";
 import { cn } from "@genuin/ui/lib/utils";
 import React, { useCallback } from "react";
 import { useBaseContext } from "@genuin/components/context/base";
+import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
 
 import { usePlayerContext } from "../context/context";
 import { Controls } from "./controls";
@@ -14,6 +15,7 @@ import { Linkouts } from "@genuin/components/organisms/linkouts/linkouts";
 import { SpeedControlSideBars } from "../../playback-speed/speed-control-bars";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { VideoEditActionButtons } from "./controls/control-buttons";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 export function Default({
   className,
@@ -35,12 +37,21 @@ export function Default({
   expandViewDetails = true,
   ...restProps
 }: ControlLayerPropsType) {
-  const { showExpandView, togglePlay, toggleMuted, muted } = usePlayerContext();
-  const { gestureOverlayUI, hideGestureOverlay } = useGestureOverlayManager();
-  const { showSeeker } = usePlayerContext();
-  const { isMobile } = useDeviceDetectMediaQuery();
-
   const { brandDetails, playbackSpeed } = useBaseContext();
+  const { showExpandView, togglePlay, toggleMuted, muted, showSeeker } =
+    usePlayerContext();
+  const { gestureOverlayUI, hideGestureOverlay } = useGestureOverlayManager();
+  const { isMobile } = useDeviceDetectMediaQuery();
+  const embedConfig = useEmbedConfigs();
+
+  const cardLayoutId = embedConfig.view.isPlacementView
+    ? postDetails.video.placement_card_layout_id
+    : postDetails.video.cardLayoutId;
+  const videoLayoutId = embedConfig.view.isPlacementView
+    ? postDetails.video.placement_video_layout_id
+    : postDetails.video.videoLayoutId;
+
+  const layoutType = getBrandType(cardLayoutId, videoLayoutId);
 
   // Extract properties with fallbacks to prevent undefined errors
   const tapBehavior = brandDetails?.web_configs?.tap_behavior || 1; // Default to 1 if undefined
@@ -81,31 +92,76 @@ export function Default({
     [muted]
   );
 
-  return (
-    <>
-      <div
-        onClick={handleVideoClick}
-        className={cn(
-          "group gencl:inset-0 gencl:z-10 gencl:flex gencl:justify-center",
-          // showSeeker && "gencl:-translate-y-4",
-          // showScrubber ? "gencl:hidden" : "gencl:block",
-          className
-        )}
-        {...restProps}
-      >
-        <Controls
-          showCloseButton={showCloseButton}
-          enableExpand={enableExpand}
-          className={cn(
-            isMobile
-              ? `gencl:z-20 ${showExpandView && "gencl:top-0"}`
-              : "gencl:group-hover:opacity-100 gencl:group-hover:pointer-events-auto gencl:opacity-0 gencl:pointer-events-none gencl:transition-opacity gencl:duration-300"
-          )}
-          variant={isSectioned ? "sectioned" : "default"}
-        />
+  switch (layoutType) {
+    case "iheart":
+      return (
+        <>
+          <div
+            onClick={() => {
+              togglePlay(true);
+            }}
+            className={cn(
+              "group gencl:inset-0 gencl:z-10 gencl:flex gencl:justify-center",
+              className
+            )}
+            {...restProps}
+          >
+            {(showExpandView || isMobile) && expandViewDetails && (
+              <ExpandViewDetails
+                postDetails={postDetails}
+                isActive={isActive}
+                onCommunityJoinStatusChange={onCommunityJoinStatusChange}
+                onGroupJoinStatusChange={onGroupJoinStatusChange}
+                onGroupSubscriptionChange={onGroupSubscriptionChange}
+                onReactionStateChange={onReactionStateChange}
+                onCommentCountChange={onCommentCountChange}
+                variant={variant}
+                className={cn(playbackSpeed.speed !== 1 && "gencl:invisible")}
+              />
+            )}
 
-        {/* this is wallet badge for wallet. */}
-        {/* {isInModal && (
+            <PlayingState
+              showOnlyPlayAction={true}
+              className={cn(
+                "gencl:absolute gencl:left-1/2 gencl:top-1/2 gencl:flex gencl:items-center",
+                "gencl:justify-center gencl:h-16 gencl:w-16",
+                "gencl:-translate-x-1/2 gencl:-translate-y-1/2"
+              )}
+            />
+          </div>
+        </>
+      );
+
+    case "grubhub":
+    case "ted":
+    case "walmart":
+    case "default":
+    default:
+      return (
+        <>
+          <div
+            onClick={handleVideoClick}
+            className={cn(
+              "group gencl:inset-0 gencl:z-10 gencl:flex gencl:justify-center",
+              // showSeeker && "gencl:-translate-y-4",
+              // showScrubber ? "gencl:hidden" : "gencl:block",
+              className
+            )}
+            {...restProps}
+          >
+            <Controls
+              showCloseButton={showCloseButton}
+              enableExpand={enableExpand}
+              className={cn(
+                isMobile
+                  ? `gencl:z-20 ${showExpandView && "gencl:top-0"}`
+                  : "gencl:group-hover:opacity-100 gencl:group-hover:pointer-events-auto gencl:opacity-0 gencl:pointer-events-none gencl:transition-opacity gencl:duration-300"
+              )}
+              variant={isSectioned ? "sectioned" : "default"}
+            />
+
+            {/* this is wallet badge for wallet. */}
+            {/* {isInModal && (
         <div
           className={cn(
             "gencl:absolute gencl:right-2 gencl:top-20 gencl:h-fit gencl:w-fit gencl:cursor-pointer gencl:md:right-6 gencl:md:top-6"
@@ -115,92 +171,95 @@ export function Default({
         </div>
       )} */}
 
-        {/** These are play back speed controls. */}
-        {/* <PlaybackControls /> */}
+            {/** These are play back speed controls. */}
+            {/* <PlaybackControls /> */}
 
-        {/**
-         * This is the expand view details.
-         * It will show the details of the post. If post is expanded.
-         */}
-        {(showExpandView || isMobile) && expandViewDetails ? (
-          <ExpandViewDetails
-            postDetails={postDetails}
-            isActive={isActive}
-            onCommunityJoinStatusChange={onCommunityJoinStatusChange}
-            onGroupJoinStatusChange={onGroupJoinStatusChange}
-            onGroupSubscriptionChange={onGroupSubscriptionChange}
-            onReactionStateChange={onReactionStateChange}
-            onCommentCountChange={onCommentCountChange}
-            variant={variant}
-            className={cn(playbackSpeed.speed !== 1 && "gencl:invisible")}
-          />
-        ) : (
-          <div
-            className={cn(
-              "gencl:absolute gencl:bottom-0 gencl:w-full gencl:p-2 gencl:transition-all",
-              showSeeker && "gencl:bottom-4"
-            )}
-          >
             {/**
-             * This section renders the video interaction buttons:
-             * - "Trim" button if `clipVideo` is enabled
-             * - "Edit Cover" button if `editCover` is enabled
-             *
-             * Both buttons trigger the same `editClipVideo` callback with the source URL
+             * This is the expand view details.
+             * It will show the details of the post. If post is expanded.
              */}
-            <VideoEditActionButtons
-              clipVideo={clipVideo}
-              editCover={editCover}
-              onClickClip={() => editClipVideo?.(postDetails.video.source)}
-              onClickEditCover={() =>
-                editCoverImage?.(postDetails.video.source)
-              }
-            />
+            {(showExpandView || isMobile) && expandViewDetails ? (
+              <ExpandViewDetails
+                postDetails={postDetails}
+                isActive={isActive}
+                onCommunityJoinStatusChange={onCommunityJoinStatusChange}
+                onGroupJoinStatusChange={onGroupJoinStatusChange}
+                onGroupSubscriptionChange={onGroupSubscriptionChange}
+                onReactionStateChange={onReactionStateChange}
+                onCommentCountChange={onCommentCountChange}
+                variant={variant}
+                className={cn(playbackSpeed.speed !== 1 && "gencl:invisible")}
+              />
+            ) : (
+              <div
+                className={cn(
+                  "gencl:absolute gencl:bottom-0 gencl:w-full gencl:p-2 gencl:transition-all",
+                  showSeeker && "gencl:bottom-4"
+                )}
+              >
+                {/**
+                 * This section renders the video interaction buttons:
+                 * - "Trim" button if `clipVideo` is enabled
+                 * - "Edit Cover" button if `editCover` is enabled
+                 *
+                 * Both buttons trigger the same `editClipVideo` callback with the source URL
+                 */}
+                <VideoEditActionButtons
+                  clipVideo={clipVideo}
+                  editCover={editCover}
+                  onClickClip={() => editClipVideo?.(postDetails.video.source)}
+                  onClickEditCover={() =>
+                    editCoverImage?.(postDetails.video.source)
+                  }
+                />
 
-            <Linkouts
-              isActive={isActive}
-              linkouts={postDetails.video.linkouts}
-              linkoutId={postDetails.video.linkoutId}
-            />
-          </div>
-        )}
+                <Linkouts
+                  isActive={isActive}
+                  linkouts={postDetails.video.linkouts}
+                  linkoutId={postDetails.video.linkoutId}
+                />
+              </div>
+            )}
 
-        {/**
-         * This is the player's state whether it is playing or paused or buffering.
-         */}
-        <PlayingState
-          className={cn(
-            "gencl:absolute gencl:left-1/2 gencl:top-1/2 gencl:flex gencl:items-center",
-            "gencl:justify-center gencl:h-16 gencl:w-16",
-            "gencl:-translate-x-1/2 gencl:-translate-y-1/2"
-          )}
-        />
-
-        {/* This is the playback speed controls for the desktop. */}
-        {playback_speed_enabled && (
-          <>
-            <PlaybackSpeedCapsule
+            {/**
+             * This is the player's state whether it is playing or paused or buffering.
+             */}
+            <PlayingState
               className={cn(
-                "gencl:absolute gencl:z-10 gencl:transition-all gencl:bottom-12"
-                // showExpandView ? "gencl:bottom-32" : "gencl:bottom-12"
+                "gencl:absolute gencl:left-1/2 gencl:top-1/2 gencl:flex gencl:items-center",
+                "gencl:justify-center gencl:h-16 gencl:w-16",
+                "gencl:-translate-x-1/2 gencl:-translate-y-1/2"
               )}
             />
-            <SpeedControlSideBars />
-          </>
-        )}
 
-        {/**
-         * This is basically player scrubber.
-         */}
-        <Scrubber
-          spriteUrl={postDetails.video.thumbnailSprite ?? ""}
-          className={cn(
-            "gencl:absolute gencl:bottom-0 gencl:z-20 gencl:transition-all"
-          )}
-        />
+            {/* This is the playback speed controls for the desktop. */}
+            {playback_speed_enabled && (
+              <>
+                <PlaybackSpeedCapsule
+                  className={cn(
+                    "gencl:absolute gencl:z-10 gencl:transition-all gencl:bottom-12"
+                    // showExpandView ? "gencl:bottom-32" : "gencl:bottom-12"
+                  )}
+                />
+                <SpeedControlSideBars />
+              </>
+            )}
 
-        {gestureOverlayUI}
-      </div>
-    </>
-  );
+            {/**
+             * This is basically player scrubber.
+             */}
+            <Scrubber
+              spriteUrl={postDetails.video.thumbnailSprite ?? ""}
+              className={cn(
+                "gencl:absolute gencl:bottom-0 gencl:z-20 gencl:transition-all",
+                showSeeker &&
+                  "gencl:mx-auto gencl:px-4 gencl:-translate-y-2 gencl:pb-3 gencl:py-1.5"
+              )}
+            />
+
+            {gestureOverlayUI}
+          </div>
+        </>
+      );
+  }
 }

@@ -16,6 +16,11 @@ import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { Linkouts } from "@genuin/components/organisms";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { Image } from "@genuin/ui/components/image";
+import { compressText } from "@genuin/components/lib/utils";
+import { Scrubber } from "../scrubber";
+import { IHeartControls, IHeartFollowButton } from "../iheart";
+import { getBrandType } from "../../../../lib/utils/brand-layout";
 
 type ExpandViewProps = ComponentProps<"div"> & {
   postDetails: PostDetailsType;
@@ -35,106 +40,47 @@ type ExpandViewProps = ComponentProps<"div"> & {
   >["onCommentCountChange"];
 } & VariantProps<typeof controlLayerVariant>;
 
-// Layout configuration interface
-interface LayoutConfig {
-  userProfile: "default" | "iheart" | "ted";
-  description: "default" | "iheart" | "ted";
-  linkouts: {
-    cardVariant?: "default" | "primary";
-  };
-}
-
-// Layout configurations
-const LAYOUT_CONFIGS: Record<number | "default", LayoutConfig> = {
-  default: {
-    userProfile: "default",
-    description: "default",
-    linkouts: {
-      cardVariant: "default",
-    },
-  },
-  2: {
-    // iHeart
-    userProfile: "iheart",
-    description: "iheart",
-    linkouts: {
-      cardVariant: "primary",
-    },
-  },
-  3: {
-    // TED
-    userProfile: "ted",
-    description: "ted",
-    linkouts: {
-      cardVariant: "default",
-    },
-  },
-  6: {
-    // Walmart
-    userProfile: "default",
-    description: "default",
-    linkouts: {
-      cardVariant: "default",
-    },
-  },
-};
-
 /**
  * Hook to get layout configuration and shared logic
  */
 function useExpandViewConfig(postDetails: PostDetailsType): {
-  config: LayoutConfig;
-  layoutType: "default" | "iheart" | "ted" | "walmart";
+  layoutType: "default" | "iheart" | "ted" | "walmart" | "grubhub";
   defaultOpenCommentDialog: boolean;
   showSeeker: boolean;
   hideCommunityJoinButton: boolean;
   hideGroupSubscriptionButton: boolean;
   showLinkoutInExpand: boolean;
   hideGroupPill: boolean;
+  hideCommunityPill: boolean;
+  showScrubber: boolean;
 } {
-  const { showSeeker } = usePlayerContext();
+  const { showSeeker, showScrubber } = usePlayerContext();
+  const { isDesktop } = useDeviceDetectMediaQuery();
   const embedDetails = useSafeEmbedContext();
   const embedConfig = useEmbedConfigs();
-  const { isDesktop } = useDeviceDetectMediaQuery();
-  const videoLayoutId =
-    postDetails.video.videoLayoutId ?? embedDetails?.embedData.video_layout_id;
-  const placementVideoLayoutId = postDetails.video.placement_video_layout_id;
   const showLinkoutInExpand = embedConfig.links.showLinksInExpand;
-  const hideGroupPill = videoLayoutId === 3;
+
+  const videoLayoutId = embedConfig.view.isPlacementView
+    ? postDetails.video.placement_video_layout_id
+    : postDetails.video.videoLayoutId;
+  const cardLayoutId = embedConfig.view.isPlacementView
+    ? postDetails.video.placement_card_layout_id
+    : postDetails.video.cardLayoutId;
+
+  const layoutType = getBrandType(cardLayoutId, videoLayoutId) as
+    | "default"
+    | "iheart"
+    | "ted"
+    | "walmart"
+    | "grubhub";
+
+  // Configure visibility based on layout type instead of IDs
+  const hideGroupPill = layoutType === "iheart" || layoutType === "ted";
+  const hideCommunityPill = layoutType === "iheart";
   const hideCommunityJoinButton =
-    videoLayoutId === 3 ||
-    (videoLayoutId === 5 && placementVideoLayoutId === 1);
+    layoutType === "iheart" || layoutType === "ted";
   const hideGroupSubscriptionButton =
-    videoLayoutId === 3 ||
-    (videoLayoutId === 5 && placementVideoLayoutId === 1);
-
-  // Determine layout type and config
-  let layoutType: "default" | "iheart" | "ted" | "walmart" = "default";
-  let config = LAYOUT_CONFIGS.default;
-
-  // Only determine layout type/config when running inside SDK
-  if (embedDetails) {
-    if (videoLayoutId && LAYOUT_CONFIGS[videoLayoutId]) {
-      config = LAYOUT_CONFIGS[videoLayoutId];
-
-      layoutType = (() => {
-        switch (videoLayoutId) {
-          case 2:
-            return "iheart";
-          case 3:
-            return "ted";
-          case 6:
-            return "walmart";
-          default:
-            return "default";
-        }
-      })();
-    } else if (placementVideoLayoutId === 1) {
-      // Fallback: use Walmart config when placement layout is 1
-      config = LAYOUT_CONFIGS[6]!;
-      layoutType = "walmart";
-    }
-  }
+    layoutType === "iheart" || layoutType === "ted";
 
   const defaultOpenCommentDialog = useMemo(() => {
     const openCommentDialog =
@@ -151,7 +97,6 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
   }, [embedDetails, postDetails, isDesktop]);
 
   return {
-    config,
     layoutType,
     defaultOpenCommentDialog,
     showSeeker,
@@ -159,6 +104,8 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
     hideGroupSubscriptionButton,
     showLinkoutInExpand,
     hideGroupPill,
+    hideCommunityPill,
+    showScrubber,
   };
 }
 
@@ -170,29 +117,49 @@ function AdaptiveUserProfile({
   type,
 }: {
   owner: PostDetailsType["owner"];
-  type: "default" | "iheart" | "ted";
+  type: "default" | "iheart" | "ted" | "walmart" | "grubhub";
 }) {
   switch (type) {
     case "iheart":
       return (
-        <div className="gencl:flex gencl:gap-2 gencl:items-center gencl:text-white gencl:text-body-0-semi-bold">
-          <Avatar
-            imageUrl={owner.profileImage}
-            alt={owner.name ?? ""}
-            isAvatar={owner.isAvatar}
+        <div className="gencl:flex gencl:gap-2 gencl:items-center gencl:text-white">
+          <Image
+            aspectRatio="square"
+            src={
+              "https://fastly.picsum.photos/id/576/200/200.jpg?hmac=pkNsIvSErgVpup1XYfj_NAE5ySK9YL7DmYlGGTTjScw"
+            }
+            alt={'postDetails.video.slug ?? ""'}
+            className="gencl:size-12 gencl:rounded-md gencl:object-cover"
           />
-          <div>
-            <p className="gencl:text-body-2-semi-bold gencl:line-clamp-1">
-              {owner.name}
+          <div className="gencl:w-full gencl:flex gencl:flex-col gencl:gap-1">
+            <p className="gencl:h-5 gencl:text-body-2-semi-bold gencl:line-clamp-1 gencl:tracking-[-0.35px]! gencl:flex gencl:items-center gencl:gap-2">
+              {compressText("iHeart Sports 960", 25)}
+              <span className="gencl:px-1.5 gencl:bg-[#CC032E] gencl:rounded-xs">
+                LIVE
+              </span>
+              <IHeartFollowButton
+                variant="outlined"
+                size="xs"
+                onClick={(e) => e.stopPropagation()}
+              />
             </p>
-            <p className="gencl:text-body-2-normal gencl:line-clamp-2">
-              {owner.bio}
-            </p>
+
+            <ReadMore
+              text={compressText(
+                "The Sunday Read: ‘The Cryptocurrency Scam That Turned a Small Town Against Itself, The Sunday Read: ‘The Cryptocurrency Scam That Turned a Small Town Against Itself ",
+                110
+              )}
+              shouldAnimate
+              textClassName="gencl:text-body-2-normal gencl:tracking-[-0.35px]!"
+              className="gencl:line-clamp-3"
+            />
           </div>
         </div>
       );
     case "ted":
       return null;
+    case "walmart":
+    case "grubhub":
     case "default":
     default:
       return (
@@ -224,25 +191,29 @@ function AdaptiveDescription({
   type,
 }: {
   video: PostDetailsType["video"];
-  type: "default" | "iheart" | "ted";
+  type: "default" | "iheart" | "ted" | "walmart" | "grubhub";
 }) {
   switch (type) {
     case "iheart":
       return (
-        <div>
-          <p className="gencl:text-white gencl:text-body-2-semi-bold gencl:font-normal">
+        <div className="gencl:z-10">
+          <p className="gencl:text-white gencl:text-body-2-normal gencl:font-normal">
             {getMonthYear(video.attributes?.timestamp ?? video.createdAt ?? 0)}{" "}
-            • {getFormattedDuration(String(video.duration ?? ""))}
+            • {getFormattedDuration(String(video.duration ?? ""))}{" "}
+            <ReadMore
+              text={compressText(
+                "Short clip description Lorem ipsum dolor sit amet, consectetur adipiscing elitices Lorem ipsum dolor sit amet, consectetur adipiscing elitices Lorem ipsum dolor sit amet, consectetur adipiscing elitices Lorem ipsum dolor sit amet. Today • 1 min 30 sec  Short clip description Lorem ipsum dolor sit amet, consectetur adipiscing elitices Lorem ipsum dolor sit amet, consectetur adipiscing elitices Lorem ipsum dolor sit amet, consectetur adipiscing elitices Lorem ipsum dolor sit amet.",
+                224
+              )}
+              showExpandText
+              shouldAnimate
+              position="overlay"
+              viewLessText="Less"
+              viewMoreText=""
+              textClassName="gencl:text-body-2-normal gencl:tracking-[-0.35px]!"
+              className="gencl:line-clamp-5 gencl:text-white/70!"
+            />
           </p>
-          <ReadMore
-            showExpandText={false}
-            text={video.description ?? ""}
-            maxLines={2}
-            shouldAnimate
-            position="overlay"
-            textClassName="gencl:text-body-2-normal"
-            showOverlay={true}
-          />
         </div>
       );
     case "ted":
@@ -257,6 +228,8 @@ function AdaptiveDescription({
           showOverlay={true}
         />
       );
+    case "walmart":
+    case "grubhub":
     case "default":
     default:
       return (
@@ -274,22 +247,50 @@ function AdaptiveDescription({
 }
 
 /**
- * Shared actions component
+ * Shared actions component that handles different brand controls
  */
 const SharedActions = memo(function SharedActions({
   postDetails,
   defaultOpenCommentDialog,
   onReactionStateChange,
   onCommentCountChange,
+  layoutType,
 }: {
   postDetails: PostDetailsType;
   defaultOpenCommentDialog: boolean;
+  layoutType: "default" | "iheart" | "ted" | "walmart" | "grubhub";
   onCommentCountChange?: ComponentProps<
     typeof CommentsDialog
   >["onCommentCountChange"];
   onReactionStateChange?: (videoId: string, isReacted: boolean) => void;
 }) {
   const embedDetails = useSafeEmbedContext();
+
+  // Handle iHeart brand controls
+  if (layoutType === "iheart") {
+    return (
+      <IHeartControls
+        onClick={(e) => e.stopPropagation()}
+        className={cn("gencl:gap-1 gencl:z-20")}
+        size="lg"
+        variant="expand"
+        contentId={postDetails.video.id}
+        shareUrl={postDetails.video.shareUrl}
+        slug={postDetails.video.slug}
+        isReacted={postDetails.video.isSparked ?? false}
+        reactionCount={postDetails.video.sparkCount}
+        onReactionStateChange={(isReacted) => {
+          const videoId =
+            postDetails.video.slug === embedDetails?.embedData.startVideoSlug
+              ? postDetails.video.slug
+              : postDetails.video.id;
+          onReactionStateChange?.(videoId, isReacted);
+        }}
+      />
+    );
+  }
+
+  // Default actions for other brands
   return (
     <Actions
       onClick={(e) => e.stopPropagation()}
@@ -350,7 +351,6 @@ export function ExpandViewDetails({
   ...restProps
 }: ExpandViewProps) {
   const {
-    config,
     layoutType,
     defaultOpenCommentDialog,
     showSeeker,
@@ -358,6 +358,8 @@ export function ExpandViewDetails({
     hideGroupSubscriptionButton,
     showLinkoutInExpand,
     hideGroupPill,
+    hideCommunityPill,
+    showScrubber,
   } = useExpandViewConfig(postDetails);
 
   return (
@@ -371,8 +373,11 @@ export function ExpandViewDetails({
     >
       <div
         className={cn(
-          "gencl:flex gencl:w-full gencl:gap-4 gencl:justify-between gencl:items-end",
-          layoutType === "ted" && "gencl:gap-3"
+          "gencl:flex gencl:w-full gencl:gap-4 gencl:justify-between gencl:items-end gencl:transition-opacity gencl:duration-200",
+          layoutType === "ted" && "gencl:gap-3",
+          showScrubber &&
+            layoutType === "iheart" &&
+            "gencl:opacity-0 gencl:pointer-events-none"
         )}
       >
         <div
@@ -383,66 +388,94 @@ export function ExpandViewDetails({
           onClick={(e) => e.stopPropagation()}
         >
           <div onClick={(e) => e.stopPropagation()} className="gencl:z-10">
-            <AdaptiveUserProfile
-              owner={postDetails.owner}
-              type={config.userProfile}
-            />
+            <AdaptiveUserProfile owner={postDetails.owner} type={layoutType} />
           </div>
 
-          {showLinkoutInExpand && (
+          {showLinkoutInExpand && layoutType !== "iheart" && (
             <Linkouts
               linkouts={postDetails.video.linkouts}
               linkoutId={postDetails.video.linkoutId}
               isActive={isActive}
-              className="gencl:w-full gencl:z-10"
-              cardVariant={config.linkouts.cardVariant}
+              className={cn("gencl:w-full gencl:z-10", className)}
             />
           )}
 
-          <AdaptiveDescription
-            video={postDetails.video}
-            type={config.description}
-          />
+          <AdaptiveDescription video={postDetails.video} type={layoutType} />
         </div>
 
         <SharedActions
           postDetails={postDetails}
+          layoutType={layoutType}
           defaultOpenCommentDialog={defaultOpenCommentDialog}
           onReactionStateChange={onReactionStateChange}
           onCommentCountChange={onCommentCountChange}
         />
       </div>
 
-      <div
-        className="gencl:w-full gencl:overflow-x-auto gencl:scrollbar-none"
-        onClick={(e) => {
-          e.stopPropagation();
-        }}
-        style={{
-          scrollBehavior: "smooth",
-        }}
-      >
-        <Pills
-          communityDetails={postDetails.community}
-          groupDetails={postDetails.group}
-          onGroupJoinStatusChange={onGroupJoinStatusChange}
-          onGroupSubscriptionChange={onGroupSubscriptionChange}
-          onCommunityJoinStatusChange={onCommunityJoinStatusChange}
-          variant="fullScreen"
-          className="gencl:min-w-max gencl:pt-3"
-          hideCommunityJoinButton={hideCommunityJoinButton}
-          hideGroupSubscriptionButton={hideGroupSubscriptionButton}
-          hideGroupPill={hideGroupPill}
-        />
-      </div>
+      {(!hideGroupPill || !hideCommunityPill) && (
+        <div
+          className={cn(
+            "gencl:w-full gencl:overflow-x-auto gencl:scrollbar-none gencl:transition-opacity gencl:duration-200",
+            showScrubber &&
+              layoutType === "iheart" &&
+              "gencl:opacity-0 gencl:pointer-events-none"
+          )}
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+          style={{
+            scrollBehavior: "smooth",
+          }}
+        >
+          <Pills
+            communityDetails={postDetails.community}
+            groupDetails={postDetails.group}
+            onGroupJoinStatusChange={onGroupJoinStatusChange}
+            onGroupSubscriptionChange={onGroupSubscriptionChange}
+            onCommunityJoinStatusChange={onCommunityJoinStatusChange}
+            variant="fullScreen"
+            className="gencl:min-w-max gencl:pt-3"
+            hideCommunityJoinButton={hideCommunityJoinButton}
+            hideGroupSubscriptionButton={hideGroupSubscriptionButton}
+            hideGroupPill={hideGroupPill}
+            hideCommunityPill={hideCommunityPill}
+          />
+        </div>
+      )}
 
-      <div
-        className={cn(
-          "gencl:h-0 gencl:transition-all",
-          showSeeker && "gencl:h-4"
+      {layoutType === "iheart" ? (
+        <div className="gencl:h-11 gencl:flex gencl:items-center">
+          <Scrubber
+            className={cn("gencl:z-20 gencl:transition-all")}
+            showOnlyTime={true}
+          />
+        </div>
+      ) : (
+        <div
+          className={cn(
+            "gencl:h-0 gencl:transition-all",
+            showSeeker && "gencl:h-4"
+          )}
+          onClick={(e) => e.stopPropagation()}
+        />
+      )}
+
+      {/* iHeart: Show linkouts below seeker */}
+      {showLinkoutInExpand &&
+        layoutType === "iheart" &&
+        postDetails.video.linkoutId && (
+          <div className="gencl:h-11 gencl:flex gencl:items-center">
+            <Linkouts
+              linkouts={postDetails.video.linkouts}
+              linkoutId={postDetails.video.linkoutId}
+              isActive={isActive}
+              className={cn("gencl:w-full", className)}
+              cardVariant="primary"
+              ctaOnly={true}
+              showImmediately={true}
+            />
+          </div>
         )}
-        onClick={(e) => e.stopPropagation()}
-      />
     </div>
   );
 }

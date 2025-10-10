@@ -1,113 +1,48 @@
-import { cn, getFormattedDuration, getMonthYear } from "@genuin/ui/lib/utils";
+import { cn } from "@genuin/ui/lib/utils";
 import { ControlLayerPropsType } from "./control-layer.types";
 import { Controls } from "./controls/controls";
 import { Linkouts } from "@genuin/components/organisms/linkouts";
 import { type FC } from "react";
 import { Avatar } from "@genuin/ui/components";
 import { ReadMore } from "@genuin/components/molecules/read-more";
-import { Image } from "@genuin/ui/components/image";
 import { PlayIcon, PriceTagIcon } from "@genuin/ui/icons";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { Stats } from "../../stats";
 import { EmbedControls } from "./controls/embed";
+import { IHeartControlLayer } from "./iheart";
 import { useEmbedDimensions } from "@genuin/components/hooks/embed/use-embed-dimensions";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
 
 export const Embed: FC<ControlLayerPropsType> = ({
   postDetails,
   className,
   isActive,
+  onReactionStateChange,
   ...restProps
 }) => {
   const config = useEmbedConfigs();
   const showLayout = config.responsive.canShowEngagement;
   const { containerHeight } = useEmbedDimensions();
+  const embedDetails = useSafeEmbedContext();
 
-  // Determine embed layout type
-  const getEmbedLayoutType = () => {
-    const cardLayoutId = postDetails.video.cardLayoutId;
-    switch (cardLayoutId) {
-      case 2:
-        return "iheart";
-      case 3:
-        return "ted";
-      case 4:
-        return "grubhub";
-      case 6:
-        return "walmart";
-      default:
-        return "default";
-    }
-  };
-
-  const layoutType = !showLayout ? "responsiveness" : getEmbedLayoutType();
+  const layoutType = !showLayout
+    ? "responsiveness"
+    : getBrandType(
+        embedDetails?.embedData.card_layout_id,
+        embedDetails?.embedData.video_layout_id
+      );
 
   switch (layoutType) {
     case "iheart":
       return (
-        <div
-          className={cn(
-            "gencl:flex gencl:flex-col gencl:justify-between",
-            className
-          )}
+        <IHeartControlLayer
+          postDetails={postDetails}
+          className={className}
+          isActive={isActive}
+          onReactionStateChange={onReactionStateChange}
           {...restProps}
-        >
-          {postDetails.video.attributes ? (
-            <div className="gencl:p-3 gencl:text-white! gencl:flex gencl:gap-2">
-              {postDetails.video.attributes?.image_url && (
-                <Image
-                  aspectRatio="square"
-                  src={postDetails.video.attributes?.image_url ?? ""}
-                  alt={postDetails.video.slug ?? ""}
-                  className="gencl:size-12 gencl:rounded-lg gencl:object-cover"
-                />
-              )}
-              <div>
-                <p className="gencl:text-body-2-semi-bold gencl:line-clamp-1">
-                  {postDetails.owner?.name ?? postDetails.owner?.userName}
-                </p>
-                <p className="gencl:text-body-2-normal gencl:line-clamp-2">
-                  {postDetails.video.attributes?.title ??
-                    postDetails?.owner?.bio}
-                </p>
-              </div>
-            </div>
-          ) : (
-            <div />
-          )}
-          <div className="gencl:p-3 gencl:space-y-2 gencl:bg-gradient-to-t gencl:from-black/80 gencl:to-transparent">
-            <div>
-              <p className="gencl:text-white gencl:text-body-2-semi-bold gencl:font-normal">
-                {getMonthYear(
-                  postDetails.video.attributes?.timestamp ??
-                    postDetails.video.createdAt ??
-                    0
-                )}{" "}
-                •{" "}
-                {getFormattedDuration(String(postDetails.video.duration ?? ""))}
-              </p>
-              <ReadMore
-                text={postDetails.video.description}
-                textClassName="gencl:text-white! gencl:text-body-2-medium gencl:font-normal"
-                shouldAnimate
-                maxLines={2}
-              />
-            </div>
-            <div
-              className={cn(
-                "gencl:overflow-hidden gencl:transition-all gencl:ease-in-out gencl:duration-300",
-                isActive
-                  ? "gencl:max-h-12 gencl:mt-2 gencl:opacity-100"
-                  : "gencl:max-h-0 gencl:mt-0 gencl:opacity-0"
-              )}
-            >
-              <EmbedControls
-                onClick={(e) => e.stopPropagation()}
-                className={cn("gencl:gap-2 gencl:z-20")}
-                size="sm"
-              />
-            </div>
-          </div>
-        </div>
+        />
       );
 
     case "ted":
@@ -219,7 +154,12 @@ export const Embed: FC<ControlLayerPropsType> = ({
           className={cn("gencl:h-full gencl:w-full", className)}
           {...restProps}
         >
-          {isActive && <EmbedControls onClick={(e) => e.stopPropagation()} className="gencl:justify-end gencl:p-1" />}
+          {isActive && (
+            <EmbedControls
+              onClick={(e) => e.stopPropagation()}
+              className="gencl:justify-end gencl:p-1"
+            />
+          )}
         </div>
       );
 

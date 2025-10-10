@@ -27,13 +27,18 @@ export function Scrubber({
   value,
   ...restProps
 }: ScrubberPropsType) {
-  const [showScrubber, setShowScrubber] = useState(false);
   const [playerTimeState, setPlayerTimeState] = useState({
     duration: 0,
     currentTime: 0,
   });
-  const { onVideoTimeStateChange, showSeeker, setShowSeeker, play } =
-    usePlayerContext();
+  const {
+    onVideoTimeStateChange,
+    showSeeker,
+    setShowSeeker,
+    play,
+    showScrubber,
+    setShowScrubber,
+  } = usePlayerContext();
   const [progressValue, setProgressValue] = useState(0);
 
   useEffect(() => {
@@ -61,8 +66,9 @@ export function Scrubber({
       if (!value[0]) return;
       setProgressValue(value[0]);
       setShowScrubber(true);
+      setShowSeeker(true);
     },
-    [setShowScrubber]
+    [setProgressValue, setShowScrubber, setShowSeeker]
   );
 
   const handleValueCommit = useCallback(

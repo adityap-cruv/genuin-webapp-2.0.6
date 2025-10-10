@@ -2,6 +2,7 @@
 import { useEffect, useState, useMemo, ComponentProps } from "react";
 import { LinkCard } from "@genuin/components/molecules/linkouts/single-link-card";
 import { MultiLinkCard } from "@genuin/components/molecules/linkouts/multi-link-card";
+import { CTAOnlyCard } from "@genuin/components/molecules/linkouts/cta-only-card";
 import { useGetLinkouts } from "@genuin/components/react-query/api/linkouts/get-linkouts";
 import { LinkoutsType } from "@genuin/components/react-query/api/linkouts/schema";
 import { cn } from "@genuin/ui/lib/utils";
@@ -49,6 +50,11 @@ export type LinkoutsProps = {
    */
   showImmediately?: boolean;
   isOutside?: boolean;
+  /**
+   * If true, only the CTA button will be shown without link thumbnails.
+   * This can be controlled by brand configuration or layout preferences.
+   */
+  ctaOnly?: boolean;
 } & ComponentProps<"div"> &
   VariantProps<typeof linkOutVariant>;
 
@@ -69,6 +75,7 @@ export function Linkouts({
   cardVariant = "default",
   showImmediately = false,
   isOutside = false,
+  ctaOnly = false,
   ...restProps
 }: LinkoutsProps) {
   const { showLinkouts } = useShowLinkouts({
@@ -156,6 +163,19 @@ export function Linkouts({
         (a, b) => (a.position || 0) - (b.position || 0)
       );
 
+      // Render CTA-only card if configured
+      if (ctaOnly) {
+        return (
+          <CTAOnlyCard
+            key={`cta-only-${index}`}
+            isEmbed={isEmbed}
+            ctaText={cta_text ?? ""}
+            ctaLink={cta_link ?? ""}
+            linkCount={sortedLinks.length}
+          />
+        );
+      }
+
       // Render single link card
       if (sortedLinks.length === 1) {
         const link = sortedLinks[0];
@@ -191,7 +211,7 @@ export function Linkouts({
         />
       );
     });
-  }, [linkouts, isEmbed, isOutside, cardVariant]);
+  }, [linkouts, isEmbed, isOutside, cardVariant, ctaOnly]);
 
   // Loading state
   if (isLoading) {

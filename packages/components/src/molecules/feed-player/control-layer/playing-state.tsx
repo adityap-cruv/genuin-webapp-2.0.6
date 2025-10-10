@@ -7,10 +7,15 @@ import { PauseIcon } from "@genuin/ui/icons";
 import { usePlayerContext } from "../context/context";
 import { ComponentProps } from "react";
 
+export type PlayingStateProps = ComponentProps<"div"> & {
+  showOnlyPlayAction?: boolean;
+};
+
 export function PlayingState({
   className,
+  showOnlyPlayAction = false,
   ...restProps
-}: ComponentProps<"div">) {
+}: PlayingStateProps) {
   const { playingState, buttonAction } = usePlayerContext();
 
   // If no buttonAction is set (which happens when not user initiated), don't render anything
@@ -32,6 +37,30 @@ export function PlayingState({
       </div>
     );
 
+  // Special handling for layouts that only show play action
+  if (showOnlyPlayAction) {
+    // Only show PlayIcon when action is PLAY, hide all other actions (PAUSE, MUTE, UNMUTE)
+    if (buttonAction === "PLAY") {
+      return (
+        <div
+          key={buttonAction}
+          className={cn(
+            "gencl:rounded-full gencl:bg-black/40 gencl:align-middle gencl:backdrop-blur-sm",
+            "gencl:delay-500 gencl:animate-fade-out",
+            className
+          )}
+          {...restProps}
+        >
+          <PlayIcon theme="fill-dark" size="xl" />
+        </div>
+      );
+    }
+
+    // Don't show anything for other actions (PAUSE, MUTE, UNMUTE)
+    return null;
+  }
+
+  // Default behavior for non-iHeart layouts
   if (buttonAction === "PAUSE" && playingState === "PAUSED") {
     return (
       <div

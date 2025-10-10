@@ -3,12 +3,12 @@
 import * as React from "react";
 import * as SliderPrimitive from "@radix-ui/react-slider";
 import { cn, getWebpUrlForImage } from "@genuin/ui/utils";
-import { usePlayerContext } from "../../context/context";
 
 type SliderPropsType = React.ComponentPropsWithoutRef<
   typeof SliderPrimitive.Root
 > & {
-  spriteUrl: string;
+  spriteUrl?: string;
+  showOnlyTime?: boolean;
 };
 
 const framesPerRow = 12;
@@ -66,6 +66,7 @@ const ScrubberSlider = React.forwardRef<
       showSeeker,
       showScrubber,
       spriteUrl,
+      showOnlyTime = false,
       ...props
     },
     ref
@@ -75,15 +76,28 @@ const ScrubberSlider = React.forwardRef<
       [value, playerTimeState]
     );
 
+    const formatTime = (seconds: number) => {
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins}:${secs.toString().padStart(2, "0")}`;
+    };
+
     const time = React.useMemo(() => {
       const duration = playerTimeState.duration;
       if (!duration || !value?.[0]) return "00:00";
 
       const totalSeconds = (value[0] / 100) * duration;
+
+      if (showOnlyTime) {
+        const currentTimeFormatted = formatTime(totalSeconds);
+        const durationFormatted = formatTime(duration);
+        return `${currentTimeFormatted} / ${durationFormatted}`;
+      }
+
       const minutes = Math.floor(totalSeconds / 60);
       const seconds = Math.floor(totalSeconds % 60);
       return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-    }, [value, playerTimeState]);
+    }, [value, playerTimeState, showOnlyTime]);
 
     const spritePosition = React.useMemo(() => {
       const timeMs = scrubberStartTime * 1000;
@@ -101,8 +115,6 @@ const ScrubberSlider = React.forwardRef<
         ref={ref}
         className={cn(
           "gencl:relative gencl:left-1/2 gencl:flex gencl:w-full gencl:-translate-x-1/2 gencl:touch-none gencl:select-none gencl:items-center gencl:transition-all",
-          showSeeker &&
-            "gencl:mx-auto gencl:px-4 gencl:-translate-y-2 gencl:pb-3 gencl:py-1.5",
           className
         )}
         value={value}
@@ -121,10 +133,13 @@ const ScrubberSlider = React.forwardRef<
               "gencl:block gencl:cursor-pointer gencl:h-3 gencl:w-3 gencl:rounded-full gencl:border-2 gencl:border-primary gencl:bg-primary gencl:outline-none gencl:transition-all gencl:disabled:pointer-events-none gencl:disabled:opacity-50"
             )}
           >
-            {showScrubber && spriteUrl && (
+            {showScrubber && (
               <div
                 className={cn(
-                  "gencl:flex gencl:w-24 gencl:-translate-x-[40%] gencl:-translate-y-[calc(100%+36px)] gencl:flex-col gencl:items-center gencl:transition-all",
+                  "gencl:flex gencl:w-24 gencl:-translate-x-[40%] gencl:flex-col gencl:items-center gencl:transition-all",
+                  showOnlyTime
+                    ? "gencl:-translate-y-10"
+                    : "gencl:-translate-y-[calc(100%+36px)]",
                   value &&
                     value[0] !== undefined &&
                     value[0] < 3 &&
@@ -135,15 +150,17 @@ const ScrubberSlider = React.forwardRef<
                     "gencl:-translate-x-3/4"
                 )}
               >
-                <div
-                  className="gencl:aspect-reel gencl:w-24 gencl:overflow-clip gencl:rounded-lg gencl:border gencl:border-white"
-                  style={{
-                    height: `${frameHeight}px`,
-                    backgroundImage: `url(${getWebpUrlForImage(spriteUrl)})`,
-                    ...spritePosition,
-                    backgroundSize: `${framesPerRow * frameWidth}px ${framesPerColumn * frameHeight}px`,
-                  }}
-                />
+                {!showOnlyTime && spriteUrl && (
+                  <div
+                    className="gencl:aspect-reel gencl:w-24 gencl:overflow-clip gencl:rounded-lg gencl:border gencl:border-white"
+                    style={{
+                      height: `${frameHeight}px`,
+                      backgroundImage: `url(${getWebpUrlForImage(spriteUrl)})`,
+                      ...spritePosition,
+                      backgroundSize: `${framesPerRow * frameWidth}px ${framesPerColumn * frameHeight}px`,
+                    }}
+                  />
+                )}
                 <p className="gencl:text-body-0-semi-bold gencl:text-white">
                   {time}
                 </p>

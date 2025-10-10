@@ -100,6 +100,11 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
    */
   const [showSeeker, setShowSeeker] = useState(false);
   /**
+   * Whether the user is actively scrubbing/seeking through the video.
+   * True when user starts dragging the scrubber, false when released.
+   */
+  const [showScrubber, setShowScrubber] = useState(false);
+  /**
    * This state is used to play or pause the video player.
    */
   const [feedPlayerShouldPlay, setFeedPlayerShouldPlay] = useState(
@@ -410,6 +415,9 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
 
     showSeeker,
     setShowSeeker,
+
+    showScrubber,
+    setShowScrubber,
 
     feedPlayerShouldPlay:
       isActive &&

@@ -1,0 +1,108 @@
+import { cn } from "@genuin/ui/lib/utils";
+import { type FC } from "react";
+import { Image } from "@genuin/ui/components/image";
+import { IHeartControls, IHeartListenLiveButton } from "./index";
+import { compressText } from "@genuin/components/lib/utils";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import { ControlLayerPropsType } from "../control-layer.types";
+
+export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
+  postDetails,
+  className,
+  onReactionStateChange,
+  ...restProps
+}) => {
+  const embedDetails = useSafeEmbedContext();
+
+  return (
+    <div
+      className={cn("gencl:h-full gencl:relative", className)}
+      {...restProps}
+    >
+      {/* Header Section */}
+      <div className="gencl:absolute gencl:top-0 gencl:w-full gencl:flex gencl:justify-between gencl:items-center gencl:gap-2 gencl:text-white gencl:p-3 gencl:bg-gradient-to-b gencl:from-black/50 gencl:to-transparent">
+        <Image
+          aspectRatio="square"
+          src={
+            "https://fastly.picsum.photos/id/576/200/200.jpg?hmac=pkNsIvSErgVpup1XYfj_NAE5ySK9YL7DmYlGGTTjScw"
+          }
+          alt={postDetails.video.slug ?? ""}
+          className="gencl:size-12 gencl:rounded-md gencl:object-cover"
+        />
+        <div className="gencl:w-full">
+          <p className="gencl:text-body-2-semi-bold gencl:line-clamp-1 gencl:tracking-[-0.35px]!">
+            {/* {postDetails.owner?.name ?? postDetails.owner?.userName} */}
+            iHeart Sports 960
+          </p>
+          <p className="gencl:text-body-2-normal gencl:line-clamp-2 gencl:tracking-[-0.35px]!">
+            {/* {postDetails.video.attributes?.title ?? postDetails?.owner?.bio} */}
+            {compressText("The Bay Area's Sports Talk", 75)}
+          </p>
+        </div>
+      </div>
+
+      {/* Footer Section */}
+      <div className="gencl:absolute gencl:bottom-0 gencl:p-3 gencl:text-white gencl:w-full gencl:space-y-3 gencl:bg-gradient-to-t gencl:from-black/50 gencl:to-transparent">
+        <div>
+          <p className="gencl:text-body-2-normal gencl:line-clamp-2 gencl:tracking-[-0.35px]!">
+            {/* {getMonthYear(
+              postDetails.video.attributes?.timestamp ??
+                postDetails.video.createdAt ??
+                0
+            )}{" "}
+            •{" "}
+            {getFormattedDuration(String(postDetails.video.duration ?? ""))} */}
+            <span>Jan 6, 2025 • 1 min 30 sec</span>{" "}
+            <span className="gencl:text-white/70">
+              {compressText(
+                "Short clip description Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                110
+              )}
+            </span>
+          </p>
+        </div>
+
+        {/* Controls Section */}
+        <div
+          className={cn(
+            "gencl:overflow-hidden gencl:transition-all gencl:ease-in-out gencl:duration-300 gencl:flex gencl:items-center gencl:justify-between"
+          )}
+        >
+          <IHeartControls
+            onClick={(e) => e.stopPropagation()}
+            className={cn("gencl:z-20")}
+            size="lg"
+            variant="clip"
+            contentId={postDetails.video.id}
+            shareUrl={postDetails.video.shareUrl}
+            slug={postDetails.video.slug}
+            isReacted={postDetails.video.isSparked ?? false}
+            reactionCount={postDetails.video.sparkCount}
+            onReactionStateChange={(isReacted) => {
+              const videoId =
+                postDetails.video.slug ===
+                embedDetails?.embedData.startVideoSlug
+                  ? postDetails.video.slug
+                  : postDetails.video.id;
+              onReactionStateChange?.(videoId, isReacted);
+            }}
+          />
+
+          <IHeartListenLiveButton variant="filled" />
+        </div>
+      </div>
+
+      {/* Optional: End of Content Overlay (uncomment when needed) */}
+      {/* <IHeartEndOfContentOverlay
+        onGoToEpisodes={() => {
+          // Handle go to episodes action
+          console.log("Go to episodes clicked");
+        }}
+        onPlayAgain={() => {
+          // Handle play again action
+          console.log("Play again clicked");
+        }}
+      /> */}
+    </div>
+  );
+};

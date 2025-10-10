@@ -37,6 +37,12 @@ export type PlayerContextType = {
   setShowSeeker: React.Dispatch<React.SetStateAction<boolean>>;
 
   /**
+   * Whether the user is actively scrubbing/seeking through the video.
+   */
+  showScrubber: boolean;
+  setShowScrubber: React.Dispatch<React.SetStateAction<boolean>>;
+
+  /**
    * This is the state of the video player.
    * It can be "PLAYING", "PAUSED", or "LOADING".
    */

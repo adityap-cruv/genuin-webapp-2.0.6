@@ -21,6 +21,8 @@ import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { ChevronDownIcon, ChevronUpIcon } from "@genuin/ui/icons";
 import { Swiper } from "swiper/types";
 import { useAnalytics } from "@genuin/components/context";
+import { PlayerHeader } from "./player-header";
+import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
 
 type PlayerListPropsType = {
   posts: PostDetailsType[];
@@ -61,7 +63,7 @@ export function PlayerList({
   onCommentCountChange,
   isSectioned = false,
 }: PlayerListPropsType) {
-  const { showExpandView, activeIndex } = useFeedContext();
+  const { showExpandView, activeIndex, toggleExpandView } = useFeedContext();
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
   const { value, toggle, setValue } = useBoolean(isDesktop);
   const { track, EventName } = useAnalytics();
@@ -71,6 +73,10 @@ export function PlayerList({
     },
   } = useEmbedConfigs();
   const embedDetails = useSafeEmbedContext();
+  const layoutType = getBrandType(
+    embedDetails?.embedData.card_layout_id,
+    embedDetails?.embedData.video_layout_id
+  );
 
   // Section-related state
   const sectionList = embedDetails?.embedEventBus.getContext().sectionList;
@@ -249,6 +255,11 @@ export function PlayerList({
             isMobile && "gencl:h-full gencl:w-full"
           )}
         >
+          {/* Header with back button and centered title */}
+          {layoutType === "iheart" && (
+            <PlayerHeader title="The Daily" onBackClick={toggleExpandView} />
+          )}
+
           {isSectioned && (
             <SectionsTabs onSectionSelect={handleSectionSelect} />
           )}

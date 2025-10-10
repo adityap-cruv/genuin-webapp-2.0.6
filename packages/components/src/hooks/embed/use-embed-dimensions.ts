@@ -64,7 +64,7 @@ export function useEmbedDimensions() {
 
     // Calculate header height based on view type and configuration
     const getHeaderHeight = (): number => {
-      if (!config.header.showHeader) return 0;
+      if (!config.header.showHeader || (config.view.isPlacementView && !config.contentDisplay.showStyleDetails)) return 0;
 
       if (config.view.isFeed) {
         if (config.header.ctaButton?.url) {
@@ -89,12 +89,12 @@ export function useEmbedDimensions() {
     const headerHeight = getHeaderHeight();
     const statsHeight =
       config.engagement.showSocialInteractionData &&
-      config.engagement.showEngagementOnRootElement
+      config.responsive.canShowEngagement
         ? 40
         : 0;
     const linkoutHeight =
       config.links.showLinkOutside &&
-      config.engagement.showEngagementOnRootElement
+      config.responsive.canShowEngagement
         ? 108
         : 0;
 
@@ -126,7 +126,7 @@ export function useEmbedDimensions() {
     config.dimensions.containerWidth,
     config.header.showHeader,
     config.engagement.showSocialInteractionData,
-    config.engagement.showEngagementOnRootElement,
+    config.responsive.canShowEngagement,
     config.links.showLinkOutside,
     config.view.isFeed,
     observedDimensions.width,
