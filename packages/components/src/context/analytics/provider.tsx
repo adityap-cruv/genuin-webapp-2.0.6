@@ -45,7 +45,7 @@ export function AnalyticsProvider({
   isWebSDK,
   embedData,
 }: AnalyticsProviderProps) {
-  const { brandDetails,isInIframe } = useBaseContext();
+  const { brandDetails, isInIframe } = useBaseContext();
   const { user } = useAuthContext();
   const embedDetails = useSafeEmbedContext();
   const pathname = usePathname();
@@ -145,7 +145,11 @@ user_longitude
         // Add non-empty SDK values to the main payload
         Object.assign(initPayload, sdkPayload);
       }
-      AnalyticsService.initialize(initPayload,brandDetails,embedDetails?.embedData)
+      AnalyticsService.initialize(
+        initPayload,
+        brandDetails,
+        embedDetails?.embedData
+      )
         .then(() => {
           // console.log(
           //   "[AnalyticsProvider] AnalyticsService.initialize() called and promise resolved."

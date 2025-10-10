@@ -80,7 +80,6 @@ class AnalyticsServiceSingleton {
     if (this.initializationPromise) {
       return this.initializationPromise;
     }
-
     if (!defaultPayload) {
       console.warn(
         "[AnalyticsService] initialize called without defaultPayload. Analytics events may be missing required fields."
@@ -226,20 +225,39 @@ class AnalyticsServiceSingleton {
     };
   }
 
-  public updatePayload(key: string, value: any) {
-    this.defaultPayload = {
-      ...(this.defaultPayload ?? {
-        user_id: undefined,
-        gen_user_id: undefined,
-        brand_id: undefined,
-        channel: "",
-        environment: "",
-        path: "",
-        query_params: {},
-        title: "",
-      }),
-      [key]: value,
-    } as DefaultAnalyticsPayload;
+  public updatePayload(
+    keyOrObject: string | Partial<DefaultAnalyticsPayload>,
+    value?: any
+  ) {
+    // Ensure base structure exists
+    const basePayload: DefaultAnalyticsPayload = {
+      user_id: undefined,
+      gen_user_id: undefined,
+      brand_id: undefined,
+      channel: "",
+      environment: "",
+      path: "",
+      query_params: {},
+      title: "",
+      ...(this.defaultPayload ?? {}),
+    };
+
+    if (typeof keyOrObject === "string") {
+      // Updating a single key-value pair
+      this.defaultPayload = {
+        ...basePayload,
+        [keyOrObject]: value,
+      };
+    } else if (typeof keyOrObject === "object" && keyOrObject !== null) {
+      // Updating multiple fields via an object
+      this.defaultPayload = {
+        ...basePayload,
+        ...keyOrObject,
+      };
+    } else {
+      // Optional: Handle unexpected input
+      console.warn("Invalid input to updatePayload");
+    }
   }
 
   public async track(

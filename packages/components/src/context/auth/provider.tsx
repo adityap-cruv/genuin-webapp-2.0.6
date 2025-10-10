@@ -25,6 +25,7 @@ import {
   emitRefreshFailedEvent,
   performTokenRefresh,
 } from "./token-refresh";
+import { AnalyticsService } from "../analytics/service";
 
 // Define global window type for genuinAuth
 declare global {
@@ -106,6 +107,14 @@ export function AuthProvider({
     const handleAuthenticateUser = (authCallbackData: any) => {
       setAuthenticatedUser(authCallbackData.payload);
       setAuthenticationStatus("authenticated");
+      const newUser = authCallbackData.payload;
+      AnalyticsService.updatePayload({
+        gen_user_id: newUser.id,
+        user_id: newUser.id,
+        phone_no: newUser.phoneNumber,
+        user_name: newUser.nickname,
+        gen_user_name: newUser.nickname,
+      });
     };
 
     window.genuin.on("sdk:authenticateUser", handleAuthenticateUser);
@@ -149,6 +158,13 @@ export function AuthProvider({
         if (!!newUser) {
           await onSignIn?.(newUser);
         }
+        AnalyticsService.updatePayload({
+          gen_user_id: newUser.id,
+          user_id: newUser.id,
+          phone_no: newUser.phoneNumber,
+          user_name: newUser.nickname,
+          gen_user_name: newUser.nickname,
+        });
         setAuthenticationStatus("authenticated");
       } catch (error) {
         setAuthenticationStatus("unauthenticated");
@@ -186,6 +202,13 @@ export function AuthProvider({
           } as AuthUser;
           await onUpdateUser?.(mergedUser);
           setAuthenticatedUser(mergedUser);
+          AnalyticsService.updatePayload({
+            gen_user_id: mergedUser.id,
+            user_id: mergedUser.id,
+            phone_no: mergedUser.phoneNumber,
+            user_name: mergedUser.nickname,
+            gen_user_name: mergedUser.nickname,
+          });
         }
         setAuthenticationStatus("authenticated");
       } catch (error) {
