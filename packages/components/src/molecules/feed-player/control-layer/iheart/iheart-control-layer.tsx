@@ -1,23 +1,42 @@
 import { cn, getFormattedDuration, getMonthYear } from "@genuin/ui/lib/utils";
 import { type FC } from "react";
 import { Image } from "@genuin/ui/components/image";
-import { IHeartControls, IHeartListenLiveButton } from "./index";
+import {
+  IHeartControls,
+  IHeartListenLiveButton,
+  IHeartEndOfContentOverlay,
+} from "./index";
 import { compressText } from "@genuin/components/lib/utils";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { ControlLayerPropsType } from "../control-layer.types";
+import { useBaseContext } from "@genuin/components/context";
+import { usePlayerContext } from "../../context";
 import { ReadMore } from "@genuin/components/molecules/read-more";
 
 export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
   postDetails,
   className,
   onReactionStateChange,
+  onClick,
   ...restProps
 }) => {
+  const { baseContextManager } = useBaseContext();
   const embedDetails = useSafeEmbedContext();
+  const isWatched = baseContextManager.getVideoState(
+    postDetails.video.id
+  )?.isWatched;
+  const { play } = usePlayerContext();
 
   return (
     <div
       className={cn("gencl:h-full gencl:relative", className)}
+      onClick={(e) => {
+        if (postDetails.video.isWatched || isWatched) {
+          e.stopPropagation();
+          return;
+        }
+        onClick?.(e);
+      }}
       {...restProps}
     >
       {/* Header Section */}
@@ -86,22 +105,27 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
               onReactionStateChange?.(videoId, isReacted);
             }}
           />
-
-          <IHeartListenLiveButton variant="filled" />
+          {/* TODO : iheart phase-2 implementation  */}
+          {/* <IHeartListenLiveButton variant="filled" /> */}
         </div>
       </div>
 
-      {/* Optional: End of Content Overlay (uncomment when needed) */}
-      {/* <IHeartEndOfContentOverlay
-        onGoToEpisodes={() => {
-          // Handle go to episodes action
-          console.log("Go to episodes clicked");
-        }}
-        onPlayAgain={() => {
-          // Handle play again action
-          console.log("Play again clicked");
-        }}
-      /> */}
+      {(postDetails.video.isWatched || isWatched) && (
+        <IHeartEndOfContentOverlay
+          onGoToEpisodes={() => {
+            // Handle go to episodes action
+            console.log("Go to episodes clicked");
+          }}
+          onPlayAgain={() => {
+            // Handle play again action
+            play(true, 0);
+            baseContextManager.setVideoWatched({
+              videoId: postDetails.video.id,
+              isWatched: false,
+            });
+          }}
+        />
+      )}
     </div>
   );
 };

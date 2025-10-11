@@ -3,6 +3,7 @@ import { ExpandViewDetails } from "./expand-view";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { VariantProps } from "class-variance-authority";
 import { controlLayerVariant } from "./control-layer";
+import { BrandType } from "@genuin/components/lib/utils/brand-layout";
 
 export type ControlLayerPropsType = ComponentProps<"div"> & {
   postDetails: PostDetailsType;
@@ -14,6 +15,7 @@ export type ControlLayerPropsType = ComponentProps<"div"> & {
   editCover?: boolean;
   enableExpand?: boolean;
   expandViewDetails?: boolean;
+  layoutType?: "responsiveness" | BrandType;
   editClipVideo?: (url: string) => void;
   editCoverImage?: (url: string) => void;
   onReactionStateChange?: ComponentProps<

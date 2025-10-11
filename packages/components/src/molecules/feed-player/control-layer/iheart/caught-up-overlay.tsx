@@ -19,7 +19,7 @@ export function IHeartCaughtUpOverlay({
     <div
       {...props}
       className={cn(
-        "gencl:pointer-events-none gencl:z-[1000] gencl:h-full gencl:w-full gencl:bg-black/65 gencl:backdrop-blur-sm gencl:flex gencl:flex-col gencl:items-center gencl:justify-center gencl:gap-4",
+        "gencl:pointer-events-none gencl:z-50 gencl:h-full gencl:w-full gencl:bg-black/65 gencl:backdrop-blur-sm gencl:flex gencl:flex-col gencl:items-center gencl:justify-center gencl:gap-4",
         className
       )}
     >

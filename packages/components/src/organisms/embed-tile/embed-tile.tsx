@@ -18,8 +18,11 @@ import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema"
 import { useCallback, useMemo } from "react";
 import { useEmbedContext } from "@genuin/components/context/embed";
 import { DynamicReactionIcon } from "@genuin/components/molecules/reaction-button";
-import { Image } from "@genuin/ui/components/image";
-import { useEmbedDimensions } from "@genuin/components/hooks/embed/use-embed-dimensions";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
+import { IHeartCaughtUpOverlay } from "@genuin/components/molecules/feed-player/control-layer/iheart";
+import { isMiddlewareOverlayEnabled } from "@genuin/components/lib/utils";
+import WatchBoundaryOverlay from "@genuin/components/molecules/feed-player/control-layer/watch-boundary-overlay";
 
 /**
  * Helper function to extract the most appropriate URL from linkouts based on priority:
@@ -93,38 +96,51 @@ export function EmbedTile({
   const { value, toggle } = useBoolean(false);
   // Use the structured config object
   const config = useEmbedConfigs();
+  const shouldShowMiddlewareOverlay = isMiddlewareOverlayEnabled({
+    videoLayoutId: postDetails.video.placement_video_layout_id ?? 0,
+    cardLayoutId: postDetails.video.placement_video_layout_id ?? 0,
+  });
 
   return (
-    <div
-      className={cn(
-        embedTileVariants({ variant }),
-        {
-          "gencl:border gencl:border-secondary-150":
-            config.video.showBorderAroundVideo,
-        },
-        className
-      )}
-      {...restProps}
-    >
-      {/* Take available height after showLinkOutside & showSocialInteractionData gets its height   */}
-      <PlayerProvider
-        isActive={isActive}
-        videoId={postDetails.video.id}
-        showExpandView={value}
-        toggleExpandView={toggle}
-        onPlayerIterationEnd={onPlayerIterationEnd}
-        isEmbed
-        explicitAutoPlay={config.video.videoAutoplay && isActive}
-        explicitLoop={config.video.videoLoop && isActive}
-      >
-        <EmbedPlayer
-          postDetails={postDetails}
-          isActive={isActive}
-          index={index}
+    <>
+      {shouldShowMiddlewareOverlay && postDetails.video.type === "overlay" ? (
+        <WatchBoundaryOverlay
+          videoLayoutId={postDetails.video.placement_video_layout_id ?? 0}
+          cardLayoutId={postDetails.video.cardLayoutId ?? 0}
         />
-      </PlayerProvider>
-      <OutsideComponents postDetails={postDetails} />
-    </div>
+      ) : (
+        <div
+          className={cn(
+            embedTileVariants({ variant }),
+            {
+              "gencl:border gencl:border-secondary-150":
+                config.video.showBorderAroundVideo,
+            },
+            className
+          )}
+          {...restProps}
+        >
+          {/* Take available height after showLinkOutside & showSocialInteractionData gets its height   */}
+          <PlayerProvider
+            isActive={isActive}
+            videoId={postDetails.video.id}
+            showExpandView={value}
+            toggleExpandView={toggle}
+            onPlayerIterationEnd={onPlayerIterationEnd}
+            isEmbed
+            explicitAutoPlay={config.video.videoAutoplay && isActive}
+            explicitLoop={config.video.videoLoop && isActive}
+          >
+            <EmbedPlayer
+              postDetails={postDetails}
+              isActive={isActive}
+              index={index}
+            />
+          </PlayerProvider>
+          <OutsideComponents postDetails={postDetails} />
+        </div>
+      )}
+    </>
   );
 }
 
@@ -143,6 +159,14 @@ function EmbedPlayer({
   const config = useEmbedConfigs();
   const { changeActivePlayerType, embedData } = useEmbedContext();
   const videoCrop = config.video.videoCrop;
+  const embedDetails = useSafeEmbedContext();
+  const showLayout = config.responsive.canShowEngagement;
+  const layoutType = !showLayout
+    ? "responsiveness"
+    : getBrandType(
+        embedDetails?.embedData.card_layout_id,
+        embedDetails?.embedData.video_layout_id
+      );
 
   const handleClickOnEmbedTile = useCallback(() => {
     if (isAdPlaying) {
@@ -214,6 +238,7 @@ function EmbedPlayer({
             ? "gencl:object-cover gencl:h-full gencl:w-full"
             : "gencl:h-full"
         }
+        layoutType={layoutType}
       />
       <ControlLayer
         variant={config.view.isPlacementView ? "placement" : "embed"}
@@ -221,6 +246,7 @@ function EmbedPlayer({
         postDetails={postDetails}
         onClick={handleClickOnEmbedTile}
         onCommentCountChange={undefined}
+        layoutType={layoutType}
       />
     </div>
   );

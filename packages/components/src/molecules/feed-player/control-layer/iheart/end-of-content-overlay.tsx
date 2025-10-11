@@ -1,5 +1,5 @@
 import { Button } from "@genuin/ui";
-import { IHeartPlayAgainIcon } from "@genuin/ui/icons/iheart-icons";
+import { IHeartPlayAgainIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
 import { type ComponentProps } from "react";
 
@@ -18,11 +18,12 @@ export function IHeartEndOfContentOverlay({
     <div
       {...props}
       className={cn(
-        "gencl:absolute gencl:inset-0 gencl:pointer-events-none gencl:z-[1000] gencl:h-full gencl:w-full gencl:bg-black/65 gencl:flex gencl:flex-col gencl:items-center gencl:justify-center gencl:gap-4",
+        "gencl:absolute gencl:inset-0 gencl:pointer-events-none gencl:z-50 gencl:h-full gencl:w-full gencl:bg-black/65 gencl:flex gencl:flex-col gencl:items-center gencl:justify-center gencl:gap-4",
         className
       )}
     >
       <div className="gencl:flex gencl:flex-col gencl:gap-4 gencl:pointer-events-auto">
+        {/* TODO: Move static color declaration to CSS utility class: gencl:text-[#27292D]! */}
         <Button
           onClick={onGoToEpisodes}
           className="gencl:h-11 gencl:text-body-1-semi-bold! gencl:flex gencl:items-center gencl:justify-center gencl:rounded-full gencl:bg-white gencl:px-5 gencl:text-[#27292D]!"

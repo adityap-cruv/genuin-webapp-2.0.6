@@ -61,6 +61,7 @@ type VideoData = {
   no_of_shares?: number;
   linkouts?: Linkout[] | null;
   is_sparked?: boolean;
+  is_watched?: boolean;
   is_read?: boolean;
   clickable_url?: string | null;
   is_pinned?: boolean;

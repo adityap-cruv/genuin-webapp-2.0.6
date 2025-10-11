@@ -1,5 +1,11 @@
 "use client";
-import React, { useState, useCallback, useRef, useEffect } from "react";
+import React, {
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+  useMemo,
+} from "react";
 import OpenPlayerJS from "openplayerjs";
 import { getVideoPlayerConfigs } from "../utils";
 import {
@@ -81,7 +87,8 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   explicitAutoPlay,
   explicitLoop,
 }) => {
-  const { brandDetails, baseEventBus, baseContextManager } = useBaseContext();
+  const { brandDetails, baseEventBus, baseContextManager, muted, setMuted } =
+    useBaseContext();
   const embedDetails = useSafeEmbedContext();
   const embedConfig = useEmbedConfigs();
   const cardLayoutId = embedConfig.view.isPlacementView
@@ -142,13 +149,15 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     isAdPlaying: boolean;
   }>({ isAdPlaying: false });
 
-  const { muted, setMuted } = useBaseContext();
-
   const { track, EventName } = useAnalytics();
+
+  // To check whether video is fully watched or not..
+  const isVideoWatched = baseContextManager.getVideoState(videoId)?.isWatched;
 
   // To check whether player should play or not, based on all the conditions.
   const playerPlayFlag =
     feedPlayerShouldPlay &&
+    !isVideoWatched &&
     isActive &&
     focusState.isFocused &&
     focusState.containerInView;
@@ -162,7 +171,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     const playerConfig = playerConfigRef.current;
     const player = playerRef.current;
     if (!player) return;
-    if (isActive) {
+    if (isActive && !isVideoWatched) {
       // Check if explicit unmute is set to false - if so, don't unmute
       if (playerConfig.unmuteVideo) {
         unmute(false);

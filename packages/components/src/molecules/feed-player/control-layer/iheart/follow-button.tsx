@@ -1,5 +1,5 @@
 import { cn } from "@genuin/ui/lib/utils";
-import { IHeartCheckIcon, IHeartPlusIcon } from "@genuin/ui/icons/iheart-icons";
+import { IHeartCheckIcon, IHeartPlusIcon } from "@genuin/ui/icons";
 import { type ComponentProps } from "react";
 
 interface IHeartFollowButtonProps extends ComponentProps<"div"> {

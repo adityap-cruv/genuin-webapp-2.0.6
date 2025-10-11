@@ -23,124 +23,159 @@ function tryJsonParse<T>(data: string | undefined): T | null {
 
 /**
  * Parses the given response from the Go API into the PostDetailsSchema format.
+ * Optionally inserts a special "overlay" type item at the transition point where videos
+ * change from unwatched to watched (this transition occurs at most once in the feed).
+ *
  * @param data - The response data from the Go API.
- * @returns Parsed data conforming to PostDetailsSchema.
+ * @param shouldShowMiddlewareOverlay - Flag to enable/disable overlay insertion at watch boundary.
+ * @returns Parsed data conforming to PostDetailsSchema with optional overlay inserted at watch boundary.
  */
 export function parseFeed(
-  data: FeedResponseFromGoApi
+  data: FeedResponseFromGoApi,
+  shouldShowMiddlewareOverlay: boolean = false
 ): Array<z.infer<typeof PostDetailsSchema>> {
   if (!data || !Array.isArray(data)) {
     return [];
   }
 
-  return data.map((item) => ({
-    video: {
-      id: item.video.uuid,
-      createdAt: item.video.conversation_at,
-      commentCount: item.video.no_of_comments || 0,
-      shareUrl: item.video.share_url,
-      attachedLink: item.video.attached_link || null,
-      source: item.video.media_url_m3u8 ?? item.video.media_url,
-      isSparked: item.video.is_sparked || false,
-      sparkCount: item.video.no_of_sparks || 0,
-      thumbnail: item.video.thumbnail_url,
-      viewCount: item.video.no_of_views || 0,
-      thumbnailM: item.video.thumbnail_url_m || null,
-      description:
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (tryJsonParse(item.video.description_data) as any) ??
-        item.video.description_text,
-      slug: item.video.slug,
-      linkoutId: item.video.linkouts_id || null,
-      clickableUrl: item.video.clickable_url || null,
-      linkouts: item.video.linkouts || [],
-      isPinned: item.video.is_pinned || false,
-      thumbnailSprite: item.video.sprite_image_url || null,
-      // adUrl: item.video.ads_config?.ads_url || null,
-      cardLayoutId: item.video.card_layout_id || null,
-      videoLayoutId: item.video.video_layout_id || null,
-      // cardLayoutType: mapVideoLayoutId(item.video.card_layout_id),
-      // videoLayoutType: mapVideoLayoutId(item.video.video_layout_id),
-      duration: typeof item.video.duration === "number"
-        ? item.video.duration
-        : typeof item.video.meta_data?.duration === "number"
-        ? item.video.meta_data.duration
-        : null,
-      attributes: item.video.attributes || null,
-      placement_card_layout_id: item.video.placement_card_layout_id || null,
-      placement_video_layout_id: item.video.placement_video_layout_id || null,
-      placement_card_section_layout_id:
-        item.video.placement_card_section_layout_id || null,
-    },
-    group: {
-      id: item.loop.uuid || "",
-      slug: item.loop.slug || "",
-      description: item.loop.group_description || "",
-      shareUrl: item.loop.share_url || undefined,
-      name: item.loop.group_name || "",
-      isSubscribed: item.loop.is_subscriber || false,
-      role: mapGroupJoinStatus(item.loop.request_status),
-      isPrivate: isGroupPrivate(
-        item.loop.actions,
-        item.community.logged_in_user_role,
-        item.loop.member_info
-      ),
-    },
-    community: {
-      id: item.community.uuid || "",
-      shareUrl: item.community.share_url || "",
-      slug: item.community.slug || "",
-      handle: item.community.handle || "",
-      // Check privacy info if type === 1 then it is public, type === 2 then it is private.
-      isPrivate: item.community.type === 2,
-      // is join requested is false because feed api does not give private community videos.
-      userRole: mapCommunityUserRole(item.community.logged_in_user_role),
-      type: item.community.type || null,
-      name: item.community.name || null,
-      profileImage:
-        item.community.dp_s || item.community.dp_m || item.community.dp || null,
-      membersCount: item.community.no_of_members || 0,
-      groupsCount: item.community.no_of_groups || 0,
-      postsCount: item.community.no_of_videos || 0,
-      ...(item.community.brand && {
-        brand: {
-          id: item.community.brand.brand_id,
-          name: item.community.brand.name,
-          slug: item.community.brand.brand_slug,
-          webLogo: item.community.brand.brand_web_logo || null,
-          userLogo: item.community.brand.brand_user_logo || null,
-          handle: item.community.brand.brand_handle ?? undefined,
-        },
-      }),
-    },
-    owner: {
-      profileImage:
-        item.owner.profile_image_s ??
-        item.owner.profile_image_m ??
-        item.owner.profile_image,
-      isAvatar: item.owner.is_avatar,
-      userName: item.owner.username,
-      name: item.owner.name || null,
-      bio: item.owner.bio || null,
-      shareUrl: item.owner.share_url || "",
-      brand: item.owner.brand
-        ? {
-            id: Number(item.owner.brand.brand_id),
-            slug: item.owner.brand.brand_slug,
-            userLogo: item.owner.brand.brand_user_logo || null,
-          }
-        : null,
-    },
-    section: {
-      id: item.section?._id || null,
-      title: item.section?.title || null,
-      description: item.section?.description || null,
-      position: item.section?.position || null,
-      cover_url: item.section?.cover_url || null,
-      thumbnail_url: item.section?.thumbnail_url || null,
-      no_of_clips: item.section?.no_of_clips || null,
-    },
-  }));
+  const result: Array<z.infer<typeof PostDetailsSchema>> = [];
+
+  // Track if we've already found the unwatched -> watched transition
+  // Once found, we can skip further checks for optimization
+  let watchBoundaryFound = false;
+
+  for (let index = 0; index < data.length; index++) {
+    const item = data[index];
+    if (!item) continue;
+
+    const currentIsWatched = item.video?.is_watched || false;
+
+    // Map the API response to our schema
+    const mappedItem: z.infer<typeof PostDetailsSchema> = {
+      video: {
+        id: item.video.uuid,
+        type: "video",
+        createdAt: item.video.conversation_at,
+        commentCount: item.video.no_of_comments || 0,
+        shareUrl: item.video.share_url,
+        attachedLink: item.video.attached_link || null,
+        source: item.video.media_url_m3u8 ?? item.video.media_url,
+        isSparked: item.video.is_sparked || false,
+        isWatched: currentIsWatched,
+        sparkCount: item.video.no_of_sparks || 0,
+        thumbnail: item.video.thumbnail_url,
+        viewCount: item.video.no_of_views || 0,
+        thumbnailM: item.video.thumbnail_url_m || null,
+        description:
+          (tryJsonParse(item.video.description_data) as any) ??
+          item.video.description_text,
+        slug: item.video.slug,
+        linkoutId: item.video.linkouts_id || null,
+        clickableUrl: item.video.clickable_url || null,
+        linkouts: item.video.linkouts || [],
+        isPinned: item.video.is_pinned || false,
+        thumbnailSprite: item.video.sprite_image_url || null,
+        cardLayoutId: item.video.card_layout_id || null,
+        videoLayoutId: item.video.video_layout_id || null,
+        duration: item.video.duration || null,
+        attributes: item.video.attributes || null,
+        placement_card_layout_id: item.video.placement_card_layout_id || null,
+        placement_video_layout_id: item.video.placement_video_layout_id || null,
+        placement_card_section_layout_id:
+          item.video.placement_card_section_layout_id || null,
+      },
+      group: {
+        id: item.loop.uuid || "",
+        slug: item.loop.slug || "",
+        description: item.loop.group_description || "",
+        shareUrl: item.loop.share_url || undefined,
+        name: item.loop.group_name || "",
+        isSubscribed: item.loop.is_subscriber || false,
+        role: mapGroupJoinStatus(item.loop.request_status),
+        isPrivate: isGroupPrivate(
+          item.loop.actions,
+          item.community.logged_in_user_role,
+          item.loop.member_info
+        ),
+      },
+      community: {
+        id: item.community.uuid || "",
+        shareUrl: item.community.share_url || "",
+        slug: item.community.slug || "",
+        handle: item.community.handle || "",
+        isPrivate: item.community.type === 2,
+        userRole: mapCommunityUserRole(item.community.logged_in_user_role),
+        type: item.community.type || null,
+        name: item.community.name || null,
+        profileImage:
+          item.community.dp_s ||
+          item.community.dp_m ||
+          item.community.dp ||
+          null,
+        membersCount: item.community.no_of_members || 0,
+        groupsCount: item.community.no_of_groups || 0,
+        postsCount: item.community.no_of_videos || 0,
+        ...(item.community.brand && {
+          brand: {
+            id: item.community.brand.brand_id,
+            name: item.community.brand.name,
+            slug: item.community.brand.brand_slug,
+            webLogo: item.community.brand.brand_web_logo || null,
+            userLogo: item.community.brand.brand_user_logo || null,
+            handle: item.community.brand.brand_handle ?? undefined,
+          },
+        }),
+      },
+      owner: {
+        profileImage:
+          item.owner.profile_image_s ??
+          item.owner.profile_image_m ??
+          item.owner.profile_image,
+        isAvatar: item.owner.is_avatar,
+        userName: item.owner.username,
+        name: item.owner.name || null,
+        bio: item.owner.bio || null,
+        shareUrl: item.owner.share_url || "",
+        brand: item.owner.brand
+          ? {
+              id: Number(item.owner.brand.brand_id),
+              slug: item.owner.brand.brand_slug,
+              userLogo: item.owner.brand.brand_user_logo || null,
+            }
+          : null,
+      },
+      section: {
+        id: item.section?._id || null,
+        title: item.section?.title || null,
+        description: item.section?.description || null,
+        position: item.section?.position || null,
+      },
+    };
+
+    // Check for the unwatched -> watched transition (only if middleware is enabled)
+    // When found, insert an overlay marker before the first watched video
+    if (shouldShowMiddlewareOverlay && !watchBoundaryFound && index > 0) {
+      const previousIsWatched = data[index - 1]?.video?.is_watched || false;
+
+      if (!previousIsWatched && currentIsWatched) {
+        // Insert overlay marker at the transition boundary
+        result.push({
+          ...mappedItem,
+          video: {
+            ...mappedItem.video,
+            type: "overlay",
+          },
+        });
+
+        // Mark boundary as found to skip further checks
+        watchBoundaryFound = true;
+      }
+    }
+
+    // Add the actual video item
+    result.push(mappedItem);
+  }
+  return result;
 }
 
 /**

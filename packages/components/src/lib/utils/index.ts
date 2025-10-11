@@ -5,6 +5,7 @@ import { PROTECTED_ROUTES } from "../constants";
 import { GroupUserStatusType } from "@genuin/components/types/roles";
 import { MEDIA_BASE_URL } from "./env";
 import { DeepLinkActionType } from "@genuin/components/react-query/api/deeplink";
+import { getBrandType } from "./brand-layout";
 
 /**
  * This function will check if the url includes any of the protected routes.
@@ -292,4 +293,28 @@ export function getSocialLinks(socialLinks: {
   }
 
   return links;
+}
+
+/**
+ * Determines whether the middleware overlay component should be displayed
+ * at the unwatched/watched video boundary based on brand-specific layout configuration.
+ *
+ * @param params - Layout identifiers for brand detection
+ * @param params.videoLayoutId - The video layout identifier
+ * @param params.cardLayoutId - The card layout identifier
+ * @returns True if middleware component should be shown, false otherwise
+ */
+export function isMiddlewareOverlayEnabled({
+  videoLayoutId,
+  cardLayoutId,
+}: {
+  videoLayoutId: number | undefined;
+  cardLayoutId: number | undefined;
+}): boolean {
+  const brandType = getBrandType(cardLayoutId, videoLayoutId);
+
+  // Brands that support middleware overlay component
+  const enabledBrands = new Set(["iheart"]);
+
+  return enabledBrands.has(brandType);
 }

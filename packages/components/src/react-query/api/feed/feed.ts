@@ -183,9 +183,14 @@ async function fetchFeed(
         ...(deviceId && { device_id: deviceId }),
         ...(options?.placementId && { placement_id: options.placementId }),
         ...(options?.styleId && { style_id: options.styleId }),
+        ...(pageParam?.pageSession && { page_session: pageParam.pageSession }),
+        ...(pageParam?.lastVideoId
+          ? { last_video_id: pageParam.lastVideoId }
+          : options?.lastVideoId
+            ? { last_video_id: options.lastVideoId }
+            : {}),
       };
       break;
-
     case feedType === "SECTION_FEED":
       url = API_PATHS.SECTION_FEED;
       requestBody = {
@@ -234,7 +239,10 @@ async function fetchFeed(
       }
 
       return {
-        feed: parseFeed(res.data.data.feeds),
+        feed: parseFeed(
+          res.data.data.feeds,
+          options?.shouldShowMiddlewareOverlay
+        ),
         hasSection: res.data.data.has_section ?? false,
         pageSession: res.data.data.page_session,
         endOfFeed: res.data.data.end_of_feed,
@@ -272,6 +280,7 @@ type UseFeedOptionsType = {
   refetchIntervalInBackground?: boolean;
   embedId?: string;
   isInIframe: boolean;
+  shouldShowMiddlewareOverlay?: boolean;
 };
 
 /**

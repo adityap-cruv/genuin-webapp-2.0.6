@@ -6,10 +6,9 @@ import {
   IHeartMuteIcon,
   IHeartPauseIcon,
   IHeartPlayIcon,
-  IHeartReactionIcon,
   IHeartShareIcon,
   IHeartUnmuteIcon,
-} from "@genuin/ui/icons/iheart-icons";
+} from "@genuin/ui/icons";
 import { Button } from "@genuin/ui/components";
 import { usePlayerContext } from "../../context";
 import { ShareButton } from "@genuin/components/molecules/share-button";

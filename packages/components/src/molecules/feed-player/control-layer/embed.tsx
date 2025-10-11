@@ -11,27 +11,17 @@ import { Stats } from "../../stats";
 import { EmbedControls } from "./controls/embed";
 import { IHeartControlLayer } from "./iheart";
 import { useEmbedDimensions } from "@genuin/components/hooks/embed/use-embed-dimensions";
-import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
-import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
 
 export const Embed: FC<ControlLayerPropsType> = ({
   postDetails,
   className,
   isActive,
   onReactionStateChange,
+  layoutType,
   ...restProps
 }) => {
   const config = useEmbedConfigs();
-  const showLayout = config.responsive.canShowEngagement;
   const { containerHeight } = useEmbedDimensions();
-  const embedDetails = useSafeEmbedContext();
-
-  const layoutType = !showLayout
-    ? "responsiveness"
-    : getBrandType(
-        embedDetails?.embedData.card_layout_id,
-        embedDetails?.embedData.video_layout_id
-      );
 
   switch (layoutType) {
     case "iheart":

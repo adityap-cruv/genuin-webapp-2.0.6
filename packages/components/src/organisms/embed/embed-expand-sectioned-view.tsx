@@ -4,6 +4,7 @@ import { useBaseContext, useEmbedContext } from "@genuin/components/context";
 import { useEffect, useMemo, useState } from "react";
 import { useFeed } from "@genuin/components/react-query/api/feed";
 import { getQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
+import { isMiddlewareOverlayEnabled } from "@genuin/components/lib/utils";
 
 type EmbedExpandViewProps = {
   videos: PostDetailsType[];
@@ -15,7 +16,7 @@ export function EmbedExpandSectionedView({
   pageSession,
 }: EmbedExpandViewProps) {
   const { embedEventBus, embedData } = useEmbedContext();
-  const {isInIframe} = useBaseContext();
+  const { isInIframe } = useBaseContext();
   const isSectioned = embedEventBus.getContext().isSectioned;
   const [selectedSection, setSelectedSection] = useState<
     PostDetailsType["section"]
@@ -35,6 +36,10 @@ export function EmbedExpandSectionedView({
       embedId: embedData.embed_id,
       pageSession: pageSession,
       isInIframe,
+      shouldShowMiddlewareOverlay: isMiddlewareOverlayEnabled({
+        videoLayoutId: embedData.placement_video_layout_id,
+        cardLayoutId: embedData.placement_card_layout_id,
+      }),
       lastVideoId:
         filteredSelectedSectionVideos.length > 0
           ? (filteredSelectedSectionVideos[
@@ -64,7 +69,7 @@ export function EmbedExpandSectionedView({
       gcTime: 30 * 60 * 1000, // 30 minutes - keep in cache for 30 minutes
       refetchOnMount: false,
       refetchOnWindowFocus: false,
-      refetchOnReconnect: true
+      refetchOnReconnect: true,
     }),
     [
       isSectioned,
@@ -72,7 +77,7 @@ export function EmbedExpandSectionedView({
       pageSession,
       videos,
       filteredSelectedSectionVideos,
-      isInIframe
+      isInIframe,
     ]
   );
 

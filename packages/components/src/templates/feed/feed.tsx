@@ -16,6 +16,7 @@ import {
 } from "./feed.type";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { useBaseContext } from "@genuin/components/context";
+import { isMiddlewareOverlayEnabled } from "@genuin/components/lib/utils";
 
 /**
  * Complete feed solution with built-in data fetching and context management.
@@ -48,6 +49,10 @@ export function FeedWithData({
       contextualParams: embedDetails?.embedData?.contextualParams,
       embed_id: embedDetails?.embedData?.embed_id,
       isInIframe,
+      shouldShowMiddlewareOverlay: isMiddlewareOverlayEnabled({
+        videoLayoutId: embedDetails?.embedData.placement_video_layout_id,
+        cardLayoutId: embedDetails?.embedData.placement_card_layout_id,
+      }),
     }),
     [embedDetails, isInIframe]
   );

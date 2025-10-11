@@ -26,6 +26,7 @@ import { cva, VariantProps } from "class-variance-authority";
 import { EmbedItem } from "./embed-tile-item";
 import { AnalyticsService } from "@genuin/components/context/analytics/service";
 import { useBaseContext } from "@genuin/components/context";
+import { isMiddlewareOverlayEnabled } from "@genuin/components/lib/utils";
 
 const embedVariants = cva("gencl:rounded-md gencl:overflow-auto", {
   variants: {
@@ -74,6 +75,10 @@ export function Embed({
     contextualParams: embedData.contextualParams,
     embedId: embedData.embed_id,
     isInIframe,
+    shouldShowMiddlewareOverlay: isMiddlewareOverlayEnabled({
+      videoLayoutId: embedData.placement_video_layout_id,
+      cardLayoutId: embedData.placement_card_layout_id,
+    }),
   };
 
   const {

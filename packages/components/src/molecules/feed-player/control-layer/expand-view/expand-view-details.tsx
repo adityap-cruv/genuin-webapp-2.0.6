@@ -457,7 +457,8 @@ export function ExpandViewDetails({
       )}
 
       {/* iHeart: Show linkouts below seeker */}
-      {showLinkoutInExpand &&
+      {/* // TODO : iheart phase-2 implementation */}
+      {/* {showLinkoutInExpand &&
         layoutType === "iheart" &&
         postDetails.video.linkoutId && (
           <div className="gencl:h-11 gencl:flex gencl:items-center">
@@ -471,7 +472,7 @@ export function ExpandViewDetails({
               showImmediately={true}
             />
           </div>
-        )}
+        )} */}
     </div>
   );
 }

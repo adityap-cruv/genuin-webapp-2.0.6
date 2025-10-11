@@ -4,7 +4,7 @@ import { useAnalytics } from "@genuin/components/context/analytics/context";
 import { useBaseContext } from "@genuin/components/context/base";
 import { useState } from "react";
 import { getRedirectUrl } from "./utils";
-import { IHeartPlayIcon } from "@genuin/ui/icons/iheart-icons";
+import { IHeartPlayIcon } from "@genuin/ui/icons";
 
 interface CTAOnlyCardProps {
   isEmbed: boolean;

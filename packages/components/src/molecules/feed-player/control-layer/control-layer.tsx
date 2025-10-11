@@ -77,6 +77,7 @@ export const ControlLayer = memo(function ControlLayer(
       <Embed
         className={cn(controlLayerVariant({ variant }), className)}
         style={safariOptimizationStyles}
+        layoutType={props.layoutType}
         {...restProps}
       />
     );

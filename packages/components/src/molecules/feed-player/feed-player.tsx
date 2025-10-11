@@ -14,8 +14,9 @@ import { audioManager } from "@genuin/components/lib/audio-manager";
 import { usePlayerContext } from "./context/context";
 import { useAnalytics } from "@genuin/components/context/analytics";
 import { cn } from "@genuin/ui/lib/utils";
+import { BrandType } from "@genuin/components/lib/utils/brand-layout";
 
-type Props = Omit<
+type FeedPlayerProps = Omit<
   ComponentProps<typeof VideoPlayer>,
   "volume" | "playbackSpeed" | "shouldPlay"
 > & {
@@ -23,6 +24,10 @@ type Props = Omit<
    * The id of the video to passed to analytics.
    */
   videoId: string;
+  /**
+   * Defines the layout style for the embed, used to identify and apply the corresponding brand layout.
+   */
+  layoutType?: "responsiveness" | BrandType;
 };
 
 /**
@@ -40,9 +45,11 @@ export const FeedPlayer = memo(function FeedPlayer({
   onPlay,
   onPause,
   onLoadStart,
+  layoutType,
   ...props
-}: Props) {
+}: FeedPlayerProps) {
   const { muted, volume, playbackSpeed, baseContextManager } = useBaseContext();
+  // const embedDetails = useSafeEmbedContext();
   const {
     feedPlayerShouldPlay,
     setVideoTimeState,
@@ -162,6 +169,8 @@ export const FeedPlayer = memo(function FeedPlayer({
     (e: any) => {
       onEnded?.(e);
       stateHandleEnded?.();
+      // Set `is_watched` to true only for iHeart, as the video overlay needs to be displayed in this layout.
+      baseContextManager.setVideoWatched({ isWatched: true, videoId });
       const target = e?.target as HTMLVideoElement | undefined;
       track(EventName.VIDEO_COMPLETED, {
         ...analyticsEventData,

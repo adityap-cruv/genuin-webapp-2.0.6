@@ -20,6 +20,8 @@ export const videoSchema = z.object({
   attachedLink: z.string().nullish(),
   source: z.string(),
   isSparked: z.boolean().nullish(),
+  isWatched: z.boolean().nullish(),
+  type: z.enum(["video", "overlay"]).default("video"),
   sparkCount: z.number(),
   thumbnail: z.string(),
   thumbnailM: z.string().nullish(),
