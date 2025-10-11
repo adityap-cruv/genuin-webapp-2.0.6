@@ -19,7 +19,7 @@ export function EmbedItem({
   postDetails,
   ...restProps
 }: EmbedItemProps) {
-  const { updateActiveIndex, goToNextVideo, activeIndex, moveToNext } =
+  const { updateActiveIndex, goToNextVideo, activeIndex } =
     useEmbedManagerContext();
   const config = useEmbedConfigs();
   const { embedEventBus, updateSelectedSection } = useEmbedContext();
@@ -56,10 +56,11 @@ export function EmbedItem({
 
   // Handle automatic progression when video ends
   const handlePlayerIterationEnd = useCallback(() => {
-    if (!(moveToNext && config.view.isPlacementView)) return;
-
-    goToNextVideo();
-  }, [moveToNext, goToNextVideo, config]);
+    // Use intelligent auto-scroll for placement view when enabled
+    const useAutoScroll =
+      config.view.isPlacementView && config.video.autoScrollToNextSlide;
+    goToNextVideo(useAutoScroll);
+  }, [goToNextVideo, config]);
 
   return (
     <EmbedTile

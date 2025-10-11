@@ -288,14 +288,17 @@ export function encodeVideoSourceUrl(videoSource: string) {
 }
 
 /**
- * Formats a timestamp into a month-day or month-day-year string
+ * Formats a timestamp into a month-day-year string
  * If the date is today, returns "Today"
- * If the year matches the current year, only month and day are shown
- * @param timestamp Unix timestamp in seconds
+ * Always shows full date in "MMM dd, yyyy" format
+ * @param timestamp Unix timestamp in seconds or milliseconds
  * @returns Formatted date string or "Today"
  */
 export function getMonthYear(timestamp: number): string {
-  const date = new Date(timestamp * 1000);
+  // Handle both seconds and milliseconds timestamps
+  // If timestamp is > 1e10, it's likely in milliseconds, otherwise in seconds
+  const timestampMs = timestamp > 1e10 ? timestamp : timestamp * 1000;
+  const date = new Date(timestampMs);
   const now = new Date();
 
   // Check if the date is today
@@ -308,27 +311,18 @@ export function getMonthYear(timestamp: number): string {
     return "Today";
   }
 
-  const currentYear = now.getFullYear();
-  const dateYear = date.getFullYear();
-
-  // Format based on whether the year matches current year
-  if (dateYear === currentYear) {
-    // MMM dd format (e.g., "Aug 05")
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-  } else {
-    // MMM dd, yyyy format (e.g., "Aug 05, 2024")
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      // year: 'numeric'
-    });
-  }
+  // Always return full date format: "MMM dd, yyyy" (e.g., "Sep 23, 2025")
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 }
 
 /**
  * Formats a duration string (in seconds) into a readable format
  * @param durationString Duration in seconds as a string
- * @returns Formatted duration string (e.g., "2min 30s" or "45s")
+ * @returns Formatted duration string (e.g., "1hr 30min", "2min 30sec", or "45sec")
  */
 export function getFormattedDuration(durationString: string): string | null {
   const totalSeconds = parseInt(durationString, 10);
@@ -337,13 +331,20 @@ export function getFormattedDuration(durationString: string): string | null {
     return null;
   }
 
-  const minutes = Math.floor(totalSeconds / 60);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
 
-  if (minutes > 0) {
-    return seconds > 0 ? `${minutes}min ${seconds}s` : `${minutes}min`;
+  if (hours > 0) {
+    if (minutes > 0) {
+      return `${hours} hr ${minutes} min`;
+    } else {
+      return `${hours} hr`;
+    }
+  } else if (minutes > 0) {
+    return seconds > 0 ? `${minutes} min ${seconds} sec` : `${minutes} min`;
   } else {
-    return `${seconds}s`;
+    return `${seconds} sec`;
   }
 }
 

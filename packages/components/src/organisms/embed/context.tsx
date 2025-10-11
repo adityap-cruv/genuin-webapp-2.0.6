@@ -14,6 +14,7 @@ import {
 } from "./utils";
 import { useEmbedContext } from "@genuin/components/context/embed";
 import { EmbedEventContextType } from "@genuin/components/context/embed/event-bus";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 type EmbedManagerContextType = {
   /**
@@ -28,19 +29,15 @@ type EmbedManagerContextType = {
   updateActiveIndex: (index: number) => void;
   /**
    * Function to go to the next video in the embed.
+   * @param useAutoScroll Whether to use intelligent auto-scroll positioning (default: false)
    * @returns void
    */
-  goToNextVideo: () => void;
+  goToNextVideo: (useAutoScroll?: boolean) => void;
   /**
    * Function to go to the previous video in the embed.
    * @returns void
    */
   goToPreviousVideo: () => void;
-  /**
-   * Whether to automatically move to the next video.
-   * When false, videos will loop but manual navigation is still allowed.
-   */
-  moveToNext: boolean;
 };
 
 const EmbedManagerContext = createContext<EmbedManagerContextType | undefined>(
@@ -50,17 +47,11 @@ const EmbedManagerContext = createContext<EmbedManagerContextType | undefined>(
 type EmbedManagerProviderProps = {
   children: React.ReactNode;
   swiper: SwiperType | null;
-  isGridLayout?: boolean;
-  moveToNext?: boolean;
-  moveToNextTime?: number;
 };
 
 export function EmbedManagerProvider({
   children,
   swiper,
-  isGridLayout = false,
-  moveToNext = true,
-  moveToNextTime = 0,
 }: EmbedManagerProviderProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [previousVisibleRange, setPreviousVisibleRange] = useState({
@@ -68,6 +59,10 @@ export function EmbedManagerProvider({
     last: 0,
   });
   const { embedEventBus, changeActiveIndex } = useEmbedContext();
+  const config = useEmbedConfigs();
+  const isGridLayout = config.view.isGrid;
+  const moveToNext = !config.video.videoLoop;
+  const moveToNextTime = config.video.moveToNextTime;
 
   // Trigger changeActiveIndex whenever activeIndex changes
   useEffect(() => {
@@ -128,29 +123,55 @@ export function EmbedManagerProvider({
     [swiper, setActiveIndex, isGridLayout]
   );
 
-  const goToNextVideo = useCallback(() => {
-    if (isGridLayout) {
-      // For grid layout, just increment the index
-      setActiveIndex((prevIndex) => prevIndex + 1);
-      return;
-    }
+  const goToNextVideo = useCallback(
+    (useAutoScroll: boolean = false) => {
+      if (isGridLayout) {
+        // For grid layout, just increment the index
+        setActiveIndex((prevIndex) => prevIndex + 1);
+        return;
+      }
 
-    if (!swiper) return;
+      if (!swiper) return;
 
-    const { shouldSlide, targetIndex } = getNavigationAction(
-      swiper,
-      activeIndex,
-      "next"
-    );
+      const nextIndex = activeIndex + 1;
+      const totalSlides = swiper.slides?.length || 0;
 
-    // Always slide to ensure swiper navigation happens
-    swiper.slideNext();
+      // Check if we've reached the end
+      if (nextIndex >= totalSlides) {
+        return;
+      }
 
-    // Only update active index if we shouldn't slide automatically
-    if (!shouldSlide) {
-      setActiveIndex(targetIndex);
-    }
-  }, [swiper, activeIndex, isGridLayout]);
+      if (useAutoScroll) {
+        // Use intelligent auto-scroll positioning for placement view
+        const isNextVisible = isSlideVisible(swiper, nextIndex);
+
+        // Always scroll to next video to bring it into optimal view
+        // This ensures even the last video scrolls into view if viewport is small
+        if (!isNextVisible || nextIndex === totalSlides - 1) {
+          swiper.slideTo(nextIndex, 300, true);
+        }
+
+        // Always update the active index to next video
+        setActiveIndex(nextIndex);
+      } else {
+        // Default behavior: use standard navigation action
+        const { shouldSlide, targetIndex } = getNavigationAction(
+          swiper,
+          activeIndex,
+          "next"
+        );
+
+        // Always slide to ensure swiper navigation happens
+        swiper.slideNext();
+
+        // Only update active index if we shouldn't slide automatically
+        if (!shouldSlide) {
+          setActiveIndex(targetIndex);
+        }
+      }
+    },
+    [swiper, activeIndex, isGridLayout]
+  );
 
   const goToPreviousVideo = useCallback(() => {
     if (isGridLayout) {
@@ -223,13 +244,7 @@ export function EmbedManagerProvider({
     return () => {
       clearTimeout(timer);
     };
-  }, [
-    activeIndex,
-    moveToNextTime,
-    moveToNext,
-    goToNextVideo,
-    embedEventBus,
-  ]);
+  }, [activeIndex, moveToNextTime, moveToNext, goToNextVideo, embedEventBus]);
 
   return (
     <EmbedManagerContext.Provider
@@ -238,7 +253,6 @@ export function EmbedManagerProvider({
         updateActiveIndex,
         goToNextVideo,
         goToPreviousVideo,
-        moveToNext,
       }}
     >
       {children}

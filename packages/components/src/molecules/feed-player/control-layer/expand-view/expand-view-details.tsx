@@ -198,20 +198,16 @@ function AdaptiveDescription({
       return (
         <div className="gencl:z-10">
           <p className="gencl:text-white gencl:text-body-2-normal gencl:font-normal">
-            {getMonthYear(video.attributes?.timestamp ?? video.createdAt ?? 0)}{" "}
-            • {getFormattedDuration(String(video.duration ?? ""))}{" "}
+            {getMonthYear(video.createdAt ?? 0)}
+            {video.duration && " • "}
+            {getFormattedDuration(String(video.duration ?? ""))}{" "}
             <ReadMore
-              text={compressText(
-                "Short clip description Lorem ipsum dolor sit amet, consectetur adipiscing elitices Lorem ipsum dolor sit amet, consectetur adipiscing elitices Lorem ipsum dolor sit amet, consectetur adipiscing elitices Lorem ipsum dolor sit amet. Today • 1 min 30 sec  Short clip description Lorem ipsum dolor sit amet, consectetur adipiscing elitices Lorem ipsum dolor sit amet, consectetur adipiscing elitices Lorem ipsum dolor sit amet, consectetur adipiscing elitices Lorem ipsum dolor sit amet.",
-                224
-              )}
+              text={video.description}
               showExpandText
               shouldAnimate
               position="overlay"
-              viewLessText="Less"
-              viewMoreText=""
-              textClassName="gencl:text-body-2-normal gencl:tracking-[-0.35px]!"
-              className="gencl:line-clamp-5 gencl:text-white/70!"
+              textClassName="gencl:text-body-2-normal gencl:tracking-[-0.35px]! gencl:text-white/70!"
+              className="gencl:line-clamp-5"
             />
           </p>
         </div>

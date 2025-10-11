@@ -71,11 +71,16 @@ export function PlayerList({
     engagement: {
       engagementTools: { comment: showCommentBox },
     },
+    view: { isPlacementView },
   } = useEmbedConfigs();
   const embedDetails = useSafeEmbedContext();
   const layoutType = getBrandType(
-    embedDetails?.embedData.card_layout_id,
-    embedDetails?.embedData.video_layout_id
+    isPlacementView
+      ? embedDetails?.embedData.placement_card_layout_id
+      : embedDetails?.embedData.card_layout_id,
+    isPlacementView
+      ? embedDetails?.embedData.placement_video_layout_id
+      : embedDetails?.embedData.video_layout_id
   );
 
   // Section-related state

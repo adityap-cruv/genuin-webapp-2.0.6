@@ -579,8 +579,9 @@ export type CustomizationType = {
   is_show_popup_by_default?: boolean;
   theme?: "dark" | "light";
   video_crop?: boolean;
-  scroll_behavior?: "free_scroll";
+  scroll_behavior?: "free_scroll" | "paging ";
   is_navigation_control_enabled?: boolean;
+  enable_auto_scroll?: boolean
 };
 
 export type FeedVideoType = {
@@ -838,6 +839,7 @@ export type PlacementEnvironmentConfig = {
     sub_heading_text_color: string;
     video_details: VideoDetails;
     video_layout_id?: number;
+    enable_auto_scroll?: boolean
   };
   expand_view: {
     enable_engagement_tools: EngagementTools;

@@ -1,10 +1,11 @@
-import { cn } from "@genuin/ui/lib/utils";
+import { cn, getFormattedDuration, getMonthYear } from "@genuin/ui/lib/utils";
 import { type FC } from "react";
 import { Image } from "@genuin/ui/components/image";
 import { IHeartControls, IHeartListenLiveButton } from "./index";
 import { compressText } from "@genuin/components/lib/utils";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { ControlLayerPropsType } from "../control-layer.types";
+import { ReadMore } from "@genuin/components/molecules/read-more";
 
 export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
   postDetails,
@@ -45,20 +46,18 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
       <div className="gencl:absolute gencl:bottom-0 gencl:p-3 gencl:text-white gencl:w-full gencl:space-y-3 gencl:bg-gradient-to-t gencl:from-black/50 gencl:to-transparent">
         <div>
           <p className="gencl:text-body-2-normal gencl:line-clamp-2 gencl:tracking-[-0.35px]!">
-            {/* {getMonthYear(
-              postDetails.video.attributes?.timestamp ??
-                postDetails.video.createdAt ??
-                0
+            {getMonthYear(postDetails.video.createdAt ?? 0)}
+            {postDetails.video.duration && " • "}
+            {getFormattedDuration(
+              String(postDetails.video.duration ?? "")
             )}{" "}
-            •{" "}
-            {getFormattedDuration(String(postDetails.video.duration ?? ""))} */}
-            <span>Jan 6, 2025 • 1 min 30 sec</span>{" "}
-            <span className="gencl:text-white/70">
-              {compressText(
-                "Short clip description Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-                110
-              )}
-            </span>
+            <ReadMore
+              text={postDetails.video.description ?? ""}
+              position="overlay"
+              shouldAnimate
+              textClassName="gencl:text-body-2-normal gencl:tracking-[-0.35px]! gencl:text-white/70!"
+              className="gencl:line-clamp-2!"
+            />
           </p>
         </div>
 

@@ -248,12 +248,7 @@ export function Embed({
       }}
       {...restProps}
     >
-      <EmbedManagerProvider
-        swiper={swiper}
-        isGridLayout={isGridLayout}
-        moveToNext={!config.video.videoLoop}
-        moveToNextTime={config.video.moveToNextTime}
-      >
+      <EmbedManagerProvider swiper={swiper}>
         {isGridLayout ? (
           <GridView
             videos={videos}
@@ -273,6 +268,7 @@ export function Embed({
               variant={embedVariant}
             />
             <EmbedSwiper
+              onSwiper={(swiperInstance) => setSwiper(swiperInstance)}
               forFeed={config.view.isFeed}
               aspectRatio={embedData.aspect_ratio}
               spaceBetweenVideos={spaceBetweenVideos}
@@ -285,8 +281,9 @@ export function Embed({
               style={{
                 height: availableHeight,
               }}
-              // freeMode={true}
-              onSwiper={(swiperInstance) => setSwiper(swiperInstance)}
+              freeMode={config.view.scrollBehavior === "free_scroll"}
+              centeredSlides={config.view.centeredSlides}
+              centeredSlidesBounds={config.view.centeredSlides}
             >
               {videos?.map((videoData, idx) => {
                 return (

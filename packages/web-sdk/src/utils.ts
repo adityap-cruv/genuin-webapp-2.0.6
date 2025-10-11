@@ -186,6 +186,7 @@ export function parsePlacementToEmbedData(
       scroll_behavior: configureView?.scroll_behavior,
       is_navigation_control_enabled:
         configureView?.is_navigation_control_enabled,
+      enable_auto_scroll: configureView?.enable_auto_scroll,
     },
 
     // Additional placement-specific data that might be useful

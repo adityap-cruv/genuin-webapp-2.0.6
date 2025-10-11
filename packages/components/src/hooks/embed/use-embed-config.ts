@@ -62,9 +62,10 @@ export function useEmbedConfigs() {
       theme: customization?.theme || "light",
       gridLayout: embedData?.grid_layout || undefined,
       scrollBehavior: customization?.scroll_behavior || "paging",
-      isNavigationControlEnabled:
+      isNavigationControlEnabled: 
         customization?.is_navigation_control_enabled ||
         embedData?.card_layout_id !== 3,
+      centeredSlides: embedData?.placement_card_layout_id === 2,
     }),
     [customization, embedData?.style]
   );
@@ -113,6 +114,7 @@ export function useEmbedConfigs() {
           ? true
           : false,
       videoCrop: customization?.video_crop,
+      autoScrollToNextSlide: customization?.enable_auto_scroll ?? false,
     }),
     [customization, brandDetails.brand_id, embedData?.style]
   );
@@ -141,7 +143,7 @@ export function useEmbedConfigs() {
         position: "overlay_on_bottom",
         comments: false,
         reactions: false,
-        views: false
+        views: false,
       },
       showStyleDetails: embedData?.show_style_details ?? false,
       socialMetrics: embedData?.social_metrics || "views",
