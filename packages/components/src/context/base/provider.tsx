@@ -1,5 +1,11 @@
 "use client";
-import { useEffect, useLayoutEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from "react";
 
 import {
   DEVICE_ID_KEY_FOR_LOCAL_STORAGE,
@@ -12,8 +18,14 @@ import type { PlaybackSpeedType } from "@genuin/components/molecules/feed-player
 
 import { BaseContext } from "./context";
 import { parseBrandColors } from "@genuin/components/lib/utils/brand-color-parser";
-import { createBaseEventBus } from "./event-bus";
+import { BaseEventBusContext, createBaseEventBus } from "./event-bus";
 import internalStorageManager from "@genuin/components/lib/utils/internal-storage-manager";
+import { FeedContextManager } from "./feed-context-manager";
+import { useSafeEmbedContext } from "../embed/context";
+import {
+  SDKEventEmitter,
+  SDKEventName,
+} from "@genuin/components/lib/sdk-event-emitter";
 
 type BaseContextProviderProps = {
   children: React.ReactNode;
@@ -42,10 +54,16 @@ export function BaseContextProvider({
     }
   }, [brandDetails]);
   const baseEventBus = useMemo(() => createBaseEventBus(), []);
+  const baseContextManager = useMemo(
+    () => FeedContextManager.getInstance(),
+    []
+  );
+  const embedDetails = useSafeEmbedContext();
 
   // TODO: move this states to event based states.
   const [muted, setMuted] = useState(true);
   const [volume, setVolume] = useState(100);
+
   // Detect if running inside an iframe (safe for SSR)
   const isInIframe = useMemo(() => {
     if (typeof window === "undefined") return false;
@@ -61,6 +79,11 @@ export function BaseContextProvider({
     speed: 1.0,
     isSpeedFromGesture: false,
   });
+
+  // update volume and muted details in baseEventBus.
+  useEffect(() => {
+    baseEventBus.updateContext({ ...baseEventBus.getContext(), muted, volume });
+  }, [volume, muted]);
 
   useEffect(() => {
     // If deviceId is not available, get a new one.
@@ -81,19 +104,19 @@ export function BaseContextProvider({
   // Track window focus state and update userIsFocused in embedEventBus
   useEffect(() => {
     const handleWindowFocus = () => {
-      console.log("window focused");
       baseEventBus.emit("userFocusChange", undefined, (currentContext) => ({
         ...currentContext,
         userIsFocused: true,
       }));
+      baseContextManager.setPlayPauseTracker({ isFocused: true });
     };
 
     const handleWindowBlur = () => {
-      console.log("window blurred");
       baseEventBus.emit("userFocusChange", undefined, (currentContext) => ({
         ...currentContext,
         userIsFocused: false,
       }));
+      baseContextManager.setPlayPauseTracker({ isFocused: false });
     };
 
     window.addEventListener("focus", handleWindowFocus);
@@ -104,6 +127,81 @@ export function BaseContextProvider({
       window.removeEventListener("blur", handleWindowBlur);
     };
   }, [baseEventBus]);
+
+  useEffect(() => {
+    if (!embedDetails) return;
+
+    const handleInViewChange = (_: any, context: any) => {
+      baseContextManager.setPlayPauseTracker({
+        isInView: context.containerInView,
+      });
+    };
+
+    embedDetails.embedEventBus.on("containerInViewChange", handleInViewChange);
+
+    return () => {
+      embedDetails.embedEventBus.off(
+        "containerInViewChange",
+        handleInViewChange
+      );
+    };
+  }, [embedDetails?.embedEventBus, baseContextManager]);
+
+  useEffect(() => {
+    const handlePlay = () => {
+      const baseContext = baseEventBus.getContext();
+      const isInView =
+        typeof embedDetails !== undefined
+          ? (embedDetails?.embedEventBus.getContext().containerInView ?? true)
+          : true;
+      SDKEventEmitter.emit(SDKEventName.PLAY, {
+        isFocused: baseContext.userIsFocused,
+        isInView,
+        muted: baseContext.muted,
+        volume: baseContext.volume,
+      });
+    };
+
+    const handlePause = () => {
+      const baseContext = baseEventBus.getContext();
+      const isInView =
+        typeof embedDetails !== undefined
+          ? (embedDetails?.embedEventBus.getContext().containerInView ?? true)
+          : true;
+
+      SDKEventEmitter.emit(SDKEventName.PAUSE, {
+        isFocused: baseContext.userIsFocused,
+        isInView,
+        muted: baseContext.muted,
+        volume: baseContext.volume,
+      });
+    };
+
+    baseContextManager.onPlay(handlePlay);
+    baseContextManager.onPause(handlePause);
+
+    return () => {
+      baseContextManager.offPlay(handlePlay);
+      baseContextManager.offPause(handlePause);
+    };
+  }, [baseContextManager]);
+
+  useEffect(() => {
+    const baseContext = baseEventBus.getContext();
+
+    if (baseContext.firstTimeMutedBypass) {
+      baseEventBus.updateContext({
+        ...baseContext,
+        firstTimeMutedBypass: false,
+      });
+      return;
+    }
+
+    SDKEventEmitter.emit(SDKEventName.MUTE_CHANGE, {
+      muted,
+      volume: baseEventBus.getContext().volume,
+    });
+  }, [muted]);
 
   return (
     <BaseContext.Provider
@@ -119,6 +217,7 @@ export function BaseContextProvider({
         setPlaybackSpeed,
         baseEventBus,
         isInIframe,
+        baseContextManager,
       }}
     >
       {children}

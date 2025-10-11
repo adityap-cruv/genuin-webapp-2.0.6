@@ -1,6 +1,7 @@
 import axios from "axios";
 import { API_PATHS } from "@genuin/components/react-query/paths";
 import { NEXT_PUBLIC_API_URL } from "@genuin/components/lib/utils/env";
+import { SDKEventEmitter, SDKEventName } from "@genuin/components/lib/sdk-event-emitter";
 
 export async function performTokenRefresh(
   accessToken?: string,
@@ -44,22 +45,10 @@ export function emitRefreshFailedEvent(payload?: {
   brandId: number;
   params?: any;
 }): void {
-  if (typeof window !== "undefined" && window.genuin?.emit) {
-    try {
-      window.genuin.emit("auth:refresh_failed", payload);
-    } catch (eventError) {
-      console.warn("Failed to emit refresh failed event:", eventError);
-    }
-  }
+  SDKEventEmitter.emit(SDKEventName.AUTH_REFRESH_FAILED, payload || {});
 }
 
 // Utility function to emit user update event
 export function emitCachedUserUpdateEvent(userData: any): void {
-  if (typeof window !== "undefined" && window.genuin?.emit) {
-    try {
-      window.genuin.emit("auth:cached_user_update", userData);
-    } catch (eventError) {
-      console.warn("Failed to emit user update event:", eventError);
-    }
-  }
+  SDKEventEmitter.emit(SDKEventName.CACHED_USER_UPDATE, userData);
 }

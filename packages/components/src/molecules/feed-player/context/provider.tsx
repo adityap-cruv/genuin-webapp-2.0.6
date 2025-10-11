@@ -79,7 +79,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   explicitAutoPlay,
   explicitLoop,
 }) => {
-  const { brandDetails, baseEventBus } = useBaseContext();
+  const { brandDetails, baseEventBus, baseContextManager } = useBaseContext();
   const embedDetails = useSafeEmbedContext();
   const playerRef = useRef<OpenPlayerJS | null>(null);
   /**
@@ -274,6 +274,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     (byUser: boolean) => {
       setFeedPlayerShouldPlay((prev) => {
         if (byUser) {
+          baseContextManager.setPlayPauseTracker({ isPlaying: !prev });
           if (prev) {
             setButtonAction("PAUSE");
           } else {
@@ -302,6 +303,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     }
     setFeedPlayerShouldPlay(true);
     if (byUser) {
+      baseContextManager.setPlayPauseTracker({ isPlaying: true });
       setButtonAction("PLAY");
       // Track play event with Analytics only if the video play is triggered by user.
       track(EventName.VIDEO_PLAY, {
@@ -315,6 +317,8 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     (byUser: boolean) => {
       setFeedPlayerShouldPlay(false);
       if (byUser) {
+        // Notify base context manager if anyone is playing or not.
+        baseContextManager.setPlayPauseTracker({ isPlaying: false });
         setButtonAction("PAUSE");
         // Track pause event with Analytics only if the video pause is triggered by user.
         track(EventName.VIDEO_PAUSED, {
@@ -397,7 +401,11 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     // This is useful for auto-swiping functionality
     if (shouldSwipeNext) {
       onPlayerIterationEnd();
+      return;
     }
+
+    // set isplaying paused, no swipe next had happened.
+    baseContextManager.setPlayPauseTracker({ isPlaying: false });
   }, [isEmbed, onPlayerIterationEnd, explicitLoop]);
 
   const updateAdInfo = useCallback(

@@ -14,7 +14,6 @@ import { audioManager } from "@genuin/components/lib/audio-manager";
 import { usePlayerContext } from "./context/context";
 import { useAnalytics } from "@genuin/components/context/analytics";
 import { cn } from "@genuin/ui/lib/utils";
-import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 
 type Props = Omit<
   ComponentProps<typeof VideoPlayer>,
@@ -26,9 +25,9 @@ type Props = Omit<
   videoId: string;
 };
 
-const EVENT_DURATION_PROPERTY_NAME = "video_length";
-const EVENT_VIEW_LENGTH_PROPERTY_NAME = "video_view_length";
-
+/**
+ * This is feed player, However this player is used for embed as well, so don't confuse it as it is only used in feed.
+ */
 export const FeedPlayer = memo(function FeedPlayer({
   src,
   videoId,
@@ -43,8 +42,7 @@ export const FeedPlayer = memo(function FeedPlayer({
   onLoadStart,
   ...props
 }: Props) {
-  const { muted, volume, playbackSpeed } = useBaseContext();
-  // const embedDetails = useSafeEmbedContext();
+  const { muted, volume, playbackSpeed, baseContextManager } = useBaseContext();
   const {
     feedPlayerShouldPlay,
     setVideoTimeState,
@@ -58,6 +56,16 @@ export const FeedPlayer = memo(function FeedPlayer({
   const { track, EventName } = useAnalytics();
   const id = useId();
   const playerRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    baseContextManager.registerVideo({
+      videoId,
+    });
+
+    return () => {
+      baseContextManager.unregisterVideo(videoId);
+    };
+  }, [baseContextManager]);
 
   useEffect(() => {
     audioManager.register(id, () => {
@@ -132,15 +140,23 @@ export const FeedPlayer = memo(function FeedPlayer({
     [mute, unmute, id]
   );
 
-  const handleTimeUpdate = useCallback((event: any) => {
-    onTimeUpdate?.(event);
-    const target = event.target as HTMLVideoElement;
-    if (!target) return;
-    setVideoTimeState({
-      duration: target.duration,
-      currentTime: target.currentTime,
-    });
-  }, []);
+  const handleTimeUpdate = useCallback(
+    (event: any) => {
+      onTimeUpdate?.(event);
+      const target = event.target as HTMLVideoElement;
+      if (!target) return;
+      setVideoTimeState({
+        duration: target.duration,
+        currentTime: target.currentTime,
+      });
+      baseContextManager.setTimeInfo({
+        duration: target.duration,
+        currentTime: target.currentTime,
+        videoId,
+      });
+    },
+    [baseContextManager]
+  );
 
   const handleEnded = useCallback(
     (e: any) => {
@@ -227,8 +243,9 @@ export const FeedPlayer = memo(function FeedPlayer({
     (event: any) => {
       onPlay?.(event);
       setPlayingState("PLAYING");
+      baseContextManager.setPlayPauseTracker({ isPlaying: true });
     },
-    [onPlay, setPlayingState]
+    [onPlay, setPlayingState, baseContextManager]
   );
 
   const handleOnPause = useCallback(

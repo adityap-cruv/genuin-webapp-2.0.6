@@ -18,6 +18,7 @@ import { useGetUserDataForSSOMutation } from "@genuin/components/react-query/api
 import { Toast } from "@genuin/ui/components/toaster";
 import { invalidateAllQueries } from "@genuin/components/react-query/client";
 import { useBaseContext } from "../base";
+import { SDKEventEmitter, SDKListenerEventName } from "@genuin/components/lib/sdk-event-emitter";
 import { useSafeEmbedContext } from "../embed/context";
 import { AxiosError, InternalAxiosRequestConfig } from "axios";
 import {
@@ -102,8 +103,6 @@ export function AuthProvider({
     );
 
   useLayoutEffect(() => {
-    if (!window.genuin) return;
-
     const handleAuthenticateUser = (authCallbackData: any) => {
       setAuthenticatedUser(authCallbackData.payload);
       setAuthenticationStatus("authenticated");
@@ -117,12 +116,10 @@ export function AuthProvider({
       });
     };
 
-    window.genuin.on("sdk:authenticateUser", handleAuthenticateUser);
+    SDKEventEmitter.on(SDKListenerEventName.AUTHENTICATE_USER, handleAuthenticateUser);
 
     return () => {
-      if (window.genuin) {
-        window.genuin.off("sdk:authenticateUser", handleAuthenticateUser);
-      }
+      SDKEventEmitter.off(SDKListenerEventName.AUTHENTICATE_USER, handleAuthenticateUser);
     };
   }, []);
 

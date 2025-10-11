@@ -2,6 +2,7 @@
 
 import { DangerIcon } from "@genuin/ui/icons";
 import { useEffect } from "react";
+import { SDKEventEmitter, SDKEventName } from "@genuin/components/lib/sdk-event-emitter";
 
 interface ErrorStateProps {
   containerHeight?: number | string;
@@ -16,8 +17,7 @@ export function SdkErrorState({
 }: ErrorStateProps) {
 
   useEffect(() => {
-    if (!window.genuin) return;
-    window.genuin.emit("sdk:error", {
+    SDKEventEmitter.emit(SDKEventName.ERROR, {
       isError: true,
       isNoContent: false,
     });

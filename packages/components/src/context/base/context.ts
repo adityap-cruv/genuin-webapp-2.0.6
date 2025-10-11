@@ -4,6 +4,7 @@ import { createContext, useContext } from "react";
 import type { BrandDetailsConfigType } from "@genuin/components/types/brand";
 import type { PlaybackSpeedType } from "@genuin/components/molecules/feed-player/context/types";
 import { createBaseEventBus } from "./event-bus";
+import { FeedContextManager } from "./feed-context-manager";
 
 const DEFAULT_WEB_CONFIGS: BrandDetailsConfigType["web_configs"] = {
   video_autoplay: {
@@ -99,11 +100,17 @@ export type BaseContextType = {
    * Event bus for base context to communicate between components
    */
   baseEventBus: ReturnType<typeof createBaseEventBus>;
-   /**
+  /**
    * Indicates whether the embed is running inside an iframe.
    */
   isInIframe: boolean;
-
+  /**
+   * this manager is used for managing all the players playing state,
+   * And event throwing regarding player states.
+   *
+   * Is feed-context-manager.
+   */
+  baseContextManager: FeedContextManager;
 };
 
 export const BaseContext = createContext<BaseContextType | null>(null);

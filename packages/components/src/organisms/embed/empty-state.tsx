@@ -2,6 +2,7 @@
 
 import { PlayIcon } from "@genuin/ui/icons";
 import { useEffect } from "react";
+import { SDKEventEmitter, SDKEventName } from "@genuin/components/lib/sdk-event-emitter";
 
 interface EmptyStateProps {
   containerHeight?: number | string;
@@ -16,8 +17,7 @@ export function SdkEmptyState({
 }: EmptyStateProps) {
 
   useEffect(() => {
-    if (!window.genuin) return;
-    window.genuin.emit("sdk:noContent", {
+    SDKEventEmitter.emit(SDKEventName.NO_CONTENT, {
       isError: false,
       isNoContent: true,
     });

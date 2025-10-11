@@ -12,6 +12,7 @@ import { cn } from "@genuin/ui/lib/utils";
 import { useBaseContext } from "@genuin/components/context/base";
 import { usePrevious } from "@genuin/components/hooks/use-previous";
 import { RemoveScroll } from "react-remove-scroll";
+import { SDKEventEmitter, SDKEventName } from "@genuin/components/lib/sdk-event-emitter";
 
 type EmbedExpandViewProps = {
   videos: PostDetailsType[];
@@ -218,16 +219,15 @@ export function EmbedExpandView({
        *
        * @remarks
        * - When the expand view is successfully opened, it emits the `"sdk:expand-view-loaded"` event
-       *   via `window.genuin?.emit?.("sdk:expand-view-loaded", true)`. This event is used to signal
-       *   that the expand view UI is ready, allowing to close any skeleton loaders or overlays
-       *   that may have been shown while waiting for the expand view to initialize (such as those triggered
-       *   by a "start video slug" pass-through).
+       *   via SDKEventEmitter. This event is used to signal that the expand view UI is ready,
+       *   allowing to close any skeleton loaders or overlays that may have been shown while waiting
+       *   for the expand view to initialize (such as those triggered by a "start video slug" pass-through).
        *
        * @param props - EmbedExpandViewProps containing video feed data, pagination, loading state, and context handlers.
        *
-       * @fires window.genuin.emit("sdk:expand-view-loaded", true) when expand view is loaded.
+       * @fires SDKEventEmitter.emit(SDKEventName.EXPAND_VIEW_LOADED, true) when expand view is loaded.
        */
-      window.genuin?.emit?.("sdk:expand-view-loaded", true);
+      SDKEventEmitter.emit(SDKEventName.EXPAND_VIEW_LOADED, true);
       htmlElement.style.setProperty("overflow", "hidden", "important");
     } else {
       htmlElement.style.setProperty(

@@ -11,6 +11,7 @@ import {
 } from "react";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { createEmbedRouter } from "./embed-router";
+import { SDKEventEmitter, SDKEventName, SDKListenerEventName } from "@genuin/components/lib/sdk-event-emitter";
 
 type EmbedProviderProps = {
   embedData: EmbedDataType;
@@ -48,8 +49,6 @@ export function EmbedProvider({
 
   // Mount event listeners and handlers
   useInsertionEffect(() => {
-    if (!window.genuin) return;
-
     const handleUpdateContextualParams = (props: any) => {
       const payload = props.payload;
       if (
@@ -81,29 +80,19 @@ export function EmbedProvider({
       }
     };
 
-    window.genuin.on(
-      "sdk:updateContextualParams",
-      handleUpdateContextualParams
-    );
-    window.genuin.on("sdk:updateStartVideoSlug", handleUpdateStartVideoSlug);
+    SDKEventEmitter.on(SDKListenerEventName.UPDATE_CONTEXTUAL_PARAMS, handleUpdateContextualParams);
+    SDKEventEmitter.on(SDKListenerEventName.UPDATE_START_VIDEO_SLUG, handleUpdateStartVideoSlug);
 
     return () => {
-      window.genuin?.off(
-        "sdk:updateContextualParams",
-        handleUpdateContextualParams
-      );
-      window.genuin?.off(
-        "sdk:updateStartVideoSlug",
-        handleUpdateStartVideoSlug
-      );
+      SDKEventEmitter.off(SDKListenerEventName.UPDATE_CONTEXTUAL_PARAMS, handleUpdateContextualParams);
+      SDKEventEmitter.off(SDKListenerEventName.UPDATE_START_VIDEO_SLUG, handleUpdateStartVideoSlug);
     };
   }, []);
 
   // Notify that the embed provider is ready
   useEffect(() => {
-    if (!window.genuin) return;
     // Signal that the embed provider is ready to receive events
-    window.genuin?.emit("sdk:embedProviderReady", {
+    SDKEventEmitter.emit(SDKEventName.EMBED_PROVIDER_READY, {
       embedId: stateEmbedData.embed_id,
       placementId: stateEmbedData.placement_id,
     });

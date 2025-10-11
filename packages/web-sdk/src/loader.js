@@ -47,6 +47,14 @@
 
   const SDK_VERSION = '2.0.0'
 
+  // Allowed events list - only these events can be listened to
+  const ALLOWED_EVENTS = [
+    'onPlay',
+    'onPause',
+    'onMuteChange',
+    // Add allowed event names here
+  ]
+
   // Global state
   let sdkLoaded = false
   let sdkLoading = false
@@ -180,6 +188,15 @@
    * Add event listener
    */
   function on(event, callback) {
+    // Validate event against allowlist
+    if (ALLOWED_EVENTS.length > 0 && !ALLOWED_EVENTS.includes(event)) {
+      console.warn(
+        `Event "${event}" is not in the allowed events list. Allowed events:`,
+        ALLOWED_EVENTS,
+      )
+      return Promise.resolve()
+    }
+
     return loadSDK().then((sdk) => {
       const GenuinClass = sdk.default || sdk.Genuin
 
@@ -193,6 +210,15 @@
    * Remove event listener
    */
   function off(event, callback) {
+    // Validate event against allowlist
+    if (ALLOWED_EVENTS.length > 0 && !ALLOWED_EVENTS.includes(event)) {
+      console.warn(
+        `Event "${event}" is not in the allowed events list. Allowed events:`,
+        ALLOWED_EVENTS,
+      )
+      return Promise.resolve()
+    }
+
     return loadSDK().then((sdk) => {
       const GenuinClass = sdk.default || sdk.Genuin
 
