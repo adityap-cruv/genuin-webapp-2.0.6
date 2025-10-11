@@ -4,6 +4,11 @@ export type VideoDetails = {
   currentTime: number;
   duration: number;
   isWatched: boolean;
+  /**
+   * To check, How many instances are there.
+   * If it's zero it will unregistered.
+   */
+  instances: number;
 };
 
 export type VideoEventData = {
@@ -128,6 +133,13 @@ export class FeedContextManager {
         currentTime: 0,
         duration: 0,
         isWatched: false,
+        instances: 1,
+      };
+    } else {
+      const videoDetails = this.videos[videoId];
+      this.videos[videoId] = {
+        ...videoDetails,
+        instances: videoDetails.instances + 1,
       };
     }
   }
@@ -203,7 +215,21 @@ export class FeedContextManager {
    * Remove a video from tracking
    */
   public unregisterVideo(videoId: string) {
-    delete this.videos[videoId];
+    const videoDetails = this.videos[videoId];
+    if (!videoDetails) return;
+
+    // Decrement the instances count
+    const updatedInstances = videoDetails.instances - 1;
+
+    // Only delete the video if no instances remain
+    if (updatedInstances <= 0) {
+      delete this.videos[videoId];
+    } else {
+      this.videos[videoId] = {
+        ...videoDetails,
+        instances: updatedInstances,
+      };
+    }
   }
 
   /**

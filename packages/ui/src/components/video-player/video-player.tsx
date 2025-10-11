@@ -71,6 +71,7 @@ export type PlayerProps = ComponentProps<"video"> & {
   playbackSpeed?: number;
   play?: boolean;
   adUrl?: string; // URL for video ads
+  startTime?: number;
   onOpenPlayerReady?: (player: OpenPlayerJS) => void;
   onPlayerLoad?: (player: OpenPlayerJS | null) => void; // Add custom event prop
   onVideoFirstQuartile?: (duration: number, currentTime: number) => void;
@@ -115,6 +116,7 @@ export const VideoPlayer = memo(function VideoPlayer({
   poster,
   className,
   style,
+  startTime = 0,
   ref,
   playsInline = true,
   volume = 100,
@@ -489,6 +491,7 @@ export const VideoPlayer = memo(function VideoPlayer({
       forceNative: true,
       showLoaderOnInit: true,
       hls: hlsConfigs,
+      startTime,
       ads: adUrl
         ? {
             src: adUrl,

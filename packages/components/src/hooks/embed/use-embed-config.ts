@@ -62,7 +62,7 @@ export function useEmbedConfigs() {
       theme: customization?.theme || "light",
       gridLayout: embedData?.grid_layout || undefined,
       scrollBehavior: customization?.scroll_behavior || "paging",
-      isNavigationControlEnabled: 
+      isNavigationControlEnabled:
         customization?.is_navigation_control_enabled ||
         embedData?.card_layout_id !== 3,
       centeredSlides: embedData?.placement_card_layout_id === 2,
@@ -115,6 +115,7 @@ export function useEmbedConfigs() {
           : false,
       videoCrop: customization?.video_crop,
       autoScrollToNextSlide: customization?.enable_auto_scroll ?? false,
+      resumePlaybackFrom: brandDetails.web_configs.resume_playback_from,
     }),
     [customization, brandDetails.brand_id, embedData?.style]
   );

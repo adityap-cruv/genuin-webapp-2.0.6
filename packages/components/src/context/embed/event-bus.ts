@@ -39,6 +39,11 @@ export type EmbedEventContextType = {
    * Indicates if the embed container is currently in view.
    */
   containerInView: boolean;
+  /**
+   * This flag is used to see if player went from (embed -> expand) or (expand -> embed),
+   * Player should have to play from same currenttime instead or doing -5 of currentTime, for the first activeIndex only, from second activeIndex onwards it should do -5.
+   */
+  skipTimeOffsetOnce: boolean;
 };
 
 type EmbedEventNameType =
@@ -62,5 +67,6 @@ export const createEmbedEventBus = (context?: EmbedEventContextType) =>
     selectedSection: null,
     autoInteractionActionDone: false,
     containerInView: true,
+    skipTimeOffsetOnce: false,
     ...context,
   });

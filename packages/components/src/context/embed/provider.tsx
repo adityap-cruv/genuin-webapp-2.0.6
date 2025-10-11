@@ -11,7 +11,11 @@ import {
 } from "react";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { createEmbedRouter } from "./embed-router";
-import { SDKEventEmitter, SDKEventName, SDKListenerEventName } from "@genuin/components/lib/sdk-event-emitter";
+import {
+  SDKEventEmitter,
+  SDKEventName,
+  SDKListenerEventName,
+} from "@genuin/components/lib/sdk-event-emitter";
 
 type EmbedProviderProps = {
   embedData: EmbedDataType;
@@ -40,6 +44,7 @@ export function EmbedProvider({
         sectionList: [],
         isSectioned: false,
         containerInView: true,
+        skipTimeOffsetOnce: false,
       }),
     []
   );
@@ -80,12 +85,24 @@ export function EmbedProvider({
       }
     };
 
-    SDKEventEmitter.on(SDKListenerEventName.UPDATE_CONTEXTUAL_PARAMS, handleUpdateContextualParams);
-    SDKEventEmitter.on(SDKListenerEventName.UPDATE_START_VIDEO_SLUG, handleUpdateStartVideoSlug);
+    SDKEventEmitter.on(
+      SDKListenerEventName.UPDATE_CONTEXTUAL_PARAMS,
+      handleUpdateContextualParams
+    );
+    SDKEventEmitter.on(
+      SDKListenerEventName.UPDATE_START_VIDEO_SLUG,
+      handleUpdateStartVideoSlug
+    );
 
     return () => {
-      SDKEventEmitter.off(SDKListenerEventName.UPDATE_CONTEXTUAL_PARAMS, handleUpdateContextualParams);
-      SDKEventEmitter.off(SDKListenerEventName.UPDATE_START_VIDEO_SLUG, handleUpdateStartVideoSlug);
+      SDKEventEmitter.off(
+        SDKListenerEventName.UPDATE_CONTEXTUAL_PARAMS,
+        handleUpdateContextualParams
+      );
+      SDKEventEmitter.off(
+        SDKListenerEventName.UPDATE_START_VIDEO_SLUG,
+        handleUpdateStartVideoSlug
+      );
     };
   }, []);
 
@@ -156,6 +173,7 @@ export function EmbedProvider({
           previousPlayerType: currentContext.activePlayerType,
           activePlayerType: newActiveType,
           activeIndex: activeIndex ?? currentContext.activeIndex,
+          skipTimeOffsetOnce: true,
         })
       );
     },

@@ -14,6 +14,8 @@ import { useBaseContext } from "@genuin/components/context/base";
 import { useAnalytics } from "@genuin/components/context/analytics";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { Swiper } from "swiper/types";
+import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 type VideoProviderProps = {
   children: React.ReactNode;
@@ -81,6 +83,14 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
 }) => {
   const { brandDetails, baseEventBus, baseContextManager } = useBaseContext();
   const embedDetails = useSafeEmbedContext();
+  const embedConfig = useEmbedConfigs();
+  const cardLayoutId = embedConfig.view.isPlacementView
+    ? embedDetails?.embedData.placement_card_layout_id
+    : embedDetails?.embedData.card_layout_id;
+  const videoLayoutId = embedConfig.view.isPlacementView
+    ? embedDetails?.embedData.placement_video_layout_id
+    : embedDetails?.embedData.video_layout_id;
+  const layoutType = getBrandType(cardLayoutId, videoLayoutId);
   const playerRef = useRef<OpenPlayerJS | null>(null);
   /**
    * Player configuration reference. contains the player configuration.
@@ -136,6 +146,13 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
 
   const { track, EventName } = useAnalytics();
 
+  // To check whether player should play or not, based on all the conditions.
+  const playerPlayFlag =
+    feedPlayerShouldPlay &&
+    isActive &&
+    focusState.isFocused &&
+    focusState.containerInView;
+
   const videoStateRef = useRef<VideoTimeStateType>({
     currentTime: 0,
     duration: 0,
@@ -175,6 +192,58 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       };
     }
   }, [isActive, explicitAutoPlay]);
+
+  // specifically for iheart to maintain the -n sec player replay.
+  useEffect(() => {
+    if (
+      layoutType !== "iheart" ||
+      !playerRef.current ||
+      !embedDetails?.embedEventBus
+    )
+      return;
+
+    const embedEventBus = embedDetails.embedEventBus;
+
+    // This flag checks only if the player is active or not.
+    if (isActive) {
+      // time info of new active player
+      const timeInfo = baseContextManager.getTimeInfo(videoId);
+
+      // This case is for handling if the player comes back from another state to back here.
+      // Let's say, embed -> expand -> embed,
+      // In that case we need to change currentTime same as the previous player type.
+      if (embedEventBus.getContext().skipTimeOffsetOnce) {
+        playerRef.current.getMedia().currentTime = timeInfo.currentTime;
+        embedEventBus.updateContext({
+          ...embedEventBus.getContext(),
+          skipTimeOffsetOnce: false,
+        });
+        return;
+      }
+
+      // If the player is ended no need to change the current time.
+      if (timeInfo.duration === timeInfo.currentTime) {
+        return;
+      }
+
+      const resumePlaybackFrom = embedConfig.video.resumePlaybackFrom;
+
+      // in case resumePlaybackFrom is -1, start it from beginning.
+      if (resumePlaybackFrom === -1) {
+        playerRef.current.getElement().currentTime = 0;
+        return;
+      }
+
+      // calculate new current time
+      let newCurrentTime =
+        timeInfo.currentTime - embedConfig.video.resumePlaybackFrom;
+      // if less than 0 than 0 or else, same value.
+      newCurrentTime = newCurrentTime < 0 ? 0 : newCurrentTime;
+
+      // reset the player.
+      playerRef.current.getMedia().currentTime = newCurrentTime;
+    }
+  }, [layoutType, isActive, embedDetails?.embedEventBus]);
 
   /**
    * In case of user action only we need to show seeker.
@@ -427,11 +496,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     showScrubber,
     setShowScrubber,
 
-    feedPlayerShouldPlay:
-      isActive &&
-      feedPlayerShouldPlay &&
-      focusState.isFocused &&
-      focusState.containerInView,
+    feedPlayerShouldPlay: playerPlayFlag,
     togglePlay,
     play,
     pause,
