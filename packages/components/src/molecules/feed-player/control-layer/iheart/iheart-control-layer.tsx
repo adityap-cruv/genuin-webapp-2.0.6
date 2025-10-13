@@ -64,7 +64,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
       {/* Footer Section */}
       <div className="gencl:absolute gencl:bottom-0 gencl:p-3 gencl:text-white gencl:w-full gencl:space-y-3 gencl:bg-gradient-to-t gencl:from-black/50 gencl:to-transparent">
         <div>
-          <p className="gencl:text-body-2-normal gencl:line-clamp-2 gencl:tracking-[-0.35px]!">
+          <div className="gencl:text-body-2-normal gencl:line-clamp-2 gencl:tracking-[-0.35px]!">
             {getMonthYear(postDetails.video.createdAt ?? 0)}
             {postDetails.video.duration && " • "}
             {getFormattedDuration(
@@ -77,7 +77,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
               textClassName="gencl:text-body-2-normal gencl:tracking-[-0.35px]! gencl:text-white/70!"
               className="gencl:line-clamp-2!"
             />
-          </p>
+          </div>
         </div>
 
         {/* Controls Section */}

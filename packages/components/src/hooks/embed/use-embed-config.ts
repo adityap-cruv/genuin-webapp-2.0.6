@@ -3,6 +3,7 @@ import { useBaseContext } from "@genuin/components/context/base";
 import { useMemo } from "react";
 import { useDeviceDetectMediaQuery } from "../use-devide-detect-media-query";
 import type { CustomizationType } from "@genuin/components/context/embed/embed.types";
+import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
 
 const MIN_EMBED_WIDTH = 150;
 const MIN_EMBED_HEIGHT = 268; // Based on 9:16 aspect ratio for 150 width
@@ -44,14 +45,24 @@ export function useEmbedConfigs() {
   // ============================================================
   // View Type Configuration (feed/carousel/standard_wall)
   // ============================================================
-  const viewConfig = useMemo(
-    () => ({
+  const viewConfig = useMemo(() => {
+    const isPlacementView = !!embedData?.placement_id;
+
+    const cardLayoutId = isPlacementView
+      ? embedData?.placement_card_layout_id
+      : embedData?.card_layout_id;
+    const videoLayoutId = isPlacementView
+      ? embedData?.placement_video_layout_id
+      : embedData?.video_layout_id;
+    const brandLayoutType = getBrandType(cardLayoutId, videoLayoutId);
+
+    return {
       embedStyle: embedData?.style,
       isFeed: embedData?.style === "feed",
       isCarousel: embedData?.style === "carousel",
       isStandardWall: embedData?.style === "standard_wall",
       isGrid: embedData?.style === "grid",
-      isPlacementView: !!embedData?.placement_id,
+      isPlacementView,
       showCarouselIcon: !!customization?.is_carousel_icon,
       isFloatingView: !!customization?.is_floating_view,
       isExpandedView: !!customization?.is_expanded_view,
@@ -66,9 +77,9 @@ export function useEmbedConfigs() {
         customization?.is_navigation_control_enabled ||
         embedData?.card_layout_id !== 3,
       centeredSlides: embedData?.placement_card_layout_id === 2,
-    }),
-    [customization, embedData?.style]
-  );
+      brandLayoutType,
+    };
+  }, [customization, embedData?.style, embedData?.placement_id, embedData?.card_layout_id, embedData?.placement_card_layout_id, embedData?.video_layout_id, embedData?.placement_video_layout_id]);
 
   // ============================================================
   // Header Configuration

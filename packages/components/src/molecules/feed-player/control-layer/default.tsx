@@ -2,7 +2,6 @@ import { ControlLayerPropsType } from "./control-layer.types";
 import { cn } from "@genuin/ui/lib/utils";
 import React, { useCallback } from "react";
 import { useBaseContext } from "@genuin/components/context/base";
-import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
 
 import { usePlayerContext } from "../context/context";
 import { Controls } from "./controls";
@@ -43,15 +42,7 @@ export function Default({
   const { gestureOverlayUI, hideGestureOverlay } = useGestureOverlayManager();
   const { isMobile } = useDeviceDetectMediaQuery();
   const embedConfig = useEmbedConfigs();
-
-  const cardLayoutId = embedConfig.view.isPlacementView
-    ? postDetails.video.placement_card_layout_id
-    : postDetails.video.cardLayoutId;
-  const videoLayoutId = embedConfig.view.isPlacementView
-    ? postDetails.video.placement_video_layout_id
-    : postDetails.video.videoLayoutId;
-
-  const layoutType = getBrandType(cardLayoutId, videoLayoutId);
+  const brandLayoutType = embedConfig.view.brandLayoutType;
 
   // Extract properties with fallbacks to prevent undefined errors
   const tapBehavior = brandDetails?.web_configs?.tap_behavior || 1; // Default to 1 if undefined
@@ -92,7 +83,7 @@ export function Default({
     [muted]
   );
 
-  switch (layoutType) {
+  switch (brandLayoutType) {
     case "iheart":
       return (
         <>

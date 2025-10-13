@@ -8,8 +8,6 @@ import { Stats } from "../../stats";
 import { CommentIcon, PlayIcon } from "@genuin/ui";
 import { DynamicReactionIcon } from "../../reaction-button";
 import { Image } from "@genuin/ui/components/image";
-import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
-import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { IHeartControlLayer } from "./iheart";
 
 // Helper function to process video description
@@ -36,16 +34,12 @@ export const Placement: FC<ControlLayerPropsType> = ({
   onReactionStateChange,
   ...restProps
 }) => {
-  const embedDetails = useSafeEmbedContext();
-  const { contentDisplay, responsive } = useEmbedConfigs();
+  const { contentDisplay, responsive, view } = useEmbedConfigs();
   const { isXs, isMd, isSm, isLg } = responsive;
   const shouldHideOnSmall = isXs;
   const shouldUseCompactText = isMd;
 
-  const layoutType = getBrandType(
-    embedDetails?.embedData.placement_card_layout_id,
-    embedDetails?.embedData.placement_video_layout_id
-  );
+  const brandLayoutType = view.brandLayoutType;
 
   // Memoize expensive computations and element creation
   const sectionDetails = useMemo(
@@ -289,7 +283,7 @@ export const Placement: FC<ControlLayerPropsType> = ({
     ]
   );
 
-  switch (layoutType) {
+  switch (brandLayoutType) {
     case "iheart":
       return (
         <IHeartControlLayer

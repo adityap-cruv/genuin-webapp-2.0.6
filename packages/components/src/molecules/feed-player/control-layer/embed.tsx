@@ -23,7 +23,11 @@ export const Embed: FC<ControlLayerPropsType> = ({
   const config = useEmbedConfigs();
   const { containerHeight } = useEmbedDimensions();
 
-  switch (layoutType) {
+  const brandLayoutType = !config.responsive.canShowEngagement
+    ? "responsiveness"
+    : config.view.brandLayoutType;
+
+  switch (brandLayoutType) {
     case "iheart":
       return (
         <IHeartControlLayer

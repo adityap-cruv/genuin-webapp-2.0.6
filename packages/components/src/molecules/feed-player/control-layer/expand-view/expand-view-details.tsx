@@ -20,7 +20,7 @@ import { Image } from "@genuin/ui/components/image";
 import { compressText } from "@genuin/components/lib/utils";
 import { Scrubber } from "../scrubber";
 import { IHeartControls, IHeartFollowButton } from "../iheart";
-import { getBrandType } from "../../../../lib/utils/brand-layout";
+import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
 
 type ExpandViewProps = ComponentProps<"div"> & {
   postDetails: PostDetailsType;
@@ -44,7 +44,7 @@ type ExpandViewProps = ComponentProps<"div"> & {
  * Hook to get layout configuration and shared logic
  */
 function useExpandViewConfig(postDetails: PostDetailsType): {
-  layoutType: "default" | "iheart" | "ted" | "walmart" | "grubhub";
+  brandLayoutType: "default" | "iheart" | "ted" | "walmart" | "grubhub";
   defaultOpenCommentDialog: boolean;
   showSeeker: boolean;
   hideCommunityJoinButton: boolean;
@@ -67,7 +67,7 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
     ? postDetails.video.placement_card_layout_id
     : postDetails.video.cardLayoutId;
 
-  const layoutType = getBrandType(cardLayoutId, videoLayoutId) as
+  const brandLayoutType = getBrandType(cardLayoutId, videoLayoutId) as
     | "default"
     | "iheart"
     | "ted"
@@ -75,12 +75,13 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
     | "grubhub";
 
   // Configure visibility based on layout type instead of IDs
-  const hideGroupPill = layoutType === "iheart" || layoutType === "ted";
-  const hideCommunityPill = layoutType === "iheart";
+  const hideGroupPill =
+    brandLayoutType === "iheart" || brandLayoutType === "ted";
+  const hideCommunityPill = brandLayoutType === "iheart";
   const hideCommunityJoinButton =
-    layoutType === "iheart" || layoutType === "ted";
+    brandLayoutType === "iheart" || brandLayoutType === "ted";
   const hideGroupSubscriptionButton =
-    layoutType === "iheart" || layoutType === "ted";
+    brandLayoutType === "iheart" || brandLayoutType === "ted";
 
   const defaultOpenCommentDialog = useMemo(() => {
     const openCommentDialog =
@@ -97,7 +98,7 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
   }, [embedDetails, postDetails, isDesktop]);
 
   return {
-    layoutType,
+    brandLayoutType,
     defaultOpenCommentDialog,
     showSeeker,
     hideCommunityJoinButton,
@@ -197,7 +198,7 @@ function AdaptiveDescription({
     case "iheart":
       return (
         <div className="gencl:z-10">
-          <p className="gencl:text-white gencl:text-body-2-normal gencl:font-normal">
+          <div className="gencl:text-white gencl:text-body-2-normal gencl:font-normal">
             {getMonthYear(video.createdAt ?? 0)}
             {video.duration && " • "}
             {getFormattedDuration(String(video.duration ?? ""))}{" "}
@@ -209,7 +210,7 @@ function AdaptiveDescription({
               textClassName="gencl:text-body-2-normal gencl:tracking-[-0.35px]! gencl:text-white/70!"
               className="gencl:line-clamp-5"
             />
-          </p>
+          </div>
         </div>
       );
     case "ted":
@@ -250,11 +251,11 @@ const SharedActions = memo(function SharedActions({
   defaultOpenCommentDialog,
   onReactionStateChange,
   onCommentCountChange,
-  layoutType,
+  brandLayoutType,
 }: {
   postDetails: PostDetailsType;
   defaultOpenCommentDialog: boolean;
-  layoutType: "default" | "iheart" | "ted" | "walmart" | "grubhub";
+  brandLayoutType: "default" | "iheart" | "ted" | "walmart" | "grubhub";
   onCommentCountChange?: ComponentProps<
     typeof CommentsDialog
   >["onCommentCountChange"];
@@ -263,7 +264,7 @@ const SharedActions = memo(function SharedActions({
   const embedDetails = useSafeEmbedContext();
 
   // Handle iHeart brand controls
-  if (layoutType === "iheart") {
+  if (brandLayoutType === "iheart") {
     return (
       <IHeartControls
         onClick={(e) => e.stopPropagation()}
@@ -347,7 +348,7 @@ export function ExpandViewDetails({
   ...restProps
 }: ExpandViewProps) {
   const {
-    layoutType,
+    brandLayoutType,
     defaultOpenCommentDialog,
     showSeeker,
     hideCommunityJoinButton,
@@ -370,24 +371,27 @@ export function ExpandViewDetails({
       <div
         className={cn(
           "gencl:flex gencl:w-full gencl:gap-4 gencl:justify-between gencl:items-end gencl:transition-opacity gencl:duration-200",
-          layoutType === "ted" && "gencl:gap-3",
+          brandLayoutType === "ted" && "gencl:gap-3",
           showScrubber &&
-            layoutType === "iheart" &&
+            brandLayoutType === "iheart" &&
             "gencl:opacity-0 gencl:pointer-events-none"
         )}
       >
         <div
           className={cn(
             "gencl:flex gencl:flex-col gencl:gap-4 gencl:sm:gap-2 gencl:w-5/6 gencl:sm:w-full gencl:transition-all",
-            layoutType === "ted" && "gencl:gap-3"
+            brandLayoutType === "ted" && "gencl:gap-3"
           )}
           onClick={(e) => e.stopPropagation()}
         >
           <div onClick={(e) => e.stopPropagation()} className="gencl:z-10">
-            <AdaptiveUserProfile owner={postDetails.owner} type={layoutType} />
+            <AdaptiveUserProfile
+              owner={postDetails.owner}
+              type={brandLayoutType}
+            />
           </div>
 
-          {showLinkoutInExpand && layoutType !== "iheart" && (
+          {showLinkoutInExpand && brandLayoutType !== "iheart" && (
             <Linkouts
               linkouts={postDetails.video.linkouts}
               linkoutId={postDetails.video.linkoutId}
@@ -396,12 +400,15 @@ export function ExpandViewDetails({
             />
           )}
 
-          <AdaptiveDescription video={postDetails.video} type={layoutType} />
+          <AdaptiveDescription
+            video={postDetails.video}
+            type={brandLayoutType}
+          />
         </div>
 
         <SharedActions
           postDetails={postDetails}
-          layoutType={layoutType}
+          brandLayoutType={brandLayoutType}
           defaultOpenCommentDialog={defaultOpenCommentDialog}
           onReactionStateChange={onReactionStateChange}
           onCommentCountChange={onCommentCountChange}
@@ -413,7 +420,7 @@ export function ExpandViewDetails({
           className={cn(
             "gencl:w-full gencl:overflow-x-auto gencl:scrollbar-none gencl:transition-opacity gencl:duration-200",
             showScrubber &&
-              layoutType === "iheart" &&
+              brandLayoutType === "iheart" &&
               "gencl:opacity-0 gencl:pointer-events-none"
           )}
           onClick={(e) => {
@@ -439,7 +446,7 @@ export function ExpandViewDetails({
         </div>
       )}
 
-      {layoutType === "iheart" ? (
+      {brandLayoutType === "iheart" ? (
         <div className="gencl:h-11 gencl:flex gencl:items-center">
           <Scrubber
             className={cn("gencl:z-20 gencl:transition-all")}
@@ -457,9 +464,8 @@ export function ExpandViewDetails({
       )}
 
       {/* iHeart: Show linkouts below seeker */}
-      {/* // TODO : iheart phase-2 implementation */}
-      {/* {showLinkoutInExpand &&
-        layoutType === "iheart" &&
+      {showLinkoutInExpand &&
+        brandLayoutType === "iheart" &&
         postDetails.video.linkoutId && (
           <div className="gencl:h-11 gencl:flex gencl:items-center">
             <Linkouts
@@ -472,7 +478,7 @@ export function ExpandViewDetails({
               showImmediately={true}
             />
           </div>
-        )} */}
+        )}
     </div>
   );
 }

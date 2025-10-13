@@ -154,6 +154,8 @@ export function EmbedManagerProvider({
         // Always update the active index to next video
         setActiveIndex(nextIndex);
       } else {
+        if (!moveToNext) return;
+
         // Default behavior: use standard navigation action
         const { shouldSlide, targetIndex } = getNavigationAction(
           swiper,

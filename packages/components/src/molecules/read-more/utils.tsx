@@ -135,7 +135,6 @@ export function renderAnchorTag(
   }
 
   const commonProps = {
-    key: `${item.type}-${index}`,
     className: cn("gencl:text-primary"),
     onClick: (e: React.MouseEvent) => e.stopPropagation(),
   };
@@ -147,7 +146,7 @@ export function renderAnchorTag(
         : `https://${item.url.replace(/^\/+/g, "")}`;
 
       return (
-        <Link href={href} {...commonProps}>
+        <Link key={`${item.type}-${index}`} href={href} {...commonProps}>
           {item.text}
         </Link>
       );
@@ -158,7 +157,7 @@ export function renderAnchorTag(
       const href = buildPageUrl({ type: "profile", slug: username });
 
       return (
-        <Link href={href} {...commonProps}>
+        <Link key={`${item.type}-${index}`} href={href} {...commonProps}>
           {item.text}
         </Link>
       );
@@ -167,7 +166,7 @@ export function renderAnchorTag(
     case "community": {
       const href = buildPageUrl({ type: "community", slug: item.slug });
       return (
-        <Link href={href} {...commonProps}>
+        <Link key={`${item.type}-${index}`} href={href} {...commonProps}>
           {item.text}
         </Link>
       );

@@ -8,9 +8,13 @@ export type BaseEventBusContext = {
    */
   firstTimeMutedBypass: boolean;
   volume: number;
+  /**
+   * To track whether any video is playing or not globally.
+   */
+  isPlaying: boolean;
 };
 
-type EventNames = "userFocusChange";
+type EventNames = "userFocusChange" | "playingStateChange";
 
 export function createBaseEventBus() {
   return new EventManager<BaseEventBusContext, EventNames>({
@@ -18,5 +22,6 @@ export function createBaseEventBus() {
     firstTimeMutedBypass: true,
     muted: true,
     volume: 100,
+    isPlaying: false,
   });
 }

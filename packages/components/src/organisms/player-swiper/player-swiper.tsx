@@ -71,17 +71,9 @@ export function PlayerList({
     engagement: {
       engagementTools: { comment: showCommentBox },
     },
-    view: { isPlacementView },
+    view: { brandLayoutType },
   } = useEmbedConfigs();
   const embedDetails = useSafeEmbedContext();
-  const layoutType = getBrandType(
-    isPlacementView
-      ? embedDetails?.embedData.placement_card_layout_id
-      : embedDetails?.embedData.card_layout_id,
-    isPlacementView
-      ? embedDetails?.embedData.placement_video_layout_id
-      : embedDetails?.embedData.video_layout_id
-  );
 
   // Section-related state
   const sectionList = embedDetails?.embedEventBus.getContext().sectionList;
@@ -261,7 +253,7 @@ export function PlayerList({
           )}
         >
           {/* Header with back button and centered title */}
-          {layoutType === "iheart" && (
+          {brandLayoutType === "iheart" && (
             <PlayerHeader title="The Daily" onBackClick={toggleExpandView} />
           )}
 

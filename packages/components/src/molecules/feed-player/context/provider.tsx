@@ -20,8 +20,8 @@ import { useBaseContext } from "@genuin/components/context/base";
 import { useAnalytics } from "@genuin/components/context/analytics";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { Swiper } from "swiper/types";
-import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { BaseEventBusContext } from "@genuin/components/context/base/event-bus";
 
 type VideoProviderProps = {
   children: React.ReactNode;
@@ -59,7 +59,7 @@ type VideoProviderProps = {
 type PlayerConfigType = ReturnType<typeof getVideoPlayerConfigs>;
 
 function getInitialShouldPlayState(
-  playerConfig: PlayerConfigType,
+  playerConfig: PlayerConfigType | undefined,
   explicitAutoPlay?: boolean
 ) {
   // If explicit autoplay is provided and set to false, it should override config
@@ -90,14 +90,14 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   const { brandDetails, baseEventBus, baseContextManager, muted, setMuted } =
     useBaseContext();
   const embedDetails = useSafeEmbedContext();
-  const embedConfig = useEmbedConfigs();
-  const cardLayoutId = embedConfig.view.isPlacementView
-    ? embedDetails?.embedData.placement_card_layout_id
-    : embedDetails?.embedData.card_layout_id;
-  const videoLayoutId = embedConfig.view.isPlacementView
-    ? embedDetails?.embedData.placement_video_layout_id
-    : embedDetails?.embedData.video_layout_id;
-  const layoutType = getBrandType(cardLayoutId, videoLayoutId);
+  const {
+    view: { brandLayoutType },
+    video,
+  } = useEmbedConfigs();
+
+  // For iHeart brand layout, use shared state from BaseContext
+  const isIHeartLayout = brandLayoutType === "iheart";
+
   const playerRef = useRef<OpenPlayerJS | null>(null);
   /**
    * Player configuration reference. contains the player configuration.
@@ -154,13 +154,36 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   // To check whether video is fully watched or not..
   const isVideoWatched = baseContextManager.getVideoState(videoId)?.isWatched;
 
+  // Track globalPlayState from baseEventBus - controls if ANY player can play based on user action
+  const [globalPlayState, setGlobalPlayState] = useState(
+    baseEventBus.getContext().isPlaying
+  );
+
   // To check whether player should play or not, based on all the conditions.
-  const playerPlayFlag =
-    feedPlayerShouldPlay &&
-    !isVideoWatched &&
-    isActive &&
-    focusState.isFocused &&
-    focusState.containerInView;
+  // For iHeart layout, also check globalPlayState to sync all players
+  const playerPlayFlag = useMemo(() => {
+    const baseConditions =
+      feedPlayerShouldPlay &&
+      !isVideoWatched &&
+      isActive &&
+      focusState.isFocused &&
+      focusState.containerInView;
+
+    // For iHeart layout, add globalPlayState check to sync play state across all players
+    if (isIHeartLayout) {
+      return baseConditions && globalPlayState;
+    }
+
+    return baseConditions;
+  }, [
+    feedPlayerShouldPlay,
+    isVideoWatched,
+    isActive,
+    focusState.isFocused,
+    focusState.containerInView,
+    isIHeartLayout,
+    globalPlayState,
+  ]);
 
   const videoStateRef = useRef<VideoTimeStateType>({
     currentTime: 0,
@@ -177,6 +200,12 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         unmute(false);
       }
 
+      if (isIHeartLayout) {
+        const globalPlayState = baseEventBus.getContext().isPlaying;
+        setFeedPlayerShouldPlay(globalPlayState);
+        return;
+      }
+
       if (explicitAutoPlay === false) {
         setFeedPlayerShouldPlay(false);
         return;
@@ -191,21 +220,23 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
           }, playerConfig.autoplayAfter * 1000);
           return;
         }
-
         // autoplay is true, so play the video.
         play(false);
       }
     } else {
-      playerConfigRef.current = {
-        ...getVideoPlayerConfigs(brandDetails.web_configs),
-      };
+      // For iHeart layout, don't reset player config to maintain shared state
+      if (!isIHeartLayout) {
+        playerConfigRef.current = {
+          ...getVideoPlayerConfigs(brandDetails.web_configs),
+        };
+      }
     }
-  }, [isActive, explicitAutoPlay]);
+  }, [isActive, explicitAutoPlay, isIHeartLayout, baseContextManager]);
 
   // specifically for iheart to maintain the -n sec player replay.
   useEffect(() => {
     if (
-      layoutType !== "iheart" ||
+      brandLayoutType !== "iheart" ||
       !playerRef.current ||
       !embedDetails?.embedEventBus
     )
@@ -235,7 +266,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         return;
       }
 
-      const resumePlaybackFrom = embedConfig.video.resumePlaybackFrom;
+      const resumePlaybackFrom = video.resumePlaybackFrom;
 
       // in case resumePlaybackFrom is -1, start it from beginning.
       if (resumePlaybackFrom === -1) {
@@ -244,15 +275,14 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       }
 
       // calculate new current time
-      let newCurrentTime =
-        timeInfo.currentTime - embedConfig.video.resumePlaybackFrom;
+      let newCurrentTime = timeInfo.currentTime - video.resumePlaybackFrom;
       // if less than 0 than 0 or else, same value.
       newCurrentTime = newCurrentTime < 0 ? 0 : newCurrentTime;
 
       // reset the player.
       playerRef.current.getMedia().currentTime = newCurrentTime;
     }
-  }, [layoutType, isActive, embedDetails?.embedEventBus]);
+  }, [brandLayoutType, isActive, embedDetails?.embedEventBus]);
 
   /**
    * In case of user action only we need to show seeker.
@@ -314,6 +344,20 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     };
   }, []);
 
+  // Listen to global playing state changes from baseEventBus
+  // This ensures all players respect user's play/pause actions across the embed
+  useEffect(() => {
+    function handlePlayingStateChange(_: any, context: BaseEventBusContext) {
+      setGlobalPlayState(context.isPlaying);
+    }
+
+    baseEventBus.on("playingStateChange", handlePlayingStateChange);
+
+    return () => {
+      baseEventBus.off("playingStateChange", handlePlayingStateChange);
+    };
+  }, [baseEventBus]);
+
   const setVideoTimeState = useCallback((timeState: VideoTimeStateType) => {
     videoStateRef.current = {
       ...videoStateRef.current,
@@ -352,7 +396,20 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     (byUser: boolean) => {
       setFeedPlayerShouldPlay((prev) => {
         if (byUser) {
-          baseContextManager.setPlayPauseTracker({ isPlaying: !prev });
+          const newPlayingState = !prev;
+          baseContextManager.setPlayPauseTracker({
+            isPlaying: newPlayingState,
+          });
+
+          baseEventBus.emit(
+            "playingStateChange",
+            undefined,
+            (currentContext) => ({
+              ...currentContext,
+              isPlaying: newPlayingState,
+            })
+          );
+
           if (prev) {
             setButtonAction("PAUSE");
           } else {
@@ -366,7 +423,15 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         return !prev;
       });
     },
-    [setFeedPlayerShouldPlay, EventName.VIDEO_PAUSED, EventName.VIDEO_PLAY]
+    [
+      setFeedPlayerShouldPlay,
+      EventName.VIDEO_PAUSED,
+      EventName.VIDEO_PLAY,
+      baseEventBus,
+      baseContextManager,
+      track,
+      videoId,
+    ]
   );
 
   // setPlayerRef: Sets the player reference to the current OpenPlayerJS instance or null.
@@ -375,28 +440,50 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   }, []);
 
   // play: Sets the feed player to play state.
-  const play = useCallback((byUser: boolean, seekTime: number = 0) => {
-    if (seekTime && playerRef.current) {
-      playerRef.current.getMedia().currentTime = seekTime;
-    }
-    setFeedPlayerShouldPlay(true);
-    if (byUser) {
-      baseContextManager.setPlayPauseTracker({ isPlaying: true });
-      setButtonAction("PLAY");
-      // Track play event with Analytics only if the video play is triggered by user.
-      track(EventName.VIDEO_PLAY, {
-        content_id: videoId,
-      });
-    }
-  }, []);
+  const play = useCallback(
+    (byUser: boolean, seekTime: number = 0) => {
+      if (seekTime && playerRef.current) {
+        playerRef.current.getMedia().currentTime = seekTime;
+      }
+      setFeedPlayerShouldPlay(true);
+      if (byUser) {
+        baseContextManager.setPlayPauseTracker({ isPlaying: true });
+
+        baseEventBus.emit(
+          "playingStateChange",
+          undefined,
+          (currentContext) => ({
+            ...currentContext,
+            isPlaying: true,
+          })
+        );
+
+        setButtonAction("PLAY");
+        // Track play event with Analytics only if the video play is triggered by user.
+        track(EventName.VIDEO_PLAY, {
+          content_id: videoId,
+        });
+      }
+    },
+    [baseEventBus, baseContextManager, EventName.VIDEO_PLAY, track, videoId]
+  );
 
   // pause: Sets the feed player to pause state.
   const pause = useCallback(
     (byUser: boolean) => {
       setFeedPlayerShouldPlay(false);
       if (byUser) {
-        // Notify base context manager if anyone is playing or not.
         baseContextManager.setPlayPauseTracker({ isPlaying: false });
+
+        baseEventBus.emit(
+          "playingStateChange",
+          undefined,
+          (currentContext) => ({
+            ...currentContext,
+            isPlaying: false,
+          })
+        );
+
         setButtonAction("PAUSE");
         // Track pause event with Analytics only if the video pause is triggered by user.
         track(EventName.VIDEO_PAUSED, {
@@ -404,7 +491,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         });
       }
     },
-    [EventName.VIDEO_PAUSED]
+    [EventName.VIDEO_PAUSED, baseEventBus, baseContextManager, track, videoId]
   );
 
   // toggleMuted: Toggles the muted state of the player.
@@ -425,7 +512,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       }
       setMuted((oldMuted) => !oldMuted);
     },
-    [setMuted]
+    [setMuted, muted, videoId, track, EventName]
   );
 
   // mute: Mutes the player.
@@ -463,6 +550,12 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       return;
     }
 
+    // For iHeart layout, ignore playerConfig and just go to next
+    if (isIHeartLayout) {
+      onPlayerIterationEnd();
+      return;
+    }
+
     const { repeatCount, shouldSwipeNext } = playerConfigRef.current;
 
     // Check if repeatCount is greater than 0
@@ -484,7 +577,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
 
     // set isplaying paused, no swipe next had happened.
     baseContextManager.setPlayPauseTracker({ isPlaying: false });
-  }, [isEmbed, onPlayerIterationEnd, explicitLoop]);
+  }, [isEmbed, onPlayerIterationEnd, explicitLoop, isIHeartLayout]);
 
   const updateAdInfo = useCallback(
     (isAdPlaying: boolean, adInfo: AdInfoType) => {

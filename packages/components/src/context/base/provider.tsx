@@ -85,6 +85,32 @@ export function BaseContextProvider({
     baseEventBus.updateContext({ ...baseEventBus.getContext(), muted, volume });
   }, [volume, muted]);
 
+  // Set initial isPlaying state based on autoplay config
+  useEffect(() => {
+    let shouldAutoplay = false;
+
+    // For embed context, check embed-specific autoplay settings
+    if (isEmbed && embedDetails) {
+      const { embedData, customization } = embedDetails;
+      // Check if it's a placement or standard embed
+      if (embedData?.placement_id) {
+        shouldAutoplay = embedData?.media_play?.enable_autoplay ?? false;
+      } else {
+        shouldAutoplay = customization?.autoplay ?? false;
+      }
+    } else {
+      // For non-embed context, use brand config
+      const autoplayType = brandDetails?.web_configs?.video_autoplay?.type ?? 1;
+      shouldAutoplay = autoplayType === 1; // type 1 = "always" autoplay
+    }
+
+    // Update baseEventBus with the initial autoplay state
+    baseEventBus.updateContext({
+      ...baseEventBus.getContext(),
+      isPlaying: shouldAutoplay,
+    });
+  }, [isEmbed, embedDetails, brandDetails, baseEventBus]);
+
   useEffect(() => {
     // If deviceId is not available, get a new one.
     if (!deviceId) {

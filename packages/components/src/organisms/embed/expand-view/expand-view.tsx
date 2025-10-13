@@ -12,7 +12,10 @@ import { cn } from "@genuin/ui/lib/utils";
 import { useBaseContext } from "@genuin/components/context/base";
 import { usePrevious } from "@genuin/components/hooks/use-previous";
 import { RemoveScroll } from "react-remove-scroll";
-import { SDKEventEmitter, SDKEventName } from "@genuin/components/lib/sdk-event-emitter";
+import {
+  SDKEventEmitter,
+  SDKEventName,
+} from "@genuin/components/lib/sdk-event-emitter";
 
 type EmbedExpandViewProps = {
   videos: PostDetailsType[];
@@ -39,6 +42,7 @@ export function EmbedExpandView({
     embedData,
   } = useEmbedContext();
   const { setMuted, muted, setPlaybackSpeed, isInIframe } = useBaseContext();
+  const { isMobile } = useDeviceDetectMediaQuery();
   const previousMuteState = usePrevious(muted);
   const isSectioned = embedEventBus.getContext().isSectioned;
   const [showExpandView, setShowExpandView] = useState(
@@ -49,12 +53,16 @@ export function EmbedExpandView({
       engagementTools: { comment, share, repost, spark },
       redirectionTools: { community, group, user },
     },
+    view: { brandLayoutType },
   } = useEmbedConfigs();
-  const { isMobile } = useDeviceDetectMediaQuery();
 
   // Function to handle closing expand view - restores mute state and goes back
   const handleCloseExpandView = () => {
-    if (typeof previousMuteState === "boolean") {
+    // For iHeart layout, maintain the current mute state (preserve user preference)
+    if (
+      brandLayoutType !== "iheart" &&
+      typeof previousMuteState === "boolean"
+    ) {
       setMuted(true);
     }
     setPlaybackSpeed((x) => {
@@ -76,9 +84,11 @@ export function EmbedExpandView({
         setShowExpandView(true);
         setStartIndex(context.isSectioned ? 0 : context.activeIndex);
 
-        // Unmute player if brand_id is 2357
-        if (embedData?.card_layout_id === 3) {
-          // wait till player get init so setMuted update the value::
+        if (brandLayoutType === "iheart") {
+          setTimeout(() => {
+            setMuted(muted);
+          }, 100);
+        } else if (brandLayoutType === "ted") {
           setTimeout(() => {
             setMuted(false);
           }, 300);
@@ -92,7 +102,7 @@ export function EmbedExpandView({
     return () => {
       embedEventBus.off("activePlayerTypeChange", handleActivePlayerTypeChange);
     };
-  }, [embedEventBus]);
+  }, [embedEventBus, brandLayoutType, setMuted, muted]);
 
   // Add keyboard event listener for ESC key
   useEffect(() => {
