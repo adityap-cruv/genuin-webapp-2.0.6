@@ -1,5 +1,4 @@
 "use client";
-import type { ComponentProps } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@genuin/ui/lib/utils";
 
@@ -65,6 +64,8 @@ export const ReadMore = memo(function ReadMore({
   showExpandText = true,
   shouldAnimate = false,
   position = "outside",
+  expandable = true,
+  display = "block",
   className,
   textClassName,
   buttonClassName,
@@ -216,8 +217,8 @@ export const ReadMore = memo(function ReadMore({
   useEffect(() => {
     if (!textRef.current || shouldAnimate) return;
     const textElement = textRef.current;
-    applyLineClampStyles(textElement, isExpanded ? null : maxLines);
-  }, [maxLines, isExpanded, shouldAnimate]);
+    applyLineClampStyles(textElement, isExpanded ? null : maxLines, display);
+  }, [maxLines, isExpanded, shouldAnimate, display]);
 
   // Modified animation logic for smooth expand/collapse and delayed char reduction
   useEffect(() => {
@@ -226,10 +227,10 @@ export const ReadMore = memo(function ReadMore({
     const textElement = textRef.current;
 
     if (textElement && !isExpanded) {
-      applyLineClampStyles(textElement, maxLines);
+      applyLineClampStyles(textElement, maxLines, display);
       setShowCollapsed(false);
     } else {
-      applyLineClampStyles(textElement, null);
+      applyLineClampStyles(textElement, null, display);
       setShowCollapsed(true);
     }
   }, [shouldAnimate, isExpanded, maxLines]);
@@ -240,7 +241,7 @@ export const ReadMore = memo(function ReadMore({
   }, [open]);
 
   const clampedStyle: React.CSSProperties = {
-    display: "-webkit-box",
+    display: display === "inline" ? "inline" : "-webkit-box",
     WebkitLineClamp: maxLines,
     WebkitBoxOrient: "vertical",
     overflow: "hidden",
@@ -249,12 +250,12 @@ export const ReadMore = memo(function ReadMore({
 
   // Memoize toggle function
   const toggleExpand = useCallback(() => {
-    if (!textParts.shouldTruncate) return;
+    if (!textParts.shouldTruncate || !expandable) return;
     setIsExpanded((prevValue: boolean) => {
       onExpandChange?.(!prevValue);
       return !prevValue;
     });
-  }, [onExpandChange, textParts.shouldTruncate]);
+  }, [onExpandChange, textParts.shouldTruncate, expandable]);
 
   // Handle overlay click - only close if expanded
   const handleOverlayClick = useCallback(
@@ -388,7 +389,7 @@ export const ReadMore = memo(function ReadMore({
   // Early return if no text
   if (!flattenedText || flattenedText.length === 0) return null;
 
-  const content = (
+  const renderBlockContent = (
     <div className="gencl:w-full gencl:overflow-clip" style={{ maxWidth }}>
       <p
         {...rest}
@@ -397,18 +398,21 @@ export const ReadMore = memo(function ReadMore({
           className
         )}
         style={{
-          maxHeight: shouldAnimate
-            ? isExpanded
-              ? heights.expanded
-              : heights.collapsed
-            : undefined,
-          overflow: shouldAnimate ? "auto" : undefined,
-          transition: shouldAnimate
-            ? "max-height 0.5s cubic-bezier(0.4,0,0.2,1)"
-            : undefined,
+          maxHeight:
+            shouldAnimate && expandable
+              ? isExpanded
+                ? heights.expanded
+                : heights.collapsed
+              : undefined,
+          overflow: shouldAnimate && expandable ? "auto" : undefined,
+          transition:
+            shouldAnimate && expandable
+              ? "max-height 0.5s cubic-bezier(0.4,0,0.2,1)"
+              : undefined,
           ...rest.style,
         }}
         onClick={(e) => {
+          if (!expandable) return;
           e.stopPropagation();
           onClick?.(e);
           setIsExpanded((prev) => !prev);
@@ -424,7 +428,7 @@ export const ReadMore = memo(function ReadMore({
             textClassName
           )}
           style={
-            !shouldAnimate && !isExpanded
+            !shouldAnimate && !isExpanded && expandable
               ? clampedStyle
               : { wordBreak: "break-word" }
           }
@@ -433,6 +437,50 @@ export const ReadMore = memo(function ReadMore({
         </span>
       </p>
     </div>
+  );
+
+  const renderInlineContent = (
+    <span className="gencl:w-full gencl:overflow-clip" style={{ maxWidth }}>
+      <span
+        {...rest}
+        className={cn(
+          "gencl:transition-all gencl:relative gencl:duration-500 gencl:ease-in-out gencl:overflow-auto gencl:scrollbar-none",
+          className
+        )}
+        style={{
+          maxHeight:
+            shouldAnimate && expandable
+              ? isExpanded
+                ? heights.expanded
+                : heights.collapsed
+              : undefined,
+          overflow: shouldAnimate && expandable ? "auto" : undefined,
+          transition:
+            shouldAnimate && expandable
+              ? "max-height 0.5s cubic-bezier(0.4,0,0.2,1)"
+              : undefined,
+          ...rest.style,
+        }}
+      >
+        <span
+          ref={textRef}
+          className={cn(
+            "gencl:w-full gencl:break-words",
+            position !== "outside"
+              ? "gencl:text-white!"
+              : "gencl:text-secondary-900",
+            textClassName
+          )}
+          style={
+            !shouldAnimate && !isExpanded && expandable
+              ? clampedStyle
+              : { wordBreak: "break-word" }
+          }
+        >
+          {displayText}
+        </span>
+      </span>
+    </span>
   );
 
   // Wrap content in link if href is provided
@@ -444,21 +492,24 @@ export const ReadMore = memo(function ReadMore({
         linkClassName
       )}
     >
-      {content}
+      {display === "inline" ? renderInlineContent : renderBlockContent}
     </a>
+  ) : display === "inline" ? (
+    renderInlineContent
   ) : (
-    content
+    renderBlockContent
   );
 
   return (
     <div
       className={cn(
-        "gencl:relative"
+        "gencl:relative",
+        display === "inline" && "gencl:inline"
         // showOverlay && isExpanded && "gencl:z-10"
       )}
     >
       {/* Overlay backdrop */}
-      {showOverlay && textParts.shouldTruncate && isExpanded && (
+      {showOverlay && expandable && textParts.shouldTruncate && isExpanded && (
         <div
           className={cn(
             "gencl:fixed gencl:inset-0 gencl:bg-black/60 gencl:transition-opacity gencl:duration-300",

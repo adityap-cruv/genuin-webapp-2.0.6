@@ -79,26 +79,26 @@ const preview: Preview = {
             style={{ ...parsedColor }}
           >
             <ReactQueryClientProvider>
-              <BaseContextProvider brandDetails={testBrandDetails} isEmbed>
-                <EmbedProvider
-                  container={document.getElementById("gen-sdk") as HTMLElement}
-                  embedData={embedData}
-                >
-                  <AuthProvider
-                    onSignIn={() => {}}
-                    onSignOut={() => {}}
-                    onUpdateUser={() => {}}
-                    user={null}
-                  >
-                    <LinkProvider>
+              <EmbedProvider
+                container={document.getElementById("gen-sdk") as HTMLElement}
+                embedData={embedData}
+              >
+                <BaseContextProvider brandDetails={testBrandDetails} isEmbed>
+                  <LinkProvider>
+                    <AuthProvider
+                      onSignIn={() => {}}
+                      onSignOut={() => {}}
+                      onUpdateUser={() => {}}
+                      user={null}
+                    >
                       <AnalyticsProvider isWebSDK>
                         <Story />
                         <Toaster />
                       </AnalyticsProvider>
-                    </LinkProvider>
-                  </AuthProvider>
-                </EmbedProvider>
-              </BaseContextProvider>
+                    </AuthProvider>
+                  </LinkProvider>
+                </BaseContextProvider>
+              </EmbedProvider>
             </ReactQueryClientProvider>
           </div>
         );
@@ -107,11 +107,8 @@ const preview: Preview = {
       const parsedColor = parseBrandColors(testBrandDetails.brand_colors);
       return (
         <ReactQueryClientProvider>
-          <LinkProvider>
-            <BaseContextProvider
-              isEmbed={false}
-              brandDetails={testBrandDetails}
-            >
+          <BaseContextProvider isEmbed={false} brandDetails={testBrandDetails}>
+            <LinkProvider>
               <AuthProvider
                 onSignIn={() => {}}
                 onSignOut={() => {}}
@@ -144,8 +141,8 @@ const preview: Preview = {
                   </main>
                 </AnalyticsProvider>
               </AuthProvider>
-            </BaseContextProvider>
-          </LinkProvider>
+            </LinkProvider>
+          </BaseContextProvider>
         </ReactQueryClientProvider>
       );
     },

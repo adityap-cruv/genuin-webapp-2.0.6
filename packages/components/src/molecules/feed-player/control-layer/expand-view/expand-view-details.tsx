@@ -20,7 +20,8 @@ import { Image } from "@genuin/ui/components/image";
 import { compressText } from "@genuin/components/lib/utils";
 import { Scrubber } from "../scrubber";
 import { IHeartControls, IHeartFollowButton } from "../iheart";
-import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
+import { getBrandType } from "../../../../lib/utils/brand-layout";
+import { ReadMoreTextType } from "@genuin/components/molecules/read-more/read-more.types";
 
 type ExpandViewProps = ComponentProps<"div"> & {
   postDetails: PostDetailsType;
@@ -194,11 +195,41 @@ function AdaptiveDescription({
   video: PostDetailsType["video"];
   type: "default" | "iheart" | "ted" | "walmart" | "grubhub";
 }) {
+  const enhancedDescription: ReadMoreTextType = useMemo(() => {
+    if (type !== "iheart") {
+      return video.description
+        ? Array.isArray(video.description)
+          ? video.description
+          : [video.description]
+        : [];
+    }
+
+    const monthYear = getMonthYear(video.createdAt ?? 0);
+    const duration = video.duration
+      ? ` • ${getFormattedDuration(String(video.duration))}`
+      : "";
+
+    return [
+      {
+        type: "custom",
+        text: `${monthYear}${duration}`,
+        style: { color: "#ffffff" },
+        className:
+          "gencl:text-white gencl:text-body-2-normal gencl:font-normal",
+      },
+      " ",
+      ...(video.description
+        ? Array.isArray(video.description)
+          ? video.description
+          : [video.description]
+        : []),
+    ];
+  }, [type, video.createdAt, video.duration, video.description]);
   switch (type) {
     case "iheart":
       return (
         <div className="gencl:z-10">
-          <div className="gencl:text-white gencl:text-body-2-normal gencl:font-normal">
+          <p className="gencl:text-white gencl:text-body-2-normal gencl:font-normal">
             {getMonthYear(video.createdAt ?? 0)}
             {video.duration && " • "}
             {getFormattedDuration(String(video.duration ?? ""))}{" "}
@@ -210,7 +241,7 @@ function AdaptiveDescription({
               textClassName="gencl:text-body-2-normal gencl:tracking-[-0.35px]! gencl:text-white/70!"
               className="gencl:line-clamp-5"
             />
-          </div>
+          </p>
         </div>
       );
     case "ted":

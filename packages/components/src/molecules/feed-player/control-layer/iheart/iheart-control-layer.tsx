@@ -75,7 +75,8 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
               position="overlay"
               shouldAnimate
               textClassName="gencl:text-body-2-normal gencl:tracking-[-0.35px]! gencl:text-white/70!"
-              className="gencl:line-clamp-2!"
+              expandable={false}
+              display="inline"
             />
           </div>
         </div>

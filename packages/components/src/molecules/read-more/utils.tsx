@@ -7,10 +7,11 @@ import { Link } from "../link";
 // Utility function to apply line clamp styles to an element
 export function applyLineClampStyles(
   element: HTMLElement,
-  maxLines: number | null
+  maxLines: number | null,
+  display: "inline" | "block"
 ) {
   if (maxLines === null) {
-    element.style.display = "-webkit-box"; // Reset display
+    element.style.display = display === "inline" ? "inline" : "-webkit-box"; // Reset display
     (
       element.style as unknown as {
         webkitLineClamp?: string;
@@ -26,7 +27,7 @@ export function applyLineClampStyles(
     element.style.overflow = "hidden"; // Reset overflow
     element.style.textOverflow = "ellipsis"; // Reset text-overflow
   } else {
-    element.style.display = "-webkit-box";
+    element.style.display = display === "inline" ? "inline" : "-webkit-box";
     (
       element.style as unknown as {
         webkitLineClamp?: string;
@@ -45,7 +46,7 @@ export function applyLineClampStyles(
 }
 
 interface AnchorTagBase {
-  type: "url" | "member" | "community";
+  type: "url" | "member" | "community" | "custom";
   text: string;
 }
 
@@ -63,10 +64,18 @@ interface CommunityAnchorTag extends AnchorTagBase {
   slug: string;
 }
 
+interface CustomAnchorTag extends AnchorTagBase {
+  type: "custom";
+  text: string;
+  style: React.CSSProperties;
+  className?: string;
+}
+
 export type AnchorTagType =
   | UrlAnchorTag
   | MemberAnchorTag
   | CommunityAnchorTag
+  | CustomAnchorTag
   | string
   | null;
 
@@ -105,6 +114,19 @@ export function convertUrlsToAnchorTags(
         type: "community",
         slug: String(item.slug),
         text: String(item.text),
+      };
+    }
+    if (
+      typeof item === "object" &&
+      item !== null &&
+      "text" in item &&
+      "style" in item
+    ) {
+      return {
+        type: "custom",
+        style: item.style as React.CSSProperties,
+        text: String(item.text),
+        className: String(item.className),
       };
     }
     if (typeof item === "string" || item === null) return item;
@@ -149,6 +171,14 @@ export function renderAnchorTag(
         <Link key={`${item.type}-${index}`} href={href} {...commonProps}>
           {item.text}
         </Link>
+      );
+    }
+
+    case "custom": {
+      return (
+        <span style={item.style} className={item.className}>
+          {item.text}
+        </span>
       );
     }
 

@@ -97,4 +97,15 @@ export type ReadMoreProps = {
    * Custom class name for the overlay
    */
   overlayClassName?: string;
+  /**
+   * Defines how the content should be displayed relative to its parent.
+   * @default "block"
+   */
+  display?: "block" | "inline";
+
+  /**
+   * Determines whether the content can be expanded or not.
+   * @default true
+   */
+  expandable?: boolean;
 } & Omit<ComponentProps<"p">, "children">;
