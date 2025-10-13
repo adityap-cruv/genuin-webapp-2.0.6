@@ -29,6 +29,21 @@ import {
   UpdateConfigByUserType,
 } from '@/type'
 
+// Allowed events list - only these events can be listened to
+const ALLOWED_EVENTS = [
+  'onPlay',
+  'onPause',
+  'onMuteChange',
+  // Add allowed event names here
+]
+
+const ALLOWED_EMIT_EVENTS = [
+  'player:play',
+  'player:pause',
+  'player:mute',
+  'player:unmute',
+]
+
 export class GenuinSDK {
   private brandDetailsManager: BrandDetailsManager
   private static instance: GenuinSDK
@@ -1016,6 +1031,17 @@ export class GenuinSDK {
    * Subscribe to SDK events
    */
   on(eventType: SDKEventType, listener: EventListener): () => void {
+    if (!ALLOWED_EVENTS.includes(eventType)) {
+      console.warn(
+        `Event "${eventType}" is not in the allowed events list. Allowed events:`,
+        ALLOWED_EVENTS,
+      )
+      return () => {}
+    }
+    return this.eventManager.on(eventType, listener)
+  }
+
+  onInternal(eventType: SDKEventType, listener: EventListener): () => void {
     return this.eventManager.on(eventType, listener)
   }
 
@@ -1023,6 +1049,20 @@ export class GenuinSDK {
    * Unsubscribe from SDK events
    */
   off(eventType: SDKEventType, listener: EventListener): void {
+    if (!ALLOWED_EVENTS.includes(eventType)) {
+      console.warn(
+        `Event "${eventType}" is not in the allowed events list. Allowed events:`,
+        ALLOWED_EVENTS,
+      )
+      return
+    }
+    this.eventManager.off(eventType, listener)
+  }
+
+  /**
+   * Unsubscribe from SDK events
+   */
+  offInternal(eventType: SDKEventType, listener: EventListener): void {
     this.eventManager.off(eventType, listener)
   }
 
@@ -1081,6 +1121,17 @@ export class GenuinSDK {
    * @param payload The data to include with the event
    */
   emit(eventType: SDKEventType, payload?: any): void {
+    if (!ALLOWED_EMIT_EVENTS.includes(eventType)) {
+      console.warn(
+        `Event "${eventType}" is not in the allowed events list. Allowed events:`,
+        ALLOWED_EMIT_EVENTS,
+      )
+      return
+    }
+    this.eventManager.emit(eventType, payload)
+  }
+
+  emitInternal(eventType: SDKEventType, payload?: any): void {
     this.eventManager.emit(eventType, payload)
   }
 

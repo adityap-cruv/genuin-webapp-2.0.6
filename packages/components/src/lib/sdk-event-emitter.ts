@@ -33,6 +33,10 @@ export enum SDKListenerEventName {
   AUTHENTICATE_USER = "sdk:authenticateUser",
   UPDATE_CONTEXTUAL_PARAMS = "sdk:updateContextualParams",
   UPDATE_START_VIDEO_SLUG = "sdk:updateStartVideoSlug",
+  PLAYER_PLAY = "player:play",
+  PLAYER_PAUSE = "player:pause",
+  PLAYER_MUTE = "player:mute",
+  PLAYER_UNMUTE = "player:unmute",
 }
 
 /**
@@ -134,7 +138,8 @@ export class SDKEventEmitter {
     }
 
     try {
-      window.genuin!.emit(eventName, payload);
+      Object.assign(payload, { isInternal: true });
+      window.genuin!.emitInternal(eventName, payload);
     } catch (error) {
       // Silent fail
     }
@@ -157,7 +162,7 @@ export class SDKEventEmitter {
     }
 
     try {
-      window.genuin!.on(eventName, listener);
+      window.genuin!.onInternal(eventName, listener);
     } catch (error) {
       // Silent fail
     }
@@ -183,7 +188,7 @@ export class SDKEventEmitter {
     }
 
     try {
-      window.genuin!.off(eventName, listener);
+      window.genuin!.offInternal(eventName, listener);
     } catch (error) {
       // Silent fail
     }

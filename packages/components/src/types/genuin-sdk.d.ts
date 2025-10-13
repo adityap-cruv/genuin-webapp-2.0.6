@@ -17,16 +17,19 @@ interface GenuinSDK {
    * Emits an event to the SDK event system
    */
   emit: (eventName: string, payload: any) => void;
+  emitInternal: (eventName: string, payload: any) => void;
 
   /**
    * Registers an event listener
    */
   on: (eventName: string, listener: (props: any) => void) => void;
+  onInternal: (eventName: string, listener: (props: any) => void) => void;
 
   /**
    * Removes an event listener
    */
   off: (eventName: string, listener: (props: any) => void) => void;
+  offInternal: (eventName: string, listener: (props: any) => void) => void;
   onAll: (listener: (props: any) => void) => void;
 }
 

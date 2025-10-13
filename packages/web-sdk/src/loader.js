@@ -6,7 +6,7 @@
  */
 
 ;(function (window) {
-  'use strict'
+  ;('use strict')
 
   // Configuration - auto-detect base URL from script location
   let SDK_BASE_URL = window.GENUIN_SDK_BASE_URL
@@ -46,14 +46,6 @@
   }
 
   const SDK_VERSION = '2.0.0'
-
-  // Allowed events list - only these events can be listened to
-  const ALLOWED_EVENTS = [
-    'onPlay',
-    'onPause',
-    'onMuteChange',
-    // Add allowed event names here
-  ]
 
   // Global state
   let sdkLoaded = false
@@ -188,15 +180,6 @@
    * Add event listener
    */
   function on(event, callback) {
-    // Validate event against allowlist
-    if (ALLOWED_EVENTS.length > 0 && !ALLOWED_EVENTS.includes(event)) {
-      console.warn(
-        `Event "${event}" is not in the allowed events list. Allowed events:`,
-        ALLOWED_EVENTS,
-      )
-      return Promise.resolve()
-    }
-
     return loadSDK().then((sdk) => {
       const GenuinClass = sdk.default || sdk.Genuin
 
@@ -210,20 +193,24 @@
    * Remove event listener
    */
   function off(event, callback) {
-    // Validate event against allowlist
-    if (ALLOWED_EVENTS.length > 0 && !ALLOWED_EVENTS.includes(event)) {
-      console.warn(
-        `Event "${event}" is not in the allowed events list. Allowed events:`,
-        ALLOWED_EVENTS,
-      )
-      return Promise.resolve()
-    }
-
     return loadSDK().then((sdk) => {
       const GenuinClass = sdk.default || sdk.Genuin
 
       if (GenuinClass) {
         return GenuinClass.off(event, callback)
+      }
+    })
+  }
+
+  /**
+   * Remove event listener
+   */
+  function emit(event, payload) {
+    return loadSDK().then((sdk) => {
+      const GenuinClass = sdk.default || sdk.Genuin
+
+      if (GenuinClass) {
+        return GenuinClass.emit(event, payload)
       }
     })
   }
@@ -253,6 +240,10 @@
           .catch(reject)
       } else if (method === 'off') {
         off(...args)
+          .then(resolve)
+          .catch(reject)
+      } else if (method === 'emit') {
+        emit(...args)
           .then(resolve)
           .catch(reject)
       }
@@ -304,6 +295,17 @@
 
       return new Promise((resolve, reject) => {
         initQueue.push({ method: 'off', args, resolve, reject })
+        setTimeout(processInitQueue, 0)
+      })
+    },
+
+    emit: function (...args) {
+      if (queueProcessed) {
+        return emit(...args)
+      }
+
+      return new Promise((resolve, reject) => {
+        initQueue.push({ method: 'emit', args, resolve, reject })
         setTimeout(processInitQueue, 0)
       })
     },

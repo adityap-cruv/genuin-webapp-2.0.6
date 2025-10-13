@@ -43,6 +43,9 @@ declare global {
       update?: (config: any) => ReturnType<typeof Genuin.newUpdate>
       emit?: typeof Genuin.emit
       onAll?: typeof Genuin.onAll
+      onInternal: typeof Genuin.onInternal
+      offInternal: typeof Genuin.offInternal
+      emitInternal: typeof Genuin.emitInternal
       _initQueue?: Array<() => void>
     }
     onGenuinReady?: (sdk: typeof Genuin) => void
@@ -52,26 +55,16 @@ declare global {
 // Set up global API for browser usage
 if (typeof window !== 'undefined') {
   // Modern global API
-  window.GenuinSDK = Genuin
+  // window.GenuinSDK = Genuin
 
   // Enhanced global API with both legacy and new methods
   window.genuin = {
+    ...window.genuin,
     // Main SDK instance
     SDK: Genuin,
-
-    // Event handling methods
-    on: Genuin.on.bind(Genuin),
-    off: Genuin.off.bind(Genuin),
-    emit: Genuin.emit.bind(Genuin),
-    onAll: Genuin.onAll.bind(Genuin),
-
-    // Legacy methods - now properly connected to new architecture
-    init: (config: any) => {
-      return Genuin.newInit(config)
-    },
-    update: (config: any) => {
-      return Genuin.newUpdate(config)
-    },
+    onInternal: Genuin.onInternal.bind(Genuin),
+    offInternal: Genuin.offInternal.bind(Genuin),
+    emitInternal: Genuin.emitInternal.bind(Genuin),
   }
 
   // Setup DOM initialization like legacy SDK

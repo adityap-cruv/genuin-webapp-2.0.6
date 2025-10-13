@@ -25,6 +25,7 @@ import { useSafeEmbedContext } from "../embed/context";
 import {
   SDKEventEmitter,
   SDKEventName,
+  SDKListenerEventName,
 } from "@genuin/components/lib/sdk-event-emitter";
 
 type BaseContextProviderProps = {
@@ -145,12 +146,55 @@ export function BaseContextProvider({
       baseContextManager.setPlayPauseTracker({ isFocused: false });
     };
 
+    const handlePlayFromOutside = () => {
+      console.log("handlaplay from outside.");
+    };
+
+    const handlePauseFromOutside = () => {
+      console.log("handle pause from outside");
+    };
+
+    const handleMuteFromOutside = () => {
+      setMuted(true);
+    };
+
+    const handleUnmuteFromOutside = () => {
+      setMuted(false);
+    };
+
     window.addEventListener("focus", handleWindowFocus);
     window.addEventListener("blur", handleWindowBlur);
+    SDKEventEmitter.on(SDKListenerEventName.PLAYER_PLAY, handlePlayFromOutside);
+    SDKEventEmitter.on(
+      SDKListenerEventName.PLAYER_PAUSE,
+      handlePauseFromOutside
+    );
+    SDKEventEmitter.on(SDKListenerEventName.PLAYER_MUTE, handleMuteFromOutside);
+    SDKEventEmitter.on(
+      SDKListenerEventName.PLAYER_UNMUTE,
+      handleUnmuteFromOutside
+    );
 
     return () => {
       window.removeEventListener("focus", handleWindowFocus);
       window.removeEventListener("blur", handleWindowBlur);
+
+      SDKEventEmitter.off(
+        SDKListenerEventName.PLAYER_PLAY,
+        handlePlayFromOutside
+      );
+      SDKEventEmitter.off(
+        SDKListenerEventName.PLAYER_PAUSE,
+        handlePauseFromOutside
+      );
+      SDKEventEmitter.off(
+        SDKListenerEventName.PLAYER_MUTE,
+        handleMuteFromOutside
+      );
+      SDKEventEmitter.off(
+        SDKListenerEventName.PLAYER_UNMUTE,
+        handleUnmuteFromOutside
+      );
     };
   }, [baseEventBus]);
 
