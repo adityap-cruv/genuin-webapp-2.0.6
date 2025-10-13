@@ -156,7 +156,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
 
   // Track globalPlayState from baseEventBus - controls if ANY player can play based on user action
   const [globalPlayState, setGlobalPlayState] = useState(
-    baseEventBus.getContext().isPlaying
+    baseEventBus.getContext().globalPlayingState
   );
 
   // To check whether player should play or not, based on all the conditions.
@@ -201,7 +201,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       }
 
       if (isIHeartLayout) {
-        const globalPlayState = baseEventBus.getContext().isPlaying;
+        const globalPlayState = baseEventBus.getContext().globalPlayingState;
         setFeedPlayerShouldPlay(globalPlayState);
         return;
       }
@@ -348,13 +348,13 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   // This ensures all players respect user's play/pause actions across the embed
   useEffect(() => {
     function handlePlayingStateChange(_: any, context: BaseEventBusContext) {
-      setGlobalPlayState(context.isPlaying);
+      setGlobalPlayState(context.globalPlayingState);
     }
 
-    baseEventBus.on("playingStateChange", handlePlayingStateChange);
+    baseEventBus.on("globalPlayingStateChange", handlePlayingStateChange);
 
     return () => {
-      baseEventBus.off("playingStateChange", handlePlayingStateChange);
+      baseEventBus.off("globalPlayingStateChange", handlePlayingStateChange);
     };
   }, [baseEventBus]);
 
@@ -402,7 +402,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
           });
 
           baseEventBus.emit(
-            "playingStateChange",
+            "globalPlayingStateChange",
             undefined,
             (currentContext) => ({
               ...currentContext,
@@ -450,7 +450,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         baseContextManager.setPlayPauseTracker({ isPlaying: true });
 
         baseEventBus.emit(
-          "playingStateChange",
+          "globalPlayingStateChange",
           undefined,
           (currentContext) => ({
             ...currentContext,
@@ -476,7 +476,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         baseContextManager.setPlayPauseTracker({ isPlaying: false });
 
         baseEventBus.emit(
-          "playingStateChange",
+          "globalPlayingStateChange",
           undefined,
           (currentContext) => ({
             ...currentContext,

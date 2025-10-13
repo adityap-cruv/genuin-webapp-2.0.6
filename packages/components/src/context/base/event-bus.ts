@@ -10,11 +10,12 @@ export type BaseEventBusContext = {
   volume: number;
   /**
    * To track whether any video is playing or not globally.
+   * This will only work for iheart, not other brands.
    */
-  isPlaying: boolean;
+  globalPlayingState: boolean;
 };
 
-type EventNames = "userFocusChange" | "playingStateChange";
+type EventNames = "userFocusChange" | "globalPlayingStateChange";
 
 export function createBaseEventBus() {
   return new EventManager<BaseEventBusContext, EventNames>({
@@ -22,6 +23,6 @@ export function createBaseEventBus() {
     firstTimeMutedBypass: true,
     muted: true,
     volume: 100,
-    isPlaying: false,
+    globalPlayingState: false,
   });
 }

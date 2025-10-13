@@ -18,7 +18,7 @@ import type { PlaybackSpeedType } from "@genuin/components/molecules/feed-player
 
 import { BaseContext } from "./context";
 import { parseBrandColors } from "@genuin/components/lib/utils/brand-color-parser";
-import { BaseEventBusContext, createBaseEventBus } from "./event-bus";
+import { createBaseEventBus } from "./event-bus";
 import internalStorageManager from "@genuin/components/lib/utils/internal-storage-manager";
 import { FeedContextManager } from "./feed-context-manager";
 import { useSafeEmbedContext } from "../embed/context";
@@ -108,7 +108,7 @@ export function BaseContextProvider({
     // Update baseEventBus with the initial autoplay state
     baseEventBus.updateContext({
       ...baseEventBus.getContext(),
-      isPlaying: shouldAutoplay,
+      globalPlayingState: shouldAutoplay,
     });
   }, [isEmbed, embedDetails, brandDetails, baseEventBus]);
 
@@ -147,11 +147,17 @@ export function BaseContextProvider({
     };
 
     const handlePlayFromOutside = () => {
-      console.log("handlaplay from outside.");
+      baseEventBus.updateContext({
+        ...baseEventBus.getContext(),
+        globalPlayingState: true,
+      });
     };
 
     const handlePauseFromOutside = () => {
-      console.log("handle pause from outside");
+      baseEventBus.updateContext({
+        ...baseEventBus.getContext(),
+        globalPlayingState: false,
+      });
     };
 
     const handleMuteFromOutside = () => {
