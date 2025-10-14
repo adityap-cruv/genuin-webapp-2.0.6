@@ -26,6 +26,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
     postDetails.video.id
   )?.isWatched;
   const { play } = usePlayerContext();
+  const isPodcast = true;
 
   return (
     <div
@@ -41,23 +42,28 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
     >
       {/* Header Section */}
       <div className="gencl:absolute gencl:top-0 gencl:w-full gencl:flex gencl:justify-between gencl:items-center gencl:gap-2 gencl:text-white gencl:p-3 gencl:bg-gradient-to-b gencl:from-black/50 gencl:to-transparent">
-        <Image
-          aspectRatio="square"
-          src={
-            "https://fastly.picsum.photos/id/576/200/200.jpg?hmac=pkNsIvSErgVpup1XYfj_NAE5ySK9YL7DmYlGGTTjScw"
-          }
-          alt={postDetails.video.slug ?? ""}
-          className="gencl:size-12 gencl:rounded-md gencl:object-cover"
-        />
+        {postDetails.video.attributes?.image_url && (
+          <Image
+            aspectRatio="square"
+            src={postDetails.video.attributes?.image_url ?? ""}
+            alt={postDetails.video.attributes?.video_slug ?? ""}
+            className="gencl:size-12 gencl:rounded-md gencl:object-cover"
+          />
+        )}
         <div className="gencl:w-full">
-          <p className="gencl:text-body-2-semi-bold gencl:line-clamp-1 gencl:tracking-[-0.35px]!">
-            {/* {postDetails.owner?.name ?? postDetails.owner?.userName} */}
-            iHeart Sports 960
-          </p>
-          <p className="gencl:text-body-2-normal gencl:line-clamp-2 gencl:tracking-[-0.35px]!">
-            {/* {postDetails.video.attributes?.title ?? postDetails?.owner?.bio} */}
-            {compressText("The Bay Area's Sports Talk", 75)}
-          </p>
+          {(postDetails.video.attributes?.station_title ||
+            postDetails.video.attributes?.podcast_title) && (
+            <p className="gencl:text-body-2-semi-bold gencl:line-clamp-1 gencl:tracking-[-0.35px]!">
+              {isPodcast
+                ? postDetails.video.attributes?.podcast_title
+                : postDetails.video.attributes?.station_title}
+            </p>
+          )}
+          {postDetails.video.attributes?.description && (
+            <p className="gencl:text-body-2-normal gencl:line-clamp-2 gencl:tracking-[-0.35px]!">
+              {postDetails.video.attributes?.description}
+            </p>
+          )}
         </div>
       </div>
 
@@ -93,7 +99,6 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
             size="lg"
             variant="clip"
             contentId={postDetails.video.id}
-            shareUrl={postDetails.video.shareUrl}
             slug={postDetails.video.slug}
             isReacted={postDetails.video.isSparked ?? false}
             reactionCount={postDetails.video.sparkCount}

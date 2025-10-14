@@ -17,10 +17,9 @@ import { Linkouts } from "@genuin/components/organisms";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { Image } from "@genuin/ui/components/image";
-import { compressText } from "@genuin/components/lib/utils";
 import { Scrubber } from "../scrubber";
-import { IHeartControls, IHeartFollowButton } from "../iheart";
-import { getBrandType } from "../../../../lib/utils/brand-layout";
+import { IHeartControls } from "../iheart";
+import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
 import { ReadMoreTextType } from "@genuin/components/molecules/read-more/read-more.types";
 
 type ExpandViewProps = ComponentProps<"div"> & {
@@ -115,46 +114,52 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
  * User profile component that adapts based on layout
  */
 function AdaptiveUserProfile({
-  owner,
+  postDetails,
   type,
 }: {
-  owner: PostDetailsType["owner"];
+  postDetails: PostDetailsType;
   type: "default" | "iheart" | "ted" | "walmart" | "grubhub";
 }) {
   switch (type) {
     case "iheart":
+      const isPodcast = true;
       return (
         <div className="gencl:flex gencl:gap-2 gencl:items-center gencl:text-white">
-          <Image
-            aspectRatio="square"
-            src={
-              "https://fastly.picsum.photos/id/576/200/200.jpg?hmac=pkNsIvSErgVpup1XYfj_NAE5ySK9YL7DmYlGGTTjScw"
-            }
-            alt={'postDetails.video.slug ?? ""'}
-            className="gencl:size-12 gencl:rounded-md gencl:object-cover"
-          />
-          <div className="gencl:w-full gencl:flex gencl:flex-col gencl:gap-1">
-            <p className="gencl:h-5 gencl:text-body-2-semi-bold gencl:line-clamp-1 gencl:tracking-[-0.35px]! gencl:flex gencl:items-center gencl:gap-2">
-              {compressText("iHeart Sports 960", 25)}
-              <span className="gencl:px-1.5 gencl:bg-[#CC032E] gencl:rounded-xs">
-                LIVE
-              </span>
-              <IHeartFollowButton
-                variant="outlined"
-                size="xs"
-                onClick={(e) => e.stopPropagation()}
-              />
-            </p>
-
-            <ReadMore
-              text={compressText(
-                "The Sunday Read: ‘The Cryptocurrency Scam That Turned a Small Town Against Itself, The Sunday Read: ‘The Cryptocurrency Scam That Turned a Small Town Against Itself ",
-                110
-              )}
-              shouldAnimate
-              textClassName="gencl:text-body-2-normal gencl:tracking-[-0.35px]!"
-              className="gencl:line-clamp-3"
+          {postDetails.video.attributes?.image_url && (
+            <Image
+              aspectRatio="square"
+              src={postDetails.video.attributes?.image_url ?? ""}
+              alt={postDetails.video.attributes?.video_slug ?? ""}
+              className="gencl:size-12 gencl:rounded-md gencl:object-cover"
             />
+          )}
+          <div className="gencl:w-full gencl:flex gencl:flex-col gencl:gap-1">
+            {(postDetails.video.attributes?.station_title ||
+              postDetails.video.attributes?.podcast_title) && (
+              <p className="gencl:h-5 gencl:text-body-2-semi-bold gencl:line-clamp-1 gencl:tracking-[-0.35px]! gencl:flex gencl:items-center gencl:gap-2">
+                {isPodcast
+                  ? postDetails.video.attributes?.podcast_title
+                  : postDetails.video.attributes?.station_title}
+
+                {/* <span className="gencl:px-1.5 gencl:bg-[#CC032E] gencl:rounded-xs">
+                  LIVE
+                </span> */}
+                {/* <IHeartFollowButton
+                  variant="outlined"
+                  size="xs"
+                  onClick={(e) => e.stopPropagation()}
+                /> */}
+              </p>
+            )}
+
+            {postDetails.video.attributes?.description && (
+              <ReadMore
+                text={postDetails.video.attributes?.description ?? ""}
+                shouldAnimate
+                textClassName="gencl:text-body-2-normal gencl:tracking-[-0.35px]!"
+                className="gencl:line-clamp-3"
+              />
+            )}
           </div>
         </div>
       );
@@ -167,18 +172,20 @@ function AdaptiveUserProfile({
       return (
         <div className="gencl:flex gencl:gap-2 gencl:items-center gencl:text-white gencl:text-body-0-semi-bold">
           <Avatar
-            imageUrl={owner.profileImage}
-            alt={owner.name ?? ""}
-            isAvatar={owner.isAvatar}
+            imageUrl={postDetails.owner.profileImage}
+            alt={postDetails.owner.name ?? ""}
+            isAvatar={postDetails.owner.isAvatar}
           />
           <ProfileLink
             url={buildPageUrl({
-              type: !!owner.brand ? "brand" : "profile",
-              slug: !!owner.brand ? owner.brand.slug : owner.userName,
+              type: !!postDetails.owner.brand ? "brand" : "profile",
+              slug: !!postDetails.owner.brand
+                ? postDetails.owner.brand.slug
+                : postDetails.owner.userName,
             })}
-            userLogoType={owner.brand?.userLogo}
+            userLogoType={postDetails.owner.brand?.userLogo}
           >
-            @{owner.userName}
+            @{postDetails.owner.userName}
           </ProfileLink>
         </div>
       );
@@ -229,7 +236,7 @@ function AdaptiveDescription({
     case "iheart":
       return (
         <div className="gencl:z-10">
-           <ReadMore
+          <ReadMore
             text={enhancedDescription}
             showExpandText
             viewMoreText="more"
@@ -300,7 +307,6 @@ const SharedActions = memo(function SharedActions({
         size="lg"
         variant="expand"
         contentId={postDetails.video.id}
-        shareUrl={postDetails.video.shareUrl}
         slug={postDetails.video.slug}
         isReacted={postDetails.video.isSparked ?? false}
         reactionCount={postDetails.video.sparkCount}
@@ -414,7 +420,7 @@ export function ExpandViewDetails({
         >
           <div onClick={(e) => e.stopPropagation()} className="gencl:z-10">
             <AdaptiveUserProfile
-              owner={postDetails.owner}
+              postDetails={postDetails}
               type={brandLayoutType}
             />
           </div>

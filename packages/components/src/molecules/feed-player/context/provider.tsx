@@ -538,6 +538,12 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   );
 
   const handleEnded = useCallback(() => {
+    // For iHeart layout, ignore playerConfig and just go to next
+    if (isIHeartLayout) {
+      swiper?.slideNext();
+      return;
+    }
+
     // If explicit loop is set to true, just replay the video indefinitely
     if (explicitLoop) {
       playerRef.current?.play();
@@ -577,7 +583,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
 
     // set isplaying paused, no swipe next had happened.
     baseContextManager.setPlayPauseTracker({ isPlaying: false });
-  }, [isEmbed, onPlayerIterationEnd, explicitLoop, isIHeartLayout]);
+  }, [isEmbed, onPlayerIterationEnd, explicitLoop, isIHeartLayout, swiper]);
 
   const updateAdInfo = useCallback(
     (isAdPlaying: boolean, adInfo: AdInfoType) => {

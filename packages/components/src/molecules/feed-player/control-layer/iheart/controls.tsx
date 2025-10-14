@@ -15,6 +15,10 @@ import { ShareButton } from "@genuin/components/molecules/share-button";
 import { useAnalytics } from "@genuin/components/context/analytics";
 import { ReactionButton } from "@genuin/components/molecules/reaction-button";
 import { DynamicReactionIcon } from "@genuin/components/molecules/reaction-button";
+import {
+  SDKEventEmitter,
+  SDKEventName,
+} from "@genuin/components/lib/sdk-event-emitter";
 
 type IHeartControlsProps = ComponentProps<"div"> & {
   /**
@@ -33,7 +37,6 @@ type IHeartControlsProps = ComponentProps<"div"> & {
    * Data required for share and reaction functionality (same as Actions component)
    */
   contentId?: string;
-  shareUrl?: string;
   slug?: string;
   isReacted?: boolean;
   reactionCount?: number;
@@ -48,7 +51,6 @@ export function IHeartControls({
   size = "xs",
   variant = "clip",
   contentId,
-  shareUrl,
   slug,
   isReacted = false,
   reactionCount = 0,
@@ -57,6 +59,7 @@ export function IHeartControls({
 }: IHeartControlsProps) {
   const { playingState, togglePlay, muted, toggleMuted } = usePlayerContext();
   const { track, EventName } = useAnalytics();
+  const shareUrl = `${window.location.href.replace(/\/$/, "")}/clip/${slug}_${contentId}`;
 
   const isExpand = variant === "expand";
 
@@ -92,6 +95,7 @@ export function IHeartControls({
               theme="dark"
               iconHeight={24}
               iconWidth={24}
+              type="feed"
             />
           </Button>
         </ReactionButton>
@@ -152,6 +156,10 @@ export function IHeartControls({
               event_target_screen: "none",
             });
           }
+          // Emit SDK share event
+          SDKEventEmitter.emit(SDKEventName.SHARE, {
+            shareUrl: shareUrl ?? "",
+          });
         }}
       >
         <Button

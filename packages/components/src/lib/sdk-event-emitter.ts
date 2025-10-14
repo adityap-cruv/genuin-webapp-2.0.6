@@ -24,6 +24,7 @@ export enum SDKEventName {
   PLAY = "onPlay",
   PAUSE = "onPause",
   MUTE_CHANGE = "onMuteChange",
+  SHARE = "onShare",
 }
 
 /**
@@ -86,6 +87,10 @@ export interface SDKMuteChangePayload {
   volume: number;
 }
 
+export interface SDKShareEventPayload {
+  shareUrl: string;
+}
+
 /**
  * Type mapping for SDK event payloads
  * Maps each event name to its corresponding payload type
@@ -100,6 +105,7 @@ export type SDKEventPayloadMap = {
   [SDKEventName.PLAY]: SDKPlayEventPayload;
   [SDKEventName.PAUSE]: SDKPauseEventPayload;
   [SDKEventName.MUTE_CHANGE]: SDKMuteChangePayload;
+  [SDKEventName.SHARE]: SDKShareEventPayload;
 };
 
 /**
