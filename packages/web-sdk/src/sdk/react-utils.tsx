@@ -81,7 +81,6 @@ export function loadExpandView(container: HTMLElement): void {
   */
   const cleanup = () => {
     if (loaderDiv) {
-      console.log('loader div::', { loaderDiv })
       root.unmount()
       loaderDiv.remove()
       loaderDiv = null
