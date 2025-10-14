@@ -123,17 +123,17 @@
    * Initialize SDK and create embed based on configuration
    */
   function init(config) {
-    // return loadMainCSS().then(() => {
-    return loadSDK().then((sdk) => {
-      // Use the default export of the module
-      const GenuinClass = sdk.default || sdk.Genuin
+    return loadMainCSS().then(() => {
+      return loadSDK().then((sdk) => {
+        // Use the default export of the module
+        const GenuinClass = sdk.default || sdk.Genuin
 
-      if (GenuinClass) {
-        return GenuinClass.newInit(config)
-      }
-      throw new Error('Genuin SDK not properly loaded')
+        if (GenuinClass) {
+          return GenuinClass.newInit(config)
+        }
+        throw new Error('Genuin SDK not properly loaded')
+      })
     })
-    // })
   }
 
   /**
