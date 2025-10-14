@@ -74,17 +74,31 @@ export function loadExpandView(container: HTMLElement): void {
 
   // Create a React root inside the loader div
   const root = createRoot(loaderDiv)
-  /* 
-  Remove or unmount the loader div when the "sdk:expand-view-loaded" event is emitted, 
-  indicating that the expand view has successfully loaded. 
-*/
 
-  window.genuin?.on?.(SDKEventType.SDK_EXPAND_VIEW_LOADED, () => {
+  /*
+  Remove or unmount the loader div when the "sdk:expand-view-loaded" event is emitted,
+  indicating that the expand view has successfully loaded.
+  */
+  const cleanup = () => {
     if (loaderDiv) {
-      document.body.removeChild(loaderDiv)
+      console.log('loader div::', { loaderDiv })
       root.unmount()
+      loaderDiv.remove()
+      loaderDiv = null
     }
-  })
+  }
+
+  const unsubscribe = window.genuin?.onInternal?.(
+    SDKEventType.SDK_EXPAND_VIEW_LOADED,
+    () => {
+      cleanup()
+      // Clean up the event listener
+      if (typeof unsubscribe === 'function') {
+        unsubscribe()
+      }
+    },
+  )
+
   root.render(<ExpandViewSkeleton />)
 }
 
