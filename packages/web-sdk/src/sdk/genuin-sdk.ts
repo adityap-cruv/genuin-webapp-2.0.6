@@ -412,6 +412,7 @@ export class GenuinSDK {
       // Add all the other params to embedDetails
       embedDetails.authInfo = config.authInfo
       embedDetails.startVideoSlug = config.startVideoSlug
+      embedDetails.brand_context = config.brandContext
       embedDetails.autoUserInteractionToPerform = config.action
       embedDetails.commentId = config.commentId
       if (config.contextualParams)
@@ -941,6 +942,7 @@ export class GenuinSDK {
     // extras needed to set explicitly from user config.
     answerToReturn.params = configByUser?.params
     answerToReturn.authInfo = configByUser?.authInfo
+    answerToReturn.brandContext = configByUser?.brand_context
 
     return answerToReturn
   }

@@ -1,7 +1,7 @@
 "use client";
 import { cn } from "@genuin/ui/utils";
 import { CommunityUserRole } from "@genuin/components/types/post";
-import { useCallback, useEffect, memo } from "react";
+import { useCallback, useEffect, memo, useRef } from "react";
 import "swiper/css";
 
 import { PlayerList } from "@genuin/components/organisms/player-swiper";
@@ -26,6 +26,7 @@ import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema"
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { setQueryDataForVideoDetails } from "@genuin/components/react-query/api/video";
 import { getQueryKeyForVideoDetails } from "@genuin/components/react-query/keys/video";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 /**
  * Internal core presentation component for displaying feed data.
@@ -58,8 +59,48 @@ export const FeedViewCore = memo(function FeedViewCore({
   const { handleSwipeCount, dialogType, shouldShowDialog, closeDialog } =
     useInterruptionManager();
   const embedDetails = useSafeEmbedContext();
+  const {
+    view: { brandLayoutType },
+  } = useEmbedConfigs();
   const { isDesktop } = useDeviceDetectMediaQuery();
   const showSidePanel = videos[activeIndex] && !showExpandView && isDesktop;
+
+  // Store original URL for iHeart layout URL manipulation
+  const originalUrlRef = useRef<string | null>(null);
+
+  // Handle URL manipulation for iHeart brand layout
+  useEffect(() => {
+    if (brandLayoutType !== "iheart" || !videos) return;
+
+    const currentVideo = videos[activeIndex];
+    if (!currentVideo?.video) return;
+
+    if (showExpandView) {
+      // Store original URL when entering expand view
+      if (originalUrlRef.current === null) {
+        originalUrlRef.current = window.location.href;
+      }
+
+      const videoSlug = currentVideo.video.slug;
+      const videoId = currentVideo.video.id;
+
+      const url = new URL(originalUrlRef.current);
+      // Ensure pathname ends with '/' if it doesn't already, then append video path
+      const basePath = url.pathname.endsWith("/")
+        ? url.pathname
+        : url.pathname + "/";
+      url.pathname = basePath + videoSlug + "_" + videoId;
+
+      // Update URL without causing page reload
+      window.history.replaceState(null, "", url.toString());
+    } else {
+      // Restore original URL when leaving expand view
+      if (originalUrlRef.current) {
+        window.history.replaceState(null, "", originalUrlRef.current);
+        originalUrlRef.current = null;
+      }
+    }
+  }, [showExpandView, activeIndex, brandLayoutType, videos]);
 
   // this useEffect is used to fetch the next page of videos when the user scrolls to the end of the list.
   // it checks if there is a next page and if the user is not already fetching the next page.

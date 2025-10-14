@@ -58,6 +58,10 @@ export type ConfigByUser = {
    */
   errorHandler?: ErrorHandlerFn
   error_handler?: ErrorHandlerFn
+  brand_context?: Array<{
+    id: string
+    type: string
+  }>
 }
 
 export type UpdateConfigByUserType = {
@@ -102,4 +106,8 @@ export type SingleEmbedDataConfig = {
   brandDetails?: BrandDetailsConfigType
   commentId?: string
   live?: any
+  brandContext?: Array<{
+    id: string
+    type: string
+  }>
 }

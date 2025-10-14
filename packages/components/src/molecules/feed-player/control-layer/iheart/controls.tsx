@@ -59,9 +59,10 @@ export function IHeartControls({
 }: IHeartControlsProps) {
   const { playingState, togglePlay, muted, toggleMuted } = usePlayerContext();
   const { track, EventName } = useAnalytics();
-  const shareUrl = `${window.location.href.replace(/\/$/, "")}/clip/${slug}_${contentId}`;
-
   const isExpand = variant === "expand";
+  const shareUrl = isExpand
+    ? window.location.href
+    : `${window.location.href.replace(/\/$/, "")}/${slug}_${contentId}`;
 
   return (
     <div

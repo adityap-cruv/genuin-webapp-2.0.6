@@ -21,12 +21,14 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
   ...restProps
 }) => {
   const { baseContextManager } = useBaseContext();
+  const { play } = usePlayerContext();
   const embedDetails = useSafeEmbedContext();
   const isWatched = baseContextManager.getVideoState(
     postDetails.video.id
   )?.isWatched;
-  const { play } = usePlayerContext();
-  const isPodcast = true;
+  const isPodcast = embedDetails?.embedData?.brand_context?.some(
+    (context) => context.type === "podcast"
+  );
 
   return (
     <div

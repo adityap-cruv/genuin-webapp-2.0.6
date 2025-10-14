@@ -189,6 +189,7 @@ async function fetchFeed(
           : options?.lastVideoId
             ? { last_video_id: options.lastVideoId }
             : {}),
+        ...(options?.brandContext && { brand_context: options.brandContext }),
       };
       break;
     case feedType === "SECTION_FEED":
@@ -281,6 +282,10 @@ type UseFeedOptionsType = {
   embedId?: string;
   isInIframe: boolean;
   shouldShowMiddlewareOverlay?: boolean;
+  brandContext?: Array<{
+    id: string
+    type: string
+  }>
 };
 
 /**

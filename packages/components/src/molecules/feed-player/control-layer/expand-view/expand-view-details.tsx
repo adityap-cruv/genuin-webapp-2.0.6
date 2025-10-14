@@ -67,12 +67,15 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
     ? postDetails.video.placement_card_layout_id
     : postDetails.video.cardLayoutId;
 
-  const brandLayoutType = getBrandType(cardLayoutId, videoLayoutId) as
-    | "default"
-    | "iheart"
-    | "ted"
-    | "walmart"
-    | "grubhub";
+  const brandLayoutType =
+    embedConfig.view.brandLayoutType === "iheart"
+      ? embedConfig.view.brandLayoutType
+      : (getBrandType(cardLayoutId, videoLayoutId) as
+          | "default"
+          | "iheart"
+          | "ted"
+          | "walmart"
+          | "grubhub");
 
   // Configure visibility based on layout type instead of IDs
   const hideGroupPill =
@@ -122,7 +125,10 @@ function AdaptiveUserProfile({
 }) {
   switch (type) {
     case "iheart":
-      const isPodcast = true;
+      const embedDetails = useSafeEmbedContext();
+      const isPodcast = embedDetails?.embedData?.brand_context?.some(
+        (context) => context.type === "podcast"
+      );
       return (
         <div className="gencl:flex gencl:gap-2 gencl:items-center gencl:text-white">
           {postDetails.video.attributes?.image_url && (
