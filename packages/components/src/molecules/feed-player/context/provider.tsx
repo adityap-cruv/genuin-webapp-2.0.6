@@ -406,7 +406,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
             undefined,
             (currentContext) => ({
               ...currentContext,
-              isPlaying: newPlayingState,
+              globalPlayingState: newPlayingState,
             })
           );
 
@@ -454,7 +454,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
           undefined,
           (currentContext) => ({
             ...currentContext,
-            isPlaying: true,
+            globalPlayingState: true,
           })
         );
 
@@ -480,7 +480,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
           undefined,
           (currentContext) => ({
             ...currentContext,
-            isPlaying: false,
+            globalPlayingState: false,
           })
         );
 

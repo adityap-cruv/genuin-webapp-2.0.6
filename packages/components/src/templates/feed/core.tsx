@@ -85,11 +85,16 @@ export const FeedViewCore = memo(function FeedViewCore({
       const videoId = currentVideo.video.id;
 
       const url = new URL(originalUrlRef.current);
-      // Ensure pathname ends with '/' if it doesn't already, then append video path
-      const basePath = url.pathname.endsWith("/")
-        ? url.pathname
-        : url.pathname + "/";
-      url.pathname = basePath + videoSlug + "_" + videoId;
+      const videoPath = videoSlug + "_" + videoId;
+
+      // Check if URL already ends with the video path
+      if (!url.pathname.endsWith("/" + videoPath)) {
+        // Ensure pathname ends with '/' if it doesn't already, then append video path
+        const basePath = url.pathname.endsWith("/")
+          ? url.pathname
+          : url.pathname + "/";
+        url.pathname = basePath + videoPath;
+      }
 
       // Update URL without causing page reload
       window.history.replaceState(null, "", url.toString());
