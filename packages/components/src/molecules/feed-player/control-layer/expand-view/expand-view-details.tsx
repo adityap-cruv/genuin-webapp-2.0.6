@@ -162,8 +162,10 @@ function AdaptiveUserProfile({
               <ReadMore
                 text={postDetails.video.attributes?.description ?? ""}
                 shouldAnimate
-                textClassName="gencl:text-body-2-normal gencl:tracking-[-0.35px]!"
-                className="gencl:line-clamp-3"
+
+              textClassName="gencl:text-body-2-normal gencl:tracking-[-0.35px]!"
+              lineClampClassName="gencl:line-clamp-1"
+              maxLines={2}
               />
             )}
           </div>
@@ -241,7 +243,7 @@ function AdaptiveDescription({
   switch (type) {
     case "iheart":
       return (
-        <div className="gencl:z-10">
+        <p className="gencl:z-10">
           <ReadMore
             text={enhancedDescription}
             showExpandText
@@ -249,10 +251,10 @@ function AdaptiveDescription({
             viewLessText="less"
             position="overlay"
             textClassName="gencl:text-body-2-normal gencl:tracking-[-0.35px]! gencl:text-white/70!"
-            className="gencl:line-clamp-5!"
             maxLines={2}
+            lineClampClassName="gencl:line-clamp-3"
           />
-        </div>
+        </p>
       );
     case "ted":
       return (
@@ -504,7 +506,7 @@ export function ExpandViewDetails({
       )}
 
       {/* iHeart: Show linkouts below seeker */}
-      {showLinkoutInExpand &&
+      {/* TODO : iheart phase-2 implementation  */}      {/* {showLinkoutInExpand &&
         brandLayoutType === "iheart" &&
         postDetails.video.linkoutId && (
           <div className="gencl:h-11 gencl:flex gencl:items-center">
@@ -518,7 +520,7 @@ export function ExpandViewDetails({
               showImmediately={true}
             />
           </div>
-        )}
+        )} */}
     </div>
   );
 }

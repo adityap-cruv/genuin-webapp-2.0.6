@@ -152,7 +152,12 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   const { track, EventName } = useAnalytics();
 
   // To check whether video is fully watched or not..
-  const isVideoWatched = baseContextManager.getVideoState(videoId)?.isWatched;
+  const isVideoWatched: boolean = useMemo(() => {
+    if (!isIHeartLayout) return false;
+    return isEmbed
+      ? (baseContextManager.getVideoState(videoId)?.isWatched ?? false)
+      : false;
+  }, [baseContextManager, videoId, isIHeartLayout, isActive, isEmbed]);
 
   // Track globalPlayState from baseEventBus - controls if ANY player can play based on user action
   const [globalPlayState, setGlobalPlayState] = useState(
@@ -200,17 +205,20 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         unmute(false);
       }
 
+      console.log("provider inside the useEffect isActive - 1");
+
       if (isIHeartLayout) {
         const globalPlayState = baseEventBus.getContext().globalPlayingState;
         setFeedPlayerShouldPlay(globalPlayState);
         return;
       }
 
+      console.log("provider inside the useEffect isActive - 2");
+
       if (explicitAutoPlay === false) {
         setFeedPlayerShouldPlay(false);
         return;
       }
-
       if (playerConfig.autoplay) {
         // autoplay after sometime is true, so play the video after timeout.
         if (playerConfig.autoplayAfter) {
@@ -231,7 +239,14 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         };
       }
     }
-  }, [isActive, explicitAutoPlay, isIHeartLayout, baseContextManager]);
+  }, [
+    isActive,
+    explicitAutoPlay,
+    isVideoWatched,
+    isIHeartLayout,
+    baseContextManager,
+    baseEventBus,
+  ]);
 
   // specifically for iheart to maintain the -n sec player replay.
   useEffect(() => {
@@ -442,10 +457,11 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   // play: Sets the feed player to play state.
   const play = useCallback(
     (byUser: boolean, seekTime: number = 0) => {
-      if (seekTime && playerRef.current) {
+      if (seekTime >= 0 && playerRef.current) {
         playerRef.current.getMedia().currentTime = seekTime;
       }
       setFeedPlayerShouldPlay(true);
+      baseContextManager.setVideoWatched({ videoId, isWatched: false });
       if (byUser) {
         baseContextManager.setPlayPauseTracker({ isPlaying: true });
 
@@ -538,12 +554,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   );
 
   const handleEnded = useCallback(() => {
-    // For iHeart layout, ignore playerConfig and just go to next
-    if (isIHeartLayout) {
-      swiper?.slideNext();
-      return;
-    }
-
     // If explicit loop is set to true, just replay the video indefinitely
     if (explicitLoop) {
       playerRef.current?.play();
@@ -553,12 +563,13 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     // In case of embed regardless of shouldSwipeNext it should go to next
     if (isEmbed) {
       onPlayerIterationEnd();
+      baseContextManager.setVideoWatched({ videoId, isWatched: true });
       return;
     }
 
     // For iHeart layout, ignore playerConfig and just go to next
     if (isIHeartLayout) {
-      onPlayerIterationEnd();
+      swiper?.slideNext();
       return;
     }
 
@@ -570,6 +581,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     if (repeatCount > 0) {
       playerConfigRef.current.repeatCount--;
       playerRef.current?.play();
+      baseContextManager.setVideoWatched({ videoId, isWatched: false });
       return;
     }
 
@@ -583,7 +595,15 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
 
     // set isplaying paused, no swipe next had happened.
     baseContextManager.setPlayPauseTracker({ isPlaying: false });
-  }, [isEmbed, onPlayerIterationEnd, explicitLoop, isIHeartLayout, swiper]);
+  }, [
+    isEmbed,
+    baseContextManager,
+    videoId,
+    onPlayerIterationEnd,
+    explicitLoop,
+    isIHeartLayout,
+    swiper,
+  ]);
 
   const updateAdInfo = useCallback(
     (isAdPlaying: boolean, adInfo: AdInfoType) => {

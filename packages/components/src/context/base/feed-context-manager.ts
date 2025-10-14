@@ -193,6 +193,7 @@ export class FeedContextManager {
       this.videos[videoId] = {
         ...videoDetails,
         isWatched,
+        currentTime: isWatched ? 0 : videoDetails.currentTime,
       };
     }
   }

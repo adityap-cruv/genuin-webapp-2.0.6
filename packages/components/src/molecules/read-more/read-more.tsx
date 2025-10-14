@@ -78,6 +78,7 @@ export const ReadMore = memo(function ReadMore({
   open,
   href,
   linkClassName,
+  lineClampClassName,
   showOverlay = false,
   overlayClassName,
   ...rest
@@ -356,7 +357,12 @@ export const ReadMore = memo(function ReadMore({
       return (
         <>
           {renderText(teaser)}
-          <span className="gencl:max-h-[10em] gencl:opacity-100 gencl:text-inherit">
+          <span
+            className={cn(
+              "gencl:max-h-[10em] gencl:opacity-100 gencl:text-inherit",
+              lineClampClassName
+            )}
+          >
             {renderText(remaining)}
           </span>
         </>
@@ -366,7 +372,12 @@ export const ReadMore = memo(function ReadMore({
     return (
       <>
         {renderText(teaser)}
-        <span className="gencl:max-h-[10em] gencl:opacity-100 gencl:text-inherit">
+        <span
+          className={cn(
+            "gencl:max-h-[10em] gencl:opacity-100 gencl:text-inherit",
+            lineClampClassName
+          )}
+        >
           {renderText(remaining)}
         </span>
         {showExpandText && createButton(viewLessText)}

@@ -108,4 +108,8 @@ export type ReadMoreProps = {
    * @default true
    */
   expandable?: boolean;
+  /**
+   * Custom class name for the truncate the text
+   */
+  lineClampClassName?: string;
 } & Omit<ComponentProps<"p">, "children">;

@@ -169,8 +169,6 @@ export const FeedPlayer = memo(function FeedPlayer({
     (e: any) => {
       onEnded?.(e);
       stateHandleEnded?.();
-      // Set `is_watched` to true only for iHeart, as the video overlay needs to be displayed in this layout.
-      baseContextManager.setVideoWatched({ isWatched: true, videoId });
       const target = e?.target as HTMLVideoElement | undefined;
       track(EventName.VIDEO_COMPLETED, {
         ...analyticsEventData,
@@ -191,9 +189,10 @@ export const FeedPlayer = memo(function FeedPlayer({
       if (feedPlayerShouldPlay) {
         audioManager.notifyPlaying(id);
         player.play();
+        baseContextManager.setVideoWatched({ videoId, isWatched: false });
       }
     },
-    [feedPlayerShouldPlay, id]
+    [feedPlayerShouldPlay, id, baseContextManager, videoId]
   );
 
   const handleVideoFirstQuartile = useCallback(
@@ -253,8 +252,9 @@ export const FeedPlayer = memo(function FeedPlayer({
       onPlay?.(event);
       setPlayingState("PLAYING");
       baseContextManager.setPlayPauseTracker({ isPlaying: true });
+      baseContextManager.setVideoWatched({ isWatched: false, videoId });
     },
-    [onPlay, setPlayingState, baseContextManager]
+    [onPlay, setPlayingState, baseContextManager, videoId]
   );
 
   const handleOnPause = useCallback(

@@ -251,7 +251,7 @@ export const calculateMaxCharacterLimit = (
   // Define character limits for different scenarios
   const characterLimits = {
     mobile: {
-      overlay: 100,
+      overlay: 90,
       default: 80,
     },
     desktop: {
