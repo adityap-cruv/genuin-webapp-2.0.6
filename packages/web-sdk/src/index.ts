@@ -46,6 +46,7 @@ declare global {
       onInternal: typeof Genuin.onInternal
       offInternal: typeof Genuin.offInternal
       emitInternal: typeof Genuin.emitInternal
+      destroy: typeof Genuin.destroy
       _initQueue?: Array<() => void>
     }
     onGenuinReady?: (sdk: typeof Genuin) => void
@@ -65,6 +66,7 @@ if (typeof window !== 'undefined') {
     onInternal: Genuin.onInternal.bind(Genuin),
     offInternal: Genuin.offInternal.bind(Genuin),
     emitInternal: Genuin.emitInternal.bind(Genuin),
+    destroy: Genuin.destroy.bind(Genuin),
   }
 }
 

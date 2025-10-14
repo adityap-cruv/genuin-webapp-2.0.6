@@ -84,6 +84,7 @@ export type SDKElementsType = Record<
     element: HTMLElement
     config: Partial<SingleEmbedDataConfig>
     status: InitializationStatus
+    cleanup?: () => void
   }
 >
 

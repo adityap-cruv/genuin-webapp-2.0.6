@@ -79,6 +79,22 @@ export class GenuinSDK {
   }
 
   /**
+   * Store the cleanup function for an embed element
+   * @param element The HTML element to store cleanup for
+   * @param cleanup The cleanup function to store
+   * @private
+   */
+  private storeCleanupFunction(
+    element: HTMLElement,
+    cleanup: () => void,
+  ): void {
+    const instanceId = element.getAttribute('data-instance-id')
+    if (instanceId && this.sdkElements[instanceId]) {
+      this.sdkElements[instanceId].cleanup = cleanup
+    }
+  }
+
+  /**
    * Initialize div with callback (for window.onGenuinReady support)
    * @param div The div element to initialize.
    * @param callback The callback to execute once initialization is complete.
@@ -291,13 +307,16 @@ export class GenuinSDK {
 
       // Apply brand colors to the element
       this.themeManager.applyBrandColors(element, brandDetails.brand_colors)
-      loadNewEmbed({
+      const cleanup = loadNewEmbed({
         container: element,
         embedData: embedDetails,
         brandDetails,
         config,
         user,
       })
+
+      // Store the cleanup function in sdkElements
+      this.storeCleanupFunction(element, cleanup)
     } catch (error) {
       console.error('Error initializing embed:', error)
       console.log('[gen-sdk]: Calling user error handler with:')
@@ -362,12 +381,15 @@ export class GenuinSDK {
       return
     }
 
-    loadNewEmbed({
+    const cleanup = loadNewEmbed({
       container: element,
       embedData: config.embedDetails,
       brandDetails,
       config,
     })
+
+    // Store the cleanup function in sdkElements
+    this.storeCleanupFunction(element, cleanup)
   }
 
   /**
@@ -1162,6 +1184,17 @@ export class GenuinSDK {
    * Destroy all embeds and reset SDK
    */
   destroy(): void {
+    // Call cleanup functions for all embeds to unmount React roots
+    Object.values(this.sdkElements).forEach((embedElement) => {
+      if (embedElement.cleanup && typeof embedElement.cleanup === 'function') {
+        try {
+          embedElement.cleanup()
+        } catch (error) {
+          console.error('Error during embed cleanup:', error)
+        }
+      }
+    })
+
     // Remove all iframes
     const iframes = document.querySelectorAll('iframe[data-genuin-embed]')
     iframes.forEach((iframe) => iframe.remove())
@@ -1170,6 +1203,7 @@ export class GenuinSDK {
     this.eventManager.removeAllListeners()
     this.errorHandler.clearErrors()
     this.isInitialized = false
+    this.sdkElements = {}
 
     this.eventManager.emit(SDKEventType.EMBED_LOADED, { destroyed: true })
   }
