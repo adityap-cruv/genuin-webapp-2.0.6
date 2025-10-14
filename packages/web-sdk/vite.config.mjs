@@ -159,6 +159,13 @@ const copyLoaderPlugin = () => ({
         'https://media.qa.begenuin.com'
       loaderContent = loaderContent.replace(/__MEDIA_BASE_URL__/g, mediaBaseUrl)
 
+      // Replace NODE_ENV check with actual value
+      const nodeEnvCheck = isDevelopment ? 'true' : 'false'
+      loaderContent = loaderContent.replace(
+        /__DEV_ENVIRONMENT__/g,
+        nodeEnvCheck,
+      )
+
       // Replace __SDK_VERSION_PATH__ with version path if provided
       const sdkVersionPath = process.env.SDK_VERSION_PATH
       if (sdkVersionPath && sdkVersionPath.trim()) {
@@ -280,8 +287,8 @@ const scopePreflightCss = () => ({
           /^::?after$/, // ::after, :after
           /^\*::?before$/, // *::before, *:before
           /^\*::?after$/, // *::after, *:after
-         /^html$/, // html
-         /^body$/, // body
+          /^html$/, // html
+          /^body$/, // body
           /^hr$/, // hr
           /^h[1-6]$/, // h1-h6
           /^p$/, // p
