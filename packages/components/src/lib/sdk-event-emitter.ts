@@ -144,7 +144,6 @@ export class SDKEventEmitter {
     }
 
     try {
-      Object.assign(payload, { isInternal: true });
       window.genuin!.emitInternal(eventName, payload);
     } catch (error) {
       // Silent fail
