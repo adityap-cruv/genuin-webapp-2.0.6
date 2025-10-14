@@ -229,19 +229,16 @@ function AdaptiveDescription({
     case "iheart":
       return (
         <div className="gencl:z-10">
-          <p className="gencl:text-white gencl:text-body-2-normal gencl:font-normal">
-            {getMonthYear(video.createdAt ?? 0)}
-            {video.duration && " • "}
-            {getFormattedDuration(String(video.duration ?? ""))}{" "}
-            <ReadMore
-              text={video.description}
-              showExpandText
-              shouldAnimate
-              position="overlay"
-              textClassName="gencl:text-body-2-normal gencl:tracking-[-0.35px]! gencl:text-white/70!"
-              className="gencl:line-clamp-5"
-            />
-          </p>
+           <ReadMore
+            text={enhancedDescription}
+            showExpandText
+            viewMoreText="more"
+            viewLessText="less"
+            position="overlay"
+            textClassName="gencl:text-body-2-normal gencl:tracking-[-0.35px]! gencl:text-white/70!"
+            className="gencl:line-clamp-5!"
+            maxLines={2}
+          />
         </div>
       );
     case "ted":
