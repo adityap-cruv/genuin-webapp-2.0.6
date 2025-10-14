@@ -44,6 +44,10 @@ export type EmbedEventContextType = {
    * Player should have to play from same currenttime instead or doing -5 of currentTime, for the first activeIndex only, from second activeIndex onwards it should do -5.
    */
   skipTimeOffsetOnce: boolean;
+  /**
+   * Flag to disable swiper in expand view (used when startVideoSlug is present on first open)
+   */
+  disableSwiper: boolean;
 };
 
 type EmbedEventNameType =
@@ -52,7 +56,8 @@ type EmbedEventNameType =
   | "sectionListChange"
   | "isSectionedChange"
   | "selectedSectionChange"
-  | "containerInViewChange";
+  | "containerInViewChange"
+  | "disableSwiperChange";
 
 /**
  * Creates a new event bus instance for embed functionality
@@ -68,5 +73,6 @@ export const createEmbedEventBus = (context?: EmbedEventContextType) =>
     autoInteractionActionDone: false,
     containerInView: true,
     skipTimeOffsetOnce: false,
+    disableSwiper: false,
     ...context,
   });

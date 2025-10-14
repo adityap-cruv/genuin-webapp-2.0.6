@@ -49,6 +49,7 @@ type PlayerListPropsType = {
    */
   onCommentCountChange?: ComponentProps<typeof Player>["onCommentCountChange"];
   isSectioned?: boolean;
+  disableSwiper?: boolean;
 };
 
 // TODO: This component is using feed context, which is not ideal. Remove this dep of FeedContext in future.
@@ -62,6 +63,7 @@ export function PlayerList({
   onGroupSubscriptionChange,
   onCommentCountChange,
   isSectioned = false,
+  disableSwiper = false,
 }: PlayerListPropsType) {
   const { showExpandView, activeIndex, toggleExpandView } = useFeedContext();
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
@@ -129,6 +131,7 @@ export function PlayerList({
           embedDetails?.updateSelectedSection(sectionList[swiper.activeIndex]);
         }
       }}
+      disableScroll={disableSwiper}
     >
       {sectionList?.map((item, sectionIdx) => (
         <SwiperSlide key={item?.id || sectionIdx}>
@@ -149,6 +152,7 @@ export function PlayerList({
                   section_id: item?.id,
                 });
               }}
+              disableScroll={disableSwiper}
             >
               {posts.map((post, index) => (
                 <SwiperSlide key={post.video.id}>
@@ -213,6 +217,7 @@ export function PlayerList({
       onActiveIndexChange={(swiper) => {
         onActiveIndexChange?.(swiper.activeIndex);
       }}
+      disableScroll={disableSwiper}
     >
       {posts.map((post, index) => (
         <SwiperSlide key={post.video.id}>

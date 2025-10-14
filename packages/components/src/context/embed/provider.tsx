@@ -16,6 +16,7 @@ import {
   SDKEventName,
   SDKListenerEventName,
 } from "@genuin/components/lib/sdk-event-emitter";
+import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
 
 type EmbedProviderProps = {
   embedData: EmbedDataType;
@@ -35,6 +36,27 @@ export function EmbedProvider({
   container,
 }: EmbedProviderProps) {
   const [stateEmbedData, setStateEmbedData] = useState(embedData);
+
+  // Determine brand layout type
+  const brandLayoutType = useMemo(() => {
+    const isPlacementView = !!embedData.placement_id;
+    const cardLayoutId = isPlacementView
+      ? embedData.placement_card_layout_id
+      : embedData.card_layout_id;
+    const videoLayoutId = isPlacementView
+      ? embedData.placement_video_layout_id
+      : embedData.video_layout_id;
+    return getBrandType(cardLayoutId, videoLayoutId);
+  }, [
+    embedData.placement_id,
+    embedData.card_layout_id,
+    embedData.placement_card_layout_id,
+    embedData.video_layout_id,
+    embedData.placement_video_layout_id,
+  ]);
+
+  const isIHeartLayout = brandLayoutType === "iheart";
+
   // Create a unique event bus for this provider instance
   const embedEventBus = useMemo(
     () =>
@@ -45,6 +67,8 @@ export function EmbedProvider({
         isSectioned: false,
         containerInView: true,
         skipTimeOffsetOnce: false,
+        // Only disable swiper for iHeart layout with startVideoSlug
+        disableSwiper: isIHeartLayout && !!embedData.startVideoSlug,
       }),
     []
   );
@@ -203,6 +227,33 @@ export function EmbedProvider({
     });
   }, [embedEventBus]);
 
+  // Track when user closes expand view for the first time with startVideoSlug
+  // and permanently enable swiper for all future opens
+  // This feature is only enabled for iHeart brand layout
+  useEffect(() => {
+    if (!isIHeartLayout || !embedData.startVideoSlug) return;
+
+    function handleActivePlayerTypeChange() {
+      const context = embedEventBus.getContext();
+      // If user exits expand view and swiper is currently disabled, enable it permanently
+      if (context.activePlayerType !== "expand-view" && context.disableSwiper) {
+        embedEventBus.emit(
+          "disableSwiperChange",
+          undefined,
+          (currentContext) => ({
+            ...currentContext,
+            disableSwiper: false,
+          })
+        );
+      }
+    }
+
+    embedEventBus.on("activePlayerTypeChange", handleActivePlayerTypeChange);
+    return () => {
+      embedEventBus.off("activePlayerTypeChange", handleActivePlayerTypeChange);
+    };
+  }, [isIHeartLayout, embedData.startVideoSlug, embedEventBus]);
+
   // Observe the container for visibility changes to handle floating view behavior and track in-view status
   useEffect(() => {
     const element = container;
@@ -251,6 +302,7 @@ export function EmbedProvider({
         rootElement: container,
         embedData: stateEmbedData,
         customization: stateEmbedData.customization,
+        brandLayoutType,
         embedEventBus,
         embedRouter,
         changeActiveIndex,

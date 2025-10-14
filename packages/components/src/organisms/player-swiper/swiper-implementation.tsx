@@ -24,11 +24,13 @@ const CONFIG = {
 
 type SwiperImplementationProps = {
   children: React.ReactNode;
+  disableScroll?: boolean;
 } & ComponentProps<typeof Swiper>;
 
 export function SwiperImplementation({
   children,
   direction = "vertical",
+  disableScroll = false,
   ...restProps
 }: SwiperImplementationProps) {
   // const { height } = useFeedVideoSizeBox();
@@ -72,7 +74,8 @@ export function SwiperImplementation({
         swiperRef.current = swiper;
       }}
       className="gencl:mx-0!"
-      enabled
+      enabled={!disableScroll}
+      allowTouchMove={!disableScroll}
       spaceBetween={swiperSpaceBetween}
       direction={direction}
       slidesPerView={swiperSlidesPerView}

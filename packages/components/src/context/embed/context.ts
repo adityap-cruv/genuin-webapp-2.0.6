@@ -3,6 +3,7 @@ import { createContext, useContext } from "react";
 import { EmbedDataType } from "./embed.types";
 import { ActivePlayerType, createEmbedEventBus } from "./event-bus";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+import type { BrandType } from "@genuin/components/lib/utils/brand-layout";
 
 /**
  * Type definition for the Embed context.
@@ -12,6 +13,10 @@ type EmbedContextType = {
   rootElement: HTMLElement | null;
   embedData: EmbedDataType;
   customization: EmbedDataType["customization"];
+  /**
+   * The brand layout type derived from card and video layout IDs
+   */
+  brandLayoutType: BrandType;
   /**
    * The event bus for the embed context, used to manage events.
    */

@@ -65,6 +65,11 @@ export const FeedViewCore = memo(function FeedViewCore({
   const { isDesktop } = useDeviceDetectMediaQuery();
   const showSidePanel = videos[activeIndex] && !showExpandView && isDesktop;
 
+  // Get disableSwiper flag from embed context (only applies to expand view)
+  const disableSwiper = showExpandView
+    ? (embedDetails?.embedEventBus.getContext().disableSwiper ?? false)
+    : false;
+
   // Store original URL for iHeart layout URL manipulation
   const originalUrlRef = useRef<string | null>(null);
 
@@ -234,6 +239,7 @@ export const FeedViewCore = memo(function FeedViewCore({
     onGroupJoinStatusChange: handleGroupJoinStatusChange,
     onGroupSubscriptionChange: handleGroupSubscriptionChange,
     onCommentCountChange: handleCommentCountChange,
+    disableSwiper,
   };
 
   if (isLoading) {
