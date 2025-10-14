@@ -12,6 +12,7 @@ import { ControlLayerPropsType } from "../control-layer.types";
 import { useBaseContext } from "@genuin/components/context";
 import { usePlayerContext } from "../../context";
 import { ReadMore } from "@genuin/components/molecules/read-more";
+import { Link } from "@genuin/components/molecules/link";
 
 export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
   postDetails,

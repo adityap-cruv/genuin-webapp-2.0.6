@@ -20,6 +20,11 @@ type LinkProps = ExtendedLinkProps & {
    * The URL to navigate to when the link is clicked.
    */
   href: string;
+  /**
+   * Pass true to bypass all checks and render a plain <a> element directly.
+   * When enabled, all context checks, redirection logic, and custom routing are skipped.
+   */
+  bypassChecks?: boolean;
 };
 
 /**
@@ -71,6 +76,7 @@ export function Link({
   href,
   children,
   enabled = true,
+  bypassChecks = false,
   // Next.js specific props
   as,
   replace,
@@ -84,9 +90,20 @@ export function Link({
   // Standard props
   ...restProps
 }: LinkProps) {
+  // If bypassChecks is true, render a plain <a> element directly
+  if (bypassChecks) {
+    return (
+      <a href={href} className={className} target={target} {...restProps}>
+        {children}
+      </a>
+    );
+  }
+
   const { LinkComponent, isNextJS, isCustomRouting, createExternalLink } =
     useLinkContext();
   const wantsToOpenInNewTab = target === "_blank";
+
+  console.log("href::", href);
 
   // Extract engagement configurations for redirection tools and link behavior
   const {

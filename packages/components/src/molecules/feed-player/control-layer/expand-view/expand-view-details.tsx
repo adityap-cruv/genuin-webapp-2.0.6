@@ -21,6 +21,7 @@ import { Scrubber } from "../scrubber";
 import { IHeartControls } from "../iheart";
 import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
 import { ReadMoreTextType } from "@genuin/components/molecules/read-more/read-more.types";
+import { Link } from "@genuin/components/molecules/link";
 
 type ExpandViewProps = ComponentProps<"div"> & {
   postDetails: PostDetailsType;
@@ -39,6 +40,19 @@ type ExpandViewProps = ComponentProps<"div"> & {
     typeof CommentsDialog
   >["onCommentCountChange"];
 } & VariantProps<typeof controlLayerVariant>;
+
+/**
+ * Removes the /clip segment and everything after it from a URL
+ * @param url - The URL to process
+ * @returns The base URL without /clip and subsequent segments
+ * @example
+ * // Returns "https://dev.listen.iheart.com/live/971-wash-fm-2501"
+ * getBaseUrlWithoutClip("https://dev.listen.iheart.com/live/971-wash-fm-2501/clip/subscribe-for-more-bmw-content-visit-our-website-2rvh_bcde348d-74c4-4689-aa07-59d2648dfff9")
+ */
+function getBaseUrlWithoutClip(url: string): string {
+  const clipIndex = url.indexOf("/clip");
+  return clipIndex !== -1 ? url.substring(0, clipIndex) : url;
+}
 
 /**
  * Hook to get layout configuration and shared logic
@@ -129,33 +143,43 @@ function AdaptiveUserProfile({
       const isPodcast = embedDetails?.embedData?.brand_context?.some(
         (context) => context.type === "podcast"
       );
+
+      const podcastUrl = useMemo(
+        () => getBaseUrlWithoutClip(window.location.href),
+        []
+      );
+
       return (
         <div className="gencl:flex gencl:gap-2 gencl:items-center gencl:text-white">
           {postDetails.video.attributes?.image_url && (
-            <Image
-              aspectRatio="square"
-              src={postDetails.video.attributes?.image_url ?? ""}
-              alt={postDetails.video.attributes?.video_slug ?? ""}
-              className="gencl:size-12 gencl:rounded-md gencl:object-cover"
-            />
+            <Link href={podcastUrl} bypassChecks>
+              <Image
+                aspectRatio="square"
+                src={postDetails.video.attributes?.image_url ?? ""}
+                alt={postDetails.video.attributes?.video_slug ?? ""}
+                className="gencl:size-12 gencl:rounded-md gencl:object-cover"
+              />
+            </Link>
           )}
           <div className="gencl:w-full gencl:flex gencl:flex-col gencl:gap-1">
             {(postDetails.video.attributes?.station_title ||
               postDetails.video.attributes?.podcast_title) && (
-              <p className="gencl:h-5 gencl:text-body-2-semi-bold gencl:line-clamp-1 gencl:tracking-[-0.35px]! gencl:flex gencl:items-center gencl:gap-2">
-                {isPodcast
-                  ? postDetails.video.attributes?.podcast_title
-                  : postDetails.video.attributes?.station_title}
+              <Link href={podcastUrl} bypassChecks>
+                <p className="gencl:h-5 gencl:text-body-2-semi-bold gencl:line-clamp-1 gencl:tracking-[-0.35px]! gencl:flex gencl:items-center gencl:gap-2">
+                  {isPodcast
+                    ? postDetails.video.attributes?.podcast_title
+                    : postDetails.video.attributes?.station_title}
 
-                {/* <span className="gencl:px-1.5 gencl:bg-[#CC032E] gencl:rounded-xs">
+                  {/* <span className="gencl:px-1.5 gencl:bg-[#CC032E] gencl:rounded-xs">
                   LIVE
                 </span> */}
-                {/* <IHeartFollowButton
+                  {/* <IHeartFollowButton
                   variant="outlined"
                   size="xs"
                   onClick={(e) => e.stopPropagation()}
                 /> */}
-              </p>
+                </p>
+              </Link>
             )}
 
             {postDetails.video.attributes?.description && (
