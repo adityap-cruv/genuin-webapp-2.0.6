@@ -151,7 +151,7 @@
     return new Promise((resolve, reject) => {
       const link = document.createElement('link')
       link.rel = 'stylesheet'
-      link.href = '__DEV_ENVIRONMENT__'
+      link.href = __DEV_ENVIRONMENT__
         ? './dist/assets/web-sdk.css'
         : `__MEDIA_BASE_URL__/sdk/__SDK_VERSION_PATH__assets/web-sdk.css`
 
