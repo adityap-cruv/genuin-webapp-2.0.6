@@ -35,8 +35,13 @@
   text-decoration: inherit !important;
 }
 
-.gen-sdk-class, .gen-sdk-class * {
+.gen-sdk-class,
+.gen-sdk-class * {
   box-sizing: border-box;
+}
+
+.gen-sdk-class button {
+  all: revert-layer;
 }
 
 /* Web SDK specific styles */
