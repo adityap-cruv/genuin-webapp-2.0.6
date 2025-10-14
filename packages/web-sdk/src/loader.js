@@ -51,13 +51,14 @@
   let sdkLoaded = false
   let sdkLoading = false
   let loadPromise = null
+  let genuinSDKInstance = null
 
   /**
    * Load the main SDK module
    */
   function loadSDK() {
     if (sdkLoaded) {
-      return Promise.resolve(window.GenuinSDK)
+      return Promise.resolve(genuinSDKInstance)
     }
 
     if (sdkLoading) {
@@ -86,6 +87,7 @@
       .then((module) => {
         sdkLoaded = true
         window.GenuinSDK = module
+        genuinSDKInstance = module.default || module.Genuin
 
         // Ensure React is properly available before continuing
         // This helps prevent timing issues with vendor chunks
@@ -96,6 +98,9 @@
             '⚠️ React not immediately detected - may be in separate vendor chunk',
           )
         }
+
+        // onGenuinReady callback after SDK is fully loaded
+        callOnGenuinReadyCallback(genuinSDKInstance)
 
         // Don't set up window.genuin here - loader already handles it
         // Just return the module for internal use
@@ -146,8 +151,9 @@
     return new Promise((resolve, reject) => {
       const link = document.createElement('link')
       link.rel = 'stylesheet'
-      // Use environment-specific media URL with optional version path, replaced during build
-      link.href = `__MEDIA_BASE_URL__/sdk/__SDK_VERSION_PATH__assets/web-sdk.css`
+      link.href = '__DEV_ENVIRONMENT__'
+        ? './dist/assets/web-sdk.css'
+        : `__MEDIA_BASE_URL__/sdk/__SDK_VERSION_PATH__assets/web-sdk.css`
 
       link.onload = () => {
         console.log('CSS file loaded')
@@ -251,6 +257,24 @@
     initQueue.length = 0
   }
 
+  //  Handle onGenuinReady callback
+  function callOnGenuinReadyCallback(sdk) {
+    const callback = window.onGenuinReady
+    try {
+      if (typeof callback === 'function') {
+        console.log('Calling onGenuinReady callback')
+        const div = document.getElementById('gen-sdk')
+        if (div && typeof sdk.newInitWithCallback === 'function') {
+          sdk.newInitWithCallback(div, callback)
+        } else {
+          callback(sdk)
+        }
+      }
+    } catch (err) {
+      console.error('Error calling onGenuinReady callback', err)
+    }
+  }
+
   // Enhanced global API with queueing for early calls
   window.genuin = {
     init: function (...args) {
@@ -321,6 +345,50 @@
     const receivedObj = event.data
     if (receivedObj?.action === 'open_link') {
       window.open(receivedObj.link, '_blank')
+    }
+  })
+
+  window.addEventListener('DOMContentLoaded', () => {
+    if (window.onGenuinReady) {
+      if (sdkLoaded && genuinSDKInstance) {
+        callOnGenuinReadyCallback(genuinSDKInstance)
+        return
+      }
+      loadMainCSS().then(() => {
+        loadSDK().then((sdk) => {
+          const genuinSDKInstance = sdk.default || sdk.Genuin
+          callOnGenuinReadyCallback(genuinSDKInstance)
+        })
+      })
+    } else {
+      Object.defineProperty(window, 'onGenuinReady', {
+        configurable: true,
+        enumerable: true,
+        set(fn) {
+          // Replace with actual value
+          Object.defineProperty(window, 'onGenuinReady', {
+            value: fn,
+            writable: true,
+            configurable: true,
+            enumerable: true,
+          })
+          // If SDK already loaded, call immediately
+          if (sdkLoaded && genuinSDKInstance) {
+            callOnGenuinReadyCallback(genuinSDKInstance)
+          } else {
+            loadMainCSS().then(() => {
+              loadSDK().then((sdk) => {
+                const genuinSDKInstance = sdk.default || sdk.Genuin
+                callOnGenuinReadyCallback(genuinSDKInstance)
+              })
+            })
+          }
+          // Otherwise, it will be called when SDK finishes loading
+        },
+        get() {
+          return undefined
+        },
+      })
     }
   })
 })(window)
