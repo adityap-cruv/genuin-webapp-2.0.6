@@ -50,6 +50,10 @@ AWS Configuration (for S3 publishing):
 - `AWS_SECRET_ACCESS_KEY`: AWS secret key (leave empty if using AWS CLI configuration)
 - `CLOUDFRONT_DISTRIBUTION_ID`: CloudFront distribution ID for cache invalidation
 
+Bunny CDN Configuration (for cache purging):
+
+- `BUNNY_API_KEY`: Bunny CDN API key for automatic cache purging after S3 uploads
+
 4. Environment Validation:
    The project includes automatic environment validation that runs before builds and during development. If you see any validation errors:
 
@@ -89,6 +93,23 @@ The publish process will:
 - Allow selection of target S3 paths
 - Show upload progress for each file
 - Automatically invalidate CloudFront cache after successful upload
+- Automatically purge Bunny CDN cache for uploaded paths
+
+7. Manual Bunny CDN Cache Purging:
+
+You can also purge Bunny CDN cache manually without uploading files:
+
+```bash
+# Interactive path selection for QA
+npm run purge:bunny:qa
+
+# Interactive path selection for Production
+npm run purge:bunny:prod
+
+# Purge specific paths directly
+npm run purge:bunny:qa sdk/2.0.0
+npm run purge:bunny:prod sdk sdk/2.0.0
+```
 
 AWS Credentials Setup:
 
@@ -175,6 +196,8 @@ npm run dev:prod    # Runs development server with Production configuration
    - Each environment has its own S3 bucket and CloudFront distribution
    - Use `npm run publish:s3:qa` or `npm run publish:s3:prod` after building
    - AWS credentials can be configured in environment files or via AWS CLI
+   - Bunny CDN cache is automatically purged after successful S3 uploads
+   - Manual cache purging available via `npm run purge:bunny:qa` or `npm run purge:bunny:prod`
 
 ## Version Management
 
@@ -197,9 +220,9 @@ To configure your `index.html` for embedding the Genuin Web SDK, refer to the pr
 
 ### Choosing the Right Example
 
-- **Single Embed**:  
+- **Single Embed**:
    If your application only requires one SDK embed, start with `index.html.example`. This file demonstrates the minimal setup needed for a single integration.
-- **Multiple Embeds**:  
+- **Multiple Embeds**:
    If you plan to have more than one SDK embed on the same page (for example, multiple widgets or components), use `index.multi.html.example`. This example shows how to initialize and configure several SDK instances independently. Note: The multi-embed approach also works for single embeds, so you can use it for both cases if you prefer a unified setup.
 
 ### Steps to Configure

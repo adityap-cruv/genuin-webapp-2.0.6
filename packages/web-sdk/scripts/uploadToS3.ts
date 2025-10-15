@@ -45,6 +45,7 @@ import { confirm, checkbox } from '@inquirer/prompts'
 import chalk from 'chalk'
 import dotenv from 'dotenv'
 import cliProgress from 'cli-progress'
+import { purgeBunnyCDN } from './bunnyPurge'
 
 /**
  * Configuration interface for S3 upload settings
@@ -404,6 +405,17 @@ export async function uploadBuildsToS3(): Promise<void> {
           '\n⚠ No CloudFront distribution ID provided, skipping cache invalidation',
         ),
       )
+    }
+
+    // Purge Bunny CDN cache
+    try {
+      await purgeBunnyCDN(selectedPaths)
+    } catch (error) {
+      console.error(
+        chalk.red('\n⚠ Bunny CDN purge failed (non-critical):'),
+        error,
+      )
+      // Don't fail the entire process if Bunny CDN purge fails
     }
   } catch (error) {
     progressBar.stop()

@@ -148,7 +148,7 @@ export function Menu({
     return (
       <Dialog type="menu-dialog">
         <DialogTrigger asChild>{children}</DialogTrigger>
-        <DialogContent className="gencl:p-4 gencl:border gencl:border-secondary-100 gencl:rounded-none gencl:!rounded-t-2xl gencl:flex gencl:flex-col gencl:gap-1 gencl:z-50 gencl:!bg-white gencl:focus-visible:outline-none gencl:focus-visible:ring-0">
+        <DialogContent className="gen-sdk-expand-view gencl:p-4 gencl:border gencl:border-secondary-100 gencl:rounded-none gencl:!rounded-t-2xl gencl:flex gencl:flex-col gencl:gap-1 gencl:z-50 gencl:!bg-white gencl:focus-visible:outline-none gencl:focus-visible:ring-0">
           <p className="gencl:text-body-0-semi-bold gencl:p-1">More options</p>
           {MenuData.map((data, index) => (
             <React.Fragment key={index}>{data.children}</React.Fragment>
@@ -162,7 +162,7 @@ export function Menu({
       <PopoverTrigger asChild>{children}</PopoverTrigger>
       <PopoverContent
         align="start"
-        className="gen-sdk-class gencl:w-fit gencl:p-3 gencl:border gencl:border-secondary-100 gencl:rounded-xl gencl:flex gencl:flex-col gencl:gap-0.5 gencl:z-50 gencl:!bg-white gencl:focus-visible:outline-none gencl:focus-visible:ring-0"
+        className="gen-sdk-class gen-sdk-expand-view gencl:w-fit gencl:p-3 gencl:border gencl:border-secondary-100 gencl:rounded-xl gencl:flex gencl:flex-col gencl:gap-0.5 gencl:z-50 gencl:!bg-white gencl:focus-visible:outline-none gencl:focus-visible:ring-0"
       >
         {MenuData.map((data, index) => (
           <React.Fragment key={index}>{data.children}</React.Fragment>
