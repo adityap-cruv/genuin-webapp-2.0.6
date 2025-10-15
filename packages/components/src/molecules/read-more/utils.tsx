@@ -176,7 +176,7 @@ export function renderAnchorTag(
 
     case "custom": {
       return (
-        <span style={item.style} className={item.className}>
+        <span key={`${item.type}-${index}`} style={item.style} className={item.className}>
           {item.text}
         </span>
       );

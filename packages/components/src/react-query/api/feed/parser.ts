@@ -164,6 +164,7 @@ export function parseFeed(
           video: {
             ...mappedItem.video,
             type: "overlay",
+            id : mappedItem.video.id + "_overlay"
           },
         });
 

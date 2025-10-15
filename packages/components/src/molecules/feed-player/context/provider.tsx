@@ -364,6 +364,19 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     };
   }, [videoId, baseEventBus]);
 
+  useEffect(() => {
+    if (buttonAction === "PLAY" || buttonAction === "PAUSE") {
+      baseEventBus.emit(
+        "globalPlayingStateChange",
+        undefined,
+        (currentContext) => ({
+          ...currentContext,
+          globalPlayingState: buttonAction === "PLAY",
+        })
+      );
+    }
+  }, [buttonAction, baseEventBus]);
+
   const setVideoTimeState = useCallback((timeState: VideoTimeStateType) => {
     videoStateRef.current = {
       ...videoStateRef.current,
@@ -401,32 +414,19 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   const togglePlay = useCallback(
     (byUser: boolean) => {
       setFeedPlayerShouldPlay((prev) => {
+        const newPlayingState = !prev;
         if (byUser) {
-          const newPlayingState = !prev;
           baseContextManager.setPlayPauseTracker({
             isPlaying: newPlayingState,
           });
 
-          baseEventBus.emit(
-            "globalPlayingStateChange",
-            undefined,
-            (currentContext) => ({
-              ...currentContext,
-              globalPlayingState: newPlayingState,
-            })
-          );
-
-          if (prev) {
-            setButtonAction("PAUSE");
-          } else {
-            setButtonAction("PLAY");
-          }
+          setButtonAction(prev ? "PAUSE" : "PLAY");
           // Track play/pause events with Analytics only if the video play pause is triggered by user.
           track(prev ? EventName.VIDEO_PAUSED : EventName.VIDEO_PLAY, {
             content_id: videoId,
           });
         }
-        return !prev;
+        return newPlayingState;
       });
     },
     [
@@ -455,14 +455,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       baseContextManager.setVideoWatched({ videoId, isWatched: false });
       if (byUser) {
         baseContextManager.setPlayPauseTracker({ isPlaying: true });
-        baseEventBus.emit(
-          "globalPlayingStateChange",
-          undefined,
-          (currentContext) => ({
-            ...currentContext,
-            globalPlayingState: true,
-          })
-        );
 
         setButtonAction("PLAY");
         // Track play event with Analytics only if the video play is triggered by user.
@@ -480,15 +472,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       setFeedPlayerShouldPlay(false);
       if (byUser) {
         baseContextManager.setPlayPauseTracker({ isPlaying: false });
-
-        baseEventBus.emit(
-          "globalPlayingStateChange",
-          undefined,
-          (currentContext) => ({
-            ...currentContext,
-            globalPlayingState: false,
-          })
-        );
 
         setButtonAction("PAUSE");
         // Track pause event with Analytics only if the video pause is triggered by user.

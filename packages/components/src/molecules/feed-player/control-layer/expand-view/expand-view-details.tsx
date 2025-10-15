@@ -267,7 +267,7 @@ function AdaptiveDescription({
   switch (type) {
     case "iheart":
       return (
-        <p className="gencl:z-10">
+        <div className="gencl:z-10">
           <ReadMore
             text={enhancedDescription}
             showExpandText
@@ -278,7 +278,7 @@ function AdaptiveDescription({
             maxLines={2}
             lineClampClassName="gencl:line-clamp-3"
           />
-        </p>
+        </div>
       );
     case "ted":
       return (

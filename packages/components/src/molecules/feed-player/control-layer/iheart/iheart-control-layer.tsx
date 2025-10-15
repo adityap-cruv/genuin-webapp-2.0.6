@@ -20,6 +20,9 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
   className,
   onReactionStateChange,
   onClick,
+  layoutType,
+  onCommentCountChange,
+  isActive,
   ...restProps
 }) => {
   const { baseContextManager } = useBaseContext();
