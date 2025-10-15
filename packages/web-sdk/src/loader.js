@@ -54,6 +54,19 @@
   let genuinSDKInstance = null
 
   /**
+   * Get the SDK class from the loaded module
+   */
+  function getSDKClass(sdk) {
+    const GenuinClass = sdk.default || sdk.Genuin
+    if (GenuinClass) {
+      return GenuinClass
+    } else if (window.genuin?.SDK) {
+      return window.genuin.SDK
+    }
+    throw new Error('Genuin SDK not properly loaded')
+  }
+
+  /**
    * Load the main SDK module
    */
   function loadSDK() {
@@ -130,14 +143,8 @@
   function init(config) {
     return loadMainCSS().then(() => {
       return loadSDK().then((sdk) => {
-        // Use the default export of the module
-        const GenuinClass = sdk.default || sdk.Genuin
-        if (GenuinClass) {
-          return GenuinClass.newInit(config)
-        } else if (window.genuin) {
-          return window.genuin?.SDK.newInit(config)
-        }
-        throw new Error('Genuin SDK not properly loaded')
+        const GenuinClass = getSDKClass(sdk)
+        return GenuinClass.newInit(config)
       })
     })
   }
@@ -174,12 +181,8 @@
    */
   function update(config) {
     return loadSDK().then((sdk) => {
-      const GenuinClass = sdk.default || sdk.Genuin
-
-      if (GenuinClass) {
-        return GenuinClass.legacyUpdate(config)
-      }
-      throw new Error('Genuin SDK not properly loaded')
+      const GenuinClass = getSDKClass(sdk)
+      return GenuinClass.legacyUpdate(config)
     })
   }
 
@@ -188,11 +191,8 @@
    */
   function on(event, callback) {
     return loadSDK().then((sdk) => {
-      const GenuinClass = sdk.default || sdk.Genuin
-
-      if (GenuinClass) {
-        return GenuinClass.on(event, callback)
-      }
+      const GenuinClass = getSDKClass(sdk)
+      return GenuinClass.on(event, callback)
     })
   }
 
@@ -201,11 +201,8 @@
    */
   function off(event, callback) {
     return loadSDK().then((sdk) => {
-      const GenuinClass = sdk.default || sdk.Genuin
-
-      if (GenuinClass) {
-        return GenuinClass.off(event, callback)
-      }
+      const GenuinClass = getSDKClass(sdk)
+      return GenuinClass.off(event, callback)
     })
   }
 
@@ -214,11 +211,8 @@
    */
   function emit(event, payload) {
     return loadSDK().then((sdk) => {
-      const GenuinClass = sdk.default || sdk.Genuin
-
-      if (GenuinClass) {
-        return GenuinClass.emit(event, payload)
-      }
+      const GenuinClass = getSDKClass(sdk)
+      return GenuinClass.emit(event, payload)
     })
   }
 
