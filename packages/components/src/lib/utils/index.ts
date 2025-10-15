@@ -318,3 +318,12 @@ export function isMiddlewareOverlayEnabled({
 
   return enabledBrands.has(brandType);
 }
+
+/**
+ * Checks if the provided string is a valid UUID (Universally Unique Identifier) in version 4 format.
+ * @param value - The string to check
+ * @returns True if the string matches UUID v4 format, false otherwise
+ */
+export function isUuid(value: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+}

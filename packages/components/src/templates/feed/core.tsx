@@ -92,8 +92,8 @@ export const FeedViewCore = memo(function FeedViewCore({
       const url = new URL(originalUrlRef.current);
       const videoPath = videoSlug + "_" + videoId;
 
-      // Check if URL already ends with the video path
-      if (!url.pathname.endsWith("/" + videoPath)) {
+      // Check if URL already contains a video path (indicated by "_" in pathname)
+      if (!url.pathname.includes("_")) {
         // Ensure pathname ends with '/' if it doesn't already, then append video path
         const basePath = url.pathname.endsWith("/")
           ? url.pathname
@@ -104,9 +104,19 @@ export const FeedViewCore = memo(function FeedViewCore({
       // Update URL without causing page reload
       window.history.replaceState(null, "", url.toString());
     } else {
-      // Restore original URL when leaving expand view
+      // Restore original URL when leaving expand view, but remove any video path (slug_id format)
       if (originalUrlRef.current) {
-        window.history.replaceState(null, "", originalUrlRef.current);
+        const url = new URL(originalUrlRef.current);
+        // Remove video path if present (anything after last / that contains _)
+        const pathParts = url.pathname.split("/");
+        const lastPart = pathParts[pathParts.length - 1];
+        if (lastPart && lastPart.includes("_")) {
+          // Remove the last part which is the video path
+          pathParts.pop();
+          url.pathname =
+            pathParts.join("/") + (pathParts.length > 0 ? "/" : "");
+        }
+        window.history.replaceState(null, "", url.toString());
         originalUrlRef.current = null;
       }
     }
