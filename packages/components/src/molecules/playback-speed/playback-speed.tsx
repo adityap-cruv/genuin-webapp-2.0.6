@@ -24,7 +24,7 @@ export function PlaybackSpeed({ children, ...props }: PlaybackSpeedProps) {
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent
         className={cn(
-          "gencl:text-center gencl:bg-white gencl:sm:min-w-lg! gencl:md:min-w-xl! gencl:rounded-t-2xl! gencl:md:rounded-2xl! gencl:flex gencl:flex-col gencl:gap-4",
+          "gen-sdk-expand-view gencl:text-center gencl:bg-white gencl:sm:min-w-lg! gencl:md:min-w-xl! gencl:rounded-t-2xl! gencl:md:rounded-2xl! gencl:flex gencl:flex-col gencl:gap-4",
           isTablet ? "gencl:p-10" : "gencl:p-6"
         )}
       >
