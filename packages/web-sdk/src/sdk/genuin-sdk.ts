@@ -1205,7 +1205,8 @@ export class GenuinSDK {
     this.isInitialized = false
     this.sdkElements = {}
 
-    this.eventManager.emit(SDKEventType.EMBED_LOADED, { destroyed: true })
+    // Don't know why this error is being thrown.
+    // this.eventManager.emit(SDKEventType.EMBED_LOADED, { destroyed: true })
   }
 }
 

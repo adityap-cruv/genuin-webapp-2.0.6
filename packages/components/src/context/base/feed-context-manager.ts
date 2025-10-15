@@ -205,7 +205,10 @@ export class FeedContextManager {
         isWatched,
         currentTime: isWatched ? 0 : videoDetails.currentTime,
       };
-      this.emit("onVideoWatchedChanged", { videoId, isVideoWatched: isWatched });
+      this.emit("onVideoWatchedChanged", {
+        videoId,
+        isVideoWatched: isWatched,
+      });
     }
   }
 
@@ -330,5 +333,35 @@ export class FeedContextManager {
     listener: GenericEventListener
   ): void {
     this.eventManager.off(eventName, listener);
+  }
+
+  /**
+   * Prints all details of the FeedContextManager including video states and play/pause tracker.
+   *
+   * Useful for debugging and monitoring the current state of the feed context.
+   */
+  public printAllDetails(): void {
+    console.log("[FeedContextManager]", {
+      playPauseTracker: this.playPauseTracker,
+      videos: this.videos,
+    });
+  }
+
+  /**
+   * Destroys the singleton instance and cleans up all resources.
+   *
+   * This method:
+   * - Clears all video tracking data
+   * - Removes all event listeners
+   * - Resets the play/pause tracker to default state
+   * - Resets the singleton instance
+   *
+   * After calling this method, the next call to getInstance() will create a new instance.
+   */
+  public static destroy(): void {
+    if (this.instance) {
+      // Reset the singleton instance
+      this.instance = undefined;
+    }
   }
 }

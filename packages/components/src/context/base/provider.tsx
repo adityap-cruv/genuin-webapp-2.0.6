@@ -161,10 +161,12 @@ export function BaseContextProvider({
     };
 
     const handleMuteFromOutside = () => {
+      console.log("[mute]: from outside came");
       setMuted(true);
     };
 
     const handleUnmuteFromOutside = () => {
+      console.log("[unmute]: from outside came");
       setMuted(false);
     };
 
@@ -259,6 +261,7 @@ export function BaseContextProvider({
     return () => {
       baseContextManager.offPlay(handlePlay);
       baseContextManager.offPause(handlePause);
+      FeedContextManager.destroy();
     };
   }, [baseContextManager]);
 

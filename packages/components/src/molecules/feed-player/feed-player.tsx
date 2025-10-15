@@ -70,6 +70,7 @@ export const FeedPlayer = memo(function FeedPlayer({
     });
 
     return () => {
+      console.log("[FeedContextManager]: unregisterVideos");
       baseContextManager.unregisterVideo(videoId);
     };
   }, [baseContextManager]);
