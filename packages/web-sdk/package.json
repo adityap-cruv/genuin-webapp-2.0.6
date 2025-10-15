@@ -25,6 +25,8 @@
     "dev:vite": "vite",
     "publish:s3:qa": "env-cmd -f ./.env.qa cross-env NODE_ENV=qa npx tsx scripts/uploadToS3.ts",
     "publish:s3:prod": "env-cmd -f ./.env.production cross-env NODE_ENV=production npx tsx scripts/uploadToS3.ts",
+    "purge:bunny:qa": "env-cmd -f ./.env.qa cross-env NODE_ENV=qa npx tsx scripts/purgeBunnyStandalone.ts",
+    "purge:bunny:prod": "env-cmd -f ./.env.production cross-env NODE_ENV=production npx tsx scripts/purgeBunnyStandalone.ts",
     "deploy:qa": "npx env-cmd -f ./.env.qa cross-env NODE_ENV=qa npx tsx scripts/npmVersionManager.ts && npm run build:qa && npm run publish:s3:qa",
     "deploy:prod": "npx env-cmd -f ./.env.production cross-env NODE_ENV=production npx tsx scripts/npmVersionManager.ts && npm run build:prod && npm run publish:s3:prod",
     "analyze": "cross-env ANALYZE=true NODE_ENV=production npm run build:prod",
