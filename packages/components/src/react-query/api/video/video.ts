@@ -7,6 +7,10 @@ import { QueryKey, useQuery } from "@tanstack/react-query";
 import { queryClient } from "@genuin/components/react-query/client";
 import { parseFeed } from "../feed/parser";
 import { isUuid } from "@genuin/components/lib/utils";
+import {
+  SDKEventEmitter,
+  SDKEventName,
+} from "@genuin/components/lib/sdk-event-emitter";
 
 async function fetchVideoDetails(slug: string, embedId?: string) {
   try {
@@ -16,11 +20,28 @@ async function fetchVideoDetails(slug: string, embedId?: string) {
         embed_id: embedId,
       },
     });
-    return parseFeed(response.data?.data?.feeds);
+    const feeds = response.data?.data?.feeds;
+    if (!feeds || feeds.length === 0) {
+      // Emit SDK video not found event when no feeds are returned
+      SDKEventEmitter.emit(SDKEventName.VIDEO_NOT_FOUND, {
+        slug,
+        errorCode: "NO_FEEDS_RETURNED",
+      });
+
+      return [];
+    }
+    return parseFeed(feeds);
   } catch (e: any) {
     if (e.response?.data?.code === NOT_FOUND_ERROR_CODES.video) {
+      // Emit SDK video not found event
+      SDKEventEmitter.emit(SDKEventName.VIDEO_NOT_FOUND, {
+        slug,
+        errorCode: e.response.data.code,
+      });
       throw new Error(e.response.data.code);
     }
+    // Re-throw other errors
+    throw e;
   }
 }
 

@@ -25,6 +25,7 @@ export enum SDKEventName {
   PAUSE = "onPause",
   MUTE_CHANGE = "onMuteChange",
   SHARE = "onShare",
+  VIDEO_NOT_FOUND = "onVideoNotFound",
 }
 
 /**
@@ -91,6 +92,11 @@ export interface SDKShareEventPayload {
   shareUrl: string;
 }
 
+export interface SDKVideoNotFoundPayload {
+  slug: string;
+  errorCode: string;
+}
+
 /**
  * Type mapping for SDK event payloads
  * Maps each event name to its corresponding payload type
@@ -106,6 +112,7 @@ export type SDKEventPayloadMap = {
   [SDKEventName.PAUSE]: SDKPauseEventPayload;
   [SDKEventName.MUTE_CHANGE]: SDKMuteChangePayload;
   [SDKEventName.SHARE]: SDKShareEventPayload;
+  [SDKEventName.VIDEO_NOT_FOUND]: SDKVideoNotFoundPayload;
 };
 
 /**

@@ -34,6 +34,7 @@ const ALLOWED_EVENTS = [
   'onPlay',
   'onPause',
   'onMuteChange',
+  'onVideoNotFound',
   // Add allowed event names here
 ]
 
