@@ -136,24 +136,20 @@ const genuinResolver = () => ({
   },
 })
 
-// Custom plugin to copy loader file after build
+// Custom plugin to process loader file after build
 const copyLoaderPlugin = () => ({
-  name: 'copy-loader',
-  async writeBundle() {
-    // Copy the loader file after each build
-    const sourceFile = resolve(__dirname, 'src/loader.js')
-    const isDevelopment = process.env.NODE_ENV === 'development'
-    const targetFile = resolve(
-      __dirname,
-      'dist',
-      isDevelopment ? 'gen_sdk.js' : 'gen_sdk.min.js',
+  name: 'process-loader',
+  async generateBundle(options, bundle) {
+    // Find the loader bundle entry
+    const loaderEntry = Object.keys(bundle).find(
+      (key) => key.startsWith('gen_sdk') && bundle[key].type === 'chunk',
     )
 
-    try {
-      // Read the loader file and replace environment placeholders
-      let loaderContent = fs.readFileSync(sourceFile, 'utf8')
+    if (loaderEntry) {
+      const loaderBundle = bundle[loaderEntry]
+      let loaderContent = loaderBundle.code
 
-      // Replace __MEDIA_BASE_URL__ with the actual environment-specific media URL
+      // Replace environment placeholders in the generated code
       const mediaBaseUrl =
         process.env.MEDIA_BASE_URL ||
         process.env.NEXT_PUBLIC_MEDIA_BASE_URL ||
@@ -161,6 +157,7 @@ const copyLoaderPlugin = () => ({
       loaderContent = loaderContent.replace(/__MEDIA_BASE_URL__/g, mediaBaseUrl)
 
       // Replace NODE_ENV check with actual value
+      const isDevelopment = process.env.NODE_ENV === 'development'
       const nodeEnvCheck = isDevelopment ? 'true' : 'false'
       loaderContent = loaderContent.replace(
         /__DEV_ENVIRONMENT__/g,
@@ -175,13 +172,8 @@ const copyLoaderPlugin = () => ({
           /__SDK_VERSION_PATH__/g,
           versionPath,
         )
-        console.log(
-          `  - SDK_VERSION_PATH: ${versionPath} (versioned path enabled)`,
-        )
       } else {
-        // Remove the version path placeholder (keeps default /sdk/assets/ path)
         loaderContent = loaderContent.replace(/__SDK_VERSION_PATH__/g, '')
-        console.log(`  - SDK_VERSION_PATH: (none - using default path)`)
       }
 
       // Generate build metadata header
@@ -202,27 +194,15 @@ const copyLoaderPlugin = () => ({
 
 `
 
-      // Prepend metadata header to the loader content
-      loaderContent = metadataHeader + loaderContent
+      // Prepend metadata header to the processed content
+      loaderBundle.code = metadataHeader + loaderContent
 
-      // Write the processed loader file
-      fs.writeFileSync(targetFile, loaderContent)
-      console.log(
-        `✓ Copied and processed loader to ${isDevelopment ? 'gen_sdk.js' : 'gen_sdk.min.js'}`,
-      )
+      console.log(`✓ Processed loader bundle: ${loaderEntry}`)
       console.log(`  - Build time: ${buildTime}`)
       console.log(`  - Environment: ${environment}`)
       console.log(`  - Version: ${version}`)
       console.log(`  - MEDIA_BASE_URL: ${mediaBaseUrl}`)
-      if (process.env.SDK_VERSION_PATH && process.env.SDK_VERSION_PATH.trim()) {
-        console.log(
-          `  - SDK_VERSION_PATH: ${process.env.SDK_VERSION_PATH.trim()}/ (versioned path enabled)`,
-        )
-      } else {
-        console.log(`  - SDK_VERSION_PATH: (none - using default path)`)
-      }
-    } catch (error) {
-      console.error('Failed to copy loader file:', error)
+      console.log(`  - Processed by Vite build pipeline: Yes`)
     }
   },
 })
@@ -435,144 +415,148 @@ export default defineConfig({
 
   build: {
     lib: {
-      entry: resolve(__dirname, 'src/index.ts'),
-      formats: ['es', 'iife'],
+      entry: {
+        'genuin-sdk': resolve(__dirname, 'src/index.ts'),
+        gen_sdk: resolve(__dirname, 'src/loader.js'),
+      },
+      formats: ['es'], // Only ES format for multi-entry builds
       name: 'GenuinSDK',
-      fileName: (format) =>
-        format === 'es' ? 'genuin-sdk.js' : 'genuin-sdk-legacy.js',
+      fileName: (format, entryName) => {
+        if (entryName === 'gen_sdk') {
+          // Use environment-specific naming for loader
+          const isDevelopment = process.env.NODE_ENV === 'development'
+          return isDevelopment ? 'gen_sdk.js' : 'gen_sdk.min.js'
+        }
+        return 'genuin-sdk.js'
+      },
     },
     rollupOptions: {
       // Don't externalize anything for the web SDK build
       // We want to bundle everything for standalone usage
       external: [],
-      output: [
-        {
-          // Main ES module bundle that supports code splitting
-          format: 'es',
-          entryFileNames: 'genuin-sdk.js',
-          chunkFileNames: 'chunks/[name]-[hash].js',
-          assetFileNames: (assetInfo) => {
-            // Use consistent naming for CSS files, hash-based for others
-            if (assetInfo.name && assetInfo.name.endsWith('.css')) {
-              return 'assets/web-sdk.css'
-            }
-            return 'assets/[name]-[hash][extname]'
-          },
-          // Set the base path for dynamic imports
-          inlineDynamicImports: false,
-          // Ensure exports are preserved
-          exports: 'named',
-          // Configure manual chunks for lazy-loaded components and vendor libraries
-          manualChunks: (id) => {
-            // DON'T manually chunk standard-wall - let lazy loading handle it naturally
-            // This prevents eager loading of the standard-wall chunk
-
-            // === VENDOR LIBRARY CHUNKS ===
-
-            // NOTE: React and React-DOM are intentionally NOT separated into vendor chunks
-            // to avoid createContext timing issues. They stay in the main bundle for proper module resolution.
-
-            // React Query - Keep separate for performance
-            if (
-              id.includes('react-query') ||
-              id.includes('@tanstack/react-query')
-            ) {
-              return 'vendor-react-query'
-            }
-
-            // Radix UI components - Large UI primitive library
-            if (id.includes('node_modules/@radix-ui/')) {
-              return 'vendor-radix'
-            }
-
-            // Animation and media libraries
-            if (
-              id.includes('node_modules/motion/') ||
-              id.includes('node_modules/swiper/') ||
-              id.includes('node_modules/embla-carousel') ||
-              id.includes('node_modules/openplayerjs/')
-            ) {
-              return 'vendor-animation'
-            }
-
-            // Form and input libraries
-            if (
-              id.includes('node_modules/react-hook-form/') ||
-              id.includes('node_modules/input-otp/') ||
-              id.includes('node_modules/react-phone-number-input/') ||
-              id.includes('node_modules/zod/')
-            ) {
-              return 'vendor-forms'
-            }
-
-            // Utility libraries
-            if (
-              id.includes('node_modules/axios/') ||
-              id.includes('node_modules/crypto-es/') ||
-              id.includes('node_modules/dompurify/') ||
-              id.includes('node_modules/uuid/') ||
-              id.includes('node_modules/ua-parser-js/')
-            ) {
-              return 'vendor-utils'
-            }
-
-            // Router and navigation
-            if (id.includes('node_modules/wouter/')) {
-              return 'vendor-router'
-            }
-
-            // Other large third-party libraries
-            if (
-              id.includes('node_modules/@fingerprintjs/') ||
-              id.includes('node_modules/@rudderstack/') ||
-              id.includes('node_modules/next/')
-            ) {
-              return 'vendor-external'
-            }
-
-            // === APPLICATION CHUNKS ===
-
-            // Split other page components (but not standard-wall)
-            if (
-              id.includes('components/page/') &&
-              !id.includes('standard-wall')
-            ) {
-              return 'app-embed-components'
-            }
-
-            // Split large UI libraries into separate chunks
-            if (id.includes('@genuin/ui') && !id.includes('src/index')) {
-              return 'app-ui-components'
-            }
-
-            // Keep core SDK functionality in main bundle
-            if (
-              id.includes('src/core') ||
-              id.includes('src/sdk') ||
-              id.includes('src/index')
-            ) {
-              return undefined // Goes to main bundle
-            }
-
-            // Let Rollup handle other chunks automatically
-            return null
-          },
+      output: {
+        // Single ES module output with multiple entries
+        format: 'es',
+        entryFileNames: (chunkInfo) => {
+          if (chunkInfo.name === 'gen_sdk') {
+            const isDevelopment = process.env.NODE_ENV === 'development'
+            return isDevelopment ? 'gen_sdk.js' : 'gen_sdk.min.js'
+          }
+          return 'genuin-sdk.js'
         },
-        {
-          // Legacy IIFE bundle for backward compatibility (single file)
-          format: 'iife',
-          name: 'GenuinSDK',
-          entryFileNames: 'genuin-sdk-legacy.js',
-          assetFileNames: (assetInfo) => {
-            // Use consistent naming for CSS files, hash-based for others
-            if (assetInfo.name && assetInfo.name.endsWith('.css')) {
-              return 'assets/web-sdk.css'
-            }
-            return 'assets/[name]-[hash][extname]'
-          },
-          inlineDynamicImports: true, // Required for IIFE single file
+        chunkFileNames: 'chunks/[name]-[hash].js',
+        assetFileNames: (assetInfo) => {
+          // Use consistent naming for CSS files, hash-based for others
+          if (assetInfo.name && assetInfo.name.endsWith('.css')) {
+            return 'assets/web-sdk.css'
+          }
+          return 'assets/[name]-[hash][extname]'
         },
-      ],
+        // Set the base path for dynamic imports
+        inlineDynamicImports: false,
+        // Ensure exports are preserved
+        exports: 'named',
+        // Configure manual chunks for lazy-loaded components and vendor libraries
+        manualChunks: (id) => {
+          // Exclude loader from manual chunking - it should be standalone
+          if (id.includes('src/loader.js')) {
+            return undefined
+          }
+
+          // DON'T manually chunk standard-wall - let lazy loading handle it naturally
+          // This prevents eager loading of the standard-wall chunk
+
+          // === VENDOR LIBRARY CHUNKS ===
+
+          // NOTE: React and React-DOM are intentionally NOT separated into vendor chunks
+          // to avoid createContext timing issues. They stay in the main bundle for proper module resolution.
+
+          // React Query - Keep separate for performance
+          if (
+            id.includes('react-query') ||
+            id.includes('@tanstack/react-query')
+          ) {
+            return 'vendor-react-query'
+          }
+
+          // Radix UI components - Large UI primitive library
+          if (id.includes('node_modules/@radix-ui/')) {
+            return 'vendor-radix'
+          }
+
+          // Animation and media libraries
+          if (
+            id.includes('node_modules/motion/') ||
+            id.includes('node_modules/swiper/') ||
+            id.includes('node_modules/embla-carousel') ||
+            id.includes('node_modules/openplayerjs/')
+          ) {
+            return 'vendor-animation'
+          }
+
+          // Form and input libraries
+          if (
+            id.includes('node_modules/react-hook-form/') ||
+            id.includes('node_modules/input-otp/') ||
+            id.includes('node_modules/react-phone-number-input/') ||
+            id.includes('node_modules/zod/')
+          ) {
+            return 'vendor-forms'
+          }
+
+          // Utility libraries
+          if (
+            id.includes('node_modules/axios/') ||
+            id.includes('node_modules/crypto-es/') ||
+            id.includes('node_modules/dompurify/') ||
+            id.includes('node_modules/uuid/') ||
+            id.includes('node_modules/ua-parser-js/')
+          ) {
+            return 'vendor-utils'
+          }
+
+          // Router and navigation
+          if (id.includes('node_modules/wouter/')) {
+            return 'vendor-router'
+          }
+
+          // Other large third-party libraries
+          if (
+            id.includes('node_modules/@fingerprintjs/') ||
+            id.includes('node_modules/@rudderstack/') ||
+            id.includes('node_modules/next/')
+          ) {
+            return 'vendor-external'
+          }
+
+          // === APPLICATION CHUNKS ===
+
+          // Split other page components (but not standard-wall)
+          if (
+            id.includes('components/page/') &&
+            !id.includes('standard-wall')
+          ) {
+            return 'app-embed-components'
+          }
+
+          // Split large UI libraries into separate chunks
+          if (id.includes('@genuin/ui') && !id.includes('src/index')) {
+            return 'app-ui-components'
+          }
+
+          // Keep core SDK functionality in main bundle
+          if (
+            id.includes('src/core') ||
+            id.includes('src/sdk') ||
+            id.includes('src/index')
+          ) {
+            return undefined // Goes to main bundle
+          }
+
+          // Let Rollup handle other chunks automatically
+          return null
+        },
+      },
     },
     sourcemap: true,
     target: 'es2020',
