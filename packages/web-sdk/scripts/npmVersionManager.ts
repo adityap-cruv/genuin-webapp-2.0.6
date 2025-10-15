@@ -3,6 +3,13 @@ import { execSync } from 'child_process'
 import readline from 'readline'
 import fs from 'fs'
 import path from 'path'
+import dotenv from 'dotenv'
+
+// Load environment variables from .env.common
+const commonEnvFile = path.resolve(process.cwd(), '.env.common')
+if (fs.existsSync(commonEnvFile)) {
+  dotenv.config({ path: commonEnvFile, override: false })
+}
 
 type VersionType = 'major' | 'minor' | 'patch'
 
@@ -97,39 +104,64 @@ async function promptVersion() {
     console.log('\n\x1b[36mℹ Version bump skipped\x1b[0m\n')
   }
 
-  // Prompt for CSS path version
+  // Prompt for CSS path selection
   console.log('\x1b[36m=== CSS Path Configuration ===\x1b[0m')
-  console.log('Configure CSS path for this deployment:')
-  console.log('• Leave empty for default path: /sdk/assets/')
-  console.log('• Enter version for versioned path: /sdk/{version}/assets/')
-  console.log('• Example: entering "2.0.0" will use /sdk/2.0.0/assets/\n')
 
-  const cssPathVersion = await createPrompt(
+  // Read available S3 upload paths from environment
+  const s3UploadPaths = process.env.S3_UPLOAD_PATHS || '/sdk'
+  const availablePaths = s3UploadPaths.split(',').map((path) => path.trim())
+
+  console.log('Select CSS path for this deployment:')
+  availablePaths.forEach((path, index) => {
+    const displayPath = path === '/sdk' ? `${path}/assets/` : `${path}/assets/`
+    const description = path === '/sdk' ? ' (default)' : ''
+    console.log(`${index + 1}. ${displayPath}${description}`)
+  })
+  console.log()
+
+  const pathChoice = await createPrompt(
     rl,
-    'Enter CSS path version (or press Enter to skip): ',
+    `Select path (1-${availablePaths.length}): `,
   )
 
-  if (cssPathVersion && cssPathVersion.trim()) {
-    // Set environment variable for the build process
-    const versionPath = cssPathVersion.trim()
-    process.env.SDK_VERSION_PATH = versionPath
+  const choiceIndex = parseInt(pathChoice) - 1
+  if (choiceIndex >= 0 && choiceIndex < availablePaths.length) {
+    const selectedPath = availablePaths[choiceIndex]
 
-    // Also write to a temporary file that can be sourced by the build process
-    const tempEnvFile = path.resolve(process.cwd(), '.env.deploy.tmp')
-    fs.writeFileSync(tempEnvFile, `SDK_VERSION_PATH=${versionPath}\n`)
+    if (selectedPath === '/sdk') {
+      // Default path - no version path needed
+      const tempEnvFile = path.resolve(process.cwd(), '.env.deploy.tmp')
+      if (fs.existsSync(tempEnvFile)) {
+        fs.unlinkSync(tempEnvFile)
+      }
+      console.log('\n\x1b[32m✓ Selected default CSS path\x1b[0m')
+      console.log(
+        'CSS will be loaded from: \x1b[36m/sdk/assets/web-sdk.css\x1b[0m\n',
+      )
+    } else {
+      // Extract version from path (everything after /sdk/)
+      const versionPath = selectedPath.replace('/sdk/', '').replace('/sdk', '')
 
-    console.log(`\n\x1b[32m✓ CSS path version set to: ${versionPath}\x1b[0m`)
-    console.log(
-      `CSS will be loaded from: \x1b[36m/sdk/${versionPath}/assets/web-sdk.css\x1b[0m\n`,
-    )
+      // Set environment variable for the build process
+      process.env.SDK_VERSION_PATH = versionPath
+
+      // Also write to a temporary file that can be sourced by the build process
+      const tempEnvFile = path.resolve(process.cwd(), '.env.deploy.tmp')
+      fs.writeFileSync(tempEnvFile, `SDK_VERSION_PATH=${versionPath}\n`)
+
+      console.log(`\n\x1b[32m✓ CSS path version set to: ${versionPath}\x1b[0m`)
+      console.log(
+        `CSS will be loaded from: \x1b[36m${selectedPath}/assets/web-sdk.css\x1b[0m\n`,
+      )
+    }
   } else {
-    // Remove any existing temp env file
+    // Invalid choice - use default
     const tempEnvFile = path.resolve(process.cwd(), '.env.deploy.tmp')
     if (fs.existsSync(tempEnvFile)) {
       fs.unlinkSync(tempEnvFile)
     }
     console.log(
-      '\n\x1b[36mℹ Using default CSS path: /sdk/assets/web-sdk.css\x1b[0m\n',
+      '\n\x1b[33m⚠ Invalid choice. Using default CSS path: /sdk/assets/web-sdk.css\x1b[0m\n',
     )
   }
 
