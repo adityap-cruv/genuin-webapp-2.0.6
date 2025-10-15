@@ -49,6 +49,7 @@ const DEFAULT_WEB_CONFIGS: BrandDetailsConfigType["web_configs"] = {
   gesture_guidance: true,
   playback_speed_enabled: true,
   is_start_with_sound: false,
+  resume_playback_from: 0,
 };
 
 export const DEFAULT_BRAND_DETAILS = {
@@ -111,6 +112,14 @@ export type BaseContextType = {
    * Is feed-context-manager.
    */
   baseContextManager: FeedContextManager;
+  /**
+   * Theme of the application - 'dark' or 'light'
+   */
+  theme: "dark" | "light";
+  /**
+   * Set the theme of the application
+   */
+  setTheme: React.Dispatch<React.SetStateAction<"dark" | "light">>;
 };
 
 export const BaseContext = createContext<BaseContextType | null>(null);

@@ -62,6 +62,7 @@ export type ConfigByUser = {
     id: string
     type: string
   }>
+  theme?: 'dark' | 'light'
 }
 
 export type UpdateConfigByUserType = {
@@ -111,4 +112,5 @@ export type SingleEmbedDataConfig = {
     id: string
     type: string
   }>
+  theme?: 'dark' | 'light'
 }

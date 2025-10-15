@@ -614,23 +614,11 @@ export class GenuinSDK {
     Array.from(uniqueElements).forEach((element) => {
       const instanceId = this.setInstanceId(element)
       // Show loading view immediately
-      loadLoadingView(element)
       const extractedData = this.extractDataFromSingleDiv(element, configByUser)
+      loadLoadingView(element, extractedData.theme)
       if (extractedData.startVideoSlug) {
         loadExpandView(element)
       }
-      console.log('[gen-sdk]: element Initialization', element)
-      console.log('[gen-sdk]: url', window.location.href)
-      console.log('[gen-sdk]: sdk embed id:', extractedData.embedId)
-      console.log('[gen-sdk]: sdk api key:', extractedData.apiKey)
-      console.log(
-        '[gen-sdk]: Initialization with start video slug:',
-        extractedData.startVideoSlug,
-      )
-      console.log(
-        '[gen-sdk]: Initialization with actions',
-        element.getAttribute('data-video-id'),
-      )
       if (extractedData) {
         this.sdkElements[instanceId] = {
           element,
@@ -712,6 +700,7 @@ export class GenuinSDK {
       'data-posted-by-user-ids',
       'data-community-ids',
       'data-loop-ids',
+      'data-theme',
     ] as const
 
     // Extract core configuration attributes from the HTML element
@@ -956,6 +945,12 @@ export class GenuinSDK {
           )
             ? loopIdsParsed
             : configByUser?.contextual_params?.loop_ids
+          break
+        case 'data-theme':
+          const themeValue = value ?? configByUser?.theme
+          if (themeValue === 'dark' || themeValue === 'light') {
+            answerToReturn.theme = themeValue
+          }
           break
         default:
           break

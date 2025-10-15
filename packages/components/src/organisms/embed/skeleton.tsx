@@ -16,17 +16,23 @@ import {
 } from "lucide-react";
 import { useEmbedContext } from "@genuin/components/context/embed";
 import { useEmbedDimensions } from "@genuin/components/hooks/embed/use-embed-dimensions";
+import { useBaseContext } from "@genuin/components/context";
 
-const carouselSkeletonVariant = cva("gencl:bg-secondary-200 gencl:rounded-md", {
+const carouselSkeletonVariant = cva("gencl:rounded-md", {
   variants: {
     variant: {
       carousel: "",
       feed: "gencl:flex gencl:flex-col",
       grid: "",
     },
-    defaultVariants: {
-      variant: "carousel",
+    theme: {
+      light: "gencl:bg-secondary-200",
+      dark: "gencl:bg-secondary-900",
     },
+  },
+  defaultVariants: {
+    variant: "carousel",
+    theme: "light",
   },
 });
 
@@ -57,15 +63,19 @@ export function SdkSkeleton({
   const embedVariant: "carousel" | "feed" =
     config.view.embedStyle === "feed" ? "feed" : "carousel";
   const skeletonItems = Array(12).fill(null);
+  const { theme } = useBaseContext();
 
   // If variant is grid, render grid skeleton layout
   if (isGridLayout) {
     const rows = config.view.gridLayout?.row ?? 2;
     const cols = config.view.gridLayout?.column ?? 2;
-    const autoAdjust = config.view.gridLayout?.auto_adjust;
+    // const autoAdjust = config.view.gridLayout?.auto_adjust;
     return (
       <div
-        className="gencl:bg-secondary-200 gencl:rounded-md"
+        className={cn(
+          "gencl:rounded-md",
+          theme === "dark" ? "gencl:bg-secondary-900" : "gencl:bg-secondary-200"
+        )}
         style={{
           height: Math.max(0, containerHeight || 0),
           width: Math.max(0, containerWidth || 0),
@@ -73,7 +83,7 @@ export function SdkSkeleton({
         {...restProps}
       >
         <div className="gencl:h-full gencl:w-full gencl:overflow-auto">
-          <EmbedHeaderSkeleton variant="grid" />
+          <EmbedHeaderSkeleton variant="grid" theme={theme} />
           <div
             className={cn("gencl:w-full gencl:gap-2")}
             style={{
@@ -93,7 +103,14 @@ export function SdkSkeleton({
                     "gencl:cursor-pointer"
                   )}
                 >
-                  <Skeleton className="gencl:h-full gencl:w-full" />
+                  <Skeleton
+                    className={cn(
+                      "gencl:h-full gencl:w-full",
+                      theme === "dark"
+                        ? "gencl:bg-secondary-800"
+                        : "gencl:bg-secondary-100"
+                    )}
+                  />
                 </div>
               ))}
           </div>
@@ -106,7 +123,10 @@ export function SdkSkeleton({
   return (
     <div
       className={cn(
-        carouselSkeletonVariant({ variant: variant || embedVariant }),
+        carouselSkeletonVariant({
+          variant: variant || embedVariant,
+          theme: theme,
+        }),
         className
       )}
       style={{
@@ -119,6 +139,7 @@ export function SdkSkeleton({
         variant={
           variant === "carousel" || variant === "feed" ? variant : embedVariant
         }
+        theme={theme}
       />
       <div className="gencl:relative">
         <EmbedSwiper
@@ -138,12 +159,19 @@ export function SdkSkeleton({
           {skeletonItems.map((_, idx) => {
             return (
               <SwiperSlide className="gencl:h-full gencl:w-full" key={idx}>
-                <Skeleton className="gencl:h-full gencl:w-full" />
+                <Skeleton
+                  className={cn(
+                    "gencl:h-full gencl:w-full",
+                    theme === "dark"
+                      ? "gencl:bg-secondary-800"
+                      : "gencl:bg-secondary-100"
+                  )}
+                />
               </SwiperSlide>
             );
           })}
         </EmbedSwiper>
-        <NavigationButtons embedVariant={embedVariant} />
+        <NavigationButtons embedVariant={embedVariant} theme={theme} />
       </div>
     </div>
   );
@@ -151,8 +179,10 @@ export function SdkSkeleton({
 
 function NavigationButtons({
   embedVariant,
+  theme = "light",
 }: {
   embedVariant: "feed" | "carousel";
+  theme?: "light" | "dark";
 }) {
   const config = useEmbedConfigs();
 
@@ -174,9 +204,21 @@ function NavigationButtons({
               theme="overlay"
               variant="icon"
               size="sm"
-              className="gencl:pointer-events-auto gencl:rounded-full gencl:bg-white gencl:hover:bg-secondary-150"
+              className={cn(
+                "gencl:pointer-events-auto gencl:rounded-full",
+                theme === "dark"
+                  ? "gencl:bg-secondary-800 gencl:hover:bg-secondary-600"
+                  : "gencl:bg-white gencl:hover:bg-secondary-150"
+              )}
             >
-              <ChevronLeft className="gencl:h-5 gencl:w-5 gencl:stroke-secondary-600" />
+              <ChevronLeft
+                className={cn(
+                  "gencl:h-5 gencl:w-5",
+                  theme === "dark"
+                    ? "gencl:stroke-secondary-200"
+                    : "gencl:stroke-secondary-600"
+                )}
+              />
               <span className="gencl:sr-only">Previous</span>
             </Button>
           </div>
@@ -186,9 +228,21 @@ function NavigationButtons({
               theme="overlay"
               variant="icon"
               size="sm"
-              className="gencl:pointer-events-auto gencl:rounded-full gencl:bg-white gencl:hover:bg-secondary-150"
+              className={cn(
+                "gencl:pointer-events-auto gencl:rounded-full",
+                theme === "dark"
+                  ? "gencl:bg-secondary-800 gencl:hover:bg-secondary-600"
+                  : "gencl:bg-white gencl:hover:bg-secondary-150"
+              )}
             >
-              <ChevronRight className="gencl:h-5 gencl:w-5 gencl:stroke-secondary-600" />
+              <ChevronRight
+                className={cn(
+                  "gencl:h-5 gencl:w-5",
+                  theme === "dark"
+                    ? "gencl:stroke-secondary-200"
+                    : "gencl:stroke-secondary-600"
+                )}
+              />
               <span className="gencl:sr-only">Next</span>
             </Button>
           </div>
@@ -204,9 +258,21 @@ function NavigationButtons({
         theme="overlay"
         variant="icon"
         size="sm"
-        className="gencl:rounded-full gencl:bg-white gencl:hover:bg-secondary-150"
+        className={cn(
+          "gencl:rounded-full",
+          theme === "dark"
+            ? "gencl:bg-secondary-800 gencl:hover:bg-secondary-600"
+            : "gencl:bg-white gencl:hover:bg-secondary-150"
+        )}
       >
-        <ChevronUp className="gencl:h-5 gencl:w-5 gencl:stroke-secondary-600" />
+        <ChevronUp
+          className={cn(
+            "gencl:h-5 gencl:w-5",
+            theme === "dark"
+              ? "gencl:stroke-secondary-200"
+              : "gencl:stroke-secondary-600"
+          )}
+        />
         <span className="gencl:sr-only">Previous</span>
       </Button>
 
@@ -214,9 +280,21 @@ function NavigationButtons({
         theme="overlay"
         variant="icon"
         size="sm"
-        className="gencl:rounded-full gencl:bg-white gencl:hover:bg-secondary-150"
+        className={cn(
+          "gencl:rounded-full",
+          theme === "dark"
+            ? "gencl:bg-secondary-800 gencl:hover:bg-secondary-600"
+            : "gencl:bg-white gencl:hover:bg-secondary-150"
+        )}
       >
-        <ChevronDown className="gencl:h-5 gencl:w-5 gencl:stroke-secondary-600" />
+        <ChevronDown
+          className={cn(
+            "gencl:h-5 gencl:w-5",
+            theme === "dark"
+              ? "gencl:stroke-secondary-200"
+              : "gencl:stroke-secondary-600"
+          )}
+        />
         <span className="gencl:sr-only">Next</span>
       </Button>
     </div>
@@ -241,7 +319,10 @@ const embedHeaderSkeletonVariants = cva(
 
 function EmbedHeaderSkeleton({
   variant,
-}: VariantProps<typeof embedHeaderSkeletonVariants>) {
+  theme = "light",
+}: VariantProps<typeof embedHeaderSkeletonVariants> & {
+  theme?: "light" | "dark";
+}) {
   const { header, view, contentDisplay } = useEmbedConfigs();
   const { headerHeight } = useEmbedDimensions();
 
@@ -259,11 +340,36 @@ function EmbedHeaderSkeleton({
       className={cn(embedHeaderSkeletonVariants({ variant }))}
     >
       <div className="gencl:flex gencl:flex-col gencl:items-start gencl:gap-2">
-        {header.heading && <Skeleton className="gencl:h-5 gencl:w-32" />}
-        {header.subHeading && <Skeleton className="gencl:h-3 gencl:w-24" />}
+        {header.heading && (
+          <Skeleton
+            className={cn(
+              "gencl:h-5 gencl:w-32",
+              theme === "dark"
+                ? "gencl:bg-secondary-800"
+                : "gencl:bg-secondary-100"
+            )}
+          />
+        )}
+        {header.subHeading && (
+          <Skeleton
+            className={cn(
+              "gencl:h-3 gencl:w-24",
+              theme === "dark"
+                ? "gencl:bg-secondary-800"
+                : "gencl:bg-secondary-100"
+            )}
+          />
+        )}
       </div>
       {header.ctaButton?.url && (
-        <Skeleton className="gencl:h-10 gencl:w-24 gencl:rounded-md" />
+        <Skeleton
+          className={cn(
+            "gencl:h-10 gencl:w-24 gencl:rounded-md",
+            theme === "dark"
+              ? "gencl:bg-secondary-800"
+              : "gencl:bg-secondary-100"
+          )}
+        />
       )}
     </div>
   );

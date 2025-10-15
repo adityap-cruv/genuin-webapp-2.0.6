@@ -35,6 +35,10 @@ type BaseContextProviderProps = {
    * Pass this prop to indicate that this is an embed context.
    */
   isEmbed: boolean;
+  /**
+   * Theme of the application - 'dark' or 'light'
+   */
+  theme?: "dark" | "light";
 };
 
 /**
@@ -47,6 +51,7 @@ export function BaseContextProvider({
   children,
   brandDetails,
   isEmbed = false,
+  theme = "light",
 }: BaseContextProviderProps) {
   useLayoutEffect(() => {
     // Set the brand details in the context.
@@ -64,6 +69,7 @@ export function BaseContextProvider({
   // TODO: move this states to event based states.
   const [muted, setMuted] = useState(true);
   const [volume, setVolume] = useState(100);
+  const [currentTheme, setCurrentTheme] = useState<"dark" | "light">(theme);
 
   // Detect if running inside an iframe (safe for SSR)
   const isInIframe = useMemo(() => {
@@ -161,12 +167,10 @@ export function BaseContextProvider({
     };
 
     const handleMuteFromOutside = () => {
-      console.log("[mute]: from outside came");
       setMuted(true);
     };
 
     const handleUnmuteFromOutside = () => {
-      console.log("[unmute]: from outside came");
       setMuted(false);
     };
 
@@ -297,6 +301,8 @@ export function BaseContextProvider({
         baseEventBus,
         isInIframe,
         baseContextManager,
+        theme: currentTheme,
+        setTheme: setCurrentTheme,
       }}
     >
       {children}

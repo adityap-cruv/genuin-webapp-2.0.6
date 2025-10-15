@@ -44,7 +44,10 @@ export function loadErrorView(container: HTMLElement): void {
 }
 
 // Loading view function
-export function loadLoadingView(container: HTMLElement): void {
+export function loadLoadingView(
+  container: HTMLElement,
+  theme?: 'dark' | 'light',
+): void {
   // Unmount previous root if exists for this container
   const prevRoot = containerRootMap.get(container)
   if (prevRoot) {
@@ -55,11 +58,14 @@ export function loadLoadingView(container: HTMLElement): void {
   const root = createRoot(container)
   containerRootMap.set(container, root)
 
-  root.render(<EmbedSkeleton />)
+  root.render(<EmbedSkeleton theme={theme} />)
 }
 
 // Expand view function
-export function loadExpandView(container: HTMLElement): void {
+export function loadExpandView(
+  container: HTMLElement,
+  theme?: 'dark' | 'light',
+): void {
   // Check if loader div already exists, if not, create it
   let loaderDiv = document.getElementById(
     'gen-sdk-expand-view-loader',
@@ -98,7 +104,7 @@ export function loadExpandView(container: HTMLElement): void {
     },
   )
 
-  root.render(<ExpandViewSkeleton />)
+  root.render(<ExpandViewSkeleton theme={theme} />)
 }
 
 // Lazy load the Embed component for better code splitting
@@ -130,18 +136,26 @@ const LazyStandardWall = lazy(() =>
 )
 
 // Generic skeleton for embed
-const EmbedSkeleton = () => (
-  <div className='gencl:flex gencl:relative gencl:h-full gencl:w-full gencl:bg-secondary-50 gencl:rounded-md'>
-    <Loader
-      size='md'
-      className='gencl:absolute gencl:top-1/2 gencl:left-1/2 gencl:-translate-x-1/2 gencl:-translate-y-1/2'
-    />
-  </div>
-)
-
-const ExpandViewSkeleton = () => {
+const EmbedSkeleton = ({ theme }: { theme?: 'dark' | 'light' }) => {
+  const bgClass =
+    theme === 'dark' ? 'gencl:bg-secondary-900' : 'gencl:bg-secondary-50'
   return (
-    <div className='gencl:fixed gencl:inset-0 gencl:h-full gencl:w-full gencl:z-50'>
+    <div
+      className={`gencl:flex gencl:relative gencl:h-full gencl:w-full ${bgClass} gencl:rounded-md`}>
+      <Loader
+        size='md'
+        className='gencl:absolute gencl:top-1/2 gencl:left-1/2 gencl:-translate-x-1/2 gencl:-translate-y-1/2'
+      />
+    </div>
+  )
+}
+
+const ExpandViewSkeleton = ({ theme }: { theme?: 'dark' | 'light' }) => {
+  const bgClass =
+    theme === 'dark' ? 'gencl:bg-secondary-900' : 'gencl:bg-secondary-50'
+  return (
+    <div
+      className={`gencl:fixed gencl:inset-0 gencl:h-full gencl:w-full gencl:z-50 ${bgClass}`}>
       <FeedSkeleton variant='fullscreen' />
     </div>
   )
@@ -179,6 +193,7 @@ export function loadNewEmbed({
         }}>
         <BaseContextProvider
           brandDetails={brandDetails}
+          theme={config.theme}
           isEmbed>
           <LinkProvider>
             <AuthProvider
@@ -187,7 +202,7 @@ export function loadNewEmbed({
               onUpdateUser={() => {}}
               user={user}>
               <AnalyticsProvider isWebSDK={true}>
-                <Suspense fallback={<EmbedSkeleton />}>
+                <Suspense fallback={<EmbedSkeleton theme={config.theme} />}>
                   {embedData.style === 'standard_wall' ? (
                     <LazyStandardWall />
                   ) : (
