@@ -132,9 +132,10 @@
       return loadSDK().then((sdk) => {
         // Use the default export of the module
         const GenuinClass = sdk.default || sdk.Genuin
-
         if (GenuinClass) {
           return GenuinClass.newInit(config)
+        } else if (window.genuin) {
+          return window.genuin?.SDK.newInit(config)
         }
         throw new Error('Genuin SDK not properly loaded')
       })
