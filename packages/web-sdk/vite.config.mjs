@@ -184,11 +184,35 @@ const copyLoaderPlugin = () => ({
         console.log(`  - SDK_VERSION_PATH: (none - using default path)`)
       }
 
+      // Generate build metadata header
+      const buildTime = new Date().toISOString()
+      const environment = process.env.NODE_ENV || 'development'
+      const version = process.env.npm_package_version || '2.0.0'
+      const sdkPath = isDevelopment ? 'gen_sdk.js' : 'gen_sdk.min.js'
+
+      const metadataHeader = `/**
+ * Genuin SDK v${version}
+ * Built: ${buildTime}
+ * Environment: ${environment}
+ * File: ${sdkPath}
+ *
+ * Copyright (c) Genuin Inc.
+ * https://begenuin.com
+ */
+
+`
+
+      // Prepend metadata header to the loader content
+      loaderContent = metadataHeader + loaderContent
+
       // Write the processed loader file
       fs.writeFileSync(targetFile, loaderContent)
       console.log(
         `✓ Copied and processed loader to ${isDevelopment ? 'gen_sdk.js' : 'gen_sdk.min.js'}`,
       )
+      console.log(`  - Build time: ${buildTime}`)
+      console.log(`  - Environment: ${environment}`)
+      console.log(`  - Version: ${version}`)
       console.log(`  - MEDIA_BASE_URL: ${mediaBaseUrl}`)
       if (process.env.SDK_VERSION_PATH && process.env.SDK_VERSION_PATH.trim()) {
         console.log(
