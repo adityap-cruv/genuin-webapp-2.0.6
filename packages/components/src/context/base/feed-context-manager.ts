@@ -26,6 +26,17 @@ export type PlayPauseTracker = {
   isInView: boolean;
 };
 
+export type GenericData = {
+  isVideoWatched: boolean;
+  videoId: string;
+};
+
+export type GenericEventNames = "onVideoWatchedChanged";
+
+export type GenericEventListener = (eventData: GenericData) => void;
+
+type EventNames = VideoEventNames | GenericEventNames;
+
 /**
  * This class is responsible for tracking which video is in which state.
  */
@@ -37,7 +48,7 @@ export class FeedContextManager {
     isInView: true,
     isPlaying: false,
   };
-  private eventManager: EventManager<{}, VideoEventNames>;
+  private eventManager: EventManager<{}, EventNames>;
 
   private constructor() {
     // Initialize EventManager with empty context since we don't need context functionality
@@ -188,13 +199,13 @@ export class FeedContextManager {
     isWatched: boolean;
   }) {
     const videoDetails = this.videos[videoId];
-
     if (videoDetails) {
       this.videos[videoId] = {
         ...videoDetails,
         isWatched,
         currentTime: isWatched ? 0 : videoDetails.currentTime,
       };
+      this.emit("onVideoWatchedChanged", { videoId, isVideoWatched: isWatched });
     }
   }
 
@@ -257,6 +268,22 @@ export class FeedContextManager {
   }
 
   /**
+   * Registers a listener for a specific event type.
+   *
+   * This method provides a generic way to attach event listeners that respond generic events
+   *
+   * @param eventName - The name of the event to listen for.
+   *   It can be one of the values defined in `EventNames`.
+   * @param listener - The callback function to execute when the event is triggered.
+   */
+  public on(
+    eventName: GenericEventNames,
+    listener: GenericEventListener
+  ): void {
+    this.eventManager.on(eventName, listener);
+  }
+
+  /**
    * Unsubscribe from onPlay event
    * @param listener - The listener function to remove
    */
@@ -270,5 +297,38 @@ export class FeedContextManager {
    */
   public offPause(listener: VideoEventListener): void {
     this.eventManager.off("onPause", listener);
+  }
+
+  /**
+   * Triggers a specific event and notifies all registered listeners.
+   *
+   * This method emits an event of the given type, passing along any relevant
+   * event data to the listeners that have been registered via `on()`.
+   *
+   * @param eventName - The name of the event to emit.
+   *   It must be one of the values defined in `EventNames`.
+   * @param eventData - The data payload associated with the event.
+   *   This provides context to the listeners when the event is triggered.
+   */
+  public emit(eventName: GenericEventNames, eventData: GenericData): void {
+    this.eventManager.emit(eventName, eventData);
+  }
+
+  /**
+   * Removes a previously registered event listener.
+   *
+   * This method unregisters a listener from the specified event type,
+   * ensuring it no longer responds when that event is triggered.
+   *
+   * @param eventName - The name of the event to stop listening for.
+   *   It must be one of the values defined in `EventNames`.
+   * @param listener - The listener function to remove.
+   *   It must be the same reference used when calling `on()`.
+   */
+  public off(
+    eventName: GenericEventNames,
+    listener: GenericEventListener
+  ): void {
+    this.eventManager.off(eventName, listener);
   }
 }

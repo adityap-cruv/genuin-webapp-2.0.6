@@ -22,6 +22,7 @@ import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { Swiper } from "swiper/types";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { BaseEventBusContext } from "@genuin/components/context/base/event-bus";
+import { GenericData } from "@genuin/components/context/base/feed-context-manager";
 
 type VideoProviderProps = {
   children: React.ReactNode;
@@ -130,6 +131,13 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       explicitAutoPlay
     )
   );
+  // To check whether video is fully watched or not..
+  const [isVideoWatched, setIsVideoWatched] = useState<boolean>(
+    isEmbed
+      ? (baseContextManager.getVideoState(videoId)?.isWatched ?? false)
+      : false
+  );
+
   // State to track user focus and container visibility for controlling video playback
   // isFocused: whether the user is actively focused on the page/tab
   // containerInView: whether the video container is visible (for embed scenarios)
@@ -150,14 +158,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   }>({ isAdPlaying: false });
 
   const { track, EventName } = useAnalytics();
-
-  // To check whether video is fully watched or not..
-  const isVideoWatched: boolean = useMemo(() => {
-    if (!isIHeartLayout) return false;
-    return isEmbed
-      ? (baseContextManager.getVideoState(videoId)?.isWatched ?? false)
-      : false;
-  }, [baseContextManager, videoId, isIHeartLayout, isActive, isEmbed]);
 
   // Track globalPlayState from baseEventBus - controls if ANY player can play based on user action
   const [globalPlayState, setGlobalPlayState] = useState(
@@ -205,15 +205,11 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         unmute(false);
       }
 
-      console.log("provider inside the useEffect isActive - 1");
-
       if (isIHeartLayout) {
         const globalPlayState = baseEventBus.getContext().globalPlayingState;
         setFeedPlayerShouldPlay(globalPlayState);
         return;
       }
-
-      console.log("provider inside the useEffect isActive - 2");
 
       if (explicitAutoPlay === false) {
         setFeedPlayerShouldPlay(false);
@@ -340,38 +336,33 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       }));
     }
 
-    embedEventBus.on("containerInViewChange", handleContainerInViewChange);
-    return () => {
-      embedEventBus.off("containerInViewChange", handleContainerInViewChange);
-    };
-  }, []);
+    // Listen to global playing state changes from baseEventBus
+    // This ensures all players respect user's play/pause actions across the embed
+    function handlePlayingStateChange(_: any, context: BaseEventBusContext) {
+      setGlobalPlayState(context.globalPlayingState);
+    }
 
-  useEffect(() => {
     function handleUserFocusChange() {
       const context = baseEventBus.getContext();
       setFocusState((prev) => ({ ...prev, isFocused: context.userIsFocused }));
     }
 
-    baseEventBus.on("userFocusChange", handleUserFocusChange);
-
-    return () => {
-      baseEventBus.off("userFocusChange", handleUserFocusChange);
-    };
-  }, []);
-
-  // Listen to global playing state changes from baseEventBus
-  // This ensures all players respect user's play/pause actions across the embed
-  useEffect(() => {
-    function handlePlayingStateChange(_: any, context: BaseEventBusContext) {
-      setGlobalPlayState(context.globalPlayingState);
+    function handleVideoWatched(payload: Partial<GenericData>) {
+      if (videoId === payload.videoId)
+        setIsVideoWatched(payload.isVideoWatched ?? false);
     }
 
+    embedEventBus.on("containerInViewChange", handleContainerInViewChange);
+    baseEventBus.on("userFocusChange", handleUserFocusChange);
     baseEventBus.on("globalPlayingStateChange", handlePlayingStateChange);
-
+    baseContextManager.on("onVideoWatchedChanged", handleVideoWatched);
     return () => {
+      embedEventBus.off("containerInViewChange", handleContainerInViewChange);
+      baseEventBus.off("userFocusChange", handleUserFocusChange);
       baseEventBus.off("globalPlayingStateChange", handlePlayingStateChange);
+      baseContextManager.off("onVideoWatchedChanged", handleVideoWatched);
     };
-  }, [baseEventBus]);
+  }, [videoId, baseEventBus]);
 
   const setVideoTimeState = useCallback((timeState: VideoTimeStateType) => {
     videoStateRef.current = {
@@ -464,7 +455,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       baseContextManager.setVideoWatched({ videoId, isWatched: false });
       if (byUser) {
         baseContextManager.setPlayPauseTracker({ isPlaying: true });
-
         baseEventBus.emit(
           "globalPlayingStateChange",
           undefined,

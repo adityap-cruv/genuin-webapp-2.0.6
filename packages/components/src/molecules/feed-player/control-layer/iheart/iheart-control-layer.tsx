@@ -1,5 +1,5 @@
 import { cn, getFormattedDuration, getMonthYear } from "@genuin/ui/lib/utils";
-import { type FC } from "react";
+import { useEffect, useState, type FC } from "react";
 import { Image } from "@genuin/ui/components/image";
 import {
   IHeartControls,
@@ -12,6 +12,7 @@ import { ControlLayerPropsType } from "../control-layer.types";
 import { useBaseContext } from "@genuin/components/context";
 import { usePlayerContext } from "../../context";
 import { ReadMore } from "@genuin/components/molecules/read-more";
+import { GenericData } from "@genuin/components/context/base/feed-context-manager";
 import { Link } from "@genuin/components/molecules/link";
 
 export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
@@ -24,18 +25,31 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
   const { baseContextManager } = useBaseContext();
   const { play } = usePlayerContext();
   const embedDetails = useSafeEmbedContext();
-  const isWatched = baseContextManager.getVideoState(
-    postDetails.video.id
-  )?.isWatched;
+  const [isVideoWatched, setIsVideoWatched] = useState<boolean>(
+    baseContextManager.getVideoState(postDetails.video.id)?.isWatched ?? false
+  );
+
   const isPodcast = embedDetails?.embedData?.brand_context?.some(
     (context) => context.type === "podcast"
   );
+
+  useEffect(() => {
+    function handleVideoWatched(payload: Partial<GenericData>) {
+      if (postDetails.video.id === payload.videoId)
+        setIsVideoWatched(payload.isVideoWatched ?? false);
+    }
+
+    baseContextManager.on("onVideoWatchedChanged", handleVideoWatched);
+    return () => {
+      baseContextManager.off("onVideoWatchedChanged", handleVideoWatched);
+    };
+  }, []);
 
   return (
     <div
       className={cn("gencl:h-full gencl:relative", className)}
       onClick={(e) => {
-        if (postDetails.video.isWatched || isWatched) {
+        if (postDetails.video.isWatched || isVideoWatched) {
           e.stopPropagation();
           return;
         }
@@ -119,7 +133,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
         </div>
       </div>
 
-      {(postDetails.video.isWatched || isWatched) && (
+      {(postDetails.video.isWatched || isVideoWatched) && (
         <IHeartEndOfContentOverlay
           onGoToEpisodes={() => {
             // Handle go to episodes action
