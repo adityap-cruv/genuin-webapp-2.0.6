@@ -35,43 +35,50 @@ The deployment process includes these prompts:
    Do you want to bump the version? (y/n):
    ```
 
-2. **CSS Path Version Prompt** (new)
+2. **CSS Path Selection Prompt** (new)
    ```
    === CSS Path Configuration ===
-   Configure CSS path for this deployment:
-   • Leave empty for default path: /sdk/assets/
-   • Enter version for versioned path: /sdk/{version}/assets/
-   • Example: entering "2.0.0" will use /sdk/2.0.0/assets/
+   Select CSS path for this deployment:
+   1. /sdk/assets/ (default)
+   2. /sdk/v1/assets/
+   3. /sdk/multi/assets/
+   4. /sdk/multi-v2/assets/
+   5. /sdk/v2/assets/
+   6. /sdk/2.0.0/assets/
 
-   Enter CSS path version (or press Enter to skip):
-   ```
-
-### Examples
+   Select path (1-6):
+   ```### Examples
 
 **Example 1: Default Path**
-- Input: (press Enter to skip)
+- Selection: `1` (/sdk/assets/)
 - Result: CSS loads from `https://media.begenuin.com/sdk/assets/web-sdk.css`
 
-**Example 2: Versioned Path**
-- Input: `2.0.0`
+**Example 2: Version 2.0.0**
+- Selection: `6` (/sdk/2.0.0/assets/)
 - Result: CSS loads from `https://media.begenuin.com/sdk/2.0.0/assets/web-sdk.css`
 
-**Example 3: Custom Version**
-- Input: `v2.1.0-beta`
-- Result: CSS loads from `https://media.begenuin.com/sdk/v2.1.0-beta/assets/web-sdk.css`
+**Example 3: Multi-v2 Version**
+- Selection: `4` (/sdk/multi-v2/assets/)
+- Result: CSS loads from `https://media.begenuin.com/sdk/multi-v2/assets/web-sdk.css`
 
 ## Technical Implementation
+
+### Environment Configuration
+- Available paths are defined in `.env.common` as `S3_UPLOAD_PATHS`
+- Current paths: `/sdk,/sdk/v1,/sdk/multi,/sdk/multi-v2,/sdk/v2,/sdk/2.0.0`
+- The deployment script reads these paths and presents them as selectable options
 
 ### Environment Variable
 - The CSS path version is stored in `SDK_VERSION_PATH` environment variable
 - This variable is set during the deployment process and used during build
 
 ### Build Process
-1. `npmVersionManager.ts` prompts for CSS path version
-2. If provided, sets `SDK_VERSION_PATH` environment variable
-3. Creates temporary `.env.deploy.tmp` file with the variable
-4. Vite build process reads the environment variable
-5. `loader.js` placeholders are replaced with actual values:
+1. `npmVersionManager.ts` reads available paths from `S3_UPLOAD_PATHS`
+2. Presents numbered selection menu to user
+3. If a versioned path is selected, sets `SDK_VERSION_PATH` environment variable
+4. Creates temporary `.env.deploy.tmp` file with the variable
+5. Vite build process reads the environment variable
+6. `loader.js` placeholders are replaced with actual values:
    - `__MEDIA_BASE_URL__` → environment-specific media URL
    - `__SDK_VERSION_PATH__` → version path (or empty for default)
 
@@ -90,12 +97,21 @@ The deployment process includes these prompts:
 ### S3 Structure
 ```
 s3://bucket/sdk/
-├── assets/                    # Default path
+├── assets/                    # Default path (option 1)
 │   └── web-sdk.css
-├── 2.0.0/                     # Versioned path
+├── v1/                        # Version 1 (option 2)
 │   └── assets/
 │       └── web-sdk.css
-└── v2.1.0-beta/               # Custom versioned path
+├── multi/                     # Multi version (option 3)
+│   └── assets/
+│       └── web-sdk.css
+├── multi-v2/                  # Multi v2 (option 4)
+│   └── assets/
+│       └── web-sdk.css
+├── v2/                        # Version 2 (option 5)
+│   └── assets/
+│       └── web-sdk.css
+└── 2.0.0/                     # Specific version (option 6)
     └── assets/
         └── web-sdk.css
 ```

@@ -20,6 +20,7 @@ const deployTempEnvFile = resolve(__dirname, '.env.deploy.tmp')
 if (fs.existsSync(commonEnvFile)) {
   dotenv.config({ path: commonEnvFile })
   console.log(`✓ Loaded common environment variables from .env.common`)
+  console.log(`DEBUG: S3_UPLOAD_PATHS = ${process.env.S3_UPLOAD_PATHS}`)
 }
 
 if (fs.existsSync(envFile)) {
