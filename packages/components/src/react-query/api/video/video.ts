@@ -12,12 +12,13 @@ import {
   SDKEventName,
 } from "@genuin/components/lib/sdk-event-emitter";
 
-async function fetchVideoDetails(slug: string, embedId?: string) {
+async function fetchVideoDetails(slug: string, embedId?: string, placementId?: string) {
   try {
     const response = await axiosInstance.get(API_PATHS.VIDEO_DETAILS, {
       params: {
         ...(isUuid(slug) ? { uuid: slug } : { slug }),
-        embed_id: embedId,
+        ...(embedId && { embed_id: embedId }),
+        ...(placementId && { placement_id: placementId }),
       },
     });
     const feeds = response.data?.data?.feeds;
@@ -52,7 +53,7 @@ async function fetchVideoDetails(slug: string, embedId?: string) {
  * @param slug - The slug of the video to fetch details for.
  * @returns The video data in a structure matching useFeed's return value
  */
-export function useGetVideoDetailsAsFeed(slug: string, embedId?: string) {
+export function useGetVideoDetailsAsFeed(slug: string, embedId?: string, placementId?: string) {
   return useQuery({
     queryKey: getQueryKeyForVideoDetails(slug),
     queryFn: async () => {
@@ -60,7 +61,7 @@ export function useGetVideoDetailsAsFeed(slug: string, embedId?: string) {
       if (!slug) {
         throw new Error("Slug is required to fetch video details");
       }
-      return await fetchVideoDetails(slug, embedId);
+      return await fetchVideoDetails(slug, embedId, placementId);
     },
     // Don't run the query if slug is empty
     enabled: !!slug && slug !== "",

@@ -309,7 +309,8 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
   const startVideoSlug = options?.startVideoSlug;
   const videoDetailsQuery = useGetVideoDetailsAsFeed(
     startVideoSlug || "",
-    options?.embedId
+    options?.embedId,
+    options?.placementId
   );
   const queryKey = getQueryKeyForFeed(feedType, options);
 

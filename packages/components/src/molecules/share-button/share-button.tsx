@@ -1,4 +1,5 @@
 import { useBaseContext, useLinkContext } from "@genuin/components/context";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { Button } from "@genuin/ui/button";
 import { Toast } from "@genuin/ui/components/toaster";
@@ -46,6 +47,9 @@ export function ShareButton({
   const { isMobile } = useDeviceDetectMediaQuery();
   const { createExternalLink } = useLinkContext();
   const { brandDetails } = useBaseContext();
+  const {
+    view: { brandLayoutType },
+  } = useEmbedConfigs();
 
   const handleClick = useCallback(
     async (e: any) => {
@@ -81,6 +85,9 @@ export function ShareButton({
         }
       }
 
+      const toastPosition =
+        brandLayoutType === "iheart" ? "bottom-center" : undefined;
+
       // For mobile devices, use native share API if available
       if (isMobile && navigator.share) {
         try {
@@ -109,22 +116,42 @@ export function ShareButton({
           // For other errors, fallback to clipboard
           const success = await copy(fullUrl);
           if (success) {
-            Toast.Success({ message: "Link Copied" });
+            Toast.Success({
+              message: "Link Copied",
+              position: toastPosition,
+            });
           } else {
-            Toast.Error({ message: "Failed to copy link. Please try again." });
+            Toast.Error({
+              message: "Failed to copy link. Please try again.",
+              position: toastPosition,
+            });
           }
         }
       } else {
         // For desktop, use clipboard
         const success = await copy(fullUrl);
         if (success) {
-          Toast.Success({ message: "Link Copied" });
+          Toast.Success({
+            message: "Link Copied",
+            position: toastPosition,
+          });
         } else {
-          Toast.Error({ message: "Failed to copy link. Please try again." });
+          Toast.Error({
+            message: "Failed to copy link. Please try again.",
+            position: toastPosition,
+          });
         }
       }
     },
-    [copy, pathName, isMobile, title, description, createExternalLink]
+    [
+      copy,
+      pathName,
+      isMobile,
+      title,
+      description,
+      createExternalLink,
+      brandLayoutType,
+    ]
   );
 
   if (withCustomChildren) {

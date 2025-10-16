@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import type { ToasterProps } from "sonner";
 import { Toaster as Sonner, toast } from "sonner";
@@ -13,17 +14,32 @@ type ToastVariant = "success" | "error";
 interface ToastBodyProps {
   message: string;
   description?: string;
+  position?: ToasterProps["position"];
 }
 
-const Toaster = ({ ...props }: ToasterProps) => {
+const Toaster = ({ position, ...props }: ToasterProps) => {
   const { theme = "system" } = useTheme();
   const { isMobile } = useDeviceDetection();
+  const [currentPosition, setCurrentPosition] = useState<
+    ToasterProps["position"]
+  >(position || (isMobile ? "top-center" : "bottom-right"));
+
+  useEffect(() => {
+    const handler = (e: CustomEvent<ToasterProps["position"]>) =>
+      setCurrentPosition(e.detail);
+    window.addEventListener("toastPositionChange", handler as EventListener);
+    return () =>
+      window.removeEventListener(
+        "toastPositionChange",
+        handler as EventListener
+      );
+  }, []);
 
   return (
     <Sonner
       theme={theme as ToasterProps["theme"]}
       className="toaster gencl:group"
-      position={isMobile ? "top-center" : "bottom-right"}
+      position={currentPosition}
       expand={isMobile}
       style={
         {
@@ -42,8 +58,14 @@ const Toaster = ({ ...props }: ToasterProps) => {
 const showCustomToast = (
   message: string,
   description: string | undefined,
-  variant: ToastVariant
+  variant: ToastVariant,
+  position?: ToasterProps["position"]
 ) => {
+  if (position) {
+    window.dispatchEvent(
+      new CustomEvent("toastPositionChange", { detail: position })
+    );
+  }
   toast.custom((id) => (
     <div className="gencl:bg-white gencl:text-black gencl:flex gencl:items-start gencl:border gencl:border-secondary-150 gencl:justify-between gencl:gap-4 gencl:p-4 gencl:rounded-lg gencl:shadow-lg gencl:w-full gencl:sm:w-sm! sm:gencl:max-w-sm! sm:gencl:mt-0!">
       <div
@@ -72,11 +94,11 @@ const showCustomToast = (
   ));
 };
 
-const ToastSuccess = ({ message, description }: ToastBodyProps) =>
-  showCustomToast(message, description, "success");
+const ToastSuccess = ({ message, description, position }: ToastBodyProps) =>
+  showCustomToast(message, description, "success", position);
 
-const ToastError = ({ message, description }: ToastBodyProps) =>
-  showCustomToast(message, description, "error");
+const ToastError = ({ message, description, position }: ToastBodyProps) =>
+  showCustomToast(message, description, "error", position);
 
 const Toast = { Success: ToastSuccess, Error: ToastError };
 
