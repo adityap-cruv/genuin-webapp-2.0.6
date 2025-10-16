@@ -14,23 +14,26 @@ export function isValidHTTPS(link: string) {
  * Opens a URL with maximum compatibility across browsers and iOS.
  * Uses a programmatic <a> tag click to bypass popup blockers reliably.
  */
-export function openUrlInNewTab(url: string, target: "_blank" | "_self" = "_blank"): void {
+export function openUrlInNewTab(
+  url: string,
+  target: "_blank" | "_self" = "_blank"
+): void {
   // Create a temporary anchor element
   const anchor = document.createElement("a");
   anchor.href = url;
   anchor.target = target;
-  
+
   // Only add noopener noreferrer for new tabs (security best practice)
   if (target === "_blank") {
     anchor.rel = "noopener noreferrer";
   }
-  
+
   // Append to body (required for Firefox)
   document.body.appendChild(anchor);
-  
+
   // Trigger click programmatically
   anchor.click();
-  
+
   // Clean up by removing the element
   document.body.removeChild(anchor);
 }
@@ -295,23 +298,28 @@ export function encodeVideoSourceUrl(videoSource: string) {
  * @returns Formatted date string or "Today"
  */
 export function getMonthYear(timestamp: number): string {
-  // Handle both seconds and milliseconds timestamps
-  // If timestamp is > 1e10, it's likely in milliseconds, otherwise in seconds
+  if (!Number.isFinite(timestamp) || timestamp < 0) {
+    throw new Error("Invalid timestamp");
+  }
+
   const timestampMs = timestamp > 1e10 ? timestamp : timestamp * 1000;
   const date = new Date(timestampMs);
   const now = new Date();
 
-  // Check if the date is today
-  const isToday =
-    date.getDate() === now.getDate() &&
-    date.getMonth() === now.getMonth() &&
-    date.getFullYear() === now.getFullYear();
+  const dateOnly = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate()
+  );
+  const todayOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-  if (isToday) {
-    return "Today";
-  }
+  const diffDays = Math.floor(
+    (todayOnly.getTime() - dateOnly.getTime()) / (1000 * 60 * 60 * 24)
+  );
 
-  // Always return full date format: "MMM dd, yyyy" (e.g., "Sep 23, 2025")
+  if (diffDays === 0) return "Today";
+  if (diffDays === 1) return "Yesterday";
+
   return date.toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",

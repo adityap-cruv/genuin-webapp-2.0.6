@@ -423,6 +423,7 @@ export const ReadMore = memo(function ReadMore({
           ...rest.style,
         }}
         onClick={(e) => {
+          if (!textParts.shouldTruncate) return;
           if (!expandable) return;
           e.stopPropagation();
           onClick?.(e);
