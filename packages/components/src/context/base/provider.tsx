@@ -51,7 +51,7 @@ export function BaseContextProvider({
   children,
   brandDetails,
   isEmbed = false,
-  theme = "light",
+  theme,
 }: BaseContextProviderProps) {
   useLayoutEffect(() => {
     // Set the brand details in the context.
@@ -69,7 +69,7 @@ export function BaseContextProvider({
   // TODO: move this states to event based states.
   const [muted, setMuted] = useState(true);
   const [volume, setVolume] = useState(100);
-  const [currentTheme, setCurrentTheme] = useState<"dark" | "light">(theme);
+  const [currentTheme, setCurrentTheme] = useState<"dark" | "light" | undefined>(theme);
 
   // Detect if running inside an iframe (safe for SSR)
   const isInIframe = useMemo(() => {

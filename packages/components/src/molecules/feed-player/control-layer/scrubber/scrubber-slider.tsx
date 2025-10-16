@@ -82,7 +82,7 @@ const ScrubberSlider = React.forwardRef<
       return `${mins}:${secs.toString().padStart(2, "0")}`;
     };
 
-    const time = React.useMemo(() => {
+    const time = React.useMemo<React.ReactNode>(() => {
       const duration = playerTimeState.duration;
       if (!duration || !value?.[0]) return "00:00";
 
@@ -91,7 +91,12 @@ const ScrubberSlider = React.forwardRef<
       if (showOnlyTime) {
         const currentTimeFormatted = formatTime(totalSeconds);
         const durationFormatted = formatTime(duration);
-        return `${currentTimeFormatted} / ${durationFormatted}`;
+        return (
+          <>
+            <span>{currentTimeFormatted}</span>
+            <span style={{color : "#B1B1B1"}}> / {durationFormatted}</span>
+          </>
+        );
       }
 
       const minutes = Math.floor(totalSeconds / 60);

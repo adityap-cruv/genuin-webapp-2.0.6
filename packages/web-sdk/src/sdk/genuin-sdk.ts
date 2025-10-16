@@ -617,7 +617,7 @@ export class GenuinSDK {
       const extractedData = this.extractDataFromSingleDiv(element, configByUser)
       loadLoadingView(element, extractedData.theme)
       if (extractedData.startVideoSlug) {
-        loadExpandView(element)
+        loadExpandView(element,extractedData.theme)
       }
       if (extractedData) {
         this.sdkElements[instanceId] = {

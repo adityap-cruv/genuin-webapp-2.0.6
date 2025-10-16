@@ -7,15 +7,35 @@ import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-d
 
 export type FeedSkeletonProps = {
   variant?: "default" | "fullscreen";
+  theme?: "light" | "dark";
 };
 
 export const FeedSkeleton: FC<FeedSkeletonProps> = ({
   variant = "default",
+  theme = "dark",
 }) => {
   const { isMobile } = useDeviceDetectMediaQuery();
+  const skeletonTheme = {
+    light: {
+      container: "gencl:bg-secondary-100",
+      primary: "gencl:bg-secondary-200",
+      secondary: "gencl:bg-secondary-300",
+    },
+    dark: {
+      container: "gencl:bg-black",
+      primary: "gencl:bg-secondary-900",
+      secondary: "gencl:bg-secondary-800",
+    },
+  } as const;
+  const colors = skeletonTheme[theme];
   if (variant === "fullscreen") {
     return (
-      <div className="gencl:fixed gencl:inset-0 gencl:bg-black gencl:z-50 gencl:flex gencl:items-center gencl:justify-center gencl:gap-6">
+      <div
+        className={cn(
+          "gencl:fixed gencl:inset-0 gencl:z-50 gencl:flex gencl:items-center gencl:justify-center gencl:gap-6",
+          colors.container
+        )}
+      >
         <div
           className={cn(
             "gencl:relative gencl:block gencl:sm:hidden!",
@@ -24,30 +44,68 @@ export const FeedSkeleton: FC<FeedSkeletonProps> = ({
               : "gencl:aspect-reel gencl:h-full"
           )}
         >
-          <Skeleton className="gencl:w-full gencl:h-full gencl:bg-secondary-900 gencl:sm:bg-secondary-900!" />
+          <Skeleton
+            className={cn(
+              "gencl:w-full gencl:h-full gencl:sm:bg-secondary-900!",
+              colors.primary
+            )}
+          />
 
           <div className="gencl:flex gencl:sm:hidden! gencl:absolute gencl:bottom-0 gencl:left-1/2 gencl:-translate-x-1/2 gencl:p-4 gencl:justify-between gencl:items-end gencl:gap-4 gencl:w-screen gencl:max-w-full">
             <div className="gencl:w-full">
               <div className="gencl:flex gencl:gap-2 gencl:overflow-hidden gencl:mb-3 gencl:mt-0">
-                <Skeleton className="gencl:size-10 gencl:rounded-full gencl:shrink-0" />
+                <Skeleton
+                  className={cn(
+                    "gencl:size-10 gencl:rounded-full gencl:shrink-0",
+                    colors.secondary
+                  )}
+                />
                 <div className="gencl:w-full gencl:flex gencl:flex-col gencl:justify-center gencl:gap-2">
-                  <Skeleton className="gencl:w-1/2 gencl:h-3 gencl:rounded-md gencl:mt-1.5" />
+                  <Skeleton
+                    className={cn(
+                      "gencl:w-1/2 gencl:h-3 gencl:rounded-md gencl:mt-1.5",
+                      colors.secondary
+                    )}
+                  />
                 </div>
               </div>
               <div className="gencl:mb-3 gencl:mt-0">
-                <Skeleton className="gencl:w-full gencl:h-3 gencl:rounded-md gencl:mt-1.5" />
-                <Skeleton className="gencl:w-full gencl:h-3 gencl:rounded-md gencl:mt-1.5" />
+                <Skeleton
+                  className={cn(
+                    "gencl:w-full gencl:h-3 gencl:rounded-md gencl:mt-1.5",
+                    colors.secondary
+                  )}
+                />
+                <Skeleton
+                  className={cn(
+                    "gencl:w-full gencl:h-3 gencl:rounded-md gencl:mt-1.5",
+                    colors.secondary
+                  )}
+                />
               </div>
               <div className="gencl:flex gencl:gap-2">
-                <Skeleton className="gencl:size-10 gencl:rounded-full gencl:shrink-0 gencl:w-32 gencl:h-7" />
-                <Skeleton className="gencl:size-10 gencl:rounded-full gencl:shrink-0 gencl:w-32 gencl:h-7" />
+                <Skeleton
+                  className={cn(
+                    "gencl:size-10 gencl:rounded-full gencl:shrink-0 gencl:w-32 gencl:h-7",
+                    colors.secondary
+                  )}
+                />
+                <Skeleton
+                  className={cn(
+                    "gencl:size-10 gencl:rounded-full gencl:shrink-0 gencl:w-32 gencl:h-7",
+                    colors.secondary
+                  )}
+                />
               </div>
             </div>
             <div className="gencl:flex gencl:sm:hidden! gencl:gap-4 gencl:flex-col gencl:justify-end gencl:w-12">
               {Array.from({ length: 5 }).map((_, index) => (
                 <Skeleton
                   key={index}
-                  className="gencl:size-10 gencl:rounded-full gencl:shrink-0"
+                  className={cn(
+                    "gencl:size-10 gencl:rounded-full gencl:shrink-0",
+                    colors.secondary
+                  )}
                 />
               ))}
             </div>
@@ -55,24 +113,44 @@ export const FeedSkeleton: FC<FeedSkeletonProps> = ({
         </div>
 
         <div className="gencl:h-full gencl:gap-2 gencl:hidden gencl:sm:flex!">
-          <Skeleton className="gencl:aspect-reel gencl:h-full" />
+          <Skeleton
+            className={cn("gencl:aspect-reel gencl:h-full", colors.primary)}
+          />
           <div className="gencl:flex gencl:gap-4 gencl:flex-col gencl:justify-end gencl:w-13">
             {Array.from({ length: 5 }).map((_, index) => (
               <Skeleton
                 key={index}
-                className="gencl:size-12 gencl:rounded-full gencl:shrink-0"
+                className={cn(
+                  "gencl:size-12 gencl:rounded-full gencl:shrink-0",
+                  colors.secondary
+                )}
               />
             ))}
           </div>
         </div>
 
         <div className="gencl:max-w-118 gencl:w-full gencl:h-full gencl:py-6 gencl:hidden gencl:sm:block!">
-          <Skeleton className="gencl:w-full gencl:h-full gencl:py-6 gencl:rounded-2xl" />
+          <Skeleton
+            className={cn(
+              "gencl:w-full gencl:h-full gencl:py-6 gencl:rounded-2xl",
+              colors.primary
+            )}
+          />
         </div>
 
         <div className="gencl:absolute gencl:right-7.5 gencl:space-y-2 gencl:hidden gencl:sm:block!">
-          <Skeleton className="gencl:size-12 gencl:rounded-full gencl:shrink-0" />
-          <Skeleton className="gencl:size-12 gencl:rounded-full gencl:shrink-0" />
+          <Skeleton
+            className={cn(
+              "gencl:size-12 gencl:rounded-full gencl:shrink-0",
+              colors.secondary
+            )}
+          />
+          <Skeleton
+            className={cn(
+              "gencl:size-12 gencl:rounded-full gencl:shrink-0",
+              colors.secondary
+            )}
+          />
         </div>
       </div>
     );

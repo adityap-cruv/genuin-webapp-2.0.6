@@ -327,3 +327,16 @@ export function isMiddlewareOverlayEnabled({
 export function isUuid(value: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 }
+
+/**
+ * Removes the /clip segment and everything after it from a URL
+ * @param url - The URL to process
+ * @returns The base URL without /clip and subsequent segments
+ * @example
+ * // Returns "https://dev.listen.iheart.com/live/971-wash-fm-2501"
+ * getBaseUrlWithoutClip("https://dev.listen.iheart.com/live/971-wash-fm-2501/clip/subscribe-for-more-bmw-content-visit-our-website-2rvh_bcde348d-74c4-4689-aa07-59d2648dfff9")
+ */
+export function getBaseUrlWithoutClip(url: string): string {
+  const clipIndex = url.indexOf("/clip");
+  return clipIndex !== -1 ? url.substring(0, clipIndex) : url;
+}

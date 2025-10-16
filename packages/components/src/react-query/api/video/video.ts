@@ -12,7 +12,7 @@ import {
   SDKEventName,
 } from "@genuin/components/lib/sdk-event-emitter";
 
-async function fetchVideoDetails(slug: string, embedId?: string, placementId?: string) {
+async function fetchVideoDetails(slug: string, embedId?: string, placementId?: string,shouldShowMiddlewareOverlay?:boolean) {
   try {
     const response = await axiosInstance.get(API_PATHS.VIDEO_DETAILS, {
       params: {
@@ -31,7 +31,7 @@ async function fetchVideoDetails(slug: string, embedId?: string, placementId?: s
 
       return [];
     }
-    return parseFeed(feeds);
+    return parseFeed(feeds,shouldShowMiddlewareOverlay);
   } catch (e: any) {
     if (e.response?.data?.code === NOT_FOUND_ERROR_CODES.video) {
       // Emit SDK video not found event
@@ -53,7 +53,7 @@ async function fetchVideoDetails(slug: string, embedId?: string, placementId?: s
  * @param slug - The slug of the video to fetch details for.
  * @returns The video data in a structure matching useFeed's return value
  */
-export function useGetVideoDetailsAsFeed(slug: string, embedId?: string, placementId?: string) {
+export function useGetVideoDetailsAsFeed(slug: string, embedId?: string, placementId?: string,shouldShowMiddlewareOverlay? : boolean) {
   return useQuery({
     queryKey: getQueryKeyForVideoDetails(slug),
     queryFn: async () => {
@@ -61,7 +61,7 @@ export function useGetVideoDetailsAsFeed(slug: string, embedId?: string, placeme
       if (!slug) {
         throw new Error("Slug is required to fetch video details");
       }
-      return await fetchVideoDetails(slug, embedId, placementId);
+      return await fetchVideoDetails(slug, embedId, placementId,shouldShowMiddlewareOverlay);
     },
     // Don't run the query if slug is empty
     enabled: !!slug && slug !== "",

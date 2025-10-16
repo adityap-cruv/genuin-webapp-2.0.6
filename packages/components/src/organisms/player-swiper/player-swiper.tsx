@@ -259,7 +259,7 @@ export function PlayerList({
         >
           {/* Header with back button and centered title */}
           {brandLayoutType === "iheart" && (
-            <PlayerHeader title="The Daily" onBackClick={toggleExpandView} />
+            <PlayerHeader title={posts[activeIndex]?.video.attributes?.title ?? ""} onBackClick={toggleExpandView} />
           )}
 
           {isSectioned && (

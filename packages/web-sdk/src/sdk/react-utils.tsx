@@ -152,11 +152,11 @@ const EmbedSkeleton = ({ theme }: { theme?: 'dark' | 'light' }) => {
 
 const ExpandViewSkeleton = ({ theme }: { theme?: 'dark' | 'light' }) => {
   const bgClass =
-    theme === 'dark' ? 'gencl:bg-secondary-900' : 'gencl:bg-secondary-50'
+    theme === 'dark' ? 'gencl:bg-secondary-900' : 'gencl:bg-secondary-50';
   return (
     <div
       className={`gencl:fixed gencl:inset-0 gencl:h-full gencl:w-full gencl:z-50 ${bgClass}`}>
-      <FeedSkeleton variant='fullscreen' />
+      <FeedSkeleton theme={theme} variant='fullscreen' />
     </div>
   )
 }

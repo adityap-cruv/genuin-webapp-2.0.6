@@ -283,9 +283,9 @@ type UseFeedOptionsType = {
   isInIframe: boolean;
   shouldShowMiddlewareOverlay?: boolean;
   brandContext?: Array<{
-    id: string
-    type: string
-  }>
+    id: string;
+    type: string;
+  }>;
 };
 
 /**
@@ -310,7 +310,8 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
   const videoDetailsQuery = useGetVideoDetailsAsFeed(
     startVideoSlug || "",
     options?.embedId,
-    options?.placementId
+    options?.placementId,
+    options?.shouldShowMiddlewareOverlay
   );
   const queryKey = getQueryKeyForFeed(feedType, options);
 
@@ -387,7 +388,7 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
           const hasInitialVideosInApi = initialVideos.some((v) =>
             apiVideoIds.has(v.video.id)
           );
-
+          
           // If initial videos are already in API, return API data as is
           if (hasInitialVideosInApi) {
             return data;
@@ -473,7 +474,7 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
             return {
               ...page,
               feed: page.feed.filter(
-                (video) => video.video.slug !== options.startVideoSlug
+                (video) => (video.video.id !== options.startVideoSlug && video.video.slug !== options.startVideoSlug)
               ),
             };
           });

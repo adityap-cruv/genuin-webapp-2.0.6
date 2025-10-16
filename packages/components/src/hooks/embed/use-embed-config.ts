@@ -25,7 +25,8 @@ export function useEmbedConfigs() {
       embedData: null,
     };
   }
-  const { customization, rootElement, embedData, brandLayoutType } = embedContextData;
+  const { customization, rootElement, embedData, brandLayoutType } =
+    embedContextData;
   const { brandDetails, isEmbed } = useBaseContext();
   const { isMobile } = useDeviceDetectMediaQuery();
 
@@ -45,7 +46,6 @@ export function useEmbedConfigs() {
   // View Type Configuration (feed/carousel/standard_wall)
   // ============================================================
   const viewConfig = useMemo(() => {
-
     return {
       embedStyle: embedData?.style,
       isFeed: embedData?.style === "feed",
@@ -64,12 +64,20 @@ export function useEmbedConfigs() {
       gridLayout: embedData?.grid_layout || undefined,
       scrollBehavior: customization?.scroll_behavior || "paging",
       isNavigationControlEnabled:
-        customization?.is_navigation_control_enabled ||
-        embedData?.card_layout_id !== 3,
+        brandLayoutType === "ted"
+          ? false
+          : customization?.is_navigation_control_enabled,
       centeredSlides: embedData?.placement_card_layout_id === 2,
       brandLayoutType: brandLayoutType ?? "default",
     };
-  }, [customization, embedData?.style, embedData?.placement_id, embedData?.card_layout_id, embedData?.placement_card_layout_id, brandLayoutType]);
+  }, [
+    customization,
+    embedData?.style,
+    embedData?.placement_id,
+    embedData?.card_layout_id,
+    embedData?.placement_card_layout_id,
+    brandLayoutType,
+  ]);
 
   // ============================================================
   // Header Configuration
@@ -110,8 +118,9 @@ export function useEmbedConfigs() {
       moveToNextTime: embedData?.media_play?.auto_advance_playback ?? 0,
       showBorderAroundVideo:
         (!!customization?.is_enable_engagement_tools ||
-        (customization?.links?.is_show_links &&
-          customization?.links?.position === "outside")) && brandLayoutType !== "iheart"
+          (customization?.links?.is_show_links &&
+            customization?.links?.position === "outside")) &&
+        brandLayoutType !== "iheart"
           ? true
           : false,
       videoCrop: customization?.video_crop,

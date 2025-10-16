@@ -45,22 +45,7 @@ export const videoSchema = z.object({
       title: z.string().nullish(),
       bucket_name: z.string().nullish(),
       offer_text: z.string().nullish(),
-      country_code: z.string().nullish(),
-      episode_description: z.string().nullish(),
-      episode_id: z.string().nullish(),
-      episode_title: z.string().nullish(),
-      podcast_id: z.string().nullish(),
-      podcast_radio_logo: z.string().nullish(),
-      podcast_title: z.string().nullish(),
-      slug: z.string().nullish(),
-      station_id: z.string().nullish(),
-      station_title: z.string().nullish(),
-      video_category: z.string().nullish(),
-      video_people: z.array(z.string()).nullish(),
-      video_slug: z.string().nullish(),
-      video_thumbnail_aspect_ratio: z.string().nullish(),
-      video_title: z.string().nullish(),
-      video_topic: z.array(z.string()).nullish(),
+      slug: z.string().nullish()
     })
     .nullish()
     .optional(),

@@ -27,6 +27,7 @@ import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { setQueryDataForVideoDetails } from "@genuin/components/react-query/api/video";
 import { getQueryKeyForVideoDetails } from "@genuin/components/react-query/keys/video";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { useBaseContext } from "@genuin/components/context";
 
 /**
  * Internal core presentation component for displaying feed data.
@@ -59,6 +60,7 @@ export const FeedViewCore = memo(function FeedViewCore({
   const { handleSwipeCount, dialogType, shouldShowDialog, closeDialog } =
     useInterruptionManager();
   const embedDetails = useSafeEmbedContext();
+  const { theme } = useBaseContext();
   const {
     view: { brandLayoutType },
   } = useEmbedConfigs();
@@ -253,7 +255,7 @@ export const FeedViewCore = memo(function FeedViewCore({
   };
 
   if (isLoading) {
-    return <FeedSkeleton variant={showExpandView ? "fullscreen" : "default"} />;
+    return <FeedSkeleton theme={theme} variant={showExpandView ? "fullscreen" : "default"} />;
   }
 
   if (videos && videos.length !== 0) {

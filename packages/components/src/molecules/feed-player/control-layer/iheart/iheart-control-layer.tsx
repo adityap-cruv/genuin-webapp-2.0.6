@@ -32,10 +32,6 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
     baseContextManager.getVideoState(postDetails.video.id)?.isWatched ?? false
   );
 
-  const isPodcast = embedDetails?.embedData?.brand_context?.some(
-    (context) => context.type === "podcast"
-  );
-
   useEffect(() => {
     function handleVideoWatched(payload: Partial<GenericData>) {
       if (postDetails.video.id === payload.videoId)
@@ -66,17 +62,14 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
           <Image
             aspectRatio="square"
             src={postDetails.video.attributes?.image_url ?? ""}
-            alt={postDetails.video.attributes?.video_slug ?? ""}
+            alt={postDetails.video.attributes?.slug ?? ""}
             className="gencl:size-12 gencl:rounded-md gencl:object-cover"
           />
         )}
         <div className="gencl:w-full">
-          {(postDetails.video.attributes?.station_title ||
-            postDetails.video.attributes?.podcast_title) && (
+          {postDetails.video.attributes?.title && (
             <p className="gencl:text-body-2-semi-bold gencl:line-clamp-1 gencl:tracking-[-0.35px]!">
-              {isPodcast
-                ? postDetails.video.attributes?.podcast_title
-                : postDetails.video.attributes?.station_title}
+              {postDetails.video.attributes.title}
             </p>
           )}
           {postDetails.video.attributes?.description && (

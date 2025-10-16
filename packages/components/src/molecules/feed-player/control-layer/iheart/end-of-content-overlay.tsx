@@ -24,13 +24,13 @@ export function IHeartEndOfContentOverlay({
     >
       <div className="gencl:flex gencl:flex-col gencl:gap-4 gencl:pointer-events-auto">
         {/* TODO: Move static color declaration to CSS utility class: gencl:text-[#27292D]! */}
-        <Button
+        {/* TODO : iheart phase-2 implementation  */}
+        {/* <Button
           onClick={onGoToEpisodes}
           className="gencl:h-11 gencl:text-body-1-semi-bold! gencl:flex gencl:items-center gencl:justify-center gencl:rounded-full gencl:bg-white gencl:px-5 gencl:text-[#27292D]!"
         >
           Go to episodes
-        </Button>
-
+        </Button> */}
         <Button
           onClick={onPlayAgain}
           className="gencl:h-11 gencl:text-body-1-semi-bold! gencl:flex gencl:items-center gencl:justify-center gencl:rounded-full gencl:bg-transparent gencl:px-5 gencl:text-white"
