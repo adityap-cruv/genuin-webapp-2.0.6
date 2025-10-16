@@ -291,4 +291,8 @@ export const API_PATHS = {
    * Api path to fetch HTML content.
    */
   FETCH_HTML: "/goservices/links/resolve-html",
+  /**
+   * Api path to send analytics event to backend.
+   */
+  BACKEND_ANALYTICS: "/goservices/data/collect",
 } as const;

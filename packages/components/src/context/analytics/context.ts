@@ -15,6 +15,10 @@ export const EventName = {
   VIDEO_MIDPOINT: "Midpoint",
   VIDEO_THIRD_QUARTILE: "Video Third Quartile",
   VIDEO_COMPLETED: "Video Complete",
+  /**
+   * this event should be sent to backend only.
+   */
+  VIDEO_MARK_COMPLETE: "Video Mark Complete",
   VIDEO_PAUSED: "Video Paused",
   VIDEO_MUTED: "Muted",
   VIDEO_UNMUTED: "Unmuted",

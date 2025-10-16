@@ -15,6 +15,7 @@ import { GENUIN_BRAND_ID } from "@genuin/components/lib/constants";
 import { usePathname } from "@genuin/components/hooks/use-pathname";
 import { EmbedDataType } from "@genuin/components/context/embed/embed.types";
 import { useSafeEmbedContext } from "../embed/context";
+import { sendAnalyticsToBackend } from "@genuin/components/react-query/api/analytics";
 
 type AnalyticsProviderProps = {
   children: ReactNode;
@@ -171,8 +172,25 @@ user_longitude
   const track = useCallback(
     async (eventName: EventNameType, payload?: EventPayload) => {
       await AnalyticsService.track(eventName, payload);
+      if (
+        eventName === EventName.VIDEO_COMPLETED &&
+        embedDetails?.brandLayoutType === "iheart" &&
+        user
+      ) {
+        sendAnalyticsToBackend({
+          eventName: EventName.VIDEO_MARK_COMPLETE,
+          payload: {
+            content_id: payload?.content_id,
+            video_length: payload?.video_length,
+            video_view_length: payload?.video_view_length,
+            environment: brandDetails.environment,
+            brand_id: brandDetails.brand_id,
+            user_id: user?.id ?? getDeviceId(isInIframe),
+          },
+        });
+      }
     },
-    []
+    [embedDetails?.brandLayoutType, user, isInIframe]
   );
 
   return (
