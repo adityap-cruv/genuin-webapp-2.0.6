@@ -325,6 +325,8 @@ function Button({
     <PrimitiveButton
       disabled={isPending}
       onClick={handleOnClick}
+      aria-label={`${isReacted ? "Remove thumbs up" : "Thumbs up to this clip"}. ${reactionCount} ${reactionCount === 1 ? "spark" : "sparks"}`}
+      aria-pressed={isReacted}
       {...restProps}
     >
       <DynamicReactionIcon
@@ -335,6 +337,7 @@ function Button({
         iconWidth={24}
         sparkCount={reactionCount}
         type="feed"
+        aria-hidden="true"
       />
     </PrimitiveButton>
   );

@@ -88,11 +88,13 @@ export function Default({
       return (
         <>
           <div
+            aria-label="Toggle video playback"
             onClick={() => {
               togglePlay(true);
             }}
             className={cn(
               "group gencl:inset-0 gencl:z-10 gencl:flex gencl:justify-center",
+              "gencl:appearance-none gencl:border-0 gencl:bg-transparent gencl:p-0 gencl:cursor-pointer gencl:w-full",
               className
             )}
             {...restProps}

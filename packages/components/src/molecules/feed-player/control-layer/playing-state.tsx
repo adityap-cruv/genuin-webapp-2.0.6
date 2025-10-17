@@ -11,6 +11,24 @@ export type PlayingStateProps = ComponentProps<"div"> & {
   showOnlyPlayAction?: boolean;
 };
 
+/**
+ * Get accessible label for button action state
+ */
+function getAriaLabelForAction(action: string | null): string {
+  switch (action) {
+    case "PLAY":
+      return "Playing video";
+    case "PAUSE":
+      return "Video paused";
+    case "MUTE":
+      return "Audio muted";
+    case "UNMUTE":
+      return "Audio unmuted";
+    default:
+      return "";
+  }
+}
+
 export function PlayingState({
   className,
   showOnlyPlayAction = false,
@@ -26,6 +44,9 @@ export function PlayingState({
   if (playingState === "LOADING")
     return (
       <div
+        role="status"
+        aria-live="polite"
+        aria-label="Loading video"
         className={cn(
           "gencl:rounded-full gencl:bg-black/40",
           "gencl:align-middle gencl:opacity-100 gencl:backdrop-blur-sm gencl:transition-all gencl:duration-100",
@@ -33,7 +54,7 @@ export function PlayingState({
         )}
         {...restProps}
       >
-        <Loader size="sm" />
+        <Loader size="sm" aria-hidden="true" />
       </div>
     );
 
@@ -44,6 +65,9 @@ export function PlayingState({
       return (
         <div
           key={buttonAction}
+          role="status"
+          aria-live="polite"
+          aria-label={getAriaLabelForAction(buttonAction)}
           className={cn(
             "gencl:rounded-full gencl:bg-black/40 gencl:align-middle gencl:backdrop-blur-sm",
             "gencl:delay-500 gencl:animate-fade-out",
@@ -51,7 +75,7 @@ export function PlayingState({
           )}
           {...restProps}
         >
-          <PlayIcon theme="fill-dark" size="xl" />
+          <PlayIcon theme="fill-dark" size="xl" aria-hidden="true" />
         </div>
       );
     }
@@ -65,13 +89,16 @@ export function PlayingState({
     return (
       <div
         key={buttonAction}
+        role="status"
+        aria-live="polite"
+        aria-label={getAriaLabelForAction(buttonAction)}
         className={cn(
           "gencl:rounded-full gencl:bg-black/40 gencl:align-middle gencl:backdrop-blur-sm",
           className
         )}
         {...restProps}
       >
-        <PauseIcon theme="dark" size="xl" />
+        <PauseIcon theme="dark" size="xl" aria-hidden="true" />
       </div>
     );
   }
@@ -80,11 +107,11 @@ export function PlayingState({
   const renderIcon = () => {
     switch (buttonAction) {
       case "PLAY":
-        return <PlayIcon theme="fill-dark" size="xl" />;
+        return <PlayIcon theme="fill-dark" size="xl" aria-hidden="true" />;
       case "MUTE":
-        return <MuteIcon theme="dark" size="xl" />;
+        return <MuteIcon theme="dark" size="xl" aria-hidden="true" />;
       case "UNMUTE":
-        return <UnmuteIcon theme="dark" size="xl" />;
+        return <UnmuteIcon theme="dark" size="xl" aria-hidden="true" />;
       default:
         return null;
     }
@@ -97,9 +124,14 @@ export function PlayingState({
     return null;
   }
 
+  const ariaLabel = getAriaLabelForAction(buttonAction);
+
   return (
     <div
       key={buttonAction}
+      role="status"
+      aria-live="polite"
+      aria-label={ariaLabel}
       className={cn(
         "gencl:rounded-full gencl:bg-black/40 gencl:align-middle gencl:backdrop-blur-sm",
         "gencl:delay-500 gencl:animate-fade-out",

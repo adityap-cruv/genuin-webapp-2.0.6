@@ -2,7 +2,7 @@
 import { Avatar } from "@genuin/ui/avatar";
 import { ReadMore } from "@genuin/components/molecules/read-more";
 import { cn, getFormattedDuration, getMonthYear } from "@genuin/ui/utils";
-import { useMemo, memo, type ComponentProps } from "react";
+import { useMemo, memo, useEffect, useState, type ComponentProps } from "react";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { usePlayerContext } from "../../context";
 import { ProfileLink } from "@genuin/components/molecules/profile-link";
@@ -12,7 +12,10 @@ import { Actions } from "@genuin/components/molecules/actions";
 import { CommentsDialog } from "@genuin/components/molecules/comments";
 import { controlLayerVariant } from "../control-layer";
 import { VariantProps } from "class-variance-authority";
-import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import {
+  useEmbedContext,
+  useSafeEmbedContext,
+} from "@genuin/components/context/embed/context";
 import { Linkouts } from "@genuin/components/organisms";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
@@ -23,6 +26,22 @@ import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
 import { ReadMoreTextType } from "@genuin/components/molecules/read-more/read-more.types";
 import { Link } from "@genuin/components/molecules/link";
 import { getBaseUrlWithoutClip } from "@genuin/components/lib/utils";
+import { useBaseContext } from "@genuin/components/context";
+
+// Constants
+const GRADIENT_COLORS = {
+  from: "#11111100",
+  to: "#111111b3",
+} as const;
+
+type BrandLayoutType = "default" | "iheart" | "ted" | "walmart" | "grubhub";
+
+// Utility functions
+const brandHidesPills = (type: BrandLayoutType): boolean =>
+  type === "iheart" || type === "ted";
+
+const brandHidesCommunityFeatures = (type: BrandLayoutType): boolean =>
+  type === "iheart" || type === "ted";
 
 type ExpandViewProps = ComponentProps<"div"> & {
   postDetails: PostDetailsType;
@@ -46,7 +65,7 @@ type ExpandViewProps = ComponentProps<"div"> & {
  * Hook to get layout configuration and shared logic
  */
 function useExpandViewConfig(postDetails: PostDetailsType): {
-  brandLayoutType: "default" | "iheart" | "ted" | "walmart" | "grubhub";
+  brandLayoutType: BrandLayoutType;
   defaultOpenCommentDialog: boolean;
   showSeeker: boolean;
   hideCommunityJoinButton: boolean;
@@ -72,35 +91,35 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
   const brandLayoutType =
     embedConfig.view.brandLayoutType === "iheart"
       ? embedConfig.view.brandLayoutType
-      : (getBrandType(cardLayoutId, videoLayoutId) as
-          | "default"
-          | "iheart"
-          | "ted"
-          | "walmart"
-          | "grubhub");
+      : (getBrandType(cardLayoutId, videoLayoutId) as BrandLayoutType);
 
-  // Configure visibility based on layout type instead of IDs
-  const hideGroupPill =
-    brandLayoutType === "iheart" || brandLayoutType === "ted";
+  // Configure visibility based on layout type using utility functions
+  const hideGroupPill = brandHidesPills(brandLayoutType);
   const hideCommunityPill = brandLayoutType === "iheart";
-  const hideCommunityJoinButton =
-    brandLayoutType === "iheart" || brandLayoutType === "ted";
+  const hideCommunityJoinButton = brandHidesCommunityFeatures(brandLayoutType);
   const hideGroupSubscriptionButton =
-    brandLayoutType === "iheart" || brandLayoutType === "ted";
+    brandHidesCommunityFeatures(brandLayoutType);
 
-  const defaultOpenCommentDialog = useMemo(() => {
-    const openCommentDialog =
+  const shouldOpenCommentDialog = useMemo(() => {
+    return (
       (embedDetails?.embedData.autoUserInteractionToPerform ===
         "comment-spark" ||
         embedDetails?.embedData.autoUserInteractionToPerform === "comment") &&
       embedDetails.embedData.startVideoSlug === postDetails.video.slug &&
       !isDesktop &&
-      !embedDetails?.embedEventBus.getContext().autoInteractionActionDone;
-    if (openCommentDialog) {
-      embedDetails.markAutoInteractionActionDone();
+      !embedDetails?.embedEventBus.getContext().autoInteractionActionDone
+    );
+  }, [embedDetails, postDetails.video.slug, isDesktop]);
+
+  const [defaultOpenCommentDialog, setDefaultOpenCommentDialog] =
+    useState(false);
+
+  useEffect(() => {
+    if (shouldOpenCommentDialog) {
+      embedDetails?.markAutoInteractionActionDone();
+      setDefaultOpenCommentDialog(true);
     }
-    return openCommentDialog ?? false;
-  }, [embedDetails, postDetails, isDesktop]);
+  }, [shouldOpenCommentDialog, embedDetails]);
 
   return {
     brandLayoutType,
@@ -118,53 +137,65 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
 /**
  * User profile component that adapts based on layout
  */
-function AdaptiveUserProfile({
+const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
   postDetails,
   type,
 }: {
   postDetails: PostDetailsType;
-  type: "default" | "iheart" | "ted" | "walmart" | "grubhub";
+  type: BrandLayoutType;
 }) {
+  const { video, owner } = postDetails;
+  const { attributes } = video;
+
   switch (type) {
     case "iheart":
       const podcastUrl = useMemo(
         () => getBaseUrlWithoutClip(window.location.href),
+        // Empty deps array is intentional - URL is computed once on mount
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         []
       );
 
+      const embedContext = useSafeEmbedContext();
+      const contentType = embedContext?.embedData.brand_context?.some((val) => {
+        return val.type === "podcast";
+      })
+        ? "podcase"
+        : "station";
+
       return (
         <div className="gencl:flex gencl:gap-2 gencl:items-center gencl:text-white">
-          {postDetails.video.attributes?.image_url && (
-            <Link href={podcastUrl} bypassChecks className="gencl:shrink-0">
+          {attributes?.image_url && (
+            <Link
+              href={podcastUrl}
+              bypassChecks
+              aria-label={`View ${postDetails.video.attributes?.title || contentType} page`}
+              className="gencl:shrink-0"
+            >
               <Image
                 aspectRatio="square"
-                src={postDetails.video.attributes?.image_url ?? ""}
-                alt={postDetails.video.attributes?.slug ?? ""}
+                src={attributes.image_url}
+                alt={`${postDetails.video.attributes?.title || contentType} artwork`}
                 className="gencl:size-12 gencl:rounded-md gencl:object-cover"
               />
             </Link>
           )}
           <div className="gencl:w-full gencl:flex gencl:flex-col gencl:gap-1">
             {postDetails.video.attributes?.title && (
-              <Link href={podcastUrl} bypassChecks>
+              <Link
+                href={podcastUrl}
+                bypassChecks
+                aria-label={`Go to ${postDetails.video.attributes?.title} page`}
+              >
                 <p className="gencl:h-5 gencl:text-body-2-semi-bold gencl:line-clamp-1 gencl:tracking-[-0.35px]! gencl:flex gencl:items-center gencl:gap-2">
                   {postDetails.video.attributes?.title}
-
-                  {/* <span className="gencl:px-1.5 gencl:bg-[#CC032E] gencl:rounded-xs">
-                  LIVE
-                </span> */}
-                  {/* <IHeartFollowButton
-                  variant="outlined"
-                  size="xs"
-                  onClick={(e) => e.stopPropagation()}
-                /> */}
                 </p>
               </Link>
             )}
 
-            {postDetails.video.attributes?.description && (
+            {attributes?.description && (
               <ReadMore
-                text={postDetails.video.attributes?.description ?? ""}
+                text={attributes.description}
                 shouldAnimate
                 textClassName="gencl:text-body-2-normal gencl:tracking-[-0.35px]!"
                 lineClampClassName="gencl:line-clamp-1"
@@ -183,66 +214,67 @@ function AdaptiveUserProfile({
       return (
         <div className="gencl:flex gencl:gap-2 gencl:items-center gencl:text-white gencl:text-body-0-semi-bold">
           <Avatar
-            imageUrl={postDetails.owner.profileImage}
-            alt={postDetails.owner.name ?? ""}
-            isAvatar={postDetails.owner.isAvatar}
+            imageUrl={owner.profileImage}
+            alt={owner.name ?? ""}
+            isAvatar={owner.isAvatar}
           />
           <ProfileLink
             url={buildPageUrl({
-              type: !!postDetails.owner.brand ? "brand" : "profile",
-              slug: !!postDetails.owner.brand
-                ? postDetails.owner.brand.slug
-                : postDetails.owner.userName,
+              type: !!owner.brand ? "brand" : "profile",
+              slug: !!owner.brand ? owner.brand.slug : owner.userName,
             })}
-            userLogoType={postDetails.owner.brand?.userLogo}
+            userLogoType={owner.brand?.userLogo}
           >
-            @{postDetails.owner.userName}
+            @{owner.userName}
           </ProfileLink>
         </div>
       );
   }
-}
+});
 
 /**
  * Description component that adapts based on layout
  */
-function AdaptiveDescription({
+const AdaptiveDescription = memo(function AdaptiveDescription({
   video,
   type,
 }: {
   video: PostDetailsType["video"];
-  type: "default" | "iheart" | "ted" | "walmart" | "grubhub";
+  type: BrandLayoutType;
 }) {
+  const { description, createdAt, duration } = video;
+
   const enhancedDescription: ReadMoreTextType = useMemo(() => {
     if (type !== "iheart") {
-      return video.description
-        ? Array.isArray(video.description)
-          ? video.description
-          : [video.description]
+      return description
+        ? Array.isArray(description)
+          ? description
+          : [description]
         : [];
     }
 
-    const monthYear = getMonthYear(video.createdAt ?? 0);
-    const duration = video.duration
-      ? ` • ${getFormattedDuration(String(video.duration))}`
+    const monthYear = getMonthYear(createdAt ?? 0);
+    const durationText = duration
+      ? ` • ${getFormattedDuration(String(duration))}`
       : "";
 
     return [
       {
         type: "custom",
-        text: `${monthYear}${duration}`,
+        text: `${monthYear}${durationText}`,
         style: { color: "#ffffff" },
         className:
           "gencl:text-white gencl:text-body-2-normal gencl:font-normal",
       },
       " ",
-      ...(video.description
-        ? Array.isArray(video.description)
-          ? video.description
-          : [video.description]
+      ...(description
+        ? Array.isArray(description)
+          ? description
+          : [description]
         : []),
     ];
-  }, [type, video.createdAt, video.duration, video.description]);
+  }, [type, createdAt, duration, description]);
+
   switch (type) {
     case "iheart":
       return (
@@ -264,7 +296,7 @@ function AdaptiveDescription({
       return (
         <ReadMore
           showExpandText={false}
-          text={video.description}
+          text={description}
           maxLines={2}
           shouldAnimate
           position="overlay"
@@ -279,7 +311,7 @@ function AdaptiveDescription({
       return (
         <ReadMore
           showExpandText={false}
-          text={video.description}
+          text={description}
           maxLines={2}
           shouldAnimate
           position="overlay"
@@ -288,6 +320,19 @@ function AdaptiveDescription({
         />
       );
   }
+});
+
+/**
+ * Hook to determine iHeart scrubber visibility styling
+ */
+function useIHeartScrubberVisibility(
+  showScrubber: boolean,
+  brandLayoutType: BrandLayoutType
+) {
+  return {
+    shouldHide: showScrubber && brandLayoutType === "iheart",
+    hiddenClassName: "gencl:opacity-0 gencl:pointer-events-none",
+  };
 }
 
 /**
@@ -302,7 +347,7 @@ const SharedActions = memo(function SharedActions({
 }: {
   postDetails: PostDetailsType;
   defaultOpenCommentDialog: boolean;
-  brandLayoutType: "default" | "iheart" | "ted" | "walmart" | "grubhub";
+  brandLayoutType: BrandLayoutType;
   onCommentCountChange?: ComponentProps<
     typeof CommentsDialog
   >["onCommentCountChange"];
@@ -405,11 +450,28 @@ export function ExpandViewDetails({
     showScrubber,
   } = useExpandViewConfig(postDetails);
 
+  const { shouldHide, hiddenClassName } = useIHeartScrubberVisibility(
+    showScrubber,
+    brandLayoutType
+  );
+
+  // Focus management: when expand view becomes active, move focus to the main content region
+  useEffect(() => {
+    if (isActive) {
+      const mainRegion = document.getElementById("expand-view-details-region");
+      mainRegion?.focus();
+    }
+  }, [isActive]);
+
   return (
     <div
+      id="expand-view-details-region"
+      role="region"
+      aria-label="Video details and actions"
+      tabIndex={-1}
       className={cn(
         "gencl:absolute gencl:gap-2 gencl:w-full gencl:z-20 gencl:right-0 gencl:bottom-0 gencl:p-4",
-        "gencl:bg-gradient-to-b gencl:from-[#11111100] gencl:to-[#111111b3]",
+        `gencl:bg-gradient-to-b gencl:from-[${GRADIENT_COLORS.from}] gencl:to-[${GRADIENT_COLORS.to}]`,
         className
       )}
       {...restProps}
@@ -418,9 +480,7 @@ export function ExpandViewDetails({
         className={cn(
           "gencl:flex gencl:w-full gencl:gap-4 gencl:justify-between gencl:items-end gencl:transition-opacity gencl:duration-200",
           brandLayoutType === "ted" && "gencl:gap-3",
-          showScrubber &&
-            brandLayoutType === "iheart" &&
-            "gencl:opacity-0 gencl:pointer-events-none"
+          shouldHide && hiddenClassName
         )}
       >
         <div
@@ -430,7 +490,7 @@ export function ExpandViewDetails({
           )}
           onClick={(e) => e.stopPropagation()}
         >
-          <div onClick={(e) => e.stopPropagation()} className="gencl:z-10">
+          <div className="gencl:z-10">
             <AdaptiveUserProfile
               postDetails={postDetails}
               type={brandLayoutType}
@@ -462,11 +522,12 @@ export function ExpandViewDetails({
       </div>
       {(!hideGroupPill || !hideCommunityPill) && (
         <div
+          role="group"
+          aria-label="Community and group information"
+          tabIndex={0}
           className={cn(
             "gencl:w-full gencl:overflow-x-auto gencl:scrollbar-none gencl:transition-opacity gencl:duration-200",
-            showScrubber &&
-              brandLayoutType === "iheart" &&
-              "gencl:opacity-0 gencl:pointer-events-none"
+            shouldHide && hiddenClassName
           )}
           onClick={(e) => {
             e.stopPropagation();
@@ -499,11 +560,11 @@ export function ExpandViewDetails({
         </div>
       ) : (
         <div
+          aria-hidden="true"
           className={cn(
             "gencl:h-0 gencl:transition-all",
             showSeeker && "gencl:h-4"
           )}
-          onClick={(e) => e.stopPropagation()}
         />
       )}
       {/* iHeart: Show linkouts below seeker */}

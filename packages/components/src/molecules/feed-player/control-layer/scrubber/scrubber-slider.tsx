@@ -18,6 +18,27 @@ const frameWidth = 96;
 const frameHeight = 170;
 
 /**
+ * Format time in MM:SS format
+ */
+function formatTime(seconds: number): string {
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, "0")}`;
+}
+
+/**
+ * Format time for screen readers with natural language
+ */
+function formatTimeForScreenReader(seconds: number): string {
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  if (mins === 0) {
+    return `${secs} ${secs === 1 ? "second" : "seconds"}`;
+  }
+  return `${mins} ${mins === 1 ? "minute" : "minutes"} and ${secs} ${secs === 1 ? "second" : "seconds"}`;
+}
+
+/**
  * Calculate the position in a sprite sheet based on time position
  * Inspired by ThumbnailExtractOperation Swift implementation
  */
@@ -76,13 +97,7 @@ const ScrubberSlider = React.forwardRef<
       [value, playerTimeState]
     );
 
-    const formatTime = (seconds: number) => {
-      const mins = Math.floor(seconds / 60);
-      const secs = Math.floor(seconds % 60);
-      return `${mins}:${secs.toString().padStart(2, "0")}`;
-    };
-
-    const time = React.useMemo<React.ReactNode>(() => {
+    const time = React.useMemo(() => {
       const duration = playerTimeState.duration;
       if (!duration || !value?.[0]) return "00:00";
 
@@ -94,7 +109,7 @@ const ScrubberSlider = React.forwardRef<
         return (
           <>
             <span>{currentTimeFormatted}</span>
-            <span style={{color : "#B1B1B1"}}> / {durationFormatted}</span>
+            <span style={{ color: "#B1B1B1" }}> / {durationFormatted}</span>
           </>
         );
       }
@@ -103,6 +118,14 @@ const ScrubberSlider = React.forwardRef<
       const seconds = Math.floor(totalSeconds % 60);
       return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
     }, [value, playerTimeState, showOnlyTime]);
+
+    const ariaValueText = React.useMemo(() => {
+      const duration = playerTimeState.duration;
+      if (!duration || !value?.[0]) return "0 seconds";
+
+      const totalSeconds = (value[0] / 100) * duration;
+      return formatTimeForScreenReader(totalSeconds);
+    }, [value, playerTimeState]);
 
     const spritePosition = React.useMemo(() => {
       const timeMs = scrubberStartTime * 1000;
@@ -118,6 +141,11 @@ const ScrubberSlider = React.forwardRef<
     return (
       <SliderPrimitive.Root
         ref={ref}
+        aria-label="Video progress"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={value?.[0] ?? 0}
+        aria-valuetext={ariaValueText}
         className={cn(
           "gencl:relative gencl:left-1/2 gencl:flex gencl:w-full gencl:-translate-x-1/2 gencl:touch-none gencl:select-none gencl:items-center gencl:transition-all",
           className
@@ -157,6 +185,7 @@ const ScrubberSlider = React.forwardRef<
               >
                 {!showOnlyTime && spriteUrl && (
                   <div
+                    aria-hidden="true"
                     className="gencl:aspect-reel gencl:w-24 gencl:overflow-clip gencl:rounded-lg gencl:border gencl:border-white"
                     style={{
                       height: `${frameHeight}px`,
@@ -166,7 +195,10 @@ const ScrubberSlider = React.forwardRef<
                     }}
                   />
                 )}
-                <p className="gencl:text-body-0-semi-bold gencl:text-white">
+                <p
+                  className="gencl:text-body-0-semi-bold gencl:text-white"
+                  aria-live="polite"
+                >
                   {time}
                 </p>
               </div>

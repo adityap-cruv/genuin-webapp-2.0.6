@@ -17,6 +17,9 @@ export function IHeartEndOfContentOverlay({
   return (
     <div
       {...props}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Video ended"
       className={cn(
         "gencl:absolute gencl:inset-0 gencl:pointer-events-none gencl:z-50 gencl:h-full gencl:w-full gencl:bg-black/65 gencl:flex gencl:flex-col gencl:items-center gencl:justify-center gencl:gap-4",
         className
@@ -27,15 +30,17 @@ export function IHeartEndOfContentOverlay({
         {/* TODO : iheart phase-2 implementation  */}
         {/* <Button
           onClick={onGoToEpisodes}
+          aria-label="Go to all episodes"
           className="gencl:h-11 gencl:text-body-1-semi-bold! gencl:flex gencl:items-center gencl:justify-center gencl:rounded-full gencl:bg-white gencl:px-5 gencl:text-[#27292D]!"
         >
           Go to episodes
         </Button> */}
         <Button
           onClick={onPlayAgain}
+          aria-label="Play this episode again"
           className="gencl:h-11 gencl:text-body-1-semi-bold! gencl:flex gencl:items-center gencl:justify-center gencl:rounded-full gencl:bg-transparent gencl:px-5 gencl:text-white"
         >
-          <IHeartPlayAgainIcon theme="dark" size="md" /> Play again
+          <IHeartPlayAgainIcon theme="dark" size="md" aria-hidden="true" /> Play again
         </Button>
       </div>
     </div>

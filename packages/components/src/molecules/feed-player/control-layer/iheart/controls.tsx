@@ -66,6 +66,9 @@ export function IHeartControls({
 
   return (
     <div
+      role="toolbar"
+      aria-label="Media controls"
+      aria-orientation={isExpand ? "vertical" : "horizontal"}
       className={cn("gencl:flex", isExpand && "gencl:flex-col", className)}
       {...restProps}
     >
@@ -88,6 +91,8 @@ export function IHeartControls({
           <Button
             theme="custom"
             variant="icon"
+            aria-label={isReacted ? `Remove spark (${reactionCount} sparks)` : `Spark this video (${reactionCount} sparks)`}
+            aria-pressed={isReacted}
             className="gencl:w-11 gencl:h-11 gencl:p-0 gencl:flex gencl:items-center gencl:justify-center"
           >
             <DynamicReactionIcon
@@ -97,6 +102,7 @@ export function IHeartControls({
               iconHeight={24}
               iconWidth={24}
               type="feed"
+              aria-hidden="true"
             />
           </Button>
         </ReactionButton>
@@ -118,29 +124,33 @@ export function IHeartControls({
       <Button
         theme="custom"
         variant="icon"
+        aria-label={muted ? "Unmute audio" : "Mute audio"}
+        aria-pressed={muted}
         className="gencl:w-11 gencl:h-11 gencl:p-0 gencl:flex gencl:items-center gencl:justify-center"
         onClick={() => {
           toggleMuted(true);
         }}
       >
         {muted ? (
-          <IHeartMuteIcon theme="dark" size={size} />
+          <IHeartMuteIcon theme="dark" size={size} aria-hidden="true" />
         ) : (
-          <IHeartUnmuteIcon theme="dark" size={size} />
+          <IHeartUnmuteIcon theme="dark" size={size} aria-hidden="true" />
         )}
       </Button>
       <Button
         theme="custom"
         variant="icon"
+        aria-label={playingState === "PLAYING" ? "Pause video" : "Play video"}
+        aria-pressed={playingState === "PLAYING"}
         className="gencl:w-11 gencl:h-11 gencl:p-0 gencl:flex gencl:items-center gencl:justify-center"
         onClick={() => {
           togglePlay(true);
         }}
       >
         {playingState === "PLAYING" ? (
-          <IHeartPauseIcon theme="dark" size={size} />
+          <IHeartPauseIcon theme="dark" size={size} aria-hidden="true" />
         ) : (
-          <IHeartPlayIcon theme="dark" size={size} />
+          <IHeartPlayIcon theme="dark" size={size} aria-hidden="true" />
         )}
       </Button>
 
@@ -166,9 +176,10 @@ export function IHeartControls({
         <Button
           theme="custom"
           variant="icon"
+          aria-label="Share video"
           className="gencl:w-11 gencl:h-11 gencl:p-0 gencl:flex gencl:items-center gencl:justify-center"
         >
-          <IHeartShareIcon theme="dark" size={size} />
+          <IHeartShareIcon theme="dark" size={size} aria-hidden="true" />
         </Button>
       </ShareButton>
     </div>

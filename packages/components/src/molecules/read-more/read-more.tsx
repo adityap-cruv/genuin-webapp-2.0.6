@@ -300,6 +300,8 @@ export const ReadMore = memo(function ReadMore({
     const createButton = (text: string) => (
       <button
         type="button"
+        aria-expanded={isExpanded}
+        aria-label={isExpanded ? 'Show less content' : 'Show more content'}
         className={cn(
           "gencl:inline gencl:bg-transparent gencl:!text-secondary-600 gencl:hover:underline gencl:cursor-pointer",
           buttonClassName

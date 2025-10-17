@@ -256,6 +256,8 @@ export function PlayerList({
             "gencl:h-full gencl:aspect-reel gencl:relative",
             isMobile && "gencl:h-full gencl:w-full"
           )}
+          role="region"
+          aria-label="Video player"
         >
           {/* Header with back button and centered title */}
           {brandLayoutType === "iheart" && (
@@ -311,6 +313,7 @@ export function PlayerList({
 
               // Simple ui to show for comment trigger
               function CommentBox({ children }: { children: React.ReactNode }) {
+                const commentCount = posts[activeIndex]?.video.commentCount ?? 0;
                 return (
                   <>
                     {children}
@@ -319,10 +322,9 @@ export function PlayerList({
                         "gencl:p-0 gencl:text-center gencl:text-black gencl:text-body-2-medium",
                         showExpandView && "gencl:text-white!"
                       )}
+                      aria-label={`${commentCount} ${commentCount === 1 ? "comment" : "comments"}`}
                     >
-                      {abbreviateNumber(
-                        posts[activeIndex]?.video.commentCount ?? 0
-                      )}
+                      {abbreviateNumber(commentCount)}
                     </p>
                   </>
                 );
@@ -415,21 +417,32 @@ function NavigationButton({
 
   if (!swiper) return null;
 
+  const currentSlide = swiper.activeIndex + 1;
+  const totalSlides = postsLength ?? swiper.slides.length;
+
   return (
-    <div className="gencl:z-50 gencl:text-white gencl:flex gencl:flex-col gencl:gap-4 gencl:fixed gencl:right-7.5 gencl:top-1/2 gencl:-translate-y-1/2">
+    <div
+      className="gencl:z-50 gencl:text-white gencl:flex gencl:flex-col gencl:gap-4 gencl:fixed gencl:right-7.5 gencl:top-1/2 gencl:-translate-y-1/2"
+      role="navigation"
+      aria-label="Video navigation"
+    >
       <Button
         theme="navigation"
         disabled={swiper.isBeginning}
         onClick={() => swiper.slidePrev()}
+        aria-label={`Previous video (${currentSlide - 1} of ${totalSlides})`}
+        aria-disabled={swiper.isBeginning}
       >
-        <ChevronUpIcon theme="dark" size="sm" />
+        <ChevronUpIcon theme="dark" size="sm" aria-hidden="true" />
       </Button>
       <Button
         theme="navigation"
         disabled={swiper.isEnd}
         onClick={() => swiper.slideNext()}
+        aria-label={`Next video (${currentSlide + 1} of ${totalSlides})`}
+        aria-disabled={swiper.isEnd}
       >
-        <ChevronDownIcon theme="dark" size="sm" />
+        <ChevronDownIcon theme="dark" size="sm" aria-hidden="true" />
       </Button>
     </div>
   );
