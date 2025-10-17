@@ -23,6 +23,6 @@ export function createBaseEventBus() {
     firstTimeMutedBypass: true,
     muted: true,
     volume: 100,
-    globalPlayingState: false,
+    globalPlayingState: true,
   });
 }
