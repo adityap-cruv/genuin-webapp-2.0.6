@@ -26,7 +26,6 @@ import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
 import { ReadMoreTextType } from "@genuin/components/molecules/read-more/read-more.types";
 import { Link } from "@genuin/components/molecules/link";
 import { getBaseUrlWithoutClip } from "@genuin/components/lib/utils";
-import { useBaseContext } from "@genuin/components/context";
 
 // Constants
 const GRADIENT_COLORS = {
@@ -197,10 +196,10 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
               <ReadMore
                 text={attributes.description}
                 shouldAnimate
-                position="overlay"
-                textClassName="gencl:text-[14px] gencl:font-normal gencl:leading-[20px] gencl:tracking-[-0.35px] gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]!"
-                lineClampClassName="gencl:line-clamp-1"
+                lineClampClassName="gencl:line-clamp-3"
                 maxLines={2}
+                position="overlay"
+                textClassName="gencl:text-body-2-normal gencl:tracking-[-0.35px] gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]!"
               />
             )}
           </div>
@@ -289,7 +288,7 @@ const AdaptiveDescription = memo(function AdaptiveDescription({
             position="overlay"
             textClassName="gencl:text-[14px] gencl:font-normal gencl:leading-[20px] gencl:tracking-[-0.35px]! gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]! gencl:text-white/70!"
             maxLines={2}
-            lineClampClassName="gencl:line-clamp-3"
+            lineClampClassName="gencl:line-clamp-5"
           />
         </div>
       );

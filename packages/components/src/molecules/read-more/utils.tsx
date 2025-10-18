@@ -176,7 +176,11 @@ export function renderAnchorTag(
 
     case "custom": {
       return (
-        <span key={`${item.type}-${index}`} style={item.style} className={item.className}>
+        <span
+          key={`${item.type}-${index}`}
+          style={item.style}
+          className={item.className}
+        >
           {item.text}&nbsp;
         </span>
       );
@@ -232,37 +236,177 @@ export function safeJsonParse(input: string): any {
 }
 
 /**
- * Calculate maximum character limit based on device type and position
- * @param {boolean} isMobile - Whether the device is mobile
- * @param {string} position - Position type ('overlay' or other)
- * @param {number} maxChars - Optional override for max characters
- * @returns {number} Maximum character limit
+ * Calculates the maximum number of characters from `textContent` that can fit
+ * within a given number of visible text lines (`maxLines`) inside the provided
+ * DOM element (`element`), accounting for real-world CSS properties such as
+ * font size, line height, padding, and width.
+ *
+ * This function uses an off-screen measurement container to simulate the
+ * rendered text layout and iteratively determines the last character that fits
+ * without exceeding the specified number of lines. It appends a suffix such as
+ * "…View More" to match actual layout conditions when truncation is applied.
+ *
+ * ### Algorithm overview:
+ * 1. Clone relevant computed styles (width, font, spacing, etc.) from the target element.
+ * 2. Create a hidden measurement container off-screen.
+ * 3. Incrementally append tokens (words and spaces) from `textContent` and check
+ *    if the rendered height still fits within `maxLines`.
+ * 4. Once overflow occurs, perform a character-level refinement to find the
+ *    exact cutoff point.
+ * 5. Return the number of visible characters that fit before truncation.
+ *
+ * ### Notes:
+ * - This function measures layout in the DOM, so it should be called only in a
+ *   browser environment (not SSR).
+ * - It preserves all spaces and newlines using a whitespace-preserving split.
+ * - For better performance when repeatedly called on the same element and text,
+ *   use the cached variant: {@link calculateMaxCharacterLimitCached}.
+ *
+ * @param {number} maxLines - The maximum number of visible text lines allowed.
+ * @param {HTMLElement | undefined} element - The DOM element whose width and styles are used for measurement.
+ * @param {string} textContent - The text whose visible length should be measured.
+ * @param {string} [viewMoreText="View More"] - The text appended at the end (e.g., for "View More" links).
+ * @returns {number} The number of characters from `textContent` that fit within the given line limit.
  */
-export const calculateMaxCharacterLimit = (
-  isMobile: boolean,
-  position: "overlay" | "outside",
-  maxChars = null
-) => {
-  // If maxChars is provided, use it directly
-  if (maxChars) {
-    return maxChars;
+export function calculateMaxCharacterLimit(
+  maxLines: number,
+  element: HTMLElement | undefined,
+  textContent: string,
+  viewMoreText: string = "View More"
+): number {
+  if (!element || !textContent) return 0;
+
+  const computedStyle = window.getComputedStyle(element);
+
+  // Create measurement container (off-screen, but visible to layout)
+  const container = document.createElement("div");
+  container.style.cssText = `
+    position: absolute;
+    top: 0;
+    left: -9999px;
+    pointer-events: none;
+    display: block;
+    white-space: normal;
+  `;
+
+  // Copy relevant computed styles
+  container.style.width = `${element.clientWidth}px`;
+  container.style.fontFamily = computedStyle.fontFamily;
+  container.style.fontSize = computedStyle.fontSize;
+  container.style.fontWeight = computedStyle.fontWeight;
+  container.style.fontStyle = computedStyle.fontStyle;
+  container.style.lineHeight = computedStyle.lineHeight;
+  container.style.letterSpacing = computedStyle.letterSpacing;
+  container.style.wordSpacing = computedStyle.wordSpacing;
+  container.style.textTransform = computedStyle.textTransform;
+  container.style.wordBreak = computedStyle.wordBreak;
+  container.style.overflowWrap = computedStyle.overflowWrap;
+  container.style.whiteSpace = computedStyle.whiteSpace;
+  container.style.paddingLeft = computedStyle.paddingLeft;
+  container.style.paddingRight = computedStyle.paddingRight;
+  container.style.boxSizing = computedStyle.boxSizing;
+
+  // Create text and suffix spans
+  const textSpan = document.createElement("span");
+  const buttonSpan = document.createElement("span");
+  buttonSpan.className = "gencl:whitespace-nowrap";
+  buttonSpan.style.whiteSpace = "nowrap";
+
+  container.appendChild(textSpan);
+  container.appendChild(buttonSpan);
+  document.body.appendChild(container);
+
+  try {
+    const suffix = `…${viewMoreText}`;
+    buttonSpan.textContent = suffix;
+
+    // Split text into tokens while preserving spaces and newlines
+    const words = textContent.split(/(\s+)/);
+    let resultString = "";
+    let lastFitString = "";
+
+    // Helper: checks if current text fits within maxLines
+    const fitsInLines = (text: string): boolean => {
+      textSpan.textContent = text + suffix;
+      const range = document.createRange();
+      range.selectNodeContents(textSpan);
+      const rects = range.getClientRects();
+      const lineCount = rects.length;
+      range.detach();
+      return lineCount <= maxLines;
+    };
+
+    // Iteratively append text until overflow occurs
+    for (let i = 0; i < words.length; i++) {
+      const word = words[i];
+      if (!word) continue;
+
+      const testString = i === 0 ? word : `${resultString}${word}`;
+
+      if (fitsInLines(testString)) {
+        resultString = testString;
+        lastFitString = resultString;
+      } else {
+        // Overflow occurred — refine by character
+        let previousString = resultString;
+
+        for (let charIndex = 0; charIndex < word.length; charIndex++) {
+          const char = word[charIndex];
+          const testStringWithChar =
+            charIndex === 0 && i > 0
+              ? `${previousString}${char}`
+              : `${resultString}${char}`;
+
+          if (fitsInLines(testStringWithChar)) {
+            resultString = testStringWithChar;
+            lastFitString = resultString;
+          } else {
+            return resultString.length;
+          }
+        }
+      }
+    }
+
+    return resultString.length;
+  } finally {
+    document.body.removeChild(container);
+  }
+}
+
+/**
+ * Cached version of {@link calculateMaxCharacterLimit}.
+ *
+ * This variant caches measurement results per unique combination of:
+ * element width, font properties, line limit, suffix, and the first
+ * 100 characters of the text. It is ideal for performance optimization
+ * when called frequently on the same DOM element or with similar text.
+ *
+ * @param {number} maxLines - The maximum number of visible text lines allowed.
+ * @param {HTMLElement | undefined} element - The DOM element used for measuring text layout.
+ * @param {string} textContent - The text to measure.
+ * @param {string} [viewMoreText="View More"] - The suffix appended to the text.
+ * @returns {number} The number of characters that can fit within `maxLines`.
+ */
+export function calculateMaxCharacterLimitCached(
+  maxLines: number,
+  element: HTMLElement | undefined,
+  textContent: string,
+  viewMoreText: string = "View More"
+): number {
+  if (!element || !textContent) return 0;
+
+  const computedStyle = window.getComputedStyle(element);
+  const cacheKey = `${element.clientWidth}-${computedStyle.fontSize}-${computedStyle.fontFamily}-${maxLines}-${viewMoreText}-${textContent.substring(0, 100)}`;
+
+  // Retrieve or initialize cache
+  const cache = (element as any).__charLimitCache || {};
+  if (cache[cacheKey] !== undefined) {
+    return Math.min(cache[cacheKey], textContent.length);
   }
 
-  // Define character limits for different scenarios
-  const characterLimits = {
-    mobile: {
-      overlay: 90,
-      default: 80,
-    },
-    desktop: {
-      overlay: 180,
-      default: 90,
-    },
-  };
+  // Compute and store result
+  const result = calculateMaxCharacterLimit(maxLines, element, textContent, viewMoreText);
+  (element as any).__charLimitCache = { ...cache, [cacheKey]: result };
 
-  const deviceType = isMobile ? "mobile" : "desktop";
-
-  const positionType = position === "overlay" ? "overlay" : "default";
-
-  return characterLimits[deviceType][positionType];
-};
+  return result;
+}

@@ -460,7 +460,6 @@ export function getPastTense(word: string) {
  *
  * @param ratio - Aspect ratio string in the format "width:height" (e.g. "16:9", "4:3").
  * @returns An object with numeric width and height values.
- *
  * @example
  * getAspectRatio("16:9") // { width: 16, height: 9 }
  * getAspectRatio() // { width: 9, height: 16 }

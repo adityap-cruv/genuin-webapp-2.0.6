@@ -4,14 +4,13 @@ import { cn } from "@genuin/ui/lib/utils";
 
 import {
   applyLineClampStyles,
-  calculateMaxCharacterLimit,
+  calculateMaxCharacterLimitCached,
   convertUrlsToAnchorTags,
   renderAnchorTag,
 } from "./utils";
 import { tryJsonParse } from "@genuin/ui/lib/utils";
 import type { ReadMoreProps, ReadMoreTextType } from "./read-more.types";
 import { memo } from "react";
-import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 
 /**
  * ReadMore Component
@@ -83,15 +82,11 @@ export const ReadMore = memo(function ReadMore({
   overlayClassName,
   ...rest
 }: ReadMoreProps) {
-  const { isMobile } = useDeviceDetectMediaQuery();
   const textRef = useRef<HTMLParagraphElement>(null);
   const [isExpanded, setIsExpanded] = useState(defaultExpand);
   // For smooth collapse: delay reducing chars until after animation
   const [showCollapsed, setShowCollapsed] = useState(!defaultExpand);
-
-  // set maximum char limit as per the device
-  const maxCharacter =
-    maxChars ?? calculateMaxCharacterLimit(isMobile, position);
+  const [maxCharacter, setCalculatedMaxChars] = useState<number>(maxChars ?? 0);
 
   // Memoize parsed text processing
   const parsedText = useMemo(() => {
@@ -129,12 +124,24 @@ export const ReadMore = memo(function ReadMore({
     return "";
   }, [parsedText]);
 
+  // Calculate max characters after mount when ref is available
+  useEffect(() => {
+    if (!maxChars && textRef.current && flattenedText) {
+      const limit = calculateMaxCharacterLimitCached(
+        maxLines,
+        textRef.current,
+        flattenedText,
+        viewMoreText.length > viewMoreText.length ? viewMoreText : viewLessText
+      );
+      setCalculatedMaxChars(limit);
+    }
+  }, [maxChars, flattenedText, maxLines, viewLessText, viewMoreText]);
+
   // Memoize text splitting for performance
   const textParts = useMemo(() => {
     if (!parsedText || flattenedText.length <= maxCharacter) {
       return { teaser: parsedText, remaining: null, shouldTruncate: false };
     }
-
     if (typeof parsedText === "string") {
       const words = parsedText.split(" ");
       const teaserWords: string[] = [];
@@ -148,7 +155,6 @@ export const ReadMore = memo(function ReadMore({
         teaserWords.push(word);
         teaserLen += wordLen;
       }
-
       return {
         teaser: teaserWords.join(" "),
         remaining: words.slice(i).join(" "),
@@ -192,16 +198,14 @@ export const ReadMore = memo(function ReadMore({
           charCount += typeof itemText === "string" ? itemText.length : 0;
         }
       }
-
       return {
         teaser: teaserArr,
         remaining: remainingArr,
         shouldTruncate: true,
       };
     }
-
     return { teaser: parsedText, remaining: null, shouldTruncate: false };
-  }, [parsedText, flattenedText, maxChars]);
+  }, [parsedText, flattenedText, maxCharacter]);
 
   // Memoize text rendering for performance
   const renderText = useCallback((input: ReadMoreTextType) => {
@@ -256,7 +260,7 @@ export const ReadMore = memo(function ReadMore({
       onExpandChange?.(!prevValue);
       return !prevValue;
     });
-  }, [onExpandChange, textParts.shouldTruncate, expandable]);
+  }, [onExpandChange, textParts, expandable]);
 
   // Handle overlay click - only close if expanded
   const handleOverlayClick = useCallback(
@@ -301,7 +305,7 @@ export const ReadMore = memo(function ReadMore({
       <button
         type="button"
         aria-expanded={isExpanded}
-        aria-label={isExpanded ? 'Show less content' : 'Show more content'}
+        aria-label={isExpanded ? "Show less content" : "Show more content"}
         className={cn(
           "gencl:inline gencl:bg-transparent gencl:!text-secondary-600 gencl:hover:underline gencl:cursor-pointer",
           buttonClassName
@@ -358,13 +362,13 @@ export const ReadMore = memo(function ReadMore({
     if (shouldAnimate) {
       return (
         <>
-          {renderText(teaser)}
           <span
             className={cn(
               "gencl:max-h-[10em] gencl:opacity-100 gencl:text-inherit",
               lineClampClassName
             )}
           >
+            {renderText(teaser)}
             {renderText(remaining)}
           </span>
         </>
@@ -373,16 +377,16 @@ export const ReadMore = memo(function ReadMore({
 
     return (
       <>
-        {renderText(teaser)}
         <span
           className={cn(
             "gencl:max-h-[10em] gencl:opacity-100 gencl:text-inherit",
             lineClampClassName
           )}
         >
+          {renderText(teaser)}
           {renderText(remaining)}
+          {showExpandText && <span>&nbsp;{createButton(viewLessText)}</span>}
         </span>
-        {showExpandText && createButton(viewLessText)}
       </>
     );
   }, [
@@ -407,7 +411,7 @@ export const ReadMore = memo(function ReadMore({
       <p
         {...rest}
         className={cn(
-          "gencl:transition-all gencl:relative gencl:duration-500 gencl:ease-in-out gencl:overflow-auto gencl:scrollbar-none",
+          "gencl:transition-all gencl:relative gencl:duration-500 gencl:ease-in-out gencl:overflow-auto gencl:scrollbar-none gencl:w-full",
           className
         )}
         style={{
@@ -458,7 +462,7 @@ export const ReadMore = memo(function ReadMore({
       <span
         {...rest}
         className={cn(
-          "gencl:transition-all gencl:relative gencl:duration-500 gencl:ease-in-out gencl:overflow-auto gencl:scrollbar-none",
+          "gencl:transition-all gencl:relative gencl:duration-500 gencl:ease-in-out gencl:overflow-auto gencl:scrollbar-none gencl:w-full",
           className
         )}
         style={{
@@ -502,7 +506,7 @@ export const ReadMore = memo(function ReadMore({
     <a
       href={href}
       className={cn(
-        "gencl:cursor-pointer hover:gencl:underline focus:gencl:outline-none",
+        "gencl:cursor-pointer hover:gencl:underline focus:gencl:outline-none gencl:w-full",
         linkClassName
       )}
     >
@@ -535,7 +539,6 @@ export const ReadMore = memo(function ReadMore({
           onClick={handleOverlayClick}
         />
       )}
-
       {finalContent}
     </div>
   );
