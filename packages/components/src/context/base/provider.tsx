@@ -69,7 +69,9 @@ export function BaseContextProvider({
   // TODO: move this states to event based states.
   const [muted, setMuted] = useState(true);
   const [volume, setVolume] = useState(100);
-  const [currentTheme, setCurrentTheme] = useState<"dark" | "light" | undefined>(theme);
+  const [currentTheme, setCurrentTheme] = useState<
+    "dark" | "light" | undefined
+  >(theme);
 
   // Detect if running inside an iframe (safe for SSR)
   const isInIframe = useMemo(() => {
@@ -153,17 +155,19 @@ export function BaseContextProvider({
     };
 
     const handlePlayFromOutside = () => {
-      baseEventBus.updateContext({
-        ...baseEventBus.getContext(),
-        globalPlayingState: true,
-      });
+      baseEventBus.emit(
+        "globalPlayingStateChange",
+        {},
+        { ...baseEventBus.getContext(), globalPlayingState: true }
+      );
     };
 
     const handlePauseFromOutside = () => {
-      baseEventBus.updateContext({
-        ...baseEventBus.getContext(),
-        globalPlayingState: false,
-      });
+      baseEventBus.emit(
+        "globalPlayingStateChange",
+        {},
+        { ...baseEventBus.getContext(), globalPlayingState: false }
+      );
     };
 
     const handleMuteFromOutside = () => {

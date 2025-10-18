@@ -164,7 +164,7 @@ export function EmbedManagerProvider({
         );
 
         // Always slide to ensure swiper navigation happens
-        swiper.slideNext();
+        if (shouldSlide) swiper.slideNext();
 
         // Only update active index if we shouldn't slide automatically
         if (!shouldSlide) {
@@ -191,10 +191,11 @@ export function EmbedManagerProvider({
     );
 
     // Always slide to ensure swiper navigation happens
-    swiper.slidePrev();
+    if (shouldSlide) swiper.slidePrev();
 
     // Only update active index if we shouldn't slide automatically
-    if (!shouldSlide) {
+    // here targetIndex's 0 check is for handling edge case
+    if (!shouldSlide || targetIndex === 0) {
       setActiveIndex(targetIndex);
     }
   }, [swiper, activeIndex, isGridLayout]);

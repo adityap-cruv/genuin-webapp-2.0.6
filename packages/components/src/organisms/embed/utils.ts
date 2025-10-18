@@ -17,11 +17,13 @@ export function isSlideVisible(
   if (!swiper || !swiper.params) return false;
 
   // Default to 1 if slidesPerView is undefined
-  const slidesPerView = (swiper.params.slidesPerView as number) || 1;
+  const slidesPerView = Math.floor(
+    (swiper.params.slidesPerView as number) || 1
+  );
   const firstVisibleIndex = swiper.activeIndex;
   const lastVisibleIndex = firstVisibleIndex + slidesPerView - 1;
 
-  return targetIndex >= firstVisibleIndex && targetIndex <= lastVisibleIndex;
+  return targetIndex >= firstVisibleIndex && targetIndex < lastVisibleIndex;
 }
 
 /**
@@ -43,6 +45,12 @@ export function getNavigationAction(
   const totalSlides = swiper.slides.length;
   const targetIndex =
     direction === "next" ? currentActiveIndex + 1 : currentActiveIndex - 1;
+
+  // in case of zero no need to check if we should swiper or not,
+  // if swiper is already at 0 it won't swipe. So we just send true for should swipe as it will swipe to top even if small out of bounds issue.
+  if (targetIndex === 0) {
+    return { shouldSlide: true, targetIndex };
+  }
 
   // Check bounds
   if (targetIndex < 0 || targetIndex >= totalSlides) {
