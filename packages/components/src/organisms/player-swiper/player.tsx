@@ -11,6 +11,7 @@ import { useSwiper } from "swiper/react";
 import { useCallback } from "react";
 import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
 import { ComponentProps } from "react";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 type PlayerProps = {
   post: PostDetailsType;
@@ -56,6 +57,9 @@ export function Player({
   // const { isActive, isNext, isPrev, isVisible } = useSwiperSlide();
   const swiper = useSwiper();
   const { showGestureOverlay } = useGestureOverlayManager();
+  const {
+    view: { brandLayoutType },
+  } = useEmbedConfigs();
 
   const handleTimeUpdate = useCallback(
     (event: React.SyntheticEvent<HTMLVideoElement>) => {
@@ -87,7 +91,10 @@ export function Player({
           className={cn(
             "gencl:group gencl:relative gencl:h-full gencl:w-full gencl:overflow-clip",
             {
-              "gencl:sm:rounded-xl": !showExpandView,
+              "gencl:sm:rounded-xl!": !showExpandView,
+            },
+            {
+              "gencl:sm:rounded!": brandLayoutType === "iheart",
             }
           )}
         >

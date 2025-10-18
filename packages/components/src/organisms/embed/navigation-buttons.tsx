@@ -1,122 +1,172 @@
 import { Button } from "@genuin/ui/components";
-import { useEmbedManagerContext } from "./context";
-import { cn } from "@genuin/ui/lib/utils";
 import {
-  ChevronUp,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+  ChevronDownIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ChevronUpIcon,
+} from "@genuin/ui";
+import { useEmbedManagerContext } from "./context";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { useCallback } from "react";
 
 interface NavigationButtonsProps {
   totalSlides: number;
+  isIheartLayout?: boolean;
+  theme?: "light" | "dark";
+  embedVariant?: "carousel" | "feed";
+  activeIndex: number;
+  onPrev: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onNext: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  isNavigationControlEnabled: boolean;
 }
 
-export function NavigationButtons({ totalSlides }: NavigationButtonsProps) {
-  const { goToNextVideo, goToPreviousVideo, activeIndex } =
-    useEmbedManagerContext();
-  const config = useEmbedConfigs();
+export function NavigationButtons({
+  totalSlides,
+  isIheartLayout = false,
+  theme = "light",
+  embedVariant: providedEmbedVariant,
+  activeIndex,
+  onPrev,
+  onNext,
+  isNavigationControlEnabled,
+}: NavigationButtonsProps) {
+  // Early return if navigation is disabled
+  if (!isNavigationControlEnabled) return null;
 
-  // Create handlers with preventDefault
-  const handlePrevClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    goToPreviousVideo();
-  };
-
-  const handleNextClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    goToNextVideo();
-  };
-
-  // Use the shared utility for embed variant
-  const embedVariant = config.view.embedStyle;
+  // Determine layout and states
+  const embedVariant = providedEmbedVariant;
   const isCarousel = embedVariant === "carousel";
-
-  // To determine first/last slide, we need to pass the total videos count as a prop
-  // or access it from a parent context. For now, we'll access it from a prop.
-  // We'll add a total count prop to the component.
-
-  // Check if we're at the first or last slide
   const isFirstSlide = activeIndex === 0;
   const isLastSlide = activeIndex === totalSlides - 1;
 
-  if (!config.view.isNavigationControlEnabled) return;
+  // Theme configuration
+  const buttonTheme = theme === "dark" ? "secondaryDark" : "secondary";
+  const iconTheme = theme === "dark" ? "dark" : "light";
 
+  // Click handlers
+  const handlePrevClick = onPrev;
+  const handleNextClick = onNext;
+
+  // Helper to create navigation buttons
+  const createNavButton = (
+    Icon: React.ComponentType<any>,
+    disabled: boolean,
+    onClick: (e: React.MouseEvent<HTMLButtonElement>) => void,
+    label: string,
+    size: "sm" | "md" = "md"
+  ) => (
+    <Button
+      variant="icon"
+      shape="circle"
+      size={size}
+      theme={buttonTheme}
+      disabled={disabled}
+      onClick={onClick}
+      aria-label={label}
+    >
+      <Icon theme={iconTheme} size="lg" />
+    </Button>
+  );
+
+  // iHeart layout - horizontal buttons below embed
+  if (isIheartLayout) {
+    return (
+      <div className="gencl:flex gencl:justify-center gencl:items-center gencl:gap-2 gencl:mt-4 gencl:mb-2">
+        {createNavButton(
+          ChevronLeftIcon,
+          isFirstSlide,
+          handlePrevClick,
+          "Previous",
+          "sm"
+        )}
+        {createNavButton(
+          ChevronRightIcon,
+          isLastSlide,
+          handleNextClick,
+          "Next",
+          "sm"
+        )}
+      </div>
+    );
+  }
+
+  // Carousel layout - side navigation buttons
   if (isCarousel) {
-    // Carousel layout - buttons on left and right sides
     return (
       <div className="gencl:absolute gencl:z-20 gencl:inset-y-0 gencl:left-0 gencl:right-0 gencl:pointer-events-none">
         <div className="gencl:h-full gencl:w-full gencl:flex gencl:justify-between gencl:items-center">
-          <div className="gencl:ml-2">
-            <Button
-              theme="overlay"
-              variant="icon"
-              size="sm"
-              onClick={handlePrevClick}
-              disabled={isFirstSlide}
-              className={cn(
-                "gencl:pointer-events-auto gencl:rounded-full gencl:bg-white gencl:hover:bg-secondary-150",
-                isFirstSlide && "gencl:hidden"
-              )}
-            >
-              <ChevronLeft className="gencl:h-5 gencl:w-5 gencl:stroke-secondary-600" />
-              <span className="gencl:sr-only">Previous</span>
-            </Button>
+          <div className="gencl:ml-2 gencl:pointer-events-auto">
+            {createNavButton(
+              ChevronLeftIcon,
+              isFirstSlide,
+              handlePrevClick,
+              "Previous"
+            )}
           </div>
-
-          <div className="gencl:mr-2">
-            <Button
-              theme="overlay"
-              variant="icon"
-              size="sm"
-              onClick={handleNextClick}
-              disabled={isLastSlide}
-              className={cn(
-                "gencl:pointer-events-auto gencl:rounded-full gencl:bg-white gencl:hover:bg-secondary-150",
-                isLastSlide && "gencl:hidden"
-              )}
-            >
-              <ChevronRight className="gencl:h-5 gencl:w-5 gencl:stroke-secondary-600" />
-              <span className="gencl:sr-only">Next</span>
-            </Button>
+          <div className="gencl:mr-2 gencl:pointer-events-auto">
+            {createNavButton(
+              ChevronRightIcon,
+              isLastSlide,
+              handleNextClick,
+              "Next"
+            )}
           </div>
         </div>
       </div>
     );
   }
 
-  // Feed layout - buttons on right side with up/down arrows
+  // Feed layout - vertical buttons on right side
   return (
     <div className="gencl:absolute gencl:z-20 gencl:right-2 gencl:top-1/2 gencl:transform gencl:-translate-y-1/2 gencl:flex gencl:flex-col gencl:gap-2">
-      <Button
-        theme="overlay"
-        variant="icon"
-        size="sm"
-        onClick={handlePrevClick}
-        disabled={isFirstSlide}
-        className={cn(
-          "gencl:rounded-full gencl:bg-white gencl:hover:bg-secondary-150",
-          isFirstSlide && "gencl:hidden"
-        )}
-      >
-        <ChevronUp className="gencl:h-5 gencl:w-5 gencl:stroke-secondary-600" />
-        <span className="gencl:sr-only">Previous</span>
-      </Button>
-      <Button
-        theme="overlay"
-        variant="icon"
-        size="sm"
-        onClick={handleNextClick}
-        disabled={isLastSlide}
-        className={cn(
-          "gencl:rounded-full gencl:bg-white gencl:hover:bg-secondary-150",
-          isLastSlide && "gencl:hidden"
-        )}
-      >
-        <ChevronDown className="gencl:h-5 gencl:w-5 gencl:stroke-secondary-600" />
-        <span className="gencl:sr-only">Next</span>
-      </Button>
+      {createNavButton(
+        ChevronUpIcon,
+        isFirstSlide,
+        handlePrevClick,
+        "Previous"
+      )}
+      {createNavButton(ChevronDownIcon, isLastSlide, handleNextClick, "Next")}
     </div>
+  );
+}
+
+export function NavigationButtonsWithContext({
+  totalSlides,
+  isIheartLayout = false,
+}: {
+  totalSlides: number;
+  isIheartLayout?: boolean;
+}) {
+  const { goToNextVideo, goToPreviousVideo, activeIndex } =
+    useEmbedManagerContext();
+  const config = useEmbedConfigs();
+
+  const handlePrev = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault();
+      goToPreviousVideo();
+    },
+    [goToPreviousVideo]
+  );
+
+  const handleNext = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault();
+      goToNextVideo();
+    },
+    [goToNextVideo]
+  );
+
+  return (
+    <NavigationButtons
+      totalSlides={totalSlides}
+      isIheartLayout={isIheartLayout}
+      activeIndex={activeIndex}
+      onPrev={handlePrev}
+      onNext={handleNext}
+      isNavigationControlEnabled={
+        config.view.isNavigationControlEnabled ?? false
+      }
+    />
   );
 }

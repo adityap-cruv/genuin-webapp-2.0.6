@@ -25,7 +25,7 @@ type IHeartControlsProps = ComponentProps<"div"> & {
    * Size of the buttons within the controls
    * @default "xs"
    */
-  size?: "xs" | "sm" | "md" | "lg";
+  size?: "xs" | "sm" | "md" | "lg" | "xl";
   /**
    * Variant of the controls layout
    * - "clip": Default horizontal layout without reaction icon

@@ -176,7 +176,7 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
                 aspectRatio="square"
                 src={attributes.image_url}
                 alt={`${postDetails.video.attributes?.title || contentType} artwork`}
-                className="gencl:size-12 gencl:rounded-md gencl:object-cover"
+                className="gencl:size-12 gencl:rounded-md gencl:object-cover gencl:lg:size-16!"
               />
             </Link>
           )}
@@ -187,7 +187,7 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
                 bypassChecks
                 aria-label={`Go to ${postDetails.video.attributes?.title} page`}
               >
-                <p className="gencl:h-5 gencl:text-body-2-semi-bold gencl:line-clamp-1 gencl:tracking-[-0.35px]! gencl:flex gencl:items-center gencl:gap-2">
+                <p className="gencl:h-5 gencl:flex gencl:items-center gencl:gap-2 gencl:text-[14px] gencl:font-semibold gencl:leading-[20px] gencl:line-clamp-1 gencl:tracking-[-0.35px] gencl:lg:text-[17px]! gencl:lg:font-semibold! gencl:lg:leading-[24px]! gencl:lg:tracking-[-0.2px]!">
                   {postDetails.video.attributes?.title}
                 </p>
               </Link>
@@ -197,7 +197,8 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
               <ReadMore
                 text={attributes.description}
                 shouldAnimate
-                textClassName="gencl:text-body-2-normal gencl:tracking-[-0.35px]!"
+                position="overlay"
+                textClassName="gencl:text-[14px] gencl:font-normal gencl:leading-[20px] gencl:tracking-[-0.35px] gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]!"
                 lineClampClassName="gencl:line-clamp-1"
                 maxLines={2}
               />
@@ -264,7 +265,7 @@ const AdaptiveDescription = memo(function AdaptiveDescription({
         text: `${monthYear}${durationText}`,
         style: { color: "#ffffff" },
         className:
-          "gencl:text-white gencl:text-body-2-normal gencl:font-normal",
+          "gencl:text-[14px] gencl:font-normal gencl:leading-[20px] gencl:tracking-[-0.35px]! gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]!",
       },
       " ",
       ...(description
@@ -286,7 +287,7 @@ const AdaptiveDescription = memo(function AdaptiveDescription({
             viewMoreText="More"
             viewLessText="Less"
             position="overlay"
-            textClassName="gencl:text-body-2-normal gencl:tracking-[-0.35px]! gencl:text-white/70!"
+            textClassName="gencl:text-[14px] gencl:font-normal gencl:leading-[20px] gencl:tracking-[-0.35px]! gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]! gencl:text-white/70!"
             maxLines={2}
             lineClampClassName="gencl:line-clamp-3"
           />

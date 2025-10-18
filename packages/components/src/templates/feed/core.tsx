@@ -252,10 +252,16 @@ export const FeedViewCore = memo(function FeedViewCore({
     onGroupSubscriptionChange: handleGroupSubscriptionChange,
     onCommentCountChange: handleCommentCountChange,
     disableSwiper,
+    theme,
   };
 
   if (isLoading) {
-    return <FeedSkeleton theme={theme} variant={showExpandView ? "fullscreen" : "default"} />;
+    return (
+      <FeedSkeleton
+        theme={theme}
+        variant={showExpandView ? "fullscreen" : "default"}
+      />
+    );
   }
 
   if (videos && videos.length !== 0) {
@@ -265,8 +271,9 @@ export const FeedViewCore = memo(function FeedViewCore({
         className={cn(
           "gencl:flex gencl:w-full gencl:h-full gencl:gap-4",
           {
-            "gencl:fixed gencl:top-0 gencl:sm:p-0! gencl:flex gencl:items-center gencl:mt-0 gencl:z-50 gencl:left-0 gencl:h-full gencl:w-full gencl:bg-black":
-              showExpandView,
+            [`gencl:fixed gencl:top-0 gencl:sm:p-0! gencl:flex gencl:items-center gencl:mt-0 gencl:z-50 gencl:left-0 gencl:h-full gencl:w-full ${
+              theme === "dark" ? "gencl:bg-black" : "gencl:bg-white"
+            }`]: showExpandView,
             "gencl:sm:pr-4! gencl:pt-0 gencl:sm:pt-4!": !showExpandView,
           },
           className

@@ -1,37 +1,38 @@
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 import type { SVGIconsProps } from "../type";
-import { cn } from "@genuin/ui/lib/utils";
+import { cn, defaultSizesForIcons } from "@genuin/ui/lib/utils";
 
-const iconVariants = cva("", {
+const chevronRightVariant = cva("", {
   variants: {
-    variant: {
-      default: "gencl:stroke-secondary-600",
-      active: "gencl:stroke-black",
-      muted: "gencl:stroke-secondary-400",
+    theme: {
+      light: "gencl:fill-black",
+      dark: "gencl:fill-white",
+      secondary: "gencl:fill-secondary-600",
     },
+    size: defaultSizesForIcons(),
   },
   defaultVariants: {
-    variant: "default",
+    theme: "dark",
+    size: "md",
   },
 });
 
 export function ChevronRightIcon({
   className,
-  variant,
+  theme,
+  size,
   ...restProps
-}: SVGIconsProps & VariantProps<typeof iconVariants>) {
+}: SVGIconsProps & VariantProps<typeof chevronRightVariant>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="7"
-      height="10"
-      viewBox="0 0 7 10"
+      viewBox="0 0 24 24"
       fill="none"
-      className={cn(className, iconVariants({ variant }))}
+      className={cn(className, chevronRightVariant({ theme, size }))}
       {...restProps}
     >
-      <path d="M1.0013 1L5.16797 5.16667L1.0013 9.33333" strokeWidth="1.5" />
+      <path d="M8.77528 6.3157C8.35616 6.73482 8.35616 7.41186 8.77528 7.83097L12.945 12.0007L8.77528 16.1704C8.35616 16.5895 8.35616 17.2665 8.77528 17.6857C9.1944 18.1048 9.87144 18.1048 10.2906 17.6857L15.2233 12.7529C15.6424 12.3338 15.6424 11.6568 15.2233 11.2377L10.2906 6.30495C9.88218 5.89658 9.1944 5.89658 8.77528 6.3157Z" />
     </svg>
   );
 }

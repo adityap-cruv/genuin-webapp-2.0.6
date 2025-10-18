@@ -112,6 +112,13 @@ export function useEmbedDimensions() {
       MIN_CAROUSEL_HEIGHT
     );
 
+    // For iheart brand layout, reserve space for navigation buttons below the embed
+    const isIheartLayout = config.view.brandLayoutType === 'iheart';
+    const navigationButtonHeight = 60; // Approximate height for navigation buttons
+    const finalAvailableHeight = isIheartLayout
+      ? Math.max(availableHeight - navigationButtonHeight, MIN_CAROUSEL_HEIGHT)
+      : availableHeight;
+
     return {
       containerHeight,
       containerWidth,
@@ -119,7 +126,7 @@ export function useEmbedDimensions() {
       statsHeight,
       linkoutHeight,
       spaceBetweenVideos,
-      availableHeight,
+      availableHeight: finalAvailableHeight,
     };
   }, [
     config.dimensions.containerHeight,
@@ -129,6 +136,7 @@ export function useEmbedDimensions() {
     config.responsive.canShowEngagement,
     config.links.showLinkOutside,
     config.view.isFeed,
+    config.view.brandLayoutType,
     observedDimensions.width,
     observedDimensions.height,
   ]);

@@ -7,16 +7,10 @@ import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config
 import { SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { EmbedSwiper } from "@genuin/components/molecules/embed-swiper";
-import { Button } from "@genuin/ui/components";
-import {
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  ChevronUp,
-} from "lucide-react";
 import { useEmbedContext } from "@genuin/components/context/embed";
 import { useEmbedDimensions } from "@genuin/components/hooks/embed/use-embed-dimensions";
 import { useBaseContext } from "@genuin/components/context";
+import { NavigationButtons } from "./navigation-buttons";
 
 const carouselSkeletonVariant = cva("gencl:rounded-md", {
   variants: {
@@ -171,132 +165,19 @@ export function SdkSkeleton({
             );
           })}
         </EmbedSwiper>
-        <NavigationButtons embedVariant={embedVariant} theme={theme} />
-      </div>
-    </div>
-  );
-}
-
-function NavigationButtons({
-  embedVariant,
-  theme = "light",
-}: {
-  embedVariant: "feed" | "carousel";
-  theme?: "light" | "dark";
-}) {
-  const config = useEmbedConfigs();
-
-  // Only render navigation buttons if they're enabled in config
-  if (!config.view.isNavigationControlEnabled) {
-    return null;
-  }
-
-  if (embedVariant === "carousel") {
-    // Only show carousel navigation if carousel icons are enabled
-    if (!config.view.showCarouselIcon) return null;
-
-    // Carousel layout - buttons on left and right sides
-    return (
-      <div className="gencl:absolute gencl:z-20 gencl:inset-y-0 gencl:left-0 gencl:right-0 gencl:pointer-events-none">
-        <div className="gencl:h-full gencl:w-full gencl:flex gencl:justify-between gencl:items-center">
-          <div className="gencl:ml-2">
-            <Button
-              theme="overlay"
-              variant="icon"
-              size="sm"
-              className={cn(
-                "gencl:pointer-events-auto gencl:rounded-full",
-                theme === "dark"
-                  ? "gencl:bg-secondary-800 gencl:hover:bg-secondary-600"
-                  : "gencl:bg-white gencl:hover:bg-secondary-150"
-              )}
-            >
-              <ChevronLeft
-                className={cn(
-                  "gencl:h-5 gencl:w-5",
-                  theme === "dark"
-                    ? "gencl:stroke-secondary-200"
-                    : "gencl:stroke-secondary-600"
-                )}
-              />
-              <span className="gencl:sr-only">Previous</span>
-            </Button>
-          </div>
-
-          <div className="gencl:mr-2">
-            <Button
-              theme="overlay"
-              variant="icon"
-              size="sm"
-              className={cn(
-                "gencl:pointer-events-auto gencl:rounded-full",
-                theme === "dark"
-                  ? "gencl:bg-secondary-800 gencl:hover:bg-secondary-600"
-                  : "gencl:bg-white gencl:hover:bg-secondary-150"
-              )}
-            >
-              <ChevronRight
-                className={cn(
-                  "gencl:h-5 gencl:w-5",
-                  theme === "dark"
-                    ? "gencl:stroke-secondary-200"
-                    : "gencl:stroke-secondary-600"
-                )}
-              />
-              <span className="gencl:sr-only">Next</span>
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Feed layout - buttons on right side with up/down arrows
-  return (
-    <div className="gencl:absolute gencl:z-20 gencl:right-2 gencl:top-1/2 gencl:transform gencl:-translate-y-1/2 gencl:flex gencl:flex-col gencl:gap-2">
-      <Button
-        theme="overlay"
-        variant="icon"
-        size="sm"
-        className={cn(
-          "gencl:rounded-full",
-          theme === "dark"
-            ? "gencl:bg-secondary-800 gencl:hover:bg-secondary-600"
-            : "gencl:bg-white gencl:hover:bg-secondary-150"
-        )}
-      >
-        <ChevronUp
-          className={cn(
-            "gencl:h-5 gencl:w-5",
-            theme === "dark"
-              ? "gencl:stroke-secondary-200"
-              : "gencl:stroke-secondary-600"
-          )}
+        <NavigationButtons
+          totalSlides={2}
+          theme={theme}
+          embedVariant={embedVariant}
+          activeIndex={0}
+          onPrev={() => {}}
+          onNext={() => {}}
+          isIheartLayout={config.view.brandLayoutType === "iheart"}
+          isNavigationControlEnabled={
+            config.view.isNavigationControlEnabled ?? false
+          }
         />
-        <span className="gencl:sr-only">Previous</span>
-      </Button>
-
-      <Button
-        theme="overlay"
-        variant="icon"
-        size="sm"
-        className={cn(
-          "gencl:rounded-full",
-          theme === "dark"
-            ? "gencl:bg-secondary-800 gencl:hover:bg-secondary-600"
-            : "gencl:bg-white gencl:hover:bg-secondary-150"
-        )}
-      >
-        <ChevronDown
-          className={cn(
-            "gencl:h-5 gencl:w-5",
-            theme === "dark"
-              ? "gencl:stroke-secondary-200"
-              : "gencl:stroke-secondary-600"
-          )}
-        />
-        <span className="gencl:sr-only">Next</span>
-      </Button>
+      </div>
     </div>
   );
 }

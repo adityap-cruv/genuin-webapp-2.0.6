@@ -18,7 +18,11 @@ import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-d
 import { abbreviateNumber, cn } from "@genuin/ui/lib/utils";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
-import { ChevronDownIcon, ChevronUpIcon } from "@genuin/ui/icons";
+import {
+  ArrowLeftIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+} from "@genuin/ui/icons";
 import { Swiper } from "swiper/types";
 import { useAnalytics } from "@genuin/components/context";
 import { PlayerHeader } from "./player-header";
@@ -50,6 +54,7 @@ type PlayerListPropsType = {
   onCommentCountChange?: ComponentProps<typeof Player>["onCommentCountChange"];
   isSectioned?: boolean;
   disableSwiper?: boolean;
+  theme?: "light" | "dark";
 };
 
 // TODO: This component is using feed context, which is not ideal. Remove this dep of FeedContext in future.
@@ -64,6 +69,7 @@ export function PlayerList({
   onCommentCountChange,
   isSectioned = false,
   disableSwiper = false,
+  theme,
 }: PlayerListPropsType) {
   const { showExpandView, activeIndex, toggleExpandView } = useFeedContext();
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
@@ -245,10 +251,15 @@ export function PlayerList({
   );
 
   return (
-    <div className="gencl:h-full gencl:w-full gencl:flex gencl:gap-6 gencl:justify-center">
+    <div
+      className={cn(
+        "gencl:h-full gencl:w-full gencl:flex gencl:gap-6 gencl:justify-center",
+        brandLayoutType === "iheart" && "gencl:sm:py-8!"
+      )}
+    >
       <div
         className={cn(
-          "gencl:flex gencl:justify-center gencl:gap-6 gencl:h-full gencl:w-full gencl:sm:w-fit!"
+          "gencl:flex gencl:justify-center gencl:gap-6 gencl:h-full gencl:w-full gencl:sm:w-fit! gencl:relative"
         )}
       >
         <div
@@ -261,7 +272,11 @@ export function PlayerList({
         >
           {/* Header with back button and centered title */}
           {brandLayoutType === "iheart" && (
-            <PlayerHeader title={posts[activeIndex]?.video.attributes?.title ?? ""} onBackClick={toggleExpandView} />
+            <PlayerHeader
+              isMobile={isMobile}
+              title={posts[activeIndex]?.video.attributes?.title ?? ""}
+              onBackClick={toggleExpandView}
+            />
           )}
 
           {isSectioned && (
@@ -269,17 +284,35 @@ export function PlayerList({
           )}
           {isSectioned ? renderSectionedContent() : renderNonSectionedContent()}
         </div>
+
+        {/* Navigation buttons for iheart expand view positioned relative to player */}
+        {showExpandView && brandLayoutType === "iheart" && !isMobile && (
+          <div className="gencl:flex gencl:h-full gencl:flex-col gencl:justify-end gencl:-right-24 gencl:absolute">
+            <NavigationButton
+              swiper={activeSwiper ?? undefined}
+              postsLength={posts.length}
+              position="relative"
+              theme={theme}
+            />
+          </div>
+        )}
       </div>
 
       {/* Navigation buttons for expand view (not on mobile) */}
-      {showExpandView && !isMobile && (
+      {showExpandView && brandLayoutType !== "iheart" && !isMobile && (
         <NavigationButton
           swiper={activeSwiper ?? undefined}
           postsLength={posts.length}
+          theme={theme}
         />
       )}
 
-      {!isMobile && posts[activeIndex] && (
+      {/* Back button for iheart expand view (not on mobile) */}
+      {brandLayoutType === "iheart" && !isMobile && (
+        <BackButton onBackClick={toggleExpandView} theme={theme} />
+      )}
+
+      {!isMobile && brandLayoutType !== "iheart" && posts[activeIndex] && (
         <Actions
           shareUrl={posts[activeIndex]?.video.shareUrl ?? ""}
           isReacted={posts[activeIndex]?.video.isSparked ?? false}
@@ -313,7 +346,8 @@ export function PlayerList({
 
               // Simple ui to show for comment trigger
               function CommentBox({ children }: { children: React.ReactNode }) {
-                const commentCount = posts[activeIndex]?.video.commentCount ?? 0;
+                const commentCount =
+                  posts[activeIndex]?.video.commentCount ?? 0;
                 return (
                   <>
                     {children}
@@ -379,6 +413,7 @@ export function PlayerList({
         showExpandView &&
         showCommentBox &&
         posts[activeIndex] &&
+        brandLayoutType !== "iheart" &&
         isDesktop && (
           <div className="gencl:max-w-118 gencl:w-full gencl:h-full gencl:hidden gencl:sm:block! gencl:py-6">
             <Comments
@@ -401,9 +436,15 @@ export function PlayerList({
 function NavigationButton({
   swiper,
   postsLength,
+  position = "fixed",
+  className,
+  theme,
 }: {
   swiper?: Swiper;
   postsLength?: number;
+  position?: "fixed" | "absolute" | "relative";
+  className?: string;
+  theme?: "light" | "dark";
 }) {
   // State to force re-render when swiper state changes
   const [, forceUpdate] = useState({});
@@ -422,27 +463,71 @@ function NavigationButton({
 
   return (
     <div
-      className="gencl:z-50 gencl:text-white gencl:flex gencl:flex-col gencl:gap-4 gencl:fixed gencl:right-7.5 gencl:top-1/2 gencl:-translate-y-1/2"
+      className={cn(
+        "gencl:z-50 gencl:text-white gencl:flex gencl:flex-col gencl:gap-4",
+        position === "fixed" &&
+          "gencl:fixed gencl:right-7.5 gencl:top-1/2 gencl:-translate-y-1/2",
+        position === "absolute" &&
+          "gencl:absolute gencl:right-7.5 gencl:top-1/2 gencl:-translate-y-1/2",
+        position === "relative" && "gencl:relative",
+        className
+      )}
       role="navigation"
       aria-label="Video navigation"
     >
       <Button
-        theme="navigation"
+        variant="icon"
+        shape="circle"
+        size="lg"
+        theme={theme === "dark" ? "navigation" : "secondary"}
         disabled={swiper.isBeginning}
         onClick={() => swiper.slidePrev()}
         aria-label={`Previous video (${currentSlide - 1} of ${totalSlides})`}
         aria-disabled={swiper.isBeginning}
       >
-        <ChevronUpIcon theme="dark" size="sm" aria-hidden="true" />
+        <ChevronUpIcon
+          theme={theme === "dark" ? "dark" : "light"}
+          size="lg"
+          aria-hidden="true"
+        />
       </Button>
       <Button
-        theme="navigation"
+        variant="icon"
+        shape="circle"
+        size="lg"
+        theme={theme === "dark" ? "navigation" : "secondary"}
         disabled={swiper.isEnd}
         onClick={() => swiper.slideNext()}
         aria-label={`Next video (${currentSlide + 1} of ${totalSlides})`}
         aria-disabled={swiper.isEnd}
       >
-        <ChevronDownIcon theme="dark" size="sm" aria-hidden="true" />
+        <ChevronDownIcon
+          theme={theme === "dark" ? "dark" : "light"}
+          size="lg"
+          aria-hidden="true"
+        />
+      </Button>
+    </div>
+  );
+}
+
+function BackButton({
+  onBackClick,
+  theme,
+}: {
+  onBackClick?: () => void;
+  theme?: "light" | "dark";
+}) {
+  return (
+    <div className="gencl:z-50 gencl:text-white gencl:fixed gencl:left-8 gencl:top-8">
+      <Button
+        variant="icon"
+        shape="circle"
+        size="lg"
+        theme={theme === "dark" ? "navigation" : "secondary"}
+        onClick={onBackClick}
+      >
+        <ArrowLeftIcon theme={theme === "dark" ? "dark" : "light"} size="md" />
       </Button>
     </div>
   );

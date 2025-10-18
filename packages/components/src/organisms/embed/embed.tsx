@@ -3,7 +3,7 @@ import { useFeed } from "@genuin/components/react-query/api/feed";
 import { EmbedProps } from "./embed.types";
 import { SdkSkeleton } from "./skeleton";
 import { cn } from "@genuin/ui/lib/utils";
-import { useMemo, useState, useRef, useEffect, useCallback } from "react";
+import { useMemo, useState, useEffect, useCallback } from "react";
 import { EmbedSwiper } from "@genuin/components/molecules/embed-swiper/embed-swiper";
 import { useAnalytics } from "@genuin/components/context/analytics/context";
 import { SwiperSlide } from "swiper/react";
@@ -11,7 +11,6 @@ import { EmbedManagerProvider } from "./context";
 import { Swiper } from "swiper/types";
 import { EmbedHeader } from "@genuin/components/molecules/embed-header";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import { NavigationButtons } from "./navigation-buttons";
 import { EmbedExpandSectionedView } from "./embed-expand-sectioned-view";
 import { useEmbedContext } from "@genuin/components/context/embed";
 import { EmbedEventContextType } from "@genuin/components/context/embed/event-bus";
@@ -27,6 +26,7 @@ import { EmbedItem } from "./embed-tile-item";
 import { AnalyticsService } from "@genuin/components/context/analytics/service";
 import { useBaseContext } from "@genuin/components/context";
 import { isMiddlewareOverlayEnabled } from "@genuin/components/lib/utils";
+import { NavigationButtonsWithContext } from "./navigation-buttons";
 
 const embedVariants = cva("gencl:rounded-md gencl:overflow-auto", {
   variants: {
@@ -210,6 +210,9 @@ export function Embed({
     availableHeight,
   } = useEmbedDimensions();
 
+  // Check for iheart brand layout for navigation button positioning
+  const isIheartLayout = config.view.brandLayoutType === "iheart";
+
   if (isError) {
     return (
       <SdkErrorState
@@ -299,8 +302,16 @@ export function Embed({
                 );
               })}
             </EmbedSwiper>
-            <NavigationButtons totalSlides={videos?.length} />
+            {!isIheartLayout && (
+              <NavigationButtonsWithContext totalSlides={videos?.length ?? 0} />
+            )}
           </div>
+        )}
+        {isIheartLayout && (
+          <NavigationButtonsWithContext
+            totalSlides={videos?.length ?? 0}
+            isIheartLayout={true}
+          />
         )}
       </EmbedManagerProvider>
 

@@ -9,6 +9,7 @@ import { useBaseContext } from "@genuin/components/context";
 import { usePlayerContext } from "../../context";
 import { ReadMore } from "@genuin/components/molecules/read-more";
 import { GenericData } from "@genuin/components/context/base/feed-context-manager";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 
 export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
   postDetails,
@@ -21,6 +22,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
   ...restProps
 }) => {
   const { baseContextManager } = useBaseContext();
+  const { isDesktop } = useDeviceDetectMediaQuery();
   const { play } = usePlayerContext();
   const embedDetails = useSafeEmbedContext();
   const [isVideoWatched, setIsVideoWatched] = useState<boolean>(
@@ -65,17 +67,17 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
             alt={`${postDetails.video.attributes.title ?? "Podcast artwork"}`}
             role="img"
             aria-label={`${postDetails.video.attributes.title ?? "Podcast cover image"}`}
-            className="gencl:size-12 gencl:rounded-md gencl:object-cover"
+            className="gencl:size-12 gencl:rounded-md gencl:object-cover gencl:lg:size-16!"
           />
         )}
         <div className="gencl:w-full">
           {postDetails.video.attributes?.title && (
-            <p className="gencl:text-body-2-semi-bold gencl:line-clamp-1 gencl:tracking-[-0.35px]!">
+            <p className="gencl:text-[14px] gencl:font-semibold gencl:leading-[20px] gencl:line-clamp-1 gencl:tracking-[-0.35px] gencl:lg:text-[17px]! gencl:lg:font-semibold! gencl:lg:leading-[24px]! gencl:lg:tracking-[-0.2px]!">
               {postDetails.video.attributes?.title}
             </p>
           )}
           {postDetails.video.attributes?.description && (
-            <p className="gencl:text-body-2-normal gencl:line-clamp-2 gencl:tracking-[-0.35px]!">
+            <p className="gencl:text-[14px] gencl:font-normal gencl:leading-[20px] gencl:line-clamp-2 gencl:tracking-[-0.35px] gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]!">
               {postDetails.video.attributes?.description}
             </p>
           )}
@@ -90,7 +92,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
         <div
           aria-label={`Published ${getMonthYear(postDetails.video.createdAt ?? 0)}, Duration ${getFormattedDuration(String(postDetails.video.duration ?? ""))}`}
         >
-          <div className="gencl:text-body-2-normal gencl:line-clamp-2 gencl:tracking-[-0.35px]!">
+          <div className="gencl:text-[14px] gencl:font-normal gencl:leading-[20px] gencl:line-clamp-2 gencl:tracking-[-0.35px]! gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]!">
             <time
               dateTime={new Date(
                 postDetails.video.createdAt ?? 0
@@ -108,7 +110,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
               text={postDetails.video.description ?? ""}
               position="overlay"
               shouldAnimate
-              textClassName="gencl:text-body-2-normal gencl:tracking-[-0.35px]! gencl:text-white/70!"
+              textClassName="gencl:text-[14px] gencl:font-normal gencl:leading-[20px] gencl:tracking-[-0.35px]! gencl:text-white/70! gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]!"
               expandable={false}
               display="inline"
             />
@@ -123,8 +125,8 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
         >
           <IHeartControls
             onClick={(e) => e.stopPropagation()}
-            className={cn("gencl:z-20")}
-            size="lg"
+            className={cn("gencl:z-20 gencl:lg:gap-1!")}
+            size={isDesktop ? "xl" : "lg"}
             variant="clip"
             contentId={postDetails.video.id}
             slug={postDetails.video.slug}
