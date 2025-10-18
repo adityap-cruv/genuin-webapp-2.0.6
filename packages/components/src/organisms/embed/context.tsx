@@ -64,6 +64,8 @@ export function EmbedManagerProvider({
   const moveToNext = !config.video.videoLoop;
   const moveToNextTime = config.video.moveToNextTime;
 
+  const isIHeart = config.view.brandLayoutType === "iheart";
+
   // Trigger changeActiveIndex whenever activeIndex changes
   useEffect(() => {
     changeActiveIndex(activeIndex);
@@ -164,15 +166,22 @@ export function EmbedManagerProvider({
         );
 
         // Always slide to ensure swiper navigation happens
-        if (shouldSlide) swiper.slideNext();
+        if (shouldSlide) {
+          if (isIHeart) {
+            // for iheart we need to slide whole screen
+            swiper.slideTo(targetIndex + 1);
+          } else {
+            swiper.slideNext();
+          }
+        }
 
         // Only update active index if we shouldn't slide automatically
-        if (!shouldSlide) {
-          setActiveIndex(targetIndex);
-        }
+        // if (!shouldSlide) {
+        setActiveIndex(targetIndex);
+        // }
       }
     },
-    [swiper, activeIndex, isGridLayout]
+    [swiper, activeIndex, isGridLayout, isIHeart]
   );
 
   const goToPreviousVideo = useCallback(() => {
@@ -191,14 +200,20 @@ export function EmbedManagerProvider({
     );
 
     // Always slide to ensure swiper navigation happens
-    if (shouldSlide) swiper.slidePrev();
+    if (shouldSlide) {
+      if (isIHeart) {
+        swiper.slideTo(targetIndex - 1);
+      } else {
+        swiper.slidePrev();
+      }
+    }
 
     // Only update active index if we shouldn't slide automatically
     // here targetIndex's 0 check is for handling edge case
-    if (!shouldSlide || targetIndex === 0) {
-      setActiveIndex(targetIndex);
-    }
-  }, [swiper, activeIndex, isGridLayout]);
+    // if (!shouldSlide || targetIndex === 0) {
+    setActiveIndex(targetIndex);
+    // }
+  }, [swiper, activeIndex, isGridLayout, isIHeart]);
 
   useEffect(() => {
     const handleActivePlayerTypeChange = (
