@@ -16,6 +16,7 @@ import {
   SDKEventEmitter,
   SDKEventName,
 } from "@genuin/components/lib/sdk-event-emitter";
+import { IheartFullscreenContainer } from "@genuin/components/molecules/iheart-full-screen-contaner";
 
 type EmbedExpandViewProps = {
   videos: PostDetailsType[];
@@ -42,7 +43,7 @@ export function EmbedExpandView({
     embedData,
   } = useEmbedContext();
   const { setMuted, muted, setPlaybackSpeed, isInIframe } = useBaseContext();
-  const { isMobile } = useDeviceDetectMediaQuery();
+  const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
   const previousMuteState = usePrevious(muted);
   const isSectioned = embedEventBus.getContext().isSectioned;
   const [showExpandView, setShowExpandView] = useState(
@@ -55,6 +56,7 @@ export function EmbedExpandView({
     },
     view: { brandLayoutType },
   } = useEmbedConfigs();
+  const isIHeart = brandLayoutType === "iheart";
 
   // Function to handle closing expand view - restores mute state and goes back
   const handleCloseExpandView = () => {
@@ -294,20 +296,25 @@ export function EmbedExpandView({
       <RemoveScroll>
         <RootPortal
           className={cn(
-            "gen-sdk-class gen-sdk-expand-view gencl:fixed gencl:flex gencl:justify-center gencl:gap-6 gencl:h-screen gencl:w-screen gencl:inset-0 gencl:z-50 gencl:bg-white",
-            isMobile && "gencl:flex-col"
+            "gen-sdk-class gen-sdk-expand-view gencl:h-full gencl:w-full gencl:flex gencl:justify-center gencl:gap-6  gencl:inset-0 gencl:z-50 gencl:bg-white",
+            isMobile && "gencl:flex-col",
+            // Apply fixed positioning with full screen dimensions for non-iHeart layouts
+            !isIHeart && "gencl:fixed gencl:h-screen gencl:w-screen"
           )}
+          container={isDesktop ? "genuin-full-screen-view-element" : undefined}
         >
-          {/** for ted internal routing is not enabled. */}
-          {!(community || group || user) ? (
-            defaultComponent
-          ) : (
-            <StandardWall
-              className="gencl:bg-white gencl:h-full gencl:w-full"
-              defaultComponent={defaultComponent}
-              baseLayoutVariant="embed-expand-view"
-            />
-          )}
+          <IheartFullscreenContainer>
+            {/** for ted internal routing is not enabled. */}
+            {!(community || group || user) ? (
+              defaultComponent
+            ) : (
+              <StandardWall
+                className="gencl:bg-white gencl:h-full gencl:w-full"
+                defaultComponent={defaultComponent}
+                baseLayoutVariant="embed-expand-view"
+              />
+            )}
+          </IheartFullscreenContainer>
         </RootPortal>
       </RemoveScroll>
     );

@@ -254,7 +254,7 @@ export function PlayerList({
     <div
       className={cn(
         "gencl:h-full gencl:w-full gencl:flex gencl:gap-6 gencl:justify-center",
-        brandLayoutType === "iheart" && "gencl:sm:py-8!"
+        brandLayoutType === "iheart" && isDesktop && "gencl:sm:py-8!"
       )}
     >
       <div

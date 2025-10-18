@@ -28,6 +28,7 @@ import { setQueryDataForVideoDetails } from "@genuin/components/react-query/api/
 import { getQueryKeyForVideoDetails } from "@genuin/components/react-query/keys/video";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useBaseContext } from "@genuin/components/context";
+import { IheartFullscreenContainer } from "@genuin/components/molecules/iheart-full-screen-contaner";
 
 /**
  * Internal core presentation component for displaying feed data.
@@ -66,6 +67,7 @@ export const FeedViewCore = memo(function FeedViewCore({
   } = useEmbedConfigs();
   const { isDesktop } = useDeviceDetectMediaQuery();
   const showSidePanel = videos[activeIndex] && !showExpandView && isDesktop;
+  const isIHeart = brandLayoutType === "iheart";
 
   // Get disableSwiper flag from embed context (only applies to expand view)
   const disableSwiper = showExpandView
@@ -271,35 +273,39 @@ export const FeedViewCore = memo(function FeedViewCore({
         className={cn(
           "gencl:flex gencl:w-full gencl:h-full gencl:gap-4",
           {
-            [`gencl:fixed gencl:top-0 gencl:sm:p-0! gencl:flex gencl:items-center gencl:mt-0 gencl:z-50 gencl:left-0 gencl:h-full gencl:w-full ${
+            [` gencl:sm:p-0! gencl:flex gencl:items-center gencl:mt-0 gencl:z-50 gencl:left-0 gencl:h-full gencl:w-full ${
               theme === "dark" ? "gencl:bg-black" : "gencl:bg-white"
             }`]: showExpandView,
             "gencl:sm:pr-4! gencl:pt-0 gencl:sm:pt-4!": !showExpandView,
+            // Apply fixed positioning from top for non-iHeart layouts in expand view
+            "gencl:fixed gencl:top-0": !isIHeart && showExpandView,
           },
           className
         )}
         {...restProps}
       >
-        <PlayerList isSectioned={isSectioned} {...playerListProps} />
-        {showSidePanel && (
-          <PostSidePanel
-            onGroupJoinStatusChange={handleGroupJoinStatusChange}
-            onGroupSubscriptionChange={handleGroupSubscriptionChange}
-            onCommunityJoinStatusChange={handleCommunityJoinStatusChange}
-            onCommentCountChange={handleCommentCountChange}
-            postDetails={videos?.[activeIndex] as PostDetailsType}
-          />
-        )}
-        {/* For Interruption */}
-        {shouldShowDialog && (
-          <AuthenticationModal
-            open={shouldShowDialog}
-            onOpenChange={() => {
-              closeDialog();
-            }}
-            customStep={dialogType}
-          />
-        )}
+        <IheartFullscreenContainer>
+          <PlayerList isSectioned={isSectioned} {...playerListProps} />
+          {showSidePanel && (
+            <PostSidePanel
+              onGroupJoinStatusChange={handleGroupJoinStatusChange}
+              onGroupSubscriptionChange={handleGroupSubscriptionChange}
+              onCommunityJoinStatusChange={handleCommunityJoinStatusChange}
+              onCommentCountChange={handleCommentCountChange}
+              postDetails={videos?.[activeIndex] as PostDetailsType}
+            />
+          )}
+          {/* For Interruption */}
+          {shouldShowDialog && (
+            <AuthenticationModal
+              open={shouldShowDialog}
+              onOpenChange={() => {
+                closeDialog();
+              }}
+              customStep={dialogType}
+            />
+          )}
+        </IheartFullscreenContainer>
       </div>
     );
   }
