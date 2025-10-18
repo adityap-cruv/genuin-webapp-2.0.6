@@ -253,13 +253,21 @@ export function PlayerList({
   return (
     <div
       className={cn(
-        "gencl:h-full gencl:w-full gencl:flex gencl:gap-6 gencl:justify-center",
-        brandLayoutType === "iheart" && isDesktop && "gencl:sm:py-8!"
+        "gencl:h-full gencl:w-full gencl:flex gencl:justify-center",
+        brandLayoutType === "iheart" && isDesktop && "gencl:sm:py-8!",
+        brandLayoutType !== "iheart" && "gencl:gap-6"
       )}
     >
+      {/* Back button for iheart expand view (not on mobile) */}
+      {brandLayoutType === "iheart" && !isMobile && (
+        <div className="gencl:pt-8 gencl:pl-10.5">
+          <BackButton onBackClick={toggleExpandView} theme={theme} />
+        </div>
+      )}
       <div
         className={cn(
-          "gencl:flex gencl:justify-center gencl:gap-6 gencl:h-full gencl:w-full gencl:sm:w-fit! gencl:relative"
+          "gencl:flex gencl:flex-1 gencl:justify-center gencl:h-full gencl:w-full gencl:sm:w-fit! gencl:relative",
+          brandLayoutType !== "iheart" && "gencl:gap-6"
         )}
       >
         <div
@@ -287,14 +295,13 @@ export function PlayerList({
 
         {/* Navigation buttons for iheart expand view positioned relative to player */}
         {showExpandView && brandLayoutType === "iheart" && !isMobile && (
-          <div className="gencl:flex gencl:h-full gencl:flex-col gencl:justify-end gencl:-right-24 gencl:absolute">
-            <NavigationButton
-              swiper={activeSwiper ?? undefined}
-              postsLength={posts.length}
-              position="relative"
-              theme={theme}
-            />
-          </div>
+          <NavigationButton
+            swiper={activeSwiper ?? undefined}
+            postsLength={posts.length}
+            position="relative"
+            className="gencl:pl-10 gencl:justify-end"
+            theme={theme}
+          />
         )}
       </div>
 
@@ -305,11 +312,6 @@ export function PlayerList({
           postsLength={posts.length}
           theme={theme}
         />
-      )}
-
-      {/* Back button for iheart expand view (not on mobile) */}
-      {brandLayoutType === "iheart" && !isMobile && (
-        <BackButton onBackClick={toggleExpandView} theme={theme} />
       )}
 
       {!isMobile && brandLayoutType !== "iheart" && posts[activeIndex] && (
@@ -519,16 +521,14 @@ function BackButton({
   theme?: "light" | "dark";
 }) {
   return (
-    <div className="gencl:z-50 gencl:text-white gencl:fixed gencl:left-8 gencl:top-8">
-      <Button
-        variant="icon"
-        shape="circle"
-        size="lg"
-        theme={theme === "dark" ? "navigation" : "secondary"}
-        onClick={onBackClick}
-      >
-        <ArrowLeftIcon theme={theme === "dark" ? "dark" : "light"} size="md" />
-      </Button>
-    </div>
+    <Button
+      variant="icon"
+      shape="circle"
+      size="lg"
+      theme={theme === "dark" ? "navigation" : "secondary"}
+      onClick={onBackClick}
+    >
+      <ArrowLeftIcon theme={theme === "dark" ? "dark" : "light"} size="md" />
+    </Button>
   );
 }

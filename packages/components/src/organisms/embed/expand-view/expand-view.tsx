@@ -301,7 +301,6 @@ export function EmbedExpandView({
             // Apply fixed positioning with full screen dimensions for non-iHeart layouts
             !isIHeart && "gencl:fixed gencl:h-screen gencl:w-screen"
           )}
-          container={isDesktop ? "genuin-full-screen-view-element" : undefined}
         >
           <IheartFullscreenContainer>
             {/** for ted internal routing is not enabled. */}

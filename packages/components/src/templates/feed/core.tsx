@@ -279,6 +279,8 @@ export const FeedViewCore = memo(function FeedViewCore({
             "gencl:sm:pr-4! gencl:pt-0 gencl:sm:pt-4!": !showExpandView,
             // Apply fixed positioning from top for non-iHeart layouts in expand view
             "gencl:fixed gencl:top-0": !isIHeart && showExpandView,
+            // Apply fixed positioning from top 48px, if it's mobile and iheart(brand)
+            "gencl:fixed gencl:top-12": isIHeart && !isDesktop,
           },
           className
         )}
