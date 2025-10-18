@@ -260,7 +260,7 @@ export function PlayerList({
     >
       {/* Back button for iheart expand view (not on mobile) */}
       {brandLayoutType === "iheart" && !isMobile && (
-        <div className="gencl:pt-8 gencl:pl-10.5">
+        <div className="gencl:pl-10.5">
           <BackButton onBackClick={toggleExpandView} theme={theme} />
         </div>
       )}
