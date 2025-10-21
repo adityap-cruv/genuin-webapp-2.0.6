@@ -2,7 +2,14 @@
 import { Avatar } from "@genuin/ui/avatar";
 import { ReadMore } from "@genuin/components/molecules/read-more";
 import { cn, getFormattedDuration, getMonthYear } from "@genuin/ui/utils";
-import { useMemo, memo, useEffect, useState, type ComponentProps } from "react";
+import {
+  useMemo,
+  memo,
+  useEffect,
+  useState,
+  type ComponentProps,
+  useCallback,
+} from "react";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { usePlayerContext } from "../../context";
 import { ProfileLink } from "@genuin/components/molecules/profile-link";
@@ -139,9 +146,13 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
 const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
   postDetails,
   type,
+  isExpanded,
+  onExpand,
 }: {
   postDetails: PostDetailsType;
   type: BrandLayoutType;
+  isExpanded?: boolean;
+  onExpand?: () => void;
 }) {
   const { video, owner } = postDetails;
   const { attributes } = video;
@@ -186,7 +197,7 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
                 bypassChecks
                 aria-label={`Go to ${postDetails.video.attributes?.title} page`}
               >
-                <p className="gencl:h-5 gencl:flex gencl:items-center gencl:gap-2 gencl:text-[14px] gencl:font-semibold gencl:leading-[20px] gencl:line-clamp-1 gencl:tracking-[-0.35px] gencl:lg:text-[17px]! gencl:lg:font-semibold! gencl:lg:leading-[24px]! gencl:lg:tracking-[-0.2px]!">
+                <p className="gencl:h-5 gencl:flex gencl:items-center gencl:gap-2 gencl:text-[14px] gencl:font-semibold gencl:leading-[20px] gencl:line-clamp-1! gencl:tracking-[-0.35px] gencl:lg:text-[17px]! gencl:lg:font-semibold! gencl:lg:leading-[24px]! gencl:lg:tracking-[-0.2px]!">
                   {postDetails.video.attributes?.title}
                 </p>
               </Link>
@@ -198,6 +209,8 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
                 shouldAnimate
                 lineClampClassName="gencl:line-clamp-3"
                 maxLines={2}
+                open={isExpanded}
+                expandable={isExpanded}
                 position="overlay"
                 textClassName="gencl:text-body-2-normal gencl:tracking-[-0.35px] gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]!"
               />
@@ -238,9 +251,13 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
 const AdaptiveDescription = memo(function AdaptiveDescription({
   video,
   type,
+  isExpanded,
+  onExpand,
 }: {
   video: PostDetailsType["video"];
   type: BrandLayoutType;
+  isExpanded?: boolean;
+  onExpand?: () => void;
 }) {
   const { description, createdAt, duration } = video;
 
@@ -284,6 +301,10 @@ const AdaptiveDescription = memo(function AdaptiveDescription({
             showExpandText
             showOverlay={true}
             viewMoreText="More"
+            shouldAnimate
+            expandable
+            open={isExpanded}
+            onExpandChange={onExpand}
             viewLessText="Less"
             position="overlay"
             textClassName="gencl:text-[14px] gencl:font-normal gencl:leading-[20px] gencl:tracking-[-0.35px]! gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]! gencl:text-white/70!"
@@ -449,6 +470,7 @@ export function ExpandViewDetails({
     hideCommunityPill,
     showScrubber,
   } = useExpandViewConfig(postDetails);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const { shouldHide, hiddenClassName } = useIHeartScrubberVisibility(
     showScrubber,
@@ -462,6 +484,10 @@ export function ExpandViewDetails({
       mainRegion?.focus();
     }
   }, [isActive]);
+
+  const onExpand = useCallback(() => {
+    setIsExpanded((prev) => !prev);
+  }, []);
 
   return (
     <div
@@ -494,6 +520,10 @@ export function ExpandViewDetails({
             <AdaptiveUserProfile
               postDetails={postDetails}
               type={brandLayoutType}
+              {...(brandLayoutType === "iheart" && {
+                isExpanded,
+                onExpand,
+              })}
             />
           </div>
 
@@ -509,6 +539,10 @@ export function ExpandViewDetails({
           <AdaptiveDescription
             video={postDetails.video}
             type={brandLayoutType}
+            {...(brandLayoutType === "iheart" && {
+              isExpanded,
+              onExpand,
+            })}
           />
         </div>
 

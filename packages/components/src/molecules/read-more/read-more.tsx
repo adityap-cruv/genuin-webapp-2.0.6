@@ -433,7 +433,10 @@ export const ReadMore = memo(function ReadMore({
           if (!expandable) return;
           e.stopPropagation();
           onClick?.(e);
-          setIsExpanded((prev) => !prev);
+          setIsExpanded((prev) => {
+            onExpandChange?.(!prev);
+            return !prev;
+          });
         }}
       >
         <span

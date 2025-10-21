@@ -121,6 +121,7 @@ export function Default({
                 "gencl:-translate-x-1/2 gencl:-translate-y-1/2"
               )}
             />
+            {gestureOverlayUI}
           </div>
         </>
       );
