@@ -20,8 +20,11 @@ export function isSlideVisible(
   const slidesPerView = Math.floor(
     (swiper.params.slidesPerView as number) || 1
   );
-  const firstVisibleIndex = swiper.activeIndex;
-  const lastVisibleIndex = firstVisibleIndex + slidesPerView - 1;
+
+  // Don't know perfect root cause but from event swiper index calculation starts from 0, whereas here activeIndex starts from 1.
+  // I will had to do -1 to know the first visible index.
+  const firstVisibleIndex = swiper.activeIndex - 1;
+  const lastVisibleIndex = firstVisibleIndex + slidesPerView;
 
   return targetIndex >= firstVisibleIndex && targetIndex < lastVisibleIndex;
 }
