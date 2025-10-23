@@ -21,12 +21,21 @@ export function isSlideVisible(
     (swiper.params.slidesPerView as number) || 1
   );
 
-  // Don't know perfect root cause but from event swiper index calculation starts from 0, whereas here activeIndex starts from 1.
-  // I will had to do -1 to know the first visible index.
-  const firstVisibleIndex = swiper.activeIndex - 1;
-  const lastVisibleIndex = firstVisibleIndex + slidesPerView;
+  // Calculate first visible index based on slide centering mode, in case of centered slides true activeIndex moves forward with 1 slide.
+  // - Normal mode: activeIndex is the first visible slide (leftmost)
+  // - Centered mode: activeIndex is the center slide, so first visible is one before
+  const firstVisibleIndex = swiper.params.centeredSlides
+    ? swiper.activeIndex - 1
+    : swiper.activeIndex;
 
-  return targetIndex >= firstVisibleIndex && targetIndex < lastVisibleIndex;
+  // Calculate last visible index based on slide centering mode
+  // - Normal mode: last = first + slidesPerView - 1 (e.g., first=0, view=3 → last=2)
+  // - Centered mode: last = first + slidesPerView (e.g., first=-1, view=3 → last=2)
+  const lastVisibleIndex = swiper.params.centeredSlides
+    ? firstVisibleIndex + slidesPerView
+    : firstVisibleIndex + slidesPerView - 1;
+
+  return targetIndex >= firstVisibleIndex && targetIndex <= lastVisibleIndex;
 }
 
 /**
