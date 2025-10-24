@@ -35,6 +35,8 @@ const ALLOWED_EVENTS = [
   'onPause',
   'onMuteChange',
   'onVideoNotFound',
+  'onSwipedForward',
+  'onSwipedBackward',
   // Add allowed event names here
 ]
 
@@ -617,7 +619,7 @@ export class GenuinSDK {
       const extractedData = this.extractDataFromSingleDiv(element, configByUser)
       loadLoadingView(element, extractedData.theme)
       if (extractedData.startVideoSlug) {
-        loadExpandView(element,extractedData.theme)
+        loadExpandView(element, extractedData.theme)
       }
       if (extractedData) {
         this.sdkElements[instanceId] = {

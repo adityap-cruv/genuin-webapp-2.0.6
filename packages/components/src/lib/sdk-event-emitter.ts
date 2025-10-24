@@ -26,6 +26,8 @@ export enum SDKEventName {
   MUTE_CHANGE = "onMuteChange",
   SHARE = "onShare",
   VIDEO_NOT_FOUND = "onVideoNotFound",
+  SWIPED_FORWARD = "onSwipedForward",
+  SWIPED_BACKWARD = "onSwipedBackward",
 }
 
 /**
@@ -97,6 +99,18 @@ export interface SDKVideoNotFoundPayload {
   errorCode: string;
 }
 
+export interface SDKSwipedForwardPayload {
+  fromIndex: number;
+  toIndex: number;
+  timestamp?: number;
+}
+
+export interface SDKSwipedBackwardPayload {
+  fromIndex: number;
+  toIndex: number;
+  timestamp?: number;
+}
+
 /**
  * Type mapping for SDK event payloads
  * Maps each event name to its corresponding payload type
@@ -113,6 +127,8 @@ export type SDKEventPayloadMap = {
   [SDKEventName.MUTE_CHANGE]: SDKMuteChangePayload;
   [SDKEventName.SHARE]: SDKShareEventPayload;
   [SDKEventName.VIDEO_NOT_FOUND]: SDKVideoNotFoundPayload;
+  [SDKEventName.SWIPED_FORWARD]: SDKSwipedForwardPayload;
+  [SDKEventName.SWIPED_BACKWARD]: SDKSwipedBackwardPayload;
 };
 
 /**

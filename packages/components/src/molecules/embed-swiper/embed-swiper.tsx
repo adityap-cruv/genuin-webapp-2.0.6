@@ -1,10 +1,15 @@
-import { ComponentProps, type ReactNode } from "react";
+import { ComponentProps, useRef, type ReactNode } from "react";
 import { Swiper } from "swiper/react";
+import { Swiper as SwiperType } from "swiper/types";
 import { Mousewheel, FreeMode, Keyboard, A11y } from "swiper/modules";
 import { getSlidesPerView, SWIPER_CONFIG } from "./utils";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 import "swiper/css";
 import { cn } from "@genuin/ui/lib/utils";
+import {
+  SDKEventEmitter,
+  SDKEventName,
+} from "@genuin/components/lib/sdk-event-emitter";
 
 type EmbedSwiperProps = {
   forFeed?: boolean;
@@ -36,6 +41,40 @@ export function EmbedSwiper({
 }: EmbedSwiperProps) {
   const { isWindows } = useDeviceDetection();
 
+  const scrolledOnce = () => {
+    console.log("Scrolled from index 0 to 1");
+    SDKEventEmitter.emit(SDKEventName.SWIPED_FORWARD, {
+      fromIndex: 0,
+      toIndex: 1,
+      timestamp: Date.now(),
+    });
+  };
+
+  const scrolledBack = () => {
+    console.log("Scrolled back from index 1 to 0");
+    SDKEventEmitter.emit(SDKEventName.SWIPED_BACKWARD, {
+      fromIndex: 1,
+      toIndex: 0,
+      timestamp: Date.now(),
+    });
+  };
+
+  const handleActiveIndexChange = (swiper: SwiperType) => {
+    const currentIndex = swiper.activeIndex;
+    const previousIndex = swiper.previousIndex;
+
+    // Check if scrolled from 0 to 1
+    if (previousIndex === 0 && currentIndex === 1) {
+      scrolledOnce();
+    }
+    // Check if scrolled back from 1 to 0
+    else if (previousIndex === 1 && currentIndex === 0) {
+      scrolledBack();
+    }
+
+    // Update the previous index
+  };
+
   return (
     <Swiper
       direction={forFeed ? "vertical" : "horizontal"}
@@ -47,6 +86,7 @@ export function EmbedSwiper({
           aspectRatio
         ) ?? 1
       }
+      onActiveIndexChange={handleActiveIndexChange}
       spaceBetween={spaceBetweenVideos}
       speed={SWIPER_CONFIG.SCROLL_DELAY}
       modules={
