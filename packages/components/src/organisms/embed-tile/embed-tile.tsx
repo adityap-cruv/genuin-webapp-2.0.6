@@ -21,9 +21,7 @@ import { DynamicReactionIcon } from "@genuin/components/molecules/reaction-butto
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
 import { IHeartCaughtUpOverlay } from "@genuin/components/molecules/feed-player/control-layer/iheart";
-import {
-  isMiddlewareOverlayEnabled,
-} from "@genuin/components/lib/utils";
+import { isMiddlewareOverlayEnabled } from "@genuin/components/lib/utils";
 import WatchBoundaryOverlay from "@genuin/components/molecules/feed-player/control-layer/watch-boundary-overlay";
 
 /**

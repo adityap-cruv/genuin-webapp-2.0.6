@@ -4,8 +4,9 @@ import { ComponentProps, useCallback, useEffect, useState } from "react";
 import { EmbedEventContextType } from "@genuin/components/context/embed/event-bus";
 import { useEmbedManagerContext } from "./context";
 import { useDebounceCallback } from "usehooks-ts";
-import { useEmbedContext } from "@genuin/components/context";
+import { useBaseContext, useEmbedContext } from "@genuin/components/context";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { GenericData } from "@genuin/components/context/base/feed-context-manager";
 
 type EmbedItemProps = Omit<
   ComponentProps<typeof EmbedTile>,
@@ -22,11 +23,29 @@ export function EmbedItem({
   const { updateActiveIndex, goToNextVideo, activeIndex } =
     useEmbedManagerContext();
   const config = useEmbedConfigs();
+  const { baseContextManager } = useBaseContext();
   const { embedEventBus, updateSelectedSection } = useEmbedContext();
   const [embedIsActive, setEmbedIsActive] = useState(
     embedEventBus.getContext().activePlayerType === "embed"
   );
+  const [isVideoWatched, setIsVideoWatched] = useState<boolean>(
+    postDetails.video.isWatched ||
+      (baseContextManager.getVideoState(postDetails.video.id)?.isWatched ??
+        false)
+  );
   const isSectioned = embedEventBus.getContext().isSectioned;
+
+  useEffect(() => {
+    function handleVideoWatched(payload: Partial<GenericData>) {
+      if (postDetails.video.id === payload.videoId)
+        setIsVideoWatched(payload.isVideoWatched ?? false);
+    }
+
+    baseContextManager.on("onVideoWatchedChanged", handleVideoWatched);
+    return () => {
+      baseContextManager.off("onVideoWatchedChanged", handleVideoWatched);
+    };
+  }, []);
 
   useEffect(() => {
     const handleActivePlayerTypeChange = (
@@ -66,7 +85,7 @@ export function EmbedItem({
     <EmbedTile
       className={cn("gencl:cursor-pointer")}
       postDetails={postDetails}
-      isActive={activeIndex === index && embedIsActive}
+      isActive={activeIndex === index && embedIsActive && !isVideoWatched}
       onPlayerIterationEnd={handlePlayerIterationEnd}
       onMouseEnter={debouncedSetActiveIndex}
       onMouseLeave={handleMouseLeave}

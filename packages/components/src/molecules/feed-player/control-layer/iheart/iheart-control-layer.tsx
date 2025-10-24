@@ -26,7 +26,9 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
   const { play } = usePlayerContext();
   const embedDetails = useSafeEmbedContext();
   const [isVideoWatched, setIsVideoWatched] = useState<boolean>(
-    baseContextManager.getVideoState(postDetails.video.id)?.isWatched ?? false
+    postDetails.video.isWatched ||
+      (baseContextManager.getVideoState(postDetails.video.id)?.isWatched ??
+        false)
   );
 
   useEffect(() => {
@@ -147,7 +149,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
         </div>
       </footer>
 
-      {(postDetails.video.isWatched || isVideoWatched) && (
+      {isVideoWatched && (
         <IHeartEndOfContentOverlay
           onGoToEpisodes={() => {
             // Handle go to episodes action
