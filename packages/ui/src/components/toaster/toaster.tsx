@@ -15,6 +15,7 @@ interface ToastBodyProps {
   message: string;
   description?: string;
   position?: ToasterProps["position"];
+  bgColor?: string;
 }
 
 const Toaster = ({ position, ...props }: ToasterProps) => {
@@ -59,7 +60,8 @@ const showCustomToast = (
   message: string,
   description: string | undefined,
   variant: ToastVariant,
-  position?: ToasterProps["position"]
+  position?: ToasterProps["position"],
+  bgColor?: string
 ) => {
   if (position) {
     window.dispatchEvent(
@@ -67,7 +69,13 @@ const showCustomToast = (
     );
   }
   toast.custom((id) => (
-    <div className="gencl:bg-white gencl:text-black gencl:flex gencl:items-start gencl:border gencl:border-secondary-150 gencl:justify-between gencl:gap-4 gencl:p-4 gencl:rounded-lg gencl:shadow-lg gencl:w-full gencl:sm:w-sm! sm:gencl:max-w-sm! sm:gencl:mt-0!">
+    <div
+      className={cn(
+        "gencl:flex gencl:items-start gencl:border gencl:border-secondary-150 gencl:justify-between gencl:gap-4 gencl:p-4 gencl:rounded-lg gencl:shadow-lg gencl:w-full gencl:sm:w-sm! sm:gencl:max-w-sm! sm:gencl:mt-0!",
+        bgColor ? "gencl:text-black" : "gencl:bg-white gencl:text-black"
+      )}
+      style={bgColor ? { backgroundColor: bgColor } : undefined}
+    >
       <div
         className={cn(
           "gencl:flex gencl:items-center gencl:gap-2",
@@ -94,11 +102,21 @@ const showCustomToast = (
   ));
 };
 
-const ToastSuccess = ({ message, description, position }: ToastBodyProps) =>
-  showCustomToast(message, description, "success", position);
+const ToastSuccess = ({
+  message,
+  description,
+  position,
+  bgColor,
+}: ToastBodyProps) =>
+  showCustomToast(message, description, "success", position, bgColor);
 
-const ToastError = ({ message, description, position }: ToastBodyProps) =>
-  showCustomToast(message, description, "error", position);
+const ToastError = ({
+  message,
+  description,
+  position,
+  bgColor,
+}: ToastBodyProps) =>
+  showCustomToast(message, description, "error", position, bgColor);
 
 const Toast = { Success: ToastSuccess, Error: ToastError };
 

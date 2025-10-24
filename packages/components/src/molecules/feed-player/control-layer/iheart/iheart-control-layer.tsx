@@ -72,12 +72,12 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
         )}
         <div className="gencl:w-full">
           {postDetails.video.attributes?.title && (
-            <p className="gencl:text-[14px] gencl:font-semibold gencl:leading-[20px] gencl:line-clamp-1 gencl:tracking-[-0.35px] gencl:lg:text-[17px]! gencl:lg:font-semibold! gencl:lg:leading-[24px]! gencl:lg:tracking-[-0.2px]!">
+            <p className="gencl:text-[14px] gencl:font-semibold gencl:leading-[18px] gencl:line-clamp-1 gencl:tracking-[-0.2px] gencl:lg:text-[17px]! gencl:lg:font-semibold! gencl:lg:leading-[24px]! gencl:lg:tracking-[-0.2px]!">
               {postDetails.video.attributes?.title}
             </p>
           )}
           {postDetails.video.attributes?.description && (
-            <p className="gencl:text-[14px] gencl:font-normal gencl:leading-[20px] gencl:line-clamp-2 gencl:tracking-[-0.35px] gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]!">
+            <p className="gencl:text-[12px] gencl:font-normal gencl:leading-[16px] gencl:line-clamp-2 gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]!">
               {postDetails.video.attributes?.description}
             </p>
           )}
@@ -92,7 +92,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
         <div
           aria-label={`Published ${getMonthYear(postDetails.video.createdAt ?? 0)}, Duration ${getFormattedDuration(String(postDetails.video.duration ?? ""))}`}
         >
-          <div className="gencl:text-[14px] gencl:font-normal gencl:leading-[20px] gencl:line-clamp-2 gencl:tracking-[-0.35px]! gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]!">
+          <div className="gencl:text-[14px] gencl:font-normal gencl:leading-[18px] gencl:line-clamp-2 gencl:tracking-[-0.2px]! gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]!">
             <time
               dateTime={new Date(
                 postDetails.video.createdAt ?? 0
@@ -110,7 +110,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
               text={postDetails.video.description ?? ""}
               position="overlay"
               shouldAnimate
-              textClassName="gencl:text-[14px] gencl:font-normal gencl:leading-[20px] gencl:tracking-[-0.35px]! gencl:text-white/70! gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]!"
+              textClassName="gencl:text-[14px] gencl:font-normal gencl:leading-[18px] gencl:tracking-[-0.2px]! gencl:text-white/70! gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]!"
               expandable={false}
               display="inline"
             />
@@ -126,7 +126,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
           <IHeartControls
             onClick={(e) => e.stopPropagation()}
             className={cn("gencl:z-20 gencl:lg:gap-1!")}
-            size={isDesktop ? "xl" : "lg"}
+            size="lg"
             variant="clip"
             contentId={postDetails.video.id}
             slug={postDetails.video.slug}

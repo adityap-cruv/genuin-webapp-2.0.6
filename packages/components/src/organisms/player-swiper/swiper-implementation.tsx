@@ -8,6 +8,7 @@ import { useFeedVideoSizeBox } from "@genuin/components/hooks/use-feed-video-siz
 import { ComponentProps } from "react";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { dialogManager } from "@genuin/ui/lib/dialog-manager/dialog-manager";
+import { cn } from "@genuin/ui";
 
 const CONFIG = {
   SCROLL_DELAY: 500,
@@ -25,12 +26,16 @@ const CONFIG = {
 type SwiperImplementationProps = {
   children: React.ReactNode;
   disableScroll?: boolean;
+  spaceBetween?: number;
 } & ComponentProps<typeof Swiper>;
 
 export function SwiperImplementation({
   children,
   direction = "vertical",
   disableScroll = false,
+  className,
+  slidesPerView: slidesPerViewProp,
+  spaceBetween: spaceBetweenProp,
   ...restProps
 }: SwiperImplementationProps) {
   // const { height } = useFeedVideoSizeBox();
@@ -39,9 +44,11 @@ export function SwiperImplementation({
   const { isMobile } = useDeviceDetectMediaQuery();
 
   // const swiperHeight = showExpandView ? "100%" : isMobile ? "100%" : height;
-  const swiperSpaceBetween = showExpandView || isMobile ? 0 : 16;
-  const swiperSlidesPerView =
+  const defaultSpaceBetween = showExpandView || isMobile ? 0 : 16;
+  const swiperSpaceBetween = spaceBetweenProp ?? defaultSpaceBetween;
+  const defaultSlidesPerView =
     showExpandView || isMobile ? 1 : isWindows ? 1.06 : 1.03;
+  const swiperSlidesPerView = slidesPerViewProp ?? defaultSlidesPerView;
   const swiperRef = useRef<any>(null);
 
   // Track if any modal is open
@@ -73,7 +80,11 @@ export function SwiperImplementation({
       onSwiper={(swiper) => {
         swiperRef.current = swiper;
       }}
-      className="gencl:mx-0!"
+      className={cn(
+        "gencl:h-full gencl:w-full",
+        swiperSlidesPerView === 1 && "gencl:aspect-reel",
+        className
+      )}
       enabled={!disableScroll}
       allowTouchMove={!disableScroll}
       spaceBetween={swiperSpaceBetween}

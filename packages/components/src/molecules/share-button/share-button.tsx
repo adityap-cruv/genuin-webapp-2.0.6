@@ -88,6 +88,11 @@ export function ShareButton({
       const toastPosition =
         brandLayoutType === "iheart" ? "bottom-center" : undefined;
 
+      const toastMessage =
+        brandLayoutType === "iheart"
+          ? "Link copied to clipboard"
+          : "Link Copied";
+
       // For mobile devices, use native share API if available
       if (isMobile && navigator.share) {
         try {
@@ -117,13 +122,15 @@ export function ShareButton({
           const success = await copy(fullUrl);
           if (success) {
             Toast.Success({
-              message: "Link Copied",
+              message: toastMessage,
               position: toastPosition,
+              bgColor: brandLayoutType === "iheart" ? "#ACE7C0" : undefined,
             });
           } else {
             Toast.Error({
               message: "Failed to copy link. Please try again.",
               position: toastPosition,
+              bgColor: brandLayoutType === "iheart" ? "#ACE7C0" : undefined,
             });
           }
         }
@@ -132,13 +139,15 @@ export function ShareButton({
         const success = await copy(fullUrl);
         if (success) {
           Toast.Success({
-            message: "Link Copied",
+            message: toastMessage,
             position: toastPosition,
+            bgColor: brandLayoutType === "iheart" ? "#ACE7C0" : undefined,
           });
         } else {
           Toast.Error({
             message: "Failed to copy link. Please try again.",
             position: toastPosition,
+            bgColor: brandLayoutType === "iheart" ? "#ACE7C0" : undefined,
           });
         }
       }

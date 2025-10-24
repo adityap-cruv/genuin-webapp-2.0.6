@@ -186,7 +186,7 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
                 aspectRatio="square"
                 src={attributes.image_url}
                 alt={`${postDetails.video.attributes?.title || contentType} artwork`}
-                className="gencl:size-12 gencl:rounded-md gencl:object-cover gencl:lg:size-16!"
+                className="gencl:size-16 gencl:rounded-md gencl:object-cover"
               />
             </Link>
           )}
@@ -197,7 +197,7 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
                 bypassChecks
                 aria-label={`Go to ${postDetails.video.attributes?.title} page`}
               >
-                <p className="gencl:h-5 gencl:flex gencl:items-center gencl:gap-2 gencl:text-[14px] gencl:font-semibold gencl:leading-[20px] gencl:line-clamp-1! gencl:tracking-[-0.35px] gencl:lg:text-[17px]! gencl:lg:font-semibold! gencl:lg:leading-[24px]! gencl:lg:tracking-[-0.2px]!">
+                <p className="gencl:h-5 gencl:flex gencl:items-center gencl:gap-2 gencl:text-[16px] gencl:font-semibold gencl:leading-[24px] gencl:line-clamp-1! gencl:tracking-[-0.2px] gencl:lg:text-[17px]! gencl:lg:font-semibold! gencl:lg:leading-[24px]! gencl:lg:tracking-[-0.2px]!">
                   {postDetails.video.attributes?.title}
                 </p>
               </Link>

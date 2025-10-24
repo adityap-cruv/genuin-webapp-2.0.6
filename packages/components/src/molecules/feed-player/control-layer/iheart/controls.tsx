@@ -91,7 +91,11 @@ export function IHeartControls({
           <Button
             theme="custom"
             variant="icon"
-            aria-label={isReacted ? `Remove spark (${reactionCount} sparks)` : `Spark this video (${reactionCount} sparks)`}
+            aria-label={
+              isReacted
+                ? `Remove spark (${reactionCount} sparks)`
+                : `Spark this video (${reactionCount} sparks)`
+            }
             aria-pressed={isReacted}
             className="gencl:w-11 gencl:h-11 gencl:p-0 gencl:flex gencl:items-center gencl:justify-center"
           >

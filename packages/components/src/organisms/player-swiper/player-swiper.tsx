@@ -21,6 +21,7 @@ import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import {
   ArrowLeftIcon,
   ChevronDownIcon,
+  ChevronLeftIcon,
   ChevronUpIcon,
 } from "@genuin/ui/icons";
 import { Swiper } from "swiper/types";
@@ -126,10 +127,6 @@ export function PlayerList({
   const renderSectionedContent = () => (
     <SwiperImplementation
       direction="horizontal"
-      className={cn(
-        "gencl:h-full gencl:aspect-reel",
-        isMobile && "gencl:h-full gencl:w-full"
-      )}
       onSwiper={setHorizontalSwiper}
       onActiveIndexChange={(swiper) => {
         setActiveHorizontalIndex(swiper.activeIndex);
@@ -145,6 +142,16 @@ export function PlayerList({
             <SwiperImplementation
               className="gencl:h-full"
               initialSlide={startIndex}
+              slidesPerView={
+                brandLayoutType === "iheart" && !isMobile && !isDesktop
+                  ? 1.2
+                  : undefined
+              }
+              spaceBetween={
+                brandLayoutType === "iheart" && !isMobile && !isDesktop
+                  ? 16
+                  : undefined
+              }
               onSwiper={(swiper) => {
                 setVerticalSwipers((prev) => ({
                   ...prev,
@@ -177,24 +184,22 @@ export function PlayerList({
                       isVerticalVisible && isHorizontalActive;
 
                     return (
-                      <div className="gencl:h-full gencl:w-full">
-                        <Player
-                          isActive={isTrulyActive}
-                          isNext={isTrulyNext}
-                          isPrev={isTrulyPrev}
-                          isVisible={isTrulyVisible}
-                          post={post}
-                          isSectioned={isSectioned}
-                          onCommunityJoinStatusChange={
-                            onCommunityJoinStatusChange
-                          }
-                          onGroupJoinStatusChange={onGroupJoinStatusChange}
-                          onGroupSubscriptionChange={onGroupSubscriptionChange}
-                          onReactionStateChange={onReactionStateChange}
-                          onCommentCountChange={onCommentCountChange}
-                          index={index}
-                        />
-                      </div>
+                      <Player
+                        isActive={isTrulyActive}
+                        isNext={isTrulyNext}
+                        isPrev={isTrulyPrev}
+                        isVisible={isTrulyVisible}
+                        post={post}
+                        isSectioned={isSectioned}
+                        onCommunityJoinStatusChange={
+                          onCommunityJoinStatusChange
+                        }
+                        onGroupJoinStatusChange={onGroupJoinStatusChange}
+                        onGroupSubscriptionChange={onGroupSubscriptionChange}
+                        onReactionStateChange={onReactionStateChange}
+                        onCommentCountChange={onCommentCountChange}
+                        index={index}
+                      />
                     );
                   }}
                 </SwiperSlide>
@@ -210,10 +215,14 @@ export function PlayerList({
   const renderNonSectionedContent = () => (
     <SwiperImplementation
       initialSlide={startIndex}
-      className={cn(
-        "gencl:h-full gencl:aspect-reel",
-        isMobile && "gencl:h-full gencl:w-full"
-      )}
+      slidesPerView={
+        brandLayoutType === "iheart" && !isMobile && !isDesktop
+          ? 1.2
+          : undefined
+      }
+      spaceBetween={
+        brandLayoutType === "iheart" && !isMobile && !isDesktop ? 16 : undefined
+      }
       onSwiper={(swiper) => {
         setVerticalSwipers((prev) => ({
           ...prev,
@@ -228,22 +237,20 @@ export function PlayerList({
       {posts.map((post, index) => (
         <SwiperSlide key={post.video.id}>
           {({ isActive, isNext, isPrev, isVisible }) => (
-            <div className="gencl:h-full gencl:w-full">
-              <Player
-                isActive={isActive}
-                isNext={isNext}
-                isPrev={isPrev}
-                isVisible={isVisible}
-                post={post}
-                isSectioned={isSectioned}
-                onCommunityJoinStatusChange={onCommunityJoinStatusChange}
-                onGroupJoinStatusChange={onGroupJoinStatusChange}
-                onGroupSubscriptionChange={onGroupSubscriptionChange}
-                onReactionStateChange={onReactionStateChange}
-                onCommentCountChange={onCommentCountChange}
-                index={index}
-              />
-            </div>
+            <Player
+              isActive={isActive}
+              isNext={isNext}
+              isPrev={isPrev}
+              isVisible={isVisible}
+              post={post}
+              isSectioned={isSectioned}
+              onCommunityJoinStatusChange={onCommunityJoinStatusChange}
+              onGroupJoinStatusChange={onGroupJoinStatusChange}
+              onGroupSubscriptionChange={onGroupSubscriptionChange}
+              onReactionStateChange={onReactionStateChange}
+              onCommentCountChange={onCommentCountChange}
+              index={index}
+            />
           )}
         </SwiperSlide>
       ))}
@@ -264,6 +271,7 @@ export function PlayerList({
           <BackButton onBackClick={toggleExpandView} theme={theme} />
         </div>
       )}
+
       <div
         className={cn(
           "gencl:flex gencl:flex-1 gencl:justify-center gencl:h-full gencl:w-full gencl:sm:w-fit! gencl:relative",
@@ -290,11 +298,15 @@ export function PlayerList({
           {isSectioned && (
             <SectionsTabs onSectionSelect={handleSectionSelect} />
           )}
-          {isSectioned ? renderSectionedContent() : renderNonSectionedContent()}
+          <div className="gencl:h-full gencl:w-full">
+            {isSectioned
+              ? renderSectionedContent()
+              : renderNonSectionedContent()}
+          </div>
         </div>
 
         {/* Navigation buttons for iheart expand view positioned relative to player */}
-        {showExpandView && brandLayoutType === "iheart" && !isMobile && (
+        {showExpandView && brandLayoutType === "iheart" && isDesktop && (
           <NavigationButton
             swiper={activeSwiper ?? undefined}
             postsLength={posts.length}
@@ -521,14 +533,35 @@ function BackButton({
   theme?: "light" | "dark";
 }) {
   return (
-    <Button
-      variant="icon"
-      shape="circle"
-      size="lg"
-      theme={theme === "dark" ? "navigation" : "secondary"}
-      onClick={onBackClick}
-    >
-      <ArrowLeftIcon theme={theme === "dark" ? "dark" : "light"} size="md" />
-    </Button>
+    <>
+      <Button
+        variant="icon"
+        shape="circle"
+        size="lg"
+        theme={theme === "dark" ? "navigation" : "secondary"}
+        onClick={onBackClick}
+        className="gencl:hidden gencl:lg:flex!"
+      >
+        <ArrowLeftIcon theme={theme === "dark" ? "dark" : "light"} size="md" />
+      </Button>
+
+      <Button
+        id="player-header-back-button"
+        variant="icon"
+        theme="overlay"
+        onClick={(e) => {
+          e.stopPropagation();
+          onBackClick?.();
+        }}
+        className="gencl:w-11 gencl:h-11 gencl:flex gencl:lg:hidden!"
+        aria-label="Go back"
+      >
+        <ChevronLeftIcon
+          theme={theme === "dark" ? "dark" : "light"}
+          size="lg"
+          aria-hidden="true"
+        />
+      </Button>
+    </>
   );
 }

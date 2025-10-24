@@ -15,6 +15,12 @@ import { SpeedControlSideBars } from "../../playback-speed/speed-control-bars";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { VideoEditActionButtons } from "./controls/control-buttons";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import {
+  DynamicReactionIcon,
+  ReactionButton,
+} from "@genuin/components/molecules/reaction-button";
+import { Button } from "@genuin/ui/button";
+import { useDoubleClick } from "@genuin/components/hooks/use-double-click";
 
 export function Default({
   className,
@@ -43,6 +49,39 @@ export function Default({
   const { isMobile } = useDeviceDetectMediaQuery();
   const embedConfig = useEmbedConfigs();
   const brandLayoutType = embedConfig.view.brandLayoutType;
+
+  // Ref to programmatically trigger reaction button click
+  const reactionButtonRef = React.useRef<HTMLButtonElement>(null);
+
+  // State for showing reaction icon temporarily on double-click
+  const [showReactionIcon, setShowReactionIcon] = React.useState(false);
+
+  // Use the useDoubleClick hook for iheart layout
+  const { onClick: handleIheartClick, onDoubleClick: handleIheartDoubleClick } =
+    useDoubleClick({
+      delay: 300,
+      onSingleClick: () => {
+        // Single click - toggle play
+        togglePlay(true);
+      },
+      onDoubleClick: () => {
+        // Only handle double-click on mobile
+        if (!isMobile) return;
+
+        // Show reaction icon
+        if (!postDetails.video.isSparked) setShowReactionIcon(true);
+
+        // Hide reaction icon after 1 seconds with fade
+        setTimeout(() => {
+          setShowReactionIcon(false);
+        }, 1000);
+
+        // Programmatically trigger reaction button click
+        if (reactionButtonRef.current) {
+          reactionButtonRef.current.click();
+        }
+      },
+    });
 
   // Extract properties with fallbacks to prevent undefined errors
   const tapBehavior = brandDetails?.web_configs?.tap_behavior || 1; // Default to 1 if undefined
@@ -89,9 +128,8 @@ export function Default({
         <>
           <div
             aria-label="Toggle video playback"
-            onClick={() => {
-              togglePlay(true);
-            }}
+            onClick={handleIheartClick}
+            onDoubleClick={handleIheartDoubleClick}
             className={cn(
               "group gencl:inset-0 gencl:z-10 gencl:flex gencl:justify-center",
               "gencl:appearance-none gencl:border-0 gencl:bg-transparent gencl:p-0 gencl:cursor-pointer gencl:w-full",
@@ -121,6 +159,47 @@ export function Default({
                 "gencl:-translate-x-1/2 gencl:-translate-y-1/2"
               )}
             />
+
+            {/* Large reaction icon on double-click */}
+            {showReactionIcon && (
+              <DynamicReactionIcon
+                isSparked={postDetails.video.isSparked ?? false}
+                sparkCount={postDetails.video.sparkCount}
+                type="feed"
+                iconHeight={120}
+                iconWidth={120}
+                theme="light"
+                className={cn(
+                  "gencl:absolute gencl:left-1/2 gencl:top-1/2 gencl:flex gencl:items-center",
+                  "gencl:justify-center gencl:h-32 gencl:w-32",
+                  "gencl:-translate-x-1/2 gencl:-translate-y-1/2 gencl:z-20",
+                  "gencl:transition-opacity gencl:duration-300 gencl:opacity-100"
+                )}
+              />
+            )}
+
+            {/* This is invisible button for reactions */}
+            <ReactionButton
+              contentId={postDetails.video.id}
+              isReacted={postDetails.video.isSparked ?? false}
+              reactionCount={postDetails.video.sparkCount}
+              contentType="VIDEO"
+              onReactionStateChange={(isReacted) =>
+                onReactionStateChange?.(postDetails.video.id, isReacted)
+              }
+              withCustomChildren
+              asChild
+              onClick={(e) => {
+                e?.stopPropagation();
+              }}
+            >
+              <Button
+                ref={reactionButtonRef}
+                theme="custom"
+                className="gencl:opacity-0"
+              />
+            </ReactionButton>
+
             {gestureOverlayUI}
           </div>
         </>

@@ -1,5 +1,5 @@
 import { Button } from "@genuin/ui/button";
-import { ChevronLeftIcon } from "lucide-react";
+import { ChevronLeftIcon } from "@genuin/ui/icons";
 import { ComponentProps } from "react";
 
 type PlayerHeaderProps = ComponentProps<"div"> & {
@@ -33,10 +33,7 @@ export function PlayerHeader({
           className="gencl:absolute gencl:left-0 gencl:w-11 gencl:h-11"
           aria-label="Go back"
         >
-          <ChevronLeftIcon
-            className="gencl:size-6 gencl:text-white"
-            aria-hidden="true"
-          />
+          <ChevronLeftIcon theme="dark" size="lg" aria-hidden="true" />
         </Button>
       )}
       <p
