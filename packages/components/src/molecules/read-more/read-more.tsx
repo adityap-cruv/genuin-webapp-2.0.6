@@ -5,6 +5,7 @@ import { cn } from "@genuin/ui/lib/utils";
 import {
   applyLineClampStyles,
   calculateMaxCharacterLimitCached,
+  calculateMaxHeight,
   convertUrlsToAnchorTags,
   renderAnchorTag,
 } from "./utils";
@@ -71,6 +72,8 @@ export const ReadMore = memo(function ReadMore({
   viewMoreText = "View More",
   viewLessText = "View Less",
   expandedHeight = "40vh",
+  useDynamicHeight,
+  showBottomOverlay = false,
   onClick,
   defaultExpand = false,
   onExpandChange,
@@ -87,7 +90,7 @@ export const ReadMore = memo(function ReadMore({
   // For smooth collapse: delay reducing chars until after animation
   const [showCollapsed, setShowCollapsed] = useState(!defaultExpand);
   const [maxCharacter, setCalculatedMaxChars] = useState<number>(maxChars ?? 0);
-
+  const [measuredHeight, setMeasuredHeight] = useState("0px");
   // Memoize parsed text processing
   const parsedText = useMemo(() => {
     if (!text) return "";
@@ -125,17 +128,46 @@ export const ReadMore = memo(function ReadMore({
   }, [parsedText]);
 
   // Calculate max characters after mount when ref is available
+  // Added shouldAnimate dependency to recalculate after animation styles are applied
   useEffect(() => {
     if (!maxChars && textRef.current && flattenedText) {
-      const limit = calculateMaxCharacterLimitCached(
-        maxLines,
-        textRef.current,
-        flattenedText,
-        viewMoreText.length > viewMoreText.length ? viewMoreText : viewLessText
-      );
-      setCalculatedMaxChars(limit);
+      // Use requestAnimationFrame to ensure all styles and layout are applied
+      const rafId = requestAnimationFrame(() => {
+        // Double RAF to ensure layout is complete
+        requestAnimationFrame(() => {
+          if (textRef.current) {
+            const limit = calculateMaxCharacterLimitCached(
+              maxLines,
+              textRef.current,
+              flattenedText,
+              showExpandText
+                ? viewMoreText.length > viewLessText.length
+                  ? viewMoreText
+                  : viewLessText
+                : ""
+            );
+            setCalculatedMaxChars(limit);
+          }
+        });
+      });
+
+      return () => cancelAnimationFrame(rafId);
     }
-  }, [maxChars, flattenedText, maxLines, viewLessText, viewMoreText]);
+  }, [
+    maxChars,
+    flattenedText,
+    maxLines,
+    viewLessText,
+    viewMoreText,
+    shouldAnimate,
+    showExpandText,
+  ]);
+
+  useEffect(() => {
+    if (!useDynamicHeight) return;
+    const height = calculateMaxHeight(textRef.current, 5);
+    setMeasuredHeight(height);
+  }, [useDynamicHeight]);
 
   // Memoize text splitting for performance
   const textParts = useMemo(() => {
@@ -220,10 +252,10 @@ export const ReadMore = memo(function ReadMore({
 
   // Handle line-based truncation
   useEffect(() => {
-    if (!textRef.current || shouldAnimate) return;
+    if (!textRef.current) return;
     const textElement = textRef.current;
     applyLineClampStyles(textElement, isExpanded ? null : maxLines, display);
-  }, [maxLines, isExpanded, shouldAnimate, display]);
+  }, [maxLines, isExpanded, display]);
 
   // Modified animation logic for smooth expand/collapse and delayed char reduction
   useEffect(() => {
@@ -278,9 +310,9 @@ export const ReadMore = memo(function ReadMore({
   const heights = useMemo(
     () => ({
       collapsed: `${maxLines * 24}px`,
-      expanded: expandedHeight,
+      expanded: useDynamicHeight ? measuredHeight : expandedHeight,
     }),
-    [maxLines, expandedHeight]
+    [maxLines, expandedHeight, measuredHeight, useDynamicHeight]
   );
 
   // Memoize display text generation
@@ -289,7 +321,7 @@ export const ReadMore = memo(function ReadMore({
 
     if (!shouldTruncate) {
       // If shouldAnimate and not expanded, add 3 dots at the end
-      if (shouldAnimate && !isExpanded && showCollapsed) {
+      if (shouldAnimate && !isExpanded && showCollapsed && !showExpandText) {
         return (
           <>
             {renderText(parsedText)}
@@ -332,7 +364,7 @@ export const ReadMore = memo(function ReadMore({
           : renderText(teaser);
 
       // If shouldAnimate, only show teaser after animation completes
-      if (shouldAnimate && showCollapsed) {
+      if (shouldAnimate && showCollapsed && !showExpandText) {
         return (
           <>
             {teaserContent}
@@ -341,7 +373,7 @@ export const ReadMore = memo(function ReadMore({
         );
       }
       // During animation, show full text (no truncation)
-      if (shouldAnimate && !showCollapsed) {
+      if (shouldAnimate && !showCollapsed && !showExpandText) {
         return renderText(parsedText);
       }
 
@@ -359,7 +391,7 @@ export const ReadMore = memo(function ReadMore({
     }
 
     // If shouldAnimate and expanded, do not show 3 dots
-    if (shouldAnimate) {
+    if (shouldAnimate && !showExpandText) {
       return (
         <>
           <span
@@ -457,6 +489,15 @@ export const ReadMore = memo(function ReadMore({
           {displayText}
         </span>
       </p>
+      {isExpanded && showBottomOverlay && (
+        <div
+          className="gencl:absolute gencl:bottom-0 gencl:left-0 gencl:right-0 gencl:h-2/5 gencl:pointer-events-none"
+          style={{
+            background:
+              "linear-gradient(180deg, rgba(39, 41, 45, 0) 0%, #1E1317 100%)",
+          }}
+        />
+      )}
     </div>
   );
 
@@ -530,18 +571,22 @@ export const ReadMore = memo(function ReadMore({
       )}
     >
       {/* Overlay backdrop */}
-      {showOverlay && expandable && textParts.shouldTruncate && isExpanded && (
-        <div
-          className={cn(
-            "gencl:fixed gencl:inset-0 gencl:bg-black/60 gencl:transition-opacity gencl:duration-300",
-            isExpanded
-              ? "gencl:opacity-100 gencl:pointer-events-auto"
-              : "gencl:opacity-0 gencl:pointer-events-none",
-            overlayClassName
-          )}
-          onClick={handleOverlayClick}
-        />
-      )}
+      {showOverlay &&
+        expandable &&
+        textParts.shouldTruncate &&
+        isExpanded &&
+        !showBottomOverlay && (
+          <div
+            className={cn(
+              "gencl:fixed gencl:inset-0 gencl:bg-black/60 gencl:transition-opacity gencl:duration-300",
+              isExpanded
+                ? "gencl:opacity-100 gencl:pointer-events-auto"
+                : "gencl:opacity-0 gencl:pointer-events-none",
+              overlayClassName
+            )}
+            onClick={handleOverlayClick}
+          />
+        )}
       {finalContent}
     </div>
   );

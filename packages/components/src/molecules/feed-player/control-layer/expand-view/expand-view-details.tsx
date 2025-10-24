@@ -202,7 +202,6 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
                 </p>
               </Link>
             )}
-
             {attributes?.description && (
               <ReadMore
                 text={attributes.description}
@@ -210,7 +209,8 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
                 lineClampClassName="gencl:line-clamp-3"
                 maxLines={2}
                 open={isExpanded}
-                expandable={isExpanded}
+                showExpandText={false}
+                expandable={false}
                 position="overlay"
                 textClassName="gencl:text-body-2-normal gencl:tracking-[-0.35px] gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]!"
               />
@@ -253,11 +253,13 @@ const AdaptiveDescription = memo(function AdaptiveDescription({
   type,
   isExpanded,
   onExpand,
+  layoutType,
 }: {
   video: PostDetailsType["video"];
   type: BrandLayoutType;
   isExpanded?: boolean;
   onExpand?: () => void;
+  layoutType?: BrandLayoutType;
 }) {
   const { description, createdAt, duration } = video;
 
@@ -299,17 +301,17 @@ const AdaptiveDescription = memo(function AdaptiveDescription({
           <ReadMore
             text={enhancedDescription}
             showExpandText
-            showOverlay={true}
             viewMoreText="More"
             shouldAnimate
+            useDynamicHeight
             expandable
+            showBottomOverlay={layoutType === "iheart"}
             open={isExpanded}
             onExpandChange={onExpand}
             viewLessText="Less"
             position="overlay"
             textClassName="gencl:text-[14px] gencl:font-normal gencl:leading-[20px] gencl:tracking-[-0.35px]! gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]! gencl:text-white/70!"
             maxLines={2}
-            lineClampClassName="gencl:line-clamp-5"
           />
         </div>
       );
@@ -543,6 +545,7 @@ export function ExpandViewDetails({
               isExpanded,
               onExpand,
             })}
+            layoutType={brandLayoutType}
           />
         </div>
 

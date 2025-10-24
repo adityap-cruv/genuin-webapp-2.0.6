@@ -189,7 +189,6 @@ export function renderAnchorTag(
     case "member": {
       const username = item.text.slice(1);
       const href = buildPageUrl({ type: "profile", slug: username });
-
       return (
         <Link key={`${item.type}-${index}`} href={href} {...commonProps}>
           {item.text}
@@ -366,7 +365,6 @@ export function calculateMaxCharacterLimit(
         }
       }
     }
-
     return resultString.length;
   } finally {
     document.body.removeChild(container);
@@ -394,7 +392,6 @@ export function calculateMaxCharacterLimitCached(
   viewMoreText: string = "View More"
 ): number {
   if (!element || !textContent) return 0;
-
   const computedStyle = window.getComputedStyle(element);
   const cacheKey = `${element.clientWidth}-${computedStyle.fontSize}-${computedStyle.fontFamily}-${maxLines}-${viewMoreText}-${textContent.substring(0, 100)}`;
 
@@ -405,8 +402,76 @@ export function calculateMaxCharacterLimitCached(
   }
 
   // Compute and store result
-  const result = calculateMaxCharacterLimit(maxLines, element, textContent, viewMoreText);
+  const result = calculateMaxCharacterLimit(
+    maxLines,
+    element,
+    textContent,
+    viewMoreText
+  );
   (element as any).__charLimitCache = { ...cache, [cacheKey]: result };
 
   return result;
+}
+
+/**
+ * Calculates the maximum pixel height needed to display a given number of text lines
+ * inside an HTML element, based on its computed line height.
+ *
+ * This is useful for responsive "Read More" or collapsible text components where
+ * you want to show only a fixed number of lines (e.g., 3 or 5) before expanding.
+ *
+ * ---
+ * Example use case:
+ * ```tsx
+ * const ref = useRef<HTMLDivElement>(null);
+ * const [maxHeight, setMaxHeight] = useState("0px");
+ *
+ * useEffect(() => {
+ *   if (ref.current) {
+ *     setMaxHeight(calculateMaxHeight(ref.current, 5));
+ *   }
+ * }, []);
+ *
+ * return <div ref={ref} style={{ maxHeight, overflowY: 'auto' }}>Your text...</div>;
+ * ```
+ *
+ * ---
+ * @param {HTMLElement | null} element - The DOM element whose computed style should be used for measurement.
+ * @param {number} maxLines - The number of visible lines before the text is truncated or scrollable.
+ * @returns {string} - The calculated maximum height in pixels (e.g., `"100px"`).
+ *
+ * @example
+ * // Given a paragraph with line-height of 20px
+ * calculateMaxHeight(paragraphEl, 5);
+ * // → "100px"
+ *
+ * ---
+ * Notes:
+ * - Handles cases where `line-height` is given in `px`, `normal`, or a unitless value like `1.5`.
+ * - Falls back to a default multiplier (1.2) when line-height is `"normal"`.
+ */
+export function calculateMaxHeight(
+  element: HTMLElement | null,
+  maxLines: number
+): string {
+  if (!element) return "0px";
+
+  const computedStyle = window.getComputedStyle(element);
+  const lineHeightValue = computedStyle.lineHeight;
+
+  let lineHeightPx: number;
+
+  if (lineHeightValue.endsWith("px")) {
+    // Direct pixel value (e.g., "20px")
+    lineHeightPx = parseFloat(lineHeightValue);
+  } else {
+    // Handle unitless or "normal" line-heights
+    const fontSize = parseFloat(computedStyle.fontSize);
+    const lineHeightMultiplier =
+      lineHeightValue === "normal" ? 1.2 : parseFloat(lineHeightValue);
+    lineHeightPx = lineHeightMultiplier * fontSize;
+  }
+
+  const maxHeight = lineHeightPx * maxLines;
+  return `${maxHeight}px`;
 }

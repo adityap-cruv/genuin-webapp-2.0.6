@@ -112,4 +112,15 @@ export type ReadMoreProps = {
    * Custom class name for the truncate the text
    */
   lineClampClassName?: string;
+  /**
+   * Dynamically calculates height using the element’s computed line height,
+   * ensuring consistent collapsed height across fonts and viewports.
+   * When enabled, overrides static height values like `expandedHeight`.
+   */
+  useDynamicHeight?: boolean;
+ /**
+   * Whether to show a dark overlay behind the expanded content from the bottom (i.e. iheart usecase)
+   * @default false
+   */
+  showBottomOverlay? : boolean
 } & Omit<ComponentProps<"p">, "children">;

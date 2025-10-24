@@ -112,6 +112,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
               shouldAnimate
               textClassName="gencl:text-[14px] gencl:font-normal gencl:leading-[18px] gencl:tracking-[-0.2px]! gencl:text-white/70! gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]!"
               expandable={false}
+              showExpandText={false}
               display="inline"
             />
           </div>
