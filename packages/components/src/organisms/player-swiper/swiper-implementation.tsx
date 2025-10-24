@@ -80,11 +80,7 @@ export function SwiperImplementation({
       onSwiper={(swiper) => {
         swiperRef.current = swiper;
       }}
-      className={cn(
-        "gencl:h-full gencl:w-full",
-        swiperSlidesPerView === 1 && "gencl:aspect-reel",
-        className
-      )}
+      className={cn("gencl:h-full gencl:w-full", className)}
       enabled={!disableScroll}
       allowTouchMove={!disableScroll}
       spaceBetween={swiperSpaceBetween}

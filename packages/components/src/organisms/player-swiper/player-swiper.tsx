@@ -13,7 +13,7 @@ import { Comments, CommentsDialog } from "../../molecules/comments";
 import { Player } from "./player";
 import { SwiperImplementation } from "./swiper-implementation";
 import { SectionsTabs } from "./sections-tabs";
-import { ComponentProps, useEffect, useState } from "react";
+import { ComponentProps, useEffect, useState, useRef } from "react";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { abbreviateNumber, cn } from "@genuin/ui/lib/utils";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
@@ -27,7 +27,7 @@ import {
 import { Swiper } from "swiper/types";
 import { useAnalytics } from "@genuin/components/context";
 import { PlayerHeader } from "./player-header";
-import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
+import { calculateSlideDimensions } from "./utils";
 
 type PlayerListPropsType = {
   posts: PostDetailsType[];
@@ -83,6 +83,51 @@ export function PlayerList({
     view: { brandLayoutType },
   } = useEmbedConfigs();
   const embedDetails = useSafeEmbedContext();
+
+  // Container dimensions state
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [slideDimensions, setSlideDimensions] = useState<{
+    slideWidth: number;
+    slideHeight: number;
+    slidesPerView: number;
+  } | null>(null);
+
+  // Calculate slide dimensions on mount and resize (only for iheart brand on specific devices)
+  useEffect(() => {
+    const shouldCalculateDimensions =
+      brandLayoutType === "iheart" && !isMobile && !isDesktop;
+
+    if (!shouldCalculateDimensions) {
+      setSlideDimensions(null);
+      return;
+    }
+
+    const updateDimensions = () => {
+      if (containerRef.current) {
+        const containerHeight = containerRef.current.clientHeight;
+        if (containerHeight > 0) {
+          const dimensions = calculateSlideDimensions({
+            containerDimension: containerHeight,
+            dimensionType: "height",
+            aspectRatio: 9 / 16,
+            slidesPerView: 1.2,
+          });
+          setSlideDimensions(dimensions);
+        }
+      }
+    };
+
+    updateDimensions();
+
+    const resizeObserver = new ResizeObserver(updateDimensions);
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
+    }
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [brandLayoutType, isMobile, isDesktop]);
 
   // Section-related state
   const sectionList = embedDetails?.embedEventBus.getContext().sectionList;
@@ -142,16 +187,8 @@ export function PlayerList({
             <SwiperImplementation
               className="gencl:h-full"
               initialSlide={startIndex}
-              slidesPerView={
-                brandLayoutType === "iheart" && !isMobile && !isDesktop
-                  ? 1.2
-                  : undefined
-              }
-              spaceBetween={
-                brandLayoutType === "iheart" && !isMobile && !isDesktop
-                  ? 16
-                  : undefined
-              }
+              slidesPerView={slideDimensions?.slidesPerView ? 1.2 : undefined}
+              spaceBetween={slideDimensions?.slidesPerView ? 16 : undefined}
               onSwiper={(swiper) => {
                 setVerticalSwipers((prev) => ({
                   ...prev,
@@ -168,7 +205,17 @@ export function PlayerList({
               disableScroll={disableSwiper}
             >
               {posts.map((post, index) => (
-                <SwiperSlide key={post.video.id}>
+                <SwiperSlide
+                  key={post.video.id}
+                  style={
+                    slideDimensions
+                      ? {
+                          width: `${slideDimensions.slideWidth}px`,
+                          height: `${slideDimensions.slideHeight}px`,
+                        }
+                      : undefined
+                  }
+                >
                   {({
                     isActive: isVerticalActive,
                     isNext: isVerticalNext,
@@ -215,14 +262,8 @@ export function PlayerList({
   const renderNonSectionedContent = () => (
     <SwiperImplementation
       initialSlide={startIndex}
-      slidesPerView={
-        brandLayoutType === "iheart" && !isMobile && !isDesktop
-          ? 1.2
-          : undefined
-      }
-      spaceBetween={
-        brandLayoutType === "iheart" && !isMobile && !isDesktop ? 16 : undefined
-      }
+      slidesPerView={slideDimensions?.slidesPerView ? 1.2 : undefined}
+      spaceBetween={slideDimensions?.slidesPerView ? 16 : undefined}
       onSwiper={(swiper) => {
         setVerticalSwipers((prev) => ({
           ...prev,
@@ -235,7 +276,17 @@ export function PlayerList({
       disableScroll={disableSwiper}
     >
       {posts.map((post, index) => (
-        <SwiperSlide key={post.video.id}>
+        <SwiperSlide
+          key={post.video.id}
+          style={
+            slideDimensions
+              ? {
+                  width: `${slideDimensions.slideWidth}px`,
+                  height: `${slideDimensions.slideHeight}px`,
+                }
+              : undefined
+          }
+        >
           {({ isActive, isNext, isPrev, isVisible }) => (
             <Player
               isActive={isActive}
@@ -279,10 +330,18 @@ export function PlayerList({
         )}
       >
         <div
+          ref={containerRef}
           className={cn(
             "gencl:h-full gencl:aspect-reel gencl:relative",
             isMobile && "gencl:h-full gencl:w-full"
           )}
+          style={
+            slideDimensions
+              ? {
+                  width: `${slideDimensions.slideWidth}px`,
+                }
+              : undefined
+          }
           role="region"
           aria-label="Video player"
         >

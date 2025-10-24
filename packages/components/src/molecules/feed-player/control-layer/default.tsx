@@ -187,18 +187,15 @@ export function Default({
               onReactionStateChange={(isReacted) =>
                 onReactionStateChange?.(postDetails.video.id, isReacted)
               }
-              withCustomChildren
-              asChild
               onClick={(e) => {
                 e?.stopPropagation();
               }}
-            >
-              <Button
-                ref={reactionButtonRef}
-                theme="custom"
-                className="gencl:opacity-0"
-              />
-            </ReactionButton>
+              asChild
+              withCustomChildren
+              children={
+                <Button ref={reactionButtonRef} className="gencl:opacity-0" />
+              }
+            />
 
             {gestureOverlayUI}
           </div>
