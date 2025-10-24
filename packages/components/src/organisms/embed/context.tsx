@@ -66,6 +66,43 @@ export function EmbedManagerProvider({
 
   const isIHeart = config.view.brandLayoutType === "iheart";
 
+  /**
+   * Handles iHeart-specific slide navigation logic
+   * @param direction - The direction to navigate ('next' or 'prev')
+   * @param currentIndex - The current active index
+   * @returns void
+   */
+  const handleIHeartNavigation = useCallback(
+    (direction: "next" | "prev") => {
+      if (!swiper) return;
+
+      // Calculate slide offset - always round to get full viewport scroll
+      const slidesPerView = (swiper.params.slidesPerView as number) || 1;
+      const slideOffset = Math.round(slidesPerView);
+      const currentIndex = swiper.activeIndex;
+
+      // Calculate target slide index based on direction
+      let targetSlideIndex =
+        direction === "next"
+          ? currentIndex + slideOffset
+          : currentIndex - slideOffset;
+
+      // Calculate which slide will be first visible after scrolling
+      // When centered, the first visible slide is offset by half the viewport
+      let newActiveIndex = swiper.params.centeredSlides
+        ? targetSlideIndex - Math.floor(slidesPerView / 2)
+        : targetSlideIndex;
+
+      // Apply bounds checking to prevent negative indices
+      targetSlideIndex = targetSlideIndex < 0 ? 0 : targetSlideIndex;
+      newActiveIndex = newActiveIndex < 0 ? 0 : newActiveIndex;
+
+      swiper.slideTo(targetSlideIndex);
+      setActiveIndex(newActiveIndex);
+    },
+    [swiper]
+  );
+
   // Trigger changeActiveIndex whenever activeIndex changes
   useEffect(() => {
     changeActiveIndex(activeIndex);
@@ -142,7 +179,6 @@ export function EmbedManagerProvider({
       if (nextIndex >= totalSlides) {
         return;
       }
-
       if (useAutoScroll) {
         // Use intelligent auto-scroll positioning for placement view
         const isNextVisible = isSlideVisible(swiper, nextIndex);
@@ -150,11 +186,18 @@ export function EmbedManagerProvider({
         // Always scroll to next video to bring it into optimal view
         // This ensures even the last video scrolls into view if viewport is small
         if (!isNextVisible || nextIndex === totalSlides - 1) {
-          swiper.slideTo(nextIndex, 300, true);
+          if (isIHeart) {
+            // For iHeart, use the standard navigation logic to handle centeredSlides
+            handleIHeartNavigation("next");
+          } else {
+            swiper.slideTo(nextIndex, 300, true);
+            // Always update the active index to next video
+            setActiveIndex(nextIndex);
+          }
+        } else {
+          // Next slide is visible, just update the active index
+          setActiveIndex(nextIndex);
         }
-
-        // Always update the active index to next video
-        setActiveIndex(nextIndex);
       } else {
         if (!moveToNext) return;
 
@@ -165,23 +208,25 @@ export function EmbedManagerProvider({
           "next"
         );
 
-        // Always slide to ensure swiper navigation happens
-        if (shouldSlide) {
-          if (isIHeart) {
-            // for iheart we need to slide whole screen
-            swiper.slideTo(targetIndex + 1);
-          } else {
+        if (isIHeart) {
+          handleIHeartNavigation("next");
+        } else {
+          // Always slide to ensure swiper navigation happens
+          if (shouldSlide) {
             swiper.slideNext();
           }
+          setActiveIndex(targetIndex);
         }
-
-        // Only update active index if we shouldn't slide automatically
-        // if (!shouldSlide) {
-        setActiveIndex(targetIndex);
-        // }
       }
     },
-    [swiper, activeIndex, isGridLayout, isIHeart]
+    [
+      swiper,
+      activeIndex,
+      isGridLayout,
+      isIHeart,
+      handleIHeartNavigation,
+      moveToNext,
+    ]
   );
 
   const goToPreviousVideo = useCallback(() => {
@@ -199,21 +244,21 @@ export function EmbedManagerProvider({
       "prev"
     );
 
-    // Always slide to ensure swiper navigation happens
-    if (shouldSlide) {
-      if (isIHeart) {
-        swiper.slideTo(targetIndex - 1);
-      } else {
+    if (isIHeart) {
+      handleIHeartNavigation("prev");
+    } else {
+      // Always slide to ensure swiper navigation happens
+      if (shouldSlide) {
         swiper.slidePrev();
       }
+      setActiveIndex(targetIndex);
     }
 
     // Only update active index if we shouldn't slide automatically
     // here targetIndex's 0 check is for handling edge case
     // if (!shouldSlide || targetIndex === 0) {
-    setActiveIndex(targetIndex);
     // }
-  }, [swiper, activeIndex, isGridLayout, isIHeart]);
+  }, [swiper, activeIndex, isGridLayout, isIHeart, handleIHeartNavigation]);
 
   useEffect(() => {
     const handleActivePlayerTypeChange = (

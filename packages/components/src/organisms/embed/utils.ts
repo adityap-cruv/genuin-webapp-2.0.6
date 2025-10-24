@@ -25,15 +25,11 @@ export function isSlideVisible(
   // - Normal mode: activeIndex is the first visible slide (leftmost)
   // - Centered mode: activeIndex is the center slide, so first visible is one before
   const firstVisibleIndex = swiper.params.centeredSlides
-    ? swiper.activeIndex - 1
+    ? swiper.activeIndex - Math.floor(slidesPerView / 2)
     : swiper.activeIndex;
 
   // Calculate last visible index based on slide centering mode
-  // - Normal mode: last = first + slidesPerView - 1 (e.g., first=0, view=3 → last=2)
-  // - Centered mode: last = first + slidesPerView (e.g., first=-1, view=3 → last=2)
-  const lastVisibleIndex = swiper.params.centeredSlides
-    ? firstVisibleIndex + slidesPerView
-    : firstVisibleIndex + slidesPerView - 1;
+  const lastVisibleIndex = firstVisibleIndex + slidesPerView - 1;
 
   return targetIndex >= firstVisibleIndex && targetIndex <= lastVisibleIndex;
 }

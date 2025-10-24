@@ -1,4 +1,4 @@
-import { ComponentProps, useRef, type ReactNode } from "react";
+import { ComponentProps, useMemo, useRef, type ReactNode } from "react";
 import { Swiper } from "swiper/react";
 import { Swiper as SwiperType } from "swiper/types";
 import { Mousewheel, FreeMode, Keyboard, A11y } from "swiper/modules";
@@ -37,6 +37,8 @@ export function EmbedSwiper({
   className,
   aspectRatio,
   freeMode = false,
+  centeredSlides,
+  centeredSlidesBounds,
   ...restProps
 }: EmbedSwiperProps) {
   const { isWindows } = useDeviceDetection();
@@ -75,17 +77,21 @@ export function EmbedSwiper({
     // Update the previous index
   };
 
+  const slidesPerView = useMemo(
+    () =>
+      getSlidesPerView(
+        containerDimensions?.height ?? 0,
+        containerDimensions?.width ?? 0,
+        forFeed,
+        aspectRatio
+      ) ?? 1,
+    [forFeed, aspectRatio, containerDimensions]
+  );
+
   return (
     <Swiper
       direction={forFeed ? "vertical" : "horizontal"}
-      slidesPerView={
-        getSlidesPerView(
-          containerDimensions?.height ?? 0,
-          containerDimensions?.width ?? 0,
-          forFeed,
-          aspectRatio
-        ) ?? 1
-      }
+      slidesPerView={slidesPerView}
       onActiveIndexChange={handleActiveIndexChange}
       spaceBetween={spaceBetweenVideos}
       speed={SWIPER_CONFIG.SCROLL_DELAY}
@@ -136,6 +142,8 @@ export function EmbedSwiper({
       role="region"
       aria-label={forFeed ? "Video feed carousel" : "Video carousel"}
       className={cn("gencl:h-full gencl:w-full", className)}
+      centeredSlides={slidesPerView < 2 ? false : centeredSlides}
+      centeredSlidesBounds={slidesPerView < 2 ? false : centeredSlidesBounds}
       {...restProps}
     >
       {children}
