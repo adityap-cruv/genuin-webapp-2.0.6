@@ -19,6 +19,7 @@ import {
   SDKEventEmitter,
   SDKEventName,
 } from "@genuin/components/lib/sdk-event-emitter";
+import { useEmbedContext } from "@genuin/components/context";
 
 type IHeartControlsProps = ComponentProps<"div"> & {
   /**
@@ -45,6 +46,7 @@ type IHeartControlsProps = ComponentProps<"div"> & {
    * Callback functions for handling control actions
    */
   onReactionStateChange?: (isReacted: boolean) => void;
+  index?: number;
 };
 
 export function IHeartControls({
@@ -57,10 +59,12 @@ export function IHeartControls({
   isReacted = false,
   reactionCount = 0,
   onReactionStateChange,
+  index,
   ...restProps
 }: IHeartControlsProps) {
   const { playingState, togglePlay, muted, toggleMuted } = usePlayerContext();
   const { track, EventName } = useAnalytics();
+  // const { embedEventBus } = useEmbedContext();
   const isExpand = variant === "expand";
   const shareUrl = isExpand
     ? window.location.href
@@ -135,6 +139,7 @@ export function IHeartControls({
         className="gencl:w-11 gencl:h-11 gencl:p-0 gencl:flex gencl:items-center gencl:justify-center"
         onClick={() => {
           toggleMuted(true);
+          // embedEventBus.emit("centerActiveSlide", {});
         }}
       >
         {muted ? (

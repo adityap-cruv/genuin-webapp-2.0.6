@@ -247,6 +247,7 @@ function EmbedPlayer({
       <ControlLayer
         variant={config.view.isPlacementView ? "placement" : "embed"}
         isActive={isActive}
+        index={index}
         postDetails={postDetails}
         onClick={handleClickOnEmbedTile}
         onCommentCountChange={undefined}

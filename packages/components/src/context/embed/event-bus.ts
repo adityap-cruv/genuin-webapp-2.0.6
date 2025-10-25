@@ -57,7 +57,8 @@ type EmbedEventNameType =
   | "isSectionedChange"
   | "selectedSectionChange"
   | "containerInViewChange"
-  | "disableSwiperChange";
+  | "disableSwiperChange"
+  | "centerActiveSlide";
 
 /**
  * Creates a new event bus instance for embed functionality

@@ -19,6 +19,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
   layoutType,
   onCommentCountChange,
   isActive,
+  index,
   ...restProps
 }) => {
   const { baseContextManager } = useBaseContext();
@@ -131,6 +132,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
             className={cn("gencl:z-20 gencl:lg:gap-1!")}
             size="lg"
             variant="clip"
+            index={index}
             isActive={isActive}
             contentId={postDetails.video.id}
             slug={postDetails.video.slug}

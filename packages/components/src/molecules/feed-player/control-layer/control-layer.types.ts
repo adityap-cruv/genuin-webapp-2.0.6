@@ -9,6 +9,7 @@ export type ControlLayerPropsType = ComponentProps<"div"> & {
   postDetails: PostDetailsType;
   isInModal?: boolean;
   isActive: boolean;
+  index: number;
   showCloseButton?: boolean;
   isSectioned?: boolean;
   clipVideo?: boolean;

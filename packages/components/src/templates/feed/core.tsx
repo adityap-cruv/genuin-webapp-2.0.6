@@ -61,7 +61,7 @@ export const FeedViewCore = memo(function FeedViewCore({
   const { handleSwipeCount, dialogType, shouldShowDialog, closeDialog } =
     useInterruptionManager();
   const embedDetails = useSafeEmbedContext();
-  const { theme } = useBaseContext();
+  const { theme = "dark" } = useBaseContext();
   const {
     view: { brandLayoutType },
   } = useEmbedConfigs();

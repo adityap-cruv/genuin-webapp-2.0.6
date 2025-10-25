@@ -83,6 +83,8 @@ export function PlayerList({
     view: { brandLayoutType },
   } = useEmbedConfigs();
   const embedDetails = useSafeEmbedContext();
+  // if we use directly isTablet from the hook then for desktop it will be true based on useDeviceDetectMediaQuery implementation
+  const isTablet = !isMobile && !isDesktop;
 
   // Container dimensions state
   const containerRef = useRef<HTMLDivElement>(null);
@@ -94,8 +96,7 @@ export function PlayerList({
 
   // Calculate slide dimensions on mount and resize (only for iheart brand on specific devices)
   useEffect(() => {
-    const shouldCalculateDimensions =
-      brandLayoutType === "iheart" && !isMobile && !isDesktop;
+    const shouldCalculateDimensions = brandLayoutType === "iheart" && isTablet;
 
     if (!shouldCalculateDimensions) {
       setSlideDimensions(null);
@@ -313,19 +314,13 @@ export function PlayerList({
       className={cn(
         "gencl:h-full gencl:w-full gencl:flex gencl:justify-center",
         brandLayoutType === "iheart" && isDesktop && "gencl:sm:py-8!",
+        brandLayoutType === "iheart" && isTablet && "gencl:sm:pt-8!",
         brandLayoutType !== "iheart" && "gencl:gap-6"
       )}
     >
-      {/* Back button for iheart expand view (not on mobile) */}
-      {brandLayoutType === "iheart" && !isMobile && (
-        <div className="gencl:pl-10.5">
-          <BackButton onBackClick={toggleExpandView} theme={theme} />
-        </div>
-      )}
-
       <div
         className={cn(
-          "gencl:flex gencl:flex-1 gencl:justify-center gencl:h-full gencl:w-full gencl:sm:w-fit! gencl:relative",
+          "gencl:flex gencl:justify-center gencl:h-full gencl:w-full gencl:sm:w-fit! gencl:relative",
           brandLayoutType !== "iheart" && "gencl:gap-6"
         )}
       >
@@ -375,6 +370,13 @@ export function PlayerList({
           />
         )}
       </div>
+
+      {/* Back button for iheart expand view (not on mobile) */}
+      {brandLayoutType === "iheart" && !isMobile && (
+        <div className="gencl:absolute gencl:top-8 gencl:left-8 gencl:z-50">
+          <BackButton onBackClick={toggleExpandView} theme={theme} />
+        </div>
+      )}
 
       {/* Navigation buttons for expand view (not on mobile) */}
       {showExpandView && brandLayoutType !== "iheart" && !isMobile && (
@@ -599,7 +601,7 @@ function BackButton({
         size="lg"
         theme={theme === "dark" ? "navigation" : "secondary"}
         onClick={onBackClick}
-        className="gencl:hidden gencl:lg:flex!"
+        className="gencl:hidden! gencl:lg:flex!"
       >
         <ArrowLeftIcon theme={theme === "dark" ? "dark" : "light"} size="md" />
       </Button>
@@ -612,7 +614,7 @@ function BackButton({
           e.stopPropagation();
           onBackClick?.();
         }}
-        className="gencl:w-11 gencl:h-11 gencl:flex gencl:lg:hidden!"
+        className="gencl:flex! gencl:lg:hidden!"
         aria-label="Go back"
       >
         <ChevronLeftIcon

@@ -199,6 +199,21 @@ export function Embed({
     };
   }, [fetchNextPage, isLoading, hasNextPage, isFetchingNextPage, videos]);
 
+  // Listen for centerActiveSlide event to center the swiper when exiting expand view
+  useEffect(() => {
+    function handleCenterActiveSlide() {
+      if (swiper) {
+        const activeIndex = embedEventBus.getContext().activeIndex;
+        swiper.slideTo(activeIndex, 300); // Center the active slide with smooth animation
+      }
+    }
+
+    embedEventBus.on("centerActiveSlide", handleCenterActiveSlide);
+    return () => {
+      embedEventBus.off("centerActiveSlide", handleCenterActiveSlide);
+    };
+  }, [swiper, embedEventBus]);
+
   // Use the custom hook with style prop to prioritize parent styles
   const {
     containerHeight,
@@ -307,7 +322,7 @@ export function Embed({
             )}
           </div>
         )}
-        {isIheartLayout && (
+        {isIheartLayout && config.view.isCarousel && (
           <NavigationButtonsWithContext
             totalSlides={videos?.length ?? 0}
             isIheartLayout={true}

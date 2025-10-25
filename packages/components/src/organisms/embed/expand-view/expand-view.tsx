@@ -73,6 +73,8 @@ export function EmbedExpandView({
       }
       return x;
     });
+    // Emit event to center the active slide in the swiper before going back
+    embedEventBus.emit("centerActiveSlide", {});
     goBackToPreviousPlayerType();
   };
 

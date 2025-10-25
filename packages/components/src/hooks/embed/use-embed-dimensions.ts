@@ -112,10 +112,10 @@ export function useEmbedDimensions() {
       MIN_CAROUSEL_HEIGHT
     );
 
-    // For iheart brand layout, reserve space for navigation buttons below the embed
-    const isIheartLayout = config.view.brandLayoutType === 'iheart';
+    // For iheart brand layout in carousel view, reserve space for navigation buttons below the embed
+    const isIheartCarouselLayout = config.view.brandLayoutType === 'iheart' && config.view.isCarousel;
     const navigationButtonHeight = 60; // Approximate height for navigation buttons
-    const finalAvailableHeight = isIheartLayout
+    const finalAvailableHeight = isIheartCarouselLayout
       ? Math.max(availableHeight - navigationButtonHeight, MIN_CAROUSEL_HEIGHT)
       : availableHeight;
 

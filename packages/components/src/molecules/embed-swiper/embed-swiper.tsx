@@ -155,8 +155,10 @@ export function EmbedSwiper({
       role="region"
       aria-label={forFeed ? "Video feed carousel" : "Video carousel"}
       className={cn("gencl:h-full gencl:w-full", className)}
-      centeredSlides={slidesPerView < 3 ? false : centeredSlides}
-      centeredSlidesBounds={slidesPerView < 3 ? false : centeredSlidesBounds}
+      centeredSlides={slidesPerView < 3 && !forFeed ? false : centeredSlides}
+      centeredSlidesBounds={
+        slidesPerView < 3 && !forFeed ? false : centeredSlidesBounds
+      }
       {...restProps}
     >
       {children}
