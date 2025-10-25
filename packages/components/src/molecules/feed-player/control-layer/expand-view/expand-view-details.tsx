@@ -303,13 +303,14 @@ const AdaptiveDescription = memo(function AdaptiveDescription({
             showExpandText
             viewMoreText="More"
             shouldAnimate
-            useDynamicHeight
             expandable
             showBottomOverlay={layoutType === "iheart"}
             open={isExpanded}
             onExpandChange={onExpand}
             viewLessText="Less"
+            expandedHeight="20vh"
             position="overlay"
+            showOverlay={true}
             textClassName="gencl:text-[14px] gencl:font-normal gencl:leading-[20px] gencl:tracking-[-0.35px]! gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]! gencl:text-white/70!"
             maxLines={2}
           />
@@ -367,6 +368,7 @@ const SharedActions = memo(function SharedActions({
   onReactionStateChange,
   onCommentCountChange,
   brandLayoutType,
+  isActive,
 }: {
   postDetails: PostDetailsType;
   defaultOpenCommentDialog: boolean;
@@ -375,6 +377,7 @@ const SharedActions = memo(function SharedActions({
     typeof CommentsDialog
   >["onCommentCountChange"];
   onReactionStateChange?: (videoId: string, isReacted: boolean) => void;
+  isActive: boolean;
 }) {
   const embedDetails = useSafeEmbedContext();
 
@@ -386,6 +389,7 @@ const SharedActions = memo(function SharedActions({
         className={cn("gencl:gap-1 gencl:z-20")}
         size="lg"
         variant="expand"
+        isActive={isActive}
         contentId={postDetails.video.id}
         slug={postDetails.video.slug}
         isReacted={postDetails.video.isSparked ?? false}
@@ -555,6 +559,7 @@ export function ExpandViewDetails({
           defaultOpenCommentDialog={defaultOpenCommentDialog}
           onReactionStateChange={onReactionStateChange}
           onCommentCountChange={onCommentCountChange}
+          isActive={isActive}
         />
       </div>
       {(!hideGroupPill || !hideCommunityPill) && (

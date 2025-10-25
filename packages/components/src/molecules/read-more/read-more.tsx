@@ -86,11 +86,13 @@ export const ReadMore = memo(function ReadMore({
   ...rest
 }: ReadMoreProps) {
   const textRef = useRef<HTMLParagraphElement>(null);
+  const containerRef = useRef<HTMLParagraphElement>(null);
   const [isExpanded, setIsExpanded] = useState(defaultExpand);
   // For smooth collapse: delay reducing chars until after animation
   const [showCollapsed, setShowCollapsed] = useState(!defaultExpand);
   const [maxCharacter, setCalculatedMaxChars] = useState<number>(maxChars ?? 0);
   const [measuredHeight, setMeasuredHeight] = useState("0px");
+  const [maskState, setMaskState] = useState({ bottom: true, top: false });
   // Memoize parsed text processing
   const parsedText = useMemo(() => {
     if (!text) return "";
@@ -277,6 +279,69 @@ export const ReadMore = memo(function ReadMore({
     setIsExpanded(open);
   }, [open]);
 
+  // Handle scroll to show/hide mask image based on scroll position
+  useEffect(() => {
+    if (!shouldAnimate || !expandable || !showBottomOverlay) return;
+
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      const scrollThreshold = 10; // pixels from bottom/top
+      const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+
+      // Show bottom mask if not near bottom and content is scrollable
+      const shouldShowBottomMask =
+        distanceFromBottom > scrollThreshold && scrollHeight > clientHeight;
+      setMaskState((prev) => ({
+        ...prev,
+        bottom: shouldShowBottomMask,
+      }));
+
+      // Show top mask if scrolled down (not at top)
+      const shouldShowTopMask = scrollTop > scrollThreshold;
+      setMaskState((prev) => ({
+        ...prev,
+        top: shouldShowTopMask,
+      }));
+    };
+
+    // Initial check
+    handleScroll();
+
+    container.addEventListener("scroll", handleScroll, { passive: true });
+
+    // Also check on resize in case content changes
+    const resizeObserver = new ResizeObserver(handleScroll);
+    resizeObserver.observe(container);
+
+    return () => {
+      container.removeEventListener("scroll", handleScroll);
+      resizeObserver.disconnect();
+    };
+  }, [shouldAnimate, expandable, showBottomOverlay, isExpanded]);
+
+  // Reset mask visibility when expanding/collapsing
+  useEffect(() => {
+    if (isExpanded && showBottomOverlay) {
+      // Small delay to allow layout to settle
+      const timer = setTimeout(() => {
+        const container = containerRef.current;
+        if (container) {
+          const { scrollHeight, clientHeight } = container;
+          setMaskState({
+            bottom: scrollHeight > clientHeight,
+            top: false, // Reset to top when expanding
+          });
+        }
+      }, 100);
+      return () => clearTimeout(timer);
+    } else {
+      setMaskState({ bottom: false, top: false });
+    }
+  }, [isExpanded, showBottomOverlay]);
+
   const clampedStyle: React.CSSProperties = {
     display: display === "inline" ? "inline" : "-webkit-box",
     WebkitLineClamp: maxLines,
@@ -442,8 +507,10 @@ export const ReadMore = memo(function ReadMore({
     <div className="gencl:w-full gencl:overflow-clip" style={{ maxWidth }}>
       <p
         {...rest}
+        ref={containerRef}
         className={cn(
           "gencl:transition-all gencl:relative gencl:duration-500 gencl:ease-in-out gencl:overflow-auto gencl:scrollbar-none gencl:w-full",
+          "swiper-no-swiping",
           className
         )}
         style={{
@@ -456,8 +523,17 @@ export const ReadMore = memo(function ReadMore({
           overflow: shouldAnimate && expandable ? "auto" : undefined,
           transition:
             shouldAnimate && expandable
-              ? "max-height 0.5s cubic-bezier(0.4,0,0.2,1)"
+              ? "max-height 0.5s cubic-bezier(0.4,0,0.2,1), -webkit-mask-image 0.3s ease-in-out, mask-image 0.3s ease-in-out"
               : undefined,
+          ...(isExpanded &&
+            showBottomOverlay && {
+              WebkitMaskImage: `
+                linear-gradient(to bottom, transparent 0%, black ${maskState.top ? "30%" : "0%"}, black ${maskState.bottom ? "70%" : "100%"}, transparent 100%)
+              `.trim(),
+              maskImage: `
+                linear-gradient(to bottom, transparent 0%, black ${maskState.top ? "30%" : "0%"}, black ${maskState.bottom ? "70%" : "100%"}, transparent 100%)
+              `.trim(),
+            }),
           ...rest.style,
         }}
         onClick={(e) => {
@@ -489,15 +565,6 @@ export const ReadMore = memo(function ReadMore({
           {displayText}
         </span>
       </p>
-      {isExpanded && showBottomOverlay && (
-        <div
-          className="gencl:absolute gencl:bottom-0 gencl:left-0 gencl:right-0 gencl:h-2/5 gencl:pointer-events-none"
-          style={{
-            background:
-              "linear-gradient(180deg, rgba(39, 41, 45, 0) 0%, #1E1317 100%)",
-          }}
-        />
-      )}
     </div>
   );
 
@@ -571,22 +638,18 @@ export const ReadMore = memo(function ReadMore({
       )}
     >
       {/* Overlay backdrop */}
-      {showOverlay &&
-        expandable &&
-        textParts.shouldTruncate &&
-        isExpanded &&
-        !showBottomOverlay && (
-          <div
-            className={cn(
-              "gencl:fixed gencl:inset-0 gencl:bg-black/60 gencl:transition-opacity gencl:duration-300",
-              isExpanded
-                ? "gencl:opacity-100 gencl:pointer-events-auto"
-                : "gencl:opacity-0 gencl:pointer-events-none",
-              overlayClassName
-            )}
-            onClick={handleOverlayClick}
-          />
-        )}
+      {showOverlay && expandable && textParts.shouldTruncate && isExpanded && (
+        <div
+          className={cn(
+            "gencl:fixed gencl:inset-0 gencl:bg-black/40 gencl:transition-opacity gencl:duration-300",
+            isExpanded
+              ? "gencl:opacity-100 gencl:pointer-events-auto"
+              : "gencl:opacity-0 gencl:pointer-events-none",
+            overlayClassName
+          )}
+          onClick={handleOverlayClick}
+        />
+      )}
       {finalContent}
     </div>
   );

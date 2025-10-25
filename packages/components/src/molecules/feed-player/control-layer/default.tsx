@@ -69,15 +69,15 @@ export function Default({
         if (!isMobile) return;
 
         // Show reaction icon
-        if (!postDetails.video.isSparked) setShowReactionIcon(true);
+        setShowReactionIcon(true);
 
         // Hide reaction icon after 1 seconds with fade
         setTimeout(() => {
           setShowReactionIcon(false);
         }, 1000);
 
-        // Programmatically trigger reaction button click
-        if (reactionButtonRef.current) {
+        // Programmatically trigger reaction button click only if not already sparked
+        if (!postDetails.video.isSparked && reactionButtonRef.current) {
           reactionButtonRef.current.click();
         }
       },
@@ -165,15 +165,13 @@ export function Default({
               <DynamicReactionIcon
                 isSparked={postDetails.video.isSparked ?? false}
                 sparkCount={postDetails.video.sparkCount}
-                type="feed"
-                iconHeight={120}
-                iconWidth={120}
+                type="feed_animate"
+                iconHeight={185}
+                iconWidth={185}
                 theme="light"
                 className={cn(
-                  "gencl:absolute gencl:left-1/2 gencl:top-1/2 gencl:flex gencl:items-center",
-                  "gencl:justify-center gencl:h-32 gencl:w-32",
-                  "gencl:-translate-x-1/2 gencl:-translate-y-1/2 gencl:z-20",
-                  "gencl:transition-opacity gencl:duration-300 gencl:opacity-100"
+                  "gencl:absolute gencl:left-1/2 gencl:top-1/2 gencl:-translate-x-1/2 gencl:-translate-y-1/2 gencl:z-20",
+                  "gencl:delay-1000 gencl:animate-fade-out gencl:transition-all gencl:duration-700 gencl:ease-out"
                 )}
               />
             )}

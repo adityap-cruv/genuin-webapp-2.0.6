@@ -23,7 +23,7 @@ type DynamicReactionIconProps = {
   iconHeight?: number;
   iconWidth?: number;
   className?: string;
-  type: "feed" | "comment" | "social_count";
+  type: "feed" | "comment" | "social_count" | "feed_animate";
 } & VariantProps<typeof reactionButtonVariant>;
 
 export function DynamicReactionIcon({
@@ -55,6 +55,8 @@ export function DynamicReactionIcon({
         return isSparked
           ? reaction?.keys.feed_selected.svg
           : reaction?.keys.feed_unselected.svg;
+      case "feed_animate":
+        return reaction?.keys.feed_animate.png;
       case "social_count":
         return theme === "dark"
           ? reaction?.keys.social_count_white.svg
