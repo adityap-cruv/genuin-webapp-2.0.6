@@ -66,7 +66,7 @@ export function EmbedItem({
   }, []);
 
   const debouncedSetActiveIndex = useDebounceCallback(() => {
-    updateActiveIndex(index);
+    updateActiveIndex(index, true);
   }, 700);
 
   const handleMouseLeave = useCallback(() => {

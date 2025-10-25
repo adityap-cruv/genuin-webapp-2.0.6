@@ -23,6 +23,7 @@ import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
 import { IHeartCaughtUpOverlay } from "@genuin/components/molecules/feed-player/control-layer/iheart";
 import { isMiddlewareOverlayEnabled } from "@genuin/components/lib/utils";
 import WatchBoundaryOverlay from "@genuin/components/molecules/feed-player/control-layer/watch-boundary-overlay";
+import { useEmbedManagerContext } from "../embed/context";
 
 /**
  * Helper function to extract the most appropriate URL from linkouts based on priority:
@@ -94,6 +95,7 @@ export function EmbedTile({
   ...restProps
 }: EmbedTileProps & VariantProps<typeof embedTileVariants>) {
   const { value, toggle } = useBoolean(false);
+  const { updateActiveIndex } = useEmbedManagerContext();
   // Use the structured config object
   const config = useEmbedConfigs();
   const shouldShowMiddlewareOverlay = isMiddlewareOverlayEnabled({
@@ -122,6 +124,7 @@ export function EmbedTile({
         >
           {/* Take available height after showLinkOutside & showSocialInteractionData gets its height   */}
           <PlayerProvider
+            index={index}
             isActive={isActive}
             videoId={postDetails.video.id}
             showExpandView={value}
@@ -130,6 +133,7 @@ export function EmbedTile({
             isEmbed
             explicitAutoPlay={config.video.videoAutoplay && isActive}
             explicitLoop={config.video.videoLoop && isActive}
+            updateActiveIndex={updateActiveIndex}
           >
             <EmbedPlayer
               postDetails={postDetails}

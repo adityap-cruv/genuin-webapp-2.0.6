@@ -40,6 +40,7 @@ type IHeartControlsProps = ComponentProps<"div"> & {
   slug?: string;
   isReacted?: boolean;
   reactionCount?: number;
+  isActive: boolean;
   /**
    * Callback functions for handling control actions
    */
@@ -50,6 +51,7 @@ export function IHeartControls({
   className,
   size = "xs",
   variant = "clip",
+  isActive,
   contentId,
   slug,
   isReacted = false,

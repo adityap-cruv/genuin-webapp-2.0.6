@@ -26,7 +26,7 @@ type EmbedManagerContextType = {
    * @param index The new active index.
    * @returns void
    */
-  updateActiveIndex: (index: number) => void;
+  updateActiveIndex: (index: number, byHover?: boolean) => void;
   /**
    * Function to go to the next video in the embed.
    * @param useAutoScroll Whether to use intelligent auto-scroll positioning (default: false)
@@ -84,7 +84,7 @@ export function EmbedManagerProvider({
       // Calculate target slide index based on direction
       let targetSlideIndex =
         direction === "next"
-          ? currentIndex + slideOffset
+          ? currentIndex + slideOffset - 1
           : currentIndex - slideOffset;
 
       // Calculate which slide will be first visible after scrolling
@@ -145,7 +145,7 @@ export function EmbedManagerProvider({
   }, [swiper, activeIndex, previousVisibleRange, isGridLayout]);
 
   const updateActiveIndex = useCallback(
-    (index: number) => {
+    (index: number, byHover?: boolean) => {
       if (isGridLayout) {
         // In grid layout, all indices are valid
         setActiveIndex(index);
@@ -157,6 +157,10 @@ export function EmbedManagerProvider({
       // Only update if the index is currently visible
       if (isSlideVisible(swiper, index)) {
         setActiveIndex(index);
+      } else {
+        if (!byHover) {
+          setActiveIndex(index);
+        }
       }
     },
     [swiper, setActiveIndex, isGridLayout]

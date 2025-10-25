@@ -131,6 +131,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
             className={cn("gencl:z-20 gencl:lg:gap-1!")}
             size="lg"
             variant="clip"
+            isActive={isActive}
             contentId={postDetails.video.id}
             slug={postDetails.video.slug}
             isReacted={postDetails.video.isSparked ?? false}
