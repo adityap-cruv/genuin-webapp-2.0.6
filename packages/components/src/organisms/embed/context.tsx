@@ -160,6 +160,7 @@ export function EmbedManagerProvider({
       } else {
         if (!byHover) {
           setActiveIndex(index);
+          swiper.slideTo(index, 300);
         }
       }
     },

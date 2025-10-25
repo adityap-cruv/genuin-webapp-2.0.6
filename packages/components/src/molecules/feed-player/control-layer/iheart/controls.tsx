@@ -64,7 +64,6 @@ export function IHeartControls({
 }: IHeartControlsProps) {
   const { playingState, togglePlay, muted, toggleMuted } = usePlayerContext();
   const { track, EventName } = useAnalytics();
-  // const { embedEventBus } = useEmbedContext();
   const isExpand = variant === "expand";
   const shareUrl = isExpand
     ? window.location.href
@@ -139,7 +138,6 @@ export function IHeartControls({
         className="gencl:w-11 gencl:h-11 gencl:p-0 gencl:flex gencl:items-center gencl:justify-center"
         onClick={() => {
           toggleMuted(true);
-          // embedEventBus.emit("centerActiveSlide", {});
         }}
       >
         {muted ? (

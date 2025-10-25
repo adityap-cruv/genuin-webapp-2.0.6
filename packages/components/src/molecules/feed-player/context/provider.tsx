@@ -414,49 +414,42 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   );
 
   /**
-   * Internal helper to set play state and handle common side effects.
-   * @param playing - Whether the video should play (true) or pause (false)
-   * @param byUser - Whether this was triggered by user action
-   * @param resetWatched - Whether to reset the video watched state (only for play)
-   */
-  const setPlayState = useCallback(
-    (playing: boolean, byUser: boolean, resetWatched: boolean = false) => {
-      setFeedPlayerShouldPlay(playing);
-
-      if (resetWatched) {
-        baseContextManager.setVideoWatched({ videoId, isWatched: false });
-      }
-
-      if (byUser) {
-        baseContextManager.setPlayPauseTracker({ isPlaying: playing });
-        setButtonAction(playing ? "PAUSE" : "PLAY");
-        track(playing ? EventName.VIDEO_PLAY : EventName.VIDEO_PAUSED, {
-          content_id: videoId,
-        });
-      }
-    },
-    [baseContextManager, videoId, setButtonAction, track]
-  );
-
-  /**
    * This function is used to toggle the play state of the video player.
    */
   const togglePlay = useCallback(
     (byUser: boolean) => {
-      if (byUser && !isActive && index !== undefined) {
-        // Handle inactive case: activate this item without toggling play state
-        updateActiveIndex?.(index);
-        setButtonAction("PAUSE"); // Assuming it should play after activation
-        return;
-      }
-
       setFeedPlayerShouldPlay((prev) => {
+        if (byUser && !isActive && index !== undefined) {
+          // If user is trying to play while inactive, activate this item
+          updateActiveIndex?.(index);
+          return prev; // Set to play after activation
+        }
         const newPlayingState = !prev;
-        setPlayState(newPlayingState, byUser);
+        if (byUser) {
+          baseContextManager.setPlayPauseTracker({
+            isPlaying: newPlayingState,
+          });
+
+          setButtonAction(prev ? "PAUSE" : "PLAY");
+          // Track play/pause events with Analytics only if the video play pause is triggered by user.
+          track(prev ? EventName.VIDEO_PAUSED : EventName.VIDEO_PLAY, {
+            content_id: videoId,
+          });
+        }
         return newPlayingState;
       });
     },
-    [isActive, index, updateActiveIndex, setButtonAction, setPlayState]
+    [
+      setFeedPlayerShouldPlay,
+      EventName.VIDEO_PAUSED,
+      EventName.VIDEO_PLAY,
+      baseEventBus,
+      baseContextManager,
+      track,
+      videoId,
+      updateActiveIndex,
+      isActive,
+    ]
   );
 
   // setPlayerRef: Sets the player reference to the current OpenPlayerJS instance or null.
@@ -470,17 +463,36 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       if (seekTime >= 0 && playerRef.current) {
         playerRef.current.getMedia().currentTime = seekTime;
       }
-      setPlayState(true, byUser, true);
+      setFeedPlayerShouldPlay(true);
+      baseContextManager.setVideoWatched({ videoId, isWatched: false });
+      if (byUser) {
+        baseContextManager.setPlayPauseTracker({ isPlaying: true });
+
+        setButtonAction("PLAY");
+        // Track play event with Analytics only if the video play is triggered by user.
+        track(EventName.VIDEO_PLAY, {
+          content_id: videoId,
+        });
+      }
     },
-    [setPlayState]
+    [baseEventBus, baseContextManager, EventName.VIDEO_PLAY, track, videoId]
   );
 
   // pause: Sets the feed player to pause state.
   const pause = useCallback(
     (byUser: boolean) => {
-      setPlayState(false, byUser);
+      setFeedPlayerShouldPlay(false);
+      if (byUser) {
+        baseContextManager.setPlayPauseTracker({ isPlaying: false });
+
+        setButtonAction("PAUSE");
+        // Track pause event with Analytics only if the video pause is triggered by user.
+        track(EventName.VIDEO_PAUSED, {
+          content_id: videoId,
+        });
+      }
     },
-    [setPlayState]
+    [EventName.VIDEO_PAUSED, baseEventBus, baseContextManager, track, videoId]
   );
 
   // toggleMuted: Toggles the muted state of the player.
