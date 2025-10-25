@@ -10,6 +10,7 @@ import {
   SDKEventEmitter,
   SDKEventName,
 } from "@genuin/components/lib/sdk-event-emitter";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 
 type EmbedSwiperProps = {
   forFeed?: boolean;
@@ -39,42 +40,54 @@ export function EmbedSwiper({
   freeMode = false,
   centeredSlides,
   centeredSlidesBounds,
+  onActiveIndexChange,
   ...restProps
 }: EmbedSwiperProps) {
   const { isWindows } = useDeviceDetection();
+  const { isDesktop } = useDeviceDetectMediaQuery();
+  const lastFiredEventRef = useRef<"forward" | "backward" | null>(null);
 
   const scrolledOnce = () => {
-    console.log("Scrolled from index 0 to 1");
     SDKEventEmitter.emit(SDKEventName.SWIPED_FORWARD, {
       fromIndex: 0,
       toIndex: 1,
       timestamp: Date.now(),
     });
+    lastFiredEventRef.current = "forward";
   };
 
   const scrolledBack = () => {
-    console.log("Scrolled back from index 1 to 0");
     SDKEventEmitter.emit(SDKEventName.SWIPED_BACKWARD, {
       fromIndex: 1,
       toIndex: 0,
       timestamp: Date.now(),
     });
+    lastFiredEventRef.current = "backward";
   };
 
   const handleActiveIndexChange = (swiper: SwiperType) => {
-    const currentIndex = swiper.activeIndex;
-    const previousIndex = swiper.previousIndex;
+    onActiveIndexChange?.(swiper);
+
+    // for desktop we are going to render carousel for iheart so no need to emit events.
+    if (isDesktop) return;
 
     // Check if scrolled from 0 to 1
-    if (previousIndex === 0 && currentIndex === 1) {
+    // Fire forward event only if backward was fired last or this is the first event
+    if (
+      swiper.previousIndex < swiper.activeIndex &&
+      lastFiredEventRef.current !== "forward"
+    ) {
       scrolledOnce();
     }
+
     // Check if scrolled back from 1 to 0
-    else if (previousIndex === 1 && currentIndex === 0) {
+    // Fire backward event only if forward was fired last or this is the first event
+    if (
+      swiper.previousIndex > swiper.activeIndex &&
+      lastFiredEventRef.current !== "backward"
+    ) {
       scrolledBack();
     }
-
-    // Update the previous index
   };
 
   const slidesPerView = useMemo(
