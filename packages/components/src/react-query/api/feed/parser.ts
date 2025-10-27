@@ -48,7 +48,7 @@ export function parseFeed(
     const item = data[index];
     if (!item) continue;
 
-    const currentIsWatched = item.video?.is_watched || false;
+    const currentIsWatched = item.video?.is_watched ?? false;
 
     // Map the API response to our schema
     const mappedItem: z.infer<typeof PostDetailsSchema> = {
@@ -171,6 +171,19 @@ export function parseFeed(
         // Mark boundary as found to skip further checks
         watchBoundaryFound = true;
       }
+    } else if (shouldShowMiddlewareOverlay && index === 0 && currentIsWatched) {
+      // Insert overlay marker at the transition boundary
+      result.push({
+        ...mappedItem,
+        video: {
+          ...mappedItem.video,
+          type: "overlay",
+          id: mappedItem.video.id + "_overlay",
+        },
+      });
+
+      // Mark boundary as found to skip further checks
+      watchBoundaryFound = true;
     }
 
     // Add the actual video item

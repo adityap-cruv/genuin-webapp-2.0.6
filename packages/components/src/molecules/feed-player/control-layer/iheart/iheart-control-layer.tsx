@@ -50,7 +50,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
       aria-label={`Video player controls for ${postDetails.video.attributes?.title || "video"}`}
       className={cn("gencl:h-full gencl:relative", className)}
       onClick={(e) => {
-        if (postDetails.video.isWatched || isVideoWatched) {
+        if (isVideoWatched) {
           e.stopPropagation();
           return;
         }
