@@ -1,7 +1,7 @@
 import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
 import { IHeartCaughtUpOverlay } from "./iheart";
 import { useCallback } from "react";
-import { getBaseUrlWithoutClip } from "@genuin/components/lib/utils";
+import { getBaseUrlWithouthighlights } from "@genuin/components/lib/utils";
 
 export default function WatchBoundaryOverlay({
   cardLayoutId,
@@ -14,7 +14,7 @@ export default function WatchBoundaryOverlay({
 
   const handleGoToEpisode = useCallback(() => {
     if (layoutType !== "iheart") return;
-    const redirectUrl = getBaseUrlWithoutClip(window.location.href);
+    const redirectUrl = getBaseUrlWithouthighlights(window.location.href);
     window.location.replace(redirectUrl);
   }, [layoutType]);
 

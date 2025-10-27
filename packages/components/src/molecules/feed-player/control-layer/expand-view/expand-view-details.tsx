@@ -32,7 +32,7 @@ import { IHeartControls } from "../iheart";
 import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
 import { ReadMoreTextType } from "@genuin/components/molecules/read-more/read-more.types";
 import { Link } from "@genuin/components/molecules/link";
-import { getBaseUrlWithoutClip } from "@genuin/components/lib/utils";
+import { getBaseUrlWithouthighlights } from "@genuin/components/lib/utils";
 
 // Constants
 const GRADIENT_COLORS = {
@@ -160,7 +160,7 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
   switch (type) {
     case "iheart":
       const podcastUrl = useMemo(
-        () => getBaseUrlWithoutClip(window.location.href),
+        () => getBaseUrlWithouthighlights(window.location.href),
         // Empty deps array is intentional - URL is computed once on mount
         // eslint-disable-next-line react-hooks/exhaustive-deps
         []
@@ -502,7 +502,7 @@ export function ExpandViewDetails({
       aria-label="Video details and actions"
       tabIndex={-1}
       className={cn(
-        "gencl:absolute gencl:gap-2 gencl:w-full gencl:z-20 gencl:right-0 gencl:bottom-0 gencl:p-4",
+        "gencl:absolute gencl:gap-2 gencl:w-full gencl:z-20 gencl:right-0 gencl:bottom-0 gencl:p-4 gencl:focus:outline-none",
         `gencl:bg-gradient-to-b gencl:from-[${GRADIENT_COLORS.from}] gencl:to-[${GRADIENT_COLORS.to}]`,
         className
       )}

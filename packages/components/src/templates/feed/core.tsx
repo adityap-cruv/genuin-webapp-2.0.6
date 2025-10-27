@@ -98,10 +98,16 @@ export const FeedViewCore = memo(function FeedViewCore({
 
       // Check if URL already contains a video path (indicated by "_" in pathname)
       if (!url.pathname.includes("_")) {
-        // Ensure pathname ends with '/' if it doesn't already, then append video path
-        const basePath = url.pathname.endsWith("/")
+        // Ensure pathname ends with '/' if it doesn't already
+        let basePath = url.pathname.endsWith("/")
           ? url.pathname
           : url.pathname + "/";
+
+        // Ensure /highlights is present in the URL before adding video path
+        if (!basePath.includes("/highlights")) {
+          basePath += "highlights/";
+        }
+
         url.pathname = basePath + videoPath;
       }
 

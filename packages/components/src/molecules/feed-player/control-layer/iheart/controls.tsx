@@ -67,7 +67,12 @@ export function IHeartControls({
   const isExpand = variant === "expand";
   const shareUrl = isExpand
     ? window.location.href
-    : `${window.location.href.replace(/\/$/, "")}/${slug}_${contentId}`;
+    : (() => {
+        const baseUrl = window.location.href.replace(/\/$/, "");
+        const hasHighlights = baseUrl.includes("/highlights");
+        const highlightsPath = hasHighlights ? "" : "/highlights";
+        return `${baseUrl}${highlightsPath}/${slug}_${contentId}`;
+      })();
 
   return (
     <div
