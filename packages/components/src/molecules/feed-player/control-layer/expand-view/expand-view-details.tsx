@@ -311,6 +311,7 @@ const AdaptiveDescription = memo(function AdaptiveDescription({
             expandedHeight="20vh"
             position="overlay"
             showOverlay={true}
+            buttonClassName="gencl:text-white/70! gencl:font-bold gencl:text-[14px] gencl:leading-[18px] gencl:tracking-[-0.5px] gencl:align-bottom"
             textClassName="gencl:text-[14px] gencl:font-normal gencl:leading-[20px] gencl:tracking-[-0.35px]! gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]! gencl:text-white/70!"
             maxLines={2}
           />
@@ -522,7 +523,7 @@ export function ExpandViewDetails({
           )}
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="gencl:z-10">
+          <div className="gencl:z-20">
             <AdaptiveUserProfile
               postDetails={postDetails}
               type={brandLayoutType}

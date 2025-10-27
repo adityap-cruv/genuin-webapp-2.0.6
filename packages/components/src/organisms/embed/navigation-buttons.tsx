@@ -59,19 +59,25 @@ export function NavigationButtons({
       variant="icon"
       shape="circle"
       size={size}
-      theme={buttonTheme}
+      theme={"custom"}
       disabled={disabled}
       onClick={onClick}
       aria-label={label}
+      className={disabled ? "gencl:bg-[#E6EAED]!" : "gencl:bg-[#27292D]!"}
+      style={{ background: disabled ? "#E6EAED" : "#27292D" }}
     >
-      <Icon theme={iconTheme} size="lg" />
+      <Icon
+        theme={iconTheme}
+        className={disabled ? "gencl:fill-[#A9AFB2]!" : "gencl:fill-white!"}
+        size="lg"
+      />
     </Button>
   );
 
   // iHeart layout - horizontal buttons below embed
   if (isIheartLayout) {
     return (
-      <div className="gencl:flex gencl:justify-center gencl:items-center gencl:gap-2 gencl:mt-4 gencl:mb-2">
+      <div className="gencl:flex gencl:justify-center gencl:items-center gencl:gap-2 gencl:my-4">
         {createNavButton(
           ChevronLeftIcon,
           isFirstSlide,

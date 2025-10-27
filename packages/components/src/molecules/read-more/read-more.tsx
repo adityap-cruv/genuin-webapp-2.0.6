@@ -1,7 +1,6 @@
 "use client";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@genuin/ui/lib/utils";
-
 import {
   applyLineClampStyles,
   calculateMaxCharacterLimitCached,
