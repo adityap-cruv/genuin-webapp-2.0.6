@@ -32,7 +32,10 @@ import { IHeartControls } from "../iheart";
 import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
 import { ReadMoreTextType } from "@genuin/components/molecules/read-more/read-more.types";
 import { Link } from "@genuin/components/molecules/link";
-import { getBaseUrlWithouthighlights } from "@genuin/components/lib/utils";
+import {
+  getBaseUrl,
+  getBaseUrlWithouthighlights,
+} from "@genuin/components/lib/utils";
 
 type BrandLayoutType = "default" | "iheart" | "ted" | "walmart" | "grubhub";
 
@@ -153,26 +156,37 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
 
   switch (type) {
     case "iheart":
-      const podcastUrl = useMemo(
-        () => getBaseUrlWithouthighlights(window.location.href),
-        // Empty deps array is intentional - URL is computed once on mount
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        []
-      );
-
       const embedContext = useSafeEmbedContext();
       const contentType = embedContext?.embedData.brand_context?.some((val) => {
         return val.type === "podcast";
       })
-        ? "podcase"
+        ? "podcast"
         : "station";
+
+      const linkUrl = useMemo(() => {
+        if (typeof window === "undefined") return "";
+
+        const currentUrl = window.location.href;
+
+        // If content type matches, use current URL without highlights
+        if (contentType === attributes?.type) {
+          return getBaseUrlWithouthighlights(currentUrl);
+        }
+
+        // Otherwise, generate URL for the other content type
+        const baseUrl = getBaseUrl(currentUrl);
+        const path = attributes?.type === "podcast" ? "/podcast" : "/live";
+        const slug = postDetails.video.attributes?.slug;
+
+        return `${baseUrl}${path}/${slug}`;
+      }, [contentType, attributes?.type, postDetails.video.attributes?.slug]);
 
       return (
         <div className="gencl:flex gencl:gap-2 gencl:items-center gencl:text-white">
           {attributes?.image_url && (
             <div className="gencl:shrink-0 gencl:size-16 gencl:rounded-md">
               <Link
-                href={podcastUrl}
+                href={linkUrl}
                 bypassChecks
                 aria-label={`View ${postDetails.video.attributes?.title || contentType} page`}
               >
@@ -188,7 +202,7 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
           <div className="gencl:w-full gencl:flex gencl:flex-col gencl:gap-1">
             {postDetails.video.attributes?.title && (
               <Link
-                href={podcastUrl}
+                href={linkUrl}
                 bypassChecks
                 aria-label={`Go to ${postDetails.video.attributes?.title} page`}
               >

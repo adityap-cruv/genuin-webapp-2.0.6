@@ -342,3 +342,19 @@ export function getBaseUrlWithouthighlights(url: string): string {
   const clipIndex = url.indexOf("/highlights");
   return clipIndex !== -1 ? url.substring(0, clipIndex) : url;
 }
+
+/**
+ * Extracts the base URL (origin) from a given URL, including protocol, host, and port
+ * @param url - The URL to process
+ * @returns The base URL without path, query, or fragment
+ * @example
+ * // Returns "https://web-listen-staging-17723.radioedit.iheart.com"
+ * getBaseUrl("https://web-listen-staging-17723.radioedit.iheart.com/podcast/1119-stuff-you-should-know-26940277/clip")
+ */
+export function getBaseUrl(url: string): string {
+  try {
+    return new URL(url).origin;
+  } catch {
+    return url;
+  }
+}

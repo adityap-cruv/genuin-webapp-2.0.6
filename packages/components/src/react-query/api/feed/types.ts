@@ -88,6 +88,10 @@ type VideoData = {
     bucket_name?: string;
     offer_text?: string;
     slug?: string;
+    episode_id?: string | null;
+    podcast_id?: string;
+    station_id?: string;
+    type?: string;
     [key: string]: unknown;
   };
 };

@@ -45,7 +45,11 @@ export const videoSchema = z.object({
       title: z.string().nullish(),
       bucket_name: z.string().nullish(),
       offer_text: z.string().nullish(),
-      slug: z.string().nullish()
+      slug: z.string().nullish(),
+      episode_id: z.string().nullish(),
+      podcast_id: z.string().nullish(),
+      station_id: z.string().nullish(),
+      type: z.string().nullish()
     })
     .nullish()
     .optional(),
