@@ -17,7 +17,7 @@ export function PlayerHeader({
 }: PlayerHeaderProps) {
   return (
     <div
-      className="gencl:absolute gencl:top-0 gencl:left-0 gencl:right-0 gencl:z-20 gencl:flex gencl:items-center gencl:p-4"
+      className="gencl:absolute gencl:top-0 gencl:left-0 gencl:right-0 gencl:z-20 gencl:flex gencl:items-center gencl:p-4 gencl:bg-gradient-to-b gencl:from-black/50 gencl:to-transparent"
       role="banner"
       {...restProps}
     >

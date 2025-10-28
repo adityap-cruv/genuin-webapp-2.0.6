@@ -11,6 +11,7 @@ import {
   isSlideVisible,
   getVisibleSlideRange,
   getNewActiveIndexOnSlideChange,
+  getSlideVisibilityPercentage,
 } from "./utils";
 import { useEmbedContext } from "@genuin/components/context/embed";
 import { EmbedEventContextType } from "@genuin/components/context/embed/event-bus";
@@ -160,7 +161,14 @@ export function EmbedManagerProvider({
       } else {
         if (!byHover) {
           setActiveIndex(index);
-          swiper.slideTo(index, 300);
+          const visibilityPercentage = getSlideVisibilityPercentage({
+            swiper,
+            index,
+            isVertical: config.view.isFeed,
+          });
+          if (visibilityPercentage < 70) {
+            swiper.slideTo(index, 300);
+          }
         }
       }
     },

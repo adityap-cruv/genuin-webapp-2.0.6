@@ -34,12 +34,6 @@ import { ReadMoreTextType } from "@genuin/components/molecules/read-more/read-mo
 import { Link } from "@genuin/components/molecules/link";
 import { getBaseUrlWithouthighlights } from "@genuin/components/lib/utils";
 
-// Constants
-const GRADIENT_COLORS = {
-  from: "#11111100",
-  to: "#111111b3",
-} as const;
-
 type BrandLayoutType = "default" | "iheart" | "ted" | "walmart" | "grubhub";
 
 // Utility functions
@@ -176,19 +170,20 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
       return (
         <div className="gencl:flex gencl:gap-2 gencl:items-center gencl:text-white">
           {attributes?.image_url && (
-            <Link
-              href={podcastUrl}
-              bypassChecks
-              aria-label={`View ${postDetails.video.attributes?.title || contentType} page`}
-              className="gencl:shrink-0"
-            >
-              <Image
-                aspectRatio="square"
-                src={attributes.image_url}
-                alt={`${postDetails.video.attributes?.title || contentType} artwork`}
-                className="gencl:size-16 gencl:rounded-md gencl:object-cover"
-              />
-            </Link>
+            <div className="gencl:shrink-0 gencl:size-16 gencl:rounded-md">
+              <Link
+                href={podcastUrl}
+                bypassChecks
+                aria-label={`View ${postDetails.video.attributes?.title || contentType} page`}
+              >
+                <Image
+                  aspectRatio="square"
+                  src={attributes.image_url}
+                  alt={`${postDetails.video.attributes?.title || contentType} artwork`}
+                  className="gencl:size-16 gencl:rounded-md gencl:object-cover"
+                />
+              </Link>
+            </div>
           )}
           <div className="gencl:w-full gencl:flex gencl:flex-col gencl:gap-1">
             {postDetails.video.attributes?.title && (
@@ -504,7 +499,7 @@ export function ExpandViewDetails({
       tabIndex={-1}
       className={cn(
         "gencl:absolute gencl:gap-2 gencl:w-full gencl:z-20 gencl:right-0 gencl:bottom-0 gencl:p-4 gencl:focus:outline-none",
-        `gencl:bg-gradient-to-b gencl:from-[${GRADIENT_COLORS.from}] gencl:to-[${GRADIENT_COLORS.to}]`,
+        `gencl:bg-gradient-to-t gencl:from-black/50 gencl:to-transparent`,
         className
       )}
       {...restProps}

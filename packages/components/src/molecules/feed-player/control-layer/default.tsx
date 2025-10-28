@@ -21,6 +21,7 @@ import {
 } from "@genuin/components/molecules/reaction-button";
 import { Button } from "@genuin/ui/button";
 import { useDoubleClick } from "@genuin/components/hooks/use-double-click";
+import { useAuthContext } from "@genuin/components/context";
 
 export function Default({
   className,
@@ -48,6 +49,7 @@ export function Default({
   const { gestureOverlayUI, hideGestureOverlay } = useGestureOverlayManager();
   const { isMobile } = useDeviceDetectMediaQuery();
   const embedConfig = useEmbedConfigs();
+  const { user } = useAuthContext();
   const brandLayoutType = embedConfig.view.brandLayoutType;
 
   // Ref to programmatically trigger reaction button click
@@ -66,7 +68,7 @@ export function Default({
       },
       onDoubleClick: () => {
         // Only handle double-click on mobile
-        if (!isMobile) return;
+        if (!isMobile || !user) return;
 
         // Show reaction icon
         setShowReactionIcon(true);
@@ -195,7 +197,7 @@ export function Default({
               }
             />
 
-            {gestureOverlayUI}
+            {/* {gestureOverlayUI} */}
           </div>
         </>
       );
