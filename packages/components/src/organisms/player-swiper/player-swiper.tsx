@@ -273,6 +273,16 @@ export function PlayerList({
       }}
       onActiveIndexChange={(swiper) => {
         onActiveIndexChange?.(swiper.activeIndex);
+
+        // iHeart desktop layout: Prevent rapid slide changes with 300ms debounce
+        // Temporarily disable swiper to ignore additional navigation attempts
+        // Button remains visually enabled but swiper interactions are blocked
+        if (brandLayoutType === "iheart" && isDesktop) {
+          swiper.disable();
+          setTimeout(() => {
+            swiper.enable();
+          }, 300);
+        }
       }}
       disableScroll={disableSwiper}
     >
