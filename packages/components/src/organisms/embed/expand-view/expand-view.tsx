@@ -54,7 +54,7 @@ export function EmbedExpandView({
       engagementTools: { comment, share, repost, spark },
       redirectionTools: { community, group, user },
     },
-    view: { brandLayoutType },
+    view: { brandLayoutType, websiteType },
   } = useEmbedConfigs();
   const isIHeart = brandLayoutType === "iheart";
 
@@ -301,7 +301,12 @@ export function EmbedExpandView({
             "gen-sdk-class gen-sdk-expand-view gencl:h-full gencl:w-full gencl:flex gencl:justify-center gencl:gap-6  gencl:inset-0 gencl:z-50 gencl:bg-white",
             isMobile && "gencl:flex-col",
             // Apply fixed positioning with full screen dimensions for non-iHeart layouts
-            !isIHeart && "gencl:fixed gencl:h-screen gencl:w-screen"
+            !isIHeart && "gencl:fixed gencl:h-screen gencl:w-screen",
+            isIHeart &&
+              websiteType === "legacy" && [
+                "gencl:fixed",
+                isDesktop ? "gencl:z-[117]!" : "gencl:z-[112]!",
+              ]
           )}
         >
           <IheartFullscreenContainer>

@@ -143,7 +143,7 @@ type ReactionKeys = {
   feed_unselected: ReactionKey;
   social_count_white: ReactionKey;
   social_count_black: ReactionKey;
-  feed_animate: ReactionKey
+  feed_animate: ReactionKey;
 };
 
 type ReactionType = {
@@ -526,9 +526,10 @@ export type EmbedDataType = {
   show_style_details?: boolean;
   social_metrics?: "views";
   brand_context?: Array<{
-    id: string
-    type: string
+    id: string;
+    type: string;
   }>;
+  websiteType?: "polaris" | "legacy" | undefined;
 };
 
 export type CustomizationType = {
@@ -585,7 +586,7 @@ export type CustomizationType = {
   video_crop?: boolean;
   scroll_behavior?: "free_scroll" | "paging ";
   is_navigation_control_enabled?: boolean;
-  enable_auto_scroll?: boolean
+  enable_auto_scroll?: boolean;
 };
 
 export type FeedVideoType = {
@@ -843,7 +844,7 @@ export type PlacementEnvironmentConfig = {
     sub_heading_text_color: string;
     video_details: VideoDetails;
     video_layout_id?: number;
-    enable_auto_scroll?: boolean
+    enable_auto_scroll?: boolean;
   };
   expand_view: {
     enable_engagement_tools: EngagementTools;

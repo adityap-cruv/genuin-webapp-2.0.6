@@ -1,7 +1,7 @@
 "use client";
 import { cn } from "@genuin/ui/utils";
 import { CommunityUserRole } from "@genuin/components/types/post";
-import { useCallback, useEffect, memo, useRef } from "react";
+import { useCallback, useEffect, memo, useRef, useMemo } from "react";
 import "swiper/css";
 
 import { PlayerList } from "@genuin/components/organisms/player-swiper";
@@ -68,7 +68,6 @@ export const FeedViewCore = memo(function FeedViewCore({
   const { isDesktop } = useDeviceDetectMediaQuery();
   const showSidePanel = videos[activeIndex] && !showExpandView && isDesktop;
   const isIHeart = brandLayoutType === "iheart";
-
   // Get disableSwiper flag from embed context (only applies to expand view)
   const disableSwiper = showExpandView
     ? (embedDetails?.embedEventBus.getContext().disableSwiper ?? false)

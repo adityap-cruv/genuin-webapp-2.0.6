@@ -80,7 +80,7 @@ export function PlayerList({
     engagement: {
       engagementTools: { comment: showCommentBox },
     },
-    view: { brandLayoutType },
+    view: { brandLayoutType,websiteType },
   } = useEmbedConfigs();
   const embedDetails = useSafeEmbedContext();
   // if we use directly isTablet from the hook then for desktop it will be true based on useDeviceDetectMediaQuery implementation
@@ -360,21 +360,33 @@ export function PlayerList({
         </div>
 
         {/* Navigation buttons for iheart expand view positioned relative to player */}
-        {showExpandView && brandLayoutType === "iheart" && isDesktop && (
-          <NavigationButton
-            swiper={activeSwiper ?? undefined}
-            postsLength={posts.length}
-            position="relative"
-            className="gencl:pl-10 gencl:justify-end"
-            theme={theme}
-          />
-        )}
+        {showExpandView &&
+          brandLayoutType === "iheart" &&
+          isDesktop &&
+          !disableSwiper && (
+            <NavigationButton
+              swiper={activeSwiper ?? undefined}
+              postsLength={posts.length}
+              position="relative"
+              className={cn(
+                "gencl:pl-10",
+                websiteType === "polaris"
+                  ? "gencl:justify-end"
+                  : "gencl:justify-center"
+              )}
+              theme={theme}
+            />
+          )}
       </div>
 
       {/* Back button for iheart expand view (not on mobile) */}
       {brandLayoutType === "iheart" && !isMobile && (
         <div className="gencl:absolute gencl:top-8 gencl:left-8 gencl:z-50">
-          <BackButton onBackClick={toggleExpandView} theme={theme} />
+          <BackButton
+            websiteType={websiteType}
+            onBackClick={toggleExpandView}
+            theme={theme}
+          />
         </div>
       )}
 
@@ -589,22 +601,29 @@ function NavigationButton({
 function BackButton({
   onBackClick,
   theme,
+  websiteType,
 }: {
   onBackClick?: () => void;
   theme?: "light" | "dark";
+  websiteType?: "legacy" | "polaris" | undefined;
 }) {
   return (
     <>
-      <Button
-        variant="icon"
-        shape="circle"
-        size="lg"
-        theme={theme === "dark" ? "navigation" : "secondary"}
-        onClick={onBackClick}
-        className="gencl:hidden! gencl:lg:flex!"
-      >
-        <ArrowLeftIcon theme={theme === "dark" ? "dark" : "light"} size="md" />
-      </Button>
+      {websiteType === "polaris" && (
+        <Button
+          variant="icon"
+          shape="circle"
+          size="lg"
+          theme={theme === "dark" ? "navigation" : "secondary"}
+          onClick={onBackClick}
+          className="gencl:hidden! gencl:lg:flex!"
+        >
+          <ArrowLeftIcon
+            theme={theme === "dark" ? "dark" : "light"}
+            size="md"
+          />
+        </Button>
+      )}
 
       <Button
         id="player-header-back-button"
@@ -614,7 +633,10 @@ function BackButton({
           e.stopPropagation();
           onBackClick?.();
         }}
-        className="gencl:flex! gencl:lg:hidden!"
+        className={cn(
+          "gencl:flex!",
+          websiteType === "polaris" && "gencl:lg:hidden!"
+        )}
         aria-label="Go back"
       >
         <ChevronLeftIcon

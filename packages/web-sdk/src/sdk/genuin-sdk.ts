@@ -703,6 +703,7 @@ export class GenuinSDK {
       'data-community-ids',
       'data-loop-ids',
       'data-theme',
+      'data-website-type',
     ] as const
 
     // Extract core configuration attributes from the HTML element
@@ -952,6 +953,12 @@ export class GenuinSDK {
           const themeValue = value ?? configByUser?.theme
           if (themeValue === 'dark' || themeValue === 'light') {
             answerToReturn.theme = themeValue
+          }
+          break
+        case 'data-website-type':
+          const websiteType = value ?? configByUser?.website_type
+          if (websiteType === 'legacy' || websiteType === 'polaris') {
+            answerToReturn.websiteType = websiteType
           }
           break
         default:
