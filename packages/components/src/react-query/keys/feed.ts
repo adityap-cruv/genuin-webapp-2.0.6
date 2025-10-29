@@ -1,7 +1,6 @@
 import { type QueryKey } from "@tanstack/react-query";
 
 import type { FeedType } from "@genuin/components/types/post";
-import { EmbedDataType } from "@genuin/components/context/embed/embed.types";
 
 import { baseQueryKey } from "./base";
 
@@ -13,50 +12,25 @@ import { baseQueryKey } from "./base";
  */
 export function getQueryKeyForFeed(
   feedType: FeedType,
-  options?: {
-    communityIds?: string[];
-    groupIds?: string[];
-    startVideoSlug?: string;
-    enabled?: boolean;
-    placementId?: string;
-    styleId?: string;
-    sectionId?: string;
-    pageSession?: string;
-    lastVideoId?: string;
-    contextualParams?: EmbedDataType["contextualParams"];
-    // Caching option
-    staleTime?: number;
-    gcTime?: number;
-    refetchOnMount?: boolean;
-    refetchOnWindowFocus?: boolean;
-  }
+  options?: Record<string, any>
 ): QueryKey {
-  if (!options) {
-    return [...baseQueryKey, "feed", feedType];
-  }
+  // Convert options object to an array of strings in the format "key-value"
+  // This ensures proper cache key serialization for React Query
+  const optionsArray = options
+    ? Object.entries(options).map(([key, value]) => {
+        // Handle complex values (objects, arrays) by stringifying them
+        // Primitive values are converted directly to strings
+        const stringValue =
+          typeof value === "object" && value !== null
+            ? JSON.stringify(value)
+            : String(value);
+        // Format: "key-value" (e.g., "category-tech", "filter-{\"active\":true}")
+        return `${key}-${stringValue}`;
+      })
+    : [];
 
-  // Create a sanitized options object for caching that excludes runtime-specific params
-  const cacheableOptions = {
-    ...(options.communityIds && { communityIds: options.communityIds }),
-    ...(options.groupIds && { groupIds: options.groupIds }),
-    ...(options.startVideoSlug && { startVideoSlug: options.startVideoSlug }),
-    ...(options.placementId && { placementId: options.placementId }),
-    ...(options.styleId && { styleId: options.styleId }),
-    ...(options.sectionId && { sectionId: options.sectionId }),
-    // Include contextual params for proper cache differentiation
-    ...(options.contextualParams?.page_context && {
-      pageContext: options.contextualParams.page_context,
-    }),
-    ...(options.contextualParams?.geo && {
-      geo: options.contextualParams.geo,
-    }),
-    // Note: pageSession, lastVideoId, and caching options are excluded as they're 
-    // pagination-specific or configuration-specific and should not affect the base query cache key
-  };
-
-  return Object.keys(cacheableOptions).length > 0
-    ? [...baseQueryKey, "feed", feedType, cacheableOptions]
-    : [...baseQueryKey, "feed", feedType];
+  // Spread the options array into the query key for proper cache differentiation
+  return [...baseQueryKey, "feed", feedType, ...optionsArray];
 }
 
 /**
