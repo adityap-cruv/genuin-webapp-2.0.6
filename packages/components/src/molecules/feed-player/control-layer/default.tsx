@@ -22,6 +22,7 @@ import {
 import { Button } from "@genuin/ui/button";
 import { useDoubleClick } from "@genuin/components/hooks/use-double-click";
 import { useAuthContext } from "@genuin/components/context";
+import { Toaster } from "@genuin/ui";
 
 export function Default({
   className,
@@ -152,7 +153,6 @@ export function Default({
                 className={cn(playbackSpeed.speed !== 1 && "gencl:invisible")}
               />
             )}
-
             <PlayingState
               showOnlyPlayAction={true}
               className={cn(
@@ -161,7 +161,6 @@ export function Default({
                 "gencl:-translate-x-1/2 gencl:-translate-y-1/2"
               )}
             />
-
             {/* Large reaction icon on double-click */}
             {showReactionIcon && (
               <DynamicReactionIcon
@@ -177,7 +176,6 @@ export function Default({
                 )}
               />
             )}
-
             {/* This is invisible button for reactions */}
             <ReactionButton
               contentId={postDetails.video.id}
@@ -196,6 +194,21 @@ export function Default({
                 <Button ref={reactionButtonRef} className="gencl:opacity-0" />
               }
             />
+
+            {isActive && (
+              <Toaster
+                position="bottom-center"
+                style={{
+                  width: "100%",
+                }}
+                toastOptions={{
+                  style: {
+                    width: "calc(100% - 32px)",
+                    right: "-8px",
+                  },
+                }}
+              />
+            )}
 
             {/* {gestureOverlayUI} */}
           </div>

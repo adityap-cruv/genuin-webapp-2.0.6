@@ -61,7 +61,7 @@ export function PlayingState({
   // Special handling for layouts that only show play action
   if (showOnlyPlayAction) {
     // Only show PlayIcon when action is PLAY, hide all other actions (PAUSE, MUTE, UNMUTE)
-    if (buttonAction === "PLAY") {
+    if (buttonAction === "PAUSE") {
       return (
         <div
           key={buttonAction}
@@ -70,7 +70,7 @@ export function PlayingState({
           aria-label={getAriaLabelForAction(buttonAction)}
           className={cn(
             "gencl:rounded-full gencl:bg-black/40 gencl:align-middle gencl:backdrop-blur-sm",
-            "gencl:delay-500 gencl:animate-fade-out",
+            "gencl:delay-500 gencl:animate-fade-out gencl:duration-[1500ms]",
             className
           )}
           {...restProps}
@@ -134,7 +134,7 @@ export function PlayingState({
       aria-label={ariaLabel}
       className={cn(
         "gencl:rounded-full gencl:bg-black/40 gencl:align-middle gencl:backdrop-blur-sm",
-        "gencl:delay-500 gencl:animate-fade-out",
+        "gencl:delay-500 gencl:animate-fade-out gencl:duration-1500",
         className
       )}
       {...restProps}

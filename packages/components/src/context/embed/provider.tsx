@@ -22,6 +22,7 @@ type EmbedProviderProps = {
   embedData: EmbedDataType;
   children: React.ReactNode;
   container: HTMLElement;
+  brandLayoutType: ReturnType<typeof getBrandType>;
 };
 
 /**
@@ -34,26 +35,9 @@ export function EmbedProvider({
   embedData,
   children,
   container,
+  brandLayoutType,
 }: EmbedProviderProps) {
   const [stateEmbedData, setStateEmbedData] = useState(embedData);
-
-  // Determine brand layout type
-  const brandLayoutType = useMemo(() => {
-    const isPlacementView = !!embedData.placement_id;
-    const cardLayoutId = isPlacementView
-      ? embedData.placement_card_layout_id
-      : embedData.card_layout_id;
-    const videoLayoutId = isPlacementView
-      ? embedData.placement_video_layout_id
-      : embedData.video_layout_id;
-    return getBrandType(cardLayoutId, videoLayoutId);
-  }, [
-    embedData.placement_id,
-    embedData.card_layout_id,
-    embedData.placement_card_layout_id,
-    embedData.video_layout_id,
-    embedData.placement_video_layout_id,
-  ]);
 
   const isIHeartLayout = brandLayoutType === "iheart";
 

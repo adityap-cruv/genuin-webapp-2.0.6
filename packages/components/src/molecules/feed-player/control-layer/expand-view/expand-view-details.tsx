@@ -184,7 +184,7 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
       return (
         <div className="gencl:flex gencl:gap-2 gencl:items-center gencl:text-white">
           {attributes?.image_url && (
-            <div className="gencl:shrink-0 gencl:size-16 gencl:rounded-md">
+            <div className="gencl:shrink-0! gencl:size-16 gencl:rounded-md">
               <Link
                 href={linkUrl}
                 bypassChecks

@@ -17,6 +17,7 @@ import { AuthUser } from '@genuin/components/types/auth'
 import { SingleEmbedDataConfig } from '@/type'
 import { FeedSkeleton } from '@genuin/components/templates/feed'
 import { SDKEventType } from '@/core'
+import { getBrandType } from '@genuin/components/lib/utils/brand-layout'
 
 // Track React roots per container to support multiple embeds
 const containerRootMap = new Map<HTMLElement, Root>()
@@ -152,11 +153,14 @@ const EmbedSkeleton = ({ theme }: { theme?: 'dark' | 'light' }) => {
 
 const ExpandViewSkeleton = ({ theme }: { theme?: 'dark' | 'light' }) => {
   const bgClass =
-    theme === 'dark' ? 'gencl:bg-secondary-900' : 'gencl:bg-secondary-50';
+    theme === 'dark' ? 'gencl:bg-secondary-900' : 'gencl:bg-secondary-50'
   return (
     <div
       className={`gencl:fixed gencl:inset-0 gencl:h-full gencl:w-full gencl:z-50 ${bgClass}`}>
-      <FeedSkeleton theme={theme} variant='fullscreen' />
+      <FeedSkeleton
+        theme={theme}
+        variant='fullscreen'
+      />
     </div>
   )
 }
@@ -182,6 +186,16 @@ export function loadNewEmbed({
   const root = createRoot(container)
   containerRootMap.set(container, root)
 
+  // Determine brand layout type
+  const isPlacementView = !!embedData.placement_id
+  const cardLayoutId = isPlacementView
+    ? embedData.placement_card_layout_id
+    : embedData.card_layout_id
+  const videoLayoutId = isPlacementView
+    ? embedData.placement_video_layout_id
+    : embedData.video_layout_id
+  const brandLayoutType = getBrandType(cardLayoutId, videoLayoutId)
+
   const rootToRender = (
     <ReactQueryClientProvider>
       <EmbedProvider
@@ -190,8 +204,8 @@ export function loadNewEmbed({
           ...embedData,
           brand_id: embedData.brand_id,
           action: embedData.autoUserInteractionToPerform,
-          websiteType : config.websiteType
-        }}>
+        }}
+        brandLayoutType={brandLayoutType}>
         <BaseContextProvider
           brandDetails={brandDetails}
           theme={config.theme}
@@ -210,7 +224,7 @@ export function loadNewEmbed({
                     <LazyEmbed />
                   )}
                 </Suspense>
-                <Toaster />
+                {brandLayoutType !== 'iheart' && <Toaster />}
               </AnalyticsProvider>
             </AuthProvider>
           </LinkProvider>

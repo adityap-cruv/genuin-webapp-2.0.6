@@ -123,14 +123,12 @@ export function ShareButton({
           if (success) {
             Toast.Success({
               message: toastMessage,
-              position: toastPosition,
-              bgColor: brandLayoutType === "iheart" ? "#ACE7C0" : undefined,
+              isIheart: brandLayoutType === "iheart",
             });
           } else {
             Toast.Error({
               message: "Failed to copy link. Please try again.",
-              position: toastPosition,
-              bgColor: brandLayoutType === "iheart" ? "#ACE7C0" : undefined,
+              isIheart: brandLayoutType === "iheart",
             });
           }
         }
@@ -140,14 +138,12 @@ export function ShareButton({
         if (success) {
           Toast.Success({
             message: toastMessage,
-            position: toastPosition,
-            bgColor: brandLayoutType === "iheart" ? "#ACE7C0" : undefined,
+            isIheart: brandLayoutType === "iheart",
           });
         } else {
           Toast.Error({
             message: "Failed to copy link. Please try again.",
-            position: toastPosition,
-            bgColor: brandLayoutType === "iheart" ? "#ACE7C0" : undefined,
+            isIheart: brandLayoutType === "iheart",
           });
         }
       }
