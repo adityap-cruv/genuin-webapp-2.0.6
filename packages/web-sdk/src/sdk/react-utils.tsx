@@ -207,6 +207,7 @@ export function loadNewEmbed({
           ...embedData,
           brand_id: embedData.brand_id,
           action: embedData.autoUserInteractionToPerform,
+          websiteType: config.websiteType,
         }}
         brandLayoutType={brandLayoutType}>
         <BaseContextProvider

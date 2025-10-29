@@ -30,6 +30,10 @@ export function useEmbedConfigs() {
   const { brandDetails, isEmbed } = useBaseContext();
   const { isMobile } = useDeviceDetectMediaQuery();
 
+  const isAdsEnabledInIheart = useMemo(() => {
+    return rootElement?.getAttribute("data-ads-enabled") === "true";
+  }, [rootElement]);
+
   // ============================================================
   // Dimensions Configuration
   // ============================================================
@@ -70,6 +74,7 @@ export function useEmbedConfigs() {
       centeredSlides: embedData?.placement_card_layout_id === 2,
       brandLayoutType: brandLayoutType ?? "default",
       websiteType: embedData?.websiteType ?? "polaris",
+      isAdsEnabledInIheart: isAdsEnabledInIheart ?? false,
     };
   }, [
     customization,

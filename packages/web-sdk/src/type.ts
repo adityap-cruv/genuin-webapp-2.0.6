@@ -63,7 +63,7 @@ export type ConfigByUser = {
     type: string
   }>
   theme?: 'dark' | 'light'
-  website_type? : 'legacy' | 'polaris'
+  website_type?: 'legacy' | 'polaris'
 }
 
 export type UpdateConfigByUserType = {
@@ -113,6 +113,6 @@ export type SingleEmbedDataConfig = {
     id: string
     type: string
   }>
-  theme?: 'dark' | 'light',
-  websiteType? : 'legacy' | 'polaris'
+  theme?: 'dark' | 'light'
+  websiteType?: 'legacy' | 'polaris'
 }

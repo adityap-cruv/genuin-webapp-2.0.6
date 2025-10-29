@@ -80,7 +80,7 @@ export function PlayerList({
     engagement: {
       engagementTools: { comment: showCommentBox },
     },
-    view: { brandLayoutType,websiteType },
+    view: { brandLayoutType, websiteType, isAdsEnabledInIheart },
   } = useEmbedConfigs();
   const embedDetails = useSafeEmbedContext();
   // if we use directly isTablet from the hook then for desktop it will be true based on useDeviceDetectMediaQuery implementation
@@ -111,7 +111,8 @@ export function PlayerList({
             containerDimension: containerHeight,
             dimensionType: "height",
             aspectRatio: 9 / 16,
-            slidesPerView: 1.2,
+            // In the disabled swiper case, we should display only a single clip in the table view.
+            slidesPerView: disableSwiper || websiteType === "legacy" ? 1 : 1.2,
           });
           setSlideDimensions(dimensions);
         }
@@ -188,7 +189,14 @@ export function PlayerList({
             <SwiperImplementation
               className="gencl:h-full"
               initialSlide={startIndex}
-              slidesPerView={slideDimensions?.slidesPerView ? 1.2 : undefined}
+              // In the disabled swiper case, we should display only a single clip in the table view.
+              slidesPerView={
+                slideDimensions?.slidesPerView
+                  ? disableSwiper || websiteType === "legacy"
+                    ? 1
+                    : 1.2
+                  : undefined
+              }
               spaceBetween={slideDimensions?.slidesPerView ? 16 : undefined}
               onSwiper={(swiper) => {
                 setVerticalSwipers((prev) => ({
@@ -263,7 +271,14 @@ export function PlayerList({
   const renderNonSectionedContent = () => (
     <SwiperImplementation
       initialSlide={startIndex}
-      slidesPerView={slideDimensions?.slidesPerView ? 1.2 : undefined}
+      // In the disabled swiper case, we should display only a single clip in the table view.
+      slidesPerView={
+        slideDimensions?.slidesPerView
+          ? disableSwiper || websiteType === "legacy"
+            ? 1
+            : 1.2
+          : undefined
+      }
       spaceBetween={slideDimensions?.slidesPerView ? 16 : undefined}
       onSwiper={(swiper) => {
         setVerticalSwipers((prev) => ({
@@ -324,7 +339,14 @@ export function PlayerList({
       className={cn(
         "gencl:h-full gencl:w-full gencl:flex gencl:justify-center",
         brandLayoutType === "iheart" && isDesktop && "gencl:sm:py-8!",
-        brandLayoutType === "iheart" && isTablet && "gencl:sm:pt-8!",
+        brandLayoutType === "iheart" &&
+          isTablet &&
+          websiteType === "polaris" &&
+          "gencl:sm:pt-8!",
+        brandLayoutType === "iheart" &&
+          websiteType === "legacy" &&
+          isAdsEnabledInIheart &&
+          "gencl:pt-[72px]! gencl:md:pt-8!",
         brandLayoutType !== "iheart" && "gencl:gap-6"
       )}
     >
@@ -391,7 +413,14 @@ export function PlayerList({
 
       {/* Back button for iheart expand view (not on mobile) */}
       {brandLayoutType === "iheart" && !isMobile && (
-        <div className="gencl:absolute gencl:top-8 gencl:left-8 gencl:z-50">
+        <div
+          className={cn(
+            "gencl:absolute gencl:left-8 gencl:z-50",
+            websiteType === "legacy" && isAdsEnabledInIheart
+              ? "gencl:top-20! gencl:md:top-8!"
+              : "gencl:top-8"
+          )}
+        >
           <BackButton
             websiteType={websiteType}
             onBackClick={toggleExpandView}
@@ -399,7 +428,6 @@ export function PlayerList({
           />
         </div>
       )}
-
       {/* Navigation buttons for expand view (not on mobile) */}
       {showExpandView && brandLayoutType !== "iheart" && !isMobile && (
         <NavigationButton
