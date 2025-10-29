@@ -95,12 +95,15 @@ export function loadExpandView(
   }
 
   const unsubscribe = window.genuin?.onInternal?.(
-    SDKEventType.SDK_EXPAND_VIEW_LOADED,
-    () => {
-      cleanup()
-      // Clean up the event listener
-      if (typeof unsubscribe === 'function') {
-        unsubscribe()
+    SDKEventType.SDK_EXPAND_VIEW_CHANGED,
+    (payload: any) => {
+      // If payload is opened true, we need to clean up the loader
+      if (payload.payload) {
+        cleanup()
+        // Clean up the event listener
+        if (typeof unsubscribe === 'function') {
+          unsubscribe()
+        }
       }
     },
   )

@@ -17,7 +17,6 @@
 export enum SDKEventName {
   ERROR = "sdk:error",
   NO_CONTENT = "sdk:noContent",
-  EXPAND_VIEW_LOADED = "sdk:expand-view-loaded",
   EMBED_PROVIDER_READY = "sdk:embedProviderReady",
   AUTH_REFRESH_FAILED = "auth:refresh_failed",
   CACHED_USER_UPDATE = "auth:cached_user_update",
@@ -28,6 +27,7 @@ export enum SDKEventName {
   VIDEO_NOT_FOUND = "onVideoNotFound",
   SWIPED_FORWARD = "onSwipedForward",
   SWIPED_BACKWARD = "onSwipedBackward",
+  EXPAND_VIEW_CHANGED = "onExpandViewChanged",
 }
 
 /**
@@ -118,7 +118,7 @@ export interface SDKSwipedBackwardPayload {
 export type SDKEventPayloadMap = {
   [SDKEventName.ERROR]: SDKErrorPayload;
   [SDKEventName.NO_CONTENT]: SDKNoContentPayload;
-  [SDKEventName.EXPAND_VIEW_LOADED]: boolean;
+  [SDKEventName.EXPAND_VIEW_CHANGED]: boolean;
   [SDKEventName.EMBED_PROVIDER_READY]: SDKEmbedProviderReadyPayload;
   [SDKEventName.AUTH_REFRESH_FAILED]: SDKAuthRefreshFailedPayload;
   [SDKEventName.CACHED_USER_UPDATE]: SDKCachedUserUpdatePayload;

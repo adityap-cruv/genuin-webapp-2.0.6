@@ -15,7 +15,7 @@ export enum SDKEventType {
   SDK_EMBED_PROVIDER_READY = 'sdk:embedProviderReady',
   SDK_EMBED_ERROR = 'sdk:error',
   SDK_EMBED_NO_CONTENT = 'sdk:noContent',
-  SDK_EXPAND_VIEW_LOADED = 'sdk:expand-view-loaded',
+  SDK_EXPAND_VIEW_CHANGED = 'onExpandViewChanged',
 }
 
 export interface SDKEvent {

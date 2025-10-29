@@ -37,6 +37,7 @@ const ALLOWED_EVENTS = [
   'onVideoNotFound',
   'onSwipedForward',
   'onSwipedBackward',
+  'onExpandViewChanged',
   // Add allowed event names here
 ]
 

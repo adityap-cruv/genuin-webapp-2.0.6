@@ -241,7 +241,7 @@ export function EmbedExpandView({
        *
        * @fires SDKEventEmitter.emit(SDKEventName.EXPAND_VIEW_LOADED, true) when expand view is loaded.
        */
-      SDKEventEmitter.emit(SDKEventName.EXPAND_VIEW_LOADED, true);
+      SDKEventEmitter.emit(SDKEventName.EXPAND_VIEW_CHANGED, true);
       htmlElement.style.setProperty("overflow", "hidden", "important");
     } else {
       htmlElement.style.setProperty(
@@ -252,6 +252,9 @@ export function EmbedExpandView({
     }
 
     return () => {
+      if (showExpandView) {
+        SDKEventEmitter.emit(SDKEventName.EXPAND_VIEW_CHANGED, false);
+      }
       if (hasInlineStyle) {
         htmlElement.style.setProperty(
           "overflow",
