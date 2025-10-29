@@ -2,13 +2,17 @@ import { API_BASE_URL } from '../constants'
 import { ErrorHandler, ErrorType } from './errors'
 import { encryptText } from '@genuin/components/lib/utils/encryption'
 import { BrandDetailsConfigType } from '@genuin/components/types/brand'
-import { getDeviceId } from '@genuin/components/lib/utils/device-id'
+import {
+  DEVICE_ID_KEY_FOR_LOCAL_STORAGE,
+  getNewDeviceId,
+} from '@genuin/components/lib/utils/device-id'
 import {
   EmbedDataType,
   PlacementDataResponse,
 } from '@genuin/components/context/embed/embed.types'
 import { parseUserData } from '@genuin/components/react-query/api/authentication/parser'
 import { AuthUser } from '@genuin/components/types/auth'
+import internalStorageManager from '@genuin/components/lib/utils/internal-storage-manager'
 
 export type BrandDetailsResponse = BrandDetailsConfigType
 
@@ -126,17 +130,53 @@ export class APIService {
   }
 
   /**
+   * Initializes and stores a unique device ID for the current session.
+   *
+   * This function ensures that a valid `deviceId` is always available and persisted
+   * in the correct storage context — `internalStorageManager` when running inside
+   * an iframe, or `localStorage` otherwise.
+   *
+   *  Why we regenerate the device ID:
+   * In the **auto-login** flow, the SDK’s `baseContext` might not have been created yet.
+   * Since device ID generation usually happens inside that context, the `deviceId`
+   * remains empty (""). To handle this edge case, we explicitly generate a new
+   * device ID here to guarantee availability even before `baseContext` is initialized.
+   */
+  async initDeviceId(isInIframe: boolean): Promise<string | undefined> {
+    const newDeviceId = await new Promise<string | undefined>((resolve) => {
+      getNewDeviceId((deviceId) => {
+        resolve(deviceId)
+      })
+    })
+    if (!newDeviceId) return undefined
+    if (isInIframe) {
+      internalStorageManager.setItem(
+        DEVICE_ID_KEY_FOR_LOCAL_STORAGE,
+        newDeviceId,
+      )
+    } else {
+      localStorage.setItem(
+        DEVICE_ID_KEY_FOR_LOCAL_STORAGE,
+        JSON.stringify(newDeviceId),
+      )
+    }
+    return newDeviceId
+  }
+
+  /**
    * Get authenticated user details using token
    * Used for personalized content and authentication
    */
   async getAuthenticatedUserDetails(
     token: string,
     brandId: number,
-    isInIframe : boolean,
+    isInIframe: boolean,
     userParams?: Record<string, any>,
   ): Promise<AuthUser | null> {
     try {
-      const deviceId = getDeviceId(isInIframe)
+      let deviceId = await this.initDeviceId(isInIframe)
+
+      if (!deviceId) return null
 
       // Build user parameters based on reference implementation
       const userParamsBody = {

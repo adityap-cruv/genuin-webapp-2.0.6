@@ -186,6 +186,7 @@ user_longitude
             environment: brandDetails.environment,
             brand_id: brandDetails.brand_id,
             user_id: user?.id ?? getDeviceId(isInIframe),
+            placement_id: embedDetails.embedData.placement_id,
           },
         });
       }

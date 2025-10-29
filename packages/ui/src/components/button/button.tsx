@@ -26,7 +26,7 @@ const buttonVariants = cva(
         text: "gencl:text-primary",
         custom: "",
         navigation:
-          "gencl:p-0 gencl:size-12! gencl:rounded-full! gencl:flex-center gencl:bg-secondary-800 gencl:text-white gencl:backdrop-blur-sm gencl:hover:bg-secondary-600 gencl:border-0 gencl:transition-all gencl:duration-200 [&_svg]:gencl:size-5",
+          "gencl:p-0 gencl:size-11! gencl:rounded-full! gencl:flex-center gencl:bg-secondary-800 gencl:text-white gencl:backdrop-blur-sm gencl:hover:bg-secondary-600 gencl:border-0 gencl:transition-all gencl:duration-200 [&_svg]:gencl:size-5",
         overlay: "",
       },
       size: {

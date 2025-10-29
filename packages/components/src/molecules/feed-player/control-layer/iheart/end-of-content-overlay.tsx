@@ -38,9 +38,9 @@ export function IHeartEndOfContentOverlay({
         <Button
           onClick={onPlayAgain}
           aria-label="Play this episode again"
-          className="gencl:h-11 gencl:text-body-1-semi-bold! gencl:bg-white gencl:flex gencl:items-center gencl:justify-center gencl:rounded-full gencl:px-5 gencl:text-[#27292D]!"
+          className="gencl:h-12 gencl:text-body-1-semi-bold! gencl:bg-white gencl:flex gencl:items-center gencl:justify-center gencl:rounded-full gencl:px-5 gencl:text-[#27292D]!"
         >
-          <IHeartPlayAgainIcon strokeWidth="0px" theme="light" size="md" aria-hidden="true" /> Play
+          <IHeartPlayAgainIcon strokeWidth="0px" theme="light" size="lg" aria-hidden="true" /> Play
           again
         </Button>
       </div>

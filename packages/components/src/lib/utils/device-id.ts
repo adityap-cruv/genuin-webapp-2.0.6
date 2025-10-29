@@ -1,4 +1,4 @@
-import FingerPringJS from "@fingerprintjs/fingerprintjs";
+import FingerPrintJS from "@fingerprintjs/fingerprintjs";
 import { useLocalStorage } from "usehooks-ts";
 import internalStorage from "@genuin/components/lib/utils/internal-storage-manager";
 
@@ -14,7 +14,7 @@ export const DEVICE_ID_KEY_FOR_LOCAL_STORAGE = "geuinDeviceId";
  * @returns
  */
 export async function getNewDeviceId(onDeviceId?: (deviceId: string) => void) {
-  return FingerPringJS.load().then(async (fp) => {
+  return FingerPrintJS.load().then(async (fp) => {
     const visitorId = (await fp.get()).visitorId;
     onDeviceId?.(visitorId);
   });
