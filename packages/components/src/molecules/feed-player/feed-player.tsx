@@ -15,6 +15,7 @@ import { usePlayerContext } from "./context/context";
 import { useAnalytics } from "@genuin/components/context/analytics";
 import { cn } from "@genuin/ui/lib/utils";
 import { BrandType } from "@genuin/components/lib/utils/brand-layout";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 type FeedPlayerProps = Omit<
   ComponentProps<typeof VideoPlayer>,
@@ -63,6 +64,9 @@ export const FeedPlayer = memo(function FeedPlayer({
   const { track, EventName } = useAnalytics();
   const id = useId();
   const playerRef = useRef<HTMLVideoElement>(null);
+  const {
+    view: { brandLayoutType },
+  } = useEmbedConfigs();
 
   useEffect(() => {
     baseContextManager.registerVideo({
@@ -70,12 +74,15 @@ export const FeedPlayer = memo(function FeedPlayer({
     });
 
     return () => {
-      console.log("[FeedContextManager]: unregisterVideos");
       baseContextManager.unregisterVideo(videoId);
     };
   }, [baseContextManager]);
 
   useEffect(() => {
+    // If brand layout is iheart, do not register video
+    // TODO: refactor audio manager befor merging iheart branch in develop, otherwise it will break iheart feed player.
+    if (brandLayoutType === "iheart") return;
+
     audioManager.register(id, () => {
       mute(false);
     });
@@ -85,6 +92,10 @@ export const FeedPlayer = memo(function FeedPlayer({
   }, [id]);
 
   useEffect(() => {
+    // If brand layout is iheart, do not register video
+    // TODO: refactor audio manager befor merging iheart branch in develop, otherwise it will break iheart feed player.
+    if (brandLayoutType === "iheart") return;
+
     // this is the key line — fire unmute when this player unmutes
     if (!muted) {
       audioManager.notifyPlaying(id);

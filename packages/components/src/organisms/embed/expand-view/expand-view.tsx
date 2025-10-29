@@ -88,11 +88,7 @@ export function EmbedExpandView({
         setShowExpandView(true);
         setStartIndex(context.isSectioned ? 0 : context.activeIndex);
 
-        if (brandLayoutType === "iheart") {
-          setTimeout(() => {
-            setMuted(muted);
-          }, 100);
-        } else if (brandLayoutType === "ted") {
+        if (brandLayoutType === "ted") {
           setTimeout(() => {
             setMuted(false);
           }, 300);

@@ -103,8 +103,6 @@ export function Link({
     useLinkContext();
   const wantsToOpenInNewTab = target === "_blank";
 
-  console.log("href::", href);
-
   // Extract engagement configurations for redirection tools and link behavior
   const {
     engagement: { redirectionTools, openAllLinksInNewTab },
