@@ -91,6 +91,10 @@
       sdkUrl = new URL(SDK_BASE_URL + 'genuin-sdk.js', baseUrl).href
     }
 
+    // Add cache buster to ensure fresh SDK loads
+    const cacheBuster = Date.now()
+    sdkUrl += (sdkUrl.includes('?') ? '&' : '?') + 'v=' + cacheBuster
+
     console.log('Loading Genuin SDK from:', sdkUrl)
 
     // Mark that we're using ES module loading to prevent global setup conflicts
