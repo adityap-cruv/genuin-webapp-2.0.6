@@ -60,7 +60,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
     >
       {/* Top gradient overlay (10% height) */}
       <div
-        className="gencl:absolute gencl:top-0 gencl:left-0 gencl:right-0 gencl:pointer-events-none gencl:z-[1]"
+        className="gencl:absolute gencl:top-0 gencl:left-0 gencl:right-0 gencl:pointer-events-none"
         style={{
           height: "25%",
           background:
@@ -70,7 +70,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
 
       {/* Bottom gradient overlay (40% height) */}
       <div
-        className="gencl:absolute gencl:bottom-0 gencl:left-0 gencl:right-0 gencl:pointer-events-none gencl:z-[1]"
+        className="gencl:absolute gencl:bottom-0 gencl:left-0 gencl:right-0 gencl:pointer-events-none"
         style={{
           height: "35%",
           background:

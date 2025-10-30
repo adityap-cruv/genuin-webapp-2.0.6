@@ -142,7 +142,7 @@ export function Default({
           >
             {/* Top gradient overlay (10% height) */}
             <div
-              className="gencl:absolute gencl:top-0 gencl:left-0 gencl:right-0 gencl:pointer-events-none gencl:z-[1]"
+              className="gencl:absolute gencl:top-0 gencl:left-0 gencl:right-0 gencl:pointer-events-none"
               style={{
                 height: "10%",
                 background:
@@ -152,7 +152,7 @@ export function Default({
 
             {/* Bottom gradient overlay (40% height) */}
             <div
-              className="gencl:absolute gencl:bottom-0 gencl:left-0 gencl:right-0 gencl:pointer-events-none gencl:z-[1]"
+              className="gencl:absolute gencl:bottom-0 gencl:left-0 gencl:right-0 gencl:pointer-events-none"
               style={{
                 height: "40%",
                 background:
@@ -219,12 +219,11 @@ export function Default({
               <Toaster
                 position="bottom-center"
                 style={{
-                  width: "100%",
+                  width: "calc(100% - 32px)",
                 }}
                 toastOptions={{
                   style: {
-                    width: "calc(100% - 32px)",
-                    right: "-8px",
+                    width: "100%",
                   },
                 }}
               />

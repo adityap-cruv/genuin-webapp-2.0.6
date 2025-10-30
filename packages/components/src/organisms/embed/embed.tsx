@@ -27,6 +27,7 @@ import { AnalyticsService } from "@genuin/components/context/analytics/service";
 import { useBaseContext } from "@genuin/components/context";
 import { isMiddlewareOverlayEnabled } from "@genuin/components/lib/utils";
 import { NavigationButtonsWithContext } from "./navigation-buttons";
+import { Toaster } from "@genuin/ui";
 
 const embedVariants = cva("gencl:rounded-md gencl:overflow-auto", {
   variants: {
@@ -56,6 +57,10 @@ export function Embed({
   // Local state for isSectioned synced with event bus
   const [isSectioned, setIsSectioned] = useState(
     embedEventBus.getContext().isSectioned
+  );
+  // Local state for activePlayerType synced with event bus
+  const [activePlayerType, setActivePlayerType] = useState(
+    embedEventBus.getContext().activePlayerType
   );
   const { track, EventName } = useAnalytics();
   const config = useEmbedConfigs();
@@ -214,6 +219,21 @@ export function Embed({
     };
   }, [swiper, embedEventBus]);
 
+  // Listen for activePlayerType changes to sync local state
+  useEffect(() => {
+    function handleActivePlayerTypeChange(
+      eventData: any,
+      context: EmbedEventContextType
+    ) {
+      setActivePlayerType(context.activePlayerType);
+    }
+
+    embedEventBus.on("activePlayerTypeChange", handleActivePlayerTypeChange);
+    return () => {
+      embedEventBus.off("activePlayerTypeChange", handleActivePlayerTypeChange);
+    };
+  }, [embedEventBus]);
+
   // Use the custom hook with style prop to prioritize parent styles
   const {
     containerHeight,
@@ -237,8 +257,7 @@ export function Embed({
     );
   }
 
-  const isActivePlayerTypeEmbed =
-    embedEventBus.getContext().activePlayerType === "embed";
+  const isActivePlayerTypeEmbed = activePlayerType === "embed";
   if (isLoading && isActivePlayerTypeEmbed) {
     return (
       <SdkSkeleton
@@ -351,6 +370,20 @@ export function Embed({
       )}
 
       <PipView videos={videos ?? []} isLoading={isLoading} />
+
+      {activePlayerType === "embed" && isIheartLayout && (
+        <Toaster
+          position="bottom-center"
+          style={{
+            width: "280px",
+          }}
+          toastOptions={{
+            style: {
+              width: "100%",
+            },
+          }}
+        />
+      )}
     </div>
   );
 }

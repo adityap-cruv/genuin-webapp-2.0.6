@@ -56,7 +56,7 @@ export function DynamicReactionIcon({
           ? reaction?.keys.feed_selected.svg
           : reaction?.keys.feed_unselected.svg;
       case "feed_animate":
-        return reaction?.keys.feed_animate.png;
+        return reaction?.keys.feed_animate.svg;
       case "social_count":
         return theme === "dark"
           ? reaction?.keys.social_count_white.svg

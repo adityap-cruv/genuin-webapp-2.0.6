@@ -65,14 +65,32 @@ export function IHeartControls({
   const { playingState, togglePlay, muted, toggleMuted } = usePlayerContext();
   const { track, EventName } = useAnalytics();
   const isExpand = variant === "expand";
-  const shareUrl = isExpand
-    ? window.location.href
-    : (() => {
-        const baseUrl = window.location.href.replace(/\/$/, "");
-        const hasHighlights = baseUrl.includes("/highlights");
-        const highlightsPath = hasHighlights ? "" : "/highlights";
-        return `${baseUrl}${highlightsPath}/${slug}_${contentId}`;
-      })();
+
+  // Generate share URL with action=share parameter
+  const generateShareUrl = (
+    isExpand: boolean,
+    slug?: string,
+    contentId?: string
+  ) => {
+    let url = isExpand
+      ? window.location.href
+      : (() => {
+          const baseUrl = window.location.href.replace(/\/$/, "");
+          const hasHighlights = baseUrl.includes("/highlights");
+          const highlightsPath = hasHighlights ? "" : "/highlights";
+          return `${baseUrl}${highlightsPath}/${slug}_${contentId}`;
+        })();
+
+    // Add action=share query parameter if not already present
+    if (!url.includes("action=share")) {
+      const separator = url.includes("?") ? "&" : "?";
+      url = `${url}${separator}action=share`;
+    }
+
+    return url;
+  };
+
+  const shareUrl = generateShareUrl(isExpand, slug, contentId);
 
   return (
     <div

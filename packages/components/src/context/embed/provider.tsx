@@ -41,6 +41,11 @@ export function EmbedProvider({
 
   const isIHeartLayout = brandLayoutType === "iheart";
 
+  const urlParams = new URLSearchParams(
+    typeof window !== "undefined" ? window.location.search : ""
+  );
+  const action = urlParams.get("action");
+
   // Create a unique event bus for this provider instance
   const embedEventBus = useMemo(
     () =>
@@ -51,10 +56,11 @@ export function EmbedProvider({
         isSectioned: false,
         containerInView: true,
         skipTimeOffsetOnce: false,
-        // Only disable swiper for iHeart layout with startVideoSlug
-        disableSwiper: isIHeartLayout && !!embedData.startVideoSlug,
+        // Only disable swiper for iHeart layout with startVideoSlug and action=share
+        disableSwiper:
+          isIHeartLayout && !!embedData.startVideoSlug && action === "share",
       }),
-    []
+    [isIHeartLayout, embedData.startVideoSlug, action]
   );
 
   // Create a unique router for this provider instance
@@ -215,7 +221,8 @@ export function EmbedProvider({
   // and permanently enable swiper for all future opens
   // This feature is only enabled for iHeart brand layout
   useEffect(() => {
-    if (!isIHeartLayout || !embedData.startVideoSlug) return;
+    if (!isIHeartLayout || !embedData.startVideoSlug || action !== "share")
+      return;
 
     function handleActivePlayerTypeChange() {
       const context = embedEventBus.getContext();
@@ -236,7 +243,7 @@ export function EmbedProvider({
     return () => {
       embedEventBus.off("activePlayerTypeChange", handleActivePlayerTypeChange);
     };
-  }, [isIHeartLayout, embedData.startVideoSlug, embedEventBus]);
+  }, [isIHeartLayout, embedData.startVideoSlug, action, embedEventBus]);
 
   // Observe the container for visibility changes to handle floating view behavior and track in-view status
   useEffect(() => {

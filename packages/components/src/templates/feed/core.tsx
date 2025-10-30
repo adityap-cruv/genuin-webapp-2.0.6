@@ -125,6 +125,8 @@ export const FeedViewCore = memo(function FeedViewCore({
           url.pathname =
             pathParts.join("/") + (pathParts.length > 0 ? "/" : "");
         }
+        // Remove search params
+        url.searchParams.delete("action");
         window.history.replaceState(null, "", url.toString());
         originalUrlRef.current = null;
       }
