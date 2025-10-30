@@ -174,7 +174,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   const playerPlayFlag = useMemo(() => {
     const baseConditions =
       feedPlayerShouldPlay &&
-      !isVideoWatched &&
+      (isEmbed ? !isVideoWatched : true) &&
       isActive &&
       focusState.isFocused &&
       focusState.containerInView;
@@ -193,6 +193,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     focusState.containerInView,
     isIHeartLayout,
     globalPlayState,
+    isEmbed,
   ]);
 
   const videoStateRef = useRef<VideoTimeStateType>({
@@ -545,10 +546,11 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       return;
     }
 
+    baseContextManager.setVideoWatched({ videoId, isWatched: true });
+
     // In case of embed regardless of shouldSwipeNext it should go to next
     if (isEmbed) {
       onPlayerIterationEnd();
-      baseContextManager.setVideoWatched({ videoId, isWatched: true });
       return;
     }
 
