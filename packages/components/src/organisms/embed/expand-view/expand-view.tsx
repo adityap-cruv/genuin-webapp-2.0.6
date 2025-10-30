@@ -87,8 +87,11 @@ export function EmbedExpandView({
         // Store current mute state when entering expand view
         setShowExpandView(true);
         setStartIndex(context.isSectioned ? 0 : context.activeIndex);
-
-        if (brandLayoutType === "ted") {
+        if (brandLayoutType === "iheart") {
+          setTimeout(() => {
+            setMuted(muted);
+          }, 100);
+        } else if (brandLayoutType === "ted") {
           setTimeout(() => {
             setMuted(false);
           }, 300);
