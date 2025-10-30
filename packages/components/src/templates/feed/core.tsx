@@ -106,8 +106,8 @@ export const FeedViewCore = memo(function FeedViewCore({
         if (!basePath.includes("/highlights")) {
           basePath += "highlights/";
         }
-
-        url.pathname = basePath + videoPath;
+        url.pathname =
+          basePath + (videoId.includes("complete") ? "" : videoPath);
       }
 
       // Update URL without causing page reload

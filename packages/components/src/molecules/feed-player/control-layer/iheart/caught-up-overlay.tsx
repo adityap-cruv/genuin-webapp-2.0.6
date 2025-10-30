@@ -1,18 +1,20 @@
-import { Button } from "@genuin/ui";
+import { Button, IHeartTickIcon } from "@genuin/ui";
 import { cn } from "@genuin/ui/lib/utils";
 import { type ComponentProps } from "react";
 
 interface IHeartCaughtUpOverlayProps extends ComponentProps<"div"> {
-  onGoToEpisodes?: () => void;
+  variant: "overlay" | "complete";
   title?: string;
   subtitle?: string;
+  onGoToEpisodes?: () => void;
 }
 
 export function IHeartCaughtUpOverlay({
   className,
-  onGoToEpisodes,
   title = "You're all caught up!",
-  subtitle = "New clips will appear soon.",
+  subtitle = "New highlights will appear soon.",
+  variant = "overlay",
+  onGoToEpisodes,
   ...props
 }: IHeartCaughtUpOverlayProps) {
   return (
@@ -23,22 +25,37 @@ export function IHeartCaughtUpOverlay({
       aria-labelledby="caught-up-title"
       aria-describedby="caught-up-subtitle"
       className={cn(
-        "gencl:pointer-events-none gencl:z-50 gencl:h-full gencl:w-full gencl:bg-black/65 gencl:backdrop-blur-sm gencl:flex gencl:flex-col gencl:items-center gencl:justify-center gencl:gap-4",
+        "gencl:pointer-events-none gencl:z-50 gencl:h-full gencl:w-full gencl:bg-black gencl:backdrop-blur-sm gencl:flex gencl:flex-col gencl:items-center gencl:justify-center gencl:gap-4",
         className
       )}
     >
       <div className="gencl:flex gencl:flex-col gencl:gap-4 gencl:pointer-events-auto">
         <div className="gencl:flex gencl:flex-col gencl:gap-2 gencl:text-center gencl:text-white">
-          <p id="caught-up-title" className="gencl:text-body-1-semi-bold">{title}</p>
-          <p id="caught-up-subtitle" className="gencl:text-body-2-normal">{subtitle}</p>
+          {variant === "complete" && (
+            <IHeartTickIcon className="gencl:self-center" />
+          )}
+          <p
+            id="caught-up-title"
+            className="gencl:text-body-1-semi-bold gencl:text-[18px] gencl:leading-[24px] gencl:tracking-[-0.5px]"
+          >
+            {title}
+          </p>
+          <p
+            id="caught-up-subtitle"
+            className="gencl:text-body-2-normal gencl:text-[14px] gencl:leading-4"
+          >
+            {subtitle}
+          </p>
         </div>
-        <Button
-          onClick={onGoToEpisodes}
-          aria-label="Go to all episodes page"
-          className="gencl:h-11 gencl:text-body-1-semi-bold! gencl:flex gencl:items-center gencl:justify-center gencl:rounded-full gencl:bg-white gencl:px-5 gencl:text-[#27292D]!"
-        >
-          Go to episodes
-        </Button>
+        {variant === "overlay" && (
+          <Button
+            onClick={onGoToEpisodes}
+            aria-label="Go to all episodes page"
+            className="gencl:h-11 gencl:text-body-1-semi-bold! gencl:flex gencl:items-center gencl:justify-center gencl:rounded-full gencl:bg-white gencl:px-5 gencl:text-[#27292D]!"
+          >
+            Go to episodes
+          </Button>
+        )}
       </div>
     </div>
   );

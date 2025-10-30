@@ -66,6 +66,8 @@ export function EmbedItem({
   }, []);
 
   const debouncedSetActiveIndex = useDebounceCallback(() => {
+    // Disable hover for the iheart legacy
+    if (config.view.websiteType === "legacy") return;
     updateActiveIndex(index, true);
   }, 700);
 

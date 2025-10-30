@@ -242,7 +242,8 @@ async function fetchFeed(
       return {
         feed: parseFeed(
           res.data.data.feeds,
-          options?.shouldShowMiddlewareOverlay
+          options?.shouldShowMiddlewareOverlay,
+          res.data.data.end_of_feed
         ),
         hasSection: res.data.data.has_section ?? false,
         pageSession: res.data.data.page_session,

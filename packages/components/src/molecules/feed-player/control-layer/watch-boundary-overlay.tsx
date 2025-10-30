@@ -1,16 +1,16 @@
-import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
 import { IHeartCaughtUpOverlay } from "./iheart";
 import { useCallback } from "react";
 import { getBaseUrlWithouthighlights } from "@genuin/components/lib/utils";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 export default function WatchBoundaryOverlay({
-  cardLayoutId,
-  videoLayoutId,
+  variant,
 }: {
-  videoLayoutId: number | undefined;
-  cardLayoutId: number | undefined;
+  variant: "overlay" | "complete";
 }) {
-  const layoutType = getBrandType(cardLayoutId, videoLayoutId);
+  const {
+    view: { brandLayoutType: layoutType },
+  } = useEmbedConfigs();
 
   const handleGoToEpisode = useCallback(() => {
     if (layoutType !== "iheart") return;
@@ -20,7 +20,12 @@ export default function WatchBoundaryOverlay({
 
   switch (layoutType) {
     case "iheart": {
-      return <IHeartCaughtUpOverlay onGoToEpisodes={handleGoToEpisode} />;
+      return (
+        <IHeartCaughtUpOverlay
+          onGoToEpisodes={handleGoToEpisode}
+          variant={variant}
+        />
+      );
     }
     default:
       return null;

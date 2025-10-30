@@ -32,7 +32,8 @@ function tryJsonParse<T>(data: string | undefined): T | null {
  */
 export function parseFeed(
   data: FeedResponseFromGoApi,
-  shouldShowMiddlewareOverlay: boolean = false
+  shouldShowMiddlewareOverlay: boolean = false,
+  endOfFeed: boolean = false
 ): Array<z.infer<typeof PostDetailsSchema>> {
   if (!data || !Array.isArray(data)) {
     return [];
@@ -151,7 +152,8 @@ export function parseFeed(
         position: item.section?.position || null,
       },
     };
-
+    /*
+      TODO : iheart phase-2 implementation
     // Check for the unwatched -> watched transition (only if middleware is enabled)
     // When found, insert an overlay marker before the first watched video
     if (shouldShowMiddlewareOverlay && !watchBoundaryFound && index > 0) {
@@ -185,9 +187,21 @@ export function parseFeed(
       // Mark boundary as found to skip further checks
       watchBoundaryFound = true;
     }
-
+    */
     // Add the actual video item
     result.push(mappedItem);
+
+    // end of feed the caught up overlay
+    if (endOfFeed && index === data.length - 1) {
+      result.push({
+        ...mappedItem,
+        video: {
+          ...mappedItem.video,
+          type: "complete",
+          id: mappedItem.video.id + "_complete",
+        },
+      });
+    }
   }
   return result;
 }

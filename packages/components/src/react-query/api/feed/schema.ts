@@ -21,7 +21,7 @@ export const videoSchema = z.object({
   source: z.string(),
   isSparked: z.boolean().nullish(),
   isWatched: z.boolean().nullish(),
-  type: z.enum(["video", "overlay"]).default("video"),
+  type: z.enum(["video", "overlay", "complete"]).default("video"),
   sparkCount: z.number(),
   thumbnail: z.string(),
   thumbnailM: z.string().nullish(),
@@ -49,7 +49,7 @@ export const videoSchema = z.object({
       episode_id: z.string().nullish(),
       podcast_id: z.string().nullish(),
       station_id: z.string().nullish(),
-      type: z.string().nullish()
+      type: z.string().nullish(),
     })
     .nullish()
     .optional(),

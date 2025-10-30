@@ -8,3 +8,4 @@ export { IHeartReactionIcon } from "./iheart-reaction-icon";
 export { IHeartShareIcon } from "./iheart-share-icon";
 export { IHeartStopIcon } from "./iheart-stop-icon";
 export { IHeartUnmuteIcon } from "./iheart-unmute-icon";
+export { IHeartTickIcon } from "./iheart-tick-icon";

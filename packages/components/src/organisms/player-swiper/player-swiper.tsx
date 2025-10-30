@@ -13,7 +13,13 @@ import { Comments, CommentsDialog } from "../../molecules/comments";
 import { Player } from "./player";
 import { SwiperImplementation } from "./swiper-implementation";
 import { SectionsTabs } from "./sections-tabs";
-import { ComponentProps, useEffect, useState, useRef } from "react";
+import {
+  ComponentProps,
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+} from "react";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { abbreviateNumber, cn } from "@genuin/ui/lib/utils";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
@@ -28,6 +34,7 @@ import { Swiper } from "swiper/types";
 import { useAnalytics } from "@genuin/components/context";
 import { PlayerHeader } from "./player-header";
 import { calculateSlideDimensions } from "./utils";
+import WatchBoundaryOverlay from "@genuin/components/molecules/feed-player/control-layer/watch-boundary-overlay";
 
 type PlayerListPropsType = {
   posts: PostDetailsType[];
@@ -83,6 +90,7 @@ export function PlayerList({
     view: { brandLayoutType, websiteType, isAdsEnabledInIheart },
   } = useEmbedConfigs();
   const embedDetails = useSafeEmbedContext();
+  const [isEndOfFeedReached, setEndOfFeedReached] = useState<boolean>(false);
   // if we use directly isTablet from the hook then for desktop it will be true based on useDeviceDetectMediaQuery implementation
   const isTablet = !isMobile && !isDesktop;
 
@@ -212,6 +220,12 @@ export function PlayerList({
                 });
               }}
               disableScroll={disableSwiper}
+              onReachEnd={() => {
+                setEndOfFeedReached(true);
+              }}
+              onSlideChange={() => {
+                if (isEndOfFeedReached) setEndOfFeedReached(false);
+              }}
             >
               {posts.map((post, index) => (
                 <SwiperSlide
@@ -239,7 +253,7 @@ export function PlayerList({
                     const isTrulyVisible =
                       isVerticalVisible && isHorizontalActive;
 
-                    return (
+                    return post.video.type === "video" ? (
                       <Player
                         isActive={isTrulyActive}
                         isNext={isTrulyNext}
@@ -256,6 +270,8 @@ export function PlayerList({
                         onCommentCountChange={onCommentCountChange}
                         index={index}
                       />
+                    ) : (
+                      <WatchBoundaryOverlay variant="complete" />
                     );
                   }}
                 </SwiperSlide>
@@ -300,6 +316,12 @@ export function PlayerList({
         }
       }}
       disableScroll={disableSwiper}
+      onReachEnd={() => {
+        setEndOfFeedReached(true);
+      }}
+      onSlideChange={() => {
+        if (isEndOfFeedReached) setEndOfFeedReached(false);
+      }}
     >
       {posts.map((post, index) => (
         <SwiperSlide
@@ -314,20 +336,26 @@ export function PlayerList({
           }
         >
           {({ isActive, isNext, isPrev, isVisible }) => (
-            <Player
-              isActive={isActive}
-              isNext={isNext}
-              isPrev={isPrev}
-              isVisible={isVisible}
-              post={post}
-              isSectioned={isSectioned}
-              onCommunityJoinStatusChange={onCommunityJoinStatusChange}
-              onGroupJoinStatusChange={onGroupJoinStatusChange}
-              onGroupSubscriptionChange={onGroupSubscriptionChange}
-              onReactionStateChange={onReactionStateChange}
-              onCommentCountChange={onCommentCountChange}
-              index={index}
-            />
+            <>
+              {post.video.type === "video" ? (
+                <Player
+                  isActive={isActive}
+                  isNext={isNext}
+                  isPrev={isPrev}
+                  isVisible={isVisible}
+                  post={post}
+                  isSectioned={isSectioned}
+                  onCommunityJoinStatusChange={onCommunityJoinStatusChange}
+                  onGroupJoinStatusChange={onGroupJoinStatusChange}
+                  onGroupSubscriptionChange={onGroupSubscriptionChange}
+                  onReactionStateChange={onReactionStateChange}
+                  onCommentCountChange={onCommentCountChange}
+                  index={index}
+                />
+              ) : (
+                <WatchBoundaryOverlay variant="complete" />
+              )}
+            </>
           )}
         </SwiperSlide>
       ))}
@@ -373,7 +401,7 @@ export function PlayerList({
           aria-label="Video player"
         >
           {/* Header with back button and centered title */}
-          {brandLayoutType === "iheart" && (
+          {brandLayoutType === "iheart" && !isEndOfFeedReached && (
             <PlayerHeader
               isMobile={isMobile}
               title={posts[activeIndex]?.video.attributes?.title ?? ""}

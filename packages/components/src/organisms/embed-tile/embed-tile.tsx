@@ -106,10 +106,7 @@ export function EmbedTile({
   return (
     <>
       {shouldShowMiddlewareOverlay && postDetails.video.type === "overlay" ? (
-        <WatchBoundaryOverlay
-          videoLayoutId={postDetails.video.placement_video_layout_id ?? 0}
-          cardLayoutId={postDetails.video.cardLayoutId ?? 0}
-        />
+        <WatchBoundaryOverlay variant="overlay" />
       ) : (
         <div
           className={cn(
