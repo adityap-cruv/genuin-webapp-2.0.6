@@ -112,6 +112,10 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     ...getVideoPlayerConfigs(brandDetails?.web_configs),
   });
   /**
+   * Ref to track the previous active player type for resumePlaybackFrom logic
+   */
+  const previousActivePlayerTypeRef = useRef<string | null>(null);
+  /**
    * this state is solely use to show if the user has paused the video or not.
    */
   const [buttonAction, setButtonAction] = useState<ButtonActionType>();
@@ -265,6 +269,8 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     if (isActive) {
       // time info of new active player
       const timeInfo = baseContextManager.getTimeInfo(videoId);
+      const currentActivePlayerType =
+        embedEventBus.getContext().activePlayerType;
 
       // This case is for handling if the player comes back from another state to back here.
       // Let's say, embed -> expand -> embed,
@@ -275,11 +281,13 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
           ...embedEventBus.getContext(),
           skipTimeOffsetOnce: false,
         });
+        previousActivePlayerTypeRef.current = currentActivePlayerType;
         return;
       }
 
       // If the player is ended no need to change the current time.
       if (timeInfo.duration === timeInfo.currentTime) {
+        previousActivePlayerTypeRef.current = currentActivePlayerType;
         return;
       }
 
@@ -288,16 +296,26 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       // in case resumePlaybackFrom is -1, start it from beginning.
       if (resumePlaybackFrom === -1) {
         playerRef.current.getElement().currentTime = 0;
+        previousActivePlayerTypeRef.current = currentActivePlayerType;
         return;
       }
 
-      // calculate new current time
-      let newCurrentTime = timeInfo.currentTime - video.resumePlaybackFrom;
-      // if less than 0 than 0 or else, same value.
-      newCurrentTime = newCurrentTime < 0 ? 0 : newCurrentTime;
+      // Only apply resumePlaybackFrom if activePlayerType hasn't changed or is first time
+      if (
+        previousActivePlayerTypeRef.current === null ||
+        currentActivePlayerType === previousActivePlayerTypeRef.current
+      ) {
+        // calculate new current time
+        let newCurrentTime = timeInfo.currentTime - video.resumePlaybackFrom;
+        // if less than 0 than 0 or else, same value.
+        newCurrentTime = newCurrentTime < 0 ? 0 : newCurrentTime;
 
-      // reset the player.
-      playerRef.current.getMedia().currentTime = newCurrentTime;
+        // reset the player.
+        playerRef.current.getMedia().currentTime = newCurrentTime;
+      }
+
+      // Update previous active player type
+      previousActivePlayerTypeRef.current = currentActivePlayerType;
     }
   }, [brandLayoutType, isActive, embedDetails?.embedEventBus]);
 
