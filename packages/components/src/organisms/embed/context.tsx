@@ -11,7 +11,6 @@ import {
   isSlideVisible,
   getVisibleSlideRange,
   getNewActiveIndexOnSlideChange,
-  getSlideVisibilityPercentage,
 } from "./utils";
 import { useEmbedContext } from "@genuin/components/context/embed";
 import { EmbedEventContextType } from "@genuin/components/context/embed/event-bus";
@@ -39,6 +38,20 @@ type EmbedManagerContextType = {
    * @returns void
    */
   goToPreviousVideo: () => void;
+  /**
+   * The swiper instance.
+   */
+  swiper: SwiperType | null;
+  /**
+   * Gets the visibility percentage of a slide at the given index.
+   * @param params.index The slide index to check
+   * @param params.dir The direction of the layout ('vertical' or 'horizontal')
+   * @returns The percentage of the slide that is visible (0-100)
+   */
+  getSlideVisibilityPercentage: (params: {
+    index: number;
+    dir: "vertical" | "horizontal";
+  }) => number;
 };
 
 const EmbedManagerContext = createContext<EmbedManagerContextType | undefined>(
@@ -162,9 +175,8 @@ export function EmbedManagerProvider({
         if (!byHover) {
           setActiveIndex(index);
           const visibilityPercentage = getSlideVisibilityPercentage({
-            swiper,
             index,
-            isVertical: config.view.isFeed,
+            dir: config.view.isFeed ? "vertical" : "horizontal",
           });
           if (visibilityPercentage < 70) {
             swiper.slideTo(index, 300);
@@ -172,7 +184,7 @@ export function EmbedManagerProvider({
         }
       }
     },
-    [swiper, setActiveIndex, isGridLayout]
+    [swiper, setActiveIndex, isGridLayout, config.view.isFeed]
   );
 
   const goToNextVideo = useCallback(
@@ -322,6 +334,35 @@ export function EmbedManagerProvider({
     };
   }, [activeIndex, moveToNextTime, moveToNext, goToNextVideo, embedEventBus]);
 
+  const getSlideVisibilityPercentage = useCallback(
+    ({ index, dir }: { index: number; dir: "vertical" | "horizontal" }) => {
+      if (!swiper) return 0;
+      const slides = swiper.slides;
+      const slide = slides[index];
+      if (!slide) return 0;
+
+      const slideRect = slide.getBoundingClientRect();
+      const containerRect = swiper.el.getBoundingClientRect();
+
+      if (dir === "vertical") {
+        // Vertical feed: use height
+        const slideTop = Math.max(slideRect.top, containerRect.top);
+        const slideBottom = Math.min(slideRect.bottom, containerRect.bottom);
+        const visibleHeight = Math.max(0, slideBottom - slideTop);
+        const slideHeight = slideRect.height;
+        return slideHeight > 0 ? (visibleHeight / slideHeight) * 100 : 0;
+      } else {
+        // Horizontal carousel: use width
+        const slideLeft = Math.max(slideRect.left, containerRect.left);
+        const slideRight = Math.min(slideRect.right, containerRect.right);
+        const visibleWidth = Math.max(0, slideRight - slideLeft);
+        const slideWidth = slideRect.width;
+        return slideWidth > 0 ? (visibleWidth / slideWidth) * 100 : 0;
+      }
+    },
+    [swiper]
+  );
+
   return (
     <EmbedManagerContext.Provider
       value={{
@@ -329,6 +370,8 @@ export function EmbedManagerProvider({
         updateActiveIndex,
         goToNextVideo,
         goToPreviousVideo,
+        swiper,
+        getSlideVisibilityPercentage,
       }}
     >
       {children}

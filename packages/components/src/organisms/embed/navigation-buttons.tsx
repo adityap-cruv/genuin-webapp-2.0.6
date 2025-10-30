@@ -7,28 +7,28 @@ import {
 } from "@genuin/ui";
 import { useEmbedManagerContext } from "./context";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import { useCallback } from "react";
+import { useCallback, useState, useEffect } from "react";
 
 interface NavigationButtonsProps {
-  totalSlides: number;
   isIheartLayout?: boolean;
   theme?: "light" | "dark";
   embedVariant?: "carousel" | "feed";
-  activeIndex: number;
   onPrev: (e: React.MouseEvent<HTMLButtonElement>) => void;
   onNext: (e: React.MouseEvent<HTMLButtonElement>) => void;
   isNavigationControlEnabled: boolean;
+  isPrevDisabled?: boolean;
+  isNextDisabled?: boolean;
 }
 
 export function NavigationButtons({
-  totalSlides,
   isIheartLayout = false,
   theme = "light",
   embedVariant: providedEmbedVariant,
-  activeIndex,
   onPrev,
   onNext,
   isNavigationControlEnabled,
+  isPrevDisabled = false,
+  isNextDisabled = false,
 }: NavigationButtonsProps) {
   // Early return if navigation is disabled
   if (!isNavigationControlEnabled) return null;
@@ -36,8 +36,6 @@ export function NavigationButtons({
   // Determine layout and states
   const embedVariant = providedEmbedVariant;
   const isCarousel = embedVariant === "carousel";
-  const isFirstSlide = activeIndex === 0;
-  const isLastSlide = activeIndex === totalSlides - 1;
 
   // Theme configuration
   const buttonTheme = theme === "dark" ? "secondaryDark" : "secondary";
@@ -80,14 +78,14 @@ export function NavigationButtons({
       <div className="gencl:flex gencl:justify-center gencl:items-center gencl:gap-2 gencl:my-4">
         {createNavButton(
           ChevronLeftIcon,
-          isFirstSlide,
+          isPrevDisabled,
           handlePrevClick,
           "Previous",
           "sm"
         )}
         {createNavButton(
           ChevronRightIcon,
-          isLastSlide,
+          isNextDisabled,
           handleNextClick,
           "Next",
           "sm"
@@ -104,7 +102,7 @@ export function NavigationButtons({
           <div className="gencl:ml-2 gencl:pointer-events-auto">
             {createNavButton(
               ChevronLeftIcon,
-              isFirstSlide,
+              isPrevDisabled,
               handlePrevClick,
               "Previous"
             )}
@@ -112,7 +110,7 @@ export function NavigationButtons({
           <div className="gencl:mr-2 gencl:pointer-events-auto">
             {createNavButton(
               ChevronRightIcon,
-              isLastSlide,
+              isNextDisabled,
               handleNextClick,
               "Next"
             )}
@@ -127,11 +125,16 @@ export function NavigationButtons({
     <div className="gencl:absolute gencl:z-20 gencl:right-2 gencl:top-1/2 gencl:transform gencl:-translate-y-1/2 gencl:flex gencl:flex-col gencl:gap-2">
       {createNavButton(
         ChevronUpIcon,
-        isFirstSlide,
+        isPrevDisabled,
         handlePrevClick,
         "Previous"
       )}
-      {createNavButton(ChevronDownIcon, isLastSlide, handleNextClick, "Next")}
+      {createNavButton(
+        ChevronDownIcon,
+        isNextDisabled,
+        handleNextClick,
+        "Next"
+      )}
     </div>
   );
 }
@@ -143,9 +146,17 @@ export function NavigationButtonsWithContext({
   totalSlides: number;
   isIheartLayout?: boolean;
 }) {
-  const { goToNextVideo, goToPreviousVideo, activeIndex } =
-    useEmbedManagerContext();
+  const {
+    goToNextVideo,
+    goToPreviousVideo,
+    activeIndex,
+    getSlideVisibilityPercentage,
+    swiper,
+  } = useEmbedManagerContext();
   const config = useEmbedConfigs();
+
+  const [isPrevDisabled, setIsPrevDisabled] = useState(false);
+  const [isNextDisabled, setIsNextDisabled] = useState(false);
 
   const handlePrev = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -163,16 +174,71 @@ export function NavigationButtonsWithContext({
     [goToNextVideo]
   );
 
+  // Function to update disabled state based on current swiper state
+  const updateDisabledState = useCallback(() => {
+    if (isIheartLayout) {
+      // For iHeart layout, use slide visibility percentage
+      // Disable prev if slide at index 1 is fully visible
+      const prevDisabled =
+        getSlideVisibilityPercentage({
+          index: 0,
+          dir: "horizontal",
+        }) === 100;
+
+      // Disable next if last slide is fully visible
+      const nextDisabled =
+        getSlideVisibilityPercentage({
+          index: totalSlides - 1,
+          dir: "horizontal",
+        }) === 100;
+
+      setIsPrevDisabled(prevDisabled);
+      setIsNextDisabled(nextDisabled);
+    } else {
+      // For standard layouts, use activeIndex
+      setIsPrevDisabled(activeIndex === 0);
+      setIsNextDisabled(activeIndex === totalSlides - 1);
+    }
+  }, [activeIndex, totalSlides, isIheartLayout, getSlideVisibilityPercentage]);
+
+  // Update disabled state when dependencies change
+  useEffect(() => {
+    updateDisabledState();
+  }, [updateDisabledState]);
+
+  // Listen to swiper events to update disabled state when slides move
+  useEffect(() => {
+    if (!swiper) return;
+
+    // Update on progress (for continuous updates during scrolling)
+    const handleProgress = () => {
+      updateDisabledState();
+    };
+
+    // Update on transitionEnd (when swiper transition completes)
+    const handleTransitionEnd = () => {
+      updateDisabledState();
+    };
+
+    swiper.on("progress", handleProgress);
+    swiper.on("transitionEnd", handleTransitionEnd);
+
+    return () => {
+      swiper.off("progress", handleProgress);
+      swiper.off("transitionEnd", handleTransitionEnd);
+    };
+  }, [swiper, updateDisabledState]);
+
   return (
     <NavigationButtons
-      totalSlides={totalSlides}
       isIheartLayout={isIheartLayout}
-      activeIndex={activeIndex}
       onPrev={handlePrev}
       onNext={handleNext}
       isNavigationControlEnabled={
         config.view.isNavigationControlEnabled ?? false
       }
+      isPrevDisabled={isPrevDisabled}
+      isNextDisabled={isNextDisabled}
     />
   );
 }
