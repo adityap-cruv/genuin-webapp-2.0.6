@@ -163,9 +163,14 @@
     return new Promise((resolve, reject) => {
       const link = document.createElement('link')
       link.rel = 'stylesheet'
-      link.href = __DEV_ENVIRONMENT__
+      const cssUrl = __DEV_ENVIRONMENT__
         ? './dist/assets/web-sdk.css'
         : `__MEDIA_BASE_URL__/sdk/__SDK_VERSION_PATH__assets/web-sdk.css`
+
+      // Add cache buster to ensure fresh CSS loads
+      const cacheBuster = Date.now()
+      link.href =
+        cssUrl + (cssUrl.includes('?') ? '&' : '?') + 'v=' + cacheBuster
 
       link.onload = () => {
         console.log('CSS file loaded')
