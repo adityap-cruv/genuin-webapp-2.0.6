@@ -1,5 +1,5 @@
 /**
- * SDKEventEmitter - Centralized SDK event emission class
+ * SDKEventEmitter - Centralized SDK event emission class with debouncing support
  *
  * This class provides static methods to emit events to the Genuin SDK (window.genuin).
  * All SDK events are centralized here to provide better visibility and maintainability
@@ -7,7 +7,8 @@
  *
  * @remarks
  * Each static method corresponds to a specific SDK event type and provides
- * type-safe payloads for the events being emitted.
+ * type-safe payloads for the events being emitted. Supports debouncing to prevent
+ * rapid event emissions.
  */
 
 /**
@@ -137,9 +138,27 @@ export type SDKEventPayloadMap = {
 export type SDKEventListener = (props: any) => void;
 
 /**
+ * Options for emitting SDK events
+ */
+export interface SDKEmitOptions {
+  /**
+   * Debounce time in milliseconds. If provided, the event will be debounced
+   * and only the last emission within the time window will be sent.
+   * @default undefined (no debouncing)
+   */
+  debounceTime?: number;
+}
+
+/**
  * SDKEventEmitter class for centralized SDK event emissions and listeners
  */
 export class SDKEventEmitter {
+  /**
+   * Map to store debounce timers for each event
+   * Key format: `${eventName}`
+   */
+  private static debounceTimers: Map<string, NodeJS.Timeout> = new Map();
+
   /**
    * Checks if the Genuin SDK is available on the window object
    */
@@ -148,17 +167,9 @@ export class SDKEventEmitter {
   }
 
   /**
-   * Generalized type-safe emit method for all SDK events
-   * @param eventName - The SDK event name from SDKEventName enum
-   * @param payload - The payload for the event (type-safe based on event name)
-   *
-   * @example
-   * ```ts
-   * SDKEventEmitter.emit(SDKEventName.ERROR, { isError: true, isNoContent: false });
-   * SDKEventEmitter.emit(SDKEventName.PLAY, { videoId: '123', timestamp: Date.now() });
-   * ```
+   * Internal method to actually emit the event
    */
-  static emit<T extends SDKEventName>(
+  private static emitEvent<T extends SDKEventName>(
     eventName: T,
     payload: SDKEventPayloadMap[T]
   ): void {
@@ -171,6 +182,83 @@ export class SDKEventEmitter {
     } catch (error) {
       // Silent fail
     }
+  }
+
+  /**
+   * Generalized type-safe emit method for all SDK events with debouncing support
+   * @param eventName - The SDK event name from SDKEventName enum
+   * @param payload - The payload for the event (type-safe based on event name)
+   * @param options - Optional configuration including debounceTime
+   *
+   * @example
+   * ```ts
+   * // Immediate emission (no debounce)
+   * SDKEventEmitter.emit(SDKEventName.ERROR, { isError: true, isNoContent: false });
+   * 
+   * // Debounced emission (300ms)
+   * SDKEventEmitter.emit(
+   *   SDKEventName.PLAY, 
+   *   { muted: false, isInView: true, isFocused: true, volume: 100 },
+   *   { debounceTime: 300 }
+   * );
+   * ```
+   */
+  static emit<T extends SDKEventName>(
+    eventName: T,
+    payload: SDKEventPayloadMap[T],
+    options?: SDKEmitOptions
+  ): void {
+    const { debounceTime } = options || {};
+
+    // If no debounce time provided, emit immediately
+    if (!debounceTime || debounceTime <= 0) {
+      this.emitEvent(eventName, payload);
+      return;
+    }
+
+    // Clear existing timer for this event
+    const existingTimer = this.debounceTimers.get(eventName);
+    if (existingTimer) {
+      clearTimeout(existingTimer);
+    }
+
+    // Set new timer
+    const timer = setTimeout(() => {
+      this.emitEvent(eventName, payload);
+      this.debounceTimers.delete(eventName);
+    }, debounceTime);
+
+    this.debounceTimers.set(eventName, timer);
+  }
+
+  /**
+   * Cancels any pending debounced emissions for a specific event
+   * @param eventName - The SDK event name to cancel
+   *
+   * @example
+   * ```ts
+   * SDKEventEmitter.cancelDebounce(SDKEventName.PLAY);
+   * ```
+   */
+  static cancelDebounce(eventName: SDKEventName): void {
+    const timer = this.debounceTimers.get(eventName);
+    if (timer) {
+      clearTimeout(timer);
+      this.debounceTimers.delete(eventName);
+    }
+  }
+
+  /**
+   * Cancels all pending debounced emissions
+   *
+   * @example
+   * ```ts
+   * SDKEventEmitter.cancelAllDebounce();
+   * ```
+   */
+  static cancelAllDebounce(): void {
+    this.debounceTimers.forEach((timer) => clearTimeout(timer));
+    this.debounceTimers.clear();
   }
 
   /**

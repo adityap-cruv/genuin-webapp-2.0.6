@@ -240,12 +240,16 @@ export function BaseContextProvider({
         typeof embedDetails !== undefined
           ? (embedDetails?.embedEventBus.getContext().containerInView ?? true)
           : true;
-      SDKEventEmitter.emit(SDKEventName.PLAY, {
-        isFocused: baseContext.userIsFocused,
-        isInView,
-        muted: baseContext.muted,
-        volume: baseContext.volume,
-      });
+      SDKEventEmitter.emit(
+        SDKEventName.PLAY,
+        {
+          isFocused: baseContext.userIsFocused,
+          isInView,
+          muted: baseContext.muted,
+          volume: baseContext.volume,
+        },
+        { debounceTime: 300 }
+      );
     };
 
     const handlePause = () => {
@@ -255,12 +259,16 @@ export function BaseContextProvider({
           ? (embedDetails?.embedEventBus.getContext().containerInView ?? true)
           : true;
 
-      SDKEventEmitter.emit(SDKEventName.PAUSE, {
-        isFocused: baseContext.userIsFocused,
-        isInView,
-        muted: baseContext.muted,
-        volume: baseContext.volume,
-      });
+      SDKEventEmitter.emit(
+        SDKEventName.PAUSE,
+        {
+          isFocused: baseContext.userIsFocused,
+          isInView,
+          muted: baseContext.muted,
+          volume: baseContext.volume,
+        },
+        { debounceTime: 300 }
+      );
     };
 
     baseContextManager.onPlay(handlePlay);
@@ -270,6 +278,7 @@ export function BaseContextProvider({
       baseContextManager.offPlay(handlePlay);
       baseContextManager.offPause(handlePause);
       FeedContextManager.destroy();
+      SDKEventEmitter.cancelAllDebounce();
     };
   }, [baseContextManager]);
 
@@ -284,10 +293,14 @@ export function BaseContextProvider({
       return;
     }
 
-    SDKEventEmitter.emit(SDKEventName.MUTE_CHANGE, {
-      muted,
-      volume: baseEventBus.getContext().volume,
-    });
+    SDKEventEmitter.emit(
+      SDKEventName.MUTE_CHANGE,
+      {
+        muted,
+        volume: baseEventBus.getContext().volume,
+      },
+      { debounceTime: 300 }
+    );
   }, [muted]);
 
   return (
