@@ -58,10 +58,30 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
       }}
       {...restProps}
     >
+      {/* Top gradient overlay (10% height) */}
+      <div
+        className="gencl:absolute gencl:top-0 gencl:left-0 gencl:right-0 gencl:pointer-events-none gencl:z-[1]"
+        style={{
+          height: "25%",
+          background:
+            "linear-gradient(to bottom, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%)",
+        }}
+      />
+
+      {/* Bottom gradient overlay (40% height) */}
+      <div
+        className="gencl:absolute gencl:bottom-0 gencl:left-0 gencl:right-0 gencl:pointer-events-none gencl:z-[1]"
+        style={{
+          height: "35%",
+          background:
+            "linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0) 100%)",
+        }}
+      />
+
       {/* Header Section */}
       <header
         aria-label="Video information"
-        className="gencl:absolute gencl:top-0 gencl:w-full gencl:flex gencl:justify-between gencl:items-center gencl:gap-2 gencl:text-white gencl:p-3 gencl:bg-gradient-to-b gencl:from-black/50 gencl:to-transparent"
+        className="gencl:absolute gencl:top-0 gencl:w-full gencl:flex gencl:justify-between gencl:items-center gencl:gap-2 gencl:text-white gencl:p-3"
       >
         {postDetails.video.attributes?.image_url && (
           <Image
@@ -90,7 +110,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
       {/* Footer Section */}
       <footer
         aria-label="Video metadata and controls"
-        className="gencl:absolute gencl:bottom-0 gencl:p-3 gencl:text-white gencl:w-full gencl:space-y-3 gencl:bg-gradient-to-t gencl:from-black/50 gencl:to-transparent"
+        className="gencl:absolute gencl:bottom-0 gencl:p-3 gencl:text-white gencl:w-full gencl:space-y-3"
       >
         <div
           aria-label={`Published ${getMonthYear(postDetails.video.createdAt ?? 0)}, Duration ${getFormattedDuration(String(postDetails.video.duration ?? ""))}`}

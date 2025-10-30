@@ -140,6 +140,26 @@ export function Default({
             )}
             {...restProps}
           >
+            {/* Top gradient overlay (10% height) */}
+            <div
+              className="gencl:absolute gencl:top-0 gencl:left-0 gencl:right-0 gencl:pointer-events-none gencl:z-[1]"
+              style={{
+                height: "10%",
+                background:
+                  "linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0) 100%)",
+              }}
+            />
+
+            {/* Bottom gradient overlay (40% height) */}
+            <div
+              className="gencl:absolute gencl:bottom-0 gencl:left-0 gencl:right-0 gencl:pointer-events-none gencl:z-[1]"
+              style={{
+                height: "40%",
+                background:
+                  "linear-gradient(to top, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.6) 25%, rgba(0, 0, 0, 0.45) 50%, rgba(0, 0, 0, 0.25) 75%, rgba(0, 0, 0, 0) 100%)",
+              }}
+            />
+
             {(showExpandView || isMobile) && expandViewDetails && (
               <ExpandViewDetails
                 postDetails={postDetails}

@@ -513,7 +513,8 @@ export function ExpandViewDetails({
       tabIndex={-1}
       className={cn(
         "gencl:absolute gencl:gap-2 gencl:w-full gencl:z-20 gencl:right-0 gencl:bottom-0 gencl:p-4 gencl:focus:outline-none",
-        `gencl:bg-gradient-to-t gencl:from-black/50 gencl:to-transparent`,
+        brandLayoutType !== "iheart" &&
+          "gencl:bg-gradient-to-t gencl:from-black/50 gencl:to-transparent",
         className
       )}
       {...restProps}
