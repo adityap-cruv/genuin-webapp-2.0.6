@@ -644,7 +644,7 @@ function NavigationButton({
         aria-disabled={swiper.isBeginning}
       >
         <ChevronUpIcon
-          theme={theme === "dark" ? "dark" : "light"}
+          theme={theme === "light" ? "dark" : "light"}
           size="lg"
           aria-hidden="true"
         />
@@ -665,7 +665,7 @@ function NavigationButton({
         aria-disabled={swiper.isEnd}
       >
         <ChevronDownIcon
-          theme={theme === "dark" ? "dark" : "light"}
+          theme={theme === "light" ? "dark" : "light"}
           size="lg"
           aria-hidden="true"
         />
@@ -700,7 +700,7 @@ function BackButton({
           )}
         >
           <ArrowLeftIcon
-            theme={theme === "dark" ? "dark" : "light"}
+            theme={theme === "dark" ? "light" : "light"}
             size="md"
           />
         </Button>

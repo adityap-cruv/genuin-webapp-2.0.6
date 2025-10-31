@@ -32,6 +32,7 @@ import {
   SDKEventEmitter,
   SDKEventName,
 } from "@genuin/components/lib/sdk-event-emitter";
+import { useIheartUrlManager } from "@genuin/components/hooks/embed/use-iheart-url-manager";
 
 const embedVariants = cva("gencl:rounded-md gencl:overflow-auto", {
   variants: {
@@ -65,6 +66,10 @@ export function Embed({
   // Local state for activePlayerType synced with event bus
   const [activePlayerType, setActivePlayerType] = useState(
     embedEventBus.getContext().activePlayerType
+  );
+  // Local state for activeIndex synced with event bus
+  const [activeIndex, setActiveIndex] = useState(
+    embedEventBus.getContext().activeIndex
   );
   const { track, EventName } = useAnalytics();
   const config = useEmbedConfigs();
@@ -246,6 +251,21 @@ export function Embed({
     };
   }, [embedEventBus]);
 
+  // Listen for activeIndex changes to sync local state
+  useEffect(() => {
+    function handleActiveIndexChange(
+      eventData: any,
+      context: EmbedEventContextType
+    ) {
+      setActiveIndex(context.activeIndex);
+    }
+
+    embedEventBus.on("activeIndexChange", handleActiveIndexChange);
+    return () => {
+      embedEventBus.off("activeIndexChange", handleActiveIndexChange);
+    };
+  }, [embedEventBus]);
+
   // Use the custom hook with style prop to prioritize parent styles
   const {
     containerHeight,
@@ -259,6 +279,16 @@ export function Embed({
 
   // Check for iheart brand layout for navigation button positioning
   const isIheartLayout = config.view.brandLayoutType === "iheart";
+  const websiteType = config.view.websiteType;
+
+  // Handle URL manipulation for iHeart brand layout
+  useIheartUrlManager({
+    isIheartLayout,
+    websiteType,
+    activePlayerType,
+    activeIndex,
+    videos,
+  });
 
   if (isError) {
     return (

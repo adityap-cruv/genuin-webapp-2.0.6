@@ -1,7 +1,7 @@
 "use client";
 import { cn } from "@genuin/ui/utils";
 import { CommunityUserRole } from "@genuin/components/types/post";
-import { useCallback, useEffect, memo, useRef, useMemo } from "react";
+import { useCallback, useEffect, memo } from "react";
 import "swiper/css";
 
 import { PlayerList } from "@genuin/components/organisms/player-swiper";
@@ -72,66 +72,6 @@ export const FeedViewCore = memo(function FeedViewCore({
   const disableSwiper = showExpandView
     ? (embedDetails?.embedEventBus.getContext().disableSwiper ?? false)
     : false;
-
-  // Store original URL for iHeart layout URL manipulation
-  const originalUrlRef = useRef<string | null>(null);
-
-  // Handle URL manipulation for iHeart brand layout
-  useEffect(() => {
-    if (brandLayoutType !== "iheart" || !videos) return;
-
-    const currentVideo = videos[activeIndex];
-    if (!currentVideo?.video) return;
-
-    if (showExpandView) {
-      // Store original URL when entering expand view
-      if (originalUrlRef.current === null) {
-        originalUrlRef.current = window.location.href;
-      }
-
-      const videoSlug = currentVideo.video.slug;
-      const videoId = currentVideo.video.id;
-
-      const url = new URL(originalUrlRef.current);
-      const videoPath = videoSlug + "_" + videoId;
-
-      // Check if URL already contains a video path (indicated by "_" in pathname)
-      if (!url.pathname.includes("_")) {
-        // Ensure pathname ends with '/' if it doesn't already
-        let basePath = url.pathname.endsWith("/")
-          ? url.pathname
-          : url.pathname + "/";
-
-        // Ensure /highlights is present in the URL before adding video path
-        if (!basePath.includes("/highlights")) {
-          basePath += "highlights/";
-        }
-        url.pathname =
-          basePath + (videoId.includes("complete") ? "" : videoPath);
-      }
-
-      // Update URL without causing page reload
-      window.history.replaceState(null, "", url.toString());
-    } else {
-      // Restore original URL when leaving expand view, but remove any video path (slug_id format)
-      if (originalUrlRef.current) {
-        const url = new URL(originalUrlRef.current);
-        // Remove video path if present (anything after last / that contains _)
-        const pathParts = url.pathname.split("/");
-        const lastPart = pathParts[pathParts.length - 1];
-        if (lastPart && lastPart.includes("_")) {
-          // Remove the last part which is the video path
-          pathParts.pop();
-          url.pathname =
-            pathParts.join("/") + (pathParts.length > 0 ? "/" : "");
-        }
-        // Remove search params
-        url.searchParams.delete("action");
-        window.history.replaceState(null, "", url.toString());
-        originalUrlRef.current = null;
-      }
-    }
-  }, [showExpandView, activeIndex, brandLayoutType, videos]);
 
   // this useEffect is used to fetch the next page of videos when the user scrolls to the end of the list.
   // it checks if there is a next page and if the user is not already fetching the next page.
