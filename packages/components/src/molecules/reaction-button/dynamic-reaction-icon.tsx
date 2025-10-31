@@ -53,10 +53,10 @@ export function DynamicReactionIcon({
           : reaction?.keys.comment_unselected.svg;
       case "feed":
         return isSparked
-          ? reaction?.keys.feed_selected.svg
-          : reaction?.keys.feed_unselected.svg;
+          ? reaction?.keys.feed_selected.svg + "?t=" + new Date().getTime()
+          : reaction?.keys.feed_unselected.svg + "?t=" + new Date().getTime();
       case "feed_animate":
-        return reaction?.keys.feed_animate.svg;
+        return reaction?.keys.feed_animate.svg + "?t=" + new Date().getTime();
       case "social_count":
         return theme === "dark"
           ? reaction?.keys.social_count_white.svg
