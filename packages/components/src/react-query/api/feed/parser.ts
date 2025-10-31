@@ -16,8 +16,8 @@ function tryJsonParse<T>(data: string | undefined): T | null {
   try {
     return JSON.parse(data);
   } catch (e) {
-    console.error("Failed to parse JSON", e);
-    return null;
+   // console.error("Failed to parse JSON", e);
+   return null;
   }
 }
 
