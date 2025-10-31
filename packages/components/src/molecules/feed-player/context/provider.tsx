@@ -97,7 +97,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     useBaseContext();
   const embedDetails = useSafeEmbedContext();
   const {
-    view: { brandLayoutType },
+    view: { brandLayoutType, websiteType },
     video,
   } = useEmbedConfigs();
 
@@ -566,6 +566,12 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
 
     baseContextManager.setVideoWatched({ videoId, isWatched: true });
 
+    if (isIHeartLayout && websiteType === "legacy") {
+      setButtonAction("PAUSE");
+      setFeedPlayerShouldPlay(false);
+      return;
+    }
+
     // In case of embed regardless of shouldSwipeNext it should go to next
     if (isEmbed) {
       onPlayerIterationEnd();
@@ -608,6 +614,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     explicitLoop,
     isIHeartLayout,
     swiper,
+    websiteType,
   ]);
 
   const updateAdInfo = useCallback(

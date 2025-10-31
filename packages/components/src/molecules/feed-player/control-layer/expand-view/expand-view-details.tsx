@@ -153,6 +153,9 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
 }) {
   const { video, owner } = postDetails;
   const { attributes } = video;
+  const {
+    view: { websiteType },
+  } = useEmbedConfigs();
 
   switch (type) {
     case "iheart":
@@ -194,7 +197,12 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
                   aspectRatio="square"
                   src={attributes.image_url}
                   alt={`${postDetails.video.attributes?.title || contentType} artwork`}
-                  className="gencl:size-16 gencl:rounded-md gencl:object-cover"
+                  className={cn(
+                    "gencl:rounded-md gencl:object-cover",
+                    websiteType === "polaris"
+                      ? "gencl:size-16"
+                      : "gencl:size-[68px]"
+                  )}
                 />
               </Link>
             </div>
@@ -206,7 +214,14 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
                 bypassChecks
                 aria-label={`Go to ${postDetails.video.attributes?.title} page`}
               >
-                <p className="gencl:h-5 gencl:flex gencl:items-center gencl:gap-2 gencl:text-[16px] gencl:font-semibold gencl:leading-[24px] gencl:line-clamp-1! gencl:tracking-[-0.2px] gencl:lg:text-[17px]! gencl:lg:font-semibold! gencl:lg:leading-[24px]! gencl:lg:tracking-[-0.2px]!">
+                <p
+                  className={cn(
+                    "gencl:h-5 gencl:flex gencl:items-center gencl:gap-2 gencl:font-semibold gencl:leading-[24px] gencl:line-clamp-1! gencl:tracking-[-0.2px] gencl:lg:font-semibold! gencl:lg:leading-[24px]! gencl:lg:tracking-[-0.2px]!",
+                    websiteType === "polaris"
+                      ? "gencl:text-[16px] gencl:lg:text-[17px]!"
+                      : "gencl:text-[16px]"
+                  )}
+                >
                   {postDetails.video.attributes?.title}
                 </p>
               </Link>

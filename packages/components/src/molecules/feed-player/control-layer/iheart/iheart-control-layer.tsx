@@ -10,6 +10,7 @@ import { usePlayerContext } from "../../context";
 import { ReadMore } from "@genuin/components/molecules/read-more";
 import { GenericData } from "@genuin/components/context/base/feed-context-manager";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
   postDetails,
@@ -23,7 +24,10 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
   ...restProps
 }) => {
   const { baseContextManager } = useBaseContext();
-  const { isDesktop } = useDeviceDetectMediaQuery();
+  const {
+    view: { websiteType },
+  } = useEmbedConfigs();
+  const { isMobile } = useDeviceDetectMediaQuery();
   const { play } = usePlayerContext();
   const embedDetails = useSafeEmbedContext();
   const [isVideoWatched, setIsVideoWatched] = useState<boolean>(
@@ -90,7 +94,12 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
             alt={`${postDetails.video.attributes.title ?? "Podcast artwork"}`}
             role="img"
             aria-label={`${postDetails.video.attributes.title ?? "Podcast cover image"}`}
-            className="gencl:size-12 gencl:rounded-md gencl:object-cover gencl:lg:size-16!"
+            className={cn(
+              "gencl:rounded-md gencl:object-cover",
+              websiteType === "polaris"
+                ? "gencl:size-12 gencl:lg:size-16!"
+                : "gencl:size-14!"
+            )}
           />
         )}
         <div className="gencl:w-full">
@@ -174,6 +183,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
 
       {isVideoWatched && (
         <IHeartEndOfContentOverlay
+          isMobile={isMobile}
           onGoToEpisodes={() => {
             // Handle go to episodes action
             console.log("Go to episodes clicked");

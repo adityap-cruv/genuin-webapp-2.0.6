@@ -1,9 +1,11 @@
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { Button } from "@genuin/ui";
 import { IHeartPlayAgainIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
 import { type ComponentProps } from "react";
 
 interface IHeartEndOfContentOverlayProps extends ComponentProps<"div"> {
+  isMobile: boolean;
   onGoToEpisodes?: () => void;
   onPlayAgain?: () => void;
 }
@@ -12,8 +14,12 @@ export function IHeartEndOfContentOverlay({
   className,
   onGoToEpisodes,
   onPlayAgain,
+  isMobile,
   ...props
 }: IHeartEndOfContentOverlayProps) {
+  const {
+    view: { websiteType },
+  } = useEmbedConfigs();
   return (
     <div
       {...props}
@@ -38,10 +44,18 @@ export function IHeartEndOfContentOverlay({
         <Button
           onClick={onPlayAgain}
           aria-label="Play this episode again"
-          className="gencl:h-12 gencl:text-body-1-semi-bold! gencl:bg-white gencl:flex gencl:items-center gencl:justify-center gencl:rounded-full gencl:px-5 gencl:text-[#27292D]!"
+          className={cn(
+            "gencl:text-body-1-semi-bold! gencl:bg-white gencl:flex gencl:items-center gencl:justify-center gencl:rounded-full gencl:px-5 gencl:text-[#27292D]!",
+            websiteType === "polaris" ? "gencl:h-8 gencl:md:h-12" : "gencl:h-8"
+          )}
         >
-          <IHeartPlayAgainIcon strokeWidth="0px" theme="light" size="lg" aria-hidden="true" /> Play
-          again
+          <IHeartPlayAgainIcon
+            strokeWidth="0px"
+            theme="light"
+            size={isMobile || websiteType === "legacy" ? "sm" : "lg"}
+            aria-hidden="true"
+          />{" "}
+          Play again
         </Button>
       </div>
     </div>

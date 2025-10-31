@@ -272,7 +272,7 @@ export function NavigationButtonsWithContext({
       // Disable next if last slide is fully visible
       const nextDisabled =
         getSlideVisibilityPercentage({
-          index: totalSlides - 1,
+          index: totalSlides - 2,
           dir: "horizontal",
         }) === 100;
 
