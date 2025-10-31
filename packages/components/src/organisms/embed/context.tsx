@@ -82,37 +82,39 @@ export function EmbedManagerProvider({
 
   /**
    * Handles iHeart-specific slide navigation logic
+   * Navigates to the first peeking (partially visible) slide
    * @param direction - The direction to navigate ('next' or 'prev')
-   * @param currentIndex - The current active index
    * @returns void
    */
   const handleIHeartNavigation = useCallback(
     (direction: "next" | "prev") => {
       if (!swiper) return;
 
-      // Calculate slide offset - always round to get full viewport scroll
-      const slidesPerView = (swiper.params.slidesPerView as number) || 1;
-      const slideOffset = Math.round(slidesPerView);
-      const currentIndex = swiper.activeIndex;
+      const slidesPerView = swiper.params.slidesPerView as number;
+      const currentActiveIndex = swiper.activeIndex;
+      const totalSlides = swiper.slides?.length || 0;
 
-      // Calculate target slide index based on direction
-      let targetSlideIndex =
-        direction === "next"
-          ? currentIndex + slideOffset - 1
-          : currentIndex - slideOffset;
+      // Calculate the number of slides to jump
+      // For slidesPerView like 2.2, we want to jump by 2 (floor of the value)
+      // This means we skip the fully visible slides and land on the peeking slide
+      const slidesToJump = Math.floor(slidesPerView);
 
-      // Calculate which slide will be first visible after scrolling
-      // When centered, the first visible slide is offset by half the viewport
-      let newActiveIndex = swiper.params.centeredSlides
-        ? targetSlideIndex - Math.floor(slidesPerView / 2)
-        : targetSlideIndex;
+      let targetIndex: number;
 
-      // Apply bounds checking to prevent negative indices
-      targetSlideIndex = targetSlideIndex < 0 ? 0 : targetSlideIndex;
-      newActiveIndex = newActiveIndex < 0 ? 0 : newActiveIndex;
+      if (direction === "next") {
+        // Navigate forward by slidesToJump positions
+        targetIndex = Math.min(
+          currentActiveIndex + slidesToJump,
+          totalSlides - 1
+        );
+      } else {
+        // Navigate backward by slidesToJump positions
+        targetIndex = Math.max(currentActiveIndex - slidesToJump, 0);
+      }
 
-      swiper.slideTo(targetSlideIndex);
-      setActiveIndex(newActiveIndex);
+      // Slide to the calculated target index
+      swiper.slideTo(targetIndex, 300);
+      setActiveIndex(targetIndex);
     },
     [swiper]
   );
