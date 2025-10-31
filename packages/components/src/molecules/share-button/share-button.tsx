@@ -54,36 +54,40 @@ export function ShareButton({
   const handleClick = useCallback(
     async (e: any) => {
       onClick?.(e);
-      // TODO : remove temporary check of ted brand id.
-      const baseShareUrl = pathName ? pathName.split("/video") : [];
-      const shareUrl =
-        (brandDetails.brand_id === 2357 &&
-        baseShareUrl &&
-        baseShareUrl.length === 2
-          ? window.location.href
-          : pathName) ?? pathName;
 
-      // Append UTM source parameter for tracking
-      const url = new URL(createExternalLink(shareUrl));
-      url.search = "";
-      if (brandDetails.brand_id === 2357) {
-        const shareUrl = baseShareUrl[1]?.split("?");
-        url.searchParams.set("video", shareUrl?.[0]?.slice(1) ?? "");
-      }
-      url.searchParams.append("utm_source", "web");
-      let fullUrl = url.href;
+      // Build the share URL with smart parameter handling
+      const buildShareUrl = (): string => {
+        // TODO : remove temporary check of ted brand id.
+        const baseShareUrl = pathName ? pathName.split("/video") : [];
+        const initialUrl =
+          (brandDetails.brand_id === 2357 &&
+          baseShareUrl &&
+          baseShareUrl.length === 2
+            ? window.location.href
+            : pathName) ?? pathName;
 
-      // Check if share_image_id exists in the current URL
-      if (window.location.href.includes("share_image_id=")) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const shareImageId = urlParams.get("share_image_id");
+        const url = new URL(createExternalLink(initialUrl));
 
-        if (shareImageId && !fullUrl.includes("share_image_id=")) {
-          // Add share_image_id to the shareLink
-          const separator = fullUrl.includes("?") ? "&" : "?";
-          fullUrl = `${fullUrl}${separator}share_image_id=${shareImageId}`;
+        // Handle TED brand special case (brand_id 2357)
+        if (brandDetails.brand_id === 2357 && baseShareUrl[1]) {
+          const videoPath = baseShareUrl[1].split("?")[0];
+          url.searchParams.set("video", videoPath?.slice(1) ?? "");
         }
-      }
+
+        // Add or update utm_source for tracking
+        url.searchParams.set("utm_source", "web");
+
+        // Add share_image_id from current URL if present and not already in share URL
+        const currentUrlParams = new URLSearchParams(window.location.search);
+        const shareImageId = currentUrlParams.get("share_image_id");
+        if (shareImageId && !url.searchParams.has("share_image_id")) {
+          url.searchParams.set("share_image_id", shareImageId);
+        }
+
+        return url.href;
+      };
+
+      let fullUrl = buildShareUrl();
 
       const toastPosition =
         brandLayoutType === "iheart" ? "bottom-center" : undefined;

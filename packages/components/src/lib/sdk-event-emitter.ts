@@ -29,6 +29,7 @@ export enum SDKEventName {
   SWIPED_FORWARD = "onSwipedForward",
   SWIPED_BACKWARD = "onSwipedBackward",
   EXPAND_VIEW_CHANGED = "onExpandViewChanged",
+  FEED_LOADED = "onFeedLoaded",
 }
 
 /**
@@ -60,6 +61,13 @@ export interface SDKNoContentPayload {
 export interface SDKEmbedProviderReadyPayload {
   embedId?: string;
   placementId?: string;
+}
+
+export interface SDKFeedLoadedPayload {
+  videoCount: number;
+  hasNextPage: boolean;
+  isSectioned: boolean;
+  feedType?: string;
 }
 
 export interface SDKAuthRefreshFailedPayload {
@@ -121,6 +129,7 @@ export type SDKEventPayloadMap = {
   [SDKEventName.NO_CONTENT]: SDKNoContentPayload;
   [SDKEventName.EXPAND_VIEW_CHANGED]: boolean;
   [SDKEventName.EMBED_PROVIDER_READY]: SDKEmbedProviderReadyPayload;
+  [SDKEventName.FEED_LOADED]: SDKFeedLoadedPayload;
   [SDKEventName.AUTH_REFRESH_FAILED]: SDKAuthRefreshFailedPayload;
   [SDKEventName.CACHED_USER_UPDATE]: SDKCachedUserUpdatePayload;
   [SDKEventName.PLAY]: SDKPlayEventPayload;

@@ -264,7 +264,7 @@ export const FeedViewCore = memo(function FeedViewCore({
     theme,
   };
 
-  if (isLoading) {
+  if (isLoading && !isIHeart) {
     return (
       <FeedSkeleton
         theme={theme}

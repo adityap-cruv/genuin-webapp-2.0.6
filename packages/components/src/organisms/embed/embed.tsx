@@ -28,6 +28,10 @@ import { useBaseContext } from "@genuin/components/context";
 import { isMiddlewareOverlayEnabled } from "@genuin/components/lib/utils";
 import { NavigationButtonsWithContext } from "./navigation-buttons";
 import { Toaster } from "@genuin/ui";
+import {
+  SDKEventEmitter,
+  SDKEventName,
+} from "@genuin/components/lib/sdk-event-emitter";
 
 const embedVariants = cva("gencl:rounded-md gencl:overflow-auto", {
   variants: {
@@ -116,6 +120,14 @@ export function Embed({
         updateIsSectioned(sectioned);
         setIsSectioned(sectioned);
       }
+
+      // Emit SDK event when feed is loaded
+      SDKEventEmitter.emit(SDKEventName.FEED_LOADED, {
+        videoCount: videos.length,
+        hasNextPage: hasNextPage ?? false,
+        isSectioned: sectioned,
+        feedType: feedType,
+      });
     }
     if (sectionList.length > 0 && updateSectionList) {
       updateSectionList(sectionList);
@@ -378,6 +390,7 @@ export function Embed({
           position="bottom-center"
           style={{
             width: "280px",
+            bottom: "88px",
           }}
           toastOptions={{
             style: {

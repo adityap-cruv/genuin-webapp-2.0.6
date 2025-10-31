@@ -38,6 +38,7 @@ const ALLOWED_EVENTS = [
   'onSwipedForward',
   'onSwipedBackward',
   'onExpandViewChanged',
+  'onFeedLoaded'
   // Add allowed event names here
 ]
 
@@ -307,6 +308,10 @@ export class GenuinSDK {
             token: config.token,
             userParams: config.params,
           })) ?? undefined
+      } else {
+        // Remove user data from local storage if no token is provided
+        this.tokenManager.removeUserData()
+        user = null
       }
 
       // Apply brand colors to the element
