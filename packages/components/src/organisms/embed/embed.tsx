@@ -55,7 +55,7 @@ export function Embed({
   ...restProps
 }: EmbedProps & VariantProps<typeof embedVariants>) {
   const [swiper, setSwiper] = useState<Swiper | null>(null);
-  const { isInIframe } = useBaseContext();
+  const { isInIframe, theme } = useBaseContext();
   const { embedData, embedEventBus, updateIsSectioned, updateSectionList } =
     useEmbedContext();
   // Local state for isSectioned synced with event bus
@@ -351,7 +351,10 @@ export function Embed({
               })}
             </EmbedSwiper>
             {!isIheartLayout && (
-              <NavigationButtonsWithContext totalSlides={videos?.length ?? 0} />
+              <NavigationButtonsWithContext
+                totalSlides={videos?.length ?? 0}
+                theme={theme}
+              />
             )}
           </div>
         )}
@@ -359,6 +362,7 @@ export function Embed({
           <NavigationButtonsWithContext
             totalSlides={videos?.length ?? 0}
             isIheartLayout={true}
+            theme={theme}
           />
         )}
       </EmbedManagerProvider>

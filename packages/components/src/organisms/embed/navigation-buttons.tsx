@@ -38,7 +38,6 @@ export function NavigationButtons({
   const isCarousel = embedVariant === "carousel";
 
   // Theme configuration
-  const buttonTheme = theme === "dark" ? "secondaryDark" : "secondary";
   const iconTheme = theme === "dark" ? "dark" : "light";
 
   // Click handlers
@@ -46,13 +45,27 @@ export function NavigationButtons({
   const handleNextClick = onNext;
 
   // Helper to create navigation buttons
-  const createNavButton = (
-    Icon: React.ComponentType<any>,
-    disabled: boolean,
-    onClick: (e: React.MouseEvent<HTMLButtonElement>) => void,
-    label: string,
-    size: "sm" | "md" = "md"
-  ) => (
+  const createNavButton = ({
+    Icon,
+    disabled,
+    onClick,
+    label,
+    size = "md",
+    className,
+    style,
+    iconClassName,
+    iconStyle,
+  }: {
+    Icon: React.ComponentType<any>;
+    disabled: boolean;
+    onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
+    label: string;
+    size?: "sm" | "md";
+    className?: string;
+    style?: React.CSSProperties;
+    iconClassName?: string;
+    iconStyle?: React.CSSProperties;
+  }) => (
     <Button
       variant="icon"
       shape="circle"
@@ -61,12 +74,13 @@ export function NavigationButtons({
       disabled={disabled}
       onClick={onClick}
       aria-label={label}
-      className={disabled ? "gencl:bg-[#E6EAED]!" : "gencl:bg-[#27292D]!"}
-      style={{ background: disabled ? "#E6EAED" : "#27292D" }}
+      className={className}
+      style={style}
     >
       <Icon
         theme={iconTheme}
-        className={disabled ? "gencl:fill-[#A9AFB2]!" : "gencl:fill-white!"}
+        className={iconClassName}
+        style={iconStyle}
         size="lg"
       />
     </Button>
@@ -74,22 +88,90 @@ export function NavigationButtons({
 
   // iHeart layout - horizontal buttons below embed
   if (isIheartLayout) {
+    // Define styles based on theme
+    const isDarkTheme = theme === "dark";
+
+    // Dark theme colors
+    const darkTheme = {
+      disabled: { button: "#3F4447", icon: "#717277" },
+      default: { button: "white", icon: "#27292D" },
+      hover: { button: "#A9AFB2", icon: "#27292D" },
+    };
+
+    // Light theme colors
+    const lightTheme = {
+      disabled: { button: "#E6EAED", icon: "#A9AFB2" },
+      default: { button: "#27292D", icon: "white" },
+      hover: { button: "#717277", icon: "white" },
+    };
+
+    const colors = isDarkTheme ? darkTheme : lightTheme;
+
+    // Component with hover and focus state
+    const IHeartNavButton = ({
+      Icon,
+      disabled,
+      onClick,
+      label,
+    }: {
+      Icon: React.ComponentType<any>;
+      disabled: boolean;
+      onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
+      label: string;
+    }) => {
+      const [isHovered, setIsHovered] = useState(false);
+
+      const buttonBg = disabled
+        ? colors.disabled.button
+        : isHovered
+          ? colors.hover.button
+          : colors.default.button;
+
+      const iconFill = disabled
+        ? colors.disabled.icon
+        : isHovered
+          ? colors.hover.icon
+          : colors.default.icon;
+
+      return (
+        <div
+          onMouseEnter={() => !disabled && setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          {createNavButton({
+            Icon,
+            disabled,
+            onClick: (e) => {
+              setIsHovered(false);
+              onClick(e);
+            },
+            label,
+            size: "sm",
+            className: `gencl:transition-all gencl:duration-200 gencl:outline-none gencl:focus:outline-1 ${disabled ? "gencl:cursor-not-allowed!" : ""}`,
+            style: {
+              background: buttonBg,
+            },
+            iconClassName: "gencl:transition-colors gencl:duration-200",
+            iconStyle: { fill: iconFill },
+          })}
+        </div>
+      );
+    };
+
     return (
       <div className="gencl:flex gencl:justify-center gencl:items-center gencl:gap-2 gencl:my-4">
-        {createNavButton(
-          ChevronLeftIcon,
-          isPrevDisabled,
-          handlePrevClick,
-          "Previous",
-          "sm"
-        )}
-        {createNavButton(
-          ChevronRightIcon,
-          isNextDisabled,
-          handleNextClick,
-          "Next",
-          "sm"
-        )}
+        <IHeartNavButton
+          Icon={ChevronLeftIcon}
+          disabled={isPrevDisabled}
+          onClick={handlePrevClick}
+          label="Previous"
+        />
+        <IHeartNavButton
+          Icon={ChevronRightIcon}
+          disabled={isNextDisabled}
+          onClick={handleNextClick}
+          label="Next"
+        />
       </div>
     );
   }
@@ -100,20 +182,20 @@ export function NavigationButtons({
       <div className="gencl:absolute gencl:z-20 gencl:inset-y-0 gencl:left-0 gencl:right-0 gencl:pointer-events-none">
         <div className="gencl:h-full gencl:w-full gencl:flex gencl:justify-between gencl:items-center">
           <div className="gencl:ml-2 gencl:pointer-events-auto">
-            {createNavButton(
-              ChevronLeftIcon,
-              isPrevDisabled,
-              handlePrevClick,
-              "Previous"
-            )}
+            {createNavButton({
+              Icon: ChevronLeftIcon,
+              disabled: isPrevDisabled,
+              onClick: handlePrevClick,
+              label: "Previous",
+            })}
           </div>
           <div className="gencl:mr-2 gencl:pointer-events-auto">
-            {createNavButton(
-              ChevronRightIcon,
-              isNextDisabled,
-              handleNextClick,
-              "Next"
-            )}
+            {createNavButton({
+              Icon: ChevronRightIcon,
+              disabled: isNextDisabled,
+              onClick: handleNextClick,
+              label: "Next",
+            })}
           </div>
         </div>
       </div>
@@ -123,18 +205,18 @@ export function NavigationButtons({
   // Feed layout - vertical buttons on right side
   return (
     <div className="gencl:absolute gencl:z-20 gencl:right-2 gencl:top-1/2 gencl:transform gencl:-translate-y-1/2 gencl:flex gencl:flex-col gencl:gap-2">
-      {createNavButton(
-        ChevronUpIcon,
-        isPrevDisabled,
-        handlePrevClick,
-        "Previous"
-      )}
-      {createNavButton(
-        ChevronDownIcon,
-        isNextDisabled,
-        handleNextClick,
-        "Next"
-      )}
+      {createNavButton({
+        Icon: ChevronUpIcon,
+        disabled: isPrevDisabled,
+        onClick: handlePrevClick,
+        label: "Previous",
+      })}
+      {createNavButton({
+        Icon: ChevronDownIcon,
+        disabled: isNextDisabled,
+        onClick: handleNextClick,
+        label: "Next",
+      })}
     </div>
   );
 }
@@ -142,9 +224,11 @@ export function NavigationButtons({
 export function NavigationButtonsWithContext({
   totalSlides,
   isIheartLayout = false,
+  theme,
 }: {
   totalSlides: number;
   isIheartLayout?: boolean;
+  theme?: "light" | "dark";
 }) {
   const {
     goToNextVideo,
@@ -239,6 +323,7 @@ export function NavigationButtonsWithContext({
       }
       isPrevDisabled={isPrevDisabled}
       isNextDisabled={isNextDisabled}
+      theme={theme}
     />
   );
 }
