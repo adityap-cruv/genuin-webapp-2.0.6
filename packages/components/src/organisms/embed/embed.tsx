@@ -329,7 +329,9 @@ export function Embed({
               centeredSlidesBounds={config.view.centeredSlides}
             >
               {videos?.map((videoData, idx) => {
-                return (
+                return videoData.video.type === "complete" ? (
+                  <></>
+                ) : (
                   <SwiperSlide key={idx}>
                     <EmbedItem index={idx} postDetails={videoData} />
                   </SwiperSlide>
