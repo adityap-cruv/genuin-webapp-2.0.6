@@ -207,8 +207,9 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
 
   useEffect(() => {
     const playerConfig = playerConfigRef.current;
-    const player = playerRef.current;
-    if (!player) return;
+    // TODO :
+    // const player = playerRef.current;
+    // if (!player) return;
     if (isActive && !isVideoWatched) {
       // Check if explicit unmute is set to false - if so, don't unmute
       if (playerConfig.unmuteVideo) {
