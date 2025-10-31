@@ -28,126 +28,99 @@ export function useIheartUrlManager({
   activeIndex,
   videos,
 }: UseIheartUrlManagerProps) {
-  // Track the base URL before entering expand view
   const baseUrlRef = useRef<string | null>(null);
 
-  // Helper function to construct video path segment
   const getVideoPathSegment = (index: number): string => {
     const video = videos[index];
-    if (!video) return "";
-    // Skip videos with type "complete" - don't append anything to URL
-    if (video.video.type === "complete") return "";
+    if (!video || video.video.type === "complete") return "";
     return `${video.video.slug}_${video.video.id}`;
   };
 
-  // Helper function to update URL with video path
-  const updateUrlWithVideo = (index: number) => {
-    if (typeof window === "undefined" || !isIheartLayout) return;
+  const isVideoPathSegment = (segment: string): boolean => {
+    return segment.includes("_");
+  };
 
-    const videoPathSegment = getVideoPathSegment(index);
-    if (!videoPathSegment) return;
-
-    const currentUrl = new URL(window.location.href);
-    const pathSegments = currentUrl.pathname.split("/").filter(Boolean);
-
-    if (websiteType === "polaris") {
-      // For polaris: add /videoSlug_videoId
-      pathSegments.push(videoPathSegment);
-    } else if (websiteType === "legacy") {
-      // For legacy: add /highlights/videoSlug_videoId
-      pathSegments.push("highlights", videoPathSegment);
+  const removeVideoPath = (segments: string[]): string[] => {
+    if (websiteType === "legacy") {
+      const highlightsIndex = segments.indexOf("highlights");
+      if (highlightsIndex !== -1) {
+        segments.splice(highlightsIndex, 2);
+      }
+    } else if (websiteType === "polaris" && segments.length > 0) {
+      const lastSegment = segments[segments.length - 1];
+      if (lastSegment && isVideoPathSegment(lastSegment)) {
+        segments.pop();
+      }
     }
+    return segments;
+  };
 
+  const setVideoPath = (segments: string[], videoPath: string): string[] => {
+    if (websiteType === "polaris") {
+      const lastSegment = segments[segments.length - 1];
+      if (lastSegment && isVideoPathSegment(lastSegment)) {
+        segments[segments.length - 1] = videoPath;
+      } else {
+        segments.push(videoPath);
+      }
+    } else if (websiteType === "legacy") {
+      const highlightsIndex = segments.indexOf("highlights");
+      if (highlightsIndex !== -1) {
+        if (highlightsIndex < segments.length - 1) {
+          segments[highlightsIndex + 1] = videoPath;
+        } else {
+          segments.splice(highlightsIndex + 1, 0, videoPath);
+        }
+      } else {
+        segments.push("highlights", videoPath);
+      }
+    }
+    return segments;
+  };
+
+  const updateUrl = (pathSegments: string[], replaceState = false) => {
+    const currentUrl = new URL(window.location.href);
     currentUrl.pathname = "/" + pathSegments.join("/");
-    window.history.pushState({}, "", currentUrl.toString());
+    const method = replaceState ? "replaceState" : "pushState";
+    window.history[method]({}, "", currentUrl.toString());
   };
 
-  // Helper function to remove video path from URL
-  const removeVideoPathFromUrl = () => {
-    if (typeof window === "undefined" || !isIheartLayout || !baseUrlRef.current)
-      return;
-
-    window.history.pushState({}, "", baseUrlRef.current);
-  };
-
-  // Handle URL updates when entering/exiting expand view
   useEffect(() => {
     if (!isIheartLayout) return;
 
     if (activePlayerType === "expand-view") {
-      // Entering expand view: store base URL and add video path
-      baseUrlRef.current = window.location.href;
-      updateUrlWithVideo(activeIndex);
+      const currentUrl = new URL(window.location.href);
+      const pathSegments = currentUrl.pathname.split("/").filter(Boolean);
+
+      removeVideoPath(pathSegments);
+      const baseUrl = new URL(window.location.href);
+      baseUrl.pathname = "/" + pathSegments.join("/");
+      baseUrl.search = "";
+      baseUrlRef.current = baseUrl.toString();
+
+      const videoPath = getVideoPathSegment(activeIndex);
+      if (videoPath) {
+        setVideoPath(pathSegments, videoPath);
+        updateUrl(pathSegments);
+      }
     } else if (baseUrlRef.current) {
-      // Exiting expand view: restore base URL
-      removeVideoPathFromUrl();
+      window.history.pushState({}, "", baseUrlRef.current);
       baseUrlRef.current = null;
     }
   }, [activePlayerType, isIheartLayout]);
 
-  // Handle URL updates when activeIndex changes in expand view
   useEffect(() => {
     if (!isIheartLayout || activePlayerType !== "expand-view") return;
 
-    const currentUrl = new URL(window.location.href);
-    const pathSegments = currentUrl.pathname.split("/").filter(Boolean);
-    const videoPathSegment = getVideoPathSegment(activeIndex);
+    const pathSegments = window.location.pathname.split("/").filter(Boolean);
+    const videoPath = getVideoPathSegment(activeIndex);
 
-    // If videoPathSegment is empty (type === "complete"), remove the video path
-    if (!videoPathSegment) {
-      if (websiteType === "polaris") {
-        // For polaris: remove the last segment if it's a video path
-        if (pathSegments.length > 0) {
-          const lastSegment = pathSegments[pathSegments.length - 1];
-          // Check if last segment looks like a video path (contains underscore)
-          if (lastSegment && lastSegment.includes("_")) {
-            pathSegments.pop();
-          }
-        }
-      } else if (websiteType === "legacy") {
-        // For legacy: remove /highlights/videoSlug_videoId
-        const highlightsIndex = pathSegments.indexOf("highlights");
-        if (highlightsIndex !== -1) {
-          // Remove both "highlights" and the video path segment after it
-          pathSegments.splice(highlightsIndex, 2);
-        }
-      }
-      currentUrl.pathname = "/" + pathSegments.join("/");
-      window.history.replaceState({}, "", currentUrl.toString());
-      return;
+    if (!videoPath) {
+      removeVideoPath(pathSegments);
+    } else {
+      setVideoPath(pathSegments, videoPath);
     }
 
-    if (websiteType === "polaris") {
-      // For polaris: replace the last segment if it's a video path, otherwise add it
-      if (pathSegments.length > 0) {
-        const lastSegment = pathSegments[pathSegments.length - 1];
-        // If last segment looks like a video path (contains underscore), replace it
-        if (lastSegment && lastSegment.includes("_")) {
-          pathSegments[pathSegments.length - 1] = videoPathSegment;
-        } else {
-          // Otherwise, add the video path as a new segment
-          pathSegments.push(videoPathSegment);
-        }
-      } else {
-        // No segments exist, just add the video path
-        pathSegments.push(videoPathSegment);
-      }
-    } else if (websiteType === "legacy") {
-      // For legacy: replace or add the segment after "highlights"
-      const highlightsIndex = pathSegments.indexOf("highlights");
-      if (highlightsIndex !== -1 && highlightsIndex < pathSegments.length - 1) {
-        // Replace existing video path after highlights
-        pathSegments[highlightsIndex + 1] = videoPathSegment;
-      } else if (highlightsIndex !== -1) {
-        // highlights exists but no video path after it, add it
-        pathSegments.splice(highlightsIndex + 1, 0, videoPathSegment);
-      } else {
-        // highlights doesn't exist, add both highlights and video path
-        pathSegments.push("highlights", videoPathSegment);
-      }
-    }
-
-    currentUrl.pathname = "/" + pathSegments.join("/");
-    window.history.replaceState({}, "", currentUrl.toString());
+    updateUrl(pathSegments, true);
   }, [activeIndex, activePlayerType, isIheartLayout, websiteType, videos]);
 }
