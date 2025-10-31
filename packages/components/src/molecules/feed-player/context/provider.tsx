@@ -442,7 +442,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         if (byUser && !isActive && index !== undefined) {
           // If user is trying to play while inactive, activate this item
           updateActiveIndex?.(index);
-          return prev; // Set to play after activation
         }
         const newPlayingState = !prev;
         if (byUser) {
