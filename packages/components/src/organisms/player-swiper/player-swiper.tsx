@@ -632,7 +632,12 @@ function NavigationButton({
         variant="icon"
         shape="circle"
         size="lg"
-        theme={theme === "dark" ? "navigation" : "secondary"}
+        theme="custom"
+        className={cn(
+          theme === "dark"
+            ? "gencl:bg-white gencl:hover:bg-white/90 [&_svg]:gencl:stroke-[#27292D]"
+            : "gencl:bg-[#D9D9D9] gencl:hover:bg-[#D9D9D9]/90 [&_svg]:gencl:stroke-[#27292D]"
+        )}
         disabled={swiper.isBeginning}
         onClick={() => swiper.slidePrev()}
         aria-label={`Previous video (${currentSlide - 1} of ${totalSlides})`}
@@ -648,7 +653,12 @@ function NavigationButton({
         variant="icon"
         shape="circle"
         size="lg"
-        theme={theme === "dark" ? "navigation" : "secondary"}
+        theme="custom"
+        className={cn(
+          theme === "dark"
+            ? "gencl:bg-white gencl:hover:bg-white/90 [&_svg]:gencl:stroke-[#27292D]"
+            : "gencl:bg-[#D9D9D9] gencl:hover:bg-[#D9D9D9]/90 [&_svg]:gencl:stroke-[#27292D]"
+        )}
         disabled={swiper.isEnd}
         onClick={() => swiper.slideNext()}
         aria-label={`Next video (${currentSlide + 1} of ${totalSlides})`}
@@ -680,9 +690,14 @@ function BackButton({
           variant="icon"
           shape="circle"
           size="lg"
-          theme={theme === "dark" ? "navigation" : "secondary"}
+          theme="custom"
           onClick={onBackClick}
-          className="gencl:hidden! gencl:lg:flex!"
+          className={cn(
+            "gencl:hidden! gencl:lg:flex!",
+            theme === "dark"
+              ? "gencl:bg-white gencl:hover:bg-white/90 [&_svg]:gencl:stroke-[#27292D]"
+              : "gencl:bg-[#D9D9D9] gencl:hover:bg-[#D9D9D9]/90 [&_svg]:gencl:stroke-[#27292D]"
+          )}
         >
           <ArrowLeftIcon
             theme={theme === "dark" ? "dark" : "light"}
