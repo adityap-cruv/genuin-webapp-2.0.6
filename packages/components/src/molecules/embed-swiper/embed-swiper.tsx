@@ -22,6 +22,7 @@ type EmbedSwiperProps = {
   };
   aspectRatio?: string;
   freeMode?: boolean;
+  slidesOffsetBefore?: number;
 } & ComponentProps<typeof Swiper>;
 
 /**
@@ -41,6 +42,7 @@ export function EmbedSwiper({
   centeredSlides,
   centeredSlidesBounds,
   onActiveIndexChange,
+  slidesOffsetBefore,
   ...restProps
 }: EmbedSwiperProps) {
   const { isWindows } = useDeviceDetection();
@@ -159,6 +161,7 @@ export function EmbedSwiper({
       centeredSlidesBounds={
         slidesPerView < 3 && !forFeed ? false : centeredSlidesBounds
       }
+      slidesOffsetBefore={slidesOffsetBefore}
       {...restProps}
     >
       {children}

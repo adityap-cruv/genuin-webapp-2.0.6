@@ -97,11 +97,15 @@ const ScrubberSlider = React.forwardRef<
       [value, playerTimeState]
     );
 
+    const totalSeconds = React.useMemo(() => {
+      const duration = playerTimeState.duration;
+      if (!duration || !value?.[0]) return 0;
+      return (value[0] / 100) * duration;
+    }, [value, playerTimeState]);
+
     const time = React.useMemo(() => {
       const duration = playerTimeState.duration;
       if (!duration || !value?.[0]) return "00:00";
-
-      const totalSeconds = (value[0] / 100) * duration;
 
       if (showOnlyTime) {
         const currentTimeFormatted = formatTime(totalSeconds);
@@ -117,15 +121,12 @@ const ScrubberSlider = React.forwardRef<
       const minutes = Math.floor(totalSeconds / 60);
       const seconds = Math.floor(totalSeconds % 60);
       return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-    }, [value, playerTimeState, showOnlyTime]);
+    }, [totalSeconds, playerTimeState.duration, showOnlyTime]);
 
     const ariaValueText = React.useMemo(() => {
-      const duration = playerTimeState.duration;
-      if (!duration || !value?.[0]) return "0 seconds";
-
-      const totalSeconds = (value[0] / 100) * duration;
+      if (!playerTimeState.duration || !value?.[0]) return "0 seconds";
       return formatTimeForScreenReader(totalSeconds);
-    }, [value, playerTimeState]);
+    }, [totalSeconds, playerTimeState.duration, value]);
 
     const spritePosition = React.useMemo(() => {
       const timeMs = scrubberStartTime * 1000;

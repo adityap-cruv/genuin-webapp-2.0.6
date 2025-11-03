@@ -3,6 +3,7 @@ import { type ComponentProps, useCallback, useState, useEffect } from "react";
 import { ScrubberSlider } from "./scrubber-slider";
 import { cn } from "@genuin/ui/utils";
 import { usePlayerContext } from "../../context/context";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 type ScrubberPropsType = Omit<
   ComponentProps<typeof ScrubberSlider> & {
@@ -36,18 +37,22 @@ export function Scrubber({
     showSeeker,
     setShowSeeker,
     play,
+    pause,
     showScrubber,
     setShowScrubber,
   } = usePlayerContext();
   const [progressValue, setProgressValue] = useState(0);
+  const {
+    view: { brandLayoutType },
+  } = useEmbedConfigs();
 
   useEffect(() => {
-    if (!playerTimeState.duration) return;
-    const progressValue = Math.round(
+    if (!playerTimeState.duration || showScrubber) return;
+    const newProgressValue = Math.round(
       (playerTimeState.currentTime / playerTimeState.duration) * 100
     );
-    setProgressValue(progressValue);
-  }, [playerTimeState]);
+    setProgressValue(newProgressValue);
+  }, [playerTimeState, showScrubber]);
 
   useEffect(() => {
     const unsubscribe = onVideoTimeStateChange((state) => {
@@ -64,11 +69,24 @@ export function Scrubber({
   const handleSeek = useCallback(
     (value: number[]) => {
       if (!value[0]) return;
+
+      // Only pause while scrubbing for iHeart brand layout
+      if (brandLayoutType === "iheart" && !showScrubber) {
+        pause(false);
+      }
+
       setProgressValue(value[0]);
       setShowScrubber(true);
       setShowSeeker(true);
     },
-    [setProgressValue, setShowScrubber, setShowSeeker]
+    [
+      setProgressValue,
+      setShowScrubber,
+      setShowSeeker,
+      showScrubber,
+      pause,
+      brandLayoutType,
+    ]
   );
 
   const handleValueCommit = useCallback(
@@ -78,8 +96,17 @@ export function Scrubber({
 
       const seekPosition = value[0];
       const seekTime = (seekPosition / 100) * playerTimeState.duration;
-      play(true, seekTime);
-      setShowScrubber(false);
+
+      if (brandLayoutType === "iheart") {
+        // For iHeart: seek and start playing after scrubbing
+        play(true, seekTime);
+        setShowScrubber(false);
+        setShowSeeker(false);
+      } else {
+        // Default behavior for other layouts
+        play(true, seekTime);
+        setShowScrubber(false);
+      }
 
       // Update video time
       // if (playerRef.current) {
@@ -89,22 +116,63 @@ export function Scrubber({
       //   });
       // }
     },
-    [setShowScrubber, playerTimeState.duration, play]
+    [
+      setShowScrubber,
+      setShowSeeker,
+      playerTimeState.duration,
+      play,
+      brandLayoutType,
+    ]
   );
 
+  // Add global event listeners to handle cases where user releases outside the slider
+  useEffect(() => {
+    const handleGlobalEnd = () => {
+      if (showScrubber) {
+        if (brandLayoutType === "iheart") {
+          // For iHeart: start playing and hide seeker when scrubbing ends
+          play(true);
+          setShowScrubber(false);
+          setShowSeeker(false);
+        } else {
+          // Default behavior for other layouts
+          setShowScrubber(false);
+        }
+      }
+    };
+
+    if (showScrubber) {
+      document.addEventListener("mouseup", handleGlobalEnd);
+      document.addEventListener("touchend", handleGlobalEnd);
+      document.addEventListener("pointerup", handleGlobalEnd);
+    }
+
+    return () => {
+      document.removeEventListener("mouseup", handleGlobalEnd);
+      document.removeEventListener("touchend", handleGlobalEnd);
+      document.removeEventListener("pointerup", handleGlobalEnd);
+    };
+  }, [showScrubber, setShowScrubber, setShowSeeker, play, brandLayoutType]);
+
   return (
-    <ScrubberSlider
-      value={value ?? [progressValue]} // Pass the current progress value
-      className={cn("swiper-no-swiping gencl:rounded-none", className)}
-      spriteUrl={spriteUrl ?? ""}
-      showScrubber={showScrubber}
-      onValueChange={handleSeek}
-      showSeeker={showSeeker}
-      playerTimeState={playerTimeState}
-      onValueCommit={handleValueCommit}
-      // onMouseEnter={() => setShowSeeker?.(true)}
-      // onMouseLeave={() => setShowSeeker?.(false)}
-      {...restProps}
-    />
+    <div
+      onClick={(e) => e.stopPropagation()}
+      onPointerDown={(e) => e.stopPropagation()}
+      className="gencl:w-full"
+    >
+      <ScrubberSlider
+        value={value ?? [progressValue]} // Pass the current progress value
+        className={cn("swiper-no-swiping gencl:rounded-none", className)}
+        spriteUrl={spriteUrl ?? ""}
+        showScrubber={showScrubber}
+        onValueChange={handleSeek}
+        showSeeker={showSeeker}
+        playerTimeState={playerTimeState}
+        onValueCommit={handleValueCommit}
+        // onMouseEnter={() => setShowSeeker?.(true)}
+        // onMouseLeave={() => setShowSeeker?.(false)}
+        {...restProps}
+      />
+    </div>
   );
 }

@@ -56,6 +56,7 @@ export function Embed({
   ...restProps
 }: EmbedProps & VariantProps<typeof embedVariants>) {
   const [swiper, setSwiper] = useState<Swiper | null>(null);
+  const [slidesOffsetBefore, setSlidesOffsetBefore] = useState<number>(0);
   const { isInIframe, theme } = useBaseContext();
   const { embedData, embedEventBus, updateIsSectioned, updateSectionList } =
     useEmbedContext();
@@ -359,6 +360,14 @@ export function Embed({
               forFeed={config.view.isFeed}
               aspectRatio={embedData.aspect_ratio}
               spaceBetweenVideos={spaceBetweenVideos}
+              onSlideChange={(swiperInstance) => {
+                if (!swiperInstance) return;
+                if (swiperInstance.isBeginning) {
+                  setSlidesOffsetBefore(0);
+                } else {
+                  setSlidesOffsetBefore(48);
+                }
+              }}
               containerDimensions={{
                 height: config.view.isFeed
                   ? availableHeight - spaceBetweenVideos
@@ -371,6 +380,7 @@ export function Embed({
               freeMode={config.view.scrollBehavior === "free_scroll"}
               centeredSlides={config.view.centeredSlides}
               centeredSlidesBounds={config.view.centeredSlides}
+              slidesOffsetBefore={slidesOffsetBefore}
             >
               {videos?.map((videoData, idx) => {
                 return videoData.video.type === "complete" ? (
