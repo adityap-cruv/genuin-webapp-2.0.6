@@ -86,6 +86,7 @@ export interface SDKPlayEventPayload {
   isInView: boolean;
   isFocused: boolean;
   volume: number;
+  autoplay?: boolean;
 }
 
 export interface SDKPauseEventPayload {

@@ -68,6 +68,7 @@ export const FeedPlayer = memo(function FeedPlayer({
   const playerRef = useRef<HTMLVideoElement>(null);
   const {
     view: { brandLayoutType },
+    video,
   } = useEmbedConfigs();
 
   useEffect(() => {
@@ -123,6 +124,7 @@ export const FeedPlayer = memo(function FeedPlayer({
       event_target_screen: "none",
       total_videos: totalVideos,
       position_index: positionIndex,
+      autoplay: video.videoAutoplay,
     };
   }, [videoId, totalVideos]);
 
