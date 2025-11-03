@@ -26,6 +26,7 @@ export const videoSchema = z.object({
   thumbnail: z.string(),
   thumbnailM: z.string().nullish(),
   description: description.nullish(),
+  descritptionText: z.string().nullish(),
   slug: z.string(),
   linkoutId: z.number().nullish(),
   clickableUrl: z.string().nullable(),

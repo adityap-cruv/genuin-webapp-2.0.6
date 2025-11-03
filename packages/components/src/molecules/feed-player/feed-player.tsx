@@ -26,6 +26,10 @@ type FeedPlayerProps = Omit<
    */
   videoId: string;
   /**
+   * Descritption to pass to analytics.
+   */
+  videoDescription?: string | null;
+  /**
    * Defines the layout style for the embed, used to identify and apply the corresponding brand layout.
    */
   layoutType?: "responsiveness" | BrandType;
@@ -40,13 +44,14 @@ export const FeedPlayer = memo(function FeedPlayer({
   adUrl,
   poster,
   className,
+  layoutType,
+  videoDescription,
   onOpenPlayerReady,
   onTimeUpdate,
   onEnded,
   onPlay,
   onPause,
   onLoadStart,
-  layoutType,
   ...props
 }: FeedPlayerProps) {
   const { muted, volume, playbackSpeed, baseContextManager } = useBaseContext();
@@ -125,6 +130,7 @@ export const FeedPlayer = memo(function FeedPlayer({
       total_videos: totalVideos,
       position_index: positionIndex,
       autoplay: video.videoAutoplay,
+      title: videoDescription,
     };
   }, [videoId, totalVideos]);
 

@@ -42,6 +42,7 @@ type IHeartControlsProps = ComponentProps<"div"> & {
   isReacted?: boolean;
   reactionCount?: number;
   isActive: boolean;
+  videoDescription?: string | null;
   /**
    * Callback functions for handling control actions
    */
@@ -58,8 +59,9 @@ export function IHeartControls({
   slug,
   isReacted = false,
   reactionCount = 0,
-  onReactionStateChange,
+  videoDescription,
   index,
+  onReactionStateChange,
   ...restProps
 }: IHeartControlsProps) {
   const { playingState, togglePlay, muted, toggleMuted } = usePlayerContext();
@@ -194,6 +196,7 @@ export function IHeartControls({
           if (contentId) {
             track(EventName.VIDEO_SHARED, {
               content_id: contentId,
+              title: videoDescription,
               content_category: "loop",
               event_record_screen: "feed",
               event_target_screen: "none",

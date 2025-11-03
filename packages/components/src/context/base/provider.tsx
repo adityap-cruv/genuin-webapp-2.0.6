@@ -27,7 +27,6 @@ import {
   SDKEventName,
   SDKListenerEventName,
 } from "@genuin/components/lib/sdk-event-emitter";
-import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 type BaseContextProviderProps = {
   children: React.ReactNode;
@@ -66,7 +65,6 @@ export function BaseContextProvider({
     []
   );
   const embedDetails = useSafeEmbedContext();
-  const embedConfig = useEmbedConfigs();
 
   // TODO: move this states to event based states.
   const [muted, setMuted] = useState(true);
@@ -249,7 +247,7 @@ export function BaseContextProvider({
           isInView,
           muted: baseContext.muted,
           volume: baseContext.volume,
-          autoplay: embedConfig.video.videoAutoplay,
+          autoplay: embedDetails?.embedData.media_play?.enable_autoplay,
         },
         { debounceTime: 300 }
       );

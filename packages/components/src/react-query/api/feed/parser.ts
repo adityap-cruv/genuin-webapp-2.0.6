@@ -16,8 +16,8 @@ function tryJsonParse<T>(data: string | undefined): T | null {
   try {
     return JSON.parse(data);
   } catch (e) {
-   // console.error("Failed to parse JSON", e);
-   return null;
+    // console.error("Failed to parse JSON", e);
+    return null;
   }
 }
 
@@ -70,6 +70,7 @@ export function parseFeed(
         description:
           (tryJsonParse(item.video.description_data) as any) ??
           item.video.description_text,
+        descritptionText: item.video.description_text,
         slug: item.video.slug,
         linkoutId: item.video.linkouts_id || null,
         clickableUrl: item.video.clickable_url || null,
@@ -80,6 +81,7 @@ export function parseFeed(
         videoLayoutId: item.video.video_layout_id || null,
         duration: item.video.duration || null,
         attributes: item.video.attributes || null,
+
         placement_card_layout_id: item.video.placement_card_layout_id || null,
         placement_video_layout_id: item.video.placement_video_layout_id || null,
         placement_card_section_layout_id:

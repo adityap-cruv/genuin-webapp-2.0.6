@@ -460,6 +460,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
             content_id: videoId,
             position_index: index,
             total_videos: totalVideos,
+            by_user: true,
           });
         }
         return newPlayingState;
@@ -485,33 +486,21 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   }, []);
 
   // play: Sets the feed player to play state.
-  const play = useCallback(
-    (byUser: boolean, seekTime: number = 0) => {
-      if (seekTime >= 0 && playerRef.current) {
-        playerRef.current.getMedia().currentTime = seekTime;
-      }
-      setFeedPlayerShouldPlay(true);
-      baseContextManager.setVideoWatched({ videoId, isWatched: false });
-      if (byUser) {
-        baseContextManager.setPlayPauseTracker({ isPlaying: true });
-
-        setButtonAction("PLAY");
-        // Track play event with Analytics only if the video play is triggered by user.
-        track(EventName.VIDEO_PLAY, {
-          content_id: videoId,
-          total_videos: totalVideos,
-        });
-      }
-    },
-    [
-      baseEventBus,
-      baseContextManager,
-      EventName.VIDEO_PLAY,
-      track,
-      videoId,
-      totalVideos,
-    ]
-  );
+  const play = useCallback((byUser: boolean, seekTime: number = 0) => {
+    if (seekTime && playerRef.current) {
+      playerRef.current.getMedia().currentTime = seekTime;
+    }
+    setFeedPlayerShouldPlay(true);
+    if (byUser) {
+      setButtonAction("PLAY");
+      // Track play event with Analytics only if the video play is triggered by user.
+      track(EventName.VIDEO_PLAY, {
+        content_id: videoId,
+        by_user: true,
+        total_videos: totalVideos,
+      });
+    }
+  }, []);
 
   // pause: Sets the feed player to pause state.
   const pause = useCallback(
@@ -525,6 +514,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         track(EventName.VIDEO_PAUSED, {
           content_id: videoId,
           total_videos: totalVideos,
+          by_user: true,
         });
       }
     },
@@ -540,12 +530,14 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
           track(EventName.VIDEO_UNMUTED, {
             content_id: videoId,
             total_videos: totalVideos,
+            by_user: true,
           });
         } else {
           setButtonAction("MUTE");
           track(EventName.VIDEO_MUTED, {
             content_id: videoId,
             total_videos: totalVideos,
+            by_user: true,
           });
         }
       }

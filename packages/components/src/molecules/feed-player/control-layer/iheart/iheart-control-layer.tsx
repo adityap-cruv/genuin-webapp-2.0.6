@@ -161,6 +161,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
             className={cn("gencl:z-20 gencl:lg:gap-1!")}
             size="lg"
             variant="clip"
+            videoDescription={postDetails.video.descritptionText}
             index={index}
             isActive={isActive}
             contentId={postDetails.video.id}

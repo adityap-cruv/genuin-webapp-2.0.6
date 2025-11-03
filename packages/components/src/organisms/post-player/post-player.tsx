@@ -48,6 +48,7 @@ export function PostPlayer({
             className="gencl:bg-secondary-200 gencl:w-full"
             style={{ height: "inherit" }}
             playsInline
+            videoDescription={post.video.descritptionText}
           />
           <ControlLayer
             isActive={true}
