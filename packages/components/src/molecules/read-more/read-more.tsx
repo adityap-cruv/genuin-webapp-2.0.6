@@ -389,7 +389,7 @@ export const ReadMore = memo(function ReadMore({
         return (
           <>
             {renderText(parsedText)}
-            <span className="gencl:whitespace-nowrap align-baseline">…</span>
+            <span className="gencl:whitespace-nowrap gencl:align-baseline">…</span>
           </>
         );
       }
@@ -432,7 +432,7 @@ export const ReadMore = memo(function ReadMore({
         return (
           <>
             {teaserContent}
-            <span className="gencl:whitespace-nowrap align-baseline">…</span>
+            <span className="gencl:whitespace-nowrap gencl:align-baseline">…</span>
           </>
         );
       }
@@ -445,7 +445,7 @@ export const ReadMore = memo(function ReadMore({
         <>
           {teaserContent}
           {showExpandText && (
-            <span className="gencl:whitespace-nowrap align-baseline">
+            <span className="gencl:whitespace-nowrap gencl:align-baseline">
               &nbsp;…
               {createButton(viewMoreText)}
             </span>

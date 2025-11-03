@@ -310,6 +310,10 @@ export function calculateMaxCharacterLimit(
   const buttonSpan = document.createElement("span");
   buttonSpan.className = "gencl:whitespace-nowrap";
   buttonSpan.style.whiteSpace = "nowrap";
+  textSpan.style.overflowWrap = "break-word";
+  textSpan.style.wordBreak = "break-word"; // optional fallback
+  textSpan.style.webkitLineClamp = maxLines.toString();
+  textSpan.style.webkitBoxOrient = "vertical";
 
   container.appendChild(textSpan);
   container.appendChild(buttonSpan);
@@ -325,14 +329,34 @@ export function calculateMaxCharacterLimit(
     let lastFitString = "";
 
     // Helper: checks if current text fits within maxLines
+    // const fitsInLines = (text: string): boolean => {
+    //   textSpan.textContent = text + suffix;
+    //   const range = document.createRange();
+    //   range.selectNodeContents(textSpan);
+    //   const rects = range.getClientRects();
+    //   const lineCount = rects.length;
+    //   range.detach();
+    //   return lineCount <= maxLines;
+    // };
+
+    // Helper: checks if current text fits within maxLines using scrollHeight
     const fitsInLines = (text: string): boolean => {
       textSpan.textContent = text + suffix;
-      const range = document.createRange();
-      range.selectNodeContents(textSpan);
-      const rects = range.getClientRects();
-      const lineCount = rects.length;
-      range.detach();
-      return lineCount <= maxLines;
+
+      // Force reflow for Safari
+      container.offsetHeight;
+
+      // Use scrollHeight method (more reliable cross-browser)
+      const lineHeight = parseFloat(computedStyle.lineHeight);
+      const actualLineHeight = isNaN(lineHeight)
+        ? parseFloat(computedStyle.fontSize) * 1.2
+        : lineHeight;
+
+      const maxHeight = actualLineHeight * maxLines;
+      const currentHeight = container.scrollHeight;
+
+      // Add small tolerance for Safari's sub-pixel rendering
+      return currentHeight <= maxHeight + 1;
     };
 
     // Iteratively append text until overflow occurs
