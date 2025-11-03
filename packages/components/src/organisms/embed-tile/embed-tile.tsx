@@ -107,6 +107,7 @@ export function EmbedTile({
       {/* Take available height after showLinkOutside & showSocialInteractionData gets its height   */}
       <PlayerProvider
         isActive={isActive}
+        index={index}
         videoId={postDetails.video.id}
         showExpandView={value}
         toggleExpandView={toggle}

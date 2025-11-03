@@ -14,6 +14,7 @@ import { useBaseContext } from "@genuin/components/context/base";
 import { useAnalytics } from "@genuin/components/context/analytics";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { Swiper } from "swiper/types";
+import { EmbedEventContextType } from "@genuin/components/context/embed/event-bus";
 
 type VideoProviderProps = {
   children: React.ReactNode;
@@ -184,21 +185,72 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   }, [buttonAction]);
 
   useEffect(() => {
-    // Skip if current index doesn't match previous index
-    // Skip impression event if video was viewed for less than 2 seconds
+    // TODO: Update the video impression logic after the `release/iheart` branch is merged.
+    // This section handles video impression tracking for the expand view (non-embed case).
+
+    // Skip execution if the swiper instance or index is not available.
     if (!swiper || !index) return;
 
-    if (index !== swiper.previousIndex) return;
+    // Skip if the current index is the same as the previous one
+    // (prevents duplicate tracking when the user stays on the same video).
+    if (index - 1 === swiper.previousIndex) return;
 
-    track(EventName.VIDEO_IMPRESSION, {
-      content_category: "loop",
-      content_id: videoId,
-      event_record_screen: "feed",
-      event_target_screen: "none",
-      video_length: videoStateRef.current.duration,
-      video_view_length: videoStateRef.current.currentTime,
-    });
+    // Track the video impression if both duration and current playback time are available.
+    if (
+      !!videoStateRef.current.duration &&
+      !!videoStateRef.current.currentTime
+    ) {
+      track(EventName.VIDEO_IMPRESSION, {
+        content_category: "loop",
+        content_id: videoId,
+        event_record_screen: "feed",
+        event_target_screen: "none",
+        video_length: videoStateRef.current.duration,
+        video_view_length: videoStateRef.current.currentTime,
+      });
+    }
   }, [swiper]);
+
+  useEffect(() => {
+    // This section handles video impression tracking specifically for embedded videos.
+    if (!embedDetails) return;
+    const { embedEventBus } = embedDetails;
+
+    function handleActiveIndexChange(
+      eventData: any,
+      context: EmbedEventContextType
+    ) {
+      // Only proceed if the index matches the previous index from the context.
+      // This ensures impressions are recorded when switching *away* from the current video.
+      if (index !== context.previousIndex) return;
+
+      // Skip the first trigger when the page initially loads.
+      // On first load, `index` and `previousIndex` will be identical,
+      // so this check prevents false impression tracking.
+      if (
+        !isActive &&
+        !!videoStateRef.current.duration &&
+        !!videoStateRef.current.currentTime
+      ) {
+        track(EventName.VIDEO_IMPRESSION, {
+          content_category: "loop",
+          content_id: videoId,
+          event_record_screen: "feed",
+          event_target_screen: "none",
+          video_length: videoStateRef.current.duration,
+          video_view_length: videoStateRef.current.currentTime,
+        });
+      }
+    }
+
+    // Listen for active index changes within the embed context.
+    embedEventBus.on("activeIndexChange", handleActiveIndexChange);
+
+    // Clean up listener on unmount or when dependencies change.
+    return () => {
+      embedEventBus.off("activeIndexChange", handleActiveIndexChange);
+    };
+  }, [embedDetails, isActive]);
 
   useEffect(() => {
     if (!embedDetails) return;

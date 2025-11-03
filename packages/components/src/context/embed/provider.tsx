@@ -151,6 +151,7 @@ export function EmbedProvider({
       embedEventBus.emit("activeIndexChange", undefined, (currentContext) => ({
         ...currentContext,
         activeIndex: newIndex,
+        previousIndex: currentContext.activeIndex,
       }));
     },
     [embedEventBus]

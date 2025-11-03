@@ -20,6 +20,10 @@ export type EmbedEventContextType = {
    */
   activeIndex: number;
   /**
+   * The index of the previously active player.
+   */
+  previousIndex?: number;
+  /**
    * List of all available sections in the feed (used for sectioned views)
    */
   sectionList: PostDetailsType["section"][];
