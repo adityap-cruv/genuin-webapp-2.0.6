@@ -110,6 +110,7 @@ export function Embed({
     () => feedData?.pages?.flatMap((page) => page.feed) || [],
     [feedData]
   );
+  const totalVideos = feedData?.pages?.[0]?.totalVideos as number;
 
   // Extract video titles from postDetails
   const sectionList = useMemo(
@@ -164,6 +165,7 @@ export function Embed({
                   has_sections: isSectioned,
                   section_count: sectionList.length,
                 }),
+                activeIndex: 10,
               }
             );
             observer.disconnect();
@@ -375,7 +377,11 @@ export function Embed({
                   <></>
                 ) : (
                   <SwiperSlide key={idx}>
-                    <EmbedItem index={idx} postDetails={videoData} />
+                    <EmbedItem
+                      index={idx}
+                      postDetails={videoData}
+                      totalVideos={feedData?.pages?.[0]?.totalVideos}
+                    />
                   </SwiperSlide>
                 );
               })}
@@ -412,6 +418,7 @@ export function Embed({
               isFetchingNextPage={isFetchingNextPage}
               isLoading={isLoading}
               queryKey={queryKey}
+              totalVideos={totalVideos}
             />
           )}
         </>

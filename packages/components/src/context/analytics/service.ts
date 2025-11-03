@@ -345,6 +345,10 @@ class AnalyticsServiceSingleton {
     return this.isInitialized;
   }
 
+  public getDefaultPayload(): DefaultAnalyticsPayload | null {
+    return this.defaultPayload;
+  }
+
   public setDefaultPayload(payload: DefaultAnalyticsPayload): void {
     this.defaultPayload = payload;
     // console.log(

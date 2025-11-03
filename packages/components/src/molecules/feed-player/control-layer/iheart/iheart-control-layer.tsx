@@ -15,12 +15,12 @@ import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config
 export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
   postDetails,
   className,
-  onReactionStateChange,
-  onClick,
   layoutType,
-  onCommentCountChange,
   isActive,
   index,
+  onReactionStateChange,
+  onClick,
+  onCommentCountChange,
   ...restProps
 }) => {
   const { baseContextManager } = useBaseContext();

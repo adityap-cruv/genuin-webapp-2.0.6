@@ -16,6 +16,10 @@ import { usePathname } from "@genuin/components/hooks/use-pathname";
 import { EmbedDataType } from "@genuin/components/context/embed/embed.types";
 import { useSafeEmbedContext } from "../embed/context";
 import { sendAnalyticsToBackend } from "@genuin/components/react-query/api/analytics";
+import {
+  SDKEventEmitter,
+  SDKEventName,
+} from "@genuin/components/lib/sdk-event-emitter";
 
 type AnalyticsProviderProps = {
   children: ReactNode;
@@ -169,13 +173,28 @@ user_longitude
     };
   }, [brandDetails, user, isWebSDK, embedData, pathname]);
 
-  const track = useCallback(
-    async (eventName: EventNameType, payload?: EventPayload) => {
-      await AnalyticsService.track(eventName, payload);
+  const emitAnalyticsEvent = useCallback(
+    (eventName: EventNameType, payload?: EventPayload) => {
+      const defaultPayload = AnalyticsService.getDefaultPayload();
+      const mergedPayload = {
+        ...(defaultPayload || {}),
+        ...(payload || {}),
+      };
+
+      SDKEventEmitter.emit(SDKEventName.ANALYTICS, {
+        eventName,
+        eventPayload: mergedPayload,
+      });
+    },
+    []
+  );
+
+  const sendVideoCompletedToBackend = useCallback(
+    (payload?: EventPayload) => {
       if (
-        eventName === EventName.VIDEO_COMPLETED &&
         embedDetails?.brandLayoutType === "iheart" &&
-        user
+        user &&
+        embedDetails.embedData.placement_id
       ) {
         sendAnalyticsToBackend({
           eventName: EventName.VIDEO_MARK_COMPLETE,
@@ -191,7 +210,18 @@ user_longitude
         });
       }
     },
-    [embedDetails?.brandLayoutType, user, isInIframe]
+    [embedDetails?.brandLayoutType, embedDetails?.embedData.placement_id, user, brandDetails.environment, brandDetails.brand_id, isInIframe]
+  );
+
+  const track = useCallback(
+    async (eventName: EventNameType, payload?: EventPayload) => {
+      await AnalyticsService.track(eventName, payload);
+      emitAnalyticsEvent(eventName, payload);
+      if (eventName === EventName.VIDEO_COMPLETED) {
+        sendVideoCompletedToBackend(payload);
+      }
+    },
+    [emitAnalyticsEvent, sendVideoCompletedToBackend]
   );
 
   return (

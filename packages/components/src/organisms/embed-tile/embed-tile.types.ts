@@ -17,6 +17,10 @@ export type EmbedTileProps = {
    */
   index: number;
   /**
+   * Total number of videos in feed.
+   */
+  totalVideos?: number;
+  /**
    * Function to swipe to the next video in the carousel.
    */
   onPlayerIterationEnd: ComponentProps<

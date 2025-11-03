@@ -38,7 +38,8 @@ const ALLOWED_EVENTS = [
   'onSwipedForward',
   'onSwipedBackward',
   'onExpandViewChanged',
-  'onFeedLoaded'
+  'onAnalyticsTrack',
+  'onFeedLoaded',
   // Add allowed event names here
 ]
 

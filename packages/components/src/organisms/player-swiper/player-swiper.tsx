@@ -40,6 +40,10 @@ type PlayerListPropsType = {
   posts: PostDetailsType[];
   startIndex?: number;
   className?: string;
+  isSectioned?: boolean;
+  disableSwiper?: boolean;
+  theme?: "light" | "dark";
+  totalVideos?: number;
   onActiveIndexChange?: (index: number) => void;
   /**
    * @param isReacted - Whether the post is reacted to
@@ -60,24 +64,22 @@ type PlayerListPropsType = {
    * @param increment - true to increment, false to decrement
    */
   onCommentCountChange?: ComponentProps<typeof Player>["onCommentCountChange"];
-  isSectioned?: boolean;
-  disableSwiper?: boolean;
-  theme?: "light" | "dark";
 };
 
 // TODO: This component is using feed context, which is not ideal. Remove this dep of FeedContext in future.
 export function PlayerList({
   posts,
   startIndex = 0,
+  isSectioned = false,
+  disableSwiper = false,
+  theme,
+  totalVideos,
   onActiveIndexChange,
   onReactionStateChange,
   onCommunityJoinStatusChange,
   onGroupJoinStatusChange,
   onGroupSubscriptionChange,
   onCommentCountChange,
-  isSectioned = false,
-  disableSwiper = false,
-  theme,
 }: PlayerListPropsType) {
   const { showExpandView, activeIndex, toggleExpandView } = useFeedContext();
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
@@ -269,6 +271,7 @@ export function PlayerList({
                         onReactionStateChange={onReactionStateChange}
                         onCommentCountChange={onCommentCountChange}
                         index={index}
+                        totalVideos={totalVideos}
                       />
                     ) : (
                       <WatchBoundaryOverlay variant="complete" />

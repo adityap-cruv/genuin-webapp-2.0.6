@@ -25,23 +25,21 @@ type EmbedExpandViewProps = {
   isFetchingNextPage: boolean;
   isLoading: boolean;
   queryKey: QueryKey;
+  totalVideos: number;
 };
 
 export function EmbedExpandView({
   videos,
-  fetchNextPage,
   hasNextPage,
   isFetchingNextPage,
   isLoading,
   queryKey,
+  totalVideos,
+  fetchNextPage,
 }: EmbedExpandViewProps) {
   const [startIndex, setStartIndex] = useState(0);
-  const {
-    changeActiveIndex,
-    embedEventBus,
-    goBackToPreviousPlayerType,
-    embedData,
-  } = useEmbedContext();
+  const { changeActiveIndex, embedEventBus, goBackToPreviousPlayerType } =
+    useEmbedContext();
   const { setMuted, muted, setPlaybackSpeed, isInIframe } = useBaseContext();
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
   const previousMuteState = usePrevious(muted);
@@ -290,6 +288,7 @@ export function EmbedExpandView({
         isFetchingNextPage,
         isLoading,
         queryKey,
+        totalVideos,
       }}
       embedOptions={{
         actions: {

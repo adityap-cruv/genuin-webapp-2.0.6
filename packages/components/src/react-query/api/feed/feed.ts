@@ -236,6 +236,7 @@ async function fetchFeed(
           pageSession: undefined,
           endOfFeed: true,
           timestamp: 0,
+          totalVideos: 0,
         };
       }
 
@@ -249,6 +250,7 @@ async function fetchFeed(
         pageSession: res.data.data.page_session,
         endOfFeed: res.data.data.end_of_feed,
         timestamp: res.data.data.timestamp,
+        totalVideos: res.data.data.no_of_videos ?? 0,
       };
     })
     .catch(() => {
@@ -389,7 +391,7 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
           const hasInitialVideosInApi = initialVideos.some((v) =>
             apiVideoIds.has(v.video.id)
           );
-          
+
           // If initial videos are already in API, return API data as is
           if (hasInitialVideosInApi) {
             return data;
@@ -406,6 +408,10 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
             timestamp:
               data.pages[data.pages.length - 1]?.timestamp ||
               initialPage?.timestamp ||
+              0,
+            totalVideos:
+              data.pages[data.pages.length - 1]?.totalVideos ||
+              initialPage?.totalVideos ||
               0,
           };
 
@@ -435,6 +441,7 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
                   pageSession: null,
                   endOfFeed: false,
                   timestamp: 0,
+                  totalVideos: 0,
                 },
               ],
               pageParams: [{ pageSession: "", lastVideoId: "" }],
@@ -462,6 +469,7 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
               pageSession: null,
               endOfFeed: false,
               timestamp: 0,
+              totalVideos: 0,
             },
             ...data.pages,
           ];
@@ -475,7 +483,9 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
             return {
               ...page,
               feed: page.feed.filter(
-                (video) => (video.video.id !== options.startVideoSlug && video.video.slug !== options.startVideoSlug)
+                (video) =>
+                  video.video.id !== options.startVideoSlug &&
+                  video.video.slug !== options.startVideoSlug
               ),
             };
           });

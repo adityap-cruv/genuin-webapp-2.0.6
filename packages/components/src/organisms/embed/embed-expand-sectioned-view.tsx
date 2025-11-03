@@ -59,6 +59,7 @@ export function EmbedExpandSectionedView({
                   pageSession: pageSession,
                   endOfFeed: false,
                   timestamp: 0,
+                  totalVideos: filteredSelectedSectionVideos.length,
                 },
               ],
               pageParams: [{ pageSession: "", lastVideoId: "" }],
@@ -89,6 +90,7 @@ export function EmbedExpandSectionedView({
     hasNextPage,
     isFetchingNextPage,
   } = useFeed("SECTION_FEED", feedOptions);
+  const totalVideos = sectionFeedData?.pages[0]?.totalVideos;
 
   // Generate the correct query key for the actual query being made
   const queryKey = getQueryKeyForFeed("SECTION_FEED", feedOptions);
@@ -128,6 +130,7 @@ export function EmbedExpandSectionedView({
       isFetchingNextPage={isFetchingNextPage}
       isLoading={false}
       queryKey={queryKey}
+      totalVideos={totalVideos}
     />
   );
 }

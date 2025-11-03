@@ -15,6 +15,13 @@ import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config
 
 type PlayerProps = {
   post: PostDetailsType;
+  index: number;
+  isSectioned?: boolean;
+  isActive: boolean;
+  isNext: boolean;
+  isPrev: boolean;
+  isVisible: boolean;
+  totalVideos?: number;
   onReactionStateChange?: (videoId: string, isReacted: boolean) => void;
   onCommunityJoinStatusChange: ComponentProps<
     typeof ControlLayer
@@ -28,28 +35,23 @@ type PlayerProps = {
   onCommentCountChange: ComponentProps<
     typeof ControlLayer
   >["onCommentCountChange"];
-  index: number;
-  isSectioned?: boolean;
-  isActive: boolean;
-  isNext: boolean;
-  isPrev: boolean;
-  isVisible: boolean;
 };
 
 // TODO: This component is using feed context, which is not ideal. Remove this dep of FeedContext in future.
 export function Player({
   post,
   index,
-  onCommunityJoinStatusChange,
-  onGroupJoinStatusChange,
-  onGroupSubscriptionChange,
-  onReactionStateChange,
-  onCommentCountChange,
   isSectioned,
   isActive,
   isNext,
   isPrev,
   isVisible,
+  totalVideos,
+  onCommunityJoinStatusChange,
+  onGroupJoinStatusChange,
+  onGroupSubscriptionChange,
+  onReactionStateChange,
+  onCommentCountChange,
 }: PlayerProps) {
   const { showExpandView, toggleExpandView, activeIndex, variant } =
     useFeedContext();
@@ -86,6 +88,7 @@ export function Player({
         swiper={swiper}
         index={index}
         onPlayerIterationEnd={swiper.slideNext}
+        totalVideos={totalVideos}
       >
         <div
           className={cn(
@@ -115,6 +118,7 @@ export function Player({
             style={{ height: "inherit" }}
           />
           <ControlLayer
+            index={index}
             isActive={isActive}
             postDetails={post}
             isSectioned={isSectioned}

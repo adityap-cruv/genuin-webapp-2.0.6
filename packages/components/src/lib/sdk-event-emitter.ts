@@ -29,6 +29,7 @@ export enum SDKEventName {
   SWIPED_FORWARD = "onSwipedForward",
   SWIPED_BACKWARD = "onSwipedBackward",
   EXPAND_VIEW_CHANGED = "onExpandViewChanged",
+  ANALYTICS = "onAnalyticsTrack",
   FEED_LOADED = "onFeedLoaded",
 }
 
@@ -120,6 +121,11 @@ export interface SDKSwipedBackwardPayload {
   timestamp?: number;
 }
 
+export interface SDKAnalyticsPayload {
+  eventName: string;
+  eventPayload: Record<string, any> | undefined;
+}
+
 /**
  * Type mapping for SDK event payloads
  * Maps each event name to its corresponding payload type
@@ -139,6 +145,7 @@ export type SDKEventPayloadMap = {
   [SDKEventName.VIDEO_NOT_FOUND]: SDKVideoNotFoundPayload;
   [SDKEventName.SWIPED_FORWARD]: SDKSwipedForwardPayload;
   [SDKEventName.SWIPED_BACKWARD]: SDKSwipedBackwardPayload;
+  [SDKEventName.ANALYTICS]: SDKAnalyticsPayload;
 };
 
 /**
@@ -203,10 +210,10 @@ export class SDKEventEmitter {
    * ```ts
    * // Immediate emission (no debounce)
    * SDKEventEmitter.emit(SDKEventName.ERROR, { isError: true, isNoContent: false });
-   * 
+   *
    * // Debounced emission (300ms)
    * SDKEventEmitter.emit(
-   *   SDKEventName.PLAY, 
+   *   SDKEventName.PLAY,
    *   { muted: false, isInView: true, isFocused: true, volume: 100 },
    *   { debounceTime: 300 }
    * );

@@ -21,6 +21,24 @@ declare global {
 
 export type EventNameType = (typeof EventName)[keyof typeof EventName];
 
+/**
+ * Maps event names to their respective payload data types.
+ * Define specific payload types for each event to ensure type safety.
+ */
+export type EventPayloadMap = {};
+
+/**
+ * Type-safe track function that maps event names to their respective payload types.
+ * If an event is defined in EventPayloadMap, it uses that specific type.
+ * Otherwise, it falls back to Record<string, any> for flexibility.
+ */
+export type TrackFunction = <T extends EventNameType>(
+  eventName: T,
+  payload?: T extends keyof EventPayloadMap
+    ? EventPayloadMap[T]
+    : Record<string, any>
+) => void;
+
 export type QueuedEvent = {
   eventName: EventNameType;
   payload?: EventPayload;

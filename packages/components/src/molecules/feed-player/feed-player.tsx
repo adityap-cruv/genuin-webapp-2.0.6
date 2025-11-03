@@ -60,6 +60,8 @@ export const FeedPlayer = memo(function FeedPlayer({
     unmute,
     handleEnded: stateHandleEnded,
     updateAdInfo,
+    totalVideos,
+    positionIndex,
   } = usePlayerContext();
   const { track, EventName } = useAnalytics();
   const id = useId();
@@ -119,8 +121,10 @@ export const FeedPlayer = memo(function FeedPlayer({
       content_id: videoId,
       event_record_screen: "feed",
       event_target_screen: "none",
+      total_videos: totalVideos,
+      position_index: positionIndex,
     };
-  }, [videoId]);
+  }, [videoId, totalVideos]);
 
   // Track when video comes into view using IntersectionObserver
   useEffect(() => {

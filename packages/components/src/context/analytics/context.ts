@@ -1,9 +1,9 @@
 "use client";
 
 import { createContext, useContext } from "react";
-import { EventNameType, EventPayload } from "./types";
+import { TrackFunction } from "./types";
 
-// TODO Change the type in case of SDK
+// TODO: Change the type in case of SDK
 /**
  * Defines the names of trackable events.
  * Add more event names as your application requires.
@@ -79,7 +79,7 @@ type AnalyticsContextType = {
    * @param eventName The name of the event to track.
    * @param payload Additional data associated with the event.
    */
-  track: (eventName: EventNameType, payload?: EventPayload) => void; // track is now async
+  track: TrackFunction;
   EventName: typeof EventName; // Expose EventName for easy access
 };
 

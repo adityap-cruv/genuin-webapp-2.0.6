@@ -13,11 +13,16 @@ type EmbedItemProps = Omit<
   "onPlayerIterationEnd" | "isActive"
 > & {
   index: number;
+  /**
+   * number of total videos in feed.
+   */
+  totalVideos: number;
 };
 
 export function EmbedItem({
   index,
   postDetails,
+  totalVideos,
   ...restProps
 }: EmbedItemProps) {
   const { updateActiveIndex, goToNextVideo, activeIndex } =
@@ -98,6 +103,7 @@ export function EmbedItem({
         updateActiveIndex(index);
       }}
       index={index}
+      totalVideos={totalVideos}
       {...restProps}
     />
   );

@@ -26,6 +26,10 @@ export type FeedData = {
   isFetchingNextPage: boolean;
   /** Function to fetch the next page of videos */
   fetchNextPage: () => void;
+  /**
+   * Total videos in feed.
+   */
+  totalVideos?: number;
 };
 
 type BaseFeedPropsType = {
@@ -56,7 +60,7 @@ type BaseFeedPropsType = {
 type FeedWithDataPropsType = {
   /** Type of feed to display (HOME, POPULAR, LATEST) */
   feedType: FeedType;
-  isSectioned?: boolean
+  isSectioned?: boolean;
 } & BaseFeedPropsType &
   ComponentProps<"div">;
 
@@ -99,8 +103,8 @@ type FeedViewPropsType = {
    * @returns
    */
   onActiveIndexChange?: (index: number) => void;
-  isSectioned?: boolean
-  isInIframe? : boolean
+  isSectioned?: boolean;
+  isInIframe?: boolean;
 } & BaseFeedPropsType &
   ComponentProps<"div">;
 

@@ -103,6 +103,14 @@ export type PlayerContextType = {
    * @returns
    */
   updateAdInfo: (isAdPlaying: boolean, adInfo: AdInfoType) => void;
+  /**
+   * Total number of videos in feed.
+   */
+  totalVideos?: number;
+  /**
+   * Index position of video in feed.
+   */
+  positionIndex?: number;
 } & ExpandViewProps;
 
 export const PlayerContext = createContext<PlayerContextType | null>(null);
