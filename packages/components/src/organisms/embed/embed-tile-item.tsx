@@ -83,6 +83,9 @@ export function EmbedItem({
   // Handle automatic progression when video ends
   const handlePlayerIterationEnd = useCallback(() => {
     // Use intelligent auto-scroll for placement view when enabled
+    if (config.view.isPlacementView && !config.video.autoScrollToNextSlide)
+      return;
+
     const useAutoScroll =
       config.view.isPlacementView && config.video.autoScrollToNextSlide;
     goToNextVideo(useAutoScroll);
