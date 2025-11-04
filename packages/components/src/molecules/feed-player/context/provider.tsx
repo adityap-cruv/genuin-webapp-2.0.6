@@ -432,7 +432,8 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
 
     // Check if repeatCount is greater than 0
     // and if so, decrement it and play the video again
-    // Otherwise, swipe to the next video
+    // Only do this if the video actually reached its natural end
+    // (not due to an ad error that might cause premature ending)
     if (repeatCount > 0) {
       playerConfigRef.current.repeatCount--;
       playerRef.current?.play();

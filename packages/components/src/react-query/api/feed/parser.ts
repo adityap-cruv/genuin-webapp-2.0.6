@@ -56,7 +56,7 @@ export function parseFeed(
       linkouts: item.video.linkouts || [],
       isPinned: item.video.is_pinned || false,
       thumbnailSprite: item.video.sprite_image_url || null,
-      // adUrl: item.video.ads_config?.ads_url || null,
+      adUrl: item.video.ads_config?.ads_url || null,
       cardLayoutId: item.video.card_layout_id || null,
       videoLayoutId: item.video.video_layout_id || null,
       // cardLayoutType: mapVideoLayoutId(item.video.card_layout_id),
