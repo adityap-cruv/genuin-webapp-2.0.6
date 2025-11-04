@@ -39,6 +39,7 @@ export function PostPlayer({
         isActive={true}
         videoId={post.video.id}
         onPlayerIterationEnd={() => null}
+        videoDescription={post.video.descritptionText}
       >
         <GestureProvider isInIframe={isInIframe}>
           <FeedPlayer

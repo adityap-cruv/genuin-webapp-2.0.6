@@ -89,6 +89,7 @@ export function Player({
         index={index}
         onPlayerIterationEnd={swiper.slideNext}
         totalVideos={totalVideos}
+        videoDescription={post.video.descritptionText}
       >
         <div
           className={cn(

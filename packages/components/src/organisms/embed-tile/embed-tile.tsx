@@ -90,6 +90,7 @@ export function EmbedTile({
   postDetails,
   className,
   index,
+  totalVideos,
   onPlayerIterationEnd,
   ...restProps
 }: EmbedTileProps & VariantProps<typeof embedTileVariants>) {
@@ -130,6 +131,8 @@ export function EmbedTile({
             explicitAutoPlay={config.video.videoAutoplay && isActive}
             explicitLoop={config.video.videoLoop && isActive}
             updateActiveIndex={updateActiveIndex}
+            videoDescription={postDetails.video.descritptionText}
+            totalVideos={totalVideos}
           >
             <EmbedPlayer
               postDetails={postDetails}

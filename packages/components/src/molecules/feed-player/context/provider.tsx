@@ -60,6 +60,10 @@ type VideoProviderProps = {
    */
   totalVideos?: number;
   /**
+   * A video description to pass data to analytics.
+   */
+  videoDescription?: string | null;
+  /**
    * Function to update ative index in embed-manager-provider
    */
   updateActiveIndex?: (idx: number) => void;
@@ -94,6 +98,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   explicitAutoPlay,
   explicitLoop,
   totalVideos,
+  videoDescription,
   onPlayerIterationEnd,
   toggleExpandView,
   updateActiveIndex,
@@ -172,6 +177,16 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   }>({ isAdPlaying: false });
 
   const { track, EventName } = useAnalytics();
+
+  // Memoized base analytics data
+  const baseAnalyticsData = useMemo(
+    () => ({
+      content_id: videoId,
+      total_videos: totalVideos,
+      title: videoDescription,
+    }),
+    [videoId, totalVideos, videoDescription]
+  );
 
   // Track globalPlayState from baseEventBus - controls if ANY player can play based on user action
   const [globalPlayState, setGlobalPlayState] = useState(
@@ -345,14 +360,14 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     if (index !== swiper.previousIndex) return;
 
     track(EventName.VIDEO_IMPRESSION, {
+      ...baseAnalyticsData,
       content_category: "loop",
-      content_id: videoId,
       event_record_screen: "feed",
       event_target_screen: "none",
       video_length: videoStateRef.current.duration,
       video_view_length: videoStateRef.current.currentTime,
     });
-  }, [swiper]);
+  }, [swiper, track, EventName.VIDEO_IMPRESSION, baseAnalyticsData]);
 
   useEffect(() => {
     if (!embedDetails) return;
@@ -457,9 +472,8 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
           setButtonAction(prev ? "PAUSE" : "PLAY");
           // Track play/pause events with Analytics only if the video play pause is triggered by user.
           track(prev ? EventName.VIDEO_PAUSED : EventName.VIDEO_PLAY, {
-            content_id: videoId,
+            ...baseAnalyticsData,
             position_index: index,
-            total_videos: totalVideos,
             by_user: true,
           });
         }
@@ -473,10 +487,10 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       baseEventBus,
       baseContextManager,
       track,
-      videoId,
       updateActiveIndex,
       isActive,
-      totalVideos,
+      index,
+      baseAnalyticsData,
     ]
   );
 
@@ -486,21 +500,23 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   }, []);
 
   // play: Sets the feed player to play state.
-  const play = useCallback((byUser: boolean, seekTime: number = 0) => {
-    if (seekTime && playerRef.current) {
-      playerRef.current.getMedia().currentTime = seekTime;
-    }
-    setFeedPlayerShouldPlay(true);
-    if (byUser) {
-      setButtonAction("PLAY");
-      // Track play event with Analytics only if the video play is triggered by user.
-      track(EventName.VIDEO_PLAY, {
-        content_id: videoId,
-        by_user: true,
-        total_videos: totalVideos,
-      });
-    }
-  }, []);
+  const play = useCallback(
+    (byUser: boolean, seekTime: number = 0) => {
+      if (seekTime && playerRef.current) {
+        playerRef.current.getMedia().currentTime = seekTime;
+      }
+      setFeedPlayerShouldPlay(true);
+      if (byUser) {
+        setButtonAction("PLAY");
+        // Track play event with Analytics only if the video play is triggered by user.
+        track(EventName.VIDEO_PLAY, {
+          ...baseAnalyticsData,
+          by_user: true,
+        });
+      }
+    },
+    [track, EventName.VIDEO_PLAY, baseAnalyticsData]
+  );
 
   // pause: Sets the feed player to pause state.
   const pause = useCallback(
@@ -512,13 +528,18 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         setButtonAction("PAUSE");
         // Track pause event with Analytics only if the video pause is triggered by user.
         track(EventName.VIDEO_PAUSED, {
-          content_id: videoId,
-          total_videos: totalVideos,
+          ...baseAnalyticsData,
           by_user: true,
         });
       }
     },
-    [EventName.VIDEO_PAUSED, baseEventBus, baseContextManager, track, videoId]
+    [
+      EventName.VIDEO_PAUSED,
+      baseEventBus,
+      baseContextManager,
+      track,
+      baseAnalyticsData,
+    ]
   );
 
   // toggleMuted: Toggles the muted state of the player.
@@ -528,22 +549,20 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         if (muted) {
           setButtonAction("UNMUTE");
           track(EventName.VIDEO_UNMUTED, {
-            content_id: videoId,
-            total_videos: totalVideos,
+            ...baseAnalyticsData,
             by_user: true,
           });
         } else {
           setButtonAction("MUTE");
           track(EventName.VIDEO_MUTED, {
-            content_id: videoId,
-            total_videos: totalVideos,
+            ...baseAnalyticsData,
             by_user: true,
           });
         }
       }
       setMuted((oldMuted) => !oldMuted);
     },
-    [setMuted, muted, videoId, track, EventName, totalVideos]
+    [setMuted, muted, track, EventName, baseAnalyticsData]
   );
 
   // mute: Mutes the player.
@@ -553,12 +572,11 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       if (byUser) {
         setButtonAction("MUTE");
         track(EventName.VIDEO_MUTED, {
-          content_id: videoId,
-          total_videos: totalVideos,
+          ...baseAnalyticsData,
         });
       }
     },
-    [setMuted, totalVideos]
+    [setMuted, track, EventName.VIDEO_MUTED, baseAnalyticsData]
   );
 
   // unmute: Unmutes the player.
