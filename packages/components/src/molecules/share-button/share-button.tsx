@@ -44,7 +44,7 @@ export function ShareButton({
   ...restProps
 }: ShareButtonProps) {
   const [, copy] = useCopyToClipboard();
-  const { isMobile } = useDeviceDetectMediaQuery();
+  const { isDesktop } = useDeviceDetectMediaQuery();
   const { createExternalLink } = useLinkContext();
   const { brandDetails } = useBaseContext();
   const {
@@ -97,8 +97,8 @@ export function ShareButton({
           ? "Link copied to clipboard"
           : "Link Copied";
 
-      // For mobile devices, use native share API if available
-      if (isMobile && navigator.share) {
+      // For mobile/tablet devices, use native share API if available
+      if (!isDesktop && navigator.share) {
         try {
           // Check if we're in an embed context
           const isEmbed = window.location.href.includes("embed");
@@ -155,7 +155,7 @@ export function ShareButton({
     [
       copy,
       pathName,
-      isMobile,
+      isDesktop,
       title,
       description,
       createExternalLink,

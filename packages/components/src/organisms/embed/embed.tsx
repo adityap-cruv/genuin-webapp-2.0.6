@@ -209,7 +209,7 @@ export function Embed({
     ) {
       if (
         videos.length > 0 &&
-        context.activeIndex === videos.length - 3 &&
+        context.activeIndex >= videos.length - 3 &&
         hasNextPage &&
         !isFetchingNextPage &&
         context.activePlayerType !== "expand-view"

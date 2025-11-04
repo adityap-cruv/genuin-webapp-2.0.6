@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 export interface UseDoubleClickOptions {
   /**
@@ -32,52 +32,51 @@ export interface UseDoubleClickReturn {
  * 
  * @example
  * ```tsx
- * const { onClick, onDoubleClick } = useDoubleClick({
+ * const handleClick = useDoubleClick({
  *   onSingleClick: () => console.log('Single click'),
  *   onDoubleClick: () => console.log('Double click'),
  *   delay: 300
  * });
  * 
- * return <div onClick={onClick} onDoubleClick={onDoubleClick}>Click me</div>
+ * return <div onClick={handleClick}>Click me</div>
  * ```
  */
 export function useDoubleClick({
   delay = 300,
   onSingleClick,
   onDoubleClick,
-}: UseDoubleClickOptions): UseDoubleClickReturn {
-  const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const clickCountRef = useRef(0);
+}: UseDoubleClickOptions): (event: React.MouseEvent) => void {
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const onClick = useCallback(() => {
-    clickCountRef.current += 1;
-
-    if (clickTimeoutRef.current) {
-      clearTimeout(clickTimeoutRef.current);
-    }
-
-    const timeout = setTimeout(() => {
-      if (clickCountRef.current === 1) {
-        onSingleClick?.();
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
       }
-      clickCountRef.current = 0;
-    }, delay);
+    };
+  }, []);
 
-    clickTimeoutRef.current = timeout;
-  }, [delay, onSingleClick]);
-
-  const handleDoubleClick = useCallback(() => {
-    if (clickTimeoutRef.current) {
-      clearTimeout(clickTimeoutRef.current);
-      clickTimeoutRef.current = null;
+  const handleClick = useCallback((event: React.MouseEvent) => {
+    event.preventDefault();
+    
+    // If timer exists, it's a double click
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+      onDoubleClick?.();
+      return;
     }
-    clickCountRef.current = 0;
 
-    onDoubleClick?.();
-  }, [onDoubleClick]);
+    // First click - set timer for single click
+    timerRef.current = setTimeout(() => {
+      // Check if timer still exists before executing single click
+      if (timerRef.current) {
+        onSingleClick?.();
+        timerRef.current = null;
+      }
+    }, delay);
+  }, [delay, onSingleClick, onDoubleClick]);
 
-  return {
-    onClick,
-    onDoubleClick: handleDoubleClick,
-  };
+  return handleClick;
 }

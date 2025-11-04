@@ -60,17 +60,16 @@ export function Default({
   const [showReactionIcon, setShowReactionIcon] = React.useState(false);
 
   // Use the useDoubleClick hook for iheart layout
-  const { onClick: handleIheartClick, onDoubleClick: handleIheartDoubleClick } =
+  const handleIHeartClick =
     useDoubleClick({
       delay: 300,
       onSingleClick: () => {
         // Single click - toggle play
-        togglePlay(true);
+          togglePlay(true);
       },
       onDoubleClick: () => {
         // Only handle double-click on mobile
         if (!isMobile || !user) return;
-
         // Show reaction icon
         setShowReactionIcon(true);
 
@@ -131,8 +130,7 @@ export function Default({
         <>
           <div
             aria-label="Toggle video playback"
-            onClick={handleIheartClick}
-            onDoubleClick={handleIheartDoubleClick}
+            onClick={handleIHeartClick}
             className={cn(
               "group gencl:inset-0 gencl:z-10 gencl:flex gencl:justify-center",
               "gencl:appearance-none gencl:border-0 gencl:bg-transparent gencl:p-0 gencl:cursor-pointer gencl:w-full",

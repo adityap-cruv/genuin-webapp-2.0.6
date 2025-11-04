@@ -207,7 +207,7 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
               </Link>
             </div>
           )}
-          <div className="gencl:w-full gencl:flex gencl:flex-col gencl:gap-1">
+          <div className="gencl:w-full gencl:flex gencl:flex-col gencl:gap-1 gencl:self-start">
             {postDetails.video.attributes?.title && (
               <Link
                 href={linkUrl}

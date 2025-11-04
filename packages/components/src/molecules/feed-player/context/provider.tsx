@@ -237,8 +237,8 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       }
 
       if (isIHeartLayout) {
-        const globalPlayState = baseEventBus.getContext().globalPlayingState;
-        setFeedPlayerShouldPlay(globalPlayState);
+          const globalPlayState = baseEventBus.getContext().globalPlayingState;
+          setFeedPlayerShouldPlay(globalPlayState);   
         return;
       }
 
@@ -273,6 +273,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     isIHeartLayout,
     baseContextManager,
     baseEventBus,
+    globalPlayState,
   ]);
 
   // specifically for iheart to maintain the -n sec player replay.
@@ -468,7 +469,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
           baseContextManager.setPlayPauseTracker({
             isPlaying: newPlayingState,
           });
-
           setButtonAction(prev ? "PAUSE" : "PLAY");
           // Track play/pause events with Analytics only if the video play pause is triggered by user.
           track(prev ? EventName.VIDEO_PAUSED : EventName.VIDEO_PLAY, {
