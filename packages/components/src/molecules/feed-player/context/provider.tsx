@@ -237,8 +237,8 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       }
 
       if (isIHeartLayout) {
-          const globalPlayState = baseEventBus.getContext().globalPlayingState;
-          setFeedPlayerShouldPlay(globalPlayState);   
+        const globalPlayState = baseEventBus.getContext().globalPlayingState;
+        setFeedPlayerShouldPlay(globalPlayState);
         return;
       }
 
@@ -499,6 +499,11 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     playerRef.current = player;
   }, []);
 
+  const seek = useCallback((seekTime: number) => {
+    if (!playerRef.current) return;
+    playerRef.current.getMedia().currentTime = seekTime;
+  }, []);
+
   // play: Sets the feed player to play state.
   const play = useCallback(
     (byUser: boolean, seekTime: number = 0) => {
@@ -521,6 +526,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   // pause: Sets the feed player to pause state.
   const pause = useCallback(
     (byUser: boolean) => {
+      console.log("pause called");
       setFeedPlayerShouldPlay(false);
       if (byUser) {
         baseContextManager.setPlayPauseTracker({ isPlaying: false });
@@ -673,7 +679,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     togglePlay,
     play,
     pause,
-
+    seek,
     muted,
     toggleMuted,
     mute,

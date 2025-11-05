@@ -38,7 +38,9 @@ export function Scrubber({
     setShowSeeker,
     play,
     pause,
+    seek,
     showScrubber,
+    feedPlayerShouldPlay,
     setShowScrubber,
   } = usePlayerContext();
   const [progressValue, setProgressValue] = useState(0);
@@ -71,7 +73,7 @@ export function Scrubber({
       if (!value[0]) return;
 
       // Only pause while scrubbing for iHeart brand layout
-      if (brandLayoutType === "iheart" && !showScrubber) {
+      if (brandLayoutType !== "iheart" && !showScrubber) {
         pause(false);
       }
 
@@ -99,9 +101,14 @@ export function Scrubber({
 
       if (brandLayoutType === "iheart") {
         // For iHeart: seek and start playing after scrubbing
-        play(true, seekTime);
+        seek(seekTime);
         setShowScrubber(false);
-        setShowSeeker(false);
+        // For iHeart: maintain a global playback state and synchronize the seeker display based on it.
+        if (feedPlayerShouldPlay) {
+          setShowSeeker(false);
+        } else {
+          setShowSeeker(true);
+        }
       } else {
         // Default behavior for other layouts
         play(true, seekTime);
@@ -122,6 +129,7 @@ export function Scrubber({
       playerTimeState.duration,
       play,
       brandLayoutType,
+      feedPlayerShouldPlay,
     ]
   );
 
@@ -133,7 +141,12 @@ export function Scrubber({
           // For iHeart: start playing and hide seeker when scrubbing ends
           play(true);
           setShowScrubber(false);
-          setShowSeeker(false);
+          // For iHeart: maintain a global playback state and synchronize the seeker display based on it.
+          if (feedPlayerShouldPlay) {
+            setShowSeeker(false);
+          } else {
+            setShowSeeker(true);
+          }
         } else {
           // Default behavior for other layouts
           setShowScrubber(false);
@@ -152,7 +165,14 @@ export function Scrubber({
       document.removeEventListener("touchend", handleGlobalEnd);
       document.removeEventListener("pointerup", handleGlobalEnd);
     };
-  }, [showScrubber, setShowScrubber, setShowSeeker, play, brandLayoutType]);
+  }, [
+    showScrubber,
+    setShowScrubber,
+    setShowSeeker,
+    play,
+    brandLayoutType,
+    feedPlayerShouldPlay,
+  ]);
 
   return (
     <div

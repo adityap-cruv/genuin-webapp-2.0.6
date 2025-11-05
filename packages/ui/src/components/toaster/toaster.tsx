@@ -80,7 +80,10 @@ const showCustomToast = (
         </div>
       </div>
       <XIcon
-        onClick={() => toast.dismiss(id)}
+        onClick={(event) => {
+          toast.dismiss(id);
+          event.stopPropagation();
+        }}
         className="gencl:size-4 gencl:shrink-0 gencl:text-secondary-600 hover:gencl:text-black gencl:cursor-pointer gencl:mt-1"
       />
     </div>

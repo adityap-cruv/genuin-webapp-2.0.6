@@ -68,7 +68,12 @@ export type PlayerContextType = {
    */
   play: (byUser: boolean, seekTime?: number) => void;
   pause: (byUser: boolean) => void;
-
+  /**
+   * Function to seek the video to a specific time.
+   * @param seekTime - The target time (in seconds) to which the video should be moved.
+   * @returns void
+   */
+  seek: (seekTime: number) => void;
   muted: boolean;
   /**
    * Function to toggle the mute state of the video player.

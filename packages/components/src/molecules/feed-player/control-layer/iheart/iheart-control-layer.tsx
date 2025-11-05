@@ -104,7 +104,14 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
         )}
         <div className="gencl:w-full">
           {postDetails.video.attributes?.title && (
-            <p className="gencl:text-[14px] gencl:font-semibold gencl:leading-[18px] gencl:line-clamp-1 gencl:tracking-[-0.2px] gencl:lg:text-[17px]! gencl:lg:font-semibold! gencl:lg:leading-[24px]! gencl:lg:tracking-[-0.2px]!">
+            <p
+              className={cn(
+                "gencl:font-semibold gencl:leading-[18px] gencl:line-clamp-1 gencl:tracking-[-0.2px] gencl:lg:font-semibold! gencl:lg:leading-[24px]! gencl:lg:tracking-[-0.2px]!",
+                websiteType === "polaris"
+                  ? "gencl:text-[14px] gencl:lg:text-[17px]!"
+                  : "gencl:text-[16px]"
+              )}
+            >
               {postDetails.video.attributes?.title}
             </p>
           )}
