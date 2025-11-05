@@ -12,11 +12,22 @@ import {
 
 import { cn, encodeVideoSourceUrl } from "@genuin/ui/lib/utils";
 const hlsConfigs = {
-  // debug: true,
+  debug: true,
   /**
-   * Let the player decide the best quality level dynamically.
+   * Start with lowest quality level to ensure smooth playback start.
+   * ABR will gradually increase quality based on actual bandwidth.
    */
-  startLevel: 1,
+  startLevel: 0,
+  /**
+   * Disable capLevelToPlayerSize to prevent jumping to high quality based on player dimensions.
+   * This ensures startLevel is respected for the first fragment.
+   */
+  capLevelToPlayerSize: false,
+  /**
+   * Restrict initial quality - set max to level 1 initially to force low quality start.
+   * This can be adjusted dynamically after playback starts.
+   */
+  maxAutoLevel: 1,
   /**
    * Use worker threads for decoding for better performance.
    */
@@ -29,41 +40,43 @@ const hlsConfigs = {
    * Low latency mode for quicker playback start and adaptation.
    */
   lowLatencyMode: true,
-  // /**
-  //  * Buffer settings tuned for 1-second fragments.
-  //  */
-  // maxBufferLength: 6, // Buffer up to 6 seconds (can be adjusted based on use case).
-  // maxBufferSize: 20 * 1000 * 1000, // Maximum buffer size in bytes (e.g., 20MB).
-  // backBufferLength: 15, // Retain up to 15 seconds of back-buffer for seamless rewinding.
   /**
-   * Adjust buffer settings for 2-second fragments.
+   * Buffer settings optimized for 2-second fragments.
    */
   maxBufferLength: 10, // Buffer up to 6 fragments (12 seconds).
-  maxBufferSize: 40 * 1000 * 1000, // Maximum buffer size in bytes (e.g., 40MB).
+  maxBufferSize: 40 * 1000 * 1000, // Maximum buffer size in bytes (40MB).
   backBufferLength: 30, // Retain 30 seconds for seamless rewind.
   /**
-   * Optimize for quicker fragment loading and adaptation.
+   * Fragment loading optimization.
    */
-  fragLoadingTimeOut: 10000, // Timeout in milliseconds for loading fragments.
+  fragLoadingTimeOut: 7000, // Timeout in milliseconds for loading fragments (reduced for faster failure detection).
   startFragPrefetch: true, // Prefetch the next fragment to minimize stutters.
   /**
-   * Ensure codec compatibility for adaptive VP9 playback.
+   * Prevent HLS.js from probing multiple quality levels on startup.
+   * This stops unnecessary parallel downloads of the same fragment at different qualities.
    */
-  overrideCodec: (codec: string) => codec.includes("vp09"),
+  testBandwidth: false, // Disable initial bandwidth test that loads multiple quality levels
   /**
-   * Optimize bitrate switching by limiting to player size.
+   * Conservative ABR settings to prevent jumping to highest quality immediately.
    */
-  capLevelToPlayerSize: true,
+  abrEwmaDefaultEstimate: 300000, // Lower initial bandwidth estimate (300 kbps) to start conservatively.
+  abrBandWidthFactor: 0.8, // More conservative - requires 80% of bandwidth before switching up.
+  abrBandWidthUpFactor: 0.5, // Very conservative upscaling - prevents jumping to 1080p immediately.
+  abrEwmaFastLive: 3, // Slower adaptation for live content.
+  abrEwmaSlowLive: 5, // Even slower for stable quality.
+  abrEwmaFastVoD: 3, // Slower adaptation for VOD content.
+  abrEwmaSlowVoD: 5, // Gradual quality increases.
   /**
    * Handle live playback smoothly for low-latency streams.
    */
   liveSyncDuration: 2.5, // Keep live playback latency low.
   liveMaxLatencyDuration: 6, // Maximum latency allowed for live streams.
   /**
-   * Fallback handling for errors during playback.
+   * Error recovery and buffer hole handling.
    */
-  // recoverDecodingError: true, // Recover from decoding errors dynamically.
-  // recoverFragLoadError: true, // Attempt to reload fragments on failure.
+  maxLoadingDelay: 4, // Maximum delay for loading retries (seconds).
+  maxBufferHole: 0.5, // Maximum buffer hole tolerance (seconds).
+  highBufferWatchdogPeriod: 2, // Period to check for buffer issues (seconds).
 };
 
 export type PlayerProps = ComponentProps<"video"> & {
@@ -148,7 +161,6 @@ export const VideoPlayer = memo(function VideoPlayer({
   const videoRef = internalVideoRef;
   const playerRef = useRef<OpenPlayerJS | null>(null);
   const [adStarted, setAdStarted] = useState(false);
-
   // Using refs for ad tracking (no UI updates needed)
   const adInfoRef = useRef<{
     isPlaying: boolean;
@@ -488,7 +500,7 @@ export const VideoPlayer = memo(function VideoPlayer({
         alwaysVisible: false,
       },
       mode: "responsive",
-      forceNative: true,
+      forceNative: !src?.endsWith(".m3u8"), // Use HLS.js to respect custom hlsConfigs for m3u8.
       showLoaderOnInit: true,
       hls: hlsConfigs,
       startTime,
