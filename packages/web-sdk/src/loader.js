@@ -91,12 +91,6 @@
       sdkUrl = new URL(SDK_BASE_URL + 'genuin-sdk.js', baseUrl).href
     }
 
-    // Add cache buster to ensure fresh SDK loads
-    const cacheBuster = Date.now()
-    sdkUrl += (sdkUrl.includes('?') ? '&' : '?') + 'v=' + cacheBuster
-
-    console.log('Loading Genuin SDK from:', sdkUrl)
-
     // Mark that we're using ES module loading to prevent global setup conflicts
     window.__GENUIN_ES_MODULE__ = true
 
@@ -167,13 +161,9 @@
         ? './dist/assets/web-sdk.css'
         : `__MEDIA_BASE_URL__/sdk/__SDK_VERSION_PATH__assets/web-sdk.css`
 
-      // Add cache buster to ensure fresh CSS loads
-      const cacheBuster = Date.now()
-      link.href =
-        cssUrl + (cssUrl.includes('?') ? '&' : '?') + 'v=' + cacheBuster
+      link.href = cssUrl
 
       link.onload = () => {
-        console.log('CSS file loaded')
         resolve(true)
       }
 
