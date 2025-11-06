@@ -12,13 +12,31 @@ import {
   SDKEventName,
 } from "@genuin/components/lib/sdk-event-emitter";
 
-async function fetchVideoDetails(slug: string, embedId?: string, placementId?: string,shouldShowMiddlewareOverlay?:boolean) {
+type BrandContext =
+  | {
+      id: string;
+      type: string;
+    }[]
+  | undefined;
+
+async function fetchVideoDetails(
+  slug: string,
+  embedId?: string,
+  placementId?: string,
+  shouldShowMiddlewareOverlay?: boolean,
+  brandContext?: BrandContext
+) {
   try {
     const response = await axiosInstance.get(API_PATHS.VIDEO_DETAILS, {
       params: {
         ...(isUuid(slug) ? { uuid: slug } : { slug }),
         ...(embedId && { embed_id: embedId }),
         ...(placementId && { placement_id: placementId }),
+        ...(brandContext &&
+          brandContext.length === 1 && {
+            id: brandContext[0]?.id,
+            type: brandContext[0]?.type,
+          }),
       },
     });
     const feeds = response.data?.data?.feeds;
@@ -31,7 +49,7 @@ async function fetchVideoDetails(slug: string, embedId?: string, placementId?: s
 
       return [];
     }
-    return parseFeed(feeds,shouldShowMiddlewareOverlay);
+    return parseFeed(feeds, shouldShowMiddlewareOverlay);
   } catch (e: any) {
     if (e.response?.data?.code === NOT_FOUND_ERROR_CODES.video) {
       // Emit SDK video not found event
@@ -53,7 +71,13 @@ async function fetchVideoDetails(slug: string, embedId?: string, placementId?: s
  * @param slug - The slug of the video to fetch details for.
  * @returns The video data in a structure matching useFeed's return value
  */
-export function useGetVideoDetailsAsFeed(slug: string, embedId?: string, placementId?: string,shouldShowMiddlewareOverlay? : boolean) {
+export function useGetVideoDetailsAsFeed(
+  slug: string,
+  embedId?: string,
+  placementId?: string,
+  shouldShowMiddlewareOverlay?: boolean,
+  brandContext?: BrandContext
+) {
   return useQuery({
     queryKey: getQueryKeyForVideoDetails(slug),
     queryFn: async () => {
@@ -61,7 +85,13 @@ export function useGetVideoDetailsAsFeed(slug: string, embedId?: string, placeme
       if (!slug) {
         throw new Error("Slug is required to fetch video details");
       }
-      return await fetchVideoDetails(slug, embedId, placementId,shouldShowMiddlewareOverlay);
+      return await fetchVideoDetails(
+        slug,
+        embedId,
+        placementId,
+        shouldShowMiddlewareOverlay,
+        brandContext
+      );
     },
     // Don't run the query if slug is empty
     enabled: !!slug && slug !== "",

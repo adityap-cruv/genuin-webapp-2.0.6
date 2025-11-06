@@ -314,7 +314,8 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
     startVideoSlug || "",
     options?.embedId,
     options?.placementId,
-    options?.shouldShowMiddlewareOverlay
+    options?.shouldShowMiddlewareOverlay,
+    options?.brandContext
   );
   const queryKey = getQueryKeyForFeed(feedType, options);
 

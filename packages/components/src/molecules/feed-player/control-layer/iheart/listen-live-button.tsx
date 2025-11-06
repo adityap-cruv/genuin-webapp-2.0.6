@@ -18,10 +18,13 @@ export function IHeartListenLiveButton({
 }: IHeartListenLiveButtonProps) {
   const isOutlined = variant === "outlined";
 
+  const ctaText = "Listen Live";
+
   return (
     <Button
       theme="custom"
       className="gencl:h-11 gencl:p-0 gencl:flex gencl:items-center gencl:justify-center"
+      title={ctaText}
     >
       <div
         {...props}
@@ -42,7 +45,7 @@ export function IHeartListenLiveButton({
             isOutlined ? "gencl:text-white" : "gencl:text-black"
           )}
         >
-          Listen Live
+          {ctaText}
         </p>
       </div>
     </Button>

@@ -195,6 +195,7 @@ export function IHeartControls({
         onClick={() => {
           toggleMuted(true, customMuted && !muted);
         }}
+        title={muted ? "Unmute" : "Mute"}
       >
         {muted || customMuted ? (
           <IHeartMuteIcon theme="dark" size={size} aria-hidden="true" />
@@ -216,6 +217,7 @@ export function IHeartControls({
         onClick={() => {
           togglePlay(true);
         }}
+        title={playingState === "PLAYING" ? "Pause" : "Play"}
       >
         {playingState === "PLAYING" ? (
           <IHeartPauseIcon theme="dark" size={size} aria-hidden="true" />
@@ -251,6 +253,7 @@ export function IHeartControls({
           role="button"
           tabIndex={0}
           className="gencl:w-11 gencl:h-11 gencl:p-0 gencl:flex gencl:items-center gencl:justify-center"
+          title="Share"
         >
           <IHeartShareIcon theme="dark" size={size} aria-hidden="true" />
         </Button>
