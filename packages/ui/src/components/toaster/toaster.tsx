@@ -3,10 +3,10 @@
 import { useTheme } from "next-themes";
 import type { ToasterProps } from "sonner";
 import { Toaster as Sonner, toast } from "sonner";
-import { CircleCheck, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useDeviceDetection } from "@genuin/ui/hooks/use-device-detection";
 import { cn, getGenclStyles } from "@genuin/ui/lib/utils";
-import { XIcon } from "@genuin/ui/icons";
+import { IHeartCheckIcon, XIcon } from "@genuin/ui/icons";
 
 type ToastVariant = "success" | "error";
 
@@ -63,12 +63,14 @@ const showCustomToast = (
         )}
       >
         {variant === "success" ? (
-          <CircleCheck
-            className={cn(
-              "gencl:size-5 gencl:shrink-0 gencl:fill-success-status gencl:text-white",
-              isIheart && "gencl:fill-[#46815A]"
-            )}
-          />
+            <div className={cn("gencl:size-5 gencl:rounded-2xl gencl:flex gencl:justify-center gencl:items-center",isIheart ? "gencl:bg-[#46815A]!" : "gencl:bg-success-status gencl:border gencl:border-white")}>
+              <IHeartCheckIcon
+                className={cn(
+                  "gencl:shrink-0 gencl:fill-white",
+                  isIheart ? "gencl:size-4" : "gencl:size-3"
+                )}
+              />
+            </div>
         ) : (
           <X className="gencl:size-4 gencl:shrink-0 gencl:bg-error-status gencl:text-white gencl:rounded-full gencl:p-0.5" />
         )}

@@ -368,6 +368,9 @@ export function Embed({
                   setSlidesOffsetBefore(48);
                 }
               }}
+              onReachBeginning={()=>{
+                setSlidesOffsetBefore(0);
+              }}
               containerDimensions={{
                 height: config.view.isFeed
                   ? availableHeight - spaceBetweenVideos
@@ -380,11 +383,11 @@ export function Embed({
               freeMode={config.view.scrollBehavior === "free_scroll"}
               centeredSlides={config.view.centeredSlides}
               centeredSlidesBounds={config.view.centeredSlides}
-              // slidesOffsetBefore={
-              //   config.view.isCarousel && isIheartLayout
-              //     ? slidesOffsetBefore
-              //     : 0
-              // }
+              slidesOffsetBefore={
+                config.view.isCarousel && isIheartLayout
+                  ? slidesOffsetBefore
+                  : 0
+              }
             >
               {videos?.map((videoData, idx) => {
                 return videoData.video.type === "complete" ? (
