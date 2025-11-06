@@ -1,6 +1,6 @@
 "use client";
 import "swiper/css";
-import { Button } from "@genuin/ui/button";
+import { Button, ButtonProps } from "@genuin/ui/button";
 import { SwiperSlide } from "swiper/react";
 import { useBoolean } from "usehooks-ts";
 
@@ -438,6 +438,7 @@ export function PlayerList({
                   : "gencl:justify-center"
               )}
               theme={theme}
+              size={websiteType === "polaris" ? "lg" : "xl"}
             />
           )}
       </div>
@@ -465,6 +466,7 @@ export function PlayerList({
           swiper={activeSwiper ?? undefined}
           postsLength={posts.length}
           theme={theme}
+           size={websiteType === "polaris" ? "lg" : "xl"}
         />
       )}
 
@@ -595,12 +597,14 @@ function NavigationButton({
   position = "fixed",
   className,
   theme,
+  size
 }: {
   swiper?: Swiper;
   postsLength?: number;
   position?: "fixed" | "absolute" | "relative";
   className?: string;
   theme?: "light" | "dark";
+  size: ButtonProps["size"]
 }) {
   // State to force re-render when swiper state changes
   const [, forceUpdate] = useState({});
@@ -634,7 +638,7 @@ function NavigationButton({
       <Button
         variant="icon"
         shape="circle"
-        size="lg"
+        size={size}
         theme="custom"
         className={cn(
           theme === "dark"
@@ -655,7 +659,7 @@ function NavigationButton({
       <Button
         variant="icon"
         shape="circle"
-        size="lg"
+        size={size}
         theme="custom"
         className={cn(
           theme === "dark"

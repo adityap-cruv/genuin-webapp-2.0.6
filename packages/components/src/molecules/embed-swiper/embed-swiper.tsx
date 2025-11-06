@@ -154,7 +154,7 @@ export function EmbedSwiper({
       }}
       role="region"
       aria-label={forFeed ? "Video feed carousel" : "Video carousel"}
-      className={cn("gencl:h-full gencl:w-full", className)}
+      className={cn("gencl:h-full gencl:w-full gencl:rounded-lg", className)}
       slidesOffsetBefore={slidesOffsetBefore}
       {...restProps}
     >

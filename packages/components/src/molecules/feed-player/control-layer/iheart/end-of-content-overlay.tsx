@@ -45,8 +45,8 @@ export function IHeartEndOfContentOverlay({
           onClick={onPlayAgain}
           aria-label="Play this episode again"
           className={cn(
-            "gencl:text-body-1-semi-bold! gencl:bg-white gencl:flex gencl:items-center gencl:justify-center gencl:rounded-full gencl:px-5 gencl:text-[#27292D]!",
-            websiteType === "polaris" ? "gencl:h-8!gencl:md:h-12!" : "gencl:h-8!"
+            "gencl:text-body-1-semi-bold! gencl:bg-white gencl:flex gencl:items-center gencl:justify-center gencl:rounded-full gencl:text-[#27292D]!",
+            websiteType === "polaris" ? "gencl:h-8! gencl:md:h-12! gencl:px-5" : "gencl:h-8! gencl:px-4"
           )}
         >
           <IHeartPlayAgainIcon

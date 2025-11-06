@@ -380,11 +380,11 @@ export function Embed({
               freeMode={config.view.scrollBehavior === "free_scroll"}
               centeredSlides={config.view.centeredSlides}
               centeredSlidesBounds={config.view.centeredSlides}
-              slidesOffsetBefore={
-                config.view.isCarousel && isIheartLayout
-                  ? slidesOffsetBefore
-                  : 0
-              }
+              // slidesOffsetBefore={
+              //   config.view.isCarousel && isIheartLayout
+              //     ? slidesOffsetBefore
+              //     : 0
+              // }
             >
               {videos?.map((videoData, idx) => {
                 return videoData.video.type === "complete" ? (

@@ -71,7 +71,7 @@ export function useEmbedConfigs() {
         brandLayoutType === "ted"
           ? false
           : customization?.is_navigation_control_enabled,
-      centeredSlides: embedData?.placement_card_layout_id === 2,
+      centeredSlides: embedData?.style === "feed" && embedData?.placement_card_layout_id === 2,
       brandLayoutType: brandLayoutType ?? "default",
       websiteType: embedData?.websiteType ?? "polaris",
       isAdsEnabledInIheart: isAdsEnabledInIheart ?? false,

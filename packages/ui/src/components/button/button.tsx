@@ -29,10 +29,12 @@ const buttonVariants = cva(
           "gencl:p-0 gencl:size-11! gencl:rounded-full! gencl:flex-center gencl:bg-secondary-800 gencl:text-white gencl:backdrop-blur-sm gencl:hover:bg-secondary-600 gencl:border-0 gencl:transition-all gencl:duration-200 [&_svg]:gencl:size-5",
         overlay: "",
       },
+      // TODO: Improve and standardize the size naming convention
       size: {
         xs: "gencl:size-6",
         sm: "gencl:h-9 gencl:rounded-lg gencl:gap-1.5 gencl:text-body-1-semi-bold",
         md: "gencl:h-10",
+        xl : "gencl:h-11",
         lg: "gencl:h-12",
       },
       shape: {
