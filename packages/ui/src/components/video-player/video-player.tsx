@@ -12,7 +12,7 @@ import {
 
 import { cn, encodeVideoSourceUrl } from "@genuin/ui/lib/utils";
 const hlsConfigs = {
-  debug: true,
+  // debug: true,
   /**
    * Start with lowest quality level to ensure smooth playback start.
    * ABR will gradually increase quality based on actual bandwidth.
