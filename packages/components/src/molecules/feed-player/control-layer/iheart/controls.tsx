@@ -1,6 +1,6 @@
 "use client";
 import { cn } from "@genuin/ui/utils";
-import { type ComponentProps } from "react";
+import { useEffect, useState, type ComponentProps } from "react";
 
 import {
   IHeartMuteIcon,
@@ -19,7 +19,7 @@ import {
   SDKEventEmitter,
   SDKEventName,
 } from "@genuin/components/lib/sdk-event-emitter";
-import { useEmbedContext } from "@genuin/components/context";
+import { useBaseContext } from "@genuin/components/context";
 
 type IHeartControlsProps = ComponentProps<"div"> & {
   /**
@@ -66,6 +66,35 @@ export function IHeartControls({
 }: IHeartControlsProps) {
   const { playingState, togglePlay, muted, toggleMuted } = usePlayerContext();
   const { track, EventName } = useAnalytics();
+  //  Access baseContextManager to subscribe to preview index change events
+  const { baseContextManager } = useBaseContext();
+
+  //  Track custom muted state for video preview (hover) mode
+  // This state is separate from the actual player mute state and controls UI appearance only
+  // When true, displays mute icon even if player is not actually muted
+  const [customMuted, setCustomMuted] = useState(false);
+
+  //  Listen for preview index changes to update custom mute UI state
+  // When a video enters preview mode (hover), it should show as muted in the controls
+  useEffect(() => {
+    function handlePreviewIndexChanged(payload: any) {
+      // Set customMuted to true when this video's index matches the preview index
+      // This shows a muted icon during hover/preview without affecting actual audio state
+      setCustomMuted(payload.previewIndex === index);
+    }
+
+    // Subscribe to preview index changes
+    baseContextManager.on("onPreviewIndexChanged", handlePreviewIndexChanged);
+
+    // Cleanup: unsubscribe when component unmounts or dependencies change
+    return () => {
+      baseContextManager.off(
+        "onPreviewIndexChanged",
+        handlePreviewIndexChanged
+      );
+    };
+  }, [baseContextManager, index]);
+
   const isExpand = variant === "expand";
 
   // Generate share URL with action=share parameter
@@ -162,10 +191,10 @@ export function IHeartControls({
         aria-pressed={muted}
         className="gencl:w-11 gencl:h-11 gencl:p-0 gencl:flex gencl:items-center gencl:justify-center"
         onClick={() => {
-          toggleMuted(true);
+          toggleMuted(true, customMuted && !muted);
         }}
       >
-        {muted ? (
+        {muted || customMuted ? (
           <IHeartMuteIcon theme="dark" size={size} aria-hidden="true" />
         ) : (
           <IHeartUnmuteIcon theme="dark" size={size} aria-hidden="true" />

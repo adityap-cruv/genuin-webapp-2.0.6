@@ -78,9 +78,14 @@ export type PlayerContextType = {
   /**
    * Function to toggle the mute state of the video player.
    * @param byUser - Whether the mute action was triggered by the user or not.
+   * @param bypassMuteChange - Optional parameter to bypass the actual mute state change.
+   *                          When true, prevents toggling the muted state while still
+   *                          executing other mute-related logic (e.g., triggering play during preview mode).
+   *                          Used in video-hover feature to handle custom mute UI states without
+   *                          affecting the underlying player mute state.
    * @returns
    */
-  toggleMuted: (byUser: boolean) => void;
+  toggleMuted: (byUser: boolean, bypassMuteChange?: boolean) => void;
   mute: (byUser: boolean) => void;
   unmute: (byUser: boolean) => void;
 

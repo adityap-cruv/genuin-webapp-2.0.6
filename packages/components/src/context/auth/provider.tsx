@@ -18,7 +18,10 @@ import { useGetUserDataForSSOMutation } from "@genuin/components/react-query/api
 import { Toast } from "@genuin/ui/components/toaster";
 import { invalidateAllQueries } from "@genuin/components/react-query/client";
 import { useBaseContext } from "../base";
-import { SDKEventEmitter, SDKListenerEventName } from "@genuin/components/lib/sdk-event-emitter";
+import {
+  SDKEventEmitter,
+  SDKListenerEventName,
+} from "@genuin/components/lib/sdk-event-emitter";
 import { useSafeEmbedContext } from "../embed/context";
 import { AxiosError, InternalAxiosRequestConfig } from "axios";
 import {
@@ -116,10 +119,16 @@ export function AuthProvider({
       });
     };
 
-    SDKEventEmitter.on(SDKListenerEventName.AUTHENTICATE_USER, handleAuthenticateUser);
+    SDKEventEmitter.on(
+      SDKListenerEventName.AUTHENTICATE_USER,
+      handleAuthenticateUser
+    );
 
     return () => {
-      SDKEventEmitter.off(SDKListenerEventName.AUTHENTICATE_USER, handleAuthenticateUser);
+      SDKEventEmitter.off(
+        SDKListenerEventName.AUTHENTICATE_USER,
+        handleAuthenticateUser
+      );
     };
   }, []);
 

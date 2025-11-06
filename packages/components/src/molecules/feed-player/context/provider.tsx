@@ -23,6 +23,7 @@ import { Swiper } from "swiper/types";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { BaseEventBusContext } from "@genuin/components/context/base/event-bus";
 import { GenericData } from "@genuin/components/context/base/feed-context-manager";
+import { useEmbedManagerContext } from "@genuin/components/organisms/embed/context";
 
 type VideoProviderProps = {
   children: React.ReactNode;
@@ -66,7 +67,9 @@ type VideoProviderProps = {
   /**
    * Function to update ative index in embed-manager-provider
    */
-  updateActiveIndex?: (idx: number) => void;
+  updateActiveIndex?: ReturnType<
+    typeof useEmbedManagerContext
+  >["updateActiveIndex"];
 } & ExpandViewProps;
 
 type PlayerConfigType = ReturnType<typeof getVideoPlayerConfigs>;
@@ -150,6 +153,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       explicitAutoPlay
     )
   );
+
   // To check whether video is fully watched or not..
   const [isVideoWatched, setIsVideoWatched] = useState<boolean>(
     isEmbed
@@ -193,6 +197,32 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     baseEventBus.getContext().globalPlayingState
   );
 
+  const videoStateRef = useRef<VideoTimeStateType>({
+    currentTime: 0,
+    duration: 0,
+  });
+
+  /**
+   * Disables preview mode for the current video when user takes explicit control.
+   *
+   * Preview mode enables hover-triggered looping behavior. This function stops that behavior
+   * when the user manually interacts with playback controls (play/pause), ensuring manual
+   * control takes precedence over automatic preview functionality.
+   *
+   * @remarks
+   * Called when user explicitly toggles play/pause to prevent preview mode from interfering
+   * with user-initiated playback control.
+   */
+  const disablePreviewMode = useCallback(() => {
+    if (videoId && index !== undefined && video.videoShouldPreview) {
+      baseContextManager.setShouldPreview({
+        shouldPreview: false,
+        videoId,
+        index,
+      });
+    }
+  }, [baseContextManager, videoId, index]);
+
   // To check whether player should play or not, based on all the conditions.
   // For iHeart layout, also check globalPlayState to sync all players
   const playerPlayFlag = useMemo(() => {
@@ -202,6 +232,25 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       isActive &&
       focusState.isFocused &&
       focusState.containerInView;
+
+    const videoShouldPreview = baseContextManager.checkIfVideoShouldPreview({
+      videoId,
+    });
+
+    // Disable preview mode when all of the following conditions are met:
+    // 1. isActive: The current player instance is active/playing
+    // 2. activePlayerType === "expand-view": The player is in expanded/fullscreen view mode
+    // 3. baseConditions: Other required base conditions are satisfied (e.g., feedPlayerShouldPlay, not watched, active state)
+    // This ensures preview mode is disabled when the user has played video in expanded player,
+    // preventing any preview-related UI or behavior from interfering with the embed experience when user comes back to embed from full-screen view.
+    if (
+      isActive &&
+      video.videoShouldPreview &&
+      baseConditions &&
+      videoShouldPreview
+    ) {
+      disablePreviewMode();
+    }
 
     // For iHeart layout, add globalPlayState check to sync play state across all players
     if (isIHeartLayout) {
@@ -219,11 +268,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     globalPlayState,
     isEmbed,
   ]);
-
-  const videoStateRef = useRef<VideoTimeStateType>({
-    currentTime: 0,
-    duration: 0,
-  });
 
   useEffect(() => {
     const playerConfig = playerConfigRef.current;
@@ -386,6 +430,9 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     // This ensures all players respect user's play/pause actions across the embed
     function handlePlayingStateChange(_: any, context: BaseEventBusContext) {
       setGlobalPlayState(context.globalPlayingState);
+
+      // sync feed player should play with global playing state.
+      setFeedPlayerShouldPlay(context.globalPlayingState);
     }
 
     function handleUserFocusChange() {
@@ -423,6 +470,102 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     }
   }, [buttonAction, baseEventBus]);
 
+  /**
+   * Handles video preview playback when hovering over feed items.
+   * Listens to "onPreviewIndexChanged" events and manages a looping 3-second preview.
+   *
+   * Behavior:
+   * - When preview index matches this video's index: starts playing from beginning and loops every 3 seconds
+   * - When preview index changes to another video: pauses playback
+   * - Clears any existing preview intervals before starting new ones
+   *
+   * The media element reference is cached once per preview to avoid redundant getMedia() calls.
+   */
+  useEffect(() => {
+    const activePlayerType =
+      embedDetails?.embedEventBus.getContext().activePlayerType;
+
+    // active player type should be embed than an than only this feature should work.
+    if (!video.videoShouldPreview || activePlayerType !== "embed") return;
+    let previewInterval: NodeJS.Timeout | null = null;
+
+    function handlePreviewIndexChange({ previewIndex }: any) {
+      const player = playerRef.current;
+      const media = player?.getMedia();
+      // Clear any existing preview interval before handling new preview state
+      if (previewInterval) {
+        clearInterval(previewInterval);
+        previewInterval = null;
+      }
+
+      if (!media) return;
+
+      // If preview index matches current index, start preview playback
+      if (previewIndex === index) {
+        // Start playing from beginning
+        media.currentTime = 0;
+        media.play();
+        media.muted = true;
+
+        // Set up loop with 3 second max length - resets to beginning when limit is reached
+        previewInterval = setInterval(() => {
+          if (
+            media.currentTime >= video.previewSeconds ||
+            media.currentTime >= media.duration
+          ) {
+            media.currentTime = 0;
+          }
+        }, 100); // Check every 100ms for smooth looping
+      } else {
+        media.pause();
+        media.muted = muted;
+      }
+    }
+
+    baseContextManager.on("onPreviewIndexChanged", handlePreviewIndexChange);
+    return () => {
+      // Cleanup: clear interval and remove event listener
+      if (previewInterval) {
+        clearInterval(previewInterval);
+      }
+      baseContextManager.off("onPreviewIndexChanged", handlePreviewIndexChange);
+    };
+  }, [index, baseContextManager, embedDetails?.embedEventBus, muted]);
+
+  /**
+   * Handles resuming playback of the last known preview index.
+   * When the "playLastKnownIndex" event is triggered, this checks if the preview index
+   * matches the current video index and if playback is enabled, then plays the video.
+   * This is typically used to restore playback state after preview interactions.
+   */
+  useEffect(() => {
+    // only listen to event if videoshouldpreview is false.
+    if (!video.videoShouldPreview) return;
+
+    function playLastKnownIndex(payload: Partial<GenericData>) {
+      // Only play if the preview index matches this video and playback is enabled
+      if (
+        payload.previewIndex === index &&
+        typeof index === "number" &&
+        embedDetails?.embedEventBus.getContext().activePlayerType === "embed"
+      ) {
+        if (!isActive) {
+          updateActiveIndex?.(index, undefined, true);
+        } else {
+          if (feedPlayerShouldPlay) {
+            const media = playerRef.current?.getMedia();
+            if (media?.paused) media?.play();
+          }
+        }
+      }
+    }
+
+    baseContextManager.on("playLastKnownIndex", playLastKnownIndex);
+    return () => {
+      baseContextManager.off("playLastKnownIndex", playLastKnownIndex);
+    };
+  }, [isActive, video, feedPlayerShouldPlay]);
+
   const setVideoTimeState = useCallback((timeState: VideoTimeStateType) => {
     videoStateRef.current = {
       ...videoStateRef.current,
@@ -459,9 +602,75 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
    */
   const togglePlay = useCallback(
     (byUser: boolean) => {
+      if (byUser && video.videoShouldPreview && typeof index === "number") {
+        disablePreviewMode();
+      }
+      if (
+        byUser &&
+        video.videoShouldPreview &&
+        websiteType === "polaris" &&
+        !isActive &&
+        index !== undefined
+      ) {
+        updateActiveIndex?.(index, undefined, undefined, true);
+        setFeedPlayerShouldPlay((prev) => {
+          if (prev && !isActive) {
+            return true;
+          }
+          const newPlayingState = !prev;
+          if (byUser) {
+            baseContextManager.setPlayPauseTracker({
+              isPlaying: newPlayingState,
+            });
+
+            setButtonAction(prev ? "PAUSE" : "PLAY");
+
+            // Track play/pause events with Analytics only if the video play pause is triggered by user.
+            track(prev ? EventName.VIDEO_PAUSED : EventName.VIDEO_PLAY, {
+              ...baseAnalyticsData,
+              position_index: index,
+              by_user: true,
+            });
+          }
+          return newPlayingState;
+        });
+        return;
+      }
+
+      if (
+        byUser &&
+        !video.videoShouldPreview &&
+        websiteType === "legacy" &&
+        !isActive &&
+        index !== undefined
+      ) {
+        updateActiveIndex?.(index);
+        setFeedPlayerShouldPlay((prev) => {
+          if (prev && !isActive) {
+            return true;
+          }
+          const newPlayingState = !prev;
+          if (byUser) {
+            baseContextManager.setPlayPauseTracker({
+              isPlaying: newPlayingState,
+            });
+
+            setButtonAction(prev ? "PAUSE" : "PLAY");
+
+            // Track play/pause events with Analytics only if the video play pause is triggered by user.
+            track(prev ? EventName.VIDEO_PAUSED : EventName.VIDEO_PLAY, {
+              ...baseAnalyticsData,
+              position_index: index,
+              by_user: true,
+            });
+          }
+          return newPlayingState;
+        });
+        return;
+      }
+
       setFeedPlayerShouldPlay((prev) => {
-        if (byUser && !isActive && index !== undefined) {
-          // If user is trying to play while inactive, activate this item
+        if (!isActive && index !== undefined) {
           updateActiveIndex?.(index);
         }
         const newPlayingState = !prev;
@@ -470,6 +679,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
             isPlaying: newPlayingState,
           });
           setButtonAction(prev ? "PAUSE" : "PLAY");
+
           // Track play/pause events with Analytics only if the video play pause is triggered by user.
           track(prev ? EventName.VIDEO_PAUSED : EventName.VIDEO_PLAY, {
             ...baseAnalyticsData,
@@ -484,13 +694,13 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       setFeedPlayerShouldPlay,
       EventName.VIDEO_PAUSED,
       EventName.VIDEO_PLAY,
-      baseEventBus,
       baseContextManager,
       track,
       updateActiveIndex,
       isActive,
       index,
       baseAnalyticsData,
+      feedPlayerShouldPlay,
     ]
   );
 
@@ -550,7 +760,33 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
 
   // toggleMuted: Toggles the muted state of the player.
   const toggleMuted = useCallback(
-    (byUser: boolean) => {
+    (byUser: boolean, bypassMuteChange?: boolean) => {
+      // Special handling for video preview mode (hover-to-play feature)
+      if (video.videoShouldPreview && byUser) {
+        // When a video is in preview mode and user clicks mute/unmute button:
+        // 1. Check if this video is actually in an active preview state
+        // 2. If yes, convert the preview into a full playback by toggling play
+        // This ensures that clicking mute/unmute during hover transitions from preview to actual play
+        if (
+          byUser &&
+          video.videoShouldPreview &&
+          typeof index === "number" &&
+          // Verify the video is actively previewing before triggering play
+          // This prevents unwanted play toggles when video is not in hover/preview state
+          baseContextManager.checkIfVideoPreviewActive({ index })
+        ) {
+          togglePlay(byUser);
+        }
+
+        // Conditionally update the mute state based on bypassMuteChange flag
+        // bypassMuteChange=true: Skip mute state change (used when showing custom mute UI during preview)
+        // bypassMuteChange=false/undefined: Normal behavior - toggle the mute state
+        // This allows the UI to show a muted icon during preview without actually muting the player
+        if (!bypassMuteChange) {
+          setMuted((oldMuted) => !oldMuted);
+        }
+        return;
+      }
       if (byUser) {
         if (muted) {
           setButtonAction("UNMUTE");
@@ -663,6 +899,34 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     []
   );
 
+  /**
+   * Middleware wrapper for setPlayingState to add custom conditions/logic
+   * before updating the playing state.
+   */
+  const setPlayingStateMiddleware = useCallback(
+    (
+      newState:
+        | PlayingStateType
+        | ((prevState: PlayingStateType) => PlayingStateType)
+    ) => {
+      const isPreviewActive =
+        index !== undefined
+          ? baseContextManager.checkIfVideoPreviewActive({
+              index,
+            })
+          : false;
+
+      // If preview is active don't change the play/pause status of video.
+      if (isPreviewActive) {
+        return;
+      }
+
+      // Call the original setPlayingState
+      setPlayingState(newState);
+    },
+    [baseContextManager, index]
+  );
+
   const value: PlayerContextType = {
     setPlayerRef,
 
@@ -691,7 +955,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     videoId,
 
     playingState,
-    setPlayingState,
+    setPlayingState: setPlayingStateMiddleware,
 
     buttonAction,
 

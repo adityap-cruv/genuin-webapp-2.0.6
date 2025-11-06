@@ -1,6 +1,6 @@
 "use client";
 import { cn, getFormattedDuration, getMonthYear } from "@genuin/ui/lib/utils";
-import { useEffect, useState, type FC } from "react";
+import { useCallback, useEffect, useState, type FC } from "react";
 import { Image } from "@genuin/ui/components/image";
 import { IHeartControls, IHeartEndOfContentOverlay } from "./index";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
@@ -21,6 +21,8 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
   onReactionStateChange,
   onClick,
   onCommentCountChange,
+  onMouseEnter,
+  onMouseLeave,
   ...restProps
 }) => {
   const { baseContextManager } = useBaseContext();
@@ -30,6 +32,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
   const { isMobile } = useDeviceDetectMediaQuery();
   const { play } = usePlayerContext();
   const embedDetails = useSafeEmbedContext();
+  const embedConfigs = useEmbedConfigs();
   const [isVideoWatched, setIsVideoWatched] = useState<boolean>(
     postDetails.video.isWatched ||
       (baseContextManager.getVideoState(postDetails.video.id)?.isWatched ??
@@ -48,6 +51,53 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
     };
   }, []);
 
+  /**
+   * Triggers preview playback when user hovers over the video.
+   * Sets the preview index to this video, which activates the 3-second looping preview
+   * in the feed player provider's onPreviewIndexChanged handler.
+   *
+   * Debounced by 300ms to prevent rapid preview triggering.
+   * only if IHeart.
+   */
+  // const debouncedSetPreviewIndex = useDebounceCallback(() => {}, 300);
+
+  const handleMouseEnter = useCallback(
+    (e: any) => {
+      onMouseEnter?.(e);
+      if (embedConfigs.video.videoShouldPreview && index !== undefined) {
+        // Set preview index to activate hover preview for this video
+        baseContextManager.setPreviewIndex({
+          index,
+          videoId: postDetails.video.id,
+        });
+      }
+    },
+    [onMouseEnter]
+  );
+
+  /**
+   * Stops preview playback when user moves mouse away from the video.
+   * Clears the preview index (sets to null), which pauses the preview
+   * in the feed player provider's onPreviewIndexChanged handler.
+   *
+   * Cancels any pending debounced preview to prevent it from triggering after mouse leave.
+   * only if IHeart
+   */
+  const handleMouseLeave = useCallback(
+    (e: any) => {
+      onMouseLeave?.(e);
+
+      if (embedConfigs.video.videoShouldPreview) {
+        // Clear preview index to stop preview playback
+        baseContextManager.setPreviewIndex({
+          index: null,
+          videoId: postDetails.video.id,
+        });
+      }
+    },
+    [onMouseLeave, postDetails, baseContextManager, embedConfigs]
+  );
+
   return (
     <div
       role="region"
@@ -60,6 +110,8 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
         }
         onClick?.(e);
       }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       {...restProps}
     >
       {/* Top gradient overlay (10% height) */}

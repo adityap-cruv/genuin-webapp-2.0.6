@@ -24,9 +24,16 @@ type EmbedManagerContextType = {
   /**
    * Updates the active index of the embed.
    * @param index The new active index.
+   * @param flag if update active index is being called by hover.
+   * @param ifInView if we want to update active index only if swiper is in view.
    * @returns void
    */
-  updateActiveIndex: (index: number, byHover?: boolean) => void;
+  updateActiveIndex: (
+    index: number,
+    byHover?: boolean,
+    ifInView?: boolean,
+    force?: boolean
+  ) => void;
   /**
    * Function to go to the next video in the embed.
    * @param useAutoScroll Whether to use intelligent auto-scroll positioning (default: false)
@@ -161,7 +168,18 @@ export function EmbedManagerProvider({
   }, [swiper, activeIndex, previousVisibleRange, isGridLayout]);
 
   const updateActiveIndex = useCallback(
-    (index: number, byHover?: boolean) => {
+    (index: number, byHover?: boolean, ifInView?: boolean, force?: boolean) => {
+      if (force) {
+        setActiveIndex(index);
+        return;
+      }
+      // When ifInView flag is set, only update the active index if the slide is currently visible
+      // This prevents updating to slides that are off-screen when hover events occur
+      if (ifInView && swiper && isSlideVisible(swiper, index)) {
+        setActiveIndex(index);
+        return;
+      }
+
       if (isGridLayout) {
         // In grid layout, all indices are valid
         setActiveIndex(index);

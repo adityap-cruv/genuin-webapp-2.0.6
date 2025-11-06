@@ -9,6 +9,10 @@ export type VideoDetails = {
    * If it's zero it will unregistered.
    */
   instances: number;
+  /**
+   * Whether the video should be previewed (e.g., in a hover).
+   */
+  shouldPreview: boolean;
 };
 
 export type VideoEventData = {
@@ -29,9 +33,23 @@ export type PlayPauseTracker = {
 export type GenericData = {
   isVideoWatched: boolean;
   videoId: string;
+  /**
+   * The index of the video being previewed (hover state).
+   * Used to identify which video should show preview playback.
+   */
+  previewIndex?: number;
 };
 
-export type GenericEventNames = "onVideoWatchedChanged";
+/**
+ * Generic event names for video-related events.
+ * - onVideoWatchedChanged: Fired when video watch status changes
+ * - onPreviewIndexChanged: Fired when hover preview state changes (index set/cleared)
+ * - playLastKnownIndex: Fired to resume playback after preview ends (debounced)
+ */
+export type GenericEventNames =
+  | "onVideoWatchedChanged"
+  | "onPreviewIndexChanged"
+  | "playLastKnownIndex";
 
 export type GenericEventListener = (eventData: GenericData) => void;
 
@@ -49,6 +67,12 @@ export class FeedContextManager {
     isPlaying: false,
   };
   private eventManager: EventManager<{}, EventNames>;
+  /** Current preview index (-1 means no preview active) */
+  private previewIndex: number = -1;
+  /** Debounce timer to delay "playLastKnownIndex" event after preview ends */
+  private previewDebounceTimer: NodeJS.Timeout | null = null;
+  /** Last active video index before preview started (for resuming playback) */
+  private lastActiveIndex: number = -1;
 
   private constructor() {
     // Initialize EventManager with empty context since we don't need context functionality
@@ -145,6 +169,7 @@ export class FeedContextManager {
         duration: 0,
         isWatched: false,
         instances: 1,
+        shouldPreview: true,
       };
     } else {
       const videoDetails = this.videos[videoId];
@@ -348,18 +373,213 @@ export class FeedContextManager {
   }
 
   /**
+   * Sets the preview index for hover-based video previews.
+   *
+   * When a user hovers over a video (index set), this triggers preview playback.
+   * When hover ends (index null/-1), it stops preview and debounces for 300ms
+   * before emitting "playLastKnownIndex" to resume the last active video.
+   *
+   * The debounce prevents interruption when quickly moving between videos.
+   *
+   * @param index - Video index to preview (null/-1 to stop preview)
+   * @param videoId - ID of the video
+   *
+   * Events emitted:
+   * - onPreviewIndexChanged: When preview starts/stops (if shouldPreview is true)
+   * - playLastKnownIndex: After 300ms debounce when preview ends (to resume playback)
+   */
+  public setPreviewIndex({
+    index,
+    videoId,
+    bypassTracking,
+  }: {
+    index: number | null;
+    videoId: string;
+    bypassTracking?: boolean;
+  }) {
+    // Clear existing debounce timer to reset the 300ms window
+    if (this.previewDebounceTimer) {
+      clearTimeout(this.previewDebounceTimer);
+      this.previewDebounceTimer = null;
+    }
+
+    const currentVideo = this.videos[videoId];
+
+    // Handle index becoming -1 (preview stopped - user moved mouse away)
+    if (index === null || index === -1) {
+      this.previewIndex = -1;
+
+      // Capture the lastActiveIndex NOW to prevent it from changing during the debounce period
+      const capturedLastActiveIndex = this.lastActiveIndex;
+
+      // Start 300ms debounce timer before resuming last known video
+      // This prevents interruption when quickly hovering between videos
+      this.previewDebounceTimer = setTimeout(() => {
+        // If still no preview after 300ms and we have a last active index, resume playback
+        if (
+          this.previewIndex === -1 &&
+          capturedLastActiveIndex !== -1 &&
+          !bypassTracking
+        ) {
+          this.emit("playLastKnownIndex", {
+            videoId: videoId,
+            isVideoWatched: currentVideo?.isWatched ?? false,
+            previewIndex: capturedLastActiveIndex,
+          });
+        }
+      }, 300);
+
+      // Emit preview stopped event if video allows previews
+      if (currentVideo?.shouldPreview) {
+        this.emit("onPreviewIndexChanged", {
+          videoId: videoId,
+          isVideoWatched: currentVideo.isWatched,
+          previewIndex: -1,
+        });
+      }
+      return;
+    }
+
+    // Handle valid index (preview started/changed - user hovered over video)
+    if (currentVideo?.shouldPreview) {
+      this.previewIndex = index;
+
+      // Emit preview started event with the new preview index
+      this.emit("onPreviewIndexChanged", {
+        videoId: videoId,
+        isVideoWatched: currentVideo.isWatched,
+        previewIndex: this.previewIndex,
+      });
+    }
+  }
+
+  /**
+   * Controls whether a video should allow preview playback.
+   *
+   * When a user clicks play/pause controls, this disables preview mode (shouldPreview: false)
+   * to give the user full control. It also tracks the last active index for resuming playback.
+   *
+   * If the video is currently being previewed when shouldPreview is set to false,
+   * it automatically stops the preview.
+   *
+   * @param shouldPreview - Whether preview should be enabled for this video
+   * @param videoId - ID of the video
+   * @param index - Current video index (tracked as lastActiveIndex)
+   */
+  public setShouldPreview({
+    shouldPreview,
+    videoId,
+    index,
+    bypassEventTracking,
+  }: {
+    shouldPreview: boolean;
+    videoId: string;
+    index: number;
+    bypassEventTracking?: boolean;
+  }) {
+    const currentVideo = this.videos[videoId];
+    // Track this as the last active index for potential playback resumption
+    this.lastActiveIndex = index;
+
+    // Only update if the shouldPreview state is actually changing
+    if (currentVideo && currentVideo.shouldPreview !== shouldPreview) {
+      // If disabling preview and this video is currently being previewed, stop the preview
+      if (this.previewIndex === index) {
+        this.setPreviewIndex({
+          index: null,
+          videoId,
+          bypassTracking: bypassEventTracking,
+        });
+      }
+      // Update the video's preview permission
+      this.videos[videoId] = {
+        ...currentVideo,
+        shouldPreview,
+      };
+    }
+  }
+
+  /**
+   * Checks whether a video is allowed to show preview playback.
+   *
+   * Preview playback is the hover-triggered looping behavior that plays a video
+   * when the user hovers over it. This method retrieves the current preview
+   * permission state for the specified video.
+   *
+   * @param videoId - The unique identifier of the video to check
+   * @returns The current shouldPreview state (true if preview is allowed, false if disabled),
+   *          or undefined if the video hasn't been registered yet
+   *
+   * @example
+   * ```ts
+   * const canPreview = feedContextManager.checkIfVideoShouldPreview({ videoId: 'abc123' });
+   * if (canPreview) {
+   *   // Enable hover preview functionality
+   * }
+   * ```
+   */
+  public checkIfVideoShouldPreview({
+    videoId,
+  }: {
+    videoId: string;
+  }): boolean | undefined {
+    return this.videos[videoId]?.shouldPreview;
+  }
+
+  /**
+   * Checks if the video preview is currently active for the given index.
+   *
+   * This method determines whether a specific video (identified by its index)
+   * is currently in preview/hover playback mode. Used to conditionally apply
+   * preview-specific UI states or behaviors.
+   *
+   * @param index - The index of the video to check
+   * @returns true if the video at the given index is currently being previewed, false otherwise
+   *
+   * @example
+   * ```ts
+   * const isPreviewActive = feedContextManager.checkIfVideoPreviewActive({ index: 2 });
+   * if (isPreviewActive) {
+   *   // Apply preview-specific styles or behavior
+   * }
+   * ```
+   */
+  public checkIfVideoPreviewActive({ index }: { index: number }) {
+    return index === this.previewIndex;
+  }
+
+  /**
+   * Updates the last active index in the feed.
+   *
+   * This method tracks which video was last actively playing (not previewing)
+   * so it can be resumed after hover previews end. The last active index is used
+   * by the setPreviewIndex method to restore playback after the 300ms debounce.
+   *
+   * @param index - The index of the currently active (playing) video in the feed
+   */
+  public updateLastActiveIndex({ index }: { index: number }) {
+    this.lastActiveIndex = index;
+  }
+
+  /**
    * Destroys the singleton instance and cleans up all resources.
    *
    * This method:
    * - Clears all video tracking data
    * - Removes all event listeners
    * - Resets the play/pause tracker to default state
+   * - Clears any pending debounce timers
    * - Resets the singleton instance
    *
    * After calling this method, the next call to getInstance() will create a new instance.
    */
   public static destroy(): void {
     if (this.instance) {
+      // Clear any pending debounce timer
+      if (this.instance.previewDebounceTimer) {
+        clearTimeout(this.instance.previewDebounceTimer);
+        this.instance.previewDebounceTimer = null;
+      }
       // Reset the singleton instance
       this.instance = undefined;
     }

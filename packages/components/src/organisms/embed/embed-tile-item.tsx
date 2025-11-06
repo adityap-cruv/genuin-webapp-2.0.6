@@ -68,13 +68,44 @@ export function EmbedItem({
     return () => {
       embedEventBus.off("activePlayerTypeChange", handleActivePlayerTypeChange);
     };
-  }, []);
+  }, [embedEventBus]);
 
-  const debouncedSetActiveIndex = useDebounceCallback(() => {
-    // Disable hover for the iheart legacy
-    if (config.view.websiteType === "legacy") return;
-    updateActiveIndex(index, true);
-  }, 700);
+  const debouncedSetActiveIndex = useDebounceCallback(
+    () => {
+      if (config.view.websiteType === "legacy") return;
+      // TODO: This is patch work - needs refactoring for better clarity and maintainability
+      // For iheart layout, disable default hover behavior to activate video.
+      // iHeart uses its own hover preview system instead of activating the video on hover.
+      if (config.video.videoShouldPreview) {
+        // Check if this specific video should be allowed to preview
+        if (
+          !baseContextManager.checkIfVideoShouldPreview({
+            videoId: postDetails.video.id,
+          })
+        ) {
+          // Video should not preview - handle index updates
+          if (activeIndex !== index) {
+            // Update to this index if it's not already active
+            updateActiveIndex(index, true);
+          } else {
+            // If already active, emit event to play from last known position
+            baseContextManager.emit("playLastKnownIndex", {
+              isVideoWatched: false,
+              videoId: postDetails.video.id,
+              previewIndex: index,
+            });
+          }
+          baseContextManager.updateLastActiveIndex({ index });
+          return;
+        }
+        // Video should preview - exit early without further action
+        return;
+      }
+
+      updateActiveIndex(index, true);
+    },
+    config.video.videoShouldPreview ? 300 : 700
+  );
 
   const handleMouseLeave = useCallback(() => {
     debouncedSetActiveIndex.cancel();

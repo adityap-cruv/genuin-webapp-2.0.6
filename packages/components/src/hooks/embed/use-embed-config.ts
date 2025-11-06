@@ -132,6 +132,13 @@ export function useEmbedConfigs() {
       videoCrop: customization?.video_crop,
       autoScrollToNextSlide: customization?.enable_auto_scroll ?? false,
       resumePlaybackFrom: brandDetails.web_configs.resume_playback_from,
+      previewSeconds: embedData?.media_play?.video_preview_seconds ?? 0,
+      /**
+       * Video preview enabled flag.
+       */
+      videoShouldPreview:
+        embedData?.media_play?.video_preview_seconds !== undefined &&
+        embedData.media_play.video_preview_seconds > 0,
     }),
     [customization, brandDetails.brand_id, embedData?.style]
   );

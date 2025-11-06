@@ -514,6 +514,11 @@ export type EmbedDataType = {
     enable_autoplay: boolean;
     enable_loop_video?: boolean;
     auto_advance_playback?: number;
+    /**
+     * How many seconds videos should preview,
+     * -1 if video should not preview.
+     */
+    video_preview_seconds?: number;
   };
   show_linkout_in_expand?: boolean;
 
