@@ -328,7 +328,11 @@ export function Embed({
   return (
     <div
       ref={embedRefCallback}
-      className={cn(embedVariants({ variant: embedVariant }), className)}
+      className={cn(
+        "gen-sdk-embed",
+        embedVariants({ variant: embedVariant }),
+        className
+      )}
       style={{
         height: containerHeight,
         width: containerWidth,
@@ -360,6 +364,7 @@ export function Embed({
               forFeed={config.view.isFeed}
               aspectRatio={embedData.aspect_ratio}
               spaceBetweenVideos={spaceBetweenVideos}
+              isIheartLayout={isIheartLayout}
               onSlideChange={(swiperInstance) => {
                 if (!swiperInstance) return;
                 if (swiperInstance.isBeginning) {
@@ -368,7 +373,7 @@ export function Embed({
                   setSlidesOffsetBefore(48);
                 }
               }}
-              onReachBeginning={()=>{
+              onReachBeginning={() => {
                 setSlidesOffsetBefore(0);
               }}
               containerDimensions={{

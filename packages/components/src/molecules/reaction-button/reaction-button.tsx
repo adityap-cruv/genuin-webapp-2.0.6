@@ -314,7 +314,12 @@ function Button({
   // If withCustomChildren is true, just return the children with logic attached
   if (withCustomChildren) {
     return (
-      <span onClick={handleOnClick} className="gencl:cursor-pointer">
+      <span
+        onClick={handleOnClick}
+        className="gencl:cursor-pointer"
+        role="button"
+        {...restProps}
+      >
         {children}
       </span>
     );
@@ -337,7 +342,6 @@ function Button({
         iconWidth={24}
         sparkCount={reactionCount}
         type="feed"
-        aria-hidden="true"
       />
     </PrimitiveButton>
   );

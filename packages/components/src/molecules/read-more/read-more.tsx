@@ -389,7 +389,13 @@ export const ReadMore = memo(function ReadMore({
         return (
           <>
             {renderText(parsedText)}
-            <span className="gencl:whitespace-nowrap gencl:align-baseline">…</span>
+            <span
+              className="gencl:whitespace-nowrap gencl:align-baseline"
+              aria-hidden="true"
+              tabIndex={-1}
+            >
+              …
+            </span>
           </>
         );
       }
@@ -400,8 +406,8 @@ export const ReadMore = memo(function ReadMore({
     const createButton = (text: string) => (
       <button
         type="button"
-        aria-expanded={isExpanded}
-        aria-label={isExpanded ? "Show less content" : "Show more content"}
+        aria-hidden="true"
+        tabIndex={-1}
         className={cn(
           "gencl:inline gencl:bg-transparent gencl:!text-secondary-600 gencl:hover:underline gencl:cursor-pointer",
           buttonClassName
@@ -432,7 +438,13 @@ export const ReadMore = memo(function ReadMore({
         return (
           <>
             {teaserContent}
-            <span className="gencl:whitespace-nowrap gencl:align-baseline">…</span>
+            <span
+              className="gencl:whitespace-nowrap gencl:align-baseline"
+              aria-hidden="true"
+              tabIndex={-1}
+            >
+              …
+            </span>
           </>
         );
       }
@@ -445,7 +457,11 @@ export const ReadMore = memo(function ReadMore({
         <>
           {teaserContent}
           {showExpandText && (
-            <span className="gencl:whitespace-nowrap gencl:align-baseline">
+            <span
+              className="gencl:whitespace-nowrap gencl:align-baseline"
+              aria-hidden="true"
+              tabIndex={-1}
+            >
               &nbsp;…
               {createButton(viewMoreText)}
             </span>
@@ -463,6 +479,7 @@ export const ReadMore = memo(function ReadMore({
               "gencl:max-h-[10em] gencl:opacity-100 gencl:text-inherit",
               lineClampClassName
             )}
+            tabIndex={-1}
           >
             {renderText(teaser)}
             {renderText(remaining)}
@@ -478,6 +495,7 @@ export const ReadMore = memo(function ReadMore({
             "gencl:max-h-[10em] gencl:opacity-100 gencl:text-inherit",
             lineClampClassName
           )}
+          tabIndex={-1}
         >
           {renderText(teaser)}
           {renderText(remaining)}

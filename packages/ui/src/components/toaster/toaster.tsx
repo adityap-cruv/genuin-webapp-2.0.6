@@ -55,6 +55,7 @@ const showCustomToast = (
           ? "gencl:text-black gencl:bg-[#ACE7C0] gencl:p-3"
           : "gencl:bg-white gencl:text-black gencl:border gencl:border-secondary-150 gencl:p-4 gencl:sm:w-sm! gencl:sm:max-w-sm! sm:gencl:mt-0!"
       )}
+      tabIndex={-1}
     >
       <div
         className={cn(
@@ -63,14 +64,21 @@ const showCustomToast = (
         )}
       >
         {variant === "success" ? (
-            <div className={cn("gencl:size-5 gencl:rounded-2xl gencl:flex gencl:justify-center gencl:items-center",isIheart ? "gencl:bg-[#46815A]!" : "gencl:bg-success-status gencl:border gencl:border-white")}>
-              <IHeartCheckIcon
-                className={cn(
-                  "gencl:shrink-0 gencl:fill-white",
-                  isIheart ? "gencl:size-4" : "gencl:size-3"
-                )}
-              />
-            </div>
+          <div
+            className={cn(
+              "gencl:size-5 gencl:rounded-2xl gencl:flex gencl:justify-center gencl:items-center",
+              isIheart
+                ? "gencl:bg-[#46815A]!"
+                : "gencl:bg-success-status gencl:border gencl:border-white"
+            )}
+          >
+            <IHeartCheckIcon
+              className={cn(
+                "gencl:shrink-0 gencl:fill-white",
+                isIheart ? "gencl:size-4" : "gencl:size-3"
+              )}
+            />
+          </div>
         ) : (
           <X className="gencl:size-4 gencl:shrink-0 gencl:bg-error-status gencl:text-white gencl:rounded-full gencl:p-0.5" />
         )}

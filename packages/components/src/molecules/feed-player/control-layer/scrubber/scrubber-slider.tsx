@@ -3,12 +3,15 @@
 import * as React from "react";
 import * as SliderPrimitive from "@radix-ui/react-slider";
 import { cn, getWebpUrlForImage } from "@genuin/ui/utils";
+import { useCallback, useState } from "react";
 
 type SliderPropsType = React.ComponentPropsWithoutRef<
   typeof SliderPrimitive.Root
 > & {
   spriteUrl?: string;
   showOnlyTime?: boolean;
+  onSkipForward?: () => void;
+  onSkipBackward?: () => void;
 };
 
 const framesPerRow = 12;
@@ -88,10 +91,44 @@ const ScrubberSlider = React.forwardRef<
       showScrubber,
       spriteUrl,
       showOnlyTime = false,
+      onSkipForward,
+      onSkipBackward,
       ...props
     },
     ref
   ) => {
+    // State for navigation announcements
+    const [navigationAnnouncement, setNavigationAnnouncement] =
+      useState<string>("");
+
+    // Keyboard event handler for accessibility
+    const handleKeyDown = useCallback(
+      (e: React.KeyboardEvent) => {
+        // Only handle keyboard events if the scrubber container is focused
+        if (e.target !== e.currentTarget) return;
+
+        switch (e.key) {
+          case "ArrowRight":
+          case "ArrowUp":
+            e.preventDefault();
+            setNavigationAnnouncement("Skipped forward 15 seconds");
+            onSkipForward?.();
+            // Clear announcement after a short delay
+            setTimeout(() => setNavigationAnnouncement(""), 100);
+            break;
+          case "ArrowLeft":
+          case "ArrowDown":
+            e.preventDefault();
+            setNavigationAnnouncement("Skipped backward 15 seconds");
+            onSkipBackward?.();
+            // Clear announcement after a short delay
+            setTimeout(() => setNavigationAnnouncement(""), 100);
+            break;
+        }
+      },
+      [onSkipForward, onSkipBackward]
+    );
+
     const scrubberStartTime = React.useMemo(
       () => ((value?.[0] ?? 0) / 100) * playerTimeState.duration,
       [value, playerTimeState]
@@ -139,21 +176,35 @@ const ScrubberSlider = React.forwardRef<
       });
     }, [scrubberStartTime]);
 
+    const currentTimeFormatted = formatTime(playerTimeState.currentTime);
+    const durationFormatted = formatTime(playerTimeState.duration);
+    const scrubberLabel = `Slider, playback position, current time & duration ${currentTimeFormatted} / ${durationFormatted}`;
+
     return (
       <SliderPrimitive.Root
         ref={ref}
-        aria-label="Video progress"
+        role="region"
+        aria-label={scrubberLabel}
+        tabIndex={0}
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={value?.[0] ?? 0}
         aria-valuetext={ariaValueText}
+        onKeyDown={handleKeyDown}
         className={cn(
           "gencl:relative gencl:left-1/2 gencl:flex gencl:w-full gencl:-translate-x-1/2 gencl:touch-none gencl:select-none gencl:items-center gencl:transition-all",
+          "gencl:py-2 gencl:px-1 gencl:rounded-md",
+          "focus:gencl:ring-2 focus:gencl:ring-primary focus:gencl:ring-opacity-50 focus:gencl:bg-black/10 focus:gencl:h-12",
+          "gencl:min-h-[24px]",
           className
         )}
         value={value}
         {...props}
       >
+        {/* Screen reader announcement for navigation */}
+        <div aria-live="polite" aria-atomic="true" className="gencl:sr-only">
+          {navigationAnnouncement}
+        </div>
         <SliderPrimitive.Track
           className={cn(
             "gencl:relative gencl:h-[3px] gencl:w-full gencl:grow gencl:overflow-hidden gencl:bg-white/50 "
@@ -186,7 +237,6 @@ const ScrubberSlider = React.forwardRef<
               >
                 {!showOnlyTime && spriteUrl && (
                   <div
-                    aria-hidden="true"
                     className="gencl:aspect-reel gencl:w-24 gencl:overflow-clip gencl:rounded-lg gencl:border gencl:border-white"
                     style={{
                       height: `${frameHeight}px`,
@@ -196,10 +246,7 @@ const ScrubberSlider = React.forwardRef<
                     }}
                   />
                 )}
-                <p
-                  className="gencl:text-body-0-semi-bold gencl:text-white"
-                  aria-live="polite"
-                >
+                <p className="gencl:text-body-0-semi-bold gencl:text-white">
                   {time}
                 </p>
               </div>

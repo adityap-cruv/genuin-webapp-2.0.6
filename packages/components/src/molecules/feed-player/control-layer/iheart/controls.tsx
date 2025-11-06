@@ -125,9 +125,9 @@ export function IHeartControls({
 
   return (
     <div
-      role="toolbar"
-      aria-label="Media controls"
-      aria-orientation={isExpand ? "vertical" : "horizontal"}
+      // role="toolbar"
+      // aria-label="Media controls"
+      // aria-orientation={isExpand ? "vertical" : "horizontal"}
       className={cn("gencl:flex", isExpand && "gencl:flex-col", className)}
       {...restProps}
     >
@@ -142,20 +142,21 @@ export function IHeartControls({
           onReactionStateChange={onReactionStateChange}
           reactionButtonTheme="dark"
           withCustomChildren
-          asChild
           onClick={(e) => {
             e?.stopPropagation();
           }}
+          className="gencl:w-11 gencl:h-11"
+          tabIndex={-1}
         >
           <Button
             theme="custom"
-            variant="icon"
             aria-label={
-              isReacted
-                ? `Remove spark (${reactionCount} sparks)`
-                : `Spark this video (${reactionCount} sparks)`
+              isReacted ? `Thumb up, Pressed` : `Thumb up, Not pressed`
             }
             aria-pressed={isReacted}
+            role="button"
+            tabIndex={-1}
+            variant="icon"
             className="gencl:w-11 gencl:h-11 gencl:p-0 gencl:flex gencl:items-center gencl:justify-center"
           >
             <DynamicReactionIcon
@@ -165,7 +166,6 @@ export function IHeartControls({
               iconHeight={24}
               iconWidth={24}
               type="feed"
-              aria-hidden="true"
             />
           </Button>
         </ReactionButton>
@@ -187,8 +187,10 @@ export function IHeartControls({
       <Button
         theme="custom"
         variant="icon"
-        aria-label={muted ? "Unmute audio" : "Mute audio"}
+        aria-label={muted ? "Mute, Pressed" : "Mute, Not pressed"}
+        role="button"
         aria-pressed={muted}
+        tabIndex={0}
         className="gencl:w-11 gencl:h-11 gencl:p-0 gencl:flex gencl:items-center gencl:justify-center"
         onClick={() => {
           toggleMuted(true, customMuted && !muted);
@@ -200,11 +202,16 @@ export function IHeartControls({
           <IHeartUnmuteIcon theme="dark" size={size} aria-hidden="true" />
         )}
       </Button>
+
       <Button
         theme="custom"
         variant="icon"
-        aria-label={playingState === "PLAYING" ? "Pause video" : "Play video"}
-        aria-pressed={playingState === "PLAYING"}
+        aria-label={
+          playingState === "PLAYING" ? "Paused, Not pressed" : "Paused, Pressed"
+        }
+        role="button"
+        aria-pressed={playingState !== "PLAYING"}
+        tabIndex={0}
         className="gencl:w-11 gencl:h-11 gencl:p-0 gencl:flex gencl:items-center gencl:justify-center"
         onClick={() => {
           togglePlay(true);
@@ -240,7 +247,9 @@ export function IHeartControls({
         <Button
           theme="custom"
           variant="icon"
-          aria-label="Share video"
+          aria-label="Share"
+          role="button"
+          tabIndex={0}
           className="gencl:w-11 gencl:h-11 gencl:p-0 gencl:flex gencl:items-center gencl:justify-center"
         >
           <IHeartShareIcon theme="dark" size={size} aria-hidden="true" />

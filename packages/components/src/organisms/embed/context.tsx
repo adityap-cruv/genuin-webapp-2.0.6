@@ -331,6 +331,38 @@ export function EmbedManagerProvider({
     };
   }, [swiper, isGridLayout]);
 
+  // Handle focus changes via tab navigation
+  useEffect(() => {
+    if (!swiper) return;
+
+    const handleFocusIn = (event: FocusEvent) => {
+      const focusedElement = event.target as HTMLElement;
+
+      // Find the closest slide element
+      const slideElement = focusedElement.closest(
+        ".swiper-slide"
+      ) as HTMLElement;
+      if (!slideElement) return;
+
+      // Get the slide index from the swiper slides array
+      const slides = Array.from(swiper.slides);
+      const slideIndex = slides.indexOf(slideElement);
+
+      if (slideIndex !== -1 && slideIndex !== activeIndex) {
+        // Update active index when focus changes to a different slide
+        setActiveIndex(slideIndex);
+      }
+    };
+
+    // Add event listener to the swiper container
+    const swiperContainer = swiper.el;
+    swiperContainer.addEventListener("focusin", handleFocusIn);
+
+    return () => {
+      swiperContainer.removeEventListener("focusin", handleFocusIn);
+    };
+  }, [swiper, activeIndex]);
+
   // Auto-advance logic: Move to next video after moveToNextTime seconds
   useEffect(() => {
     // Only auto-advance if:

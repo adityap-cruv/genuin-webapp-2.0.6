@@ -60,30 +60,29 @@ export function Default({
   const [showReactionIcon, setShowReactionIcon] = React.useState(false);
 
   // Use the useDoubleClick hook for iheart layout
-  const handleIHeartClick =
-    useDoubleClick({
-      delay: 300,
-      onSingleClick: () => {
-        // Single click - toggle play
-          togglePlay(true);
-      },
-      onDoubleClick: () => {
-        // Only handle double-click on mobile
-        if (!isMobile || !user) return;
-        // Show reaction icon
-        setShowReactionIcon(true);
+  const handleIHeartClick = useDoubleClick({
+    delay: 300,
+    onSingleClick: () => {
+      // Single click - toggle play
+      togglePlay(true);
+    },
+    onDoubleClick: () => {
+      // Only handle double-click on mobile
+      if (!isMobile || !user) return;
+      // Show reaction icon
+      setShowReactionIcon(true);
 
-        // Hide reaction icon after 1 seconds with fade
-        setTimeout(() => {
-          setShowReactionIcon(false);
-        }, 1000);
+      // Hide reaction icon after 1 seconds with fade
+      setTimeout(() => {
+        setShowReactionIcon(false);
+      }, 1000);
 
-        // Programmatically trigger reaction button click only if not already sparked
-        if (!postDetails.video.isSparked && reactionButtonRef.current) {
-          reactionButtonRef.current.click();
-        }
-      },
-    });
+      // Programmatically trigger reaction button click only if not already sparked
+      if (!postDetails.video.isSparked && reactionButtonRef.current) {
+        reactionButtonRef.current.click();
+      }
+    },
+  });
 
   // Extract properties with fallbacks to prevent undefined errors
   const tapBehavior = brandDetails?.web_configs?.tap_behavior || 1; // Default to 1 if undefined
@@ -129,7 +128,7 @@ export function Default({
       return (
         <>
           <div
-            aria-label="Toggle video playback"
+            // aria-label="Toggle video playback"
             onClick={handleIHeartClick}
             className={cn(
               "group gencl:inset-0 gencl:z-10 gencl:flex gencl:justify-center",
@@ -208,8 +207,15 @@ export function Default({
               }}
               asChild
               withCustomChildren
+              tabIndex={-1}
+              aria-hidden={true}
               children={
-                <Button ref={reactionButtonRef} className="gencl:opacity-0" />
+                <Button
+                  ref={reactionButtonRef}
+                  className="gencl:opacity-0"
+                  aria-hidden={true}
+                  tabIndex={-1}
+                />
               }
             />
 

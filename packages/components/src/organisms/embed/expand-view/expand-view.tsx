@@ -274,6 +274,24 @@ export function EmbedExpandView({
     };
   }, [showExpandView]);
 
+  // Make underlying embed content inert when expand view is active
+  useEffect(() => {
+    if (!showExpandView) return;
+
+    // Find the main embed container
+    const embedContainer = document.querySelector(".gen-sdk-embed");
+
+    if (embedContainer && embedContainer instanceof HTMLElement) {
+      // Set inert attribute to prevent all interactions with elements behind expand view
+      embedContainer.inert = true;
+
+      return () => {
+        // Remove inert attribute when expand view is closed
+        embedContainer.inert = false;
+      };
+    }
+  }, [showExpandView]);
+
   const defaultComponent = (
     <FeedView
       startIndex={startIndex}

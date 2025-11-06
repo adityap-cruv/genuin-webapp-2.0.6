@@ -36,6 +36,8 @@ import {
   getBaseUrl,
   getBaseUrlWithouthighlights,
 } from "@genuin/components/lib/utils";
+import { useRef } from "react";
+import { useFeedContext } from "@genuin/components/templates/feed/context";
 
 type BrandLayoutType = "default" | "iheart" | "ted" | "walmart" | "grubhub";
 
@@ -191,7 +193,8 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
               <Link
                 href={linkUrl}
                 bypassChecks
-                aria-label={`View ${postDetails.video.attributes?.title || contentType} page`}
+                aria-label={`${postDetails.video.attributes?.title || contentType} podcast artwork`}
+                tabIndex={0}
               >
                 <Image
                   aspectRatio="square"
@@ -212,7 +215,8 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
               <Link
                 href={linkUrl}
                 bypassChecks
-                aria-label={`Go to ${postDetails.video.attributes?.title} page`}
+                aria-label={`${postDetails.video.attributes?.title} heading`}
+                tabIndex={0}
               >
                 <p
                   className={cn(
@@ -237,6 +241,8 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
                 expandable={false}
                 position="overlay"
                 textClassName="gencl:text-body-2-normal gencl:tracking-[-0.35px] gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]!"
+                aria-label={attributes.description}
+                tabIndex={0}
               />
             )}
           </div>
@@ -338,6 +344,8 @@ const AdaptiveDescription = memo(function AdaptiveDescription({
             buttonClassName="gencl:text-white/70! gencl:font-bold gencl:text-[12px] gencl:lg:text-[14px]! gencl:leading-[18px] gencl:tracking-[-0.5px] gencl:align-bottom gencl:hover:no-underline"
             textClassName="gencl:text-[12px] gencl:font-normal gencl:leading-[20px] gencl:tracking-[-0.35px]! gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]! gencl:text-white/70!"
             maxLines={2}
+            tabIndex={0}
+            aria-label={`${getMonthYear(createdAt ?? 0)}${duration ? ` • ${getFormattedDuration(String(duration))}` : ""} ${Array.isArray(description) ? description.join(" ") : description || ""}, Video description`}
           />
         </div>
       );
@@ -502,19 +510,12 @@ export function ExpandViewDetails({
     showScrubber,
   } = useExpandViewConfig(postDetails);
   const [isExpanded, setIsExpanded] = useState(false);
+  const scrubberRef = useRef<HTMLDivElement>(null);
 
   const { shouldHide, hiddenClassName } = useIHeartScrubberVisibility(
     showScrubber,
     brandLayoutType
   );
-
-  // Focus management: when expand view becomes active, move focus to the main content region
-  useEffect(() => {
-    if (isActive) {
-      const mainRegion = document.getElementById("expand-view-details-region");
-      mainRegion?.focus();
-    }
-  }, [isActive]);
 
   const onExpand = useCallback(() => {
     setIsExpanded((prev) => !prev);
@@ -522,10 +523,7 @@ export function ExpandViewDetails({
 
   return (
     <div
-      id="expand-view-details-region"
-      role="region"
-      aria-label="Video details and actions"
-      tabIndex={-1}
+      data-expand-view="true"
       className={cn(
         "gencl:absolute gencl:gap-2 gencl:w-full gencl:z-20 gencl:right-0 gencl:bottom-0 gencl:p-4 gencl:focus:outline-none",
         brandLayoutType !== "iheart" &&
@@ -620,7 +618,11 @@ export function ExpandViewDetails({
         </div>
       )}
       {brandLayoutType === "iheart" ? (
-        <div className="gencl:h-11 gencl:flex gencl:items-center">
+        <div
+          ref={scrubberRef}
+          className="gencl:h-11 gencl:flex gencl:items-center"
+          data-scrubber-container="true"
+        >
           <Scrubber
             className={cn("gencl:z-20 gencl:transition-all")}
             showOnlyTime={true}

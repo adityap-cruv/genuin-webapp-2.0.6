@@ -147,7 +147,7 @@ export function NavigationButtons({
             },
             label,
             size: "sm",
-            className: `gencl:transition-all gencl:duration-200 gencl:outline-none gencl:focus:outline-1 ${disabled ? "gencl:cursor-not-allowed!" : ""}`,
+            className: `gencl:transition-all gencl:duration-200 gencl:focus:ring-2 gencl:focus:ring-offset-2 gencl:focus:ring-primary ${disabled ? "gencl:cursor-not-allowed!" : ""}`,
             style: {
               background: buttonBg,
             },

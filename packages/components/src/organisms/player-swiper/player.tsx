@@ -1,4 +1,4 @@
-import { cn } from "@genuin/ui/utils";
+import { cn, detectAccessibilityMode } from "@genuin/ui/utils";
 import { useBaseContext } from "@genuin/components/context/base";
 import {
   ControlLayer,
@@ -8,7 +8,7 @@ import { PlayerProvider } from "@genuin/components/molecules/feed-player/context
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
 import { useSwiper } from "swiper/react";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
 import { ComponentProps } from "react";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
@@ -53,8 +53,13 @@ export function Player({
   onReactionStateChange,
   onCommentCountChange,
 }: PlayerProps) {
-  const { showExpandView, toggleExpandView, activeIndex, variant } =
-    useFeedContext();
+  const {
+    showExpandView,
+    toggleExpandView,
+    activeIndex,
+    variant,
+    setActiveIndex,
+  } = useFeedContext();
   const { muted } = useBaseContext();
   // const { isActive, isNext, isPrev, isVisible } = useSwiperSlide();
   const swiper = useSwiper();
@@ -62,6 +67,9 @@ export function Player({
   const {
     view: { brandLayoutType },
   } = useEmbedConfigs();
+
+  // Detect accessibility mode based on browser accessibility preferences
+  const isAccessibilityMode = useMemo(() => detectAccessibilityMode(), []);
 
   const handleTimeUpdate = useCallback(
     (event: React.SyntheticEvent<HTMLVideoElement>) => {
@@ -78,7 +86,8 @@ export function Player({
   );
 
   // load player when the post is active or previous/next post is active or the post is visible
-  if (isActive || isNext || isPrev || isVisible)
+  // For accessibility mode, always load to help with keyboard navigation and screen readers
+  if (isAccessibilityMode || isActive || isNext || isPrev || isVisible)
     return (
       <PlayerProvider
         isActive={isActive}
@@ -89,7 +98,6 @@ export function Player({
         index={index}
         onPlayerIterationEnd={swiper.slideNext}
         totalVideos={totalVideos}
-        videoDescription={post.video.descritptionText}
       >
         <div
           className={cn(
@@ -101,6 +109,9 @@ export function Player({
               "gencl:sm:rounded!": brandLayoutType === "iheart",
             }
           )}
+          // tabIndex={showExpandView ? 0 : -1}
+          // role="region"
+          // aria-label={`Video ${index + 1} - ${post.video.attributes?.title || post.video.descritptionText || "Video content"}`}
         >
           <FeedPlayer
             videoId={post.video.id}

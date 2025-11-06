@@ -26,6 +26,7 @@ export function IHeartEndOfContentOverlay({
       role="dialog"
       aria-modal="true"
       aria-label="Video ended"
+      tabIndex={0}
       className={cn(
         "gencl:absolute gencl:inset-0 gencl:pointer-events-none gencl:z-50 gencl:h-full gencl:w-full gencl:bg-black/65 gencl:flex gencl:flex-col gencl:items-center gencl:justify-center gencl:gap-4",
         className
@@ -44,9 +45,12 @@ export function IHeartEndOfContentOverlay({
         <Button
           onClick={onPlayAgain}
           aria-label="Play this episode again"
+          tabIndex={0}
           className={cn(
             "gencl:text-body-1-semi-bold! gencl:bg-white gencl:flex gencl:items-center gencl:justify-center gencl:rounded-full gencl:text-[#27292D]!",
-            websiteType === "polaris" ? "gencl:h-8! gencl:md:h-12! gencl:px-5" : "gencl:h-8! gencl:px-4"
+            websiteType === "polaris"
+              ? "gencl:h-8! gencl:md:h-12! gencl:px-5"
+              : "gencl:h-8! gencl:px-4"
           )}
         >
           <IHeartPlayAgainIcon

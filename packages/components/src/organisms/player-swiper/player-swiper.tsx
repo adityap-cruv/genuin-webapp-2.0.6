@@ -13,13 +13,7 @@ import { Comments, CommentsDialog } from "../../molecules/comments";
 import { Player } from "./player";
 import { SwiperImplementation } from "./swiper-implementation";
 import { SectionsTabs } from "./sections-tabs";
-import {
-  ComponentProps,
-  useEffect,
-  useState,
-  useRef,
-  useCallback,
-} from "react";
+import { ComponentProps, useEffect, useState, useRef } from "react";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { abbreviateNumber, cn } from "@genuin/ui/lib/utils";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
@@ -35,6 +29,7 @@ import { useAnalytics } from "@genuin/components/context";
 import { PlayerHeader } from "./player-header";
 import { calculateSlideDimensions } from "./utils";
 import WatchBoundaryOverlay from "@genuin/components/molecules/feed-player/control-layer/watch-boundary-overlay";
+import { useFocusManagement } from "@genuin/components/hooks/use-focus-management";
 
 type PlayerListPropsType = {
   posts: PostDetailsType[];
@@ -153,6 +148,25 @@ export function PlayerList({
   >({});
   const [activeHorizontalIndex, setActiveHorizontalIndex] = useState(0);
 
+  // Get the active swiper for navigation buttons
+  const activeSwiper = isSectioned
+    ? verticalSwipers[activeHorizontalIndex]
+    : verticalSwipers[0];
+
+  // Focus management hook
+  const {
+    containerRef: playerListRef,
+    focusableElements,
+    currentFocusIndex,
+    updateFocusableElements,
+    setSlideNavigationDirection,
+  } = useFocusManagement({
+    isEnabled: showExpandView,
+    activeIndex,
+    activeSwiper,
+    onToggleExpandView: toggleExpandView,
+  });
+
   // Effect to navigate to selected section when it changes (only for sectioned mode)
   useEffect(() => {
     if (isSectioned && horizontalSwiper && selectedSection && sectionList) {
@@ -174,11 +188,6 @@ export function PlayerList({
       embedDetails.updateSelectedSection(section);
     }
   };
-
-  // Get the active swiper for navigation buttons
-  const activeSwiper = isSectioned
-    ? verticalSwipers[activeHorizontalIndex]
-    : verticalSwipers[0];
 
   // Render sectioned swiper content
   const renderSectionedContent = () => (
@@ -367,6 +376,7 @@ export function PlayerList({
 
   return (
     <div
+      ref={playerListRef}
       className={cn(
         "gencl:h-full gencl:w-full gencl:flex gencl:justify-center",
         brandLayoutType === "iheart" && isDesktop && "gencl:sm:py-8!",
@@ -381,6 +391,24 @@ export function PlayerList({
         brandLayoutType !== "iheart" && "gencl:gap-6"
       )}
     >
+      {/* Back button for iheart expand view (not on mobile) */}
+      {brandLayoutType === "iheart" && !isMobile && (
+        <div
+          className={cn(
+            "gencl:absolute gencl:left-8 gencl:z-50",
+            websiteType === "legacy" && isAdsEnabledInIheart
+              ? "gencl:top-20! gencl:md:top-8!"
+              : "gencl:top-8"
+          )}
+        >
+          <BackButton
+            websiteType={websiteType}
+            onBackClick={toggleExpandView}
+            theme={theme}
+          />
+        </div>
+      )}
+
       <div
         className={cn(
           "gencl:flex gencl:justify-center gencl:h-full gencl:w-full gencl:sm:w-fit! gencl:relative",
@@ -400,8 +428,8 @@ export function PlayerList({
                 }
               : undefined
           }
-          role="region"
-          aria-label="Video player"
+          // role="region"
+          // aria-label="Video player"
         >
           {/* Header with back button and centered title */}
           {brandLayoutType === "iheart" && !isEndOfFeedReached && (
@@ -443,30 +471,13 @@ export function PlayerList({
           )}
       </div>
 
-      {/* Back button for iheart expand view (not on mobile) */}
-      {brandLayoutType === "iheart" && !isMobile && (
-        <div
-          className={cn(
-            "gencl:absolute gencl:left-8 gencl:z-50",
-            websiteType === "legacy" && isAdsEnabledInIheart
-              ? "gencl:top-20! gencl:md:top-8!"
-              : "gencl:top-8"
-          )}
-        >
-          <BackButton
-            websiteType={websiteType}
-            onBackClick={toggleExpandView}
-            theme={theme}
-          />
-        </div>
-      )}
       {/* Navigation buttons for expand view (not on mobile) */}
       {showExpandView && brandLayoutType !== "iheart" && !isMobile && (
         <NavigationButton
           swiper={activeSwiper ?? undefined}
           postsLength={posts.length}
           theme={theme}
-           size={websiteType === "polaris" ? "lg" : "xl"}
+          size={websiteType === "polaris" ? "lg" : "xl"}
         />
       )}
 
@@ -597,14 +608,14 @@ function NavigationButton({
   position = "fixed",
   className,
   theme,
-  size
+  size,
 }: {
   swiper?: Swiper;
   postsLength?: number;
   position?: "fixed" | "absolute" | "relative";
   className?: string;
   theme?: "light" | "dark";
-  size: ButtonProps["size"]
+  size: ButtonProps["size"];
 }) {
   // State to force re-render when swiper state changes
   const [, forceUpdate] = useState({});
@@ -649,6 +660,7 @@ function NavigationButton({
         onClick={() => swiper.slidePrev()}
         aria-label={`Previous video (${currentSlide - 1} of ${totalSlides})`}
         aria-disabled={swiper.isBeginning}
+        tabIndex={0}
       >
         <ChevronUpIcon
           theme={theme === "light" ? "dark" : "light"}
@@ -670,6 +682,7 @@ function NavigationButton({
         onClick={() => swiper.slideNext()}
         aria-label={`Next video (${currentSlide + 1} of ${totalSlides})`}
         aria-disabled={swiper.isEnd}
+        tabIndex={0}
       >
         <ChevronDownIcon
           theme={theme === "light" ? "dark" : "light"}
@@ -698,6 +711,8 @@ function BackButton({
           shape="circle"
           size="lg"
           theme="custom"
+          aria-label="Back"
+          role="button"
           onClick={onBackClick}
           className={cn(
             "gencl:hidden! gencl:lg:flex!",
@@ -725,7 +740,9 @@ function BackButton({
           "gencl:flex!",
           websiteType === "polaris" && "gencl:lg:hidden!"
         )}
-        aria-label="Go back"
+        aria-label="Back"
+        role="button"
+        tabIndex={0}
       >
         <ChevronLeftIcon
           theme={theme === "dark" ? "dark" : "light"}

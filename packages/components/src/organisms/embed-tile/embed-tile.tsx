@@ -232,6 +232,7 @@ function EmbedPlayer({
             : "gencl:h-full"
         }
         layoutType={layoutType}
+        aria-hidden="true"
       />
       <ControlLayer
         variant={config.view.isPlacementView ? "placement" : "embed"}

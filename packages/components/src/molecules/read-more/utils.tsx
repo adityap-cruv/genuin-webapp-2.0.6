@@ -180,6 +180,8 @@ export function renderAnchorTag(
           key={`${item.type}-${index}`}
           style={item.style}
           className={item.className}
+          tabIndex={-1}
+          aria-hidden="true"
         >
           {item.text}&nbsp;
         </span>

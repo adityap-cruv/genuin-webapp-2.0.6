@@ -75,6 +75,7 @@ export function DynamicReactionIcon({
         width={iconWidth}
         alt="reaction"
         className={className}
+        aria-hidden="true"
       />
     </>
   );

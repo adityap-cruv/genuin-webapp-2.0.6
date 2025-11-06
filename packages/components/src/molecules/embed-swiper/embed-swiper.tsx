@@ -23,6 +23,7 @@ type EmbedSwiperProps = {
   aspectRatio?: string;
   freeMode?: boolean;
   slidesOffsetBefore?: number;
+  isIheartLayout?: boolean;
 } & ComponentProps<typeof Swiper>;
 
 /**
@@ -41,6 +42,7 @@ export function EmbedSwiper({
   freeMode = false,
   onActiveIndexChange,
   slidesOffsetBefore,
+  isIheartLayout = false,
   ...restProps
 }: EmbedSwiperProps) {
   const { isWindows } = useDeviceDetection();
@@ -115,7 +117,7 @@ export function EmbedSwiper({
       }
       freeMode={freeMode}
       keyboard={{
-        enabled: true,
+        enabled: !isIheartLayout,
         onlyInViewport: false,
       }}
       a11y={{
@@ -137,8 +139,7 @@ export function EmbedSwiper({
         containerRoleDescriptionMessage: forFeed
           ? "Clip feed carousel"
           : "Clip carousel",
-        itemRoleDescriptionMessage: forFeed ? "Video" : "Slide",
-        slideRole: "group",
+        // itemRoleDescriptionMessage: forFeed ? "Video" : "Slide",
         scrollOnFocus: true,
       }}
       mousewheel={{
@@ -152,8 +153,8 @@ export function EmbedSwiper({
           ? SWIPER_CONFIG.MOUSE_SENSITIVITY.WINDOWS
           : SWIPER_CONFIG.MOUSE_SENSITIVITY.DEFAULT,
       }}
-      role="region"
-      aria-label={forFeed ? "Video feed carousel" : "Video carousel"}
+      // role="region"
+      // aria-label={forFeed ? "Video feed carousel" : "Video carousel"}
       className={cn("gencl:h-full gencl:w-full gencl:rounded-lg", className)}
       slidesOffsetBefore={slidesOffsetBefore}
       {...restProps}

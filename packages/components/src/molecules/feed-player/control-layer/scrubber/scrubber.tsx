@@ -133,6 +133,26 @@ export function Scrubber({
     ]
   );
 
+  // Skip forward/backward functions for keyboard accessibility
+  const skipForward = useCallback(() => {
+    if (!playerTimeState.duration) return;
+    const newTime = Math.min(
+      playerTimeState.currentTime + 15,
+      playerTimeState.duration
+    );
+    play(true, newTime);
+  }, [playerTimeState.currentTime, playerTimeState.duration, play]);
+
+  const skipBackward = useCallback(() => {
+    if (!playerTimeState.duration) return;
+    // If current time is less than 15 seconds, move to 0
+    const newTime =
+      playerTimeState.currentTime < 15
+        ? 0
+        : Math.max(playerTimeState.currentTime - 15, 0);
+    play(true, newTime);
+  }, [playerTimeState.currentTime, playerTimeState.duration, play]);
+
   // Add global event listeners to handle cases where user releases outside the slider
   useEffect(() => {
     const handleGlobalEnd = () => {
@@ -175,24 +195,22 @@ export function Scrubber({
   ]);
 
   return (
-    <div
+    <ScrubberSlider
+      value={value ?? [progressValue]} // Pass the current progress value
+      className={cn("swiper-no-swiping gencl:rounded-none", className)}
+      spriteUrl={spriteUrl ?? ""}
+      showScrubber={showScrubber}
+      onValueChange={handleSeek}
+      showSeeker={showSeeker}
+      playerTimeState={playerTimeState}
+      onValueCommit={handleValueCommit}
+      onSkipForward={skipForward}
+      onSkipBackward={skipBackward}
       onClick={(e) => e.stopPropagation()}
       onPointerDown={(e) => e.stopPropagation()}
-      className="gencl:w-full"
-    >
-      <ScrubberSlider
-        value={value ?? [progressValue]} // Pass the current progress value
-        className={cn("swiper-no-swiping gencl:rounded-none", className)}
-        spriteUrl={spriteUrl ?? ""}
-        showScrubber={showScrubber}
-        onValueChange={handleSeek}
-        showSeeker={showSeeker}
-        playerTimeState={playerTimeState}
-        onValueCommit={handleValueCommit}
-        // onMouseEnter={() => setShowSeeker?.(true)}
-        // onMouseLeave={() => setShowSeeker?.(false)}
-        {...restProps}
-      />
-    </div>
+      // onMouseEnter={() => setShowSeeker?.(true)}
+      // onMouseLeave={() => setShowSeeker?.(false)}
+      {...restProps}
+    />
   );
 }
