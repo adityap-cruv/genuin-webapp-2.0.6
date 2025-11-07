@@ -106,10 +106,18 @@ export function IHeartControls({
     let url = isExpand
       ? window.location.href
       : (() => {
-          const baseUrl = window.location.href.replace(/\/$/, "");
-          const hasHighlights = baseUrl.includes("/highlights");
-          const highlightsPath = hasHighlights ? "" : "/highlights";
-          return `${baseUrl}${highlightsPath}/${slug}_${contentId}`;
+          const url = new URL(window.location.href);
+          const pathSegments = url.pathname.split("/").filter(Boolean);
+          const hasHighlights = pathSegments.includes("highlights");
+
+          let newPath;
+          if (hasHighlights) {
+            newPath = `${url.pathname}/${slug}_${contentId}`;
+          } else {
+            newPath = `${url.pathname.replace(/\/$/, "")}/highlights/${slug}_${contentId}`;
+          }
+          const queryString = url.search;
+          return `${url.origin}${newPath}${queryString}`;
         })();
 
     // Add action=share query parameter if not already present
