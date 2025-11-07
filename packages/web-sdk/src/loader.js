@@ -79,22 +79,38 @@
     }
 
     sdkLoading = true
+    // Function to get the actual SDK filename from manifest
+    function getSDKFilename() {
+      // In development, use static filename
+      if (__DEV_ENVIRONMENT__) {
+        return Promise.resolve('genuin-sdk.js')
+      }
 
-    // Ensure we have a proper absolute URL for the SDK
-    let sdkUrl
-    if (SDK_BASE_URL.startsWith('http') || SDK_BASE_URL.startsWith('/')) {
-      // Absolute URL or root-relative path
-      sdkUrl = SDK_BASE_URL + 'genuin-sdk.js'
-    } else {
-      // Relative path - resolve relative to current page
-      const baseUrl = new URL(window.location.href)
-      sdkUrl = new URL(SDK_BASE_URL + 'genuin-sdk.js', baseUrl).href
+      // In production, use the filename that was injected during build
+      // This placeholder gets replaced by the build process with the actual hashed filename
+      return Promise.resolve('__SDK_FILENAME_PLACEHOLDER__')
     }
 
-    // Mark that we're using ES module loading to prevent global setup conflicts
-    window.__GENUIN_ES_MODULE__ = true
+    loadPromise = getSDKFilename()
+      .then((filename) => {
+        // Ensure we have a proper absolute URL for the SDK
+        let sdkUrl
+        if (SDK_BASE_URL.startsWith('http') || SDK_BASE_URL.startsWith('/')) {
+          // Absolute URL or root-relative path
+          sdkUrl = SDK_BASE_URL + filename
+        } else {
+          // Relative path - resolve relative to current page
+          const baseUrl = new URL(window.location.href)
+          sdkUrl = new URL(SDK_BASE_URL + filename, baseUrl).href
+        }
 
-    loadPromise = import(sdkUrl)
+        console.log('Loading Genuin SDK from:', sdkUrl)
+
+        // Mark that we're using ES module loading to prevent global setup conflicts
+        window.__GENUIN_ES_MODULE__ = true
+
+        return import(sdkUrl)
+      })
       .then((module) => {
         sdkLoaded = true
         window.GenuinSDK = module
