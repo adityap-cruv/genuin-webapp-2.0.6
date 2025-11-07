@@ -165,9 +165,10 @@
 
   /**
    * Load the main CSS file from the CDN
-   * URL format: {MEDIA_BASE_URL}/sdk/{VERSION_PATH}assets/web-sdk.css
+   * URL format: {MEDIA_BASE_URL}/sdk/{VERSION_PATH}assets/{CSS_FILENAME}
    * - MEDIA_BASE_URL: Environment-specific CDN URL (replaced at build time)
    * - VERSION_PATH: Optional version-specific path (e.g., "2.0.0/" or empty)
+   * - CSS_FILENAME: Hashed CSS filename (replaced at build time)
    */
   function loadMainCSS() {
     return new Promise((resolve, reject) => {
@@ -175,7 +176,7 @@
       link.rel = 'stylesheet'
       const cssUrl = __DEV_ENVIRONMENT__
         ? './dist/assets/web-sdk.css'
-        : `__MEDIA_BASE_URL__/sdk/__SDK_VERSION_PATH__assets/web-sdk.css`
+        : `__MEDIA_BASE_URL__/sdk/__SDK_VERSION_PATH__assets/__CSS_FILENAME_PLACEHOLDER__`
 
       link.href = cssUrl
 
