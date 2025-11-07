@@ -164,6 +164,16 @@ function getBuildFiles(): string[] {
       return true
     }
 
+    // Include hashed ES module files (pattern: genuin-sdk-[hash].js)
+    if (
+      filename.startsWith('genuin-sdk-') &&
+      filename.endsWith('.js') &&
+      !filename.includes('legacy') &&
+      filename.match(/genuin-sdk-[a-zA-Z0-9_-]+\.js$/)
+    ) {
+      return true
+    }
+
     // Include all chunk files (.js files in chunks directory)
     if (file.includes('chunks/') && ext === '.js') {
       return true

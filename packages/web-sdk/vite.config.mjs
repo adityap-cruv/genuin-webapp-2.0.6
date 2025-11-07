@@ -138,8 +138,8 @@ const genuinResolver = () => ({
 
 // Custom plugin to process loader file after build
 const copyLoaderPlugin = () => ({
-  name: 'process-loader',
-  async generateBundle(options, bundle) {
+  name: 'copy-loader',
+  async writeBundle(options, bundle) {
     // Find the loader bundle entry
     const loaderEntry = Object.keys(bundle).find(
       (key) => key.startsWith('gen_sdk') && bundle[key].type === 'chunk',
@@ -176,6 +176,44 @@ const copyLoaderPlugin = () => ({
         loaderContent = loaderContent.replace(/__SDK_VERSION_PATH__/g, '')
       }
 
+      // Find the main SDK file with hash by checking the actual dist directory
+      // The bundle object might not contain all files, so check the filesystem
+      const distDir = resolve(__dirname, 'dist')
+      let sdkFile = null
+      try {
+        // Read the dist directory to find the hashed SDK file
+        const distFiles = fs.readdirSync(distDir)
+        sdkFile = distFiles.find(
+          (fileName) =>
+            fileName.startsWith('genuin-sdk-') &&
+            fileName.endsWith('.js') &&
+            !fileName.includes('legacy') &&
+            fileName.match(/genuin-sdk-[a-zA-Z0-9]+\.js$/), // Ensure it has a hash
+        )
+        console.log(
+          '🔍 Dist directory files:',
+          distFiles.filter((f) => f.endsWith('.js')),
+        )
+        console.log('🔍 Found hashed SDK file:', sdkFile)
+      } catch (error) {
+        console.error('❌ Could not read dist directory:', error)
+      }
+      if (!sdkFile) {
+        console.error(
+          '❌ Could not find hashed ES module file in dist directory!',
+        )
+        console.error('❌ This build is invalid - hashed ES module is required')
+        throw new Error('Build failed: No hashed ES module found')
+      }
+      if (sdkFile) {
+        console.log('🔄 Found hashed SDK filename:', sdkFile)
+        loaderContent = loaderContent.replace(
+          /__SDK_FILENAME_PLACEHOLDER__/g,
+          sdkFile,
+        )
+        console.log('✅ Replaced SDK filename placeholder with:', sdkFile)
+      }
+
       // Generate build metadata header
       const buildTime = new Date().toISOString()
       const environment = process.env.NODE_ENV || 'development'
@@ -197,11 +235,17 @@ const copyLoaderPlugin = () => ({
       // Prepend metadata header to the processed content
       loaderBundle.code = metadataHeader + loaderContent
 
+      // Write the modified loader file back to disk
+      const loaderFilePath = resolve(__dirname, 'dist', loaderEntry)
+      fs.writeFileSync(loaderFilePath, loaderBundle.code, 'utf8')
+
       console.log(`✓ Processed loader bundle: ${loaderEntry}`)
       console.log(`  - Build time: ${buildTime}`)
       console.log(`  - Environment: ${environment}`)
       console.log(`  - Version: ${version}`)
       console.log(`  - MEDIA_BASE_URL: ${mediaBaseUrl}`)
+      console.log(`  - SDK_FILENAME: ${sdkFile}`)
+      console.log(`  - Written to: ${loaderFilePath}`)
       console.log(`  - Processed by Vite build pipeline: Yes`)
     }
   },
@@ -442,7 +486,7 @@ export default defineConfig({
             const isDevelopment = process.env.NODE_ENV === 'development'
             return isDevelopment ? 'gen_sdk.js' : 'gen_sdk.min.js'
           }
-          return 'genuin-sdk.js'
+          return 'genuin-sdk-[hash].js'
         },
         chunkFileNames: 'chunks/[name]-[hash].js',
         assetFileNames: (assetInfo) => {
