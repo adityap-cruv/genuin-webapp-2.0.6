@@ -308,15 +308,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         playerConfigRef.current = {
           ...getVideoPlayerConfigs(brandDetails.web_configs),
         };
-      } else if (isIHeartLayout && websiteType === "legacy") {
-        /**
-         * For iHeart legacy layout — videos play or pause only via user action.
-         * They don’t auto-play on viewport entry.
-         * When a playing video leaves the view, global play state is set to false.
-         */
-        setFeedPlayerShouldPlay(false);
-        setGlobalPlayState(false);
-        setButtonAction("PAUSE");
       }
     }
   }, [
