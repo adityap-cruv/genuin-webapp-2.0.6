@@ -190,7 +190,7 @@ const copyLoaderPlugin = () => ({
             fileName.startsWith('genuin-sdk-') &&
             fileName.endsWith('.js') &&
             !fileName.includes('legacy') &&
-            fileName.match(/genuin-sdk-[a-zA-Z0-9]+\.js$/), // Ensure it has a hash
+            fileName.match(/genuin-sdk-[a-zA-Z0-9_-]+\.js$/), // Ensure it has a hash (can include _, -)
         )
         console.log(
           '🔍 Dist directory files:',
@@ -237,6 +237,15 @@ const copyLoaderPlugin = () => ({
         loaderContent = loaderContent.replace(
           /__CSS_FILENAME_PLACEHOLDER__/g,
           'web-sdk.css',
+        )
+      }
+
+      // Remove console statements in production
+      if (!isDevelopment) {
+        // Remove console.log, console.warn, console.error, console.debug, console.info
+        loaderContent = loaderContent.replace(
+          /console\.(log|warn|error|debug|info|group|groupEnd|groupCollapsed)\([^)]*\);?/g,
+          '',
         )
       }
 
@@ -486,6 +495,14 @@ export default defineConfig({
   // Set base path for chunk resolution
   base: './',
 
+  // Configure esbuild for all transforms and minification
+  esbuild:
+    process.env.NODE_ENV === 'production'
+      ? {
+          drop: ['console', 'debugger'],
+        }
+      : undefined,
+
   // Optimize dependencies for better chunking
   optimizeDeps: {
     include: ['react', 'react-dom'],
@@ -652,7 +669,7 @@ export default defineConfig({
         },
       },
     },
-    sourcemap: true,
+    sourcemap: process.env.NODE_ENV !== 'production',
     target: 'es2020',
     // Optimize chunk sizes
     chunkSizeWarningLimit: 1000, // Warn for chunks over 1MB
