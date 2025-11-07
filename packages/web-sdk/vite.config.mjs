@@ -179,7 +179,9 @@ const copyLoaderPlugin = () => ({
       // Find the main SDK file with hash by checking the actual dist directory
       // The bundle object might not contain all files, so check the filesystem
       const distDir = resolve(__dirname, 'dist')
+      const distAssetsDir = resolve(__dirname, 'dist/assets')
       let sdkFile = null
+      let cssFile = null
       try {
         // Read the dist directory to find the hashed SDK file
         const distFiles = fs.readdirSync(distDir)
@@ -195,6 +197,14 @@ const copyLoaderPlugin = () => ({
           distFiles.filter((f) => f.endsWith('.js')),
         )
         console.log('🔍 Found hashed SDK file:', sdkFile)
+
+        // Read the assets directory to find the hashed CSS file
+        const assetFiles = fs.readdirSync(distAssetsDir)
+        cssFile = assetFiles.find(
+          (fileName) =>
+            fileName.startsWith('web-sdk') && fileName.endsWith('.css'),
+        )
+        console.log('🔍 Found CSS file:', cssFile)
       } catch (error) {
         console.error('❌ Could not read dist directory:', error)
       }
@@ -212,6 +222,22 @@ const copyLoaderPlugin = () => ({
           sdkFile,
         )
         console.log('✅ Replaced SDK filename placeholder with:', sdkFile)
+      }
+
+      // Replace CSS filename placeholder
+      if (cssFile) {
+        console.log('🔄 Found hashed CSS filename:', cssFile)
+        loaderContent = loaderContent.replace(
+          /__CSS_FILENAME_PLACEHOLDER__/g,
+          cssFile,
+        )
+        console.log('✅ Replaced CSS filename placeholder with:', cssFile)
+      } else {
+        // Fallback to default name if no hashed CSS file found (development)
+        loaderContent = loaderContent.replace(
+          /__CSS_FILENAME_PLACEHOLDER__/g,
+          'web-sdk.css',
+        )
       }
 
       // Generate build metadata header
@@ -245,6 +271,7 @@ const copyLoaderPlugin = () => ({
       console.log(`  - Version: ${version}`)
       console.log(`  - MEDIA_BASE_URL: ${mediaBaseUrl}`)
       console.log(`  - SDK_FILENAME: ${sdkFile}`)
+      console.log(`  - CSS_FILENAME: ${cssFile || 'web-sdk.css'}`)
       console.log(`  - Written to: ${loaderFilePath}`)
       console.log(`  - Processed by Vite build pipeline: Yes`)
     }
@@ -408,7 +435,27 @@ scopePreflightCss.postcss = true
 const postBuildCssPlugin = () => ({
   name: 'postbuild-css',
   async writeBundle() {
-    const cssPath = resolve(__dirname, 'dist/assets/web-sdk.css')
+    const distAssetsDir = resolve(__dirname, 'dist/assets')
+
+    // Find the CSS file (could be web-sdk.css or web-sdk-[hash].css)
+    let cssFile = null
+    try {
+      const assetFiles = fs.readdirSync(distAssetsDir)
+      cssFile = assetFiles.find(
+        (fileName) =>
+          fileName.startsWith('web-sdk') && fileName.endsWith('.css'),
+      )
+    } catch (error) {
+      console.warn('⚠️ Could not read dist/assets directory:', error)
+      return
+    }
+
+    if (!cssFile) {
+      console.warn('⚠️ No web-sdk CSS file found in dist/assets')
+      return
+    }
+
+    const cssPath = resolve(distAssetsDir, cssFile)
     if (fs.existsSync(cssPath)) {
       const css = fs.readFileSync(cssPath, 'utf8')
       const result = await postcss([
@@ -420,10 +467,10 @@ const postBuildCssPlugin = () => ({
       ]).process(css, { from: cssPath, to: cssPath })
       fs.writeFileSync(cssPath, result.css)
       console.log(
-        '✓ PostCSS applied on generated CSS (preflight scoped, variables renamed, !important added to gencl properties)',
+        `✓ PostCSS applied on generated CSS: ${cssFile} (preflight scoped, variables renamed, !important added to gencl properties)`,
       )
     } else {
-      console.warn('⚠️ No web-sdk.css found in dist/assets')
+      console.warn(`⚠️ CSS file not found: ${cssPath}`)
     }
   },
 })
@@ -490,9 +537,12 @@ export default defineConfig({
         },
         chunkFileNames: 'chunks/[name]-[hash].js',
         assetFileNames: (assetInfo) => {
-          // Use consistent naming for CSS files, hash-based for others
+          // Use hash-based naming for all assets including CSS in production
           if (assetInfo.name && assetInfo.name.endsWith('.css')) {
-            return 'assets/web-sdk.css'
+            const isProduction = process.env.NODE_ENV === 'production'
+            return isProduction
+              ? 'assets/web-sdk-[hash].css'
+              : 'assets/web-sdk.css'
           }
           return 'assets/[name]-[hash][extname]'
         },

@@ -158,8 +158,7 @@ function getBuildFiles(): string[] {
     if (
       filename === 'gen_sdk.min.js' ||
       filename === 'genuin-sdk.js' ||
-      filename === 'genuin-sdk-legacy.js' ||
-      filename === 'web-sdk.css'
+      filename === 'genuin-sdk-legacy.js'
     ) {
       return true
     }
@@ -184,9 +183,15 @@ function getBuildFiles(): string[] {
       return true
     }
 
-    // Include CSS files from assets
+    // Include all CSS files from assets directory (both hashed and non-hashed)
+    // Pattern: web-sdk.css or web-sdk-[hash].css
     if (file.includes('assets/') && ext === '.css') {
-      return true
+      if (
+        filename === 'web-sdk.css' ||
+        filename.match(/web-sdk-[a-zA-Z0-9_-]+\.css$/)
+      ) {
+        return true
+      }
     }
 
     return false
