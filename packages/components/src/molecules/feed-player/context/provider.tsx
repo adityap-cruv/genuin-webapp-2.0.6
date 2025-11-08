@@ -240,6 +240,16 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       focusState.isFocused &&
       focusState.containerInView;
 
+    if (index === 0) {
+      console.log("[gen]: index 0's play pause status::", {
+        feedPlayerShouldPlay,
+        isActive,
+        focusState,
+        globalPlayState,
+        context: baseEventBus.getContext().globalPlayingState,
+      });
+    }
+
     const videoShouldPreview = baseContextManager.checkIfVideoShouldPreview({
       videoId,
     });
