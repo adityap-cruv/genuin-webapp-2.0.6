@@ -147,11 +147,13 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
   type,
   isExpanded,
   onExpand,
+  isActive,
 }: {
   postDetails: PostDetailsType;
   type: BrandLayoutType;
   isExpanded?: boolean;
   onExpand?: () => void;
+  isActive?: boolean;
 }) {
   const { video, owner } = postDetails;
   const { attributes } = video;
@@ -199,7 +201,7 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
                 <Image
                   aspectRatio="square"
                   src={attributes.image_url}
-                  alt={`${postDetails.video.attributes?.title || contentType} artwork`}
+                  alt={`${postDetails.video.attributes?.title || contentType} podcast artwork`}
                   className={cn(
                     "gencl:rounded-md gencl:object-cover",
                     websiteType === "polaris"
@@ -210,17 +212,17 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
               </Link>
             </div>
           )}
-          <div className="gencl:w-full gencl:flex gencl:flex-col gencl:gap-1 gencl:self-start">
+          <div className="gencl:w-full gencl:flex gencl:flex-col gencl:self-start">
             {postDetails.video.attributes?.title && (
               <Link
                 href={linkUrl}
                 bypassChecks
-                aria-label={`${postDetails.video.attributes?.title} heading`}
                 tabIndex={0}
+                aria-label={`${postDetails.video.attributes?.title}, title`}
               >
                 <p
                   className={cn(
-                    "gencl:h-5 gencl:flex gencl:items-center gencl:gap-2 gencl:font-semibold gencl:leading-[24px] gencl:line-clamp-1! gencl:tracking-[-0.2px] gencl:lg:font-semibold! gencl:lg:leading-[24px]! gencl:lg:tracking-[-0.2px]!",
+                    "gencl:h-5 gencl:mb-2! gencl:mt-4! gencl:flex gencl:items-center gencl:gap-2 gencl:font-semibold gencl:leading-[24px] gencl:line-clamp-1! gencl:tracking-[-0.2px] gencl:lg:font-semibold! gencl:lg:leading-[24px]! gencl:lg:tracking-[-0.2px]!",
                     websiteType === "polaris"
                       ? "gencl:text-[16px] gencl:lg:text-[17px]!"
                       : "gencl:text-[16px]"
@@ -342,7 +344,7 @@ const AdaptiveDescription = memo(function AdaptiveDescription({
             position="overlay"
             showOverlay={true}
             buttonClassName="gencl:text-white/70! gencl:font-bold gencl:text-[12px] gencl:lg:text-[14px]! gencl:leading-[18px] gencl:tracking-[-0.5px] gencl:align-bottom gencl:hover:no-underline"
-            textClassName="gencl:text-[12px] gencl:font-normal gencl:leading-[20px] gencl:tracking-[-0.35px]! gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]! gencl:text-white/70!"
+            textClassName="gencl:text-[12px] gencl:font-normal gencl:leading-[20px] gencl:tracking-[-0.35px]! gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]! gencl:text-white/70! gencl:pt-1!"
             maxLines={2}
             tabIndex={0}
             aria-label={`${getMonthYear(createdAt ?? 0)}${duration ? ` • ${getFormattedDuration(String(duration))}` : ""} ${Array.isArray(description) ? description.join(" ") : description || ""}, Video description`}
@@ -542,7 +544,8 @@ export function ExpandViewDetails({
         <div
           className={cn(
             "gencl:flex gencl:flex-col gencl:gap-4 gencl:sm:gap-2 gencl:w-5/6 gencl:sm:w-full gencl:transition-all",
-            brandLayoutType === "ted" && "gencl:gap-3"
+            brandLayoutType === "ted" ||
+              (brandLayoutType === "iheart" && "gencl:gap-3")
           )}
           onClick={(e) => e.stopPropagation()}
         >
@@ -554,6 +557,7 @@ export function ExpandViewDetails({
                 isExpanded,
                 onExpand,
               })}
+              isActive={isActive}
             />
           </div>
 

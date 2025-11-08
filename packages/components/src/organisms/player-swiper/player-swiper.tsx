@@ -153,7 +153,7 @@ export function PlayerList({
     ? verticalSwipers[activeHorizontalIndex]
     : verticalSwipers[0];
 
-  // Focus management hook
+  // Focus management hook (only for iHeart)
   const {
     containerRef: playerListRef,
     focusableElements,
@@ -161,10 +161,9 @@ export function PlayerList({
     updateFocusableElements,
     setSlideNavigationDirection,
   } = useFocusManagement({
-    isEnabled: showExpandView,
+    isEnabled: showExpandView && brandLayoutType === "iheart",
     activeIndex,
     activeSwiper,
-    onToggleExpandView: toggleExpandView,
   });
 
   // Effect to navigate to selected section when it changes (only for sectioned mode)

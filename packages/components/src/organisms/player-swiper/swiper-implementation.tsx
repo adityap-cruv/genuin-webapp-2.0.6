@@ -103,6 +103,12 @@ export function SwiperImplementation({
           ? CONFIG.MOUSE_SENSITIVITY.WINDOWS
           : CONFIG.MOUSE_SENSITIVITY.DEFAULT,
       }}
+      a11y={{
+        enabled: true,
+        prevSlideMessage: "Previous clip. Playing",
+        nextSlideMessage: "Next clip. Playing",
+        scrollOnFocus: true,
+      }}
       followFinger={false}
       {...restProps}
     >

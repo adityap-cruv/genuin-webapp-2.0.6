@@ -37,12 +37,14 @@ export function IHeartCaughtUpOverlay({
           )}
           <p
             id="caught-up-title"
+            tabIndex={0}
             className="gencl:text-body-1-semi-bold gencl:text-[18px] gencl:leading-[24px] gencl:tracking-[-0.5px]"
           >
             {title}
           </p>
           <p
             id="caught-up-subtitle"
+            tabIndex={0}
             className="gencl:text-body-2-normal gencl:text-[14px] gencl:leading-4"
           >
             {subtitle}
