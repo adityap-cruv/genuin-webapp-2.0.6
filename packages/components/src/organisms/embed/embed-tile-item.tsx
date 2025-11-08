@@ -7,6 +7,7 @@ import { useDebounceCallback } from "usehooks-ts";
 import { useBaseContext, useEmbedContext } from "@genuin/components/context";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { GenericData } from "@genuin/components/context/base/feed-context-manager";
+import { Swiper } from "swiper/types";
 
 type EmbedItemProps = Omit<
   ComponentProps<typeof EmbedTile>,
@@ -17,12 +18,17 @@ type EmbedItemProps = Omit<
    * number of total videos in feed.
    */
   totalVideos: number;
+  /**
+   * Swiper instance for the video player.
+   */
+  swiper: Swiper | null;
 };
 
 export function EmbedItem({
   index,
   postDetails,
   totalVideos,
+  swiper,
   ...restProps
 }: EmbedItemProps) {
   const { updateActiveIndex, goToNextVideo, activeIndex } =
@@ -137,6 +143,7 @@ export function EmbedItem({
         updateActiveIndex(index);
       }}
       index={index}
+      swiper={swiper}
       totalVideos={totalVideos}
       {...restProps}
     />

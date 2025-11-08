@@ -150,6 +150,14 @@ export function EmbedManagerProvider({
     if (!swiper) return;
 
     function handleSlideChange(swiper: SwiperType) {
+      /**
+       *  For the iHeart legacy embed layout, we skip updating the activeIndex
+          when a slide comes into view. This aligns with the legacy behavior where
+          videos can only be played or paused through user interaction.
+          This ensures that videos do not auto-play when they enter the viewport
+          and require manual user action to start playback.
+       */
+      if (config.view.websiteType === "legacy") return;
       // If current activeIndex is going out of visible bounds, update it intelligently
       if (!isSlideVisible(swiper, activeIndex)) {
         const newActiveIndex = getNewActiveIndexOnSlideChange(

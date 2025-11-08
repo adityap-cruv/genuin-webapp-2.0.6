@@ -403,6 +403,7 @@ export function Embed({
                       index={idx}
                       postDetails={videoData}
                       totalVideos={feedData?.pages?.[0]?.totalVideos}
+                      swiper={swiper}
                     />
                   </SwiperSlide>
                 );

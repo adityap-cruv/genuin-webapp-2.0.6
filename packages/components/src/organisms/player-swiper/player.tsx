@@ -98,6 +98,7 @@ export function Player({
         index={index}
         onPlayerIterationEnd={swiper.slideNext}
         totalVideos={totalVideos}
+        activeIndex={activeIndex}
       >
         <div
           className={cn(
