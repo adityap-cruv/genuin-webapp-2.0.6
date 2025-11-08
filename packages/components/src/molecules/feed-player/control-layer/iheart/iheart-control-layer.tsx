@@ -188,9 +188,8 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
       </div>
       {/* Top gradient overlay (10% height) */}
       <div
-        // role="button"
+        role="region"
         aria-label={`${postDetails.video.attributes?.title} click to play`}
-        // aria-pressed={isActive ? "true" : "false"}
         tabIndex={0}
         className={cn(
           "gencl:h-full gencl:relative gencl:cursor-pointer",
@@ -256,7 +255,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
               aspectRatio="square"
               src={postDetails.video.attributes?.image_url ?? ""}
               alt={`${postDetails.video.attributes?.title || ""}, live radio artwork`}
-              tabIndex={0}
+              tabIndex={isVideoWatched ? -1 : 0}
               className={cn(
                 "gencl:rounded-md gencl:object-cover",
                 websiteType === "polaris"
@@ -268,8 +267,8 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
           <div className="gencl:w-full">
             {postDetails.video.attributes?.title && (
               <p
-                tabIndex={0}
-                // aria-label={`${postDetails.video.attributes?.title}, title`}
+                tabIndex={isVideoWatched ? -1 : 0}
+                aria-label={`${postDetails.video.attributes?.title}, title`}
                 className={cn(
                   "gencl:font-semibold gencl:leading-[18px] gencl:line-clamp-1 gencl:tracking-[-0.2px] gencl:lg:font-semibold! gencl:lg:leading-[24px]! gencl:lg:tracking-[-0.2px]!",
                   websiteType === "polaris"
@@ -282,8 +281,8 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
             )}
             {postDetails.video.attributes?.description && (
               <p
-                tabIndex={0}
-                // aria-label={`${postDetails.video.attributes?.title || "Content"}, Video title`}
+                tabIndex={isVideoWatched ? -1 : 0}
+                aria-label={`${postDetails.video.attributes?.description}, Video title`}
                 className="gencl:text-[12px] gencl:font-normal gencl:leading-[16px] gencl:line-clamp-2 gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]!"
               >
                 {postDetails.video.attributes?.description}
@@ -304,7 +303,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
               showOverlay={true}
               textClassName="gencl:z-10 gencl:text-[14px] gencl:font-normal gencl:leading-[18px] gencl:tracking-[-0.2px]! gencl:text-white/70! gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]!"
               maxLines={2}
-              tabIndex={0}
+              tabIndex={isVideoWatched ? -1 : 0}
               aria-label={`${getMonthYear(postDetails.video.createdAt ?? 0)}${postDetails.video.duration ? ` • ${getFormattedDuration(String(postDetails.video.duration))}` : ""} ${Array.isArray(postDetails.video.description) ? postDetails.video.description.join(" ") : postDetails.video.description || ""}, Video description`}
             />
           </div>
@@ -335,6 +334,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
                     : postDetails.video.id;
                 onReactionStateChange?.(videoId, isReacted);
               }}
+              isVideoWatched={isVideoWatched}
             />
             {/* TODO : iheart phase-2 implementation  */}
             {/* <IHeartListenLiveButton variant="filled" /> */}

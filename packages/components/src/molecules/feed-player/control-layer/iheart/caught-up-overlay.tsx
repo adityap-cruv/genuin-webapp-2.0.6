@@ -36,12 +36,14 @@ export function IHeartCaughtUpOverlay({
           )}
           <p
             id="caught-up-title"
+            tabIndex={0}
             className="gencl:text-body-1-semi-bold gencl:text-[18px] gencl:leading-[24px] gencl:tracking-[-0.5px]"
           >
             {title}
           </p>
           <p
             id="caught-up-subtitle"
+            tabIndex={0}
             className="gencl:text-body-2-normal gencl:text-[14px] gencl:leading-4"
           >
             {subtitle}
@@ -51,6 +53,7 @@ export function IHeartCaughtUpOverlay({
           <Button
             onClick={onGoToEpisodes}
             aria-label="Go to all episodes page"
+            tabIndex={0}
             className="gencl:h-11 gencl:text-body-1-semi-bold! gencl:flex gencl:items-center gencl:justify-center gencl:rounded-full gencl:bg-white gencl:px-5 gencl:text-[#27292D]!"
           >
             Go to episodes

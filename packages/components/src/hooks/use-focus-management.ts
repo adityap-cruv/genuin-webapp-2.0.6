@@ -28,8 +28,6 @@ export interface UseFocusManagementOptions {
   activeIndex: number;
   /** The active swiper instance for slide navigation */
   activeSwiper?: Swiper | null;
-  /** Callback to toggle the expand view (called on Escape) */
-  onToggleExpandView?: () => void;
 }
 
 export interface UseFocusManagementReturn {
@@ -49,7 +47,6 @@ export function useFocusManagement({
   isEnabled,
   activeIndex,
   activeSwiper,
-  onToggleExpandView,
 }: UseFocusManagementOptions): UseFocusManagementReturn {
   // Create a ref for the container
   const containerRef = useRef<HTMLDivElement>(null);
@@ -60,26 +57,31 @@ export function useFocusManagement({
   const previousFocusedElementRef = useRef<HTMLElement | null>(null);
 
   // Track slide navigation for focus management
-  const [slideNavigationDirection, setSlideNavigationDirection] = useState<
-    "next" | "prev" | null
-  >(null);
+  const slideNavigationDirection = useRef<"next" | "prev" | null>(null);
 
   // Function to update focusable elements list
   const updateFocusableElements = useCallback(() => {
-    if (containerRef.current) {
-      // Clear previous elements first
+    if (!containerRef.current) {
       setFocusableElements([]);
-
-      // Get fresh elements from the current viewport
-      const elements = getTabindexElementsInViewport(containerRef.current);
-
-      // Update state with new elements
-      setFocusableElements(elements);
-      return elements;
+      return [];
     }
-    // Clear elements if no container
-    setFocusableElements([]);
-    return [];
+
+    const elements = getTabindexElementsInViewport(containerRef.current);
+    
+    // Filter out disabled elements
+    const enabledElements = elements.filter(element => {
+      const htmlElement = element.element;
+      // Check if element is disabled (for buttons, inputs, etc.)
+      return !htmlElement.hasAttribute('disabled') && 
+             !(htmlElement as any).disabled;
+    });
+    
+    setFocusableElements(enabledElements);
+    return enabledElements;
+  }, []);
+
+  const setSlideNavigationDirection = useCallback((direction: "next" | "prev" | null) => {
+    slideNavigationDirection.current = direction;
   }, []);
 
   // Focus management when enabled/disabled
@@ -115,50 +117,41 @@ export function useFocusManagement({
 
   // Update focusable elements when activeIndex changes
   useEffect(() => {
-    if (isEnabled) {
-      const timeoutId = setTimeout(() => {
-        // Always refresh focusable elements when slide changes
-        const elements = updateFocusableElements();
+    if (!isEnabled) return;
 
-        // Handle focus after slide navigation
-        if (slideNavigationDirection && elements.length > 0) {
-          if (slideNavigationDirection === "next" && elements[0]) {
-            // Focus first element of new slide
-            elements[0].element.focus();
-            setCurrentFocusIndex(0);
-          } else if (slideNavigationDirection === "prev") {
-            // Focus last element of new slide
-            const lastIndex = elements.length - 1;
-            const lastElement = elements[lastIndex];
-            if (lastElement) {
-              lastElement.element.focus();
-              setCurrentFocusIndex(lastIndex);
-            }
-          }
-          // Reset navigation direction
-          setSlideNavigationDirection(null);
-        } else if (elements.length > 0) {
-          // If no slide navigation direction but we have elements, maintain current focus or reset to first
-          const targetIndex = Math.min(currentFocusIndex, elements.length - 1);
-          const currentElement = elements[targetIndex];
-          if (currentElement) {
-            currentElement.element.focus();
-            setCurrentFocusIndex(targetIndex);
+    const timeoutId = setTimeout(() => {
+      const elements = updateFocusableElements();
+
+      // Handle focus after slide navigation
+      const direction = slideNavigationDirection.current;
+      if (direction && elements.length > 0) {
+        if (direction === "next" && elements[0]) {
+          elements[0].element.focus();
+          setCurrentFocusIndex(0);
+        } else if (direction === "prev") {
+          const lastIndex = elements.length - 1;
+          const lastElement = elements[lastIndex];
+          if (lastElement) {
+            lastElement.element.focus();
+            setCurrentFocusIndex(lastIndex);
           }
         }
-      }, 150); // Slightly longer timeout to ensure DOM is fully updated
+        slideNavigationDirection.current = null;
+      } else if (elements.length > 0) {
+        // Maintain current focus or reset to first element
+        const targetIndex = Math.min(currentFocusIndex, elements.length - 1);
+        const currentElement = elements[targetIndex];
+        if (currentElement) {
+          currentElement.element.focus();
+          setCurrentFocusIndex(targetIndex);
+        }
+      }
+    }, 150);
 
-      return () => clearTimeout(timeoutId);
-    }
-  }, [
-    activeIndex,
-    isEnabled,
-    updateFocusableElements,
-    slideNavigationDirection,
-    currentFocusIndex,
-  ]);
+    return () => clearTimeout(timeoutId);
+  }, [activeIndex, isEnabled, updateFocusableElements, currentFocusIndex]);
 
-  // Track focus changes to maintain current focus index
+  // Track focus changes to maintain current focus index and refresh elements when needed
   useEffect(() => {
     if (!isEnabled) return;
 
@@ -171,7 +164,7 @@ export function useFocusManagement({
       if (elementIndex !== -1) {
         setCurrentFocusIndex(elementIndex);
       } else {
-        // If focused element is not in our list, refresh the focusable elements
+        // Refresh if focused element is not in current list
         setTimeout(() => {
           updateFocusableElements();
         }, 50);
@@ -182,38 +175,19 @@ export function useFocusManagement({
     return () => document.removeEventListener("focusin", handleFocusIn);
   }, [isEnabled, focusableElements, updateFocusableElements]);
 
-  // Listen for swiper slide change events to refresh focusable elements
+  // Listen for swiper slide change events (handled by activeIndex effect above)
   useEffect(() => {
-    if (activeSwiper && isEnabled) {
-      const handleSlideChange = () => {
-        // Small delay to ensure the slide transition is complete
-        setTimeout(() => {
-          updateFocusableElements();
-        }, 100);
-      };
+    if (!activeSwiper || !isEnabled) return;
 
-      // Add event listener for slide change
-      activeSwiper.on("slideChange", handleSlideChange);
-
-      return () => {
-        // Clean up event listener
-        activeSwiper.off("slideChange", handleSlideChange);
-      };
-    }
-  }, [activeSwiper, isEnabled, updateFocusableElements]);
-
-  // Additional effect to ensure focusable elements are updated whenever activeIndex changes
-  // This serves as a backup to the main activeIndex effect above
-  useEffect(() => {
-    if (isEnabled) {
-      // Use a longer delay to avoid conflicts with the main effect
-      const timeoutId = setTimeout(() => {
+    const handleSlideChange = () => {
+      setTimeout(() => {
         updateFocusableElements();
-      }, 300);
+      }, 100);
+    };
 
-      return () => clearTimeout(timeoutId);
-    }
-  }, [activeIndex, isEnabled, updateFocusableElements]);
+    activeSwiper.on("slideChange", handleSlideChange);
+    return () => activeSwiper.off("slideChange", handleSlideChange);
+  }, [activeSwiper, isEnabled, updateFocusableElements]);
 
   // Keyboard navigation handler with slide navigation
   useEffect(() => {
@@ -221,87 +195,58 @@ export function useFocusManagement({
       if (!isEnabled || focusableElements.length === 0) return;
 
       if (event.key === "Tab") {
-        // Check if the currently focused element is still in our focusable elements list
+        event.preventDefault();
+
+        // Get current focused element index
         const activeElement = document.activeElement as HTMLElement;
         const currentElementIndex = focusableElements.findIndex(
           (el) => el.element === activeElement
         );
-
-        // Update current index if we found the active element
-        if (currentElementIndex !== -1) {
-          setCurrentFocusIndex(currentElementIndex);
-        }
-
-        event.preventDefault();
-
-        const actualCurrentIndex =
-          currentElementIndex !== -1 ? currentElementIndex : currentFocusIndex;
+        
+        const actualCurrentIndex = currentElementIndex !== -1 ? currentElementIndex : currentFocusIndex;
 
         if (event.shiftKey) {
           // Shift+Tab: Go to previous element or previous slide
           if (actualCurrentIndex > 0) {
-            // Move to previous element in current slide
-            const nextIndex = actualCurrentIndex - 1;
-            const nextElement = focusableElements[nextIndex];
+            const nextElement = focusableElements[actualCurrentIndex - 1];
             if (nextElement) {
               nextElement.element.focus();
-              setCurrentFocusIndex(nextIndex);
+              setCurrentFocusIndex(actualCurrentIndex - 1);
             }
+          } else if (activeSwiper && !activeSwiper.isBeginning) {
+            // Go to previous slide
+            slideNavigationDirection.current = "prev";
+            activeSwiper.slidePrev();
           } else {
-            // At first element, try to go to previous slide
-            if (activeSwiper && !activeSwiper.isBeginning) {
-              setSlideNavigationDirection("prev");
-              activeSwiper.slidePrev();
-
-              // Force refresh focusable elements after a short delay to ensure new slide is loaded
-              setTimeout(() => {
-                updateFocusableElements();
-              }, 200);
-            } else {
-              // If at beginning of slides, wrap to last element of current slide
-              const lastIndex = focusableElements.length - 1;
-              const lastElement = focusableElements[lastIndex];
-              if (lastElement) {
-                lastElement.element.focus();
-                setCurrentFocusIndex(lastIndex);
-              }
+            // Wrap to last element
+            const lastIndex = focusableElements.length - 1;
+            const lastElement = focusableElements[lastIndex];
+            if (lastElement) {
+              lastElement.element.focus();
+              setCurrentFocusIndex(lastIndex);
             }
           }
         } else {
           // Tab: Go to next element or next slide
           if (actualCurrentIndex < focusableElements.length - 1) {
-            // Move to next element in current slide
-            const nextIndex = actualCurrentIndex + 1;
-            const nextElement = focusableElements[nextIndex];
+            const nextElement = focusableElements[actualCurrentIndex + 1];
             if (nextElement) {
               nextElement.element.focus();
-              setCurrentFocusIndex(nextIndex);
+              setCurrentFocusIndex(actualCurrentIndex + 1);
             }
+          } else if (activeSwiper && !activeSwiper.isEnd) {
+            // Go to next slide
+            slideNavigationDirection.current = "next";
+            activeSwiper.slideNext();
           } else {
-            // At last element, try to go to next slide
-            if (activeSwiper && !activeSwiper.isEnd) {
-              setSlideNavigationDirection("next");
-              activeSwiper.slideNext();
-
-              // Force refresh focusable elements after a short delay to ensure new slide is loaded
-              setTimeout(() => {
-                updateFocusableElements();
-              }, 200);
-            } else {
-              // If at end of slides, wrap to first element of current slide
-              const firstElement = focusableElements[0];
-              if (firstElement) {
-                firstElement.element.focus();
-                setCurrentFocusIndex(0);
-              }
+            // Wrap to first element
+            const firstElement = focusableElements[0];
+            if (firstElement) {
+              firstElement.element.focus();
+              setCurrentFocusIndex(0);
             }
           }
         }
-      }
-
-      // Close expand view on Escape key
-      if (event.key === "Escape" && onToggleExpandView) {
-        onToggleExpandView();
       }
     };
 
@@ -309,14 +254,7 @@ export function useFocusManagement({
       document.addEventListener("keydown", handleKeyDown);
       return () => document.removeEventListener("keydown", handleKeyDown);
     }
-  }, [
-    isEnabled,
-    focusableElements,
-    currentFocusIndex,
-    activeSwiper,
-    onToggleExpandView,
-    updateFocusableElements,
-  ]);
+  }, [isEnabled, focusableElements, currentFocusIndex, activeSwiper]);
 
 
 

@@ -120,28 +120,19 @@ export function EmbedSwiper({
         enabled: !isIheartLayout,
         onlyInViewport: false,
       }}
-      a11y={{
-        enabled: true,
-        prevSlideMessage: forFeed ? "Previous clip" : "Previous slide",
-        nextSlideMessage: forFeed ? "Next clip" : "Next slide",
-        firstSlideMessage: forFeed
-          ? "This is the first clip"
-          : "This is the first slide",
-        lastSlideMessage: forFeed
-          ? "This is the last clip"
-          : "This is the last slide",
-        slideLabelMessage: forFeed
-          ? "Clip {{index}} of {{slidesLength}}"
-          : "Slide {{index}} of {{slidesLength}}",
-        containerMessage: forFeed
-          ? "Clip feed carousel. Use arrow keys to navigate between clips."
-          : "Clip carousel. Use arrow keys to navigate between slides.",
-        containerRoleDescriptionMessage: forFeed
-          ? "Clip feed carousel"
-          : "Clip carousel",
-        // itemRoleDescriptionMessage: forFeed ? "Video" : "Slide",
-        scrollOnFocus: true,
-      }}
+      // a11y={{
+      //   enabled: true,
+      //   prevSlideMessage: "Previous clip",
+      //   nextSlideMessage: "Next clip",
+      //   // firstSlideMessage: "This is the first clip",
+      //   // lastSlideMessage: "This is the last clip",
+      //   // slideLabelMessage: "Clip {{index}} of {{slidesLength}}",
+      //   // containerMessage:
+      //   //   "Clip carousel. Use arrow keys to navigate between clips.",
+      //   // containerRoleDescriptionMessage: "Clip carousel",
+      //   itemRoleDescriptionMessage: "video clip",
+      //   scrollOnFocus: true,
+      // }}
       mousewheel={{
         forceToAxis: true,
         releaseOnEdges: true,

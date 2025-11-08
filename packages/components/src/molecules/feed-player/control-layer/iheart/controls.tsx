@@ -48,6 +48,7 @@ type IHeartControlsProps = ComponentProps<"div"> & {
    */
   onReactionStateChange?: (isReacted: boolean) => void;
   index?: number;
+  isVideoWatched?: boolean;
 };
 
 export function IHeartControls({
@@ -62,6 +63,7 @@ export function IHeartControls({
   videoDescription,
   index,
   onReactionStateChange,
+  isVideoWatched,
   ...restProps
 }: IHeartControlsProps) {
   const { playingState, togglePlay, muted, toggleMuted } = usePlayerContext();
@@ -155,6 +157,7 @@ export function IHeartControls({
           }}
           className="gencl:w-11 gencl:h-11"
           tabIndex={-1}
+          aria-hidden="true"
         >
           <Button
             theme="custom"
@@ -198,7 +201,7 @@ export function IHeartControls({
         aria-label={muted ? "Mute, Pressed" : "Mute, Not pressed"}
         role="button"
         aria-pressed={muted}
-        tabIndex={0}
+        tabIndex={isVideoWatched ? -1 : 0}
         className="gencl:w-11 gencl:h-11 gencl:p-0 gencl:flex gencl:items-center gencl:justify-center"
         onClick={() => {
           toggleMuted(true, customMuted && !muted);
@@ -220,7 +223,7 @@ export function IHeartControls({
         }
         role="button"
         aria-pressed={playingState !== "PLAYING"}
-        tabIndex={0}
+        tabIndex={isVideoWatched ? -1 : 0}
         className="gencl:w-11 gencl:h-11 gencl:p-0 gencl:flex gencl:items-center gencl:justify-center"
         onClick={() => {
           togglePlay(true);
@@ -259,7 +262,7 @@ export function IHeartControls({
           variant="icon"
           aria-label="Share"
           role="button"
-          tabIndex={0}
+          tabIndex={isVideoWatched ? -1 : 0}
           className="gencl:w-11 gencl:h-11 gencl:p-0 gencl:flex gencl:items-center gencl:justify-center"
           title="Share"
         >
