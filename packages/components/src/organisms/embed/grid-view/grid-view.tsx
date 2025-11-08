@@ -26,7 +26,7 @@ export function GridView({
   moveToNextTime: number;
 } & ComponentProps<"div">) {
   const { embedEventBus } = useEmbedContext();
-  const { updateActiveIndex } = useEmbedManagerContext();
+  const { updateActiveIndex, swiper } = useEmbedManagerContext();
   const [isHovering, setIsHovering] = useState(false);
   const { containerHeight, containerWidth, headerHeight } =
     useEmbedDimensions();
@@ -127,7 +127,7 @@ export function GridView({
               );
             }}
           >
-            <EmbedItem index={index} postDetails={videoData} />
+            <EmbedItem swiper={swiper} index={index} postDetails={videoData} />
           </div>
         ))}
       </div>

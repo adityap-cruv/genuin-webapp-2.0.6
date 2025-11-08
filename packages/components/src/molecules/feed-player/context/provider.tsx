@@ -24,6 +24,7 @@ import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config
 import { BaseEventBusContext } from "@genuin/components/context/base/event-bus";
 import { GenericData } from "@genuin/components/context/base/feed-context-manager";
 import { useEmbedManagerContext } from "@genuin/components/organisms/embed/context";
+import { isSlideVisible } from "@genuin/components/organisms/embed/utils";
 
 type VideoProviderProps = {
   children: React.ReactNode;
@@ -41,7 +42,7 @@ type VideoProviderProps = {
   /**
    * Swiper instance for the video player.
    */
-  swiper?: Swiper;
+  swiper?: Swiper | null;
   /**
    * If player is active or not.
    */
@@ -65,11 +66,16 @@ type VideoProviderProps = {
    */
   videoDescription?: string | null;
   /**
-   * Function to update ative index in embed-manager-provider
+   * Function to update active index in embed-manager-provider
    */
   updateActiveIndex?: ReturnType<
     typeof useEmbedManagerContext
   >["updateActiveIndex"];
+  /**
+   * Represents the index of the currently playing video.
+   * Note: This is not the swiper's activeIndex.
+   */
+  activeIndex?: number;
 } & ExpandViewProps;
 
 type PlayerConfigType = ReturnType<typeof getVideoPlayerConfigs>;
@@ -102,6 +108,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   explicitLoop,
   totalVideos,
   videoDescription,
+  activeIndex,
   onPlayerIterationEnd,
   toggleExpandView,
   updateActiveIndex,
@@ -413,6 +420,36 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       video_view_length: videoStateRef.current.currentTime,
     });
   }, [swiper, track, EventName.VIDEO_IMPRESSION, baseAnalyticsData]);
+
+  useEffect(() => {
+    /**
+     * Handles playback behavior for the iHeart legacy layout.
+     *
+     * In this layout:
+     * - Videos can only be played or paused through user interaction.
+     * - Videos do NOT auto-play when they enter the viewport.
+     * - When the currently playing video goes out of view, set the global play state as false.
+     */
+    if (!swiper || !isIHeartLayout || websiteType !== "legacy") return;
+
+    // Checks if the currently playing video remains in view.
+    // If it goes out of view, pause the video and update the global play state.
+    function handleSlideChange() {
+      if (!swiper || !globalPlayState || activeIndex === undefined) return;
+
+      const isActiveVideoVisible = isSlideVisible(swiper, activeIndex);
+      if (!isActiveVideoVisible) {
+        setButtonAction("PAUSE");
+        setGlobalPlayState(false);
+      }
+    }
+
+    swiper.on("slideChange", handleSlideChange);
+
+    return () => {
+      swiper.off("slideChange", handleSlideChange);
+    };
+  }, [swiper, globalPlayState, activeIndex]);
 
   useEffect(() => {
     if (!embedDetails) return;

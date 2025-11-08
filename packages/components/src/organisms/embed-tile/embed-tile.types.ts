@@ -1,6 +1,7 @@
 import { PlayerProvider } from "@genuin/components/molecules/feed-player/context";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { type ComponentProps } from "react";
+import { Swiper } from "swiper/types";
 
 export type EmbedTileProps = {
   isActive: boolean;
@@ -26,4 +27,8 @@ export type EmbedTileProps = {
   onPlayerIterationEnd: ComponentProps<
     typeof PlayerProvider
   >["onPlayerIterationEnd"];
+  /**
+   * Swiper instance for the video player.
+   */
+  swiper: Swiper | null;
 } & ComponentProps<"div">;

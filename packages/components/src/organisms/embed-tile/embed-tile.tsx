@@ -90,12 +90,13 @@ export function EmbedTile({
   postDetails,
   className,
   index,
+  swiper,
   totalVideos,
   onPlayerIterationEnd,
   ...restProps
 }: EmbedTileProps & VariantProps<typeof embedTileVariants>) {
   const { value, toggle } = useBoolean(false);
-  const { updateActiveIndex } = useEmbedManagerContext();
+  const { updateActiveIndex, activeIndex } = useEmbedManagerContext();
   // Use the structured config object
   const config = useEmbedConfigs();
   const shouldShowMiddlewareOverlay = isMiddlewareOverlayEnabled({
@@ -133,6 +134,8 @@ export function EmbedTile({
             updateActiveIndex={updateActiveIndex}
             videoDescription={postDetails.video.descritptionText}
             totalVideos={totalVideos}
+            swiper={swiper}
+            activeIndex={activeIndex}
           >
             <EmbedPlayer
               postDetails={postDetails}
