@@ -81,11 +81,6 @@
     sdkLoading = true
     // Function to get the actual SDK filename from manifest
     function getSDKFilename() {
-      // In development, use static filename
-      if (__DEV_ENVIRONMENT__) {
-        return Promise.resolve('genuin-sdk.js')
-      }
-
       // In production, use the filename that was injected during build
       // This placeholder gets replaced by the build process with the actual hashed filename
       return Promise.resolve('__SDK_FILENAME_PLACEHOLDER__')
