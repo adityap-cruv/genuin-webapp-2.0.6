@@ -224,6 +224,7 @@ function EmbedPlayer({
   }, [
     isAdPlaying,
     changeActivePlayerType,
+    index,
     postDetails,
     embedData.card_layout_id,
   ]);

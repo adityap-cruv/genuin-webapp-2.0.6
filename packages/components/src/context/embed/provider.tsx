@@ -152,6 +152,7 @@ export function EmbedProvider({
         ...currentContext,
         activeIndex: newIndex,
         previousIndex: currentContext.activeIndex,
+        shouldTrackImpression: newIndex !== currentContext.activeIndex,
       }));
     },
     [embedEventBus]
@@ -168,6 +169,8 @@ export function EmbedProvider({
           previousPlayerType: currentContext.activePlayerType,
           activePlayerType: newActiveType,
           activeIndex: activeIndex ?? currentContext.activeIndex,
+          previousIndex: currentContext.activeIndex,
+          shouldTrackImpression: activeIndex !== currentContext.activeIndex,
         })
       );
     },

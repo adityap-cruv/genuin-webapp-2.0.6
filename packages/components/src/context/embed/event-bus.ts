@@ -24,6 +24,13 @@ export type EmbedEventContextType = {
    */
   previousIndex?: number;
   /**
+   * Indicates whether the current event should trigger impression tracking.
+   * This flag is set based on player index changes — `true` when the `activeIndex`
+   * differs from the `newIndex`, and `false` when they are the same.
+   * Used to ensure impressions are recorded only during valid player transitions.
+   */
+  shouldTrackImpression?: boolean;
+  /**
    * List of all available sections in the feed (used for sectioned views)
    */
   sectionList: PostDetailsType["section"][];

@@ -212,23 +212,27 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   }, [swiper]);
 
   useEffect(() => {
-    // This section handles video impression tracking specifically for embedded videos.
+    // Handles video impression tracking specifically for embedded videos.
     if (!embedDetails) return;
     const { embedEventBus } = embedDetails;
 
-    function handleActiveIndexChange(
+    function handleActivePlayerChange(
       eventData: any,
       context: EmbedEventContextType
     ) {
-      // Only proceed if the index matches the previous index from the context.
-      // This ensures impressions are recorded when switching *away* from the current video.
-      if (index !== context.previousIndex) return;
+      // Proceed only if the current index matches the previous index from the context.
+      // This ensures impressions are tracked only when switching away from the current video.
+      // The `context.shouldTrackImpression` flag further confirms that the index match is valid for impression tracking.
+      if (index !== context.previousIndex || !context.shouldTrackImpression) return;
 
-      // Skip the first trigger when the page initially loads.
-      // On first load, `index` and `previousIndex` will be identical,
-      // so this check prevents false impression tracking.
+      // Skip the first trigger on initial page load.
+      // During the first render, `index` and `previousIndex` are identical,
+      // so this prevents recording a false impression event.
+      const isActivePlayer =
+        context.activePlayerType === "embed" ? !isActive : true;
+
       if (
-        !isActive &&
+        isActivePlayer &&
         !!videoStateRef.current.duration &&
         !!videoStateRef.current.currentTime
       ) {
@@ -243,12 +247,14 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       }
     }
 
-    // Listen for active index changes within the embed context.
-    embedEventBus.on("activeIndexChange", handleActiveIndexChange);
+    // Attach listeners for changes in active index and player type within the embed context.
+    embedEventBus.on("activeIndexChange", handleActivePlayerChange);
+    embedEventBus.on("activePlayerTypeChange", handleActivePlayerChange);
 
-    // Clean up listener on unmount or when dependencies change.
+    // Clean up listeners when the component unmounts or dependencies update.
     return () => {
-      embedEventBus.off("activeIndexChange", handleActiveIndexChange);
+      embedEventBus.off("activeIndexChange", handleActivePlayerChange);
+      embedEventBus.off("activePlayerTypeChange", handleActivePlayerChange);
     };
   }, [embedDetails, isActive]);
 
