@@ -240,16 +240,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       focusState.isFocused &&
       focusState.containerInView;
 
-    if (index === 0) {
-      console.log("[gen]: index 0's play pause status::", {
-        feedPlayerShouldPlay,
-        isActive,
-        focusState,
-        globalPlayState,
-        context: baseEventBus.getContext().globalPlayingState,
-      });
-    }
-
     const videoShouldPreview = baseContextManager.checkIfVideoShouldPreview({
       videoId,
     });
@@ -477,8 +467,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     // This ensures all players respect user's play/pause actions across the embed
     function handlePlayingStateChange(_: any, context: BaseEventBusContext) {
       setGlobalPlayState(context.globalPlayingState);
-
-      // sync feed player should play with global playing state.
       setFeedPlayerShouldPlay(context.globalPlayingState);
     }
 
@@ -715,7 +703,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         });
         return;
       }
-
       setFeedPlayerShouldPlay((prev) => {
         if (!isActive && index !== undefined) {
           updateActiveIndex?.(index);
@@ -767,6 +754,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       if (seekTime && playerRef.current) {
         playerRef.current.getMedia().currentTime = seekTime;
       }
+
       setFeedPlayerShouldPlay(true);
       if (byUser) {
         setButtonAction("PLAY");
@@ -783,7 +771,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   // pause: Sets the feed player to pause state.
   const pause = useCallback(
     (byUser: boolean) => {
-      console.log("pause called");
       setFeedPlayerShouldPlay(false);
       if (byUser) {
         baseContextManager.setPlayPauseTracker({ isPlaying: false });
