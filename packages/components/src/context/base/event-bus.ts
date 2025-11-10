@@ -17,12 +17,12 @@ export type BaseEventBusContext = {
 
 type EventNames = "userFocusChange" | "globalPlayingStateChange";
 
-export function createBaseEventBus() {
+export function createBaseEventBus(initialGlobalPlayingState: boolean = true) {
   return new EventManager<BaseEventBusContext, EventNames>({
     userIsFocused: true,
     firstTimeMutedBypass: true,
     muted: true,
     volume: 100,
-    globalPlayingState: true,
+    globalPlayingState: initialGlobalPlayingState,
   });
 }
