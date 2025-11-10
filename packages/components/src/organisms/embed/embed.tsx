@@ -33,6 +33,8 @@ import {
   SDKEventName,
 } from "@genuin/components/lib/sdk-event-emitter";
 import { useIheartUrlManager } from "@genuin/components/hooks/embed/use-iheart-url-manager";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { isSlideVisible } from "./utils";
 
 const embedVariants = cva("gencl:rounded-md gencl:overflow-auto", {
   variants: {
@@ -111,6 +113,7 @@ export function Embed({
     () => feedData?.pages?.flatMap((page) => page.feed) || [],
     [feedData]
   );
+  const { isMobile } = useDeviceDetectMediaQuery();
   const totalVideos = feedData?.pages?.[0]?.totalVideos as number;
 
   // Extract video titles from postDetails
@@ -284,6 +287,80 @@ export function Embed({
   const isIheartLayout = config.view.brandLayoutType === "iheart";
   const websiteType = config.view.websiteType;
 
+  /**
+   * Calculates the total number of slides to display based on the device type.
+   *
+   * Logic:
+   * - On mobile devices → Exclude "complete" videos (final overlays or end cards).
+   * - On desktop/tablet → Include only actual video slides (exclude overlays or non-video types).
+   *
+   * Dependencies:
+   * - `videos`: The list of all video feed items.
+   * - `isMobile`: Determines which filtering logic to apply.
+   */
+  const totalSlides = useMemo(() => {
+    return isMobile
+      ? videos.filter((item) => item.video.type !== "complete").length
+      : videos.filter((item) => item.video.type === "video").length;
+  }, [videos, isMobile]);
+
+  /**
+   * Handles slide change events in the Swiper carousel.
+   *
+   * Behavior:
+   * - Only active for iHeart layout on desktop/tablet views.
+   * - Detects when the user reaches the "end of feed" overlay slide.
+   * - Emits the `CAUGHT_OVERLAY` event via the SDK event emitter when the overlay is reached.
+   *
+   * Logic:
+   * 1. Skip execution for non-iHeart layouts or mobile devices.
+   * 2. Validate the Swiper indices (`activeIndex`, `previousIndex`).
+   * 3. Check if the current or traversed slides contain an overlay-type video.
+   * 4. If yes → emit the end-of-feed event.
+   *
+   */
+  const onFeedSlideChange = useCallback(
+    (swiperInstance: Swiper) => {
+      // Only check end of feed for iheart layout and we have to show toaster for desktop and tablet.
+      if (
+        config?.view?.brandLayoutType !== "iheart" ||
+        isMobile ||
+        !Array.isArray(videos)
+      )
+        return;
+
+      const activeIndex = swiperInstance.activeIndex ?? 0;
+      const previousIndex = swiperInstance.previousIndex ?? 0;
+
+      // Validate indices
+      if (activeIndex < 0 || activeIndex >= videos.length) return;
+
+      // Check if current video is overlay
+      let isReachedEndOfFeed = videos[activeIndex]?.video?.type === "overlay";
+
+      // If not overlay, check the range between previous and active
+      if (!isReachedEndOfFeed) {
+        // Handle both forward and backward swipes
+        const startIndex = Math.max(0, Math.min(previousIndex, activeIndex));
+        const endIndex = isSlideVisible(swiperInstance, totalSlides - 1)
+          ? totalSlides - 1
+          : Math.min(totalSlides - 1, Math.max(previousIndex, activeIndex));
+        // Ensure we have a valid range
+        if (startIndex < endIndex) {
+          isReachedEndOfFeed = videos
+            .slice(startIndex, endIndex + 1)
+            .some((feed) => feed?.video?.type === "overlay");
+        }
+      }
+
+      // Emit event if overlay detected
+      if (isReachedEndOfFeed) {
+        SDKEventEmitter.emit(SDKEventName.CAUGHT_OVERLAY, true);
+      }
+    },
+    [videos, isMobile, SDKEventEmitter, SDKEventName]
+  );
+
   // Handle URL manipulation for iHeart brand layout
   useIheartUrlManager({
     isIheartLayout,
@@ -366,12 +443,16 @@ export function Embed({
               spaceBetweenVideos={spaceBetweenVideos}
               isIheartLayout={isIheartLayout}
               onSlideChange={(swiperInstance) => {
+                // Early safety check
                 if (!swiperInstance) return;
+
+                // Handle slides offset
                 if (swiperInstance.isBeginning) {
                   setSlidesOffsetBefore(0);
                 } else {
                   setSlidesOffsetBefore(48);
                 }
+                onFeedSlideChange(swiperInstance);
               }}
               onReachBeginning={() => {
                 setSlidesOffsetBefore(0);
@@ -397,6 +478,10 @@ export function Embed({
               {videos?.map((videoData, idx) => {
                 return videoData.video.type === "complete" ? (
                   <></>
+                ) : videoData.video.type === "overlay" &&
+                  config.view.brandLayoutType === "iheart" &&
+                  !isMobile ? (
+                  <></>
                 ) : (
                   <SwiperSlide key={idx}>
                     <EmbedItem
@@ -410,7 +495,7 @@ export function Embed({
             </EmbedSwiper>
             {!isIheartLayout && (
               <NavigationButtonsWithContext
-                totalSlides={videos?.length ?? 0}
+                totalSlides={totalSlides}
                 theme={theme}
               />
             )}
@@ -418,7 +503,7 @@ export function Embed({
         )}
         {isIheartLayout && config.view.isCarousel && (
           <NavigationButtonsWithContext
-            totalSlides={videos?.length ?? 0}
+            totalSlides={totalSlides}
             isIheartLayout={true}
             theme={theme}
           />

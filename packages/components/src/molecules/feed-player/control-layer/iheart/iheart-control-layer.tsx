@@ -344,10 +344,6 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
         {isVideoWatched && (
           <IHeartEndOfContentOverlay
             isMobile={isMobile}
-            onGoToEpisodes={() => {
-              // Handle go to episodes action
-              console.log("Go to episodes clicked");
-            }}
             onPlayAgain={() => {
               // Handle play again action
               play(true, 0);

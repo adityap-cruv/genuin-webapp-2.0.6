@@ -154,8 +154,7 @@ export function parseFeed(
         position: item.section?.position || null,
       },
     };
-    /*
-      TODO : iheart phase-2 implementation
+
     // Check for the unwatched -> watched transition (only if middleware is enabled)
     // When found, insert an overlay marker before the first watched video
     if (shouldShowMiddlewareOverlay && !watchBoundaryFound && index > 0) {
@@ -189,7 +188,7 @@ export function parseFeed(
       // Mark boundary as found to skip further checks
       watchBoundaryFound = true;
     }
-    */
+
     // Add the actual video item
     result.push(mappedItem);
 

@@ -40,6 +40,7 @@ const ALLOWED_EVENTS = [
   'onExpandViewChanged',
   'onAnalyticsTrack',
   'onFeedLoaded',
+  'onCaughtOverlay',
   // Add allowed event names here
 ]
 

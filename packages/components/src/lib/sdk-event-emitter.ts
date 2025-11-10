@@ -31,6 +31,7 @@ export enum SDKEventName {
   EXPAND_VIEW_CHANGED = "onExpandViewChanged",
   ANALYTICS = "onAnalyticsTrack",
   FEED_LOADED = "onFeedLoaded",
+  CAUGHT_OVERLAY = "onCaughtOverlay",
 }
 
 /**
@@ -137,6 +138,7 @@ export type SDKEventPayloadMap = {
   [SDKEventName.EXPAND_VIEW_CHANGED]: boolean;
   [SDKEventName.EMBED_PROVIDER_READY]: SDKEmbedProviderReadyPayload;
   [SDKEventName.FEED_LOADED]: SDKFeedLoadedPayload;
+  [SDKEventName.CAUGHT_OVERLAY]: boolean;
   [SDKEventName.AUTH_REFRESH_FAILED]: SDKAuthRefreshFailedPayload;
   [SDKEventName.CACHED_USER_UPDATE]: SDKCachedUserUpdatePayload;
   [SDKEventName.PLAY]: SDKPlayEventPayload;

@@ -1,12 +1,13 @@
-import { Button, IHeartTickIcon } from "@genuin/ui";
+import { IHeartTickIcon } from "@genuin/ui";
 import { cn } from "@genuin/ui/lib/utils";
 import { type ComponentProps } from "react";
+import { OverLayButton } from "./overlay-buttons";
 
 interface IHeartCaughtUpOverlayProps extends ComponentProps<"div"> {
   variant: "overlay" | "complete";
   title?: string;
   subtitle?: string;
-  onGoToEpisodes?: () => void;
+  onIheartRedirection?: () => void;
 }
 
 export function IHeartCaughtUpOverlay({
@@ -14,7 +15,7 @@ export function IHeartCaughtUpOverlay({
   title = "You're all caught up!",
   subtitle = "New highlights will appear soon.",
   variant = "overlay",
-  onGoToEpisodes,
+  onIheartRedirection,
   ...props
 }: IHeartCaughtUpOverlayProps) {
   return (
@@ -48,13 +49,7 @@ export function IHeartCaughtUpOverlay({
           </p>
         </div>
         {variant === "overlay" && (
-          <Button
-            onClick={onGoToEpisodes}
-            aria-label="Go to all episodes page"
-            className="gencl:h-11 gencl:text-body-1-semi-bold! gencl:flex gencl:items-center gencl:justify-center gencl:rounded-full gencl:bg-white gencl:px-5 gencl:text-[#27292D]!"
-          >
-            Go to episodes
-          </Button>
+          <OverLayButton onIheartRedirection={onIheartRedirection} />
         )}
       </div>
     </div>

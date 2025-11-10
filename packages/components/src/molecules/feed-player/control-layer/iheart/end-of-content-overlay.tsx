@@ -1,20 +1,21 @@
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { Button } from "@genuin/ui";
-import { IHeartPlayAgainIcon } from "@genuin/ui/icons";
+import { IHeartPlayAgainIcon, IHeartPlayIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
 import { type ComponentProps } from "react";
+import { OverLayButton } from "./overlay-buttons";
 
 interface IHeartEndOfContentOverlayProps extends ComponentProps<"div"> {
   isMobile: boolean;
-  onGoToEpisodes?: () => void;
+  onIheartRedirection?: () => void;
   onPlayAgain?: () => void;
 }
 
 export function IHeartEndOfContentOverlay({
   className,
-  onGoToEpisodes,
-  onPlayAgain,
   isMobile,
+  onIheartRedirection,
+  onPlayAgain,
   ...props
 }: IHeartEndOfContentOverlayProps) {
   const {
@@ -34,28 +35,19 @@ export function IHeartEndOfContentOverlay({
     >
       <div className="gencl:flex gencl:flex-col gencl:gap-4 gencl:pointer-events-auto">
         {/* TODO: Move static color declaration to CSS utility class: gencl:text-[#27292D]! */}
-        {/* TODO : iheart phase-2 implementation  */}
-        {/* <Button
-          onClick={onGoToEpisodes}
-          aria-label="Go to all episodes"
-          className="gencl:h-11 gencl:text-body-1-semi-bold! gencl:flex gencl:items-center gencl:justify-center gencl:rounded-full gencl:bg-white gencl:px-5 gencl:text-[#27292D]!"
-        >
-          Go to episodes
-        </Button> */}
+        <OverLayButton onIheartRedirection={onIheartRedirection} />
         <Button
           onClick={onPlayAgain}
           aria-label="Play this episode again"
           tabIndex={0}
           className={cn(
-            "gencl:text-body-1-semi-bold! gencl:bg-white gencl:flex gencl:items-center gencl:justify-center gencl:rounded-full gencl:text-[#27292D]!",
-            websiteType === "polaris"
-              ? "gencl:h-8! gencl:md:h-12! gencl:px-5"
-              : "gencl:h-8! gencl:px-4"
+            "gencl:text-body-1-semi-bold! gencl:bg-transparent gencl:flex gencl:items-center gencl:justify-center gencl:rounded-full gencl:text-white gencl:h-fit"
           )}
+          theme="custom"
         >
           <IHeartPlayAgainIcon
             strokeWidth="0px"
-            theme="light"
+            theme="dark"
             size={isMobile || websiteType === "legacy" ? "sm" : "lg"}
             aria-hidden="true"
           />{" "}
