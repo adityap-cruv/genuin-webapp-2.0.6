@@ -159,7 +159,7 @@ export function Scrubber({
       if (showScrubber) {
         if (brandLayoutType === "iheart") {
           // For iHeart: start playing and hide seeker when scrubbing ends
-          play(true);
+          // play(true);
           setShowScrubber(false);
           // For iHeart: maintain a global playback state and synchronize the seeker display based on it.
           if (feedPlayerShouldPlay) {

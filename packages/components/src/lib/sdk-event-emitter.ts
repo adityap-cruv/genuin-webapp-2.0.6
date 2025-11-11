@@ -50,6 +50,7 @@ export enum SDKListenerEventName {
   PLAYER_UNMUTE = "player:unmute",
   PLAYER_ON_FOLLOW_CHANGED = "player:onFollowChanged",
   PLAY_CHANGE_IHEART_CONTENT = "player:onMiniPlayerPlayChange",
+  THEME_CHANGE = "sdk:themeChange",
 }
 
 /**

@@ -25,6 +25,7 @@ import { useSafeEmbedContext } from "../embed/context";
 import {
   SDKEventEmitter,
   SDKEventName,
+  SDKEventPayloadMap,
   SDKListenerEventName,
 } from "@genuin/components/lib/sdk-event-emitter";
 
@@ -326,6 +327,22 @@ export function BaseContextProvider({
       { debounceTime: 300 }
     );
   }, [muted]);
+
+  useEffect(() => {
+    function handleThemeChange({
+      payload,
+    }: {
+      payload: "dark" | "light" | undefined;
+    }) {
+      if (currentTheme !== payload && payload !== undefined)
+        setCurrentTheme(payload);
+    }
+
+    SDKEventEmitter.on(SDKListenerEventName.THEME_CHANGE, handleThemeChange);
+    return () => {
+      SDKEventEmitter.off(SDKListenerEventName.THEME_CHANGE, handleThemeChange);
+    };
+  }, [currentTheme]);
 
   return (
     <BaseContext.Provider

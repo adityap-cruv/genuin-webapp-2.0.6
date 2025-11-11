@@ -215,6 +215,7 @@ export const FeedPlayer = memo(function FeedPlayer({
         player.play();
         baseContextManager.setVideoWatched({ videoId, isWatched: false });
       }
+      setPlayingState("READY");
     },
     [feedPlayerShouldPlay, id, baseContextManager, videoId]
   );
