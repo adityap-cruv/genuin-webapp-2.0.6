@@ -13,6 +13,7 @@ interface CTAOnlyCardProps {
   linkCount?: number;
   isDisabled?: boolean;
   showIcon?: boolean;
+  handleCTAClick?: (e: React.MouseEvent) => void;
 }
 
 export const CTAOnlyCard = ({
@@ -22,22 +23,17 @@ export const CTAOnlyCard = ({
   linkCount = 0,
   isDisabled = false,
   showIcon = true,
+  handleCTAClick,
 }: CTAOnlyCardProps) => {
-  const { track, EventName } = useAnalytics();
   const { brandDetails } = useBaseContext();
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleCTAClick = async (e: React.MouseEvent) => {
+  const handleInternalCTAClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsLoading(true);
     try {
       const url = checkAndAppendHttps(ctaLink);
-      const finalUrl = await getRedirectUrl(url, brandDetails.brand_id);
-
-      track(EventName.LINKOUTS_CTA_CLICKED, {
-        linkUrl: ctaLink,
-        linkCount,
-      });
+      const finalUrl = await getRedirectUrl(url);
 
       window.open(finalUrl, "_blank");
     } finally {
@@ -50,7 +46,7 @@ export const CTAOnlyCard = ({
       theme="custom"
       size={isEmbed ? "sm" : "md"}
       className={cn(
-        "gencl:w-full gencl:h-9! gencl:text-body-1-semi-bold! gencl:font-semibold gencl:text-center gencl:justify-center gencl:transition-all gencl:text-white gencl:flex gencl:items-center gencl:px-3 gencl:rounded-full gencl:bg-primary gencl:hover:bg-primary-700",
+        "gencl:w-full gencl:h-9! gencl:text-body-1-semi-bold! gencl:font-semibold gencl:text-center gencl:justify-center gencl:transition-all gencl:text-white gencl:flex gencl:items-center gencl:px-3 gencl:rounded-full! gencl:bg-primary gencl:hover:bg-primary-700",
         isDisabled &&
           "gencl:bg-[#3F4447]! gencl:text-[#A9AFB2]! gencl:cursor-not-allowed"
       )}
@@ -59,7 +55,7 @@ export const CTAOnlyCard = ({
         background: brandDetails.cta_config?.button_color ?? "",
         color: brandDetails.cta_config?.text_color ?? "",
       }}
-      onClick={handleCTAClick}
+      onClick={handleCTAClick ? handleCTAClick : handleInternalCTAClick}
       disabled={isLoading}
     >
       <div className="gencl:flex gencl:items-center gencl:gap-1">

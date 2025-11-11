@@ -61,6 +61,10 @@ export type ConfigByUser = {
   brand_context?: Array<{
     id: string
     type: string
+    isFollowed?: boolean
+    activePlayingId?: string | number | undefined
+    activePlayingType?: 'episode' | 'live' | 'station'
+    isPlaying?: boolean
   }>
   theme?: 'dark' | 'light'
   website_type?: 'legacy' | 'polaris'

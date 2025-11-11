@@ -1,5 +1,5 @@
 "use client";
-import { EmbedContext } from "./context";
+import { EmbedContext, type FollowStatusItem } from "./context";
 import { ActivePlayerType, createEmbedEventBus } from "./event-bus";
 import { EmbedDataType } from "./embed.types";
 import {
@@ -17,6 +17,7 @@ import {
   SDKListenerEventName,
 } from "@genuin/components/lib/sdk-event-emitter";
 import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
+import { useFollowStatus } from "./hooks";
 
 type EmbedProviderProps = {
   embedData: EmbedDataType;
@@ -46,6 +47,19 @@ export function EmbedProvider({
   );
   const action = urlParams.get("action");
 
+  // Initialize follow statuses from brand_context (only for iHeart layout)
+  const initialFollowStatuses: FollowStatusItem[] = useMemo(() => {
+    if (!isIHeartLayout || !embedData.brand_context) return [];
+
+    return embedData.brand_context
+      .filter((item) => item.type === "podcast" || item.type === "station")
+      .map((item) => ({
+        id: String(item.id),
+        type: item.type as "podcast" | "station",
+        isFollowed: item.isFollowed ?? false,
+      }));
+  }, [embedData.brand_context, isIHeartLayout]);
+
   // Create a unique event bus for this provider instance
   const embedEventBus = useMemo(
     () =>
@@ -56,15 +70,24 @@ export function EmbedProvider({
         isSectioned: false,
         containerInView: true,
         skipTimeOffsetOnce: false,
+        followStatuses: initialFollowStatuses,
         // Only disable swiper for iHeart layout with startVideoSlug and action=share
         disableSwiper:
           isIHeartLayout && !!embedData.startVideoSlug && action === "share",
       }),
-    [isIHeartLayout, embedData.startVideoSlug, action]
+    [isIHeartLayout, embedData.startVideoSlug, action, initialFollowStatuses]
   );
 
   // Create a unique router for this provider instance
   const embedRouter = useMemo(() => createEmbedRouter(), []);
+
+  // Use the follow status hook (only active for iHeart layout)
+  const followStatusMethods = useFollowStatus({
+    embedData,
+    embedEventBus,
+    isIHeartLayout,
+    setStateEmbedData,
+  });
 
   // Mount event listeners and handlers
   useInsertionEffect(() => {
@@ -303,6 +326,8 @@ export function EmbedProvider({
         updateIsSectioned,
         updateSelectedSection,
         markAutoInteractionActionDone,
+        getFollowStatus: followStatusMethods.getFollowStatus,
+        updateFollowStatus: followStatusMethods.updateFollowStatus,
       }}
     >
       {children}

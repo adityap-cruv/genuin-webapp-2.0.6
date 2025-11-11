@@ -531,8 +531,12 @@ export type EmbedDataType = {
   show_style_details?: boolean;
   social_metrics?: "views";
   brand_context?: Array<{
-    id: string;
-    type: string;
+    id: string
+    type: string
+    isFollowed?: boolean
+    activePlayingId?: string | number | undefined
+    activePlayingType?: 'episode' | 'live' | 'station'
+    isPlaying?: boolean
   }>;
   websiteType?: "polaris" | "legacy" | undefined;
 };

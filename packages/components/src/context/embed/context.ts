@@ -6,6 +6,15 @@ import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema"
 import type { BrandType } from "@genuin/components/lib/utils/brand-layout";
 
 /**
+ * Type representing a follow status item
+ */
+export type FollowStatusItem = {
+  id: string;
+  type: "podcast" | "station";
+  isFollowed: boolean;
+};
+
+/**
  * Type definition for the Embed context.
  * @property rootElement - The root HTML element associated with the embed context, or null if not set.
  */
@@ -79,6 +88,22 @@ type EmbedContextType = {
    * Marks that the auto interaction action (spark, comment-spark) has been done
    */
   markAutoInteractionActionDone: () => void;
+
+  /**
+   * Gets the follow status for a specific item by id and type
+   * @param id The id of the podcast or station
+   * @param type The type of the content ("podcast" | "station")
+   * @returns The follow status or undefined if not found
+   */
+  getFollowStatus: (id: string, type: "podcast" | "station") => boolean | undefined;
+
+  /**
+   * Updates the follow status for a specific item
+   * @param id The id of the podcast or station
+   * @param type The type of the content ("podcast" | "station")
+   * @param isFollowed The new follow status
+   */
+  updateFollowStatus: (id: string, type: "podcast" | "station", isFollowed: boolean) => void;
 };
 
 /**

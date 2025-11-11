@@ -40,7 +40,10 @@ const ALLOWED_EVENTS = [
   'onExpandViewChanged',
   'onAnalyticsTrack',
   'onFeedLoaded',
+  'onFollowChanged',
   'onCaughtOverlay',
+  'checkFollowingStatus',
+  'onLinkoutCtaClick'
   // Add allowed event names here
 ]
 
@@ -49,6 +52,7 @@ const ALLOWED_EMIT_EVENTS = [
   'player:pause',
   'player:mute',
   'player:unmute',
+  'player:onFollowChanged'
 ]
 
 export class GenuinSDK {

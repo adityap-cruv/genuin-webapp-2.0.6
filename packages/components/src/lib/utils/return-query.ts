@@ -14,7 +14,8 @@ export type ActionType =
   | "join-community"
   | "join-group"
   | "subscribe-group"
-  | "become-a-creator";
+  | "become-a-creator"
+  | "iheart-follow";
 
 /**
  * Parameters for creating query parameters

@@ -96,7 +96,10 @@ export function Embed({
       videoLayoutId: embedData.placement_video_layout_id,
       cardLayoutId: embedData.placement_card_layout_id,
     }),
-    brandContext: embedData.brand_context,
+    brandContext: embedData.brand_context?.map(({ id, type }) => ({
+      id,
+      type,
+    })),
   };
 
   const {

@@ -1,5 +1,6 @@
 import { EventManager } from "@genuin/components/lib/utils/event-manager";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+import type { FollowStatusItem } from "./context";
 
 export type ActivePlayerType = "embed" | "expand-view" | "pip";
 
@@ -48,9 +49,13 @@ export type EmbedEventContextType = {
    * Flag to disable swiper in expand view (used when startVideoSlug is present on first open)
    */
   disableSwiper: boolean;
+  /**
+   * Array of follow statuses for podcast and station content
+   */
+  followStatuses: FollowStatusItem[];
 };
 
-type EmbedEventNameType =
+export type EmbedEventNameType =
   | "activeIndexChange"
   | "activePlayerTypeChange"
   | "sectionListChange"
@@ -58,7 +63,8 @@ type EmbedEventNameType =
   | "selectedSectionChange"
   | "containerInViewChange"
   | "disableSwiperChange"
-  | "centerActiveSlide";
+  | "centerActiveSlide"
+  | "followStatusChange";
 
 /**
  * Creates a new event bus instance for embed functionality
@@ -75,5 +81,6 @@ export const createEmbedEventBus = (context?: EmbedEventContextType) =>
     containerInView: true,
     skipTimeOffsetOnce: false,
     disableSwiper: false,
+    followStatuses: [],
     ...context,
   });

@@ -28,7 +28,7 @@ import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { Image } from "@genuin/ui/components/image";
 import { Scrubber } from "../scrubber";
-import { IHeartControls } from "../iheart";
+import { IHeartControls, IHeartFollowButton } from "../iheart";
 import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
 import { ReadMoreTextType } from "@genuin/components/molecules/read-more/read-more.types";
 import { Link } from "@genuin/components/molecules/link";
@@ -37,7 +37,7 @@ import {
   getBaseUrlWithouthighlights,
 } from "@genuin/components/lib/utils";
 import { useRef } from "react";
-import { useFeedContext } from "@genuin/components/templates/feed/context";
+import { ClipPlayerCTA } from "../iheart/clip-player-cta";
 
 type BrandLayoutType = "default" | "iheart" | "ted" | "walmart" | "grubhub";
 
@@ -79,11 +79,16 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
   hideGroupPill: boolean;
   hideCommunityPill: boolean;
   showScrubber: boolean;
+  websiteType: "polaris" | "legacy";
+  toggleExpandView?: () => void;
 } {
-  const { showSeeker, showScrubber } = usePlayerContext();
+  const { showSeeker, showScrubber, toggleExpandView } = usePlayerContext();
   const { isDesktop } = useDeviceDetectMediaQuery();
   const embedDetails = useSafeEmbedContext();
   const embedConfig = useEmbedConfigs();
+  const {
+    view: { websiteType },
+  } = useEmbedConfigs();
   const showLinkoutInExpand = embedConfig.links.showLinksInExpand;
 
   const videoLayoutId = embedConfig.view.isPlacementView
@@ -136,6 +141,8 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
     hideGroupPill,
     hideCommunityPill,
     showScrubber,
+    websiteType,
+    toggleExpandView,
   };
 }
 
@@ -147,19 +154,17 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
   type,
   isExpanded,
   onExpand,
-  isActive,
+  websiteType,
 }: {
   postDetails: PostDetailsType;
   type: BrandLayoutType;
   isExpanded?: boolean;
   onExpand?: () => void;
+  websiteType: "polaris" | "legacy";
   isActive?: boolean;
 }) {
   const { video, owner } = postDetails;
   const { attributes } = video;
-  const {
-    view: { websiteType },
-  } = useEmbedConfigs();
 
   switch (type) {
     case "iheart":
@@ -213,25 +218,35 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
             </div>
           )}
           <div className="gencl:w-full gencl:flex gencl:flex-col gencl:self-start">
-            {postDetails.video.attributes?.title && (
-              <Link
-                href={linkUrl}
-                bypassChecks
-                tabIndex={0}
-                aria-label={`${postDetails.video.attributes?.title}, title`}
-              >
-                <p
-                  className={cn(
-                    "gencl:h-5 gencl:mb-2! gencl:mt-4! gencl:flex gencl:items-center gencl:gap-2 gencl:font-semibold gencl:leading-[24px] gencl:line-clamp-1! gencl:tracking-[-0.2px] gencl:lg:font-semibold! gencl:lg:leading-[24px]! gencl:lg:tracking-[-0.2px]!",
-                    websiteType === "polaris"
-                      ? "gencl:text-[16px] gencl:lg:text-[17px]!"
-                      : "gencl:text-[16px]"
-                  )}
+            <div className="gencl:flex gencl:items-center gencl:gap-2 gencl:h-11">
+              {postDetails.video.attributes?.title && (
+                <Link
+                  href={linkUrl}
+                  bypassChecks
+                  aria-label={`${postDetails.video.attributes?.title} heading`}
+                  tabIndex={0}
                 >
-                  {postDetails.video.attributes?.title}
-                </p>
-              </Link>
-            )}
+                  <p
+                    className={cn(
+                      "gencl:my-3! gencl:h-5 gencl:flex gencl:items-center gencl:gap-2 gencl:font-semibold gencl:leading-[24px] gencl:line-clamp-1! gencl:tracking-[-0.2px] gencl:lg:font-semibold! gencl:lg:leading-[24px]! gencl:lg:tracking-[-0.2px]!",
+                      websiteType === "polaris"
+                        ? "gencl:text-[16px] gencl:lg:text-[17px]!"
+                        : "gencl:text-[16px]"
+                    )}
+                  >
+                    {postDetails.video.attributes?.title}
+                  </p>
+                </Link>
+              )}
+
+              <div className="gencl:h-11 gencl:flex gencl:items-center">
+                <IHeartFollowButton
+                  websiteType={websiteType}
+                  attributes={attributes}
+                />
+              </div>
+            </div>
+
             {attributes?.description && (
               <ReadMore
                 text={attributes.description}
@@ -510,6 +525,8 @@ export function ExpandViewDetails({
     hideGroupPill,
     hideCommunityPill,
     showScrubber,
+    websiteType,
+    toggleExpandView,
   } = useExpandViewConfig(postDetails);
   const [isExpanded, setIsExpanded] = useState(false);
   const scrubberRef = useRef<HTMLDivElement>(null);
@@ -557,6 +574,7 @@ export function ExpandViewDetails({
                 isExpanded,
                 onExpand,
               })}
+              websiteType={websiteType}
               isActive={isActive}
             />
           </div>
@@ -643,21 +661,16 @@ export function ExpandViewDetails({
       )}
       {/* iHeart: Show linkouts below seeker */}
       {/* TODO : iheart phase-2 implementation  */}{" "}
-      {/* {showLinkoutInExpand &&
-        brandLayoutType === "iheart" &&
-        postDetails.video.linkoutId && (
-          <div className="gencl:h-11 gencl:flex gencl:items-center">
-            <Linkouts
-              linkouts={postDetails.video.linkouts}
-              linkoutId={postDetails.video.linkoutId}
-              isActive={isActive}
-              className={cn("gencl:w-full", className)}
-              cardVariant="primary"
-              ctaOnly={true}
-              showImmediately={true}
-            />
-          </div>
-        )} */}
+      {brandLayoutType === "iheart" && postDetails.video.linkoutId && (
+        <div className="gencl:h-11 gencl:flex gencl:items-center">
+          <ClipPlayerCTA
+            websiteType={websiteType}
+            postDetails={postDetails}
+            toggleExpandView={toggleExpandView}
+            isActive={isActive}
+          />
+        </div>
+      )}
     </div>
   );
 }

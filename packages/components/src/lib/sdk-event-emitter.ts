@@ -31,7 +31,10 @@ export enum SDKEventName {
   EXPAND_VIEW_CHANGED = "onExpandViewChanged",
   ANALYTICS = "onAnalyticsTrack",
   FEED_LOADED = "onFeedLoaded",
+  ON_FOLLOW_CHANGED = "onFollowChanged",
   CAUGHT_OVERLAY = "onCaughtOverlay",
+  CHECK_FOLLOWING_STATUS = "checkFollowingStatus",
+  LINKOUT_CTA_CLICK = "onLinkoutCtaClick",
 }
 
 /**
@@ -45,6 +48,7 @@ export enum SDKListenerEventName {
   PLAYER_PAUSE = "player:pause",
   PLAYER_MUTE = "player:mute",
   PLAYER_UNMUTE = "player:unmute",
+  PLAYER_ON_FOLLOW_CHANGED = "player:onFollowChanged",
 }
 
 /**
@@ -128,6 +132,27 @@ export interface SDKAnalyticsPayload {
   eventPayload: Record<string, any> | undefined;
 }
 
+export interface SDKFollowChangedPayload {
+  /** Whether the user isFollowed (true) or unfollowed (false) */
+  isFollowed: boolean;
+  /** The ID of the podcast/station being isFollowed */
+  id: string | number;
+  /** Event type identifier */
+  type: "podcast" | "station";
+}
+
+export interface SDKCheckFollowingPayload {
+  /** The ID of the podcast/station to check following status */
+  id: string | number;
+  /** Event type identifier */
+  type: "podcast" | "station";
+}
+
+export interface SDKLinkoutCtaClickPayload {
+  /** The type of content (podcast/station) */
+  type?: string;
+}
+
 /**
  * Type mapping for SDK event payloads
  * Maps each event name to its corresponding payload type
@@ -149,6 +174,9 @@ export type SDKEventPayloadMap = {
   [SDKEventName.SWIPED_FORWARD]: SDKSwipedForwardPayload;
   [SDKEventName.SWIPED_BACKWARD]: SDKSwipedBackwardPayload;
   [SDKEventName.ANALYTICS]: SDKAnalyticsPayload;
+  [SDKEventName.ON_FOLLOW_CHANGED]: SDKFollowChangedPayload;
+  [SDKEventName.CHECK_FOLLOWING_STATUS]: SDKCheckFollowingPayload;
+  [SDKEventName.LINKOUT_CTA_CLICK]: SDKLinkoutCtaClickPayload;
 };
 
 /**

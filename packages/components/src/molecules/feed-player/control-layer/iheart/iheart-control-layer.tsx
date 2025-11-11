@@ -9,7 +9,11 @@ import {
   type FC,
 } from "react";
 import { Image } from "@genuin/ui/components/image";
-import { IHeartControls, IHeartEndOfContentOverlay } from "./index";
+import {
+  IHeartControls,
+  IHeartEndOfContentOverlay,
+  IHeartListenLiveButton,
+} from "./index";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { ControlLayerPropsType } from "../control-layer.types";
 import { useBaseContext } from "@genuin/components/context";
@@ -336,8 +340,11 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
               }}
               isVideoWatched={isVideoWatched}
             />
-            {/* TODO : iheart phase-2 implementation  */}
-            {/* <IHeartListenLiveButton variant="filled" /> */}
+
+            {/* <IHeartListenLiveButton
+              isIheartPlaying={true}
+              videoDetails={postDetails.video}
+            /> */}
           </div>
         </footer>
 

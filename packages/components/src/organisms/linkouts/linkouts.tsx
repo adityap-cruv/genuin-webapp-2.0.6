@@ -1,14 +1,14 @@
 "use client";
 import { useEffect, useState, useMemo, ComponentProps } from "react";
-import { LinkCard } from "@genuin/components/molecules/linkouts/single-link-card";
-import { MultiLinkCard } from "@genuin/components/molecules/linkouts/multi-link-card";
-import { CTAOnlyCard } from "@genuin/components/molecules/linkouts/cta-only-card";
+import { LinkCard } from "@genuin/components/molecules/linkouts";
+import { MultiLinkCard } from "@genuin/components/molecules/linkouts";
 import { useGetLinkouts } from "@genuin/components/react-query/api/linkouts/get-linkouts";
 import { LinkoutsType } from "@genuin/components/react-query/api/linkouts/schema";
 import { cn } from "@genuin/ui/lib/utils";
 import useShowLinkouts from "@genuin/components/hooks/use-show-linkouts";
 import { useAnalytics } from "@genuin/components/context/analytics/context";
 import { cva, VariantProps } from "class-variance-authority";
+import { CTAOnlyCard } from "@genuin/components/molecules/linkouts";
 
 export const linkOutVariant = cva("gencl:space-y-4", {
   variants: {
@@ -55,6 +55,7 @@ export type LinkoutsProps = {
    * This can be controlled by brand configuration or layout preferences.
    */
   ctaOnly?: boolean;
+  handleCTAClick?: (e: React.MouseEvent) => void;
 } & ComponentProps<"div"> &
   VariantProps<typeof linkOutVariant>;
 
@@ -76,6 +77,7 @@ export function Linkouts({
   showImmediately = false,
   isOutside = false,
   ctaOnly = false,
+  handleCTAClick,
   ...restProps
 }: LinkoutsProps) {
   const { showLinkouts } = useShowLinkouts({
@@ -172,6 +174,7 @@ export function Linkouts({
             ctaText={cta_text ?? ""}
             ctaLink={cta_link ?? ""}
             linkCount={sortedLinks.length}
+            handleCTAClick={handleCTAClick}
           />
         );
       }
