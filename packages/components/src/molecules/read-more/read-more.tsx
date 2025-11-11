@@ -79,6 +79,7 @@ export const ReadMore = memo(function ReadMore({
   open,
   href,
   linkClassName,
+  isLineTruncate = true,
   lineClampClassName,
   showOverlay = false,
   overlayClassName,
@@ -255,8 +256,13 @@ export const ReadMore = memo(function ReadMore({
   useEffect(() => {
     if (!textRef.current) return;
     const textElement = textRef.current;
-    applyLineClampStyles(textElement, isExpanded ? null : maxLines, display);
-  }, [maxLines, isExpanded, display]);
+    applyLineClampStyles(
+      textElement,
+      isExpanded ? null : maxLines,
+      display,
+      isLineTruncate
+    );
+  }, [maxLines, isExpanded, display, isLineTruncate]);
 
   // Modified animation logic for smooth expand/collapse and delayed char reduction
   useEffect(() => {
@@ -265,13 +271,13 @@ export const ReadMore = memo(function ReadMore({
     const textElement = textRef.current;
 
     if (textElement && !isExpanded) {
-      applyLineClampStyles(textElement, maxLines, display);
+      applyLineClampStyles(textElement, maxLines, display, isLineTruncate);
       setShowCollapsed(false);
     } else {
-      applyLineClampStyles(textElement, null, display);
+      applyLineClampStyles(textElement, null, display, isLineTruncate);
       setShowCollapsed(true);
     }
-  }, [shouldAnimate, isExpanded, maxLines]);
+  }, [shouldAnimate, isExpanded, maxLines, isLineTruncate]);
 
   useEffect(() => {
     if (typeof open === "undefined") return;
@@ -343,7 +349,7 @@ export const ReadMore = memo(function ReadMore({
 
   const clampedStyle: React.CSSProperties = {
     display: display === "inline" ? "inline" : "-webkit-box",
-    WebkitLineClamp: maxLines,
+    WebkitLineClamp: isLineTruncate ? maxLines : undefined,
     WebkitBoxOrient: "vertical",
     overflow: "hidden",
     wordBreak: "break-word",
