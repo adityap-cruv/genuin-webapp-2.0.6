@@ -495,6 +495,52 @@ export default defineConfig({
   // Set base path for chunk resolution
   base: './',
 
+  // Development server configuration with CORS for cross-origin access
+  server: {
+    port: 3000,
+    host: '0.0.0.0', // Allow external access
+    cors: {
+      origin: [
+        'http://localhost:3000',
+        'http://localhost:3001',
+        'http://localhost:4000',
+        'http://localhost:4005',
+        'http://dev.listen.iheart.com',
+        /^https?:\/\/.*\.iheart\.com$/,
+        /^https?:\/\/.*\.begenuin\.com$/,
+        /^http:\/\/localhost:\d+$/,
+        /^http:\/\/127\.0\.0\.1:\d+$/,
+      ],
+      credentials: true,
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    },
+    // Serve static files from dist directory
+    fs: {
+      allow: ['..', '../..', './dist'],
+    },
+  },
+
+  // Preview server (for production builds) with same CORS settings
+  preview: {
+    port: 3000,
+    host: '0.0.0.0',
+    cors: {
+      origin: [
+        'http://localhost:3000',
+        'http://localhost:3001',
+        'http://localhost:4000',
+        'http://localhost:4005',
+        'http://dev.listen.iheart.com',
+        /^https?:\/\/.*\.iheart\.com$/,
+        /^https?:\/\/.*\.begenuin\.com$/,
+        /^http:\/\/localhost:\d+$/,
+        /^http:\/\/127\.0\.0\.1:\d+$/,
+      ],
+      credentials: true,
+    },
+  },
+
   // Configure esbuild for all transforms and minification
   esbuild:
     process.env.NODE_ENV === 'production'
