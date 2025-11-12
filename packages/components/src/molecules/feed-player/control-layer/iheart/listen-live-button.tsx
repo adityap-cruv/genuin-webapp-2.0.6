@@ -33,17 +33,17 @@ export function IHeartListenLiveButton({
   className,
   videoDetails,
   info,
-  variant,
 }: IHeartListenLiveButtonProps) {
   const embedDetails = useSafeEmbedContext();
   const brandContext = embedDetails?.embedData?.brand_context?.[0];
-  const isOutlined = variant === "outlined";
   const [isPlaying, setIsPlaying] = useState(() => {
     const isPlaying = brandContext?.isPlaying;
     const activePlayingId = brandContext?.activePlayingId
       ? Number(brandContext.activePlayingId)
       : undefined;
-    const brandContextId = brandContext?.id ? Number(brandContext.id) : undefined;
+    const brandContextId = brandContext?.id
+      ? Number(brandContext.id)
+      : undefined;
 
     if (
       brandContext?.activePlayingType === "station" &&
@@ -64,6 +64,7 @@ export function IHeartListenLiveButton({
     }
     return false;
   });
+  const isOutlined = !isPlaying;
 
   const contentType: ContentType = useMemo(() => {
     return embedDetails?.embedData.brand_context?.some(
@@ -109,24 +110,29 @@ export function IHeartListenLiveButton({
     };
   }, [info.type, info.podcast, info.episode, info.station]);
 
-  const togglePlayInIheartContent = useCallback(() => {
-    const payload =
-      info.type === "station" && info.station
-        ? { type: "station" as const, stationId: info.station }
-        : info.type === "podcast" && info.podcast && info.episode
-          ? {
-              type: "podcast" as const,
-              podcastId: info.podcast,
-              episodeId: info.episode,
-            }
-          : null;
+  const togglePlayInIheartContent = useCallback(
+    (e: any) => {
+      e.stopPropagation();
 
-    payload &&
-      SDKEventEmitter.emit(SDKEventName.PLAY_IHEART_CONTENT, {
-        ...payload,
-        play: !isPlaying,
-      });
-  }, [info, isPlaying]);
+      const payload =
+        info.type === "station" && info.station
+          ? { type: "station" as const, stationId: info.station }
+          : info.type === "podcast" && info.podcast && info.episode
+            ? {
+                type: "podcast" as const,
+                podcastId: info.podcast,
+                episodeId: info.episode,
+              }
+            : null;
+
+      payload &&
+        SDKEventEmitter.emit(SDKEventName.PLAY_IHEART_CONTENT, {
+          ...payload,
+          play: !isPlaying,
+        });
+    },
+    [info, isPlaying]
+  );
 
   if (!ctaText) return null;
 
@@ -138,7 +144,7 @@ export function IHeartListenLiveButton({
       role="button"
       className={cn(
         "gencl:h-11 gencl:border gencl:px-4 gencl:py-2 gencl:rounded-full gencl:flex gencl:items-center gencl:justify-center gencl:gap-1 gencl:transition-colors",
-        isPlaying
+        !isOutlined
           ? "gencl:border-transparent gencl:bg-white"
           : "gencl:border-white gencl:bg-transparent",
         className
@@ -146,25 +152,23 @@ export function IHeartListenLiveButton({
       title={ctaText}
       onClick={togglePlayInIheartContent}
     >
-      <div>
-        {isPlaying ? (
-          info.type === "station" ? (
-            <IHeartStopIcon theme={isOutlined ? "dark" : "light"} size="md" />
-          ) : (
-            <IHeartPauseIcon theme={isOutlined ? "dark" : "light"} size="md" />
-          )
+      {isPlaying ? (
+        info.type === "station" ? (
+          <IHeartStopIcon theme={isOutlined ? "dark" : "light"} size="md" />
         ) : (
-          <IHeartPlayIcon theme={isOutlined ? "dark" : "light"} size="md" />
+          <IHeartPauseIcon theme={isOutlined ? "dark" : "light"} size="md" />
+        )
+      ) : (
+        <IHeartPlayIcon theme={isOutlined ? "dark" : "light"} size="md" />
+      )}
+      <p
+        className={cn(
+          "gencl:text-body-1-semi-bold!",
+          isOutlined ? "gencl:text-white!" : "gencl:text-black!"
         )}
-        <p
-          className={cn(
-            "gencl:text-body-1-semi-bold!",
-            isOutlined ? "gencl:text-white" : "gencl:text-black"
-          )}
-        >
-          {ctaText}
-        </p>
-      </div>
+      >
+        {ctaText}
+      </p>
     </Button>
   );
 }
