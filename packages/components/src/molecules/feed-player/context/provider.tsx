@@ -812,6 +812,19 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
           togglePlay(byUser);
         }
 
+        // If preview mode is active and user is trying to unmute video and video is paused than play it.
+        if (
+          byUser &&
+          video.videoShouldPreview &&
+          muted &&
+          !baseEventBus.getContext().globalPlayingState
+        ) {
+          baseEventBus.emit("globalPlayingStateChange", undefined, {
+            ...baseEventBus.getContext(),
+            globalPlayingState: true,
+          });
+        }
+
         // Conditionally update the mute state based on bypassMuteChange flag
         // bypassMuteChange=true: Skip mute state change (used when showing custom mute UI during preview)
         // bypassMuteChange=false/undefined: Normal behavior - toggle the mute state
