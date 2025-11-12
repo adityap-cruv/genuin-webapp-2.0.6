@@ -360,7 +360,6 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
               }}
               isVideoWatched={isVideoWatched}
             />
-            {/* TODO : iheart phase-2 implementation  */}
             <IHeartListenLiveButton
               variant="filled"
               info={listenLiveButtonInfo}
@@ -372,6 +371,8 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
         {isVideoWatched && (
           <IHeartEndOfContentOverlay
             isMobile={isMobile}
+            info={listenLiveButtonInfo}
+            videoDetails={postDetails.video}
             onPlayAgain={() => {
               // Handle play again action
               play(true, 0);

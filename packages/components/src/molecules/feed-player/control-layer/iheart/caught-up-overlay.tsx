@@ -2,11 +2,19 @@ import { IHeartTickIcon } from "@genuin/ui";
 import { cn } from "@genuin/ui/lib/utils";
 import { type ComponentProps } from "react";
 import { OverLayButton } from "./overlay-buttons";
+import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 interface IHeartCaughtUpOverlayProps extends ComponentProps<"div"> {
   variant: "overlay" | "complete";
   title?: string;
   subtitle?: string;
+  videoDetails?: PostDetailsType["video"];
+  info?: {
+    podcast?: number;
+    station?: number;
+    episode?: number;
+    type?: "station" | "podcast";
+  };
   onIheartRedirection?: () => void;
 }
 
@@ -15,6 +23,8 @@ export function IHeartCaughtUpOverlay({
   title = "You're all caught up!",
   subtitle = "New highlights will appear soon.",
   variant = "overlay",
+  videoDetails,
+  info,
   onIheartRedirection,
   ...props
 }: IHeartCaughtUpOverlayProps) {
@@ -51,7 +61,11 @@ export function IHeartCaughtUpOverlay({
           </p>
         </div>
         {variant === "overlay" && (
-          <OverLayButton onIheartRedirection={onIheartRedirection} />
+          <OverLayButton
+            videoDetails={videoDetails ?? ({} as PostDetailsType["video"])}
+            info={info ?? {}}
+            onIheartRedirection={onIheartRedirection}
+          />
         )}
       </div>
     </div>

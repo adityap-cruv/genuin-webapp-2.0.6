@@ -104,10 +104,35 @@ export function EmbedTile({
     cardLayoutId: postDetails.video.placement_video_layout_id ?? 0,
   });
 
+  const listenLiveButtonInfo = useMemo(
+    () => ({
+      episode: postDetails.video.attributes?.episode_id
+        ? Number(postDetails.video.attributes.episode_id)
+        : undefined,
+      podcast: postDetails.video.attributes?.podcast_id
+        ? Number(postDetails.video.attributes.podcast_id)
+        : undefined,
+      station: postDetails.video.attributes?.station_id
+        ? Number(postDetails.video.attributes.station_id)
+        : undefined,
+      type: postDetails.video.attributes?.type,
+    }),
+    [
+      postDetails.video.attributes?.episode_id,
+      postDetails.video.attributes?.podcast_id,
+      postDetails.video.attributes?.station_id,
+      postDetails.video.attributes?.type,
+    ]
+  );
+
   return (
     <>
       {shouldShowMiddlewareOverlay && postDetails.video.type === "overlay" ? (
-        <WatchBoundaryOverlay variant="overlay" />
+        <WatchBoundaryOverlay
+          info={listenLiveButtonInfo}
+          videoDetails={postDetails.video}
+          variant="overlay"
+        />
       ) : (
         <div
           className={cn(

@@ -4,9 +4,18 @@ import { IHeartPlayAgainIcon, IHeartPlayIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
 import { type ComponentProps } from "react";
 import { OverLayButton } from "./overlay-buttons";
+import { IHeartListenLiveButton } from "./listen-live-button";
+import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 interface IHeartEndOfContentOverlayProps extends ComponentProps<"div"> {
   isMobile: boolean;
+  videoDetails: PostDetailsType["video"];
+  info: {
+    podcast?: number;
+    station?: number;
+    episode?: number;
+    type?: "station" | "podcast";
+  };
   onIheartRedirection?: () => void;
   onPlayAgain?: () => void;
 }
@@ -14,6 +23,8 @@ interface IHeartEndOfContentOverlayProps extends ComponentProps<"div"> {
 export function IHeartEndOfContentOverlay({
   className,
   isMobile,
+  videoDetails,
+  info,
   onIheartRedirection,
   onPlayAgain,
   ...props
@@ -35,7 +46,11 @@ export function IHeartEndOfContentOverlay({
     >
       <div className="gencl:flex gencl:flex-col gencl:gap-4 gencl:pointer-events-auto">
         {/* TODO: Move static color declaration to CSS utility class: gencl:text-[#27292D]! */}
-        <OverLayButton onIheartRedirection={onIheartRedirection} />
+        <OverLayButton
+          info={info}
+          videoDetails={videoDetails}
+          onIheartRedirection={onIheartRedirection}
+        />
         <Button
           onClick={onPlayAgain}
           aria-label="Play this episode again"

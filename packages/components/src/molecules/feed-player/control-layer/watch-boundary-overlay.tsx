@@ -1,10 +1,20 @@
+import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { IHeartCaughtUpOverlay } from "./iheart";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 export default function WatchBoundaryOverlay({
   variant,
+  videoDetails,
+  info,
 }: {
   variant: "overlay" | "complete";
+  videoDetails?: PostDetailsType["video"];
+  info?: {
+    podcast?: number;
+    station?: number;
+    episode?: number;
+    type?: "station" | "podcast";
+  };
 }) {
   const {
     view: { brandLayoutType: layoutType },
@@ -12,7 +22,13 @@ export default function WatchBoundaryOverlay({
 
   switch (layoutType) {
     case "iheart": {
-      return <IHeartCaughtUpOverlay variant={variant} />;
+      return (
+        <IHeartCaughtUpOverlay
+          videoDetails={videoDetails}
+          info={info}
+          variant={variant}
+        />
+      );
     }
     default:
       return null;
