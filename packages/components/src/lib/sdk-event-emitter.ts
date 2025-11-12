@@ -162,18 +162,20 @@ export type PlayIheartContentPayload = { play: boolean } & (
     }
 );
 
-export type PlayChangeIHeartContentPayload =
-  | {
-      type: "station";
-      stationId: number;
-      playStatus: boolean;
-    }
-  | {
-      type: "podcast";
-      podcastId: number;
-      episodeId: number;
-      playStatus: boolean;
-    };
+export type PlayChangeIHeartContentPayload = {
+  payload:
+    | {
+        type: "station";
+        stationId: number;
+        playStatus: boolean;
+      }
+    | {
+        type: "podcast";
+        podcastId: number;
+        episodeId: number;
+        playStatus: boolean;
+      };
+};
 
 /**
  * Type mapping for SDK event payloads

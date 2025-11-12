@@ -80,7 +80,7 @@ export function IHeartListenLiveButton({
   const ctaText = videoDetails?.linkouts?.[0]?.cta_text;
 
   useEffect(() => {
-    function handlePlayChange(payload: PlayChangeIHeartContentPayload) {
+    function handlePlayChange({ payload }: PlayChangeIHeartContentPayload) {
       if (payload.type === "podcast" && info.type === "podcast") {
         // Check if podcast and episode IDs match
         if (
