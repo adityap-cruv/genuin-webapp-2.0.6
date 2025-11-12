@@ -34,7 +34,7 @@ export enum SDKEventName {
   ON_FOLLOW_CHANGED = "onFollowChanged",
   CAUGHT_OVERLAY = "onCaughtOverlay",
   CHECK_FOLLOWING_STATUS = "checkFollowingStatus",
-  LINKOUT_CTA_CLICK = "onLinkoutCtaClick",
+  PLAY_IHEART_CONTENT = "playIHeartContent",
 }
 
 /**
@@ -49,6 +49,7 @@ export enum SDKListenerEventName {
   PLAYER_MUTE = "player:mute",
   PLAYER_UNMUTE = "player:unmute",
   PLAYER_ON_FOLLOW_CHANGED = "player:onFollowChanged",
+  PLAY_CHANGE_IHEART_CONTENT = "player:onMiniPlayerPlayChange",
 }
 
 /**
@@ -148,10 +149,30 @@ export interface SDKCheckFollowingPayload {
   type: "podcast" | "station";
 }
 
-export interface SDKLinkoutCtaClickPayload {
-  /** The type of content (podcast/station) */
-  type?: string;
-}
+export type PlayIheartContentPayload = { play: boolean } & (
+  | {
+      type: "station";
+      stationId: number;
+    }
+  | {
+      type: "podcast";
+      podcastId: number;
+      episodeId: number;
+    }
+);
+
+export type PlayChangeIHeartContentPayload =
+  | {
+      type: "station";
+      stationId: number;
+      playStatus: boolean;
+    }
+  | {
+      type: "podcast";
+      podcastId: number;
+      episodeId: number;
+      playStatus: boolean;
+    };
 
 /**
  * Type mapping for SDK event payloads
@@ -176,7 +197,7 @@ export type SDKEventPayloadMap = {
   [SDKEventName.ANALYTICS]: SDKAnalyticsPayload;
   [SDKEventName.ON_FOLLOW_CHANGED]: SDKFollowChangedPayload;
   [SDKEventName.CHECK_FOLLOWING_STATUS]: SDKCheckFollowingPayload;
-  [SDKEventName.LINKOUT_CTA_CLICK]: SDKLinkoutCtaClickPayload;
+  [SDKEventName.PLAY_IHEART_CONTENT]: PlayIheartContentPayload;
 };
 
 /**

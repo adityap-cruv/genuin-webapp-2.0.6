@@ -43,8 +43,7 @@ const ALLOWED_EVENTS = [
   'onFollowChanged',
   'onCaughtOverlay',
   'checkFollowingStatus',
-  'onLinkoutCtaClick'
-  // Add allowed event names here
+  'playIHeartContent',
 ]
 
 const ALLOWED_EMIT_EVENTS = [
@@ -52,7 +51,8 @@ const ALLOWED_EMIT_EVENTS = [
   'player:pause',
   'player:mute',
   'player:unmute',
-  'player:onFollowChanged'
+  'player:onFollowChanged',
+  'player:onMiniPlayerPlayChange',
 ]
 
 export class GenuinSDK {

@@ -9,11 +9,9 @@ import {
   type FC,
 } from "react";
 import { Image } from "@genuin/ui/components/image";
-import {
-  IHeartControls,
-  IHeartEndOfContentOverlay,
-  IHeartListenLiveButton,
-} from "./index";
+import { IHeartControls } from "./controls";
+import { IHeartListenLiveButton } from "./listen-live-button";
+
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { ControlLayerPropsType } from "../control-layer.types";
 import { useBaseContext } from "@genuin/components/context";
@@ -23,6 +21,7 @@ import { GenericData } from "@genuin/components/context/base/feed-context-manage
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { ReadMoreTextType } from "@genuin/components/molecules/read-more/read-more.types";
+import { IHeartEndOfContentOverlay } from "./end-of-content-overlay";
 
 export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
   postDetails,
@@ -168,6 +167,27 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
       }
     },
     [onMouseLeave, postDetails, baseContextManager, embedConfigs]
+  );
+
+  const listenLiveButtonInfo = useMemo(
+    () => ({
+      episode: postDetails.video.attributes?.episode_id
+        ? Number(postDetails.video.attributes.episode_id)
+        : undefined,
+      podcast: postDetails.video.attributes?.podcast_id
+        ? Number(postDetails.video.attributes.podcast_id)
+        : undefined,
+      station: postDetails.video.attributes?.station_id
+        ? Number(postDetails.video.attributes.station_id)
+        : undefined,
+      type: postDetails.video.attributes?.type,
+    }),
+    [
+      postDetails.video.attributes?.episode_id,
+      postDetails.video.attributes?.podcast_id,
+      postDetails.video.attributes?.station_id,
+      postDetails.video.attributes?.type,
+    ]
   );
 
   return (
@@ -340,11 +360,12 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
               }}
               isVideoWatched={isVideoWatched}
             />
-
-            {/* <IHeartListenLiveButton
-              isIheartPlaying={true}
+            {/* TODO : iheart phase-2 implementation  */}
+            <IHeartListenLiveButton
+              variant="filled"
+              info={listenLiveButtonInfo}
               videoDetails={postDetails.video}
-            /> */}
+            />
           </div>
         </footer>
 

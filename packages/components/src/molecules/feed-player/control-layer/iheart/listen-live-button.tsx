@@ -4,26 +4,66 @@ import {
   IHeartPlayIcon,
   IHeartStopIcon,
 } from "@genuin/ui/icons/iheart-icons";
-import { type ComponentProps, useMemo } from "react";
 import { Button } from "@genuin/ui";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { type ContentType } from "@genuin/components/lib/utils/iheart-text-utils";
 
-interface IHeartListenLiveButtonProps extends ComponentProps<"button"> {
-  isIheartPlaying?: boolean;
-  videoDetails?: PostDetailsType["video"];
-  onClick?: () => void;
+import { useCallback, useEffect, useState, useMemo } from "react";
+import {
+  PlayChangeIHeartContentPayload,
+  SDKEventEmitter,
+  SDKEventName,
+  SDKListenerEventName,
+} from "@genuin/components/lib/sdk-event-emitter";
+
+interface IHeartListenLiveButtonProps {
+  className?: string;
+  variant?: "outlined" | "filled";
+  videoDetails: PostDetailsType["video"];
+  info: {
+    podcast?: number;
+    station?: number;
+    episode?: number;
+    type?: "station" | "podcast";
+  };
 }
 
 export function IHeartListenLiveButton({
   className,
-  isIheartPlaying = false,
   videoDetails,
-  onClick,
-  ...props
+  info,
+  variant,
 }: IHeartListenLiveButtonProps) {
   const embedDetails = useSafeEmbedContext();
+  const brandContext = embedDetails?.embedData?.brand_context?.[0];
+  const isOutlined = variant === "outlined";
+  const [isPlaying, setIsPlaying] = useState(() => {
+    const isPlaying = brandContext?.isPlaying;
+    const activePlayingId = brandContext?.activePlayingId
+      ? Number(brandContext.activePlayingId)
+      : undefined;
+    const brandContextId = brandContext?.id ? Number(brandContext.id) : undefined;
+
+    if (
+      brandContext?.activePlayingType === "station" &&
+      activePlayingId !== undefined
+    ) {
+      if (
+        info.type === "podcast" &&
+        activePlayingId === info.episode &&
+        brandContextId !== undefined &&
+        brandContextId === info.podcast
+      ) {
+        return isPlaying;
+      }
+
+      if (info.type === "station" && activePlayingId === info.station) {
+        return isPlaying;
+      }
+    }
+    return false;
+  });
 
   const contentType: ContentType = useMemo(() => {
     return embedDetails?.embedData.brand_context?.some(
@@ -38,48 +78,93 @@ export function IHeartListenLiveButton({
   // Use utility functions for text and aria labels
   const ctaText = videoDetails?.linkouts?.[0]?.cta_text;
 
-  const iconTheme = isIheartPlaying ? "light" : "dark";
+  useEffect(() => {
+    function handlePlayChange(payload: PlayChangeIHeartContentPayload) {
+      if (payload.type === "podcast" && info.type === "podcast") {
+        // Check if podcast and episode IDs match
+        if (
+          payload.podcastId === info.podcast &&
+          payload.episodeId === info.episode
+        ) {
+          setIsPlaying(payload.playStatus);
+        }
+      }
 
-  const renderIcon = useMemo(() => {
-    if (!isIheartPlaying) {
-      return <IHeartPlayIcon theme={iconTheme} size="md" />;
+      if (payload.type === "station" && info.type === "station") {
+        // Check if station ID matches
+        if (payload.stationId === info.station) {
+          setIsPlaying(payload.playStatus);
+        }
+      }
     }
+    SDKEventEmitter.on(
+      SDKListenerEventName.PLAY_CHANGE_IHEART_CONTENT,
+      handlePlayChange
+    );
+    return () => {
+      SDKEventEmitter.off(
+        SDKListenerEventName.PLAY_CHANGE_IHEART_CONTENT,
+        handlePlayChange
+      );
+    };
+  }, [info.type, info.podcast, info.episode, info.station]);
 
-    if (type === "podcast") {
-      return <IHeartPauseIcon theme={iconTheme} size="md" />;
-    }
+  const togglePlayInIheartContent = useCallback(() => {
+    const payload =
+      info.type === "station" && info.station
+        ? { type: "station" as const, stationId: info.station }
+        : info.type === "podcast" && info.podcast && info.episode
+          ? {
+              type: "podcast" as const,
+              podcastId: info.podcast,
+              episodeId: info.episode,
+            }
+          : null;
 
-    return <IHeartStopIcon theme={iconTheme} size="md" />;
-  }, [isIheartPlaying, type, iconTheme]);
+    payload &&
+      SDKEventEmitter.emit(SDKEventName.PLAY_IHEART_CONTENT, {
+        ...payload,
+        play: !isPlaying,
+      });
+  }, [info, isPlaying]);
 
-  if (!videoDetails?.linkoutId) return null;
+  if (!ctaText) return null;
 
   return (
     <Button
-      {...props}
       theme="custom"
       aria-label={type === "podcast" ? "Play full episode" : "Play live radio"}
       tabIndex={0}
       role="button"
       className={cn(
         "gencl:h-11 gencl:border gencl:px-4 gencl:py-2 gencl:rounded-full gencl:flex gencl:items-center gencl:justify-center gencl:gap-1 gencl:transition-colors",
-        isIheartPlaying
+        isPlaying
           ? "gencl:border-transparent gencl:bg-white"
           : "gencl:border-white gencl:bg-transparent",
         className
       )}
       title={ctaText}
-      onClick={onClick}
+      onClick={togglePlayInIheartContent}
     >
-      {renderIcon}
-      <p
-        className={cn(
-          "gencl:text-body-1-semi-bold!",
-          isIheartPlaying ? "gencl:text-black" : "gencl:text-white"
+      <div>
+        {isPlaying ? (
+          info.type === "station" ? (
+            <IHeartStopIcon theme={isOutlined ? "dark" : "light"} size="md" />
+          ) : (
+            <IHeartPauseIcon theme={isOutlined ? "dark" : "light"} size="md" />
+          )
+        ) : (
+          <IHeartPlayIcon theme={isOutlined ? "dark" : "light"} size="md" />
         )}
-      >
-        {ctaText}
-      </p>
+        <p
+          className={cn(
+            "gencl:text-body-1-semi-bold!",
+            isOutlined ? "gencl:text-white" : "gencl:text-black"
+          )}
+        >
+          {ctaText}
+        </p>
+      </div>
     </Button>
   );
 }

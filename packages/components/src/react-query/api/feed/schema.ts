@@ -50,7 +50,7 @@ export const videoSchema = z.object({
       episode_id: z.string().nullish(),
       podcast_id: z.string().nullish(),
       station_id: z.string().nullish(),
-      type: z.string().nullish(),
+      type: z.enum(["station", "podcast"]),
     })
     .nullish()
     .optional(),
