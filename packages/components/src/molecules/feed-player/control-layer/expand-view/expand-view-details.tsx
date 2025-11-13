@@ -343,8 +343,9 @@ const AdaptiveDescription = memo(function AdaptiveDescription({
             expandedHeight="20vh"
             position="overlay"
             showOverlay={true}
-            buttonClassName="gencl:text-white/70! gencl:font-bold gencl:text-[12px] gencl:lg:text-[14px]! gencl:leading-[18px] gencl:tracking-[-0.5px] gencl:align-bottom gencl:hover:no-underline"
-            textClassName="gencl:text-[12px] gencl:font-normal gencl:leading-[20px] gencl:tracking-[-0.35px]! gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]! gencl:text-white/70! gencl:pt-1!"
+            isLineTruncate={false}
+            buttonClassName="gencl:text-white! gencl:font-bold gencl:text-[12px] gencl:lg:text-[14px]! gencl:leading-[18px] gencl:tracking-[-0.5px] gencl:align-bottom gencl:hover:no-underline"
+            textClassName="gencl:text-[12px] gencl:font-normal gencl:leading-[20px] gencl:tracking-[-0.35px]! gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]! gencl:text-white! gencl:pt-1!"
             maxLines={2}
             tabIndex={0}
             aria-label={`${getMonthYear(createdAt ?? 0)}${duration ? ` • ${getFormattedDuration(String(duration))}` : ""} ${Array.isArray(description) ? description.join(" ") : description || ""}, Video description`}
@@ -630,6 +631,7 @@ export function ExpandViewDetails({
           <Scrubber
             className={cn("gencl:z-20 gencl:transition-all")}
             showOnlyTime={true}
+            duration={postDetails.video.duration}
           />
         </div>
       ) : (

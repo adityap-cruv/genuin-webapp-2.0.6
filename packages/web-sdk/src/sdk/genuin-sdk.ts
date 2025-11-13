@@ -48,6 +48,7 @@ const ALLOWED_EMIT_EVENTS = [
   'player:pause',
   'player:mute',
   'player:unmute',
+  'sdk:themeChange',
 ]
 
 export class GenuinSDK {

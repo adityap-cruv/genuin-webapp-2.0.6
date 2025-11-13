@@ -132,7 +132,11 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
   const handleMouseEnter = useCallback(
     (e: any) => {
       onMouseEnter?.(e);
-      if (embedConfigs.video.videoShouldPreview && index !== undefined) {
+      if (
+        embedConfigs.video.videoShouldPreview &&
+        index !== undefined &&
+        !isVideoWatched
+      ) {
         // Set preview index to activate hover preview for this video
         baseContextManager.setPreviewIndex({
           index,
@@ -140,7 +144,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
         });
       }
     },
-    [onMouseEnter]
+    [onMouseEnter, isVideoWatched]
   );
 
   /**
@@ -301,7 +305,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
               expandable={false}
               position="overlay"
               showOverlay={true}
-              textClassName="gencl:z-10 gencl:text-[14px] gencl:font-normal gencl:leading-[18px] gencl:tracking-[-0.2px]! gencl:text-white/70! gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]!"
+              textClassName="gencl:z-10 gencl:text-[14px] gencl:font-normal gencl:leading-[18px] gencl:tracking-[-0.2px]! gencl:text-white! gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]!"
               maxLines={2}
               tabIndex={isVideoWatched ? -1 : 0}
               aria-label={`${getMonthYear(postDetails.video.createdAt ?? 0)}${postDetails.video.duration ? ` • ${getFormattedDuration(String(postDetails.video.duration))}` : ""} ${Array.isArray(postDetails.video.description) ? postDetails.video.description.join(" ") : postDetails.video.description || ""}, Video description`}

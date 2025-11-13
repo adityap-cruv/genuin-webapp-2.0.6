@@ -118,9 +118,15 @@ export type ReadMoreProps = {
    * When enabled, overrides static height values like `expandedHeight`.
    */
   useDynamicHeight?: boolean;
- /**
+  /**
    * Whether to show a dark overlay behind the expanded content from the bottom (i.e. iheart usecase)
    * @default false
    */
-  showBottomOverlay? : boolean
+  showBottomOverlay?: boolean;
+  /**
+   * Determines whether the text should be truncated by lines or by words.
+   * When set to `true`, truncation is based on line count; when `false`, it's word-based.
+   * @default true
+   */
+  isLineTruncate?: boolean;
 } & Omit<ComponentProps<"p">, "children">;

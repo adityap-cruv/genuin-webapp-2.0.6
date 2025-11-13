@@ -326,14 +326,14 @@ export function EmbedExpandView({
       <RemoveScroll>
         <RootPortal
           className={cn(
-            "gen-sdk-class gen-sdk-expand-view gencl:h-full gencl:w-full gencl:flex gencl:justify-center gencl:gap-6  gencl:inset-0 gencl:z-50 gencl:bg-white",
+            "gen-sdk-class gen-sdk-expand-view gencl:h-full gencl:w-full gencl:flex gencl:justify-center gencl:gap-6 gencl:inset-0 gencl:z-50 gencl:bg-white",
             isMobile && "gencl:flex-col",
             // Apply fixed positioning with full screen dimensions for non-iHeart layouts
             !isIHeart && "gencl:fixed gencl:h-screen gencl:w-screen",
             isIHeart &&
               websiteType === "legacy" && [
                 "gencl:fixed",
-                isDesktop ? "gencl:z-[117]!" : "gencl:z-[112]!",
+                isDesktop ? "gencl:z-[115]!" : "gencl:z-[112]!",
               ]
           )}
         >

@@ -8,9 +8,10 @@ import { Link } from "../link";
 export function applyLineClampStyles(
   element: HTMLElement,
   maxLines: number | null,
-  display: "inline" | "block"
+  display: "inline" | "block",
+  isLineTruncate: boolean
 ) {
-  if (maxLines === null) {
+  if (maxLines === null || !isLineTruncate) {
     element.style.display = display === "inline" ? "inline" : "-webkit-box"; // Reset display
     (
       element.style as unknown as {

@@ -120,7 +120,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     view: { brandLayoutType, websiteType },
     video,
   } = useEmbedConfigs();
-
   // For iHeart brand layout, use shared state from BaseContext
   const isIHeartLayout = brandLayoutType === "iheart";
 
@@ -467,8 +466,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     // This ensures all players respect user's play/pause actions across the embed
     function handlePlayingStateChange(_: any, context: BaseEventBusContext) {
       setGlobalPlayState(context.globalPlayingState);
-
-      // sync feed player should play with global playing state.
       setFeedPlayerShouldPlay(context.globalPlayingState);
     }
 
@@ -519,11 +516,9 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
    * The media element reference is cached once per preview to avoid redundant getMedia() calls.
    */
   useEffect(() => {
-    const activePlayerType =
-      embedDetails?.embedEventBus.getContext().activePlayerType;
 
     // active player type should be embed than an than only this feature should work.
-    if (!video.videoShouldPreview || activePlayerType !== "embed") return;
+    if (!video.videoShouldPreview) return;
     let previewInterval: NodeJS.Timeout | null = null;
 
     function handlePreviewIndexChange({ previewIndex }: any) {
@@ -567,7 +562,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       }
       baseContextManager.off("onPreviewIndexChanged", handlePreviewIndexChange);
     };
-  }, [index, baseContextManager, embedDetails?.embedEventBus, muted]);
+  }, [index, baseContextManager, muted]);
 
   /**
    * Handles resuming playback of the last known preview index.
@@ -705,7 +700,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         });
         return;
       }
-
       setFeedPlayerShouldPlay((prev) => {
         if (!isActive && index !== undefined) {
           updateActiveIndex?.(index);
@@ -757,6 +751,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       if (seekTime && playerRef.current) {
         playerRef.current.getMedia().currentTime = seekTime;
       }
+
       setFeedPlayerShouldPlay(true);
       if (byUser) {
         setButtonAction("PLAY");
@@ -773,7 +768,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   // pause: Sets the feed player to pause state.
   const pause = useCallback(
     (byUser: boolean) => {
-      console.log("pause called");
       setFeedPlayerShouldPlay(false);
       if (byUser) {
         baseContextManager.setPlayPauseTracker({ isPlaying: false });
@@ -813,6 +807,19 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
           baseContextManager.checkIfVideoPreviewActive({ index })
         ) {
           togglePlay(byUser);
+        }
+
+        // If preview mode is active and user is trying to unmute video and video is paused than play it.
+        if (
+          byUser &&
+          video.videoShouldPreview &&
+          muted &&
+          !baseEventBus.getContext().globalPlayingState
+        ) {
+          baseEventBus.emit("globalPlayingStateChange", undefined, {
+            ...baseEventBus.getContext(),
+            globalPlayingState: true,
+          });
         }
 
         // Conditionally update the mute state based on bypassMuteChange flag

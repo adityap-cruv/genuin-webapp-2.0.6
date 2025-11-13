@@ -157,7 +157,7 @@ export const FeedPlayer = memo(function FeedPlayer({
     return () => {
       observer.disconnect();
     };
-  }, [videoId]);
+  }, [videoId, analyticsEventData]);
 
   const handleMutedChange = useCallback(
     (isMuted: boolean) => {
@@ -215,6 +215,7 @@ export const FeedPlayer = memo(function FeedPlayer({
         player.play();
         baseContextManager.setVideoWatched({ videoId, isWatched: false });
       }
+      setPlayingState("READY");
     },
     [feedPlayerShouldPlay, id, baseContextManager, videoId]
   );

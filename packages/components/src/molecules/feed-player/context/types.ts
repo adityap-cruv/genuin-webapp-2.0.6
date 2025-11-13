@@ -1,4 +1,4 @@
-export type PlayingStateType = "PLAYING" | "PAUSED" | "LOADING";
+export type PlayingStateType = "PLAYING" | "PAUSED" | "LOADING" | "READY";
 
 export type ButtonActionType = "MUTE" | "UNMUTE" | "PLAY" | "PAUSE" | undefined;
 

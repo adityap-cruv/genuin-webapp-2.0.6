@@ -78,6 +78,7 @@ export function FeedWithData({
     hasNextPage: hasNextPage ?? false,
     isFetchingNextPage,
     fetchNextPage,
+    totalVideos: data?.pages[0]?.totalVideos,
   };
 
   if (isError) {

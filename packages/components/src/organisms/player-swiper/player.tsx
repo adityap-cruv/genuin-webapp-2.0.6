@@ -53,13 +53,8 @@ export function Player({
   onReactionStateChange,
   onCommentCountChange,
 }: PlayerProps) {
-  const {
-    showExpandView,
-    toggleExpandView,
-    activeIndex,
-    variant,
-    setActiveIndex,
-  } = useFeedContext();
+  const { showExpandView, toggleExpandView, activeIndex, variant } =
+    useFeedContext();
   const { muted } = useBaseContext();
   // const { isActive, isNext, isPrev, isVisible } = useSwiperSlide();
   const swiper = useSwiper();

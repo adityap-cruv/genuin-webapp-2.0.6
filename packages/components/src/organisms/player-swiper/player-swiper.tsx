@@ -355,6 +355,7 @@ export function PlayerList({
                   isPrev={isPrev}
                   isVisible={isVisible}
                   post={post}
+                  totalVideos={totalVideos}
                   isSectioned={isSectioned}
                   onCommunityJoinStatusChange={onCommunityJoinStatusChange}
                   onGroupJoinStatusChange={onGroupJoinStatusChange}
@@ -458,12 +459,7 @@ export function PlayerList({
               swiper={activeSwiper ?? undefined}
               postsLength={posts.length}
               position="relative"
-              className={cn(
-                "gencl:pl-10",
-                websiteType === "polaris"
-                  ? "gencl:justify-end"
-                  : "gencl:justify-center"
-              )}
+              className={cn("gencl:pl-10 gencl:justify-center")}
               theme={theme}
               size={websiteType === "polaris" ? "lg" : "xl"}
             />
@@ -618,6 +614,8 @@ function NavigationButton({
 }) {
   // State to force re-render when swiper state changes
   const [, forceUpdate] = useState({});
+  const [prevHovered, setPrevHovered] = useState(false);
+  const [nextHovered, setNextHovered] = useState(false);
 
   useEffect(() => {
     if (swiper && swiper.update) {
@@ -630,6 +628,45 @@ function NavigationButton({
 
   const currentSlide = swiper.activeIndex + 1;
   const totalSlides = postsLength ?? swiper.slides.length;
+
+  // Define theme colors consistent with navigation-buttons.tsx
+  const isDarkTheme = theme === "dark";
+
+  // Dark theme colors
+  const darkTheme = {
+    disabled: { button: "#3F4447", icon: "#717277" },
+    default: { button: "#F6F8F9", icon: "#27292D" },
+    hover: { button: "#A9AFB2", icon: "#27292D" },
+  };
+
+  // Light theme colors
+  const lightTheme = {
+    disabled: { button: "#E6EAED", icon: "#A9AFB2" },
+    default: { button: "#27292D", icon: "#FFFFFF" },
+    hover: { button: "#717277", icon: "#FFFFFF" },
+  };
+
+  const colors = isDarkTheme ? darkTheme : lightTheme;
+
+  // Helper function to get button styles
+  const getButtonStyles = (disabled: boolean, isHovered: boolean) => {
+    const buttonBg = disabled
+      ? colors.disabled.button
+      : isHovered
+        ? colors.hover.button
+        : colors.default.button;
+
+    const iconFill = disabled
+      ? colors.disabled.icon
+      : isHovered
+        ? colors.hover.icon
+        : colors.default.icon;
+
+    return { buttonBg, iconFill };
+  };
+
+  const prevStyles = getButtonStyles(swiper.isBeginning, prevHovered);
+  const nextStyles = getButtonStyles(swiper.isEnd, nextHovered);
 
   return (
     <div
@@ -645,50 +682,74 @@ function NavigationButton({
       role="navigation"
       aria-label="Video navigation"
     >
-      <Button
-        variant="icon"
-        shape="circle"
-        size={size}
-        theme="custom"
-        className={cn(
-          theme === "dark"
-            ? "gencl:bg-white gencl:hover:bg-white/90 [&_svg]:gencl:stroke-[#27292D]"
-            : "gencl:bg-[#D9D9D9] gencl:hover:bg-[#D9D9D9]/90 [&_svg]:gencl:stroke-[#27292D]"
-        )}
-        disabled={swiper.isBeginning}
-        onClick={() => swiper.slidePrev()}
-        aria-label={`Previous video (${currentSlide - 1} of ${totalSlides})`}
-        aria-disabled={swiper.isBeginning}
-        tabIndex={0}
+      <div
+        onMouseEnter={() => !swiper.isBeginning && setPrevHovered(true)}
+        onMouseLeave={() => setPrevHovered(false)}
       >
-        <ChevronUpIcon
-          theme={theme === "light" ? "dark" : "light"}
-          size="lg"
-          aria-hidden="true"
-        />
-      </Button>
-      <Button
-        variant="icon"
-        shape="circle"
-        size={size}
-        theme="custom"
-        className={cn(
-          theme === "dark"
-            ? "gencl:bg-white gencl:hover:bg-white/90 [&_svg]:gencl:stroke-[#27292D]"
-            : "gencl:bg-[#D9D9D9] gencl:hover:bg-[#D9D9D9]/90 [&_svg]:gencl:stroke-[#27292D]"
-        )}
-        disabled={swiper.isEnd}
-        onClick={() => swiper.slideNext()}
-        aria-label={`Next video (${currentSlide + 1} of ${totalSlides})`}
-        aria-disabled={swiper.isEnd}
-        tabIndex={0}
+        <Button
+          variant="icon"
+          shape="circle"
+          size={size}
+          theme="custom"
+          className={cn(
+            "gencl:transition-all gencl:duration-200",
+            swiper.isBeginning && "gencl:cursor-not-allowed!"
+          )}
+          style={{
+            background: prevStyles.buttonBg,
+          }}
+          disabled={swiper.isBeginning}
+          onClick={() => {
+            setPrevHovered(false);
+            swiper.slidePrev();
+          }}
+          aria-label={`Previous video (${currentSlide - 1} of ${totalSlides})`}
+          aria-disabled={swiper.isBeginning}
+          tabIndex={0}
+        >
+          <ChevronUpIcon
+            theme={theme === "light" ? "dark" : "light"}
+            size="lg"
+            aria-hidden="true"
+            className="gencl:transition-colors gencl:duration-200"
+            style={{ fill: prevStyles.iconFill }}
+          />
+        </Button>
+      </div>
+      <div
+        onMouseEnter={() => !swiper.isEnd && setNextHovered(true)}
+        onMouseLeave={() => setNextHovered(false)}
       >
-        <ChevronDownIcon
-          theme={theme === "light" ? "dark" : "light"}
-          size="lg"
-          aria-hidden="true"
-        />
-      </Button>
+        <Button
+          variant="icon"
+          shape="circle"
+          size={size}
+          theme="custom"
+          className={cn(
+            "gencl:transition-all gencl:duration-200",
+            swiper.isEnd && "gencl:cursor-not-allowed!"
+          )}
+          style={{
+            background: nextStyles.buttonBg,
+          }}
+          disabled={swiper.isEnd}
+          onClick={() => {
+            setNextHovered(false);
+            swiper.slideNext();
+          }}
+          aria-label={`Next video (${currentSlide + 1} of ${totalSlides})`}
+          aria-disabled={swiper.isEnd}
+          tabIndex={0}
+        >
+          <ChevronDownIcon
+            theme={theme === "light" ? "dark" : "light"}
+            size="lg"
+            aria-hidden="true"
+            className="gencl:transition-colors gencl:duration-200"
+            style={{ fill: nextStyles.iconFill }}
+          />
+        </Button>
+      </div>
     </div>
   );
 }
@@ -716,8 +777,8 @@ function BackButton({
           className={cn(
             "gencl:hidden! gencl:lg:flex!",
             theme === "dark"
-              ? "gencl:bg-white gencl:hover:bg-white/90 [&_svg]:gencl:stroke-[#27292D]"
-              : "gencl:bg-[#D9D9D9] gencl:hover:bg-[#D9D9D9]/90 [&_svg]:gencl:stroke-[#27292D]"
+              ? "gencl:bg-white gencl:hover:bg-white/90"
+              : "gencl:bg-[#D9D9D9] gencl:hover:bg-[#D9D9D9]/90"
           )}
         >
           <ArrowLeftIcon

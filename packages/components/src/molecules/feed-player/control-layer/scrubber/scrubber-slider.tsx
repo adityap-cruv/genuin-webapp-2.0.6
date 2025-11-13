@@ -80,6 +80,7 @@ const ScrubberSlider = React.forwardRef<
     showScrubber?: boolean;
     playerTimeState: { duration: number; currentTime: number };
     showSeeker?: boolean;
+    duration?: number | null | undefined;
   }
 >(
   (
@@ -93,6 +94,7 @@ const ScrubberSlider = React.forwardRef<
       showOnlyTime = false,
       onSkipForward,
       onSkipBackward,
+      duration,
       ...props
     },
     ref
@@ -129,24 +131,30 @@ const ScrubberSlider = React.forwardRef<
       [onSkipForward, onSkipBackward]
     );
 
+    // Simple duration - use player duration or fallback to prop
+    const effectiveDuration = playerTimeState.duration || duration || 0;
+
     const scrubberStartTime = React.useMemo(
-      () => ((value?.[0] ?? 0) / 100) * playerTimeState.duration,
-      [value, playerTimeState]
+      () => ((value?.[0] ?? 0) / 100) * effectiveDuration,
+      [value, effectiveDuration]
     );
 
     const totalSeconds = React.useMemo(() => {
-      const duration = playerTimeState.duration;
-      if (!duration || !value?.[0]) return 0;
-      return (value[0] / 100) * duration;
-    }, [value, playerTimeState]);
+      if (!effectiveDuration || !value?.[0]) return 0;
+      return (value[0] / 100) * effectiveDuration;
+    }, [value, effectiveDuration]);
 
     const time = React.useMemo(() => {
-      const duration = playerTimeState.duration;
-      if (!duration || !value?.[0]) return "00:00";
+      if (!effectiveDuration) return "00:00";
+
+      // Show scrubbed time if user is scrubbing, otherwise current time
+      const timeToShow = value?.[0]
+        ? totalSeconds
+        : playerTimeState.currentTime || 0;
 
       if (showOnlyTime) {
-        const currentTimeFormatted = formatTime(totalSeconds);
-        const durationFormatted = formatTime(duration);
+        const currentTimeFormatted = formatTime(timeToShow);
+        const durationFormatted = formatTime(effectiveDuration);
         return (
           <>
             <span>{currentTimeFormatted}</span>
@@ -155,15 +163,22 @@ const ScrubberSlider = React.forwardRef<
         );
       }
 
-      const minutes = Math.floor(totalSeconds / 60);
-      const seconds = Math.floor(totalSeconds % 60);
-      return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-    }, [totalSeconds, playerTimeState.duration, showOnlyTime]);
+      return formatTime(timeToShow);
+    }, [
+      totalSeconds,
+      effectiveDuration,
+      showOnlyTime,
+      value,
+      playerTimeState.currentTime,
+    ]);
 
     const ariaValueText = React.useMemo(() => {
-      if (!playerTimeState.duration || !value?.[0]) return "0 seconds";
-      return formatTimeForScreenReader(totalSeconds);
-    }, [totalSeconds, playerTimeState.duration, value]);
+      const timeToShow =
+        value?.[0] && effectiveDuration
+          ? totalSeconds
+          : playerTimeState.currentTime || 0;
+      return formatTimeForScreenReader(timeToShow);
+    }, [totalSeconds, effectiveDuration, value, playerTimeState.currentTime]);
 
     const spritePosition = React.useMemo(() => {
       const timeMs = scrubberStartTime * 1000;
@@ -176,8 +191,13 @@ const ScrubberSlider = React.forwardRef<
       });
     }, [scrubberStartTime]);
 
-    const currentTimeFormatted = formatTime(playerTimeState.currentTime);
-    const durationFormatted = formatTime(playerTimeState.duration);
+    // Current time for accessibility
+    const currentTimeFormatted = formatTime(
+      value?.[0] && effectiveDuration
+        ? (value[0] / 100) * effectiveDuration
+        : playerTimeState.currentTime || 0
+    );
+    const durationFormatted = formatTime(effectiveDuration || 0);
     const scrubberLabel = `Slider, playback position, current time & duration ${currentTimeFormatted} / ${durationFormatted}`;
 
     return (

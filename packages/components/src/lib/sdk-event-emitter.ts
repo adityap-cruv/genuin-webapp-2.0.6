@@ -44,6 +44,7 @@ export enum SDKListenerEventName {
   PLAYER_PAUSE = "player:pause",
   PLAYER_MUTE = "player:mute",
   PLAYER_UNMUTE = "player:unmute",
+  THEME_CHANGE = "sdk:themeChange",
 }
 
 /**

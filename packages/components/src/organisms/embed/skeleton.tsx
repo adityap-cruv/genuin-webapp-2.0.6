@@ -166,10 +166,8 @@ export function SdkSkeleton({
           })}
         </EmbedSwiper>
         <NavigationButtons
-          totalSlides={2}
           theme={theme}
           embedVariant={embedVariant}
-          activeIndex={0}
           onPrev={() => {}}
           onNext={() => {}}
           isIheartLayout={config.view.brandLayoutType === "iheart"}
@@ -252,6 +250,21 @@ function EmbedHeaderSkeleton({
           )}
         />
       )}
+    </div>
+  );
+}
+
+export function ShimmerSlide({ className }: { className?: string }) {
+  const { theme } = useBaseContext();
+
+  return (
+    <div className={cn("gencl:h-full gencl:w-full", className)}>
+      <Skeleton
+        className={cn(
+          "gencl:h-full gencl:w-full gencl:rounded-lg",
+          theme === "dark" ? "gencl:bg-secondary-800" : "gencl:bg-secondary-100"
+        )}
+      />
     </div>
   );
 }
