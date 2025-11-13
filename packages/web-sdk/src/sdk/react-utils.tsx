@@ -173,7 +173,7 @@ export function loadNewEmbed({
               onSignOut={() => {}}
               onUpdateUser={() => {}}
               user={user}>
-              <AnalyticsProvider isWebSDK={true}>
+              <AnalyticsProvider embedData={embedData} isWebSDK={true}>
                 <Suspense fallback={<EmbedSkeleton />}>
                   {embedData.style === 'standard_wall' ? (
                     <LazyStandardWall />
