@@ -32,12 +32,10 @@ import { IHeartControls, IHeartFollowButton } from "../iheart";
 import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
 import { ReadMoreTextType } from "@genuin/components/molecules/read-more/read-more.types";
 import { Link } from "@genuin/components/molecules/link";
-import {
-  getBaseUrl,
-  getBaseUrlWithouthighlights,
-} from "@genuin/components/lib/utils";
+import { getBaseUrl } from "@genuin/components/lib/utils";
 import { useRef } from "react";
 import { ClipPlayerCTA } from "../iheart/clip-player-cta";
+import { getBaseUrlWithouthighlights } from "../iheart/use-iheart-playback";
 
 type BrandLayoutType = "default" | "iheart" | "ted" | "walmart" | "grubhub";
 
@@ -178,15 +176,16 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
       const linkUrl = useMemo(() => {
         if (typeof window === "undefined") return "";
 
-        const currentUrl = window.location.href;
-
         // If content type matches, use current URL without highlights
         if (contentType === attributes?.type) {
-          return getBaseUrlWithouthighlights(currentUrl);
+          return getBaseUrlWithouthighlights({
+            type: attributes.type,
+            slug: attributes.slug,
+          });
         }
 
         // Otherwise, generate URL for the other content type
-        const baseUrl = getBaseUrl(currentUrl);
+        const baseUrl = getBaseUrl(window.location.href);
         const path = attributes?.type === "podcast" ? "/podcast" : "/live";
         const slug = postDetails.video.attributes?.slug;
 

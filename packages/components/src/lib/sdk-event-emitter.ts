@@ -150,17 +150,31 @@ export interface SDKCheckFollowingPayload {
   type: "podcast" | "station";
 }
 
-export type PlayIheartContentPayload = { play: boolean } & (
+export type PlayIheartContentPayload =
+  | ({
+      play: boolean;
+      navigate?: false;
+      slug?: string;
+    } & (
+      | {
+          type: "station";
+          stationId: number;
+        }
+      | {
+          type: "podcast";
+          podcastId: number;
+          episodeId?: number;
+        }
+    ))
   | {
-      type: "station";
-      stationId: number;
-    }
-  | {
-      type: "podcast";
-      podcastId: number;
-      episodeId: number;
-    }
-);
+      play: boolean;
+      navigate: true;
+      slug?: string;
+      type?: "station" | "podcast";
+      stationId?: number;
+      podcastId?: number;
+      episodeId?: number;
+    };
 
 export type PlayChangeIHeartContentPayload = {
   payload:

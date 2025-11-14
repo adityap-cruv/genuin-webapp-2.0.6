@@ -331,19 +331,6 @@ export function isUuid(value: string): boolean {
 }
 
 /**
- * Removes the /highlights segment and everything after it from a URL
- * @param url - The URL to process
- * @returns The base URL without /highlights and subsequent segments
- * @example
- * // Returns "https://dev.listen.iheart.com/live/971-wash-fm-2501"
- * getBaseUrlWithouthighlights("https://dev.listen.iheart.com/live/971-wash-fm-2501/highlights/subscribe-for-more-bmw-content-visit-our-website-2rvh_bcde348d-74c4-4689-aa07-59d2648dfff9")
- */
-export function getBaseUrlWithouthighlights(url: string): string {
-  const clipIndex = url.indexOf("/highlights");
-  return clipIndex !== -1 ? url.substring(0, clipIndex) : url;
-}
-
-/**
  * Extracts the base URL (origin) from a given URL, including protocol, host, and port
  * @param url - The URL to process
  * @returns The base URL without path, query, or fragment

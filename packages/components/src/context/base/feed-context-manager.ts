@@ -30,26 +30,37 @@ export type PlayPauseTracker = {
   isInView: boolean;
 };
 
-export type GenericData = {
-  isVideoWatched: boolean;
-  videoId: string;
-  /**
-   * The index of the video being previewed (hover state).
-   * Used to identify which video should show preview playback.
-   */
-  previewIndex?: number;
-};
+export type GenericData =
+  | {
+      isVideoWatched: boolean;
+      videoId: string;
+      /**
+       * The index of the video being previewed (hover state).
+       * Used to identify which video should show preview playback.
+       */
+      previewIndex?: number;
+    }
+  | ActiveIHeartContentType;
 
 /**
  * Generic event names for video-related events.
  * - onVideoWatchedChanged: Fired when video watch status changes
  * - onPreviewIndexChanged: Fired when hover preview state changes (index set/cleared)
  * - playLastKnownIndex: Fired to resume playback after preview ends (debounced)
+ * - onActiveIHeartContentChanged: Fired when active iHeart content changes
  */
 export type GenericEventNames =
   | "onVideoWatchedChanged"
   | "onPreviewIndexChanged"
-  | "playLastKnownIndex";
+  | "playLastKnownIndex"
+  | "onActiveIHeartContentChanged";
+
+export type ActiveIHeartContentType = {
+  podcastId: number;
+  stationId: number;
+  episodeId: number;
+  type: "station" | "podcast" | null;
+} | null;
 
 export type GenericEventListener = (eventData: GenericData) => void;
 
@@ -73,6 +84,12 @@ export class FeedContextManager {
   private previewDebounceTimer: NodeJS.Timeout | null = null;
   /** Last active video index before preview started (for resuming playback) */
   private lastActiveIndex: number = -1;
+  private activeIHeartContent: ActiveIHeartContentType = {
+    podcastId: -1,
+    episodeId: -1,
+    stationId: -1,
+    type: null,
+  };
 
   private constructor() {
     // Initialize EventManager with empty context since we don't need context functionality
@@ -559,6 +576,37 @@ export class FeedContextManager {
    */
   public updateLastActiveIndex({ index }: { index: number }) {
     this.lastActiveIndex = index;
+  }
+
+  /**
+   * Sets the current active iHeartRadio content (station or podcast).
+   *
+   * This method tracks which iHeartRadio content is currently being played,
+   * including podcasts, episodes, and radio stations.
+   *
+   * @param status - The iHeartRadio content status containing:
+   *   - podcastId: ID of the podcast being played (-1 if not applicable)
+   *   - episodeId: ID of the podcast episode being played (-1 if not applicable)
+   *   - stationId: ID of the radio station being played (-1 if not applicable)
+   *   - type: The type of content - "station" for radio, "podcast" for podcasts, or null if no iHeartRadio content is active
+   */
+  public setActiveIHeartContent(status: ActiveIHeartContentType) {
+    this.activeIHeartContent = status;
+
+    // Emit change event
+    this.emit("onActiveIHeartContentChanged", this.activeIHeartContent);
+  }
+
+  /**
+   * Retrieves the current iHeartRadio content status.
+   *
+   * Returns information about the currently active iHeartRadio content,
+   * including whether it's a podcast episode or radio station, and their respective IDs.
+   *
+   * @returns The current iHeartRadio content status object containing podcastId, episodeId, stationId, and content type
+   */
+  public getCurrentActiveIHeartContent() {
+    return this.activeIHeartContent;
   }
 
   /**
