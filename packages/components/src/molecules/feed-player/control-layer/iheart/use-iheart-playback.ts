@@ -219,6 +219,7 @@ export function useIHeartPlayback({
 
       // Call optional redirection callback (for overlay-buttons)
       options?.onRedirection?.();
+      const payload = constructPayload();
 
       // Handle "Go to Episode" redirection logic (for overlay-buttons)
       if (isGoToEpisode) {
@@ -229,13 +230,17 @@ export function useIHeartPlayback({
           });
           window.location.replace(redirectUrl);
         } else {
-          window.scrollTo({ top: 0, behavior: "smooth" });
+          SDKEventEmitter.emit(SDKEventName.PLAY_IHEART_CONTENT, {
+            ...payload,
+            play: !isPlaying,
+            navigate: true,
+            slug: videoDetails.attributes?.slug ?? "",
+          });
         }
         return; // Don't play - just redirect/scroll
       }
 
       // Standard play/pause logic (base behavior from listen-live-button)
-      const payload = constructPayload();
 
       if (payload) {
         // Optimistically update UI immediately for better user experience

@@ -1,3 +1,6 @@
+import { useBaseContext } from "@genuin/components/context";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import {
   SDKEventEmitter,
   SDKEventName,
@@ -5,6 +8,8 @@ import {
 import { Linkouts } from "@genuin/components/organisms";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { cn } from "@genuin/ui/lib/utils";
+import { info } from "console";
+import { useCallback } from "react";
 
 interface ClipPlayerCTAProps {
   websiteType: "polaris" | "legacy";
@@ -17,32 +22,48 @@ export const ClipPlayerCTA = ({
   postDetails,
   isActive,
 }: ClipPlayerCTAProps) => {
-  const handleCTAClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const type = postDetails.video.attributes?.type;
-    const episodeId = postDetails.video.attributes?.episode_id
-      ? Number(postDetails.video.attributes?.episode_id)
-      : undefined;
-    const podcastId = postDetails.video.attributes?.podcast_id
-      ? Number(postDetails.video.attributes?.podcast_id)
-      : undefined;
-    const stationId = postDetails.video.attributes?.station_id
-      ? Number(postDetails.video.attributes?.station_id)
-      : undefined;
-    const slug = postDetails.video.attributes?.slug;
+  const {
+    view: { websiteType },
+  } = useEmbedConfigs();
+  const embedDetails = useSafeEmbedContext();
 
-    if (slug)
-      SDKEventEmitter.emit(SDKEventName.PLAY_IHEART_CONTENT, {
-        navigate: true,
-        // dummy data,
-        play: false,
-        episodeId,
-        podcastId,
-        slug,
-        stationId,
-        type,
-      });
-  };
+  const handleCTAClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      const type = postDetails.video.attributes?.type;
+      const episodeId = postDetails.video.attributes?.episode_id
+        ? Number(postDetails.video.attributes?.episode_id)
+        : undefined;
+      const podcastId = postDetails.video.attributes?.podcast_id
+        ? Number(postDetails.video.attributes?.podcast_id)
+        : undefined;
+      const stationId = postDetails.video.attributes?.station_id
+        ? Number(postDetails.video.attributes?.station_id)
+        : undefined;
+      const slug = postDetails.video.attributes?.slug;
+
+      if (websiteType === "legacy") {
+        const isExpandViewOpen = embedDetails?.embedEventBus.getContext();
+        if (isExpandViewOpen) {
+          embedDetails?.goBackToPreviousPlayerType();
+        }
+      }
+
+      if (slug) {
+        SDKEventEmitter.emit(SDKEventName.PLAY_IHEART_CONTENT, {
+          navigate: true,
+          // dummy data,
+          play: false,
+          episodeId,
+          podcastId,
+          slug,
+          stationId,
+          type,
+        });
+      }
+    },
+    [postDetails, embedDetails]
+  );
 
   if (!postDetails.video.attributes?.slug) return;
 
