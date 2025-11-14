@@ -94,15 +94,15 @@ export function NavigationButtons({
     // Dark theme colors
     const darkTheme = {
       disabled: { button: "#3F4447", icon: "#717277" },
-      default: { button: "white", icon: "#27292D" },
+      default: { button: "#F6F8F9", icon: "#27292D" },
       hover: { button: "#A9AFB2", icon: "#27292D" },
     };
 
     // Light theme colors
     const lightTheme = {
       disabled: { button: "#E6EAED", icon: "#A9AFB2" },
-      default: { button: "#27292D", icon: "white" },
-      hover: { button: "#717277", icon: "white" },
+      default: { button: "#27292D", icon: "#FFFFFF" },
+      hover: { button: "#717277", icon: "#FFFFFF" },
     };
 
     const colors = isDarkTheme ? darkTheme : lightTheme;
@@ -147,7 +147,7 @@ export function NavigationButtons({
             },
             label,
             size: "sm",
-            className: `gencl:transition-all gencl:duration-200 gencl:focus:ring-2 gencl:focus:ring-offset-2 gencl:focus:ring-primary ${disabled ? "gencl:cursor-not-allowed!" : ""}`,
+            className: `gencl:transition-all gencl:duration-200 ${disabled ? "gencl:cursor-not-allowed!" : ""}`,
             style: {
               background: buttonBg,
             },

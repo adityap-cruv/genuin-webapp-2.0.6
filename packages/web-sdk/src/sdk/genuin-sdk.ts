@@ -53,6 +53,7 @@ const ALLOWED_EMIT_EVENTS = [
   'player:unmute',
   'player:onFollowChanged',
   'player:onMiniPlayerPlayChange',
+  'sdk:themeChange',
 ]
 
 export class GenuinSDK {

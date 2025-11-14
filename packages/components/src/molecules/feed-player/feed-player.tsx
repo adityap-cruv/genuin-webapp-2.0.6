@@ -157,7 +157,7 @@ export const FeedPlayer = memo(function FeedPlayer({
     return () => {
       observer.disconnect();
     };
-  }, [videoId]);
+  }, [videoId, analyticsEventData]);
 
   const handleMutedChange = useCallback(
     (isMuted: boolean) => {

@@ -120,7 +120,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     view: { brandLayoutType, websiteType },
     video,
   } = useEmbedConfigs();
-
   // For iHeart brand layout, use shared state from BaseContext
   const isIHeartLayout = brandLayoutType === "iheart";
 
@@ -517,11 +516,9 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
    * The media element reference is cached once per preview to avoid redundant getMedia() calls.
    */
   useEffect(() => {
-    const activePlayerType =
-      embedDetails?.embedEventBus.getContext().activePlayerType;
 
     // active player type should be embed than an than only this feature should work.
-    if (!video.videoShouldPreview || activePlayerType !== "embed") return;
+    if (!video.videoShouldPreview) return;
     let previewInterval: NodeJS.Timeout | null = null;
 
     function handlePreviewIndexChange({ previewIndex }: any) {
@@ -565,7 +562,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       }
       baseContextManager.off("onPreviewIndexChanged", handlePreviewIndexChange);
     };
-  }, [index, baseContextManager, embedDetails?.embedEventBus, muted]);
+  }, [index, baseContextManager, muted]);
 
   /**
    * Handles resuming playback of the last known preview index.

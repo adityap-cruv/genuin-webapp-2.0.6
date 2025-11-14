@@ -356,6 +356,7 @@ export function Default({
              */}
             <Scrubber
               spriteUrl={postDetails.video.thumbnailSprite ?? ""}
+              duration={postDetails.video.duration}
               className={cn(
                 "gencl:absolute gencl:bottom-0 gencl:z-20 gencl:transition-all",
                 showSeeker &&

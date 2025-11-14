@@ -1,5 +1,11 @@
 "use client";
-import { type ComponentProps, useCallback, useState, useEffect } from "react";
+import {
+  type ComponentProps,
+  useCallback,
+  useState,
+  useEffect,
+  useRef,
+} from "react";
 import { ScrubberSlider } from "./scrubber-slider";
 import { cn } from "@genuin/ui/utils";
 import { usePlayerContext } from "../../context/context";
@@ -10,6 +16,7 @@ type ScrubberPropsType = Omit<
     spriteUrl?: string;
     showSeeker?: boolean;
     value?: number[];
+    duration?: number | null | undefined;
   },
   "playerTimeState"
 >;
@@ -26,6 +33,7 @@ export function Scrubber({
   spriteUrl,
   className,
   value,
+  duration,
   ...restProps
 }: ScrubberPropsType) {
   const [playerTimeState, setPlayerTimeState] = useState({
@@ -43,173 +51,207 @@ export function Scrubber({
     feedPlayerShouldPlay,
     setShowScrubber,
   } = usePlayerContext();
-  const [progressValue, setProgressValue] = useState(0);
+
+  const [scrubberPosition, setScrubberPosition] = useState(0);
+  const [isUserInteracting, setIsUserInteracting] = useState(false);
+  const userPositionRef = useRef<number | null>(null);
+
   const {
     view: { brandLayoutType },
   } = useEmbedConfigs();
 
-  useEffect(() => {
-    if (!playerTimeState.duration || showScrubber) return;
-    const newProgressValue = Math.round(
-      (playerTimeState.currentTime / playerTimeState.duration) * 100
-    );
-    setProgressValue(newProgressValue);
-  }, [playerTimeState, showScrubber]);
+  // Simplified duration calculation
+  const totalDuration = playerTimeState.duration || duration || 0;
+  const isVideoLoaded = playerTimeState.duration > 0;
 
+  // Sync scrubber with video time (only when user is not interacting)
+  useEffect(() => {
+    const shouldBlockUpdates =
+      isUserInteracting ||
+      showScrubber ||
+      !isVideoLoaded ||
+      !totalDuration ||
+      userPositionRef.current !== null;
+
+    if (shouldBlockUpdates) return;
+
+    const videoProgress = Math.round(
+      (playerTimeState.currentTime / totalDuration) * 100
+    );
+    setScrubberPosition(videoProgress);
+  }, [
+    playerTimeState.currentTime,
+    totalDuration,
+    isUserInteracting,
+    isVideoLoaded,
+    showScrubber,
+  ]);
+
+  // Subscribe to video time changes
   useEffect(() => {
     const unsubscribe = onVideoTimeStateChange((state) => {
-      if (!state.duration) return;
-      setPlayerTimeState(state);
+      if (state.duration) setPlayerTimeState(state);
     });
-
-    return () => {
-      unsubscribe();
-    };
+    return unsubscribe;
   }, [onVideoTimeStateChange]);
 
-  // Handle touch event for seeking
+  // Utility to reset user interaction state after a delay
+  const resetUserInteraction = useCallback(
+    (delay = 100) => {
+      setTimeout(() => {
+        setIsUserInteracting(false);
+        setShowScrubber(false);
+        setTimeout(() => {
+          userPositionRef.current = null;
+        }, 400);
+      }, delay);
+    },
+    [setShowScrubber]
+  );
+
+  // Handle user dragging
   const handleSeek = useCallback(
     (value: number[]) => {
-      if (!value[0]) return;
+      const position = value[0];
+      if (!position) return;
 
-      // Only pause while scrubbing for iHeart brand layout
+      // Pause during scrubbing (except for iHeart)
       if (brandLayoutType !== "iheart" && !showScrubber) {
         pause(false);
       }
 
-      setProgressValue(value[0]);
+      setScrubberPosition(position);
+      setIsUserInteracting(true);
+      userPositionRef.current = position;
+
       setShowScrubber(true);
       setShowSeeker(true);
     },
-    [
-      setProgressValue,
-      setShowScrubber,
-      setShowSeeker,
-      showScrubber,
-      pause,
-      brandLayoutType,
-    ]
+    [pause, brandLayoutType, showScrubber, setShowScrubber, setShowSeeker]
   );
 
+  // Handle when user finishes dragging
   const handleValueCommit = useCallback(
     (value: number[]) => {
-      if (!playerTimeState.duration) return;
-      if (!value[0]) return;
+      const targetPosition = value[0];
+      if (!targetPosition) return;
 
-      const seekPosition = value[0];
-      const seekTime = (seekPosition / 100) * playerTimeState.duration;
+      if (totalDuration > 0) {
+        const seekTime = (targetPosition / 100) * totalDuration;
 
-      if (brandLayoutType === "iheart") {
-        // For iHeart: seek and start playing after scrubbing
-        seek(seekTime);
-        setShowScrubber(false);
-        // For iHeart: maintain a global playback state and synchronize the seeker display based on it.
-        if (feedPlayerShouldPlay) {
-          setShowSeeker(false);
-        } else {
-          setShowSeeker(true);
-        }
-      } else {
-        // Default behavior for other layouts
-        play(true, seekTime);
-        setShowScrubber(false);
-      }
-
-      // Update video time
-      // if (playerRef.current) {
-      //   playerRef.current.getMedia().currentTime = seekTime;
-      //   void play(playerRef.current).then(() => {
-      //     setShouldPlay(true);
-      //   });
-      // }
-    },
-    [
-      setShowScrubber,
-      setShowSeeker,
-      playerTimeState.duration,
-      play,
-      brandLayoutType,
-      feedPlayerShouldPlay,
-    ]
-  );
-
-  // Skip forward/backward functions for keyboard accessibility
-  const skipForward = useCallback(() => {
-    if (!playerTimeState.duration) return;
-    const newTime = Math.min(
-      playerTimeState.currentTime + 15,
-      playerTimeState.duration
-    );
-    play(true, newTime);
-  }, [playerTimeState.currentTime, playerTimeState.duration, play]);
-
-  const skipBackward = useCallback(() => {
-    if (!playerTimeState.duration) return;
-    // If current time is less than 15 seconds, move to 0
-    const newTime =
-      playerTimeState.currentTime < 15
-        ? 0
-        : Math.max(playerTimeState.currentTime - 15, 0);
-    play(true, newTime);
-  }, [playerTimeState.currentTime, playerTimeState.duration, play]);
-
-  // Add global event listeners to handle cases where user releases outside the slider
-  useEffect(() => {
-    const handleGlobalEnd = () => {
-      if (showScrubber) {
         if (brandLayoutType === "iheart") {
           // For iHeart: start playing and hide seeker when scrubbing ends
           // play(true);
           setShowScrubber(false);
           // For iHeart: maintain a global playback state and synchronize the seeker display based on it.
+          seek(seekTime);
           if (feedPlayerShouldPlay) {
-            setShowSeeker(false);
+            setTimeout(() => setShowSeeker(false), 1500);
           } else {
             setShowSeeker(true);
           }
         } else {
-          // Default behavior for other layouts
-          setShowScrubber(false);
+          play(true, seekTime);
         }
+
+        resetUserInteraction();
+      } else {
+        // No duration available yet
+        setScrubberPosition(targetPosition);
+        resetUserInteraction();
+      }
+    },
+    [
+      totalDuration,
+      brandLayoutType,
+      seek,
+      play,
+      feedPlayerShouldPlay,
+      setShowSeeker,
+      resetUserInteraction,
+    ]
+  );
+
+  // Shared skip logic
+  const handleSkip = useCallback(
+    (seconds: number) => {
+      if (!totalDuration) return;
+
+      const currentTime = (scrubberPosition / 100) * totalDuration;
+      const newTime = Math.max(
+        0,
+        Math.min(currentTime + seconds, totalDuration)
+      );
+      const newPosition = Math.round((newTime / totalDuration) * 100);
+
+      setScrubberPosition(newPosition);
+      userPositionRef.current = newPosition;
+      play(true, newTime);
+
+      // Clear protection after video settles
+      setTimeout(() => {
+        userPositionRef.current = null;
+      }, 1000);
+    },
+    [scrubberPosition, totalDuration, play]
+  );
+
+  const skipForward = useCallback(() => handleSkip(15), [handleSkip]);
+  const skipBackward = useCallback(() => handleSkip(-15), [handleSkip]);
+
+  // Handle global events when user releases outside slider
+  useEffect(() => {
+    const handleGlobalEnd = () => {
+      if (showScrubber) {
+        if (brandLayoutType === "iheart") {
+          if (feedPlayerShouldPlay) {
+            setTimeout(() => setShowSeeker(false), 1500);
+          } else {
+            setShowSeeker(true);
+          }
+        }
+        resetUserInteraction();
       }
     };
 
     if (showScrubber) {
-      document.addEventListener("mouseup", handleGlobalEnd);
-      document.addEventListener("touchend", handleGlobalEnd);
-      document.addEventListener("pointerup", handleGlobalEnd);
-    }
+      const events = ["mouseup", "touchend", "pointerup"];
+      events.forEach((event) =>
+        document.addEventListener(event, handleGlobalEnd)
+      );
 
-    return () => {
-      document.removeEventListener("mouseup", handleGlobalEnd);
-      document.removeEventListener("touchend", handleGlobalEnd);
-      document.removeEventListener("pointerup", handleGlobalEnd);
-    };
+      return () => {
+        events.forEach((event) =>
+          document.removeEventListener(event, handleGlobalEnd)
+        );
+      };
+    }
   }, [
     showScrubber,
-    setShowScrubber,
-    setShowSeeker,
-    play,
     brandLayoutType,
     feedPlayerShouldPlay,
+    setShowSeeker,
+    resetUserInteraction,
   ]);
 
   return (
     <ScrubberSlider
-      value={value ?? [progressValue]} // Pass the current progress value
+      value={value ?? [scrubberPosition]} // Single source of truth
       className={cn("swiper-no-swiping gencl:rounded-none", className)}
       spriteUrl={spriteUrl ?? ""}
       showScrubber={showScrubber}
       onValueChange={handleSeek}
       showSeeker={showSeeker}
-      playerTimeState={playerTimeState}
+      playerTimeState={{
+        duration: totalDuration,
+        currentTime: (scrubberPosition / 100) * totalDuration,
+      }}
       onValueCommit={handleValueCommit}
       onSkipForward={skipForward}
       onSkipBackward={skipBackward}
       onClick={(e) => e.stopPropagation()}
       onPointerDown={(e) => e.stopPropagation()}
-      // onMouseEnter={() => setShowSeeker?.(true)}
-      // onMouseLeave={() => setShowSeeker?.(false)}
+      duration={duration}
       {...restProps}
     />
   );

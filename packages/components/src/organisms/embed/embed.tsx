@@ -1,9 +1,9 @@
 "use client";
 import { useFeed } from "@genuin/components/react-query/api/feed";
 import { EmbedProps } from "./embed.types";
-import { SdkSkeleton } from "./skeleton";
+import { SdkSkeleton, ShimmerSlide } from "./skeleton";
 import { cn } from "@genuin/ui/lib/utils";
-import { useMemo, useState, useEffect, useCallback } from "react";
+import { useMemo, useState, useEffect, useCallback, useRef } from "react";
 import { EmbedSwiper } from "@genuin/components/molecules/embed-swiper/embed-swiper";
 import { useAnalytics } from "@genuin/components/context/analytics/context";
 import { SwiperSlide } from "swiper/react";
@@ -35,6 +35,89 @@ import {
 import { useIheartUrlManager } from "@genuin/components/hooks/embed/use-iheart-url-manager";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { isSlideVisible } from "./utils";
+
+// Component to handle fetchNextPage logic using swiper events
+function FetchNextPageHandler({
+  videos,
+  fetchNextPage,
+  hasNextPage,
+  isFetchingNextPage,
+  swiper,
+  embedEventBus,
+}: {
+  videos: any[];
+  fetchNextPage: () => void;
+  hasNextPage: boolean | undefined;
+  isFetchingNextPage: boolean;
+  swiper: Swiper | null;
+  embedEventBus: any;
+}) {
+  const lastTriggeredAtProgressRef = useRef<number>(-1);
+
+  useEffect(() => {
+    if (!swiper) return;
+
+    function checkAndFetchNextPage() {
+      const context = embedEventBus.getContext();
+
+      // Early exit conditions
+      if (
+        !swiper ||
+        videos.length === 0 ||
+        !hasNextPage ||
+        isFetchingNextPage ||
+        context.activePlayerType === "expand-view"
+      ) {
+        return;
+      }
+
+      // Calculate trigger point (when 4 slides remain)
+      const totalSlides = videos.length;
+      const triggerSlideIndex = totalSlides - 4;
+
+      if (triggerSlideIndex <= 0) return; // Need at least 4 slides
+
+      const triggerProgress = 0.7; // Fixed at 70% for simplicity
+      const currentProgress = swiper.progress;
+
+      // Check if we've crossed the trigger threshold
+      if (
+        currentProgress >= triggerProgress &&
+        lastTriggeredAtProgressRef.current < triggerProgress
+      ) {
+        lastTriggeredAtProgressRef.current = currentProgress;
+        fetchNextPage();
+      }
+    }
+
+    // Use progress event for real-time tracking
+    const handleProgress = () => {
+      checkAndFetchNextPage();
+    };
+
+    swiper.on("progress", handleProgress);
+
+    return () => {
+      swiper.off("progress", handleProgress);
+    };
+  }, [
+    swiper,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    videos.length,
+    embedEventBus,
+  ]);
+
+  // Reset tracking when videos length changes (new data loaded)
+  useEffect(() => {
+    if (videos.length > 0) {
+      lastTriggeredAtProgressRef.current = -1;
+    }
+  }, [videos.length]);
+
+  return null; // This component doesn't render anything
+}
 
 const embedVariants = cva("gencl:rounded-md gencl:overflow-auto", {
   variants: {
@@ -207,28 +290,6 @@ export function Embed({
       });
     }
   }, [isEmbed, isLoading]);
-
-  useEffect(() => {
-    function handleActiveIndexChange(
-      eventData: any,
-      context: EmbedEventContextType
-    ) {
-      if (
-        videos.length > 0 &&
-        context.activeIndex >= videos.length - 3 &&
-        hasNextPage &&
-        !isFetchingNextPage &&
-        context.activePlayerType !== "expand-view"
-      ) {
-        fetchNextPage();
-      }
-    }
-
-    embedEventBus.on("activeIndexChange", handleActiveIndexChange);
-    return () => {
-      embedEventBus.off("activeIndexChange", handleActiveIndexChange);
-    };
-  }, [fetchNextPage, isLoading, hasNextPage, isFetchingNextPage, videos]);
 
   // Listen for centerActiveSlide event to center the swiper when exiting expand view
   useEffect(() => {
@@ -421,6 +482,14 @@ export function Embed({
       {...restProps}
     >
       <EmbedManagerProvider swiper={swiper}>
+        <FetchNextPageHandler
+          videos={videos}
+          fetchNextPage={fetchNextPage}
+          hasNextPage={hasNextPage}
+          isFetchingNextPage={isFetchingNextPage}
+          swiper={swiper}
+          embedEventBus={embedEventBus}
+        />
         {isGridLayout ? (
           <GridView
             videos={videos}
@@ -496,6 +565,13 @@ export function Embed({
                   </SwiperSlide>
                 );
               })}
+              {/* Add shimmer slides when fetching next page */}
+              {isFetchingNextPage &&
+                Array.from({ length: 3 }).map((_, idx) => (
+                  <SwiperSlide key={`shimmer-${idx}`}>
+                    <ShimmerSlide />
+                  </SwiperSlide>
+                ))}
             </EmbedSwiper>
             {!isIheartLayout && (
               <NavigationButtonsWithContext

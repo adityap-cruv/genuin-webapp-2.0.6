@@ -55,6 +55,7 @@ export const FeedViewCore = memo(function FeedViewCore({
     hasNextPage,
     isFetchingNextPage,
     queryKey,
+    totalVideos,
   } = feedData;
   const { setActiveIndex, activeIndex, showExpandView } = useFeedContext();
   const { hideGestureOverlay } = useGestureOverlayManager();
@@ -234,7 +235,11 @@ export const FeedViewCore = memo(function FeedViewCore({
         {...restProps}
       >
         <IheartFullscreenContainer>
-          <PlayerList isSectioned={isSectioned} {...playerListProps} />
+          <PlayerList
+            isSectioned={isSectioned}
+            totalVideos={totalVideos}
+            {...playerListProps}
+          />
           {showSidePanel && (
             <PostSidePanel
               onGroupJoinStatusChange={handleGroupJoinStatusChange}
