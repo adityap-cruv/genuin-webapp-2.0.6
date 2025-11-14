@@ -53,7 +53,7 @@ export const ClipPlayerCTA = ({
         SDKEventEmitter.emit(SDKEventName.PLAY_IHEART_CONTENT, {
           navigate: true,
           // dummy data,
-          play: false,
+          play: true,
           episodeId,
           podcastId,
           slug,

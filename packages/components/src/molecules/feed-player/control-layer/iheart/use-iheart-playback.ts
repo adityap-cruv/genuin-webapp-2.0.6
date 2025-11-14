@@ -203,7 +203,7 @@ export function useIHeartPlayback({
   const constructPayload = useCallback(() => {
     return info.type === "station" && info.station
       ? { type: "station" as const, stationId: info.station }
-      : info.type === "podcast" && info.podcast && info.episode
+      : info.type === "podcast" && info.podcast
         ? {
             type: "podcast" as const,
             podcastId: info.podcast,
@@ -252,6 +252,7 @@ export function useIHeartPlayback({
 
         SDKEventEmitter.emit(SDKEventName.PLAY_IHEART_CONTENT, {
           ...payload,
+          slug: videoDetails.attributes?.slug ?? "",
           play: !isPlaying,
         });
       }
