@@ -41,6 +41,9 @@ export const CTAOnlyCard = ({
     }
   };
 
+  // Get the actual button text for accessibility
+  const buttonText = ctaText;
+
   return (
     <Button
       theme="custom"
@@ -56,7 +59,11 @@ export const CTAOnlyCard = ({
         color: brandDetails.cta_config?.text_color ?? "",
       }}
       onClick={handleCTAClick ? handleCTAClick : handleInternalCTAClick}
-      disabled={isLoading}
+      disabled={isLoading || isDisabled}
+      aria-label={isLoading ? `Loading ${buttonText}` : buttonText}
+      aria-disabled={isDisabled}
+      role="button"
+      tabIndex={0}
     >
       <div className="gencl:flex gencl:items-center gencl:gap-1">
         {showIcon && (
@@ -72,9 +79,7 @@ export const CTAOnlyCard = ({
             isDisabled && "gencl:text-[#A9AFB2]!"
           )}
         >
-          {brandDetails.cta_config?.default_button_text
-            ? brandDetails.cta_config?.default_button_text
-            : ctaText || "Full Episode"}
+          {buttonText}
         </p>
       </div>
     </Button>

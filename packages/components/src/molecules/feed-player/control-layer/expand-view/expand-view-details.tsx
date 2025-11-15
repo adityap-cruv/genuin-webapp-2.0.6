@@ -225,16 +225,21 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
                   aria-label={`${postDetails.video.attributes?.title} heading`}
                   tabIndex={0}
                 >
-                  <p
-                    className={cn(
-                      "gencl:my-3! gencl:h-5 gencl:flex gencl:items-center gencl:gap-2 gencl:font-semibold gencl:leading-[24px] gencl:line-clamp-1! gencl:tracking-[-0.2px] gencl:lg:font-semibold! gencl:lg:leading-[24px]! gencl:lg:tracking-[-0.2px]!",
+                  <ReadMore
+                    text={postDetails.video.attributes?.title}
+                    shouldAnimate
+                    lineClampClassName="gencl:line-clamp-1"
+                    maxLines={1}
+                    showExpandText={false}
+                    expandable={false}
+                    position="overlay"
+                    textClassName={cn(
+                      "gencl:my-3! gencl:h-5 gencl:flex gencl:items-center gencl:gap-2 gencl:font-semibold gencl:leading-[24px] gencl:tracking-[-0.2px] gencl:lg:font-semibold! gencl:lg:leading-[24px]! gencl:lg:tracking-[-0.2px]! gencl:break-all",
                       websiteType === "polaris"
                         ? "gencl:text-[16px] gencl:lg:text-[17px]!"
                         : "gencl:text-[16px]"
                     )}
-                  >
-                    {postDetails.video.attributes?.title}
-                  </p>
+                  />
                 </Link>
               )}
 

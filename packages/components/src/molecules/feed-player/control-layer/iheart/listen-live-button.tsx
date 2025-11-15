@@ -39,7 +39,7 @@ export function IHeartListenLiveButton({
   return (
     <Button
       theme="custom"
-      aria-label={type === "podcast" ? "Play full episode" : "Play live radio"}
+      aria-label={ctaText}
       tabIndex={0}
       role="button"
       className={cn(

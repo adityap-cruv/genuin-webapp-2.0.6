@@ -187,11 +187,11 @@ export function IHeartFollowButton({
       type="button"
       {...props}
       onClick={handleClick}
-      aria-label={isFollowing ? "Unfollow" : "Follow"}
+      aria-label={displayText}
       aria-pressed={isFollowing}
       tabIndex={0}
       className={cn(
-        "gencl:w-fit gencl:border gencl:rounded-full gencl:flex gencl:items-center gencl:justify-center gencl:cursor-pointer gencl:gap-1 gencl:py-2 gencl:px-4",
+        "gencl:w-fit gencl:border gencl:rounded-full gencl:flex gencl:items-center gencl:justify-center gencl:cursor-pointer gencl:gap-1 gencl:py-1.5 gencl:px-4",
         // Enhanced transitions for smooth state changes
         "gencl:transition-all gencl:duration-300 gencl:ease-in-out",
         !isFollowing
