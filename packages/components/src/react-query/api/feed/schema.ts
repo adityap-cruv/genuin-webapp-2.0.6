@@ -129,6 +129,7 @@ const SectionSchema = z
   .optional();
 
 const PostDetailsSchema = z.object({
+  type: z.string().optional().nullish(),
   video: videoSchema,
   group: GroupSchema,
   community: communitySchema,
