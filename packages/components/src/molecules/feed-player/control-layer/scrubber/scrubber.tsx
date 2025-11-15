@@ -209,8 +209,10 @@ export function Scrubber({
         if (brandLayoutType === "iheart") {
           if (feedPlayerShouldPlay) {
             setTimeout(() => setShowSeeker(false), 1500);
+            setPlayingState("PLAYING");
           } else {
             setShowSeeker(true);
+            setPlayingState("PAUSED");
           }
         }
         resetUserInteraction();
