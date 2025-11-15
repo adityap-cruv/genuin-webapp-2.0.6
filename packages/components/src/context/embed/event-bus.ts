@@ -20,6 +20,10 @@ export type EmbedEventContextType = {
    */
   activeIndex: number;
   /**
+   * The index of the previously active player.
+   */
+  previousActiveIndex: number;
+  /**
    * List of all available sections in the feed (used for sectioned views)
    */
   sectionList: PostDetailsType["section"][];
@@ -48,6 +52,13 @@ export type EmbedEventContextType = {
    * Flag to disable swiper in expand view (used when startVideoSlug is present on first open)
    */
   disableSwiper: boolean;
+  /**
+   * Indicates whether the current event should trigger impression tracking.
+   * This flag is set based on player index changes — `true` when the `activeIndex`
+   * differs from the `newIndex`, and `false` when they are the same.
+   * Used to ensure impressions are recorded only during valid player transitions.
+   */
+  shouldTrackImpression?: boolean;
 };
 
 type EmbedEventNameType =
@@ -68,6 +79,7 @@ export const createEmbedEventBus = (context?: EmbedEventContextType) =>
   new EventManager<EmbedEventContextType, EmbedEventNameType>({
     activePlayerType: "embed",
     activeIndex: 0,
+    previousActiveIndex: -1,
     sectionList: [],
     isSectioned: false,
     selectedSection: null,

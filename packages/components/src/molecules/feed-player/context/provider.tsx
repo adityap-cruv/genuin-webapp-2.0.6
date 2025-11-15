@@ -25,6 +25,8 @@ import { BaseEventBusContext } from "@genuin/components/context/base/event-bus";
 import { GenericData } from "@genuin/components/context/base/feed-context-manager";
 import { useEmbedManagerContext } from "@genuin/components/organisms/embed/context";
 import { isSlideVisible } from "@genuin/components/organisms/embed/utils";
+import { EmbedEventContextType } from "@genuin/components/context/embed/event-bus";
+import { usePrevious } from "@genuin/components/hooks/use-previous";
 
 type VideoProviderProps = {
   children: React.ReactNode;
@@ -275,9 +277,65 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     isEmbed,
   ]);
 
+  const handleVideoImpression = useCallback(
+    ({
+      videoId: triggeredVideoId,
+      previousActiveIndex,
+      impressionSource,
+    }: {
+      videoId: string;
+      previousActiveIndex?: number;
+      impressionSource: string;
+    }) => {
+      if (
+        index === undefined ||
+        triggeredVideoId !== videoId ||
+        previousActiveIndex === undefined ||
+        !impressionSource ||
+        !swiper
+      ) {
+        return;
+      }
+
+      // The `impressionSource` determines which logic to follow.
+      /*
+        - If the impression is triggered at the end of the video, record the impression for the current video.
+        - If the impression is triggered due to scroll behavior, record the impression for the previous video.
+      */
+      const isActiveVideo =
+        impressionSource === "end"
+          ? index === previousActiveIndex
+          : index - 1 === previousActiveIndex;
+
+      if (!isActiveVideo) return;
+
+      const prevSlide = swiper.slides[previousActiveIndex];
+      const videoRef = prevSlide?.querySelector(
+        "video"
+      ) as HTMLVideoElement | null;
+      if (!videoRef) return;
+
+      const { currentTime, duration } = videoRef;
+
+      const isInvalid =
+        !duration || Number.isNaN(duration) || Number.isNaN(currentTime);
+
+      if (isInvalid) return;
+
+      track(EventName.VIDEO_IMPRESSION, {
+        ...baseAnalyticsData,
+        content_category: "loop",
+        event_record_screen: "feed",
+        event_target_screen: "none",
+        video_length: duration,
+        video_view_length: currentTime,
+      });
+    },
+    [videoId, index, swiper, track]
+  );
+
   useEffect(() => {
     const playerConfig = playerConfigRef.current;
-    // TODO :
     // const player = playerRef.current;
     // if (!player) return;
     if (isActive && !isVideoWatched) {
@@ -324,6 +382,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     baseContextManager,
     baseEventBus,
     globalPlayState,
+    videoId,
   ]);
 
   // specifically for iheart to maintain the -n sec player replay.
@@ -404,21 +463,28 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   }, [buttonAction]);
 
   useEffect(() => {
-    // Skip if current index doesn't match previous index
-    // Skip impression event if video was viewed for less than 2 seconds
+    // Used to trigger a video impression event in the full-screen or clip player.
     if (!swiper || !index) return;
+    function handleSwiperActiveIndexChange() {
+      // In full-screen or clip-player modes, `isEmbed` is undefined.
+      // In the clip card / embed outer view, `isEmbed` is true.
+      // This condition helps us distinguish between these two contexts.
+      if (index === undefined || index - 1 !== activeIndex || isEmbed) return;
+      if (globalPlayState) {
+        handleVideoImpression({
+          videoId,
+          previousActiveIndex: swiper?.previousIndex,
+          impressionSource: "scroll",
+        });
+      }
+    }
 
-    if (index !== swiper.previousIndex) return;
+    swiper.on("activeIndexChange", handleSwiperActiveIndexChange);
 
-    track(EventName.VIDEO_IMPRESSION, {
-      ...baseAnalyticsData,
-      content_category: "loop",
-      event_record_screen: "feed",
-      event_target_screen: "none",
-      video_length: videoStateRef.current.duration,
-      video_view_length: videoStateRef.current.currentTime,
-    });
-  }, [swiper, track, EventName.VIDEO_IMPRESSION, baseAnalyticsData]);
+    return () => {
+      swiper.off("activeIndexChange", handleSwiperActiveIndexChange);
+    };
+  }, [swiper, isEmbed, globalPlayState, activeIndex, handleVideoImpression]);
 
   useEffect(() => {
     /**
@@ -440,6 +506,16 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       if (!isActiveVideoVisible) {
         setButtonAction("PAUSE");
         setGlobalPlayState(false);
+        if (isEmbed) {
+          // In the clip-card (embed/feed) view—specifically for the legacy edge case—
+          // if a video is playing and scrolls out of view while still being the active video,
+          // this logic will trigger the impression event.
+          handleVideoImpression({
+            videoId,
+            previousActiveIndex: activeIndex ?? 0,
+            impressionSource: "scroll",
+          });
+        }
       }
     }
 
@@ -448,7 +524,14 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     return () => {
       swiper.off("slideChange", handleSlideChange);
     };
-  }, [swiper, globalPlayState, activeIndex]);
+  }, [
+    swiper,
+    globalPlayState,
+    activeIndex,
+    isEmbed,
+    videoId,
+    handleVideoImpression,
+  ]);
 
   useEffect(() => {
     if (!embedDetails) return;
@@ -479,17 +562,77 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         setIsVideoWatched(payload.isVideoWatched ?? false);
     }
 
+    // Used in the embed/feed clip-card view to fire the video impression event.
+    function handleActiveIndexChange(
+      eventData: any,
+      context: EmbedEventContextType
+    ) {
+      const prevIndex = context.previousActiveIndex;
+      /*
+        The embed’s `activeIndexChange` event is listened to by both providers:
+        the embed player provider and the full-screen player provider.
+        To differentiate between them, we added the active player type condition,
+        since this logic should run only for the relevant player.
+      */
+      if (
+        prevIndex === -1 ||
+        index === undefined ||
+        index - 1 !== prevIndex ||
+        context.activePlayerType !== "embed" ||
+        !context.shouldTrackImpression
+      ) {
+        return;
+      }
+      // Only fire the event if the video was previously played.
+      if (globalPlayState) {
+        handleVideoImpression({
+          videoId,
+          previousActiveIndex: prevIndex,
+          impressionSource: "scroll",
+        });
+      }
+    }
+
+    // Used when the user switches from the clip card/embed view to the clip player/full-screen player.
+    function handleActivePlayerChange(
+      eventData: any,
+      context: EmbedEventContextType
+    ) {
+      const prevIndex = context.previousActiveIndex;
+      if (!context.shouldTrackImpression) {
+        return;
+      }
+      if (globalPlayState) {
+        handleVideoImpression({
+          videoId,
+          previousActiveIndex: prevIndex,
+          impressionSource: "scroll",
+        });
+      }
+    }
+
     embedEventBus.on("containerInViewChange", handleContainerInViewChange);
     baseEventBus.on("userFocusChange", handleUserFocusChange);
     baseEventBus.on("globalPlayingStateChange", handlePlayingStateChange);
+    embedEventBus.on("activeIndexChange", handleActiveIndexChange);
+    embedEventBus.on("activePlayerTypeChange", handleActivePlayerChange);
     baseContextManager.on("onVideoWatchedChanged", handleVideoWatched);
     return () => {
       embedEventBus.off("containerInViewChange", handleContainerInViewChange);
       baseEventBus.off("userFocusChange", handleUserFocusChange);
       baseEventBus.off("globalPlayingStateChange", handlePlayingStateChange);
+      embedEventBus.off("activeIndexChange", handleActiveIndexChange);
+      embedEventBus.on("activePlayerTypeChange", handleActivePlayerChange);
       baseContextManager.off("onVideoWatchedChanged", handleVideoWatched);
     };
-  }, [videoId, baseEventBus]);
+  }, [
+    videoId,
+    baseEventBus,
+    baseContextManager,
+    globalPlayState,
+    isEmbed,
+    handleVideoImpression,
+  ]);
 
   useEffect(() => {
     if (buttonAction === "PLAY" || buttonAction === "PAUSE") {
@@ -516,7 +659,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
    * The media element reference is cached once per preview to avoid redundant getMedia() calls.
    */
   useEffect(() => {
-
     // active player type should be embed than an than only this feature should work.
     if (!video.videoShouldPreview) return;
     let previewInterval: NodeJS.Timeout | null = null;
@@ -762,7 +904,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         });
       }
     },
-    [track, EventName.VIDEO_PLAY, baseAnalyticsData]
+    [track, EventName.VIDEO_PLAY, baseAnalyticsData, baseContextManager]
   );
 
   // pause: Sets the feed player to pause state.
@@ -876,16 +1018,34 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     [setMuted]
   );
 
+  /*
+  Note: We only fire the impression event here when the video ends—either by user stop or auto-loop.
+  In all other cases, scrolling will trigger the impression event automatically.
+*/
   const handleEnded = useCallback(() => {
     // If explicit loop is set to true, just replay the video indefinitely
     if (explicitLoop) {
       playerRef.current?.play();
+      if (globalPlayState) {
+        handleVideoImpression({
+          videoId,
+          previousActiveIndex: activeIndex,
+          impressionSource: "end",
+        });
+      }
       return;
     }
 
     baseContextManager.setVideoWatched({ videoId, isWatched: true });
 
     if (isIHeartLayout && websiteType === "legacy") {
+      if (globalPlayState) {
+        handleVideoImpression({
+          videoId,
+          previousActiveIndex: activeIndex,
+          impressionSource: "end",
+        });
+      }
       setButtonAction("PAUSE");
       setFeedPlayerShouldPlay(false);
       return;
@@ -929,11 +1089,13 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     isEmbed,
     baseContextManager,
     videoId,
-    onPlayerIterationEnd,
     explicitLoop,
     isIHeartLayout,
     swiper,
     websiteType,
+    onPlayerIterationEnd,
+    handleVideoImpression,
+    globalPlayState,
   ]);
 
   const updateAdInfo = useCallback(
