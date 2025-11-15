@@ -15,6 +15,7 @@ import { ShareButton } from "@genuin/components/molecules/share-button";
 import { useAnalytics } from "@genuin/components/context/analytics";
 import { ReactionButton } from "@genuin/components/molecules/reaction-button";
 import { DynamicReactionIcon } from "@genuin/components/molecules/reaction-button";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import {
   SDKEventEmitter,
   SDKEventName,
@@ -66,6 +67,9 @@ export function IHeartControls({
   isVideoWatched,
   ...restProps
 }: IHeartControlsProps) {
+  const {
+    view: { websiteType },
+  } = useEmbedConfigs();
   const { playingState, togglePlay, muted, toggleMuted } = usePlayerContext();
   const { track, EventName } = useAnalytics();
   //  Access baseContextManager to subscribe to preview index change events
@@ -126,6 +130,16 @@ export function IHeartControls({
     if (!url.includes("action=share")) {
       const separator = url.includes("?") ? "&" : "?";
       url = `${url}${separator}action=share`;
+    }
+
+    if (!url.includes("cmp=")) {
+      const separator = url.includes("?") ? "&" : "?";
+      url = `${url}${separator}cmp=web_${websiteType}_hl_share`;
+    }
+
+    if (!url.includes("sc=")) {
+      const separator = url.includes("?") ? "&" : "?";
+      url = `${url}${separator}sc=web_${websiteType}_hl_social_share`;
     }
 
     return url;
