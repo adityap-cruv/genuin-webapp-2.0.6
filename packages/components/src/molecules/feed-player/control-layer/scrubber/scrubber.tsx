@@ -145,7 +145,7 @@ export function Scrubber({
           seek(seekTime);
           if (feedPlayerShouldPlay) {
             setTimeout(() => {
-              setShowSeeker(false);   
+              setShowSeeker(false);
             }, 1500);
             setPlayingState("PLAYING");
           } else {
@@ -244,7 +244,11 @@ export function Scrubber({
       spriteUrl={spriteUrl ?? ""}
       showScrubber={showScrubber}
       onValueChange={handleSeek}
-      showSeeker={showSeeker && playingState === "PAUSED"}
+      showSeeker={
+        feedPlayerShouldPlay
+          ? showSeeker
+          : showSeeker && playingState === "PAUSED"
+      }
       playerTimeState={{
         duration: totalDuration,
         currentTime: (scrubberPosition / 100) * totalDuration,
