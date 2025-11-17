@@ -66,6 +66,7 @@ export function EmbedProvider({
       createEmbedEventBus({
         activePlayerType: "embed",
         activeIndex: 0,
+        previousActiveIndex: -1,
         sectionList: [],
         isSectioned: false,
         containerInView: true,
@@ -195,6 +196,9 @@ export function EmbedProvider({
       embedEventBus.emit("activeIndexChange", undefined, (currentContext) => ({
         ...currentContext,
         activeIndex: newIndex,
+        previousActiveIndex:
+          currentContext.activeIndex,
+        shouldTrackImpression: newIndex !== currentContext.activeIndex,
       }));
     },
     [embedEventBus]
@@ -212,6 +216,8 @@ export function EmbedProvider({
           activePlayerType: newActiveType,
           activeIndex: activeIndex ?? currentContext.activeIndex,
           skipTimeOffsetOnce: true,
+          previousIndex: currentContext.activeIndex,
+          shouldTrackImpression: activeIndex !== currentContext.activeIndex,
         })
       );
     },

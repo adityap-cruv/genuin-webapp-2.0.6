@@ -210,7 +210,14 @@ user_longitude
         });
       }
     },
-    [embedDetails?.brandLayoutType, embedDetails?.embedData.placement_id, user, brandDetails.environment, brandDetails.brand_id, isInIframe]
+    [
+      embedDetails?.brandLayoutType,
+      embedDetails?.embedData.placement_id,
+      user,
+      brandDetails.environment,
+      brandDetails.brand_id,
+      isInIframe,
+    ]
   );
 
   const track = useCallback(

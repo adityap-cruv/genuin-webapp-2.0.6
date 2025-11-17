@@ -50,6 +50,8 @@ export function Scrubber({
     showScrubber,
     feedPlayerShouldPlay,
     setShowScrubber,
+    playingState,
+    setPlayingState,
   } = usePlayerContext();
 
   const [scrubberPosition, setScrubberPosition] = useState(0);
@@ -126,6 +128,7 @@ export function Scrubber({
 
       setShowScrubber(true);
       setShowSeeker(true);
+      setPlayingState("PAUSED");
     },
     [pause, brandLayoutType, showScrubber, setShowScrubber, setShowSeeker]
   );
@@ -135,7 +138,6 @@ export function Scrubber({
     (value: number[]) => {
       const targetPosition = value[0];
       if (!targetPosition) return;
-
       if (totalDuration > 0) {
         const seekTime = (targetPosition / 100) * totalDuration;
 
@@ -146,12 +148,17 @@ export function Scrubber({
           // For iHeart: maintain a global playback state and synchronize the seeker display based on it.
           seek(seekTime);
           if (feedPlayerShouldPlay) {
-            setTimeout(() => setShowSeeker(false), 1500);
+            setTimeout(() => {
+              setShowSeeker(false);
+            }, 1500);
+            setPlayingState("PLAYING");
           } else {
             setShowSeeker(true);
+            setPlayingState("PAUSED");
           }
         } else {
           play(true, seekTime);
+          setPlayingState("PLAYING");
         }
 
         resetUserInteraction();
@@ -206,8 +213,10 @@ export function Scrubber({
         if (brandLayoutType === "iheart") {
           if (feedPlayerShouldPlay) {
             setTimeout(() => setShowSeeker(false), 1500);
+            setPlayingState("PLAYING");
           } else {
             setShowSeeker(true);
+            setPlayingState("PAUSED");
           }
         }
         resetUserInteraction();
@@ -241,7 +250,11 @@ export function Scrubber({
       spriteUrl={spriteUrl ?? ""}
       showScrubber={showScrubber}
       onValueChange={handleSeek}
-      showSeeker={showSeeker}
+      showSeeker={
+        feedPlayerShouldPlay
+          ? showSeeker
+          : showSeeker && playingState === "PAUSED"
+      }
       playerTimeState={{
         duration: totalDuration,
         currentTime: (scrubberPosition / 100) * totalDuration,

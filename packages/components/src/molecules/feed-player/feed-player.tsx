@@ -199,11 +199,6 @@ export const FeedPlayer = memo(function FeedPlayer({
         video_length: target?.duration,
         video_view_length: target?.currentTime,
       });
-      track(EventName.VIDEO_IMPRESSION, {
-        ...analyticsEventData,
-        video_length: target?.duration,
-        video_view_length: target?.currentTime,
-      });
     },
     [onEnded, stateHandleEnded, track, EventName, analyticsEventData]
   );

@@ -47,7 +47,7 @@ export function parseFeed(
 
   for (let index = 0; index < data.length; index++) {
     const item = data[index];
-    if (!item) continue;
+    if (!item || item.type === "all_caught_up") continue;
 
     const currentIsWatched = item.video?.is_watched ?? false;
 
