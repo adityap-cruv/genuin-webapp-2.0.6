@@ -177,14 +177,12 @@ export function useIHeartPlayback({
         setIsPlaying(false);
       }
 
-      if (
+      setIsPlaying(
         info.type === payload?.type &&
-        (info.station === payload?.stationId ||
-          (info.episode === payload?.episodeId &&
-            info.podcast === payload?.podcastId))
-      ) {
-        setIsPlaying(true);
-      }
+          (info.station === payload?.stationId ||
+            (info.episode === payload?.episodeId &&
+              info.podcast === payload?.podcastId))
+      );
     }
 
     baseContextManager.on(

@@ -6,7 +6,6 @@ import {
 } from "@genuin/ui/icons/iheart-icons";
 import { Button } from "@genuin/ui";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
-import { type ContentType } from "@genuin/components/lib/utils/iheart-text-utils";
 import { useIHeartPlayback } from "./use-iheart-playback";
 
 interface IHeartListenLiveButtonProps {
@@ -32,7 +31,6 @@ export function IHeartListenLiveButton({
   });
 
   const isOutlined = !isPlaying;
-  const type = videoDetails?.attributes?.type as ContentType;
 
   if (!ctaText) return null;
 

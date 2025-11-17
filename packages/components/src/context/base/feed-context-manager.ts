@@ -594,7 +594,7 @@ export class FeedContextManager {
     this.activeIHeartContent = status;
 
     // Emit change event
-    this.emit("onActiveIHeartContentChanged", this.activeIHeartContent);
+    this.emit("onActiveIHeartContentChanged", status);
   }
 
   /**
