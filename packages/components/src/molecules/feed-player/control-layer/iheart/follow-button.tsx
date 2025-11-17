@@ -26,6 +26,8 @@ interface IHeartFollowButtonProps extends ComponentProps<"button"> {
   websiteType: WebsiteType;
   attributes?: PostDetailsType["video"]["attributes"];
   shareUrl?: string;
+  videoSlug?: string;
+  videoId?: string;
 }
 
 export function IHeartFollowButton({
@@ -34,6 +36,8 @@ export function IHeartFollowButton({
   websiteType,
   attributes,
   shareUrl,
+  videoSlug,
+  videoId,
   ...props
 }: IHeartFollowButtonProps) {
   const embedDetails = useSafeEmbedContext();
@@ -115,6 +119,53 @@ export function IHeartFollowButton({
     setIsFollowing(initialFollowStatus);
   }, [initialFollowStatus]);
 
+  // Auto follow logic - similar to reaction button auto spark
+  useEffect(() => {
+    if (!embedDetails || !followId || !type) return;
+
+    const action = embedDetails.embedData.autoUserInteractionToPerform;
+    const autoInteractionActionDone =
+      embedDetails.embedEventBus.getContext().autoInteractionActionDone;
+
+    // Check if this is an auto follow action for this specific follow target
+    const shouldAutoFollow =
+      action === "iheart-follow" &&
+      embedDetails.embedData.followId === String(followId) &&
+      embedDetails.embedData.followType === type;
+
+    // Don't perform auto action if already done, already following, or not authenticated
+    if (
+      autoInteractionActionDone ||
+      isFollowing ||
+      !shouldAutoFollow ||
+      authenticationStatus === "unauthenticated"
+    ) {
+      return;
+    }
+
+    // Mark auto interaction as done to prevent repeated actions
+    embedDetails.markAutoInteractionActionDone();
+
+    // Perform the auto follow action
+    const newFollowingState = true; // Auto follow always sets to following
+
+    // Update embed context follow status
+    if (embedDetails.updateFollowStatus) {
+      embedDetails.updateFollowStatus(
+        String(followId),
+        type,
+        newFollowingState
+      );
+    }
+
+    // Emit SDK follow change event
+    SDKEventEmitter.emit(SDKEventName.ON_FOLLOW_CHANGED, {
+      isFollowed: newFollowingState,
+      id: followId,
+      type: type as "podcast" | "station",
+    });
+  }, [embedDetails, followId, type, isFollowing, authenticationStatus]);
+
   // Compute CTA text using utility function
   const ctaTexts = useMemo(
     () => getFollowButtonTexts(websiteType, type),
@@ -147,6 +198,14 @@ export function IHeartFollowButton({
       returnQueryParams,
     },
     urlToOpen: shareUrl,
+    pendingActionData: {
+      action: "iheart-follow",
+      followId: followId ? String(followId) : undefined,
+      followType: type,
+      embedId: embedDetails?.embedData.embed_id,
+      videoSlug: videoSlug,
+      videoId: videoId,
+    },
   });
 
   const handleClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {

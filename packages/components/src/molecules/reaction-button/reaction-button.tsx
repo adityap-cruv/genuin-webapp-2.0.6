@@ -85,6 +85,13 @@ export const ReactionButton = React.memo(function ReactionButton({
   const clickHandler = handleAuthCallback({
     authCallbackData: { path: "/", action: "spark", returnQueryParams },
     urlToOpen: shareUrl,
+    pendingActionData: {
+      action: contentType === "COMMENT" ? "comment-spark" : "spark",
+      videoSlug: videoSlug,
+      commentId: contentType === "COMMENT" ? contentId : undefined,
+      videoId: contentType === "VIDEO" ? contentId : undefined,
+      embedId: embedDetails?.embedData.embed_id,
+    },
   });
 
   // Create a customized button based on whether it's for the popover case or not
@@ -203,6 +210,9 @@ function Button({
 }: ReactionButtonProps) {
   const { user } = useAuthContext();
   const { track, EventName } = useAnalytics();
+  const {
+    view: { brandLayoutType },
+  } = useEmbedConfigs();
 
   const {
     mutate: reactToVideo,
@@ -281,9 +291,12 @@ function Button({
     const autoInteractionActionDone =
       embedContext?.embedEventBus.getContext().autoInteractionActionDone;
 
+    // For iHeart brand, compare contentId instead of videoSlug
     const shouldAutoSparkForVideo =
       action === "spark" &&
-      startVideoSlug === videoSlug &&
+      (brandLayoutType === "iheart"
+        ? startVideoSlug === contentId
+        : startVideoSlug === videoSlug) &&
       contentType === "VIDEO";
 
     const shouldAutoSparkForComment =
@@ -309,7 +322,7 @@ function Button({
     if (shouldAutoSparkForVideo || shouldAutoSparkForComment) {
       performReaction();
     }
-  }, [performReaction]);
+  }, [performReaction, contentId, brandLayoutType]);
 
   // If withCustomChildren is true, just return the children with logic attached
   if (withCustomChildren) {

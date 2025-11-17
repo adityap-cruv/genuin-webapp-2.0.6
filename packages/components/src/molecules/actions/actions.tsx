@@ -106,6 +106,12 @@ const defaultActionWrappers: Record<
     const clickHandler = handleAuthCallback({
       authCallbackData: { path: "/", action: "repost", returnQueryParams },
       urlToOpen: _context.shareUrl,
+      pendingActionData: {
+        action: "repost",
+        videoSlug: _context.slug,
+        videoId: _context.contentId,
+        embedId: embedDetails?.embedData.embed_id,
+      },
     });
 
     // Track repost event when clicked

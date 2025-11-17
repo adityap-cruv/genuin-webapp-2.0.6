@@ -74,6 +74,10 @@ export const JoinCommunityButton = memo(function JoinCommunityButton({
           action: "join-community",
         }),
       },
+      pendingActionData: {
+        action: "join-community",
+        communityId: communityId,
+      },
     });
 
     // In case of embed if auth handler is configured than clickHandler will be called no need to open the authentication modal.

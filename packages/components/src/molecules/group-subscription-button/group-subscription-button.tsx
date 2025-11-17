@@ -47,6 +47,10 @@ export function GroupSubscriptionButton({
           action: "subscribe-group",
         }),
       },
+      pendingActionData: {
+        action: "subscribe-group",
+        groupId: restProps.groupId,
+      },
     });
 
     if (clickHandler) {

@@ -3,7 +3,7 @@ import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
 import { type CommentListType } from "@genuin/components/react-query/api/comments";
 import { MentionInput } from "../mention-input";
-import { useMemo } from "react";
+import { useMemo, useCallback } from "react";
 import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
 import { ActionPopover } from "../actions/action-popover";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
@@ -67,6 +67,12 @@ export function CommentInputBox({
   const authClickHandler = handleAuthCallback({
     authCallbackData: { action: "comment", path: "/", returnQueryParams },
     urlToOpen: shareUrl,
+    pendingActionData: {
+      action: "comment",
+      videoSlug: videoSlug,
+      videoId: videoId,
+      embedId: embedDetails?.embedData.embed_id,
+    },
   });
 
   // Special case for brand ID 2357, unauthenticated users with auth info

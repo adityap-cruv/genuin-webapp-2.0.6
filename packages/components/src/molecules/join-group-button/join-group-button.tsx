@@ -33,11 +33,14 @@ type JoinGroupButtonProps = {
   onGroupJoinStatusChange?: (newRole: GroupUserStatusType) => void;
 } & ComponentProps<typeof PrimitiveButton>;
 
-export function JoinGroupButton({ ...restProps }: JoinGroupButtonProps) {
+export function JoinGroupButton({
+  groupId,
+  ...restProps
+}: JoinGroupButtonProps) {
   const { authenticationStatus, handleAuthCallback } = useAuthContext();
   const { modalConfig } = useEmbedConfigs();
 
-  const button = <Button {...restProps} />;
+  const button = <Button groupId={groupId} {...restProps} />;
 
   if (authenticationStatus === "unauthenticated") {
     const groupUrl = buildPageUrl({
@@ -53,6 +56,10 @@ export function JoinGroupButton({ ...restProps }: JoinGroupButtonProps) {
           url: groupUrl,
           action: "join-group",
         }),
+      },
+      pendingActionData: {
+        action: "join-group",
+        groupId: groupId,
       },
     });
 

@@ -247,6 +247,8 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
                 <IHeartFollowButton
                   websiteType={websiteType}
                   attributes={attributes}
+                  videoSlug={video.slug}
+                  videoId={video.id}
                 />
               </div>
             </div>

@@ -2,6 +2,7 @@
 import { createContext, useContext } from "react";
 import type { AuthUser } from "@genuin/components/types/auth";
 import { ActionType } from "@genuin/components/lib/utils/return-query";
+import type { PendingActionData } from "@genuin/components/lib/utils/pending-action-storage";
 
 export type AuthenticationStatusType =
   | "unauthenticated"
@@ -24,11 +25,13 @@ type AuthContextType = {
    * Handles authentication callback logic based on environment
    * @param authCallbackData - Data to pass to external auth handler
    * @param urlToOpen - URL to open for external authentication
+   * @param pendingActionData - Optional pending action data to save before authentication
    * @returns Function to handle external auth if available, otherwise undefined
    */
   handleAuthCallback: (props: {
     authCallbackData: AuthCallbackDataType;
     urlToOpen?: string;
+    pendingActionData?: Omit<PendingActionData, "timestamp">;
   }) => (() => void) | undefined;
 };
 

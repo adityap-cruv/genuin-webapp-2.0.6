@@ -29,6 +29,10 @@ import {
   emitRefreshFailedEvent,
   performTokenRefresh,
 } from "./token-refresh";
+import {
+  savePendingAction,
+  type PendingActionData,
+} from "@genuin/components/lib/utils/pending-action-storage";
 import { AnalyticsService } from "../analytics/service";
 
 // Define global window type for genuinAuth
@@ -233,15 +237,18 @@ export function AuthProvider({
    *
    * @param authCallbackData - Data to be passed to the authentication callback
    * @param urlToOpen - URL to open if external authentication is needed
+   * @param pendingActionData - Optional pending action data to save before authentication
    * @returns Function to handle external auth if applicable, otherwise undefined
    */
   const handleAuthCallback = useCallback(
     ({
       authCallbackData,
       urlToOpen,
+      pendingActionData,
     }: {
       authCallbackData: AuthCallbackDataType;
       urlToOpen?: string;
+      pendingActionData?: Omit<PendingActionData, "timestamp">;
     }) => {
       // For non-embed environments and authenticated user, always return undefined so consumer shows auth modal
       if (!isEmbed || authenticationStatus === "authenticated") {
@@ -252,6 +259,11 @@ export function AuthProvider({
       // return a function to handle external auth
       if (window.genuinAuth) {
         return () => {
+          // Save pending action if provided and user is unauthenticated
+          if (authenticationStatus === "unauthenticated" && pendingActionData) {
+            savePendingAction(pendingActionData);
+          }
+
           if (window.genuinAuth) {
             window.genuinAuth(authCallbackData);
           }

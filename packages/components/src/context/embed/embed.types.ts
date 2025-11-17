@@ -419,6 +419,8 @@ export type UserParam = {
  * - "comment-spark": Represents a user giving a 'spark' specifically to a comment.
  * - "repost": Represents a user reposting or sharing the content to their own feed or elsewhere.
  * - "comment": Represents a user adding a comment to the content.
+ * - "become-a-creator": Represents a user signing up to become a content creator.
+ * - "iheart-follow": Represents a user following an iHeart station or podcast.
  *
  * Use these types to specify which automatic user interaction should be performed in the embed context.
  */
@@ -430,7 +432,9 @@ export type ActionType =
   | "report"
   | "join-community"
   | "join-group"
-  | "subscribe-group";
+  | "subscribe-group"
+  | "become-a-creator"
+  | "iheart-follow";
 
 type AutoUserInteractionToPerformType = ActionType;
 
@@ -472,6 +476,14 @@ export type EmbedDataType = {
    * The ID of the comment to focus on when the embed is loaded.
    */
   commentId?: string;
+  /**
+   * The ID of the iHeart station or podcast to follow for auto-follow actions.
+   */
+  followId?: string;
+  /**
+   * The type of follow target (station or podcast) for auto-follow actions.
+   */
+  followType?: "station" | "podcast";
   authInfo?: AuthInfoType;
   is_default?: boolean;
   aspect_ratio?: string;

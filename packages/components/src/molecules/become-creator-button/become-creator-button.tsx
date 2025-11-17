@@ -38,6 +38,9 @@ export function BecomeCreatorButton({
           action: "become-a-creator",
         }),
       },
+      pendingActionData: {
+        action: "become-a-creator",
+      },
     });
 
     if (clickHandler) return <span onClick={clickHandler}>{button}</span>;

@@ -22,6 +22,10 @@ import { PlacementManager } from '@/core/placement-manager'
 import { ActionType } from '@genuin/components/context/embed/embed.types'
 import { ContextualParamsType } from '@genuin/components/context/embed/embed.types'
 import {
+  getPendingAction,
+  clearPendingAction,
+} from '@genuin/components/lib/utils/pending-action-storage'
+import {
   ConfigByUser,
   InitializationStatus,
   SDKElementsType,
@@ -303,6 +307,14 @@ export class GenuinSDK {
 
       const embedDetails = config.embedDetails!
 
+      // Load expand view if startVideoSlug is set from config
+      if (embedDetails.startVideoSlug) {
+        const instanceId = element.getAttribute('data-instance-id')
+        if (instanceId && this.sdkElements[instanceId]) {
+          loadExpandView(element, this.sdkElements[instanceId].config.theme)
+        }
+      }
+
       // set the brand-details and embed-details to the sdkElements for future reference.
       config.brandDetails = brandDetails
 
@@ -320,6 +332,9 @@ export class GenuinSDK {
         this.tokenManager.removeUserData()
         user = null
       }
+
+      // Handle pending actions from localStorage
+      this.handlePendingAction(embedDetails, element, user)
 
       // Apply brand colors to the element
       this.themeManager.applyBrandColors(element, brandDetails.brand_colors)
@@ -409,6 +424,59 @@ export class GenuinSDK {
   }
 
   /**
+   * Handles pending actions stored in localStorage and applies them to the embed if user is authenticated
+   * @param embedDetails The embed details to potentially update
+   * @param element The HTML element for loading expand view if needed
+   * @param user The authenticated user (if any)
+   * @private
+   */
+  private handlePendingAction(
+    embedDetails: EmbedDataType,
+    element: HTMLElement,
+    user: AuthUser | null | undefined
+  ): void {
+    const pendingAction = getPendingAction()
+    if (!pendingAction) return
+
+    if (user) {
+      // User config takes priority over pending action data
+      if (!embedDetails.startVideoSlug && pendingAction.videoId) {
+        embedDetails.startVideoSlug = pendingAction.videoId
+        // Load expand view when startVideoSlug is set from pending action
+        const instanceId = element.getAttribute('data-instance-id')
+        if (instanceId && this.sdkElements[instanceId]) {
+          loadExpandView(element, this.sdkElements[instanceId].config.theme)
+        }
+      }
+
+      if (
+        !embedDetails.autoUserInteractionToPerform &&
+        pendingAction.action
+      ) {
+        embedDetails.autoUserInteractionToPerform =
+          pendingAction.action as ActionType
+      }
+
+      if (!embedDetails.commentId && pendingAction.commentId) {
+        embedDetails.commentId = pendingAction.commentId
+      }
+
+      // Add follow-specific fields for iheart-follow actions only if not already set
+      if (pendingAction.action === 'iheart-follow') {
+        if (!embedDetails.followId && pendingAction.followId) {
+          embedDetails.followId = pendingAction.followId
+        }
+        if (!embedDetails.followType && pendingAction.followType) {
+          embedDetails.followType = pendingAction.followType
+        }
+      }
+    }
+
+    // Clear pending action regardless of auth status
+    clearPendingAction()
+  }
+
+  /**
    * Retrieves embed details based on the provided configuration and configures them.
    * @param config The configuration for the embed.
    * @param brandDetails The brand details.
@@ -490,8 +558,22 @@ export class GenuinSDK {
 
     if (!embedId && this.isSingleEmbed()) {
       const firstEmbedId = Object.keys(this.sdkElements)[0]
-      if (firstEmbedId)
+      if (firstEmbedId) {
         embedId = this.sdkElements[firstEmbedId]?.config.embedDetails?.embed_id
+        // Also load expand view when updating start video dynamically
+        const sdkElement = this.sdkElements[firstEmbedId]
+        if (sdkElement?.element) {
+          loadExpandView(sdkElement.element, sdkElement.config.theme)
+        }
+      }
+    } else if (embedId) {
+      // Find the element by embedId and load expand view
+      const sdkElement = Object.values(this.sdkElements).find(
+        (element) => element.config.embedDetails?.embed_id === embedId
+      )
+      if (sdkElement?.element) {
+        loadExpandView(sdkElement.element, sdkElement.config.theme)
+      }
     }
 
     this.eventManager.emit(SDKEventType.SDK_UPDATE_START_VIDEO_SLUG, {

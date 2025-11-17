@@ -118,6 +118,7 @@ export function EmbedProvider({
           ...prev,
           startVideoSlug: payload.startVideoSlug,
           autoUserInteractionToPerform: payload.action,
+          commentId: payload.commentId,
         }));
       }
     };

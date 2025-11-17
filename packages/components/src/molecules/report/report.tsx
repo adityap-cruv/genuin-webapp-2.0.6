@@ -71,6 +71,10 @@ export function Report({
   const clickHandler = handleAuthCallback({
     authCallbackData: { path: "/", action: "report", returnQueryParams },
     urlToOpen: shareUrl,
+    pendingActionData: {
+      action: "report",
+      videoSlug: videoSlug,
+    },
   });
 
   const handleReasonChange = (value: string) => {
