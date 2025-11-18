@@ -542,7 +542,7 @@ export function Embed({
               centeredSlides={config.view.centeredSlides}
               centeredSlidesBounds={config.view.centeredSlides}
               slidesOffsetBefore={
-                config.view.isCarousel && isIheartLayout
+                config.view.isCarousel && isIheartLayout && !isMobile
                   ? slidesOffsetBefore
                   : 0
               }

@@ -5,7 +5,7 @@ import {
   mapGroupJoinStatus,
 } from "@genuin/components/lib/utils";
 
-import type { PostDetailsSchema } from "./schema";
+import type { PostDetailsSchema, PostDetailsType } from "./schema";
 import type { FeedResponseFromGoApi } from "./types";
 
 // TODO: SCRAP THIS.
@@ -41,13 +41,50 @@ export function parseFeed(
 
   const result: Array<z.infer<typeof PostDetailsSchema>> = [];
 
-  // Track if we've already found the unwatched -> watched transition
-  // Once found, we can skip further checks for optimization
-  let watchBoundaryFound = false;
-
   for (let index = 0; index < data.length; index++) {
     const item = data[index];
-    if (!item || item.type === "all_caught_up") continue;
+    if (!item || item.type === "all_caught_up") {
+      const mappedItem = {
+        video: {
+          id: item?.video.uuid + "_overlay",
+          type: "overlay",
+          createdAt: item?.video.conversation_at,
+          commentCount: item?.video.no_of_comments || 0,
+          shareUrl: item?.video.share_url,
+          attachedLink: item?.video.attached_link || null,
+          source: item?.video.media_url_m3u8 ?? item?.video.media_url,
+          isSparked: item?.video.is_sparked || false,
+          isWatched: item?.video.is_watched,
+          sparkCount: item?.video.no_of_sparks || 0,
+          thumbnail: item?.video.thumbnail_url,
+          viewCount: item?.video.no_of_views || 0,
+          thumbnailM: item?.video.thumbnail_url_m || null,
+          description:
+            (tryJsonParse(item?.video.description_data) as any) ??
+            item?.video.description_text,
+          descritptionText: item?.video.description_text,
+          slug: item?.video.slug,
+          linkoutId: item?.video.linkouts_id || null,
+          clickableUrl: item?.video.clickable_url || null,
+          linkouts: item?.video.linkouts || [],
+          isPinned: item?.video.is_pinned || false,
+          thumbnailSprite: item?.video.sprite_image_url || null,
+          cardLayoutId: item?.video.card_layout_id || null,
+          videoLayoutId: item?.video.video_layout_id || null,
+          duration: item?.video.duration || null,
+          attributes: item?.video.attributes || null,
+
+          placement_card_layout_id:
+            item?.video.placement_card_layout_id || null,
+          placement_video_layout_id:
+            item?.video.placement_video_layout_id || null,
+          placement_card_section_layout_id:
+            item?.video.placement_card_section_layout_id || null,
+        },
+      };
+      result.push(mappedItem as PostDetailsType);
+      continue;
+    }
 
     const currentIsWatched = item.video?.is_watched ?? false;
 
@@ -154,40 +191,6 @@ export function parseFeed(
         position: item.section?.position || null,
       },
     };
-
-    // Check for the unwatched -> watched transition (only if middleware is enabled)
-    // When found, insert an overlay marker before the first watched video
-    if (shouldShowMiddlewareOverlay && !watchBoundaryFound && index > 0) {
-      const previousIsWatched = data[index - 1]?.video?.is_watched || false;
-
-      if (!previousIsWatched && currentIsWatched) {
-        // Insert overlay marker at the transition boundary
-        result.push({
-          ...mappedItem,
-          video: {
-            ...mappedItem.video,
-            type: "overlay",
-            id: mappedItem.video.id + "_overlay",
-          },
-        });
-
-        // Mark boundary as found to skip further checks
-        watchBoundaryFound = true;
-      }
-    } else if (shouldShowMiddlewareOverlay && index === 0 && currentIsWatched) {
-      // Insert overlay marker at the transition boundary
-      result.push({
-        ...mappedItem,
-        video: {
-          ...mappedItem.video,
-          type: "overlay",
-          id: mappedItem.video.id + "_overlay",
-        },
-      });
-
-      // Mark boundary as found to skip further checks
-      watchBoundaryFound = true;
-    }
 
     // Add the actual video item
     result.push(mappedItem);
