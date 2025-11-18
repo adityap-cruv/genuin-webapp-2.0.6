@@ -13,7 +13,7 @@ import { Comments, CommentsDialog } from "../../molecules/comments";
 import { Player } from "./player";
 import { SwiperImplementation } from "./swiper-implementation";
 import { SectionsTabs } from "./sections-tabs";
-import { ComponentProps, useEffect, useState, useRef } from "react";
+import { ComponentProps, useEffect, useState, useRef, useMemo } from "react";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { abbreviateNumber, cn } from "@genuin/ui/lib/utils";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
@@ -153,6 +153,15 @@ export function PlayerList({
     ? verticalSwipers[activeHorizontalIndex]
     : verticalSwipers[0];
 
+  /*
+We need to filter out these posts because we shouldn't show the overlay middleware
+or the full-screen view here, and we cannot simply skip the slide since we're using
+a swiper inside another swiper.
+*/
+  const filteredPost = useMemo(() => {
+    return posts.filter((post) => post.video.type !== "overlay");
+  }, [posts]);
+
   // Focus management hook (only for iHeart)
   const {
     containerRef: playerListRef,
@@ -237,7 +246,7 @@ export function PlayerList({
                 if (isEndOfFeedReached) setEndOfFeedReached(false);
               }}
             >
-              {posts.map((post, index) => (
+              {filteredPost.map((post, index) => (
                 <SwiperSlide
                   key={post.video.id}
                   style={
@@ -281,8 +290,10 @@ export function PlayerList({
                         index={index}
                         totalVideos={totalVideos}
                       />
-                    ) : (
+                    ) : post.video.type === "complete" ? (
                       <WatchBoundaryOverlay variant="complete" />
+                    ) : (
+                      <></>
                     );
                   }}
                 </SwiperSlide>
@@ -334,7 +345,7 @@ export function PlayerList({
         if (isEndOfFeedReached) setEndOfFeedReached(false);
       }}
     >
-      {posts.map((post, index) => (
+      {filteredPost.map((post, index) => (
         <SwiperSlide
           key={post.video.id}
           style={
@@ -364,8 +375,10 @@ export function PlayerList({
                   onCommentCountChange={onCommentCountChange}
                   index={index}
                 />
-              ) : (
+              ) : post.video.type === "complete" ? (
                 <WatchBoundaryOverlay variant="complete" />
+              ) : (
+                <></>
               )}
             </>
           )}
@@ -435,7 +448,7 @@ export function PlayerList({
           {brandLayoutType === "iheart" && !isEndOfFeedReached && (
             <PlayerHeader
               isMobile={isMobile}
-              title={posts[activeIndex]?.video.attributes?.title ?? ""}
+              title={filteredPost[activeIndex]?.video.attributes?.title ?? ""}
               onBackClick={toggleExpandView}
             />
           )}
@@ -457,7 +470,7 @@ export function PlayerList({
           !disableSwiper && (
             <NavigationButton
               swiper={activeSwiper ?? undefined}
-              postsLength={posts.length}
+              postsLength={filteredPost.length}
               position="relative"
               className={cn("gencl:pl-10 gencl:justify-center")}
               theme={theme}
@@ -470,126 +483,142 @@ export function PlayerList({
       {showExpandView && brandLayoutType !== "iheart" && !isMobile && (
         <NavigationButton
           swiper={activeSwiper ?? undefined}
-          postsLength={posts.length}
+          postsLength={filteredPost.length}
           theme={theme}
           size={websiteType === "polaris" ? "lg" : "xl"}
         />
       )}
 
-      {!isMobile && brandLayoutType !== "iheart" && posts[activeIndex] && (
-        <Actions
-          shareUrl={posts[activeIndex]?.video.shareUrl ?? ""}
-          isReacted={posts[activeIndex]?.video.isSparked ?? false}
-          contentId={posts[activeIndex]?.video.id}
-          groupSlug={posts[activeIndex]?.group.slug}
-          slug={posts[activeIndex]?.video.slug}
-          reactionCount={posts[activeIndex]?.video.sparkCount}
-          theme={showExpandView ? "dark" : "light"}
-          className={cn(
-            "gencl:shrink-0",
-            showExpandView ? "gencl:pb-4" : "gencl:pb-7"
-          )}
-          isCommentBoxOpen={value}
-          actionWrapper={{
-            COMMENT: (defaultNode) => {
-              if (!showCommentBox) return;
-              //
-              const defaultOpen =
-                (embedDetails?.embedData?.autoUserInteractionToPerform ===
-                  "comment-spark" ||
-                  embedDetails?.embedData.autoUserInteractionToPerform ===
-                    "comment") &&
-                posts[activeIndex]?.video.slug ===
-                  embedDetails.embedData?.startVideoSlug &&
-                !embedDetails.embedEventBus.getContext()
-                  .autoInteractionActionDone;
+      {!isMobile &&
+        brandLayoutType !== "iheart" &&
+        filteredPost[activeIndex] && (
+          <Actions
+            shareUrl={filteredPost[activeIndex]?.video.shareUrl ?? ""}
+            isReacted={filteredPost[activeIndex]?.video.isSparked ?? false}
+            contentId={filteredPost[activeIndex]?.video.id}
+            groupSlug={filteredPost[activeIndex]?.group.slug}
+            slug={filteredPost[activeIndex]?.video.slug}
+            reactionCount={filteredPost[activeIndex]?.video.sparkCount}
+            theme={showExpandView ? "dark" : "light"}
+            className={cn(
+              "gencl:shrink-0",
+              showExpandView ? "gencl:pb-4" : "gencl:pb-7"
+            )}
+            isCommentBoxOpen={value}
+            actionWrapper={{
+              COMMENT: (defaultNode) => {
+                if (!showCommentBox) return;
+                //
+                const defaultOpen =
+                  (embedDetails?.embedData?.autoUserInteractionToPerform ===
+                    "comment-spark" ||
+                    embedDetails?.embedData.autoUserInteractionToPerform ===
+                      "comment") &&
+                  filteredPost[activeIndex]?.video.slug ===
+                    embedDetails.embedData?.startVideoSlug &&
+                  !embedDetails.embedEventBus.getContext()
+                    .autoInteractionActionDone;
 
-              if (defaultOpen) {
-                embedDetails.markAutoInteractionActionDone();
-              }
+                if (defaultOpen) {
+                  embedDetails.markAutoInteractionActionDone();
+                }
 
-              // Simple ui to show for comment trigger
-              function CommentBox({ children }: { children: React.ReactNode }) {
-                const commentCount =
-                  posts[activeIndex]?.video.commentCount ?? 0;
-                return (
-                  <>
-                    {children}
-                    <p
-                      className={cn(
-                        "gencl:p-0 gencl:text-center gencl:text-black gencl:text-body-2-medium",
-                        showExpandView && "gencl:text-white!"
-                      )}
-                      aria-label={`${commentCount} ${commentCount === 1 ? "comment" : "comments"}`}
+                // Simple ui to show for comment trigger
+                function CommentBox({
+                  children,
+                }: {
+                  children: React.ReactNode;
+                }) {
+                  const commentCount =
+                    filteredPost[activeIndex]?.video.commentCount ?? 0;
+                  return (
+                    <>
+                      {children}
+                      <p
+                        className={cn(
+                          "gencl:p-0 gencl:text-center gencl:text-black gencl:text-body-2-medium",
+                          showExpandView && "gencl:text-white!"
+                        )}
+                        aria-label={`${commentCount} ${commentCount === 1 ? "comment" : "comments"}`}
+                      >
+                        {abbreviateNumber(commentCount)}
+                      </p>
+                    </>
+                  );
+                }
+
+                if (
+                  !isDesktop &&
+                  filteredPost[activeIndex] &&
+                  (value || defaultOpen)
+                )
+                  return (
+                    <CommentsDialog
+                      commentCount={
+                        filteredPost[activeIndex]?.video.commentCount
+                      }
+                      communityId={filteredPost[activeIndex]?.community.id}
+                      loopId={filteredPost[activeIndex]?.group.id}
+                      videoId={filteredPost[activeIndex]?.video.id}
+                      videoSlug={filteredPost[activeIndex]?.video.slug}
+                      shareUrl={filteredPost[activeIndex]?.video.shareUrl}
+                      defaultOpen={value}
+                      key={
+                        "feed-comment-box" + filteredPost[activeIndex]?.video.id
+                      }
+                      onCommentCountChange={onCommentCountChange}
+                      onOpenChange={(value) => {
+                        setValue(value);
+                      }}
                     >
-                      {abbreviateNumber(commentCount)}
-                    </p>
-                  </>
-                );
-              }
-
-              if (!isDesktop && posts[activeIndex] && (value || defaultOpen))
+                      <CommentBox>{defaultNode}</CommentBox>
+                    </CommentsDialog>
+                  );
                 return (
-                  <CommentsDialog
-                    commentCount={posts[activeIndex]?.video.commentCount}
-                    communityId={posts[activeIndex]?.community.id}
-                    loopId={posts[activeIndex]?.group.id}
-                    videoId={posts[activeIndex]?.video.id}
-                    videoSlug={posts[activeIndex]?.video.slug}
-                    shareUrl={posts[activeIndex]?.video.shareUrl}
-                    defaultOpen={value}
-                    key={"feed-comment-box" + posts[activeIndex]?.video.id}
-                    onCommentCountChange={onCommentCountChange}
-                    onOpenChange={(value) => {
-                      setValue(value);
+                  <span
+                    key={
+                      "feed-comment-box" + filteredPost[activeIndex]?.video.id
+                    }
+                    onClick={() => {
+                      if (showExpandView) toggle();
                     }}
                   >
                     <CommentBox>{defaultNode}</CommentBox>
-                  </CommentsDialog>
+                  </span>
                 );
-              return (
-                <span
-                  key={"feed-comment-box" + posts[activeIndex]?.video.id}
-                  onClick={() => {
-                    if (showExpandView) toggle();
-                  }}
-                >
-                  <CommentBox>{defaultNode}</CommentBox>
-                </span>
-              );
-            },
-          }}
-          onReactionStateChange={(isReacted) => {
-            const videoId =
-              posts[activeIndex]?.video.slug ===
-              embedDetails?.embedData.startVideoSlug
-                ? posts[activeIndex]?.video.slug
-                : posts[activeIndex]?.video.id;
-            if (videoId) {
-              onReactionStateChange?.(videoId, isReacted);
-            }
-          }}
-        />
-      )}
+              },
+            }}
+            onReactionStateChange={(isReacted) => {
+              const videoId =
+                filteredPost[activeIndex]?.video.slug ===
+                embedDetails?.embedData.startVideoSlug
+                  ? filteredPost[activeIndex]?.video.slug
+                  : filteredPost[activeIndex]?.video.id;
+              if (videoId) {
+                onReactionStateChange?.(videoId, isReacted);
+              }
+            }}
+          />
+        )}
 
       {/* show this only if expand view is open  */}
       {value &&
         showExpandView &&
         showCommentBox &&
-        posts[activeIndex] &&
+        filteredPost[activeIndex] &&
         brandLayoutType !== "iheart" &&
         isDesktop && (
           <div className="gencl:max-w-118 gencl:w-full gencl:h-full gencl:hidden gencl:sm:block! gencl:py-6">
             <Comments
-              videoId={posts[activeIndex].video.id}
-              loopId={posts[activeIndex].group.id}
-              communityId={posts[activeIndex].community?.id}
-              videoSlug={posts[activeIndex].video.slug}
+              videoId={filteredPost[activeIndex].video.id}
+              loopId={filteredPost[activeIndex].group.id}
+              communityId={filteredPost[activeIndex].community?.id}
+              videoSlug={filteredPost[activeIndex].video.slug}
               className="gencl:h-full"
               showCloseButton={value}
               onClose={toggle}
               onCommentCountChange={onCommentCountChange}
-              shareUrl={posts[activeIndex].video.shareUrl}
+              shareUrl={filteredPost[activeIndex].video.shareUrl}
             />
           </div>
         )}

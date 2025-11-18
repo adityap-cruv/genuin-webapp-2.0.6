@@ -16,6 +16,7 @@ interface IHeartCaughtUpOverlayProps extends ComponentProps<"div"> {
     type?: "station" | "podcast";
   };
   onIheartRedirection?: () => void;
+  websiteType?: "polaris" | "legacy";
 }
 
 export function IHeartCaughtUpOverlay({
@@ -25,6 +26,7 @@ export function IHeartCaughtUpOverlay({
   variant = "overlay",
   videoDetails,
   info,
+  websiteType,
   onIheartRedirection,
   ...props
 }: IHeartCaughtUpOverlayProps) {
@@ -60,11 +62,13 @@ export function IHeartCaughtUpOverlay({
             {subtitle}
           </p>
         </div>
-        {variant === "overlay" && (
+        {websiteType !== "legacy" && (
           <OverLayButton
             videoDetails={videoDetails ?? ({} as PostDetailsType["video"])}
             info={info ?? {}}
             onIheartRedirection={onIheartRedirection}
+            variant="caught"
+            websiteType={websiteType}
           />
         )}
       </div>

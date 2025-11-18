@@ -8,9 +8,11 @@ import {
   IHeartStopIcon,
 } from "@genuin/ui";
 import { useIHeartPlayback } from "./use-iheart-playback";
+import { useMemo } from "react";
 
 type OverLayButtonProps = {
   onIheartRedirection?: () => void;
+  variant?: "caught" | "watch";
   videoDetails: PostDetailsType["video"];
   info: {
     podcast?: number;
@@ -18,11 +20,14 @@ type OverLayButtonProps = {
     episode?: number;
     type?: "station" | "podcast";
   };
+  websiteType?: "polaris" | "legacy";
 };
 
 export function OverLayButton({
   videoDetails,
   info,
+  variant = "caught",
+  websiteType,
   onIheartRedirection,
 }: OverLayButtonProps) {
   const { isPlaying, handleClick, ctaText, isGoToEpisode } = useIHeartPlayback({
@@ -31,19 +36,25 @@ export function OverLayButton({
     options: {
       onRedirection: onIheartRedirection,
     },
+    variant,
   });
 
   if (!ctaText) return;
 
+  const isClickDisabled = useMemo(() => {
+    return websiteType === "polaris" && variant === "caught" && isGoToEpisode;
+  }, [websiteType, variant, isGoToEpisode]);
+
   return (
     <Button
-      onClick={handleClick}
+      onClick={isClickDisabled ? undefined : (event) => handleClick(event)}
       aria-label="Go to all episodes page"
       className={cn(
         "gencl:h-11 gencl:text-body-1-semi-bold! gencl:flex gencl:items-center gencl:justify-center gencl:rounded-full gencl:px-5",
         isPlaying
           ? "gencl:bg-transparent gencl:border-white"
-          : "gencl:bg-white gencl:text-[#27292D]!"
+          : "gencl:bg-white gencl:text-[#27292D]!",
+        variant === "caught" && "gencl:w-fit! gencl:self-center!"
       )}
       title={ctaText}
     >
@@ -51,20 +62,20 @@ export function OverLayButton({
         (isPlaying ? (
           info.type === "station" ? (
             <IHeartStopIcon
-              theme={isPlaying ? "light" : "dark"}
+              theme={isPlaying ? "dark" : "light"}
               size="sm"
               aria-hidden="true"
             />
           ) : (
             <IHeartPauseIcon
-              theme={isPlaying ? "light" : "dark"}
+              theme={isPlaying ? "dark" : "light"}
               size="sm"
               aria-hidden="true"
             />
           )
         ) : (
           <IHeartPlayIcon
-            theme={isPlaying ? "light" : "dark"}
+            theme={isPlaying ? "dark" : "light"}
             size="sm"
             aria-hidden="true"
           />

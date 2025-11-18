@@ -21,6 +21,7 @@ interface UseIHeartPlaybackParams {
   options?: {
     onRedirection?: () => void;
   };
+  variant?: "caught" | "watch" | "listen";
 }
 
 interface UseIHeartPlaybackReturn {
@@ -81,6 +82,7 @@ export function useIHeartPlayback({
   info,
   videoDetails,
   options,
+  variant,
 }: UseIHeartPlaybackParams): UseIHeartPlaybackReturn {
   const { baseContextManager } = useBaseContext();
   const {
@@ -102,10 +104,19 @@ export function useIHeartPlayback({
   });
 
   // Derived values
-  const ctaText = videoDetails?.linkouts?.[0]?.cta_text;
   const isGoToEpisode =
-    info.type === "podcast" ? !!info.podcast && !info.episode : false;
-
+    info.type === "podcast" && (variant === "watch" || variant === "caught")
+      ? true
+      : info.type === "podcast"
+        ? !!info.podcast && !info.episode
+        : false;
+  const ctaText =
+    (variant === "watch" || variant === "caught")
+      ? isGoToEpisode
+        ? "Go to episode"
+        : "Listen Live"
+      : videoDetails?.linkouts?.[0]?.cta_text;
+      
   // Helper function to update active iHeart content
   const updateActiveIHeartContent = useCallback(
     (
@@ -210,6 +221,26 @@ export function useIHeartPlayback({
         : null;
   }, [info]);
 
+  const constructClipPlayerPayload = useCallback(() => {
+    if (variant !== "caught" || videoDetails.type !== "complete")
+      return undefined;
+
+    if (!videoDetails.attributes?.type) return undefined;
+    return {
+      slug: videoDetails.attributes.slug,
+      type: videoDetails.attributes.type,
+      episodeId: videoDetails.attributes.episode_id
+        ? Number(videoDetails.attributes.episode_id)
+        : undefined,
+      podcastId: videoDetails.attributes.podcast_id
+        ? Number(videoDetails.attributes.podcast_id)
+        : undefined,
+      stationId: videoDetails.attributes.station_id
+        ? Number(videoDetails.attributes.station_id)
+        : undefined,
+    };
+  }, [videoDetails, variant]);
+
   // Main click handler with optional redirection logic
   const handleClick = useCallback(
     (e: React.MouseEvent) => {
@@ -248,9 +279,19 @@ export function useIHeartPlayback({
           updateActiveIHeartContent(payload);
         }
 
+        const clipPlayerPayLoad = constructClipPlayerPayload();
+        if (clipPlayerPayLoad) {
+          SDKEventEmitter.emit(SDKEventName.PLAY_IHEART_CONTENT, {
+            ...clipPlayerPayLoad,
+            slug: clipPlayerPayLoad.slug ?? undefined,
+            play: true,
+            navigate: true,
+          });
+          return;
+        }
         SDKEventEmitter.emit(SDKEventName.PLAY_IHEART_CONTENT, {
           ...payload,
-          slug: videoDetails.attributes?.slug ?? "",
+          slug: videoDetails.attributes?.slug ?? undefined,
           play: !isPlaying,
         });
       }
@@ -258,6 +299,7 @@ export function useIHeartPlayback({
     [
       isPlaying,
       constructPayload,
+      constructClipPlayerPayload,
       options?.onRedirection,
       isGoToEpisode,
       info.type,

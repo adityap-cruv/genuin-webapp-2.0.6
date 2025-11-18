@@ -30,17 +30,15 @@ export type PlayPauseTracker = {
   isInView: boolean;
 };
 
-export type GenericData =
-  | {
-      isVideoWatched: boolean;
-      videoId: string;
-      /**
-       * The index of the video being previewed (hover state).
-       * Used to identify which video should show preview playback.
-       */
-      previewIndex?: number;
-    }
-  | ActiveIHeartContentType;
+export type GenericData = {
+  isVideoWatched: boolean;
+  videoId: string;
+  /**
+   * The index of the video being previewed (hover state).
+   * Used to identify which video should show preview playback.
+   */
+  previewIndex?: number;
+};
 
 /**
  * Generic event names for video-related events.

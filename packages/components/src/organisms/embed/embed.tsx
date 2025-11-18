@@ -199,7 +199,7 @@ export function Embed({
     () => feedData?.pages?.flatMap((page) => page.feed) || [],
     [feedData]
   );
-  const { isMobile } = useDeviceDetectMediaQuery();
+  const { isDesktop } = useDeviceDetectMediaQuery();
   const totalVideos = feedData?.pages?.[0]?.totalVideos as number;
 
   // Extract video titles from postDetails
@@ -363,10 +363,11 @@ export function Embed({
    * - `isMobile`: Determines which filtering logic to apply.
    */
   const totalSlides = useMemo(() => {
-    return isMobile
+    const conditions = websiteType === "legacy" ? true : !isDesktop;
+    return conditions
       ? videos.filter((item) => item.video.type !== "complete").length
       : videos.filter((item) => item.video.type === "video").length;
-  }, [videos, isMobile]);
+  }, [videos, isDesktop]);
 
   /**
    * Handles slide change events in the Swiper carousel.
@@ -388,8 +389,9 @@ export function Embed({
       // Only check end of feed for iheart layout and we have to show toaster for desktop and tablet.
       if (
         config?.view?.brandLayoutType !== "iheart" ||
-        isMobile ||
-        !Array.isArray(videos)
+        !isDesktop ||
+        !Array.isArray(videos) ||
+        websiteType === "legacy"
       )
         return;
 
@@ -422,7 +424,7 @@ export function Embed({
         SDKEventEmitter.emit(SDKEventName.CAUGHT_OVERLAY, true);
       }
     },
-    [videos, isMobile, SDKEventEmitter, SDKEventName]
+    [videos, isDesktop, SDKEventEmitter, SDKEventName]
   );
 
   // Handle URL manipulation for iHeart brand layout
@@ -552,7 +554,8 @@ export function Embed({
                   <></>
                 ) : videoData.video.type === "overlay" &&
                   config.view.brandLayoutType === "iheart" &&
-                  !isMobile ? (
+                  isDesktop &&
+                  websiteType !== "legacy" ? (
                   <></>
                 ) : (
                   <SwiperSlide key={idx}>

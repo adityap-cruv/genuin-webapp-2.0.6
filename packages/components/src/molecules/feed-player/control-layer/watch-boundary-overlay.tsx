@@ -17,7 +17,7 @@ export default function WatchBoundaryOverlay({
   };
 }) {
   const {
-    view: { brandLayoutType: layoutType },
+    view: { brandLayoutType: layoutType,websiteType },
   } = useEmbedConfigs();
 
   switch (layoutType) {
@@ -27,6 +27,7 @@ export default function WatchBoundaryOverlay({
           videoDetails={videoDetails}
           info={info}
           variant={variant}
+          websiteType={websiteType}
         />
       );
     }

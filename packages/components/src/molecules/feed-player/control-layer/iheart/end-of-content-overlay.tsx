@@ -50,6 +50,8 @@ export function IHeartEndOfContentOverlay({
           info={info}
           videoDetails={videoDetails}
           onIheartRedirection={onIheartRedirection}
+          variant="watch"
+          websiteType={websiteType}
         />
         <Button
           onClick={onPlayAgain}
