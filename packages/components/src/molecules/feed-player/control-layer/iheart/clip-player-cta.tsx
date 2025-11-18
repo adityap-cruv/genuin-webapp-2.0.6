@@ -42,13 +42,6 @@ export const ClipPlayerCTA = ({
         : undefined;
       const slug = postDetails.video.attributes?.slug;
 
-      if (websiteType === "legacy") {
-        const isExpandViewOpen = embedDetails?.embedEventBus.getContext();
-        if (isExpandViewOpen) {
-          embedDetails?.goBackToPreviousPlayerType();
-        }
-      }
-
       if (slug) {
         SDKEventEmitter.emit(SDKEventName.PLAY_IHEART_CONTENT, {
           navigate: true,
@@ -60,6 +53,11 @@ export const ClipPlayerCTA = ({
           stationId,
           type,
         });
+      }
+
+      const isExpandViewOpen = embedDetails?.embedEventBus.getContext();
+      if (isExpandViewOpen) {
+        embedDetails?.goBackToPreviousPlayerType();
       }
     },
     [postDetails, embedDetails]
