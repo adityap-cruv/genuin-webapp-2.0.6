@@ -32,13 +32,8 @@ export function useIheartUrlManager({
 
   const getVideoPathSegment = (index: number): string => {
     const video = videos[index];
-    if (!video || video.video.type === "complete") return "";
-    let videoId = video.video.id;
-    if (videoId.endsWith("overlay")) {
-      const parts = videoId.split("_");
-      videoId = parts.length > 0 ? (parts[0] ?? "") : "";
-    }
-    return `${video.video.slug}_${videoId}`;
+    if (!video || video.video.type !== "video") return "";
+    return `${video.video.slug}_${video.video.id}`;
   };
 
   const isVideoPathSegment = (segment: string): boolean => {

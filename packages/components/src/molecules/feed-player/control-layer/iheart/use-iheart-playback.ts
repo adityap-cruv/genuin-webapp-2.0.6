@@ -111,12 +111,12 @@ export function useIHeartPlayback({
         ? !!info.podcast && !info.episode
         : false;
   const ctaText =
-    (variant === "watch" || variant === "caught")
+    variant === "watch" || variant === "caught"
       ? isGoToEpisode
         ? "Go to episode"
         : "Listen Live"
       : videoDetails?.linkouts?.[0]?.cta_text;
-      
+
   // Helper function to update active iHeart content
   const updateActiveIHeartContent = useCallback(
     (
@@ -269,25 +269,29 @@ export function useIHeartPlayback({
         return; // Don't play - just redirect/scroll
       }
 
-      // Standard play/pause logic (base behavior from listen-live-button)
+      const clipPlayerPayLoad = constructClipPlayerPayload();
+      if (clipPlayerPayLoad) {
+        setIsPlaying(!isPlaying);
 
+        if (!isPlaying) {
+          updateActiveIHeartContent(clipPlayerPayLoad);
+        }
+        SDKEventEmitter.emit(SDKEventName.PLAY_IHEART_CONTENT, {
+          ...clipPlayerPayLoad,
+          slug: clipPlayerPayLoad.slug ?? undefined,
+          play: true,
+          navigate: true,
+        });
+        return;
+      }
+
+      // Standard play/pause logic (base behavior from listen-live-button)
       if (payload) {
         // Optimistically update UI immediately for better user experience
         setIsPlaying(!isPlaying);
 
         if (!isPlaying) {
           updateActiveIHeartContent(payload);
-        }
-
-        const clipPlayerPayLoad = constructClipPlayerPayload();
-        if (clipPlayerPayLoad) {
-          SDKEventEmitter.emit(SDKEventName.PLAY_IHEART_CONTENT, {
-            ...clipPlayerPayLoad,
-            slug: clipPlayerPayLoad.slug ?? undefined,
-            play: true,
-            navigate: true,
-          });
-          return;
         }
         SDKEventEmitter.emit(SDKEventName.PLAY_IHEART_CONTENT, {
           ...payload,

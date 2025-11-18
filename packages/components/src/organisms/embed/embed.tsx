@@ -199,7 +199,7 @@ export function Embed({
     () => feedData?.pages?.flatMap((page) => page.feed) || [],
     [feedData]
   );
-  const { isDesktop,isMobile } = useDeviceDetectMediaQuery();
+  const { isDesktop, isMobile } = useDeviceDetectMediaQuery();
   const totalVideos = feedData?.pages?.[0]?.totalVideos as number;
 
   // Extract video titles from postDetails

@@ -291,7 +291,10 @@ a swiper inside another swiper.
                         totalVideos={totalVideos}
                       />
                     ) : post.video.type === "complete" ? (
-                      <WatchBoundaryOverlay variant="complete" />
+                      <WatchBoundaryOverlay
+                        videoDetails={post.video}
+                        variant="complete"
+                      />
                     ) : (
                       <></>
                     );
@@ -376,7 +379,10 @@ a swiper inside another swiper.
                   index={index}
                 />
               ) : post.video.type === "complete" ? (
-                <WatchBoundaryOverlay variant="complete" />
+                <WatchBoundaryOverlay
+                  videoDetails={post.video}
+                  variant="complete"
+                />
               ) : (
                 <></>
               )}
