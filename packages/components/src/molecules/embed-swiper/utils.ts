@@ -28,8 +28,11 @@ export function getSlidesPerView(
   clientHeight: number,
   clientWidth: number,
   forFeed: boolean,
-  aspectRatio?: string
+  aspectRatio?: string,
+  useWindowSwiperMode?: boolean
 ) {
+  clientHeight = useWindowSwiperMode ? window.innerHeight : clientHeight;
+  clientWidth = clientWidth;
   const elementHeight = clientHeight;
   const elementWidth = clientWidth;
   let ratio = 1;

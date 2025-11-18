@@ -477,8 +477,10 @@ export function Embed({
         className
       )}
       style={{
-        height: containerHeight,
-        width: containerWidth,
+        ...(!config.useWindowSwiperMode && {
+          height: containerHeight,
+          width: containerWidth,
+        }),
         ...style,
       }}
       {...restProps}

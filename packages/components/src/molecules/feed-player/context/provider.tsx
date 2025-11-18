@@ -771,6 +771,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     []
   );
 
+  // TODO: This function takes very heavy logical decision, refactor it with more maintainable code, If you want to do any changed contact himanshu@begenuin.com first.
   /**
    * This function is used to toggle the play state of the video player.
    */
@@ -779,6 +780,23 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       if (byUser && video.videoShouldPreview && typeof index === "number") {
         disablePreviewMode();
       }
+
+      // Whenever user clicks on play/pause button, to mostly play/pause
+      // If the user clicks on video which is not active or in view and feedPlayerShouldPlay is true
+      // updateActiveIndex will take it into view and will start playing based on feed player shoud play
+      //! Note: this is only done for iheart. Once we do re-write of this provider this function will be cleaned.
+      if (
+        byUser &&
+        websiteType === "polaris" &&
+        isIHeartLayout &&
+        feedPlayerShouldPlay &&
+        !isActive &&
+        index !== undefined
+      ) {
+        updateActiveIndex?.(index, undefined, true);
+        return;
+      }
+
       if (
         byUser &&
         video.videoShouldPreview &&

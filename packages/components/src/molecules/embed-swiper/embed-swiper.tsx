@@ -6,11 +6,8 @@ import { getSlidesPerView, SWIPER_CONFIG } from "./utils";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 import "swiper/css";
 import { cn } from "@genuin/ui/lib/utils";
-import {
-  SDKEventEmitter,
-  SDKEventName,
-} from "@genuin/components/lib/sdk-event-emitter";
-import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { NativeFeedScroll } from "../native-feed-scroll";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 type EmbedSwiperProps = {
   forFeed?: boolean;
@@ -18,7 +15,7 @@ type EmbedSwiperProps = {
   spaceBetweenVideos: number;
   containerDimensions?: {
     width: number;
-    height: number;
+    height?: number;
   };
   aspectRatio?: string;
   freeMode?: boolean;
@@ -40,57 +37,16 @@ export function EmbedSwiper({
   className,
   aspectRatio,
   freeMode = false,
-  onActiveIndexChange,
   slidesOffsetBefore,
+  onActiveIndexChange,
+  onInit,
+  onSwiper,
   isIheartLayout = false,
   ...restProps
 }: EmbedSwiperProps) {
   const { isWindows } = useDeviceDetection();
-  const { isDesktop } = useDeviceDetectMediaQuery();
-  const lastFiredEventRef = useRef<"forward" | "backward" | null>(null);
-
-  const scrolledOnce = () => {
-    SDKEventEmitter.emit(SDKEventName.SWIPED_FORWARD, {
-      fromIndex: 0,
-      toIndex: 1,
-      timestamp: Date.now(),
-    });
-    lastFiredEventRef.current = "forward";
-  };
-
-  const scrolledBack = () => {
-    SDKEventEmitter.emit(SDKEventName.SWIPED_BACKWARD, {
-      fromIndex: 1,
-      toIndex: 0,
-      timestamp: Date.now(),
-    });
-    lastFiredEventRef.current = "backward";
-  };
-
-  const handleActiveIndexChange = (swiper: SwiperType) => {
-    onActiveIndexChange?.(swiper);
-
-    // for desktop we are going to render carousel for iheart so no need to emit events.
-    if (isDesktop) return;
-
-    // Check if scrolled from 0 to 1
-    // Fire forward event only if backward was fired last or this is the first event
-    if (
-      swiper.previousIndex < swiper.activeIndex &&
-      lastFiredEventRef.current !== "forward"
-    ) {
-      scrolledOnce();
-    }
-
-    // Check if scrolled back from 1 to 0
-    // Fire backward event only if forward was fired last or this is the first event
-    if (
-      swiper.previousIndex > swiper.activeIndex &&
-      lastFiredEventRef.current !== "backward"
-    ) {
-      scrolledBack();
-    }
-  };
+  const swiperRef = useRef<SwiperType | null>(null);
+  const { useWindowSwiperMode } = useEmbedConfigs();
 
   const slidesPerView = useMemo(
     () =>
@@ -98,16 +54,60 @@ export function EmbedSwiper({
         containerDimensions?.height ?? 0,
         containerDimensions?.width ?? 0,
         forFeed,
-        aspectRatio
+        aspectRatio,
+        useWindowSwiperMode
       ) ?? 1,
-    [forFeed, aspectRatio, containerDimensions]
+    [forFeed, aspectRatio, containerDimensions, useWindowSwiperMode]
   );
 
+  // Use native scroll for feed mode
+  if (useWindowSwiperMode) {
+    return (
+      <NativeFeedScroll
+        // containerHeight={containerDimensions?.height ?? 0}
+        containerWidth={containerDimensions?.width ?? 0}
+        slidesPerView={slidesPerView}
+        spaceBetween={spaceBetweenVideos}
+        slidesOffsetBefore={slidesOffsetBefore}
+        className={className}
+        onActiveIndexChange={(instance) => {
+          // Controller instance is passed directly, no wrapper needed!
+          // Cast to SwiperType for compatibility with existing code
+          const swiperCompatibleInstance = instance as unknown as SwiperType;
+          onActiveIndexChange?.(swiperCompatibleInstance);
+        }}
+        onSlideChange={(instance) => {
+          // Controller instance is passed directly, no wrapper needed!
+          // Cast to SwiperType for compatibility with existing code
+          const swiperCompatibleInstance = instance as unknown as SwiperType;
+          onActiveIndexChange?.(swiperCompatibleInstance);
+        }}
+        onInit={(instance) => {
+          // Controller instance is passed directly, no wrapper needed!
+          // Cast to SwiperType for compatibility with existing code
+          const swiperCompatibleInstance = instance as unknown as SwiperType;
+
+          // Store ref for compatibility
+          swiperRef.current = swiperCompatibleInstance;
+          onInit?.(swiperCompatibleInstance);
+          onSwiper?.(swiperCompatibleInstance);
+        }}
+        keyboardEnabled={true}
+        ariaLabel="Video feed"
+      >
+        {children}
+      </NativeFeedScroll>
+    );
+  }
+
+  // Use Swiper for carousel mode
   return (
     <Swiper
       direction={forFeed ? "vertical" : "horizontal"}
       slidesPerView={slidesPerView}
-      onActiveIndexChange={handleActiveIndexChange}
+      onActiveIndexChange={(swiper) => {
+        onActiveIndexChange?.(swiper);
+      }}
       spaceBetween={spaceBetweenVideos}
       speed={SWIPER_CONFIG.SCROLL_DELAY}
       modules={
@@ -148,6 +148,11 @@ export function EmbedSwiper({
       // aria-label={forFeed ? "Video feed carousel" : "Video carousel"}
       className={cn("gencl:h-full gencl:w-full gencl:rounded-lg", className)}
       slidesOffsetBefore={slidesOffsetBefore}
+      onInit={(swiper) => {
+        onInit?.(swiper);
+        swiperRef.current = swiper;
+      }}
+      onSwiper={onSwiper}
       {...restProps}
     >
       {children}

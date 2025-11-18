@@ -145,6 +145,8 @@ export function EmbedManagerProvider({
     setPreviousVisibleRange(range);
   }, [swiper?.activeIndex, swiper, isGridLayout]);
 
+  // Handle slide change events
+  // React re-registers this handler when dependencies change, ensuring fresh values
   useEffect(() => {
     if (isGridLayout) return; // Skip for grid layout
     if (!swiper) return;
@@ -158,6 +160,7 @@ export function EmbedManagerProvider({
           and require manual user action to start playback.
        */
       if (config.view.websiteType === "legacy") return;
+
       // If current activeIndex is going out of visible bounds, update it intelligently
       if (!isSlideVisible(swiper, activeIndex)) {
         const newActiveIndex = getNewActiveIndexOnSlideChange(
@@ -166,6 +169,8 @@ export function EmbedManagerProvider({
           previousVisibleRange
         );
         setActiveIndex(newActiveIndex);
+      } else if (config.useWindowSwiperMode) {
+        setActiveIndex(swiper.activeIndex);
       }
     }
 
@@ -173,7 +178,7 @@ export function EmbedManagerProvider({
     return () => {
       swiper.off("slideChange", handleSlideChange);
     };
-  }, [swiper, activeIndex, previousVisibleRange, isGridLayout]);
+  }, [swiper, isGridLayout, activeIndex, previousVisibleRange]);
 
   const updateActiveIndex = useCallback(
     (index: number, byHover?: boolean, ifInView?: boolean, force?: boolean) => {
@@ -206,8 +211,14 @@ export function EmbedManagerProvider({
             index,
             dir: config.view.isFeed ? "vertical" : "horizontal",
           });
-          if (visibilityPercentage < 70) {
+          if (!config.useWindowSwiperMode && visibilityPercentage < 70) {
             swiper.slideTo(index, 300);
+          }
+          if (
+            config.useWindowSwiperMode &&
+            (swiper as any).getVisibilityPercentageByIndex(index) < 70
+          ) {
+            swiper.slideTo(index);
           }
         }
       }

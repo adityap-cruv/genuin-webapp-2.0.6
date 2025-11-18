@@ -28,7 +28,7 @@ export function useEmbedConfigs() {
   const { customization, rootElement, embedData, brandLayoutType } =
     embedContextData;
   const { brandDetails, isEmbed } = useBaseContext();
-  const { isMobile } = useDeviceDetectMediaQuery();
+  const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
 
   const isAdsEnabledInIheart = useMemo(() => {
     return rootElement?.getAttribute("data-ads-enabled") === "true";
@@ -71,7 +71,9 @@ export function useEmbedConfigs() {
         brandLayoutType === "ted"
           ? false
           : customization?.is_navigation_control_enabled,
-      centeredSlides: embedData?.style === "feed" && embedData?.placement_card_layout_id === 2,
+      centeredSlides:
+        embedData?.style === "feed" &&
+        embedData?.placement_card_layout_id === 2,
       brandLayoutType: brandLayoutType ?? "default",
       websiteType: embedData?.websiteType ?? "polaris",
       isAdsEnabledInIheart: isAdsEnabledInIheart ?? false,
@@ -479,6 +481,18 @@ export function useEmbedConfigs() {
     customization,
   ]);
 
+  /**
+   * If we want to render slides into window directly instead of redering it into container.
+   */
+  const useWindowSwiperMode = useMemo(
+    () =>
+      !isDesktop &&
+      viewConfig.brandLayoutType === "iheart" &&
+      viewConfig.websiteType === "polaris" &&
+      viewConfig.isFeed,
+    []
+  );
+
   return {
     dimensions: dimensionsConfig,
     view: viewConfig,
@@ -495,5 +509,9 @@ export function useEmbedConfigs() {
     responsive: responsiveConfig,
     rawCustomization: customization as CustomizationType | null,
     embedStyle: viewConfig.embedStyle,
+    /**
+     * If we want to render slides into window directly instead of redering it into container.
+     */
+    useWindowSwiperMode,
   };
 }
