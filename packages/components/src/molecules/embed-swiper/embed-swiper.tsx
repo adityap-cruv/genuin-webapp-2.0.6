@@ -122,8 +122,8 @@ export function EmbedSwiper({
       }}
       // a11y={{
       //   enabled: true,
-      //   prevSlideMessage: "Previous clip",
-      //   nextSlideMessage: "Next clip",
+      //   prevSlideMessage: "Previous Highlight",
+      //   nextSlideMessage: "Next Highlight",
       //   // firstSlideMessage: "This is the first clip",
       //   // lastSlideMessage: "This is the last clip",
       //   // slideLabelMessage: "Clip {{index}} of {{slidesLength}}",

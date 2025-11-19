@@ -18,6 +18,9 @@ import { SingleEmbedDataConfig } from '@/type'
 import { FeedSkeleton } from '@genuin/components/templates/feed'
 import { SDKEventType } from '@/core'
 import { getBrandType } from '@genuin/components/lib/utils/brand-layout'
+import { cn } from '@genuin/ui/lib/utils'
+import { Skeleton } from '@genuin/ui/components/skeleton'
+import { useDeviceDetectMediaQuery } from '@genuin/components/hooks/use-devide-detect-media-query'
 
 // Track React roots per container to support multiple embeds
 const containerRootMap = new Map<HTMLElement, Root>()
@@ -140,16 +143,44 @@ const LazyStandardWall = lazy(() =>
 )
 
 // Generic skeleton for embed
-const EmbedSkeleton = ({ theme }: { theme?: 'dark' | 'light' }) => {
+const EmbedSkeleton = ({
+  theme,
+  brandLayoutType = 'iheart',
+}: {
+  theme?: 'dark' | 'light'
+  brandLayoutType?: string
+}) => {
   const bgClass =
-    theme === 'dark' ? 'gencl:bg-secondary-900' : 'gencl:bg-secondary-50'
+    theme === 'dark' ? 'gencl:bg-secondary-900' : 'gencl:bg-secondary-200'
+  const shimmerBgClass =
+    theme === 'dark' ? 'gencl:bg-secondary-800' : 'gencl:bg-secondary-100'
+  const { isMobile } = useDeviceDetectMediaQuery()
+
   return (
     <div
-      className={`gencl:flex gencl:relative gencl:h-full gencl:w-full ${bgClass} gencl:rounded-md`}>
-      <Loader
-        size='md'
-        className='gencl:absolute gencl:top-1/2 gencl:left-1/2 gencl:-translate-x-1/2 gencl:-translate-y-1/2'
-      />
+      className={`gencl:relative gencl:h-full gencl:w-full gencl:rounded-md ${bgClass}`}>
+      {brandLayoutType === 'iheart' ? (
+        <div
+          style={{
+            height: isMobile ? '100%' : 'calc(100% - 68px)',
+          }}
+          className='gencl:w-full gencl:flex gencl:overflow-auto'>
+          {Array.from({ length: 6 }).map((_, idx) => (
+            <Skeleton
+              key={idx}
+              className={cn(
+                'gencl:h-full gencl:aspect-square gencl:flex-shrink-0 gencl:rounded-md gencl:mr-2',
+                shimmerBgClass,
+              )}
+            />
+          ))}
+        </div>
+      ) : (
+        <Loader
+          size='md'
+          className='gencl:absolute gencl:top-1/2 gencl:left-1/2 gencl:-translate-x-1/2 gencl:-translate-y-1/2'
+        />
+      )}
     </div>
   )
 }
@@ -223,7 +254,13 @@ export function loadNewEmbed({
               <AnalyticsProvider
                 embedData={embedData}
                 isWebSDK={true}>
-                <Suspense fallback={<EmbedSkeleton theme={config.theme} />}>
+                <Suspense
+                  fallback={
+                    <EmbedSkeleton
+                      brandLayoutType={brandLayoutType}
+                      theme={config.theme}
+                    />
+                  }>
                   {embedData.style === 'standard_wall' ? (
                     <LazyStandardWall />
                   ) : (

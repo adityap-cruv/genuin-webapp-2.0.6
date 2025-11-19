@@ -107,9 +107,9 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
       let announcement = "";
 
       if (index > previousIndexRef.current) {
-        announcement = `Next clip. Playing ${videoTitle}`;
+        announcement = `Next Highlight. Playing ${videoTitle}`;
       } else if (index < previousIndexRef.current) {
-        announcement = `Previous clip. Playing ${videoTitle}`;
+        announcement = `Previous Highlight. Playing ${videoTitle}`;
       }
 
       if (announcement) {

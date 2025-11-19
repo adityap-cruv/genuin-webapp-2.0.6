@@ -105,8 +105,8 @@ export function SwiperImplementation({
       }}
       a11y={{
         enabled: true,
-        prevSlideMessage: "Previous clip. Playing",
-        nextSlideMessage: "Next clip. Playing",
+        prevSlideMessage: "Previous Highlight. Playing",
+        nextSlideMessage: "Next Highlight. Playing",
         scrollOnFocus: true,
       }}
       followFinger={false}

@@ -60,7 +60,7 @@ export const CTAOnlyCard = ({
       }}
       onClick={handleCTAClick ? handleCTAClick : handleInternalCTAClick}
       disabled={isLoading || isDisabled}
-      aria-label={isLoading ? `Loading ${buttonText}` : buttonText}
+      aria-label={buttonText}
       aria-disabled={isDisabled}
       role="button"
       tabIndex={0}
