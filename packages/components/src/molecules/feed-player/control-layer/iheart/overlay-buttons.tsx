@@ -50,9 +50,9 @@ export function OverLayButton({
       onClick={isClickDisabled ? undefined : (event) => handleClick(event)}
       aria-label="Go to all episodes page"
       className={cn(
-        "gencl:h-11 gencl:text-body-1-semi-bold! gencl:flex gencl:items-center gencl:justify-center gencl:rounded-full gencl:px-5",
+        "gencl:h-11 gencl:text-body-1-semi-bold! gencl:flex gencl:items-center gencl:justify-center gencl:rounded-full gencl:px-5 gencl:size-8!",
         isPlaying
-          ? "gencl:bg-transparent gencl:border-white"
+          ? "gencl:bg-transparent gencl:text-white gencl:border! gencl:border-white!"
           : "gencl:bg-white gencl:text-[#27292D]!",
         variant === "caught" && "gencl:w-fit! gencl:self-center!"
       )}
@@ -80,7 +80,7 @@ export function OverLayButton({
             aria-hidden="true"
           />
         ))}
-      {ctaText}
+      <span className="gencl:text-body-1-semi-bold!">{ctaText}</span>
     </Button>
   );
 }

@@ -25,7 +25,7 @@ export function IHeartListenLiveButton({
   videoDetails,
   info,
 }: IHeartListenLiveButtonProps) {
-  const { isPlaying, handleClick, ctaText } = useIHeartPlayback({
+  const { isPlaying, handleClick, ctaText, isGoToEpisode } = useIHeartPlayback({
     info,
     videoDetails,
   });
@@ -41,28 +41,28 @@ export function IHeartListenLiveButton({
       tabIndex={0}
       role="button"
       className={cn(
-        "gencl:h-11 gencl:border gencl:px-4 gencl:py-2 gencl:rounded-full gencl:flex gencl:items-center gencl:justify-center gencl:gap-1 gencl:transition-colors",
+        "gencl:border gencl:px-4 gencl:py-2 gencl:rounded-full gencl:flex gencl:items-center gencl:justify-center gencl:gap-1 gencl:transition-colors gencl:h-9! gencl:text-body-1-semi-bold!",
         !isOutlined
-          ? "gencl:border-transparent gencl:bg-white"
-          : "gencl:border-white gencl:bg-transparent",
+          ? "gencl:border-transparent gencl:bg-white gencl:text-black!"
+          : "gencl:border-white gencl:bg-transparent gencl:text-white",
         className
       )}
       title={ctaText}
       onClick={handleClick}
     >
-      {isPlaying ? (
-        info.type === "station" ? (
-          <IHeartStopIcon theme={isOutlined ? "dark" : "light"} size="md" />
+      {!isGoToEpisode &&
+        (isPlaying ? (
+          info.type === "station" ? (
+            <IHeartStopIcon theme={isOutlined ? "dark" : "light"} size="md" />
+          ) : (
+            <IHeartPauseIcon theme={isOutlined ? "dark" : "light"} size="md" />
+          )
         ) : (
-          <IHeartPauseIcon theme={isOutlined ? "dark" : "light"} size="md" />
-        )
-      ) : (
-        <IHeartPlayIcon theme={isOutlined ? "dark" : "light"} size="md" />
-      )}
+          <IHeartPlayIcon theme={isOutlined ? "dark" : "light"} size="md" />
+        ))}
       <p
         className={cn(
-          "gencl:text-body-1-semi-bold!",
-          isOutlined ? "gencl:text-white!" : "gencl:text-black!"
+          "gencl:text-body-1-semi-bold!"
         )}
       >
         {ctaText}

@@ -44,7 +44,7 @@ export function parseFeed(
   for (let index = 0; index < data.length; index++) {
     const item = data[index];
     if (!item) continue;
-    if (item.type === "all_caught_up") {
+    if (item.type === "all_caught_up" && shouldShowMiddlewareOverlay) {
       const mappedItem = {
         video: {
           id: item?.video.uuid + "_overlay",
@@ -194,12 +194,12 @@ export function parseFeed(
       result.push(mappedItem);
     }
     // end of feed the caught up overlay
-    if (endOfFeed && index === data.length - 1) {
+    if (endOfFeed && index === data.length - 1 && shouldShowMiddlewareOverlay) {
       result.push({
         video: {
           type: "complete",
           id: item.video.uuid + "_complete",
-          slug : item.video.slug
+          slug: item.video.slug,
         },
       } as PostDetailsType);
     }

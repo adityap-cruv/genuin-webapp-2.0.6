@@ -11,6 +11,7 @@ import {
   SDKEventEmitter,
   SDKEventName,
 } from "@genuin/components/lib/sdk-event-emitter";
+import { FeedResponseFromGoApi } from "../feed/types";
 
 type BrandContext =
   | {
@@ -39,17 +40,17 @@ async function fetchVideoDetails(
           }),
       },
     });
-    const feeds = response.data?.data?.feeds;
+    const feeds: FeedResponseFromGoApi = response.data?.data?.feeds;
     if (!feeds || feeds.length === 0) {
       // Emit SDK video not found event when no feeds are returned
       SDKEventEmitter.emit(SDKEventName.VIDEO_NOT_FOUND, {
         slug,
         errorCode: "NO_FEEDS_RETURNED",
       });
-
       return [];
     }
-    return parseFeed(feeds, shouldShowMiddlewareOverlay);
+    const filteredPost = feeds.filter((item) => item.type !== "all_caught_up");
+    return parseFeed(filteredPost, shouldShowMiddlewareOverlay);
   } catch (e: any) {
     if (e.response?.data?.code === NOT_FOUND_ERROR_CODES.video) {
       // Emit SDK video not found event

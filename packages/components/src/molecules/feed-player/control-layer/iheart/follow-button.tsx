@@ -254,7 +254,7 @@ export function IHeartFollowButton({
       className={cn(
         "gencl:w-fit gencl:border gencl:rounded-full gencl:flex gencl:items-center gencl:justify-center gencl:cursor-pointer gencl:gap-1 gencl:py-1.5 gencl:px-4",
         // Enhanced transitions for smooth state changes
-        "gencl:transition-all gencl:duration-300 gencl:ease-in-out",
+        "gencl:transition-all gencl:duration-300 gencl:ease-in-out gencl:h-8!",
         !isFollowing
           ? "gencl:border-white gencl:bg-transparent hover:gencl:bg-white/10"
           : "gencl:border-transparent gencl:bg-white hover:gencl:bg-gray-100",

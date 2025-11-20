@@ -207,10 +207,7 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
                   src={attributes.image_url}
                   alt={`${postDetails.video.attributes?.title || contentType} podcast artwork`}
                   className={cn(
-                    "gencl:rounded-md gencl:object-cover",
-                    websiteType === "polaris"
-                      ? "gencl:size-16"
-                      : "gencl:size-[68px]"
+                    "gencl:rounded-md gencl:object-cover gencl:size-[68px]"
                   )}
                 />
               </Link>
