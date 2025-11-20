@@ -146,6 +146,8 @@ export interface SDKFollowChangedPayload {
   id: string | number;
   /** Event type identifier */
   type: "podcast" | "station";
+  /** The name of the podcast/station being isFollowed */
+  name: string;
 }
 
 export interface SDKCheckFollowingPayload {

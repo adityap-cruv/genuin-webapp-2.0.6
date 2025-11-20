@@ -163,6 +163,7 @@ export function IHeartFollowButton({
       isFollowed: newFollowingState,
       id: followId,
       type: type as "podcast" | "station",
+      name: attributes?.title ?? "",
     });
   }, [embedDetails, followId, type, isFollowing, authenticationStatus]);
 
@@ -232,6 +233,7 @@ export function IHeartFollowButton({
         isFollowed: newFollowingState,
         id: followId,
         type: type as "podcast" | "station",
+        name: attributes?.title ?? "",
       });
     }
 
