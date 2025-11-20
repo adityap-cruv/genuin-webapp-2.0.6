@@ -48,6 +48,7 @@ const ALLOWED_EVENTS = [
   'onCaughtOverlay',
   'checkFollowingStatus',
   'playIHeartContent',
+  'onShare'
 ]
 
 const ALLOWED_EMIT_EVENTS = [

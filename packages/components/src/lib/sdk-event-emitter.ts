@@ -110,6 +110,11 @@ export interface SDKMuteChangePayload {
 
 export interface SDKShareEventPayload {
   shareUrl: string;
+  type?: string;
+  id?: string;
+  clipTitle?: string;
+  clipDescription?: string;
+  clipThumbnailUrl?: string;
 }
 
 export interface SDKVideoNotFoundPayload {

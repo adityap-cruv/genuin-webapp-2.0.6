@@ -87,7 +87,12 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
 
   useEffect(() => {
     function handleVideoWatched(payload: Partial<GenericData>) {
-      if (postDetails.video.id === payload.videoId)
+      if (
+        payload &&
+        "videoId" in payload &&
+        "isVideoWatched" in payload &&
+        postDetails.video.id === payload.videoId
+      )
         setIsVideoWatched(payload.isVideoWatched ?? false);
     }
 
@@ -347,7 +352,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
               className={cn("gencl:z-20 gencl:lg:gap-1!")}
               size="lg"
               variant="clip"
-              videoDescription={postDetails.video.descritptionText}
+              videoDetails={postDetails.video}
               index={index}
               isActive={isActive}
               contentId={postDetails.video.id}

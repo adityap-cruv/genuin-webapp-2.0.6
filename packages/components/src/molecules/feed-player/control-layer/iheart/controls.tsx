@@ -21,6 +21,7 @@ import {
   SDKEventName,
 } from "@genuin/components/lib/sdk-event-emitter";
 import { useBaseContext } from "@genuin/components/context";
+import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 type IHeartControlsProps = ComponentProps<"div"> & {
   /**
@@ -43,7 +44,7 @@ type IHeartControlsProps = ComponentProps<"div"> & {
   isReacted?: boolean;
   reactionCount?: number;
   isActive: boolean;
-  videoDescription?: string | null;
+  videoDetails: PostDetailsType["video"];
   /**
    * Callback functions for handling control actions
    */
@@ -61,7 +62,7 @@ export function IHeartControls({
   slug,
   isReacted = false,
   reactionCount = 0,
-  videoDescription,
+  videoDetails,
   index,
   onReactionStateChange,
   isVideoWatched,
@@ -254,12 +255,13 @@ export function IHeartControls({
       <ShareButton
         pathName={shareUrl ?? ""}
         withCustomChildren
+        disableInternalFunctionality={websiteType === "legacy" ? true : false}
         onClick={() => {
           // Track share event (same as Actions component)
           if (contentId) {
             track(EventName.VIDEO_SHARED, {
               content_id: contentId,
-              title: videoDescription,
+              title: videoDetails.descritptionText,
               content_category: "loop",
               event_record_screen: "feed",
               event_target_screen: "none",
@@ -268,6 +270,16 @@ export function IHeartControls({
           // Emit SDK share event
           SDKEventEmitter.emit(SDKEventName.SHARE, {
             shareUrl: shareUrl ?? "",
+            type: videoDetails.attributes?.type,
+            id:
+              videoDetails.attributes?.type === "podcast"
+                ? videoDetails.attributes?.podcast_id || undefined
+                : videoDetails.attributes?.type === "station"
+                  ? videoDetails.attributes?.station_id || undefined
+                  : undefined,
+            clipDescription: videoDetails.descritptionText ?? "",
+            clipTitle: videoDetails.attributes?.description ?? "",
+            clipThumbnailUrl: videoDetails.thumbnail,
           });
         }}
       >

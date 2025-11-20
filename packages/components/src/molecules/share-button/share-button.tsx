@@ -27,6 +27,11 @@ type ShareButtonProps = {
    * Optional description to use when sharing on mobile
    */
   description?: string;
+  /**
+   * Disable internal share functionality (copy to clipboard, native share, toast)
+   * When true, the button will only trigger the onClick prop without any built-in actions
+   */
+  disableInternalFunctionality?: boolean;
 } & React.ComponentProps<typeof Button>;
 
 export function ShareButton({
@@ -40,6 +45,7 @@ export function ShareButton({
   children,
   title,
   description,
+  disableInternalFunctionality = false,
   onClick,
   ...restProps
 }: ShareButtonProps) {
@@ -54,6 +60,11 @@ export function ShareButton({
   const handleClick = useCallback(
     async (e: any) => {
       onClick?.(e);
+
+      // If internal functionality is disabled, only trigger onClick and return
+      if (disableInternalFunctionality) {
+        return;
+      }
 
       // Build the share URL with smart parameter handling
       const buildShareUrl = (): string => {
@@ -160,6 +171,8 @@ export function ShareButton({
       description,
       createExternalLink,
       brandLayoutType,
+      disableInternalFunctionality,
+      onClick,
     ]
   );
 
