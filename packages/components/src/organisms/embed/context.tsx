@@ -121,6 +121,8 @@ export function EmbedManagerProvider({
 
       // Slide to the calculated target index
       swiper.slideTo(targetIndex, 300);
+      const websiteType = config.view.websiteType;
+      if (websiteType === "legacy") return;
       setActiveIndex(targetIndex);
     },
     [swiper]
