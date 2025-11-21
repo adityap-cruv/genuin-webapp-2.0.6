@@ -265,6 +265,8 @@ export function useIHeartPlayback({
             play: !isPlaying,
             navigate: true,
             slug: videoDetails.attributes?.slug ?? "",
+            videoId: videoDetails.id,
+            videoTitle: videoDetails.attributes?.title ?? undefined,
           });
         }
         return; // Don't play - just redirect/scroll
@@ -282,6 +284,8 @@ export function useIHeartPlayback({
           slug: clipPlayerPayLoad.slug ?? undefined,
           play: true,
           navigate: true,
+          videoId: videoDetails.id,
+          videoTitle: videoDetails.attributes?.title ?? undefined,
         });
         return;
       }
@@ -298,6 +302,8 @@ export function useIHeartPlayback({
           ...payload,
           slug: videoDetails.attributes?.slug ?? undefined,
           play: !isPlaying,
+          videoId: videoDetails.id,
+          videoTitle: videoDetails.attributes?.title ?? undefined,
         });
       }
     },

@@ -181,6 +181,8 @@ export type PlayIheartContentPayload =
       stationId?: number;
       podcastId?: number;
       episodeId?: number;
+      videoId?: string;
+      videoTitle?: string;
     };
 
 export type PlayChangeIHeartContentPayload = {
