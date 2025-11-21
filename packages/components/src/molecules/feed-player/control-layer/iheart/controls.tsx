@@ -22,6 +22,8 @@ import {
 } from "@genuin/components/lib/sdk-event-emitter";
 import { useBaseContext } from "@genuin/components/context";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { compressText } from "@genuin/components/lib/utils";
 
 type IHeartControlsProps = ComponentProps<"div"> & {
   /**
@@ -75,6 +77,7 @@ export function IHeartControls({
   const { track, EventName } = useAnalytics();
   //  Access baseContextManager to subscribe to preview index change events
   const { baseContextManager } = useBaseContext();
+  const { isMobile } = useDeviceDetectMediaQuery()
 
   //  Track custom muted state for video preview (hover) mode
   // This state is separate from the actual player mute state and controls UI appearance only
@@ -147,6 +150,16 @@ export function IHeartControls({
   };
 
   const shareUrl = generateShareUrl(isExpand, slug, contentId);
+
+  // Truncate title and description based on device type
+  const titleMaxLength = isMobile ? 30 : 55;
+  const descriptionMaxLength = isMobile ? 120 : 180;
+
+  const truncatedTitle = compressText(videoDetails.attributes?.description ?? "", titleMaxLength);
+  const truncatedDescription = compressText(
+    videoDetails.descritptionText ?? "",
+    descriptionMaxLength
+  );
 
   return (
     <div
@@ -277,8 +290,8 @@ export function IHeartControls({
                 : videoDetails.attributes?.type === "station"
                   ? videoDetails.attributes?.station_id || undefined
                   : undefined,
-            clipDescription: videoDetails.descritptionText ?? "",
-            clipTitle: videoDetails.attributes?.description ?? "",
+            clipDescription: truncatedDescription ?? "",
+            clipTitle: truncatedTitle ?? "",
             clipThumbnailUrl: videoDetails.thumbnail,
           });
         }}
