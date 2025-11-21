@@ -62,7 +62,12 @@ export function loadLoadingView(
   const root = createRoot(container)
   containerRootMap.set(container, root)
 
-  root.render(<EmbedSkeleton theme={theme} />)
+  root.render(
+    <EmbedSkeleton
+      container={container}
+      theme={theme}
+    />,
+  )
 }
 
 // Expand view function
@@ -144,32 +149,39 @@ const LazyStandardWall = lazy(() =>
 
 // Generic skeleton for embed
 const EmbedSkeleton = ({
+  container,
   theme,
-  brandLayoutType = 'iheart',
 }: {
+  container: HTMLElement
   theme?: 'dark' | 'light'
-  brandLayoutType?: string
 }) => {
   const bgClass =
     theme === 'dark' ? 'gencl:bg-secondary-900' : 'gencl:bg-secondary-200'
   const shimmerBgClass =
     theme === 'dark' ? 'gencl:bg-secondary-800' : 'gencl:bg-secondary-100'
-  const { isMobile } = useDeviceDetectMediaQuery()
+  const { isDesktop } = useDeviceDetectMediaQuery()
+  const websiteType = container.getAttribute('data-website-type')
 
   return (
     <div
-      className={`gencl:relative gencl:h-full gencl:w-full gencl:rounded-md ${bgClass}`}>
-      {brandLayoutType === 'iheart' ? (
+      className={`gencl:relative gencl:h-full gencl:w-full gencl:rounded-md ${isDesktop && bgClass}`}>
+      {websiteType ? (
         <div
           style={{
-            height: isMobile ? '100%' : 'calc(100% - 68px)',
+            height: !isDesktop ? '100%' : 'calc(100% - 68px)',
           }}
-          className='gencl:w-full gencl:flex gencl:overflow-auto'>
+          className={cn(
+            'gencl:w-full gencl:flex gencl:overflow-auto gencl:gap-2',
+            !isDesktop && websiteType === 'polaris' && 'gencl:flex-col',
+          )}>
           {Array.from({ length: 6 }).map((_, idx) => (
             <Skeleton
               key={idx}
               className={cn(
-                'gencl:h-full gencl:aspect-square gencl:flex-shrink-0 gencl:rounded-md gencl:mr-2',
+                'gencl:aspect-square gencl:flex-shrink-0 gencl:rounded-md',
+                !isDesktop && websiteType === 'polaris'
+                  ? 'gencl:w-full'
+                  : 'gencl:h-full',
                 shimmerBgClass,
               )}
             />
@@ -257,8 +269,8 @@ export function loadNewEmbed({
                 <Suspense
                   fallback={
                     <EmbedSkeleton
-                      brandLayoutType={brandLayoutType}
                       theme={config.theme}
+                      container={container}
                     />
                   }>
                   {embedData.style === 'standard_wall' ? (
