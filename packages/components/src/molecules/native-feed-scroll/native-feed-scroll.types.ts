@@ -219,6 +219,15 @@ export interface NativeFeedScrollProps {
   firstSlideMessage?: string;
   /** Message announced when reaching the last slide */
   lastSlideMessage?: string;
+  /**
+   * Defines a custom height for a specific slide.
+   * - `index`: The slide index that should use the custom height.
+   * - `height`: The height value (in px) to apply to that slide.
+   */
+  customHeightFor?: {
+    index: number;
+    height: number;
+  };
   /** Instructions for using the carousel (e.g., keyboard navigation) */
   containerMessage?: string;
   /** Custom role description for the carousel container */

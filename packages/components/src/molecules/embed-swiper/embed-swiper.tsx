@@ -21,6 +21,10 @@ type EmbedSwiperProps = {
   freeMode?: boolean;
   slidesOffsetBefore?: number;
   isIheartLayout?: boolean;
+  customHeightFor?: {
+    index: number;
+    height: number;
+  };
 } & ComponentProps<typeof Swiper>;
 
 /**
@@ -38,10 +42,11 @@ export function EmbedSwiper({
   aspectRatio,
   freeMode = false,
   slidesOffsetBefore,
+  isIheartLayout = false,
+  customHeightFor,
   onActiveIndexChange,
   onInit,
   onSwiper,
-  isIheartLayout = false,
   ...restProps
 }: EmbedSwiperProps) {
   const { isWindows } = useDeviceDetection();
@@ -70,6 +75,7 @@ export function EmbedSwiper({
         spaceBetween={spaceBetweenVideos}
         slidesOffsetBefore={slidesOffsetBefore}
         className={className}
+        customHeightFor={customHeightFor}
         onActiveIndexChange={(instance) => {
           // Controller instance is passed directly, no wrapper needed!
           // Cast to SwiperType for compatibility with existing code

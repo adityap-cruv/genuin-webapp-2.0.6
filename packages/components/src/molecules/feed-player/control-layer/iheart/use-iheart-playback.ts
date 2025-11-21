@@ -21,7 +21,7 @@ interface UseIHeartPlaybackParams {
   options?: {
     onRedirection?: () => void;
   };
-  variant?: "caught" | "watch" | "listen";
+  variant?: "complete" | "overlay" | "watch" | "listen";
 }
 
 interface UseIHeartPlaybackReturn {
@@ -105,13 +105,14 @@ export function useIHeartPlayback({
 
   // Derived values
   const isGoToEpisode =
-    info.type === "podcast" && (variant === "watch" || variant === "caught")
+    info.type === "podcast" &&
+    (variant === "watch" || variant === "complete" || variant === "overlay")
       ? true
       : info.type === "podcast"
         ? !!info.podcast && !info.episode
         : false;
   const ctaText =
-    variant === "watch" || variant === "caught"
+    variant === "watch" || variant === "complete" || variant === "overlay"
       ? isGoToEpisode
         ? "Go to episode"
         : "Listen Live"
@@ -222,8 +223,8 @@ export function useIHeartPlayback({
   }, [info]);
 
   const constructClipPlayerPayload = useCallback(() => {
-    if (variant !== "caught" || videoDetails.type !== "complete")
-      return undefined;
+    const isCaughtUp = variant === "complete" || variant === "overlay";
+    if (!isCaughtUp || videoDetails.type !== "complete") return undefined;
 
     if (!videoDetails.attributes?.type) return undefined;
     return {

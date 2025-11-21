@@ -550,6 +550,12 @@ export function Embed({
                   ? slidesOffsetBefore
                   : 0
               }
+              customHeightFor={{
+                index: videos.findIndex(
+                  (feed) => feed.video.type === "overlay"
+                ),
+                height: 160,
+              }}
             >
               {videos?.map((videoData, idx) => {
                 return videoData.video.type === "complete" ? (

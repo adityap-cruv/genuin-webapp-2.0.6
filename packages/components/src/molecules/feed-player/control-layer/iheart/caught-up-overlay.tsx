@@ -3,6 +3,7 @@ import { cn } from "@genuin/ui/lib/utils";
 import { type ComponentProps } from "react";
 import { OverLayButton } from "./overlay-buttons";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+import { useBaseContext } from "@genuin/components/context";
 
 interface IHeartCaughtUpOverlayProps extends ComponentProps<"div"> {
   variant: "overlay" | "complete";
@@ -30,6 +31,7 @@ export function IHeartCaughtUpOverlay({
   onIheartRedirection,
   ...props
 }: IHeartCaughtUpOverlayProps) {
+  const { theme } = useBaseContext();
   return (
     <div
       {...props}
@@ -39,6 +41,9 @@ export function IHeartCaughtUpOverlay({
       aria-describedby="caught-up-subtitle"
       className={cn(
         "gencl:pointer-events-none gencl:z-50 gencl:h-full gencl:w-full gencl:bg-black gencl:backdrop-blur-sm gencl:flex gencl:flex-col gencl:items-center gencl:justify-center gencl:gap-4",
+        theme === "dark" || variant === "complete"
+          ? "gencl:bg-black gencl:text-white"
+          : "gencl:bg-transparent gencl:text-black",
         className
       )}
     >
@@ -50,14 +55,24 @@ export function IHeartCaughtUpOverlay({
           <p
             id="caught-up-title"
             tabIndex={0}
-            className="gencl:text-body-1-semi-bold gencl:text-[18px] gencl:leading-[24px] gencl:tracking-[-0.5px]"
+            className={cn(
+              "gencl:text-body-1-semi-bold gencl:text-[18px] gencl:leading-[24px] gencl:tracking-[-0.5px]",
+              theme === "dark" || variant === "complete"
+                ? "gencl:text-white"
+                : "gencl:text-black"
+            )}
           >
             {title}
           </p>
           <p
             id="caught-up-subtitle"
             tabIndex={0}
-            className="gencl:text-body-2-normal gencl:text-[14px] gencl:leading-4"
+            className={cn(
+              "gencl:text-body-2-normal gencl:text-[14px] gencl:leading-4",
+              theme === "dark" || variant === "complete"
+                ? "gencl:text-white"
+                : "gencl:text-black"
+            )}
           >
             {subtitle}
           </p>
@@ -67,7 +82,7 @@ export function IHeartCaughtUpOverlay({
             videoDetails={videoDetails ?? ({} as PostDetailsType["video"])}
             info={info ?? {}}
             onIheartRedirection={onIheartRedirection}
-            variant="caught"
+            variant={variant}
             websiteType={websiteType}
           />
         )}

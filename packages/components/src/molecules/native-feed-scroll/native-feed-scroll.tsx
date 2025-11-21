@@ -39,6 +39,7 @@ const NativeFeedScroll = forwardRef<
       onSlideChange,
       onInit,
       onProgress,
+      customHeightFor,
       keyboardEnabled = true,
       ariaLabel = "Video feed",
       respectReducedMotion = true,
@@ -260,8 +261,14 @@ const NativeFeedScroll = forwardRef<
               <div
                 key={child.key || index}
                 style={{
-                  height: slideHeight,
-                  minHeight: slideHeight,
+                  height:
+                    index === customHeightFor?.index
+                      ? customHeightFor.height
+                      : slideHeight,
+                  minHeight:
+                    index === customHeightFor?.index
+                      ? customHeightFor.height
+                      : slideHeight,
                   flexShrink: 0, // Prevent slides from shrinking
                 }}
                 // Note: role, aria-roledescription, aria-label, and tabindex

@@ -455,6 +455,7 @@ const SharedActions = memo(function SharedActions({
               : postDetails.video.id;
           onReactionStateChange?.(videoId, isReacted);
         }}
+        videoDetails={postDetails.video}
       />
     );
   }
