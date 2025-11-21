@@ -106,12 +106,23 @@ export function IHeartListenLiveButton({
 
   if (!ctaText) return null;
 
+  // Generate accessible label based on button state
+  const getAriaLabel = () => {
+    if (isGoToEpisode) {
+      return ctaText;
+    }
+    
+    const state = isPlaying ? "Pressed" : "Not pressed";
+    return `${ctaText}, ${state}`;
+  };
+
   return (
     <div className="gencl:flex-shrink-0">
       <Button
         ref={buttonRef}
         theme="custom"
-        aria-label={ctaText}
+        aria-label={getAriaLabel()}
+        aria-pressed={!isGoToEpisode ? isPlaying : undefined}
         tabIndex={isVisible ? 0 : -1}
         role="button"
         className={cn(
