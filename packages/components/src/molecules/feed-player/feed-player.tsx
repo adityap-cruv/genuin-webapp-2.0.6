@@ -74,6 +74,7 @@ export const FeedPlayer = memo(function FeedPlayer({
   const {
     view: { brandLayoutType },
     video,
+    useWindowSwiperMode,
   } = useEmbedConfigs();
 
   useEffect(() => {
@@ -331,7 +332,6 @@ export const FeedPlayer = memo(function FeedPlayer({
     () => baseContextManager.getTimeInfo(videoId).currentTime,
     [baseContextManager]
   );
-
   return (
     <VideoPlayer
       ref={playerRef}
@@ -342,6 +342,7 @@ export const FeedPlayer = memo(function FeedPlayer({
       src={src}
       startTime={startTime}
       playsInline
+      enableLazyLoading={useWindowSwiperMode}
       className={cn("gencl:m-auto", className)}
       volume={volume}
       play={feedPlayerShouldPlay}

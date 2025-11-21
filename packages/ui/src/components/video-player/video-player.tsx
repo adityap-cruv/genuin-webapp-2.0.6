@@ -11,6 +11,8 @@ import {
 } from "react";
 
 import { cn, encodeVideoSourceUrl } from "@genuin/ui/lib/utils";
+import { useBrowserDetect } from "@genuin/ui/hooks";
+
 const hlsConfigs = {
   // debug: true,
   /**
@@ -85,6 +87,7 @@ export type PlayerProps = ComponentProps<"video"> & {
   play?: boolean;
   adUrl?: string; // URL for video ads
   startTime?: number;
+  enableLazyLoading?: boolean; // Enable lazy loading optimization (default: false)
   onOpenPlayerReady?: (player: OpenPlayerJS) => void;
   onPlayerLoad?: (player: OpenPlayerJS | null) => void; // Add custom event prop
   onVideoFirstQuartile?: (duration: number, currentTime: number) => void;
@@ -137,6 +140,7 @@ export const VideoPlayer = memo(function VideoPlayer({
   play = true,
   loop = false, // loop prop is now destructured
   adUrl,
+  enableLazyLoading = false, // Default to false for backward compatibility
   onVideoFirstQuartile,
   onOpenPlayerReady,
   onPlayerLoad, // Destructure new prop
@@ -160,7 +164,9 @@ export const VideoPlayer = memo(function VideoPlayer({
   ]);
   const videoRef = internalVideoRef;
   const playerRef = useRef<OpenPlayerJS | null>(null);
+  const isPlayerInitialized = useRef(false); // Track if player has been initialized
   const [adStarted, setAdStarted] = useState(false);
+  const { isSafari } = useBrowserDetect();
   // Using refs for ad tracking (no UI updates needed)
   const adInfoRef = useRef<{
     isPlaying: boolean;
@@ -483,24 +489,32 @@ export const VideoPlayer = memo(function VideoPlayer({
     player?.pause();
   }, []);
 
-  useEffect(() => {
-    playerStateRef.current.shouldPlay = play;
-    if (play) {
-      playThePlayer();
-    } else {
-      pauseThePlayer();
-    }
-  }, [play, adStarted, playThePlayer, pauseThePlayer]);
-
+  // Lazy initialization: Initialize player based on enableLazyLoading prop
   useEffect(() => {
     if (!videoRef.current) return;
+
+    // If player is already initialized, just control play/pause
+    if (isPlayerInitialized.current) {
+      playerStateRef.current.shouldPlay = play;
+      if (play) {
+        playThePlayer();
+      } else {
+        pauseThePlayer();
+      }
+      return;
+    }
+
+    // Conditional initialization based on enableLazyLoading:
+    // - If enableLazyLoading is false (default): Initialize immediately on mount
+    // - If enableLazyLoading is true: Initialize only when play becomes true
+    if (enableLazyLoading && !play) return;
 
     const player = new OpenPlayerJS(videoRef.current, {
       controls: {
         alwaysVisible: false,
       },
       mode: "responsive",
-      forceNative: !src?.endsWith(".m3u8"), // Use HLS.js to respect custom hlsConfigs for m3u8.
+      forceNative: isSafari ? true : !src?.endsWith(".m3u8"), // Safari uses native HLS, others use hls.js
       showLoaderOnInit: true,
       hls: hlsConfigs,
       startTime,
@@ -512,17 +526,58 @@ export const VideoPlayer = memo(function VideoPlayer({
         : undefined,
     });
 
-    // if (videoRef.current) {
-    //   videoRef.current.load();
-    // }
-
     // Set initial playback speed for the new video
     videoRef.current.playbackRate = playbackSpeed;
-    void initializePlayer(player, play);
-    // Reset videoStartFired when src changes (new video)
-    playerStateRef.current.videoStartFired = false;
 
+    // Mark as initialized before calling initializePlayer
+    isPlayerInitialized.current = true;
+    playerStateRef.current.shouldPlay = play;
+
+    void initializePlayer(player, play);
+
+    // Reset videoStartFired when player initializes (new video)
+    playerStateRef.current.videoStartFired = false;
+  }, [
+    play,
+    src,
+    playThePlayer,
+    pauseThePlayer,
+    enableLazyLoading,
+    isSafari,
+    playbackSpeed,
+    startTime,
+    adUrl,
+    initializePlayer,
+  ]);
+
+  useEffect(() => {
     return () => {
+      // Cleanup on unmount or src change
+      if (playerRef.current) {
+        try {
+          // Clean up ads if any
+          if (adUrl) {
+            const ad = playerRef.current.getAd?.();
+            if (ad) {
+              const adsManager = ad.getAdsManager?.() as any;
+              if (adsManager && typeof adsManager.stop === "function") {
+                adsManager.stop();
+              }
+              if (typeof ad.destroy === "function") {
+                ad.destroy();
+              }
+            }
+          }
+
+          // Destroy the player
+          if (typeof playerRef.current.destroy === "function") {
+            playerRef.current.destroy();
+          }
+        } catch (error) {
+          console.warn("Error cleaning up player:", error);
+        }
+      }
+
       playerStateRef.current = {
         firstQuartileFired: false,
         midpointFired: false,
@@ -541,25 +596,10 @@ export const VideoPlayer = memo(function VideoPlayer({
         allCompleted: false,
       };
 
-      // Clean up ads if any
-      if (playerRef.current && adUrl) {
-        try {
-          console.log("Cleaning up ads before component unmount");
-          const ad = playerRef.current.getAd?.();
-          if (ad) {
-            const adsManager = ad.getAdsManager?.() as any;
-            if (adsManager && typeof adsManager.stop === "function") {
-              adsManager.stop();
-            }
-            if (typeof ad.destroy === "function") {
-              ad.destroy();
-            }
-          }
-        } catch (error) {
-          console.warn("Error cleaning up ads:", error);
-        }
-      }
       changePlayerStateRef(true);
+
+      isPlayerInitialized.current = false;
+      playerRef.current = null;
     };
   }, [src]);
 
@@ -712,12 +752,17 @@ export const VideoPlayer = memo(function VideoPlayer({
     <video
       id={id}
       className={cn(
-        "gencl:h-auto gencl:w-auto gencl:bg-cover gencl:bg-center gencl:bg-no-repeat gencl:object-cover",
+        "gencl:h-auto gencl:w-auto gencl:bg-center gencl:bg-no-repeat gencl:object-cover",
         className
       )}
-      style={{ backgroundImage: `url(${poster})`, ...style }}
-      poster={poster}
+      style={{
+        backgroundImage: `url(${poster})`,
+        backgroundSize: "contain",
+        ...style,
+      }}
+      // poster={poster}
       ref={videoRef}
+      preload="none"
       onSeeked={onVideoSeeked}
       src={encodeVideoSourceUrl(src ?? "")}
       playsInline={playsInline}
