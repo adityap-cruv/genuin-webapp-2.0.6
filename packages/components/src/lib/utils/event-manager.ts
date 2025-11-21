@@ -119,10 +119,17 @@ export class EventManager<TContext, TEventNames extends string = string> {
 
   /**
    * Update the context that will be passed to future listener calls
-   * @param newContext - The new context to use
+   * Supports both partial updates and full replacements via function
+   * @param contextUpdate - Partial context to merge or function to compute new context
    */
-  updateContext(newContext: TContext): void {
-    this.context = newContext;
+  updateContext(
+    contextUpdate: Partial<TContext> | ((currentContext: TContext) => TContext)
+  ): void {
+    if (typeof contextUpdate === "function") {
+      this.context = contextUpdate(this.context);
+    } else {
+      this.context = { ...this.context, ...contextUpdate };
+    }
   }
 
   /**

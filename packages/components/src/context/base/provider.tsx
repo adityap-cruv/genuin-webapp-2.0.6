@@ -144,6 +144,21 @@ export function BaseContextProvider({
     baseEventBus.updateContext({ ...baseEventBus.getContext(), muted, volume });
   }, [volume, muted]);
 
+  // This effect uses a cleanup function, which doesn't run on initial mount.
+  // The event will be ignored on first render and only emitted from the second time onwards when muted changes.
+  useEffect(() => {
+    return () => {
+      SDKEventEmitter.emit(
+        SDKEventName.MUTE_CHANGE,
+        {
+          muted: !muted,
+          volume: baseEventBus.getContext().volume,
+        },
+        { debounceTime: 300 }
+      );
+    };
+  }, [muted]);
+
   useEffect(() => {
     // If deviceId is not available, get a new one.
     if (!deviceId) {
@@ -181,16 +196,16 @@ export function BaseContextProvider({
     const handlePlayFromOutside = () => {
       baseEventBus.emit(
         "globalPlayingStateChange",
-        {},
-        { ...baseEventBus.getContext(), globalPlayingState: true }
+        undefined,
+        (currentContext) => ({ ...currentContext, globalPlayingState: true })
       );
     };
 
     const handlePauseFromOutside = () => {
       baseEventBus.emit(
         "globalPlayingStateChange",
-        {},
-        { ...baseEventBus.getContext(), globalPlayingState: false }
+        undefined,
+        (currentContext) => ({ ...currentContext, globalPlayingState: false })
       );
     };
 
@@ -306,27 +321,6 @@ export function BaseContextProvider({
       SDKEventEmitter.cancelAllDebounce();
     };
   }, [baseContextManager]);
-
-  useEffect(() => {
-    const baseContext = baseEventBus.getContext();
-
-    if (baseContext.firstTimeMutedBypass) {
-      baseEventBus.updateContext({
-        ...baseContext,
-        firstTimeMutedBypass: false,
-      });
-      return;
-    }
-
-    SDKEventEmitter.emit(
-      SDKEventName.MUTE_CHANGE,
-      {
-        muted,
-        volume: baseEventBus.getContext().volume,
-      },
-      { debounceTime: 300 }
-    );
-  }, [muted]);
 
   useEffect(() => {
     function handleThemeChange({
