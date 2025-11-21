@@ -141,7 +141,11 @@ export function BaseContextProvider({
 
   // update volume and muted details in baseEventBus.
   useEffect(() => {
-    baseEventBus.updateContext({ ...baseEventBus.getContext(), muted, volume });
+    baseEventBus.updateContext((currentContext) => ({
+      ...currentContext,
+      muted,
+      volume,
+    }));
   }, [volume, muted]);
 
   // This effect uses a cleanup function, which doesn't run on initial mount.
@@ -320,7 +324,7 @@ export function BaseContextProvider({
       FeedContextManager.destroy();
       SDKEventEmitter.cancelAllDebounce();
     };
-  }, [baseContextManager]);
+  }, [baseContextManager, baseEventBus, embedDetails]);
 
   useEffect(() => {
     function handleThemeChange({
