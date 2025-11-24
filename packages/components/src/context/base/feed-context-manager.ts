@@ -38,7 +38,7 @@ export type GenericData = {
    * Used to identify which video should show preview playback.
    */
   previewIndex?: number;
-};
+} | null;
 
 /**
  * Generic event names for video-related events.
@@ -589,10 +589,28 @@ export class FeedContextManager {
    *   - type: The type of content - "station" for radio, "podcast" for podcasts, or null if no iHeartRadio content is active
    */
   public setActiveIHeartContent(status: ActiveIHeartContentType) {
-    this.activeIHeartContent = status;
+    // Check if content has actually changed
+    const hasChanged = (() => {
+      // Both null - no change
+      if (this.activeIHeartContent === null && status === null) return false;
 
-    // Emit change event
-    this.emit("onActiveIHeartContentChanged", status);
+      // One null, one not - change detected
+      if (this.activeIHeartContent === null || status === null) return true;
+
+      // Both objects - compare properties
+      return (
+        this.activeIHeartContent.podcastId !== status.podcastId ||
+        this.activeIHeartContent.episodeId !== status.episodeId ||
+        this.activeIHeartContent.stationId !== status.stationId ||
+        this.activeIHeartContent.type !== status.type
+      );
+    })();
+
+    // Only update and emit if changed
+    if (hasChanged) {
+      this.activeIHeartContent = status;
+      this.emit("onActiveIHeartContentChanged", status as any);
+    }
   }
 
   /**

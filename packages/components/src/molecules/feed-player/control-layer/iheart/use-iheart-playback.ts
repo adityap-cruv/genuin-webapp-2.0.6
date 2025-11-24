@@ -147,22 +147,10 @@ export function useIHeartPlayback({
 
   useEffect(() => {
     function handlePlayChange({ payload }: PlayChangeIHeartContentPayload) {
-      updateActiveIHeartContent(payload.playStatus ? payload : null);
-      if (payload.type === "podcast" && info.type === "podcast") {
-        // Check if podcast and episode IDs match
-        if (
-          payload.podcastId === info.podcast &&
-          payload.episodeId === info.episode
-        ) {
-          setIsPlaying(payload.playStatus);
-        }
-      } else if (payload.type === "station" && info.type === "station") {
-        // Check if station ID matches
-        if (payload.stationId === info.station) {
-          setIsPlaying(payload.playStatus);
-        }
+      if (!payload.playStatus) {
+        updateActiveIHeartContent(null);
       } else {
-        setIsPlaying(false);
+        updateActiveIHeartContent(payload);
       }
     }
     SDKEventEmitter.on(
@@ -278,6 +266,8 @@ export function useIHeartPlayback({
 
         if (!isPlaying) {
           updateActiveIHeartContent(clipPlayerPayLoad);
+        } else {
+          updateActiveIHeartContent(null);
         }
         SDKEventEmitter.emit(SDKEventName.PLAY_IHEART_CONTENT, {
           ...clipPlayerPayLoad,
@@ -297,6 +287,8 @@ export function useIHeartPlayback({
 
         if (!isPlaying) {
           updateActiveIHeartContent(payload);
+        } else {
+          updateActiveIHeartContent(null);
         }
         SDKEventEmitter.emit(SDKEventName.PLAY_IHEART_CONTENT, {
           ...payload,
