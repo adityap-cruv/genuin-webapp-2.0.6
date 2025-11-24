@@ -285,7 +285,7 @@ export function useIHeartPlayback({
           play: true,
           navigate: true,
           videoId: videoDetails.id,
-          videoTitle: videoDetails.attributes?.title ?? undefined,
+          videoTitle: videoDetails.attributes?.description ?? undefined,
         });
         return;
       }
@@ -300,10 +300,10 @@ export function useIHeartPlayback({
         }
         SDKEventEmitter.emit(SDKEventName.PLAY_IHEART_CONTENT, {
           ...payload,
+          videoTitle: videoDetails.attributes?.description ?? undefined,
           slug: videoDetails.attributes?.slug ?? undefined,
           play: !isPlaying,
           videoId: videoDetails.id,
-          videoTitle: videoDetails.attributes?.title ?? undefined,
         });
       }
     },

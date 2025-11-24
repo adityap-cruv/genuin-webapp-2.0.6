@@ -53,7 +53,7 @@ export const ClipPlayerCTA = ({
           stationId,
           type,
           videoId: postDetails.video.id,
-          videoTitle: postDetails.video.attributes?.title ?? undefined,
+          videoTitle: postDetails.video.attributes?.description ?? undefined,
         });
       }
 
