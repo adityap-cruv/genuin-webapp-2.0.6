@@ -48,7 +48,7 @@ const ALLOWED_EVENTS = [
   'onCaughtOverlay',
   'checkFollowingStatus',
   'playIHeartContent',
-  'onShare'
+  'onShare',
 ]
 
 const ALLOWED_EMIT_EVENTS = [
@@ -434,7 +434,7 @@ export class GenuinSDK {
   private handlePendingAction(
     embedDetails: EmbedDataType,
     element: HTMLElement,
-    user: AuthUser | null | undefined
+    user: AuthUser | null | undefined,
   ): void {
     const pendingAction = getPendingAction()
     if (!pendingAction) return
@@ -450,10 +450,7 @@ export class GenuinSDK {
         }
       }
 
-      if (
-        !embedDetails.autoUserInteractionToPerform &&
-        pendingAction.action
-      ) {
+      if (!embedDetails.autoUserInteractionToPerform && pendingAction.action) {
         embedDetails.autoUserInteractionToPerform =
           pendingAction.action as ActionType
       }
@@ -570,7 +567,7 @@ export class GenuinSDK {
     } else if (embedId) {
       // Find the element by embedId and load expand view
       const sdkElement = Object.values(this.sdkElements).find(
-        (element) => element.config.embedDetails?.embed_id === embedId
+        (element) => element.config.embedDetails?.embed_id === embedId,
       )
       if (sdkElement?.element) {
         loadExpandView(sdkElement.element, sdkElement.config.theme)
@@ -800,6 +797,8 @@ export class GenuinSDK {
       'data-loop-ids',
       'data-theme',
       'data-website-type',
+      'data-player-playing',
+      'data-episode-id',
     ] as const
 
     // Extract core configuration attributes from the HTML element
@@ -1056,6 +1055,16 @@ export class GenuinSDK {
           if (websiteType === 'legacy' || websiteType === 'polaris') {
             answerToReturn.websiteType = websiteType
           }
+          break
+        case 'data-player-playing':
+          const brand = configByUser?.brand_context?.[0]
+          if (!brand) break
+          brand.isPlaying = value === "true";
+          break
+        case 'data-episode-id':
+          const brand_context = configByUser?.brand_context?.[0]
+          if (!brand_context) break
+          brand_context.episodeId = value ?? brand_context.episodeId
           break
         default:
           break

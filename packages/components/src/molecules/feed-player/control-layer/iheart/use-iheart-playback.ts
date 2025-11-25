@@ -96,13 +96,26 @@ export function useIHeartPlayback({
   // Logic prioritized from listen-live-button.tsx
   const [isPlaying, setIsPlaying] = useState(() => {
     const iheartStatus = baseContextManager.getCurrentActiveIHeartContent();
-    if (!iheartStatus) return false;
-    return (
-      iheartStatus.type === info.type &&
-      (iheartStatus.stationId === info.station ||
-        (iheartStatus.episodeId === info.episode &&
-          iheartStatus.podcastId === info.podcast))
-    );
+    if (iheartStatus?.type && iheartStatus) {
+      return (
+        iheartStatus.type === info.type &&
+        (iheartStatus.stationId === info.station ||
+          (iheartStatus.episodeId === info.episode &&
+            iheartStatus.podcastId === info.podcast))
+      );
+    }
+    const brandContext = embedDetails?.embedData.brand_context?.[0];
+    if (!brandContext) return false;
+    const isInitiallyPlaying = brandContext.isPlaying;
+    if (isInitiallyPlaying) {
+      return (
+        brandContext.type === info.type &&
+        (Number(brandContext.id) === info.station ||
+          (Number(brandContext.id) === info.podcast &&
+            Number(brandContext.episodeId) === info.episode))
+      );
+    }
+    return false;
   });
 
   // Derived values

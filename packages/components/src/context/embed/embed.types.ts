@@ -548,7 +548,8 @@ export type EmbedDataType = {
     isFollowed?: boolean
     activePlayingId?: string | number | undefined
     activePlayingType?: 'episode' | 'live' | 'station'
-    isPlaying?: boolean
+    isPlaying?: boolean,
+    episodeId?: string | undefined
   }>;
   websiteType?: "polaris" | "legacy" | undefined;
 };

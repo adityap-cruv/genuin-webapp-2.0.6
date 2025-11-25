@@ -65,6 +65,7 @@ export type ConfigByUser = {
     activePlayingId?: string | number | undefined
     activePlayingType?: 'episode' | 'live' | 'station'
     isPlaying?: boolean
+    episodeId?: string | undefined
   }>
   theme?: 'dark' | 'light'
   website_type?: 'legacy' | 'polaris'

@@ -231,7 +231,7 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
                     expandable={false}
                     position="overlay"
                     textClassName={cn(
-                      "gencl:my-3! gencl:h-5 gencl:flex gencl:items-center gencl:gap-2 gencl:font-semibold gencl:leading-[24px] gencl:tracking-[-0.2px] gencl:lg:font-semibold! gencl:lg:leading-[24px]! gencl:lg:tracking-[-0.2px]! gencl:break-all",
+                      "gencl:my-3! gencl:h-5 gencl:flex gencl:items-center gencl:gap-2 gencl:font-semibold gencl:leading-[24px] gencl:tracking-[-0.2px] gencl:lg:font-semibold! gencl:lg:leading-[24px]! gencl:lg:tracking-[-0.2px]! gencl:break-all!",
                       websiteType === "polaris"
                         ? "gencl:text-[16px] gencl:lg:text-[17px]!"
                         : "gencl:text-[16px]"
