@@ -9,6 +9,7 @@ import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema"
 import { useBaseContext } from "@genuin/components/context";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { ActiveIHeartContentType } from "@genuin/components/context/base/feed-context-manager";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 
 interface UseIHeartPlaybackParams {
   info: {
@@ -85,6 +86,7 @@ export function useIHeartPlayback({
   variant,
 }: UseIHeartPlaybackParams): UseIHeartPlaybackReturn {
   const { baseContextManager } = useBaseContext();
+  const embedDetails = useSafeEmbedContext();
   const {
     view: { websiteType },
   } = useEmbedConfigs();
@@ -105,7 +107,8 @@ export function useIHeartPlayback({
 
   // Derived values
   const isGoToEpisode =
-    info.type === "podcast" &&
+    (info.type === "podcast" ||
+      embedDetails?.embedData.brand_context?.[0]?.type === "podcast") &&
     (variant === "watch" || variant === "complete" || variant === "overlay")
       ? true
       : info.type === "podcast"
@@ -114,7 +117,7 @@ export function useIHeartPlayback({
   const ctaText =
     variant === "watch" || variant === "complete" || variant === "overlay"
       ? isGoToEpisode
-        ? "Go to episode"
+        ? "Go to Episodes"
         : "Listen Live"
       : videoDetails?.linkouts?.[0]?.cta_text;
 
@@ -211,22 +214,16 @@ export function useIHeartPlayback({
   }, [info]);
 
   const constructClipPlayerPayload = useCallback(() => {
-    const isCaughtUp = variant === "complete" || variant === "overlay";
-    if (!isCaughtUp || videoDetails.type !== "complete") return undefined;
-
-    if (!videoDetails.attributes?.type) return undefined;
+    const brandContext = embedDetails?.embedData.brand_context?.[0];
     return {
-      slug: videoDetails.attributes.slug,
-      type: videoDetails.attributes.type,
-      episodeId: videoDetails.attributes.episode_id
-        ? Number(videoDetails.attributes.episode_id)
-        : undefined,
-      podcastId: videoDetails.attributes.podcast_id
-        ? Number(videoDetails.attributes.podcast_id)
-        : undefined,
-      stationId: videoDetails.attributes.station_id
-        ? Number(videoDetails.attributes.station_id)
-        : undefined,
+      type:
+        brandContext?.type === "station" || brandContext?.type === "podcast"
+          ? brandContext.type
+          : undefined,
+
+      stationId: brandContext?.id ? Number(brandContext.id) : undefined,
+      podcastId: brandContext?.id ? Number(brandContext.id) : undefined,
+      slug: brandContext?.id ? brandContext.id : undefined,
     };
   }, [videoDetails, variant]);
 
@@ -247,9 +244,16 @@ export function useIHeartPlayback({
             slug: videoDetails.attributes?.slug,
           });
           window.location.replace(redirectUrl);
+        } else if (
+          isPolaris &&
+          embedDetails?.embedData.brand_context?.[0]?.type === "podcast"
+        ) {
+          const redirectUrl = getBaseUrlWithouthighlights({ type: "podcast" });
+          window.location.replace(redirectUrl);
         } else {
           SDKEventEmitter.emit(SDKEventName.PLAY_IHEART_CONTENT, {
             ...payload,
+            episodeId: undefined,
             play: !isPlaying,
             navigate: true,
             slug: videoDetails.attributes?.slug ?? "",
@@ -259,23 +263,17 @@ export function useIHeartPlayback({
         }
         return; // Don't play - just redirect/scroll
       }
-
       const clipPlayerPayLoad = constructClipPlayerPayload();
-      if (clipPlayerPayLoad) {
-        setIsPlaying(!isPlaying);
-
-        if (!isPlaying) {
-          updateActiveIHeartContent(clipPlayerPayLoad);
-        } else {
-          updateActiveIHeartContent(null);
-        }
+      if (
+        clipPlayerPayLoad &&
+        (variant === "complete" || variant === "overlay" || variant === "watch")
+      ) {
         SDKEventEmitter.emit(SDKEventName.PLAY_IHEART_CONTENT, {
           ...clipPlayerPayLoad,
+          type: "station",
           slug: clipPlayerPayLoad.slug ?? undefined,
           play: true,
           navigate: true,
-          videoId: videoDetails.id,
-          videoTitle: videoDetails.attributes?.description ?? undefined,
         });
         return;
       }

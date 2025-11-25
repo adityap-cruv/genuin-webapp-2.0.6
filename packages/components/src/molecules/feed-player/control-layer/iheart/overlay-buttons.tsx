@@ -49,17 +49,9 @@ export function OverLayButton({
 
   if (!ctaText) return;
 
-  const isClickDisabled = useMemo(() => {
-    return (
-      websiteType === "polaris" &&
-      (variant === "complete" || variant === "overlay") &&
-      isGoToEpisode
-    );
-  }, [websiteType, variant, isGoToEpisode]);
-
   return (
     <Button
-      onClick={isClickDisabled ? undefined : (event) => handleClick(event)}
+      onClick={handleClick}
       aria-label="Go to all episodes page"
       className={cn(
         "gencl:text-body-1-semi-bold! gencl:flex gencl:items-center gencl:justify-center gencl:rounded-full gencl:px-5 gencl:h-8",
