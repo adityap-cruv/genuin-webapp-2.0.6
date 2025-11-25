@@ -121,7 +121,9 @@ export function useEmbedConfigs() {
         ? embedData?.media_play?.enable_loop_video
         : !!customization?.is_loop_video,
       videoAutoplay: !!embedData?.placement_id
-        ? embedData?.media_play?.enable_autoplay
+        ? embedData?.media_play?.enable_autoplay ||
+          (viewConfig.websiteType === "polaris" &&
+            viewConfig.brandLayoutType === "iheart")
         : !!customization?.autoplay,
       moveToNextTime: embedData?.media_play?.auto_advance_playback ?? 0,
       showBorderAroundVideo:

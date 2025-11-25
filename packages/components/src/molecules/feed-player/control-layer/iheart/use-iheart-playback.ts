@@ -243,13 +243,30 @@ export function useIHeartPlayback({
             type: info.type,
             slug: videoDetails.attributes?.slug,
           });
-          window.location.replace(redirectUrl);
+          if (videoDetails.attributes?.slug && info.type) {
+            SDKEventEmitter.emit(SDKEventName.PLAY_IHEART_CONTENT, {
+              ...payload,
+              navigate: true,
+              slug: videoDetails.attributes?.slug,
+              type: info.type,
+              play: false,
+            });
+          }
         } else if (
           isPolaris &&
           embedDetails?.embedData.brand_context?.[0]?.type === "podcast"
         ) {
           const redirectUrl = getBaseUrlWithouthighlights({ type: "podcast" });
-          window.location.replace(redirectUrl);
+          if (videoDetails.attributes?.slug && info.type) {
+            SDKEventEmitter.emit(SDKEventName.PLAY_IHEART_CONTENT, {
+              ...payload,
+              navigate: true,
+              slug: videoDetails.attributes?.slug,
+              type: info.type,
+              play: false,
+            });
+          }
+          // window.location.replace(redirectUrl);
         } else {
           SDKEventEmitter.emit(SDKEventName.PLAY_IHEART_CONTENT, {
             ...payload,

@@ -48,7 +48,7 @@ export function EmbedItem({
 
   useEffect(() => {
     function handleVideoWatched(payload: Partial<GenericData>) {
-      if (postDetails.video.id === payload.videoId)
+      if (postDetails.video.id === payload?.videoId)
         setIsVideoWatched(payload.isVideoWatched ?? false);
     }
 
@@ -84,26 +84,25 @@ export function EmbedItem({
       // iHeart uses its own hover preview system instead of activating the video on hover.
       if (config.video.videoShouldPreview) {
         // Check if this specific video should be allowed to preview
-        if (
-          !baseContextManager.checkIfVideoShouldPreview({
-            videoId: postDetails.video.id,
-          })
-        ) {
-          // Video should not preview - handle index updates
-          if (activeIndex !== index) {
-            // Update to this index if it's not already active
-            updateActiveIndex(index, true);
-          } else {
-            // If already active, emit event to play from last known position
-            baseContextManager.emit("playLastKnownIndex", {
-              isVideoWatched: false,
-              videoId: postDetails.video.id,
-              previewIndex: index,
-            });
-          }
-          baseContextManager.updateLastActiveIndex({ index });
-          return;
-        }
+        // if (
+        //   !baseContextManager.checkIfVideoShouldPreview({
+        //     videoId: postDetails.video.id,
+        //   })
+        // ) {
+        //   // Video should not preview - handle index updates
+        //   // if (activeIndex !== index) {
+        //   //   // Update to this index if it's not already active
+        //   //   updateActiveIndex(index, true);
+        //   // } else {
+        //   //   // If already active, emit event to play from last known position
+        //   //   baseContextManager.emit("playLastKnownIndex", {
+        //   //     isVideoWatched: false,
+        //   //     videoId: postDetails.video.id,
+        //   //     previewIndex: index,
+        //   //   });
+        //   // }
+        //   // baseContextManager.updateLastActiveIndex({ index });
+        // }
         // Video should preview - exit early without further action
         return;
       }

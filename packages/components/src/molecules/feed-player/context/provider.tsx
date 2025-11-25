@@ -260,8 +260,8 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       disablePreviewMode();
     }
 
-    // For iHeart layout, add globalPlayState check to sync play state across all players
     if (isIHeartLayout) {
+      // For iHeart layout, add globalPlayState check to sync play state across all players
       return baseConditions && globalPlayState;
     }
 
@@ -344,13 +344,23 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         unmute(false);
       }
 
-      if (isIHeartLayout) {
-        const globalPlayState = baseEventBus.getContext().globalPlayingState;
-        setFeedPlayerShouldPlay(globalPlayState);
-        return;
+      // if (isIHeartLayout) {
+      //   const globalPlayState = baseEventBus.getContext().globalPlayingState;
+      //   console.log("[gen]: global play state:;", { globalPlayState });
+      //   setFeedPlayerShouldPlay(globalPlayState);
+      //   return;
+      // }
+
+      if (
+        isIHeartLayout &&
+        websiteType === "polaris" &&
+        index === 0 &&
+        baseContextManager.checkIfVideoShouldPreview({ videoId })
+      ) {
+        disablePreviewMode();
       }
 
-      if (explicitAutoPlay === false) {
+      if (explicitAutoPlay === false && websiteType !== "legacy") {
         setFeedPlayerShouldPlay(false);
         return;
       }
@@ -500,7 +510,15 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     // Checks if the currently playing video remains in view.
     // If it goes out of view, pause the video and update the global play state.
     function handleSlideChange() {
-      if (!swiper || !globalPlayState || activeIndex === undefined) return;
+      if (
+        !swiper ||
+        !globalPlayState ||
+        activeIndex === undefined ||
+        embedDetails?.embedEventBus.getContext().activePlayerType ===
+          "expand-view"
+      ) {
+        return;
+      }
 
       const isActiveVideoVisible = isSlideVisible(swiper, activeIndex);
       if (!isActiveVideoVisible) {
@@ -558,8 +576,8 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     }
 
     function handleVideoWatched(payload: Partial<GenericData>) {
-      if (videoId === payload.videoId)
-        setIsVideoWatched(payload.isVideoWatched ?? false);
+      if (videoId === payload?.videoId)
+        setIsVideoWatched(payload?.isVideoWatched ?? false);
     }
 
     // Used in the embed/feed clip-card view to fire the video impression event.
@@ -691,8 +709,10 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
           }
         }, 100); // Check every 100ms for smooth looping
       } else {
-        media.pause();
-        media.muted = muted;
+        if (baseContextManager.checkIfVideoShouldPreview({ videoId })) {
+          media.pause();
+          media.muted = muted;
+        }
       }
     }
 
@@ -712,33 +732,33 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
    * matches the current video index and if playback is enabled, then plays the video.
    * This is typically used to restore playback state after preview interactions.
    */
-  useEffect(() => {
-    // only listen to event if videoshouldpreview is false.
-    if (!video.videoShouldPreview) return;
+  // useEffect(() => {
+  //   // only listen to event if videoshouldpreview is false.
+  //   if (!video.videoShouldPreview) return;
 
-    function playLastKnownIndex(payload: Partial<GenericData>) {
-      // Only play if the preview index matches this video and playback is enabled
-      if (
-        payload.previewIndex === index &&
-        typeof index === "number" &&
-        embedDetails?.embedEventBus.getContext().activePlayerType === "embed"
-      ) {
-        if (!isActive) {
-          updateActiveIndex?.(index, undefined, true);
-        } else {
-          if (feedPlayerShouldPlay) {
-            const media = playerRef.current?.getMedia();
-            if (media?.paused) media?.play();
-          }
-        }
-      }
-    }
+  //   function playLastKnownIndex(payload: Partial<GenericData>) {
+  //     // Only play if the preview index matches this video and playback is enabled
+  //     if (
+  //       payload.previewIndex === index &&
+  //       typeof index === "number" &&
+  //       embedDetails?.embedEventBus.getContext().activePlayerType === "embed"
+  //     ) {
+  //       if (!isActive) {
+  //         updateActiveIndex?.(index, undefined, true);
+  //       } else {
+  //         if (feedPlayerShouldPlay) {
+  //           const media = playerRef.current?.getMedia();
+  //           if (media?.paused) media?.play();
+  //         }
+  //       }
+  //     }
+  //   }
 
-    baseContextManager.on("playLastKnownIndex", playLastKnownIndex);
-    return () => {
-      baseContextManager.off("playLastKnownIndex", playLastKnownIndex);
-    };
-  }, [isActive, video, feedPlayerShouldPlay]);
+  //   baseContextManager.on("playLastKnownIndex", playLastKnownIndex);
+  //   return () => {
+  //     baseContextManager.off("playLastKnownIndex", playLastKnownIndex);
+  //   };
+  // }, [isActive, video, feedPlayerShouldPlay]);
 
   const setVideoTimeState = useCallback((timeState: VideoTimeStateType) => {
     videoStateRef.current = {
@@ -860,6 +880,23 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         });
         return;
       }
+
+      /**
+       * TODO: This is temporary patch work for the time being
+       * Handles edge case where legacy website needs to sync global play state
+       */
+      if (
+        websiteType === "legacy" &&
+        !baseEventBus.getContext().globalPlayingState &&
+        feedPlayerShouldPlay
+      ) {
+        baseEventBus.emit("globalPlayingStateChange", undefined, (context) => ({
+          ...context,
+          globalPlayingState: true,
+        }));
+        return;
+      }
+
       setFeedPlayerShouldPlay((prev) => {
         if (!isActive && index !== undefined) {
           updateActiveIndex?.(index);
@@ -931,7 +968,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       setFeedPlayerShouldPlay(false);
       if (byUser) {
         baseContextManager.setPlayPauseTracker({ isPlaying: false });
-
         setButtonAction("PAUSE");
         // Track pause event with Analytics only if the video pause is triggered by user.
         track(EventName.VIDEO_PAUSED, {
@@ -953,44 +989,44 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   const toggleMuted = useCallback(
     (byUser: boolean, bypassMuteChange?: boolean) => {
       // Special handling for video preview mode (hover-to-play feature)
-      if (video.videoShouldPreview && byUser) {
-        // When a video is in preview mode and user clicks mute/unmute button:
-        // 1. Check if this video is actually in an active preview state
-        // 2. If yes, convert the preview into a full playback by toggling play
-        // This ensures that clicking mute/unmute during hover transitions from preview to actual play
-        if (
-          byUser &&
-          video.videoShouldPreview &&
-          typeof index === "number" &&
-          // Verify the video is actively previewing before triggering play
-          // This prevents unwanted play toggles when video is not in hover/preview state
-          baseContextManager.checkIfVideoPreviewActive({ index })
-        ) {
-          togglePlay(byUser);
-        }
+      // if (video.videoShouldPreview && byUser) {
+      //   // When a video is in preview mode and user clicks mute/unmute button:
+      //   // 1. Check if this video is actually in an active preview state
+      //   // 2. If yes, convert the preview into a full playback by toggling play
+      //   // This ensures that clicking mute/unmute during hover transitions from preview to actual play
+      //   // if (
+      //   //   byUser &&
+      //   //   video.videoShouldPreview &&
+      //   //   typeof index === "number" &&
+      //   //   // Verify the video is actively previewing before triggering play
+      //   //   // This prevents unwanted play toggles when video is not in hover/preview state
+      //   //   baseContextManager.checkIfVideoPreviewActive({ index })
+      //   // ) {
+      //   //   togglePlay(byUser);
+      //   // }
 
-        // If preview mode is active and user is trying to unmute video and video is paused than play it.
-        if (
-          byUser &&
-          video.videoShouldPreview &&
-          muted &&
-          !baseEventBus.getContext().globalPlayingState
-        ) {
-          baseEventBus.emit("globalPlayingStateChange", undefined, {
-            ...baseEventBus.getContext(),
-            globalPlayingState: true,
-          });
-        }
+      //   // If preview mode is active and user is trying to unmute video and video is paused than play it.
+      //   // if (
+      //   //   byUser &&
+      //   //   video.videoShouldPreview &&
+      //   //   muted &&
+      //   //   !baseEventBus.getContext().globalPlayingState
+      //   // ) {
+      //   //   baseEventBus.emit("globalPlayingStateChange", undefined, {
+      //   //     ...baseEventBus.getContext(),
+      //   //     globalPlayingState: true,
+      //   //   });
+      //   // }
 
-        // Conditionally update the mute state based on bypassMuteChange flag
-        // bypassMuteChange=true: Skip mute state change (used when showing custom mute UI during preview)
-        // bypassMuteChange=false/undefined: Normal behavior - toggle the mute state
-        // This allows the UI to show a muted icon during preview without actually muting the player
-        if (!bypassMuteChange) {
-          setMuted((oldMuted) => !oldMuted);
-        }
-        return;
-      }
+      //   // Conditionally update the mute state based on bypassMuteChange flag
+      //   // bypassMuteChange=true: Skip mute state change (used when showing custom mute UI during preview)
+      //   // bypassMuteChange=false/undefined: Normal behavior - toggle the mute state
+      //   // This allows the UI to show a muted icon during preview without actually muting the player
+      //   if (!bypassMuteChange) {
+      //     setMuted((oldMuted) => !oldMuted);
+      //   }
+      //   return;
+      // }
       if (byUser) {
         if (muted) {
           setButtonAction("UNMUTE");
@@ -1064,8 +1100,15 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
           impressionSource: "end",
         });
       }
-      setButtonAction("PAUSE");
-      setFeedPlayerShouldPlay(false);
+      if (
+        embedDetails?.embedEventBus.getContext().activePlayerType ===
+        "expand-view"
+      ) {
+        swiper?.slideNext();
+      } else {
+        setButtonAction("PAUSE");
+        setFeedPlayerShouldPlay(false);
+      }
       return;
     }
 

@@ -262,6 +262,7 @@ function EmbedPlayer({
         layoutType={layoutType}
         aria-hidden="true"
         tabIndex={-1}
+        index={index}
       />
       <ControlLayer
         variant={config.view.isPlacementView ? "placement" : "embed"}

@@ -40,7 +40,8 @@ export function EmbedExpandView({
   const [startIndex, setStartIndex] = useState(0);
   const { changeActiveIndex, embedEventBus, goBackToPreviousPlayerType } =
     useEmbedContext();
-  const { setMuted, muted, setPlaybackSpeed, isInIframe } = useBaseContext();
+  const { setMuted, muted, setPlaybackSpeed, isInIframe, baseEventBus } =
+    useBaseContext();
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
   const previousMuteState = usePrevious(muted);
   const isSectioned = embedEventBus.getContext().isSectioned;
@@ -98,6 +99,16 @@ export function EmbedExpandView({
           setTimeout(() => {
             setMuted(muted);
           }, 100);
+          if (
+            websiteType === "legacy" &&
+            !baseEventBus.getContext().globalPlayingState
+          ) {
+            baseEventBus.emit(
+              "globalPlayingStateChange",
+              undefined,
+              (oldContext) => ({ ...oldContext, globalPlayingState: true })
+            );
+          }
         } else if (brandLayoutType === "ted") {
           setTimeout(() => {
             setMuted(false);

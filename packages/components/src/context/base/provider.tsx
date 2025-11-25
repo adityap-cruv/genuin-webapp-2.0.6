@@ -47,6 +47,7 @@ type AutoplayParams = {
   embedData?: any;
   customization?: any;
   brandDetails?: BrandDetailsConfigType;
+  embedDetails?: any;
 };
 
 /**
@@ -63,7 +64,15 @@ type AutoplayParams = {
  * @returns boolean indicating whether autoplay should be enabled
  */
 function getShouldAutoplay(params: AutoplayParams): boolean {
-  const { isEmbed, embedData, customization, brandDetails } = params;
+  const { isEmbed, embedDetails, embedData, customization, brandDetails } =
+    params;
+
+  const isIheart = embedDetails?.brandLayoutType === "iheart";
+  const isPolaris = embedDetails?.embedData.websiteType === "polaris";
+
+  if (isIheart && isPolaris) {
+    return true;
+  }
 
   // For embed context, check embed-specific autoplay settings
   if (isEmbed && (embedData || customization)) {
@@ -107,6 +116,7 @@ export function BaseContextProvider({
       embedData: embedDetails?.embedData,
       customization: embedDetails?.customization,
       brandDetails,
+      embedDetails,
     });
     return createBaseEventBus(shouldAutoplay);
   }, [isEmbed, embedDetails, brandDetails]);
@@ -211,6 +221,7 @@ export function BaseContextProvider({
         undefined,
         (currentContext) => ({ ...currentContext, globalPlayingState: false })
       );
+      baseContextManager.setPlayPauseTracker({ isPlaying: false });
     };
 
     const handleMuteFromOutside = () => {

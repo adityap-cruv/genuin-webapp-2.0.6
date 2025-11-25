@@ -1,6 +1,6 @@
 "use client";
 import { cn } from "@genuin/ui/utils";
-import { useEffect, useState, type ComponentProps } from "react";
+import { type ComponentProps } from "react";
 
 import {
   IHeartMuteIcon,
@@ -20,7 +20,7 @@ import {
   SDKEventEmitter,
   SDKEventName,
 } from "@genuin/components/lib/sdk-event-emitter";
-import { useBaseContext } from "@genuin/components/context";
+// import { useBaseContext } from "@genuin/components/context";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { compressText } from "@genuin/components/lib/utils";
@@ -76,34 +76,34 @@ export function IHeartControls({
   const { playingState, togglePlay, muted, toggleMuted } = usePlayerContext();
   const { track, EventName } = useAnalytics();
   //  Access baseContextManager to subscribe to preview index change events
-  const { baseContextManager } = useBaseContext();
-  const { isMobile } = useDeviceDetectMediaQuery()
+  // const { baseContextManager } = useBaseContext();
+  const { isMobile } = useDeviceDetectMediaQuery();
 
   //  Track custom muted state for video preview (hover) mode
   // This state is separate from the actual player mute state and controls UI appearance only
   // When true, displays mute icon even if player is not actually muted
-  const [customMuted, setCustomMuted] = useState(false);
+  // const [customMuted, setCustomMuted] = useState(false);
 
   //  Listen for preview index changes to update custom mute UI state
   // When a video enters preview mode (hover), it should show as muted in the controls
-  useEffect(() => {
-    function handlePreviewIndexChanged(payload: any) {
-      // Set customMuted to true when this video's index matches the preview index
-      // This shows a muted icon during hover/preview without affecting actual audio state
-      setCustomMuted(payload.previewIndex === index);
-    }
+  // useEffect(() => {
+  //   function handlePreviewIndexChanged(payload: any) {
+  //     // Set customMuted to true when this video's index matches the preview index
+  //     // This shows a muted icon during hover/preview without affecting actual audio state
+  //     setCustomMuted(payload.previewIndex === index);
+  //   }
 
-    // Subscribe to preview index changes
-    baseContextManager.on("onPreviewIndexChanged", handlePreviewIndexChanged);
+  //   // Subscribe to preview index changes
+  //   baseContextManager.on("onPreviewIndexChanged", handlePreviewIndexChanged);
 
-    // Cleanup: unsubscribe when component unmounts or dependencies change
-    return () => {
-      baseContextManager.off(
-        "onPreviewIndexChanged",
-        handlePreviewIndexChanged
-      );
-    };
-  }, [baseContextManager, index]);
+  //   // Cleanup: unsubscribe when component unmounts or dependencies change
+  //   return () => {
+  //     baseContextManager.off(
+  //       "onPreviewIndexChanged",
+  //       handlePreviewIndexChanged
+  //     );
+  //   };
+  // }, [baseContextManager, index]);
 
   const isExpand = variant === "expand";
 
@@ -155,7 +155,10 @@ export function IHeartControls({
   const titleMaxLength = isMobile ? 30 : 55;
   const descriptionMaxLength = isMobile ? 120 : 180;
 
-  const truncatedTitle = compressText(videoDetails.attributes?.description ?? "", titleMaxLength);
+  const truncatedTitle = compressText(
+    videoDetails.attributes?.description ?? "",
+    titleMaxLength
+  );
   const truncatedDescription = compressText(
     videoDetails.descritptionText ?? "",
     descriptionMaxLength
@@ -232,11 +235,11 @@ export function IHeartControls({
         tabIndex={isVideoWatched ? -1 : 0}
         className="gencl:w-11 gencl:h-11 gencl:p-0 gencl:flex gencl:items-center gencl:justify-center"
         onClick={() => {
-          toggleMuted(true, customMuted && !muted);
+          toggleMuted(true);
         }}
         title={muted ? "Unmute" : "Mute"}
       >
-        {muted || customMuted ? (
+        {muted ? (
           <IHeartMuteIcon theme="dark" size={size} aria-hidden="true" />
         ) : (
           <IHeartUnmuteIcon theme="dark" size={size} aria-hidden="true" />

@@ -33,6 +33,10 @@ type FeedPlayerProps = Omit<
    * Defines the layout style for the embed, used to identify and apply the corresponding brand layout.
    */
   layoutType?: "responsiveness" | BrandType;
+  /**
+   * Index is needed so passing it.
+   */
+  index?: number;
 };
 
 /**
@@ -46,6 +50,7 @@ export const FeedPlayer = memo(function FeedPlayer({
   className,
   layoutType,
   videoDescription,
+  index,
   onOpenPlayerReady,
   onTimeUpdate,
   onEnded,
@@ -272,7 +277,12 @@ export const FeedPlayer = memo(function FeedPlayer({
     (event: any) => {
       onPlay?.(event);
       setPlayingState("PLAYING");
-      baseContextManager.setPlayPauseTracker({ isPlaying: true });
+      if (
+        index !== undefined &&
+        !baseContextManager.checkIfVideoPreviewActive({ index })
+      ) {
+        baseContextManager.setPlayPauseTracker({ isPlaying: true });
+      }
       baseContextManager.setVideoWatched({ isWatched: false, videoId });
     },
     [onPlay, setPlayingState, baseContextManager, videoId]
