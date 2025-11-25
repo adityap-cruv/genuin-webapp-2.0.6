@@ -239,10 +239,6 @@ export function useIHeartPlayback({
       // Handle "Go to Episode" redirection logic (for overlay-buttons)
       if (isGoToEpisode) {
         if (isPolaris && info.type) {
-          const redirectUrl = getBaseUrlWithouthighlights({
-            type: info.type,
-            slug: videoDetails.attributes?.slug,
-          });
           if (videoDetails.attributes?.slug && info.type) {
             SDKEventEmitter.emit(SDKEventName.PLAY_IHEART_CONTENT, {
               ...payload,
@@ -256,7 +252,6 @@ export function useIHeartPlayback({
           isPolaris &&
           embedDetails?.embedData.brand_context?.[0]?.type === "podcast"
         ) {
-          const redirectUrl = getBaseUrlWithouthighlights({ type: "podcast" });
           if (videoDetails.attributes?.slug && info.type) {
             SDKEventEmitter.emit(SDKEventName.PLAY_IHEART_CONTENT, {
               ...payload,

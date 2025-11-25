@@ -26,7 +26,6 @@ import { GenericData } from "@genuin/components/context/base/feed-context-manage
 import { useEmbedManagerContext } from "@genuin/components/organisms/embed/context";
 import { isSlideVisible } from "@genuin/components/organisms/embed/utils";
 import { EmbedEventContextType } from "@genuin/components/context/embed/event-bus";
-import { usePrevious } from "@genuin/components/hooks/use-previous";
 
 type VideoProviderProps = {
   children: React.ReactNode;
@@ -886,7 +885,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
        * Handles edge case where legacy website needs to sync global play state
        */
       if (
-        websiteType === "legacy" &&
         !baseEventBus.getContext().globalPlayingState &&
         feedPlayerShouldPlay
       ) {
