@@ -35,6 +35,7 @@ const embedVariants = cva("gencl:rounded-md gencl:overflow-auto", {
       standard_wall: "",
       grid: "",
       dynamic: "",
+      expand_only: "",
     },
   },
   defaultVariants: {
@@ -49,7 +50,7 @@ export function Embed({
   ...restProps
 }: EmbedProps & VariantProps<typeof embedVariants>) {
   const [swiper, setSwiper] = useState<Swiper | null>(null);
-  const {isInIframe} = useBaseContext()
+  const { isInIframe } = useBaseContext();
   const { embedData, embedEventBus, updateIsSectioned, updateSectionList } =
     useEmbedContext();
   // Local state for isSectioned synced with event bus
@@ -73,7 +74,7 @@ export function Embed({
     styleId: embedData.style_id,
     contextualParams: embedData.contextualParams,
     embedId: embedData.embed_id,
-    isInIframe
+    isInIframe,
   };
 
   const {
@@ -204,6 +205,19 @@ export function Embed({
     availableHeight,
   } = useEmbedDimensions();
 
+  if (config.view.isExpandOny) {
+    return (
+      <EmbedExpandView
+        videos={videos}
+        fetchNextPage={fetchNextPage}
+        hasNextPage={hasNextPage}
+        isFetchingNextPage={isFetchingNextPage}
+        isLoading={isLoading}
+        queryKey={queryKey}
+      />
+    );
+  }
+
   if (isError) {
     return (
       <SdkErrorState
@@ -294,7 +308,6 @@ export function Embed({
           </div>
         )}
       </EmbedManagerProvider>
-
       {config.expandViewConfig.enable && (
         <>
           {isSectioned ? (
@@ -314,7 +327,6 @@ export function Embed({
           )}
         </>
       )}
-
       <PipView videos={videos ?? []} isLoading={isLoading} />
     </div>
   );

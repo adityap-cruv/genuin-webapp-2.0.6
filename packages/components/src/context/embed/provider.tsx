@@ -34,7 +34,8 @@ export function EmbedProvider({
   const embedEventBus = useMemo(
     () =>
       createEmbedEventBus({
-        activePlayerType: "embed",
+        activePlayerType:
+          embedData.style === "expand_only" ? "expand-view" : "embed",
         activeIndex: 0,
         sectionList: [],
         isSectioned: false,

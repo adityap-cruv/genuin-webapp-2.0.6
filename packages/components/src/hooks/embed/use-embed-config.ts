@@ -48,6 +48,7 @@ export function useEmbedConfigs() {
     () => ({
       embedStyle: embedData?.style,
       isFeed: embedData?.style === "feed",
+      isExpandOny: embedData?.style === "expand_only",
       isCarousel: embedData?.style === "carousel",
       isStandardWall: embedData?.style === "standard_wall",
       isGrid: embedData?.style === "grid",

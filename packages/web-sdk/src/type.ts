@@ -40,6 +40,7 @@ export type ConfigByUser = {
   placement_id?: string
   style_id?: string
   token?: string
+  embed_type?: string
   contextual_params?: ContextualParamsType
   /**
    * @deprecated use contextual_params instead
@@ -102,4 +103,5 @@ export type SingleEmbedDataConfig = {
   brandDetails?: BrandDetailsConfigType
   commentId?: string
   live?: any
+  embedStyle: 'expand_only'
 }

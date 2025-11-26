@@ -6,12 +6,13 @@ import { getQueryKeyForVideoDetails } from "../../keys/video";
 import { QueryKey, useQuery } from "@tanstack/react-query";
 import { queryClient } from "@genuin/components/react-query/client";
 import { parseFeed } from "../feed/parser";
+import { isUuid } from "@genuin/components/lib/utils";
 
 async function fetchVideoDetails(slug: string, embedId?: string) {
   try {
     const response = await axiosInstance.get(API_PATHS.VIDEO_DETAILS, {
       params: {
-        slug,
+        ...(isUuid(slug) ? { uuid: slug } : { slug }),
         embed_id: embedId,
       },
     });

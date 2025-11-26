@@ -260,6 +260,11 @@ export class GenuinSDK {
 
       const embedDetails = config.embedDetails!
 
+      // override style of embed if provided by user.
+      if (config.embedStyle) {
+        embedDetails.style = config.embedStyle
+      }
+
       // set the brand-details and embed-details to the sdkElements for future reference.
       config.brandDetails = brandDetails
 
@@ -580,18 +585,6 @@ export class GenuinSDK {
       if (extractedData.startVideoSlug) {
         loadExpandView(element)
       }
-      console.log('[gen-sdk]: element Initialization', element)
-      console.log('[gen-sdk]: url', window.location.href)
-      console.log('[gen-sdk]: sdk embed id:', extractedData.embedId)
-      console.log('[gen-sdk]: sdk api key:', extractedData.apiKey)
-      console.log(
-        '[gen-sdk]: Initialization with start video slug:',
-        extractedData.startVideoSlug,
-      )
-      console.log(
-        '[gen-sdk]: Initialization with actions',
-        element.getAttribute('data-video-id'),
-      )
       if (extractedData) {
         this.sdkElements[instanceId] = {
           element,
@@ -673,6 +666,7 @@ export class GenuinSDK {
       'data-posted-by-user-ids',
       'data-community-ids',
       'data-loop-ids',
+      'data-embed-style',
     ] as const
 
     // Extract core configuration attributes from the HTML element
@@ -917,6 +911,11 @@ export class GenuinSDK {
           )
             ? loopIdsParsed
             : configByUser?.contextual_params?.loop_ids
+          break
+        case 'data-embed-style':
+          if (value && value === 'expand_only') {
+            answerToReturn.embedStyle = value
+          }
           break
         default:
           break
