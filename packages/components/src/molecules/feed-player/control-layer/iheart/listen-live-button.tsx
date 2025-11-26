@@ -37,7 +37,7 @@ export function IHeartListenLiveButton({
     undefined
   );
 
-  const isOutlined = !isGoToEpisode && !isPlaying;
+  const isOutlined = isGoToEpisode ? true : !isPlaying;
 
   // Check if button should be visible based on available space
   useEffect(() => {
