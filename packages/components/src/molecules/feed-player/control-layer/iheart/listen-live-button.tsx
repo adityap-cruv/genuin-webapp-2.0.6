@@ -37,7 +37,7 @@ export function IHeartListenLiveButton({
     undefined
   );
 
-  const isOutlined = !isPlaying;
+  const isOutlined = !isGoToEpisode && !isPlaying;
 
   // Check if button should be visible based on available space
   useEffect(() => {
@@ -111,7 +111,7 @@ export function IHeartListenLiveButton({
     if (isGoToEpisode) {
       return ctaText;
     }
-    
+
     const state = isPlaying ? "Pressed" : "Not pressed";
     return `${ctaText}, ${state}`;
   };

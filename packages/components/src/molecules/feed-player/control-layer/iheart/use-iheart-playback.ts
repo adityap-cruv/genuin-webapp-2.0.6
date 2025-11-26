@@ -107,9 +107,11 @@ export function useIHeartPlayback({
     const brandContext = embedDetails?.embedData.brand_context?.[0];
     if (!brandContext) return false;
     const isInitiallyPlaying = brandContext.isPlaying;
-    if (isInitiallyPlaying) {
+    if (isInitiallyPlaying && brandContext.activePlayingType) {
+      const currentActivePlayerType =
+        brandContext.activePlayingType === "episode" ? "podcast" : "station";
       return (
-        brandContext.type === info.type &&
+        currentActivePlayerType === info.type &&
         (Number(brandContext.id) === info.station ||
           (Number(brandContext.id) === info.podcast &&
             Number(brandContext.episodeId) === info.episode))
@@ -120,9 +122,8 @@ export function useIHeartPlayback({
 
   // Derived values
   const isGoToEpisode =
-    (info.type === "podcast" ||
-      embedDetails?.embedData.brand_context?.[0]?.type === "podcast") &&
-    (variant === "watch" || variant === "complete" || variant === "overlay")
+    (variant === "watch" || variant === "complete" || variant === "overlay") &&
+    embedDetails?.embedData.brand_context?.[0]?.type === "podcast"
       ? true
       : info.type === "podcast"
         ? !!info.podcast && !info.episode
