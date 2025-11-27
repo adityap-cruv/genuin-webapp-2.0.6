@@ -547,7 +547,7 @@ export type EmbedDataType = {
     type: string
     isFollowed?: boolean
     activePlayingId?: string | number | undefined
-    activePlayingType?: 'episode' | 'live' | 'station'
+    activePlayingType?: 'episode' | 'live' | 'station' | 'podcast'
     isPlaying?: boolean,
     episodeId?: string | undefined
   }>;

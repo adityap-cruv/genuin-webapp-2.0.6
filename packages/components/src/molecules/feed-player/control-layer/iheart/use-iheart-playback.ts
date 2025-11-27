@@ -109,11 +109,16 @@ export function useIHeartPlayback({
     const isInitiallyPlaying = brandContext.isPlaying;
     if (isInitiallyPlaying && brandContext.activePlayingType) {
       const currentActivePlayerType =
-        brandContext.activePlayingType === "episode" ? "podcast" : "station";
+        brandContext.activePlayingType === "episode" ||
+        brandContext.activePlayingType === "podcast"
+          ? "podcast"
+          : "station";
       return (
         currentActivePlayerType === info.type &&
-        (Number(brandContext.id) === info.station ||
-          (Number(brandContext.id) === info.podcast &&
+        ((info.type === "station" &&
+          Number(brandContext.id) === info.station) ||
+          (info.type === "podcast" &&
+            Number(brandContext.activePlayingId) === info.podcast &&
             Number(brandContext.episodeId) === info.episode))
       );
     }
