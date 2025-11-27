@@ -350,7 +350,8 @@ export function useEmbedConfigs() {
       hideModal:
         embedContextData.embedData?.style === "carousel" ||
         embedContextData.embedData?.style === "feed" ||
-        embedContextData.embedData?.style === "grid",
+        embedContextData.embedData?.style === "grid" ||
+        embedContextData.embedData?.style === "expand_only",
     };
   }, [
     embedContextData.embedData?.style,
