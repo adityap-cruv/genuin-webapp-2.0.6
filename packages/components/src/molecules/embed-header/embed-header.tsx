@@ -16,6 +16,7 @@ const embedHeaderVariants = cva(
         standard_wall: "",
         grid: "gencl:justify-between gencl:items-center gencl:flex-row",
         dynamic: "",
+        expand_only: "",
       },
     },
     defaultVariants: {

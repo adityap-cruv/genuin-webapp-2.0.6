@@ -227,24 +227,55 @@ export const VideoPlayer = memo(function VideoPlayer({
         return;
       }
 
+      // Store current video position before ad error occurs
+      let contentTimeBeforeAdError = 0;
+
       player.getElement().addEventListener("playererror", (e: any) => {
         if (e.detail?.type === "Ads") {
-          playerStateRef.current.isAdErrored = true;
-          const adsManager = player.getAd();
-          if (adsManager) {
-            adsManager.destroy();
+          console.error("OpenPlayerJS Ad Error:", e.detail);
+
+          // Store the current content time for potential restoration
+          const media = player.getMedia();
+          if (media && !isNaN(media.currentTime)) {
+            contentTimeBeforeAdError = media.currentTime;
           }
 
-          if (playerStateRef.current.shouldPlay) {
-            playThePlayer();
-          } else {
-            // wait for all the callback stack in event loop to clear and then pause.
-            setTimeout(pauseThePlayer, 0);
+          // Only mark as errored if it's a fatal error that requires full cleanup
+          // For individual ad failures, we'll handle them in the IMA SDK error handler
+          const errorCode = e.detail?.code;
+          const isFatalError =
+            errorCode &&
+            (errorCode.toString().includes("VAST") ||
+              errorCode.toString().includes("NETWORK") ||
+              errorCode.toString().includes("VIDEO"));
+
+          if (isFatalError) {
+            playerStateRef.current.isAdErrored = true;
+
+            const adsManager = player.getAd();
+            if (adsManager) {
+              try {
+                adsManager.destroy();
+              } catch (error) {
+                console.warn("Error destroying ads manager:", error);
+              }
+            }
           }
+
+          // Resume content playback from the correct position
+          setTimeout(() => {
+            if (media && contentTimeBeforeAdError > 0) {
+              media.currentTime = contentTimeBeforeAdError;
+            }
+
+            if (playerStateRef.current.shouldPlay) {
+              playThePlayer();
+            } else {
+              pauseThePlayer();
+            }
+          }, 100);
         }
-      });
-
-      // Wait a bit for the player element to be ready
+      }); // Wait a bit for the player element to be ready
       setTimeout(() => {
         try {
           const playerElement = player.getElement();
@@ -252,6 +283,18 @@ export const VideoPlayer = memo(function VideoPlayer({
             console.warn("Player element does not support addEventListener");
             return;
           }
+
+          // Add AdsLoader error listener (for ad request/loading errors)
+          playerElement.addEventListener("adserror", (e: any) => {
+            console.error("AdsLoader error:", e.detail);
+            // AdsLoader errors are typically fatal for the current ad request
+            // Resume content playback
+            setTimeout(() => {
+              if (playerStateRef.current.shouldPlay) {
+                playThePlayer();
+              }
+            }, 50);
+          });
 
           // Add an event listener for when ads are loaded
           playerElement.addEventListener("adsloaded", () => {
@@ -374,14 +417,88 @@ export const VideoPlayer = memo(function VideoPlayer({
               }
             );
 
-            // Listen for ad errors
+            // Listen for ad errors using proper IMA SDK AdErrorEvent
             adsManager.addEventListener(
-              (window as any).google.ima.AdEvent.Type.AD_ERROR,
-              (e: any) => {
-                console.error("Ad error:", e.getError());
+              (window as any).google.ima.AdErrorEvent.Type.AD_ERROR,
+              (adErrorEvent: any) => {
+                const error = adErrorEvent.getError();
+                console.error("IMA SDK Ad Error:", error);
+
+                // Reset current ad state
                 adInfoRef.current.isPlaying = false;
                 adInfoRef.current.ctaInfo = null;
-                onAdError?.(e.getError());
+
+                // Determine error handling strategy based on error type
+                const errorType = error.getType();
+                const errorCode = error.getErrorCode();
+
+                console.log(
+                  `Ad Error - Type: ${errorType}, Code: ${errorCode}`
+                );
+
+                // For individual ad failures, use discardAdBreak to skip current ad
+                // but keep ads manager alive for future ad breaks (mid-roll, post-roll)
+                if (
+                  errorType ===
+                    (window as any).google.ima.AdError.Type.AD_LOAD ||
+                  errorType ===
+                    (window as any).google.ima.AdError.Type.AD_PLAY ||
+                  (errorCode >= 400 && errorCode < 500) // Client-side errors
+                ) {
+                  console.log(
+                    "Discarding current ad break due to individual ad failure"
+                  );
+
+                  try {
+                    // Get current ad info before discarding
+                    const currentAd = adsManager.getCurrentAd?.();
+                    if (currentAd) {
+                      const universalAdIds =
+                        currentAd.getUniversalAdIds?.() || [];
+                      console.log(
+                        "Discarding ad break with universal ad IDs:",
+                        universalAdIds
+                      );
+                    }
+
+                    // Discard only the current ad break, keeping ads manager for future ads
+                    adsManager.discardAdBreak();
+                  } catch (discardError) {
+                    console.warn("Error discarding ad break:", discardError);
+                    // If discard fails, mark as errored but don't destroy ads manager yet
+                    playerStateRef.current.isAdErrored = true;
+                  }
+                } else if (
+                  errorType ===
+                    (window as any).google.ima.AdError.Type.ADS_MANAGER_LOAD ||
+                  (errorCode >= 900 && errorCode < 1000) || // General errors
+                  errorCode >= 1000 // Fatal errors
+                ) {
+                  // Fatal errors require destroying the ads manager
+                  console.log("Fatal ad error, destroying ads manager");
+                  playerStateRef.current.isAdErrored = true;
+
+                  try {
+                    adsManager.destroy();
+                  } catch (destroyError) {
+                    console.warn(
+                      "Error destroying ads manager after fatal error:",
+                      destroyError
+                    );
+                  }
+                } else {
+                  // For other errors, try to continue without destroying ads manager
+                  console.log("Non-fatal ad error, attempting to continue");
+                }
+
+                // Resume content playback
+                setTimeout(() => {
+                  if (playerStateRef.current.shouldPlay) {
+                    playThePlayer();
+                  }
+                }, 50);
+
+                onAdError?.(error);
               }
             );
           });
@@ -440,22 +557,15 @@ export const VideoPlayer = memo(function VideoPlayer({
 
   const playThePlayer = useCallback(() => {
     const player = playerRef.current;
-    const active = player?.activeElement();
+    if (!player) return;
 
-    // If an ad error occurred, try to play the main content directly
-    if (player?.isAd() && !playerStateRef.current.isAdErrored) {
-      player
-        ?.getAd()
-        .play()
-        .catch((err: any) => {
-          console.warn("Could not autoplay video after ad error:", err);
-        });
-    } else {
+    // If ads manager was destroyed due to fatal error, always play main content
+    if (playerStateRef.current.isAdErrored) {
       player
         ?.getMedia()
         .play()
         .then(() => {
-          // Auto-play started
+          console.log("Content resumed after fatal ad error");
         })
         .catch((error) => {
           if (error?.name === "NotAllowedError") {
@@ -468,25 +578,70 @@ export const VideoPlayer = memo(function VideoPlayer({
               });
           }
         });
+      return;
+    }
+
+    // For normal playback, check if we're currently in an ad or content
+    try {
+      if (player.isAd()) {
+        // Currently playing an ad
+        player
+          ?.getAd()
+          .play()
+          .catch((err: any) => {
+            console.warn("Could not play ad, falling back to content:", err);
+            // If ad play fails, try content instead
+            player?.getMedia().play();
+          });
+      } else {
+        // Currently playing content
+        player
+          ?.getMedia()
+          .play()
+          .catch((error) => {
+            if (error?.name === "NotAllowedError") {
+              updatePlayerMutedState(true);
+              player
+                ?.getMedia()
+                ?.play()
+                .catch((err: any) => {
+                  console.warn("Could not autoplay video:", err);
+                });
+            }
+          });
+      }
+    } catch (error) {
+      // Fallback to content if player state check fails
+      console.warn(
+        "Error checking player state, falling back to content:",
+        error
+      );
+      player?.getMedia().play();
     }
   }, [updatePlayerMutedState]);
 
   const pauseThePlayer = useCallback(() => {
     const player = playerRef.current;
+    if (!player) return;
 
     // If an ad error occurred, just pause the main content
     if (playerStateRef.current.isAdErrored) {
-      player?.getElement().pause();
+      player?.getMedia().pause();
       return;
     }
-    // try everything to pause the video and ad.
-    if (player?.isAd()) {
-      player?.getAd()?.pause(); // Pause ad if playing
-    } else {
-      player?.getMedia().pause();
-    }
 
-    player?.pause();
+    // Pause based on current player state
+    try {
+      if (player.isAd()) {
+        player?.getAd()?.pause(); // Pause ad if playing
+      } else {
+        player?.getMedia().pause();
+      }
+    } catch (error) {
+      // Fallback to direct pause if specific methods fail
+      console.warn("Error pausing player, using fallback:", error);
+      player?.getElement().pause();
+    }
   }, []);
 
   // Lazy initialization: Initialize player based on enableLazyLoading prop
@@ -585,6 +740,7 @@ export const VideoPlayer = memo(function VideoPlayer({
         videoWatchedFired: false,
         videoStartFired: false,
         shouldPlay: false,
+        isAdErrored: false, // Reset ad error state on cleanup
       };
 
       // Reset ad tracking

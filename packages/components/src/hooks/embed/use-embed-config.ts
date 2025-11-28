@@ -53,6 +53,7 @@ export function useEmbedConfigs() {
     return {
       embedStyle: embedData?.style,
       isFeed: embedData?.style === "feed",
+      isExpandOny: embedData?.style === "expand_only",
       isCarousel: embedData?.style === "carousel",
       isStandardWall: embedData?.style === "standard_wall",
       isGrid: embedData?.style === "grid",
@@ -399,7 +400,8 @@ export function useEmbedConfigs() {
       hideModal:
         embedContextData.embedData?.style === "carousel" ||
         embedContextData.embedData?.style === "feed" ||
-        embedContextData.embedData?.style === "grid",
+        embedContextData.embedData?.style === "grid" ||
+        embedContextData.embedData?.style === "expand_only",
     };
   }, [
     embedContextData.embedData?.style,

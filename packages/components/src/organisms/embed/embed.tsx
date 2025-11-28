@@ -127,6 +127,7 @@ const embedVariants = cva("gencl:rounded-md gencl:overflow-auto", {
       standard_wall: "",
       grid: "",
       dynamic: "",
+      expand_only: "",
     },
   },
   defaultVariants: {
@@ -435,6 +436,18 @@ export function Embed({
     activeIndex,
     videos,
   });
+  if (config.view.isExpandOny) {
+    return (
+      <EmbedExpandView
+        videos={videos}
+        fetchNextPage={fetchNextPage}
+        hasNextPage={hasNextPage}
+        isFetchingNextPage={isFetchingNextPage}
+        isLoading={isLoading}
+        queryKey={queryKey}
+      />
+    );
+  }
 
   if (isError) {
     return (
@@ -600,7 +613,6 @@ export function Embed({
           />
         )}
       </EmbedManagerProvider>
-
       {config.expandViewConfig.enable && (
         <>
           {isSectioned ? (
@@ -621,7 +633,6 @@ export function Embed({
           )}
         </>
       )}
-
       <PipView videos={videos ?? []} isLoading={isLoading} />
 
       {activePlayerType === "embed" && isIheartLayout && (

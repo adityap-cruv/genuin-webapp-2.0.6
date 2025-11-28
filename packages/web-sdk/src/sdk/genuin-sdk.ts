@@ -314,6 +314,9 @@ export class GenuinSDK {
         if (instanceId && this.sdkElements[instanceId]) {
           loadExpandView(element, this.sdkElements[instanceId].config.theme)
         }
+      // override style of embed if provided by user.
+      if (config.embedStyle) {
+        embedDetails.style = config.embedStyle
       }
 
       // set the brand-details and embed-details to the sdkElements for future reference.
@@ -799,6 +802,7 @@ export class GenuinSDK {
       'data-website-type',
       'data-player-playing',
       'data-episode-id',
+      'data-embed-style',
     ] as const
 
     // Extract core configuration attributes from the HTML element
@@ -1065,6 +1069,11 @@ export class GenuinSDK {
           const brand_context = configByUser?.brand_context?.[0]
           if (!brand_context) break
           brand_context.episodeId = value ?? brand_context.episodeId
+          break
+        case 'data-embed-style':
+          if (value && value === 'expand_only') {
+            answerToReturn.embedStyle = value
+          }
           break
         default:
           break

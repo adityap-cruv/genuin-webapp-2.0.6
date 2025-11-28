@@ -939,7 +939,8 @@ export type ViewType =
   | "carousel"
   | "standard_wall"
   | "grid"
-  | "dynamic";
+  | "dynamic"
+  | "expand_only";
 
 export type SizeBoxType = { height: number; width: number };
 

@@ -64,7 +64,8 @@ export function EmbedProvider({
   const embedEventBus = useMemo(
     () =>
       createEmbedEventBus({
-        activePlayerType: "embed",
+        activePlayerType:
+          embedData.style === "expand_only" ? "expand-view" : "embed",
         activeIndex: 0,
         previousActiveIndex: -1,
         sectionList: [],
@@ -196,8 +197,7 @@ export function EmbedProvider({
       embedEventBus.emit("activeIndexChange", undefined, (currentContext) => ({
         ...currentContext,
         activeIndex: newIndex,
-        previousActiveIndex:
-          currentContext.activeIndex,
+        previousActiveIndex: currentContext.activeIndex,
         shouldTrackImpression: newIndex !== currentContext.activeIndex,
       }));
     },

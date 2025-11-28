@@ -326,11 +326,26 @@ export const FeedPlayer = memo(function FeedPlayer({
     updateAdInfo(false, event);
   }, []);
 
-  const handleAdError = useCallback((event: any) => {
-    // Handle ad error event if needed
-    console.error("Ad error", event);
-    updateAdInfo(false, event);
-  }, []);
+  const handleAdError = useCallback(
+    (error: any) => {
+      // Handle ad error event - ensure playback continues
+      console.error("Feed Player - Ad error occurred:", {
+        errorType: error?.getType?.(),
+        errorCode: error?.getErrorCode?.(),
+        message: error?.getMessage?.(),
+      });
+
+      // Update ad info to reflect error state
+      updateAdInfo(false, error);
+
+      // We could track ad errors here with a custom event when needed
+      // For now, we just log and continue playback gracefully
+
+      // Note: The VideoPlayer component now handles error recovery internally
+      // using discardAdBreak() for individual ad failures or destroy() for fatal errors
+    },
+    [updateAdInfo]
+  );
 
   const handleAdClicked = useCallback((event: any) => {
     // Handle ad clicked event if needed
