@@ -11,8 +11,6 @@ import {
 import { Image } from "@genuin/ui/components/image";
 import { IHeartControls } from "./controls";
 import { IHeartListenLiveButton } from "./listen-live-button";
-
-import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { ControlLayerPropsType } from "../control-layer.types";
 import { useBaseContext } from "@genuin/components/context";
 import { usePlayerContext } from "../../context";
@@ -42,7 +40,6 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
   } = useEmbedConfigs();
   const { isMobile } = useDeviceDetectMediaQuery();
   const { play } = usePlayerContext();
-  const embedDetails = useSafeEmbedContext();
   const embedConfigs = useEmbedConfigs();
   const [isVideoWatched, setIsVideoWatched] = useState<boolean>(
     postDetails.video.isWatched ||
@@ -360,12 +357,11 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
               isReacted={postDetails.video.isSparked ?? false}
               reactionCount={postDetails.video.sparkCount}
               onReactionStateChange={(isReacted) => {
-                const videoId =
-                  postDetails.video.slug ===
-                  embedDetails?.embedData.startVideoSlug
-                    ? postDetails.video.slug
-                    : postDetails.video.id;
-                onReactionStateChange?.(videoId, isReacted);
+                onReactionStateChange?.(
+                  postDetails.video.id,
+                  postDetails.video.slug,
+                  isReacted
+                );
               }}
               isVideoWatched={isVideoWatched}
             />

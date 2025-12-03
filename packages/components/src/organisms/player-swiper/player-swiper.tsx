@@ -44,7 +44,11 @@ type PlayerListPropsType = {
    * @param isReacted - Whether the post is reacted to
    * @returns void
    */
-  onReactionStateChange?: (videoId: string, isReacted: boolean) => void;
+  onReactionStateChange?: (
+    videoId: string,
+    videoSlug: string,
+    isReacted: boolean
+  ) => void;
   onCommunityJoinStatusChange: ComponentProps<
     typeof Player
   >["onCommunityJoinStatusChange"];
@@ -201,6 +205,10 @@ a swiper inside another swiper.
   const renderSectionedContent = () => (
     <SwiperImplementation
       direction="horizontal"
+      className={cn(
+        "gencl:h-full gencl:aspect-reel",
+        isMobile && "gencl:h-full gencl:w-full"
+      )}
       onSwiper={setHorizontalSwiper}
       onActiveIndexChange={(swiper) => {
         setActiveHorizontalIndex(swiper.activeIndex);
@@ -595,14 +603,11 @@ a swiper inside another swiper.
               },
             }}
             onReactionStateChange={(isReacted) => {
-              const videoId =
-                filteredPost[activeIndex]?.video.slug ===
-                embedDetails?.embedData.startVideoSlug
-                  ? filteredPost[activeIndex]?.video.slug
-                  : filteredPost[activeIndex]?.video.id;
-              if (videoId) {
-                onReactionStateChange?.(videoId, isReacted);
-              }
+              onReactionStateChange?.(
+                filteredPost[activeIndex]?.video.id ?? "",
+                filteredPost[activeIndex]?.video.slug ?? "",
+                isReacted
+              );
             }}
           />
         )}

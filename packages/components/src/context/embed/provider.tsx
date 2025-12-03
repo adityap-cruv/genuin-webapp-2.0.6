@@ -216,7 +216,7 @@ export function EmbedProvider({
           activePlayerType: newActiveType,
           activeIndex: activeIndex ?? currentContext.activeIndex,
           skipTimeOffsetOnce: true,
-          previousIndex: currentContext.activeIndex,
+          previousActiveIndex: currentContext.activeIndex,
           shouldTrackImpression: activeIndex !== currentContext.activeIndex,
         })
       );

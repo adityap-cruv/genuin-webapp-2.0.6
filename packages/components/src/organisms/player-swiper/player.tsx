@@ -22,7 +22,11 @@ type PlayerProps = {
   isPrev: boolean;
   isVisible: boolean;
   totalVideos?: number;
-  onReactionStateChange?: (videoId: string, isReacted: boolean) => void;
+  onReactionStateChange?: (
+    videoId: string,
+    videoSlug: string,
+    isReacted: boolean
+  ) => void;
   onCommunityJoinStatusChange: ComponentProps<
     typeof ControlLayer
   >["onCommunityJoinStatusChange"];
@@ -117,7 +121,7 @@ export function Player({
             id={"feed-player--" + post.video.id}
             poster={post.video.thumbnail ?? ""}
             className={cn(
-              "gencl:bg-secondary-200 gencl:object-cover gencl:w-full"
+              "gencl:bg-secondary-200 gencl:object-cover gencl:w-full gencl:h-full"
             )}
             playsInline
             onTimeUpdate={handleTimeUpdate}

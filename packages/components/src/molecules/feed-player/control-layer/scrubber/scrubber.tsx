@@ -246,7 +246,11 @@ export function Scrubber({
   return (
     <ScrubberSlider
       value={value ?? [scrubberPosition]} // Single source of truth
-      className={cn("swiper-no-swiping gencl:rounded-none", className)}
+      className={cn(
+        "swiper-no-swiping gencl:rounded-none",
+        brandLayoutType === "iheart" && "gencl:py-2 gencl:px-1 gencl:min-h-6",
+        className
+      )}
       spriteUrl={spriteUrl ?? ""}
       showScrubber={showScrubber}
       onValueChange={handleSeek}

@@ -20,7 +20,7 @@ type BrandContext =
     }[]
   | undefined;
 
-async function fetchVideoDetails(
+export async function fetchVideoDetails(
   slug: string,
   embedId?: string,
   placementId?: string,
@@ -69,6 +69,7 @@ async function fetchVideoDetails(
  * Hook to fetch video details in a format compatible with feed data structure.
  * This ensures that feed-related functions work with single video pages.
  *
+ * @deprecated — Do not use this hook. Use `useFeed("VIDEO", { isSingleVideo: true })` instead.
  * @param slug - The slug of the video to fetch details for.
  * @returns The video data in a structure matching useFeed's return value
  */

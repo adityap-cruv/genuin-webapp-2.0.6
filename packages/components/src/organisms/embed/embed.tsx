@@ -445,6 +445,7 @@ export function Embed({
         isFetchingNextPage={isFetchingNextPage}
         isLoading={isLoading}
         queryKey={queryKey}
+        totalVideos={totalVideos}
       />
     );
   }

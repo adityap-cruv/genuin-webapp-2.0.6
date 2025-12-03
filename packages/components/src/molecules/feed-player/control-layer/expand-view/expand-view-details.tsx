@@ -49,7 +49,11 @@ const brandHidesCommunityFeatures = (type: BrandLayoutType): boolean =>
 type ExpandViewProps = ComponentProps<"div"> & {
   postDetails: PostDetailsType;
   isActive: boolean;
-  onReactionStateChange?: (videoId: string, isReacted: boolean) => void;
+  onReactionStateChange?: (
+    videoId: string,
+    videoSlug: string,
+    isReacted: boolean
+  ) => void;
   onGroupJoinStatusChange?: ComponentProps<
     typeof Pills
   >["onGroupJoinStatusChange"];
@@ -119,19 +123,18 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
     );
   }, [embedDetails, postDetails.video.slug, isDesktop]);
 
-  const [defaultOpenCommentDialog, setDefaultOpenCommentDialog] =
-    useState(false);
-
   useEffect(() => {
-    if (shouldOpenCommentDialog) {
+    if (
+      shouldOpenCommentDialog &&
+      embedDetails?.embedData.autoUserInteractionToPerform === "comment"
+    ) {
       embedDetails?.markAutoInteractionActionDone();
-      setDefaultOpenCommentDialog(true);
     }
   }, [shouldOpenCommentDialog, embedDetails]);
 
   return {
     brandLayoutType,
-    defaultOpenCommentDialog,
+    defaultOpenCommentDialog: shouldOpenCommentDialog,
     showSeeker,
     hideCommunityJoinButton,
     hideGroupSubscriptionButton,
@@ -430,7 +433,11 @@ const SharedActions = memo(function SharedActions({
   onCommentCountChange?: ComponentProps<
     typeof CommentsDialog
   >["onCommentCountChange"];
-  onReactionStateChange?: (videoId: string, isReacted: boolean) => void;
+  onReactionStateChange?: (
+    videoId: string,
+    videoSlug: string,
+    isReacted: boolean
+  ) => void;
   isActive: boolean;
 }) {
   const embedDetails = useSafeEmbedContext();
@@ -449,11 +456,11 @@ const SharedActions = memo(function SharedActions({
         isReacted={postDetails.video.isSparked ?? false}
         reactionCount={postDetails.video.sparkCount}
         onReactionStateChange={(isReacted) => {
-          const videoId =
-            postDetails.video.slug === embedDetails?.embedData.startVideoSlug
-              ? postDetails.video.slug
-              : postDetails.video.id;
-          onReactionStateChange?.(videoId, isReacted);
+          onReactionStateChange?.(
+            postDetails.video.id,
+            postDetails.video.slug,
+            isReacted
+          );
         }}
         videoDetails={postDetails.video}
       />
@@ -498,11 +505,11 @@ const SharedActions = memo(function SharedActions({
         },
       }}
       onReactionStateChange={(isReacted) => {
-        const videoId =
-          postDetails.video.slug === embedDetails?.embedData.startVideoSlug
-            ? postDetails.video.slug
-            : postDetails.video.id;
-        onReactionStateChange?.(videoId, isReacted);
+        onReactionStateChange?.(
+          postDetails.video.id,
+          postDetails.video.slug,
+          isReacted
+        );
       }}
     />
   );

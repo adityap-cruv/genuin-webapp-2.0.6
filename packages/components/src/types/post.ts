@@ -7,6 +7,7 @@ export const FeedTypeSchema = z.union([
   z.literal("EMBED_HOME"),
   z.literal("PLACEMENT_SECTIONS"),
   z.literal("SECTION_FEED"),
+  z.literal("VIDEO")
 ]);
 
 export type FeedType = z.infer<typeof FeedTypeSchema>;

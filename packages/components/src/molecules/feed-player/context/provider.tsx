@@ -551,54 +551,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   ]);
 
   useEffect(() => {
-    // Handles video impression tracking specifically for embedded videos.
-    if (!embedDetails) return;
-    const { embedEventBus } = embedDetails;
-
-    function handleActivePlayerChange(
-      eventData: any,
-      context: EmbedEventContextType
-    ) {
-      // Proceed only if the current index matches the previous index from the context.
-      // This ensures impressions are tracked only when switching away from the current video.
-      // The `context.shouldTrackImpression` flag further confirms that the index match is valid for impression tracking.
-      if (index !== context.previousIndex || !context.shouldTrackImpression)
-        return;
-
-      // Skip the first trigger on initial page load.
-      // During the first render, `index` and `previousIndex` are identical,
-      // so this prevents recording a false impression event.
-      const isActivePlayer =
-        context.activePlayerType === "embed" ? !isActive : true;
-
-      if (
-        isActivePlayer &&
-        !!videoStateRef.current.duration &&
-        !!videoStateRef.current.currentTime
-      ) {
-        track(EventName.VIDEO_IMPRESSION, {
-          content_category: "loop",
-          content_id: videoId,
-          event_record_screen: "feed",
-          event_target_screen: "none",
-          video_length: videoStateRef.current.duration,
-          video_view_length: videoStateRef.current.currentTime,
-        });
-      }
-    }
-
-    // Attach listeners for changes in active index and player type within the embed context.
-    embedEventBus.on("activeIndexChange", handleActivePlayerChange);
-    embedEventBus.on("activePlayerTypeChange", handleActivePlayerChange);
-
-    // Clean up listeners when the component unmounts or dependencies update.
-    return () => {
-      embedEventBus.off("activeIndexChange", handleActivePlayerChange);
-      embedEventBus.off("activePlayerTypeChange", handleActivePlayerChange);
-    };
-  }, [embedDetails, isActive]);
-
-  useEffect(() => {
     if (!embedDetails) return;
     const { embedEventBus } = embedDetails;
 
@@ -700,7 +652,10 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   ]);
 
   useEffect(() => {
-    if (buttonAction === "PLAY" || buttonAction === "PAUSE") {
+    if (
+      (buttonAction === "PLAY" || buttonAction === "PAUSE") &&
+      isIHeartLayout
+    ) {
       baseEventBus.emit(
         "globalPlayingStateChange",
         undefined,
@@ -710,7 +665,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         })
       );
     }
-  }, [buttonAction, baseEventBus]);
+  }, [buttonAction, baseEventBus, isIHeartLayout]);
 
   /**
    * Handles video preview playback when hovering over feed items.
@@ -1180,6 +1135,11 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       playerConfigRef.current.repeatCount--;
       playerRef.current?.play();
       baseContextManager.setVideoWatched({ videoId, isWatched: false });
+      handleVideoImpression({
+        videoId,
+        previousActiveIndex: activeIndex,
+        impressionSource: "end",
+      });
       return;
     }
 

@@ -32,6 +32,7 @@ import {
   SingleEmbedDataConfig,
   UpdateConfigByUserType,
 } from '@/type'
+import { queryUtils } from '@/utils/query-utils'
 
 // Allowed events list - only these events can be listened to
 const ALLOWED_EVENTS = [
@@ -442,7 +443,12 @@ export class GenuinSDK {
   ): void {
     const pendingAction = getPendingAction()
     if (!pendingAction) return
-
+    // When pending action data is present in the query params, it should override any data stored in localStorage, as query params have higher priority.
+    const hasActionParam = queryUtils.has('action')
+    if (hasActionParam) {
+      clearPendingAction()
+      return
+    }
     if (user) {
       // User config takes priority over pending action data
       if (!embedDetails.startVideoSlug && pendingAction.videoId) {
@@ -1064,7 +1070,7 @@ export class GenuinSDK {
         case 'data-player-playing':
           const brand = configByUser?.brand_context?.[0]
           if (!brand) break
-          brand.isPlaying = value === "true";
+          brand.isPlaying = value === 'true'
           break
         case 'data-episode-id':
           const brand_context = configByUser?.brand_context?.[0]

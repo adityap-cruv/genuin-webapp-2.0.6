@@ -24,7 +24,6 @@ import { AuthenticationModal } from "@genuin/components/organisms/authentication
 import { FeedViewPropsType } from "./feed.type";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
-import { setQueryDataForVideoDetails } from "@genuin/components/react-query/api/video";
 import { getQueryKeyForVideoDetails } from "@genuin/components/react-query/keys/video";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useBaseContext } from "@genuin/components/context";
@@ -73,6 +72,17 @@ export const FeedViewCore = memo(function FeedViewCore({
   const disableSwiper = showExpandView
     ? (embedDetails?.embedEventBus.getContext().disableSwiper ?? false)
     : false;
+
+  // Find the index of the video that matches startVideoSlug, fallback to parent's startIndex
+  const resolvedStartIndex = (() => {
+    if (embedDetails?.embedData.startVideoSlug && videos) {
+      const foundIndex = videos.findIndex(
+        (video) => video.video?.slug === embedDetails.embedData.startVideoSlug
+      );
+      return foundIndex !== -1 ? foundIndex : startIndex;
+    }
+    return startIndex;
+  })();
 
   // this useEffect is used to fetch the next page of videos when the user scrolls to the end of the list.
   // it checks if there is a next page and if the user is not already fetching the next page.
@@ -128,22 +138,12 @@ export const FeedViewCore = memo(function FeedViewCore({
   );
 
   const handleReactionStateChange = useCallback(
-    (videoId: string, isReacted: boolean) => {
-      // If the video is from embed details (i.e., a single video page opened via startVideoSlug),
-      // update the video details using its slug as the query key.
-      if (embedDetails && embedDetails.embedData.startVideoSlug === videoId) {
-        setQueryDataForVideoDetails({
-          queryKey: getQueryKeyForVideoDetails(videoId),
-          isReacted,
-        });
-      } else {
-        // Otherwise, for videos in the feed, update the reaction state in the feed's cached data.
-        setQueryDataForReactionInFeed({
-          queryKey,
-          videoId,
-          isReacted,
-        });
-      }
+    (videoId: string, videoSlug: string, isReacted: boolean) => {
+      setQueryDataForReactionInFeed({
+        queryKey,
+        videoId,
+        isReacted,
+      });
     },
     [queryKey, getQueryKeyForVideoDetails]
   );
@@ -193,7 +193,7 @@ export const FeedViewCore = memo(function FeedViewCore({
   );
 
   const playerListProps = {
-    startIndex,
+    startIndex: resolvedStartIndex,
     posts: videos,
     onActiveIndexChange: handleActiveIndexChange,
     onReactionStateChange: handleReactionStateChange,

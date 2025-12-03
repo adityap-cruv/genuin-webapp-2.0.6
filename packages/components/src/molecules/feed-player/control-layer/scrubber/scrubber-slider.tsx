@@ -213,9 +213,8 @@ const ScrubberSlider = React.forwardRef<
         onKeyDown={handleKeyDown}
         className={cn(
           "gencl:relative gencl:left-1/2 gencl:flex gencl:w-full gencl:-translate-x-1/2 gencl:touch-none gencl:select-none gencl:items-center gencl:transition-all",
-          "gencl:py-2 gencl:px-1 gencl:rounded-md",
-          "focus:gencl:ring-2 focus:gencl:ring-primary focus:gencl:ring-opacity-50 focus:gencl:bg-black/10 focus:gencl:h-12",
-          "gencl:min-h-[24px]",
+          "gencl:rounded-md",
+          "focus:gencl:ring-2 focus:gencl:ring-primary focus:gencl:ring-opacity-50 focus:gencl:bg-black/10",
           className
         )}
         value={value}

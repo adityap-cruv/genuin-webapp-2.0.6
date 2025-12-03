@@ -17,7 +17,7 @@ import { parseFeed } from "./parser";
 import { queryClient } from "@genuin/components/react-query/client";
 import { API_PATHS } from "@genuin/components/react-query/paths";
 import { GroupUserStatusType } from "@genuin/components/types/roles";
-import { useGetVideoDetailsAsFeed } from "../video";
+import { fetchVideoDetails } from "../video";
 import { EmbedDataType } from "@genuin/components/context/embed/embed.types";
 // Mapper for FeedType to corresponding numbers
 const feedTypeToNumber: Record<FeedType, number> = {
@@ -27,6 +27,7 @@ const feedTypeToNumber: Record<FeedType, number> = {
   EMBED_HOME: 1,
   PLACEMENT_SECTIONS: 1,
   SECTION_FEED: 1,
+  VIDEO: 1,
 };
 
 // TODO: Suggestion unify this api with all the apis for feed in profile/group/community. So that
@@ -289,6 +290,7 @@ type UseFeedOptionsType = {
     id: string;
     type: string;
   }>;
+  isSingleVideo?: boolean;
 };
 
 /**
@@ -307,34 +309,66 @@ type UseFeedOptionsType = {
 export type FeedPage = Awaited<ReturnType<typeof fetchFeed>>;
 
 export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
-  // Always call the hook but control its behavior through the enabled flag
-  // This ensures consistent hook call order regardless of options changes
   const startVideoSlug = options?.startVideoSlug;
-  const videoDetailsQuery = useGetVideoDetailsAsFeed(
-    startVideoSlug || "",
-    options?.embedId,
-    options?.placementId,
-    options?.shouldShowMiddlewareOverlay,
-    options?.brandContext
-  );
   const queryKey = getQueryKeyForFeed(feedType, options);
 
-  // Emulate the old conditional behavior while keeping hook call order consistent
-  const videoQueryResult = {
-    isLoading: startVideoSlug ? videoDetailsQuery.isLoading : false,
-    data: startVideoSlug ? videoDetailsQuery.data : undefined,
-    isError: startVideoSlug ? videoDetailsQuery.isError : false,
-  };
-
-  // Common query configuration with conditional overrides
   const infiniteQueryResult = useInfiniteQuery({
     queryKey,
-    queryFn: async ({ pageParam }) =>
-      await fetchFeed(feedType, pageParam, options),
-    // Calculate the enabled state based on both options.enabled and videoQueryResult if startVideoSlug exists
-    enabled: options?.startVideoSlug
-      ? !videoQueryResult.isLoading && options?.enabled !== false
-      : options?.enabled,
+    queryFn: async ({ pageParam }) => {
+      // First, fetch the feed
+      const feedData = options?.isSingleVideo
+        ? {
+            feed: [],
+            hasSection: false,
+            pageSession: null,
+            endOfFeed: false,
+            timestamp: 0,
+            totalVideos: 0,
+          }
+        : await fetchFeed(feedType, pageParam, options);
+
+      // If this is the first page and we have a startVideoSlug
+      if (!pageParam && startVideoSlug) {
+        // Check if the slugged video exists in the feed
+        const videoExists = feedData.feed.some(
+          (item) =>
+            item.video.slug === startVideoSlug ||
+            item.video.id === startVideoSlug
+        );
+
+        // If video doesn't exist in feed, fetch it separately and prepend
+        if (!videoExists || options.isSingleVideo) {
+          try {
+            const videoDetails = await fetchVideoDetails(
+              startVideoSlug,
+              options?.embedId,
+              options?.placementId,
+              options?.shouldShowMiddlewareOverlay,
+              options?.brandContext
+            );
+
+            // Prepend video details to the feed
+            if (options.isSingleVideo) {
+              return {
+                ...feedData,
+                feed: [...videoDetails],
+              };
+            } else {
+              return {
+                ...feedData,
+                feed: [...videoDetails, ...feedData.feed],
+              };
+            }
+          } catch (error) {
+            console.error("Failed to fetch video details:", error);
+            return feedData;
+          }
+        }
+      }
+
+      return feedData;
+    },
+    enabled: options?.enabled !== false,
     initialPageParam: undefined,
     getNextPageParam: (lastPage) => {
       if (lastPage.endOfFeed) return undefined;
@@ -345,165 +379,20 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
         lastVideoId: lastPageData.video.id,
       };
     },
-    refetchOnWindowFocus: false, // Default to false for better UX
-
-    // Use custom caching options if provided, otherwise use default behavior
-    ...(options?.staleTime !== undefined && { staleTime: options.staleTime }),
-    ...(options?.gcTime !== undefined && { gcTime: options.gcTime }),
-    ...(options?.refetchOnMount !== undefined && {
-      refetchOnMount: options.refetchOnMount,
-    }),
-    ...(options?.refetchOnWindowFocus !== undefined && {
-      refetchOnWindowFocus: options.refetchOnWindowFocus,
-    }),
-    ...(options?.refetchOnReconnect !== undefined && {
-      refetchOnReconnect: options.refetchOnReconnect,
-    }),
-    ...(options?.refetchInterval !== undefined && {
-      refetchInterval: options.refetchInterval,
-    }),
-    ...(options?.refetchIntervalInBackground !== undefined && {
-      refetchIntervalInBackground: options.refetchIntervalInBackground,
-    }),
-
-    // Use select to merge placeholder data with API data when both are available
-    ...(options?.placeholderData &&
-      !options?.startVideoSlug && {
-        placeholderData: options?.placeholderData,
-        select: (data: InfiniteData<FeedPage>) => {
-          if (!data || !options?.placeholderData) return data;
-
-          const initialPage = options.placeholderData.pages[0];
-          const initialVideos = initialPage?.feed || [];
-
-          // If we only have the initial data, return as is
-          if (
-            data.pages.length === 1 &&
-            data.pages[0]?.feed?.length === initialVideos.length
-          ) {
-            return data;
-          }
-
-          // If we have API data, merge it with initial data
-          const allApiVideos = data.pages.flatMap((page) => page.feed || []);
-
-          // Check if initial videos are already in the API data
-          const apiVideoIds = new Set(allApiVideos.map((v) => v.video.id));
-          const hasInitialVideosInApi = initialVideos.some((v) =>
-            apiVideoIds.has(v.video.id)
-          );
-
-          // If initial videos are already in API, return API data as is
-          if (hasInitialVideosInApi) {
-            return data;
-          }
-
-          const mergedPage: FeedPage = {
-            feed: [...initialVideos, ...allApiVideos],
-            hasSection:
-              data.pages[0]?.hasSection || initialPage?.hasSection || false,
-            pageSession:
-              data.pages[data.pages.length - 1]?.pageSession ||
-              initialPage?.pageSession,
-            endOfFeed: data.pages[data.pages.length - 1]?.endOfFeed || false,
-            timestamp:
-              data.pages[data.pages.length - 1]?.timestamp ||
-              initialPage?.timestamp ||
-              0,
-            totalVideos:
-              data.pages[data.pages.length - 1]?.totalVideos ||
-              initialPage?.totalVideos ||
-              0,
-          };
-
-          // Update cache with merged data for other components to access
-          queryClient.setQueryData(queryKey, {
-            pages: [mergedPage],
-            pageParams: [undefined],
-          });
-
-          return {
-            pages: [mergedPage],
-            pageParams: [undefined],
-          };
-        },
-      }),
-
-    // Conditional properties based on startVideoSlug
-    ...(options?.startVideoSlug &&
-      !videoDetailsQuery.isError && {
-        enabled: !videoDetailsQuery.isLoading,
-        initialData: videoDetailsQuery.data
-          ? {
-              pages: [
-                {
-                  feed: videoDetailsQuery.data,
-                  hasSection: false,
-                  pageSession: null,
-                  endOfFeed: false,
-                  timestamp: 0,
-                  totalVideos: 0,
-                },
-              ],
-              pageParams: [{ pageSession: "", lastVideoId: "" }],
-            }
-          : undefined,
-        select: (data: InfiniteData<FeedPage>) => {
-          if (!data || !videoQueryResult.data || !options?.startVideoSlug)
-            return data;
-
-          // Check if the first page already contains the start video
-          const firstPage = data.pages[0];
-          const firstVideo = firstPage?.feed[0];
-          if (firstVideo && firstVideo.video.slug === options.startVideoSlug) {
-            // Already prepended, return as is
-            return data;
-          }
-
-          let pages = data.pages;
-
-          // Prepend video data if available
-          pages = [
-            {
-              feed: videoQueryResult.data,
-              hasSection: false,
-              pageSession: null,
-              endOfFeed: false,
-              timestamp: 0,
-              totalVideos: 0,
-            },
-            ...data.pages,
-          ];
-
-          // Filter out the start video from subsequent pages
-          pages = pages.map((page, index) => {
-            if (index === 0) {
-              // Don't filter the prepended page
-              return page;
-            }
-            return {
-              ...page,
-              feed: page.feed.filter(
-                (video) =>
-                  video.video.id !== options.startVideoSlug &&
-                  video.video.slug !== options.startVideoSlug
-              ),
-            };
-          });
-
-          return {
-            ...data,
-            pages,
-          };
-        },
-      }),
+    refetchOnWindowFocus: false,
+    staleTime: options?.staleTime,
+    gcTime: options?.gcTime,
+    refetchOnMount: options?.refetchOnMount,
+    refetchOnReconnect: options?.refetchOnReconnect,
+    refetchInterval: options?.refetchInterval,
+    refetchIntervalInBackground: options?.refetchIntervalInBackground,
+    placeholderData:
+      options?.placeholderData && !options?.startVideoSlug
+        ? options.placeholderData
+        : undefined,
   });
 
-  // Override isLoading when videoQueryResult is loading
-  return {
-    ...infiniteQueryResult,
-    isLoading: videoQueryResult.isLoading || infiniteQueryResult.isLoading,
-  };
+  return infiniteQueryResult;
 };
 
 type QueryData = ReturnType<typeof useFeed>["data"];

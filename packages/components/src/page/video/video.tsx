@@ -8,11 +8,17 @@ import { useEffect, useState } from "react";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 
 import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
+import { useFeed } from "@genuin/components/react-query/api/feed";
+import { getQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
 export function VideoPage({ videoId }: { videoId: string }) {
   const [showGetApp, setShowGetApp] = useState(false);
-
-  const { data, isLoading, isError } = useGetVideoDetailsAsFeed(videoId);
-  const queryKey = getQueryKeyForVideoDetails(videoId);
+  const videoParams = {
+    isSingleVideo: true,
+    isInIframe: false,
+    startVideoSlug: videoId,
+  };
+  const { data, isLoading, isError } = useFeed("VIDEO", videoParams);
+  const queryKey = getQueryKeyForFeed("VIDEO", videoParams);
   const { brandDetails } = useBaseContext();
 
   const { isMobile } = useDeviceDetection();
@@ -40,7 +46,7 @@ export function VideoPage({ videoId }: { videoId: string }) {
           isFetchingNextPage: false,
           isLoading,
           queryKey,
-          videos: data ?? [],
+          videos: data?.pages?.[0]?.feed || [],
         }}
       />
       {showGetApp && (
