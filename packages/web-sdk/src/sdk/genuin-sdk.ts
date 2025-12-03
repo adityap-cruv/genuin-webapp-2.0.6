@@ -314,6 +314,7 @@ export class GenuinSDK {
         if (instanceId && this.sdkElements[instanceId]) {
           loadExpandView(element, this.sdkElements[instanceId].config.theme)
         }
+      }
       // override style of embed if provided by user.
       if (config.embedStyle) {
         embedDetails.style = config.embedStyle
