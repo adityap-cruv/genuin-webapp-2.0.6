@@ -213,7 +213,7 @@
   function update(config) {
     return loadSDK().then((sdk) => {
       const GenuinClass = getSDKClass(sdk)
-      return GenuinClass.legacyUpdate(config)
+      return GenuinClass.newUpdate(config)
     })
   }
 

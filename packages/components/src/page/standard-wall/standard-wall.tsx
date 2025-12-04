@@ -8,7 +8,7 @@ import { CommunityDetails } from "../community-details";
 import { VideoPage } from "../video";
 import { SettingsPage } from "@genuin/components/organisms/settings";
 import { Explore } from "../explore";
-import { ComponentProps, useInsertionEffect, useState } from "react";
+import { ComponentProps, useEffect, useInsertionEffect, useState } from "react";
 import { useRouter } from "@genuin/components/hooks/use-router";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 
@@ -39,7 +39,7 @@ export function StandardWall({
   const embedRouter = useSafeEmbedContext()?.embedRouter;
   const [shouldRender, setShouldRender] = useState(false);
 
-  useInsertionEffect(() => {
+  useEffect(() => {
     if (defaultComponent) {
       router?.replace("/default-comp");
     }
