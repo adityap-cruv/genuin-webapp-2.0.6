@@ -45,6 +45,7 @@ export function EmbedItem({
         false)
   );
   const isSectioned = embedEventBus.getContext().isSectioned;
+  const moveToNext = !config.video.videoLoop;
 
   useEffect(() => {
     function handleVideoWatched(payload: Partial<GenericData>) {
@@ -119,14 +120,16 @@ export function EmbedItem({
   // Handle automatic progression when video ends
   const handlePlayerIterationEnd = useCallback(() => {
     // Use intelligent auto-scroll for placement view when enabled
-    if (config.view.isPlacementView && !config.video.autoScrollToNextSlide)
+    if (
+      (config.view.isPlacementView && !config.video.autoScrollToNextSlide) ||
+      !moveToNext
+    )
       return;
 
     const useAutoScroll =
       config.view.isPlacementView && config.video.autoScrollToNextSlide;
     goToNextVideo(useAutoScroll);
-  }, [goToNextVideo, config]);
-
+  }, [goToNextVideo, config, moveToNext]);
   return (
     <EmbedTile
       className={cn("gencl:cursor-pointer")}

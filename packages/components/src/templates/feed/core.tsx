@@ -28,6 +28,7 @@ import { getQueryKeyForVideoDetails } from "@genuin/components/react-query/keys/
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useBaseContext } from "@genuin/components/context";
 import { IheartFullscreenContainer } from "@genuin/components/molecules/iheart-full-screen-contaner";
+import { isUuid } from "@genuin/components/lib/utils";
 
 /**
  * Internal core presentation component for displaying feed data.
@@ -76,8 +77,10 @@ export const FeedViewCore = memo(function FeedViewCore({
   // Find the index of the video that matches startVideoSlug, fallback to parent's startIndex
   const resolvedStartIndex = (() => {
     if (embedDetails?.embedData.startVideoSlug && videos) {
-      const foundIndex = videos.findIndex(
-        (video) => video.video?.slug === embedDetails.embedData.startVideoSlug
+      const foundIndex = videos.findIndex((video) =>
+        isUuid(embedDetails.embedData.startVideoSlug ?? "")
+          ? video.video?.id === embedDetails.embedData.startVideoSlug
+          : video.video?.slug === embedDetails.embedData.startVideoSlug
       );
       return foundIndex !== -1 ? foundIndex : startIndex;
     }

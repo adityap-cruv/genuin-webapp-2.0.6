@@ -265,8 +265,6 @@ export function EmbedManagerProvider({
           setActiveIndex(nextIndex);
         }
       } else {
-        if (!moveToNext) return;
-
         // Default behavior: use standard navigation action
         const { shouldSlide, targetIndex } = getNavigationAction(
           swiper,
@@ -285,14 +283,7 @@ export function EmbedManagerProvider({
         }
       }
     },
-    [
-      swiper,
-      activeIndex,
-      isGridLayout,
-      isIHeart,
-      handleIHeartNavigation,
-      moveToNext,
-    ]
+    [swiper, activeIndex, isGridLayout, isIHeart, handleIHeartNavigation]
   );
 
   const goToPreviousVideo = useCallback(() => {
