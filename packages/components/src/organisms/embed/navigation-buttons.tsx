@@ -9,12 +9,61 @@ import { useEmbedManagerContext } from "./context";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useCallback, useState, useEffect } from "react";
 
+// Common types
+type Theme = "light" | "dark";
+type EmbedVariant =
+  | "grid"
+  | "carousel"
+  | "feed"
+  | "dynamic"
+  | "standard_wall"
+  | "expand_only"
+  | undefined;
+type ButtonSize = "sm" | "md";
+type ButtonTheme =
+  | "custom"
+  | "overlay"
+  | "text"
+  | "primary"
+  | "secondary"
+  | "secondaryDark"
+  | "outline"
+  | "navigation"
+  | null
+  | undefined;
+type ButtonClickHandler = (e: React.MouseEvent<HTMLButtonElement>) => void;
+
+// Icon component type
+type IconComponent = React.ComponentType<any>;
+
+// Navigation button creation parameters
+interface NavButtonConfig {
+  Icon: IconComponent;
+  disabled: boolean;
+  onClick: ButtonClickHandler;
+  label: string;
+  size?: ButtonSize;
+  className?: string;
+  style?: React.CSSProperties;
+  iconClassName?: string;
+  iconStyle?: React.CSSProperties;
+  theme?: ButtonTheme;
+}
+
+// iHeart navigation button props
+interface IHeartNavButtonProps {
+  Icon: IconComponent;
+  disabled: boolean;
+  onClick: ButtonClickHandler;
+  label: string;
+}
+
 interface NavigationButtonsProps {
   isIheartLayout?: boolean;
-  theme?: "light" | "dark";
-  embedVariant?: "carousel" | "feed";
-  onPrev: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  onNext: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  theme?: Theme;
+  embedVariant?: EmbedVariant;
+  onPrev: ButtonClickHandler;
+  onNext: ButtonClickHandler;
   isNavigationControlEnabled: boolean;
   isPrevDisabled?: boolean;
   isNextDisabled?: boolean;
@@ -55,22 +104,13 @@ export function NavigationButtons({
     style,
     iconClassName,
     iconStyle,
-  }: {
-    Icon: React.ComponentType<any>;
-    disabled: boolean;
-    onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
-    label: string;
-    size?: "sm" | "md";
-    className?: string;
-    style?: React.CSSProperties;
-    iconClassName?: string;
-    iconStyle?: React.CSSProperties;
-  }) => (
+    theme = "custom",
+  }: NavButtonConfig) => (
     <Button
       variant="icon"
       shape="circle"
       size={size}
-      theme={"custom"}
+      theme={theme}
       disabled={disabled}
       onClick={onClick}
       aria-label={label}
@@ -113,12 +153,7 @@ export function NavigationButtons({
       disabled,
       onClick,
       label,
-    }: {
-      Icon: React.ComponentType<any>;
-      disabled: boolean;
-      onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
-      label: string;
-    }) => {
+    }: IHeartNavButtonProps) => {
       const [isHovered, setIsHovered] = useState(false);
 
       const buttonBg = disabled
@@ -187,6 +222,7 @@ export function NavigationButtons({
               disabled: isPrevDisabled,
               onClick: handlePrevClick,
               label: "Previous",
+              theme: "secondary",
             })}
           </div>
           <div className="gencl:mr-2 gencl:pointer-events-auto">
@@ -195,6 +231,7 @@ export function NavigationButtons({
               disabled: isNextDisabled,
               onClick: handleNextClick,
               label: "Next",
+              theme: "secondary",
             })}
           </div>
         </div>
@@ -210,12 +247,14 @@ export function NavigationButtons({
         disabled: isPrevDisabled,
         onClick: handlePrevClick,
         label: "Previous",
+        theme: "secondary",
       })}
       {createNavButton({
         Icon: ChevronDownIcon,
         disabled: isNextDisabled,
         onClick: handleNextClick,
         label: "Next",
+        theme: "secondary",
       })}
     </div>
   );
@@ -225,10 +264,12 @@ export function NavigationButtonsWithContext({
   totalSlides,
   isIheartLayout = false,
   theme,
+  embedVariant,
 }: {
   totalSlides: number;
   isIheartLayout?: boolean;
-  theme?: "light" | "dark";
+  theme?: Theme;
+  embedVariant?: EmbedVariant;
 }) {
   const {
     goToNextVideo,
@@ -324,6 +365,7 @@ export function NavigationButtonsWithContext({
       isPrevDisabled={isPrevDisabled}
       isNextDisabled={isNextDisabled}
       theme={theme}
+      embedVariant={embedVariant}
     />
   );
 }

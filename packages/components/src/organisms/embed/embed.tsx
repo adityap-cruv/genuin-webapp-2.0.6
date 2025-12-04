@@ -602,6 +602,7 @@ export function Embed({
               <NavigationButtonsWithContext
                 totalSlides={totalSlides}
                 theme={theme}
+                embedVariant={embedVariant}
               />
             )}
           </div>
@@ -611,6 +612,7 @@ export function Embed({
             totalSlides={totalSlides}
             isIheartLayout={true}
             theme={theme}
+            embedVariant={embedVariant}
           />
         )}
       </EmbedManagerProvider>
