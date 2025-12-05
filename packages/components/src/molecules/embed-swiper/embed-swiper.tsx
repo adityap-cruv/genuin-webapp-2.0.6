@@ -1,7 +1,7 @@
 import { ComponentProps, useMemo, useRef, type ReactNode } from "react";
 import { Swiper } from "swiper/react";
 import { Swiper as SwiperType } from "swiper/types";
-import { Mousewheel, FreeMode, Keyboard, A11y } from "swiper/modules";
+import { Mousewheel, FreeMode, Keyboard, A11y, Virtual } from "swiper/modules";
 import { getSlidesPerView, SWIPER_CONFIG } from "./utils";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 import "swiper/css";
@@ -44,6 +44,7 @@ export function EmbedSwiper({
   slidesOffsetBefore,
   isIheartLayout = false,
   customHeightFor,
+  virtual,
   onActiveIndexChange,
   onInit,
   onSwiper,
@@ -51,7 +52,7 @@ export function EmbedSwiper({
 }: EmbedSwiperProps) {
   const { isWindows } = useDeviceDetection();
   const swiperRef = useRef<SwiperType | null>(null);
-  const { useWindowSwiperMode } = useEmbedConfigs();
+  const { useWindowSwiperMode, virtualizeSwiper } = useEmbedConfigs();
 
   const slidesPerView = useMemo(
     () =>
@@ -64,6 +65,13 @@ export function EmbedSwiper({
       ) ?? 1,
     [forFeed, aspectRatio, containerDimensions, useWindowSwiperMode]
   );
+
+  const modules = useMemo(() => {
+    const baseModules = [Mousewheel, Keyboard, A11y];
+    if (freeMode) baseModules.push(FreeMode);
+    if (virtualizeSwiper) baseModules.push(Virtual);
+    return baseModules;
+  }, [freeMode, virtualizeSwiper]);
 
   // Use native scroll for feed mode
   if (useWindowSwiperMode) {
@@ -116,11 +124,7 @@ export function EmbedSwiper({
       }}
       spaceBetween={spaceBetweenVideos}
       speed={SWIPER_CONFIG.SCROLL_DELAY}
-      modules={
-        freeMode
-          ? [Mousewheel, FreeMode, Keyboard, A11y]
-          : [Mousewheel, Keyboard, A11y]
-      }
+      modules={modules}
       freeMode={freeMode}
       keyboard={{
         enabled: !isIheartLayout,
@@ -139,6 +143,7 @@ export function EmbedSwiper({
       //   itemRoleDescriptionMessage: "video clip",
       //   scrollOnFocus: true,
       // }}
+      virtual={virtualizeSwiper}
       mousewheel={{
         forceToAxis: true,
         releaseOnEdges: true,

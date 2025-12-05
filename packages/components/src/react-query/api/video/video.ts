@@ -25,20 +25,37 @@ export async function fetchVideoDetails(
   embedId?: string,
   placementId?: string,
   shouldShowMiddlewareOverlay?: boolean,
-  brandContext?: BrandContext
+  brandContext?: BrandContext,
+  videoIds?: string[]
 ) {
   try {
+    const params: Record<string, any> = {
+      ...(slug ? (isUuid(slug) ? { uuid: slug } : { slug }) : undefined),
+      embed_id: embedId,
+      placement_id: placementId,
+      ...(brandContext &&
+        brandContext.length === 1 && {
+          id: brandContext[0]?.id,
+          type: brandContext[0]?.type,
+        }),
+    };
+
     const response = await axiosInstance.get(API_PATHS.VIDEO_DETAILS, {
-      params: {
-        ...(isUuid(slug) ? { uuid: slug } : { slug }),
-        ...(embedId && { embed_id: embedId }),
-        ...(placementId && { placement_id: placementId }),
-        ...(brandContext &&
-          brandContext.length === 1 && {
-            id: brandContext[0]?.id,
-            type: brandContext[0]?.type,
-          }),
-      },
+      params,
+      // If videoIds are provided, serialize them as multiple uuid parameters
+      paramsSerializer:
+        videoIds && videoIds.length > 0
+          ? {
+              serialize: () => {
+                const searchParams = new URLSearchParams();
+                // Add videoIds as multiple uuid parameters
+                videoIds.forEach((id) => searchParams.append("uuid", id));
+                // Add other params
+                if (embedId) searchParams.append("embed_id", embedId);
+                return searchParams.toString();
+              },
+            }
+          : undefined,
     });
     const feeds: FeedResponseFromGoApi = response.data?.data?.feeds;
     if (!feeds || feeds.length === 0) {
@@ -78,13 +95,14 @@ export function useGetVideoDetailsAsFeed(
   embedId?: string,
   placementId?: string,
   shouldShowMiddlewareOverlay?: boolean,
-  brandContext?: BrandContext
+  brandContext?: BrandContext,
+  videoIds?: string[]
 ) {
   return useQuery({
-    queryKey: getQueryKeyForVideoDetails(slug),
+    queryKey: getQueryKeyForVideoDetails(slug, videoIds),
     queryFn: async () => {
       // Only fetch if slug is non-empty
-      if (!slug) {
+      if (!slug && !videoIds) {
         throw new Error("Slug is required to fetch video details");
       }
       return await fetchVideoDetails(
@@ -92,11 +110,12 @@ export function useGetVideoDetailsAsFeed(
         embedId,
         placementId,
         shouldShowMiddlewareOverlay,
-        brandContext
+        brandContext,
+        videoIds
       );
     },
     // Don't run the query if slug is empty
-    enabled: !!slug && slug !== "",
+    enabled: (!!slug && slug !== "") || (videoIds && videoIds.length !== 0),
     retry: 1,
   });
 }

@@ -1,6 +1,5 @@
 import { EmbedDataType } from '@genuin/components/context/embed/embed.types'
 import { createRoot } from 'react-dom/client'
-import ReactDOMServer from 'react-dom/server'
 import type { Root } from 'react-dom/client'
 import { Suspense, lazy } from 'react'
 // Import providers directly from their specific paths to avoid loading entire components package
@@ -250,6 +249,7 @@ export function loadNewEmbed({
           ...embedData,
           brand_id: embedData.brand_id,
           action: embedData.autoUserInteractionToPerform,
+          videoIds: config.videoIds,
           websiteType: config.websiteType,
         }}
         brandLayoutType={brandLayoutType}>

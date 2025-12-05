@@ -497,6 +497,11 @@ export function useEmbedConfigs() {
     []
   );
 
+  const virtualizeSwiper = useMemo(
+    () => embedData?.videoIds && embedData.videoIds.length > 0,
+    []
+  );
+
   return {
     dimensions: dimensionsConfig,
     view: viewConfig,
@@ -517,5 +522,6 @@ export function useEmbedConfigs() {
      * If we want to render slides into window directly instead of redering it into container.
      */
     useWindowSwiperMode,
+    virtualizeSwiper,
   };
 }

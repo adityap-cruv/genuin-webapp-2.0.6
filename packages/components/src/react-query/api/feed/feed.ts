@@ -2,6 +2,7 @@ import {
   InfiniteData,
   QueryKey,
   useInfiniteQuery,
+  UseInfiniteQueryResult,
 } from "@tanstack/react-query";
 
 import { getDeviceId } from "@genuin/components/lib/utils/device-id";
@@ -290,6 +291,7 @@ type UseFeedOptionsType = {
     id: string;
     type: string;
   }>;
+  videoIds?: string[];
   isSingleVideo?: boolean;
 };
 
@@ -308,66 +310,148 @@ type UseFeedOptionsType = {
  */
 export type FeedPage = Awaited<ReturnType<typeof fetchFeed>>;
 
-export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
+/**
+ * Default empty feed page structure used when no feed data is available
+ */
+const createEmptyFeedPage = (): FeedPage => ({
+  feed: [],
+  hasSection: false,
+  pageSession: null,
+  endOfFeed: false,
+  timestamp: 0,
+  totalVideos: 0,
+});
+
+/**
+ * Fetches feed data when specific video IDs are provided.
+ * This bypasses the normal feed fetching and directly retrieves the specified videos.
+ *
+ * @param options - Feed options containing videoIds and related parameters
+ * @returns Feed page with the requested video details
+ */
+async function fetchFeedByVideoIds(
+  options: UseFeedOptionsType
+): Promise<FeedPage> {
+  const videoDetails = await fetchVideoDetails(
+    "",
+    options.embedId,
+    options.placementId,
+    options.shouldShowMiddlewareOverlay,
+    options.brandContext,
+    options.videoIds
+  );
+
+  return {
+    ...createEmptyFeedPage(),
+    // as only one page call should be made here
+    endOfFeed: true,
+    feed: videoDetails,
+  };
+}
+
+/**
+ * Checks if a video with the given slug exists in the feed.
+ *
+ * @param feed - Array of feed items to search
+ * @param slug - Video slug or ID to find
+ * @returns True if the video exists in the feed
+ */
+function isVideoInFeed(feed: FeedPage["feed"], slug: string): boolean {
+  return feed.some(
+    (item) => item.video.slug === slug || item.video.id === slug
+  );
+}
+
+/**
+ * Fetches and prepends a specific video to the feed.
+ * Used when a startVideoSlug is provided but the video isn't in the current feed.
+ *
+ * @param feedData - Existing feed data to prepend to
+ * @param startVideoSlug - Slug of the video to fetch and prepend
+ * @param options - Feed options for video fetching
+ * @returns Updated feed page with the video prepended
+ */
+async function prependVideoToFeed(
+  feedData: FeedPage,
+  startVideoSlug: string,
+  options?: UseFeedOptionsType
+): Promise<FeedPage> {
+  try {
+    const videoDetails = await fetchVideoDetails(
+      startVideoSlug,
+      options?.embedId,
+      options?.placementId,
+      options?.shouldShowMiddlewareOverlay,
+      options?.brandContext
+    );
+
+    // For single video mode, return only the fetched video
+    // Otherwise, prepend the video to the existing feed
+    const feed = options?.isSingleVideo
+      ? [...videoDetails]
+      : [...videoDetails, ...feedData.feed];
+
+    return {
+      ...feedData,
+      feed,
+    };
+  } catch (error) {
+    console.error("Failed to fetch video details:", error);
+    return feedData;
+  }
+}
+
+/**
+ * Main query function for fetching feed data.
+ * Handles three scenarios:
+ * 1. Fetching specific videos by IDs
+ * 2. Fetching a single video (isSingleVideo mode)
+ * 3. Fetching the regular feed with optional video prepending
+ *
+ * @param feedType - Type of feed to fetch
+ * @param pageParam - Pagination parameters
+ * @param options - Feed configuration options
+ * @returns Feed page data
+ */
+async function createFeedQueryFn(
+  feedType: FeedType,
+  pageParam: { pageSession?: string; lastVideoId?: string } | undefined,
+  options?: UseFeedOptionsType
+): Promise<FeedPage> {
   const startVideoSlug = options?.startVideoSlug;
+  const hasVideoIds = options?.videoIds && options.videoIds.length > 0;
+
+  // Scenario 1: Fetch specific videos by their IDs
+  if (hasVideoIds) {
+    return fetchFeedByVideoIds(options!);
+  }
+
+  // Scenario 2: Single video mode - start with empty feed
+  // Scenario 3: Regular feed - fetch from API
+  const feedData = options?.isSingleVideo
+    ? createEmptyFeedPage()
+    : await fetchFeed(feedType, pageParam, options);
+
+  // For the first page with a startVideoSlug, ensure the video is included
+  const isFirstPage = !pageParam;
+  const shouldPrependVideo =
+    isFirstPage &&
+    startVideoSlug &&
+    (!isVideoInFeed(feedData.feed, startVideoSlug) || options?.isSingleVideo);
+
+  if (shouldPrependVideo) {
+    return prependVideoToFeed(feedData, startVideoSlug, options);
+  }
+
+  return feedData;
+}
+
+export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
   const queryKey = getQueryKeyForFeed(feedType, options);
 
-  const infiniteQueryResult = useInfiniteQuery({
+  return useInfiniteQuery({
     queryKey,
-    queryFn: async ({ pageParam }) => {
-      // First, fetch the feed
-      const feedData = options?.isSingleVideo
-        ? {
-            feed: [],
-            hasSection: false,
-            pageSession: null,
-            endOfFeed: false,
-            timestamp: 0,
-            totalVideos: 0,
-          }
-        : await fetchFeed(feedType, pageParam, options);
-
-      // If this is the first page and we have a startVideoSlug
-      if (!pageParam && startVideoSlug) {
-        // Check if the slugged video exists in the feed
-        const videoExists = feedData.feed.some(
-          (item) =>
-            item.video.slug === startVideoSlug ||
-            item.video.id === startVideoSlug
-        );
-
-        // If video doesn't exist in feed, fetch it separately and prepend
-        if (!videoExists || options.isSingleVideo) {
-          try {
-            const videoDetails = await fetchVideoDetails(
-              startVideoSlug,
-              options?.embedId,
-              options?.placementId,
-              options?.shouldShowMiddlewareOverlay,
-              options?.brandContext
-            );
-
-            // Prepend video details to the feed
-            if (options.isSingleVideo) {
-              return {
-                ...feedData,
-                feed: [...videoDetails],
-              };
-            } else {
-              return {
-                ...feedData,
-                feed: [...videoDetails, ...feedData.feed],
-              };
-            }
-          } catch (error) {
-            console.error("Failed to fetch video details:", error);
-            return feedData;
-          }
-        }
-      }
-
-      return feedData;
-    },
+    queryFn: ({ pageParam }) => createFeedQueryFn(feedType, pageParam, options),
     enabled: options?.enabled !== false,
     initialPageParam: undefined,
     getNextPageParam: (lastPage) => {
@@ -391,8 +475,6 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
         ? options.placeholderData
         : undefined,
   });
-
-  return infiniteQueryResult;
 };
 
 type QueryData = ReturnType<typeof useFeed>["data"];

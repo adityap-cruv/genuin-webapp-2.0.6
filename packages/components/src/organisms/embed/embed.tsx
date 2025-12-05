@@ -184,6 +184,7 @@ export function Embed({
       id,
       type,
     })),
+    videoIds: embedData.videoIds,
   };
 
   const {
@@ -335,7 +336,14 @@ export function Embed({
     return () => {
       embedEventBus.off("activeIndexChange", handleActiveIndexChange);
     };
-  }, [embedEventBus]);
+  }, [
+    fetchNextPage,
+    isLoading,
+    hasNextPage,
+    isFetchingNextPage,
+    videos,
+    swiper,
+  ]);
 
   // Use the custom hook with style prop to prioritize parent styles
   const {
@@ -580,7 +588,7 @@ export function Embed({
                   websiteType !== "legacy" ? (
                   <></>
                 ) : (
-                  <SwiperSlide key={idx}>
+                  <SwiperSlide key={idx} virtualIndex={idx}>
                     <EmbedItem
                       index={idx}
                       postDetails={videoData}

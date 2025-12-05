@@ -810,6 +810,7 @@ export class GenuinSDK {
       'data-player-playing',
       'data-episode-id',
       'data-embed-style',
+      'data-video-ids',
     ] as const
 
     // Extract core configuration attributes from the HTML element
@@ -935,14 +936,8 @@ export class GenuinSDK {
         case 'data-page-context':
           answerToReturn.contextualParams =
             answerToReturn.contextualParams || {}
-          console.log('page context value::', value)
           answerToReturn.contextualParams.page_context =
             value ?? configByUser?.contextual_params?.page_context
-          console.log(
-            'page context set to::',
-            answerToReturn.contextualParams.page_context,
-            configByUser?.contextual_params?.page_context,
-          )
           break
         case 'data-previous-page-context':
           answerToReturn.contextualParams =
@@ -1080,6 +1075,13 @@ export class GenuinSDK {
         case 'data-embed-style':
           if (value && value === 'expand_only') {
             answerToReturn.embedStyle = value
+          }
+          break
+        case 'data-video-ids':
+          if (value) {
+            answerToReturn.videoIds = value.split(',')
+          } else {
+            answerToReturn.videoIds = configByUser?.video_ids?.split(',')
           }
           break
         default:

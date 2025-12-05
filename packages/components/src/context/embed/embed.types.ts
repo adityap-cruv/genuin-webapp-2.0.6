@@ -473,6 +473,10 @@ export type EmbedDataType = {
    */
   autoUserInteractionToPerform?: AutoUserInteractionToPerformType;
   /**
+   * Videos ids passed by user to override it.
+   */
+  videoIds?: string[];
+  /**
    * The ID of the comment to focus on when the embed is loaded.
    */
   commentId?: string;
