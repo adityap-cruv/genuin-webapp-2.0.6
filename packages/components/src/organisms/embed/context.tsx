@@ -368,10 +368,10 @@ export function EmbedManagerProvider({
 
     // Add event listener to the swiper container
     const swiperContainer = swiper.el;
-    swiperContainer.addEventListener("focusin", handleFocusIn);
+    swiperContainer?.addEventListener("focusin", handleFocusIn);
 
     return () => {
-      swiperContainer.removeEventListener("focusin", handleFocusIn);
+      swiperContainer?.removeEventListener("focusin", handleFocusIn);
     };
   }, [swiper, activeIndex]);
 

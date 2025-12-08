@@ -317,7 +317,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
 
       if (!isActiveVideo) return;
 
-      const prevSlide = swiper.slides[previousActiveIndex];
+      const prevSlide = swiper?.slides?.[previousActiveIndex];
       const videoRef = prevSlide?.querySelector(
         "video"
       ) as HTMLVideoElement | null;
