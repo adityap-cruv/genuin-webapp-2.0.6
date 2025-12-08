@@ -119,6 +119,7 @@ export const LinkCard = ({
         className={cn(
           linkCardVariants({
             variant: isOutside ? "transparent" : variant,
+            layout: "withCTA",
           })
         )}
         onClick={handleCardClick}
@@ -161,6 +162,7 @@ export const LinkCard = ({
           href={ctaLink}
           target="_blank"
           rel="noopener noreferrer"
+          className="gencl:w-full"
           onClick={(e) => e.stopPropagation()}
         >
           <Button
@@ -174,7 +176,7 @@ export const LinkCard = ({
             style={{
               borderRadius: brandDetails.cta_config?.button_radius ?? "",
               background: brandDetails.cta_config?.button_color ?? "",
-              color: brandDetails.cta_config?.text_color ?? "",
+              color: brandDetails.cta_config?.text_color ?? "black",
             }}
             onClick={handleCTAClick}
           >
@@ -185,9 +187,23 @@ export const LinkCard = ({
             </p>
             {brandDetails.cta_config?.show_arrow_icon &&
               (isLoading ? (
-                <Loader className="gencl:h-4 gencl:w-4 gencl:stroke-black! gencl:shrink-0 gencl:animate-spin" />
+                <Loader
+                  className={cn(
+                    "gencl:h-4 gencl:w-4 gencl:shrink-0 gencl:animate-spin",
+                    brandDetails.cta_config?.text_color
+                      ? `gencl:stroke-[${brandDetails.cta_config?.text_color}]`
+                      : "gencl:stroke-black"
+                  )}
+                />
               ) : (
-                <ChevronRight className="gencl:h-4 gencl:w-4 gencl:stroke-black! gencl:shrink-0" />
+                <ChevronRight
+                  className={cn(
+                    "gencl:h-4 gencl:w-4 gencl:shrink-0",
+                    brandDetails.cta_config?.text_color
+                      ? `gencl:stroke-[${brandDetails.cta_config?.text_color}]`
+                      : "gencl:stroke-black"
+                  )}
+                />
               ))}
           </Button>
         </Link>

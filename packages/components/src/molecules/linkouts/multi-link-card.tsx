@@ -157,12 +157,13 @@ export const MultiLinkCard = ({
           href={ctaLink}
           target="_blank"
           rel="noopener noreferrer"
+          className="gencl:w-full"
           onClick={(e) => e.stopPropagation()}
         >
           <Button
             size={isEmbed ? "sm" : "md"}
             className={cn(
-              "gencl:w-full gencl:text-body-1-medium! gencl:font-semibold gencl:transition-all gencl:bg-white gencl:hover:bg-white/90 gencl:!text-black gencl:flex gencl:justify-between gencl:items-center gencl:px-3 gencl:py-2 gencl:rounded-lg",
+              "gencl:w-full gencl:text-body-1-medium! gencl:font-semibold gencl:transition-all gencl:bg-white gencl:hover:bg-white/90 gencl:text-black gencl:flex gencl:justify-between gencl:items-center gencl:px-3 gencl:py-2 gencl:rounded-lg",
               isOutside && "gencl:bg-secondary-50 gencl:hover:bg-secondary-150",
               !brandDetails.cta_config?.show_arrow_icon &&
                 "gencl:text-center gencl:justify-center "
@@ -170,7 +171,7 @@ export const MultiLinkCard = ({
             style={{
               borderRadius: brandDetails.cta_config?.button_radius ?? "",
               background: brandDetails.cta_config?.button_color ?? "",
-              color: brandDetails.cta_config?.text_color ?? "",
+              color: brandDetails.cta_config?.text_color ?? "black",
             }}
             onClick={handleCTAClick}
           >
@@ -181,9 +182,23 @@ export const MultiLinkCard = ({
             </p>
             {brandDetails.cta_config?.show_arrow_icon &&
               (isLoading ? (
-                <Loader className="gencl:h-4 gencl:w-4 gencl:stroke-black! gencl:shrink-0 gencl:animate-spin" />
+                <Loader
+                  className={cn(
+                    "gencl:h-4 gencl:w-4 gencl:shrink-0 gencl:animate-spin",
+                    brandDetails.cta_config?.text_color
+                      ? `gencl:stroke-[${brandDetails.cta_config?.text_color}]`
+                      : "gencl:stroke-black"
+                  )}
+                />
               ) : (
-                <ChevronRight className="gencl:h-4 gencl:w-4 gencl:stroke-black! gencl:shrink-0" />
+                <ChevronRight
+                  className={cn(
+                    "gencl:h-4 gencl:w-4 gencl:shrink-0",
+                    brandDetails.cta_config?.text_color
+                      ? `gencl:stroke-[${brandDetails.cta_config?.text_color}]`
+                      : "gencl:stroke-black"
+                  )}
+                />
               ))}
           </Button>
         </Link>

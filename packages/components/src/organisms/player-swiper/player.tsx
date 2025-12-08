@@ -95,7 +95,7 @@ export function Player({
         toggleExpandView={toggleExpandView}
         swiper={swiper}
         index={index}
-        onPlayerIterationEnd={swiper.slideNext}
+        onPlayerIterationEnd={() => swiper.slideNext()}
         totalVideos={totalVideos}
         activeIndex={activeIndex}
       >

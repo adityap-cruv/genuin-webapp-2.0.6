@@ -92,7 +92,7 @@ function getInitialShouldPlayState(
     if (playerConfig.autoplay) {
       return true;
     }
-    if (playerConfig.autoplayAfter) return false;
+    if (playerConfig.autoplayAfter >= 0) return false;
   }
   return true;
 }
@@ -155,10 +155,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
    * This state is used to play or pause the video player.
    */
   const [feedPlayerShouldPlay, setFeedPlayerShouldPlay] = useState(
-    getInitialShouldPlayState(
-      getVideoPlayerConfigs(brandDetails?.web_configs),
-      explicitAutoPlay
-    )
+    getInitialShouldPlayState(playerConfigRef.current, explicitAutoPlay)
   );
 
   // To check whether video is fully watched or not..
