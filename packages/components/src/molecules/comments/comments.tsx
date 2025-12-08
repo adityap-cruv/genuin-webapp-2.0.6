@@ -6,6 +6,7 @@ import { CommentInputBox } from "./comment-input";
 import { X } from "lucide-react";
 import { cva, VariantProps } from "class-variance-authority";
 import { CommentsList } from "./comments-list";
+import { Button } from "@genuin/ui";
 
 const commentsVariant = cva("gencl:relative gencl:bg-white", {
   variants: {
@@ -67,14 +68,18 @@ export function Comments({
         />
       )} */}
       {showCloseButton && (
-        <div className="gencl:p-4 gencl:flex gencl:text-headline-4-semi-bold gencl:text-secondary-900 gencl:border-b gencl:border-secondary-150 gencl:items-center gencl:justify-between">
-          Comments
-          <X
-            className="gencl:size-5 gencl:cursor-pointer gencl:opacity-70 gencl:transition-opacity gencl:hover:opacity-100"
-            onClick={() => {
-              onClose?.();
-            }}
-          />
+        <div className="gencl:p-4 gencl:flex  gencl:border-b gencl:border-secondary-150 gencl:items-center gencl:justify-between">
+          <p className="gencl:text-headline-4-semi-bold gencl:text-secondary-900">
+            Comments
+          </p>
+          <Button
+            theme="custom"
+            variant="icon"
+            className="gencl:size-5!"
+            onClick={onClose}
+          >
+            <X className="gencl:size-5 gencl:cursor-pointer gencl:opacity-70 gencl:transition-opacity gencl:hover:opacity-100" />
+          </Button>
         </div>
       )}
       <div className="gencl:flex-1 gencl:overflow-y-auto gencl:min-h-0">
