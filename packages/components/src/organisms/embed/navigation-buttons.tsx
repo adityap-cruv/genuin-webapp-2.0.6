@@ -264,11 +264,13 @@ export function NavigationButtonsWithContext({
   totalSlides,
   isIheartLayout = false,
   theme,
-  embedVariant,
+  setSlidesOffsetBefore,
+  embedVariant
 }: {
   totalSlides: number;
   isIheartLayout?: boolean;
-  theme?: Theme;
+  theme?: "light" | "dark";
+  setSlidesOffsetBefore?: (value: number) => void;
   embedVariant?: EmbedVariant;
 }) {
   const {
@@ -294,9 +296,15 @@ export function NavigationButtonsWithContext({
   const handleNext = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
-      goToNextVideo();
+      setSlidesOffsetBefore?.(48);
+      setTimeout(
+        () => {
+          goToNextVideo();
+        },
+        activeIndex > 0 ? 0 : 50
+      );
     },
-    [goToNextVideo]
+    [goToNextVideo, activeIndex, setSlidesOffsetBefore]
   );
 
   // Function to update disabled state based on current swiper state

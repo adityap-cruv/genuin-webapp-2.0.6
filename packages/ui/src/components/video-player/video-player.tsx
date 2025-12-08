@@ -670,7 +670,7 @@ export const VideoPlayer = memo(function VideoPlayer({
       },
       mode: "responsive",
       forceNative: isSafari ? true : !src?.endsWith(".m3u8"), // Safari uses native HLS, others use hls.js
-      showLoaderOnInit: true,
+      showLoaderOnInit: false,
       hls: hlsConfigs,
       startTime,
       ads: adUrl

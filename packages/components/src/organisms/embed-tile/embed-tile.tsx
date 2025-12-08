@@ -101,7 +101,7 @@ export function EmbedTile({
   const config = useEmbedConfigs();
   const shouldShowMiddlewareOverlay = isMiddlewareOverlayEnabled({
     videoLayoutId: postDetails.video.placement_video_layout_id ?? 0,
-    cardLayoutId: postDetails.video.placement_video_layout_id ?? 0,
+    cardLayoutId: postDetails.video.placement_card_layout_id ?? 0,
   });
 
   const listenLiveButtonInfo = useMemo(

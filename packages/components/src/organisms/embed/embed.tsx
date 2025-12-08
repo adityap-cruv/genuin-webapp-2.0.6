@@ -43,16 +43,38 @@ function FetchNextPageHandler({
   hasNextPage,
   isFetchingNextPage,
   swiper,
-  embedEventBus,
 }: {
   videos: any[];
   fetchNextPage: () => void;
   hasNextPage: boolean | undefined;
   isFetchingNextPage: boolean;
   swiper: Swiper | null;
-  embedEventBus: any;
 }) {
   const lastTriggeredAtProgressRef = useRef<number>(-1);
+  const { embedEventBus } = useEmbedContext();
+  const { useWindowSwiperMode } = useEmbedConfigs();
+
+  useEffect(() => {
+    // TODO: Temporarily enabled this logic to call next page as native-scroll-swiper's progress events are getting stopped after first scroll will fix it later.
+    if (!useWindowSwiperMode) return;
+    function handleActiveIndexChange() {
+      const activeIndex = embedEventBus.getContext().activeIndex;
+
+      if (
+        activeIndex >= videos.length - 3 &&
+        !isFetchingNextPage &&
+        hasNextPage
+      ) {
+        fetchNextPage();
+      }
+    }
+
+    embedEventBus.on("activeIndexChange", handleActiveIndexChange);
+
+    return () => {
+      embedEventBus.off("activeIndexChange", handleActiveIndexChange);
+    };
+  }, [embedEventBus, videos, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   useEffect(() => {
     if (!swiper) return;
@@ -100,14 +122,7 @@ function FetchNextPageHandler({
     return () => {
       swiper.off("progress", handleProgress);
     };
-  }, [
-    swiper,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    videos.length,
-    embedEventBus,
-  ]);
+  }, [swiper, fetchNextPage, hasNextPage, isFetchingNextPage, videos.length]);
 
   // Reset tracking when videos length changes (new data loaded)
   useEffect(() => {
@@ -514,7 +529,6 @@ export function Embed({
           hasNextPage={hasNextPage}
           isFetchingNextPage={isFetchingNextPage}
           swiper={swiper}
-          embedEventBus={embedEventBus}
         />
         {isGridLayout ? (
           <GridView
@@ -611,6 +625,7 @@ export function Embed({
                 totalSlides={totalSlides}
                 theme={theme}
                 embedVariant={embedVariant}
+                setSlidesOffsetBefore={setSlidesOffsetBefore}
               />
             )}
           </div>
@@ -621,6 +636,7 @@ export function Embed({
             isIheartLayout={true}
             theme={theme}
             embedVariant={embedVariant}
+            setSlidesOffsetBefore={setSlidesOffsetBefore}
           />
         )}
       </EmbedManagerProvider>

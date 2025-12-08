@@ -116,7 +116,7 @@ export function useIHeartPlayback({
       return (
         currentActivePlayerType === info.type &&
         ((info.type === "station" &&
-          Number(brandContext.id) === info.station) ||
+          Number(brandContext.activePlayingId) === info.station) ||
           (info.type === "podcast" &&
             Number(brandContext.activePlayingId) === info.podcast &&
             Number(brandContext.episodeId) === info.episode))
@@ -271,7 +271,9 @@ export function useIHeartPlayback({
           isPolaris &&
           embedDetails?.embedData.brand_context?.[0]?.type === "podcast"
         ) {
-          if (videoDetails.attributes?.slug && info.type) {
+          if (
+            videoDetails.attributes?.slug && info.type
+          ) {
             SDKEventEmitter.emit(SDKEventName.PLAY_IHEART_CONTENT, {
               ...payload,
               navigate: true,
@@ -280,7 +282,11 @@ export function useIHeartPlayback({
               play: false,
             });
           }
-          // window.location.replace(redirectUrl);
+          else if(variant === "overlay"){
+            const redirectUrl = getBaseUrlWithouthighlights({type : "podcast"});
+            window.location.replace(redirectUrl);
+            return;
+          }
         } else {
           SDKEventEmitter.emit(SDKEventName.PLAY_IHEART_CONTENT, {
             ...payload,
@@ -291,13 +297,14 @@ export function useIHeartPlayback({
             videoId: videoDetails.id,
             videoTitle: videoDetails.attributes?.title ?? undefined,
           });
+          setIsPlaying(!isPlaying);
         }
         return; // Don't play - just redirect/scroll
       }
       const clipPlayerPayLoad = constructClipPlayerPayload();
       if (
         clipPlayerPayLoad &&
-        (variant === "complete" || variant === "overlay" || variant === "watch")
+        (variant === "complete" || variant === "overlay")
       ) {
         SDKEventEmitter.emit(SDKEventName.PLAY_IHEART_CONTENT, {
           ...clipPlayerPayLoad,
@@ -334,6 +341,7 @@ export function useIHeartPlayback({
       constructClipPlayerPayload,
       options?.onRedirection,
       isGoToEpisode,
+      variant,
       info.type,
     ]
   );

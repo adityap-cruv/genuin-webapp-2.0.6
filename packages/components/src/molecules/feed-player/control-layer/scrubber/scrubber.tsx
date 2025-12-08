@@ -128,7 +128,6 @@ export function Scrubber({
 
       setShowScrubber(true);
       setShowSeeker(true);
-      setPlayingState("PAUSED");
     },
     [pause, brandLayoutType, showScrubber, setShowScrubber, setShowSeeker]
   );
