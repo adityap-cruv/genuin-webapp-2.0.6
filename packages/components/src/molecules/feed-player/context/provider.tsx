@@ -240,8 +240,11 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       // Determine if player should be visible based on view mode:
       // - isExpandOnly: Always visible in expand-only mode (no container visibility check needed)
       // - activePlayerType === "pip": Always visible in picture-in-picture mode (floats above content)
+      // - activePlayerType === "expand-view": Always visible in expanded/fullscreen mode
       // - Otherwise: Only visible when container is in viewport
-      (isExpandOnly || activePlayerType === "pip"
+      (isExpandOnly ||
+      activePlayerType === "pip" ||
+      activePlayerType === "expand-view"
         ? true
         : focusState.containerInView);
 
