@@ -21,12 +21,8 @@ export function PipView({ videos, isLoading }: PipViewProps) {
   const [isPipViewOpen, setIsPipViewOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const { track, EventName } = useAnalytics();
-  const {
-    embedEventBus,
-    changeActiveIndex,
-    changeActivePlayerType,
-    goBackToPreviousPlayerType,
-  } = useEmbedContext();
+  const { embedEventBus, changeActiveIndex, changeActivePlayerType } =
+    useEmbedContext();
 
   useEffect(() => {
     const handleActivePlayerTypeChange = (
@@ -74,8 +70,8 @@ export function PipView({ videos, isLoading }: PipViewProps) {
   }, [changeActivePlayerType]);
 
   const handleClosePipView = useCallback(() => {
-    goBackToPreviousPlayerType();
-  }, [goBackToPreviousPlayerType]);
+    changeActivePlayerType("embed");
+  }, [changeActivePlayerType]);
 
   if (isPipViewOpen && videos.length > 0 && !isLoading) {
     // Ensure activeIndex is valid
