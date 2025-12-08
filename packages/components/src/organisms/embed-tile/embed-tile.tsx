@@ -257,8 +257,8 @@ function EmbedPlayer({
         }
         className={
           videoCrop
-            ? "gencl:object-cover gencl:h-full gencl:w-full"
-            : "gencl:h-full"
+            ? "gencl:object-cover gencl:h-full! gencl:w-full"
+            : "gencl:h-full!"
         }
         layoutType={layoutType}
         aria-hidden="true"
