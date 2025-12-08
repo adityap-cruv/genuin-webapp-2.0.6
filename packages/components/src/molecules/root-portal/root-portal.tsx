@@ -48,10 +48,7 @@ export function RootPortal({
 
   if (!mounted || !containerElement) return null;
   const elementToRender = (
-    <div
-      style={{ ...parsedBrandColors, zIndex: 30, position: "relative" }}
-      className={className}
-    >
+    <div style={{ ...parsedBrandColors, zIndex: 30 }} className={className}>
       {children}
     </div>
   );

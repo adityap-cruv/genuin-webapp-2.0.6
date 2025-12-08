@@ -86,7 +86,7 @@ export function PipView({ videos, isLoading }: PipViewProps) {
     if (videoDetails)
       return (
         <RootPortal className="gen-sdk-class">
-          <div className="gencl:fixed gencl:bottom-4 gencl:flex gencl:right-4 gencl:h-75 gencl:w-50">
+          <div className="gencl:fixed gencl:bottom-4 gencl:z-999999 gencl:flex gencl:right-4 gencl:h-75 gencl:w-50">
             <div className="gencl:rounded-lg gencl:h-full gencl:w-45">
               <PipPlayer
                 videoDetails={videoDetails}
