@@ -811,6 +811,7 @@ export class GenuinSDK {
       'data-episode-id',
       'data-embed-style',
       'data-video-ids',
+      'data-start-video-slug',
     ] as const
 
     // Extract core configuration attributes from the HTML element
@@ -882,6 +883,10 @@ export class GenuinSDK {
           answerToReturn.token = value ?? configByUser?.token
           break
         case 'data-video-id':
+          answerToReturn.startVideoSlug =
+            value ?? configByUser?.start_video_slug
+          break
+        case 'data-start-video-slug':
           answerToReturn.startVideoSlug =
             value ?? configByUser?.start_video_slug
           break
