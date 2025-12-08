@@ -233,12 +233,20 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   // To check whether player should play or not, based on all the conditions.
   // For iHeart layout, also check globalPlayState to sync all players
   const playerPlayFlag = useMemo(() => {
+    const activePlayerType =
+      embedDetails?.embedEventBus?.getContext().activePlayerType;
     const baseConditions =
       feedPlayerShouldPlay &&
       (isEmbed ? !isVideoWatched : true) &&
       isActive &&
       focusState.isFocused &&
-      (isExpandOnly ? true : focusState.containerInView);
+      // Determine if player should be visible based on view mode:
+      // - isExpandOnly: Always visible in expand-only mode (no container visibility check needed)
+      // - activePlayerType === "pip": Always visible in picture-in-picture mode (floats above content)
+      // - Otherwise: Only visible when container is in viewport
+      (isExpandOnly || activePlayerType === "pip"
+        ? true
+        : focusState.containerInView);
 
     const videoShouldPreview = baseContextManager.checkIfVideoShouldPreview({
       videoId,

@@ -124,6 +124,9 @@ export function StandardWall({
               }}
             </Route>
             <Route path="/default-comp">{defaultComponent}</Route>
+            <Route path={"/create-post"}>
+              <CreatePost />
+            </Route>
           </BaseLayout>
         </Router>
       </div>

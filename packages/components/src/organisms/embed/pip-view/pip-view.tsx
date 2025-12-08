@@ -10,6 +10,7 @@ import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema"
 import { XIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
 import { ComponentProps, useCallback, useEffect, useState } from "react";
+import { RootPortal } from "@genuin/components/molecules/root-portal";
 
 type PipViewProps = {
   videos: PostDetailsType[];
@@ -84,22 +85,24 @@ export function PipView({ videos, isLoading }: PipViewProps) {
 
     if (videoDetails)
       return (
-        <div className="gencl:fixed gencl:bottom-4 gencl:flex gencl:right-4 gencl:h-75 gencl:w-50">
-          <div className="gencl:rounded-lg gencl:h-full gencl:w-45">
-            <PipPlayer
-              videoDetails={videoDetails}
-              onInterationEnd={handleIterationEnd}
-              isPipActive={isPipViewOpen}
-              onClick={handlePipPlayerClick}
-            />
+        <RootPortal className="gen-sdk-class">
+          <div className="gencl:fixed gencl:bottom-4 gencl:flex gencl:right-4 gencl:h-75 gencl:w-50">
+            <div className="gencl:rounded-lg gencl:h-full gencl:w-45">
+              <PipPlayer
+                videoDetails={videoDetails}
+                onInterationEnd={handleIterationEnd}
+                isPipActive={isPipViewOpen}
+                onClick={handlePipPlayerClick}
+              />
+            </div>
+            <button
+              onClick={handleClosePipView}
+              className="gencl:size-6 gencl:mt-3! gencl:border-l-0! gencl:bg-secondary-600 gencl:p-1 gencl:flex-center gencl:rounded-r-md"
+            >
+              <XIcon size="md" theme="dark" />
+            </button>
           </div>
-          <div
-            onClick={handleClosePipView}
-            className="gencl:size-5 gencl:mt-4 gencl:bg-secondary-600 gencl:p-1 gencl:flex-center gencl:rounded-r-md"
-          >
-            <XIcon size="sm" theme="dark" />
-          </div>
-        </div>
+        </RootPortal>
       );
   }
 }
@@ -134,7 +137,7 @@ function PipPlayer({
           videoId={videoDetails.video.id}
           src={videoDetails.video.source}
           poster={videoDetails.video.thumbnail}
-          className="gencl:object-cover gencl:w-full gencl:h-full"
+          className="gencl:object-cover gencl:w-full gencl:h-full!"
         />
         <ControlLayer variant="embed-pip" isActive postDetails={videoDetails} />
       </PlayerProvider>
