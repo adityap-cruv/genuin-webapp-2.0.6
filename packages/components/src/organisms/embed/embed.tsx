@@ -444,7 +444,7 @@ export function Embed({
     activeIndex,
     videos,
   });
-  if (config.view.isExpandOny) {
+  if (config.view.isExpandOnly) {
     return (
       <EmbedExpandView
         videos={videos}

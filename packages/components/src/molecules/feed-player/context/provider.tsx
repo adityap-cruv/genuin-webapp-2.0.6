@@ -118,7 +118,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     useBaseContext();
   const embedDetails = useSafeEmbedContext();
   const {
-    view: { brandLayoutType, websiteType },
+    view: { brandLayoutType, websiteType, isExpandOnly },
     video,
   } = useEmbedConfigs();
   // For iHeart brand layout, use shared state from BaseContext
@@ -238,7 +238,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       (isEmbed ? !isVideoWatched : true) &&
       isActive &&
       focusState.isFocused &&
-      focusState.containerInView;
+      (isExpandOnly ? true : focusState.containerInView);
 
     const videoShouldPreview = baseContextManager.checkIfVideoShouldPreview({
       videoId,
@@ -274,6 +274,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     isIHeartLayout,
     globalPlayState,
     isEmbed,
+    isExpandOnly,
   ]);
 
   const handleVideoImpression = useCallback(
