@@ -99,7 +99,10 @@ export function EmbedManagerProvider({
 
       const slidesPerView = swiper.params.slidesPerView as number;
       const currentActiveIndex = swiper.activeIndex;
-      const totalSlides = swiper.slides?.length || 0;
+      const isVirtualEnabled = swiper.params.virtual && swiper.virtual;
+      const totalSlides = isVirtualEnabled
+        ? (swiper.virtual?.slides?.length ?? 0)
+        : (swiper.slides?.length ?? 0);
 
       // Calculate the number of slides to jump
       // For slidesPerView like 2.2, we want to jump by 2 (floor of the value)
@@ -239,7 +242,10 @@ export function EmbedManagerProvider({
       if (!swiper) return;
 
       const nextIndex = activeIndex + 1;
-      const totalSlides = swiper.slides?.length || 0;
+      const isVirtualEnabled = swiper.params.virtual && swiper.virtual;
+      const totalSlides = isVirtualEnabled
+        ? (swiper.virtual?.slides?.length ?? 0)
+        : (swiper.slides?.length ?? 0);
 
       // Check if we've reached the end
       if (nextIndex >= totalSlides) {
