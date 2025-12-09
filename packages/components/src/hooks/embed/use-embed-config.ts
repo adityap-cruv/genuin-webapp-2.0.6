@@ -3,6 +3,7 @@ import { useBaseContext } from "@genuin/components/context/base";
 import { useMemo } from "react";
 import { useDeviceDetectMediaQuery } from "../use-devide-detect-media-query";
 import type { CustomizationType } from "@genuin/components/context/embed/embed.types";
+import { useBrowserDetect } from "@genuin/ui";
 
 const MIN_EMBED_WIDTH = 150;
 const MIN_EMBED_HEIGHT = 268; // Based on 9:16 aspect ratio for 150 width
@@ -29,6 +30,7 @@ export function useEmbedConfigs() {
     embedContextData;
   const { brandDetails, isEmbed } = useBaseContext();
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
+  const { isSafari } = useBrowserDetect();
 
   const isAdsEnabledInIheart = useMemo(() => {
     return rootElement?.getAttribute("data-ads-enabled") === "true";
@@ -498,7 +500,7 @@ export function useEmbedConfigs() {
   );
 
   const virtualizeSwiper = useMemo(
-    () => embedData?.videoIds && embedData.videoIds.length > 0,
+    () => (embedData?.videoIds && embedData.videoIds.length > 0) || isSafari,
     []
   );
 
