@@ -52,7 +52,6 @@
 .gen-sdk-class,
 .gen-sdk-class * {
   box-sizing: border-box;
-  height: revert-layer;
   margin: revert-layer;
   padding: revert-layer;
 }

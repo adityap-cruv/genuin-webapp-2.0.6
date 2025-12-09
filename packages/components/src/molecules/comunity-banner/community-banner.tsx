@@ -19,7 +19,7 @@ export function CommunityBanner({
     >
       <Image
         src={src}
-        className="gencl:h-full gencl:w-full"
+        className="gencl:h-full! gencl:w-full"
         alt={undefined}
         {...restProps}
       />
