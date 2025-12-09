@@ -887,8 +887,10 @@ export class GenuinSDK {
             value ?? configByUser?.start_video_slug
           break
         case 'data-start-video-slug':
-          answerToReturn.startVideoSlug =
-            value ?? configByUser?.start_video_slug
+          if (value || configByUser?.start_video_slug) {
+            answerToReturn.startVideoSlug =
+              value ?? configByUser?.start_video_slug
+          }
           break
         case 'data-action':
           answerToReturn.action = (value ?? configByUser?.action) as
@@ -1098,7 +1100,6 @@ export class GenuinSDK {
     answerToReturn.params = configByUser?.params
     answerToReturn.authInfo = configByUser?.authInfo
     answerToReturn.brandContext = configByUser?.brand_context
-
     return answerToReturn
   }
 
