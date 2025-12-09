@@ -20,6 +20,7 @@ import {
   SDKEventEmitter,
   SDKEventName,
 } from "@genuin/components/lib/sdk-event-emitter";
+import { EmitAnalyticsData } from "./emit-analytics-data";
 
 type AnalyticsProviderProps = {
   children: ReactNode;
@@ -174,16 +175,33 @@ user_longitude
   }, [brandDetails, user, isWebSDK, embedData, pathname]);
 
   const emitAnalyticsEvent = useCallback(
-    (eventName: EventNameType, payload?: EventPayload) => {
-      const defaultPayload = AnalyticsService.getDefaultPayload();
-      const mergedPayload = {
-        ...(defaultPayload || {}),
-        ...(payload || {}),
+    (eventName: EventNameType, customPayload?: EventPayload) => {
+      if (
+        !EmitAnalyticsData[eventName] ||
+        !EmitAnalyticsData[eventName].canFire
+      )
+        return;
+      const basePayload = AnalyticsService.getDefaultPayload();
+
+      const combinedPayload: EventPayload = {
+        ...(basePayload || {}),
+        ...(customPayload || {}),
       };
 
+      const allowedKeys: (keyof EventPayload)[] | undefined =
+        EmitAnalyticsData[eventName].allowed_keys;
+
+      const filteredPayload =
+        allowedKeys && allowedKeys.length > 0
+          ? allowedKeys.reduce((result, payloadKey) => {
+              result[payloadKey] = combinedPayload[payloadKey];
+              return result;
+            }, {} as EventPayload)
+          : combinedPayload;
+
       SDKEventEmitter.emit(SDKEventName.ANALYTICS, {
-        eventName,
-        eventPayload: mergedPayload,
+        eventName: `analytics:${eventName}`,
+        eventPayload: filteredPayload,
       });
     },
     []
