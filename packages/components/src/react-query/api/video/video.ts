@@ -42,14 +42,17 @@ export async function fetchVideoDetails(
 
     const response = await axiosInstance.get(API_PATHS.VIDEO_DETAILS, {
       params,
-      // If videoIds are provided, serialize them as multiple uuid parameters
+      // If videoIds are provided, serialize them as multiple uuid/slug parameters
       paramsSerializer:
         videoIds && videoIds.length > 0
           ? {
               serialize: () => {
                 const searchParams = new URLSearchParams();
-                // Add videoIds as multiple uuid parameters
-                videoIds.forEach((id) => searchParams.append("uuid", id));
+                // Add videoIds as multiple uuid or slug parameters based on format
+                videoIds.forEach((id) => {
+                  const paramName = isUuid(id) ? "uuid" : "slug";
+                  searchParams.append(paramName, id);
+                });
                 // Add other params
                 if (embedId) searchParams.append("embed_id", embedId);
                 return searchParams.toString();
