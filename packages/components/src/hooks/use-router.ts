@@ -21,7 +21,7 @@ export function useRouter() {
 
   return useRouter
     ? { ...useRouter(), canGoBack: () => true }
-    : (() => useWouterRouter(embedContext?.embedRouter))();
+    : useWouterRouter(embedContext?.embedRouter);
 }
 
 function useWouterRouter(

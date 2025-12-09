@@ -67,7 +67,10 @@ export function TopBar({
     </div>
   );
 
-  if (layoutConfig.showBackAndCloseButton) {
+  if (
+    (layoutConfig.showBackAndCloseButton && router.canGoBack()) ||
+    layoutConfig.showCloseButton
+  ) {
     const buttonTheme = isMobile
       ? theme === "dark"
         ? "overlay"
@@ -118,12 +121,14 @@ export function TopBar({
     );
   }
 
-  return (
-    <div
-      className={cn(className, topbarVariants({ theme, variant }))}
-      {...restProps}
-    >
-      {navBarItems}
-    </div>
-  );
+  if (layoutConfig.showNavigationBar) {
+    return (
+      <div
+        className={cn(className, topbarVariants({ theme, variant }))}
+        {...restProps}
+      >
+        {navBarItems}
+      </div>
+    );
+  }
 }
