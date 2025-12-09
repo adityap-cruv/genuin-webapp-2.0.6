@@ -109,7 +109,7 @@ export function SwiperImplementation({
         nextSlideMessage: "Next Highlight. Playing",
         scrollOnFocus: true,
       }}
-      followFinger={false}
+      followFinger
       {...restProps}
     >
       {children}
