@@ -185,22 +185,22 @@ export const EmitAnalyticsData: EmitAnalyticsDataType = {
     description: "",
   },
   [EventName.EMBED_MAXIMIZED]: {
-    canFire: false,
+    canFire: true,
     allowed_keys: [...commonAllowedKeys],
     description: "",
   },
   [EventName.EMBED_MINIMIZED]: {
-    canFire: false,
+    canFire: true,
     allowed_keys: [...commonAllowedKeys],
     description: "",
   },
   [EventName.PLACEMENT_MAXIMIZED]: {
-    canFire: false,
+    canFire: true,
     allowed_keys: [...commonAllowedKeys],
     description: "",
   },
   [EventName.PLACEMENT_MINIMIZED]: {
-    canFire: false,
+    canFire: true,
     allowed_keys: [...commonAllowedKeys],
     description: "",
   },
