@@ -21,6 +21,9 @@ export function isSlideVisible(
     (swiper.params.slidesPerView as number) || 1
   );
 
+  // Check if virtualization is enabled
+  const isVirtualEnabled = swiper.params.virtual && swiper.virtual;
+
   // Calculate first visible index based on slide centering mode, in case of centered slides true activeIndex moves forward with 1 slide.
   // - Normal mode: activeIndex is the first visible slide (leftmost)
   // - Centered mode: activeIndex is the center slide, so first visible is one before
@@ -31,7 +34,16 @@ export function isSlideVisible(
   // Calculate last visible index based on slide centering mode
   const lastVisibleIndex = firstVisibleIndex + slidesPerView - 1;
 
-  return targetIndex >= firstVisibleIndex && targetIndex <= lastVisibleIndex;
+  // Get total slides count - use virtual slides length when virtualization is enabled
+  const totalSlides = isVirtualEnabled
+    ? (swiper.virtual?.slides?.length ?? swiper.slides?.length ?? 0)
+    : (swiper.slides?.length ?? 0);
+
+  // Clamp indices to valid range
+  const clampedFirst = Math.max(0, firstVisibleIndex);
+  const clampedLast = Math.min(totalSlides - 1, lastVisibleIndex);
+
+  return targetIndex >= clampedFirst && targetIndex <= clampedLast;
 }
 
 /**
@@ -46,11 +58,21 @@ export function getNavigationAction(
   currentActiveIndex: number,
   direction: "next" | "prev"
 ): { shouldSlide: boolean; targetIndex: number } {
-  if (!swiper || !swiper.slides || !swiper.params) {
+  if (!swiper || !swiper.params) {
     return { shouldSlide: false, targetIndex: currentActiveIndex };
   }
 
-  const totalSlides = swiper.slides.length;
+  // Check if virtualization is enabled
+  const isVirtualEnabled = swiper.params.virtual && swiper.virtual;
+
+  // When virtualization is enabled, use virtual.slides.length for total count
+  const totalSlides = isVirtualEnabled
+    ? (swiper.virtual?.slides?.length ?? 0)
+    : (swiper.slides?.length ?? 0);
+
+  if (totalSlides === 0) {
+    return { shouldSlide: false, targetIndex: currentActiveIndex };
+  }
   const targetIndex =
     direction === "next" ? currentActiveIndex + 1 : currentActiveIndex - 1;
 
@@ -92,12 +114,23 @@ export function getVisibleSlideRange(swiper: SwiperType): {
   first: number;
   last: number;
 } {
-  if (!swiper || !swiper.slides || !swiper.params) return { first: 0, last: 0 };
+  if (!swiper || !swiper.params) return { first: 0, last: 0 };
+
+  // Check if virtualization is enabled
+  const isVirtualEnabled = swiper.params.virtual && swiper.virtual;
+
+  // When virtualization is enabled, swiper.slides only contains rendered DOM elements
+  // Use virtual.slides.length for the total count
+  const totalSlides = isVirtualEnabled
+    ? (swiper.virtual?.slides?.length ?? 0)
+    : (swiper.slides?.length ?? 0);
+
+  if (totalSlides === 0) return { first: 0, last: 0 };
 
   // Default to 1 if slidesPerView is undefined
   const slidesPerView = (swiper.params.slidesPerView as number) || 1;
   const first = swiper.activeIndex;
-  const last = Math.min(first + slidesPerView - 1, swiper.slides.length - 1);
+  const last = Math.min(first + slidesPerView - 1, totalSlides - 1);
 
   return { first, last };
 }
@@ -114,7 +147,18 @@ export function getNewActiveIndexOnSlideChange(
   currentActiveIndex: number,
   previousVisibleRange: { first: number; last: number }
 ): number {
-  if (!swiper || !swiper.params || !swiper.slides) return 0;
+  if (!swiper || !swiper.params) return 0;
+
+  // Check if virtualization is enabled
+  const isVirtualEnabled = swiper.params.virtual && swiper.virtual;
+
+  // When virtualization is enabled, swiper.slides only contains rendered DOM elements
+  // We need to check virtual.slides for the full list
+  const hasSlides = isVirtualEnabled
+    ? (swiper.virtual?.slides?.length ?? 0) > 0
+    : (swiper.slides?.length ?? 0) > 0;
+
+  if (!hasSlides) return 0;
 
   const newRange = getVisibleSlideRange(swiper);
 
