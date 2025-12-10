@@ -232,17 +232,17 @@ export function EmbedExpandView({
      *
      * This ensures that any custom styles related to scrolling or overflow applied to the `<html>` element are preserved and restored after the expand view is closed.
      */
-    const htmlElement = document.querySelector("html");
-    if (!htmlElement) return;
+    // const htmlElement = document.querySelector("html");
+    // if (!htmlElement) return;
 
-    // Check if there's an inline style first
-    const hasInlineStyle = htmlElement.style.overflow !== "";
-    const originalOverflow = hasInlineStyle
-      ? htmlElement.style.overflow
-      : getComputedStyle(htmlElement).overflow;
-    const originalPriority = hasInlineStyle
-      ? htmlElement.style.getPropertyPriority("overflow")
-      : ""; // Computed styles don't have priority info
+    // // Check if there's an inline style first
+    // const hasInlineStyle = htmlElement.style.overflow !== "";
+    // const originalOverflow = hasInlineStyle
+    //   ? htmlElement.style.overflow
+    //   : getComputedStyle(htmlElement).overflow;
+    // const originalPriority = hasInlineStyle
+    //   ? htmlElement.style.getPropertyPriority("overflow")
+    //   : ""; // Computed styles don't have priority info
 
     if (showExpandView) {
       /**
@@ -259,29 +259,29 @@ export function EmbedExpandView({
        * @fires SDKEventEmitter.emit(SDKEventName.EXPAND_VIEW_LOADED, true) when expand view is loaded.
        */
       SDKEventEmitter.emit(SDKEventName.EXPAND_VIEW_CHANGED, true);
-      htmlElement.style.setProperty("overflow", "hidden", "important");
+      // htmlElement.style.setProperty("overflow", "hidden", "important");
     } else {
-      htmlElement.style.setProperty(
-        "overflow",
-        originalOverflow,
-        originalPriority
-      );
+      // htmlElement.style.setProperty(
+      //   "overflow",
+      //   originalOverflow,
+      //   originalPriority
+      // );
     }
 
     return () => {
       if (showExpandView) {
         SDKEventEmitter.emit(SDKEventName.EXPAND_VIEW_CHANGED, false);
       }
-      if (hasInlineStyle) {
-        htmlElement.style.setProperty(
-          "overflow",
-          originalOverflow,
-          originalPriority
-        );
-      } else {
-        // Remove inline style to let CSS cascade take over
-        htmlElement.style.removeProperty("overflow");
-      }
+      // if (hasInlineStyle) {
+      //   htmlElement.style.setProperty(
+      //     "overflow",
+      //     originalOverflow,
+      //     originalPriority
+      //   );
+      // } else {
+      //   // Remove inline style to let CSS cascade take over
+      //   htmlElement.style.removeProperty("overflow");
+      // }
     };
   }, [showExpandView]);
 
