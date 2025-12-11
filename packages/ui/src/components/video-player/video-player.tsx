@@ -644,6 +644,60 @@ export const VideoPlayer = memo(function VideoPlayer({
     }
   }, []);
 
+  useEffect(() => {
+    return () => {
+      // // Cleanup on unmount or src change
+      // if (playerRef.current) {
+      //   try {
+      //     // Clean up ads if any
+      //     if (adUrl) {
+      //       const ad = playerRef.current.getAd?.();
+      //       if (ad) {
+      //         const adsManager = ad.getAdsManager?.() as any;
+      //         if (adsManager && typeof adsManager.stop === "function") {
+      //           adsManager.stop();
+      //         }
+      //         if (typeof ad.destroy === "function") {
+      //           ad.destroy();
+      //         }
+      //       }
+      //     }
+
+      //     // Destroy the player
+      //     if (typeof playerRef.current.destroy === "function") {
+      //       playerRef.current.destroy();
+      //     }
+      //   } catch (error) {
+      //     console.warn("Error cleaning up player:", error);
+      //   }
+      // }
+
+      playerStateRef.current = {
+        firstQuartileFired: false,
+        midpointFired: false,
+        thirdQuartileFired: false,
+        videoWatchedFired: false,
+        videoStartFired: false,
+        shouldPlay: false,
+        isAdErrored: false, // Reset ad error state on cleanup
+      };
+
+      // Reset ad tracking
+      adInfoRef.current = {
+        isPlaying: false,
+        currentIndex: 0,
+        totalAds: 0,
+        ctaInfo: null,
+        allCompleted: false,
+      };
+
+      changePlayerStateRef(true);
+
+      isPlayerInitialized.current = false;
+      playerRef.current = null;
+    };
+  }, [src]);
+
   // Lazy initialization: Initialize player based on enableLazyLoading prop
   useEffect(() => {
     if (!videoRef.current) return;
@@ -704,60 +758,6 @@ export const VideoPlayer = memo(function VideoPlayer({
     adUrl,
     initializePlayer,
   ]);
-
-  useEffect(() => {
-    return () => {
-      // Cleanup on unmount or src change
-      if (playerRef.current) {
-        try {
-          // Clean up ads if any
-          if (adUrl) {
-            const ad = playerRef.current.getAd?.();
-            if (ad) {
-              const adsManager = ad.getAdsManager?.() as any;
-              if (adsManager && typeof adsManager.stop === "function") {
-                adsManager.stop();
-              }
-              if (typeof ad.destroy === "function") {
-                ad.destroy();
-              }
-            }
-          }
-
-          // Destroy the player
-          if (typeof playerRef.current.destroy === "function") {
-            playerRef.current.destroy();
-          }
-        } catch (error) {
-          console.warn("Error cleaning up player:", error);
-        }
-      }
-
-      playerStateRef.current = {
-        firstQuartileFired: false,
-        midpointFired: false,
-        thirdQuartileFired: false,
-        videoWatchedFired: false,
-        videoStartFired: false,
-        shouldPlay: false,
-        isAdErrored: false, // Reset ad error state on cleanup
-      };
-
-      // Reset ad tracking
-      adInfoRef.current = {
-        isPlaying: false,
-        currentIndex: 0,
-        totalAds: 0,
-        ctaInfo: null,
-        allCompleted: false,
-      };
-
-      changePlayerStateRef(true);
-
-      isPlayerInitialized.current = false;
-      playerRef.current = null;
-    };
-  }, [src]);
 
   useEffect(() => {
     const videoElement = videoRef.current;
