@@ -150,7 +150,7 @@ export const EmitAnalyticsData: EmitAnalyticsDataType = {
     description: "",
   },
   [EventName.VIDEO_MIDPOINT]: {
-    canFire: false,
+    canFire: true,
     allowed_keys: [...commonAllowedKeys],
     description: "",
   },
