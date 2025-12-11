@@ -792,6 +792,9 @@ export class GenuinSDK {
       'data-url',
       'data-page-context',
       'data-brand-ids',
+      /**
+       * @deprecated use data-video-ids instead
+       */
       'data-video-id',
       'data-action',
       'data-previous-page-context',
@@ -812,6 +815,7 @@ export class GenuinSDK {
       'data-embed-style',
       'data-video-ids',
       'data-start-video-slug',
+      'data-initial-video-ids',
     ] as const
 
     // Extract core configuration attributes from the HTML element
@@ -1089,6 +1093,14 @@ export class GenuinSDK {
             answerToReturn.videoIds = value.split(',')
           } else {
             answerToReturn.videoIds = configByUser?.video_ids?.split(',')
+          }
+          break
+        case 'data-initial-video-ids':
+          if (value) {
+            answerToReturn.initialVideoIds = value.split(',')
+          } else {
+            answerToReturn.initialVideoIds =
+              configByUser?.initial_video_ids?.split(',')
           }
           break
         default:

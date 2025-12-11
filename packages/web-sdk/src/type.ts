@@ -71,6 +71,7 @@ export type ConfigByUser = {
   theme?: 'dark' | 'light'
   website_type?: 'legacy' | 'polaris'
   video_ids?: string
+  initial_video_ids?: string
 }
 
 export type UpdateConfigByUserType = {
@@ -124,4 +125,5 @@ export type SingleEmbedDataConfig = {
   websiteType?: 'legacy' | 'polaris'
   embedStyle: 'expand_only'
   videoIds: string[]
+  initialVideoIds: string[]
 }

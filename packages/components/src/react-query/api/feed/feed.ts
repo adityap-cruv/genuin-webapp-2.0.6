@@ -293,6 +293,7 @@ type UseFeedOptionsType = {
   }>;
   videoIds?: string[];
   isSingleVideo?: boolean;
+  initialVideoIds?: string[];
 };
 
 /**
@@ -402,11 +403,54 @@ async function prependVideoToFeed(
 }
 
 /**
+ * Fetches and prepends initial videos to the feed.
+ * Used when initialVideoIds are provided to ensure those videos appear first.
+ *
+ * @param feedData - Existing feed data to prepend to
+ * @param initialVideoIds - Array of video IDs to fetch and prepend
+ * @param options - Feed options for video fetching
+ * @returns Updated feed page with the initial videos prepended
+ */
+async function prependInitialVideosToFeed(
+  feedData: FeedPage,
+  initialVideoIds: string[],
+  options?: UseFeedOptionsType
+): Promise<FeedPage> {
+  try {
+    const videoDetails = await fetchVideoDetails(
+      "",
+      options?.embedId,
+      options?.placementId,
+      options?.shouldShowMiddlewareOverlay,
+      options?.brandContext,
+      initialVideoIds
+    );
+
+    // Filter out any videos that are already in the feed to avoid duplicates
+    const existingVideoIds = new Set(
+      feedData.feed.map((item) => item.video.id)
+    );
+    const uniqueInitialVideos = videoDetails.filter(
+      (video) => !existingVideoIds.has(video.video.id)
+    );
+
+    return {
+      ...feedData,
+      feed: [...uniqueInitialVideos, ...feedData.feed],
+    };
+  } catch (error) {
+    console.error("Failed to fetch initial video details:", error);
+    return feedData;
+  }
+}
+
+/**
  * Main query function for fetching feed data.
- * Handles three scenarios:
+ * Handles four scenarios:
  * 1. Fetching specific videos by IDs
  * 2. Fetching a single video (isSingleVideo mode)
  * 3. Fetching the regular feed with optional video prepending
+ * 4. Prepending initial videos when initialVideoIds are provided
  *
  * @param feedType - Type of feed to fetch
  * @param pageParam - Pagination parameters
@@ -420,6 +464,8 @@ async function createFeedQueryFn(
 ): Promise<FeedPage> {
   const startVideoSlug = options?.startVideoSlug;
   const hasVideoIds = options?.videoIds && options.videoIds.length > 0;
+  const hasInitialVideoIds =
+    options?.initialVideoIds && options.initialVideoIds.length > 0;
 
   // Scenario 1: Fetch specific videos by their IDs
   if (hasVideoIds) {
@@ -428,7 +474,7 @@ async function createFeedQueryFn(
 
   // Scenario 2: Single video mode - start with empty feed
   // Scenario 3: Regular feed - fetch from API
-  const feedData = options?.isSingleVideo
+  let feedData = options?.isSingleVideo
     ? createEmptyFeedPage()
     : await fetchFeed(feedType, pageParam, options);
 
@@ -440,7 +486,32 @@ async function createFeedQueryFn(
     (!isVideoInFeed(feedData.feed, startVideoSlug) || options?.isSingleVideo);
 
   if (shouldPrependVideo) {
-    return prependVideoToFeed(feedData, startVideoSlug, options);
+    feedData = await prependVideoToFeed(feedData, startVideoSlug, options);
+  }
+
+  // Scenario 4: Prepend initial videos if initialVideoIds are provided (first page only)
+  if (isFirstPage && hasInitialVideoIds) {
+    feedData = await prependInitialVideosToFeed(
+      feedData,
+      options!.initialVideoIds!,
+      options
+    );
+  }
+
+  // Filter out initial videos and startVideoSlug from subsequent pages to avoid duplicates
+  if (!isFirstPage && (hasInitialVideoIds || startVideoSlug)) {
+    const idsToFilter = new Set<string>(options?.initialVideoIds ?? []);
+    if (startVideoSlug) {
+      idsToFilter.add(startVideoSlug);
+    }
+
+    feedData = {
+      ...feedData,
+      feed: feedData.feed.filter(
+        (item) =>
+          !idsToFilter.has(item.video.id) && !idsToFilter.has(item.video.slug)
+      ),
+    };
   }
 
   return feedData;

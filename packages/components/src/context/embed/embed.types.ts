@@ -477,6 +477,10 @@ export type EmbedDataType = {
    */
   videoIds?: string[];
   /**
+   * Initial video ids to load in the embed view.
+   */
+  initialVideoIds?: string[];
+  /**
    * The ID of the comment to focus on when the embed is loaded.
    */
   commentId?: string;
@@ -484,7 +488,7 @@ export type EmbedDataType = {
    * The ID of the iHeart station or podcast to follow for auto-follow actions.
    */
   followId?: string;
-  /**
+  /*
    * The type of follow target (station or podcast) for auto-follow actions.
    */
   followType?: "station" | "podcast";
@@ -547,13 +551,13 @@ export type EmbedDataType = {
   show_style_details?: boolean;
   social_metrics?: "views";
   brand_context?: Array<{
-    id: string
-    type: string
-    isFollowed?: boolean
-    activePlayingId?: string | number | undefined
-    activePlayingType?: 'episode' | 'live' | 'station' | 'podcast'
-    isPlaying?: boolean,
-    episodeId?: string | undefined
+    id: string;
+    type: string;
+    isFollowed?: boolean;
+    activePlayingId?: string | number | undefined;
+    activePlayingType?: "episode" | "live" | "station" | "podcast";
+    isPlaying?: boolean;
+    episodeId?: string | undefined;
   }>;
   websiteType?: "polaris" | "legacy" | undefined;
 };

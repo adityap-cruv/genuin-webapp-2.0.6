@@ -200,6 +200,7 @@ export function Embed({
       type,
     })),
     videoIds: embedData.videoIds,
+    initialVideoIds: embedData.initialVideoIds,
   };
 
   const {
