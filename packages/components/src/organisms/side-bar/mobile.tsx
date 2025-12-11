@@ -51,7 +51,7 @@ export function MobileSidebar({
         <div className="gencl:py-5 gencl:px-4 gencl:flex gencl:justify-between gencl:items-center gencl:bg-secondary-50">
           <BrandLogo
             logoType="brand_web_logo"
-            className="gencl:max-w-40 gencl:h-7 gencl:sm:w-full!"
+            className="gencl:max-w-40 gencl:h-7! gencl:sm:w-full!"
             onClick={handleCloseSheet}
           />
           <SheetClose ref={closeButtonRef}>
