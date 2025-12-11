@@ -120,7 +120,7 @@ export function Default({
           break;
       }
     },
-    [muted]
+    [muted, togglePlay, toggleMuted]
   );
 
   switch (brandLayoutType) {

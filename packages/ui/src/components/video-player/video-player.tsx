@@ -12,6 +12,7 @@ import {
 
 import { cn, encodeVideoSourceUrl } from "@genuin/ui/lib/utils";
 import { useBrowserDetect } from "@genuin/ui/hooks";
+import { Loader } from "@genuin/ui/loader";
 
 const hlsConfigs = {
   // debug: true,
@@ -106,6 +107,8 @@ export type PlayerProps = ComponentProps<"video"> & {
     latency: number
   ) => void; // Add onVideoStart prop
   onMutedChange?: (muted: boolean) => void;
+  onVideoLoadStart?: (isPlaying: boolean) => void; // Callback when video loading starts
+  onVideoLoadEnd?: (isPlaying: boolean) => void; // Callback when video loading ends
 };
 
 type VideoPlayerStateRef = {
@@ -156,6 +159,8 @@ export const VideoPlayer = memo(function VideoPlayer({
   onAllAdsCompleted,
   onSeeked,
   onMutedChange,
+  onVideoLoadStart,
+  onVideoLoadEnd,
   ...props
 }: PlayerProps) {
   const internalVideoRef = useRef<HTMLVideoElement>(null);
@@ -166,6 +171,7 @@ export const VideoPlayer = memo(function VideoPlayer({
   const playerRef = useRef<OpenPlayerJS | null>(null);
   const isPlayerInitialized = useRef(false); // Track if player has been initialized
   const [adStarted, setAdStarted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { isSafari } = useBrowserDetect();
   // Using refs for ad tracking (no UI updates needed)
   const adInfoRef = useRef<{
@@ -195,6 +201,24 @@ export const VideoPlayer = memo(function VideoPlayer({
     videoStartFired: false,
     isAdErrored: false,
   });
+
+  // Centralized loading state handler that triggers callbacks
+  const updateLoadingState = useCallback(
+    (loading: boolean, isPlaying: boolean) => {
+      setIsLoading((prevLoading) => {
+        // Only trigger callbacks when state actually changes
+        if (prevLoading !== loading) {
+          if (loading) {
+            onVideoLoadStart?.(isPlaying);
+          } else {
+            onVideoLoadEnd?.(isPlaying);
+          }
+        }
+        return loading;
+      });
+    },
+    [onVideoLoadStart, onVideoLoadEnd]
+  );
 
   useEffect(() => {
     if (typeof volume === "undefined") return;
@@ -317,6 +341,8 @@ export const VideoPlayer = memo(function VideoPlayer({
               (e: any) => {
                 try {
                   setAdStarted(true);
+                  // Clear loading state when ad starts playing (ad is now playing)
+                  updateLoadingState(false, true);
 
                   // Track ad info in ref (no UI updates)
                   adInfoRef.current.totalAds =
@@ -706,8 +732,10 @@ export const VideoPlayer = memo(function VideoPlayer({
     if (isPlayerInitialized.current) {
       playerStateRef.current.shouldPlay = play;
       if (play) {
+        updateLoadingState(true, true);
         playThePlayer();
       } else {
+        updateLoadingState(false, false);
         pauseThePlayer();
       }
       return;
@@ -742,6 +770,11 @@ export const VideoPlayer = memo(function VideoPlayer({
     isPlayerInitialized.current = true;
     playerStateRef.current.shouldPlay = play;
 
+    // Set loading state if play is requested during initialization
+    if (play) {
+      updateLoadingState(true, true);
+    }
+
     void initializePlayer(player, play);
 
     // Reset videoStartFired when player initializes (new video)
@@ -757,6 +790,7 @@ export const VideoPlayer = memo(function VideoPlayer({
     startTime,
     adUrl,
     initializePlayer,
+    updateLoadingState,
   ]);
 
   useEffect(() => {
@@ -768,6 +802,9 @@ export const VideoPlayer = memo(function VideoPlayer({
     };
 
     const handlePlaying = () => {
+      // Clear loading state when video actually starts playing
+      updateLoadingState(false, true);
+
       if (!playerStateRef.current.videoStartFired) {
         playerStateRef.current.videoStartFired = true;
         const endTime = performance.now();
@@ -788,7 +825,7 @@ export const VideoPlayer = memo(function VideoPlayer({
       videoElement.removeEventListener("play", handlePlay);
       videoElement.removeEventListener("ended", handleEnded);
     };
-  }, [onVideoStart, src]);
+  }, [onVideoStart, src, updateLoadingState]);
 
   const changePlayerStateRef = useCallback(
     (isReset: boolean, duration?: number, currentTime?: number) => {
@@ -905,24 +942,37 @@ export const VideoPlayer = memo(function VideoPlayer({
   );
 
   return (
-    <video
-      id={id}
-      className={cn(
-        "gencl:h-auto gencl:w-auto gencl:bg-center gencl:bg-no-repeat gencl:object-cover gencl:bg-cover",
-        className
+    <div className="gencl:relative gencl:h-full gencl:w-full">
+      <video
+        id={id}
+        className={cn(
+          "gencl:h-auto gencl:w-auto gencl:bg-center gencl:bg-no-repeat gencl:object-cover gencl:bg-cover",
+          className
+        )}
+        style={{
+          backgroundImage: `url(${poster})`,
+          ...style,
+        }}
+        // poster={poster}
+        ref={videoRef}
+        preload="none"
+        onSeeked={onVideoSeeked}
+        src={encodeVideoSourceUrl(src ?? "")}
+        playsInline={playsInline}
+        loop={loop}
+        {...props}
+      />
+      {isLoading && (
+        <div
+          role="status"
+          aria-label="Loading video"
+          className="gencl:absolute gencl:inset-0 gencl:flex gencl:items-center gencl:justify-center gencl:pointer-events-none"
+        >
+          <div className="gencl:rounded-full gencl:bg-black/40 gencl:p-3 gencl:backdrop-blur-sm">
+            <Loader size="md" aria-hidden="true" />
+          </div>
+        </div>
       )}
-      style={{
-        backgroundImage: `url(${poster})`,
-        ...style,
-      }}
-      // poster={poster}
-      ref={videoRef}
-      preload="none"
-      onSeeked={onVideoSeeked}
-      src={encodeVideoSourceUrl(src ?? "")}
-      playsInline={playsInline}
-      loop={loop}
-      {...props}
-    />
+    </div>
   );
 });

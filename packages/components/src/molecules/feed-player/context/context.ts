@@ -121,6 +121,10 @@ export type PlayerContextType = {
    * Index position of video in feed.
    */
   positionIndex?: number;
+  /**
+   * To update is loading state of the video
+   */
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 } & ExpandViewProps;
 
 export const PlayerContext = createContext<PlayerContextType | null>(null);

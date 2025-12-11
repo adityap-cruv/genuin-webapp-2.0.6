@@ -123,6 +123,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   } = useEmbedConfigs();
   // For iHeart brand layout, use shared state from BaseContext
   const isIHeartLayout = brandLayoutType === "iheart";
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const playerRef = useRef<OpenPlayerJS | null>(null);
   /**
@@ -808,6 +809,8 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
    */
   const togglePlay = useCallback(
     (byUser: boolean) => {
+      // If the player is still loading, ignore toggle requests.
+      if (isLoading) return;
       if (byUser && video.videoShouldPreview && typeof index === "number") {
         disablePreviewMode();
       }
@@ -939,6 +942,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       index,
       baseAnalyticsData,
       feedPlayerShouldPlay,
+      isLoading,
     ]
   );
 
@@ -955,6 +959,8 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   // play: Sets the feed player to play state.
   const play = useCallback(
     (byUser: boolean, seekTime: number = 0) => {
+      // If the player is still loading, ignore play requests.
+      if (isLoading) return;
       if (seekTime && playerRef.current) {
         playerRef.current.getMedia().currentTime = seekTime;
       }
@@ -969,12 +975,20 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         });
       }
     },
-    [track, EventName.VIDEO_PLAY, baseAnalyticsData, baseContextManager]
+    [
+      track,
+      EventName.VIDEO_PLAY,
+      baseAnalyticsData,
+      baseContextManager,
+      isLoading,
+    ]
   );
 
   // pause: Sets the feed player to pause state.
   const pause = useCallback(
     (byUser: boolean) => {
+      // If the player is still loading, ignore pause requests.
+      if (isLoading) return;
       setFeedPlayerShouldPlay(false);
       if (byUser) {
         baseContextManager.setPlayPauseTracker({ isPlaying: false });
@@ -992,6 +1006,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       baseContextManager,
       track,
       baseAnalyticsData,
+      isLoading,
     ]
   );
 
@@ -1252,6 +1267,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     updateAdInfo,
     positionIndex: index,
     totalVideos,
+    setIsLoading,
   };
 
   return (

@@ -72,6 +72,7 @@ export const FeedPlayer = memo(function FeedPlayer({
     updateAdInfo,
     totalVideos,
     positionIndex,
+    setIsLoading,
   } = usePlayerContext();
   const { track, EventName } = useAnalytics();
   const id = useId();
@@ -352,6 +353,16 @@ export const FeedPlayer = memo(function FeedPlayer({
     console.log("Ad clicked", event);
   }, []);
 
+  // Handle video load start - set playing state to LOADING
+  const handleVideoLoadStart = useCallback(() => {
+    setIsLoading(true);
+  }, [setIsLoading]);
+
+  // Handle video load end - playing state will be updated by onPlay/onPause handlers
+  const handleVideoLoadEnd = useCallback(() => {
+    setIsLoading(false);
+  }, [setIsLoading]);
+
   // If the videoid is registered already start it with that start tiime.
   const startTime = useMemo(
     () => baseContextManager.getTimeInfo(videoId).currentTime,
@@ -389,6 +400,8 @@ export const FeedPlayer = memo(function FeedPlayer({
       onAdError={handleAdError}
       onAdClicked={handleAdClicked}
       onMutedChange={handleMutedChange}
+      onVideoLoadStart={handleVideoLoadStart}
+      onVideoLoadEnd={handleVideoLoadEnd}
       {...props}
     />
   );
