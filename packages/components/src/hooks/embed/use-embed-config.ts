@@ -55,7 +55,7 @@ export function useEmbedConfigs() {
     return {
       embedStyle: embedData?.style,
       isFeed: embedData?.style === "feed",
-      isExpandOnly: embedData?.style === "expand_only",
+      isExpandOnly: embedData?.style === "expand_only" || embedData?.expandOnLoad,
       isCarousel: embedData?.style === "carousel",
       isStandardWall: embedData?.style === "standard_wall",
       isGrid: embedData?.style === "grid",
@@ -403,7 +403,8 @@ export function useEmbedConfigs() {
         embedContextData.embedData?.style === "carousel" ||
         embedContextData.embedData?.style === "feed" ||
         embedContextData.embedData?.style === "grid" ||
-        embedContextData.embedData?.style === "expand_only",
+        embedContextData.embedData?.style === "expand_only" ||
+        embedContextData.embedData?.expandOnLoad === true,
     };
   }, [
     embedContextData.embedData?.style,

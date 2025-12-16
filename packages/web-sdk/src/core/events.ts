@@ -16,6 +16,8 @@ export enum SDKEventType {
   SDK_EMBED_ERROR = 'sdk:error',
   SDK_EMBED_NO_CONTENT = 'sdk:noContent',
   SDK_EXPAND_VIEW_CHANGED = 'onExpandViewChanged',
+  SDK_EXPAND_EMBED = 'sdk:expandEmbed',
+  SDK_COLLAPSE_EMBED = 'sdk:collapseEmbed',
 }
 
 export interface SDKEvent {

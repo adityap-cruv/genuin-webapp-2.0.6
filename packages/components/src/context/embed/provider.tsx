@@ -65,7 +65,9 @@ export function EmbedProvider({
     () =>
       createEmbedEventBus({
         activePlayerType:
-          embedData.style === "expand_only" ? "expand-view" : "embed",
+          embedData.style === "expand_only" || embedData.expandOnLoad
+            ? "expand-view"
+            : "embed",
         activeIndex: 0,
         previousActiveIndex: -1,
         sectionList: [],
@@ -97,8 +99,9 @@ export function EmbedProvider({
       const payload = props.payload;
       if (
         payload &&
-        (payload.embedId === stateEmbedData.embed_id ||
-          payload.placementId === stateEmbedData.placement_id) &&
+        ((payload.embedId && payload.embedId === stateEmbedData.embed_id) ||
+          (payload.placementId &&
+            payload.placementId === stateEmbedData.placement_id)) &&
         payload.contextualParams
       ) {
         setStateEmbedData((prev) => ({
@@ -112,8 +115,9 @@ export function EmbedProvider({
       const payload = props.payload;
       if (
         payload &&
-        (payload.embedId === stateEmbedData.embed_id ||
-          payload.placementId === stateEmbedData.placement_id) &&
+        ((payload.embedId && payload.embedId === stateEmbedData.embed_id) ||
+          (payload.placementId &&
+            payload.placementId === stateEmbedData.placement_id)) &&
         payload.startVideoSlug
       ) {
         setStateEmbedData((prev) => ({
@@ -125,6 +129,30 @@ export function EmbedProvider({
       }
     };
 
+    const handleExpandEmbed = (props: any) => {
+      const payload = props.payload;
+      if (
+        payload &&
+        ((payload.embedId && payload.embedId === stateEmbedData.embed_id) ||
+          (payload.placementId &&
+            payload.placementId === stateEmbedData.placement_id))
+      ) {
+        changeActivePlayerType("expand-view");
+      }
+    };
+
+    const handleCollapseEmbed = (props: any) => {
+      const payload = props.payload;
+      if (
+        payload &&
+        ((payload.embedId && payload.embedId === stateEmbedData.embed_id) ||
+          (payload.placementId &&
+            payload.placementId === stateEmbedData.placement_id))
+      ) {
+        changeActivePlayerType("embed");
+      }
+    };
+
     SDKEventEmitter.on(
       SDKListenerEventName.UPDATE_CONTEXTUAL_PARAMS,
       handleUpdateContextualParams
@@ -132,6 +160,11 @@ export function EmbedProvider({
     SDKEventEmitter.on(
       SDKListenerEventName.UPDATE_START_VIDEO_SLUG,
       handleUpdateStartVideoSlug
+    );
+    SDKEventEmitter.on(SDKListenerEventName.EXPAND_EMBED, handleExpandEmbed);
+    SDKEventEmitter.on(
+      SDKListenerEventName.COLLAPSE_EMBED,
+      handleCollapseEmbed
     );
 
     return () => {
@@ -143,8 +176,13 @@ export function EmbedProvider({
         SDKListenerEventName.UPDATE_START_VIDEO_SLUG,
         handleUpdateStartVideoSlug
       );
+      SDKEventEmitter.off(SDKListenerEventName.EXPAND_EMBED, handleExpandEmbed);
+      SDKEventEmitter.off(
+        SDKListenerEventName.COLLAPSE_EMBED,
+        handleCollapseEmbed
+      );
     };
-  }, []);
+  }, [stateEmbedData]);
 
   // Notify that the embed provider is ready
   useEffect(() => {

@@ -44,6 +44,8 @@ export enum SDKListenerEventName {
   AUTHENTICATE_USER = "sdk:authenticateUser",
   UPDATE_CONTEXTUAL_PARAMS = "sdk:updateContextualParams",
   UPDATE_START_VIDEO_SLUG = "sdk:updateStartVideoSlug",
+  EXPAND_EMBED = "sdk:expandEmbed",
+  COLLAPSE_EMBED = "sdk:collapseEmbed",
   PLAYER_PLAY = "player:play",
   PLAYER_PAUSE = "player:pause",
   PLAYER_MUTE = "player:mute",

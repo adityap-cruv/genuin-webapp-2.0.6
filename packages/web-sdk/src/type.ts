@@ -124,6 +124,7 @@ export type SingleEmbedDataConfig = {
   theme?: 'dark' | 'light'
   websiteType?: 'legacy' | 'polaris'
   embedStyle: 'expand_only'
+  expandOnLoad?: boolean
   videoIds: string[]
   initialVideoIds: string[]
 }

@@ -247,6 +247,26 @@
     })
   }
 
+  /**
+   * Expand embed view
+   */
+  function expand(options) {
+    return loadSDK().then((sdk) => {
+      const GenuinClass = getSDKClass(sdk)
+      return GenuinClass.expand(options)
+    })
+  }
+
+  /**
+   * Collapse embed view
+   */
+  function collapse(options) {
+    return loadSDK().then((sdk) => {
+      const GenuinClass = getSDKClass(sdk)
+      return GenuinClass.collapse(options)
+    })
+  }
+
   // Queue for early initialization calls
   const initQueue = []
   let queueProcessed = false
@@ -356,6 +376,28 @@
 
       return new Promise((resolve, reject) => {
         initQueue.push({ method: 'emit', args, resolve, reject })
+        setTimeout(processInitQueue, 0)
+      })
+    },
+
+    expand: function (...args) {
+      if (queueProcessed) {
+        return expand(...args)
+      }
+
+      return new Promise((resolve, reject) => {
+        initQueue.push({ method: 'expand', args, resolve, reject })
+        setTimeout(processInitQueue, 0)
+      })
+    },
+
+    collapse: function (...args) {
+      if (queueProcessed) {
+        return collapse(...args)
+      }
+
+      return new Promise((resolve, reject) => {
+        initQueue.push({ method: 'collapse', args, resolve, reject })
         setTimeout(processInitQueue, 0)
       })
     },

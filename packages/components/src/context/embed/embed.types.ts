@@ -560,6 +560,7 @@ export type EmbedDataType = {
     episodeId?: string | undefined;
   }>;
   websiteType?: "polaris" | "legacy" | undefined;
+  expandOnLoad?: boolean;
 };
 
 export type CustomizationType = {

@@ -60,6 +60,8 @@ const ALLOWED_EMIT_EVENTS = [
   'player:onFollowChanged',
   'player:onMiniPlayerPlayChange',
   'sdk:themeChange',
+  // 'sdk:expandEmbed',
+  // 'sdk:collapseEmbed',
 ]
 
 export class GenuinSDK {
@@ -529,6 +531,7 @@ export class GenuinSDK {
       embedDetails.brand_context = config.brandContext
       embedDetails.autoUserInteractionToPerform = config.action
       embedDetails.commentId = config.commentId
+      embedDetails.expandOnLoad = config.expandOnLoad
       if (config.contextualParams)
         embedDetails.contextualParams = config.contextualParams
 
@@ -706,6 +709,27 @@ export class GenuinSDK {
       '[id="gen-sdk"], [id^="gen-sdk-"], .gen-sdk-class',
     )
 
+    // Check for duplicate IDs and warn the user
+    const idMap = new Map<string, number>()
+    elements.forEach((element) => {
+      const elementId = element.id
+      if (elementId) {
+        const count = idMap.get(elementId) || 0
+        idMap.set(elementId, count + 1)
+      }
+    })
+
+    // Warn about duplicate IDs
+    idMap.forEach((count, id) => {
+      if (count > 1) {
+        console.warn(
+          `[Genuin SDK Warning]: Found ${count} elements with the same ID "${id}". ` +
+            `Each embed container must have a unique ID. Please change the duplicate IDs to ensure proper initialization. ` +
+            `Example: <div id="gen-sdk-1">, <div id="gen-sdk-2">, etc.`,
+        )
+      }
+    })
+
     // Deduplicate using a Set to track element references
     const uniqueElements = new Set<HTMLElement>()
     elements.forEach((element) => {
@@ -816,6 +840,7 @@ export class GenuinSDK {
       'data-video-ids',
       'data-start-video-slug',
       'data-initial-video-ids',
+      'data-expand-on-load',
     ] as const
 
     // Extract core configuration attributes from the HTML element
@@ -1103,6 +1128,9 @@ export class GenuinSDK {
               configByUser?.initial_video_ids?.split(',')
           }
           break
+        case 'data-expand-on-load':
+          answerToReturn.expandOnLoad = value === 'true'
+          break
         default:
           break
       }
@@ -1324,6 +1352,95 @@ export class GenuinSDK {
    */
   clearErrors(): void {
     this.errorHandler.clearErrors()
+  }
+
+  /**
+   * Expands (opens) the expand view for a specific embed.
+   * @param id - The div element ID to target (required; if multiple elements with same ID exist, the first one will be used)
+   */
+  expand(id: string): void {
+    // Check if SDK is initialized
+    if (!this.isInitialized) {
+      console.error('SDK is not initialized. Please call genuin.init({}) first to use genuin.expand().')
+      return
+    }
+
+    // Validate that id is provided and not empty
+    if (!id || id.trim() === '') {
+      console.error('ID parameter is required for expand() method.')
+      return
+    }
+
+    // Find target embed based on id
+    let targetEmbedId: string | undefined
+    let targetPlacementId: string | undefined
+
+    // Find by div element ID (use first element if multiple exist)
+    const element = document.getElementById(id)
+
+    if (element) {
+      const instanceId = element.getAttribute('data-instance-id')
+      if (instanceId && this.sdkElements[instanceId]) {
+        targetEmbedId =
+          this.sdkElements[instanceId].config.embedDetails?.embed_id
+        targetPlacementId =
+          this.sdkElements[instanceId].config.embedDetails?.placement_id
+      }
+    }
+
+    if (!targetEmbedId && !targetPlacementId) {
+      console.warn('Could not find embed with id:', id)
+      return
+    }
+
+    this.eventManager.emit(SDKEventType.SDK_EXPAND_EMBED, {
+      embedId: targetEmbedId,
+      placementId: targetPlacementId,
+    })
+  }
+
+  /**
+   * Collapses (closes) the expand view for a specific embed.
+   * @param id - The div element ID to target (required; if multiple elements with same ID exist, the first one will be used)
+   */
+  collapse(id: string): void {
+    // Check if SDK is initialized
+    if (!this.isInitialized) {
+      console.error('SDK is not initialized. Please call genuin.init({}) first to use genuin.collapse().')
+      return
+    }
+
+    // Validate that id is provided and not empty
+    if (!id || id.trim() === '') {
+      console.error('ID parameter is required for collapse() method.')
+      return
+    }
+
+    // Find target embed based on id
+    let targetEmbedId: string | undefined
+    let targetPlacementId: string | undefined
+
+    // Find by div element ID (use first element if multiple exist)
+    const element = document.getElementById(id)
+    if (element) {
+      const instanceId = element.getAttribute('data-instance-id')
+      if (instanceId && this.sdkElements[instanceId]) {
+        targetEmbedId =
+          this.sdkElements[instanceId].config.embedDetails?.embed_id
+        targetPlacementId =
+          this.sdkElements[instanceId].config.embedDetails?.placement_id
+      }
+    }
+
+    if (!targetEmbedId && !targetPlacementId) {
+      console.warn('Could not find embed with id:', id)
+      return
+    }
+
+    this.eventManager.emit(SDKEventType.SDK_COLLAPSE_EMBED, {
+      embedId: targetEmbedId,
+      placementId: targetPlacementId,
+    })
   }
 
   /**

@@ -41,6 +41,8 @@ declare global {
       off?: typeof Genuin.off
       init?: (config: any) => ReturnType<typeof Genuin.newInit>
       update?: (config: any) => ReturnType<typeof Genuin.newUpdate>
+      expand?: typeof Genuin.expand
+      collapse?: typeof Genuin.collapse
       emit?: typeof Genuin.emit
       onAll?: typeof Genuin.onAll
       onInternal: typeof Genuin.onInternal
@@ -67,6 +69,8 @@ if (typeof window !== 'undefined') {
     offInternal: Genuin.offInternal.bind(Genuin),
     emitInternal: Genuin.emitInternal.bind(Genuin),
     destroy: Genuin.destroy.bind(Genuin),
+    expand: Genuin.expand.bind(Genuin),
+    collapse: Genuin.collapse.bind(Genuin),
   }
 }
 

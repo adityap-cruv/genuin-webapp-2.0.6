@@ -460,6 +460,7 @@ export function Embed({
     activeIndex,
     videos,
   });
+
   if (config.view.isExpandOnly) {
     return (
       <EmbedExpandView
