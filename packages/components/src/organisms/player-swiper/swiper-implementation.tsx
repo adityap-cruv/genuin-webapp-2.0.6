@@ -1,10 +1,11 @@
-import { Mousewheel, Keyboard } from "swiper/modules";
+import { Mousewheel, Keyboard, Virtual } from "swiper/modules";
 import { Swiper } from "swiper/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
 import { useFeedVideoSizeBox } from "@genuin/components/hooks/use-feed-video-size-box";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { ComponentProps } from "react";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { dialogManager } from "@genuin/ui/lib/dialog-manager/dialog-manager";
@@ -42,6 +43,7 @@ export function SwiperImplementation({
   const { showExpandView } = useFeedContext();
   const { isWindows } = useDeviceDetection();
   const { isMobile } = useDeviceDetectMediaQuery();
+  const { virtualizeSwiper } = useEmbedConfigs();
 
   // const swiperHeight = showExpandView ? "100%" : isMobile ? "100%" : height;
   const defaultSpaceBetween = showExpandView || isMobile ? 0 : 16;
@@ -55,6 +57,12 @@ export function SwiperImplementation({
   const [modalOpen, setModalOpen] = useState(
     dialogManager.getRegisteredDialogs().length > 0
   );
+
+  const modules = useMemo(() => {
+    const baseModules = [Mousewheel, Keyboard];
+    if (virtualizeSwiper) baseModules.push(Virtual);
+    return baseModules;
+  }, [virtualizeSwiper]);
 
   useEffect(() => {
     // Subscribe to modal open/close changes and update swiper controls
@@ -87,7 +95,17 @@ export function SwiperImplementation({
       direction={direction}
       slidesPerView={swiperSlidesPerView}
       speed={CONFIG.SCROLL_DELAY}
-      modules={[Mousewheel, Keyboard]}
+      modules={modules}
+      virtual={
+        virtualizeSwiper
+          ? {
+              enabled: true,
+              addSlidesBefore: 2,
+              addSlidesAfter: 2,
+              cache: true,
+            }
+          : undefined
+      }
       keyboard={{
         enabled: true,
         onlyInViewport: false,
