@@ -219,7 +219,7 @@ a swiper inside another swiper.
       disableScroll={disableSwiper}
     >
       {sectionList?.map((item, sectionIdx) => (
-        <SwiperSlide key={item?.id || sectionIdx}>
+        <SwiperSlide key={item?.id || sectionIdx} virtualIndex={sectionIdx}>
           {({ isActive: isHorizontalActive }) => (
             <SwiperImplementation
               className="gencl:h-full"
@@ -257,6 +257,7 @@ a swiper inside another swiper.
               {filteredPost.map((post, index) => (
                 <SwiperSlide
                   key={post.video.id}
+                  virtualIndex={index}
                   style={
                     slideDimensions
                       ? {
@@ -359,6 +360,7 @@ a swiper inside another swiper.
       {filteredPost.map((post, index) => (
         <SwiperSlide
           key={post.video.id}
+          virtualIndex={index}
           style={
             slideDimensions
               ? {
