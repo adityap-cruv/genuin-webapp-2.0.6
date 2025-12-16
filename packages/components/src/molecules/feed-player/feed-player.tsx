@@ -300,12 +300,12 @@ export const FeedPlayer = memo(function FeedPlayer({
   );
 
   const handleVideoStart = useCallback(
-    (duration: number, currentTime: number) => {
+    (duration: number, currentTime: number, latency: number) => {
       track(EventName.VIDEO_STARTED, {
         ...analyticsEventData,
         video_length: duration,
         video_view_length: currentTime,
-        // latency: latency,
+        latency: latency,
       });
     },
     [track, EventName.VIDEO_STARTED, analyticsEventData]

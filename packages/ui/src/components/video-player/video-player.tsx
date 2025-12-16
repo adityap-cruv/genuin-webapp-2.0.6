@@ -796,7 +796,7 @@ export const VideoPlayer = memo(function VideoPlayer({
   useEffect(() => {
     const videoElement = videoRef.current;
     if (!videoElement) return;
-    let startTime: number | null = null;
+    let startTime: number = -1;
     const handlePlay = () => {
       startTime = performance.now();
     };
@@ -808,10 +808,13 @@ export const VideoPlayer = memo(function VideoPlayer({
       if (!playerStateRef.current.videoStartFired) {
         playerStateRef.current.videoStartFired = true;
         const endTime = performance.now();
+        const latency: number = endTime - startTime;
         onVideoStart?.(
           playerRef.current?.getMedia().duration ?? 0,
           videoElement.currentTime,
-          typeof startTime === "number" ? endTime - startTime : 0
+          typeof startTime === "number" && startTime !== -1
+            ? Math.floor(latency)
+            : 0
         );
       }
     };
