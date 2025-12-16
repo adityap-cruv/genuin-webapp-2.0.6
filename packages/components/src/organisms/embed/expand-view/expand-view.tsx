@@ -40,8 +40,14 @@ export function EmbedExpandView({
   const [startIndex, setStartIndex] = useState(0);
   const { changeActiveIndex, embedEventBus, goBackToPreviousPlayerType } =
     useEmbedContext();
-  const { setMuted, muted, setPlaybackSpeed, isInIframe, baseEventBus } =
-    useBaseContext();
+  const {
+    setMuted,
+    muted,
+    setPlaybackSpeed,
+    isInIframe,
+    baseEventBus,
+    brandDetails,
+  } = useBaseContext();
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
   const previousMuteState = usePrevious(muted);
   const isSectioned = embedEventBus.getContext().isSectioned;
@@ -159,7 +165,15 @@ export function EmbedExpandView({
         } else if (el.webkitRequestFullscreen) {
           el.webkitRequestFullscreen();
         } else if (isInIframe) {
-          const videoShareUrl = videos[startIndex]?.video.shareUrl;
+          const video = videos[startIndex]?.video;
+          let videoShareUrl = video?.shareUrl;
+          const isIndianExpress = brandDetails.brand_id === 2793;
+
+          // For brand_id 2249, construct custom URL with white_label_url
+          if (isIndianExpress && video?.slug && brandDetails?.white_label_url) {
+            videoShareUrl = `${brandDetails.white_label_url}/home?startVideoSlug=${video.slug}`;
+          }
+
           if (videoShareUrl) {
             window.open(videoShareUrl, "_blank");
           }
