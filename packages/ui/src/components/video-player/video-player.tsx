@@ -542,6 +542,14 @@ export const VideoPlayer = memo(function VideoPlayer({
       await player.load();
       playerRef.current = player;
 
+      // Set playback speed and volume after player is initialized
+      const media = player.getMedia();
+      if (media) {
+        if (playbackSpeed) {
+          media.playbackRate = playbackSpeed;
+        }
+      }
+
       // Set up ad event listeners if ads are enabled
       if (adUrl) {
         setupAdPlayerEventListeners(player);
@@ -568,7 +576,7 @@ export const VideoPlayer = memo(function VideoPlayer({
 
       onOpenPlayerReady?.(player);
     },
-    [onOpenPlayerReady, adUrl, setupAdPlayerEventListeners]
+    [onOpenPlayerReady, adUrl, setupAdPlayerEventListeners, playbackSpeed]
   );
 
   const updatePlayerMutedState = useCallback(
@@ -732,7 +740,9 @@ export const VideoPlayer = memo(function VideoPlayer({
     if (isPlayerInitialized.current) {
       playerStateRef.current.shouldPlay = play;
       if (play) {
-        updateLoadingState(true, true);
+        if (!playerRef.current?.getMedia().loaded) {
+          updateLoadingState(true, true);
+        }
         playThePlayer();
       } else {
         updateLoadingState(false, false);
@@ -755,6 +765,7 @@ export const VideoPlayer = memo(function VideoPlayer({
       showLoaderOnInit: false,
       hls: hlsConfigs,
       startTime,
+      startVolume: volume / 100,
       ads: adUrl
         ? {
             src: adUrl,
@@ -762,9 +773,6 @@ export const VideoPlayer = memo(function VideoPlayer({
           }
         : undefined,
     });
-
-    // Set initial playback speed for the new video
-    videoRef.current.playbackRate = playbackSpeed;
 
     // Mark as initialized before calling initializePlayer
     isPlayerInitialized.current = true;

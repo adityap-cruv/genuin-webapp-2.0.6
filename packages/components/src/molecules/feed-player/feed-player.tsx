@@ -120,13 +120,6 @@ export const FeedPlayer = memo(function FeedPlayer({
     }
   }, [muted]);
 
-  // Handle playback speed changes
-  useEffect(() => {
-    if (playerRef.current && playbackSpeed?.speed) {
-      playerRef.current.playbackRate = playbackSpeed.speed;
-    }
-  }, [playbackSpeed]);
-
   // DRY: Common analytics event data (memoized)
   const analyticsEventData = useMemo(() => {
     return {
@@ -384,7 +377,7 @@ export const FeedPlayer = memo(function FeedPlayer({
       className={cn("gencl:m-auto", className)}
       volume={volume}
       play={feedPlayerShouldPlay}
-      playbackSpeed={playbackSpeed?.speed || 1}
+      playbackSpeed={playbackSpeed?.speed}
       onPlayerLoad={handlePlayerLoad}
       onOpenPlayerReady={handleOpenPlayerReady}
       onPlay={handleOnPlay}

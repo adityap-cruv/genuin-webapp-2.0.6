@@ -84,8 +84,8 @@ function Default({
           />
         )}
         <div className="gencl:flex gencl:w-full gencl:gap-4 gencl:justify-between">
-          <div className="gencl:space-y-4">
-            <div className="gencl:space-y-2">
+          <div className="gencl:space-y-4 gencl:w-full">
+            <div className="gencl:space-y-2 gencl:w-full">
               {title && (
                 <div>
                   <Link href={url ?? ""}>
