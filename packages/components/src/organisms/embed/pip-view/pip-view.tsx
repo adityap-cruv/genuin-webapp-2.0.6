@@ -127,6 +127,7 @@ function PipPlayer({
       <PlayerProvider
         isActive={isPipActive}
         videoId={videoDetails.video.id}
+        videoUrl={videoDetails.video.source}
         onPlayerIterationEnd={onInterationEnd ?? (() => {})}
       >
         <FeedPlayer

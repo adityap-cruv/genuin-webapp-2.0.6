@@ -91,6 +91,7 @@ export function Player({
       <PlayerProvider
         isActive={isActive}
         videoId={post.video.id}
+        videoUrl={post.video.source}
         showExpandView={showExpandView}
         toggleExpandView={toggleExpandView}
         swiper={swiper}

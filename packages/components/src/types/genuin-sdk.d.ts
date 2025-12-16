@@ -31,6 +31,10 @@ interface GenuinSDK {
   off: (eventName: string, listener: (props: any) => void) => void;
   offInternal: (eventName: string, listener: (props: any) => void) => void;
   onAll: (listener: (props: any) => void) => void;
+  /**
+   * Version of the Genuin SDK currently loaded on the page.
+   */
+  version?: string;
 }
 
 declare global {

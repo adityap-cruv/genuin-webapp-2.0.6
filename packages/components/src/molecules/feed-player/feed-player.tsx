@@ -138,8 +138,10 @@ export const FeedPlayer = memo(function FeedPlayer({
       position_index: positionIndex,
       autoplay: video.videoAutoplay,
       title: videoDescription,
+      video_id: videoId,
+      video_url: src,
     };
-  }, [videoId, totalVideos]);
+  }, [videoId, totalVideos, src]);
 
   // Track when video comes into view using IntersectionObserver
   useEffect(() => {

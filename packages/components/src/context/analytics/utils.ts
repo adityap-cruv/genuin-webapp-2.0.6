@@ -35,7 +35,7 @@ export const getVideoAutoplay = (
       return "always";
     case 2:
       return "never";
-    case 3: 
+    case 3:
       return "custom";
     default:
       return "always";
@@ -75,3 +75,40 @@ export const getLinkDelay = (
   const delay = webConfigs.linkout_delay;
   return delay.type === 1 ? `custom-${delay.appear_after}` : "immediately";
 };
+
+/**
+ * Default SDK version used as a safe fallback.
+ * This is applied when the Genuin SDK is not available
+ * or its version cannot be resolved reliably.
+ */
+const DEFAULT_SDK_VERSION = "2.0.0";
+
+/**
+ * Retrieves the currently loaded Genuin SDK version in a safe and resilient way.
+ *
+ * This helper ensures that accessing the SDK version never breaks the application.
+ * It gracefully handles the following scenarios:
+ * - Genuin SDK is not loaded on the page
+ * - `window.genuin` is undefined or inaccessible
+ * - SDK version is missing, empty, or not a valid string
+ * - Runtime errors during global object access
+ *
+ * @returns {string}
+ * The resolved SDK version if available; otherwise, a predefined
+ * fallback version (`DEFAULT_SDK_VERSION`).
+ */
+export function getSdkVersion(): string {
+  try {
+    const version = window?.genuin?.version;
+
+    // Ensure the resolved version is a non-empty string
+    if (typeof version === "string" && version.trim().length > 0) {
+      return version;
+    }
+
+    return DEFAULT_SDK_VERSION;
+  } catch {
+    // Catch any unexpected runtime or access errors
+    return DEFAULT_SDK_VERSION;
+  }
+}

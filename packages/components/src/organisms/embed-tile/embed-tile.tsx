@@ -150,6 +150,7 @@ export function EmbedTile({
             index={index}
             isActive={isActive}
             videoId={postDetails.video.id}
+            videoUrl={postDetails.video.source}
             showExpandView={value}
             toggleExpandView={toggle}
             onPlayerIterationEnd={onPlayerIterationEnd}

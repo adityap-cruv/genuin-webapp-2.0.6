@@ -38,6 +38,7 @@ export function PostPlayer({
       <PlayerProvider
         isActive={true}
         videoId={post.video.id}
+        videoUrl={post.video.source}
         onPlayerIterationEnd={() => null}
         videoDescription={post.video.descritptionText}
       >

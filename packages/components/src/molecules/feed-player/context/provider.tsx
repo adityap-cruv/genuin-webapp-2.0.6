@@ -31,6 +31,7 @@ type VideoProviderProps = {
   children: React.ReactNode;
   isEmbed?: boolean;
   videoId: string;
+  videoUrl: string;
   /**
    * Function to be called when the player completes it's iteration and is ready to play the next video.
    */
@@ -100,6 +101,7 @@ function getInitialShouldPlayState(
 export const PlayerProvider: React.FC<VideoProviderProps> = ({
   children,
   videoId,
+  videoUrl,
   showExpandView,
   isActive,
   index,
@@ -193,6 +195,8 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       content_id: videoId,
       total_videos: totalVideos,
       title: videoDescription,
+      video_id: videoId,
+      video_url: videoUrl,
     }),
     [videoId, totalVideos, videoDescription]
   );

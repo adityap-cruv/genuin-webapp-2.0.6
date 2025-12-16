@@ -21,6 +21,7 @@ import {
   SDKEventName,
 } from "@genuin/components/lib/sdk-event-emitter";
 import { EmitAnalyticsData } from "./emit-analytics-data";
+import { getSdkVersion } from "./utils";
 
 type AnalyticsProviderProps = {
   children: ReactNode;
@@ -94,6 +95,8 @@ export function AnalyticsProvider({
         environment: brandDetails.environment,
         gen_user_id: userIdToPass,
         user_id: userIdToPass,
+        app_source: "Web",
+        device_id: deviceId,
         url: typeof window !== "undefined" ? window.location.href : undefined,
         path: pathname,
         query_params: Object.fromEntries(
@@ -137,9 +140,7 @@ user_longitude
 
         // Common payload for embed and placement
         sdkPayload.content_category = "loop";
-
-        // TODO : need to change sdk version
-        sdkPayload.sdk_version = "2.0.0";
+        sdkPayload.sdk_version = getSdkVersion();
         if (user) {
           if (user.phoneNumber) sdkPayload.phone_no = user.phoneNumber;
           if (user.nickname) {
