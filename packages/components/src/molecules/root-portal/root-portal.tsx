@@ -1,4 +1,5 @@
 import { useBaseContext } from "@genuin/components/context/base";
+import { cn } from "@genuin/ui";
 import * as React from "react";
 import { createPortal } from "react-dom";
 
@@ -48,7 +49,10 @@ export function RootPortal({
 
   if (!mounted || !containerElement) return null;
   const elementToRender = (
-    <div style={{ ...parsedBrandColors, zIndex: 30 }} className={className}>
+    <div
+      style={{ ...parsedBrandColors, zIndex: 30 }}
+      className={cn("gen-sdk-root-portal", className)}
+    >
       {children}
     </div>
   );

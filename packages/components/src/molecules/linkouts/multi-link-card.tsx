@@ -140,7 +140,6 @@ export const MultiLinkCard = ({
                     className="gencl:w-full gencl:h-full gencl:object-cover"
                     onError={handleImageError}
                   />
-                  <LinkIcon className="gencl:h-6 gencl:w-6 gencl:shrink-0 gencl:stroke-black gencl:hidden" />
                 </>
               ) : (
                 <LinkIcon className="gencl:h-6 gencl:w-6 gencl:shrink-0 gencl:stroke-black " />
