@@ -912,8 +912,10 @@ export class GenuinSDK {
           answerToReturn.token = value ?? configByUser?.token
           break
         case 'data-video-id':
-          answerToReturn.startVideoSlug =
-            value ?? configByUser?.start_video_slug
+          if (value || configByUser?.start_video_slug) {
+            answerToReturn.startVideoSlug =
+              value ?? configByUser?.start_video_slug
+          }
           break
         case 'data-start-video-slug':
           if (value || configByUser?.start_video_slug) {
@@ -1361,7 +1363,9 @@ export class GenuinSDK {
   expand(id: string): void {
     // Check if SDK is initialized
     if (!this.isInitialized) {
-      console.error('SDK is not initialized. Please call genuin.init({}) first to use genuin.expand().')
+      console.error(
+        'SDK is not initialized. Please call genuin.init({}) first to use genuin.expand().',
+      )
       return
     }
 
@@ -1406,7 +1410,9 @@ export class GenuinSDK {
   collapse(id: string): void {
     // Check if SDK is initialized
     if (!this.isInitialized) {
-      console.error('SDK is not initialized. Please call genuin.init({}) first to use genuin.collapse().')
+      console.error(
+        'SDK is not initialized. Please call genuin.init({}) first to use genuin.collapse().',
+      )
       return
     }
 

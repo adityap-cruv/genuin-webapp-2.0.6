@@ -249,7 +249,7 @@ export function loadNewEmbed({
           ...embedData,
           brand_id: embedData.brand_id,
           action: embedData.autoUserInteractionToPerform,
-          initialVideoIds: embedData.initialVideoIds,
+          initialVideoIds: config.initialVideoIds,
           videoIds: config.videoIds,
           websiteType: config.websiteType,
         }}

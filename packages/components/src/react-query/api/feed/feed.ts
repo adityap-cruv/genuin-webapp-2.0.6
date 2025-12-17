@@ -425,18 +425,14 @@ async function prependInitialVideosToFeed(
       options?.brandContext,
       initialVideoIds
     );
-
     // Filter out any videos that are already in the feed to avoid duplicates
-    const existingVideoIds = new Set(
-      feedData.feed.map((item) => item.video.id)
+    const existingVideoIds = new Set(initialVideoIds);
+    const uniqueFeedVideos = feedData.feed.filter(
+      (feed) => !existingVideoIds.has(feed.video.id)
     );
-    const uniqueInitialVideos = videoDetails.filter(
-      (video) => !existingVideoIds.has(video.video.id)
-    );
-
     return {
       ...feedData,
-      feed: [...uniqueInitialVideos, ...feedData.feed],
+      feed: [...videoDetails, ...uniqueFeedVideos],
     };
   } catch (error) {
     console.error("Failed to fetch initial video details:", error);
@@ -464,9 +460,6 @@ async function createFeedQueryFn(
 ): Promise<FeedPage> {
   const startVideoSlug = options?.startVideoSlug;
   const hasVideoIds = options?.videoIds && options.videoIds.length > 0;
-  const hasInitialVideoIds =
-    options?.initialVideoIds && options.initialVideoIds.length > 0;
-
   // Scenario 1: Fetch specific videos by their IDs
   if (hasVideoIds) {
     return fetchFeedByVideoIds(options!);
@@ -488,6 +481,9 @@ async function createFeedQueryFn(
   if (shouldPrependVideo) {
     feedData = await prependVideoToFeed(feedData, startVideoSlug, options);
   }
+
+   const hasInitialVideoIds =
+    options?.initialVideoIds && options.initialVideoIds.length > 0;
 
   // Scenario 4: Prepend initial videos if initialVideoIds are provided (first page only)
   if (isFirstPage && hasInitialVideoIds) {
