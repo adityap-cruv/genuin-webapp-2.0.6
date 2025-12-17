@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { useEffect, useState } from "react";
 import { UAParser } from "ua-parser-js";
 
@@ -17,5 +17,6 @@ export function useDeviceDetection() {
     isAndroid: parser?.getResult().os.name === "Android",
     isMobile: parser?.getDevice().type === "mobile",
     isTablet: parser?.getDevice().type === "tablet",
+    isIpad: parser?.getResult().device.model?.toLowerCase() === "ipad"
   };
 }

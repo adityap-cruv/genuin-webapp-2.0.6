@@ -49,7 +49,7 @@ export function Default({
   const { showExpandView, togglePlay, toggleMuted, muted, showSeeker } =
     usePlayerContext();
   const { gestureOverlayUI, hideGestureOverlay } = useGestureOverlayManager();
-  const { isMobile, isTablet } = useDeviceDetection();
+  const { isMobile, isTablet, isIpad } = useDeviceDetection();
   const embedConfig = useEmbedConfigs();
   const { user } = useAuthContext();
   const brandLayoutType = embedConfig.view.brandLayoutType;
@@ -264,7 +264,7 @@ export function Default({
               showCloseButton={showCloseButton}
               enableExpand={enableExpand}
               className={cn(
-                isMobile || isTablet
+                isMobile || isTablet || isIpad
                   ? `gencl:z-20 ${!isSectioned && showExpandView && "gencl:top-0"}`
                   : "gencl:group-hover:opacity-100 gencl:group-hover:pointer-events-auto gencl:opacity-0 gencl:pointer-events-none gencl:transition-opacity gencl:duration-300"
               )}
@@ -299,13 +299,17 @@ export function Default({
                 onReactionStateChange={onReactionStateChange}
                 onCommentCountChange={onCommentCountChange}
                 variant={variant}
-                className={cn(playbackSpeed.speed !== 1 && "gencl:invisible")}
+                className={cn(
+                  playbackSpeed.speed !== 1 &&
+                    "gencl:hidden gencl:transition-all"
+                )}
               />
             ) : (
               <div
                 className={cn(
                   "gencl:absolute gencl:bottom-0 gencl:w-full gencl:p-2 gencl:transition-all",
-                  showSeeker && "gencl:bottom-4"
+                  showSeeker && "gencl:bottom-4",
+                  playbackSpeed.speed !== 1 && "gencl:hidden"
                 )}
               >
                 {/**

@@ -30,6 +30,7 @@ import { PlayerHeader } from "./player-header";
 import { calculateSlideDimensions } from "./utils";
 import WatchBoundaryOverlay from "@genuin/components/molecules/feed-player/control-layer/watch-boundary-overlay";
 import { useFocusManagement } from "@genuin/components/hooks/use-focus-management";
+import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 
 type PlayerListPropsType = {
   posts: PostDetailsType[];
@@ -82,7 +83,8 @@ export function PlayerList({
 }: PlayerListPropsType) {
   const { showExpandView, activeIndex, toggleExpandView } = useFeedContext();
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
-  const { value, toggle, setValue } = useBoolean(isDesktop);
+  const { isIpad } = useDeviceDetection();
+  const { value, toggle, setValue } = useBoolean(isDesktop && !isIpad);
   const { track, EventName } = useAnalytics();
   const {
     engagement: {
