@@ -38,8 +38,12 @@ export function EmbedExpandView({
   fetchNextPage,
 }: EmbedExpandViewProps) {
   const [startIndex, setStartIndex] = useState(0);
-  const { changeActiveIndex, embedEventBus, goBackToPreviousPlayerType } =
-    useEmbedContext();
+  const {
+    changeActiveIndex,
+    embedEventBus,
+    goBackToPreviousPlayerType,
+    embedData,
+  } = useEmbedContext();
   const {
     setMuted,
     muted,
@@ -52,7 +56,8 @@ export function EmbedExpandView({
   const previousMuteState = usePrevious(muted);
   const isSectioned = embedEventBus.getContext().isSectioned;
   const [showExpandView, setShowExpandView] = useState(
-    embedEventBus.getContext().activePlayerType === "expand-view"
+    embedEventBus.getContext().activePlayerType === "expand-view" ||
+      embedData.expandOnLoad
   );
   const {
     engagement: {

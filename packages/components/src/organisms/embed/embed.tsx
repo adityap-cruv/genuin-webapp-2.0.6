@@ -167,7 +167,9 @@ export function Embed({
   );
   // Local state for activePlayerType synced with event bus
   const [activePlayerType, setActivePlayerType] = useState(
-    embedEventBus.getContext().activePlayerType
+    embedData.expandOnLoad
+      ? "expand-view"
+      : embedEventBus.getContext().activePlayerType
   );
   // Local state for activeIndex synced with event bus
   const [activeIndex, setActiveIndex] = useState(

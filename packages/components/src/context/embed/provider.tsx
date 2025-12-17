@@ -79,7 +79,13 @@ export function EmbedProvider({
         disableSwiper:
           isIHeartLayout && !!embedData.startVideoSlug && action === "share",
       }),
-    [isIHeartLayout, embedData.startVideoSlug, action, initialFollowStatuses]
+    [
+      isIHeartLayout,
+      embedData.startVideoSlug,
+      action,
+      initialFollowStatuses,
+      embedData.expandOnLoad,
+    ]
   );
 
   // Create a unique router for this provider instance
