@@ -78,13 +78,15 @@ export function EmbedExpandView({
       }
       return x;
     });
+
     /*If the feed has reached its end in the expand view,
       update the active index to maintain sync between
       the expand view and the embed view.*/
     const { activeIndex } = embedEventBus.getContext();
     const isEndOfFeed = activeIndex >= videos.length - 1;
 
-    if (isEndOfFeed) {
+    // TODO : revert this changes when we sync with release/genuin-sdk/2.0.2-phase-2-fixes
+    if (isEndOfFeed && isIHeart) {
       changeActiveIndex(Math.max(activeIndex - 1, 0));
     }
     // Emit event to center the active slide in the swiper before going back

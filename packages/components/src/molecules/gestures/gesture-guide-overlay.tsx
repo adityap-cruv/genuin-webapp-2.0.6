@@ -87,7 +87,7 @@ export function LazyGestureGuideOverlay({
             alt="gesture"
             // height={80}
             // width={80}
-            className="gencl:hidden sm:gencl:block gencl:shrink-0 gencl:h-20"
+            className="gencl:hidden sm:gencl:block gencl:shrink-0 gencl:h-20!"
           />
         ) : (
           <img
@@ -95,7 +95,7 @@ export function LazyGestureGuideOverlay({
             alt="gesture"
             // height={80}
             // width={80}
-            className="sm:gencl:hidden gencl:h-20 gencl:shrink-0"
+            className="sm:gencl:hidden gencl:h-20! gencl:shrink-0"
           />
         )}
         <p className="gencl:text-center gencl:text-body-1-bold gencl:text-white">
