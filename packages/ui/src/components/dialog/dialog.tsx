@@ -85,7 +85,7 @@ function DialogOverlay({
     <DialogPrimitive.Overlay
       data-slot="dialog-overlay"
       className={cn(
-        "gen-sdk-class gencl:data-[state=open]:animate-in gencl:data-[state=closed]:animate-out gencl:data-[state=closed]:fade-out-0 gencl:data-[state=open]:fade-in-0 gencl:fixed gencl:inset-0 gencl:z-50 gencl:bg-black/50",
+        "gen-sdk-class gen-sdk-root-portal gencl:data-[state=open]:animate-in gencl:data-[state=closed]:animate-out gencl:data-[state=closed]:fade-out-0 gencl:data-[state=open]:fade-in-0 gencl:fixed gencl:inset-0 gencl:z-50 gencl:bg-black/50",
         className
       )}
       {...props}
@@ -143,7 +143,7 @@ function DialogContent({
         className={cn(
           dialogContentVariants({ variant }),
           className,
-          "gen-sdk-class"
+          "gen-sdk-class gen-sdk-root-portal"
         )}
         style={{ ...style, ...getGenclStyles()}}
         autoFocus={false}

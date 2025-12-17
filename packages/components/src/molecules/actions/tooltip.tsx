@@ -71,7 +71,7 @@ export function TooltipAction({
         <div
           className={cn(
             tooltipVariants({ variant }),
-            "gencl:hover:cursor-pointer gen-sdk-class",
+            "gencl:hover:cursor-pointer gen-sdk-class gen-sdk-root-portal",
             "gencl:h-12 gencl:p-0 gencl:w-12 gencl:flex gencl:items-center gencl:justify-center  gencl:rounded-full",
             "gencl:[&_svg]:w-8 gencl:[&_svg]:h-8",
             className

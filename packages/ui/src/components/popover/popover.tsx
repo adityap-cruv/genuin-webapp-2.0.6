@@ -87,7 +87,7 @@ function PopoverContent({
         align={align}
         sideOffset={sideOffset}
         // style={customColorStyle}
-        className={cn("gen-sdk-class",popoverContentVariants({ theme }), className)}
+        className={cn("gen-sdk-class gen-sdk-root-portal",popoverContentVariants({ theme }), className)}
         {...props}
       >
         {children}

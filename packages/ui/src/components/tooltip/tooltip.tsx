@@ -88,7 +88,7 @@ function TooltipContent({
         data-slot="tooltip-content"
         sideOffset={sideOffset}
         className={cn(
-          "gen-sdk-class",
+          "gen-sdk-class gen-sdk-root-portal",
           className,
           tooltipContentVariants({ theme })
         )}
