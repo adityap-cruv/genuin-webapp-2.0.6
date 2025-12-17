@@ -48,7 +48,7 @@ export function Default({
   const { showExpandView, togglePlay, toggleMuted, muted, showSeeker } =
     usePlayerContext();
   const { gestureOverlayUI, hideGestureOverlay } = useGestureOverlayManager();
-  const { isMobile } = useDeviceDetectMediaQuery();
+  const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
   const embedConfig = useEmbedConfigs();
   const { user } = useAuthContext();
   const brandLayoutType = embedConfig.view.brandLayoutType;
@@ -263,9 +263,9 @@ export function Default({
               showCloseButton={showCloseButton}
               enableExpand={enableExpand}
               className={cn(
-                isMobile
-                  ? `gencl:z-20 ${!isSectioned && showExpandView && "gencl:top-0"}`
-                  : "gencl:group-hover:opacity-100 gencl:group-hover:pointer-events-auto gencl:opacity-0 gencl:pointer-events-none gencl:transition-opacity gencl:duration-300"
+                isDesktop
+                  ? "gencl:group-hover:opacity-100 gencl:group-hover:pointer-events-auto gencl:opacity-0 gencl:pointer-events-none gencl:transition-opacity gencl:duration-300"
+                  : `gencl:z-20 ${!isSectioned && showExpandView && "gencl:top-0"}`
               )}
               variant={isSectioned ? "sectioned" : "default"}
             />
