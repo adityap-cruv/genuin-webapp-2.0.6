@@ -23,6 +23,7 @@ import { Button } from "@genuin/ui/button";
 import { useDoubleClick } from "@genuin/components/hooks/use-double-click";
 import { useAuthContext } from "@genuin/components/context";
 import { Toaster } from "@genuin/ui";
+import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 
 export function Default({
   className,
@@ -48,7 +49,7 @@ export function Default({
   const { showExpandView, togglePlay, toggleMuted, muted, showSeeker } =
     usePlayerContext();
   const { gestureOverlayUI, hideGestureOverlay } = useGestureOverlayManager();
-  const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
+  const { isMobile, isTablet } = useDeviceDetection();
   const embedConfig = useEmbedConfigs();
   const { user } = useAuthContext();
   const brandLayoutType = embedConfig.view.brandLayoutType;
@@ -67,8 +68,8 @@ export function Default({
       togglePlay(true);
     },
     onDoubleClick: () => {
-      // Only handle double-click on mobile
-      if (!isMobile || !user) return;
+      // Only handle double-click on mobile or tablet
+      if (!(isMobile || isTablet) || !user) return;
       // Show reaction icon
       setShowReactionIcon(true);
 
@@ -157,7 +158,7 @@ export function Default({
               }}
             />
 
-            {(showExpandView || isMobile) && expandViewDetails && (
+            {(showExpandView || isMobile || isTablet) && expandViewDetails && (
               <ExpandViewDetails
                 postDetails={postDetails}
                 isActive={isActive}
@@ -263,9 +264,9 @@ export function Default({
               showCloseButton={showCloseButton}
               enableExpand={enableExpand}
               className={cn(
-                isDesktop
-                  ? "gencl:group-hover:opacity-100 gencl:group-hover:pointer-events-auto gencl:opacity-0 gencl:pointer-events-none gencl:transition-opacity gencl:duration-300"
-                  : `gencl:z-20 ${!isSectioned && showExpandView && "gencl:top-0"}`
+                isMobile || isTablet
+                  ? `gencl:z-20 ${!isSectioned && showExpandView && "gencl:top-0"}`
+                  : "gencl:group-hover:opacity-100 gencl:group-hover:pointer-events-auto gencl:opacity-0 gencl:pointer-events-none gencl:transition-opacity gencl:duration-300"
               )}
               variant={isSectioned ? "sectioned" : "default"}
             />
@@ -288,7 +289,7 @@ export function Default({
              * This is the expand view details.
              * It will show the details of the post. If post is expanded.
              */}
-            {(showExpandView || isMobile) && expandViewDetails ? (
+            {(showExpandView || isMobile || isTablet) && expandViewDetails ? (
               <ExpandViewDetails
                 postDetails={postDetails}
                 isActive={isActive}
