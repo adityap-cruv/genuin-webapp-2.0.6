@@ -1,6 +1,5 @@
 "use client";
 import "swiper/css";
-import { Button, ButtonProps } from "@genuin/ui/button";
 import { SwiperSlide } from "swiper/react";
 import { useBoolean } from "usehooks-ts";
 
@@ -18,12 +17,7 @@ import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-d
 import { abbreviateNumber, cn } from "@genuin/ui/lib/utils";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
-import {
-  ArrowLeftIcon,
-  ChevronDownIcon,
-  ChevronLeftIcon,
-  ChevronUpIcon,
-} from "@genuin/ui/icons";
+
 import { Swiper } from "swiper/types";
 import { useAnalytics } from "@genuin/components/context";
 import { PlayerHeader } from "./player-header";
@@ -31,6 +25,7 @@ import { calculateSlideDimensions } from "./utils";
 import WatchBoundaryOverlay from "@genuin/components/molecules/feed-player/control-layer/watch-boundary-overlay";
 import { useFocusManagement } from "@genuin/components/hooks/use-focus-management";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
+import { BackButton, CloseButton, NavigationButton } from "./player-swiper-buttons";
 
 type PlayerListPropsType = {
   posts: PostDetailsType[];
@@ -497,6 +492,10 @@ a swiper inside another swiper.
           )}
       </div>
 
+      {showExpandView && isDesktop && (
+        <CloseButton theme={theme} onCloseClick={toggleExpandView} />
+      )}
+
       {/* Navigation buttons for expand view (not on mobile) */}
       {showExpandView && brandLayoutType !== "iheart" && !isMobile && (
         <NavigationButton
@@ -641,219 +640,3 @@ a swiper inside another swiper.
   );
 }
 
-function NavigationButton({
-  swiper,
-  postsLength,
-  position = "fixed",
-  className,
-  theme,
-  size,
-}: {
-  swiper?: Swiper;
-  postsLength?: number;
-  position?: "fixed" | "absolute" | "relative";
-  className?: string;
-  theme?: "light" | "dark";
-  size: ButtonProps["size"];
-}) {
-  // State to force re-render when swiper state changes
-  const [, forceUpdate] = useState({});
-  const [prevHovered, setPrevHovered] = useState(false);
-  const [nextHovered, setNextHovered] = useState(false);
-
-  useEffect(() => {
-    if (swiper && swiper.update) {
-      swiper.update();
-      forceUpdate({});
-    }
-  }, [postsLength, swiper]);
-
-  if (!swiper) return null;
-
-  const currentSlide = swiper.activeIndex + 1;
-  const totalSlides = postsLength ?? swiper.slides.length;
-
-  // Define theme colors consistent with navigation-buttons.tsx
-  const isDarkTheme = theme === "dark";
-
-  // Dark theme colors
-  const darkTheme = {
-    disabled: { button: "#3F4447", icon: "#717277" },
-    default: { button: "#F6F8F9", icon: "#27292D" },
-    hover: { button: "#A9AFB2", icon: "#27292D" },
-  };
-
-  // Light theme colors
-  const lightTheme = {
-    disabled: { button: "#E6EAED", icon: "#A9AFB2" },
-    default: { button: "#27292D", icon: "#FFFFFF" },
-    hover: { button: "#717277", icon: "#FFFFFF" },
-  };
-
-  const colors = isDarkTheme ? darkTheme : lightTheme;
-
-  // Helper function to get button styles
-  const getButtonStyles = (disabled: boolean, isHovered: boolean) => {
-    const buttonBg = disabled
-      ? colors.disabled.button
-      : isHovered
-        ? colors.hover.button
-        : colors.default.button;
-
-    const iconFill = disabled
-      ? colors.disabled.icon
-      : isHovered
-        ? colors.hover.icon
-        : colors.default.icon;
-
-    return { buttonBg, iconFill };
-  };
-
-  const prevStyles = getButtonStyles(swiper.isBeginning, prevHovered);
-  const nextStyles = getButtonStyles(swiper.isEnd, nextHovered);
-
-  return (
-    <div
-      className={cn(
-        "gencl:z-50 gencl:text-white gencl:flex gencl:flex-col gencl:gap-4",
-        position === "fixed" &&
-          "gencl:fixed gencl:right-7.5 gencl:top-1/2 gencl:-translate-y-1/2",
-        position === "absolute" &&
-          "gencl:absolute gencl:right-7.5 gencl:top-1/2 gencl:-translate-y-1/2",
-        position === "relative" && "gencl:relative",
-        className
-      )}
-      role="navigation"
-      aria-label="Video navigation"
-    >
-      <div
-        onMouseEnter={() => !swiper.isBeginning && setPrevHovered(true)}
-        onMouseLeave={() => setPrevHovered(false)}
-      >
-        <Button
-          variant="icon"
-          shape="circle"
-          size={size}
-          theme="custom"
-          className={cn(
-            "gencl:transition-all gencl:duration-200",
-            swiper.isBeginning && "gencl:cursor-not-allowed!"
-          )}
-          style={{
-            background: prevStyles.buttonBg,
-          }}
-          disabled={swiper.isBeginning}
-          onClick={() => {
-            setPrevHovered(false);
-            swiper.slidePrev();
-          }}
-          aria-label={`Previous video (${currentSlide - 1} of ${totalSlides})`}
-          aria-disabled={swiper.isBeginning}
-          tabIndex={0}
-        >
-          <ChevronUpIcon
-            theme={theme === "light" ? "dark" : "light"}
-            size="lg"
-            aria-hidden="true"
-            className="gencl:transition-colors gencl:duration-200"
-            style={{ fill: prevStyles.iconFill }}
-          />
-        </Button>
-      </div>
-      <div
-        onMouseEnter={() => !swiper.isEnd && setNextHovered(true)}
-        onMouseLeave={() => setNextHovered(false)}
-      >
-        <Button
-          variant="icon"
-          shape="circle"
-          size={size}
-          theme="custom"
-          className={cn(
-            "gencl:transition-all gencl:duration-200",
-            swiper.isEnd && "gencl:cursor-not-allowed!"
-          )}
-          style={{
-            background: nextStyles.buttonBg,
-          }}
-          disabled={swiper.isEnd}
-          onClick={() => {
-            setNextHovered(false);
-            swiper.slideNext();
-          }}
-          aria-label={`Next video (${currentSlide + 1} of ${totalSlides})`}
-          aria-disabled={swiper.isEnd}
-          tabIndex={0}
-        >
-          <ChevronDownIcon
-            theme={theme === "light" ? "dark" : "light"}
-            size="lg"
-            aria-hidden="true"
-            className="gencl:transition-colors gencl:duration-200"
-            style={{ fill: nextStyles.iconFill }}
-          />
-        </Button>
-      </div>
-    </div>
-  );
-}
-
-function BackButton({
-  onBackClick,
-  theme,
-  websiteType,
-}: {
-  onBackClick?: () => void;
-  theme?: "light" | "dark";
-  websiteType?: "legacy" | "polaris" | undefined;
-}) {
-  return (
-    <>
-      {websiteType === "polaris" && (
-        <Button
-          variant="icon"
-          shape="circle"
-          size="lg"
-          theme="custom"
-          aria-label="Back"
-          role="button"
-          onClick={onBackClick}
-          className={cn(
-            "gencl:hidden! gencl:lg:flex!",
-            theme === "dark"
-              ? "gencl:bg-white gencl:hover:bg-white/90"
-              : "gencl:bg-[#D9D9D9] gencl:hover:bg-[#D9D9D9]/90"
-          )}
-        >
-          <ArrowLeftIcon
-            theme={theme === "dark" ? "light" : "light"}
-            size="md"
-          />
-        </Button>
-      )}
-
-      <Button
-        id="player-header-back-button"
-        variant="icon"
-        theme="overlay"
-        onClick={(e) => {
-          e.stopPropagation();
-          onBackClick?.();
-        }}
-        className={cn(
-          "gencl:flex!",
-          websiteType === "polaris" && "gencl:lg:hidden!"
-        )}
-        aria-label="Back"
-        role="button"
-        tabIndex={0}
-      >
-        <ChevronLeftIcon
-          theme={theme === "dark" ? "dark" : "light"}
-          size="lg"
-          aria-hidden="true"
-        />
-      </Button>
-    </>
-  );
-}
