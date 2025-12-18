@@ -8,6 +8,7 @@ import { useBaseContext, useEmbedContext } from "@genuin/components/context";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { GenericData } from "@genuin/components/context/base/feed-context-manager";
 import { Swiper } from "swiper/types";
+import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 
 type EmbedItemProps = Omit<
   ComponentProps<typeof EmbedTile>,
@@ -36,6 +37,7 @@ export function EmbedItem({
   const config = useEmbedConfigs();
   const { baseContextManager } = useBaseContext();
   const { embedEventBus, updateSelectedSection } = useEmbedContext();
+  const { isTablet, isMobile } = useDeviceDetection();
   const [embedIsActive, setEmbedIsActive] = useState(
     embedEventBus.getContext().activePlayerType === "embed"
   );
@@ -136,8 +138,8 @@ export function EmbedItem({
       postDetails={postDetails}
       isActive={activeIndex === index && embedIsActive && !isVideoWatched}
       onPlayerIterationEnd={handlePlayerIterationEnd}
-      onMouseEnter={debouncedSetActiveIndex}
-      onMouseLeave={handleMouseLeave}
+      onMouseEnter={isTablet || isMobile ? undefined : debouncedSetActiveIndex}
+      onMouseLeave={isTablet || isMobile ? undefined : handleMouseLeave}
       onClick={() => {
         if (isSectioned) {
           updateSelectedSection(postDetails.section);

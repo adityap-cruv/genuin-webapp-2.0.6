@@ -130,7 +130,10 @@ export function getVisibleSlideRange(swiper: SwiperType): {
   // Default to 1 if slidesPerView is undefined
   const slidesPerView = (swiper.params.slidesPerView as number) || 1;
   const first = swiper.activeIndex;
-  const last = Math.min(first + slidesPerView - 1, totalSlides - 1);
+  const last = Math.min(
+    Math.floor(first + slidesPerView - 1),
+    totalSlides - 1
+  );
 
   return { first, last };
 }

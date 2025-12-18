@@ -168,10 +168,12 @@ export function EmbedManagerProvider({
 
       // If current activeIndex is going out of visible bounds, update it intelligently
       if (!isSlideVisible(swiper, activeIndex)) {
-        const newActiveIndex = getNewActiveIndexOnSlideChange(
-          swiper,
-          activeIndex,
-          previousVisibleRange
+        const newActiveIndex = Math.floor(
+          getNewActiveIndexOnSlideChange(
+            swiper,
+            activeIndex,
+            previousVisibleRange
+          )
         );
         setActiveIndex(newActiveIndex);
       } else if (config.useWindowSwiperMode) {
