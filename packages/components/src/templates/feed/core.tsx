@@ -65,6 +65,9 @@ export const FeedViewCore = memo(function FeedViewCore({
   const { theme = "dark" } = useBaseContext();
   const {
     view: { brandLayoutType },
+    engagement: {
+      engagementTools: { comment: showCommentBox },
+    },
   } = useEmbedConfigs();
   const { isDesktop } = useDeviceDetectMediaQuery();
   const showSidePanel =
@@ -217,6 +220,7 @@ export const FeedViewCore = memo(function FeedViewCore({
       <FeedSkeleton
         theme={theme}
         variant={showExpandView ? "fullscreen" : "default"}
+        showCommentsSkeleton={showCommentBox && isDesktop}
       />
     );
   }

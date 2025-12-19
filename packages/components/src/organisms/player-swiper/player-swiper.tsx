@@ -25,7 +25,11 @@ import { calculateSlideDimensions } from "./utils";
 import WatchBoundaryOverlay from "@genuin/components/molecules/feed-player/control-layer/watch-boundary-overlay";
 import { useFocusManagement } from "@genuin/components/hooks/use-focus-management";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
-import { BackButton, CloseButton, NavigationButton } from "./player-swiper-buttons";
+import {
+  BackButton,
+  CloseButton,
+  NavigationButton,
+} from "./player-swiper-buttons";
 
 type PlayerListPropsType = {
   posts: PostDetailsType[];
@@ -639,4 +643,3 @@ a swiper inside another swiper.
     </div>
   );
 }
-

@@ -83,6 +83,7 @@ export function loadExpandView(
     loaderDiv = document.createElement('div')
     loaderDiv.id = 'gen-sdk-expand-view-loader'
     loaderDiv.classList.add('loader') // optional class
+    loaderDiv.classList.add('gen-sdk-class') // optional class
     document.body.appendChild(loaderDiv)
   }
 
@@ -205,6 +206,7 @@ const ExpandViewSkeleton = ({ theme }: { theme?: 'dark' | 'light' }) => {
       <FeedSkeleton
         theme={theme}
         variant='fullscreen'
+        showCommentsSkeleton={false}
       />
     </div>
   )

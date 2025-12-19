@@ -8,11 +8,13 @@ import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-d
 export type FeedSkeletonProps = {
   variant?: "default" | "fullscreen";
   theme?: "light" | "dark";
+  showCommentsSkeleton?: boolean;
 };
 
 export const FeedSkeleton: FC<FeedSkeletonProps> = ({
   variant = "default",
   theme = "dark",
+  showCommentsSkeleton = false,
 }) => {
   const { isMobile } = useDeviceDetectMediaQuery();
   const skeletonTheme = {
@@ -112,11 +114,12 @@ export const FeedSkeleton: FC<FeedSkeletonProps> = ({
           </div>
         </div>
 
-        <div className="gencl:h-full gencl:gap-2 gencl:hidden gencl:sm:flex!">
+        {/* action items shimmer */}
+        <div className="gencl:h-full gencl:gap-6 gencl:hidden gencl:sm:flex!">
           <Skeleton
             className={cn("gencl:aspect-reel gencl:h-full", colors.primary)}
           />
-          <div className="gencl:flex gencl:gap-4 gencl:flex-col gencl:justify-end gencl:w-13">
+          <div className="gencl:flex gencl:gap-4 gencl:flex-col gencl:justify-end gencl:w-13 gencl:pb-4">
             {Array.from({ length: 5 }).map((_, index) => (
               <Skeleton
                 key={index}
@@ -129,16 +132,19 @@ export const FeedSkeleton: FC<FeedSkeletonProps> = ({
           </div>
         </div>
 
-        <div className="gencl:max-w-118 gencl:w-full gencl:h-full gencl:py-6 gencl:hidden gencl:sm:block!">
-          <Skeleton
-            className={cn(
-              "gencl:w-full gencl:h-full gencl:py-6 gencl:rounded-2xl",
-              colors.primary
-            )}
-          />
-        </div>
+        {/* comment box shimmer */}
+        {showCommentsSkeleton && (
+          <div className="gencl:max-w-118 gencl:w-full gencl:h-full gencl:py-6 gencl:hidden gencl:sm:block!">
+            <Skeleton
+              className={cn(
+                "gencl:w-full gencl:h-full gencl:py-6 gencl:rounded-2xl",
+                colors.primary
+              )}
+            />
+          </div>
+        )}
 
-        <div className="gencl:absolute gencl:right-7.5 gencl:space-y-2 gencl:hidden gencl:sm:block!">
+        <div className="gencl:absolute gencl:right-7.5 gencl:space-y-4 gencl:hidden gencl:sm:block!">
           <Skeleton
             className={cn(
               "gencl:size-12 gencl:rounded-full gencl:shrink-0",
