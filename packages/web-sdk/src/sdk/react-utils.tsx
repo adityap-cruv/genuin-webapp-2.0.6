@@ -84,6 +84,7 @@ export function loadExpandView(
     loaderDiv.id = 'gen-sdk-expand-view-loader'
     loaderDiv.classList.add('loader') // optional class
     loaderDiv.classList.add('gen-sdk-class') // optional class
+    loaderDiv.classList.add('gen-sdk-root-portal') // optional class
     document.body.appendChild(loaderDiv)
   }
 
