@@ -249,15 +249,6 @@ const copyLoaderPlugin = () => ({
         )
       }
 
-      // Remove console statements in production
-      if (process.env.NODE_ENV === 'production') {
-        // Remove console.log, console.warn, console.error, console.debug, console.info
-        loaderContent = loaderContent.replace(
-          /console\.(log|warn|error|debug|info|group|groupEnd|groupCollapsed)\([^)]*\);?/g,
-          '',
-        )
-      }
-
       // Generate build metadata header
       const buildTime = new Date().toISOString()
       const environment = process.env.NODE_ENV || 'development'

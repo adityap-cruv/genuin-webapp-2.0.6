@@ -278,6 +278,7 @@ export function EmbedProvider({
       undefined,
       (currentContext) => ({
         ...currentContext,
+        previousPlayerType: currentContext.activePlayerType,
         activePlayerType: currentContext.previousPlayerType ?? "embed",
       })
     );

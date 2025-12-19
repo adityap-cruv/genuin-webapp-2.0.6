@@ -42,7 +42,6 @@ export function EmbedExpandView({
     changeActiveIndex,
     embedEventBus,
     goBackToPreviousPlayerType,
-    embedData,
   } = useEmbedContext();
   const {
     setMuted,
@@ -56,8 +55,7 @@ export function EmbedExpandView({
   const previousMuteState = usePrevious(muted);
   const isSectioned = embedEventBus.getContext().isSectioned;
   const [showExpandView, setShowExpandView] = useState(
-    embedEventBus.getContext().activePlayerType === "expand-view" ||
-      embedData.expandOnLoad
+    embedEventBus.getContext().activePlayerType === "expand-view"
   );
   const {
     engagement: {

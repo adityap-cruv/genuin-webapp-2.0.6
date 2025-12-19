@@ -67,7 +67,11 @@ export const FeedViewCore = memo(function FeedViewCore({
     view: { brandLayoutType },
   } = useEmbedConfigs();
   const { isDesktop } = useDeviceDetectMediaQuery();
-  const showSidePanel = videos[activeIndex] && !showExpandView && isDesktop;
+  const showSidePanel =
+    videos[activeIndex] &&
+    !showExpandView &&
+    isDesktop &&
+    (!embedDetails || embedDetails.embedData.style === "standard_wall");
   const isIHeart = brandLayoutType === "iheart";
   // Get disableSwiper flag from embed context (only applies to expand view)
   const disableSwiper = showExpandView
