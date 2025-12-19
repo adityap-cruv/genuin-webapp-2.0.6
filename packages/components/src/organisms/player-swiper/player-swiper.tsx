@@ -12,7 +12,14 @@ import { Comments, CommentsDialog } from "../../molecules/comments";
 import { Player } from "./player";
 import { SwiperImplementation } from "./swiper-implementation";
 import { SectionsTabs } from "./sections-tabs";
-import { ComponentProps, useEffect, useState, useRef, useMemo } from "react";
+import {
+  ComponentProps,
+  useEffect,
+  useState,
+  useRef,
+  useMemo,
+  useCallback,
+} from "react";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { abbreviateNumber, cn } from "@genuin/ui/lib/utils";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
@@ -109,7 +116,8 @@ export function PlayerList({
     const shouldCalculateDimensions = brandLayoutType === "iheart" && isTablet;
 
     if (!shouldCalculateDimensions) {
-      setSlideDimensions(null);
+      // Set dimensions immediately for non-iheart or non-tablet to allow rendering
+      setSlideDimensions({} as any);
       return;
     }
 
@@ -140,6 +148,32 @@ export function PlayerList({
       resizeObserver.disconnect();
     };
   }, [brandLayoutType, isMobile, isDesktop]);
+
+  const changeExpandViewType = useCallback(() => {
+    if (!embedDetails) return;
+
+    const { activeIndex } = embedDetails.embedEventBus.getContext();
+
+    /*
+     * Sync indices when switching from expand view to embed view.
+     * Expand view hides the overlay card, so we need to adjust the active index
+     * when transitioning to maintain the correct video position.
+     */
+    const overlayIndex = posts.findIndex(
+      (post) => post.video.type === "overlay"
+    );
+    const isNotAtEndOfFeed = posts[activeIndex + 1]?.video.type !== "complete";
+    // increment by 1 to account for overlay card that won't be shown in expand view
+    if (
+      overlayIndex !== -1 &&
+      activeIndex >= overlayIndex &&
+      isNotAtEndOfFeed &&
+      (websiteType === "legacy" || (websiteType === "polaris" && !isDesktop))
+    ) {
+      onActiveIndexChange?.(activeIndex + 1);
+    }
+    toggleExpandView();
+  }, [posts, embedDetails, onActiveIndexChange, isDesktop]);
 
   // Section-related state
   const sectionList = embedDetails?.embedEventBus.getContext().sectionList;
@@ -433,7 +467,7 @@ a swiper inside another swiper.
         >
           <BackButton
             websiteType={websiteType}
-            onBackClick={toggleExpandView}
+            onBackClick={changeExpandViewType}
             theme={theme}
           />
         </div>
@@ -466,18 +500,20 @@ a swiper inside another swiper.
             <PlayerHeader
               isMobile={isMobile}
               title={filteredPost[activeIndex]?.video.attributes?.title ?? ""}
-              onBackClick={toggleExpandView}
+              onBackClick={changeExpandViewType}
             />
           )}
 
           {isSectioned && (
             <SectionsTabs onSectionSelect={handleSectionSelect} />
           )}
-          <div className="gencl:h-full gencl:w-full">
-            {isSectioned
-              ? renderSectionedContent()
-              : renderNonSectionedContent()}
-          </div>
+          {slideDimensions && (
+            <div className="gencl:h-full gencl:w-full">
+              {isSectioned
+                ? renderSectionedContent()
+                : renderNonSectionedContent()}
+            </div>
+          )}
         </div>
 
         {/* Navigation buttons for iheart expand view positioned relative to player */}

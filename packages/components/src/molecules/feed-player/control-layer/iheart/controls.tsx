@@ -77,7 +77,7 @@ export function IHeartControls({
   const { track, EventName } = useAnalytics();
   //  Access baseContextManager to subscribe to preview index change events
   // const { baseContextManager } = useBaseContext();
-  const { isMobile } = useDeviceDetectMediaQuery();
+  const { isMobile , isDesktop } = useDeviceDetectMediaQuery();
 
   //  Track custom muted state for video preview (hover) mode
   // This state is separate from the actual player mute state and controls UI appearance only
@@ -199,6 +199,7 @@ export function IHeartControls({
             role="button"
             tabIndex={-1}
             variant="icon"
+            title="Thumbs Up"
             className="gencl:w-11 gencl:h-11 gencl:p-0 gencl:flex gencl:items-center gencl:justify-center"
           >
             <DynamicReactionIcon
@@ -271,7 +272,7 @@ export function IHeartControls({
       <ShareButton
         pathName={shareUrl ?? ""}
         withCustomChildren
-        disableInternalFunctionality={websiteType === "legacy" ? true : false}
+        disableInternalFunctionality={websiteType === "legacy" ? true : isDesktop}
         onClick={() => {
           // Track share event (same as Actions component)
           if (contentId) {

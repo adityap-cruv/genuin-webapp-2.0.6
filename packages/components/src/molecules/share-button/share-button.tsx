@@ -61,11 +61,6 @@ export function ShareButton({
     async (e: any) => {
       onClick?.(e);
 
-      // If internal functionality is disabled, only trigger onClick and return
-      if (disableInternalFunctionality) {
-        return;
-      }
-
       // Build the share URL with smart parameter handling
       const buildShareUrl = (): string => {
         // TODO : remove temporary check of ted brand id.
@@ -97,6 +92,13 @@ export function ShareButton({
 
         return url.href;
       };
+
+      // If internal functionality is disabled, only trigger onClick and return
+      if (disableInternalFunctionality) {
+        let fullUrl = buildShareUrl();
+        await copy(fullUrl);
+        return;
+      }
 
       let fullUrl = buildShareUrl();
 

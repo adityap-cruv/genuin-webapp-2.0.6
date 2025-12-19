@@ -25,13 +25,6 @@ export type EmbedEventContextType = {
    */
   previousActiveIndex: number;
   /**
-   * Indicates whether the current event should trigger impression tracking.
-   * This flag is set based on player index changes — `true` when the `activeIndex`
-   * differs from the `newIndex`, and `false` when they are the same.
-   * Used to ensure impressions are recorded only during valid player transitions.
-   */
-  shouldTrackImpression?: boolean;
-  /**
    * List of all available sections in the feed (used for sectioned views)
    */
   sectionList: PostDetailsType["section"][];
@@ -64,6 +57,23 @@ export type EmbedEventContextType = {
    * Array of follow statuses for podcast and station content
    */
   followStatuses: FollowStatusItem[];
+  /**
+   * Indicates whether the current event should trigger impression tracking.
+   * This flag is set based on player index changes — `true` when the `activeIndex`
+   * differs from the `newIndex`, and `false` when they are the same.
+   * Used to ensure impressions are recorded only during valid player transitions.
+   */
+  shouldTrackImpression?: boolean;
+
+  /**
+   * Indicates whether the "onCaughtOverlay" event has already been fired
+   * during the current session.
+   *
+   * When set to `true`, the event will not be triggered again, ensuring that the
+   * "onCaughtOverlay" is shown only once per session. This prevents duplicate
+   * event emissions and maintains consistent session-level behavior.
+   */
+  isCaughtUpEventFired?: boolean;
 };
 
 export type EmbedEventNameType =
@@ -75,7 +85,8 @@ export type EmbedEventNameType =
   | "containerInViewChange"
   | "disableSwiperChange"
   | "centerActiveSlide"
-  | "followStatusChange";
+  | "followStatusChange"
+  | "disableCaughtUpEvent";
 
 /**
  * Creates a new event bus instance for embed functionality
@@ -94,5 +105,6 @@ export const createEmbedEventBus = (context?: EmbedEventContextType) =>
     skipTimeOffsetOnce: false,
     disableSwiper: false,
     followStatuses: [],
+    isCaughtUpEventFired: false,
     ...context,
   });

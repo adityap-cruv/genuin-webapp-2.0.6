@@ -654,7 +654,7 @@ export function ExpandViewDetails({
       {brandLayoutType === "iheart" ? (
         <div
           ref={scrubberRef}
-          className="gencl:h-11 gencl:flex gencl:items-center"
+          className="gencl:h-11 gencl:flex gencl:items-center gencl:relative gencl:z-10"
           data-scrubber-container="true"
         >
           <Scrubber
@@ -674,8 +674,8 @@ export function ExpandViewDetails({
       )}
       {/* iHeart: Show linkouts below seeker */}
       {/* TODO : iheart phase-2 implementation  */}{" "}
-      {brandLayoutType === "iheart" && postDetails.video.linkoutId && (
-        <div className="gencl:h-11 gencl:flex gencl:items-center">
+      {brandLayoutType === "iheart" && (
+        <div className="gencl:h-11 gencl:flex gencl:items-center gencl:relative gencl:z-10">
           <ClipPlayerCTA
             websiteType={websiteType}
             postDetails={postDetails}

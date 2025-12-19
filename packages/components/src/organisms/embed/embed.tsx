@@ -219,11 +219,34 @@ export function Embed({
   );
   const { isDesktop, isMobile } = useDeviceDetectMediaQuery();
   const totalVideos = feedData?.pages?.[0]?.totalVideos as number;
+  // Use the custom hook with style prop to prioritize parent styles
+  const {
+    containerHeight,
+    containerWidth,
+    statsHeight,
+    headerHeight,
+    linkoutHeight,
+    spaceBetweenVideos,
+    availableHeight,
+  } = useEmbedDimensions();
+
+  // Check for iheart brand layout for navigation button positioning
+  const isIheartLayout = config.view.brandLayoutType === "iheart";
+  const websiteType = config.view.websiteType;
+  // For iHeart Polaris on desktop, we exclude overlay-type posts.
+  // The overlay card isn't required in this layout, and maintaining index
+  // consistency between the embed view and expanded view becomes difficult.
+  // Hence, we filter out overlay posts when the conditions match.
+  const filteredPost = useMemo(() => {
+    return isDesktop && websiteType === "polaris" && isIheartLayout
+      ? videos.filter((post) => post.video.type !== "overlay")
+      : videos;
+  }, [videos, isDesktop]);
 
   // Extract video titles from postDetails
   const sectionList = useMemo(
-    () => videos.map((videoData) => videoData.section || null),
-    [videos]
+    () => filteredPost.map((videoData) => videoData.section || null),
+    [filteredPost]
   );
 
   // Extract sectioned property from feedData and update the context
@@ -237,7 +260,7 @@ export function Embed({
 
       // Emit SDK event when feed is loaded
       SDKEventEmitter.emit(SDKEventName.FEED_LOADED, {
-        videoCount: videos.length,
+        videoCount: filteredPost.length,
         hasNextPage: hasNextPage ?? false,
         isSectioned: sectioned,
         feedType: feedType,
@@ -254,7 +277,7 @@ export function Embed({
     } else {
       AnalyticsService.updatePayload("section_name", []);
     }
-  }, [videos.length]);
+  }, [filteredPost.length]);
 
   // Callback ref to know when element is mounted
   // Track EMBED_VIEWED/PLACEMENT_VIEWED event when embed is visible in viewport
@@ -361,21 +384,6 @@ export function Embed({
     swiper,
   ]);
 
-  // Use the custom hook with style prop to prioritize parent styles
-  const {
-    containerHeight,
-    containerWidth,
-    statsHeight,
-    headerHeight,
-    linkoutHeight,
-    spaceBetweenVideos,
-    availableHeight,
-  } = useEmbedDimensions();
-
-  // Check for iheart brand layout for navigation button positioning
-  const isIheartLayout = config.view.brandLayoutType === "iheart";
-  const websiteType = config.view.websiteType;
-
   /**
    * Calculates the total number of slides to display based on the device type.
    *
@@ -411,11 +419,20 @@ export function Embed({
    */
   const onFeedSlideChange = useCallback(
     (swiperInstance: Swiper) => {
+      /**
+       * Checks whether the "onCaughtOverlay" event has already been fired
+       * in the current session. If `isCaughtUpEventFired` is `true`, the event
+       * is skipped to prevent duplicate triggers.
+       */
+      const isCaughtUpEventFired =
+        embedEventBus.getContext().isCaughtUpEventFired;
+      if (isCaughtUpEventFired) return;
+
       // Only check end of feed for iheart layout and we have to show toaster for desktop and tablet.
       if (
         config?.view?.brandLayoutType !== "iheart" ||
         !isDesktop ||
-        !Array.isArray(videos) ||
+        !Array.isArray(filteredPost) ||
         websiteType === "legacy"
       )
         return;
@@ -446,10 +463,18 @@ export function Embed({
 
       // Emit event if overlay detected
       if (isReachedEndOfFeed) {
+        embedEventBus.emit(
+          "disableCaughtUpEvent",
+          undefined,
+          (currentContext) => ({
+            ...currentContext,
+            isCaughtUpEventFired: true,
+          })
+        );
         SDKEventEmitter.emit(SDKEventName.CAUGHT_OVERLAY, true);
       }
     },
-    [videos, isDesktop, SDKEventEmitter, SDKEventName]
+    [videos, isDesktop, SDKEventEmitter, SDKEventName, embedEventBus]
   );
 
   // Handle URL manipulation for iHeart brand layout
@@ -458,7 +483,7 @@ export function Embed({
     websiteType,
     activePlayerType,
     activeIndex,
-    videos,
+    videos: filteredPost,
   });
 
   if (config.view.isExpandOnly) {
@@ -498,7 +523,7 @@ export function Embed({
     );
   }
 
-  if (videos.length === 0 && !isLoading) {
+  if (filteredPost.length === 0 && !isLoading) {
     return (
       <SdkEmptyState
         containerHeight={containerHeight}
@@ -526,7 +551,7 @@ export function Embed({
     >
       <EmbedManagerProvider swiper={swiper}>
         <FetchNextPageHandler
-          videos={videos}
+          videos={filteredPost}
           fetchNextPage={fetchNextPage}
           hasNextPage={hasNextPage}
           isFetchingNextPage={isFetchingNextPage}
@@ -534,7 +559,7 @@ export function Embed({
         />
         {isGridLayout ? (
           <GridView
-            videos={videos}
+            videos={filteredPost}
             rows={config.view.gridLayout?.row ?? 2}
             cols={config.view.gridLayout?.column ?? 2}
             autoAdjust={config.view.gridLayout?.auto_adjust}
@@ -590,13 +615,13 @@ export function Embed({
                   : 0
               }
               customHeightFor={{
-                index: videos.findIndex(
+                index: filteredPost.findIndex(
                   (feed) => feed.video.type === "overlay"
                 ),
                 height: 160,
               }}
             >
-              {videos?.map((videoData, idx) => {
+              {filteredPost?.map((videoData, idx) => {
                 return videoData.video.type === "complete" ? (
                   <></>
                 ) : videoData.video.type === "overlay" &&
@@ -647,12 +672,12 @@ export function Embed({
         <>
           {isSectioned ? (
             <EmbedExpandSectionedView
-              videos={videos}
+              videos={filteredPost}
               pageSession={feedData?.pages[0]?.pageSession}
             />
           ) : (
             <EmbedExpandView
-              videos={videos}
+              videos={filteredPost}
               fetchNextPage={fetchNextPage}
               hasNextPage={hasNextPage}
               isFetchingNextPage={isFetchingNextPage}
@@ -663,7 +688,11 @@ export function Embed({
           )}
         </>
       )}
-      <PipView totalVideos={feedData?.pages[0]?.totalVideos} videos={videos ?? []} isLoading={isLoading} />
+      <PipView
+        totalVideos={feedData?.pages[0]?.totalVideos}
+        videos={filteredPost ?? []}
+        isLoading={isLoading}
+      />
 
       {activePlayerType === "embed" && isIheartLayout && (
         <Toaster

@@ -39,7 +39,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
     view: { websiteType },
   } = useEmbedConfigs();
   const { isMobile } = useDeviceDetectMediaQuery();
-  const { play } = usePlayerContext();
+  const { togglePlay } = usePlayerContext();
   const embedConfigs = useEmbedConfigs();
   const [isVideoWatched, setIsVideoWatched] = useState<boolean>(
     postDetails.video.isWatched ||
@@ -380,11 +380,11 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
             videoDetails={postDetails.video}
             onPlayAgain={() => {
               // Handle play again action
-              play(true, 0);
               baseContextManager.setVideoWatched({
                 videoId: postDetails.video.id,
                 isWatched: false,
               });
+              togglePlay(true);
             }}
           />
         )}

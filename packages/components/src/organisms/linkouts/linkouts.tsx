@@ -172,6 +172,7 @@ export function Linkouts({
             key={`cta-only-${index}`}
             isEmbed={isEmbed}
             ctaText={cta_text ?? ""}
+            showIcon={cta_text !== "Go to Episodes"}
             ctaLink={cta_link ?? ""}
             linkCount={sortedLinks.length}
             handleCTAClick={handleCTAClick}

@@ -39,12 +39,13 @@ export function IHeartEndOfContentOverlay({
       aria-modal="true"
       aria-label="Video ended"
       tabIndex={0}
+      onClick={(e) => e.stopPropagation()}
       className={cn(
-        "gencl:absolute gencl:inset-0 gencl:pointer-events-none gencl:z-50 gencl:h-full gencl:w-full gencl:bg-black/65 gencl:flex gencl:flex-col gencl:items-center gencl:justify-center gencl:gap-4",
+        "gencl:absolute gencl:inset-0 gencl:pointer-events-auto gencl:z-50 gencl:h-full gencl:w-full gencl:bg-black/65 gencl:flex gencl:flex-col gencl:items-center gencl:justify-center gencl:gap-4",
         className
       )}
     >
-      <div className="gencl:flex gencl:flex-col gencl:gap-4 gencl:pointer-events-auto">
+      <div className="gencl:flex gencl:flex-col gencl:gap-4">
         {/* TODO: Move static color declaration to CSS utility class: gencl:text-[#27292D]! */}
         <OverLayButton
           info={info}

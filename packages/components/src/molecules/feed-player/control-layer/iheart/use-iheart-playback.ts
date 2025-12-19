@@ -265,6 +265,8 @@ export function useIHeartPlayback({
               slug: videoDetails.attributes?.slug,
               type: info.type,
               play: false,
+              videoId: videoDetails.id,
+              videoTitle: videoDetails.attributes?.title ?? undefined,
             });
           }
         } else if (
@@ -277,12 +279,14 @@ export function useIHeartPlayback({
             SDKEventEmitter.emit(SDKEventName.PLAY_IHEART_CONTENT, {
               ...payload,
               navigate: true,
-              slug: videoDetails.attributes?.slug,
+              slug: videoDetails.attributes?.slug ?? undefined,
               type: info.type,
               play: false,
+              videoId: videoDetails.id,
+              videoTitle: videoDetails.attributes?.title ?? undefined,
             });
           }
-          else if(variant === "overlay"){
+          else if(variant === "overlay" || variant === "complete"){
             const redirectUrl = getBaseUrlWithouthighlights({type : "podcast"});
             window.location.replace(redirectUrl);
             return;
@@ -297,7 +301,7 @@ export function useIHeartPlayback({
             videoId: videoDetails.id,
             videoTitle: videoDetails.attributes?.title ?? undefined,
           });
-          setIsPlaying(!isPlaying);
+          // setIsPlaying(!isPlaying);
         }
         return; // Don't play - just redirect/scroll
       }
@@ -312,6 +316,8 @@ export function useIHeartPlayback({
           slug: clipPlayerPayLoad.slug ?? undefined,
           play: true,
           navigate: true,
+          videoId: videoDetails.id,
+          videoTitle: videoDetails.attributes?.title ?? undefined,
         });
         return;
       }

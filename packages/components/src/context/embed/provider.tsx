@@ -78,6 +78,7 @@ export function EmbedProvider({
         // Only disable swiper for iHeart layout with startVideoSlug and action=share
         disableSwiper:
           isIHeartLayout && !!embedData.startVideoSlug && action === "share",
+        isCaughtUpEventFired: false,
       }),
     [
       isIHeartLayout,

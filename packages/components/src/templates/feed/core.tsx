@@ -82,17 +82,17 @@ export const FeedViewCore = memo(function FeedViewCore({
     : false;
 
   // Find the index of the video that matches startVideoSlug, fallback to parent's startIndex
-  const resolvedStartIndex = (() => {
-    if (embedDetails?.embedData.startVideoSlug && videos) {
-      const foundIndex = videos.findIndex((video) =>
-        isUuid(embedDetails.embedData.startVideoSlug ?? "")
-          ? video.video?.id === embedDetails.embedData.startVideoSlug
-          : video.video?.slug === embedDetails.embedData.startVideoSlug
-      );
-      return foundIndex !== -1 ? foundIndex : startIndex;
-    }
-    return startIndex;
-  })();
+  // const resolvedStartIndex = (() => {
+  //   if (embedDetails?.embedData.startVideoSlug && videos) {
+  //     const foundIndex = videos.findIndex((video) =>
+  //       isUuid(embedDetails.embedData.startVideoSlug ?? "")
+  //         ? video.video?.id === embedDetails.embedData.startVideoSlug
+  //         : video.video?.slug === embedDetails.embedData.startVideoSlug
+  //     );
+  //     return foundIndex !== -1 ? foundIndex : startIndex;
+  //   }
+  //   return startIndex;
+  // })();
 
   // this useEffect is used to fetch the next page of videos when the user scrolls to the end of the list.
   // it checks if there is a next page and if the user is not already fetching the next page.
@@ -203,7 +203,7 @@ export const FeedViewCore = memo(function FeedViewCore({
   );
 
   const playerListProps = {
-    startIndex: resolvedStartIndex,
+    startIndex,
     posts: videos,
     onActiveIndexChange: handleActiveIndexChange,
     onReactionStateChange: handleReactionStateChange,

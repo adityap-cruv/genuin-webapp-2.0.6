@@ -67,7 +67,7 @@ export function EmbedExpandView({
   const isIHeart = brandLayoutType === "iheart";
 
   // Function to handle closing expand view - restores mute state and goes back
-  const handleCloseExpandView = () => {
+  const handleCloseExpandView = (isEscapeKey?: boolean) => {
     // For iHeart layout, maintain the current mute state (preserve user preference)
     if (
       brandLayoutType !== "iheart" &&
@@ -81,18 +81,48 @@ export function EmbedExpandView({
       }
       return x;
     });
-
-    /*If the feed has reached its end in the expand view,
-      update the active index to maintain sync between
-      the expand view and the embed view.*/
+    /*
+     * Handle closing the expand view and syncing with embed view.
+     * The embed view shows all cards (including overlay), while expand view
+     * skips the overlay card, requiring index adjustment when switching views.
+     */
     const { activeIndex } = embedEventBus.getContext();
-    const isEndOfFeed = activeIndex >= videos.length - 1;
+    const currentVideo = videos[activeIndex];
+    const nextVideo = videos[activeIndex + 1];
 
-    // TODO : revert this changes when we sync with release/genuin-sdk/2.0.2-phase-2-fixes
-    if (isEndOfFeed && isIHeart) {
+    // Case 1: At end of feed - move back one position before returning to embed view
+    const isEndOfFeed = currentVideo?.video.type === "complete";
+    if (isEndOfFeed) {
       changeActiveIndex(Math.max(activeIndex - 1, 0));
+      embedEventBus.emit("centerActiveSlide", {});
+      goBackToPreviousPlayerType();
+      return;
     }
-    // Emit event to center the active slide in the swiper before going back
+
+    // Case 2: Closed via back button OR one position before end
+    // No sync needed - indices already aligned (end card not shown in embed view)
+    const isClosedViaBackButton = !isEscapeKey;
+    const isBeforeEndOfFeed = nextVideo?.video.type === "complete";
+    if (isClosedViaBackButton || isBeforeEndOfFeed) {
+      embedEventBus.emit("centerActiveSlide", {});
+      goBackToPreviousPlayerType();
+      return;
+    }
+
+    // Case 3: Closed via Escape key - sync indices if overlay card was skipped
+    // Overlay card exists in embed view but not in expand view
+    const overlayIndex = videos.findIndex(
+      (post) => post.video.type === "overlay"
+    );
+    const hasPassedOverlay = activeIndex > overlayIndex && overlayIndex !== -1;
+    if (
+      hasPassedOverlay ||
+      (activeIndex === overlayIndex &&
+        (websiteType === "legacy" || (websiteType === "polaris" && !isDesktop)))
+    ) {
+      // Increment by 1 to account for the skipped overlay card in expand view
+      changeActiveIndex(activeIndex + 1);
+    }
     embedEventBus.emit("centerActiveSlide", {});
     goBackToPreviousPlayerType();
   };
@@ -105,7 +135,19 @@ export function EmbedExpandView({
       if (context.activePlayerType === "expand-view") {
         // Store current mute state when entering expand view
         setShowExpandView(true);
-        setStartIndex(context.isSectioned ? 0 : context.activeIndex);
+        const currentActiveIndex = context.isSectioned
+          ? 0
+          : context.activeIndex;
+        const overlayIndex = videos.findIndex(
+          (post) => post.video.type === "overlay"
+        );
+        setStartIndex(
+          overlayIndex === -1
+            ? currentActiveIndex
+            : currentActiveIndex >= overlayIndex
+              ? currentActiveIndex - 1
+              : currentActiveIndex
+        );
         if (brandLayoutType === "iheart") {
           setTimeout(() => {
             setMuted(muted);
@@ -134,7 +176,7 @@ export function EmbedExpandView({
     return () => {
       embedEventBus.off("activePlayerTypeChange", handleActivePlayerTypeChange);
     };
-  }, [embedEventBus, brandLayoutType, setMuted, muted]);
+  }, [embedEventBus, brandLayoutType, setMuted, muted, videos]);
 
   // Add keyboard event listener for ESC key
   useEffect(() => {
@@ -142,7 +184,7 @@ export function EmbedExpandView({
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        handleCloseExpandView();
+        handleCloseExpandView(true);
       }
     };
 

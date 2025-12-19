@@ -911,6 +911,9 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
           ...context,
           globalPlayingState: true,
         }));
+        baseContextManager.setPlayPauseTracker({
+          isPlaying: feedPlayerShouldPlay,
+        });
         return;
       }
 
