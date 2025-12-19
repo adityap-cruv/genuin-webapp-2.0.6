@@ -10,6 +10,7 @@ export enum SDKEventType {
   AUTHENTICATION_CACHED_USER_UPDATE = 'auth:cached_user_update',
   NAVIGATION = 'navigation',
   SDK_AUTHENTICATE_USER = 'sdk:authenticateUser',
+  SDK_LOGOUT_USER = 'sdk:logoutUser',
   SDK_UPDATE_CONTEXTUAL_PARAMS = 'sdk:updateContextualParams',
   SDK_UPDATE_START_VIDEO_SLUG = 'sdk:updateStartVideoSlug',
   SDK_EMBED_PROVIDER_READY = 'sdk:embedProviderReady',

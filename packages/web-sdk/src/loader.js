@@ -267,6 +267,16 @@
     })
   }
 
+  /**
+   * Logout the current user
+   */
+  function logout() {
+    return loadSDK().then((sdk) => {
+      const GenuinClass = getSDKClass(sdk)
+      return GenuinClass.logout()
+    })
+  }
+
   // Queue for early initialization calls
   const initQueue = []
   let queueProcessed = false
@@ -296,6 +306,18 @@
           .catch(reject)
       } else if (method === 'emit') {
         emit(...args)
+          .then(resolve)
+          .catch(reject)
+      } else if (method === 'expand') {
+        expand(...args)
+          .then(resolve)
+          .catch(reject)
+      } else if (method === 'collapse') {
+        collapse(...args)
+          .then(resolve)
+          .catch(reject)
+      } else if (method === 'logout') {
+        logout(...args)
           .then(resolve)
           .catch(reject)
       }
@@ -398,6 +420,17 @@
 
       return new Promise((resolve, reject) => {
         initQueue.push({ method: 'collapse', args, resolve, reject })
+        setTimeout(processInitQueue, 0)
+      })
+    },
+
+    logout: function (...args) {
+      if (queueProcessed) {
+        return logout(...args)
+      }
+
+      return new Promise((resolve, reject) => {
+        initQueue.push({ method: 'logout', args, resolve, reject })
         setTimeout(processInitQueue, 0)
       })
     },

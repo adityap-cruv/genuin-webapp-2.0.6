@@ -5,6 +5,7 @@ import {
   ErrorHandler,
   TokenManager,
   ThemeManager,
+  ErrorType,
 } from '../core'
 import { getRandomNumber, parsePlacementToEmbedData } from '../utils'
 import { BrandDetailsManager } from '@/core/brand-details-manager'
@@ -1447,6 +1448,45 @@ export class GenuinSDK {
       embedId: targetEmbedId,
       placementId: targetPlacementId,
     })
+  }
+
+  /**
+   * Logs out the current user by clearing authentication data and emitting logout event.
+   * This will:
+   * - Clear user data from token manager
+   * - Emit logout event to authentication provider
+   * - Clear cached user session
+   */
+  logout(): void {
+    // Check if SDK is initialized
+    if (!this.isInitialized) {
+      this.errorHandler.handleError(
+        ErrorType.CONFIGURATION_ERROR,
+        'Cannot logout: SDK is not initialized. Please call initialize() first.',
+      )
+      return
+    }
+
+    // Check if user is logged in
+    if (!this.tokenManager.hasUserData()) {
+      console.warn('GenuinSDK: No user is currently logged in. Logout skipped.')
+      return
+    }
+
+    try {
+      // Clear authentication data from token manager
+      this.tokenManager.clearAuth()
+
+      // Emit logout event to notify authentication provider
+      this.eventManager.emit(SDKEventType.SDK_LOGOUT_USER)
+
+    } catch (error) {
+      this.errorHandler.handleError(
+        ErrorType.AUTHENTICATION_ERROR,
+        `Failed to logout: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        { originalError: error instanceof Error ? error : undefined },
+      )
+    }
   }
 
   /**

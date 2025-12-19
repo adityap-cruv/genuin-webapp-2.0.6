@@ -123,16 +123,35 @@ export function AuthProvider({
       });
     };
 
+    const handleLogoutUser = async () => {
+      try {
+        if (isEmbed) {
+          // In embed mode, just clear auth without redirect
+          setAuthenticatedUser(null);
+          setAuthenticationStatus("unauthenticated");
+          removeAllAuthToken();
+        } else {
+          // In non-embed mode, perform full sign-out with redirect
+          await signOut("/home");
+        }
+      } catch (error) {
+        console.error("AuthProvider: Error handling logout event:", error);
+      }
+    };
+
     SDKEventEmitter.on(
       SDKListenerEventName.AUTHENTICATE_USER,
       handleAuthenticateUser
     );
+
+    SDKEventEmitter.on(SDKListenerEventName.LOGOUT_USER, handleLogoutUser);
 
     return () => {
       SDKEventEmitter.off(
         SDKListenerEventName.AUTHENTICATE_USER,
         handleAuthenticateUser
       );
+      SDKEventEmitter.off(SDKListenerEventName.LOGOUT_USER, handleLogoutUser);
     };
   }, []);
 
@@ -140,7 +159,11 @@ export function AuthProvider({
   // This ensures the token is set/removed before any subsequent network requests.
   useLayoutEffect(() => {
     // Use authenticatedUser first as it reflects the most current state (including refreshed tokens)
-    const token = authenticatedUser?.accessToken ?? user?.accessToken;
+    // If authenticatedUser is explicitly null (after logout), don't fall back to user prop
+    const token =
+      authenticatedUser === null
+        ? null
+        : (authenticatedUser?.accessToken ?? user?.accessToken);
     if (!!token) {
       setAuthTokenInAxiosInstance(token);
       invalidateAllQueries();

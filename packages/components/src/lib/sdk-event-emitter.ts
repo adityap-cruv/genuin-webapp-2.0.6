@@ -42,6 +42,7 @@ export enum SDKEventName {
  */
 export enum SDKListenerEventName {
   AUTHENTICATE_USER = "sdk:authenticateUser",
+  LOGOUT_USER = "sdk:logoutUser",
   UPDATE_CONTEXTUAL_PARAMS = "sdk:updateContextualParams",
   UPDATE_START_VIDEO_SLUG = "sdk:updateStartVideoSlug",
   EXPAND_EMBED = "sdk:expandEmbed",
