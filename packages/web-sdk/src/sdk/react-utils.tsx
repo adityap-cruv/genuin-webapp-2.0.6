@@ -102,9 +102,12 @@ export function loadExpandView(
   */
   const cleanup = () => {
     if (loaderDiv) {
-      root.unmount()
-      loaderDiv.remove()
-      loaderDiv = null
+      // Add a small delay before cleanup to ensure smooth transition
+      setTimeout(() => {
+        root.unmount()
+        loaderDiv?.remove()
+        loaderDiv = null
+      }, 200)
     }
   }
 
