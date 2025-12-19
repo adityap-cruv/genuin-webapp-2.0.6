@@ -7,7 +7,6 @@ import {
 } from "react";
 import { Swiper as SwiperType } from "swiper/types";
 import {
-  getNavigationAction,
   isSlideVisible,
   getVisibleSlideRange,
   getNewActiveIndexOnSlideChange,
@@ -274,17 +273,17 @@ export function EmbedManagerProvider({
         }
       } else {
         // Default behavior: use standard navigation action
-        const { shouldSlide, targetIndex } = getNavigationAction(
-          swiper,
-          activeIndex,
-          "next"
-        );
+        const targetIndex = Math.max(0, activeIndex + 1);
+        const visibilityPercentage = getSlideVisibilityPercentage({
+          index: activeIndex + 1,
+          dir: config.view.isFeed ? "vertical" : "horizontal",
+        });
 
         if (isIHeart) {
           handleIHeartNavigation("next");
         } else {
           // Always slide to ensure swiper navigation happens
-          if (shouldSlide) {
+          if (visibilityPercentage < 100) {
             swiper.slideNext();
           }
           setActiveIndex(targetIndex);
@@ -303,17 +302,17 @@ export function EmbedManagerProvider({
 
     if (!swiper) return;
 
-    const { shouldSlide, targetIndex } = getNavigationAction(
-      swiper,
-      activeIndex,
-      "prev"
-    );
+    const targetIndex = Math.max(0, activeIndex - 1);
+    const visibilityPercentage = getSlideVisibilityPercentage({
+      index: activeIndex - 1,
+      dir: config.view.isFeed ? "vertical" : "horizontal",
+    });
 
     if (isIHeart) {
       handleIHeartNavigation("prev");
     } else {
       // Always slide to ensure swiper navigation happens
-      if (shouldSlide) {
+      if (visibilityPercentage < 100) {
         swiper.slidePrev();
       }
       setActiveIndex(targetIndex);
@@ -409,27 +408,40 @@ export function EmbedManagerProvider({
   const getSlideVisibilityPercentage = useCallback(
     ({ index, dir }: { index: number; dir: "vertical" | "horizontal" }) => {
       if (!swiper) return 0;
-      const slides = swiper.slides;
-      const slide = slides[index];
+
+      // Find slide element (handle virtual slides)
+      const slide =
+        swiper.params.virtual && swiper.virtual
+          ? (swiper.el.querySelector(
+              `[data-swiper-slide-index="${index}"]`
+            ) as HTMLElement)
+          : (swiper.slides[index] as HTMLElement);
+
       if (!slide) return 0;
 
       const slideRect = slide.getBoundingClientRect();
       const containerRect = swiper.el.getBoundingClientRect();
 
       if (dir === "vertical") {
-        // Vertical feed: use height
-        const slideTop = Math.max(slideRect.top, containerRect.top);
-        const slideBottom = Math.min(slideRect.bottom, containerRect.bottom);
-        const visibleHeight = Math.max(0, slideBottom - slideTop);
-        const slideHeight = slideRect.height;
-        return slideHeight > 0 ? (visibleHeight / slideHeight) * 100 : 0;
+        const visibleTop = Math.max(slideRect.top, containerRect.top, 0);
+        const visibleBottom = Math.min(
+          slideRect.bottom,
+          containerRect.bottom,
+          window.innerHeight
+        );
+        const visibleHeight = Math.max(0, visibleBottom - visibleTop);
+        return slideRect.height > 0
+          ? (visibleHeight / slideRect.height) * 100
+          : 0;
       } else {
-        // Horizontal carousel: use width
-        const slideLeft = Math.max(slideRect.left, containerRect.left);
-        const slideRight = Math.min(slideRect.right, containerRect.right);
-        const visibleWidth = Math.max(0, slideRight - slideLeft);
-        const slideWidth = slideRect.width;
-        return slideWidth > 0 ? (visibleWidth / slideWidth) * 100 : 0;
+        const visibleLeft = Math.max(slideRect.left, containerRect.left, 0);
+        const visibleRight = Math.min(
+          slideRect.right,
+          containerRect.right,
+          window.innerWidth
+        );
+        const visibleWidth = Math.max(0, visibleRight - visibleLeft);
+        return slideRect.width > 0 ? (visibleWidth / slideRect.width) * 100 : 0;
       }
     },
     [swiper]

@@ -126,6 +126,7 @@ export function EmbedSwiper({
       speed={SWIPER_CONFIG.SCROLL_DELAY}
       modules={modules}
       freeMode={freeMode}
+      watchOverflow={true}
       keyboard={{
         enabled: !isIheartLayout,
         onlyInViewport: false,

@@ -67,6 +67,7 @@ interface NavigationButtonsProps {
   isNavigationControlEnabled: boolean;
   isPrevDisabled?: boolean;
   isNextDisabled?: boolean;
+  hideNavButtons?: boolean;
 }
 
 export function NavigationButtons({
@@ -78,9 +79,10 @@ export function NavigationButtons({
   isNavigationControlEnabled,
   isPrevDisabled = false,
   isNextDisabled = false,
+  hideNavButtons,
 }: NavigationButtonsProps) {
   // Early return if navigation is disabled
-  if (!isNavigationControlEnabled) return null;
+  if (!isNavigationControlEnabled || hideNavButtons) return null;
 
   // Determine layout and states
   const embedVariant = providedEmbedVariant;
@@ -265,7 +267,7 @@ export function NavigationButtonsWithContext({
   isIheartLayout = false,
   theme,
   setSlidesOffsetBefore,
-  embedVariant
+  embedVariant,
 }: {
   totalSlides: number;
   isIheartLayout?: boolean;
@@ -284,6 +286,7 @@ export function NavigationButtonsWithContext({
 
   const [isPrevDisabled, setIsPrevDisabled] = useState(false);
   const [isNextDisabled, setIsNextDisabled] = useState(false);
+  const [hideNavButtons, setHideNavButtons] = useState(false);
 
   const handlePrev = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -342,6 +345,7 @@ export function NavigationButtonsWithContext({
   // Listen to swiper events to update disabled state when slides move
   useEffect(() => {
     if (!swiper) return;
+    setHideNavButtons(swiper.isLocked ?? false);
 
     // Update on progress (for continuous updates during scrolling)
     const handleProgress = () => {
@@ -355,10 +359,14 @@ export function NavigationButtonsWithContext({
 
     swiper.on("progress", handleProgress);
     swiper.on("transitionEnd", handleTransitionEnd);
+    swiper.on("lock", () => setHideNavButtons(true));
+    swiper.on("unlock", () => setHideNavButtons(false));
 
     return () => {
       swiper.off("progress", handleProgress);
       swiper.off("transitionEnd", handleTransitionEnd);
+      swiper.off("lock", () => setHideNavButtons(true));
+      swiper.off("unlock", () => setHideNavButtons(false));
     };
   }, [swiper, updateDisabledState]);
 
@@ -374,6 +382,7 @@ export function NavigationButtonsWithContext({
       isNextDisabled={isNextDisabled}
       theme={theme}
       embedVariant={embedVariant}
+      hideNavButtons={hideNavButtons}
     />
   );
 }

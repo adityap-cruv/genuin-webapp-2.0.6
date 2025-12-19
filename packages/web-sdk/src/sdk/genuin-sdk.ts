@@ -312,13 +312,14 @@ export class GenuinSDK {
 
       const embedDetails = config.embedDetails!
 
-      // Load expand view if startVideoSlug is set from config
-      if (embedDetails.startVideoSlug) {
+      // Load expand view if startVideoSlug || expandOnLoad is set from config
+      if (embedDetails.startVideoSlug || embedDetails.expandOnLoad) {
         const instanceId = element.getAttribute('data-instance-id')
         if (instanceId && this.sdkElements[instanceId]) {
           loadExpandView(element, this.sdkElements[instanceId].config.theme)
         }
       }
+
       // override style of embed if provided by user.
       if (config.embedStyle) {
         embedDetails.style = config.embedStyle
@@ -746,7 +747,7 @@ export class GenuinSDK {
       // Show loading view immediately
       const extractedData = this.extractDataFromSingleDiv(element, configByUser)
       loadLoadingView(element, extractedData.theme)
-      if (extractedData.startVideoSlug) {
+      if (extractedData.startVideoSlug || extractedData.expandOnLoad) {
         loadExpandView(element, extractedData.theme)
       }
       if (extractedData) {
