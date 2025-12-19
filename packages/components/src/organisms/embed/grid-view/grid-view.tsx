@@ -15,6 +15,7 @@ export function GridView({
   aspectRatio,
   moveToNext,
   moveToNextTime,
+  totalVideos,
   ...restProps
 }: {
   videos: PostDetailsType[];
@@ -24,6 +25,7 @@ export function GridView({
   aspectRatio?: string;
   moveToNext: boolean;
   moveToNextTime: number;
+  totalVideos: number;
 } & ComponentProps<"div">) {
   const { embedEventBus } = useEmbedContext();
   const { updateActiveIndex, swiper } = useEmbedManagerContext();
@@ -127,7 +129,12 @@ export function GridView({
               );
             }}
           >
-            <EmbedItem swiper={swiper} index={index} postDetails={videoData} />
+            <EmbedItem
+              totalVideos={totalVideos}
+              swiper={swiper}
+              index={index}
+              postDetails={videoData}
+            />
           </div>
         ))}
       </div>

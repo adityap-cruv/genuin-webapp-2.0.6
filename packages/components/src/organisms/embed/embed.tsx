@@ -541,6 +541,7 @@ export function Embed({
             aspectRatio={embedData.aspect_ratio}
             moveToNext={!config.video.videoLoop}
             moveToNextTime={config.video.moveToNextTime}
+            totalVideos={feedData?.pages?.[0]?.totalVideos}
           />
         ) : (
           <div className="gencl:relative">
@@ -662,7 +663,7 @@ export function Embed({
           )}
         </>
       )}
-      <PipView videos={videos ?? []} isLoading={isLoading} />
+      <PipView totalVideos={feedData?.pages[0]?.totalVideos} videos={videos ?? []} isLoading={isLoading} />
 
       {activePlayerType === "embed" && isIheartLayout && (
         <Toaster

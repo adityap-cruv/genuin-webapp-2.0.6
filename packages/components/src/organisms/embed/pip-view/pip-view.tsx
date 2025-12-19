@@ -15,9 +15,10 @@ import { RootPortal } from "@genuin/components/molecules/root-portal";
 type PipViewProps = {
   videos: PostDetailsType[];
   isLoading: boolean;
+  totalVideos: number;
 };
 
-export function PipView({ videos, isLoading }: PipViewProps) {
+export function PipView({ videos, isLoading, totalVideos }: PipViewProps) {
   const [isPipViewOpen, setIsPipViewOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const { track, EventName } = useAnalytics();
@@ -87,6 +88,7 @@ export function PipView({ videos, isLoading }: PipViewProps) {
               <PipPlayer
                 videoDetails={videoDetails}
                 onInterationEnd={handleIterationEnd}
+                totalVideos={totalVideos}
                 isPipActive={isPipViewOpen}
                 onClick={handlePipPlayerClick}
               />
@@ -107,12 +109,14 @@ type PipPLayerPropsType = {
   videoDetails: PostDetailsType;
   isPipActive?: boolean;
   onInterationEnd?: () => void;
+  totalVideos: number;
 } & ComponentProps<"div">;
 
 function PipPlayer({
   videoDetails,
   className,
   isPipActive = false,
+  totalVideos,
   onInterationEnd,
   ...restProps
 }: PipPLayerPropsType) {
@@ -129,6 +133,7 @@ function PipPlayer({
         videoId={videoDetails.video.id}
         videoUrl={videoDetails.video.source}
         onPlayerIterationEnd={onInterationEnd ?? (() => {})}
+        totalVideos={totalVideos}
       >
         <FeedPlayer
           videoId={videoDetails.video.id}
