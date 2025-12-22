@@ -73,7 +73,26 @@ export function parseFeed(
           cardLayoutId: item?.video.card_layout_id || null,
           videoLayoutId: item?.video.video_layout_id || null,
           duration: item?.video.duration || null,
-          attributes: item?.video.attributes || null,
+          attributes:
+            item?.video.attributes &&
+            item?.video.attributes.type &&
+            (item?.video.attributes.type === "station" ||
+              item?.video.attributes.type === "podcast")
+              ? (item?.video.attributes as {
+                  type: "station" | "podcast";
+                  clip_type?: string | null;
+                  description?: string | null;
+                  image_url?: string | null;
+                  timestamp?: number | null;
+                  title?: string | null;
+                  bucket_name?: string | null;
+                  offer_text?: string | null;
+                  slug?: string | null;
+                  episode_id?: string | null;
+                  podcast_id?: string | null;
+                  station_id?: string | null;
+                })
+              : null,
 
           placement_card_layout_id:
             item?.video.placement_card_layout_id || null,
@@ -114,7 +133,26 @@ export function parseFeed(
           cardLayoutId: item.video.card_layout_id || null,
           videoLayoutId: item.video.video_layout_id || null,
           duration: item.video.duration || null,
-          attributes: item.video.attributes || null,
+          attributes:
+            item.video.attributes &&
+            item.video.attributes.type &&
+            (item.video.attributes.type === "station" ||
+              item.video.attributes.type === "podcast")
+              ? (item.video.attributes as {
+                  type: "station" | "podcast";
+                  clip_type?: string | null;
+                  description?: string | null;
+                  image_url?: string | null;
+                  timestamp?: number | null;
+                  title?: string | null;
+                  bucket_name?: string | null;
+                  offer_text?: string | null;
+                  slug?: string | null;
+                  episode_id?: string | null;
+                  podcast_id?: string | null;
+                  station_id?: string | null;
+                })
+              : null,
 
           placement_card_layout_id: item.video.placement_card_layout_id || null,
           placement_video_layout_id:
@@ -187,6 +225,9 @@ export function parseFeed(
           title: item.section?.title || null,
           description: item.section?.description || null,
           position: item.section?.position || null,
+          thumbnail_url: item.section?.thumbnail_url || null,
+          cover_url: item.section?.cover_url || null,
+          no_of_clips: item.section?.no_of_clips || null,
         },
       };
 

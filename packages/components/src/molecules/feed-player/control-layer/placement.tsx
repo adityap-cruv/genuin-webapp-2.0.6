@@ -44,7 +44,14 @@ export const Placement: FC<ControlLayerPropsType> = ({
   // Memoize expensive computations and element creation
   const sectionDetails = useMemo(
     () => (
-      <div className="gencl:flex gencl:justify-between gencl:items-center gencl:gap-2">
+      <div
+        className={cn(
+          "gencl:flex gencl:items-center gencl:gap-2",
+          contentDisplay.showSectionSubTitle &&
+            postDetails.section?.description &&
+            "gencl:justify-between"
+        )}
+      >
         {contentDisplay.showSectionThumbnail &&
           postDetails.section?.thumbnail_url &&
           !shouldHideOnSmall && (
