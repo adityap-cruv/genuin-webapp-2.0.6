@@ -94,6 +94,9 @@ class AnalyticsServiceSingleton {
       device_name: this.uaParser.device.model,
     };
 
+    // Validate initial payload has critical fields
+    this.validatePayload();
+
     this.setVideoEventsPayload(brandDetails, embedData);
 
     this.initializationPromise = new Promise<void>((resolve, reject) => {
@@ -229,8 +232,8 @@ class AnalyticsServiceSingleton {
     keyOrObject: string | Partial<DefaultAnalyticsPayload>,
     value?: any
   ) {
-    // Ensure base structure exists
-    const basePayload: DefaultAnalyticsPayload = {
+    // Start with existing payload or minimal base structure
+    const currentPayload = this.defaultPayload ?? {
       user_id: undefined,
       gen_user_id: undefined,
       brand_id: undefined,
@@ -239,24 +242,66 @@ class AnalyticsServiceSingleton {
       path: "",
       query_params: {},
       title: "",
-      ...(this.defaultPayload ?? {}),
     };
 
     if (typeof keyOrObject === "string") {
-      // Updating a single key-value pair
+      // Updating a single key-value pair - preserve all existing values
       this.defaultPayload = {
-        ...basePayload,
+        ...currentPayload,
         [keyOrObject]: value,
       };
     } else if (typeof keyOrObject === "object" && keyOrObject !== null) {
-      // Updating multiple fields via an object
+      // Updating multiple fields via an object - preserve all existing values
+      // Never allow brand_id to be overwritten with undefined/null
+      const incomingBrandId = keyOrObject.brand_id;
+      const shouldPreserveBrandId =
+        currentPayload.brand_id &&
+        (incomingBrandId === undefined || incomingBrandId === null);
+
       this.defaultPayload = {
-        ...basePayload,
+        ...currentPayload,
         ...keyOrObject,
+        // Ensure brand_id is never lost if it was previously set
+        ...(shouldPreserveBrandId && { brand_id: currentPayload.brand_id }),
       };
     } else {
       // Optional: Handle unexpected input
-      console.warn("Invalid input to updatePayload");
+      console.warn(
+        "[AnalyticsService] Invalid input to updatePayload:",
+        keyOrObject
+      );
+      return;
+    }
+
+    // Validate critical fields after update
+    this.validatePayload();
+  }
+
+  /**
+   * Validates that critical analytics fields are present and logs warnings if missing
+   */
+  private validatePayload(): void {
+    if (!this.defaultPayload) {
+      console.warn(
+        "[AnalyticsService] defaultPayload is null after updatePayload"
+      );
+      return;
+    }
+
+    const criticalFields = ["brand_id", "channel", "environment"] as const;
+    const missingFields: string[] = [];
+
+    criticalFields.forEach((field) => {
+      const value = this.defaultPayload?.[field];
+      if (value === undefined || value === null || value === "") {
+        missingFields.push(field);
+      }
+    });
+
+    if (missingFields.length > 0) {
+      console.warn(
+        `[AnalyticsService] Critical analytics fields missing or empty: ${missingFields.join(", ")}. Events may not track correctly.`
+      );
     }
   }
 
@@ -274,15 +319,25 @@ class AnalyticsServiceSingleton {
         : {}),
     };
 
+    // Filter out undefined/null values from payload
+    const sanitizedPayload = Object.entries(mergedPayload).reduce(
+      (acc, [key, value]) => {
+        if (value !== undefined && value !== null) {
+          acc[key] = value;
+        }
+        return acc;
+      },
+      {} as Record<string, any>
+    );
+
     const eventData: QueuedEvent = {
       eventName,
-
-      payload: mergedPayload,
+      payload: sanitizedPayload,
       timestamp: Date.now(),
     };
     // console.log(
     //   `[AnalyticsService Track] Event: ${eventName}`,
-    //   mergedPayload
+    //   sanitizedPayload
     // );
     if (
       this.isInitialized &&
@@ -290,21 +345,21 @@ class AnalyticsServiceSingleton {
     ) {
       // console.log(
       //   `[AnalyticsService Track] Event: ${eventName}`,
-      //   mergedPayload
+      //   sanitizedPayload
       // );
-      this.rudderAnalyticsInstance.track(eventName, mergedPayload, {
+      this.rudderAnalyticsInstance.track(eventName, sanitizedPayload, {
         os: { name: this.uaParser.os.name, version: this.uaParser.os.version },
       });
     } else if (this.isInitialized) {
       // SDK initialized (possibly simulated after error) but rudderAnalyticsInstance is not available
       // console.log(
       //   `[AnalyticsService Track (Simulated or SDK instance error)] Event: ${eventName}`,
-      //   mergedPayload
+      //   sanitizedPayload
       // );
     } else {
       // console.log(
       //   `[AnalyticsService Queued] Event: ${eventName}. Waiting for initialization.`,
-      //   mergedPayload
+      //   sanitizedPayload
       // );
       this.eventQueue.push(eventData);
       // Ensure initialization is triggered if not already in progress
