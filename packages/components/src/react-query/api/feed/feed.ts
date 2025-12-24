@@ -170,6 +170,7 @@ async function fetchFeed(
       requestBody = {
         type: feedTypeToNumber[feedType],
         ...(deviceId && { device_id: deviceId }),
+        ...(options?.embedId && { embed_id: options.embedId }),
         ...(pageParam?.lastVideoId && { last_video_id: pageParam.lastVideoId }),
         ...(pageParam?.pageSession && { page_session: pageParam.pageSession }),
         ...(options?.communityIds?.length && {
@@ -198,6 +199,8 @@ async function fetchFeed(
       url = API_PATHS.SECTION_FEED;
       requestBody = {
         ...(deviceId && { device_id: deviceId }),
+        ...(options?.placementId && { placement_id: options.placementId }),
+        ...(options?.styleId && { style_id: options.styleId }),
         ...(pageParam?.lastVideoId
           ? { last_video_id: pageParam.lastVideoId }
           : options?.lastVideoId
@@ -213,6 +216,7 @@ async function fetchFeed(
       requestBody = {
         type: feedTypeToNumber[feedType],
         ...(deviceId && { device_id: deviceId }),
+        ...(options?.embedId && { embed_id: options.embedId }),
         ...(pageParam?.lastVideoId && { last_video_id: pageParam.lastVideoId }),
         ...(pageParam?.pageSession && { page_session: pageParam.pageSession }),
         ...(options?.communityIds?.length && {
@@ -482,7 +486,7 @@ async function createFeedQueryFn(
     feedData = await prependVideoToFeed(feedData, startVideoSlug, options);
   }
 
-   const hasInitialVideoIds =
+  const hasInitialVideoIds =
     options?.initialVideoIds && options.initialVideoIds.length > 0;
 
   // Scenario 4: Prepend initial videos if initialVideoIds are provided (first page only)
