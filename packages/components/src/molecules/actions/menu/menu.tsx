@@ -20,6 +20,7 @@ import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { FlagIcon, GroupIcon, PlayIcon } from "@genuin/ui/icons";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 type MenuProps = {
   children?: React.ReactNode;
@@ -63,6 +64,9 @@ export function Menu({
   groupSlug,
   ...props
 }: MenuProps) {
+  const {
+    brand: { isIndianExpress },
+  } = useEmbedConfigs();
   const { isMobile } = useDeviceDetectMediaQuery();
   const { brandDetails } = useBaseContext();
   const embedDetails = useSafeEmbedContext();
@@ -77,12 +81,6 @@ export function Menu({
       setIsOpen(false);
     };
   }, [activeIndex]);
-
-  // Indian Express specific condition to hide some menu items
-  // As per the request from the Indian Express team
-  const isIndianExpress = useMemo(() => {
-    return brandDetails.brand_id === 2793;
-  }, []);
 
   const MenuData = [
     shareUrl &&

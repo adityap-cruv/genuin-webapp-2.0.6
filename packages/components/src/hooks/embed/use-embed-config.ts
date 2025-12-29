@@ -55,7 +55,8 @@ export function useEmbedConfigs() {
     return {
       embedStyle: embedData?.style,
       isFeed: embedData?.style === "feed",
-      isExpandOnly: embedData?.style === "expand_only" || embedData?.expandOnLoad,
+      isExpandOnly:
+        embedData?.style === "expand_only" || embedData?.expandOnLoad,
       isCarousel: embedData?.style === "carousel",
       isStandardWall: embedData?.style === "standard_wall",
       isGrid: embedData?.style === "grid",
@@ -505,6 +506,14 @@ export function useEmbedConfigs() {
     []
   );
 
+  const brand = useMemo(() => {
+    return {
+      // configuration to identify US Weekly brand
+      isUsWeekly: brandDetails.brand_id === 2476,
+      isIndianExpress: brandDetails.brand_id === 2793,
+    } as const;
+  }, [brandDetails.brand_id]);
+
   return {
     dimensions: dimensionsConfig,
     view: viewConfig,
@@ -526,5 +535,6 @@ export function useEmbedConfigs() {
      */
     useWindowSwiperMode,
     virtualizeSwiper,
+    brand,
   };
 }

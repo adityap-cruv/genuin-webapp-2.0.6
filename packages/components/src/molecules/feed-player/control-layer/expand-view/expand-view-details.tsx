@@ -540,6 +540,7 @@ export function ExpandViewDetails({
     websiteType,
     toggleExpandView,
   } = useExpandViewConfig(postDetails);
+  const { brand } = useEmbedConfigs();
   const [isExpanded, setIsExpanded] = useState(false);
   const scrubberRef = useRef<HTMLDivElement>(null);
 
@@ -579,16 +580,21 @@ export function ExpandViewDetails({
           onClick={(e) => e.stopPropagation()}
         >
           <div className="gencl:z-20">
-            <AdaptiveUserProfile
-              postDetails={postDetails}
-              type={brandLayoutType}
-              {...(brandLayoutType === "iheart" && {
-                isExpanded,
-                onExpand,
-              })}
-              websiteType={websiteType}
-              isActive={isActive}
-            />
+            {/**
+             * If the brand is US Weekly, we do not show the user profile in expand view.
+             */}
+            {!brand.isUsWeekly && (
+              <AdaptiveUserProfile
+                postDetails={postDetails}
+                type={brandLayoutType}
+                {...(brandLayoutType === "iheart" && {
+                  isExpanded,
+                  onExpand,
+                })}
+                websiteType={websiteType}
+                isActive={isActive}
+              />
+            )}
           </div>
 
           {showLinkoutInExpand && brandLayoutType !== "iheart" && (

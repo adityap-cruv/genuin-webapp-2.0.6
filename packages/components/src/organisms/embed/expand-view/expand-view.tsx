@@ -38,11 +38,8 @@ export function EmbedExpandView({
   fetchNextPage,
 }: EmbedExpandViewProps) {
   const [startIndex, setStartIndex] = useState(0);
-  const {
-    changeActiveIndex,
-    embedEventBus,
-    goBackToPreviousPlayerType,
-  } = useEmbedContext();
+  const { changeActiveIndex, embedEventBus, goBackToPreviousPlayerType } =
+    useEmbedContext();
   const {
     setMuted,
     muted,
@@ -51,6 +48,9 @@ export function EmbedExpandView({
     baseEventBus,
     brandDetails,
   } = useBaseContext();
+  const {
+    brand: { isIndianExpress },
+  } = useEmbedConfigs();
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
   const previousMuteState = usePrevious(muted);
   const isSectioned = embedEventBus.getContext().isSectioned;
@@ -214,7 +214,6 @@ export function EmbedExpandView({
         } else if (isInIframe) {
           const video = videos[startIndex]?.video;
           let videoShareUrl = video?.shareUrl;
-          const isIndianExpress = brandDetails.brand_id === 2793;
 
           // For brand_id 2249, construct custom URL with white_label_url
           if (isIndianExpress && video?.slug && brandDetails?.white_label_url) {
@@ -278,7 +277,7 @@ export function EmbedExpandView({
         void exitFullscreen();
       }
     };
-  }, [showExpandView, isInIframe]);
+  }, [showExpandView, isInIframe, isIndianExpress]);
 
   useEffect(() => {
     /**
