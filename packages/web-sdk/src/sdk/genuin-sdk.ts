@@ -843,6 +843,7 @@ export class GenuinSDK {
       'data-start-video-slug',
       'data-initial-video-ids',
       'data-expand-on-load',
+      'data-allow-gesture-scroll',
     ] as const
 
     // Extract core configuration attributes from the HTML element
@@ -1134,6 +1135,11 @@ export class GenuinSDK {
           break
         case 'data-expand-on-load':
           answerToReturn.expandOnLoad = value === 'true'
+          break
+        case 'data-allow-gesture-scroll':
+          const gestureScrollValue = value ?? configByUser?.allow_gesture_scroll
+          answerToReturn.allowGestureScroll =
+            gestureScrollValue === 'false' ? false : true
           break
         default:
           break
@@ -1480,7 +1486,6 @@ export class GenuinSDK {
 
       // Emit logout event to notify authentication provider
       this.eventManager.emit(SDKEventType.SDK_LOGOUT_USER)
-
     } catch (error) {
       this.errorHandler.handleError(
         ErrorType.AUTHENTICATION_ERROR,

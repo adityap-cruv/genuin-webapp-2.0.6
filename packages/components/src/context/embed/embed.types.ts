@@ -561,6 +561,9 @@ export type EmbedDataType = {
   }>;
   websiteType?: "polaris" | "legacy" | undefined;
   expandOnLoad?: boolean;
+  configs?: {
+    allowGestureScroll?: boolean;
+  };
 };
 
 export type CustomizationType = {

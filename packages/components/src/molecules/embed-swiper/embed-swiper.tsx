@@ -45,6 +45,8 @@ export function EmbedSwiper({
   isIheartLayout = false,
   customHeightFor,
   virtual,
+  threshold,
+  touchReleaseOnEdges,
   onActiveIndexChange,
   onInit,
   onSwiper,
@@ -52,7 +54,13 @@ export function EmbedSwiper({
 }: EmbedSwiperProps) {
   const { isWindows } = useDeviceDetection();
   const swiperRef = useRef<SwiperType | null>(null);
-  const { useWindowSwiperMode, virtualizeSwiper } = useEmbedConfigs();
+  const {
+    embedSwiperConfigs: {
+      useWindowSwiperMode,
+      virtualizeSwiper,
+      allowGestureScroll,
+    },
+  } = useEmbedConfigs();
 
   const slidesPerView = useMemo(
     () =>
@@ -82,7 +90,10 @@ export function EmbedSwiper({
         slidesPerView={slidesPerView}
         spaceBetween={spaceBetweenVideos}
         slidesOffsetBefore={slidesOffsetBefore}
-        className={className}
+        className={cn(
+          className,
+          !allowGestureScroll && "gencl:overflow-hidden"
+        )}
         customHeightFor={customHeightFor}
         onActiveIndexChange={(instance) => {
           // Controller instance is passed directly, no wrapper needed!
@@ -145,7 +156,12 @@ export function EmbedSwiper({
       //   scrollOnFocus: true,
       // }}
       virtual={virtualizeSwiper}
+      allowTouchMove={allowGestureScroll}
+      simulateTouch={allowGestureScroll}
+      touchReleaseOnEdges={!allowGestureScroll || touchReleaseOnEdges}
+      threshold={!allowGestureScroll ? 0 : threshold}
       mousewheel={{
+        enabled: allowGestureScroll,
         forceToAxis: true,
         releaseOnEdges: true,
         thresholdDelta: isWindows
@@ -158,7 +174,11 @@ export function EmbedSwiper({
       }}
       // role="region"
       // aria-label={forFeed ? "Video feed carousel" : "Video carousel"}
-      className={cn("gencl:h-full gencl:w-full gencl:rounded-lg", className)}
+      className={cn(
+        "gencl:h-full gencl:w-full gencl:rounded-lg",
+        !allowGestureScroll && "swiper-no-swiping",
+        className
+      )}
       slidesOffsetBefore={slidesOffsetBefore}
       onInit={(swiper) => {
         onInit?.(swiper);

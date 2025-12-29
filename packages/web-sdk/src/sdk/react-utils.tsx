@@ -263,6 +263,9 @@ export function loadNewEmbed({
           initialVideoIds: config.initialVideoIds,
           videoIds: config.videoIds,
           websiteType: config.websiteType,
+          configs: {
+            allowGestureScroll: config.allowGestureScroll,
+          },
         }}
         brandLayoutType={brandLayoutType}>
         <BaseContextProvider

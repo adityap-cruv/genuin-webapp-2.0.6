@@ -514,6 +514,15 @@ export function useEmbedConfigs() {
     } as const;
   }, [brandDetails.brand_id]);
 
+  const embedSwiperConfigs = useMemo(() => {
+    return {
+      useWindowSwiperMode,
+      virtualizeSwiper,
+      allowGestureScroll:
+        embedContextData.embedData?.configs?.allowGestureScroll ?? true,
+    };
+  }, [useWindowSwiperMode, virtualizeSwiper]);
+
   return {
     dimensions: dimensionsConfig,
     view: viewConfig,
@@ -531,10 +540,15 @@ export function useEmbedConfigs() {
     rawCustomization: customization as CustomizationType | null,
     embedStyle: viewConfig.embedStyle,
     /**
+     * @deprecated: use embedSwiperConfigs.useWindowSwiperMode instead
      * If we want to render slides into window directly instead of redering it into container.
      */
     useWindowSwiperMode,
+    /**
+     * @deprecated: use embedSwiperConfigs.virtualizeSwiper instead
+     */
     virtualizeSwiper,
     brand,
+    embedSwiperConfigs,
   };
 }
