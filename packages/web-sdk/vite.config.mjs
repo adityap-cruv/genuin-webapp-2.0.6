@@ -641,48 +641,57 @@ export default defineConfig({
             return 'vendor-radix'
           }
 
-          // Animation and media libraries
+          // Animation and media libraries - Split into smaller chunks
+          if (id.includes('node_modules/motion/')) {
+            return 'vendor-animation-motion'
+          }
           if (
-            id.includes('node_modules/motion/') ||
             id.includes('node_modules/swiper/') ||
-            id.includes('node_modules/embla-carousel') ||
-            id.includes('node_modules/openplayerjs/')
+            id.includes('node_modules/embla-carousel')
           ) {
-            return 'vendor-animation'
+            return 'vendor-animation-carousel'
+          }
+          if (id.includes('node_modules/openplayerjs/')) {
+            return 'vendor-animation-player'
           }
 
-          // Form and input libraries
+          // Form and input libraries - Split into smaller chunks
+          if (id.includes('node_modules/react-hook-form/')) {
+            return 'vendor-forms-core'
+          }
+          if (id.includes('node_modules/zod/')) {
+            return 'vendor-forms-validation'
+          }
           if (
-            id.includes('node_modules/react-hook-form/') ||
             id.includes('node_modules/input-otp/') ||
-            id.includes('node_modules/react-phone-number-input/') ||
-            id.includes('node_modules/zod/')
+            id.includes('node_modules/react-phone-number-input/')
           ) {
-            return 'vendor-forms'
+            return 'vendor-forms-inputs'
           }
 
-          // Utility libraries
+          // Utility libraries (includes router to merge small chunk)
           if (
             id.includes('node_modules/axios/') ||
             id.includes('node_modules/crypto-es/') ||
             id.includes('node_modules/dompurify/') ||
             id.includes('node_modules/uuid/') ||
-            id.includes('node_modules/ua-parser-js/')
+            id.includes('node_modules/ua-parser-js/') ||
+            id.includes('node_modules/wouter/') // Merge router with utils
           ) {
             return 'vendor-utils'
           }
 
-          // Router and navigation
-          if (id.includes('node_modules/wouter/')) {
-            return 'vendor-router'
-          }
+          // Router and navigation - Merge with vendor-utils (too small to be separate)
+          // Removed separate vendor-router chunk - will be merged with vendor-utils
 
-          // Other large third-party libraries
+          // Other large third-party libraries - Split analytics from others
           if (
             id.includes('node_modules/@fingerprintjs/') ||
-            id.includes('node_modules/@rudderstack/') ||
-            id.includes('node_modules/next/')
+            id.includes('node_modules/@rudderstack/')
           ) {
+            return 'vendor-analytics'
+          }
+          if (id.includes('node_modules/next/')) {
             return 'vendor-external'
           }
 
@@ -718,7 +727,7 @@ export default defineConfig({
     sourcemap: process.env.NODE_ENV !== 'production',
     target: 'es2020',
     // Optimize chunk sizes
-    chunkSizeWarningLimit: 1000, // Warn for chunks over 1MB
+    chunkSizeWarningLimit: 300, // Warn for chunks over 300KB (reduced from 1MB)
   },
 
   define: {

@@ -149,6 +149,14 @@ export class GenuinSDK {
    * @param config User-provided configuration for the SDK.
    */
   async newInit(config?: ConfigByUser) {
+    // Performance marker: Init start
+    try {
+      const { metrics } = await import('../utils/metrics')
+      metrics.markInitStart()
+    } catch (e) {
+      // Metrics not available, continue without tracking
+    }
+
     try {
       this.getAndSetDivs(config)
       this.setupEmbedProviderReadyHandler()
@@ -156,11 +164,26 @@ export class GenuinSDK {
       await this.initializeAllEmbeds()
 
       this.isInitialized = true
+
+      // Performance marker: Init end
+      try {
+        const { metrics } = await import('../utils/metrics')
+        metrics.markInitEnd()
+      } catch (e) {
+        // Metrics not available, continue
+      }
     } catch (error) {
       console.error(
         'Error during SDK initialization please contact admin:',
         error,
       )
+      // Still mark init end even on error
+      try {
+        const { metrics } = await import('../utils/metrics')
+        metrics.markInitEnd()
+      } catch (e) {
+        // Metrics not available, continue
+      }
     }
   }
 
@@ -348,7 +371,7 @@ export class GenuinSDK {
 
       // Apply brand colors to the element
       this.themeManager.applyBrandColors(element, brandDetails.brand_colors)
-      const cleanup = loadNewEmbed({
+      const cleanup = await loadNewEmbed({
         container: element,
         embedData: embedDetails,
         brandDetails,
@@ -422,7 +445,7 @@ export class GenuinSDK {
       return
     }
 
-    const cleanup = loadNewEmbed({
+    const cleanup = await loadNewEmbed({
       container: element,
       embedData: config.embedDetails,
       brandDetails,

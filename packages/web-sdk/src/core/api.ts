@@ -10,7 +10,8 @@ import {
   EmbedDataType,
   PlacementDataResponse,
 } from '@genuin/components/context/embed/embed.types'
-import { parseUserData } from '@genuin/components/react-query/api/authentication/parser'
+// Lazy load parseUserData to avoid pulling in react-query on init
+// Will be imported dynamically when needed
 import { AuthUser } from '@genuin/components/types/auth'
 import internalStorageManager from '@genuin/components/lib/utils/internal-storage-manager'
 
@@ -231,6 +232,10 @@ export class APIService {
       const refreshToken = response.headers.get('Gn-Refresh-Token') || token
       let user
       if (data) {
+        // Lazy load parseUserData to avoid pulling in react-query on init
+        const { parseUserData } = await import(
+          '@genuin/components/react-query/api/authentication/parser'
+        )
         user = parseUserData(data.data, accessToken, refreshToken, token)
       }
       return user as AuthUser

@@ -1,35 +1,48 @@
-// Import styles
-import './styles.css'
+// Lazy load styles to reduce initial bundle size
+// Styles will be loaded when needed via dynamic import
+if (typeof window !== 'undefined') {
+  // Load styles asynchronously after initial load
+  Promise.resolve().then(() => {
+    import('./styles.css').catch(() => {
+      // Silently fail if CSS can't be loaded
+    })
+  })
+}
 
-// Modern API exports
-export * from './core'
-export * from './sdk'
-export * from './types'
+// Selective exports instead of export * to reduce bundle size
+// Core exports (always needed - non-React)
+export {
+  EventManager,
+  SDKEventType,
+  type SDKEvent,
+  type EventListener,
+} from './core/events'
+export { ErrorHandler, ErrorType, type SDKError } from './core/errors'
+export { TokenManager } from './core/token-manager'
+export { ThemeManager, type BrandTheme } from './core/theme'
 
-// React components for React users
-export { SDKProvider, useSDK, useSDKConfig } from './core/context'
+// Lazy load React-dependent exports to avoid pulling in React on init
+// SDKProvider is only for React users - export as a getter that lazy loads
+export function getSDKProvider() {
+  return import('./core/context').then((m) => ({
+    SDKProvider: m.SDKProvider,
+    useSDK: m.useSDK,
+    useSDKConfig: m.useSDKConfig,
+  }))
+}
 
-// Main SDK class for vanilla JS and React
-export { GenuinSDK } from './sdk'
+// Type exports (no runtime cost)
+export type { BrandDetailsResponse } from './core/api'
+
+// SDK exports
+export { GenuinSDK, Genuin } from './sdk'
+
+// Type exports (selective)
+export type { EmbedConfig, EmbedState, EmbedMessage } from './types/embed'
+export { EmbedStyle } from './types/embed'
 
 // Import for browser global setup
 import { Genuin } from './sdk'
-
-// Types
-export {
-  EmbedStyle,
-  type EmbedConfig,
-  type EmbedState,
-  type EmbedMessage,
-} from './types/embed'
-
-export {
-  SDKEventType,
-  ErrorType,
-  type SDKEvent,
-  type EventListener,
-  type SDKError,
-} from './core'
 
 // Extend the global Window interface for TypeScript
 declare global {
@@ -74,6 +87,5 @@ if (typeof window !== 'undefined') {
   }
 }
 
-// Export at the end to ensure it appears in the compiled ES module
-export { Genuin }
+// Export default (Genuin is already exported above from './sdk')
 export default Genuin

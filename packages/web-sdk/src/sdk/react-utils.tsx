@@ -1,25 +1,36 @@
 import { EmbedDataType } from '@genuin/components/context/embed/embed.types'
 import { createRoot } from 'react-dom/client'
 import type { Root } from 'react-dom/client'
-import { Suspense, lazy } from 'react'
-// Import providers directly from their specific paths to avoid loading entire components package
-import { AuthProvider } from '@genuin/components/context/auth'
-import { BaseContextProvider } from '@genuin/components/context/base'
-import { EmbedProvider } from '@genuin/components/context/embed'
-import { LinkProvider } from '@genuin/components/context/link'
-import { ReactQueryClientProvider } from '@genuin/components/react-query/react-query-provider'
-import { AnalyticsProvider } from '@genuin/components/context/analytics'
-import { Loader } from '@genuin/ui/components/loader'
-import { Toaster } from '@genuin/ui'
+import { Suspense, lazy, type ComponentType, type ReactNode } from 'react'
 import { BrandDetailsConfigType } from '@genuin/components/types/brand'
 import { AuthUser } from '@genuin/components/types/auth'
 import { SingleEmbedDataConfig } from '@/type'
-import { FeedSkeleton } from '@genuin/components/templates/feed'
 import { SDKEventType } from '@/core'
-import { getBrandType } from '@genuin/components/lib/utils/brand-layout'
-import { cn } from '@genuin/ui/lib/utils'
-import { Skeleton } from '@genuin/ui/components/skeleton'
-import { useDeviceDetectMediaQuery } from '@genuin/components/hooks/use-devide-detect-media-query'
+import { metrics } from '../utils/metrics'
+import {
+  generateEmbedSkeletonHTML,
+  generateExpandViewSkeletonHTML,
+} from '../utils/skeleton-html'
+
+// Type definitions for lazy-loaded providers
+interface ProviderModules {
+  AuthProvider: ComponentType<any>
+  BaseContextProvider: ComponentType<any>
+  EmbedProvider: ComponentType<any>
+  LinkProvider: ComponentType<any>
+  ReactQueryClientProvider: ComponentType<any>
+  AnalyticsProvider: ComponentType<any>
+  Toaster: ComponentType<any>
+  Loader: ComponentType<any>
+  Skeleton: ComponentType<any>
+  FeedSkeleton: ComponentType<any>
+  getBrandType: (
+    cardLayoutId?: number | null,
+    videoLayoutId?: number | null,
+  ) => string
+  cn: (...args: any[]) => string
+  useDeviceDetectMediaQuery: () => { isDesktop: boolean }
+}
 
 // Track React roots per container to support multiple embeds
 const containerRootMap = new Map<HTMLElement, Root>()
@@ -46,7 +57,7 @@ export function loadErrorView(container: HTMLElement): void {
   `
 }
 
-// Loading view function
+// Loading view function - uses HTML/CSS skeleton (no React)
 export function loadLoadingView(
   container: HTMLElement,
   theme?: 'dark' | 'light',
@@ -58,15 +69,15 @@ export function loadLoadingView(
     containerRootMap.delete(container)
   }
 
-  const root = createRoot(container)
-  containerRootMap.set(container, root)
+  // Use HTML/CSS skeleton instead of React for faster initial load
+  const websiteType = container.getAttribute('data-website-type')
+  const isDesktop = window.innerWidth >= 768 // Simple desktop detection
 
-  root.render(
-    <EmbedSkeleton
-      container={container}
-      theme={theme}
-    />,
-  )
+  container.innerHTML = generateEmbedSkeletonHTML({
+    theme,
+    websiteType,
+    isDesktop,
+  })
 }
 
 // Expand view function
@@ -125,7 +136,61 @@ export function loadExpandView(
     },
   )
 
-  root.render(<ExpandViewSkeleton theme={theme} />)
+  // Use HTML/CSS skeleton instead of React for faster initial load
+  loaderDiv.innerHTML = generateExpandViewSkeletonHTML({ theme })
+}
+
+/**
+ * Dynamically load all React providers
+ * This defers loading of providers until embed is actually rendered
+ */
+async function loadProviders(): Promise<ProviderModules> {
+  const [
+    authModule,
+    baseModule,
+    embedModule,
+    linkModule,
+    queryModule,
+    analyticsModule,
+    uiModule,
+    brandUtilsModule,
+    uiUtilsModule,
+    hooksModule,
+  ] = await Promise.all([
+    import('@genuin/components/context/auth'),
+    import('@genuin/components/context/base'),
+    import('@genuin/components/context/embed'),
+    import('@genuin/components/context/link'),
+    import('@genuin/components/react-query/react-query-provider'),
+    import('@genuin/components/context/analytics'),
+    import('@genuin/ui'),
+    import('@genuin/components/lib/utils/brand-layout'),
+    import('@genuin/ui/lib/utils'),
+    import('@genuin/components/hooks/use-devide-detect-media-query'),
+  ])
+
+  // Lazy load UI components
+  const [loaderModule, skeletonModule, feedSkeletonModule] = await Promise.all([
+    import('@genuin/ui/components/loader'),
+    import('@genuin/ui/components/skeleton'),
+    import('@genuin/components/templates/feed'),
+  ])
+
+  return {
+    AuthProvider: authModule.AuthProvider,
+    BaseContextProvider: baseModule.BaseContextProvider,
+    EmbedProvider: embedModule.EmbedProvider,
+    LinkProvider: linkModule.LinkProvider,
+    ReactQueryClientProvider: queryModule.ReactQueryClientProvider,
+    AnalyticsProvider: analyticsModule.AnalyticsProvider,
+    Toaster: uiModule.Toaster,
+    Loader: loaderModule.Loader,
+    Skeleton: skeletonModule.Skeleton,
+    FeedSkeleton: feedSkeletonModule.FeedSkeleton,
+    getBrandType: brandUtilsModule.getBrandType,
+    cn: uiUtilsModule.cn,
+    useDeviceDetectMediaQuery: hooksModule.useDeviceDetectMediaQuery,
+  }
 }
 
 // Lazy load the Embed component for better code splitting
@@ -156,19 +221,24 @@ const LazyStandardWall = lazy(() =>
     }),
 )
 
-// Generic skeleton for embed
-const EmbedSkeleton = ({
+/**
+ * React-based skeleton component (loaded after providers are available)
+ * Used as Suspense fallback after providers are loaded
+ */
+function EmbedSkeleton({
   container,
   theme,
+  providers,
 }: {
   container: HTMLElement
   theme?: 'dark' | 'light'
-}) => {
+  providers: ProviderModules
+}) {
   const bgClass =
     theme === 'dark' ? 'gencl:bg-secondary-900' : 'gencl:bg-secondary-200'
   const shimmerBgClass =
     theme === 'dark' ? 'gencl:bg-secondary-800' : 'gencl:bg-secondary-100'
-  const { isDesktop } = useDeviceDetectMediaQuery()
+  const { isDesktop } = providers.useDeviceDetectMediaQuery()
   const websiteType = container.getAttribute('data-website-type')
 
   return (
@@ -179,14 +249,14 @@ const EmbedSkeleton = ({
           style={{
             height: !isDesktop ? '100%' : 'calc(100% - 68px)',
           }}
-          className={cn(
+          className={providers.cn(
             'gencl:w-full gencl:flex gencl:overflow-auto gencl:gap-2',
             !isDesktop && websiteType === 'polaris' && 'gencl:flex-col',
           )}>
           {Array.from({ length: 6 }).map((_, idx) => (
-            <Skeleton
+            <providers.Skeleton
               key={idx}
-              className={cn(
+              className={providers.cn(
                 'gencl:aspect-square gencl:flex-shrink-0 gencl:rounded-md',
                 !isDesktop && websiteType === 'polaris'
                   ? 'gencl:w-full'
@@ -197,7 +267,7 @@ const EmbedSkeleton = ({
           ))}
         </div>
       ) : (
-        <Loader
+        <providers.Loader
           size='md'
           className='gencl:absolute gencl:top-1/2 gencl:left-1/2 gencl:-translate-x-1/2 gencl:-translate-y-1/2'
         />
@@ -206,13 +276,22 @@ const EmbedSkeleton = ({
   )
 }
 
-const ExpandViewSkeleton = ({ theme }: { theme?: 'dark' | 'light' }) => {
+/**
+ * React-based expand view skeleton (loaded after providers are available)
+ */
+function ExpandViewSkeleton({
+  theme,
+  providers,
+}: {
+  theme?: 'dark' | 'light'
+  providers: ProviderModules
+}) {
   const bgClass =
     theme === 'dark' ? 'gencl:bg-secondary-900' : 'gencl:bg-secondary-50'
   return (
     <div
       className={`gencl:fixed gencl:inset-0 gencl:h-full gencl:w-full gencl:z-50 ${bgClass}`}>
-      <FeedSkeleton
+      <providers.FeedSkeleton
         theme={theme}
         variant='fullscreen'
         showCommentsSkeleton={false}
@@ -221,7 +300,7 @@ const ExpandViewSkeleton = ({ theme }: { theme?: 'dark' | 'light' }) => {
   )
 }
 
-export function loadNewEmbed({
+export async function loadNewEmbed({
   container,
   embedData,
   brandDetails,
@@ -233,11 +312,18 @@ export function loadNewEmbed({
   brandDetails: BrandDetailsConfigType
   config: Partial<SingleEmbedDataConfig>
   user?: AuthUser | null
-}): () => void {
+}): Promise<() => void> {
+  // Performance marker: Embed render start
+  const embedId = embedData.embed_id || embedData.placement_id || 'unknown'
+  metrics.markEmbedRenderStart(embedId)
+
   // Unmount previous root if exists for this container
   const prevRoot = containerRootMap.get(container)
   prevRoot?.unmount()
   containerRootMap.delete(container)
+
+  // Dynamically load all providers (defers loading until embed is rendered)
+  const providers = await loadProviders()
 
   const root = createRoot(container)
   containerRootMap.set(container, root)
@@ -250,9 +336,22 @@ export function loadNewEmbed({
   const videoLayoutId = isPlacementView
     ? embedData.placement_video_layout_id
     : embedData.video_layout_id
-  const brandLayoutType = getBrandType(cardLayoutId, videoLayoutId)
+  const brandLayoutType = providers.getBrandType(
+    cardLayoutId ? Number(cardLayoutId) : undefined,
+    videoLayoutId ? Number(videoLayoutId) : undefined,
+  )
 
-  const rootToRender = (
+  const {
+    ReactQueryClientProvider,
+    EmbedProvider,
+    BaseContextProvider,
+    LinkProvider,
+    AuthProvider,
+    AnalyticsProvider,
+    Toaster,
+  } = providers
+
+  const rootToRender: ReactNode = (
     <ReactQueryClientProvider>
       <EmbedProvider
         container={container}
@@ -286,6 +385,7 @@ export function loadNewEmbed({
                     <EmbedSkeleton
                       theme={config.theme}
                       container={container}
+                      providers={providers}
                     />
                   }>
                   {embedData.style === 'standard_wall' ? (
@@ -304,6 +404,12 @@ export function loadNewEmbed({
   )
 
   root.render(rootToRender)
+
+  // Performance marker: Embed render end (after React render)
+  // Use requestAnimationFrame to ensure render is complete
+  requestAnimationFrame(() => {
+    metrics.markEmbedRenderEnd(embedId)
+  })
 
   // Return cleanup function
   return () => {

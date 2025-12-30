@@ -78,6 +78,14 @@
       return loadPromise
     }
 
+    // Performance marker: SDK load start
+    if (typeof performance !== 'undefined' && performance.mark) {
+      performance.mark('genuin-sdk-load-start')
+    }
+    if (window.__GENUIN_METRICS__) {
+      window.__GENUIN_METRICS__.markSDKLoadStart()
+    }
+
     sdkLoading = true
     // Function to get the actual SDK filename from manifest
     function getSDKFilename() {
@@ -110,6 +118,17 @@
         sdkLoaded = true
         window.GenuinSDK = module
         genuinSDKInstance = module.default || module.Genuin
+
+        // Performance marker: SDK load end
+        if (typeof performance !== 'undefined' && performance.mark) {
+          performance.mark('genuin-sdk-load-end')
+          if (performance.measure) {
+            performance.measure('genuin-sdk-load', 'genuin-sdk-load-start', 'genuin-sdk-load-end')
+          }
+        }
+        if (window.__GENUIN_METRICS__) {
+          window.__GENUIN_METRICS__.markSDKLoadEnd()
+        }
 
         // Ensure React is properly available before continuing
         // This helps prevent timing issues with vendor chunks
