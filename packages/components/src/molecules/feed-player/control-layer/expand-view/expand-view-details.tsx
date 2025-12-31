@@ -9,14 +9,27 @@ import {
   useState,
   type ComponentProps,
   useCallback,
+  lazy,
+  Suspense,
 } from "react";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { usePlayerContext } from "../../context";
 import { ProfileLink } from "@genuin/components/molecules/profile-link";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { Pills } from "@genuin/components/molecules/feed-player/pills";
-import { Actions } from "@genuin/components/molecules/actions";
-import { CommentsDialog } from "@genuin/components/molecules/comments";
+
+// Lazy load heavy components
+const Actions = lazy(() =>
+  import("../../../actions").then((m) => ({
+    default: m.Actions,
+  }))
+);
+const CommentsDialog = lazy(() =>
+  import("../../../comments").then((m) => ({
+    default: m.CommentsDialog,
+  }))
+);
+
 import { controlLayerVariant } from "../control-layer";
 import { VariantProps } from "class-variance-authority";
 import {
@@ -469,49 +482,51 @@ const SharedActions = memo(function SharedActions({
 
   // Default actions for other brands
   return (
-    <Actions
-      onClick={(e) => e.stopPropagation()}
-      className="gencl:sm:hidden!"
-      variant="mobile"
-      theme="dark"
-      contentId={postDetails.video.id}
-      isReacted={postDetails.video.isSparked ?? false}
-      reactionCount={postDetails.video.sparkCount}
-      shareUrl={postDetails.video.shareUrl}
-      slug={postDetails.video.slug}
-      groupSlug={postDetails.group.slug}
-      actionWrapper={{
-        COMMENT: (defaultNode) => {
-          return (
-            <CommentsDialog
-              key="comment-dialog"
-              shareUrl={postDetails.video.shareUrl}
-              communityId={postDetails.community.id}
-              loopId={postDetails.group.id}
-              videoId={postDetails.video.id}
-              videoSlug={postDetails.video.slug}
-              commentCount={postDetails.video.commentCount}
-              defaultOpen={defaultOpenCommentDialog}
-              onCommentCountChange={(videoId, increment) => {
-                onCommentCountChange?.(videoId, increment);
-              }}
-            >
-              {defaultNode}
-              <p className="gencl:text-body-2-medium gencl:text-white!">
-                {postDetails.video.commentCount}
-              </p>
-            </CommentsDialog>
+    <Suspense fallback={null}>
+      <Actions
+        onClick={(e) => e.stopPropagation()}
+        className="gencl:sm:hidden!"
+        variant="mobile"
+        theme="dark"
+        contentId={postDetails.video.id}
+        isReacted={postDetails.video.isSparked ?? false}
+        reactionCount={postDetails.video.sparkCount}
+        shareUrl={postDetails.video.shareUrl}
+        slug={postDetails.video.slug}
+        groupSlug={postDetails.group.slug}
+        actionWrapper={{
+          COMMENT: (defaultNode) => {
+            return (
+              <CommentsDialog
+                key="comment-dialog"
+                shareUrl={postDetails.video.shareUrl}
+                communityId={postDetails.community.id}
+                loopId={postDetails.group.id}
+                videoId={postDetails.video.id}
+                videoSlug={postDetails.video.slug}
+                commentCount={postDetails.video.commentCount}
+                defaultOpen={defaultOpenCommentDialog}
+                onCommentCountChange={(videoId, increment) => {
+                  onCommentCountChange?.(videoId, increment);
+                }}
+              >
+                {defaultNode}
+                <p className="gencl:text-body-2-medium gencl:text-white!">
+                  {postDetails.video.commentCount}
+                </p>
+              </CommentsDialog>
+            );
+          },
+        }}
+        onReactionStateChange={(isReacted) => {
+          onReactionStateChange?.(
+            postDetails.video.id,
+            postDetails.video.slug,
+            isReacted
           );
-        },
-      }}
-      onReactionStateChange={(isReacted) => {
-        onReactionStateChange?.(
-          postDetails.video.id,
-          postDetails.video.slug,
-          isReacted
-        );
-      }}
-    />
+        }}
+      />
+    </Suspense>
   );
 });
 

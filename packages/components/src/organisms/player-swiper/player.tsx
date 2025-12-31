@@ -2,13 +2,19 @@ import { cn, detectAccessibilityMode } from "@genuin/ui/utils";
 import { useBaseContext } from "@genuin/components/context/base";
 import {
   ControlLayer,
-  FeedPlayer,
 } from "@genuin/components/molecules/feed-player";
+
+// Lazy load video player to defer heavy playback logic
+const FeedPlayer = lazy(() =>
+  import("../../molecules/feed-player").then((m) => ({
+    default: m.FeedPlayer,
+  }))
+);
 import { PlayerProvider } from "@genuin/components/molecules/feed-player/context";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
 import { useSwiper } from "swiper/react";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, lazy, Suspense } from "react";
 import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
 import { ComponentProps } from "react";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
@@ -114,23 +120,25 @@ export function Player({
           // role="region"
           // aria-label={`Video ${index + 1} - ${post.video.attributes?.title || post.video.descritptionText || "Video content"}`}
         >
-          <FeedPlayer
-            videoId={post.video.id}
-            videoDescription={post.video.descritptionText}
-            src={post.video.source}
-            adUrl={post.video.adUrl ?? undefined}
-            id={"feed-player--" + post.video.id}
-            poster={post.video.thumbnail ?? ""}
-            className={cn(
-              "gencl:bg-secondary-200 gencl:object-cover gencl:w-full gencl:h-full"
-            )}
-            playsInline
-            onTimeUpdate={handleTimeUpdate}
-            onEnded={() => {
-              showGestureOverlay("SWIPE");
-            }}
-            style={{ height: "inherit" }}
-          />
+          <Suspense fallback={null}>
+            <FeedPlayer
+              videoId={post.video.id}
+              videoDescription={post.video.descritptionText}
+              src={post.video.source}
+              adUrl={post.video.adUrl ?? undefined}
+              id={"feed-player--" + post.video.id}
+              poster={post.video.thumbnail ?? ""}
+              className={cn(
+                "gencl:bg-secondary-200 gencl:object-cover gencl:w-full gencl:h-full"
+              )}
+              playsInline
+              onTimeUpdate={handleTimeUpdate}
+              onEnded={() => {
+                showGestureOverlay("SWIPE");
+              }}
+              style={{ height: "inherit" }}
+            />
+          </Suspense>
           <ControlLayer
             index={index}
             isActive={isActive}

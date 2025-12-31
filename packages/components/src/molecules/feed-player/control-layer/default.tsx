@@ -1,13 +1,15 @@
 import { ControlLayerPropsType } from "./control-layer.types";
 import { cn } from "@genuin/ui/lib/utils";
-import React, { useCallback } from "react";
+import React, { useCallback, Suspense } from "react";
 import { useBaseContext } from "@genuin/components/context/base";
 
 import { usePlayerContext } from "../context/context";
 import { Controls } from "./controls";
 import { PlayingState } from "./playing-state";
 import { Scrubber } from "./scrubber";
-import { ExpandViewDetails } from "./expand-view";
+const ExpandViewDetails = React.lazy(() =>
+  import("./expand-view").then((m) => ({ default: m.ExpandViewDetails }))
+);
 import { PlaybackSpeedCapsule } from "@genuin/components/molecules/playback-speed/speed-capsule";
 import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
 import { Linkouts } from "@genuin/components/organisms/linkouts/linkouts";
@@ -159,17 +161,19 @@ export function Default({
             />
 
             {(showExpandView || isMobile || isTablet) && expandViewDetails && (
-              <ExpandViewDetails
-                postDetails={postDetails}
-                isActive={isActive}
-                onCommunityJoinStatusChange={onCommunityJoinStatusChange}
-                onGroupJoinStatusChange={onGroupJoinStatusChange}
-                onGroupSubscriptionChange={onGroupSubscriptionChange}
-                onReactionStateChange={onReactionStateChange}
-                onCommentCountChange={onCommentCountChange}
-                variant={variant}
-                className={cn(playbackSpeed.speed !== 1 && "gencl:invisible")}
-              />
+              <Suspense fallback={null}>
+                <ExpandViewDetails
+                  postDetails={postDetails}
+                  isActive={isActive}
+                  onCommunityJoinStatusChange={onCommunityJoinStatusChange}
+                  onGroupJoinStatusChange={onGroupJoinStatusChange}
+                  onGroupSubscriptionChange={onGroupSubscriptionChange}
+                  onReactionStateChange={onReactionStateChange}
+                  onCommentCountChange={onCommentCountChange}
+                  variant={variant}
+                  className={cn(playbackSpeed.speed !== 1 && "gencl:invisible")}
+                />
+              </Suspense>
             )}
             <PlayingState
               showOnlyPlayAction={true}
@@ -290,20 +294,22 @@ export function Default({
              * It will show the details of the post. If post is expanded.
              */}
             {(showExpandView || isMobile || isTablet) && expandViewDetails ? (
-              <ExpandViewDetails
-                postDetails={postDetails}
-                isActive={isActive}
-                onCommunityJoinStatusChange={onCommunityJoinStatusChange}
-                onGroupJoinStatusChange={onGroupJoinStatusChange}
-                onGroupSubscriptionChange={onGroupSubscriptionChange}
-                onReactionStateChange={onReactionStateChange}
-                onCommentCountChange={onCommentCountChange}
-                variant={variant}
-                className={cn(
-                  playbackSpeed.speed !== 1 &&
-                    "gencl:hidden gencl:transition-all"
-                )}
-              />
+              <Suspense fallback={null}>
+                <ExpandViewDetails
+                  postDetails={postDetails}
+                  isActive={isActive}
+                  onCommunityJoinStatusChange={onCommunityJoinStatusChange}
+                  onGroupJoinStatusChange={onGroupJoinStatusChange}
+                  onGroupSubscriptionChange={onGroupSubscriptionChange}
+                  onReactionStateChange={onReactionStateChange}
+                  onCommentCountChange={onCommentCountChange}
+                  variant={variant}
+                  className={cn(
+                    playbackSpeed.speed !== 1 &&
+                      "gencl:hidden gencl:transition-all"
+                  )}
+                />
+              </Suspense>
             ) : (
               <div
                 className={cn(

@@ -7,7 +7,15 @@ import { Actions } from "@genuin/components/molecules/actions";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
 
-import { Comments, CommentsDialog } from "../../molecules/comments";
+// Lazy load heavy comment components to split vendor-forms chunk
+const Comments = lazy(() =>
+  import("../../molecules/comments").then((m) => ({ default: m.Comments }))
+);
+const CommentsDialog = lazy(() =>
+  import("../../molecules/comments").then((m) => ({
+    default: m.CommentsDialog,
+  }))
+);
 
 import { Player } from "./player";
 import { SwiperImplementation } from "./swiper-implementation";
@@ -19,6 +27,8 @@ import {
   useRef,
   useMemo,
   useCallback,
+  lazy,
+  Suspense,
 } from "react";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { abbreviateNumber, cn } from "@genuin/ui/lib/utils";
@@ -604,32 +614,35 @@ a swiper inside another swiper.
                   );
                 }
 
-                if (
+                  if (
                   !isDesktop &&
                   filteredPost[activeIndex] &&
                   (value || defaultOpen)
                 )
                   return (
-                    <CommentsDialog
-                      commentCount={
-                        filteredPost[activeIndex]?.video.commentCount
-                      }
-                      communityId={filteredPost[activeIndex]?.community.id}
-                      loopId={filteredPost[activeIndex]?.group.id}
-                      videoId={filteredPost[activeIndex]?.video.id}
-                      videoSlug={filteredPost[activeIndex]?.video.slug}
-                      shareUrl={filteredPost[activeIndex]?.video.shareUrl}
-                      defaultOpen={value}
-                      key={
-                        "feed-comment-box" + filteredPost[activeIndex]?.video.id
-                      }
-                      onCommentCountChange={onCommentCountChange}
-                      onOpenChange={(value) => {
-                        setValue(value);
-                      }}
-                    >
-                      <CommentBox>{defaultNode}</CommentBox>
-                    </CommentsDialog>
+                    <Suspense fallback={null}>
+                      <CommentsDialog
+                        commentCount={
+                          filteredPost[activeIndex]?.video.commentCount
+                        }
+                        communityId={filteredPost[activeIndex]?.community.id}
+                        loopId={filteredPost[activeIndex]?.group.id}
+                        videoId={filteredPost[activeIndex]?.video.id}
+                        videoSlug={filteredPost[activeIndex]?.video.slug}
+                        shareUrl={filteredPost[activeIndex]?.video.shareUrl}
+                        defaultOpen={value}
+                        key={
+                          "feed-comment-box" +
+                          filteredPost[activeIndex]?.video.id
+                        }
+                        onCommentCountChange={onCommentCountChange}
+                        onOpenChange={(value) => {
+                          setValue(value);
+                        }}
+                      >
+                        <CommentBox>{defaultNode}</CommentBox>
+                      </CommentsDialog>
+                    </Suspense>
                   );
                 return (
                   <span
@@ -663,17 +676,19 @@ a swiper inside another swiper.
         brandLayoutType !== "iheart" &&
         isDesktop && (
           <div className="gencl:max-w-118 gencl:w-full gencl:h-full gencl:hidden gencl:sm:block! gencl:py-6">
-            <Comments
-              videoId={filteredPost[activeIndex].video.id}
-              loopId={filteredPost[activeIndex].group.id}
-              communityId={filteredPost[activeIndex].community?.id}
-              videoSlug={filteredPost[activeIndex].video.slug}
-              className="gencl:h-full"
-              showCloseButton={value}
-              onClose={toggle}
-              onCommentCountChange={onCommentCountChange}
-              shareUrl={filteredPost[activeIndex].video.shareUrl}
-            />
+            <Suspense fallback={null}>
+              <Comments
+                videoId={filteredPost[activeIndex].video.id}
+                loopId={filteredPost[activeIndex].group.id}
+                communityId={filteredPost[activeIndex].community?.id}
+                videoSlug={filteredPost[activeIndex].video.slug}
+                className="gencl:h-full"
+                showCloseButton={value}
+                onClose={toggle}
+                onCommentCountChange={onCommentCountChange}
+                shareUrl={filteredPost[activeIndex].video.shareUrl}
+              />
+            </Suspense>
           </div>
         )}
     </div>

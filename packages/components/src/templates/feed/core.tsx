@@ -1,11 +1,17 @@
 "use client";
 import { cn } from "@genuin/ui/utils";
 import { CommunityUserRole } from "@genuin/components/types/post";
-import { useCallback, useEffect, memo } from "react";
+import { useCallback, useEffect, memo, lazy, Suspense } from "react";
 import "swiper/css";
 
 import { PlayerList } from "@genuin/components/organisms/player-swiper";
-import { PostSidePanel } from "@genuin/components/organisms/post-side-panel";
+
+// Lazy load side panel to split comments/forms from core chunk
+const PostSidePanel = lazy(() =>
+  import("../../organisms/post-side-panel").then((m) => ({
+    default: m.PostSidePanel,
+  }))
+);
 import {
   setQueryDataForReactionInFeed,
   setQueryDataForGroupSubscriptionChangeInFeed,
@@ -72,7 +78,7 @@ export const FeedViewCore = memo(function FeedViewCore({
   const { isDesktop } = useDeviceDetectMediaQuery();
   const showSidePanel =
     videos[activeIndex] &&
-    !showExpandView &&
+    showExpandView &&
     isDesktop &&
     (!embedDetails || embedDetails.embedData.style === "standard_wall");
   const isIHeart = brandLayoutType === "iheart";
@@ -252,13 +258,15 @@ export const FeedViewCore = memo(function FeedViewCore({
             {...playerListProps}
           />
           {showSidePanel && (
-            <PostSidePanel
-              onGroupJoinStatusChange={handleGroupJoinStatusChange}
-              onGroupSubscriptionChange={handleGroupSubscriptionChange}
-              onCommunityJoinStatusChange={handleCommunityJoinStatusChange}
-              onCommentCountChange={handleCommentCountChange}
-              postDetails={videos?.[activeIndex] as PostDetailsType}
-            />
+            <Suspense fallback={null}>
+              <PostSidePanel
+                onGroupJoinStatusChange={handleGroupJoinStatusChange}
+                onGroupSubscriptionChange={handleGroupSubscriptionChange}
+                onCommunityJoinStatusChange={handleCommunityJoinStatusChange}
+                onCommentCountChange={handleCommentCountChange}
+                postDetails={videos?.[activeIndex] as PostDetailsType}
+              />
+            </Suspense>
           )}
           {/* For Interruption */}
           {shouldShowDialog && (

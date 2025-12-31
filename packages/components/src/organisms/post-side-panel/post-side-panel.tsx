@@ -2,8 +2,11 @@ import { cn } from "@genuin/ui/utils";
 import type { ComponentProps } from "react";
 
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+import { lazy, Suspense } from "react";
 
-import { Comments } from "../../molecules/comments";
+const Comments = lazy(() =>
+  import("../../molecules/comments").then((m) => ({ default: m.Comments }))
+);
 import { PostDetails } from "../post-details";
 
 type PostSidePanelPropsType = ComponentProps<"div"> & {
@@ -47,15 +50,17 @@ export function PostSidePanel({
         onGroupSubscriptionChange={onGroupSubscriptionChange}
         onCommunityJoinStatusChange={onCommunityJoinStatusChange}
       />
-      <Comments
-        videoId={postDetails.video.id}
-        loopId={postDetails.group.id}
-        communityId={postDetails.community.id}
-        shareUrl={postDetails.video.shareUrl}
-        videoSlug={postDetails.video.slug}
-        className="gencl:overflow-auto"
-        onCommentCountChange={onCommentCountChange}
-      />
+      <Suspense fallback={null}>
+        <Comments
+          videoId={postDetails.video.id}
+          loopId={postDetails.group.id}
+          communityId={postDetails.community.id}
+          shareUrl={postDetails.video.shareUrl}
+          videoSlug={postDetails.video.slug}
+          className="gencl:overflow-auto"
+          onCommentCountChange={onCommentCountChange}
+        />
+      </Suspense>
     </div>
   );
 }
