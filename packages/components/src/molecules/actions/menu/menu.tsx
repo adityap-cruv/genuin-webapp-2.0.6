@@ -1,6 +1,11 @@
 import { useBaseContext } from "@genuin/components/context/base";
 import { PlaybackSpeed } from "@genuin/components/molecules/playback-speed";
-import { Report } from "@genuin/components/molecules/report";
+const Report = React.lazy(() =>
+  import("@genuin/components/molecules/report").then((m) => ({
+    default: m.Report,
+  }))
+);
+import { Suspense } from "react";
 import {
   Popover,
   PopoverTrigger,
@@ -120,18 +125,20 @@ export function Menu({
       embedDetails?.embedData.card_layout_id !== 3 &&
       !isIndianExpress && {
         children: (
-          <Report
-            type="report-dialog"
-            reportFor="VIDEO"
-            contentId={contentId}
-            shareUrl={shareUrl ?? ""}
-            videoSlug={videoSlug ?? ""}
-            children={menuItems({
-              text: "Report Post",
-              className: "gencl:text-red",
-              ...(isMobile && { icon: <FlagIcon theme="danger" size="lg" /> }),
-            })}
-          />
+          <Suspense fallback={menuItems({ text: "Report Post", className: "gencl:text-red" })}>
+            <Report
+              type="report-dialog"
+              reportFor="VIDEO"
+              contentId={contentId}
+              shareUrl={shareUrl ?? ""}
+              videoSlug={videoSlug ?? ""}
+              children={menuItems({
+                text: "Report Post",
+                className: "gencl:text-red",
+                ...(isMobile && { icon: <FlagIcon theme="danger" size="lg" /> }),
+              })}
+            />
+          </Suspense>
         ),
       },
   ].filter(

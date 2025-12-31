@@ -4,7 +4,11 @@ import { CommunityUserRole } from "@genuin/components/types/post";
 import { useCallback, useEffect, memo, lazy, Suspense } from "react";
 import "swiper/css";
 
-import { PlayerList } from "@genuin/components/organisms/player-swiper";
+const PlayerList = lazy(() =>
+  import("@genuin/components/organisms/player-swiper").then((m) => ({
+    default: m.PlayerList,
+  }))
+);
 
 // Lazy load side panel to split comments/forms from core chunk
 const PostSidePanel = lazy(() =>
@@ -26,7 +30,11 @@ import { GroupUserStatusType } from "@genuin/components/types/roles";
 import { FeedSkeleton } from "./feed-skeleton";
 import { useInterruptionManager } from "@genuin/components/hooks/use-interruption-manager";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
-import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
+const AuthenticationModal = lazy(() =>
+  import("@genuin/components/organisms/authentication-modal").then((m) => ({
+    default: m.AuthenticationModal,
+  }))
+);
 import { FeedViewPropsType } from "./feed.type";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
@@ -252,11 +260,13 @@ export const FeedViewCore = memo(function FeedViewCore({
         {...restProps}
       >
         <IheartFullscreenContainer>
-          <PlayerList
-            isSectioned={isSectioned}
-            totalVideos={totalVideos}
-            {...playerListProps}
-          />
+          <Suspense fallback={null}>
+            <PlayerList
+              isSectioned={isSectioned}
+              totalVideos={totalVideos}
+              {...playerListProps}
+            />
+          </Suspense>
           {showSidePanel && (
             <Suspense fallback={null}>
               <PostSidePanel
@@ -270,13 +280,15 @@ export const FeedViewCore = memo(function FeedViewCore({
           )}
           {/* For Interruption */}
           {shouldShowDialog && (
-            <AuthenticationModal
-              open={shouldShowDialog}
-              onOpenChange={() => {
-                closeDialog();
-              }}
-              customStep={dialogType}
-            />
+            <Suspense fallback={null}>
+              <AuthenticationModal
+                open={shouldShowDialog}
+                onOpenChange={() => {
+                  closeDialog();
+                }}
+                customStep={dialogType}
+              />
+            </Suspense>
           )}
         </IheartFullscreenContainer>
       </div>

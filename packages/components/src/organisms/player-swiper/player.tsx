@@ -2,7 +2,7 @@ import { cn, detectAccessibilityMode } from "@genuin/ui/utils";
 import { useBaseContext } from "@genuin/components/context/base";
 import {
   ControlLayer,
-} from "@genuin/components/molecules/feed-player";
+} from "../../molecules/feed-player/control-layer";
 
 // Lazy load video player to defer heavy playback logic
 const FeedPlayer = lazy(() =>
@@ -10,7 +10,7 @@ const FeedPlayer = lazy(() =>
     default: m.FeedPlayer,
   }))
 );
-import { PlayerProvider } from "@genuin/components/molecules/feed-player/context";
+import { PlayerProvider } from "../../molecules/feed-player/context/provider";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
 import { useSwiper } from "swiper/react";

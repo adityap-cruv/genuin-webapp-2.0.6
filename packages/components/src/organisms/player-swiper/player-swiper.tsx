@@ -3,7 +3,11 @@ import "swiper/css";
 import { SwiperSlide } from "swiper/react";
 import { useBoolean } from "usehooks-ts";
 
-import { Actions } from "@genuin/components/molecules/actions";
+const Actions = lazy(() =>
+  import("@genuin/components/molecules/actions").then((m) => ({
+    default: m.Actions,
+  }))
+);
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
 
@@ -559,21 +563,22 @@ a swiper inside another swiper.
       {!isMobile &&
         brandLayoutType !== "iheart" &&
         filteredPost[activeIndex] && (
-          <Actions
-            shareUrl={filteredPost[activeIndex]?.video.shareUrl ?? ""}
-            isReacted={filteredPost[activeIndex]?.video.isSparked ?? false}
-            contentId={filteredPost[activeIndex]?.video.id}
-            groupSlug={filteredPost[activeIndex]?.group.slug}
-            slug={filteredPost[activeIndex]?.video.slug}
-            reactionCount={filteredPost[activeIndex]?.video.sparkCount}
-            theme={showExpandView ? "dark" : "light"}
-            className={cn(
-              "gencl:shrink-0",
-              showExpandView ? "gencl:pb-4" : "gencl:pb-7"
-            )}
-            isCommentBoxOpen={value}
-            actionWrapper={{
-              COMMENT: (defaultNode) => {
+          <Suspense fallback={null}>
+            <Actions
+              shareUrl={filteredPost[activeIndex]?.video.shareUrl ?? ""}
+              isReacted={filteredPost[activeIndex]?.video.isSparked ?? false}
+              contentId={filteredPost[activeIndex]?.video.id}
+              groupSlug={filteredPost[activeIndex]?.group.slug}
+              slug={filteredPost[activeIndex]?.video.slug}
+              reactionCount={filteredPost[activeIndex]?.video.sparkCount}
+              theme={showExpandView ? "dark" : "light"}
+              className={cn(
+                "gencl:shrink-0",
+                showExpandView ? "gencl:pb-4" : "gencl:pb-7"
+              )}
+              isCommentBoxOpen={value}
+              actionWrapper={{
+                COMMENT: (defaultNode) => {
                 if (!showCommentBox) return;
                 //
                 const defaultOpen =
@@ -665,7 +670,8 @@ a swiper inside another swiper.
                 isReacted
               );
             }}
-          />
+            />
+          </Suspense>
         )}
 
       {/* show this only if expand view is open  */}

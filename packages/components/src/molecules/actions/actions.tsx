@@ -6,14 +6,23 @@ import {
 } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/utils";
 import { type ComponentProps, type ReactNode, useMemo } from "react";
-import { Menu } from "./menu";
+const Menu = lazy(() => import("./menu").then((m) => ({ default: m.Menu })));
 import { ReactionButton } from "@genuin/components/molecules/reaction-button";
 import { DynamicReactionIcon } from "@genuin/components/molecules/reaction-button";
 import { ShareButton } from "@genuin/components/molecules/share-button";
-import { RepostModal } from "@genuin/components/organisms/repost-modal/repost-modal";
+const AuthenticationModal = lazy(() =>
+  import("@genuin/components/organisms/authentication-modal").then((m) => ({
+    default: m.AuthenticationModal,
+  }))
+);
+const RepostModal = lazy(() =>
+  import("@genuin/components/organisms/repost-modal/repost-modal").then(
+    (m) => ({ default: m.RepostModal })
+  )
+);
 import { useAuthContext } from "@genuin/components/context/auth";
-import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
 import { TooltipAction } from "./tooltip";
+import { lazy, Suspense } from "react";
 import { cva, VariantProps } from "class-variance-authority";
 import { useBaseContext } from "@genuin/components/context/base";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
@@ -154,28 +163,32 @@ const defaultActionWrappers: Record<
       }
 
       return (
-        <AuthenticationModal
-          key="authentication-modal"
-          getAppData={{
-            data: {
-              type: "repost",
-              payload: {
-                shareUrl: _context.shareUrl,
-                videoSlug: _context.slug,
+        <Suspense fallback={node}>
+          <AuthenticationModal
+            key="authentication-modal"
+            getAppData={{
+              data: {
+                type: "repost",
+                payload: {
+                  shareUrl: _context.shareUrl,
+                  videoSlug: _context.slug,
+                },
               },
-            },
-          }}
-          asChild
-        >
-          <div onClick={handleRepostClick}>{node}</div>
-        </AuthenticationModal>
+            }}
+            asChild
+          >
+            <div onClick={handleRepostClick}>{node}</div>
+          </AuthenticationModal>
+        </Suspense>
       );
     }
 
     return (
-      <RepostModal key="repost-modal" videoId={_context.contentId} asChild>
-        <div onClick={handleRepostClick}>{node}</div>
-      </RepostModal>
+      <Suspense fallback={node}>
+        <RepostModal key="repost-modal" videoId={_context.contentId} asChild>
+          <div onClick={handleRepostClick}>{node}</div>
+        </RepostModal>
+      </Suspense>
     );
   },
   REACTION: (node, context) => {
@@ -238,14 +251,16 @@ const defaultActionWrappers: Record<
   },
   MORE: (node, context) => {
     return (
-      <Menu
-        key="actions-more-menu"
-        contentId={context.contentId}
-        shareUrl={context.shareUrl}
-        videoSlug={context.slug}
-        groupSlug={context.groupSlug}
-        children={node}
-      />
+      <Suspense fallback={node}>
+        <Menu
+          key="actions-more-menu"
+          contentId={context.contentId}
+          shareUrl={context.shareUrl}
+          videoSlug={context.slug}
+          groupSlug={context.groupSlug}
+          children={node}
+        />
+      </Suspense>
     );
   },
 };

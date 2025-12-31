@@ -22,14 +22,23 @@ import {
 } from "@genuin/components/react-query/api/report";
 import { Loader } from "@genuin/ui/loader";
 import { UseMutationResult } from "@tanstack/react-query";
-import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
+const AuthenticationModal = React.lazy(() =>
+  import("@genuin/components/organisms/authentication-modal").then((m) => ({
+    default: m.AuthenticationModal,
+  }))
+);
 import { useAuthContext } from "@genuin/components/context/auth";
 import { MEDIA_BASE_URL } from "@genuin/components/lib/utils/env";
 import { useAnalytics } from "@genuin/components/context/analytics";
 import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { Link } from "../link";
-import { Success } from "@genuin/components/molecules/success";
+const Success = React.lazy(() =>
+  import("@genuin/components/molecules/success").then((m) => ({
+    default: m.Success,
+  }))
+);
+import { Suspense } from "react";
 
 type ReportProps = ComponentProps<typeof Dialog> & {
   reportFor: "VIDEO" | "COMMENT";
@@ -139,20 +148,22 @@ export function Report({
     }
 
     return (
-      <AuthenticationModal
-        asChild
-        getAppData={{
-          data: {
-            type: "report",
-            payload: {
-              shareUrl: shareUrl ?? "",
-              videoSlug: videoSlug ?? "",
+      <Suspense fallback={children}>
+        <AuthenticationModal
+          asChild
+          getAppData={{
+            data: {
+              type: "report",
+              payload: {
+                shareUrl: shareUrl ?? "",
+                videoSlug: videoSlug ?? "",
+              },
             },
-          },
-        }}
-      >
-        {children}
-      </AuthenticationModal>
+          }}
+        >
+          {children}
+        </AuthenticationModal>
+      </Suspense>
     );
   }
   return (
@@ -165,10 +176,12 @@ export function Report({
       </DialogTrigger>
       <DialogContent className="gencl:max-w-xl gencl:rounded-t-2xl! gencl:sm:rounded-t-none gencl:sm:rounded-2xl! gencl:flex gencl:flex-col gencl:gap-y-4">
         {reportMutation.isSuccess ? (
-          <Success
-            text="Thanks for your Feedback"
-            description="Our team will review and act on your report."
-          />
+          <Suspense fallback={<div>Loading…</div>}>
+            <Success
+              text="Thanks for your Feedback"
+              description="Our team will review and act on your report."
+            />
+          </Suspense>
         ) : (
           <ReportContent
             reportMutation={reportMutation}
