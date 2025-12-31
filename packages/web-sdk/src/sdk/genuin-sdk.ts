@@ -312,8 +312,8 @@ export class GenuinSDK {
 
       const embedDetails = config.embedDetails!
 
-      // Load expand view if startVideoSlug || expandOnLoad is set from config
-      if (embedDetails.startVideoSlug || embedDetails.expandOnLoad) {
+      // Load expand view if expandOnLoad is true, or startVideoSlug is set and expandOnLoad is not explicitly false
+      if (embedDetails.expandOnLoad === true || (embedDetails.startVideoSlug && embedDetails.expandOnLoad !== false)) {
         const instanceId = element.getAttribute('data-instance-id')
         if (instanceId && this.sdkElements[instanceId]) {
           loadExpandView(element, this.sdkElements[instanceId].config.theme)
@@ -457,10 +457,12 @@ export class GenuinSDK {
       // User config takes priority over pending action data
       if (!embedDetails.startVideoSlug && pendingAction.videoId) {
         embedDetails.startVideoSlug = pendingAction.videoId
-        // Load expand view when startVideoSlug is set from pending action
-        const instanceId = element.getAttribute('data-instance-id')
-        if (instanceId && this.sdkElements[instanceId]) {
-          loadExpandView(element, this.sdkElements[instanceId].config.theme)
+        // Load expand view when startVideoSlug is set from pending action, only if expandOnLoad is not explicitly false
+        if (embedDetails.expandOnLoad !== false) {
+          const instanceId = element.getAttribute('data-instance-id')
+          if (instanceId && this.sdkElements[instanceId]) {
+            loadExpandView(element, this.sdkElements[instanceId].config.theme)
+          }
         }
       }
 
@@ -747,7 +749,8 @@ export class GenuinSDK {
       // Show loading view immediately
       const extractedData = this.extractDataFromSingleDiv(element, configByUser)
       loadLoadingView(element, extractedData.theme)
-      if (extractedData.startVideoSlug || extractedData.expandOnLoad) {
+      // Load expand view if expandOnLoad is true, or startVideoSlug is set and expandOnLoad is not explicitly false
+      if (extractedData.expandOnLoad === true || (extractedData.startVideoSlug && extractedData.expandOnLoad !== false)) {
         loadExpandView(element, extractedData.theme)
       }
       if (extractedData) {

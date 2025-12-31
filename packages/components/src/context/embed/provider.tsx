@@ -270,8 +270,13 @@ export function EmbedProvider({
   );
 
   useEffect(() => {
-    if (embedData.startVideoSlug) changeActivePlayerType("expand-view");
-  }, [changeActivePlayerType, embedData.startVideoSlug]);
+    if (embedData.startVideoSlug && embedData.expandOnLoad !== false)
+      changeActivePlayerType("expand-view");
+  }, [
+    changeActivePlayerType,
+    embedData.startVideoSlug,
+    embedData.expandOnLoad,
+  ]);
 
   const goBackToPreviousPlayerType = useCallback(() => {
     embedEventBus.emit(
