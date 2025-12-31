@@ -313,7 +313,10 @@ export class GenuinSDK {
       const embedDetails = config.embedDetails!
 
       // Load expand view if expandOnLoad is true, or startVideoSlug is set and expandOnLoad is not explicitly false
-      if (embedDetails.expandOnLoad === true || (embedDetails.startVideoSlug && embedDetails.expandOnLoad !== false)) {
+      if (
+        embedDetails.expandOnLoad === true ||
+        (embedDetails.startVideoSlug && embedDetails.expandOnLoad !== false)
+      ) {
         const instanceId = element.getAttribute('data-instance-id')
         if (instanceId && this.sdkElements[instanceId]) {
           loadExpandView(element, this.sdkElements[instanceId].config.theme)
@@ -750,7 +753,10 @@ export class GenuinSDK {
       const extractedData = this.extractDataFromSingleDiv(element, configByUser)
       loadLoadingView(element, extractedData.theme)
       // Load expand view if expandOnLoad is true, or startVideoSlug is set and expandOnLoad is not explicitly false
-      if (extractedData.expandOnLoad === true || (extractedData.startVideoSlug && extractedData.expandOnLoad !== false)) {
+      if (
+        extractedData.expandOnLoad === true ||
+        (extractedData.startVideoSlug && extractedData.expandOnLoad !== false)
+      ) {
         loadExpandView(element, extractedData.theme)
       }
       if (extractedData) {
@@ -1393,9 +1399,9 @@ export class GenuinSDK {
     // Find by div element ID (use first element if multiple exist)
     const element = document.getElementById(id)
 
-    if (element) {
-      const instanceId = element.getAttribute('data-instance-id')
-      if (instanceId && this.sdkElements[instanceId]) {
+    const instanceId = element?.getAttribute('data-instance-id')
+    if (element && instanceId) {
+      if (this.sdkElements[instanceId]) {
         targetEmbedId =
           this.sdkElements[instanceId].config.embedDetails?.embed_id
         targetPlacementId =
@@ -1411,6 +1417,7 @@ export class GenuinSDK {
     this.eventManager.emit(SDKEventType.SDK_EXPAND_EMBED, {
       embedId: targetEmbedId,
       placementId: targetPlacementId,
+      instanceId,
     })
   }
 

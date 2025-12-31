@@ -138,11 +138,13 @@ export function EmbedProvider({
 
     const handleExpandEmbed = (props: any) => {
       const payload = props.payload;
+      const instanceId = container.getAttribute("data-instance-id");
       if (
         payload &&
         ((payload.embedId && payload.embedId === stateEmbedData.embed_id) ||
           (payload.placementId &&
-            payload.placementId === stateEmbedData.placement_id))
+            payload.placementId === stateEmbedData.placement_id)) &&
+        instanceId === payload.instanceId
       ) {
         changeActivePlayerType("expand-view");
       }
