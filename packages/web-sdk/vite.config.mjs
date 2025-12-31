@@ -636,8 +636,9 @@ export default defineConfig({
 
           // React Query - Keep separate for performance
           if (
-            id.includes('react-query') ||
-            id.includes('@tanstack/react-query')
+            id.includes('node_modules') &&
+            (id.includes('react-query') ||
+              id.includes('@tanstack/react-query'))
           ) {
             return 'vendor-react-query'
           }
@@ -661,6 +662,12 @@ export default defineConfig({
             return 'vendor-animation-player'
           }
 
+          // Icons
+          // Icons
+          if (id.includes('node_modules') && id.includes('lucide-react')) {
+            return 'vendor-icons'
+          }
+
           // Form and input libraries - Split into smaller chunks
           if (id.includes('node_modules/react-hook-form/')) {
             return 'vendor-forms-core'
@@ -668,12 +675,7 @@ export default defineConfig({
           if (id.includes('node_modules/zod/')) {
             return 'vendor-forms-validation'
           }
-          if (id.includes('node_modules/react-phone-number-input/')) {
-            return 'vendor-forms-phone'
-          }
-          if (id.includes('node_modules/input-otp/')) {
-            return 'vendor-forms-otp'
-          }
+
 
           // Utility libraries (includes router to merge small chunk)
           if (
