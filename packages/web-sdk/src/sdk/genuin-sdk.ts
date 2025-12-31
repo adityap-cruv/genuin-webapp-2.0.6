@@ -1143,7 +1143,10 @@ export class GenuinSDK {
           }
           break
         case 'data-expand-on-load':
-          answerToReturn.expandOnLoad = value === 'true'
+          // Only set expandOnLoad if the attribute is explicitly provided
+          if (value !== null) {
+            answerToReturn.expandOnLoad = value === 'true'
+          }
           break
         case 'data-allow-gesture-scroll':
           const gestureScrollValue = value ?? configByUser?.allow_gesture_scroll
@@ -1153,6 +1156,15 @@ export class GenuinSDK {
         default:
           break
       }
+    }
+
+    // If startVideoSlug is set and expandOnLoad was not explicitly provided,
+    // default expandOnLoad to true
+    if (
+      answerToReturn.startVideoSlug &&
+      answerToReturn.expandOnLoad === undefined
+    ) {
+      answerToReturn.expandOnLoad = true
     }
 
     // extras needed to set explicitly from user config.
