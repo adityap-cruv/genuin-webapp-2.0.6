@@ -9,6 +9,7 @@ import { CommentIcon, PlayIcon } from "@genuin/ui";
 import { DynamicReactionIcon } from "../../reaction-button";
 import { Image } from "@genuin/ui/components/image";
 import { IHeartControlLayer } from "./iheart";
+import { usePlayerContext } from "../context/context";
 
 // Helper function to process video description
 const processVideoDescription = (description: any) => {
@@ -34,8 +35,9 @@ export const Placement: FC<ControlLayerPropsType> = ({
   onReactionStateChange,
   ...restProps
 }) => {
-  const { contentDisplay, responsive, view } = useEmbedConfigs();
+  const { contentDisplay, responsive, view, video } = useEmbedConfigs();
   const { isXs, isMd, isSm, isLg } = responsive;
+  const { totalVideos, positionIndex } = usePlayerContext();
   const shouldHideOnSmall = isXs;
   const shouldUseCompactText = isMd;
 
@@ -190,6 +192,10 @@ export const Placement: FC<ControlLayerPropsType> = ({
             showImmediately
             linkouts={postDetails.video.linkouts}
             linkoutId={postDetails.video.linkoutId}
+            videoDetails={postDetails.video}
+            totalVideos={totalVideos}
+            positionIndex={positionIndex}
+            autoplay={video.videoAutoplay}
           />
         )}
       </>
@@ -199,6 +205,9 @@ export const Placement: FC<ControlLayerPropsType> = ({
       isActive,
       postDetails.video.linkouts,
       postDetails.video.linkoutId,
+      totalVideos,
+      positionIndex,
+      video.videoAutoplay,
     ]
   );
 

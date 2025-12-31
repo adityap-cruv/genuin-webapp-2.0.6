@@ -11,6 +11,7 @@ import { Stats } from "../../stats";
 import { EmbedControls } from "./controls/embed";
 import { IHeartControlLayer } from "./iheart";
 import { useEmbedDimensions } from "@genuin/components/hooks/embed/use-embed-dimensions";
+import { usePlayerContext } from "../context/context";
 
 export const Embed: FC<ControlLayerPropsType> = ({
   postDetails,
@@ -22,6 +23,7 @@ export const Embed: FC<ControlLayerPropsType> = ({
 }) => {
   const config = useEmbedConfigs();
   const { containerHeight } = useEmbedDimensions();
+  const { totalVideos, positionIndex } = usePlayerContext();
 
   const brandLayoutType = !config.responsive.canShowEngagement
     ? "responsiveness"
@@ -107,6 +109,10 @@ export const Embed: FC<ControlLayerPropsType> = ({
                 showImmediately
                 linkouts={postDetails.video.linkouts}
                 linkoutId={postDetails.video.linkoutId}
+                videoDetails={postDetails.video}
+                totalVideos={totalVideos}
+                positionIndex={positionIndex}
+                autoplay={config.video.videoAutoplay}
               />
             )}
           </div>
@@ -175,6 +181,10 @@ export const Embed: FC<ControlLayerPropsType> = ({
                 showImmediately
                 linkouts={postDetails.video.linkouts}
                 linkoutId={postDetails.video.linkoutId}
+                videoDetails={postDetails.video}
+                totalVideos={totalVideos}
+                positionIndex={positionIndex}
+                autoplay={config.video.videoAutoplay}
               />
             )}
             {config.community.showViewCount && !isActive && (

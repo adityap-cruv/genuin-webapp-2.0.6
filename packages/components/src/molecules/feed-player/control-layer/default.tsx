@@ -10,9 +10,8 @@ import { Scrubber } from "./scrubber";
 import { ExpandViewDetails } from "./expand-view";
 import { PlaybackSpeedCapsule } from "@genuin/components/molecules/playback-speed/speed-capsule";
 import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
-import { Linkouts } from "@genuin/components/organisms/linkouts/linkouts";
+import { Linkouts } from "@genuin/components/organisms/linkouts";
 import { SpeedControlSideBars } from "../../playback-speed/speed-control-bars";
-import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { VideoEditActionButtons } from "./controls/control-buttons";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import {
@@ -46,8 +45,15 @@ export function Default({
   ...restProps
 }: ControlLayerPropsType) {
   const { brandDetails, playbackSpeed } = useBaseContext();
-  const { showExpandView, togglePlay, toggleMuted, muted, showSeeker } =
-    usePlayerContext();
+  const {
+    showExpandView,
+    togglePlay,
+    toggleMuted,
+    muted,
+    showSeeker,
+    totalVideos,
+    positionIndex,
+  } = usePlayerContext();
   const { gestureOverlayUI, hideGestureOverlay } = useGestureOverlayManager();
   const { isMobile, isTablet, isIpad } = useDeviceDetection();
   const embedConfig = useEmbedConfigs();
@@ -332,6 +338,10 @@ export function Default({
                   isActive={isActive}
                   linkouts={postDetails.video.linkouts}
                   linkoutId={postDetails.video.linkoutId}
+                  videoDetails={postDetails.video}
+                  totalVideos={totalVideos}
+                  positionIndex={positionIndex}
+                  autoplay={embedConfig.video.videoAutoplay}
                 />
               </div>
             )}

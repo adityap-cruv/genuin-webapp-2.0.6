@@ -23,7 +23,7 @@ import {
   useEmbedContext,
   useSafeEmbedContext,
 } from "@genuin/components/context/embed/context";
-import { Linkouts } from "@genuin/components/organisms";
+import { Linkouts } from "@genuin/components/organisms/linkouts";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { Image } from "@genuin/ui/components/image";
@@ -83,13 +83,23 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
   showScrubber: boolean;
   websiteType: "polaris" | "legacy";
   toggleExpandView?: () => void;
+  totalVideos?: number;
+  positionIndex?: number;
+  videoAutoplay?: boolean;
 } {
-  const { showSeeker, showScrubber, toggleExpandView } = usePlayerContext();
+  const {
+    showSeeker,
+    showScrubber,
+    toggleExpandView,
+    totalVideos,
+    positionIndex,
+  } = usePlayerContext();
   const { isDesktop } = useDeviceDetectMediaQuery();
   const embedDetails = useSafeEmbedContext();
   const embedConfig = useEmbedConfigs();
   const {
     view: { websiteType },
+    video: { videoAutoplay },
   } = useEmbedConfigs();
   const showLinkoutInExpand = embedConfig.links.showLinksInExpand;
 
@@ -144,6 +154,9 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
     showScrubber,
     websiteType,
     toggleExpandView,
+    totalVideos,
+    positionIndex,
+    videoAutoplay,
   };
 }
 
@@ -539,6 +552,9 @@ export function ExpandViewDetails({
     showScrubber,
     websiteType,
     toggleExpandView,
+    totalVideos,
+    positionIndex,
+    videoAutoplay,
   } = useExpandViewConfig(postDetails);
   const { brand } = useEmbedConfigs();
   const [isExpanded, setIsExpanded] = useState(false);
@@ -603,6 +619,10 @@ export function ExpandViewDetails({
               linkoutId={postDetails.video.linkoutId}
               isActive={isActive}
               className={cn("gencl:w-full gencl:z-10", className)}
+              videoDetails={postDetails.video}
+              totalVideos={totalVideos}
+              positionIndex={positionIndex}
+              autoplay={videoAutoplay}
             />
           )}
 

@@ -280,7 +280,7 @@ function EmbedPlayer({
 }
 
 function OutsideComponents({ postDetails }: { postDetails: PostDetailsType }) {
-  const { contentDisplay, responsive, engagement, links, view } =
+  const { contentDisplay, responsive, engagement, links, view, video } =
     useEmbedConfigs();
   const { isXs } = responsive;
   const showLinkout = links.showLinkOutside;
@@ -361,6 +361,8 @@ function OutsideComponents({ postDetails }: { postDetails: PostDetailsType }) {
             showImmediately
             linkouts={postDetails.video.linkouts}
             linkoutId={postDetails.video.linkoutId}
+            videoDetails={postDetails.video}
+            autoplay={video.videoAutoplay}
           />
         </div>
       )}

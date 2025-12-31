@@ -9,6 +9,9 @@ import { Loader } from "@genuin/ui/components/loader";
 import { useSafeRedirect } from "./use-safe-redirect";
 import { Link } from "../link/link";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
+import { buildLinkoutsAnalyticsData } from "@genuin/components/organisms";
+import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+import { useMemo } from "react";
 
 // Combined variant for both card layouts
 const multiLinkCardVariants = cva(
@@ -41,6 +44,10 @@ interface MultiLinkCardProps
   ctaText?: string;
   ctaLink?: string;
   maxVisible?: number;
+  videoDetails?: PostDetailsType["video"];
+  totalVideos?: number;
+  positionIndex?: number;
+  autoplay?: boolean;
 }
 
 export const MultiLinkCard = ({
@@ -51,6 +58,10 @@ export const MultiLinkCard = ({
   ctaLink = "",
   maxVisible = 3,
   variant,
+  videoDetails,
+  totalVideos,
+  positionIndex,
+  autoplay,
 }: MultiLinkCardProps) => {
   const visibleLinks = links.slice(0, maxVisible);
   const hasMore = links.length > maxVisible;
@@ -60,10 +71,23 @@ export const MultiLinkCard = ({
   const { isLoading, handleRedirect } = useSafeRedirect();
   const { isMobile } = useDeviceDetection();
 
+  // Memoized analytics event data
+  const analyticsEventData = useMemo(
+    () =>
+      buildLinkoutsAnalyticsData({
+        videoDetails,
+        totalVideos,
+        positionIndex,
+        autoplay,
+      }),
+    [videoDetails, totalVideos, positionIndex, autoplay]
+  );
+
   const handleLinkClick = async (e: React.MouseEvent, link: LinkData) => {
     e.stopPropagation();
 
     track(EventName.LINKOUTS_CLICKED, {
+      ...analyticsEventData,
       linkUrl: link.link,
       linkTitle: link.title || new URL(link.link).hostname,
     });
@@ -79,6 +103,7 @@ export const MultiLinkCard = ({
     e.stopPropagation();
 
     track(EventName.LINKOUTS_CTA_CLICKED, {
+      ...analyticsEventData,
       linkUrl: ctaLink,
       linkCount: links.length,
     });
