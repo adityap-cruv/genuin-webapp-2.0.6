@@ -11,10 +11,8 @@ import { getRandomNumber, parsePlacementToEmbedData } from '../utils'
 import { BrandDetailsManager } from '@/core/brand-details-manager'
 import {
   loadErrorView,
-  loadExpandView,
-  loadLoadingView,
-  loadNewEmbed,
-} from './react-utils'
+  renderEmbedSkeleton as loadLoadingView,
+} from './dom-utils'
 import { EmbedDetailsManager } from '@/core/embed-details-manager'
 import { AuthUser } from '@genuin/components/types/auth'
 import { EmbedDataType } from '@genuin/components/context/embed/embed.types'
@@ -339,6 +337,7 @@ export class GenuinSDK {
       if (embedDetails.startVideoSlug || embedDetails.expandOnLoad) {
         const instanceId = element.getAttribute('data-instance-id')
         if (instanceId && this.sdkElements[instanceId]) {
+          const { loadExpandView } = await import('./react-utils')
           loadExpandView(element, this.sdkElements[instanceId].config.theme)
         }
       }
@@ -371,16 +370,55 @@ export class GenuinSDK {
 
       // Apply brand colors to the element
       this.themeManager.applyBrandColors(element, brandDetails.brand_colors)
-      const cleanup = await loadNewEmbed({
-        container: element,
-        embedData: embedDetails,
-        brandDetails,
-        config,
-        user,
-      })
 
-      // Store the cleanup function in sdkElements
-      this.storeCleanupFunction(element, cleanup)
+      // Render skeleton immediately (already handled in getAndSetDivs but good to ensure)
+      // loadLoadingView(element, config.theme)
+
+      // Function to perform the actual render
+      const renderEmbed = async (wasLazilyLoaded = false) => {
+        const { loadNewEmbed } = await import('./react-utils')
+        const cleanup = await loadNewEmbed({
+          container: element,
+          embedData: embedDetails,
+          brandDetails,
+          config,
+          user,
+          wasLazilyLoaded,
+        })
+        // Store the cleanup function in sdkElements
+        this.storeCleanupFunction(element, cleanup)
+      }
+
+      // Check for IntersectionObserver support for lazy loading
+      // We can also add a config flag to disable this if needed
+      const canLazyLoad =
+        'IntersectionObserver' in window &&
+        !embedDetails.startVideoSlug && // Don't lazy load if deep linking
+        !embedDetails.expandOnLoad // Don't lazy load if auto-expanding
+
+      if (canLazyLoad) {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                renderEmbed(true) // Pass true for wasLazilyLoaded
+                observer.disconnect()
+              }
+            })
+          },
+          {
+            rootMargin: '200px', // Start loading 200px before viewport
+            threshold: 0.01,
+          },
+        )
+        observer.observe(element)
+
+        // Store observer cleanup in case element is removed before loading
+        this.storeCleanupFunction(element, () => observer.disconnect())
+      } else {
+        // Fallback to eager release
+        await renderEmbed(false)
+      }
     } catch (error) {
       console.error('Error initializing embed:', error)
       console.log('[gen-sdk]: Calling user error handler with:')
@@ -445,6 +483,7 @@ export class GenuinSDK {
       return
     }
 
+    const { loadNewEmbed } = await import('./react-utils')
     const cleanup = await loadNewEmbed({
       container: element,
       embedData: config.embedDetails,
@@ -599,6 +638,7 @@ export class GenuinSDK {
         // Also load expand view when updating start video dynamically
         const sdkElement = this.sdkElements[firstEmbedId]
         if (sdkElement?.element) {
+          const { loadExpandView } = await import('./react-utils')
           loadExpandView(sdkElement.element, sdkElement.config.theme)
         }
       }
@@ -608,6 +648,7 @@ export class GenuinSDK {
         (element) => element.config.embedDetails?.embed_id === embedId,
       )
       if (sdkElement?.element) {
+        const { loadExpandView } = await import('./react-utils')
         loadExpandView(sdkElement.element, sdkElement.config.theme)
       }
     }
@@ -771,7 +812,9 @@ export class GenuinSDK {
       const extractedData = this.extractDataFromSingleDiv(element, configByUser)
       loadLoadingView(element, extractedData.theme)
       if (extractedData.startVideoSlug || extractedData.expandOnLoad) {
-        loadExpandView(element, extractedData.theme)
+        import('./react-utils').then(({ loadExpandView }) => {
+          loadExpandView(element, extractedData.theme)
+        })
       }
       if (extractedData) {
         this.sdkElements[instanceId] = {

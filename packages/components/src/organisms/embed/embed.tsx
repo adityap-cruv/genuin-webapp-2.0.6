@@ -281,34 +281,75 @@ export function Embed({
 
   // Callback ref to know when element is mounted
   // Track EMBED_VIEWED/PLACEMENT_VIEWED event when embed is visible in viewport
-  const embedRefCallback = useCallback((node: HTMLDivElement | null) => {
-    if (!node) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            track(
-              isEmbed ? EventName.EMBED_VIEWED : EventName.PLACEMENT_VIEWED,
-              {
-                community_id: config.community.communityIds,
-                group_id: config.community.communityLoopIds,
-                ...(!isEmbed && {
-                  has_sections: isSectioned,
-                  section_count: sectionList.length,
-                }),
-                activeIndex: 10,
-              }
-            );
-            observer.disconnect();
-          }
-        });
-      },
-      { threshold: 0.01 }
-    );
+  const embedRefCallback = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (!node) return;
 
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, []);
+      // If lazily loaded by SDK, we assume it's already in viewport
+      // So we don't need an intersection observer here
+      if (restProps.wasLazilyLoaded) return;
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              track(
+                isEmbed ? EventName.EMBED_VIEWED : EventName.PLACEMENT_VIEWED,
+                {
+                  community_id: config.community.communityIds,
+                  group_id: config.community.communityLoopIds,
+                  ...(!isEmbed && {
+                    has_sections: isSectioned,
+                    section_count: sectionList.length,
+                  }),
+                  activeIndex: 10,
+                }
+              );
+              observer.disconnect();
+            }
+          });
+        },
+        { threshold: 0.01 }
+      );
+
+      observer.observe(node);
+      return () => observer.disconnect();
+    },
+    [
+      restProps.wasLazilyLoaded,
+      isEmbed,
+      EventName,
+      config.community.communityIds,
+      config.community.communityLoopIds,
+      isSectioned,
+      sectionList.length,
+      track,
+    ]
+  );
+
+  // Track EMBED_VIEWED/PLACEMENT_VIEWED immediately if was lazily loaded ( SDK handled the intersection )
+  useEffect(() => {
+    if (restProps.wasLazilyLoaded) {
+      track(isEmbed ? EventName.EMBED_VIEWED : EventName.PLACEMENT_VIEWED, {
+        community_id: config.community.communityIds,
+        group_id: config.community.communityLoopIds,
+        ...(!isEmbed && {
+          has_sections: isSectioned,
+          section_count: sectionList.length,
+        }),
+        activeIndex: 10,
+      });
+    }
+  }, [
+    restProps.wasLazilyLoaded,
+    isEmbed,
+    EventName,
+    config.community.communityIds,
+    config.community.communityLoopIds,
+    isSectioned,
+    sectionList.length,
+    track,
+  ]);
 
   // Track EMBED_INITIALIZED or PLACEMENT_INITIALIZED event when component mounts
   useEffect(() => {

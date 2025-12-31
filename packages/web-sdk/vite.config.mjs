@@ -7,6 +7,7 @@ import postcss from 'postcss'
 import autoprefixer from 'autoprefixer'
 import dotenv from 'dotenv'
 import postcssNested from 'postcss-nested'
+import { visualizer } from 'rollup-plugin-visualizer'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
@@ -490,6 +491,11 @@ export default defineConfig({
     genuinResolver(),
     copyLoaderPlugin(),
     postBuildCssPlugin(),
+    process.env.ANALYZE === 'true' &&
+      visualizer({
+        filename: 'stats.json',
+        template: 'raw-data',
+      }),
   ],
 
   // Set base path for chunk resolution
@@ -662,11 +668,11 @@ export default defineConfig({
           if (id.includes('node_modules/zod/')) {
             return 'vendor-forms-validation'
           }
-          if (
-            id.includes('node_modules/input-otp/') ||
-            id.includes('node_modules/react-phone-number-input/')
-          ) {
-            return 'vendor-forms-inputs'
+          if (id.includes('node_modules/react-phone-number-input/')) {
+            return 'vendor-forms-phone'
+          }
+          if (id.includes('node_modules/input-otp/')) {
+            return 'vendor-forms-otp'
           }
 
           // Utility libraries (includes router to merge small chunk)
@@ -710,9 +716,24 @@ export default defineConfig({
             return 'app-ui-components'
           }
 
-          // Keep core SDK functionality in main bundle
+          // Optimization: Split Feed template (large component with many deps)
+          if (id.includes('templates/feed')) {
+            return 'app-ui-feed'
+          }
+
+          // Optimization: Split React-dependent code from main bundle
+          if (id.includes('src/sdk/react-utils')) {
+            return 'app-react-core'
+          }
+
+          // Optimization: Split Core SDK logic (used by both init and React parts)
+          // This prevents Core from being bundled into app-react-core
+          if (id.includes('src/core') || id.includes('src/utils')) {
+            return 'core-sdk'
+          }
+
+          // Keep core SDK functionality in main bundle (src/sdk minus react-utils, src/index)
           if (
-            id.includes('src/core') ||
             id.includes('src/sdk') ||
             id.includes('src/index')
           ) {

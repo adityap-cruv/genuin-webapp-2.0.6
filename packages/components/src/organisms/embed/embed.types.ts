@@ -6,4 +6,5 @@ export type EmbedProps = ComponentProps<"div"> & {
     pages: FeedPage[];
     pageParams?: any[];
   };
+  wasLazilyLoaded?: boolean;
 };

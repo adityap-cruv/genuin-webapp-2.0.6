@@ -503,4 +503,32 @@ Vite config creates vendor chunks, but they're still eagerly loaded because prov
     2. Implement runtime deferral so `initializeAllEmbeds()` does not eagerly render embeds on `genuin.init()` (use IntersectionObserver or explicit render), then move provider/UI imports behind that path.
     3. Split `vendor-forms-inputs` and other oversized vendor chunks into smaller manual chunks in `vite.config.mjs`, re-run `analyze:chunks` and `validate:chunks`.
 
+## Latest Updates (as of Dec 31, 2025)
+
+### Phase 4: Intersection Observer (Completed)
+- **Goal**: Defer rendering until embed visible.
+- **Implementation**:
+  - `IntersectionObserver` added in `genuin-sdk.ts`.
+  - Passing `wasLazilyLoaded` logic to `Embed` component to effectively reuse its internal analytics tracking without duplicated observers.
+  - Initial load now only renders `dom-utils.ts` skeleton.
+
+### Phase 5: React Decoupling (Completed)
+- **Goal**: Remove React and React-DOM from the main initialization bundle (`index` / entry).
+- **Implementation**:
+  - Created `src/sdk/dom-utils.ts` (pure DOM logic for skeleton/error views).
+  - Moved `react-utils.tsx` (all React logic) to a lazy-loaded dynamic import in `genuin-sdk.ts`.
+  - Updated `vite.config.mjs` to split `react-utils` into a dedicated `app-react-core` chunk.
+- **Results**:
+  - Main entry chunks (`genuin-sdk + loader`): ~7KB (Compressed) / ~0.4KB entry logic.
+  - React Core (`app-react-core`): ~344KB (Deferred).
+  - **Issue**: A shared `index` chunk of ~632KB remains, which is likely non-React dependencies of `src/core`. Investigation required.
+
+### Phase 6: Component Chunk Optimization (In Progress)
+- **Vendor Splitting**:
+  - Split `vendor-forms-inputs` into `vendor-forms-phone` (~550KB) and `vendor-forms-otp` (~11KB).
+- **Next Steps**:
+  - Investigate origin of 632KB `index` shared chunk.
+  - Verify `feed` chunk size.
+  - Verify `standard-wall` size (<500KB achieved).
+
 All generated reports and scripts live under `packages/web-sdk/`.
