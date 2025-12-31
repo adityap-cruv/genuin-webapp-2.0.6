@@ -309,6 +309,14 @@ class AnalyticsServiceSingleton {
     eventName: EventNameType,
     payload?: EventPayload
   ): Promise<void> {
+    // Early return if defaultPayload is not initialized
+    if (!this.defaultPayload) {
+      console.warn(
+        `[AnalyticsService] Cannot track event "${eventName}": defaultPayload is not initialized. Call initialize() first.`
+      );
+      return;
+    }
+
     const remainingVideoEvents = ["Muted", "Unmuted", "Midpoint"];
     const mergedPayload = {
       ...(this.defaultPayload || {}),
@@ -329,6 +337,31 @@ class AnalyticsServiceSingleton {
       },
       {} as Record<string, any>
     );
+
+    // Define critical fields that must be present
+    const criticalFields = ["brand_id", "channel", "environment"] as const;
+    const missingCriticalFields: string[] = [];
+    
+    // Force inject critical fields if missing from sanitizedPayload but present in defaultPayload
+    criticalFields.forEach((field) => {
+      if (!(field in sanitizedPayload) || sanitizedPayload[field] === undefined || sanitizedPayload[field] === null) {
+        // Check if the field exists in defaultPayload
+        const defaultValue = this.defaultPayload?.[field];
+        if (defaultValue !== undefined && defaultValue !== null && defaultValue !== "") {
+          sanitizedPayload[field] = defaultValue;
+        } else {
+          // Track fields that are missing from both payload and defaultPayload
+          missingCriticalFields.push(field);
+        }
+      }
+    });
+
+    // Warn if critical fields are still missing after injection attempt
+    if (missingCriticalFields.length > 0) {
+      console.warn(
+        `[AnalyticsService] Event "${eventName}" is missing critical fields: ${missingCriticalFields.join(", ")}. These fields were not found in defaultPayload and could not be injected.`
+      );
+    }
 
     const eventData: QueuedEvent = {
       eventName,

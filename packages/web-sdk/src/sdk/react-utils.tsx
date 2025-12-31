@@ -280,7 +280,8 @@ export function loadNewEmbed({
               user={user}>
               <AnalyticsProvider
                 embedData={embedData}
-                isWebSDK={true}>
+                isWebSDK={true}
+                brandDetails={brandDetails}>
                 <Suspense
                   fallback={
                     <EmbedSkeleton

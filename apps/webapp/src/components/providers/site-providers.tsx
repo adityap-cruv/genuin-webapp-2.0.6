@@ -25,7 +25,9 @@ function CoreProviders({ children, config, session }: SiteProvidersBaseProps) {
         <SessionProvider refetchOnWindowFocus={false} refetchInterval={3600} session={session}>
           <AuthBridge>
             <LinkBridge>
-              <AnalyticsProvider isWebSDK={false}>{children}</AnalyticsProvider>
+              <AnalyticsProvider brandDetails={config} isWebSDK={false}>
+                {children}
+              </AnalyticsProvider>
             </LinkBridge>
           </AuthBridge>
         </SessionProvider>

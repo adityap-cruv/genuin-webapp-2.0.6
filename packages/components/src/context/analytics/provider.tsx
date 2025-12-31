@@ -22,6 +22,7 @@ import {
 } from "@genuin/components/lib/sdk-event-emitter";
 import { EmitAnalyticsData } from "./emit-analytics-data";
 import { getSdkVersion } from "./utils";
+import { BrandDetailsConfigType } from "@genuin/components/types/brand";
 
 type AnalyticsProviderProps = {
   children: ReactNode;
@@ -34,6 +35,7 @@ type AnalyticsProviderProps = {
    * Optional analytics data for SDK initialization
    */
   embedData?: EmbedDataType;
+  brandDetails: BrandDetailsConfigType;
 };
 
 enum Channel {
@@ -51,8 +53,9 @@ export function AnalyticsProvider({
   children,
   isWebSDK,
   embedData,
+  brandDetails,
 }: AnalyticsProviderProps) {
-  const { brandDetails, isInIframe } = useBaseContext();
+  const { isInIframe } = useBaseContext();
   const { user } = useAuthContext();
   const embedDetails = useSafeEmbedContext();
   const pathname = usePathname();
