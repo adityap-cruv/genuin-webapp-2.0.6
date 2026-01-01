@@ -8,7 +8,7 @@ export * from "./video-player";
 export * from "./dialog";
 export * from "./input";
 export * from "./input-otp";
-export * from "./form";
+// export * from "./form"; // Temporarily removed to prevent vendor-forms leakage via barrel export
 export * from "./label";
 export * from "./popover";
 export * from "./command";

@@ -15,7 +15,7 @@ import {
   FormItem,
   FormControl,
   FormMessage,
-} from "@genuin/ui/form";
+} from "@genuin/ui/components/form";
 import { useSendOtpMutation } from "@genuin/components/react-query/api/authentication";
 import { getActionText, sanitizeInput } from "@genuin/components/lib/utils";
 import { useAuthenticationModalContext } from "../../context";

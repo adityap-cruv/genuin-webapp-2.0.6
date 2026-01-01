@@ -4,7 +4,7 @@ import {
   FormField,
   FormItem,
   FormMessage,
-} from "@genuin/ui/form";
+} from "@genuin/ui/components/form";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@genuin/ui/input-otp";
 import { TimerMessage } from "./timer";
 import { zodResolver } from "@hookform/resolvers/zod";

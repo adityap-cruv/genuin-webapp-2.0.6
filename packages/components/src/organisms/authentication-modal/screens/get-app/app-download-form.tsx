@@ -6,7 +6,7 @@ import {
   FormField,
   FormItem,
   FormMessage,
-} from "@genuin/ui/form";
+} from "@genuin/ui/components/form";
 import { ComponentProps, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
