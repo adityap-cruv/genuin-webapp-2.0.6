@@ -1,8 +1,10 @@
 import { cn, detectAccessibilityMode } from "@genuin/ui/utils";
 import { useBaseContext } from "@genuin/components/context/base";
-import {
-  ControlLayer,
-} from "../../molecules/feed-player/control-layer";
+const ControlLayer = lazy(() =>
+  import("../../molecules/feed-player/control-layer").then((m) => ({
+    default: m.ControlLayer,
+  }))
+);
 
 // Lazy load video player to defer heavy playback logic
 const FeedPlayer = lazy(() =>
@@ -139,20 +141,22 @@ export function Player({
               style={{ height: "inherit" }}
             />
           </Suspense>
-          <ControlLayer
-            index={index}
-            isActive={isActive}
-            postDetails={post}
-            isSectioned={isSectioned}
-            onCommunityJoinStatusChange={onCommunityJoinStatusChange}
-            onGroupJoinStatusChange={onGroupJoinStatusChange}
-            onGroupSubscriptionChange={onGroupSubscriptionChange}
-            showCloseButton={variant === "expand"}
-            onReactionStateChange={onReactionStateChange}
-            onCommentCountChange={onCommentCountChange}
-            // Applies GPU acceleration to prevent layer flickering on iOS devices during animations
-            className="gencl:translate-x-0"
-          />
+          <Suspense fallback={null}>
+            <ControlLayer
+              index={index}
+              isActive={isActive}
+              postDetails={post}
+              isSectioned={isSectioned}
+              onCommunityJoinStatusChange={onCommunityJoinStatusChange}
+              onGroupJoinStatusChange={onGroupJoinStatusChange}
+              onGroupSubscriptionChange={onGroupSubscriptionChange}
+              showCloseButton={variant === "expand"}
+              onReactionStateChange={onReactionStateChange}
+              onCommentCountChange={onCommentCountChange}
+              // Applies GPU acceleration to prevent layer flickering on iOS devices during animations
+              className="gencl:translate-x-0"
+            />
+          </Suspense>
         </div>
       </PlayerProvider>
     );

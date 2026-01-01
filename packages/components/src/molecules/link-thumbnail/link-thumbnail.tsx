@@ -1,4 +1,4 @@
-import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
+import React from "react";
 import { Image } from "@genuin/ui/components/image";
 import { ImageIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
@@ -94,6 +94,7 @@ export function LinkThumbnail({
             >
               Remove
             </p>
+
           </div>
         )}
       </div>

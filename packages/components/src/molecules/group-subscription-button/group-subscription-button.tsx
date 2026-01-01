@@ -1,13 +1,17 @@
-import { Button as PrimitiveButton } from "@genuin/ui/button";
-import { NotificationEnabledIcon, NotificationIcon } from "@genuin/ui/icons";
-import { useAuthContext } from "@genuin/components/context/auth";
-import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
-import { ComponentProps, useCallback } from "react";
+import React, { ComponentProps, useCallback, Suspense, lazy } from "react";
+const AuthenticationModal = lazy(() =>
+  import("../../organisms/authentication-modal").then((m) => ({
+    default: m.AuthenticationModal,
+  }))
+);
 import { useSubscribeGroupMutation } from "@genuin/components/react-query/api/group/subscribe";
 import { Toast } from "@genuin/ui/components/toaster";
 import { Loader } from "@genuin/ui/components/loader";
 import { cn } from "@genuin/ui/lib/utils";
 import { useAnalytics } from "@genuin/components/context/analytics";
+import { Button as PrimitiveButton } from "@genuin/ui/button";
+import { NotificationEnabledIcon, NotificationIcon } from "@genuin/ui/icons";
+import { useAuthContext } from "@genuin/components/context/auth";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
@@ -66,21 +70,23 @@ export function GroupSubscriptionButton({
     }
 
     return (
-      <AuthenticationModal
-        getAppData={{
-          data: {
-            type: "subscribe",
-            payload: {
-              ldDescription: restProps.groupDescription,
-              groupName: restProps.groupName,
-              shareUrl: restProps.shareUrl,
+      <Suspense fallback={null}>
+        <AuthenticationModal
+          getAppData={{
+            data: {
+              type: "subscribe",
+              payload: {
+                ldDescription: restProps.groupDescription,
+                groupName: restProps.groupName,
+                shareUrl: restProps.shareUrl,
+              },
             },
-          },
-        }}
-        asChild
-      >
-        {button}
-      </AuthenticationModal>
+          }}
+          asChild
+        >
+          {button}
+        </AuthenticationModal>
+      </Suspense>
     );
   }
 

@@ -1,11 +1,15 @@
-import { useAuthContext } from "@genuin/components/context/auth";
-import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
+import React, { memo, useCallback, Suspense, lazy, ComponentProps } from "react";
+const AuthenticationModal = lazy(() =>
+  import("../../organisms/authentication-modal").then((m) => ({
+    default: m.AuthenticationModal,
+  }))
+);
 import { useJoinGroupMutation } from "@genuin/components/react-query/api/group/join";
 import { GroupUserStatusType } from "@genuin/components/types/roles";
 import { Button as PrimitiveButton } from "@genuin/ui/button";
 import { Toast } from "@genuin/ui/components/toaster";
 import { useLeaveGroupMutation } from "@genuin/components/react-query/api/group/join";
-import { ComponentProps, useCallback } from "react";
+import { useAuthContext } from "@genuin/components/context/auth";
 import { Loader } from "@genuin/ui/components/loader";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
@@ -76,21 +80,28 @@ export function JoinGroupButton({
     }
 
     return (
-      <AuthenticationModal
-        getAppData={{
-          data: {
-            type: "join_as_collaborator",
-            payload: {
-              ldDescription: restProps.groupDescription,
-              groupName: restProps.groupName,
-              shareUrl: restProps.shareUrl,
+      <Suspense fallback={null}>
+        <AuthenticationModal
+          getAppData={{
+            description: (
+              <>
+                Download app to join the <br />
+                <span className="font-bold">@{restProps.groupSlug}</span> group.
+              </>
+            ),
+            data: {
+              type: "join_group",
+              payload: {
+                groupName: restProps.groupName,
+                slug: restProps.groupSlug,
+              },
             },
-          },
-        }}
-        asChild
-      >
-        {button}
-      </AuthenticationModal>
+          }}
+          asChild
+        >
+          {button}
+        </AuthenticationModal>
+      </Suspense>
     );
   }
 

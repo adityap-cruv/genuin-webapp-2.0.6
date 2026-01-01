@@ -1,10 +1,17 @@
 import { cn } from "@genuin/ui/lib/utils";
 import type { EmbedTileProps } from "./embed-tile.types";
 import { cva, VariantProps } from "class-variance-authority";
-import {
-  ControlLayer,
-  FeedPlayer,
-} from "@genuin/components/molecules/feed-player";
+import { lazy, Suspense, useCallback, useMemo } from "react";
+const ControlLayer = lazy(() =>
+  import("../../molecules/feed-player/control-layer").then((m) => ({
+    default: m.ControlLayer,
+  }))
+);
+const FeedPlayer = lazy(() =>
+  import("../../molecules/feed-player").then((m) => ({
+    default: m.FeedPlayer,
+  }))
+);
 import {
   PlayerProvider,
   usePlayerContext,
@@ -15,7 +22,6 @@ import { Linkouts } from "../linkouts";
 import { Stats } from "@genuin/components/molecules/stats";
 import { CommentIcon, PlayIcon } from "@genuin/ui/icons";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
-import { useCallback, useMemo } from "react";
 import { useEmbedContext } from "@genuin/components/context/embed";
 import { DynamicReactionIcon } from "@genuin/components/molecules/reaction-button";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
@@ -245,36 +251,40 @@ function EmbedPlayer({
         }
       )}
     >
-      <FeedPlayer
-        videoDescription={postDetails.video.descritptionText}
-        videoId={postDetails.video.id}
-        adUrl={postDetails.video.adUrl ?? undefined}
-        src={postDetails.video.source}
-        poster={
-          config.contentDisplay.showSectionCover &&
-          postDetails.section?.cover_url
-            ? postDetails.section?.cover_url
-            : postDetails.video.thumbnail
-        }
-        className={
-          videoCrop
-            ? "gencl:object-cover gencl:h-full! gencl:w-full"
-            : "gencl:h-full!"
-        }
-        layoutType={layoutType}
-        aria-hidden="true"
-        tabIndex={-1}
-        index={index}
-      />
-      <ControlLayer
-        variant={config.view.isPlacementView ? "placement" : "embed"}
-        isActive={isActive}
-        index={index}
-        postDetails={postDetails}
-        onClick={handleClickOnEmbedTile}
-        onCommentCountChange={undefined}
-        layoutType={layoutType}
-      />
+      <Suspense fallback={null}>
+        <FeedPlayer
+          videoDescription={postDetails.video.descritptionText}
+          videoId={postDetails.video.id}
+          adUrl={postDetails.video.adUrl ?? undefined}
+          src={postDetails.video.source}
+          poster={
+            config.contentDisplay.showSectionCover &&
+            postDetails.section?.cover_url
+              ? postDetails.section?.cover_url
+              : postDetails.video.thumbnail
+          }
+          className={
+            videoCrop
+              ? "gencl:object-cover gencl:h-full! gencl:w-full"
+              : "gencl:h-full!"
+          }
+          layoutType={layoutType}
+          aria-hidden="true"
+          tabIndex={-1}
+          index={index}
+        />
+      </Suspense>
+      <Suspense fallback={null}>
+        <ControlLayer
+          variant={config.view.isPlacementView ? "placement" : "embed"}
+          isActive={isActive}
+          index={index}
+          postDetails={postDetails}
+          onClick={handleClickOnEmbedTile}
+          onCommentCountChange={undefined}
+          layoutType={layoutType}
+        />
+      </Suspense>
     </div>
   );
 }

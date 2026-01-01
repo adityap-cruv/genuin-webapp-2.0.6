@@ -3,7 +3,7 @@ import { useFeed } from "@genuin/components/react-query/api/feed";
 import { EmbedProps } from "./embed.types";
 import { SdkSkeleton, ShimmerSlide } from "./skeleton";
 import { cn } from "@genuin/ui/lib/utils";
-import { useMemo, useState, useEffect, useCallback, useRef } from "react";
+import { useMemo, useState, useEffect, useCallback, useRef, lazy, Suspense } from "react";
 import { EmbedSwiper } from "@genuin/components/molecules/embed-swiper/embed-swiper";
 import { useAnalytics } from "@genuin/components/context/analytics/context";
 import { SwiperSlide } from "swiper/react";
@@ -11,7 +11,11 @@ import { EmbedManagerProvider } from "./context";
 import { Swiper } from "swiper/types";
 import { EmbedHeader } from "@genuin/components/molecules/embed-header";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import { EmbedExpandSectionedView } from "./embed-expand-sectioned-view";
+const EmbedExpandSectionedView = lazy(() =>
+  import("./embed-expand-sectioned-view").then((m) => ({
+    default: m.EmbedExpandSectionedView,
+  }))
+);
 import { useEmbedContext } from "@genuin/components/context/embed";
 import { EmbedEventContextType } from "@genuin/components/context/embed/event-bus";
 import { PipView } from "./pip-view";
@@ -20,7 +24,9 @@ import { useEmbedDimensions } from "@genuin/components/hooks/embed/use-embed-dim
 import { SdkErrorState } from "./error-state";
 import { SdkEmptyState } from "./empty-state";
 import { GridView } from "./grid-view/grid-view";
-import { EmbedExpandView } from "./expand-view";
+const EmbedExpandView = lazy(() =>
+  import("./expand-view").then((m) => ({ default: m.EmbedExpandView }))
+);
 import { cva, VariantProps } from "class-variance-authority";
 import { EmbedItem } from "./embed-tile-item";
 import { AnalyticsService } from "@genuin/components/context/analytics/service";
@@ -529,15 +535,17 @@ export function Embed({
 
   if (config.view.isExpandOnly) {
     return (
-      <EmbedExpandView
-        videos={videos}
-        fetchNextPage={fetchNextPage}
-        hasNextPage={hasNextPage}
-        isFetchingNextPage={isFetchingNextPage}
-        isLoading={isLoading}
-        queryKey={queryKey}
-        totalVideos={totalVideos}
-      />
+      <Suspense fallback={null}>
+        <EmbedExpandView
+          videos={videos}
+          hasNextPage={!!hasNextPage}
+          isFetchingNextPage={isFetchingNextPage}
+          isLoading={isLoading}
+          queryKey={queryKey}
+          totalVideos={totalVideos}
+          fetchNextPage={fetchNextPage}
+        />
+      </Suspense>
     );
   }
 
@@ -712,20 +720,24 @@ export function Embed({
       {config.expandViewConfig.enable && (
         <>
           {isSectioned ? (
-            <EmbedExpandSectionedView
-              videos={filteredPost}
-              pageSession={feedData?.pages[0]?.pageSession}
-            />
+            <Suspense fallback={null}>
+              <EmbedExpandSectionedView
+                videos={filteredPost}
+                pageSession={feedData?.pages[0]?.pageSession}
+              />
+            </Suspense>
           ) : (
-            <EmbedExpandView
-              videos={filteredPost}
-              fetchNextPage={fetchNextPage}
-              hasNextPage={hasNextPage}
-              isFetchingNextPage={isFetchingNextPage}
-              isLoading={isLoading}
-              queryKey={queryKey}
-              totalVideos={totalVideos}
-            />
+            <Suspense fallback={null}>
+              <EmbedExpandView
+                videos={filteredPost}
+                hasNextPage={!!hasNextPage}
+                isFetchingNextPage={isFetchingNextPage}
+                isLoading={isLoading}
+                queryKey={queryKey}
+                totalVideos={totalVideos}
+                fetchNextPage={fetchNextPage}
+              />
+            </Suspense>
           )}
         </>
       )}

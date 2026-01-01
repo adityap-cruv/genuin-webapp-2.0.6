@@ -36,7 +36,7 @@ import {
   useEmbedContext,
   useSafeEmbedContext,
 } from "@genuin/components/context/embed/context";
-import { Linkouts } from "@genuin/components/organisms";
+import { Linkouts } from "../../../../organisms/linkouts/linkouts";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { Image } from "@genuin/ui/components/image";

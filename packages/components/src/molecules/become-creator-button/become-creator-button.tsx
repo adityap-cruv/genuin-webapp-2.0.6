@@ -1,8 +1,12 @@
 import { useAuthContext } from "@genuin/components/context";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
+import { lazy, Suspense, type ComponentPropsWithoutRef } from "react";
+const AuthenticationModal = lazy(() =>
+  import("../../organisms/authentication-modal").then((m) => ({
+    default: m.AuthenticationModal,
+  }))
+);
 import { Button } from "@genuin/ui/button";
-import type { ComponentPropsWithoutRef } from "react";
 import { Link } from "../link";
 import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
 
@@ -53,8 +57,10 @@ export function BecomeCreatorButton({
   }
 
   return (
-    <AuthenticationModal asChild customStep="BECOME_CREATOR">
-      {button}
-    </AuthenticationModal>
+    <Suspense fallback={null}>
+      <AuthenticationModal asChild customStep="BECOME_CREATOR">
+        {button}
+      </AuthenticationModal>
+    </Suspense>
   );
 }

@@ -1,7 +1,11 @@
-import React, { useCallback, memo } from "react";
+import React, { useCallback, memo, Suspense, lazy } from "react";
 import type { CommunityUserRole } from "@genuin/components/types/post";
 import { useAuthContext } from "@genuin/components/context/auth";
-import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
+const AuthenticationModal = React.lazy(() =>
+  import("../../organisms/authentication-modal").then((m) => ({
+    default: m.AuthenticationModal,
+  }))
+);
 import { Button as PrimitiveButton } from "@genuin/ui/components/button";
 import {
   useJoinCommunityMutation,
@@ -99,26 +103,28 @@ export const JoinCommunityButton = memo(function JoinCommunityButton({
     }
 
     return (
-      <AuthenticationModal
-        getAppData={{
-          description: (
-            <>
-              Download app to join the <br />
-              <span className="font-bold">@{communityHandle}</span> community.
-            </>
-          ),
-          data: {
-            type: "join_community",
-            payload: {
-              communityName: communityHandle,
-              slug: slug,
+      <Suspense fallback={null}>
+        <AuthenticationModal
+          getAppData={{
+            description: (
+              <>
+                Download app to join the <br />
+                <span className="font-bold">@{communityHandle}</span> community.
+              </>
+            ),
+            data: {
+              type: "join_community",
+              payload: {
+                communityName: communityHandle,
+                slug: slug,
+              },
             },
-          },
-        }}
-        asChild
-      >
-        {button}
-      </AuthenticationModal>
+          }}
+          asChild
+        >
+          {button}
+        </AuthenticationModal>
+      </Suspense>
     );
   }
 
