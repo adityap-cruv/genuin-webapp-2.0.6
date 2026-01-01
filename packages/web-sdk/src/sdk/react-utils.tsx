@@ -273,15 +273,16 @@ export function loadNewEmbed({
           theme={config.theme}
           isEmbed>
           <LinkProvider>
-            <AuthProvider
-              onSignIn={() => {}}
-              onSignOut={() => {}}
-              onUpdateUser={() => {}}
-              user={user}>
-              <AnalyticsProvider
-                embedData={embedData}
-                isWebSDK={true}
-                brandDetails={brandDetails}>
+            <AnalyticsProvider
+              embedData={embedData}
+              isWebSDK={true}
+              user={user ?? null}
+              brandDetails={brandDetails}>
+              <AuthProvider
+                onSignIn={() => {}}
+                onSignOut={() => {}}
+                onUpdateUser={() => {}}
+                user={user}>
                 <Suspense
                   fallback={
                     <EmbedSkeleton
@@ -296,8 +297,8 @@ export function loadNewEmbed({
                   )}
                 </Suspense>
                 {brandLayoutType !== 'iheart' && <Toaster />}
-              </AnalyticsProvider>
-            </AuthProvider>
+              </AuthProvider>
+            </AnalyticsProvider>
           </LinkProvider>
         </BaseContextProvider>
       </EmbedProvider>

@@ -266,6 +266,8 @@ export function Embed({
         feedType: feedType,
       });
     }
+    // In embed mode, the sections list does not need to be updated.
+    if (isEmbed) return;
     if (sectionList.length > 0 && updateSectionList) {
       updateSectionList(sectionList);
       AnalyticsService.updatePayload(
@@ -277,7 +279,7 @@ export function Embed({
     } else {
       AnalyticsService.updatePayload("section_name", []);
     }
-  }, [filteredPost.length]);
+  }, [filteredPost.length, isEmbed]);
 
   // Callback ref to know when element is mounted
   // Track EMBED_VIEWED/PLACEMENT_VIEWED event when embed is visible in viewport

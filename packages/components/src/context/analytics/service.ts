@@ -77,6 +77,7 @@ class AnalyticsServiceSingleton {
     brandDetails?: BrandDetailsConfigType,
     embedData?: EmbedDataType
   ): Promise<void> {
+
     if (this.initializationPromise) {
       return this.initializationPromise;
     }
@@ -101,14 +102,9 @@ class AnalyticsServiceSingleton {
 
     this.initializationPromise = new Promise<void>((resolve, reject) => {
       if (this.isInitialized) {
-        // console.log("[AnalyticsService] Already initialized.");
         resolve();
         return;
       }
-
-      // console.log(
-      //   "[AnalyticsService] Attempting low-priority initialization with imported SDK..."
-      // );
 
       const doInitialize = () => {
         try {
@@ -149,9 +145,6 @@ class AnalyticsServiceSingleton {
             );
 
             this.rudderAnalyticsInstance.ready(() => {
-              // console.log(
-              //   "[AnalyticsService] RudderStack SDK initialized via import."
-              // );
               this.isInitialized = true;
               this.processEventQueue();
               resolve();
@@ -232,6 +225,8 @@ class AnalyticsServiceSingleton {
     keyOrObject: string | Partial<DefaultAnalyticsPayload>,
     value?: any
   ) {
+    const previousBrandId = this.defaultPayload?.brand_id;
+
     // Start with existing payload or minimal base structure
     const currentPayload = this.defaultPayload ?? {
       user_id: undefined,
@@ -314,6 +309,16 @@ class AnalyticsServiceSingleton {
       console.warn(
         `[AnalyticsService] Cannot track event "${eventName}": defaultPayload is not initialized. Call initialize() first.`
       );
+      const isEventQueued = this.eventQueue.some(
+        (e) => e.eventName === eventName
+      );
+      if (!isEventQueued) {
+        this.eventQueue.push({
+          eventName,
+          payload: payload || {},
+          timestamp: Date.now(),
+        });
+      }
       return;
     }
 
@@ -341,13 +346,21 @@ class AnalyticsServiceSingleton {
     // Define critical fields that must be present
     const criticalFields = ["brand_id", "channel", "environment"] as const;
     const missingCriticalFields: string[] = [];
-    
+
     // Force inject critical fields if missing from sanitizedPayload but present in defaultPayload
     criticalFields.forEach((field) => {
-      if (!(field in sanitizedPayload) || sanitizedPayload[field] === undefined || sanitizedPayload[field] === null) {
+      if (
+        !(field in sanitizedPayload) ||
+        sanitizedPayload[field] === undefined ||
+        sanitizedPayload[field] === null
+      ) {
         // Check if the field exists in defaultPayload
         const defaultValue = this.defaultPayload?.[field];
-        if (defaultValue !== undefined && defaultValue !== null && defaultValue !== "") {
+        if (
+          defaultValue !== undefined &&
+          defaultValue !== null &&
+          defaultValue !== ""
+        ) {
           sanitizedPayload[field] = defaultValue;
         } else {
           // Track fields that are missing from both payload and defaultPayload
@@ -376,10 +389,6 @@ class AnalyticsServiceSingleton {
       this.isInitialized &&
       this.rudderAnalyticsInstance // Use the instance here
     ) {
-      // console.log(
-      //   `[AnalyticsService Track] Event: ${eventName}`,
-      //   sanitizedPayload
-      // );
       this.rudderAnalyticsInstance.track(eventName, sanitizedPayload, {
         os: { name: this.uaParser.os.name, version: this.uaParser.os.version },
       });

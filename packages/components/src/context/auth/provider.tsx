@@ -110,6 +110,22 @@ export function AuthProvider({
     );
 
   useLayoutEffect(() => {
+    /*
+      AnalyticsProvider is the parent, and AuthProvider is its child.
+      In the web app, the analytics payload is initialized with null values.
+      Once authentication is resolved—or on page refresh when the user is already logged in—
+      we update the analytics payload with authenticated user details from NextAuth.
+      This update is skipped in embed mode.
+    */
+    if (!isEmbed && authenticatedUser) {
+      AnalyticsService.updatePayload({
+        gen_user_id: authenticatedUser.id,
+        user_id: authenticatedUser.id,
+        phone_no: authenticatedUser.phoneNumber,
+        user_name: authenticatedUser.nickname,
+        gen_user_name: authenticatedUser.nickname,
+      });
+    }
     const handleAuthenticateUser = (authCallbackData: any) => {
       setAuthenticatedUser(authCallbackData.payload);
       setAuthenticationStatus("authenticated");
@@ -153,7 +169,7 @@ export function AuthProvider({
       );
       SDKEventEmitter.off(SDKListenerEventName.LOGOUT_USER, handleLogoutUser);
     };
-  }, []);
+  }, [isEmbed]);
 
   // Synchronously manage the authentication token in Axios instance when the external 'user' prop changes.
   // This ensures the token is set/removed before any subsequent network requests.
