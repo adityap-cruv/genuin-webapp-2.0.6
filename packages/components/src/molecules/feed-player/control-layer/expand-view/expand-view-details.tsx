@@ -23,12 +23,14 @@ const Actions = lazy(() =>
   import("../../../actions").then((m) => ({
     default: m.Actions,
   }))
-);
+) as React.ComponentType<any>;
+
 const CommentsDialog = lazy(() =>
   import("../../../comments").then((m) => ({
     default: m.CommentsDialog,
   }))
-);
+) as React.ComponentType<any>;
+
 
 import { controlLayerVariant } from "../control-layer";
 import { VariantProps } from "class-variance-authority";

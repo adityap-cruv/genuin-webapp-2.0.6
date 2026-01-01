@@ -1,8 +1,16 @@
-import { type FC } from "react";
+import { type FC, lazy, Suspense } from "react";
+
 import { SettingRow } from "@genuin/components/molecules/setting-row";
 import { Avatar, Button } from "@genuin/ui/components";
 import { cn } from "@genuin/ui/lib/utils";
-import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
+import type { AuthenticationModalProps } from "@genuin/components/organisms/authentication-modal";
+
+const AuthenticationModal = lazy(() =>
+  import("@genuin/components/organisms/authentication-modal").then((m) => ({
+    default: m.AuthenticationModal,
+  }))
+) as React.ComponentType<AuthenticationModalProps>;
+
 import { useAuthContext } from "@genuin/components/context/auth";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 
@@ -38,11 +46,18 @@ export const EditProfileSettings: FC = () => {
               "gencl:absolute gencl:flex gencl:flex-col gencl:items-center gencl:justify-center gencl:rounded-full gencl:bg-black/50 gencl:top-0 gencl:left-0 gencl:w-full gencl:h-full gencl:opacity-0 gencl:hover:opacity-0 gencl:lg:hover:opacity-100"
             )}
           >
-            <AuthenticationModal customStep="EDIT_PROFILE_PICTURE" asChild>
+            <Suspense fallback={
               <p className="gencl:text-white gencl:text-body-2-medium gencl:cursor-pointer">
                 Edit
               </p>
-            </AuthenticationModal>
+            }>
+              <AuthenticationModal customStep="EDIT_PROFILE_PICTURE" asChild>
+                <p className="gencl:text-white gencl:text-body-2-medium gencl:cursor-pointer">
+                  Edit
+                </p>
+              </AuthenticationModal>
+            </Suspense>
+
             {/* <AuthenticationModal customStep="REMOVE_PICTURE" asChild>
             <p className="gencl:text-white gencl:text-body-2-medium gencl:cursor-pointer">
               Remove
@@ -52,7 +67,7 @@ export const EditProfileSettings: FC = () => {
         </div>
         {!isDesktop && (
           <div>
-            <AuthenticationModal customStep="EDIT_PROFILE_PICTURE" asChild>
+            <Suspense fallback={
               <Button
                 size="sm"
                 theme="text"
@@ -61,7 +76,19 @@ export const EditProfileSettings: FC = () => {
               >
                 Change Profile Photo
               </Button>
-            </AuthenticationModal>
+            }>
+              <AuthenticationModal customStep="EDIT_PROFILE_PICTURE" asChild>
+                <Button
+                  size="sm"
+                  theme="text"
+                  color="primary"
+                  className="gencl:text-body-1-semi-bold! gencl:text-red"
+                >
+                  Change Profile Photo
+                </Button>
+              </AuthenticationModal>
+            </Suspense>
+
           </div>
         )}
       </div>

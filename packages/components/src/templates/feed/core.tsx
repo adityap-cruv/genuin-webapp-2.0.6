@@ -5,17 +5,19 @@ import { useCallback, useEffect, memo, lazy, Suspense } from "react";
 import "swiper/css";
 
 const PlayerList = lazy(() =>
-  import("@genuin/components/organisms/player-swiper").then((m) => ({
+  import("../../organisms/player-swiper").then((m) => ({
     default: m.PlayerList,
   }))
-);
+) as React.ComponentType<any>;
+
 
 // Lazy load side panel to split comments/forms from core chunk
 const PostSidePanel = lazy(() =>
   import("../../organisms/post-side-panel").then((m) => ({
     default: m.PostSidePanel,
   }))
-);
+) as React.ComponentType<any>;
+
 import {
   setQueryDataForReactionInFeed,
   setQueryDataForGroupSubscriptionChangeInFeed,
@@ -24,24 +26,29 @@ import {
   setQueryDataForCommentCountInFeed,
 } from "@genuin/components/react-query/api/feed";
 
+
 import { useFeedContext } from "./context";
 import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
+
 import { GroupUserStatusType } from "@genuin/components/types/roles";
 import { FeedSkeleton } from "./feed-skeleton";
 import { useInterruptionManager } from "@genuin/components/hooks/use-interruption-manager";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 const AuthenticationModal = lazy(() =>
-  import("@genuin/components/organisms/authentication-modal").then((m) => ({
+  import("../../organisms/authentication-modal").then((m) => ({
     default: m.AuthenticationModal,
   }))
-);
+) as React.ComponentType<any>;
+
 import { FeedViewPropsType } from "./feed.type";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { getQueryKeyForVideoDetails } from "@genuin/components/react-query/keys/video";
+
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useBaseContext } from "@genuin/components/context";
 import { IheartFullscreenContainer } from "@genuin/components/molecules/iheart-full-screen-contaner";
+
 import { isUuid } from "@genuin/components/lib/utils";
 
 /**

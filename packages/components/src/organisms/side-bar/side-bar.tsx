@@ -14,8 +14,17 @@ import { useBaseContext } from "@genuin/components/context/base";
 import { cva, VariantProps } from "class-variance-authority";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useAuthContext } from "@genuin/components/context/auth";
-import { AuthenticationModal } from "../authentication-modal";
+import { lazy, Suspense } from "react";
+import type { AuthenticationModalProps } from "@genuin/components/organisms/authentication-modal";
+
+const AuthenticationModal = lazy(() =>
+  import("../../organisms/authentication-modal").then((m) => ({
+    default: m.AuthenticationModal,
+  }))
+) as React.ComponentType<AuthenticationModalProps>;
+
 import { LoginIcon, QRIcon, XIcon } from "@genuin/ui/icons";
+
 
 type SideBarProps = ComponentProps<"aside"> &
   VariantProps<typeof sidebarVariants> & {
@@ -106,22 +115,26 @@ function ProxyComponent({
   return (
     <div className={cn(proxyComponentVariant({ variant }))}>
       {!isAuthenticated && showLogin && (
-        <AuthenticationModal
-          asChild={false}
-          customStep="SIGNIN"
-          className="gencl:w-full"
-        >
-          <ProxyItem icon={<LoginIcon size="lg" />} text="Log in" />
-        </AuthenticationModal>
+        <Suspense fallback={<ProxyItem icon={<LoginIcon size="lg" />} text="Log in" />}>
+          <AuthenticationModal
+            asChild={false}
+            customStep="SIGNIN"
+            className="gencl:w-full"
+          >
+            <ProxyItem icon={<LoginIcon size="lg" />} text="Log in" />
+          </AuthenticationModal>
+        </Suspense>
       )}
       {showApp && (
-        <AuthenticationModal
-          asChild={false}
-          customStep="GET_APP"
-          className="gencl:w-full"
-        >
-          <ProxyItem icon={<QRIcon size="lg" />} text="Get app" />
-        </AuthenticationModal>
+        <Suspense fallback={<ProxyItem icon={<QRIcon size="lg" />} text="Get app" />}>
+          <AuthenticationModal
+            asChild={false}
+            customStep="GET_APP"
+            className="gencl:w-full"
+          >
+            <ProxyItem icon={<QRIcon size="lg" />} text="Get app" />
+          </AuthenticationModal>
+        </Suspense>
       )}
     </div>
   );

@@ -4,7 +4,8 @@ const Report = React.lazy(() =>
   import("@genuin/components/molecules/report").then((m) => ({
     default: m.Report,
   }))
-);
+) as React.ComponentType<any>;
+
 import { Suspense } from "react";
 import {
   Popover,

@@ -1,8 +1,20 @@
 import { useAuthContext } from "@genuin/components/context/auth";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
-import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
+import { lazy, Suspense } from "react";
+import type { AuthenticationModalProps } from "@genuin/components/organisms/authentication-modal";
+
+const AuthenticationModal = lazy(() =>
+  import("@genuin/components/organisms/authentication-modal").then((m) => ({
+    default: m.AuthenticationModal,
+  }))
+) as React.ComponentType<AuthenticationModalProps>;
+
+// Lazy load MentionInput to defer vendor-forms chunks (react-hook-form + zod)
+const MentionInput = lazy(() =>
+  import("../mention-input").then((m) => ({ default: m.MentionInput }))
+) as React.ComponentType<any>;
+
 import { type CommentListType } from "@genuin/components/react-query/api/comments";
-import { MentionInput } from "../mention-input";
 import { useMemo, useCallback } from "react";
 import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
 import { ActionPopover } from "../actions/action-popover";
@@ -128,18 +140,7 @@ export function CommentInputBox({
       );
     }
     return (
-      <AuthenticationModal
-        getAppData={{
-          data: {
-            type: "comment",
-            payload: {
-              communityId: communityId,
-              loopId: loopId,
-              videoSlug: videoSlug,
-            },
-          },
-        }}
-      >
+      <Suspense fallback={
         <div>
           <MentionInput
             videoId={videoId}
@@ -148,8 +149,31 @@ export function CommentInputBox({
             {...commentInputProps}
           />
         </div>
-      </AuthenticationModal>
+      }>
+        <AuthenticationModal
+          getAppData={{
+            data: {
+              type: "comment",
+              payload: {
+                communityId: communityId,
+                loopId: loopId,
+                videoSlug: videoSlug,
+              },
+            },
+          }}
+        >
+          <div>
+            <MentionInput
+              videoId={videoId}
+              loopId={loopId}
+              onCommentPosted={onCommentPosted}
+              {...commentInputProps}
+            />
+          </div>
+        </AuthenticationModal>
+      </Suspense>
     );
+
   }
 
   return (

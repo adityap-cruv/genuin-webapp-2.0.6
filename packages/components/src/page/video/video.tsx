@@ -7,8 +7,16 @@ import { FeedView } from "@genuin/components/templates/feed";
 import { useEffect, useState } from "react";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 
-import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
+import { lazy, Suspense } from "react";
+import { AuthenticationModalProps } from "@genuin/components/organisms/authentication-modal";
+
+const AuthenticationModal = lazy(() =>
+  import("../../organisms/authentication-modal").then((m) => ({
+    default: m.AuthenticationModal,
+  }))
+) as React.ComponentType<AuthenticationModalProps>;
 import { useFeed } from "@genuin/components/react-query/api/feed";
+
 import { getQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
 export function VideoPage({ videoId }: { videoId: string }) {
   const [showGetApp, setShowGetApp] = useState(false);
@@ -50,13 +58,16 @@ export function VideoPage({ videoId }: { videoId: string }) {
         }}
       />
       {showGetApp && (
-        <AuthenticationModal
-          open={true}
-          showClose={false}
-          customStep="GET_APP_WITH_BLURRED_BG"
-          getAppData={{ data: { type: "video" } }}
-        />
+        <Suspense fallback={null}>
+          <AuthenticationModal
+            open={true}
+            showClose={false}
+            customStep="GET_APP_WITH_BLURRED_BG"
+            getAppData={{ data: { type: "video" } }}
+          />
+        </Suspense>
       )}
     </>
+
   );
 }

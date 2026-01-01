@@ -4,22 +4,28 @@ const ControlLayer = lazy(() =>
   import("../../molecules/feed-player/control-layer").then((m) => ({
     default: m.ControlLayer,
   }))
-);
+) as React.ComponentType<any>;
+
+
 
 // Lazy load video player to defer heavy playback logic
 const FeedPlayer = lazy(() =>
   import("../../molecules/feed-player").then((m) => ({
     default: m.FeedPlayer,
   }))
-);
+) as React.ComponentType<any>;
+
+
 import { PlayerProvider } from "../../molecules/feed-player/context/provider";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
+
 import { useSwiper } from "swiper/react";
 import { useCallback, useMemo, lazy, Suspense } from "react";
 import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
 import { ComponentProps } from "react";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+
 
 type PlayerProps = {
   post: PostDetailsType;

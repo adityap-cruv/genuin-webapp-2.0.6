@@ -1,15 +1,25 @@
-"use client";
-import { useState, useCallback } from "react";
-import { Button } from "@genuin/ui/button";
-import { useBaseContext } from "@genuin/components/context/base";
-import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
-import { useAuthContext } from "@genuin/components/context/auth";
 import {
   Popover,
   PopoverClose,
   PopoverContent,
   PopoverTrigger,
 } from "@genuin/ui/popover";
+import { lazy, Suspense, useState, useCallback } from "react";
+import { useBaseContext } from "@genuin/components/context/base";
+import { useAuthContext } from "@genuin/components/context/auth";
+import { Button } from "@genuin/ui/button";
+
+import type { AuthenticationModalProps } from "@genuin/components/organisms/authentication-modal";
+
+const AuthenticationModal = lazy(() =>
+  import("../../organisms/authentication-modal").then((m) => ({
+    default: m.AuthenticationModal,
+  }))
+) as React.ComponentType<AuthenticationModalProps>;
+
+
+
+
 import { Avatar } from "@genuin/ui/avatar";
 import { ChevronLeft, LogOutIcon, SettingsIcon } from "lucide-react";
 import { Link } from "@genuin/components/molecules/link";
@@ -66,17 +76,19 @@ export function CtaButtons({ theme }: VariantProps<typeof iconVariant>) {
       <Search theme={theme} />
 
       {showApp && (
-        <AuthenticationModal
-          asChild
-          customStep="GET_APP"
-          onClick={() => {
-            track(EventName.GET_APP_BUTTON_CLICKED);
-          }}
-        >
-          <Button theme="outline" size="sm">
-            Get app
-          </Button>
-        </AuthenticationModal>
+        <Suspense fallback={<Button theme="outline" size="sm">Get app</Button>}>
+          <AuthenticationModal
+            asChild
+            customStep="GET_APP"
+            onClick={() => {
+              track(EventName.GET_APP_BUTTON_CLICKED);
+            }}
+          >
+            <Button theme="outline" size="sm">
+              Get app
+            </Button>
+          </AuthenticationModal>
+        </Suspense>
       )}
 
       {isAuthenticated && camera_enabled && (
@@ -92,15 +104,17 @@ export function CtaButtons({ theme }: VariantProps<typeof iconVariant>) {
       )}
 
       {showLogin && (
-        <AuthenticationModal customStep="SIGNIN" asChild>
-          <Button
-            theme="primary"
-            className={cn(isAuthenticated && "gencl:hidden")}
-            size="sm"
-          >
-            Log in
-          </Button>
-        </AuthenticationModal>
+        <Suspense fallback={<Button theme="primary" className={cn(isAuthenticated && "gencl:hidden")} size="sm">Log in</Button>}>
+          <AuthenticationModal customStep="SIGNIN" asChild>
+            <Button
+              theme="primary"
+              className={cn(isAuthenticated && "gencl:hidden")}
+              size="sm"
+            >
+              Log in
+            </Button>
+          </AuthenticationModal>
+        </Suspense>
       )}
 
       {isAuthenticated && (

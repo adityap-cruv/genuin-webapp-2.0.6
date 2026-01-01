@@ -1,13 +1,17 @@
 import { cn } from "@genuin/ui/utils";
+
 import type { ComponentProps } from "react";
 
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { lazy, Suspense } from "react";
 
 const Comments = lazy(() =>
-  import("../../molecules/comments").then((m) => ({ default: m.Comments }))
-);
-import { PostDetails } from "../post-details";
+  import("../../molecules/comments/comments").then((m) => ({ default: m.Comments }))
+) as React.ComponentType<any>;
+
+
+import { PostDetails } from "../post-details/post-details";
+
 
 type PostSidePanelPropsType = ComponentProps<"div"> & {
   postDetails: PostDetailsType;

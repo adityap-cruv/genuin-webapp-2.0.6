@@ -1,12 +1,14 @@
 import { cn } from "@genuin/ui/lib/utils";
 import type { EmbedTileProps } from "./embed-tile.types";
 import { cva, VariantProps } from "class-variance-authority";
-import { lazy, Suspense, useCallback, useMemo } from "react";
+import { lazy, Suspense, useCallback, useMemo, useState, useEffect } from "react";
+
 const ControlLayer = lazy(() =>
   import("../../molecules/feed-player/control-layer").then((m) => ({
     default: m.ControlLayer,
   }))
-);
+) as React.ComponentType<any>;
+
 const FeedPlayer = lazy(() =>
   import("../../molecules/feed-player").then((m) => ({
     default: m.FeedPlayer,
@@ -27,7 +29,13 @@ import { DynamicReactionIcon } from "@genuin/components/molecules/reaction-butto
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
 import { isMiddlewareOverlayEnabled } from "@genuin/components/lib/utils";
-import WatchBoundaryOverlay from "@genuin/components/molecules/feed-player/control-layer/watch-boundary-overlay";
+const WatchBoundaryOverlay = lazy(() =>
+  import(
+    "@genuin/components/molecules/feed-player/control-layer/watch-boundary-overlay"
+  ).then((m) => ({ default: m.default }))
+) as React.ComponentType<any>;
+
+
 import { useEmbedManagerContext } from "../embed/context";
 
 /**
@@ -139,6 +147,14 @@ export function EmbedTile({
           videoDetails={postDetails.video}
           variant="overlay"
         />
+      ) : shouldShowMiddlewareOverlay && postDetails.video.type === "complete" ? (
+        <Suspense fallback={null}>
+          <WatchBoundaryOverlay
+            info={listenLiveButtonInfo}
+            videoDetails={postDetails.video}
+            variant="complete"
+          />
+        </Suspense>
       ) : (
         <div
           className={cn(

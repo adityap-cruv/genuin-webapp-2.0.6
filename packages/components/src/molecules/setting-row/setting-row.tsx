@@ -14,8 +14,16 @@ import {
   TwitterIcon,
   YouTubeIcon,
 } from "@genuin/ui/icons";
-import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
+import { lazy, Suspense } from "react";
+import { AuthenticationModalProps } from "@genuin/components/organisms/authentication-modal";
+
+const AuthenticationModal = lazy(() =>
+  import("@genuin/components/organisms/authentication-modal").then((m) => ({
+    default: m.AuthenticationModal,
+  }))
+) as React.ComponentType<AuthenticationModalProps>;
 import { StepsType } from "@genuin/components/organisms/authentication-modal/context";
+
 import { cn } from "@genuin/ui/lib/utils";
 
 interface SocialIds {
@@ -140,8 +148,11 @@ export const SettingRow: FC<SettingFieldProps> = ({
   return toggle ? (
     Content
   ) : (
-    <AuthenticationModal customStep={modalType} asChild>
-      {Content}
-    </AuthenticationModal>
+    <Suspense fallback={Content}>
+      <AuthenticationModal customStep={modalType} asChild>
+        {Content}
+      </AuthenticationModal>
+    </Suspense>
   );
+
 };

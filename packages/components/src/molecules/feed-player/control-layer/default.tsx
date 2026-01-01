@@ -9,7 +9,8 @@ import { PlayingState } from "./playing-state";
 import { Scrubber } from "./scrubber";
 const ExpandViewDetails = React.lazy(() =>
   import("./expand-view").then((m) => ({ default: m.ExpandViewDetails }))
-);
+) as React.ComponentType<any>;
+
 import { PlaybackSpeedCapsule } from "@genuin/components/molecules/playback-speed/speed-capsule";
 import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
 import { Linkouts } from "@genuin/components/organisms/linkouts/linkouts";

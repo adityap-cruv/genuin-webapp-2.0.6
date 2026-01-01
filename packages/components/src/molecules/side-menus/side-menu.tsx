@@ -1,6 +1,14 @@
+import { lazy, Suspense } from "react";
 import type { FC } from "react";
 import type { MenuItem } from "./side-menu.types";
-import { AuthenticationModal } from "@genuin/components/organisms/authentication-modal";
+import type { AuthenticationModalProps } from "@genuin/components/organisms/authentication-modal";
+
+const AuthenticationModal = lazy(() =>
+  import("@genuin/components/organisms/authentication-modal").then((m) => ({
+    default: m.AuthenticationModal,
+  }))
+) as React.ComponentType<AuthenticationModalProps>;
+
 import { cn } from "@genuin/ui/lib/utils";
 
 interface SideMenuProps {
@@ -31,9 +39,11 @@ const SideMenu: FC<SideMenuProps> = ({ items, activeId, onSelect }) => {
         );
 
         return item.variant === "signOut" ? (
-          <AuthenticationModal key={item.id} customStep="SIGN_OUT" asChild>
-            {listItem}
-          </AuthenticationModal>
+          <Suspense fallback={listItem}>
+            <AuthenticationModal key={item.id} customStep="SIGN_OUT" asChild>
+              {listItem}
+            </AuthenticationModal>
+          </Suspense>
         ) : (
           listItem
         );

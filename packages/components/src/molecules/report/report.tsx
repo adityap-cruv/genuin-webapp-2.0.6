@@ -26,7 +26,8 @@ const AuthenticationModal = React.lazy(() =>
   import("@genuin/components/organisms/authentication-modal").then((m) => ({
     default: m.AuthenticationModal,
   }))
-);
+) as React.ComponentType<any>;
+
 import { useAuthContext } from "@genuin/components/context/auth";
 import { MEDIA_BASE_URL } from "@genuin/components/lib/utils/env";
 import { useAnalytics } from "@genuin/components/context/analytics";
@@ -37,7 +38,8 @@ const Success = React.lazy(() =>
   import("@genuin/components/molecules/success").then((m) => ({
     default: m.Success,
   }))
-);
+) as React.ComponentType<any>;
+
 import { Suspense } from "react";
 
 type ReportProps = ComponentProps<typeof Dialog> & {

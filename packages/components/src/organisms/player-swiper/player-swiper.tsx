@@ -3,27 +3,34 @@ import "swiper/css";
 import { SwiperSlide } from "swiper/react";
 import { useBoolean } from "usehooks-ts";
 
+
+import { useFeedContext } from "@genuin/components/templates/feed/context";
+
+
 const Actions = lazy(() =>
-  import("@genuin/components/molecules/actions").then((m) => ({
+  import("../../molecules/actions").then((m) => ({
     default: m.Actions,
   }))
-);
-import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
-import { useFeedContext } from "@genuin/components/templates/feed/context";
+) as React.ComponentType<any>;
+ // Using any for now to stop the bleed, will refine if possible
+
 
 // Lazy load heavy comment components to split vendor-forms chunk
 const Comments = lazy(() =>
-  import("../../molecules/comments").then((m) => ({ default: m.Comments }))
+  import("../../molecules/comments/comments").then((m) => ({ default: m.Comments }))
 );
 const CommentsDialog = lazy(() =>
-  import("../../molecules/comments").then((m) => ({
+  import("../../molecules/comments/comments-dialog").then((m) => ({
     default: m.CommentsDialog,
   }))
-);
+) as React.ComponentType<any>;
+
+
 
 import { Player } from "./player";
-import { SwiperImplementation } from "./swiper-implementation";
-import { SectionsTabs } from "./sections-tabs";
+import { PlayerHeader } from "./player-header";
+import { abbreviateNumber, cn } from "@genuin/ui/lib/utils";
+import { type Swiper as SwiperType } from "swiper/types";
 import {
   ComponentProps,
   useEffect,
@@ -35,15 +42,29 @@ import {
   Suspense,
 } from "react";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
-import { abbreviateNumber, cn } from "@genuin/ui/lib/utils";
+import { useBaseContext } from "@genuin/components/context/base/index";
+
+
+
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { SectionsTabs } from "./sections-tabs";
+import { type PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+import { usePlayerContext } from "@genuin/components/molecules/feed-player/context/index";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 
-import { Swiper } from "swiper/types";
+import { SwiperImplementation } from "./swiper-implementation";
+
+
 import { useAnalytics } from "@genuin/components/context";
-import { PlayerHeader } from "./player-header";
 import { calculateSlideDimensions } from "./utils";
-import WatchBoundaryOverlay from "@genuin/components/molecules/feed-player/control-layer/watch-boundary-overlay";
+const WatchBoundaryOverlay = lazy(() =>
+  import(
+    "../../molecules/feed-player/control-layer/watch-boundary-overlay"
+  ).then((m) => ({ default: m.default }))
+) as React.ComponentType<any>;
+
+
+
 import { useFocusManagement } from "@genuin/components/hooks/use-focus-management";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 import {
@@ -228,6 +249,7 @@ a swiper inside another swiper.
     activeSwiper,
   });
 
+
   // Effect to navigate to selected section when it changes (only for sectioned mode)
   useEffect(() => {
     if (isSectioned && horizontalSwiper && selectedSection && sectionList) {
@@ -349,10 +371,12 @@ a swiper inside another swiper.
                         totalVideos={totalVideos}
                       />
                     ) : post.video.type === "complete" ? (
-                      <WatchBoundaryOverlay
-                        videoDetails={post.video}
-                        variant="complete"
-                      />
+                      <Suspense fallback={null}>
+                        <WatchBoundaryOverlay
+                          videoDetails={post.video}
+                          variant="complete"
+                        />
+                      </Suspense>
                     ) : (
                       <></>
                     );
@@ -438,10 +462,12 @@ a swiper inside another swiper.
                   index={index}
                 />
               ) : post.video.type === "complete" ? (
-                <WatchBoundaryOverlay
-                  videoDetails={post.video}
-                  variant="complete"
-                />
+                <Suspense fallback={null}>
+                  <WatchBoundaryOverlay
+                    videoDetails={post.video}
+                    variant="complete"
+                  />
+                </Suspense>
               ) : (
                 <></>
               )}

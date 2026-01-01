@@ -3,14 +3,17 @@ import { useFeed } from "@genuin/components/react-query/api/feed";
 import { EmbedProps } from "./embed.types";
 import { SdkSkeleton, ShimmerSlide } from "./skeleton";
 import { cn } from "@genuin/ui/lib/utils";
+
 import { useMemo, useState, useEffect, useCallback, useRef, lazy, Suspense } from "react";
 import { EmbedSwiper } from "@genuin/components/molecules/embed-swiper/embed-swiper";
 import { useAnalytics } from "@genuin/components/context/analytics/context";
 import { SwiperSlide } from "swiper/react";
 import { EmbedManagerProvider } from "./context";
+
 import { Swiper } from "swiper/types";
 import { EmbedHeader } from "@genuin/components/molecules/embed-header";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+
 const EmbedExpandSectionedView = lazy(() =>
   import("./embed-expand-sectioned-view").then((m) => ({
     default: m.EmbedExpandSectionedView,
@@ -18,17 +21,22 @@ const EmbedExpandSectionedView = lazy(() =>
 );
 import { useEmbedContext } from "@genuin/components/context/embed";
 import { EmbedEventContextType } from "@genuin/components/context/embed/event-bus";
+
 import { PipView } from "./pip-view";
 import { getQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
 import { useEmbedDimensions } from "@genuin/components/hooks/embed/use-embed-dimensions";
+
 import { SdkErrorState } from "./error-state";
 import { SdkEmptyState } from "./empty-state";
+
 import { GridView } from "./grid-view/grid-view";
+
 const EmbedExpandView = lazy(() =>
   import("./expand-view").then((m) => ({ default: m.EmbedExpandView }))
 );
 import { cva, VariantProps } from "class-variance-authority";
 import { EmbedItem } from "./embed-tile-item";
+
 import { AnalyticsService } from "@genuin/components/context/analytics/service";
 import { useBaseContext } from "@genuin/components/context";
 import { isMiddlewareOverlayEnabled } from "@genuin/components/lib/utils";
