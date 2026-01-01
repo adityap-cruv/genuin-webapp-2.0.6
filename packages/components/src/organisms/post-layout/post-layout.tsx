@@ -2,9 +2,10 @@
 
 import { ReactNode, useEffect, useState } from "react";
 import { DiamondIcon, TickRoundIcon } from "@genuin/ui/icons";
-import { Button } from "@genuin/ui/components";
+
 import { Breadcrumb } from "@genuin/components/molecules/breadcrumb";
 import { StepPost } from "../create-post/types";
+import { Button } from "@genuin/ui/components/button";
 import { Loader } from "@genuin/ui/components/loader";
 
 type PostLayoutProps = {

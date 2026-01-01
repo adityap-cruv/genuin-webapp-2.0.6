@@ -1,11 +1,4 @@
-import {
-  TableHeader,
-  TableRow,
-  TableHead,
-  TableBody,
-  TableCell,
-  Table,
-} from "@genuin/ui/components";
+
 import {
   ColumnDef,
   flexRender,
@@ -16,6 +9,7 @@ import {
   SortingState,
   RowSelectionState,
 } from "@tanstack/react-table";
+import { TableHeader, TableRow, TableHead, TableBody, TableCell, Table } from "@genuin/ui/components/table";
 import { DataTablePagination } from "./data-table-pagination";
 
 interface DataTableProps<TData, TValue> {

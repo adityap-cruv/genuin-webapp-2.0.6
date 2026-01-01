@@ -531,4 +531,96 @@ Vite config creates vendor chunks, but they're still eagerly loaded because prov
   - Verify `feed` chunk size.
   - Verify `standard-wall` size (<500KB achieved).
 
+### Phase 7: Vendor-Forms Leakage Investigation (Jan 1, 2026)
+
+**Problem**: Despite lazy loading optimizations, `vendor-forms-core` (36KB) and `vendor-forms-validation` (87KB) are being **statically imported** in the `app-ui-feed` chunk (1.3MB), causing 123KB of form libraries to load on initial page load even when forms aren't used.
+
+**Investigation Timeline**:
+
+1. **Initial Discovery**:
+   - Analyzed bundle: `app-ui-feed-*.js` contains static imports:
+     ```javascript
+     import { u as N0, l as xe } from "./vendor-forms-validation-C8CdEaUR.js";
+     import { F as wa, u as Ea, a as ya, C as xa } from "./vendor-forms-core-hz5MHfFW.js";
+     ```
+   - Identified that 8 chunks import vendor-forms, but only `app-ui-feed` loads eagerly
+
+2. **Root Cause Analysis**:
+   - **Primary Cause**: `@genuin/ui/components/index.ts` barrel export includes `form` components
+   - `form.tsx` directly imports `react-hook-form` and related libraries
+   - Any import from `@genuin/ui/components` pulls in ALL exports due to how module bundlers resolve barrel exports
+   - Even though `MentionInput` was lazy-loaded, other components still import from the barrel
+
+3. **Attempted Solutions**:
+
+   **Approach 1: Lazy-load MentionInput** ❌ FAILED
+   - Converted `MentionInput` import to lazy loading in `comment-input.tsx`
+   - **Result**: vendor-forms still statically imported (121KB)
+   - **Why it failed**: Other components still importing from barrel export
+
+   **Approach 2: Remove form from barrel export** ❌ FAILED
+   - Removed `export * from "./form"` from `@genuin/ui/components/index.ts`
+   - Updated 21+ files to import forms from `@genuin/ui/components/form` directly
+   - **Result**: vendor-forms still statically imported (121KB)
+   - **Why it failed**: Barrel export still pulls in transitive dependencies
+
+   **Approach 3: Vite config chunk splitting** ❌ FAILED
+   - Added manual chunk configuration to force form components into separate `ui-forms` chunk:
+     ```javascript
+     if (id.includes('@genuin/ui') && id.includes('/form')) {
+       return 'ui-forms';
+     }
+     ```
+   - Excluded form components from `app-ui-components` bundle
+   - **Result**: vendor-forms still statically imported (121KB)
+   - **Why it failed**: Chunk splitting happens AFTER module resolution; barrel exports prevent tree-shaking at the module resolution stage
+
+4. **Root Cause Confirmed**:
+   - **Barrel exports fundamentally prevent tree-shaking**
+   - When ANY component imports from `@genuin/ui/components`, Vite/Rollup must resolve the entire barrel export at build time
+   - This includes all transitive dependencies, even if they're split into separate chunks later
+   - The bundler cannot determine which exports are actually used until runtime, so it includes everything
+
+5. **Files Affected** (58+ files importing from barrel):
+   - Authentication modal screens (15 files)
+   - Top bar components
+   - Side bar components
+   - Action components
+   - Settings components
+   - And many more...
+
+**Recommended Solution**: **Option 2 - Direct Imports**
+
+Convert ALL barrel imports to direct imports throughout the codebase:
+
+```typescript
+// Current (causes leakage):
+import { Button, Input, Toast } from "@genuin/ui/components";
+
+// Required (enables tree-shaking):
+import { Button } from "@genuin/ui/components/button";
+import { Input } from "@genuin/ui/components/input";
+import { Toast } from "@genuin/ui/components/toaster";
+```
+
+**Impact**:
+- **Files to update**: 58+ files in `packages/components/src`
+- **Benefit**: Proper tree-shaking, vendor-forms only loads when form components are actually used
+- **Bundle size reduction**: ~121KB deferred from initial load
+- **Long-term benefit**: Better code-splitting and tree-shaking for all UI components
+
+**Status**: Pending user approval to proceed with Option 2
+
+**Key Learnings**:
+1. Barrel exports are convenient but prevent effective tree-shaking
+2. Chunk splitting configuration cannot overcome barrel export limitations
+3. Direct imports are the only reliable way to achieve proper tree-shaking
+4. This is a known limitation of JavaScript module bundlers (Webpack, Rollup, Vite)
+
+**Files Modified During Investigation**:
+- `packages/ui/src/components/index.ts` (removed form export - reverted)
+- `packages/web-sdk/vite.config.mjs` (added ui-forms chunk splitting)
+- `packages/components/src/molecules/comment-input.tsx` (lazy-loaded MentionInput)
+- 21+ files updated to use direct form imports (will need to revert if proceeding with Option 2)
+
 All generated reports and scripts live under `packages/web-sdk/`.

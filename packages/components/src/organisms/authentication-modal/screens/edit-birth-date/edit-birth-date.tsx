@@ -7,19 +7,15 @@ import {
   FormField,
   FormItem,
 } from "@genuin/ui/components/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@genuin/ui/components";
+
 import { useUpdateUserMutation } from "@genuin/components/react-query/api/authentication";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuthContext } from "@genuin/components/context/auth";
 import { cn } from "@genuin/ui/lib/utils";
-import { Toast } from "@genuin/ui/components";
+
 import { useAuthenticationModalContext } from "../../context";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@genuin/ui/components/select";
+import { Toast } from "@genuin/ui/components/toaster";
 import { SubmitButton } from "../../submit-button";
 
 const MONTHS = [

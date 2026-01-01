@@ -10,11 +10,12 @@ import {
   UnmuteIcon,
 } from "@genuin/ui/icons";
 import { CollapseIcon } from "@genuin/ui/icons";
-import { Button } from "@genuin/ui/components";
+
 import { usePlayerContext } from "../../context";
 import { useEmbedContext } from "@genuin/components/context/embed";
 import { EmbedEventContextType } from "@genuin/components/context/embed/event-bus";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+import { Button } from "@genuin/ui/components/button";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 type EmbedControlsProps = ComponentProps<"div"> & {

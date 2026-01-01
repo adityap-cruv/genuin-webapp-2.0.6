@@ -24,8 +24,8 @@ import {
 } from "@genuin/ui/icons";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { notificationsSettings } from "@genuin/components/react-query/api/authentication/notifications";
+import { Toast } from "@genuin/ui/components/toaster";
 import { useGetCategoriesQuery } from "@genuin/components/react-query/api/authentication/categories";
-import { Toast } from "@genuin/ui/components";
 
 const menu: MenuItem[] = [
   {

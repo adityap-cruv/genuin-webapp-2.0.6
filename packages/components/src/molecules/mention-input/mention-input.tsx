@@ -13,11 +13,12 @@ import {
 } from "@genuin/ui/components/form";
 import { Loader } from "@genuin/ui/components/loader";
 import { cn } from "@genuin/ui/lib/utils";
-import { Command, CommandList, CommandItem } from "@genuin/ui/components";
+
 import { useCommentMentions } from "../../hooks/use-comment-mentions";
 import { useCommentInputHandlers } from "../../hooks/use-comment-input-handlers";
 import { useCommentTextareaHandlers } from "../../hooks/use-description-textarea-handlers";
 import HighlightedInput from "./highlighted-field";
+import { Command, CommandList, CommandItem } from "@genuin/ui/components/command";
 import { useAnalytics } from "@genuin/components/context/analytics";
 
 // Types for props

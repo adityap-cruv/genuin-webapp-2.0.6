@@ -6,10 +6,11 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { MobileSidebar } from "../side-bar";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import { Button } from "@genuin/ui/components";
+
 import { ArrowLeftIcon, XIcon } from "@genuin/ui/icons";
 import { useRouter } from "@genuin/components/hooks/use-router";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import { Button } from "@genuin/ui/components/button";
 import { useCallback } from "react";
 
 const topbarVariants = cva(

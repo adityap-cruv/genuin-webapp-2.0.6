@@ -1,9 +1,11 @@
-import { Avatar, DecorativeList } from "@genuin/ui/components";
+
 import { PostOriginCardProps } from "./types";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { Link } from "@genuin/components/molecules/link";
 import { CommunityPrivacyInfo } from "@genuin/components/molecules/community-privacy-info";
 import { GroupPrivacyInfo } from "@genuin/components/molecules/group-privacy-info";
+import { Avatar } from "@genuin/ui/components/avatar";
+import { DecorativeList } from "@genuin/ui/components/decorative-list";
 import { Skeleton } from "@genuin/ui/components/skeleton";
 
 export function PostOriginCard({ community, group }: PostOriginCardProps) {

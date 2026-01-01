@@ -1,7 +1,7 @@
 import { type FC, lazy, Suspense } from "react";
 
 import { SettingRow } from "@genuin/components/molecules/setting-row";
-import { Avatar, Button } from "@genuin/ui/components";
+
 import { cn } from "@genuin/ui/lib/utils";
 import type { AuthenticationModalProps } from "@genuin/components/organisms/authentication-modal";
 
@@ -12,6 +12,8 @@ const AuthenticationModal = lazy(() =>
 ) as React.ComponentType<AuthenticationModalProps>;
 
 import { useAuthContext } from "@genuin/components/context/auth";
+import { Avatar } from "@genuin/ui/components/avatar";
+import { Button } from "@genuin/ui/components/button";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 
 export const EditProfileSettings: FC = () => {

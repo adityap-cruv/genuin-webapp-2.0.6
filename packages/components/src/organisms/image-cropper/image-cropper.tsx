@@ -3,7 +3,8 @@ import { createRef, useState } from "react";
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
 import { uploadProfileImage } from "@genuin/components/react-query/api/profile/image";
-import { Button } from "@genuin/ui/components";
+import { Button } from "@genuin/ui/components/button";
+
 import { cn } from "@genuin/ui/lib/utils";
 
 export function ImageCropper({

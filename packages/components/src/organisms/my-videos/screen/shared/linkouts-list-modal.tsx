@@ -1,12 +1,9 @@
 "use client";
 
 import { cn } from "@genuin/ui/lib/utils";
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-  Button,
-} from "@genuin/ui/components";
+import { Dialog, DialogContent, DialogTrigger } from "@genuin/ui/components/dialog";
+import { Button } from "@genuin/ui/components/button";
+
 import { Link } from "@genuin/components/molecules/link";
 
 type LinkoutsListModalProps = {

@@ -20,8 +20,10 @@ import {
   YouTubeIcon,
 } from "@genuin/ui/icons";
 import { useAuthenticationModalContext } from "../../context";
-import { Input, Toast } from "@genuin/ui/components";
+
 import { SubmitButton } from "../../submit-button";
+import { Input } from "@genuin/ui/components/input";
+import { Toast } from "@genuin/ui/components/toaster";
 import { useUpdateUserMutation } from "@genuin/components/react-query/api/authentication";
 
 const generalUsernamePattern = /^[a-zA-Z0-9._-]+$/;

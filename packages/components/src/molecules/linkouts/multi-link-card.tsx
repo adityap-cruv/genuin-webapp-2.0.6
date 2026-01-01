@@ -1,13 +1,14 @@
 import { cn } from "@genuin/ui/lib/utils";
 import { LinkData } from "@genuin/components/react-query/api/linkouts/schema";
 import { ChevronRight, LinkIcon } from "lucide-react";
-import { Button } from "@genuin/ui/components";
+
 import { useAnalytics } from "@genuin/components/context/analytics/context";
 import { VariantProps, cva } from "class-variance-authority";
 import { useBaseContext } from "@genuin/components/context/base";
 import { Loader } from "@genuin/ui/components/loader";
 import { useSafeRedirect } from "./use-safe-redirect";
 import { Link } from "../link/link";
+import { Button } from "@genuin/ui/components/button";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 
 // Combined variant for both card layouts

@@ -8,8 +8,8 @@ import { ComponentProps, useState, useEffect } from "react";
 import { SubmitButton } from "../../submit-button";
 import { useAuthContext } from "@genuin/components/context/auth";
 import { Loader } from "@genuin/ui/components/loader";
+import { Toast } from "@genuin/ui/components/toaster";
 import { useAuthenticationModalContext } from "../../context";
-import { Toast } from "@genuin/ui/components";
 
 export type CategoryInputProps = ComponentProps<"div">;
 

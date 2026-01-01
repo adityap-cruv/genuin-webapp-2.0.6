@@ -1,12 +1,6 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@genuin/ui/components";
+
 import { Skeleton } from "@genuin/ui/components/skeleton";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@genuin/ui/components/table";
 import React from "react";
 
 export interface SkeletonColumn {

@@ -1,9 +1,10 @@
 import { ComponentProps } from "react";
 import { cn } from "@genuin/ui/lib/utils";
 import { useAuthenticationModalContext } from "../../context";
-import { Button } from "@genuin/ui/components";
+
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { useAuthContext } from "@genuin/components/context/auth";
+import { Button } from "@genuin/ui/components/button";
 import { useAnalytics } from "@genuin/components/context/analytics";
 
 export function SignOut({ className, ...restProps }: ComponentProps<"div">) {

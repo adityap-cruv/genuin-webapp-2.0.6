@@ -3,7 +3,8 @@ import type { ComponentProps } from "react";
 
 import { BrandBadge } from "../brand-badge";
 import { Link } from "../link";
-import { Chip } from "@genuin/ui/components";
+import { Chip } from "@genuin/ui/components/chip";
+
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 type ProfileLinkPropsType = {

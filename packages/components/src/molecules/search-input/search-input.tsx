@@ -1,5 +1,7 @@
-import { Button, Input } from "@genuin/ui/components";
+
 import { SearchIcon, XIcon, XIconProps } from "@genuin/ui/icons";
+import { Button } from "@genuin/ui/components/button";
+import { Input } from "@genuin/ui/components/input";
 import { cn } from "@genuin/ui/lib/utils";
 
 type SearchInputProps = React.ComponentProps<"input"> & {

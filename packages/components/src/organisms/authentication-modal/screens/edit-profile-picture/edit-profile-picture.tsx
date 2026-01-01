@@ -13,7 +13,7 @@ import {
   FormLabel,
 } from "@genuin/ui/components/form";
 import { cn } from "@genuin/ui/lib/utils";
-import { Input, Toast } from "@genuin/ui/components";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LinkIcon, UploadIcon } from "@genuin/ui/icons";
 import { useAuthContext } from "@genuin/components/context/auth";
@@ -21,6 +21,8 @@ import { useUpdateUserMutation } from "@genuin/components/react-query/api/authen
 import { fetchImageBlob } from "@genuin/components/react-query/api/profile/image";
 import { ImageCropper } from "@genuin/components/organisms/image-cropper";
 import { useAuthenticationModalContext } from "../../context";
+import { Input } from "@genuin/ui/components/input";
+import { Toast } from "@genuin/ui/components/toaster";
 import { SubmitButton } from "../../submit-button";
 
 const formSchema = z.object({

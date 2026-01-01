@@ -8,8 +8,9 @@ import { useDeletePostsMutation } from "@genuin/components/react-query/api/posts
 import { DataTable } from "../../../data-table";
 import { NoDataState, DeleteModal, type DeleteType } from "../shared";
 import { SearchInput } from "@genuin/components/molecules/search-input";
-import { Button } from "@genuin/ui/components";
+
 import type { ColumnDef, RowSelectionState } from "@tanstack/react-table";
+import { Button } from "@genuin/ui/components/button";
 import { DeleteIcon } from "@genuin/ui/icons";
 
 interface VideosTableBaseProps {

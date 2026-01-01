@@ -13,9 +13,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuthContext } from "@genuin/components/context/auth";
 import { useUpdateUserMutation } from "@genuin/components/react-query/api/authentication";
 import { cn } from "@genuin/ui/lib/utils";
-import { Input } from "@genuin/ui/components";
-import { Toast } from "@genuin/ui/components";
+
 import { useAuthenticationModalContext } from "../../context";
+import { Input } from "@genuin/ui/components/input";
+import { Toast } from "@genuin/ui/components/toaster";
 import { SubmitButton } from "../../submit-button";
 
 const nameRegex = /^[a-zA-Z0-9 ]+$/i;

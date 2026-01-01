@@ -15,11 +15,13 @@ import {
   FormLabel,
 } from "@genuin/ui/components/form";
 import { cn } from "@genuin/ui/lib/utils";
-import { Button, Input } from "@genuin/ui/components";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeftIcon, LinkIcon, UploadIcon } from "@genuin/ui/icons";
 import { fetchImageBlob } from "@genuin/components/react-query/api/profile/image";
 import { ImageCropper } from "@genuin/components/organisms/image-cropper";
+import { Button } from "@genuin/ui/components/button";
+import { Input } from "@genuin/ui/components/input";
 import { Loader } from "@genuin/ui/components/loader";
 
 type MediaModalProps = ComponentProps<typeof Dialog> & {

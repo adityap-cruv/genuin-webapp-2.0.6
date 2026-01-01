@@ -18,8 +18,9 @@ import { useValidateUsername } from "@genuin/components/react-query/api/authenti
 import { useDebounceValue } from "usehooks-ts";
 import { useUpdateUserMutation } from "@genuin/components/react-query/api/authentication";
 import { sanitizeInput } from "@genuin/components/lib/utils";
-import { Toast } from "@genuin/ui/components";
+
 import { useAuthenticationModalContext } from "../../context";
+import { Toast } from "@genuin/ui/components/toaster";
 import { useAnalytics } from "@genuin/components/context/analytics/context";
 
 const usernameSchema = z.object({

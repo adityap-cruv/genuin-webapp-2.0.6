@@ -12,10 +12,11 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cn, sanitizeInput } from "@genuin/ui/lib/utils";
 import { useAuthContext } from "@genuin/components/context/auth";
-import { Textarea } from "@genuin/ui/components";
-import { Toast } from "@genuin/ui/components";
+
 import { SubmitButton } from "../../submit-button";
 import { useAuthenticationModalContext } from "../../context";
+import { Textarea } from "@genuin/ui/components/textarea";
+import { Toast } from "@genuin/ui/components/toaster";
 import { useUpdateUserMutation } from "@genuin/components/react-query/api/authentication";
 
 const formSchema = z.object({

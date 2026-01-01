@@ -1,7 +1,7 @@
 import { ComponentProps } from "react";
 import { cn } from "@genuin/ui/lib/utils";
+import { Button } from "@genuin/ui/components/button";
 import { useAuthenticationModalContext } from "../../context";
-import { Button } from "@genuin/ui/components";
 
 export function RemovePicture({
   className,

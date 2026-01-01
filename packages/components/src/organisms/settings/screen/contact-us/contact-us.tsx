@@ -17,8 +17,9 @@ import { Input } from "@genuin/ui/components/input";
 import { Textarea } from "@genuin/ui/components/textarea";
 import { SendIcon } from "@genuin/ui/icons";
 import { useContactUsMutation } from "@genuin/components/react-query/api/authentication/use-contact-us-mutation";
-import { Toast } from "@genuin/ui/components";
+
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { Toast } from "@genuin/ui/components/toaster";
 import { useAnalytics } from "@genuin/components/context/analytics";
 
 const formSchema = z.object({

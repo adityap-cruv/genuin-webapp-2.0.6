@@ -19,7 +19,8 @@ import { RemovePicture } from "./screens/remove-picture";
 import { SignOut } from "./screens/sign-out";
 import { SignIn } from "./screens/signin";
 import { useBaseContext } from "@genuin/components/context/base";
-import { Button } from "@genuin/ui/components";
+import { Button } from "@genuin/ui/components/button";
+
 import { Link } from "@genuin/components/molecules/link";
 
 export function Screens() {

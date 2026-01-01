@@ -676,6 +676,11 @@ export default defineConfig({
             return 'vendor-forms-validation'
           }
 
+          // CRITICAL: Exclude form components from UI bundle to prevent vendor-forms leakage
+          // Form components should only be loaded when explicitly imported
+          if (id.includes('@genuin/ui') && id.includes('/form')) {
+            return 'ui-forms' // Separate chunk for form UI components
+          }
 
           // Utility libraries (includes router to merge small chunk)
           if (
@@ -713,8 +718,8 @@ export default defineConfig({
             return 'app-embed-components'
           }
 
-          // Split large UI libraries into separate chunks
-          if (id.includes('@genuin/ui') && !id.includes('src/index')) {
+          // Split large UI libraries into separate chunks (EXCLUDING form components)
+          if (id.includes('@genuin/ui') && !id.includes('src/index') && !id.includes('/form')) {
             return 'app-ui-components'
           }
 

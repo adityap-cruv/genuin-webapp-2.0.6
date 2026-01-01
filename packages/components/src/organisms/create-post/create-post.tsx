@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "@genuin/components/hooks/use-router";
 import { v4 as uuid } from "uuid";
-import { Avatar, Button, Toast } from "@genuin/ui/components";
+
 import {
   DiamondIcon,
   ImportIcon,
@@ -37,6 +37,9 @@ import { FileDetails, PostData, StepPost } from "./types";
 import { PostOriginCard } from "../post-origin-card";
 import { AddLoactionPanel, Location } from "../add-location-panel";
 import { EditCoverImage, EditCoverImageHandle } from "../edit-cover-image";
+import { Avatar } from "@genuin/ui/components/avatar";
+import { Button } from "@genuin/ui/components/button";
+import { Toast } from "@genuin/ui/components/toaster";
 import {
   SectionLayout,
   SectionLayoutLeft,

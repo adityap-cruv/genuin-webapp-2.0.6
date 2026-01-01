@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { SearchIcon } from "@genuin/ui/icons";
-import { Avatar, Input } from "@genuin/ui/components";
+
 import { Skeleton } from "@genuin/ui/components/skeleton";
 import {
   Select,
@@ -10,6 +10,8 @@ import {
   SelectItem,
 } from "@genuin/ui/components/select";
 import { useGetCommunityGroupList } from "@genuin/components/react-query/api/post";
+import { Avatar } from "@genuin/ui/components/avatar";
+import { Input } from "@genuin/ui/components/input";
 import {
   CommunityOption,
   DropdownProps,

@@ -3,13 +3,14 @@ import { ControlLayerPropsType } from "./control-layer.types";
 import { Controls } from "./controls/controls";
 import { Linkouts } from "@genuin/components/organisms/linkouts";
 import { type FC } from "react";
-import { Avatar } from "@genuin/ui/components";
+
 import { ReadMore } from "@genuin/components/molecules/read-more";
 import { PlayIcon, PriceTagIcon } from "@genuin/ui/icons";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { Stats } from "../../stats";
 import { EmbedControls } from "./controls/embed";
 import { IHeartControlLayer } from "./iheart";
+import { Avatar } from "@genuin/ui/components/avatar";
 import { useEmbedDimensions } from "@genuin/components/hooks/embed/use-embed-dimensions";
 
 export const Embed: FC<ControlLayerPropsType> = ({

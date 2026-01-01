@@ -1,5 +1,5 @@
 import type { ComponentProps } from "react";
-import { Avatar } from "@genuin/ui/components";
+
 import { Image } from "@genuin/ui/components/image";
 import { Link } from "../link";
 import { cn } from "@genuin/ui/lib/utils";
@@ -8,6 +8,7 @@ import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { Skeleton } from "@genuin/ui/components/skeleton";
 import { PlayIcon } from "@genuin/ui/icons";
 import { generatePathname } from "./utils";
+import { Avatar } from "@genuin/ui/components/avatar";
 import { NotificationDataType } from "./notification-item.types";
 
 type NotificationItemProps = {

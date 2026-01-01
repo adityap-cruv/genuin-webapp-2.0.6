@@ -1,18 +1,12 @@
 "use client";
 import { useMemo, useState } from "react";
 
-import {
-  Button,
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-} from "@genuin/ui/components";
-
 import { PlusIcon } from "@genuin/ui/icons";
 import MyVideosTable from "./screen/posted-videos/posted-videos";
 import DraftVideos from "./screen/draft-videos";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { Button } from "@genuin/ui/components/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@genuin/ui/components/tabs";
 import { Link } from "@genuin/components/molecules/link";
 
 export function MyVideos() {

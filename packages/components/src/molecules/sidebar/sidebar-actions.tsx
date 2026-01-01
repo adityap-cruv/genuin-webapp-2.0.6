@@ -9,9 +9,10 @@ import { ComponentProps, useState } from "react";
 import { NEXT_PUBLIC_HOST_URL } from "@genuin/components/lib/utils/env";
 import { cn } from "@genuin/ui/lib/utils";
 import { useAuthContext } from "@genuin/components/context/auth";
-import { Avatar } from "@genuin/ui/components";
+
 import { SearchModal } from "@genuin/components/organisms/search-modal";
 import { useBaseContext } from "@genuin/components/context/base";
+import { Avatar } from "@genuin/ui/components/avatar";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 
 const sidebarActionsVariants = cva(

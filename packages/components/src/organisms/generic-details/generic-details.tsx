@@ -5,7 +5,8 @@ import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-d
 import { GenericDetailsMobile } from "./generic-details-mobile";
 import { PinIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
-import { Avatar } from "@genuin/ui/components";
+import { Avatar } from "@genuin/ui/components/avatar";
+
 import { ReadMore } from "@genuin/components/molecules/read-more";
 
 /**

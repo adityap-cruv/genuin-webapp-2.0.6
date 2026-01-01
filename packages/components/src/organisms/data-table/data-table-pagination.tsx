@@ -1,15 +1,10 @@
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-  Button,
-} from "@genuin/ui/components";
+
 import React from "react";
 import { Table } from "@tanstack/react-table";
 
 import { cn } from "@genuin/ui/lib/utils";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@genuin/ui/components/select";
+import { Button } from "@genuin/ui/components/button";
 import {
   ChevronFirstIcon,
   ChevronRightIcon,

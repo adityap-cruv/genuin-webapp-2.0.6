@@ -2,8 +2,9 @@ import { MEDIA_BASE_URL } from "@genuin/components/lib/utils/env";
 import { Image } from "@genuin/ui/image";
 import { cn } from "@genuin/ui/lib/utils";
 import { Link } from "@genuin/components/molecules/link";
+import { Button } from "@genuin/ui/components/button";
+import { DialogClose } from "@genuin/ui/components/dialog";
 import { ComponentProps } from "react";
-import { Button, DialogClose } from "@genuin/ui/components";
 
 type SuccessProps = ComponentProps<"div"> & {
   text: string;

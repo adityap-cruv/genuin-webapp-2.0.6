@@ -9,7 +9,7 @@ import {
   IHeartShareIcon,
   IHeartUnmuteIcon,
 } from "@genuin/ui/icons";
-import { Button } from "@genuin/ui/components";
+
 import { usePlayerContext } from "../../context";
 import { ShareButton } from "@genuin/components/molecules/share-button";
 import { useAnalytics } from "@genuin/components/context/analytics";
@@ -23,6 +23,7 @@ import {
 // import { useBaseContext } from "@genuin/components/context";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { Button } from "@genuin/ui/components/button";
 import { compressText } from "@genuin/components/lib/utils";
 
 type IHeartControlsProps = ComponentProps<"div"> & {

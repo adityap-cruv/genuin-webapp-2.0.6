@@ -16,15 +16,12 @@ import {
   FormItem,
   FormMessage,
 } from "@genuin/ui/components/form";
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-  Toast,
-} from "@genuin/ui/components";
+
 import { useAuthenticationModalContext } from "../../context";
 import { TimerMessage } from "./timer";
 import { SubmitButton } from "../../submit-button";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@genuin/ui/components/input-otp";
+import { Toast } from "@genuin/ui/components/toaster";
 import { useBaseContext } from "@genuin/components/context";
 
 const OTPSchema = z.object({

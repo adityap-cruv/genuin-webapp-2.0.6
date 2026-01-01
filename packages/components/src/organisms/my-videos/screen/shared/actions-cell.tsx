@@ -7,18 +7,15 @@ import {
   DeleteIcon,
   PublishIcon,
 } from "@genuin/ui/icons";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-  Toast,
-} from "@genuin/ui/components";
+
 import { DeleteModal, type DeleteType } from "./delete-modal";
 import { useDeleteDraftsMutation } from "@genuin/components/react-query/api/posts/delete-drafts";
 import { useDeletePostsMutation } from "@genuin/components/react-query/api/posts/delete-posts";
 import { Link } from "@genuin/components/molecules/link";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { usePostVideoMutation } from "@genuin/components/react-query/api/posts/active-post";
+import { Popover, PopoverContent, PopoverTrigger } from "@genuin/ui/components/popover";
+import { Toast } from "@genuin/ui/components/toaster";
 import { Loader } from "@genuin/ui/components/loader";
 
 /**

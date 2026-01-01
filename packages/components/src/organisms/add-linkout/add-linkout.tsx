@@ -6,7 +6,7 @@ import { Switch } from "@genuin/ui/components/switch";
 import { AddButton } from "../add-linkout-button";
 import { AddLinkCard } from "../add-linkout-card";
 import { AddLinks } from "../add-linkout-form";
-import { Button } from "@genuin/ui/components";
+
 import { Plus } from "lucide-react";
 import {
   Accordion,
@@ -14,6 +14,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@genuin/ui/components/accordion";
+import { Button } from "@genuin/ui/components/button";
 import { LinkIcon } from "@genuin/ui/icons";
 
 export type CardItems = {

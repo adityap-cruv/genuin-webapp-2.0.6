@@ -1,6 +1,7 @@
-import { Button } from "@genuin/ui/components";
+
 import { AscIcon, DescIcon, SortIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
+import { Button } from "@genuin/ui/components/button";
 import { Column } from "@tanstack/react-table";
 
 interface DataTableColumnHeaderProps<TData, TValue>

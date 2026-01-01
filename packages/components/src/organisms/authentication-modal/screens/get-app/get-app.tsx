@@ -15,7 +15,8 @@ import { deepLinkActions } from "@genuin/components/react-query/api/deeplink/get
 import { Loader } from "@genuin/ui/components/loader";
 import { getActionText } from "@genuin/components/lib/utils";
 import { BrandLogo } from "@genuin/components/molecules/brand";
-import { Button } from "@genuin/ui/components";
+import { Button } from "@genuin/ui/components/button";
+
 import { useAnalytics } from "@genuin/components/context/analytics";
 
 export type GetAppProps = ComponentProps<"div"> & {

@@ -1,4 +1,4 @@
-import { Button } from "@genuin/ui/components";
+
 import {
   ChevronDownIcon,
   ChevronLeftIcon,
@@ -7,6 +7,7 @@ import {
 } from "@genuin/ui";
 import { useEmbedManagerContext } from "./context";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { Button } from "@genuin/ui/components/button";
 import { useCallback, useState, useEffect } from "react";
 
 // Common types

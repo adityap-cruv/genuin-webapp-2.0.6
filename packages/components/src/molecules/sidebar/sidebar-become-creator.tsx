@@ -8,12 +8,12 @@ const AuthenticationModal = lazy(() =>
   }))
 ) as React.ComponentType<AuthenticationModalProps>;
 
-
 import { useAuthContext } from "@genuin/components/context/auth";
 import { cva, type VariantProps } from "class-variance-authority";
 import { useBaseContext } from "@genuin/components/context/base";
 import { Success } from "@genuin/components/molecules/success";
-import { Dialog, DialogContent } from "@genuin/ui/components";
+import { Dialog, DialogContent } from "@genuin/ui/components/dialog";
+
 import { AuthUser } from "@genuin/components/types/auth";
 
 const sideBarBecomeCreatorVariants = cva(

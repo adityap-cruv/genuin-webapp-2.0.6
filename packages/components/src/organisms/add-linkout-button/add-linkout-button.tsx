@@ -14,7 +14,8 @@ import {
   useFormField,
 } from "@genuin/ui/components/form";
 import { Input } from "@genuin/ui/components/input";
-import { Toast } from "@genuin/ui/components";
+import { Toast } from "@genuin/ui/components/toaster";
+
 import { useEffect } from "react";
 
 const BUTTON_TEXT_LENGTH = 25;

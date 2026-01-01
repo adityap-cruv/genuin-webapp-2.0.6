@@ -10,7 +10,7 @@ import {
 } from "react";
 import { v4 as uuid } from "uuid";
 import { VideoTrimSlider } from "@genuin/components/molecules/video-trim-slider";
-import { Toast } from "@genuin/ui/components";
+
 import { trimVideo } from "@genuin/components/lib/utils/video-processor";
 import { usePostCreateUploadUrlMutation } from "@genuin/components/react-query/api/posts/post-video-upload";
 import {
@@ -19,6 +19,7 @@ import {
 } from "@genuin/components/molecules/video-trim-slider/utils";
 import { PostPlayer } from "../post-player";
 import { EditTrimVideoProps, TrimHandler, UpdatePostDataProps } from "./types";
+import { Toast } from "@genuin/ui/components/toaster";
 import {
   SectionLayout,
   SectionLayoutLeft,

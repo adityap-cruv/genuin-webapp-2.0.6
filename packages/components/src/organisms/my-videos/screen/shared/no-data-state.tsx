@@ -1,7 +1,8 @@
 import React from "react";
-import { Button } from "@genuin/ui/components";
+
 import { PlusIcon } from "@genuin/ui/icons";
 import { Link } from "@genuin/components/molecules/link";
+import { Button } from "@genuin/ui/components/button";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 
 interface NoDataStateProps {

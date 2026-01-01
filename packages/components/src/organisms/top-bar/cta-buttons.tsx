@@ -17,9 +17,6 @@ const AuthenticationModal = lazy(() =>
   }))
 ) as React.ComponentType<AuthenticationModalProps>;
 
-
-
-
 import { Avatar } from "@genuin/ui/avatar";
 import { ChevronLeft, LogOutIcon, SettingsIcon } from "lucide-react";
 import { Link } from "@genuin/components/molecules/link";
@@ -33,14 +30,10 @@ import {
   useReadNotifications,
 } from "@genuin/components/react-query/api/notification";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetTrigger,
-} from "@genuin/ui/components";
+
 import { Search } from "@genuin/components/molecules/search";
 import { cva, VariantProps } from "class-variance-authority";
+import { Sheet, SheetClose, SheetContent, SheetTrigger } from "@genuin/ui/components/sheet";
 import { useAnalytics } from "@genuin/components/context/analytics";
 
 export const iconVariant = cva(

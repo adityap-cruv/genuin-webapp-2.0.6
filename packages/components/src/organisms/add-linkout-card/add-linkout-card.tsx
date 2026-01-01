@@ -1,8 +1,9 @@
-import { Button } from "@genuin/ui/components";
+
 import { Image } from "@genuin/ui/components/image";
 import { DeleteIcon, EditIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
 import { CardItems } from "../add-linkout/add-linkout";
+import { Button } from "@genuin/ui/components/button";
 import { ReadMore } from "@genuin/components/molecules/read-more";
 
 type AddLinkCardProps = {

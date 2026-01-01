@@ -2,10 +2,11 @@ import { ComponentProps, useCallback } from "react";
 import { sanitizeInput } from "@genuin/components/lib/utils";
 import { cn } from "@genuin/ui/lib/utils";
 import { useAuthenticationModalContext } from "../../context";
-import { Button } from "@genuin/ui/components";
+
 import { useAuthContext } from "@genuin/components/context/auth";
 import { useForm } from "react-hook-form";
 import { useSendOtpMutation } from "@genuin/components/react-query/api/authentication";
+import { Button } from "@genuin/ui/components/button";
 import { useBaseContext } from "@genuin/components/context";
 
 export function DeleteAccount({

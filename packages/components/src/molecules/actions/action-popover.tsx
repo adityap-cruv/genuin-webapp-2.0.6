@@ -1,8 +1,9 @@
 "use client";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
-import { Popover, PopoverContent, PopoverTrigger } from "@genuin/ui/components";
+
 import { XIcon } from "@genuin/ui/icons";
 import { memo, ReactNode, useEffect, useState } from "react";
+import { Popover, PopoverContent, PopoverTrigger } from "@genuin/ui/components/popover";
 import { Link } from "../link";
 
 interface ActionPopoverProps {
