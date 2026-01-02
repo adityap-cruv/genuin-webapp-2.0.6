@@ -34,6 +34,8 @@ import {
   UpdateConfigByUserType,
 } from '@/type'
 import { queryUtils } from '@/utils/query-utils'
+import { AnalyticsService } from '@genuin/components/context/analytics/service'
+import { FeedContextManager } from '@genuin/components/context/base/feed-context-manager'
 
 // Allowed events list - only these events can be listened to
 const ALLOWED_EVENTS = [
@@ -80,6 +82,8 @@ export class GenuinSDK {
   private sdkElements: SDKElementsType = {}
   private callbackQueueManager: CallbackQueueManager
   private placementManager: PlacementManager
+  private analyticsManager = AnalyticsService
+  private videoManager = FeedContextManager;
 
   private constructor() {
     this.eventManager = EventManager.getInstance()
