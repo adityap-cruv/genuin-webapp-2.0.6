@@ -695,21 +695,6 @@ export function Embed({
         videos={filteredPost ?? []}
         isLoading={isLoading}
       />
-
-      {activePlayerType === "embed" && isIheartLayout && (
-        <Toaster
-          position="bottom-center"
-          style={{
-            width: "280px",
-            bottom: "88px",
-          }}
-          toastOptions={{
-            style: {
-              width: "100%",
-            },
-          }}
-        />
-      )}
     </div>
   );
 }

@@ -296,7 +296,7 @@ export function loadNewEmbed({
                     <LazyEmbed />
                   )}
                 </Suspense>
-                {brandLayoutType !== 'iheart' && <Toaster />}
+                <Toaster />
               </AuthProvider>
             </AnalyticsProvider>
           </LinkProvider>

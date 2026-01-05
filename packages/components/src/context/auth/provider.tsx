@@ -88,8 +88,9 @@ export function AuthProvider({
   // Access isEmbed from BaseContext
   const { isEmbed, isInIframe } = useBaseContext?.() || { isEmbed: false };
 
-  // Access embedData.style from EmbedContext if available
-  const embedData = useSafeEmbedContext?.()?.embedData;
+  // Access embed context if available
+  const embedContext = useSafeEmbedContext?.();
+  const embedData = embedContext?.embedData;
 
   const { mutate: getUserDataForSSO } = useGetUserDataForSSOMutation({
     onSuccess: async ({ user }) => {
@@ -287,7 +288,7 @@ export function AuthProvider({
     }: {
       authCallbackData: AuthCallbackDataType;
       urlToOpen?: string;
-      pendingActionData?: Omit<PendingActionData, "timestamp">;
+      pendingActionData?: Omit<PendingActionData, "timestamp" | "divId">;
     }) => {
       // For non-embed environments and authenticated user, always return undefined so consumer shows auth modal
       if (!isEmbed || authenticationStatus === "authenticated") {
@@ -300,7 +301,15 @@ export function AuthProvider({
         return () => {
           // Save pending action if provided and user is unauthenticated
           if (authenticationStatus === "unauthenticated" && pendingActionData) {
-            savePendingAction(pendingActionData);
+            // Automatically add divId and embedId from the current embed context
+            const enrichedPendingActionData: Omit<
+              PendingActionData,
+              "timestamp"
+            > = {
+              ...pendingActionData,
+              divId: embedContext?.rootElement?.id,
+            };
+            savePendingAction(enrichedPendingActionData);
           }
 
           if (window.genuinAuth) {
@@ -313,7 +322,12 @@ export function AuthProvider({
       // so consumer shows auth modal
       return undefined;
     },
-    [isEmbed, embedData?.style, authenticationStatus]
+    [
+      isEmbed,
+      embedData?.style,
+      embedContext?.rootElement?.id,
+      authenticationStatus,
+    ]
   );
 
   useEffect(() => {

@@ -21,6 +21,7 @@ export interface PendingActionData {
   videoId?: string;
   commentId?: string;
   embedId?: string;
+  divId?: string;
   timestamp: number;
   communityId?: string;
   groupId?: string;

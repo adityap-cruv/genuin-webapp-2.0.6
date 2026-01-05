@@ -230,20 +230,6 @@ export function Default({
               }
             />
 
-            {isActive && (
-              <Toaster
-                position="bottom-center"
-                style={{
-                  width: "calc(100% - 32px)",
-                }}
-                toastOptions={{
-                  style: {
-                    width: "100%",
-                  },
-                }}
-              />
-            )}
-
             {/* {gestureOverlayUI} */}
           </div>
         </>

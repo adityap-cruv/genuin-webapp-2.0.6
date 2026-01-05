@@ -50,6 +50,7 @@ export function EmbedItem({
   const moveToNext = !config.video.videoLoop;
 
   useEffect(() => {
+    if (config.view.brandLayoutType !== "iheart") return;
     function handleVideoWatched(payload: Partial<GenericData>) {
       if (postDetails.video.id === payload?.videoId)
         setIsVideoWatched(payload.isVideoWatched ?? false);
@@ -59,7 +60,7 @@ export function EmbedItem({
     return () => {
       baseContextManager.off("onVideoWatchedChanged", handleVideoWatched);
     };
-  }, []);
+  }, [config]);
 
   useEffect(() => {
     const handleActivePlayerTypeChange = (

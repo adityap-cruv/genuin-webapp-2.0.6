@@ -460,6 +460,14 @@ export class GenuinSDK {
       clearPendingAction()
       return
     }
+
+    // Only apply pending action if the divId matches the current element's ID
+    // This ensures the action is applied to the correct embed when multiple embeds exist
+    if (pendingAction.divId && pendingAction.divId !== element.id) {
+      // This pending action is for a different div, don't process it or clear it
+      return
+    }
+
     if (user) {
       // User config takes priority over pending action data
       if (!embedDetails.startVideoSlug && pendingAction.videoId) {
@@ -493,7 +501,7 @@ export class GenuinSDK {
       }
     }
 
-    // Clear pending action regardless of auth status
+    // Clear pending action only if divId matches (we've successfully applied it to the correct div)
     clearPendingAction()
   }
 
