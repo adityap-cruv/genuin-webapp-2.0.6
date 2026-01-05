@@ -14,7 +14,7 @@ import { cva, VariantProps } from "class-variance-authority";
 import { EmbedControls } from "./embed";
 
 const controlsVariants = cva(
-  "gencl:transition-all gencl:z-10 gencl:flex gencl:w-full gencl:justify-between",
+  "gencl:transition-all gencl:z-20 gencl:flex gencl:w-full gencl:justify-between",
   {
     variants: {
       variant: {

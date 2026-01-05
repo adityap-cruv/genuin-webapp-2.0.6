@@ -14,6 +14,7 @@ type SectionInfo = {
   thumbnail_url?: string | null | undefined;
   cover_url?: string | null | undefined;
   no_of_clips?: number | null | undefined;
+  sub_title?: string | null | undefined;
 } | null;
 
 export type FeedResponseFromGoApi = Array<{

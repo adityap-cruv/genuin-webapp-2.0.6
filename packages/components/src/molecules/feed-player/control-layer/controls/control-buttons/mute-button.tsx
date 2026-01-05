@@ -35,6 +35,14 @@ export const AnimatedMuteIcon = ({
     const newVolume = Number(e.target.value);
     setVolume(newVolume);
 
+    if (muted && newVolume > 0) {
+      toggleMuted(false);
+    }
+
+    if (newVolume === 0) {
+      toggleMuted(true);
+    }
+
     // Update progress color dynamically
     const progress = (newVolume / 100) * 100;
     e.target.style.background = `linear-gradient(to right, white ${progress}%, #707070 ${progress}%)`;

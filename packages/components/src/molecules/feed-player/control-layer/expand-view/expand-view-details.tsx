@@ -652,7 +652,7 @@ export function ExpandViewDetails({
           aria-label="Community and group information"
           tabIndex={0}
           className={cn(
-            "gencl:w-full gencl:overflow-x-auto gencl:scrollbar-none gencl:transition-opacity gencl:duration-200",
+            "swiper-no-swiping gencl:w-full gencl:overflow-x-auto gencl:scrollbar-none gencl:transition-opacity gencl:duration-200",
             shouldHide && hiddenClassName
           )}
           onClick={(e) => {

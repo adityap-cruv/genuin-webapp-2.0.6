@@ -124,6 +124,7 @@ const SectionSchema = z
     thumbnail_url: z.string().nullish(),
     cover_url: z.string().nullish(),
     no_of_clips: z.number().nullish(),
+    sub_title: z.string().nullish(),
   })
   .nullish()
   .optional();

@@ -531,6 +531,28 @@ async function createFeedQueryFn(
     );
   }
 
+  // Check the placementData and if found than add feed after that
+  const hasPlaceholderData =
+    options?.placeholderData &&
+    options.placeholderData.pages.length > 0 &&
+    options.placeholderData.pages[0] &&
+    options.placeholderData.pages[0].feed.length > 0;
+
+  if (isFirstPage && hasPlaceholderData) {
+    const placeholderVideos = options!.placeholderData!.pages[0]!.feed;
+    const placeholderVideoIds = new Set(
+      placeholderVideos.map((item) => item.video.id)
+    );
+    // Filter out any videos from feedData that are already in placeholder data
+    const uniqueFeedVideos = feedData.feed.filter(
+      (item) => !placeholderVideoIds.has(item.video.id)
+    );
+    feedData = {
+      ...feedData,
+      feed: [...placeholderVideos, ...uniqueFeedVideos],
+    };
+  }
+
   // Filter out initial videos and startVideoSlug from subsequent pages to avoid duplicates
   if (!isFirstPage && (hasInitialVideoIds || startVideoSlug)) {
     const idsToFilter = new Set<string>(options?.initialVideoIds ?? []);

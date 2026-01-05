@@ -145,7 +145,7 @@ function DialogContent({
           className,
           "gen-sdk-class gen-sdk-root-portal"
         )}
-        style={{ ...style, ...getGenclStyles()}}
+        style={{ ...style, ...getGenclStyles() }}
         autoFocus={false}
         {...props}
       >
@@ -160,6 +160,7 @@ function DialogContent({
               "gencl:cursor-pointer",
               closeIconClassName
             )}
+            tabIndex={-1}
           >
             <XIcon className="gencl:stroke-secondary-600" />
             <span className="gencl:sr-only">Close</span>

@@ -271,7 +271,7 @@ export function Default({
               enableExpand={enableExpand}
               className={cn(
                 isMobile || isTablet || isIpad
-                  ? `gencl:z-20 ${!isSectioned && showExpandView && "gencl:top-0"}`
+                  ? `${!isSectioned && showExpandView && "gencl:top-0"}`
                   : "gencl:group-hover:opacity-100 gencl:group-hover:pointer-events-auto gencl:opacity-0 gencl:pointer-events-none gencl:transition-opacity gencl:duration-300"
               )}
               variant={isSectioned ? "sectioned" : "default"}
