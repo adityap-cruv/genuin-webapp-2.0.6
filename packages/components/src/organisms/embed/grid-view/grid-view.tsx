@@ -13,8 +13,6 @@ export function GridView({
   cols = 2,
   autoAdjust,
   aspectRatio,
-  moveToNext,
-  moveToNextTime,
   totalVideos,
   ...restProps
 }: {
@@ -23,48 +21,12 @@ export function GridView({
   cols?: number;
   autoAdjust?: boolean;
   aspectRatio?: string;
-  moveToNext: boolean;
-  moveToNextTime: number;
   totalVideos: number;
 } & ComponentProps<"div">) {
   const { embedEventBus } = useEmbedContext();
-  const { updateActiveIndex, swiper } = useEmbedManagerContext();
-  const [isHovering, setIsHovering] = useState(false);
+  const { swiper } = useEmbedManagerContext();
   const { containerHeight, containerWidth, headerHeight } =
     useEmbedDimensions();
-
-  useEffect(() => {
-    if (
-      videos.length === 0 ||
-      isHovering ||
-      !moveToNext ||
-      moveToNextTime === 0
-    )
-      return;
-
-    const interval = setInterval(() => {
-      const context = embedEventBus.getContext();
-      if (context.activePlayerType === "expand-view") return;
-      const currentIndex = context.activeIndex || 0;
-      const nextIndex = (currentIndex + 1) % videos.length;
-      updateActiveIndex(nextIndex);
-    }, moveToNextTime * 1000);
-    return () => clearInterval(interval);
-  }, [
-    videos.length,
-    embedEventBus,
-    updateActiveIndex,
-    isHovering,
-    moveToNext,
-    moveToNextTime,
-  ]);
-
-  useEffect(() => {
-    if (videos.length > 0) {
-      const currentIndex = embedEventBus.getContext().activeIndex || 0;
-      updateActiveIndex(currentIndex);
-    }
-  }, [videos.length, embedEventBus, updateActiveIndex]);
 
   const { width: widthRatio, height: heightRatio } = useMemo(
     () => getAspectRatio(aspectRatio),
@@ -89,8 +51,6 @@ export function GridView({
         width: Math.max(containerWidth, 0),
       }}
       className="gencl:h-full gencl:w-full"
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
       {...restProps}
     >
       <EmbedHeader

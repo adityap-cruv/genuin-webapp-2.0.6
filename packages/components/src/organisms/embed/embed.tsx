@@ -566,8 +566,6 @@ export function Embed({
             cols={config.view.gridLayout?.column ?? 2}
             autoAdjust={config.view.gridLayout?.auto_adjust}
             aspectRatio={embedData.aspect_ratio}
-            moveToNext={!config.video.videoLoop}
-            moveToNextTime={config.video.moveToNextTime}
             totalVideos={feedData?.pages?.[0]?.totalVideos}
           />
         ) : (

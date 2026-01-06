@@ -116,7 +116,13 @@ export function EmbedItem({
     config.video.videoShouldPreview ? 300 : 700
   );
 
+  const handleMouseEnter = useCallback(() => {
+    if (isTablet || isMobile) return;
+    debouncedSetActiveIndex();
+  }, [debouncedSetActiveIndex]);
+
   const handleMouseLeave = useCallback(() => {
+    if (isTablet || isMobile) return;
     debouncedSetActiveIndex.cancel();
   }, [debouncedSetActiveIndex]);
 
@@ -137,10 +143,14 @@ export function EmbedItem({
     <EmbedTile
       className={cn("gencl:cursor-pointer")}
       postDetails={postDetails}
-      isActive={activeIndex === index && embedIsActive && !isVideoWatched}
+      isActive={
+        activeIndex === index &&
+        embedIsActive &&
+        (config.view.brandLayoutType !== "iheart" || !isVideoWatched)
+      }
       onPlayerIterationEnd={handlePlayerIterationEnd}
-      onMouseEnter={isTablet || isMobile ? undefined : debouncedSetActiveIndex}
-      onMouseLeave={isTablet || isMobile ? undefined : handleMouseLeave}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       onClick={() => {
         if (isSectioned) {
           updateSelectedSection(postDetails.section);

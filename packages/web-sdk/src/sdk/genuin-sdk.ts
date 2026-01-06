@@ -85,6 +85,21 @@ export class GenuinSDK {
   private analyticsManager = AnalyticsService
   private videoManager = FeedContextManager;
 
+  /**
+   * Validates if a token value is valid (not null, undefined, empty, or string 'undefined'/'null')
+   * @param token The token value to validate
+   * @returns true if token is valid, false otherwise
+   */
+  private isValidToken(token: string | null | undefined): token is string {
+    if (!token) return false
+    if (typeof token !== 'string') return false
+    const trimmedToken = token.trim()
+    if (trimmedToken === '') return false
+    if (trimmedToken.toLowerCase() === 'undefined') return false
+    if (trimmedToken.toLowerCase() === 'null') return false
+    return true
+  }
+
   private constructor() {
     this.eventManager = EventManager.getInstance()
     this.errorHandler = ErrorHandler.getInstance()
@@ -220,7 +235,7 @@ export class GenuinSDK {
 
   private async _performUpdate(config?: UpdateConfigByUserType) {
     // In case of token comes authenticateUser, this function will authenticate user in all the embeds.
-    if (config?.token) {
+    if (this.isValidToken(config?.token)) {
       await this.authenticateUser({
         token: config.token,
         userParams: config.user_params,
@@ -338,7 +353,7 @@ export class GenuinSDK {
       // If there is user already then use that authed user.
       let user: AuthUser | undefined | null = this.tokenManager.getCachedUser()
 
-      if (config.token) {
+      if (this.isValidToken(config.token)) {
         user =
           (await this.authenticateUser({
             token: config.token,
@@ -933,7 +948,9 @@ export class GenuinSDK {
           answerToReturn.commentId = value ?? configByUser?.comment_id
           break
         case 'data-token':
-          answerToReturn.token = value ?? configByUser?.token
+          // Use token only if it's a valid value (not null, undefined, empty, or 'undefined'/'null' strings)
+          const tokenValue = value ?? configByUser?.token
+          answerToReturn.token = this.isValidToken(tokenValue) ? tokenValue : undefined
           break
         case 'data-video-id':
           if (value || configByUser?.start_video_slug) {

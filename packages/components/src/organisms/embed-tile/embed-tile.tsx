@@ -293,7 +293,7 @@ function OutsideComponents({ postDetails }: { postDetails: PostDetailsType }) {
       return {
         ...(contentDisplay.showViewCount && {
           Views: {
-            value: 0,
+            value: postDetails.video.viewCount,
             icon: <PlayIcon theme="light" size="sm" strokeWidth={2} />,
           },
         }),
@@ -323,7 +323,7 @@ function OutsideComponents({ postDetails }: { postDetails: PostDetailsType }) {
 
     return {
       Views: {
-        value: 0,
+        value: postDetails.video.viewCount,
         icon: <PlayIcon theme="light" size="sm" />,
       },
       Reactions: {

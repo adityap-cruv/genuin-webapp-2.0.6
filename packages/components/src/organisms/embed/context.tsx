@@ -396,6 +396,32 @@ export function EmbedManagerProvider({
       return;
     }
 
+    // Determine if we can move to next video based on layout type
+    let shouldMove = false;
+
+    if (isGridLayout) {
+      // Grid layout: Check if we have more videos to advance to
+      const gridRow = config.view.gridLayout?.row || 1;
+      const gridCol = config.view.gridLayout?.column || 1;
+      const totalVideos = gridRow * gridCol;
+      shouldMove = activeIndex < totalVideos - 1;
+    } else {
+      // Feed/Carousel layout: Check if swiper exists and has more slides
+      if (swiper) {
+        const nextIndex = activeIndex + 1;
+        const isVirtualEnabled = swiper.params.virtual && swiper.virtual;
+        const totalSlides = isVirtualEnabled
+          ? (swiper.virtual?.slides?.length ?? 0)
+          : (swiper.slides?.length ?? 0);
+        shouldMove = nextIndex < totalSlides;
+      }
+    }
+
+    // Only set up auto-advance timer if we can move to next video
+    if (!shouldMove) {
+      return;
+    }
+
     const timer = setTimeout(() => {
       goToNextVideo();
     }, moveToNextTime * 1000);
@@ -403,7 +429,16 @@ export function EmbedManagerProvider({
     return () => {
       clearTimeout(timer);
     };
-  }, [activeIndex, moveToNextTime, moveToNext, goToNextVideo, embedEventBus]);
+  }, [
+    activeIndex,
+    moveToNextTime,
+    moveToNext,
+    goToNextVideo,
+    embedEventBus,
+    swiper,
+    isGridLayout,
+    config.view.gridLayout,
+  ]);
 
   const getSlideVisibilityPercentage = useCallback(
     ({ index, dir }: { index: number; dir: "vertical" | "horizontal" }) => {
