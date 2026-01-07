@@ -24,6 +24,9 @@ import { useDeviceDetectMediaQuery } from '@genuin/components/hooks/use-devide-d
 // Track React roots per container to support multiple embeds
 const containerRootMap = new Map<HTMLElement, Root>()
 
+// Global toaster singleton
+let toasterRoot: Root | null = null
+
 // Error view function
 export function loadErrorView(container: HTMLElement): void {
   container.innerHTML = `
@@ -236,8 +239,21 @@ export function loadNewEmbed({
 }): () => void {
   // Unmount previous root if exists for this container
   const prevRoot = containerRootMap.get(container)
-  prevRoot?.unmount()
-  containerRootMap.delete(container)
+  if (prevRoot) {
+    prevRoot.unmount()
+    containerRootMap.delete(container)
+  }
+
+  // Initialize toaster on first embed
+  if (!toasterRoot) {
+    const div = document.createElement('div')
+    div.id = 'gen-sdk-toaster-root'
+    div.classList.add('gen-sdk-class')
+    div.classList.add('gen-sdk-root-portal')
+    document.body.appendChild(div)
+    toasterRoot = createRoot(div)
+    toasterRoot.render(<Toaster />)
+  }
 
   const root = createRoot(container)
   containerRootMap.set(container, root)
@@ -296,7 +312,6 @@ export function loadNewEmbed({
                     <LazyEmbed />
                   )}
                 </Suspense>
-                <Toaster />
               </AuthProvider>
             </AnalyticsProvider>
           </LinkProvider>
@@ -311,6 +326,12 @@ export function loadNewEmbed({
   return () => {
     root.unmount()
     containerRootMap.delete(container)
+    // Cleanup toaster when no embeds remain
+    if (containerRootMap.size === 0 && toasterRoot) {
+      toasterRoot.unmount()
+      document.getElementById('gen-sdk-toaster-root')?.remove()
+      toasterRoot = null
+    }
     container.remove()
   }
 }
