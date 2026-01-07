@@ -665,6 +665,7 @@ export function ExpandViewDetails({
           <Pills
             communityDetails={postDetails.community}
             groupDetails={postDetails.group}
+            videoId={postDetails.video.id}
             onGroupJoinStatusChange={onGroupJoinStatusChange}
             onGroupSubscriptionChange={onGroupSubscriptionChange}
             onCommunityJoinStatusChange={onCommunityJoinStatusChange}

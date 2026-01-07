@@ -25,6 +25,7 @@ type JoinCommunityButtonProps = {
   slug: string;
   roleTexts?: Partial<Record<CommunityUserRole, string>>;
   role: CommunityUserRole;
+  videoId?: string;
   onCommunityJoinStatusChange?: (newRole: CommunityUserRole) => void;
 } & React.ComponentProps<typeof PrimitiveButton>;
 
@@ -153,6 +154,7 @@ function Button({
         community_handle: communityHandle,
         community_name: communityName,
         is_private: isPrivate,
+        ...(rest.videoId && { video_id: rest.videoId }),
       });
     },
     onError: (error) => {
@@ -171,6 +173,7 @@ function Button({
           community_handle: communityHandle,
           community_name: communityName,
           is_private: isPrivate,
+          ...(rest.videoId && { video_id: rest.videoId }),
         });
       },
       onError: (error) => {

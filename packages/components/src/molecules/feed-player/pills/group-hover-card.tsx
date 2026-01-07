@@ -12,6 +12,7 @@ import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 type GroupHoverCardProps = {
   groupDetails: PostDetailsType["group"];
   communityDetails: PostDetailsType["community"];
+  videoId?: string;
   onGroupJoinStatusChange?: ComponentProps<
     typeof JoinGroupButton
   >["onGroupJoinStatusChange"];
@@ -24,6 +25,7 @@ type GroupHoverCardProps = {
 export function GroupHoverCard({
   groupDetails,
   communityDetails,
+  videoId,
   className,
   onGroupJoinStatusChange,
   onGroupSubscriptionChange,
@@ -82,6 +84,7 @@ export function GroupHoverCard({
             shareUrl={groupDetails.shareUrl ?? ""}
             isPrivate={groupDetails.isPrivate}
             role={groupDetails.role}
+            videoId={videoId}
             onGroupJoinStatusChange={onGroupJoinStatusChange}
             groupSlug={groupDetails.slug}
           />
@@ -92,6 +95,7 @@ export function GroupHoverCard({
             groupDescription={ldDescription}
             shareUrl={groupDetails.shareUrl ?? ""}
             isSubscriber={groupDetails.isSubscribed ?? false}
+            videoId={videoId}
             onSubscriptionChange={onGroupSubscriptionChange}
             groupSlug={groupDetails.slug}
           />

@@ -42,6 +42,7 @@ type GroupPillProps = {
   variant?: "light" | "dark" | "fullScreen" | "compact";
   groupDetails: PostDetailsType["group"];
   communityDetails: PostDetailsType["community"];
+  videoId?: string;
   className?: string;
   onGroupJoinStatusChange: ComponentProps<
     typeof JoinGroupButton
@@ -57,6 +58,7 @@ export function GroupPill({
   variant = "light",
   groupDetails,
   communityDetails,
+  videoId,
   onGroupJoinStatusChange,
   onGroupSubscriptionChange,
   className,
@@ -129,6 +131,7 @@ export function GroupPill({
                 groupSlug={groupDetails.slug}
                 shareUrl={groupDetails.shareUrl ?? ""}
                 isSubscriber={groupDetails.isSubscribed ?? false}
+                videoId={videoId}
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -155,6 +158,7 @@ export function GroupPill({
         <GroupHoverCard
           communityDetails={communityDetails}
           groupDetails={groupDetails}
+          videoId={videoId}
           onGroupJoinStatusChange={onGroupJoinStatusChange}
           onGroupSubscriptionChange={onGroupSubscriptionChange}
         />
