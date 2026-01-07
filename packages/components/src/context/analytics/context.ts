@@ -54,6 +54,8 @@ export const EventName = {
   COMMENT_REPORT: "Comment Reported",
   COMMENT_DELETE: "Comment Deleted",
   COMMUNITY_SHARED: "Community Shared",
+  COMMUNITY_JOINED: "Community Joined",
+  COMMUNITY_LEFT: "Community Left",
   LINKOUTS_VIEWED: "Link Viewed",
   LINKOUTS_CLICKED: "Link Clicked",
   LINKOUTS_CTA_CLICKED: "Link CTA Button Clicked",
