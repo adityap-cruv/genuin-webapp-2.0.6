@@ -108,12 +108,6 @@ function Button({
   const { mutate: subscribeGroup, isPending } = useSubscribeGroupMutation({
     onSuccess(isSubscriber) {
       onSubscriptionChange?.(isSubscriber);
-      // Track subscription event
-      track(EventName.SUBSCRIPTION_CLICKED, {
-        group_id: groupId,
-        group_name: groupName,
-        is_subscribed: isSubscriber,
-      });
 
       // Track loop subscription events
       if (isSubscriber) {
