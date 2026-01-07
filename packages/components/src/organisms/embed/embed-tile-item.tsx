@@ -38,6 +38,7 @@ export function EmbedItem({
   const { baseContextManager } = useBaseContext();
   const { embedEventBus, updateSelectedSection } = useEmbedContext();
   const { isTablet, isMobile } = useDeviceDetection();
+  const [isHovering, setIsHovering] = useState(false);
   const [embedIsActive, setEmbedIsActive] = useState(
     embedEventBus.getContext().activePlayerType === "embed"
   );
@@ -118,13 +119,15 @@ export function EmbedItem({
 
   const handleMouseEnter = useCallback(() => {
     if (isTablet || isMobile) return;
+    setIsHovering(true);
     debouncedSetActiveIndex();
-  }, [debouncedSetActiveIndex]);
+  }, [debouncedSetActiveIndex, isTablet, isMobile]);
 
   const handleMouseLeave = useCallback(() => {
     if (isTablet || isMobile) return;
+    setIsHovering(false);
     debouncedSetActiveIndex.cancel();
-  }, [debouncedSetActiveIndex]);
+  }, [debouncedSetActiveIndex, isTablet, isMobile]);
 
   // Handle automatic progression when video ends
   const handlePlayerIterationEnd = useCallback(() => {
@@ -139,6 +142,72 @@ export function EmbedItem({
       config.view.isPlacementView && config.video.autoScrollToNextSlide;
     goToNextVideo(useAutoScroll);
   }, [goToNextVideo, config, moveToNext]);
+
+  // Auto-advance logic: Move to next video after moveToNextTime seconds
+  useEffect(() => {
+    const moveToNextTime = config.video.moveToNextTime;
+    const isGridLayout = config.view.isGrid;
+
+    // Only auto-advance if:
+    // 1. This tile is currently active
+    // 2. moveToNextTime is greater than 0
+    // 3. moveToNext is true (video looping is disabled)
+    // 4. activePlayerType is "embed" (not in expand view)
+    // 5. user is not hovering over this tile
+    if (
+      activeIndex !== index ||
+      moveToNextTime === 0 ||
+      !moveToNext ||
+      embedEventBus.getContext().activePlayerType !== "embed" ||
+      isHovering
+    ) {
+      return;
+    }
+
+    // Determine if we can move to next video based on layout type
+    let shouldMove = false;
+
+    if (isGridLayout) {
+      // Grid layout: Check if we have more videos to advance to
+      const gridRow = config.view.gridLayout?.row || 1;
+      const gridCol = config.view.gridLayout?.column || 1;
+      const totalVideos = gridRow * gridCol;
+      shouldMove = activeIndex < totalVideos - 1;
+    } else {
+      // Feed/Carousel layout: Check if swiper exists and has more slides
+      if (swiper) {
+        const nextIndex = activeIndex + 1;
+        const isVirtualEnabled = swiper.params.virtual && swiper.virtual;
+        const totalSlides = isVirtualEnabled
+          ? (swiper.virtual?.slides?.length ?? 0)
+          : (swiper.slides?.length ?? 0);
+        shouldMove = nextIndex < totalSlides;
+      }
+    }
+
+    // Only set up auto-advance timer if we can move to next video
+    if (!shouldMove) {
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      goToNextVideo();
+    }, moveToNextTime * 1000);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [
+    activeIndex,
+    index,
+    config,
+    moveToNext,
+    goToNextVideo,
+    embedEventBus,
+    swiper,
+    isHovering,
+  ]);
+
   return (
     <EmbedTile
       className={cn("gencl:cursor-pointer")}

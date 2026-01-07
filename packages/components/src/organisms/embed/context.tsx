@@ -382,64 +382,6 @@ export function EmbedManagerProvider({
     };
   }, [swiper, activeIndex]);
 
-  // Auto-advance logic: Move to next video after moveToNextTime seconds
-  useEffect(() => {
-    // Only auto-advance if:
-    // 1. moveToNextTime is greater than 0
-    // 2. moveToNext is true (video looping is disabled)
-    // 3. activePlayerType is "embed" (not in expand view)
-    if (
-      moveToNextTime === 0 ||
-      !moveToNext ||
-      embedEventBus.getContext().activePlayerType !== "embed"
-    ) {
-      return;
-    }
-
-    // Determine if we can move to next video based on layout type
-    let shouldMove = false;
-
-    if (isGridLayout) {
-      // Grid layout: Check if we have more videos to advance to
-      const gridRow = config.view.gridLayout?.row || 1;
-      const gridCol = config.view.gridLayout?.column || 1;
-      const totalVideos = gridRow * gridCol;
-      shouldMove = activeIndex < totalVideos - 1;
-    } else {
-      // Feed/Carousel layout: Check if swiper exists and has more slides
-      if (swiper) {
-        const nextIndex = activeIndex + 1;
-        const isVirtualEnabled = swiper.params.virtual && swiper.virtual;
-        const totalSlides = isVirtualEnabled
-          ? (swiper.virtual?.slides?.length ?? 0)
-          : (swiper.slides?.length ?? 0);
-        shouldMove = nextIndex < totalSlides;
-      }
-    }
-
-    // Only set up auto-advance timer if we can move to next video
-    if (!shouldMove) {
-      return;
-    }
-
-    const timer = setTimeout(() => {
-      goToNextVideo();
-    }, moveToNextTime * 1000);
-
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [
-    activeIndex,
-    moveToNextTime,
-    moveToNext,
-    goToNextVideo,
-    embedEventBus,
-    swiper,
-    isGridLayout,
-    config.view.gridLayout,
-  ]);
-
   const getSlideVisibilityPercentage = useCallback(
     ({ index, dir }: { index: number; dir: "vertical" | "horizontal" }) => {
       if (!swiper) return 0;
