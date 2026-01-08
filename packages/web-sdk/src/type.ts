@@ -83,10 +83,10 @@ export type UpdateConfigByUserType = {
    * @deprecated use contextual_params instead
    */
   contextualParams?: ContextualParamsType
-  embed_id?: string
-  placement_id?: string
+  container_id: string
   action?: ActionType
   start_video_slug?: string
+  comment_id?: string
 }
 
 export type SDKElementsType = Record<

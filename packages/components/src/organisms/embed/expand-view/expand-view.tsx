@@ -303,7 +303,6 @@ export function EmbedExpandView({
     // const originalPriority = hasInlineStyle
     //   ? htmlElement.style.getPropertyPriority("overflow")
     //   : ""; // Computed styles don't have priority info
-
     if (showExpandView) {
       /**
        * EmbedExpandView component for displaying an expanded video feed view in an embedded context.

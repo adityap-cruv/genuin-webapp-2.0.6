@@ -83,7 +83,7 @@ export class GenuinSDK {
   private callbackQueueManager: CallbackQueueManager
   private placementManager: PlacementManager
   private analyticsManager = AnalyticsService
-  private videoManager = FeedContextManager;
+  private videoManager = FeedContextManager
 
   /**
    * Validates if a token value is valid (not null, undefined, empty, or string 'undefined'/'null')
@@ -242,23 +242,22 @@ export class GenuinSDK {
       })
     }
 
-    // Update contextual params in the embed, if embedId is passed then only in that embed otherwise in all the embeds.
+    // Update contextual params in the embed where the instance id matches.
     const contextualParams: ContextualParamsType | undefined =
       config?.contextual_params ?? config?.contextualParams
-    if (contextualParams && config) {
+    if (contextualParams && config && config.container_id) {
       await this.updateContextualParamsInEmbed({
         contextualParams: contextualParams,
-        embedId: config.embed_id,
-        placementId: config.placement_id,
+        containerId: config.container_id,
       })
     }
-
-    //! start video slug update is only supported in embed not in placement
-    if (config?.start_video_slug && config.embed_id) {
+    // Update start video slug in the embed/placement where the instance id matches.
+    if (config?.start_video_slug && config.container_id) {
       await this.updateStartVideoId({
         startVideoSlug: config.start_video_slug,
-        embedId: config.embed_id,
+        containerId: config.container_id,
         action: config.action,
+        commentId: config.comment_id,
       })
     }
   }
@@ -587,44 +586,46 @@ export class GenuinSDK {
 
   private async updateStartVideoId({
     startVideoSlug,
-    embedId,
+    containerId,
     action,
+    commentId,
   }: {
     startVideoSlug: string
-    embedId?: string
+    containerId?: string
     action?: ActionType
+    commentId?: string
   }) {
-    if (!embedId && !this.isSingleEmbed()) {
+    if (!containerId) {
       console.warn(
-        'Embed id is required to update the start video slug in multi-embed scenario',
+        'Container id is required to update the start video slug scenario',
       )
       return
     }
-
-    if (!embedId && this.isSingleEmbed()) {
-      const firstEmbedId = Object.keys(this.sdkElements)[0]
-      if (firstEmbedId) {
-        embedId = this.sdkElements[firstEmbedId]?.config.embedDetails?.embed_id
-        // Also load expand view when updating start video dynamically
-        const sdkElement = this.sdkElements[firstEmbedId]
-        if (sdkElement?.element) {
-          loadExpandView(sdkElement.element, sdkElement.config.theme)
-        }
-      }
-    } else if (embedId) {
-      // Find the element by embedId and load expand view
-      const sdkElement = Object.values(this.sdkElements).find(
-        (element) => element.config.embedDetails?.embed_id === embedId,
+    let embedId: string | undefined = undefined
+    let placementId: string | undefined = undefined
+    const targetUpdateElement = Object.values(this.sdkElements).find(
+      (element) => element.element.id === containerId,
+    )
+    if (!targetUpdateElement) return
+    embedId = targetUpdateElement.config.embedDetails?.embed_id
+    placementId = targetUpdateElement.config.embedDetails?.placement_id
+    if (targetUpdateElement?.element)
+      loadExpandView(
+        targetUpdateElement.element,
+        targetUpdateElement.config.theme,
       )
-      if (sdkElement?.element) {
-        loadExpandView(sdkElement.element, sdkElement.config.theme)
-      }
-    }
 
     this.eventManager.emit(SDKEventType.SDK_UPDATE_START_VIDEO_SLUG, {
       embedId,
       startVideoSlug,
       action,
+      placementId,
+      commentId,
+    })
+    this.eventManager.emit(SDKEventType.SDK_EXPAND_EMBED, {
+      embedId: embedId,
+      placementId: placementId,
+      instanceId: targetUpdateElement.element.getAttribute('data-instance-id'),
     })
   }
 
@@ -634,57 +635,32 @@ export class GenuinSDK {
    */
   private async updateContextualParamsInEmbed({
     contextualParams,
-    embedId,
-    placementId,
+    containerId,
   }: {
     contextualParams: ContextualParamsType
-    embedId?: string
-    placementId?: string
+    containerId?: string
   }) {
-    const isSingleEmbed = Object.keys(this.sdkElements).length === 1
-    // in case of single embed no need of the the embedId so find that embed_id and trigger the emit.
-    if (isSingleEmbed) {
-      const firstEmbedId = Object.keys(this.sdkElements)[0]
-      if (firstEmbedId) {
-        embedId = this.sdkElements[firstEmbedId]?.config.embedDetails?.embed_id
-        placementId =
-          this.sdkElements[firstEmbedId]?.config.embedDetails?.placement_id
-
-        // Deep merge old contextual params into new contextual params
-        contextualParams = this.deepMergeObjects(
-          this.sdkElements[firstEmbedId]?.config.contextualParams || {},
-          contextualParams || {},
-        )
-      }
-
-      this.eventManager.emit(SDKEventType.SDK_UPDATE_CONTEXTUAL_PARAMS, {
-        embedId,
-        placementId,
-        contextualParams,
-      })
-
-      return
-    }
-
-    if (!embedId && !placementId) {
+    if (!containerId) {
       console.warn(
-        'Embed id or placement id is not provided to update the contextual params',
+        'Container id is not provided to update the contextual params',
       )
       return
     }
-
+    let embedId = undefined,
+      placementId = undefined
+    const updateTargetElement = Object.values(this.sdkElements).find(
+      (element) => element.element.id === containerId,
+    )
+    if (!updateTargetElement) return
     const oldContextualParams =
-      Object.values(this.sdkElements).find(
-        (element) =>
-          element.config.embedDetails?.embed_id === embedId ||
-          element.config.embedDetails?.placement_id === placementId,
-      )?.config.contextualParams || {}
+      updateTargetElement.config.contextualParams || {}
 
     contextualParams = this.deepMergeObjects(
       oldContextualParams,
       contextualParams || {},
     )
-
+    embedId = updateTargetElement.config.embedDetails?.embed_id
+    placementId = updateTargetElement.config.embedDetails?.placement_id
     if (embedId || placementId)
       console.log('Emitting event with::', embedId, placementId)
     this.eventManager.emit(SDKEventType.SDK_UPDATE_CONTEXTUAL_PARAMS, {

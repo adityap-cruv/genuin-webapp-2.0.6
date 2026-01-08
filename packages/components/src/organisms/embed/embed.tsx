@@ -229,7 +229,6 @@ export function Embed({
     spaceBetweenVideos,
     availableHeight,
   } = useEmbedDimensions();
-
   // Check for iheart brand layout for navigation button positioning
   const isIheartLayout = config.view.brandLayoutType === "iheart";
   const websiteType = config.view.websiteType;

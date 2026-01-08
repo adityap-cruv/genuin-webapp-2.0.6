@@ -297,7 +297,11 @@ export function AuthProvider({
 
       // In embed environments with genuinAuth.
       // return a function to handle external auth
-      if (window.genuinAuth) {
+      if (
+        window.genuinAuth ||
+        embedData?.authInfo?.signInUrl ||
+        embedData?.authInfo?.signUpUrl
+      ) {
         return () => {
           // Save pending action if provided and user is unauthenticated
           if (authenticationStatus === "unauthenticated" && pendingActionData) {
@@ -325,8 +329,9 @@ export function AuthProvider({
     [
       isEmbed,
       embedData?.style,
-      embedContext?.rootElement?.id,
       authenticationStatus,
+      embedData?.authInfo,
+      embedContext?.rootElement?.id,
     ]
   );
 

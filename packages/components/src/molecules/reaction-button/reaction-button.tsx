@@ -65,7 +65,10 @@ export const ReactionButton = React.memo(function ReactionButton({
   const { authenticationStatus, handleAuthCallback } = useAuthContext();
   const { brandDetails } = useBaseContext();
   const embedDetails = useSafeEmbedContext();
-  const { modalConfig } = useEmbedConfigs();
+  const {
+    modalConfig,
+    view: { brandLayoutType },
+  } = useEmbedConfigs();
   const authInfo = embedDetails?.embedData.authInfo;
   const cardLayoutId = brandDetails.card_layout_id;
 
@@ -89,7 +92,10 @@ export const ReactionButton = React.memo(function ReactionButton({
       action: contentType === "COMMENT" ? "comment-spark" : "spark",
       videoSlug: videoSlug,
       commentId: contentType === "COMMENT" ? contentId : undefined,
-      videoId: contentType === "VIDEO" ? contentId : undefined,
+      videoId:
+        brandLayoutType === "ted"
+            ? videoSlug
+            : contentId,
       embedId: embedDetails?.embedData.embed_id,
     },
   });
@@ -150,6 +156,7 @@ export const ReactionButton = React.memo(function ReactionButton({
           </div>
         }
         params={returnQueryParams}
+        onPopOverClick={clickHandler}
       />
     );
   }

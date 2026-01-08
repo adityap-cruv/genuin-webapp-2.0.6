@@ -97,7 +97,13 @@ export function loadExpandView(
   }
 
   // Create a React root inside the loader div
-  const root = createRoot(loaderDiv)
+  const root =
+    containerRootMap.get(loaderDiv) ??
+    (() => {
+      const newRoot = createRoot(loaderDiv)
+      containerRootMap.set(loaderDiv, newRoot)
+      return newRoot
+    })()
 
   /*
   Remove or unmount the loader div when the "sdk:expand-view-loaded" event is emitted,
@@ -108,6 +114,7 @@ export function loadExpandView(
       // Add a small delay before cleanup to ensure smooth transition
       setTimeout(() => {
         root.unmount()
+        containerRootMap.delete(loaderDiv!)
         loaderDiv?.remove()
         loaderDiv = null
       }, 200)

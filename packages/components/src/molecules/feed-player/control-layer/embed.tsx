@@ -61,13 +61,16 @@ export const Embed: FC<ControlLayerPropsType> = ({
               viewMoreText=""
               maxChars={500}
               shouldAnimate
+              expandable={false}
               className="gencl:overflow-y-auto gencl:text-body-2-normal! gencl:[&_span]:leading-[125%]! gencl:tracking-[-0.042px]!"
               expandedHeight={`${containerHeight * 0.35}px`}
               maxLines={containerHeight < 375 ? 1 : 2}
             />
             <div
               className="gencl:flex gencl:items-center gencl:gap-2"
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.preventDefault();
+              }}
             >
               <Avatar
                 size="xs"

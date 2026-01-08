@@ -49,7 +49,7 @@ export function CommentInputBox({
   const { authenticationStatus, user, handleAuthCallback } = useAuthContext();
   // const { brandDetails } = useBaseContext();
   const embedDetails = useSafeEmbedContext();
-  const { modalConfig } = useEmbedConfigs();
+  const { modalConfig , view : {brandLayoutType} } = useEmbedConfigs();
   const authInfo = embedDetails?.embedData.authInfo;
 
   const returnQueryParams = useMemo(
@@ -70,7 +70,7 @@ export function CommentInputBox({
     pendingActionData: {
       action: "comment",
       videoSlug: videoSlug,
-      videoId: videoId,
+      videoId: brandLayoutType === "ted" ? videoSlug : videoId,
       embedId: embedDetails?.embedData.embed_id,
     },
   });
@@ -86,6 +86,7 @@ export function CommentInputBox({
         content={"to comment on this Short."}
         params={returnQueryParams}
         align="start"
+        onPopOverClick={authClickHandler}
       >
         <div className="gencl:h-18">
           <MentionInput
