@@ -19,6 +19,7 @@ export enum SDKEventType {
   SDK_EXPAND_VIEW_CHANGED = 'onExpandViewChanged',
   SDK_EXPAND_EMBED = 'sdk:expandEmbed',
   SDK_COLLAPSE_EMBED = 'sdk:collapseEmbed',
+  SDK_CLEAR_LOGIN_ACTION = 'sdk:clearLoginAction',
 }
 
 export interface SDKEvent {

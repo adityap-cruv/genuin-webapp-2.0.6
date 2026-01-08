@@ -63,6 +63,7 @@ const ALLOWED_EMIT_EVENTS = [
   'player:onFollowChanged',
   'player:onMiniPlayerPlayChange',
   'sdk:themeChange',
+  'sdk:clearLoginAction',
   // 'sdk:expandEmbed',
   // 'sdk:collapseEmbed',
 ]
@@ -109,6 +110,8 @@ export class GenuinSDK {
     this.embedDetailsManager = EmbedDetailsManager.getInstance()
     this.callbackQueueManager = new CallbackQueueManager()
     this.placementManager = PlacementManager.getInstance()
+    
+    this.setupInternalEventHandlers()
   }
 
   static getInstance(): GenuinSDK {
@@ -181,6 +184,17 @@ export class GenuinSDK {
         error,
       )
     }
+  }
+
+  /**
+   * Sets up internal SDK event handlers
+   * @private
+   */
+  private setupInternalEventHandlers(): void {
+    // Set up event listener for clearing pending actions
+    this.eventManager.on(SDKEventType.SDK_CLEAR_LOGIN_ACTION, () => {
+      clearPendingAction()
+    })
   }
 
   /**
@@ -365,7 +379,7 @@ export class GenuinSDK {
       }
 
       // Handle pending actions from localStorage
-      this.handlePendingAction(embedDetails, element, user)
+      this.handlePendingAction(embedDetails, element, user, brandDetails.brand_id)
 
       // Apply brand colors to the element
       this.themeManager.applyBrandColors(element, brandDetails.brand_colors)
@@ -459,15 +473,27 @@ export class GenuinSDK {
    * @param embedDetails The embed details to potentially update
    * @param element The HTML element for loading expand view if needed
    * @param user The authenticated user (if any)
+   * @param brandId The brand ID for the current embed
    * @private
    */
   private handlePendingAction(
     embedDetails: EmbedDataType,
     element: HTMLElement,
     user: AuthUser | null | undefined,
+    brandId?: number,
   ): void {
-    const pendingAction = getPendingAction()
+    // brandId 2801 is for bargainhunter, 2476 is for usmagazine & 2808 is for lifeandstylemag.
+    const ignoreExpiry = brandId === 2801 || brandId === 2476 || brandId === 2808
+    const pendingAction = getPendingAction(ignoreExpiry)
     if (!pendingAction) return
+
+    if(ignoreExpiry) {
+      if(user) {
+        clearPendingAction()
+      }
+      return
+    }
+
     // When pending action data is present in the query params, it should override any data stored in localStorage, as query params have higher priority.
     const hasActionParam = queryUtils.has('action')
     if (hasActionParam) {

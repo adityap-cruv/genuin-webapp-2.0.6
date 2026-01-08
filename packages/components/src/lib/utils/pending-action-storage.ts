@@ -66,9 +66,10 @@ export function savePendingAction(data: Omit<PendingActionData, "timestamp">): v
 
 /**
  * Retrieves a pending action from localStorage
- * Returns null if not found or expired
+ * Returns null if not found or expired (unless ignoreExpiry is true)
+ * @param ignoreExpiry If true, returns the action even if expired without clearing it
  */
-export function getPendingAction(): PendingActionData | null {
+export function getPendingAction(ignoreExpiry: boolean = false): PendingActionData | null {
   if (!isLocalStorageAvailable()) {
     return null;
   }
@@ -81,11 +82,13 @@ export function getPendingAction(): PendingActionData | null {
 
     const data: PendingActionData = JSON.parse(stored);
 
-    // Check if action has expired
-    const age = Date.now() - data.timestamp;
-    if (age > EXPIRY_TIME) {
-      clearPendingAction();
-      return null;
+    // Check if action has expired (unless ignoreExpiry is true)
+    if (!ignoreExpiry) {
+      const age = Date.now() - data.timestamp;
+      if (age > EXPIRY_TIME) {
+        clearPendingAction();
+        return null;
+      }
     }
 
     return data;
