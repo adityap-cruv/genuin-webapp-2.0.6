@@ -960,11 +960,11 @@ export const VideoPlayer = memo(function VideoPlayer({
           "gencl:h-auto gencl:w-auto gencl:bg-center gencl:bg-no-repeat gencl:object-cover gencl:bg-cover",
           className
         )}
-        style={{
-          backgroundImage: `url(${poster})`,
-          ...style,
-        }}
-        // poster={poster}
+        // style={{
+        //   backgroundImage: `url(${poster})`,
+        //   ...style,
+        // }}
+        poster={poster}
         ref={videoRef}
         preload="none"
         onSeeked={onVideoSeeked}

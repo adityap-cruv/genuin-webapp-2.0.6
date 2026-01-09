@@ -65,6 +65,7 @@ export function Player({
   const { showGestureOverlay } = useGestureOverlayManager();
   const {
     view: { brandLayoutType },
+    video: { videoCrop },
   } = useEmbedConfigs();
 
   // Detect accessibility mode based on browser accessibility preferences
@@ -122,7 +123,10 @@ export function Player({
             id={"feed-player--" + post.video.id}
             poster={post.video.thumbnail ?? ""}
             className={cn(
-              "gencl:bg-secondary-200 gencl:object-cover gencl:w-full gencl:h-full"
+              "gencl:h-full gencl:w-full",
+              videoCrop
+                ? "gencl:bg-secondary-200 gencl:object-cover"
+                : "gencl:object-contain"
             )}
             playsInline
             onTimeUpdate={handleTimeUpdate}
