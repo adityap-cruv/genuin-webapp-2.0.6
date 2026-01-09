@@ -256,10 +256,11 @@ function EmbedPlayer({
             ? postDetails.section?.cover_url
             : postDetails.video.thumbnail
         }
-        className={cn(
-          "gencl:h-full! gencl:w-full",
-          videoCrop ? "gencl:object-cover" : "gencl:object-contain"
-        )}
+        className={
+          videoCrop
+            ? "gencl:object-cover gencl:h-full! gencl:w-full"
+            : "gencl:h-full!"
+        }
         layoutType={layoutType}
         aria-hidden="true"
         tabIndex={-1}
