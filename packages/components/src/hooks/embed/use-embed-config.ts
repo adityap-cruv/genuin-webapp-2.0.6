@@ -131,12 +131,10 @@ export function useEmbedConfigs() {
         : !!customization?.autoplay,
       moveToNextTime: embedData?.media_play?.auto_advance_playback ?? 0,
       showBorderAroundVideo:
-        (!!customization?.is_enable_engagement_tools ||
+        (!!customization?.is_show_social_interaction_data ||
           (customization?.links?.is_show_links &&
             customization?.links?.position === "outside")) &&
-        brandLayoutType !== "iheart"
-          ? true
-          : false,
+        brandLayoutType !== "iheart",
       videoCrop: customization?.video_crop,
       autoScrollToNextSlide: customization?.enable_auto_scroll ?? false,
       resumePlaybackFrom: brandDetails.web_configs.resume_playback_from,
