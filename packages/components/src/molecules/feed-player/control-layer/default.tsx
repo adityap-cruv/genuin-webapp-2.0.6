@@ -36,6 +36,7 @@ export function Default({
   onGroupSubscriptionChange,
   onReactionStateChange,
   onCommentCountChange,
+  onSwiperToggle,
   clipVideo,
   editCover,
   enableExpand = true,
@@ -173,6 +174,7 @@ export function Default({
                 onGroupSubscriptionChange={onGroupSubscriptionChange}
                 onReactionStateChange={onReactionStateChange}
                 onCommentCountChange={onCommentCountChange}
+                onSwiperToggle={onSwiperToggle}
                 variant={variant}
                 className={cn(playbackSpeed.speed !== 1 && "gencl:invisible")}
               />
@@ -290,6 +292,7 @@ export function Default({
                 onGroupSubscriptionChange={onGroupSubscriptionChange}
                 onReactionStateChange={onReactionStateChange}
                 onCommentCountChange={onCommentCountChange}
+                onSwiperToggle={onSwiperToggle}
                 variant={variant}
                 className={cn(
                   playbackSpeed.speed !== 1 &&

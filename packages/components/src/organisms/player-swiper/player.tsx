@@ -39,6 +39,7 @@ type PlayerProps = {
   onCommentCountChange: ComponentProps<
     typeof ControlLayer
   >["onCommentCountChange"];
+  onSwiperToggle?: (disable: boolean) => void;
 };
 
 // TODO: This component is using feed context, which is not ideal. Remove this dep of FeedContext in future.
@@ -56,6 +57,7 @@ export function Player({
   onGroupSubscriptionChange,
   onReactionStateChange,
   onCommentCountChange,
+  onSwiperToggle,
 }: PlayerProps) {
   const { showExpandView, toggleExpandView, activeIndex, variant } =
     useFeedContext();
@@ -146,6 +148,7 @@ export function Player({
             showCloseButton={variant === "expand"}
             onReactionStateChange={onReactionStateChange}
             onCommentCountChange={onCommentCountChange}
+            onSwiperToggle={onSwiperToggle}
             // Applies GPU acceleration to prevent layer flickering on iOS devices during animations
             className="gencl:translate-x-0"
           />

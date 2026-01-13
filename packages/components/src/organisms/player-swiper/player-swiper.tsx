@@ -192,6 +192,28 @@ export function PlayerList({
     ? verticalSwipers[activeHorizontalIndex]
     : verticalSwipers[0];
 
+  // Callback to enable/disable swipers when interacting with Pills
+  const handleSwiperToggle = useCallback(
+    (disable: boolean) => {
+      if (isSectioned && horizontalSwiper) {
+        if (disable) {
+          horizontalSwiper.disable();
+        } else {
+          horizontalSwiper.enable();
+        }
+      }
+      // Also disable/enable the active vertical swiper
+      if (activeSwiper) {
+        if (disable) {
+          activeSwiper.disable();
+        } else {
+          activeSwiper.enable();
+        }
+      }
+    },
+    [isSectioned, horizontalSwiper, activeSwiper]
+  );
+
   /*
 We need to filter out these posts because we shouldn't show the overlay middleware
 or the full-screen view here, and we cannot simply skip the slide since we're using
@@ -331,6 +353,7 @@ a swiper inside another swiper.
                         onGroupSubscriptionChange={onGroupSubscriptionChange}
                         onReactionStateChange={onReactionStateChange}
                         onCommentCountChange={onCommentCountChange}
+                        onSwiperToggle={handleSwiperToggle}
                         index={index}
                         totalVideos={totalVideos}
                       />
@@ -421,6 +444,7 @@ a swiper inside another swiper.
                   onGroupSubscriptionChange={onGroupSubscriptionChange}
                   onReactionStateChange={onReactionStateChange}
                   onCommentCountChange={onCommentCountChange}
+                  onSwiperToggle={handleSwiperToggle}
                   index={index}
                 />
               ) : post.video.type === "complete" ? (

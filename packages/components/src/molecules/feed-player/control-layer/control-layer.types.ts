@@ -34,4 +34,5 @@ export type ControlLayerPropsType = ComponentProps<"div"> & {
   onCommentCountChange?: ComponentProps<
     typeof ExpandViewDetails
   >["onCommentCountChange"];
+  onSwiperToggle?: (disable: boolean) => void;
 } & VariantProps<typeof controlLayerVariant>;
