@@ -12,6 +12,7 @@ export const SectionsTabs = ({ onSectionSelect }: SectionsTabsProps) => {
   const embedDetails = useSafeEmbedContext();
   const { track, EventName } = useAnalytics();
   const containerRef = useRef<HTMLDivElement>(null);
+  const tabRefs = useRef<Map<string | number, HTMLDivElement>>(new Map());
   const [sectionList, setSectionList] = useState(
     embedDetails?.embedEventBus.getContext().sectionList ?? []
   );
@@ -40,6 +41,20 @@ export const SectionsTabs = ({ onSectionSelect }: SectionsTabsProps) => {
       };
     }
   }, [embedDetails]);
+
+  // Scroll selected section into view
+  useEffect(() => {
+    if (!selectedSection?.id || isDragging) return;
+
+    const selectedTabElement = tabRefs.current.get(selectedSection.id);
+    if (selectedTabElement && containerRef.current) {
+      selectedTabElement.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "center",
+      });
+    }
+  }, [selectedSection?.id, isDragging]);
 
   // Drag scroll handlers
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -85,6 +100,11 @@ export const SectionsTabs = ({ onSectionSelect }: SectionsTabsProps) => {
         return (
           <div
             key={section?.id ?? index}
+            ref={(el) => {
+              if (el && section?.id) {
+                tabRefs.current.set(section.id, el);
+              }
+            }}
             role="tab"
             aria-selected={isSelected}
             aria-controls={`section-panel-${section?.id ?? index}`}
