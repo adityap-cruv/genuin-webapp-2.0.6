@@ -14,6 +14,9 @@ import { createReturnQueryParams } from "@genuin/components/lib/utils/return-que
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useAnalytics } from "@genuin/components/context/analytics";
 import { Link } from "../link";
+import { useRouter } from "@genuin/components/hooks/use-router";
+import { setQueryDataForJoinCommunityStatusInFeed } from "@genuin/components/react-query/api/feed";
+import { getPartialQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
 
 // TODO: lazy load authentication modal.
 type JoinCommunityButtonProps = {
@@ -143,6 +146,7 @@ function Button({
 }: JoinCommunityButtonProps) {
   const { user } = useAuthContext();
   const { track, EventName } = useAnalytics();
+  const router = useRouter();
 
   const { mutate: joinCommunity, isPending } = useJoinCommunityMutation({
     onSuccess: (newStatus) => {
@@ -155,6 +159,13 @@ function Button({
         community_name: communityName,
         is_private: isPrivate,
         ...(rest.videoId && { video_id: rest.videoId }),
+      });
+
+      // Emit SDK event only in embed/placement case (when in iframe)
+      setQueryDataForJoinCommunityStatusInFeed({
+        queryKey: getPartialQueryKeyForFeed(),
+        communityId,
+        newRole: newStatus,
       });
     },
     onError: (error) => {
@@ -174,6 +185,12 @@ function Button({
           community_name: communityName,
           is_private: isPrivate,
           ...(rest.videoId && { video_id: rest.videoId }),
+        });
+
+        setQueryDataForJoinCommunityStatusInFeed({
+          queryKey: getPartialQueryKeyForFeed(),
+          communityId,
+          newRole: newStatus,
         });
       },
       onError: (error) => {

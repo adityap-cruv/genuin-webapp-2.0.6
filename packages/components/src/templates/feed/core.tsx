@@ -28,7 +28,8 @@ import { getQueryKeyForVideoDetails } from "@genuin/components/react-query/keys/
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useBaseContext } from "@genuin/components/context";
 import { IheartFullscreenContainer } from "@genuin/components/molecules/iheart-full-screen-contaner";
-import { isUuid } from "@genuin/components/lib/utils";
+import { setQueryDataForCommunityRoleChange } from "@genuin/components/react-query/api/community/details/details";
+import { setQueryDataForSubscribeGroupInGroupDetails } from "@genuin/components/react-query/api/group/details";
 
 /**
  * Internal core presentation component for displaying feed data.
@@ -119,6 +120,11 @@ export const FeedViewCore = memo(function FeedViewCore({
         communityId: videos[activeIndex].community.id,
         newRole,
       });
+
+      setQueryDataForCommunityRoleChange(
+        videos[activeIndex].community.slug,
+        newRole
+      );
     },
     [videos, activeIndex, queryKey]
   );
@@ -143,6 +149,11 @@ export const FeedViewCore = memo(function FeedViewCore({
         groupId: videos[activeIndex].group.id,
         isSubscribed,
       });
+
+      setQueryDataForSubscribeGroupInGroupDetails(
+        videos[activeIndex].group.slug,
+        isSubscribed
+      );
     },
     [videos, activeIndex, queryKey]
   );

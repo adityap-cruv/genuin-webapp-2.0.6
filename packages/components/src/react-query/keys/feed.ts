@@ -34,6 +34,25 @@ export function getQueryKeyForFeed(
 }
 
 /**
+ * This function generates a partial query key for feed queries.
+ * Use this to match all feed queries or all queries of a specific feed type.
+ * @param feedType - Optional feed type to narrow down the match
+ * @returns Partial QueryKey array that matches all feed queries (or specific feed type)
+ * @example
+ * // Match all feed queries
+ * getPartialQueryKeyForFeed()
+ * 
+ * // Match all HOME feed queries
+ * getPartialQueryKeyForFeed('HOME')
+ */
+export function getPartialQueryKeyForFeed(feedType?: FeedType): QueryKey {
+  if (feedType) {
+    return [...baseQueryKey, "feed", feedType];
+  }
+  return [...baseQueryKey, "feed"];
+}
+
+/**
  * This function generates a unique query key for the group feed based on the group slug.
  * @param slug
  * @returns

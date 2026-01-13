@@ -655,6 +655,7 @@ export function setQueryDataForReactionInFeed({
 
 /**
  * Set query data for join community status in feed
+ * Supports partial query keys (e.g., ['feed']) to update all matching queries
  * @param param0 - Parameters for setting query data for join community status in feed
  */
 export function setQueryDataForJoinCommunityStatusInFeed({
@@ -666,34 +667,37 @@ export function setQueryDataForJoinCommunityStatusInFeed({
   communityId: string;
   newRole: CommunityUserRole;
 }) {
-  queryClient.setQueryData<QueryData>(queryKey, (oldData) => {
-    if (!oldData) return oldData;
+  queryClient.setQueriesData<QueryData>(
+    { queryKey, exact: false },
+    (oldData) => {
+      if (!oldData) return oldData;
 
-    // Create a new array with the updated community role
-    const updatedPages = oldData.pages.map((page) => {
+      // Create a new array with the updated community role
+      const updatedPages = oldData.pages.map((page) => {
+        return {
+          ...page,
+          feed: page.feed.map((video) => {
+            if (video.community.id === communityId) {
+              return {
+                ...video,
+                community: {
+                  ...video.community,
+                  userRole: newRole,
+                },
+              };
+            }
+            return video;
+          }),
+        };
+      });
+
+      // Return the updated data structure
       return {
-        ...page,
-        feed: page.feed.map((video) => {
-          if (video.community.id === communityId) {
-            return {
-              ...video,
-              community: {
-                ...video.community,
-                userRole: newRole,
-              },
-            };
-          }
-          return video;
-        }),
+        ...oldData,
+        pages: updatedPages,
       };
-    });
-
-    // Return the updated data structure
-    return {
-      ...oldData,
-      pages: updatedPages,
-    };
-  });
+    }
+  );
 }
 
 /**
@@ -754,34 +758,37 @@ export function setQueryDataForGroupSubscriptionChangeInFeed({
   groupId: string;
   isSubscribed: boolean;
 }) {
-  queryClient.setQueryData<QueryData>(queryKey, (oldData) => {
-    if (!oldData) return oldData;
+  queryClient.setQueriesData<QueryData>(
+    { queryKey, exact: false },
+    (oldData) => {
+      if (!oldData) return oldData;
 
-    // Create a new array with the updated group subscription status
-    const updatedPages = oldData.pages.map((page) => {
+      // Create a new array with the updated group subscription status
+      const updatedPages = oldData.pages.map((page) => {
+        return {
+          ...page,
+          feed: page.feed.map((video) => {
+            if (video.group?.id === groupId) {
+              return {
+                ...video,
+                group: {
+                  ...video.group,
+                  isSubscribed,
+                },
+              };
+            }
+            return video;
+          }),
+        };
+      });
+
+      // Return the updated data structure
       return {
-        ...page,
-        feed: page.feed.map((video) => {
-          if (video.group?.id === groupId) {
-            return {
-              ...video,
-              group: {
-                ...video.group,
-                isSubscribed,
-              },
-            };
-          }
-          return video;
-        }),
+        ...oldData,
+        pages: updatedPages,
       };
-    });
-
-    // Return the updated data structure
-    return {
-      ...oldData,
-      pages: updatedPages,
-    };
-  });
+    }
+  );
 }
 
 /**
