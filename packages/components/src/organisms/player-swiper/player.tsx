@@ -6,15 +6,12 @@ const ControlLayer = lazy(() =>
   }))
 ) as React.ComponentType<any>;
 
-
-
 // Lazy load video player to defer heavy playback logic
 const FeedPlayer = lazy(() =>
   import("../../molecules/feed-player").then((m) => ({
     default: m.FeedPlayer,
   }))
 ) as React.ComponentType<any>;
-
 
 import { PlayerProvider } from "../../molecules/feed-player/context/provider";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
@@ -25,7 +22,6 @@ import { useCallback, useMemo, lazy, Suspense } from "react";
 import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
 import { ComponentProps } from "react";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-
 
 type PlayerProps = {
   post: PostDetailsType;
@@ -53,6 +49,7 @@ type PlayerProps = {
   onCommentCountChange: ComponentProps<
     typeof ControlLayer
   >["onCommentCountChange"];
+  onSwiperToggle?: (disable: boolean) => void;
 };
 
 // TODO: This component is using feed context, which is not ideal. Remove this dep of FeedContext in future.
@@ -70,6 +67,7 @@ export function Player({
   onGroupSubscriptionChange,
   onReactionStateChange,
   onCommentCountChange,
+  onSwiperToggle,
 }: PlayerProps) {
   const { showExpandView, toggleExpandView, activeIndex, variant } =
     useFeedContext();
@@ -79,6 +77,7 @@ export function Player({
   const { showGestureOverlay } = useGestureOverlayManager();
   const {
     view: { brandLayoutType },
+    video: { videoCrop },
   } = useEmbedConfigs();
 
   // Detect accessibility mode based on browser accessibility preferences

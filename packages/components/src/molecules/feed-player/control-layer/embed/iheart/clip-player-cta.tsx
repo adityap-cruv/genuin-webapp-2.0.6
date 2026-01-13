@@ -4,10 +4,11 @@ import {
   SDKEventEmitter,
   SDKEventName,
 } from "@genuin/components/lib/sdk-event-emitter";
-import { Linkouts } from "@genuin/components/organisms";
+import { Linkouts } from "@genuin/components/organisms/linkouts";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { cn } from "@genuin/ui/lib/utils";
 import { useCallback } from "react";
+import { usePlayerContext } from "../../../context";
 
 interface ClipPlayerCTAProps {
   websiteType: "polaris" | "legacy";
@@ -22,8 +23,10 @@ export const ClipPlayerCTA = ({
 }: ClipPlayerCTAProps) => {
   const {
     view: { websiteType },
+    video,
   } = useEmbedConfigs();
   const embedDetails = useSafeEmbedContext();
+  const { totalVideos, positionIndex } = usePlayerContext();
 
   const handleCTAClick = useCallback(
     (e: React.MouseEvent) => {
@@ -75,6 +78,10 @@ export const ClipPlayerCTA = ({
       ctaOnly={true}
       handleCTAClick={handleCTAClick}
       showImmediately={true}
+      videoDetails={postDetails.video}
+      totalVideos={totalVideos}
+      positionIndex={positionIndex}
+      autoplay={video.videoAutoplay}
     />
   );
 };

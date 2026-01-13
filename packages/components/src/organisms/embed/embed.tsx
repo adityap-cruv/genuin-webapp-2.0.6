@@ -191,7 +191,6 @@ export function Embed({
     spaceBetweenVideos,
     availableHeight,
   } = useEmbedDimensions();
-
   // Check for iheart brand layout for navigation button positioning
   const isIheartLayout = config.view.brandLayoutType === "iheart";
   const websiteType = config.view.websiteType;
@@ -228,6 +227,8 @@ export function Embed({
         feedType: feedType,
       });
     }
+    // In embed mode, the sections list does not need to be updated.
+    if (isEmbed) return;
     if (sectionList.length > 0 && updateSectionList) {
       updateSectionList(sectionList);
       AnalyticsService.updatePayload(
@@ -239,7 +240,7 @@ export function Embed({
     } else {
       AnalyticsService.updatePayload("section_name", []);
     }
-  }, [filteredPost.length]);
+  }, [filteredPost.length, isEmbed]);
 
   // Callback ref to know when element is mounted
   // Track EMBED_VIEWED/PLACEMENT_VIEWED event when embed is visible in viewport
@@ -570,8 +571,6 @@ export function Embed({
             cols={config.view.gridLayout?.column ?? 2}
             autoAdjust={config.view.gridLayout?.auto_adjust}
             aspectRatio={embedData.aspect_ratio}
-            moveToNext={!config.video.videoLoop}
-            moveToNextTime={config.video.moveToNextTime}
             totalVideos={feedData?.pages?.[0]?.totalVideos}
           />
         ) : (
@@ -705,21 +704,6 @@ export function Embed({
         videos={filteredPost ?? []}
         isLoading={isLoading}
       />
-
-      {activePlayerType === "embed" && isIheartLayout && (
-        <Toaster
-          position="bottom-center"
-          style={{
-            width: "280px",
-            bottom: "88px",
-          }}
-          toastOptions={{
-            style: {
-              width: "100%",
-            },
-          }}
-        />
-      )}
     </div>
   );
 }

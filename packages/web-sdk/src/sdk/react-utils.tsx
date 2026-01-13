@@ -8,7 +8,7 @@ import { SingleEmbedDataConfig } from '@/type'
 import { SDKEventType } from '@/core'
 import { metrics } from '../utils/metrics'
 import {
-  generateEmbedSkeletonHTML,
+  // generateEmbedSkeletonHTML,
   generateExpandViewSkeletonHTML,
 } from '../utils/skeleton-html'
 
@@ -35,6 +35,54 @@ interface ProviderModules {
 // Track React roots per container to support multiple embeds
 const containerRootMap = new Map<HTMLElement, Root>()
 
+// Global toaster singleton
+let toasterRoot: Root | null = null
+
+// Error view function
+export function loadErrorView(container: HTMLElement): void {
+  container.innerHTML = `
+    <div style="
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      width: 100%;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      color: #666;
+      text-align: center;
+    ">
+      <div>
+        <h3 style="margin: 0 0 10px 0; color: #333;">Unable to load content</h3>
+        <p style="margin: 0; font-size: 14px;">Please check your configuration and try again.</p>
+      </div>
+    </div>
+  `
+}
+
+// Loading view function
+export function loadLoadingView(
+  container: HTMLElement,
+  theme?: 'dark' | 'light',
+): void {
+  // Unmount previous root if exists for this container
+  const prevRoot = containerRootMap.get(container)
+  if (prevRoot) {
+    prevRoot.unmount()
+    containerRootMap.delete(container)
+  }
+
+  const root = createRoot(container)
+  containerRootMap.set(container, root)
+
+  root.render(
+    <EmbedSkeleton
+      container={container}
+      theme={theme}
+    />,
+  )
+}
+
 // Expand view function
 export function loadExpandView(
   container: HTMLElement,
@@ -60,7 +108,13 @@ export function loadExpandView(
   }
 
   // Create a React root inside the loader div
-  const root = createRoot(loaderDiv)
+  const root =
+    containerRootMap.get(loaderDiv) ??
+    (() => {
+      const newRoot = createRoot(loaderDiv)
+      containerRootMap.set(loaderDiv, newRoot)
+      return newRoot
+    })()
 
   /*
   Remove or unmount the loader div when the "sdk:expand-view-loaded" event is emitted,
@@ -71,6 +125,7 @@ export function loadExpandView(
       // Add a small delay before cleanup to ensure smooth transition
       setTimeout(() => {
         root.unmount()
+        containerRootMap.delete(loaderDiv!)
         loaderDiv?.remove()
         loaderDiv = null
       }, 200)
@@ -276,8 +331,10 @@ export async function loadNewEmbed({
 
   // Unmount previous root if exists for this container
   const prevRoot = containerRootMap.get(container)
-  prevRoot?.unmount()
-  containerRootMap.delete(container)
+  if (prevRoot) {
+    prevRoot.unmount()
+    containerRootMap.delete(container)
+  }
 
   // Dynamically load all providers (defers loading until embed is rendered)
   const providers = await loadProviders()
@@ -308,6 +365,17 @@ export async function loadNewEmbed({
     Toaster,
   } = providers
 
+  // Initialize toaster on first embed
+  if (!toasterRoot) {
+    const div = document.createElement('div')
+    div.id = 'gen-sdk-toaster-root'
+    div.classList.add('gen-sdk-class')
+    div.classList.add('gen-sdk-root-portal')
+    document.body.appendChild(div)
+    toasterRoot = createRoot(div)
+    toasterRoot.render(<Toaster />)
+  }
+
   const rootToRender: ReactNode = (
     <ReactQueryClientProvider>
       <EmbedProvider
@@ -329,14 +397,16 @@ export async function loadNewEmbed({
           theme={config.theme}
           isEmbed>
           <LinkProvider>
-            <AuthProvider
-              onSignIn={() => {}}
-              onSignOut={() => {}}
-              onUpdateUser={() => {}}
-              user={user}>
-              <AnalyticsProvider
-                embedData={embedData}
-                isWebSDK={true}>
+            <AnalyticsProvider
+              embedData={embedData}
+              isWebSDK={true}
+              user={user ?? null}
+              brandDetails={brandDetails}>
+              <AuthProvider
+                onSignIn={() => {}}
+                onSignOut={() => {}}
+                onUpdateUser={() => {}}
+                user={user}>
                 <Suspense
                   fallback={
                     <EmbedSkeleton
@@ -351,9 +421,8 @@ export async function loadNewEmbed({
                     <LazyEmbed wasLazilyLoaded={wasLazilyLoaded} />
                   )}
                 </Suspense>
-                {brandLayoutType !== 'iheart' && <Toaster />}
-              </AnalyticsProvider>
-            </AuthProvider>
+              </AuthProvider>
+            </AnalyticsProvider>
           </LinkProvider>
         </BaseContextProvider>
       </EmbedProvider>
@@ -372,6 +441,12 @@ export async function loadNewEmbed({
   return () => {
     root.unmount()
     containerRootMap.delete(container)
+    // Cleanup toaster when no embeds remain
+    if (containerRootMap.size === 0 && toasterRoot) {
+      toasterRoot.unmount()
+      document.getElementById('gen-sdk-toaster-root')?.remove()
+      toasterRoot = null
+    }
     container.remove()
   }
 }

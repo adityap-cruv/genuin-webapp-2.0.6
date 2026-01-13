@@ -8,6 +8,7 @@ type PillsPropsType = {
   variant?: ComponentProps<typeof CommunityPill>["variant"];
   communityDetails: PostDetailsType["community"];
   groupDetails: PostDetailsType["group"];
+  videoId?: string;
   onGroupJoinStatusChange?: ComponentProps<
     typeof GroupPill
   >["onGroupJoinStatusChange"];
@@ -28,6 +29,7 @@ export function Pills({
   communityDetails,
   groupDetails,
   variant,
+  videoId,
   onGroupJoinStatusChange,
   onGroupSubscriptionChange,
   onCommunityJoinStatusChange,
@@ -45,6 +47,7 @@ export function Pills({
         <CommunityPill
           isHoverable={isHoverable}
           variant={variant}
+          videoId={videoId}
           onCommunityJoinStatusChange={onCommunityJoinStatusChange}
           communityDetails={communityDetails}
           hideCommunityJoinButton={hideCommunityJoinButton}
@@ -54,6 +57,7 @@ export function Pills({
         <GroupPill
           isHoverable={isHoverable}
           variant={variant}
+          videoId={videoId}
           groupDetails={groupDetails}
           communityDetails={communityDetails}
           onGroupJoinStatusChange={onGroupJoinStatusChange}

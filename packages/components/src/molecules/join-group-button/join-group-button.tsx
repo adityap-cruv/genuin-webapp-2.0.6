@@ -14,6 +14,7 @@ import { Loader } from "@genuin/ui/components/loader";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
+import { useAnalytics } from "@genuin/components/context/analytics";
 import { Link } from "../link";
 
 const DEFAULT_BUTTON_TEXT = {
@@ -30,6 +31,7 @@ type JoinGroupButtonProps = {
   groupSlug: string;
   role: GroupUserStatusType;
   isPrivate: boolean;
+  videoId?: string;
   /**
    * Custom button texts for each role. if not provided, defaults will be used.
    */
@@ -111,18 +113,29 @@ export function JoinGroupButton({
 function Button({
   buttonTexts = DEFAULT_BUTTON_TEXT,
   groupId,
+  groupName,
+  groupSlug,
+  isPrivate,
   role = "UNJOINED",
   disabled: propDisabled,
-  isPrivate,
   onClick,
   onGroupJoinStatusChange,
   ...restProps
 }: JoinGroupButtonProps) {
   const { user } = useAuthContext();
+  const { track, EventName } = useAnalytics();
   const { mutate: joinGroup, isPending: isPendingJoinGroup } =
     useJoinGroupMutation({
       onSuccess: (status) => {
         onGroupJoinStatusChange?.(status);
+        track(EventName.LOOP_JOINED, {
+          content_id: groupId,
+          slug: groupSlug,
+          group_id: groupId,
+          group_name: groupName,
+          is_private: isPrivate,
+          ...(restProps.videoId && { video_id: restProps.videoId }),
+        });
       },
       onError: () => {
         Toast.Error({ message: "Failed to join group" });
@@ -133,6 +146,14 @@ function Button({
     useLeaveGroupMutation({
       onSuccess: () => {
         onGroupJoinStatusChange?.("UNJOINED");
+        track(EventName.LOOP_LEFT, {
+          content_id: groupId,
+          slug: groupSlug,
+          group_id: groupId,
+          group_name: groupName,
+          is_private: isPrivate,
+          ...(restProps.videoId && { video_id: restProps.videoId }),
+        });
       },
       onError: () => {
         Toast.Error({ message: "Failed to leave group" });

@@ -9,7 +9,6 @@ import { AnalyticsService } from "./service"; // Import the singleton service
 import { AnalyticsContext, EventName } from "./context";
 import { EventNameType, EventPayload } from "./types";
 import { useBaseContext } from "../base";
-import { useAuthContext } from "../auth";
 import { getDeviceId } from "@genuin/components/lib/utils/device-id";
 import { GENUIN_BRAND_ID } from "@genuin/components/lib/constants";
 import { usePathname } from "@genuin/components/hooks/use-pathname";
@@ -22,6 +21,8 @@ import {
 } from "@genuin/components/lib/sdk-event-emitter";
 import { EmitAnalyticsData } from "./emit-analytics-data";
 import { getSdkVersion } from "./utils";
+import { BrandDetailsConfigType } from "@genuin/components/types/brand";
+import { AuthUser } from "@genuin/components/types/auth";
 
 type AnalyticsProviderProps = {
   children: ReactNode;
@@ -34,6 +35,8 @@ type AnalyticsProviderProps = {
    * Optional analytics data for SDK initialization
    */
   embedData?: EmbedDataType;
+  brandDetails: BrandDetailsConfigType;
+  user : AuthUser | null;
 };
 
 enum Channel {
@@ -51,9 +54,10 @@ export function AnalyticsProvider({
   children,
   isWebSDK,
   embedData,
+  brandDetails,
+  user,
 }: AnalyticsProviderProps) {
-  const { brandDetails, isInIframe } = useBaseContext();
-  const { user } = useAuthContext();
+  const { isInIframe } = useBaseContext();
   const embedDetails = useSafeEmbedContext();
   const pathname = usePathname();
   useEffect(() => {

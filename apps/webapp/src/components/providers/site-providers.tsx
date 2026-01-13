@@ -23,11 +23,11 @@ function CoreProviders({ children, config, session }: SiteProvidersBaseProps) {
     <ReactQueryClientProvider>
       <BrandDetailsProviderClient brandDetails={config}>
         <SessionProvider refetchOnWindowFocus={false} refetchInterval={3600} session={session}>
-          <AuthBridge>
-            <LinkBridge>
-              <AnalyticsProvider isWebSDK={false}>{children}</AnalyticsProvider>
-            </LinkBridge>
-          </AuthBridge>
+          <LinkBridge>
+            <AnalyticsProvider user={null} brandDetails={config} isWebSDK={false}>
+              <AuthBridge>{children}</AuthBridge>
+            </AnalyticsProvider>
+          </LinkBridge>
         </SessionProvider>
       </BrandDetailsProviderClient>
     </ReactQueryClientProvider>

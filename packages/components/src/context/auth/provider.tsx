@@ -88,8 +88,9 @@ export function AuthProvider({
   // Access isEmbed from BaseContext
   const { isEmbed, isInIframe } = useBaseContext?.() || { isEmbed: false };
 
-  // Access embedData.style from EmbedContext if available
-  const embedData = useSafeEmbedContext?.()?.embedData;
+  // Access embed context if available
+  const embedContext = useSafeEmbedContext?.();
+  const embedData = embedContext?.embedData;
 
   const { mutate: getUserDataForSSO } = useGetUserDataForSSOMutation({
     onSuccess: async ({ user }) => {
@@ -110,6 +111,22 @@ export function AuthProvider({
     );
 
   useLayoutEffect(() => {
+    /*
+      AnalyticsProvider is the parent, and AuthProvider is its child.
+      In the web app, the analytics payload is initialized with null values.
+      Once authentication is resolved—or on page refresh when the user is already logged in—
+      we update the analytics payload with authenticated user details from NextAuth.
+      This update is skipped in embed mode.
+    */
+    if (!isEmbed && authenticatedUser) {
+      AnalyticsService.updatePayload({
+        gen_user_id: authenticatedUser.id,
+        user_id: authenticatedUser.id,
+        phone_no: authenticatedUser.phoneNumber,
+        user_name: authenticatedUser.nickname,
+        gen_user_name: authenticatedUser.nickname,
+      });
+    }
     const handleAuthenticateUser = (authCallbackData: any) => {
       setAuthenticatedUser(authCallbackData.payload);
       setAuthenticationStatus("authenticated");
@@ -153,7 +170,7 @@ export function AuthProvider({
       );
       SDKEventEmitter.off(SDKListenerEventName.LOGOUT_USER, handleLogoutUser);
     };
-  }, []);
+  }, [isEmbed]);
 
   // Synchronously manage the authentication token in Axios instance when the external 'user' prop changes.
   // This ensures the token is set/removed before any subsequent network requests.
@@ -271,7 +288,7 @@ export function AuthProvider({
     }: {
       authCallbackData: AuthCallbackDataType;
       urlToOpen?: string;
-      pendingActionData?: Omit<PendingActionData, "timestamp">;
+      pendingActionData?: Omit<PendingActionData, "timestamp" | "divId">;
     }) => {
       // For non-embed environments and authenticated user, always return undefined so consumer shows auth modal
       if (!isEmbed || authenticationStatus === "authenticated") {
@@ -280,11 +297,23 @@ export function AuthProvider({
 
       // In embed environments with genuinAuth.
       // return a function to handle external auth
-      if (window.genuinAuth) {
+      if (
+        window.genuinAuth ||
+        embedData?.authInfo?.signInUrl ||
+        embedData?.authInfo?.signUpUrl
+      ) {
         return () => {
           // Save pending action if provided and user is unauthenticated
           if (authenticationStatus === "unauthenticated" && pendingActionData) {
-            savePendingAction(pendingActionData);
+            // Automatically add divId and embedId from the current embed context
+            const enrichedPendingActionData: Omit<
+              PendingActionData,
+              "timestamp"
+            > = {
+              ...pendingActionData,
+              divId: embedContext?.rootElement?.id,
+            };
+            savePendingAction(enrichedPendingActionData);
           }
 
           if (window.genuinAuth) {
@@ -297,7 +326,13 @@ export function AuthProvider({
       // so consumer shows auth modal
       return undefined;
     },
-    [isEmbed, embedData?.style, authenticationStatus]
+    [
+      isEmbed,
+      embedData?.style,
+      authenticationStatus,
+      embedData?.authInfo,
+      embedContext?.rootElement?.id,
+    ]
   );
 
   useEffect(() => {

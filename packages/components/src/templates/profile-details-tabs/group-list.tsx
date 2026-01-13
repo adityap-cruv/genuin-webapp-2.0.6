@@ -158,11 +158,10 @@ export function Groups({
           </li>
         );
       })}
-      {/* TODO: add lazy load shimmer here. */}
+      {/*  Lazy Loading Shimmer for Community Groups */}
       {isFetchingNextPage && (
         <li>
-          <div className="gencl:animate-pulse gencl:h-4 gencl:bg-gray-200"></div>
-          Loading more groups...
+           <CommunityGroupsSkeleton />
         </li>
       )}
       {hasNextPage && !isFetchingNextPage && (

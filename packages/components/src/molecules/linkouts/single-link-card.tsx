@@ -9,6 +9,13 @@ import { Loader } from "@genuin/ui/components/loader";
 import { useSafeRedirect } from "./use-safe-redirect";
 import { Link } from "../link/link";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
+import { useMemo } from "react";
+import {
+  buildLinkoutsAnalyticsData,
+  LinkoutsProps,
+} from "@genuin/components/organisms";
+import { PostData } from "@genuin/components/organisms/create-post/types";
+import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 // Combined variant for both card types
 const linkCardVariants = cva(
@@ -40,6 +47,10 @@ interface LinkCardProps extends VariantProps<typeof linkCardVariants> {
   showThumbnail?: boolean;
   ctaText?: string;
   ctaLink?: string;
+  videoDetails?: PostDetailsType["video"];
+  totalVideos?: number;
+  positionIndex?: number;
+  autoplay?: boolean;
 }
 
 export const LinkCard = ({
@@ -50,6 +61,10 @@ export const LinkCard = ({
   ctaText = "",
   ctaLink = "",
   variant,
+  videoDetails,
+  totalVideos,
+  positionIndex,
+  autoplay,
 }: LinkCardProps) => {
   const hasImage = link.image && link.image.trim() !== "";
   const hasTitle = link.title && link.title.trim() !== "";
@@ -69,6 +84,17 @@ export const LinkCard = ({
 
   const displayText = hasTitle ? link.title : getDomain(link.link);
 
+  const analyticsEventData = useMemo(
+    () =>
+      buildLinkoutsAnalyticsData({
+        videoDetails,
+        totalVideos,
+        positionIndex,
+        autoplay,
+      }),
+    [videoDetails, totalVideos, positionIndex, autoplay]
+  );
+
   const handleImageError = (
     e: React.SyntheticEvent<HTMLImageElement, Event>
   ) => {
@@ -84,6 +110,7 @@ export const LinkCard = ({
     e.stopPropagation();
 
     track(EventName.LINKOUTS_CTA_CLICKED, {
+      ...analyticsEventData,
       linkUrl: ctaLink,
       linkTitle: link.title || getDomain(link.link),
     });
@@ -99,6 +126,7 @@ export const LinkCard = ({
     e.stopPropagation();
 
     track(EventName.LINKOUTS_CLICKED, {
+      ...analyticsEventData,
       linkUrl: link.link,
       linkTitle: link.title || getDomain(link.link),
     });

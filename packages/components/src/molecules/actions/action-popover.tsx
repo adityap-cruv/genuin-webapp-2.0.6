@@ -51,6 +51,10 @@ interface ActionPopoverProps {
    * Additional CSS class name for the popover content
    */
   contentClassName?: string;
+  /**
+   * Invoked when the popover trigger is clicked.
+   */
+  onPopOverClick?: () => void;
 }
 
 export const ActionPopover = memo(function ActionPopover({
@@ -59,12 +63,13 @@ export const ActionPopover = memo(function ActionPopover({
   params,
   initialOpen = false,
   autoCloseTimeout = 2400,
-  onOpenChange,
   side = "top",
   showArrow = true,
   align = "end",
   backgroundColor = "#5786FF",
   contentClassName = "",
+  onOpenChange,
+  onPopOverClick,
 }: ActionPopoverProps) {
   const [isOpen, setIsOpen] = useState(initialOpen);
   const embedDetails = useSafeEmbedContext();
@@ -160,6 +165,7 @@ export const ActionPopover = memo(function ActionPopover({
               className="gencl:font-bold gencl:underline"
               onClick={(e) => {
                 e.stopPropagation();
+                onPopOverClick?.();
                 window.location.assign(
                   typeof signInUrl === "function" ? signInUrl() : signInUrl
                 );
@@ -172,6 +178,7 @@ export const ActionPopover = memo(function ActionPopover({
               className="gencl:font-bold gencl:underline"
               onClick={(e) => {
                 e.stopPropagation();
+                onPopOverClick?.();
                 window.location.assign(
                   typeof signUpUrl === "function" ? signUpUrl() : signUpUrl
                 );

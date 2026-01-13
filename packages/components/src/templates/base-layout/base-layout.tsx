@@ -12,7 +12,9 @@ import { useSearchParams } from "@genuin/components/hooks/use-search-params";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { cva, VariantProps } from "class-variance-authority";
 
-type BaseLayoutProps = ComponentProps<"section">;
+type BaseLayoutProps = ComponentProps<"section"> & {
+  showToaster?: boolean;
+};
 
 const baseLayoutVariant = cva("", {
   variants: {
@@ -35,6 +37,7 @@ export function BaseLayout({
   children,
   variant,
   className,
+  showToaster = true,
   ...restProps
 }: BaseLayoutProps & VariantProps<typeof baseLayoutVariant>) {
   const { isMobile } = useDeviceDetectMediaQuery();
@@ -91,7 +94,7 @@ export function BaseLayout({
         >
           {children}
         </section>
-        <Toaster />
+        {showToaster && <Toaster />}
       </main>
     </>
   );

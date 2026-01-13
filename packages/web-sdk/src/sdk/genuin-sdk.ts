@@ -32,6 +32,9 @@ import {
   UpdateConfigByUserType,
 } from '@/type'
 import { queryUtils } from '@/utils/query-utils'
+import { AnalyticsService } from '@genuin/components/context/analytics/service'
+import { FeedContextManager } from '@genuin/components/context/base/feed-context-manager'
+import { loadExpandView } from './react-utils'
 
 // Allowed events list - only these events can be listened to
 const ALLOWED_EVENTS = [
@@ -59,6 +62,7 @@ const ALLOWED_EMIT_EVENTS = [
   'player:onFollowChanged',
   'player:onMiniPlayerPlayChange',
   'sdk:themeChange',
+  'sdk:clearLoginAction',
   // 'sdk:expandEmbed',
   // 'sdk:collapseEmbed',
 ]
@@ -78,6 +82,23 @@ export class GenuinSDK {
   private sdkElements: SDKElementsType = {}
   private callbackQueueManager: CallbackQueueManager
   private placementManager: PlacementManager
+  private analyticsManager = AnalyticsService
+  private videoManager = FeedContextManager
+
+  /**
+   * Validates if a token value is valid (not null, undefined, empty, or string 'undefined'/'null')
+   * @param token The token value to validate
+   * @returns true if token is valid, false otherwise
+   */
+  private isValidToken(token: string | null | undefined): token is string {
+    if (!token) return false
+    if (typeof token !== 'string') return false
+    const trimmedToken = token.trim()
+    if (trimmedToken === '') return false
+    if (trimmedToken.toLowerCase() === 'undefined') return false
+    if (trimmedToken.toLowerCase() === 'null') return false
+    return true
+  }
 
   private constructor() {
     this.eventManager = EventManager.getInstance()
@@ -88,6 +109,8 @@ export class GenuinSDK {
     this.embedDetailsManager = EmbedDetailsManager.getInstance()
     this.callbackQueueManager = new CallbackQueueManager()
     this.placementManager = PlacementManager.getInstance()
+
+    this.setupInternalEventHandlers()
   }
 
   static getInstance(): GenuinSDK {
@@ -186,6 +209,17 @@ export class GenuinSDK {
   }
 
   /**
+   * Sets up internal SDK event handlers
+   * @private
+   */
+  private setupInternalEventHandlers(): void {
+    // Set up event listener for clearing pending actions
+    this.eventManager.on(SDKEventType.SDK_CLEAR_LOGIN_ACTION, () => {
+      clearPendingAction()
+    })
+  }
+
+  /**
    * Sets up event handlers to track when embed providers are ready and execute queued callbacks
    * @private
    */
@@ -237,30 +271,29 @@ export class GenuinSDK {
 
   private async _performUpdate(config?: UpdateConfigByUserType) {
     // In case of token comes authenticateUser, this function will authenticate user in all the embeds.
-    if (config?.token) {
+    if (this.isValidToken(config?.token)) {
       await this.authenticateUser({
         token: config.token,
         userParams: config.user_params,
       })
     }
 
-    // Update contextual params in the embed, if embedId is passed then only in that embed otherwise in all the embeds.
+    // Update contextual params in the embed where the instance id matches.
     const contextualParams: ContextualParamsType | undefined =
       config?.contextual_params ?? config?.contextualParams
-    if (contextualParams && config) {
+    if (contextualParams && config && config.container_id) {
       await this.updateContextualParamsInEmbed({
         contextualParams: contextualParams,
-        embedId: config.embed_id,
-        placementId: config.placement_id,
+        containerId: config.container_id,
       })
     }
-
-    //! start video slug update is only supported in embed not in placement
-    if (config?.start_video_slug && config.embed_id) {
+    // Update start video slug in the embed/placement where the instance id matches.
+    if (config?.start_video_slug && config.container_id) {
       await this.updateStartVideoId({
         startVideoSlug: config.start_video_slug,
-        embedId: config.embed_id,
+        containerId: config.container_id,
         action: config.action,
+        commentId: config.comment_id,
       })
     }
   }
@@ -333,8 +366,11 @@ export class GenuinSDK {
 
       const embedDetails = config.embedDetails!
 
-      // Load expand view if startVideoSlug || expandOnLoad is set from config
-      if (embedDetails.startVideoSlug || embedDetails.expandOnLoad) {
+      // Load expand view if expandOnLoad is true, or startVideoSlug is set and expandOnLoad is not explicitly false
+      if (
+        embedDetails.expandOnLoad === true ||
+        (embedDetails.startVideoSlug && embedDetails.expandOnLoad !== false)
+      ) {
         const instanceId = element.getAttribute('data-instance-id')
         if (instanceId && this.sdkElements[instanceId]) {
           const { loadExpandView } = await import('./react-utils')
@@ -353,7 +389,7 @@ export class GenuinSDK {
       // If there is user already then use that authed user.
       let user: AuthUser | undefined | null = this.tokenManager.getCachedUser()
 
-      if (config.token) {
+      if (this.isValidToken(config.token)) {
         user =
           (await this.authenticateUser({
             token: config.token,
@@ -366,7 +402,12 @@ export class GenuinSDK {
       }
 
       // Handle pending actions from localStorage
-      this.handlePendingAction(embedDetails, element, user)
+      this.handlePendingAction(
+        embedDetails,
+        element,
+        user,
+        brandDetails.brand_id,
+      )
 
       // Apply brand colors to the element
       this.themeManager.applyBrandColors(element, brandDetails.brand_colors)
@@ -500,29 +541,52 @@ export class GenuinSDK {
    * @param embedDetails The embed details to potentially update
    * @param element The HTML element for loading expand view if needed
    * @param user The authenticated user (if any)
+   * @param brandId The brand ID for the current embed
    * @private
    */
   private handlePendingAction(
     embedDetails: EmbedDataType,
     element: HTMLElement,
     user: AuthUser | null | undefined,
+    brandId?: number,
   ): void {
-    const pendingAction = getPendingAction()
+    // brandId 2801 is for bargainhunter, 2476 is for usmagazine & 2808 is for lifeandstylemag.
+    const ignoreExpiry =
+      brandId === 2801 || brandId === 2476 || brandId === 2808
+    const pendingAction = getPendingAction(ignoreExpiry)
     if (!pendingAction) return
+
+    if (ignoreExpiry) {
+      if (user) {
+        clearPendingAction()
+      }
+      return
+    }
+
     // When pending action data is present in the query params, it should override any data stored in localStorage, as query params have higher priority.
     const hasActionParam = queryUtils.has('action')
     if (hasActionParam) {
       clearPendingAction()
       return
     }
+
+    // Only apply pending action if the divId matches the current element's ID
+    // This ensures the action is applied to the correct embed when multiple embeds exist
+    if (pendingAction.divId && pendingAction.divId !== element.id) {
+      // This pending action is for a different div, don't process it or clear it
+      return
+    }
+
     if (user) {
       // User config takes priority over pending action data
       if (!embedDetails.startVideoSlug && pendingAction.videoId) {
         embedDetails.startVideoSlug = pendingAction.videoId
-        // Load expand view when startVideoSlug is set from pending action
-        const instanceId = element.getAttribute('data-instance-id')
-        if (instanceId && this.sdkElements[instanceId]) {
-          loadExpandView(element, this.sdkElements[instanceId].config.theme)
+        // Load expand view when startVideoSlug is set from pending action, only if expandOnLoad is not explicitly false
+        if (embedDetails.expandOnLoad !== false) {
+          const instanceId = element.getAttribute('data-instance-id')
+          if (instanceId && this.sdkElements[instanceId]) {
+            loadExpandView(element, this.sdkElements[instanceId].config.theme)
+          }
         }
       }
 
@@ -546,7 +610,7 @@ export class GenuinSDK {
       }
     }
 
-    // Clear pending action regardless of auth status
+    // Clear pending action only if divId matches (we've successfully applied it to the correct div)
     clearPendingAction()
   }
 
@@ -617,46 +681,46 @@ export class GenuinSDK {
 
   private async updateStartVideoId({
     startVideoSlug,
-    embedId,
+    containerId,
     action,
+    commentId,
   }: {
     startVideoSlug: string
-    embedId?: string
+    containerId?: string
     action?: ActionType
+    commentId?: string
   }) {
-    if (!embedId && !this.isSingleEmbed()) {
+    if (!containerId) {
       console.warn(
-        'Embed id is required to update the start video slug in multi-embed scenario',
+        'Container id is required to update the start video slug scenario',
       )
       return
     }
-
-    if (!embedId && this.isSingleEmbed()) {
-      const firstEmbedId = Object.keys(this.sdkElements)[0]
-      if (firstEmbedId) {
-        embedId = this.sdkElements[firstEmbedId]?.config.embedDetails?.embed_id
-        // Also load expand view when updating start video dynamically
-        const sdkElement = this.sdkElements[firstEmbedId]
-        if (sdkElement?.element) {
-          const { loadExpandView } = await import('./react-utils')
-          loadExpandView(sdkElement.element, sdkElement.config.theme)
-        }
-      }
-    } else if (embedId) {
-      // Find the element by embedId and load expand view
-      const sdkElement = Object.values(this.sdkElements).find(
-        (element) => element.config.embedDetails?.embed_id === embedId,
+    let embedId: string | undefined = undefined
+    let placementId: string | undefined = undefined
+    const targetUpdateElement = Object.values(this.sdkElements).find(
+      (element) => element.element.id === containerId,
+    )
+    if (!targetUpdateElement) return
+    embedId = targetUpdateElement.config.embedDetails?.embed_id
+    placementId = targetUpdateElement.config.embedDetails?.placement_id
+    if (targetUpdateElement?.element)
+      loadExpandView(
+        targetUpdateElement.element,
+        targetUpdateElement.config.theme,
       )
-      if (sdkElement?.element) {
-        const { loadExpandView } = await import('./react-utils')
-        loadExpandView(sdkElement.element, sdkElement.config.theme)
-      }
-    }
 
     this.eventManager.emit(SDKEventType.SDK_UPDATE_START_VIDEO_SLUG, {
       embedId,
       startVideoSlug,
       action,
+      placementId,
+      commentId,
+    })
+    this.eventManager.emit(SDKEventType.SDK_EXPAND_EMBED, {
+      embedId: embedId,
+      placementId: placementId,
+      instanceId: targetUpdateElement.element.getAttribute('data-instance-id'),
     })
   }
 
@@ -666,57 +730,32 @@ export class GenuinSDK {
    */
   private async updateContextualParamsInEmbed({
     contextualParams,
-    embedId,
-    placementId,
+    containerId,
   }: {
     contextualParams: ContextualParamsType
-    embedId?: string
-    placementId?: string
+    containerId?: string
   }) {
-    const isSingleEmbed = Object.keys(this.sdkElements).length === 1
-    // in case of single embed no need of the the embedId so find that embed_id and trigger the emit.
-    if (isSingleEmbed) {
-      const firstEmbedId = Object.keys(this.sdkElements)[0]
-      if (firstEmbedId) {
-        embedId = this.sdkElements[firstEmbedId]?.config.embedDetails?.embed_id
-        placementId =
-          this.sdkElements[firstEmbedId]?.config.embedDetails?.placement_id
-
-        // Deep merge old contextual params into new contextual params
-        contextualParams = this.deepMergeObjects(
-          this.sdkElements[firstEmbedId]?.config.contextualParams || {},
-          contextualParams || {},
-        )
-      }
-
-      this.eventManager.emit(SDKEventType.SDK_UPDATE_CONTEXTUAL_PARAMS, {
-        embedId,
-        placementId,
-        contextualParams,
-      })
-
-      return
-    }
-
-    if (!embedId && !placementId) {
+    if (!containerId) {
       console.warn(
-        'Embed id or placement id is not provided to update the contextual params',
+        'Container id is not provided to update the contextual params',
       )
       return
     }
-
+    let embedId = undefined,
+      placementId = undefined
+    const updateTargetElement = Object.values(this.sdkElements).find(
+      (element) => element.element.id === containerId,
+    )
+    if (!updateTargetElement) return
     const oldContextualParams =
-      Object.values(this.sdkElements).find(
-        (element) =>
-          element.config.embedDetails?.embed_id === embedId ||
-          element.config.embedDetails?.placement_id === placementId,
-      )?.config.contextualParams || {}
+      updateTargetElement.config.contextualParams || {}
 
     contextualParams = this.deepMergeObjects(
       oldContextualParams,
       contextualParams || {},
     )
-
+    embedId = updateTargetElement.config.embedDetails?.embed_id
+    placementId = updateTargetElement.config.embedDetails?.placement_id
     if (embedId || placementId)
       console.log('Emitting event with::', embedId, placementId)
     this.eventManager.emit(SDKEventType.SDK_UPDATE_CONTEXTUAL_PARAMS, {
@@ -811,10 +850,12 @@ export class GenuinSDK {
       // Show loading view immediately
       const extractedData = this.extractDataFromSingleDiv(element, configByUser)
       loadLoadingView(element, extractedData.theme)
-      if (extractedData.startVideoSlug || extractedData.expandOnLoad) {
-        import('./react-utils').then(({ loadExpandView }) => {
-          loadExpandView(element, extractedData.theme)
-        })
+      // Load expand view if expandOnLoad is true, or startVideoSlug is set and expandOnLoad is not explicitly false
+      if (
+        extractedData.expandOnLoad === true ||
+        (extractedData.startVideoSlug && extractedData.expandOnLoad !== false)
+      ) {
+        loadExpandView(element, extractedData.theme)
       }
       if (extractedData) {
         this.sdkElements[instanceId] = {
@@ -978,7 +1019,11 @@ export class GenuinSDK {
           answerToReturn.commentId = value ?? configByUser?.comment_id
           break
         case 'data-token':
-          answerToReturn.token = value ?? configByUser?.token
+          // Use token only if it's a valid value (not null, undefined, empty, or 'undefined'/'null' strings)
+          const tokenValue = value ?? configByUser?.token
+          answerToReturn.token = this.isValidToken(tokenValue)
+            ? tokenValue
+            : undefined
           break
         case 'data-video-id':
           if (value || configByUser?.start_video_slug) {
@@ -1200,7 +1245,10 @@ export class GenuinSDK {
           }
           break
         case 'data-expand-on-load':
-          answerToReturn.expandOnLoad = value === 'true'
+          // Only set expandOnLoad if the attribute is explicitly provided
+          if (value !== null) {
+            answerToReturn.expandOnLoad = value === 'true'
+          }
           break
         case 'data-allow-gesture-scroll':
           const gestureScrollValue = value ?? configByUser?.allow_gesture_scroll
@@ -1210,6 +1258,15 @@ export class GenuinSDK {
         default:
           break
       }
+    }
+
+    // If startVideoSlug is set and expandOnLoad was not explicitly provided,
+    // default expandOnLoad to true
+    if (
+      answerToReturn.startVideoSlug &&
+      answerToReturn.expandOnLoad === undefined
+    ) {
+      answerToReturn.expandOnLoad = true
     }
 
     // extras needed to set explicitly from user config.
@@ -1456,9 +1513,9 @@ export class GenuinSDK {
     // Find by div element ID (use first element if multiple exist)
     const element = document.getElementById(id)
 
-    if (element) {
-      const instanceId = element.getAttribute('data-instance-id')
-      if (instanceId && this.sdkElements[instanceId]) {
+    const instanceId = element?.getAttribute('data-instance-id')
+    if (element && instanceId) {
+      if (this.sdkElements[instanceId]) {
         targetEmbedId =
           this.sdkElements[instanceId].config.embedDetails?.embed_id
         targetPlacementId =
@@ -1474,6 +1531,7 @@ export class GenuinSDK {
     this.eventManager.emit(SDKEventType.SDK_EXPAND_EMBED, {
       embedId: targetEmbedId,
       placementId: targetPlacementId,
+      instanceId,
     })
   }
 

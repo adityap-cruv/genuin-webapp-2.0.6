@@ -16,6 +16,7 @@ import { Toast } from "@genuin/ui/toaster";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { useAnalytics } from "@genuin/components/context/analytics";
 import { Link } from "../link";
 
 // TODO: lazy load authentication modal.
@@ -28,6 +29,7 @@ type JoinCommunityButtonProps = {
   slug: string;
   roleTexts?: Partial<Record<CommunityUserRole, string>>;
   role: CommunityUserRole;
+  videoId?: string;
   onCommunityJoinStatusChange?: (newRole: CommunityUserRole) => void;
 } & React.ComponentProps<typeof PrimitiveButton>;
 
@@ -141,14 +143,25 @@ function Button({
   roleTexts = DEFAULT_ROLE_TEXTS,
   onClick,
   theme,
+  slug,
   onCommunityJoinStatusChange,
   ...rest
 }: JoinCommunityButtonProps) {
   const { user } = useAuthContext();
+  const { track, EventName } = useAnalytics();
 
   const { mutate: joinCommunity, isPending } = useJoinCommunityMutation({
     onSuccess: (newStatus) => {
       onCommunityJoinStatusChange?.(newStatus);
+      track(EventName.COMMUNITY_JOINED, {
+        content_id: communityId,
+        slug: slug,
+        community_id: communityId,
+        community_handle: communityHandle,
+        community_name: communityName,
+        is_private: isPrivate,
+        ...(rest.videoId && { video_id: rest.videoId }),
+      });
     },
     onError: (error) => {
       Toast.Error({ message: "Failed to join community" });
@@ -159,6 +172,15 @@ function Button({
     useLeaveCommunityMutation({
       onSuccess: (newStatus) => {
         onCommunityJoinStatusChange?.(newStatus);
+        track(EventName.COMMUNITY_LEFT, {
+          content_id: communityId,
+          slug: slug,
+          community_id: communityId,
+          community_handle: communityHandle,
+          community_name: communityName,
+          is_private: isPrivate,
+          ...(rest.videoId && { video_id: rest.videoId }),
+        });
       },
       onError: (error) => {
         Toast.Error({ message: "Failed to leave community" });

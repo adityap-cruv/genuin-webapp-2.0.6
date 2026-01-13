@@ -13,6 +13,7 @@ import { RemoveScroll } from "react-remove-scroll";
 import {
   SDKEventEmitter,
   SDKEventName,
+  SDKListenerEventName,
 } from "@genuin/components/lib/sdk-event-emitter";
 
 const FeedView = lazy(() =>
@@ -212,9 +213,22 @@ export function EmbedExpandView({
       }
     };
 
+    const handleUpdateStartVideoSlug = () => {
+      setStartIndex(0);
+    };
+
     embedEventBus.on("activePlayerTypeChange", handleActivePlayerTypeChange);
+    SDKEventEmitter.on(
+      SDKListenerEventName.UPDATE_START_VIDEO_SLUG,
+      handleUpdateStartVideoSlug
+    );
+
     return () => {
       embedEventBus.off("activePlayerTypeChange", handleActivePlayerTypeChange);
+      SDKEventEmitter.off(
+        SDKListenerEventName.UPDATE_START_VIDEO_SLUG,
+        handleUpdateStartVideoSlug
+      );
     };
   }, [embedEventBus, brandLayoutType, setMuted, muted, videos]);
 
@@ -343,7 +357,6 @@ export function EmbedExpandView({
     // const originalPriority = hasInlineStyle
     //   ? htmlElement.style.getPropertyPriority("overflow")
     //   : ""; // Computed styles don't have priority info
-
     if (showExpandView) {
       /**
        * EmbedExpandView component for displaying an expanded video feed view in an embedded context.

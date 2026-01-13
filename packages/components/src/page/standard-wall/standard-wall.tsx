@@ -68,7 +68,7 @@ export function StandardWall({
     return (
       <div className="gencl:w-full gencl:h-full gencl:relative" {...restProps}>
         <Router hook={embedRouter?.hook}>
-          <BaseLayout variant={baseLayoutVariant}>
+          <BaseLayout showToaster={false} variant={baseLayoutVariant}>
             <Route path={buildPageUrl({ type: "home" })}>
               <Feed feedType="HOME" />
             </Route>

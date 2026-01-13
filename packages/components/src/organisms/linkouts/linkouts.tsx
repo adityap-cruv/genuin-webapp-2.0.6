@@ -9,6 +9,7 @@ import useShowLinkouts from "@genuin/components/hooks/use-show-linkouts";
 import { useAnalytics } from "@genuin/components/context/analytics/context";
 import { cva, VariantProps } from "class-variance-authority";
 import { CTAOnlyCard } from "@genuin/components/molecules/linkouts";
+import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 export const linkOutVariant = cva("gencl:space-y-4", {
   variants: {
@@ -56,6 +57,10 @@ export type LinkoutsProps = {
    */
   ctaOnly?: boolean;
   handleCTAClick?: (e: React.MouseEvent) => void;
+  videoDetails?: PostDetailsType["video"];
+  totalVideos?: number;
+  positionIndex?: number;
+  autoplay?: boolean;
 } & ComponentProps<"div"> &
   VariantProps<typeof linkOutVariant>;
 
@@ -78,6 +83,10 @@ export function Linkouts({
   isOutside = false,
   ctaOnly = false,
   handleCTAClick,
+  videoDetails,
+  totalVideos,
+  positionIndex,
+  autoplay,
   ...restProps
 }: LinkoutsProps) {
   const { showLinkouts } = useShowLinkouts({
@@ -197,6 +206,10 @@ export function Linkouts({
             ctaText={cta_text ?? ""}
             ctaLink={cta_link ?? ""}
             variant={cardVariant}
+            videoDetails={videoDetails}
+            totalVideos={totalVideos}
+            positionIndex={positionIndex}
+            autoplay={autoplay}
           />
         );
       }
@@ -212,6 +225,10 @@ export function Linkouts({
           ctaText={cta_text ?? ""}
           ctaLink={cta_link ?? ""}
           variant={cardVariant}
+          videoDetails={videoDetails}
+          totalVideos={totalVideos}
+          positionIndex={positionIndex}
+          autoplay={autoplay}
         />
       );
     });

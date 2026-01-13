@@ -14,6 +14,7 @@ import { useAnalytics } from "@genuin/components/context/analytics";
 
 type CommunityHoverCardProps = {
   communityDetails: PostDetailsType["community"];
+  videoId?: string;
   onCommunityJoinStatusChange: ComponentProps<
     typeof JoinCommunityButton
   >["onCommunityJoinStatusChange"];
@@ -21,6 +22,7 @@ type CommunityHoverCardProps = {
 
 export function CommunityHoverCard({
   communityDetails,
+  videoId,
   onCommunityJoinStatusChange,
   className,
   ...restProps
@@ -98,6 +100,7 @@ export function CommunityHoverCard({
           slug={communityDetails.slug}
           isPrivate={isPrivate}
           role={userRole}
+          videoId={videoId}
           onCommunityJoinStatusChange={onCommunityJoinStatusChange}
           className="gencl:flex-grow"
         />

@@ -223,7 +223,7 @@ export function parseFeed(
         section: {
           id: item.section?._id || null,
           title: item.section?.title || null,
-          description: item.section?.description || null,
+          description: item.section?.sub_title || null,
           position: item.section?.position || null,
           thumbnail_url: item.section?.thumbnail_url || null,
           cover_url: item.section?.cover_url || null,

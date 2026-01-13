@@ -363,6 +363,34 @@ function isVideoInFeed(feed: FeedPage["feed"], slug: string): boolean {
 }
 
 /**
+ * Moves a video with the given slug to the top of the feed array.
+ *
+ * @param feed - Array of feed items
+ * @param slug - Video slug or ID to move to top
+ * @returns New feed array with the video moved to the top, or original array if not found
+ */
+function moveVideoToTop(
+  feed: FeedPage["feed"],
+  slug: string
+): FeedPage["feed"] {
+  const videoIndex = feed.findIndex(
+    (item) => item.video.slug === slug || item.video.id === slug
+  );
+  const video = feed[videoIndex];
+
+  if (videoIndex === -1 || !video) {
+    return feed; // Video not found, return original array
+  }
+
+  const remainingFeed = [
+    ...feed.slice(0, videoIndex),
+    ...feed.slice(videoIndex + 1),
+  ];
+
+  return [video, ...remainingFeed];
+}
+
+/**
  * Fetches and prepends a specific video to the feed.
  * Used when a startVideoSlug is provided but the video isn't in the current feed.
  *
@@ -472,13 +500,18 @@ async function createFeedQueryFn(
 
   // For the first page with a startVideoSlug, ensure the video is included
   const isFirstPage = !pageParam;
-  const shouldPrependVideo =
-    isFirstPage &&
-    startVideoSlug &&
-    (!isVideoInFeed(feedData.feed, startVideoSlug) || options?.isSingleVideo);
+  const videoExistsInFeed = startVideoSlug
+    ? isVideoInFeed(feedData.feed, startVideoSlug)
+    : false;
 
-  if (shouldPrependVideo) {
-    feedData = await prependVideoToFeed(feedData, startVideoSlug, options);
+  if (isFirstPage && startVideoSlug) {
+    if (videoExistsInFeed) {
+      // Move existing video to the top
+      feedData.feed = moveVideoToTop(feedData.feed, startVideoSlug);
+    } else {
+      // Prepend video if it doesn't exist in feed
+      feedData = await prependVideoToFeed(feedData, startVideoSlug, options);
+    }
   }
 
   const hasInitialVideoIds =
@@ -491,6 +524,28 @@ async function createFeedQueryFn(
       options!.initialVideoIds!,
       options
     );
+  }
+
+  // Check the placementData and if found than add feed after that
+  const hasPlaceholderData =
+    options?.placeholderData &&
+    options.placeholderData.pages.length > 0 &&
+    options.placeholderData.pages[0] &&
+    options.placeholderData.pages[0].feed.length > 0;
+
+  if (isFirstPage && hasPlaceholderData) {
+    const placeholderVideos = options!.placeholderData!.pages[0]!.feed;
+    const placeholderVideoIds = new Set(
+      placeholderVideos.map((item) => item.video.id)
+    );
+    // Filter out any videos from feedData that are already in placeholder data
+    const uniqueFeedVideos = feedData.feed.filter(
+      (item) => !placeholderVideoIds.has(item.video.id)
+    );
+    feedData = {
+      ...feedData,
+      feed: [...placeholderVideos, ...uniqueFeedVideos],
+    };
   }
 
   // Filter out initial videos and startVideoSlug from subsequent pages to avoid duplicates

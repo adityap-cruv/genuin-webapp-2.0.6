@@ -42,6 +42,7 @@ type CommunityPillProps = {
   isHoverable?: boolean;
   variant?: "light" | "dark" | "fullScreen" | "compact";
   communityDetails: PostDetailsType["community"];
+  videoId?: string;
   className?: string;
   onCommunityJoinStatusChange?: ComponentProps<
     typeof JoinCommunityButton
@@ -53,6 +54,7 @@ export function CommunityPill({
   isHoverable = false,
   variant = "light",
   communityDetails,
+  videoId,
   onCommunityJoinStatusChange,
   className,
   hideCommunityJoinButton = false,
@@ -134,6 +136,7 @@ export function CommunityPill({
                 slug={communityDetails.slug}
                 isPrivate={communityDetails.isPrivate}
                 role={communityDetails.userRole}
+                videoId={videoId}
                 shape="pill"
                 theme={
                   variant === "fullScreen"
@@ -169,6 +172,7 @@ export function CommunityPill({
       >
         <CommunityHoverCard
           communityDetails={communityDetails}
+          videoId={videoId}
           onCommunityJoinStatusChange={onCommunityJoinStatusChange}
         />
       </HoverCardContent>

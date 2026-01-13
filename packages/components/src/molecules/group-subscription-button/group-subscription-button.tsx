@@ -25,6 +25,7 @@ type GroupSubscriptionButtonProps = {
   shareUrl: string;
   showText?: boolean;
   isSubscriber: boolean;
+  videoId?: string;
   onSubscriptionChange?: (isSubscriber: boolean) => void;
 } & ComponentProps<typeof PrimitiveButton>;
 
@@ -113,18 +114,29 @@ function Button({
   const { mutate: subscribeGroup, isPending } = useSubscribeGroupMutation({
     onSuccess(isSubscriber) {
       onSubscriptionChange?.(isSubscriber);
-      // Track subscription event
-      track(EventName.SUBSCRIPTION_CLICKED, {
-        group_id: groupId,
-        group_name: groupName,
-        is_subscribed: isSubscriber,
-      });
 
-      if (isSubscriber)
+      // Track loop subscription events
+      if (isSubscriber) {
+        track(EventName.LOOP_SUBSCRIBED, {
+          content_id: groupId,
+          slug: groupSlug,
+          group_id: groupId,
+          group_name: groupName,
+          ...(restProps.videoId && { video_id: restProps.videoId }),
+        });
         Toast.Success({
           message: "Notifications have been turned on",
           description: `You will be notified of all updates for the group ${groupName}`,
         });
+      } else {
+        track(EventName.LOOP_UNSUBSCRIBED, {
+          content_id: groupId,
+          slug: groupSlug,
+          group_id: groupId,
+          group_name: groupName,
+          ...(restProps.videoId && { video_id: restProps.videoId }),
+        });
+      }
     },
     onError: (error) => {
       Toast.Error({

@@ -13,9 +13,8 @@ const ExpandViewDetails = React.lazy(() =>
 
 import { PlaybackSpeedCapsule } from "@genuin/components/molecules/playback-speed/speed-capsule";
 import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
-import { Linkouts } from "@genuin/components/organisms/linkouts/linkouts";
+import { Linkouts } from "@genuin/components/organisms/linkouts";
 import { SpeedControlSideBars } from "../../playback-speed/speed-control-bars";
-import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { VideoEditActionButtons } from "./controls/control-buttons";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import {
@@ -40,6 +39,7 @@ export function Default({
   onGroupSubscriptionChange,
   onReactionStateChange,
   onCommentCountChange,
+  onSwiperToggle,
   clipVideo,
   editCover,
   enableExpand = true,
@@ -49,8 +49,15 @@ export function Default({
   ...restProps
 }: ControlLayerPropsType) {
   const { brandDetails, playbackSpeed } = useBaseContext();
-  const { showExpandView, togglePlay, toggleMuted, muted, showSeeker } =
-    usePlayerContext();
+  const {
+    showExpandView,
+    togglePlay,
+    toggleMuted,
+    muted,
+    showSeeker,
+    totalVideos,
+    positionIndex,
+  } = usePlayerContext();
   const { gestureOverlayUI, hideGestureOverlay } = useGestureOverlayManager();
   const { isMobile, isTablet, isIpad } = useDeviceDetection();
   const embedConfig = useEmbedConfigs();
@@ -229,20 +236,6 @@ export function Default({
               }
             />
 
-            {isActive && (
-              <Toaster
-                position="bottom-center"
-                style={{
-                  width: "calc(100% - 32px)",
-                }}
-                toastOptions={{
-                  style: {
-                    width: "100%",
-                  },
-                }}
-              />
-            )}
-
             {/* {gestureOverlayUI} */}
           </div>
         </>
@@ -270,7 +263,7 @@ export function Default({
               enableExpand={enableExpand}
               className={cn(
                 isMobile || isTablet || isIpad
-                  ? `gencl:z-20 ${!isSectioned && showExpandView && "gencl:top-0"}`
+                  ? `${!isSectioned && showExpandView && "gencl:top-0"}`
                   : "gencl:group-hover:opacity-100 gencl:group-hover:pointer-events-auto gencl:opacity-0 gencl:pointer-events-none gencl:transition-opacity gencl:duration-300"
               )}
               variant={isSectioned ? "sectioned" : "default"}
@@ -339,6 +332,10 @@ export function Default({
                   isActive={isActive}
                   linkouts={postDetails.video.linkouts}
                   linkoutId={postDetails.video.linkoutId}
+                  videoDetails={postDetails.video}
+                  totalVideos={totalVideos}
+                  positionIndex={positionIndex}
+                  autoplay={embedConfig.video.videoAutoplay}
                 />
               </div>
             )}

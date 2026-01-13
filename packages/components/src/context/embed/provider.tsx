@@ -77,12 +77,14 @@ export function EmbedProvider({
         followStatuses: initialFollowStatuses,
         // Only disable swiper for iHeart layout with startVideoSlug and action=share
         disableSwiper:
-          isIHeartLayout && !!embedData.startVideoSlug && action === "share",
+          isIHeartLayout &&
+          !!stateEmbedData.startVideoSlug &&
+          action === "share",
         isCaughtUpEventFired: false,
       }),
     [
       isIHeartLayout,
-      embedData.startVideoSlug,
+      stateEmbedData.startVideoSlug,
       action,
       initialFollowStatuses,
       embedData.expandOnLoad,
@@ -138,12 +140,23 @@ export function EmbedProvider({
 
     const handleExpandEmbed = (props: any) => {
       const payload = props.payload;
+      const instanceId = container.getAttribute("data-instance-id");
       if (
         payload &&
         ((payload.embedId && payload.embedId === stateEmbedData.embed_id) ||
           (payload.placementId &&
-            payload.placementId === stateEmbedData.placement_id))
+            payload.placementId === stateEmbedData.placement_id)) &&
+        instanceId === payload.instanceId
       ) {
+        /*
+        If the expand view is already open and the `sdk:expandEmbed` event is fired,
+        we should close the loader that was directly appended to the DOM,
+        since the expand view’s own loader will be displayed automatically.
+        */
+        if (embedEventBus.getContext().activePlayerType === "expand-view") {
+          SDKEventEmitter.emit(SDKEventName.EXPAND_VIEW_CHANGED, true);
+          return;
+        }
         changeActivePlayerType("expand-view");
       }
     };
@@ -269,10 +282,6 @@ export function EmbedProvider({
     [embedEventBus]
   );
 
-  useEffect(() => {
-    if (embedData.startVideoSlug) changeActivePlayerType("expand-view");
-  }, [changeActivePlayerType, embedData.startVideoSlug]);
-
   const goBackToPreviousPlayerType = useCallback(() => {
     embedEventBus.emit(
       "activePlayerTypeChange",
@@ -297,7 +306,7 @@ export function EmbedProvider({
   // and permanently enable swiper for all future opens
   // This feature is only enabled for iHeart brand layout
   useEffect(() => {
-    if (!isIHeartLayout || !embedData.startVideoSlug || action !== "share")
+    if (!isIHeartLayout || !stateEmbedData.startVideoSlug || action !== "share")
       return;
 
     function handleActivePlayerTypeChange() {
@@ -319,7 +328,7 @@ export function EmbedProvider({
     return () => {
       embedEventBus.off("activePlayerTypeChange", handleActivePlayerTypeChange);
     };
-  }, [isIHeartLayout, embedData.startVideoSlug, action, embedEventBus]);
+  }, [isIHeartLayout, stateEmbedData.startVideoSlug, action, embedEventBus]);
 
   // Observe the container for visibility changes to handle floating view behavior and track in-view status
   useEffect(() => {

@@ -59,6 +59,7 @@ export function PostDetails({
       <Pills
         communityDetails={community}
         groupDetails={group}
+        videoId={video.id}
         onCommunityJoinStatusChange={onCommunityJoinStatusChange}
         onGroupJoinStatusChange={onGroupJoinStatusChange}
         onGroupSubscriptionChange={onGroupSubscriptionChange}

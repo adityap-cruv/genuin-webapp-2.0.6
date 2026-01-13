@@ -307,7 +307,7 @@ function EmbedPlayer({
 }
 
 function OutsideComponents({ postDetails }: { postDetails: PostDetailsType }) {
-  const { contentDisplay, responsive, engagement, links, view } =
+  const { contentDisplay, responsive, engagement, links, view, video } =
     useEmbedConfigs();
   const { isXs } = responsive;
   const showLinkout = links.showLinkOutside;
@@ -320,7 +320,7 @@ function OutsideComponents({ postDetails }: { postDetails: PostDetailsType }) {
       return {
         ...(contentDisplay.showViewCount && {
           Views: {
-            value: 0,
+            value: postDetails.video.viewCount,
             icon: <PlayIcon theme="light" size="sm" strokeWidth={2} />,
           },
         }),
@@ -350,7 +350,7 @@ function OutsideComponents({ postDetails }: { postDetails: PostDetailsType }) {
 
     return {
       Views: {
-        value: 0,
+        value: postDetails.video.viewCount,
         icon: <PlayIcon theme="light" size="sm" />,
       },
       Reactions: {
@@ -388,6 +388,8 @@ function OutsideComponents({ postDetails }: { postDetails: PostDetailsType }) {
             showImmediately
             linkouts={postDetails.video.linkouts}
             linkoutId={postDetails.video.linkoutId}
+            videoDetails={postDetails.video}
+            autoplay={video.videoAutoplay}
           />
         </div>
       )}

@@ -383,29 +383,6 @@ export function EmbedManagerProvider({
     };
   }, [swiper, activeIndex]);
 
-  // Auto-advance logic: Move to next video after moveToNextTime seconds
-  useEffect(() => {
-    // Only auto-advance if:
-    // 1. moveToNextTime is greater than 0
-    // 2. moveToNext is true (video looping is disabled)
-    // 3. activePlayerType is "embed" (not in expand view)
-    if (
-      moveToNextTime === 0 ||
-      !moveToNext ||
-      embedEventBus.getContext().activePlayerType !== "embed"
-    ) {
-      return;
-    }
-
-    const timer = setTimeout(() => {
-      goToNextVideo();
-    }, moveToNextTime * 1000);
-
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [activeIndex, moveToNextTime, moveToNext, goToNextVideo, embedEventBus]);
-
   const getSlideVisibilityPercentage = useCallback(
     ({ index, dir }: { index: number; dir: "vertical" | "horizontal" }) => {
       if (!swiper) return 0;

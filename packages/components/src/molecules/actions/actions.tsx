@@ -98,8 +98,10 @@ const defaultActionWrappers: Record<
     const embedDetails = useSafeEmbedContext();
     const authInfo = embedDetails?.embedData.authInfo;
     const { brandDetails } = useBaseContext();
-    const { modalConfig } = useEmbedConfigs();
-    const brandId = brandDetails.brand_id;
+    const {
+      modalConfig,
+      view: { brandLayoutType },
+    } = useEmbedConfigs();
 
     // Create return query params for authentication callbacks
     const returnQueryParams = useMemo(
@@ -121,7 +123,7 @@ const defaultActionWrappers: Record<
       pendingActionData: {
         action: "repost",
         videoSlug: _context.slug,
-        videoId: _context.contentId,
+        videoId: brandLayoutType === "ted" ? _context.slug : _context.contentId,
         embedId: embedDetails?.embedData.embed_id,
       },
     });
@@ -140,6 +142,7 @@ const defaultActionWrappers: Record<
           content="to repost this Short."
           children={<div onClick={handleRepostClick}>{node}</div>}
           params={returnQueryParams}
+          onPopOverClick={clickHandler}
         />
       );
     }
