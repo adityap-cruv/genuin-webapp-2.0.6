@@ -1,4 +1,3 @@
-import { useBaseContext } from "@genuin/components/context";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import {
@@ -8,7 +7,6 @@ import {
 import { Linkouts } from "@genuin/components/organisms";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { cn } from "@genuin/ui/lib/utils";
-import { info } from "console";
 import { useCallback } from "react";
 
 interface ClipPlayerCTAProps {

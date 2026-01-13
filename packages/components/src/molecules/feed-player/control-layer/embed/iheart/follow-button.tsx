@@ -1,12 +1,8 @@
+"use client";
+
 import { cn } from "@genuin/ui/lib/utils";
 import { IHeartCheckIcon, IHeartPlusIcon } from "@genuin/ui/icons";
-import {
-  type ComponentProps,
-  useMemo,
-  useState,
-  useEffect,
-  useRef,
-} from "react";
+import { type ComponentProps, useMemo, useState, useEffect } from "react";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import {
   SDKEventEmitter,

@@ -10,7 +10,7 @@ import {
   IHeartUnmuteIcon,
 } from "@genuin/ui/icons";
 
-import { usePlayerContext } from "../../context";
+import { usePlayerContext } from "../../../context";
 import { ShareButton } from "@genuin/components/molecules/share-button";
 import { useAnalytics } from "@genuin/components/context/analytics";
 import { ReactionButton } from "@genuin/components/molecules/reaction-button";
@@ -78,7 +78,7 @@ export function IHeartControls({
   const { track, EventName } = useAnalytics();
   //  Access baseContextManager to subscribe to preview index change events
   // const { baseContextManager } = useBaseContext();
-  const { isMobile , isDesktop } = useDeviceDetectMediaQuery();
+  const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
 
   //  Track custom muted state for video preview (hover) mode
   // This state is separate from the actual player mute state and controls UI appearance only
@@ -273,7 +273,9 @@ export function IHeartControls({
       <ShareButton
         pathName={shareUrl ?? ""}
         withCustomChildren
-        disableInternalFunctionality={websiteType === "legacy" ? true : isDesktop}
+        disableInternalFunctionality={
+          websiteType === "legacy" ? true : isDesktop
+        }
         onClick={() => {
           // Track share event (same as Actions component)
           if (contentId) {

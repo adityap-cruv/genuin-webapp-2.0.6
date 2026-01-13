@@ -1,12 +1,10 @@
 import { useEmbedContext } from "@genuin/components/context/embed";
 import { EmbedEventContextType } from "@genuin/components/context/embed/event-bus";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
-import { FeedView } from "@genuin/components/templates/feed";
-import { useEffect, useState } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { QueryKey } from "@tanstack/react-query";
 import { RootPortal } from "@genuin/components/molecules/root-portal";
-import { StandardWall } from "@genuin/components/page/standard-wall/standard-wall";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { cn } from "@genuin/ui/lib/utils";
 import { useBaseContext } from "@genuin/components/context/base";
@@ -16,8 +14,26 @@ import {
   SDKEventEmitter,
   SDKEventName,
 } from "@genuin/components/lib/sdk-event-emitter";
-import { IheartFullscreenContainer } from "@genuin/components/molecules/iheart-full-screen-contaner";
 
+const FeedView = lazy(() =>
+  import("@genuin/components/templates/feed").then((module) => ({
+    default: module.FeedView,
+  }))
+);
+
+const StandardWall = lazy(() =>
+  import("@genuin/components/page/standard-wall/standard-wall").then(
+    (module) => ({
+      default: module.StandardWall,
+    })
+  )
+);
+
+const IheartFullscreenContainer = lazy(() =>
+  import("@genuin/components/molecules/iheart-full-screen-contaner").then(
+    (module) => ({ default: module.IheartFullscreenContainer })
+  )
+);
 type EmbedExpandViewProps = {
   videos: PostDetailsType[];
   fetchNextPage: () => void;
@@ -26,6 +42,30 @@ type EmbedExpandViewProps = {
   isLoading: boolean;
   queryKey: QueryKey;
   totalVideos: number;
+};
+
+const ExpandViewContent = ({
+  defaultComponent,
+  community,
+  group,
+  user,
+}: {
+  defaultComponent: React.ReactNode;
+  community: boolean;
+  group: boolean;
+  user: boolean;
+}) => {
+  return !(community || group || user) ? (
+    defaultComponent
+  ) : (
+    <Suspense fallback={null}>
+      <StandardWall
+        className="gencl:bg-white gencl:h-full gencl:w-full"
+        defaultComponent={defaultComponent}
+        baseLayoutVariant="embed-expand-view"
+      />
+    </Suspense>
+  );
 };
 
 export function EmbedExpandView({
@@ -364,32 +404,34 @@ export function EmbedExpandView({
   }, [showExpandView]);
 
   const defaultComponent = (
-    <FeedView
-      startIndex={startIndex}
-      defaultExpandView
-      onCloseExpandView={handleCloseExpandView}
-      variant="expand"
-      isSectioned={isSectioned}
-      feedData={{
-        videos,
-        fetchNextPage,
-        hasNextPage,
-        isFetchingNextPage,
-        isLoading,
-        queryKey,
-        totalVideos,
-      }}
-      embedOptions={{
-        actions: {
-          comments: comment,
-          share: share,
-          reaction: spark,
-          repost: repost,
-        },
-      }}
-      onActiveIndexChange={changeActiveIndex}
-      disableNativeFullscreenApi
-    />
+    <Suspense fallback={null}>
+      <FeedView
+        startIndex={startIndex}
+        defaultExpandView
+        onCloseExpandView={handleCloseExpandView}
+        variant="expand"
+        isSectioned={isSectioned}
+        feedData={{
+          videos,
+          fetchNextPage,
+          hasNextPage,
+          isFetchingNextPage,
+          isLoading,
+          queryKey,
+          totalVideos,
+        }}
+        embedOptions={{
+          actions: {
+            comments: comment,
+            share: share,
+            reaction: spark,
+            repost: repost,
+          },
+        }}
+        onActiveIndexChange={changeActiveIndex}
+        disableNativeFullscreenApi
+      />
+    </Suspense>
   );
 
   if (showExpandView)
@@ -408,18 +450,25 @@ export function EmbedExpandView({
               ]
           )}
         >
-          <IheartFullscreenContainer>
-            {/** for ted internal routing is not enabled. */}
-            {!(community || group || user) ? (
-              defaultComponent
-            ) : (
-              <StandardWall
-                className="gencl:bg-white gencl:h-full gencl:w-full"
-                defaultComponent={defaultComponent}
-                baseLayoutVariant="embed-expand-view"
-              />
-            )}
-          </IheartFullscreenContainer>
+          {isIHeart ? (
+            <Suspense fallback={null}>
+              <IheartFullscreenContainer>
+                <ExpandViewContent
+                  defaultComponent={defaultComponent}
+                  community={community}
+                  group={group}
+                  user={user}
+                />
+              </IheartFullscreenContainer>
+            </Suspense>
+          ) : (
+            <ExpandViewContent
+              defaultComponent={defaultComponent}
+              community={community}
+              group={group}
+              user={user}
+            />
+          )}
         </RootPortal>
       </RemoveScroll>
     );

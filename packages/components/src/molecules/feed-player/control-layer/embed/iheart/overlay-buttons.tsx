@@ -1,4 +1,3 @@
-import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import {
   Button,
@@ -8,7 +7,6 @@ import {
   IHeartStopIcon,
 } from "@genuin/ui";
 import { useIHeartPlayback } from "./use-iheart-playback";
-import { useMemo } from "react";
 import { useBaseContext } from "@genuin/components/context";
 
 type OverLayButtonProps = {
@@ -40,12 +38,7 @@ export function OverLayButton({
     variant,
   });
   const { theme: currentTheme } = useBaseContext();
-  const theme =
-    variant === "complete"
-      ? "light"
-      : isPlaying
-          ? "dark"
-          : "light";
+  const theme = variant === "complete" ? "light" : isPlaying ? "dark" : "light";
 
   if (!ctaText) return;
 

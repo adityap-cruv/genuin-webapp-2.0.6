@@ -4,149 +4,97 @@ import { EmbedProps } from "./embed.types";
 import { SdkSkeleton, ShimmerSlide } from "./skeleton";
 import { cn } from "@genuin/ui/lib/utils";
 
-import { useMemo, useState, useEffect, useCallback, useRef, lazy, Suspense } from "react";
-import { EmbedSwiper } from "@genuin/components/molecules/embed-swiper/embed-swiper";
+import {
+  useMemo,
+  useState,
+  useEffect,
+  useCallback,
+  lazy,
+  Suspense,
+} from "react";
 import { useAnalytics } from "@genuin/components/context/analytics/context";
 import { SwiperSlide } from "swiper/react";
 import { EmbedManagerProvider } from "./context";
 
 import { Swiper } from "swiper/types";
-import { EmbedHeader } from "@genuin/components/molecules/embed-header";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
-const EmbedExpandSectionedView = lazy(() =>
-  import("./embed-expand-sectioned-view").then((m) => ({
-    default: m.EmbedExpandSectionedView,
-  }))
-);
 import { useEmbedContext } from "@genuin/components/context/embed";
 import { EmbedEventContextType } from "@genuin/components/context/embed/event-bus";
 
-import { PipView } from "./pip-view";
 import { getQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
 import { useEmbedDimensions } from "@genuin/components/hooks/embed/use-embed-dimensions";
 
 import { SdkErrorState } from "./error-state";
 import { SdkEmptyState } from "./empty-state";
 
-import { GridView } from "./grid-view/grid-view";
-
-const EmbedExpandView = lazy(() =>
-  import("./expand-view").then((m) => ({ default: m.EmbedExpandView }))
-);
 import { cva, VariantProps } from "class-variance-authority";
-import { EmbedItem } from "./embed-tile-item";
 
 import { AnalyticsService } from "@genuin/components/context/analytics/service";
 import { useBaseContext } from "@genuin/components/context";
 import { isMiddlewareOverlayEnabled } from "@genuin/components/lib/utils";
-import { NavigationButtonsWithContext } from "./navigation-buttons";
-import { Toaster } from "@genuin/ui";
 import {
   SDKEventEmitter,
   SDKEventName,
 } from "@genuin/components/lib/sdk-event-emitter";
-import { useIheartUrlManager } from "@genuin/components/hooks/embed/use-iheart-url-manager";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { isSlideVisible } from "./utils";
+import { FetchNextPageHandler } from "./fetch-next-page-handler";
 
-// Component to handle fetchNextPage logic using swiper events
-function FetchNextPageHandler({
-  videos,
-  fetchNextPage,
-  hasNextPage,
-  isFetchingNextPage,
-  swiper,
-}: {
-  videos: any[];
-  fetchNextPage: () => void;
-  hasNextPage: boolean | undefined;
-  isFetchingNextPage: boolean;
-  swiper: Swiper | null;
-}) {
-  const lastTriggeredAtProgressRef = useRef<number>(-1);
-  const { embedEventBus } = useEmbedContext();
-  const { useWindowSwiperMode } = useEmbedConfigs();
+const EmbedExpandView = lazy(() =>
+  import("./expand-view").then((m) => ({ default: m.EmbedExpandView }))
+);
 
-  useEffect(() => {
-    // TODO: Temporarily enabled this logic to call next page as native-scroll-swiper's progress events are getting stopped after first scroll will fix it later.
-    if (!useWindowSwiperMode) return;
-    function handleActiveIndexChange() {
-      const activeIndex = embedEventBus.getContext().activeIndex;
+const IheartUrlManager = lazy(() =>
+  import("./iheart-url-manager").then((m) => ({ default: m.IheartUrlManager }))
+);
 
-      if (
-        activeIndex >= videos.length - 3 &&
-        !isFetchingNextPage &&
-        hasNextPage
-      ) {
-        fetchNextPage();
-      }
-    }
+const EmbedExpandSectionedView = lazy(() =>
+  import("./embed-expand-sectioned-view").then((m) => ({
+    default: m.EmbedExpandSectionedView,
+  }))
+);
 
-    embedEventBus.on("activeIndexChange", handleActiveIndexChange);
+// Lazy load GridView
+const GridView = lazy(() =>
+  import("./grid-view/grid-view").then((m) => ({ default: m.GridView }))
+) as React.ComponentType<any>;
 
-    return () => {
-      embedEventBus.off("activeIndexChange", handleActiveIndexChange);
-    };
-  }, [embedEventBus, videos, hasNextPage, isFetchingNextPage, fetchNextPage]);
+// Lazy load PipView
+const PipView = lazy(() =>
+  import("./pip-view/pip-view").then((m) => ({ default: m.PipView }))
+) as React.ComponentType<any>;
 
-  useEffect(() => {
-    if (!swiper) return;
+// Lazy load NavigationButtonsWithContext
+const NavigationButtonsWithContext = lazy(() =>
+  import("./navigation-buttons").then((m) => ({
+    default: m.NavigationButtonsWithContext,
+  }))
+) as React.ComponentType<any>;
 
-    function checkAndFetchNextPage() {
-      const context = embedEventBus.getContext();
+// Lazy load EmbedSwiper
+const EmbedSwiper = lazy(() =>
+  import("../../molecules/embed-swiper").then((m) => ({
+    default: m.EmbedSwiper,
+  }))
+) as React.ComponentType<any>;
 
-      // Early exit conditions
-      if (
-        !swiper ||
-        videos.length === 0 ||
-        !hasNextPage ||
-        isFetchingNextPage ||
-        context.activePlayerType === "expand-view"
-      ) {
-        return;
-      }
+// Lazy load EmbedHeader
+const EmbedHeader = lazy(() =>
+  import("../../molecules/embed-header").then((m) => ({
+    default: m.EmbedHeader,
+  }))
+) as React.ComponentType<any>;
 
-      // Calculate trigger point (when 4 slides remain)
-      const totalSlides = videos.length;
-      const triggerSlideIndex = totalSlides - 4;
+// Lazy load Toaster
+const Toaster = lazy(() =>
+  import("@genuin/ui").then((m) => ({ default: m.Toaster }))
+) as React.ComponentType<any>;
 
-      if (triggerSlideIndex <= 0) return; // Need at least 4 slides
-
-      const triggerProgress = 0.7; // Fixed at 70% for simplicity
-      const currentProgress = swiper.progress;
-
-      // Check if we've crossed the trigger threshold
-      if (
-        currentProgress >= triggerProgress &&
-        lastTriggeredAtProgressRef.current < triggerProgress
-      ) {
-        lastTriggeredAtProgressRef.current = currentProgress;
-        fetchNextPage();
-      }
-    }
-
-    // Use progress event for real-time tracking
-    const handleProgress = () => {
-      checkAndFetchNextPage();
-    };
-
-    swiper.on("progress", handleProgress);
-
-    return () => {
-      swiper.off("progress", handleProgress);
-    };
-  }, [swiper, fetchNextPage, hasNextPage, isFetchingNextPage, videos.length]);
-
-  // Reset tracking when videos length changes (new data loaded)
-  useEffect(() => {
-    if (videos.length > 0) {
-      lastTriggeredAtProgressRef.current = -1;
-    }
-  }, [videos.length]);
-
-  return null; // This component doesn't render anything
-}
+// Lazy load EmbedItem
+const EmbedItem = lazy(() =>
+  import("./embed-tile-item").then((m) => ({ default: m.EmbedItem }))
+) as React.ComponentType<any>;
 
 const embedVariants = cva("gencl:rounded-md gencl:overflow-auto", {
   variants: {
@@ -532,15 +480,6 @@ export function Embed({
     [videos, isDesktop, SDKEventEmitter, SDKEventName, embedEventBus]
   );
 
-  // Handle URL manipulation for iHeart brand layout
-  useIheartUrlManager({
-    isIheartLayout,
-    websiteType,
-    activePlayerType,
-    activeIndex,
-    videos: filteredPost,
-  });
-
   if (config.view.isExpandOnly) {
     return (
       <Suspense fallback={null}>
@@ -607,6 +546,16 @@ export function Embed({
       {...restProps}
     >
       <EmbedManagerProvider swiper={swiper}>
+        {isIheartLayout && (
+          <Suspense fallback={null}>
+            <IheartUrlManager
+              websiteType={websiteType}
+              activePlayerType={activePlayerType}
+              activeIndex={activeIndex}
+              videos={filteredPost}
+            />
+          </Suspense>
+        )}
         <FetchNextPageHandler
           videos={filteredPost}
           fetchNextPage={fetchNextPage}
@@ -688,12 +637,14 @@ export function Embed({
                   <></>
                 ) : (
                   <SwiperSlide key={idx} virtualIndex={idx}>
-                    <EmbedItem
-                      index={idx}
-                      postDetails={videoData}
-                      totalVideos={feedData?.pages?.[0]?.totalVideos}
-                      swiper={swiper}
-                    />
+                    <Suspense fallback={null}>
+                      <EmbedItem
+                        index={idx}
+                        postDetails={videoData}
+                        totalVideos={feedData?.pages?.[0]?.totalVideos}
+                        swiper={swiper}
+                      />
+                    </Suspense>
                   </SwiperSlide>
                 );
               })}

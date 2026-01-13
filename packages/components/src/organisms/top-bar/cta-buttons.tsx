@@ -1,3 +1,4 @@
+"use client";
 import {
   Popover,
   PopoverClose,
@@ -33,7 +34,12 @@ import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-d
 
 import { Search } from "@genuin/components/molecules/search";
 import { cva, VariantProps } from "class-variance-authority";
-import { Sheet, SheetClose, SheetContent, SheetTrigger } from "@genuin/ui/components/sheet";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetTrigger,
+} from "@genuin/ui/components/sheet";
 import { useAnalytics } from "@genuin/components/context/analytics";
 
 export const iconVariant = cva(
@@ -69,7 +75,13 @@ export function CtaButtons({ theme }: VariantProps<typeof iconVariant>) {
       <Search theme={theme} />
 
       {showApp && (
-        <Suspense fallback={<Button theme="outline" size="sm">Get app</Button>}>
+        <Suspense
+          fallback={
+            <Button theme="outline" size="sm">
+              Get app
+            </Button>
+          }
+        >
           <AuthenticationModal
             asChild
             customStep="GET_APP"
@@ -97,7 +109,17 @@ export function CtaButtons({ theme }: VariantProps<typeof iconVariant>) {
       )}
 
       {showLogin && (
-        <Suspense fallback={<Button theme="primary" className={cn(isAuthenticated && "gencl:hidden")} size="sm">Log in</Button>}>
+        <Suspense
+          fallback={
+            <Button
+              theme="primary"
+              className={cn(isAuthenticated && "gencl:hidden")}
+              size="sm"
+            >
+              Log in
+            </Button>
+          }
+        >
           <AuthenticationModal customStep="SIGNIN" asChild>
             <Button
               theme="primary"

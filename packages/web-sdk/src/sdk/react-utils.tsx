@@ -35,8 +35,6 @@ interface ProviderModules {
 // Track React roots per container to support multiple embeds
 const containerRootMap = new Map<HTMLElement, Root>()
 
-
-
 // Expand view function
 export function loadExpandView(
   container: HTMLElement,

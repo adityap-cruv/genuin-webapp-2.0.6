@@ -4,7 +4,6 @@ import { useEffect, useRef, useState, useMemo } from "react";
 
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
-import { useFeedVideoSizeBox } from "@genuin/components/hooks/use-feed-video-size-box";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { ComponentProps } from "react";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";

@@ -9,6 +9,7 @@ import {
   useState,
   type ComponentProps,
   useCallback,
+  useRef,
   lazy,
   Suspense,
 } from "react";
@@ -17,6 +18,21 @@ import { usePlayerContext } from "../../context";
 import { ProfileLink } from "@genuin/components/molecules/profile-link";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { Pills } from "@genuin/components/molecules/feed-player/pills";
+import { controlLayerVariant } from "../control-layer";
+import { VariantProps } from "class-variance-authority";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import { Linkouts } from "@genuin/components/organisms/linkouts";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { Image } from "@genuin/ui/components/image";
+import { Scrubber } from "../scrubber";
+import { IHeartControls, IHeartFollowButton } from "../embed/iheart";
+import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
+import { ReadMoreTextType } from "@genuin/components/molecules/read-more/read-more.types";
+import { Link } from "@genuin/components/molecules/link";
+import { getBaseUrl } from "@genuin/components/lib/utils";
+import { ClipPlayerCTA } from "../embed/iheart/clip-player-cta";
+import { getBaseUrlWithouthighlights } from "../embed/iheart/use-iheart-playback";
 
 // Lazy load heavy components
 const Actions = lazy(() =>
@@ -30,27 +46,6 @@ const CommentsDialog = lazy(() =>
     default: m.CommentsDialog,
   }))
 ) as React.ComponentType<any>;
-
-
-import { controlLayerVariant } from "../control-layer";
-import { VariantProps } from "class-variance-authority";
-import {
-  useEmbedContext,
-  useSafeEmbedContext,
-} from "@genuin/components/context/embed/context";
-import { Linkouts } from "../../../../organisms/linkouts/linkouts";
-import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
-import { Image } from "@genuin/ui/components/image";
-import { Scrubber } from "../scrubber";
-import { IHeartControls, IHeartFollowButton } from "../iheart";
-import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
-import { ReadMoreTextType } from "@genuin/components/molecules/read-more/read-more.types";
-import { Link } from "@genuin/components/molecules/link";
-import { getBaseUrl } from "@genuin/components/lib/utils";
-import { useRef } from "react";
-import { ClipPlayerCTA } from "../iheart/clip-player-cta";
-import { getBaseUrlWithouthighlights } from "../iheart/use-iheart-playback";
 
 type BrandLayoutType = "default" | "iheart" | "ted" | "walmart" | "grubhub";
 

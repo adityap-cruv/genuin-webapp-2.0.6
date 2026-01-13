@@ -1,10 +1,9 @@
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { Button } from "@genuin/ui";
-import { IHeartPlayAgainIcon, IHeartPlayIcon } from "@genuin/ui/icons";
+import { IHeartPlayAgainIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
 import { type ComponentProps } from "react";
 import { OverLayButton } from "./overlay-buttons";
-import { IHeartListenLiveButton } from "./listen-live-button";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 interface IHeartEndOfContentOverlayProps extends ComponentProps<"div"> {

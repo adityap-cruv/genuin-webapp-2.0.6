@@ -1,9 +1,4 @@
-import {
-  InfiniteData,
-  QueryKey,
-  useInfiniteQuery,
-  UseInfiniteQueryResult,
-} from "@tanstack/react-query";
+import { QueryKey, useInfiniteQuery } from "@tanstack/react-query";
 
 import { getDeviceId } from "@genuin/components/lib/utils/device-id";
 import { getQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";

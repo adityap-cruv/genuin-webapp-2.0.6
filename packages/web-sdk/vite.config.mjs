@@ -604,7 +604,28 @@ export default defineConfig({
           }
           return 'genuin-sdk-[hash].js'
         },
-        chunkFileNames: 'chunks/[name]-[hash].js',
+        // chunkFileNames: (chunkInfo) => {
+        //   let name = chunkInfo.name
+
+        //   // If chunk name is 'index', use parent folder name for better clarity
+        //   if (name === 'index' || name.endsWith('/index')) {
+        //     const facadeModuleId = chunkInfo.facadeModuleId
+        //     if (facadeModuleId) {
+        //       const parts = facadeModuleId.split('/')
+        //       // Find parent folder of index file
+        //       for (let i = parts.length - 1; i >= 0; i--) {
+        //         if (parts[i].startsWith('index.')) {
+        //           if (i > 0) {
+        //             name = parts[i - 1]
+        //             break
+        //           }
+        //         }
+        //       }
+        //     }
+        //   }
+
+        //   return `chunks/${name}-[hash].js`
+        // },
         assetFileNames: (assetInfo) => {
           // Use hash-based naming for all assets including CSS in production
           if (assetInfo.name && assetInfo.name.endsWith('.css')) {
@@ -635,10 +656,12 @@ export default defineConfig({
           // to avoid createContext timing issues. They stay in the main bundle for proper module resolution.
 
           // React Query - Keep separate for performance
+          // Also bundle our API code with React Query since they're tightly coupled
           if (
-            id.includes('node_modules') &&
-            (id.includes('react-query') ||
-              id.includes('@tanstack/react-query'))
+            (id.includes('node_modules') &&
+              (id.includes('react-query') ||
+                id.includes('@tanstack/react-query'))) ||
+            id.includes('packages/components/src/react-query/api/')
           ) {
             return 'vendor-react-query'
           }
@@ -649,13 +672,13 @@ export default defineConfig({
           }
 
           // Animation and media libraries - Split into smaller chunks
-          if (id.includes('node_modules/motion/')) {
-            return 'vendor-animation-motion'
+          // if (id.includes('node_modules/motion/')) {
+          //   return 'vendor-animation-motion'
+          // }
+          if (id.includes('node_modules/swiper/')) {
+            return 'vendor-swiper'
           }
-          if (
-            id.includes('node_modules/swiper/') ||
-            id.includes('node_modules/embla-carousel')
-          ) {
+          if (id.includes('node_modules/embla-carousel')) {
             return 'vendor-animation-carousel'
           }
           if (id.includes('node_modules/openplayerjs/')) {
@@ -719,14 +742,18 @@ export default defineConfig({
           }
 
           // Split large UI libraries into separate chunks (EXCLUDING form components)
-          if (id.includes('@genuin/ui') && !id.includes('src/index') && !id.includes('/form')) {
+          if (
+            id.includes('@genuin/ui') &&
+            !id.includes('src/index') &&
+            !id.includes('/form')
+          ) {
             return 'app-ui-components'
           }
 
           // Optimization: Split Feed template (large component with many deps)
-          if (id.includes('templates/feed')) {
-            return 'app-ui-feed'
-          }
+          // if (id.includes('templates/feed')) {
+          //   return 'app-ui-feed'
+          // }
 
           // Optimization: Split React-dependent code from main bundle
           if (id.includes('src/sdk/react-utils')) {
@@ -740,10 +767,7 @@ export default defineConfig({
           }
 
           // Keep core SDK functionality in main bundle (src/sdk minus react-utils, src/index)
-          if (
-            id.includes('src/sdk') ||
-            id.includes('src/index')
-          ) {
+          if (id.includes('src/sdk') || id.includes('src/index')) {
             return undefined // Goes to main bundle
           }
 

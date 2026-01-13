@@ -1,23 +1,21 @@
 "use client";
 import "swiper/css";
-import { SwiperSlide } from "swiper/react";
 import { useBoolean } from "usehooks-ts";
 
-
 import { useFeedContext } from "@genuin/components/templates/feed/context";
-
 
 const Actions = lazy(() =>
   import("../../molecules/actions").then((m) => ({
     default: m.Actions,
   }))
 ) as React.ComponentType<any>;
- // Using any for now to stop the bleed, will refine if possible
-
+// Using any for now to stop the bleed, will refine if possible
 
 // Lazy load heavy comment components to split vendor-forms chunk
 const Comments = lazy(() =>
-  import("../../molecules/comments/comments").then((m) => ({ default: m.Comments }))
+  import("../../molecules/comments/comments").then((m) => ({
+    default: m.Comments,
+  }))
 );
 const CommentsDialog = lazy(() =>
   import("../../molecules/comments/comments-dialog").then((m) => ({
@@ -25,12 +23,19 @@ const CommentsDialog = lazy(() =>
   }))
 ) as React.ComponentType<any>;
 
+const SectionedContent = lazy(() =>
+  import("./sectioned-content").then((m) => ({
+    default: m.SectionedContent,
+  }))
+);
 
+const NonSectionedContent = lazy(() =>
+  import("./non-sectioned-content").then((m) => ({
+    default: m.NonSectionedContent,
+  }))
+);
 
-import { Player } from "./player";
-import { PlayerHeader } from "./player-header";
 import { abbreviateNumber, cn } from "@genuin/ui/lib/utils";
-import { type Swiper as SwiperType } from "swiper/types";
 import {
   ComponentProps,
   useEffect,
@@ -42,36 +47,39 @@ import {
   Suspense,
 } from "react";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
-import { useBaseContext } from "@genuin/components/context/base/index";
-
-
 
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import { SectionsTabs } from "./sections-tabs";
 import { type PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
-import { usePlayerContext } from "@genuin/components/molecules/feed-player/context/index";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
-
-import { SwiperImplementation } from "./swiper-implementation";
-
 
 import { useAnalytics } from "@genuin/components/context";
 import { calculateSlideDimensions } from "./utils";
-const WatchBoundaryOverlay = lazy(() =>
-  import(
-    "../../molecules/feed-player/control-layer/watch-boundary-overlay"
-  ).then((m) => ({ default: m.default }))
-) as React.ComponentType<any>;
-
-
 
 import { useFocusManagement } from "@genuin/components/hooks/use-focus-management";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
-import {
-  BackButton,
-  CloseButton,
-  NavigationButton,
-} from "./player-swiper-buttons";
+
+const CloseButton = lazy(() =>
+  import("./player-swiper-buttons").then((m) => ({ default: m.CloseButton }))
+);
+const NavigationButton = lazy(() =>
+  import("./player-swiper-buttons").then((m) => ({
+    default: m.NavigationButton,
+  }))
+);
+
+const PlayerHeader = lazy(() =>
+  import("./player-header").then((m) => ({ default: m.PlayerHeader }))
+);
+
+const IHeartBackButton = lazy(() =>
+  import("./iheart/iheart-back-button").then((m) => ({
+    default: m.IHeartBackButton,
+  }))
+);
+
+const SectionsTabs = lazy(() =>
+  import("./sections-tabs").then((m) => ({ default: m.SectionsTabs }))
+);
 
 type PlayerListPropsType = {
   posts: PostDetailsType[];
@@ -249,7 +257,6 @@ a swiper inside another swiper.
     activeSwiper,
   });
 
-
   // Effect to navigate to selected section when it changes (only for sectioned mode)
   useEffect(() => {
     if (isSectioned && horizontalSwiper && selectedSection && sectionList) {
@@ -272,212 +279,6 @@ a swiper inside another swiper.
     }
   };
 
-  // Render sectioned swiper content
-  const renderSectionedContent = () => (
-    <SwiperImplementation
-      direction="horizontal"
-      className={cn(
-        "gencl:h-full gencl:aspect-reel",
-        isMobile && "gencl:h-full gencl:w-full"
-      )}
-      onSwiper={setHorizontalSwiper}
-      onActiveIndexChange={(swiper) => {
-        setActiveHorizontalIndex(swiper.activeIndex);
-        if (sectionList) {
-          embedDetails?.updateSelectedSection(sectionList[swiper.activeIndex]);
-        }
-      }}
-      disableScroll={disableSwiper}
-    >
-      {sectionList?.map((item, sectionIdx) => (
-        <SwiperSlide key={item?.id || sectionIdx} virtualIndex={sectionIdx}>
-          {({ isActive: isHorizontalActive }) => (
-            <SwiperImplementation
-              className="gencl:h-full"
-              initialSlide={startIndex}
-              // In the disabled swiper case, we should display only a single clip in the table view.
-              slidesPerView={
-                slideDimensions?.slidesPerView
-                  ? disableSwiper || websiteType === "legacy"
-                    ? 1
-                    : 1.2
-                  : undefined
-              }
-              spaceBetween={slideDimensions?.slidesPerView ? 16 : undefined}
-              onSwiper={(swiper) => {
-                setVerticalSwipers((prev) => ({
-                  ...prev,
-                  [sectionIdx]: swiper,
-                }));
-              }}
-              onActiveIndexChange={(swiper) => {
-                onActiveIndexChange?.(swiper.activeIndex);
-                // track the event while changing the section by clicking on it
-                track(EventName.SECTION_CHANGES, {
-                  section_id: item?.id,
-                });
-              }}
-              disableScroll={disableSwiper}
-              onReachEnd={() => {
-                setEndOfFeedReached(true);
-              }}
-              onSlideChange={() => {
-                if (isEndOfFeedReached) setEndOfFeedReached(false);
-              }}
-            >
-              {filteredPost.map((post, index) => (
-                <SwiperSlide
-                  key={post.video.id}
-                  virtualIndex={index}
-                  style={
-                    slideDimensions
-                      ? {
-                          width: `${slideDimensions.slideWidth}px`,
-                          height: `${slideDimensions.slideHeight}px`,
-                        }
-                      : undefined
-                  }
-                >
-                  {({
-                    isActive: isVerticalActive,
-                    isNext: isVerticalNext,
-                    isPrev: isVerticalPrev,
-                    isVisible: isVerticalVisible,
-                  }) => {
-                    // Combine both swiper states to determine true active state
-                    const isTrulyActive =
-                      isVerticalActive && isHorizontalActive;
-                    const isTrulyNext = isVerticalNext && isHorizontalActive;
-                    const isTrulyPrev = isVerticalPrev && isHorizontalActive;
-                    const isTrulyVisible =
-                      isVerticalVisible && isHorizontalActive;
-
-                    return post.video.type === "video" ? (
-                      <Player
-                        isActive={isTrulyActive}
-                        isNext={isTrulyNext}
-                        isPrev={isTrulyPrev}
-                        isVisible={isTrulyVisible}
-                        post={post}
-                        isSectioned={isSectioned}
-                        onCommunityJoinStatusChange={
-                          onCommunityJoinStatusChange
-                        }
-                        onGroupJoinStatusChange={onGroupJoinStatusChange}
-                        onGroupSubscriptionChange={onGroupSubscriptionChange}
-                        onReactionStateChange={onReactionStateChange}
-                        onCommentCountChange={onCommentCountChange}
-                        index={index}
-                        totalVideos={totalVideos}
-                      />
-                    ) : post.video.type === "complete" ? (
-                      <Suspense fallback={null}>
-                        <WatchBoundaryOverlay
-                          videoDetails={post.video}
-                          variant="complete"
-                        />
-                      </Suspense>
-                    ) : (
-                      <></>
-                    );
-                  }}
-                </SwiperSlide>
-              ))}
-            </SwiperImplementation>
-          )}
-        </SwiperSlide>
-      ))}
-    </SwiperImplementation>
-  );
-
-  // Render non-sectioned swiper content
-  const renderNonSectionedContent = () => (
-    <SwiperImplementation
-      initialSlide={startIndex}
-      // In the disabled swiper case, we should display only a single clip in the table view.
-      slidesPerView={
-        slideDimensions?.slidesPerView
-          ? disableSwiper || websiteType === "legacy"
-            ? 1
-            : 1.2
-          : undefined
-      }
-      spaceBetween={slideDimensions?.slidesPerView ? 16 : undefined}
-      onSwiper={(swiper) => {
-        setVerticalSwipers((prev) => ({
-          ...prev,
-          [0]: swiper,
-        }));
-      }}
-      onActiveIndexChange={(swiper) => {
-        onActiveIndexChange?.(swiper.activeIndex);
-
-        // iHeart desktop layout: Prevent rapid slide changes with 300ms debounce
-        // Temporarily disable swiper to ignore additional navigation attempts
-        // Button remains visually enabled but swiper interactions are blocked
-        if (brandLayoutType === "iheart" && isDesktop) {
-          swiper.disable();
-          setTimeout(() => {
-            swiper.enable();
-          }, 300);
-        }
-      }}
-      disableScroll={disableSwiper}
-      onReachEnd={() => {
-        setEndOfFeedReached(true);
-      }}
-      onSlideChange={() => {
-        if (isEndOfFeedReached) setEndOfFeedReached(false);
-      }}
-    >
-      {filteredPost.map((post, index) => (
-        <SwiperSlide
-          key={post.video.id}
-          virtualIndex={index}
-          style={
-            slideDimensions
-              ? {
-                  width: `${slideDimensions.slideWidth}px`,
-                  height: `${slideDimensions.slideHeight}px`,
-                }
-              : undefined
-          }
-        >
-          {({ isActive, isNext, isPrev, isVisible }) => (
-            <>
-              {post.video.type === "video" ? (
-                <Player
-                  isActive={isActive}
-                  isNext={isNext}
-                  isPrev={isPrev}
-                  isVisible={isVisible}
-                  post={post}
-                  totalVideos={totalVideos}
-                  isSectioned={isSectioned}
-                  onCommunityJoinStatusChange={onCommunityJoinStatusChange}
-                  onGroupJoinStatusChange={onGroupJoinStatusChange}
-                  onGroupSubscriptionChange={onGroupSubscriptionChange}
-                  onReactionStateChange={onReactionStateChange}
-                  onCommentCountChange={onCommentCountChange}
-                  index={index}
-                />
-              ) : post.video.type === "complete" ? (
-                <Suspense fallback={null}>
-                  <WatchBoundaryOverlay
-                    videoDetails={post.video}
-                    variant="complete"
-                  />
-                </Suspense>
-              ) : (
-                <></>
-              )}
-            </>
-          )}
-        </SwiperSlide>
-      ))}
-    </SwiperImplementation>
-  );
-
   return (
     <div
       ref={playerListRef}
@@ -496,23 +297,16 @@ a swiper inside another swiper.
       )}
     >
       {/* Back button for iheart expand view (not on mobile) */}
-      {brandLayoutType === "iheart" && !isMobile && (
-        <div
-          className={cn(
-            "gencl:absolute gencl:left-8 gencl:z-50",
-            websiteType === "legacy" && isAdsEnabledInIheart
-              ? "gencl:top-20! gencl:md:top-8!"
-              : "gencl:top-8"
-          )}
-        >
-          <BackButton
+      {(brandLayoutType === "iheart" || isMobile) && (
+        <Suspense fallback={null}>
+          <IHeartBackButton
             websiteType={websiteType}
+            isAdsEnabledInIheart={isAdsEnabledInIheart}
             onBackClick={changeExpandViewType}
             theme={theme}
           />
-        </div>
+        </Suspense>
       )}
-
       <div
         className={cn(
           "gencl:flex gencl:justify-center gencl:h-full gencl:w-full gencl:sm:w-fit! gencl:relative",
@@ -537,21 +331,72 @@ a swiper inside another swiper.
         >
           {/* Header with back button and centered title */}
           {brandLayoutType === "iheart" && !isEndOfFeedReached && (
-            <PlayerHeader
-              isMobile={isMobile}
-              title={filteredPost[activeIndex]?.video.attributes?.title ?? ""}
-              onBackClick={changeExpandViewType}
-            />
+            <Suspense fallback={null}>
+              <PlayerHeader
+                isMobile={isMobile}
+                title={filteredPost[activeIndex]?.video.attributes?.title ?? ""}
+                onBackClick={changeExpandViewType}
+              />
+            </Suspense>
           )}
 
           {isSectioned && (
-            <SectionsTabs onSectionSelect={handleSectionSelect} />
+            <Suspense fallback={null}>
+              <SectionsTabs onSectionSelect={handleSectionSelect} />
+            </Suspense>
           )}
           {slideDimensions && (
             <div className="gencl:h-full gencl:w-full">
-              {isSectioned
-                ? renderSectionedContent()
-                : renderNonSectionedContent()}
+              {isSectioned ? (
+                <Suspense fallback={null}>
+                  <SectionedContent
+                    sectionList={sectionList}
+                    embedDetails={embedDetails}
+                    filteredPost={filteredPost}
+                    startIndex={startIndex}
+                    slideDimensions={slideDimensions}
+                    disableSwiper={disableSwiper}
+                    websiteType={websiteType}
+                    onActiveIndexChange={onActiveIndexChange}
+                    setEndOfFeedReached={setEndOfFeedReached}
+                    isEndOfFeedReached={isEndOfFeedReached}
+                    onCommunityJoinStatusChange={onCommunityJoinStatusChange}
+                    onGroupJoinStatusChange={onGroupJoinStatusChange}
+                    onGroupSubscriptionChange={onGroupSubscriptionChange}
+                    onReactionStateChange={onReactionStateChange}
+                    onCommentCountChange={onCommentCountChange}
+                    totalVideos={totalVideos}
+                    isSectioned={isSectioned}
+                    isMobile={isMobile}
+                    setHorizontalSwiper={setHorizontalSwiper}
+                    setActiveHorizontalIndex={setActiveHorizontalIndex}
+                    setVerticalSwipers={setVerticalSwipers}
+                  />
+                </Suspense>
+              ) : (
+                <Suspense fallback={null}>
+                  <NonSectionedContent
+                    startIndex={startIndex}
+                    slideDimensions={slideDimensions}
+                    disableSwiper={disableSwiper}
+                    websiteType={websiteType}
+                    setVerticalSwipers={setVerticalSwipers}
+                    onActiveIndexChange={onActiveIndexChange}
+                    brandLayoutType={brandLayoutType}
+                    isDesktop={isDesktop}
+                    setEndOfFeedReached={setEndOfFeedReached}
+                    isEndOfFeedReached={isEndOfFeedReached}
+                    filteredPost={filteredPost}
+                    onCommunityJoinStatusChange={onCommunityJoinStatusChange}
+                    onGroupJoinStatusChange={onGroupJoinStatusChange}
+                    onGroupSubscriptionChange={onGroupSubscriptionChange}
+                    onReactionStateChange={onReactionStateChange}
+                    onCommentCountChange={onCommentCountChange}
+                    totalVideos={totalVideos}
+                    isSectioned={isSectioned}
+                  />
+                </Suspense>
+              )}
             </div>
           )}
         </div>
@@ -561,31 +406,34 @@ a swiper inside another swiper.
           brandLayoutType === "iheart" &&
           isDesktop &&
           !disableSwiper && (
-            <NavigationButton
-              swiper={activeSwiper ?? undefined}
-              postsLength={filteredPost.length}
-              position="relative"
-              className={cn("gencl:pl-10 gencl:justify-center")}
-              theme={theme}
-              size={websiteType === "polaris" ? "lg" : "xl"}
-            />
+            <Suspense fallback={null}>
+              <NavigationButton
+                swiper={activeSwiper ?? undefined}
+                postsLength={filteredPost.length}
+                position="relative"
+                className={cn("gencl:pl-10 gencl:justify-center")}
+                theme={theme}
+                size={websiteType === "polaris" ? "lg" : "xl"}
+              />
+            </Suspense>
           )}
       </div>
-
       {showExpandView && isDesktop && (
-        <CloseButton theme={theme} onCloseClick={toggleExpandView} />
+        <Suspense fallback={null}>
+          <CloseButton theme={theme} onCloseClick={toggleExpandView} />
+        </Suspense>
       )}
-
       {/* Navigation buttons for expand view (not on mobile) */}
       {showExpandView && brandLayoutType !== "iheart" && !isMobile && (
-        <NavigationButton
-          swiper={activeSwiper ?? undefined}
-          postsLength={filteredPost.length}
-          theme={theme}
-          size={websiteType === "polaris" ? "lg" : "xl"}
-        />
+        <Suspense fallback={null}>
+          <NavigationButton
+            swiper={activeSwiper ?? undefined}
+            postsLength={filteredPost.length}
+            theme={theme}
+            size={websiteType === "polaris" ? "lg" : "xl"}
+          />
+        </Suspense>
       )}
-
       {!isMobile &&
         brandLayoutType !== "iheart" &&
         filteredPost[activeIndex] && (
@@ -605,101 +453,100 @@ a swiper inside another swiper.
               isCommentBoxOpen={value}
               actionWrapper={{
                 COMMENT: (defaultNode) => {
-                if (!showCommentBox) return;
-                //
-                const defaultOpen =
-                  (embedDetails?.embedData?.autoUserInteractionToPerform ===
-                    "comment-spark" ||
-                    embedDetails?.embedData.autoUserInteractionToPerform ===
-                      "comment") &&
-                  filteredPost[activeIndex]?.video.slug ===
-                    embedDetails.embedData?.startVideoSlug &&
-                  !embedDetails.embedEventBus.getContext()
-                    .autoInteractionActionDone;
+                  if (!showCommentBox) return;
+                  //
+                  const defaultOpen =
+                    (embedDetails?.embedData?.autoUserInteractionToPerform ===
+                      "comment-spark" ||
+                      embedDetails?.embedData.autoUserInteractionToPerform ===
+                        "comment") &&
+                    filteredPost[activeIndex]?.video.slug ===
+                      embedDetails.embedData?.startVideoSlug &&
+                    !embedDetails.embedEventBus.getContext()
+                      .autoInteractionActionDone;
 
-                if (defaultOpen) {
-                  embedDetails.markAutoInteractionActionDone();
-                }
+                  if (defaultOpen) {
+                    embedDetails.markAutoInteractionActionDone();
+                  }
 
-                // Simple ui to show for comment trigger
-                function CommentBox({
-                  children,
-                }: {
-                  children: React.ReactNode;
-                }) {
-                  const commentCount =
-                    filteredPost[activeIndex]?.video.commentCount ?? 0;
-                  return (
-                    <>
-                      {children}
-                      <p
-                        className={cn(
-                          "gencl:p-0 gencl:text-center gencl:text-black gencl:text-body-2-medium",
-                          showExpandView && "gencl:text-white!"
-                        )}
-                        aria-label={`${commentCount} ${commentCount === 1 ? "comment" : "comments"}`}
-                      >
-                        {abbreviateNumber(commentCount)}
-                      </p>
-                    </>
-                  );
-                }
+                  // Simple ui to show for comment trigger
+                  function CommentBox({
+                    children,
+                  }: {
+                    children: React.ReactNode;
+                  }) {
+                    const commentCount =
+                      filteredPost[activeIndex]?.video.commentCount ?? 0;
+                    return (
+                      <>
+                        {children}
+                        <p
+                          className={cn(
+                            "gencl:p-0 gencl:text-center gencl:text-black gencl:text-body-2-medium",
+                            showExpandView && "gencl:text-white!"
+                          )}
+                          aria-label={`${commentCount} ${commentCount === 1 ? "comment" : "comments"}`}
+                        >
+                          {abbreviateNumber(commentCount)}
+                        </p>
+                      </>
+                    );
+                  }
 
                   if (
-                  !isDesktop &&
-                  filteredPost[activeIndex] &&
-                  (value || defaultOpen)
-                )
+                    !isDesktop &&
+                    filteredPost[activeIndex] &&
+                    (value || defaultOpen)
+                  )
+                    return (
+                      <Suspense fallback={null}>
+                        <CommentsDialog
+                          commentCount={
+                            filteredPost[activeIndex]?.video.commentCount
+                          }
+                          communityId={filteredPost[activeIndex]?.community.id}
+                          loopId={filteredPost[activeIndex]?.group.id}
+                          videoId={filteredPost[activeIndex]?.video.id}
+                          videoSlug={filteredPost[activeIndex]?.video.slug}
+                          shareUrl={filteredPost[activeIndex]?.video.shareUrl}
+                          defaultOpen={value}
+                          key={
+                            "feed-comment-box" +
+                            filteredPost[activeIndex]?.video.id
+                          }
+                          onCommentCountChange={onCommentCountChange}
+                          onOpenChange={(value) => {
+                            setValue(value);
+                          }}
+                        >
+                          <CommentBox>{defaultNode}</CommentBox>
+                        </CommentsDialog>
+                      </Suspense>
+                    );
                   return (
-                    <Suspense fallback={null}>
-                      <CommentsDialog
-                        commentCount={
-                          filteredPost[activeIndex]?.video.commentCount
-                        }
-                        communityId={filteredPost[activeIndex]?.community.id}
-                        loopId={filteredPost[activeIndex]?.group.id}
-                        videoId={filteredPost[activeIndex]?.video.id}
-                        videoSlug={filteredPost[activeIndex]?.video.slug}
-                        shareUrl={filteredPost[activeIndex]?.video.shareUrl}
-                        defaultOpen={value}
-                        key={
-                          "feed-comment-box" +
-                          filteredPost[activeIndex]?.video.id
-                        }
-                        onCommentCountChange={onCommentCountChange}
-                        onOpenChange={(value) => {
-                          setValue(value);
-                        }}
-                      >
-                        <CommentBox>{defaultNode}</CommentBox>
-                      </CommentsDialog>
-                    </Suspense>
+                    <span
+                      key={
+                        "feed-comment-box" + filteredPost[activeIndex]?.video.id
+                      }
+                      onClick={() => {
+                        if (showExpandView) toggle();
+                      }}
+                    >
+                      <CommentBox>{defaultNode}</CommentBox>
+                    </span>
                   );
-                return (
-                  <span
-                    key={
-                      "feed-comment-box" + filteredPost[activeIndex]?.video.id
-                    }
-                    onClick={() => {
-                      if (showExpandView) toggle();
-                    }}
-                  >
-                    <CommentBox>{defaultNode}</CommentBox>
-                  </span>
+                },
+              }}
+              onReactionStateChange={(isReacted) => {
+                onReactionStateChange?.(
+                  filteredPost[activeIndex]?.video.id ?? "",
+                  filteredPost[activeIndex]?.video.slug ?? "",
+                  isReacted
                 );
-              },
-            }}
-            onReactionStateChange={(isReacted) => {
-              onReactionStateChange?.(
-                filteredPost[activeIndex]?.video.id ?? "",
-                filteredPost[activeIndex]?.video.slug ?? "",
-                isReacted
-              );
-            }}
+              }}
             />
           </Suspense>
         )}
-
       {/* show this only if expand view is open  */}
       {value &&
         showExpandView &&

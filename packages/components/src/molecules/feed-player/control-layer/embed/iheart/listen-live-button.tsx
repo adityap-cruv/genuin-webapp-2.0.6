@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "@genuin/ui/lib/utils";
 import {
   IHeartPauseIcon,

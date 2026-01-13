@@ -94,10 +94,12 @@
       return Promise.resolve('__SDK_FILENAME_PLACEHOLDER__')
     }
 
+    // Define sdkUrl at higher scope so it's accessible in catch block
+    let sdkUrl = ''
+
     loadPromise = getSDKFilename()
       .then((filename) => {
         // Ensure we have a proper absolute URL for the SDK
-        let sdkUrl
         if (SDK_BASE_URL.startsWith('http') || SDK_BASE_URL.startsWith('/')) {
           // Absolute URL or root-relative path
           sdkUrl = SDK_BASE_URL + filename
@@ -123,7 +125,11 @@
         if (typeof performance !== 'undefined' && performance.mark) {
           performance.mark('genuin-sdk-load-end')
           if (performance.measure) {
-            performance.measure('genuin-sdk-load', 'genuin-sdk-load-start', 'genuin-sdk-load-end')
+            performance.measure(
+              'genuin-sdk-load',
+              'genuin-sdk-load-start',
+              'genuin-sdk-load-end',
+            )
           }
         }
         if (window.__GENUIN_METRICS__) {

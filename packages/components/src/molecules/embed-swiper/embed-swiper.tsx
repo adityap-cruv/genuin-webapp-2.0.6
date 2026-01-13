@@ -1,4 +1,11 @@
-import { ComponentProps, useMemo, useRef, type ReactNode } from "react";
+import {
+  ComponentProps,
+  useMemo,
+  useRef,
+  lazy,
+  Suspense,
+  type ReactNode,
+} from "react";
 import { Swiper } from "swiper/react";
 import { Swiper as SwiperType } from "swiper/types";
 import { Mousewheel, FreeMode, Keyboard, A11y, Virtual } from "swiper/modules";
@@ -6,8 +13,12 @@ import { getSlidesPerView, SWIPER_CONFIG } from "./utils";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 import "swiper/css";
 import { cn } from "@genuin/ui/lib/utils";
-import { NativeFeedScroll } from "../native-feed-scroll";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+
+// Lazy load NativeFeedScroll
+const NativeFeedScroll = lazy(() =>
+  import("../native-feed-scroll").then((m) => ({ default: m.NativeFeedScroll }))
+);
 
 type EmbedSwiperProps = {
   forFeed?: boolean;
@@ -84,44 +95,46 @@ export function EmbedSwiper({
   // Use native scroll for feed mode
   if (useWindowSwiperMode) {
     return (
-      <NativeFeedScroll
-        // containerHeight={containerDimensions?.height ?? 0}
-        containerWidth={containerDimensions?.width ?? 0}
-        slidesPerView={slidesPerView}
-        spaceBetween={spaceBetweenVideos}
-        slidesOffsetBefore={slidesOffsetBefore}
-        className={cn(
-          className,
-          !allowGestureScroll && "gencl:overflow-hidden"
-        )}
-        customHeightFor={customHeightFor}
-        onActiveIndexChange={(instance) => {
-          // Controller instance is passed directly, no wrapper needed!
-          // Cast to SwiperType for compatibility with existing code
-          const swiperCompatibleInstance = instance as unknown as SwiperType;
-          onActiveIndexChange?.(swiperCompatibleInstance);
-        }}
-        onSlideChange={(instance) => {
-          // Controller instance is passed directly, no wrapper needed!
-          // Cast to SwiperType for compatibility with existing code
-          const swiperCompatibleInstance = instance as unknown as SwiperType;
-          onActiveIndexChange?.(swiperCompatibleInstance);
-        }}
-        onInit={(instance) => {
-          // Controller instance is passed directly, no wrapper needed!
-          // Cast to SwiperType for compatibility with existing code
-          const swiperCompatibleInstance = instance as unknown as SwiperType;
+      <Suspense fallback={null}>
+        <NativeFeedScroll
+          // containerHeight={containerDimensions?.height ?? 0}
+          containerWidth={containerDimensions?.width ?? 0}
+          slidesPerView={slidesPerView}
+          spaceBetween={spaceBetweenVideos}
+          slidesOffsetBefore={slidesOffsetBefore}
+          className={cn(
+            className,
+            !allowGestureScroll && "gencl:overflow-hidden"
+          )}
+          customHeightFor={customHeightFor}
+          onActiveIndexChange={(instance: unknown) => {
+            // Controller instance is passed directly, no wrapper needed!
+            // Cast to SwiperType for compatibility with existing code
+            const swiperCompatibleInstance = instance as unknown as SwiperType;
+            onActiveIndexChange?.(swiperCompatibleInstance);
+          }}
+          onSlideChange={(instance: unknown) => {
+            // Controller instance is passed directly, no wrapper needed!
+            // Cast to SwiperType for compatibility with existing code
+            const swiperCompatibleInstance = instance as unknown as SwiperType;
+            onActiveIndexChange?.(swiperCompatibleInstance);
+          }}
+          onInit={(instance: unknown) => {
+            // Controller instance is passed directly, no wrapper needed!
+            // Cast to SwiperType for compatibility with existing code
+            const swiperCompatibleInstance = instance as unknown as SwiperType;
 
-          // Store ref for compatibility
-          swiperRef.current = swiperCompatibleInstance;
-          onInit?.(swiperCompatibleInstance);
-          onSwiper?.(swiperCompatibleInstance);
-        }}
-        keyboardEnabled={true}
-        ariaLabel="Video feed"
-      >
-        {children}
-      </NativeFeedScroll>
+            // Store ref for compatibility
+            swiperRef.current = swiperCompatibleInstance;
+            onInit?.(swiperCompatibleInstance);
+            onSwiper?.(swiperCompatibleInstance);
+          }}
+          keyboardEnabled={true}
+          ariaLabel="Video feed"
+        >
+          {children}
+        </NativeFeedScroll>
+      </Suspense>
     );
   }
 

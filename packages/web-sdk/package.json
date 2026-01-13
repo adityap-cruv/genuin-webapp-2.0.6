@@ -46,7 +46,8 @@
     "format": "prettier --write .",
     "lint": "eslint --ext .ts,.tsx src/",
     "typecheck": "tsc --noEmit",
-    "version:bump": "npx tsx scripts/npmVersionManager.ts"
+    "version:bump": "npx tsx scripts/npmVersionManager.ts",
+    "sdk:bs": "npm run build && serve -l 5555"
   },
   "author": "Genuin Inc.",
   "license": "ISC",

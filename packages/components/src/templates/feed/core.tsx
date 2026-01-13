@@ -10,7 +10,6 @@ const PlayerList = lazy(() =>
   }))
 ) as React.ComponentType<any>;
 
-
 // Lazy load side panel to split comments/forms from core chunk
 const PostSidePanel = lazy(() =>
   import("../../organisms/post-side-panel").then((m) => ({
@@ -25,7 +24,6 @@ import {
   setQueryDataForJoinGroupStatusInFeed,
   setQueryDataForCommentCountInFeed,
 } from "@genuin/components/react-query/api/feed";
-
 
 import { useFeedContext } from "./context";
 import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
@@ -47,9 +45,37 @@ import { getQueryKeyForVideoDetails } from "@genuin/components/react-query/keys/
 
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useBaseContext } from "@genuin/components/context";
-import { IheartFullscreenContainer } from "@genuin/components/molecules/iheart-full-screen-contaner";
 
-import { isUuid } from "@genuin/components/lib/utils";
+/**
+ * Internal component to conditionally wrap feed content based on brand layout type.
+ * Uses IheartFullscreenContainer only for iHeart brand to follow DRY principle.
+ */
+const FeedContentWrapper = memo(function FeedContentWrapper({
+  isIHeart,
+  children,
+}: {
+  isIHeart: boolean;
+  children: React.ReactNode;
+}) {
+  const IheartFullscreenContainerLazy = lazy(() =>
+    import("@genuin/components/molecules/iheart-full-screen-contaner").then(
+      (m) => ({
+        default: m.IheartFullscreenContainer,
+      })
+    )
+  ) as React.ComponentType<any>;
+
+  if (isIHeart) {
+    return (
+      <Suspense fallback={null}>
+        <IheartFullscreenContainerLazy>
+          {children}
+        </IheartFullscreenContainerLazy>
+      </Suspense>
+    );
+  }
+  return <>{children}</>;
+});
 
 /**
  * Internal core presentation component for displaying feed data.
@@ -93,9 +119,10 @@ export const FeedViewCore = memo(function FeedViewCore({
   const { isDesktop } = useDeviceDetectMediaQuery();
   const showSidePanel =
     videos[activeIndex] &&
-    showExpandView &&
+    !showExpandView &&
     isDesktop &&
     (!embedDetails || embedDetails.embedData.style === "standard_wall");
+
   const isIHeart = brandLayoutType === "iheart";
   // Get disableSwiper flag from embed context (only applies to expand view)
   const disableSwiper = showExpandView
@@ -266,7 +293,7 @@ export const FeedViewCore = memo(function FeedViewCore({
         )}
         {...restProps}
       >
-        <IheartFullscreenContainer>
+        <FeedContentWrapper isIHeart={isIHeart}>
           <Suspense fallback={null}>
             <PlayerList
               isSectioned={isSectioned}
@@ -297,7 +324,7 @@ export const FeedViewCore = memo(function FeedViewCore({
               />
             </Suspense>
           )}
-        </IheartFullscreenContainer>
+        </FeedContentWrapper>
       </div>
     );
   }

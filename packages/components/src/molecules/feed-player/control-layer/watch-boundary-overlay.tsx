@@ -1,5 +1,5 @@
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
-import { IHeartCaughtUpOverlay } from "./iheart";
+import { IHeartCaughtUpOverlay } from "./embed/iheart";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 export default function WatchBoundaryOverlay({
@@ -17,7 +17,7 @@ export default function WatchBoundaryOverlay({
   };
 }) {
   const {
-    view: { brandLayoutType: layoutType,websiteType },
+    view: { brandLayoutType: layoutType, websiteType },
   } = useEmbedConfigs();
 
   switch (layoutType) {

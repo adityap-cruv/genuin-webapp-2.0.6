@@ -1,3 +1,5 @@
+"use client";
+
 import { useCallback, useEffect, useState } from "react";
 import {
   PlayChangeIHeartContentPayload,
@@ -273,9 +275,7 @@ export function useIHeartPlayback({
           isPolaris &&
           embedDetails?.embedData.brand_context?.[0]?.type === "podcast"
         ) {
-          if (
-            videoDetails.attributes?.slug && info.type
-          ) {
+          if (videoDetails.attributes?.slug && info.type) {
             SDKEventEmitter.emit(SDKEventName.PLAY_IHEART_CONTENT, {
               ...payload,
               navigate: true,
@@ -285,9 +285,10 @@ export function useIHeartPlayback({
               videoId: videoDetails.id,
               videoTitle: videoDetails.attributes?.title ?? undefined,
             });
-          }
-          else if(variant === "overlay" || variant === "complete"){
-            const redirectUrl = getBaseUrlWithouthighlights({type : "podcast"});
+          } else if (variant === "overlay" || variant === "complete") {
+            const redirectUrl = getBaseUrlWithouthighlights({
+              type: "podcast",
+            });
             window.location.replace(redirectUrl);
             return;
           }
