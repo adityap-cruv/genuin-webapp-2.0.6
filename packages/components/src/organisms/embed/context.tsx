@@ -82,9 +82,6 @@ export function EmbedManagerProvider({
   const { embedEventBus, changeActiveIndex } = useEmbedContext();
   const config = useEmbedConfigs();
   const isGridLayout = config.view.isGrid;
-  const moveToNext = !config.video.videoLoop;
-  const moveToNextTime = config.video.moveToNextTime;
-
   const isIHeart = config.view.brandLayoutType === "iheart";
 
   /**

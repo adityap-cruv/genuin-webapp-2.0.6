@@ -16,6 +16,9 @@ import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { Link } from "../link";
+import { useRouter } from "@genuin/components/hooks/use-router";
+import { setQueryDataForGroupSubscriptionChangeInFeed } from "@genuin/components/react-query/api/feed";
+import { getPartialQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
 
 type GroupSubscriptionButtonProps = {
   groupId: string;
@@ -111,9 +114,17 @@ function Button({
 }: GroupSubscriptionButtonProps) {
   const { user } = useAuthContext();
   const { track, EventName } = useAnalytics();
+  const router = useRouter();
   const { mutate: subscribeGroup, isPending } = useSubscribeGroupMutation({
     onSuccess(isSubscriber) {
       onSubscriptionChange?.(isSubscriber);
+
+      // Emit SDK event for group subscription change
+      setQueryDataForGroupSubscriptionChangeInFeed({
+        queryKey: getPartialQueryKeyForFeed(),
+        groupId,
+        isSubscribed: isSubscriber,
+      });
 
       // Track loop subscription events
       if (isSubscriber) {

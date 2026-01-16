@@ -49,6 +49,7 @@ export function EmbedItem({
   );
   const isSectioned = embedEventBus.getContext().isSectioned;
   const moveToNext = !config.video.videoLoop;
+  const moveToNextTime = config.video.moveToNextTime;
 
   useEffect(() => {
     if (config.view.brandLayoutType !== "iheart") return;
@@ -132,6 +133,13 @@ export function EmbedItem({
   // Handle automatic progression when video ends
   const handlePlayerIterationEnd = useCallback(() => {
     // Use intelligent auto-scroll for placement view when enabled
+
+    // Immediate move to next video for grid layout when moveToNextTime(full video complete) is 0
+    if (moveToNext && moveToNextTime === 0) {
+      goToNextVideo();
+      return;
+    }
+
     if (
       (config.view.isPlacementView && !config.video.autoScrollToNextSlide) ||
       !moveToNext
@@ -141,11 +149,10 @@ export function EmbedItem({
     const useAutoScroll =
       config.view.isPlacementView && config.video.autoScrollToNextSlide;
     goToNextVideo(useAutoScroll);
-  }, [goToNextVideo, config, moveToNext]);
+  }, [goToNextVideo, config, moveToNext, moveToNextTime]);
 
   // Auto-advance logic: Move to next video after moveToNextTime seconds
   useEffect(() => {
-    const moveToNextTime = config.video.moveToNextTime;
     const isGridLayout = config.view.isGrid;
 
     // Only auto-advance if:
@@ -206,6 +213,7 @@ export function EmbedItem({
     embedEventBus,
     swiper,
     isHovering,
+    moveToNextTime,
   ]);
 
   return (

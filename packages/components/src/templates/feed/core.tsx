@@ -24,6 +24,9 @@ import {
   setQueryDataForJoinGroupStatusInFeed,
   setQueryDataForCommentCountInFeed,
 } from "@genuin/components/react-query/api/feed";
+import { IheartFullscreenContainer } from "@genuin/components/molecules/iheart-full-screen-contaner";
+import { setQueryDataForCommunityRoleChange } from "@genuin/components/react-query/api/community/details/details";
+import { setQueryDataForSubscribeGroupInGroupDetails } from "@genuin/components/react-query/api/group/details";
 
 import { useFeedContext } from "./context";
 import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
@@ -167,6 +170,11 @@ export const FeedViewCore = memo(function FeedViewCore({
         communityId: videos[activeIndex].community.id,
         newRole,
       });
+
+      setQueryDataForCommunityRoleChange(
+        videos[activeIndex].community.slug,
+        newRole
+      );
     },
     [videos, activeIndex, queryKey]
   );
@@ -191,6 +199,11 @@ export const FeedViewCore = memo(function FeedViewCore({
         groupId: videos[activeIndex].group.id,
         isSubscribed,
       });
+
+      setQueryDataForSubscribeGroupInGroupDetails(
+        videos[activeIndex].group.slug,
+        isSubscribed
+      );
     },
     [videos, activeIndex, queryKey]
   );
