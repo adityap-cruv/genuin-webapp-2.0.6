@@ -109,6 +109,7 @@ export function parseFeed(
         video: {
           id: item.video.uuid,
           type: "video",
+          adUrl: item.video.ads_config?.ads_url || undefined,
           createdAt: item.video.conversation_at,
           commentCount: item.video.no_of_comments || 0,
           shareUrl: item.video.share_url,
