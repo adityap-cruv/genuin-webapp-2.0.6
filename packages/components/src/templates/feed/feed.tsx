@@ -142,6 +142,7 @@ export function FeedView({
         <FeedViewCore
           isSectioned={isSectioned}
           feedData={feedData}
+          variant={variant}
           {...restProps}
         />
       </GestureProvider>
