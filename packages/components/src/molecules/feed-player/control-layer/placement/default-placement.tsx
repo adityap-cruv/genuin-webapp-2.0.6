@@ -5,7 +5,7 @@ import { type FC, useMemo } from "react";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { EmbedControls } from "../controls/embed";
 import { Stats } from "../../../stats";
-import { CommentIcon, PlayIcon } from "@genuin/ui";
+import { CommentIcon, PlayIcon } from "@genuin/ui/icons";
 import { DynamicReactionIcon } from "../../../reaction-button";
 import { Image } from "@genuin/ui/components/image";
 

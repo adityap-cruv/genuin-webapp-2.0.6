@@ -493,8 +493,12 @@ export default defineConfig({
     postBuildCssPlugin(),
     process.env.ANALYZE === 'true' &&
       visualizer({
-        filename: 'stats.json',
-        template: 'raw-data',
+        filename: 'stats.html',
+        template: process.env.VISUALIZER_TEMPLATE || 'treemap', // Options: 'treemap', 'sunburst', 'network', 'raw-data', 'list'
+        open: true, // Automatically open the report in browser
+        gzipSize: true, // Show gzipped sizes
+        brotliSize: true, // Show brotli sizes
+        sourcemap: true, // Analyze sourcemaps for more accurate sizes
       }),
   ],
 
@@ -604,28 +608,28 @@ export default defineConfig({
           }
           return 'genuin-sdk-[hash].js'
         },
-        // chunkFileNames: (chunkInfo) => {
-        //   let name = chunkInfo.name
+        chunkFileNames: (chunkInfo) => {
+          let name = chunkInfo.name
 
-        //   // If chunk name is 'index', use parent folder name for better clarity
-        //   if (name === 'index' || name.endsWith('/index')) {
-        //     const facadeModuleId = chunkInfo.facadeModuleId
-        //     if (facadeModuleId) {
-        //       const parts = facadeModuleId.split('/')
-        //       // Find parent folder of index file
-        //       for (let i = parts.length - 1; i >= 0; i--) {
-        //         if (parts[i].startsWith('index.')) {
-        //           if (i > 0) {
-        //             name = parts[i - 1]
-        //             break
-        //           }
-        //         }
-        //       }
-        //     }
-        //   }
+          // If chunk name is 'index', use parent folder name for better clarity
+          if (name === 'index' || name.endsWith('/index')) {
+            const facadeModuleId = chunkInfo.facadeModuleId
+            if (facadeModuleId) {
+              const parts = facadeModuleId.split('/')
+              // Find parent folder of index file
+              for (let i = parts.length - 1; i >= 0; i--) {
+                if (parts[i].startsWith('index.')) {
+                  if (i > 0) {
+                    name = parts[i - 1]
+                    break
+                  }
+                }
+              }
+            }
+          }
 
-        //   return `chunks/${name}-[hash].js`
-        // },
+          return `chunks/${name}-[hash].js`
+        },
         assetFileNames: (assetInfo) => {
           // Use hash-based naming for all assets including CSS in production
           if (assetInfo.name && assetInfo.name.endsWith('.css')) {
@@ -657,19 +661,19 @@ export default defineConfig({
 
           // React Query - Keep separate for performance
           // Also bundle our API code with React Query since they're tightly coupled
-          if (
-            (id.includes('node_modules') &&
-              (id.includes('react-query') ||
-                id.includes('@tanstack/react-query'))) ||
-            id.includes('packages/components/src/react-query/api/')
-          ) {
-            return 'vendor-react-query'
-          }
+          // if (
+          //   (id.includes('node_modules') &&
+          //     (id.includes('react-query') ||
+          //       id.includes('@tanstack/react-query'))) ||
+          //   id.includes('packages/components/src/react-query/api/')
+          // ) {
+          //   return 'vendor-react-query'
+          // }
 
           // Radix UI components - Large UI primitive library
-          if (id.includes('node_modules/@radix-ui/')) {
-            return 'vendor-radix'
-          }
+          // if (id.includes('node_modules/@radix-ui/')) {
+          //   return 'vendor-radix'
+          // }
 
           // Animation and media libraries - Split into smaller chunks
           // if (id.includes('node_modules/motion/')) {
@@ -678,12 +682,12 @@ export default defineConfig({
           if (id.includes('node_modules/swiper/')) {
             return 'vendor-swiper'
           }
-          if (id.includes('node_modules/embla-carousel')) {
-            return 'vendor-animation-carousel'
-          }
-          if (id.includes('node_modules/openplayerjs/')) {
-            return 'vendor-animation-player'
-          }
+          // if (id.includes('node_modules/embla-carousel')) {
+          //   return 'vendor-animation-carousel'
+          // }
+          // if (id.includes('node_modules/openplayerjs/')) {
+          //   return 'vendor-animation-player'
+          // }
 
           // Icons
           // Icons
@@ -706,16 +710,16 @@ export default defineConfig({
           }
 
           // Utility libraries (includes router to merge small chunk)
-          if (
-            id.includes('node_modules/axios/') ||
-            id.includes('node_modules/crypto-es/') ||
-            id.includes('node_modules/dompurify/') ||
-            id.includes('node_modules/uuid/') ||
-            id.includes('node_modules/ua-parser-js/') ||
-            id.includes('node_modules/wouter/') // Merge router with utils
-          ) {
-            return 'vendor-utils'
-          }
+          // if (
+          //   id.includes('node_modules/axios/') ||
+          //   id.includes('node_modules/crypto-es/') ||
+          //   id.includes('node_modules/dompurify/') ||
+          //   id.includes('node_modules/uuid/') ||
+          //   id.includes('node_modules/ua-parser-js/') ||
+          //   id.includes('node_modules/wouter/') // Merge router with utils
+          // ) {
+          //   return 'vendor-utils'
+          // }
 
           // Router and navigation - Merge with vendor-utils (too small to be separate)
           // Removed separate vendor-router chunk - will be merged with vendor-utils
@@ -742,13 +746,13 @@ export default defineConfig({
           }
 
           // Split large UI libraries into separate chunks (EXCLUDING form components)
-          if (
-            id.includes('@genuin/ui') &&
-            !id.includes('src/index') &&
-            !id.includes('/form')
-          ) {
-            return 'app-ui-components'
-          }
+          // if (
+          //   id.includes('@genuin/ui') &&
+          //   !id.includes('src/index') &&
+          //   !id.includes('/form')
+          // ) {
+          //   return 'app-ui-components'
+          // }
 
           // Optimization: Split Feed template (large component with many deps)
           // if (id.includes('templates/feed')) {

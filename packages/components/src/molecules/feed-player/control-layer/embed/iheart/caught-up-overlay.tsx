@@ -1,4 +1,4 @@
-import { IHeartTickIcon } from "@genuin/ui";
+import { IHeartTickIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
 import { type ComponentProps } from "react";
 import { OverLayButton } from "./overlay-buttons";

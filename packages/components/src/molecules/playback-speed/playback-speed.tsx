@@ -10,7 +10,7 @@ import React, { ComponentProps } from "react";
 import PlaybackSpeedControlSlider from "./speed-control-buttons";
 import { useBaseContext } from "@genuin/components/context";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
-import { cn } from "@genuin/ui";
+import { cn } from "@genuin/ui/lib/utils";
 
 type PlaybackSpeedProps = ComponentProps<typeof Dialog> & {
   children: React.ReactNode;

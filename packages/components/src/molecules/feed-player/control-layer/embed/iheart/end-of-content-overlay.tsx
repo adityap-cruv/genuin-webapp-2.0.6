@@ -1,5 +1,5 @@
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import { Button } from "@genuin/ui";
+import { Button } from "@genuin/ui/button";
 import { IHeartPlayAgainIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
 import { type ComponentProps } from "react";

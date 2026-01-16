@@ -1,5 +1,5 @@
 import { useBaseContext } from "@genuin/components/context/base";
-import { cn } from "@genuin/ui";
+import { cn } from "@genuin/ui/lib/utils";
 import * as React from "react";
 import { createPortal } from "react-dom";
 

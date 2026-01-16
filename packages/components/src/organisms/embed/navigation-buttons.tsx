@@ -4,7 +4,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   ChevronUpIcon,
-} from "@genuin/ui";
+} from "@genuin/ui/icons";
 import { useEmbedManagerContext } from "./context";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { Button } from "@genuin/ui/components/button";

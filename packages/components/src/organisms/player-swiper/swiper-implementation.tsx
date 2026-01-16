@@ -8,7 +8,7 @@ import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config
 import { ComponentProps } from "react";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { dialogManager } from "@genuin/ui/lib/dialog-manager/dialog-manager";
-import { cn } from "@genuin/ui";
+import { cn } from "@genuin/ui/lib/utils";
 
 const CONFIG = {
   SCROLL_DELAY: 500,

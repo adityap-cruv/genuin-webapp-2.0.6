@@ -6,7 +6,7 @@ import { CommentInputBox } from "./comment-input";
 import { X } from "lucide-react";
 import { cva, VariantProps } from "class-variance-authority";
 import { CommentsList } from "./comments-list";
-import { Button } from "@genuin/ui";
+import { Button } from "@genuin/ui/button";
 
 const commentsVariant = cva("gencl:relative gencl:bg-white", {
   variants: {

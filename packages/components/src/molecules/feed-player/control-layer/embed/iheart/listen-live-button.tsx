@@ -6,7 +6,7 @@ import {
   IHeartPlayIcon,
   IHeartStopIcon,
 } from "@genuin/ui/icons/iheart-icons";
-import { Button } from "@genuin/ui";
+import { Button } from "@genuin/ui/button";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { useIHeartPlayback } from "./use-iheart-playback";
 import { useEffect, useRef, useState } from "react";

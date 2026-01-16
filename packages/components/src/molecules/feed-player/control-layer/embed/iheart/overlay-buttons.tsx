@@ -1,11 +1,11 @@
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+import { Button } from "@genuin/ui/button";
+import { cn } from "@genuin/ui/lib/utils";
 import {
-  Button,
-  cn,
   IHeartPauseIcon,
   IHeartPlayIcon,
   IHeartStopIcon,
-} from "@genuin/ui";
+} from "@genuin/ui/icons/iheart-icons";
 import { useIHeartPlayback } from "./use-iheart-playback";
 import { useBaseContext } from "@genuin/components/context";
 

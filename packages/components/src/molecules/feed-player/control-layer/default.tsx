@@ -24,7 +24,7 @@ import {
 import { Button } from "@genuin/ui/button";
 import { useDoubleClick } from "@genuin/components/hooks/use-double-click";
 import { useAuthContext } from "@genuin/components/context";
-import { Toaster } from "@genuin/ui";
+import { Toaster } from "@genuin/ui/toaster";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 
 export function Default({

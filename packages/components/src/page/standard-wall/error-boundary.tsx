@@ -6,7 +6,7 @@ import React, {
   PropsWithChildren,
   ReactNode,
 } from "react";
-import { Button } from "@genuin/ui";
+import { Button } from "@genuin/ui/button";
 import { RefreshCcw } from "lucide-react";
 
 interface ErrorBoundaryProps extends PropsWithChildren {

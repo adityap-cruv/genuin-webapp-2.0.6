@@ -2,6 +2,7 @@
   "name": "@genuin/ui",
   "version": "0.0.0",
   "private": true,
+  "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
     "./button": "./src/components/button/index.ts",
@@ -39,7 +40,16 @@
     "./sheet": "./src/components/sheet/index.ts",
     "./switch": "./src/components/switch/index.ts",
     "./textarea": "./src/components/textarea/index.ts",
-    "./select": "./src/components/select/index.ts"
+    "./select": "./src/components/select/index.ts",
+    "./hooks": "./src/hooks/index.ts",
+    "./lib/utils": "./src/lib/utils.ts",
+    "./lib/dialog-manager/dialog-manager": "./src/lib/dialog-manager/dialog-manager.ts",
+    "./icons/iheart-icons": "./src/icons/iheart-icons.tsx",
+    "./components/image": "./src/components/image/index.ts",
+    "./components/loader": "./src/components/loader/index.ts",
+    "./components/skeleton": "./src/components/skeleton/index.ts",
+    "./components/toaster": "./src/components/toaster/index.ts",
+    "./components/button": "./src/components/button/index.ts"
   },
   "scripts": {
     "lint": "eslint . --max-warnings 20",

@@ -2,6 +2,7 @@
   "name": "@genuin/web-sdk",
   "version": "2.0.3",
   "description": "Web SDK for Genuin Inc.",
+  "sideEffects": false,
   "main": "index.js",
   "scripts": {
     "clean": "rimraf dist",
@@ -38,6 +39,9 @@
     "deploy:qa": "npx env-cmd -f ./.env.qa cross-env NODE_ENV=qa npx tsx scripts/npmVersionManager.ts && npm run build:qa && npm run publish:s3:qa",
     "deploy:prod": "npx env-cmd -f ./.env.production cross-env NODE_ENV=production npx tsx scripts/npmVersionManager.ts && npm run build:prod && npm run publish:s3:prod",
     "analyze": "cross-env ANALYZE=true NODE_ENV=production npm run build:prod",
+    "analyze:sunburst": "cross-env ANALYZE=true VISUALIZER_TEMPLATE=sunburst NODE_ENV=production npm run build:prod",
+    "analyze:network": "cross-env ANALYZE=true VISUALIZER_TEMPLATE=network NODE_ENV=production npm run build:prod",
+    "analyze:list": "cross-env ANALYZE=true VISUALIZER_TEMPLATE=list NODE_ENV=production npm run build:prod",
     "measure:baseline": "npx tsx scripts/measure-baseline.ts",
     "analyze:chunks": "npx tsx scripts/analyze-chunks.ts",
     "validate:chunks": "npx tsx scripts/validate-chunk-sizes.ts",
@@ -47,7 +51,7 @@
     "lint": "eslint --ext .ts,.tsx src/",
     "typecheck": "tsc --noEmit",
     "version:bump": "npx tsx scripts/npmVersionManager.ts",
-    "sdk:bs": "npm run build && serve -l 5555"
+    "sdk:bs": "npm run build:prod && serve -l 5555"
   },
   "author": "Genuin Inc.",
   "license": "ISC",

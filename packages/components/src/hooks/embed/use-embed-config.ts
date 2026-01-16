@@ -3,7 +3,7 @@ import { useBaseContext } from "@genuin/components/context/base";
 import { useMemo } from "react";
 import { useDeviceDetectMediaQuery } from "../use-devide-detect-media-query";
 import type { CustomizationType } from "@genuin/components/context/embed/embed.types";
-import { useBrowserDetect } from "@genuin/ui";
+import { useBrowserDetect } from "@genuin/ui/hooks";
 
 const MIN_EMBED_WIDTH = 150;
 const MIN_EMBED_HEIGHT = 268; // Based on 9:16 aspect ratio for 150 width
