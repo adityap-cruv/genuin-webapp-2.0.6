@@ -8,6 +8,8 @@ import autoprefixer from 'autoprefixer'
 import dotenv from 'dotenv'
 import postcssNested from 'postcss-nested'
 import { visualizer } from 'rollup-plugin-visualizer'
+import bundleAnalyzer from 'vite-bundle-analyzer'
+import { gzipSync } from 'zlib'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
@@ -485,20 +487,72 @@ const postBuildCssPlugin = () => ({
   },
 })
 
+// Bundle size report generator
+const bundleSizeReportPlugin = () => ({
+  name: 'bundle-size-report',
+  generateBundle(options, bundle) {
+    const report = []
+    let totalSize = 0
+    let totalGzipSize = 0
+
+    for (const [fileName, chunk] of Object.entries(bundle)) {
+      if (chunk.type === 'chunk') {
+        const size = chunk.code.length
+        const gzipSize = gzipSync(chunk.code).length
+        totalSize += size
+        totalGzipSize += gzipSize
+
+        report.push({
+          file: fileName,
+          sizeBytes: size,
+          gzipSizeBytes: gzipSize,
+        })
+      }
+    }
+
+    // Sort by size descending
+    report.sort((a, b) => b.sizeBytes - a.sizeBytes)
+
+    // Add totals
+    report.push({
+      file: 'TOTAL',
+      sizeBytes: totalSize,
+      gzipSizeBytes: totalGzipSize,
+    })
+
+    // Ensure dist directory exists
+    const distDir = resolve(__dirname, 'dist')
+    if (!fs.existsSync(distDir)) {
+      fs.mkdirSync(distDir, { recursive: true })
+    }
+
+    // Write JSON report
+    const reportPath = resolve(__dirname, 'dist/bundle-size-report.json')
+    fs.writeFileSync(reportPath, JSON.stringify(report, null, 2))
+    console.log(`✓ Bundle size report generated: ${reportPath}`)
+  },
+})
+
 export default defineConfig({
   plugins: [
     react(),
     genuinResolver(),
     copyLoaderPlugin(),
     postBuildCssPlugin(),
+    bundleSizeReportPlugin(),
+    // process.env.ANALYZE === 'true' &&
+    //   visualizer({
+    //     filename: 'stats.html',
+    //     template: process.env.VISUALIZER_TEMPLATE || 'treemap', // Options: 'treemap', 'sunburst', 'network', 'raw-data', 'list'
+    //     open: true, // Automatically open the report in browser
+    //     gzipSize: true, // Show gzipped sizes
+    //     brotliSize: true, // Show brotli sizes
+    //     sourcemap: process.env.NODE_ENV !== 'production', // Analyze sourcemaps for more accurate sizes
+    //   }),
     process.env.ANALYZE === 'true' &&
-      visualizer({
-        filename: 'stats.html',
-        template: process.env.VISUALIZER_TEMPLATE || 'treemap', // Options: 'treemap', 'sunburst', 'network', 'raw-data', 'list'
-        open: true, // Automatically open the report in browser
-        gzipSize: true, // Show gzipped sizes
-        brotliSize: true, // Show brotli sizes
-        sourcemap: true, // Analyze sourcemaps for more accurate sizes
+      bundleAnalyzer({
+        analyzerMode: 'static',
+        openAnalyzer: true,
       }),
   ],
 
