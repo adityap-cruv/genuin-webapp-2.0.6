@@ -125,7 +125,7 @@ export function Player({
             id={"feed-player--" + post.video.id}
             poster={post.video.thumbnail ?? ""}
             className={cn(
-              "gencl:h-full gencl:w-full",
+              "gencl:h-full! gencl:w-full",
               videoCrop
                 ? "gencl:bg-secondary-200 gencl:object-cover"
                 : "gencl:object-contain"
