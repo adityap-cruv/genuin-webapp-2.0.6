@@ -241,7 +241,7 @@ export const FeedViewCore = memo(function FeedViewCore({
       <div
         id="gencl-feed-view"
         className={cn(
-          "gencl:flex  gencl:gap-4",
+          "gencl:flex gencl:w-full gencl:h-full gencl:gap-4",
           {
             [` gencl:sm:p-0! gencl:flex gencl:items-center gencl:mt-0 gencl:z-50 gencl:left-0 gencl:h-full gencl:w-full ${
               theme === "dark" ? "gencl:bg-black" : "gencl:bg-white"
@@ -252,9 +252,6 @@ export const FeedViewCore = memo(function FeedViewCore({
             // Apply fixed positioning from top 48px, if it's mobile and iheart(brand)
             "gencl:fixed gencl:top-12": isIHeart && !isDesktop,
           },
-          variant === "expand"
-            ? "gencl:w-screen gencl:h-screen"
-            : "gencl:w-full gencl:h-full",
           className
         )}
         {...restProps}
