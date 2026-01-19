@@ -110,7 +110,7 @@ export class GenuinSDK {
     this.embedDetailsManager = EmbedDetailsManager.getInstance()
     this.callbackQueueManager = new CallbackQueueManager()
     this.placementManager = PlacementManager.getInstance()
-    
+
     this.setupInternalEventHandlers()
   }
 
@@ -379,7 +379,12 @@ export class GenuinSDK {
       }
 
       // Handle pending actions from localStorage
-      this.handlePendingAction(embedDetails, element, user, brandDetails.brand_id)
+      this.handlePendingAction(
+        embedDetails,
+        element,
+        user,
+        brandDetails.brand_id,
+      )
 
       // Apply brand colors to the element
       this.themeManager.applyBrandColors(element, brandDetails.brand_colors)
@@ -483,12 +488,12 @@ export class GenuinSDK {
     brandId?: number,
   ): void {
     // brandId 2801 is for bargainhunter, 2476 is for usmagazine & 2808 is for lifeandstylemag.
-    const ignoreExpiry = brandId === 2801 || brandId === 2476 || brandId === 2808
+    const ignoreExpiry =
+      brandId === 2801 || brandId === 2476 || brandId === 2808
     const pendingAction = getPendingAction(ignoreExpiry)
     if (!pendingAction) return
-
-    if(ignoreExpiry) {
-      if(user) {
+    if (ignoreExpiry) {
+      if (user) {
         clearPendingAction()
       }
       return
@@ -952,7 +957,9 @@ export class GenuinSDK {
         case 'data-token':
           // Use token only if it's a valid value (not null, undefined, empty, or 'undefined'/'null' strings)
           const tokenValue = value ?? configByUser?.token
-          answerToReturn.token = this.isValidToken(tokenValue) ? tokenValue : undefined
+          answerToReturn.token = this.isValidToken(tokenValue)
+            ? tokenValue
+            : undefined
           break
         case 'data-video-id':
           if (value || configByUser?.start_video_slug) {

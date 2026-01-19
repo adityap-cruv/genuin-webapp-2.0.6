@@ -89,7 +89,7 @@ export function loadExpandView(
     loaderDiv.classList.add('gen-sdk-class') // optional class
     loaderDiv.classList.add('gen-sdk-root-portal') // optional class
     loaderDiv.style.position = 'fixed'
-    loaderDiv.style.zIndex = '10'
+    loaderDiv.style.zIndex = '30'
     loaderDiv.style.top = '0'
     loaderDiv.style.left = '0'
     loaderDiv.style.width = '100%'

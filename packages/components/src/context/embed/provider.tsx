@@ -157,7 +157,7 @@ export function EmbedProvider({
           SDKEventEmitter.emit(SDKEventName.EXPAND_VIEW_CHANGED, true);
           return;
         }
-        changeActivePlayerType("expand-view");
+        changeActivePlayerTypeToExpandView();
       }
     };
 
@@ -211,6 +211,16 @@ export function EmbedProvider({
       embedId: stateEmbedData.embed_id,
       placementId: stateEmbedData.placement_id,
     });
+  }, []);
+
+  useEffect(() => {
+    if (embedData.startVideoSlug) {
+      changeActivePlayerTypeToExpandView();
+    }
+  }, [embedData]);
+
+  const changeActivePlayerTypeToExpandView = useCallback(() => {
+    changeActivePlayerType("expand-view");
   }, []);
 
   const updateSectionList = useCallback(
