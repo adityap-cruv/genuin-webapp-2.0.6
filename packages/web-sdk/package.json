@@ -1,6 +1,6 @@
 {
   "name": "@genuin/web-sdk",
-  "version": "2.0.3",
+  "version": "2.0.5",
   "description": "Web SDK for Genuin Inc.",
   "sideEffects": false,
   "main": "index.js",
