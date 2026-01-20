@@ -138,7 +138,7 @@ function getFilesRecursively(dir: string, basePath: string = dir): string[] {
 
 /**
  * Get all build files that need to be uploaded
- * Includes chunks, source maps (for QA), and main build files
+ * Includes chunks, source maps (for QA), main build files, and bundle size report
  */
 function getBuildFiles(): string[] {
   const NODE_ENV = process.env.NODE_ENV || 'qa'
@@ -160,6 +160,11 @@ function getBuildFiles(): string[] {
       filename === 'genuin-sdk.js' ||
       filename === 'genuin-sdk-legacy.js'
     ) {
+      return true
+    }
+
+    // Include bundle size report
+    if (filename === 'bundle-size-report.json') {
       return true
     }
 
@@ -233,7 +238,7 @@ async function uploadFile(
     contentType = 'application/javascript'
   } else if (ext === '.css') {
     contentType = 'text/css'
-  } else if (ext === '.map') {
+  } else if (ext === '.map' || ext === '.json') {
     contentType = 'application/json'
   }
 
