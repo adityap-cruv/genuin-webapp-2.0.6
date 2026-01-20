@@ -555,7 +555,6 @@ export class GenuinSDK {
       brandId === 2801 || brandId === 2476 || brandId === 2808
     const pendingAction = getPendingAction(ignoreExpiry)
     if (!pendingAction) return
-
     if (ignoreExpiry) {
       if (user) {
         clearPendingAction()
