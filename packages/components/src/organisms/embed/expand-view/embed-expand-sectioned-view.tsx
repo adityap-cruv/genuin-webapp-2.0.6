@@ -2,22 +2,13 @@ import { EmbedExpandView } from "./expand-view";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { useBaseContext, useEmbedContext } from "@genuin/components/context";
 import { useEffect, useMemo, useState } from "react";
-import {
-  setQueryDataForJoinCommunityStatusInFeed,
-  setQueryDataForGroupSubscriptionChangeInFeed,
-  useFeed,
-} from "@genuin/components/react-query/api/feed";
+import { useFeed } from "@genuin/components/react-query/api/feed";
 import { getQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
 import { isMiddlewareOverlayEnabled } from "@genuin/components/lib/utils";
-import { useQueryClient } from "@tanstack/react-query";
-import {
-  SDKEventEmitter,
-  SDKListenerEventName,
-} from "@genuin/components/lib/sdk-event-emitter";
 
 type EmbedExpandViewProps = {
   videos: PostDetailsType[];
-  pageSession: string;
+  pageSession?: string;
 };
 
 export function EmbedExpandSectionedView({

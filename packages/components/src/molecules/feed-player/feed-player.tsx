@@ -59,6 +59,7 @@ export const FeedPlayer = memo(function FeedPlayer({
   onLoadStart,
   ...props
 }: FeedPlayerProps) {
+  // adUrl = undefined;
   const { muted, volume, playbackSpeed, baseContextManager } = useBaseContext();
   // const embedDetails = useSafeEmbedContext();
   const {

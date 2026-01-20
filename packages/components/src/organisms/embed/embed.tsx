@@ -40,65 +40,54 @@ import { isMiddlewareOverlayEnabled } from "@genuin/components/lib/utils";
 import {
   SDKEventEmitter,
   SDKEventName,
-  SDKListenerEventName,
 } from "@genuin/components/lib/sdk-event-emitter";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { isSlideVisible } from "./utils";
 import { FetchNextPageHandler } from "./fetch-next-page-handler";
 
-const EmbedExpandView = lazy(() =>
-  import("./expand-view").then((m) => ({ default: m.EmbedExpandView }))
-);
-
 const IheartUrlManager = lazy(() =>
-  import("./iheart-url-manager").then((m) => ({ default: m.IheartUrlManager }))
-);
-
-const EmbedExpandSectionedView = lazy(() =>
-  import("./embed-expand-sectioned-view").then((m) => ({
-    default: m.EmbedExpandSectionedView,
+  import("./iheart-url-manager.js").then((m) => ({
+    default: m.IheartUrlManager,
   }))
 );
 
 // Lazy load GridView
 const GridView = lazy(() =>
-  import("./grid-view/grid-view").then((m) => ({ default: m.GridView }))
-) as React.ComponentType<any>;
+  import("./grid-view/grid-view.js").then((m) => ({ default: m.GridView }))
+);
 
-// Lazy load PipView
-const PipView = lazy(() =>
-  import("./pip-view/pip-view").then((m) => ({ default: m.PipView }))
-) as React.ComponentType<any>;
+import { PipViewLoader } from "./pip-view/pip-view-loader";
+import { ExpandViewLoader } from "./expand-view/expand-view-loader";
 
 // Lazy load NavigationButtonsWithContext
 const NavigationButtonsWithContext = lazy(() =>
-  import("./navigation-buttons").then((m) => ({
+  import("./navigation-buttons.js").then((m) => ({
     default: m.NavigationButtonsWithContext,
   }))
 ) as React.ComponentType<any>;
 
 // Lazy load EmbedSwiper
 const EmbedSwiper = lazy(() =>
-  import("../../molecules/embed-swiper").then((m) => ({
+  import("../../molecules/embed-swiper/index.js").then((m) => ({
     default: m.EmbedSwiper,
   }))
 ) as React.ComponentType<any>;
 
 // Lazy load EmbedHeader
 const EmbedHeader = lazy(() =>
-  import("../../molecules/embed-header").then((m) => ({
+  import("../../molecules/embed-header/index.js").then((m) => ({
     default: m.EmbedHeader,
   }))
 ) as React.ComponentType<any>;
 
 // Lazy load Toaster
-const Toaster = lazy(() =>
-  import("@genuin/ui").then((m) => ({ default: m.Toaster }))
-) as React.ComponentType<any>;
+// const Toaster = lazy(() =>
+//   import("@genuin/ui").then((m) => ({ default: m.Toaster }))
+// ) as React.ComponentType<any>;
 
 // Lazy load EmbedItem
 const EmbedItem = lazy(() =>
-  import("./embed-tile-item").then((m) => ({ default: m.EmbedItem }))
+  import("./embed-tile-item.js").then((m) => ({ default: m.EmbedItem }))
 ) as React.ComponentType<any>;
 
 const embedVariants = cva("gencl:rounded-md gencl:overflow-auto", {
@@ -486,21 +475,21 @@ export function Embed({
     [videos, isDesktop, SDKEventEmitter, SDKEventName, embedEventBus]
   );
 
-  if (config.view.isExpandOnly) {
-    return (
-      <Suspense fallback={null}>
-        <EmbedExpandView
-          videos={videos}
-          hasNextPage={!!hasNextPage}
-          isFetchingNextPage={isFetchingNextPage}
-          isLoading={isLoading}
-          queryKey={queryKey}
-          totalVideos={totalVideos}
-          fetchNextPage={fetchNextPage}
-        />
-      </Suspense>
-    );
-  }
+  // if (config.view.isExpandOnly) {
+  //   return (
+  //     <Suspense fallback={null}>
+  //       <EmbedExpandView
+  //         videos={videos}
+  //         hasNextPage={!!hasNextPage}
+  //         isFetchingNextPage={isFetchingNextPage}
+  //         isLoading={isLoading}
+  //         queryKey={queryKey}
+  //         totalVideos={totalVideos}
+  //         fetchNextPage={fetchNextPage}
+  //       />
+  //     </Suspense>
+  //   );
+  // }
 
   if (isError) {
     return (
@@ -587,12 +576,12 @@ export function Embed({
               variant={embedVariant}
             />
             <EmbedSwiper
-              onSwiper={(swiperInstance) => setSwiper(swiperInstance)}
+              onSwiper={(swiperInstance: any) => setSwiper(swiperInstance)}
               forFeed={config.view.isFeed}
               aspectRatio={embedData.aspect_ratio}
               spaceBetweenVideos={spaceBetweenVideos}
               isIheartLayout={isIheartLayout}
-              onSlideChange={(swiperInstance) => {
+              onSlideChange={(swiperInstance: any) => {
                 // Early safety check
                 if (!swiperInstance) return;
 
@@ -681,34 +670,25 @@ export function Embed({
         )}
       </EmbedManagerProvider>
       {config.expandViewConfig.enable && (
-        <>
-          {isSectioned ? (
-            <Suspense fallback={null}>
-              <EmbedExpandSectionedView
-                videos={filteredPost}
-                pageSession={feedData?.pages[0]?.pageSession}
-              />
-            </Suspense>
-          ) : (
-            <Suspense fallback={null}>
-              <EmbedExpandView
-                videos={filteredPost}
-                hasNextPage={!!hasNextPage}
-                isFetchingNextPage={isFetchingNextPage}
-                isLoading={isLoading}
-                queryKey={queryKey}
-                totalVideos={totalVideos}
-                fetchNextPage={fetchNextPage}
-              />
-            </Suspense>
-          )}
-        </>
+        <ExpandViewLoader
+          videos={filteredPost}
+          isSectioned={isSectioned}
+          pageSession={feedData?.pages[0]?.pageSession}
+          hasNextPage={!!hasNextPage}
+          isFetchingNextPage={isFetchingNextPage}
+          isLoading={isLoading}
+          queryKey={queryKey}
+          totalVideos={totalVideos}
+          fetchNextPage={fetchNextPage}
+        />
       )}
-      <PipView
-        totalVideos={feedData?.pages[0]?.totalVideos}
-        videos={filteredPost ?? []}
-        isLoading={isLoading}
-      />
+      {config.view.isFloatingView && (
+        <PipViewLoader
+          totalVideos={feedData?.pages[0]?.totalVideos}
+          videos={filteredPost ?? []}
+          isLoading={isLoading}
+        />
+      )}
     </div>
   );
 }

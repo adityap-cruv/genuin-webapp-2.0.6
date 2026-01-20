@@ -17,23 +17,21 @@ import {
 } from "@genuin/components/lib/sdk-event-emitter";
 
 const FeedView = lazy(() =>
-  import("@genuin/components/templates/feed").then((module) => ({
+  import("../../../templates/feed/index").then((module) => ({
     default: module.FeedView,
   }))
 );
 
 const StandardWall = lazy(() =>
-  import("@genuin/components/page/standard-wall/standard-wall").then(
-    (module) => ({
-      default: module.StandardWall,
-    })
-  )
+  import("../../../page/standard-wall/standard-wall").then((module) => ({
+    default: module.StandardWall,
+  }))
 );
 
 const IheartFullscreenContainer = lazy(() =>
-  import("@genuin/components/molecules/iheart-full-screen-contaner").then(
-    (module) => ({ default: module.IheartFullscreenContainer })
-  )
+  import("../../../molecules/iheart-full-screen-contaner").then((module) => ({
+    default: module.IheartFullscreenContainer,
+  }))
 );
 type EmbedExpandViewProps = {
   videos: PostDetailsType[];
