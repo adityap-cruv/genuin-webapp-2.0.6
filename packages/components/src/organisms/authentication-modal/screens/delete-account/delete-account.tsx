@@ -1,5 +1,5 @@
 import { ComponentProps, useCallback } from "react";
-import { sanitizeInput } from "@genuin/components/lib/utils";
+import { sanitizeInput } from "@genuin/ui/lib/sanitize";
 import { cn } from "@genuin/ui/lib/utils";
 import { useAuthenticationModalContext } from "../../context";
 

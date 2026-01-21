@@ -6,16 +6,18 @@ import { ControlLayerPropsType } from "./control-layer.types";
 import { usePlayerContext } from "../context";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 
-const Ad = lazy(() => import("./ad").then((m) => ({ default: m.Ad })));
+const Ad = lazy(() => import("./ad.js").then((m) => ({ default: m.Ad })));
 const Default = lazy(() =>
-  import("./default").then((m) => ({ default: m.Default }))
+  import("./default.js").then((m) => ({ default: m.Default }))
 );
-const Embed = lazy(() => import("./embed").then((m) => ({ default: m.Embed })));
+const Embed = lazy(() =>
+  import("./embed.js").then((m) => ({ default: m.Embed }))
+);
 const Placement = lazy(() =>
-  import("./placement").then((m) => ({ default: m.Placement }))
+  import("./placement.js").then((m) => ({ default: m.Placement }))
 );
 const EmbedPip = lazy(() =>
-  import("./embed-pip").then((m) => ({ default: m.EmbedPip }))
+  import("./embed-pip.js").then((m) => ({ default: m.EmbedPip }))
 );
 
 export const controlLayerVariant = cva(

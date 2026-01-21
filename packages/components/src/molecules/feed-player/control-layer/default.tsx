@@ -11,9 +11,14 @@ const ExpandViewDetails = React.lazy(() =>
   import("./expand-view").then((m) => ({ default: m.ExpandViewDetails }))
 ) as React.ComponentType<any>;
 
+const Linkouts = React.lazy(() =>
+  import("@genuin/components/organisms/linkouts").then((m) => ({
+    default: m.Linkouts,
+  }))
+) as React.ComponentType<any>;
+
 import { PlaybackSpeedCapsule } from "@genuin/components/molecules/playback-speed/speed-capsule";
 import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
-import { Linkouts } from "@genuin/components/organisms/linkouts";
 import { SpeedControlSideBars } from "../../playback-speed/speed-control-bars";
 import { VideoEditActionButtons } from "./controls/control-buttons";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
@@ -328,15 +333,19 @@ export function Default({
                   }
                 />
 
-                <Linkouts
-                  isActive={isActive}
-                  linkouts={postDetails.video.linkouts}
-                  linkoutId={postDetails.video.linkoutId}
-                  videoDetails={postDetails.video}
-                  totalVideos={totalVideos}
-                  positionIndex={positionIndex}
-                  autoplay={embedConfig.video.videoAutoplay}
-                />
+                {postDetails.video.linkoutId && (
+                  <Suspense fallback={null}>
+                    <Linkouts
+                      isActive={isActive}
+                      linkouts={postDetails.video.linkouts}
+                      linkoutId={postDetails.video.linkoutId}
+                      videoDetails={postDetails.video}
+                      totalVideos={totalVideos}
+                      positionIndex={positionIndex}
+                      autoplay={embedConfig.video.videoAutoplay}
+                    />
+                  </Suspense>
+                )}
               </div>
             )}
 

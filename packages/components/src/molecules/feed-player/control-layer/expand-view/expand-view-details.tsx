@@ -21,7 +21,6 @@ import { Pills } from "@genuin/components/molecules/feed-player/pills";
 import { controlLayerVariant } from "../control-layer";
 import { VariantProps } from "class-variance-authority";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
-import { Linkouts } from "@genuin/components/organisms/linkouts";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { Image } from "@genuin/ui/components/image";
@@ -33,11 +32,18 @@ import { Link } from "@genuin/components/molecules/link";
 import { getBaseUrl } from "@genuin/components/lib/utils";
 import { ClipPlayerCTA } from "../embed/iheart/clip-player-cta";
 import { getBaseUrlWithouthighlights } from "../embed/iheart/use-iheart-playback";
+import type { ExpandViewCallbacks } from "./types";
 
 // Lazy load heavy components
 const Actions = lazy(() =>
   import("../../../actions").then((m) => ({
     default: m.Actions,
+  }))
+) as React.ComponentType<any>;
+
+const Linkouts = lazy(() =>
+  import("@genuin/components/organisms/linkouts").then((m) => ({
+    default: m.Linkouts,
   }))
 ) as React.ComponentType<any>;
 
@@ -59,25 +65,8 @@ const brandHidesCommunityFeatures = (type: BrandLayoutType): boolean =>
 type ExpandViewProps = ComponentProps<"div"> & {
   postDetails: PostDetailsType;
   isActive: boolean;
-  onReactionStateChange?: (
-    videoId: string,
-    videoSlug: string,
-    isReacted: boolean
-  ) => void;
-  onGroupJoinStatusChange?: ComponentProps<
-    typeof Pills
-  >["onGroupJoinStatusChange"];
-  onGroupSubscriptionChange?: ComponentProps<
-    typeof Pills
-  >["onGroupSubscriptionChange"];
-  onCommunityJoinStatusChange?: ComponentProps<
-    typeof Pills
-  >["onCommunityJoinStatusChange"];
-  onCommentCountChange?: ComponentProps<
-    typeof CommentsDialog
-  >["onCommentCountChange"];
-  onSwiperToggle?: (disable: boolean) => void;
-} & VariantProps<typeof controlLayerVariant>;
+} & ExpandViewCallbacks &
+  VariantProps<typeof controlLayerVariant>;
 
 /**
  * Hook to get layout configuration and shared logic
@@ -665,18 +654,22 @@ export function ExpandViewDetails({
             )}
           </div>
 
-          {showLinkoutInExpand && brandLayoutType !== "iheart" && (
-            <Linkouts
-              linkouts={postDetails.video.linkouts}
-              linkoutId={postDetails.video.linkoutId}
-              isActive={isActive}
-              className={cn("gencl:w-full gencl:z-10", className)}
-              videoDetails={postDetails.video}
-              totalVideos={totalVideos}
-              positionIndex={positionIndex}
-              autoplay={videoAutoplay}
-            />
-          )}
+          {showLinkoutInExpand &&
+            brandLayoutType !== "iheart" &&
+            postDetails.video.linkoutId && (
+              <Suspense fallback={null}>
+                <Linkouts
+                  linkouts={postDetails.video.linkouts}
+                  linkoutId={postDetails.video.linkoutId}
+                  isActive={isActive}
+                  className={cn("gencl:w-full gencl:z-10", className)}
+                  videoDetails={postDetails.video}
+                  totalVideos={totalVideos}
+                  positionIndex={positionIndex}
+                  autoplay={videoAutoplay}
+                />
+              </Suspense>
+            )}
 
           <AdaptiveDescription
             video={postDetails.video}

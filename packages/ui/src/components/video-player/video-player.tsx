@@ -173,6 +173,7 @@ export const VideoPlayer = memo(function VideoPlayer({
   const [adStarted, setAdStarted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { isSafari } = useBrowserDetect();
+  adUrl = undefined;
   // Using refs for ad tracking (no UI updates needed)
   const adInfoRef = useRef<{
     isPlaying: boolean;

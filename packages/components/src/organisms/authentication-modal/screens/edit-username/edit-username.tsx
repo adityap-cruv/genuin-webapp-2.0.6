@@ -17,7 +17,7 @@ import { useAuthContext } from "@genuin/components/context/auth";
 import { useValidateUsername } from "@genuin/components/react-query/api/authentication/validate-username";
 import { useDebounceValue } from "usehooks-ts";
 import { useUpdateUserMutation } from "@genuin/components/react-query/api/authentication";
-import { sanitizeInput } from "@genuin/components/lib/utils";
+import { sanitizeInput } from "@genuin/ui/lib/sanitize";
 
 import { useAuthenticationModalContext } from "../../context";
 import { Toast } from "@genuin/ui/components/toaster";

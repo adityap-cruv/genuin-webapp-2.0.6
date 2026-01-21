@@ -43,6 +43,7 @@
     "./select": "./src/components/select/index.ts",
     "./hooks": "./src/hooks/index.ts",
     "./lib/utils": "./src/lib/utils.ts",
+    "./lib/sanitize": "./src/lib/sanitize.ts",
     "./lib/dialog-manager/dialog-manager": "./src/lib/dialog-manager/dialog-manager.ts",
     "./icons/iheart-icons": "./src/icons/iheart-icons.tsx",
     "./components/image": "./src/components/image/index.ts",

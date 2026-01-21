@@ -1,7 +1,12 @@
 import { cn, getFormattedDuration, getMonthYear } from "@genuin/ui/lib/utils";
 import { ControlLayerPropsType } from "../control-layer.types";
-import { Linkouts } from "@genuin/components/organisms/linkouts";
-import { type FC, useMemo } from "react";
+import { type FC, useMemo, lazy, Suspense } from "react";
+
+const Linkouts = lazy(() =>
+  import("@genuin/components/organisms/linkouts").then((m) => ({
+    default: m.Linkouts,
+  }))
+) as React.ComponentType<any>;
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { EmbedControls } from "../controls/embed";
 import { Stats } from "../../../stats";
@@ -183,14 +188,16 @@ export const DefaultPlacement: FC<ControlLayerPropsType> = ({
   const linkoutSection = useMemo(
     () => (
       <>
-        {contentDisplay.showVideoLinkouts && (
-          <Linkouts
-            variant="embed"
-            isActive={isActive}
-            showImmediately
-            linkouts={postDetails.video.linkouts}
-            linkoutId={postDetails.video.linkoutId}
-          />
+        {contentDisplay.showVideoLinkouts && postDetails.video.linkoutId && (
+          <Suspense fallback={null}>
+            <Linkouts
+              variant="embed"
+              isActive={isActive}
+              showImmediately
+              linkouts={postDetails.video.linkouts}
+              linkoutId={postDetails.video.linkoutId}
+            />
+          </Suspense>
         )}
       </>
     ),
