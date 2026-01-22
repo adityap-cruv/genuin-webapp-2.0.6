@@ -384,6 +384,7 @@ export async function uploadBuildsToS3(): Promise<void> {
   progressBar.start(totalUploads, 0)
 
   try {
+    const uploadPromises: Promise<void>[] = []
     for (const filePath of buildFiles) {
       if (!fs.existsSync(filePath)) {
         console.warn(
@@ -394,16 +395,12 @@ export async function uploadBuildsToS3(): Promise<void> {
       }
 
       for (const uploadPath of selectedPaths) {
-        await uploadFile(
-          s3Client,
-          bucketName,
-          filePath,
-          uploadPath,
-          progressBar,
+        uploadPromises.push(
+          uploadFile(s3Client, bucketName, filePath, uploadPath, progressBar),
         )
       }
     }
-
+    await Promise.all(uploadPromises)
     progressBar.stop()
     console.log(chalk.green('\n✓ S3 upload completed successfully!'))
 
