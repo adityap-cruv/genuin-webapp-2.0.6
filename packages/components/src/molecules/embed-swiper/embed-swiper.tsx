@@ -17,7 +17,9 @@ import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config
 
 // Lazy load NativeFeedScroll
 const NativeFeedScroll = lazy(() =>
-  import("../native-feed-scroll").then((m) => ({ default: m.NativeFeedScroll }))
+  import("../native-feed-scroll/index.js").then((m) => ({
+    default: m.NativeFeedScroll,
+  }))
 );
 
 type EmbedSwiperProps = {

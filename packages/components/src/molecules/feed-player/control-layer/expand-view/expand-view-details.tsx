@@ -36,19 +36,19 @@ import type { ExpandViewCallbacks } from "./types";
 
 // Lazy load heavy components
 const Actions = lazy(() =>
-  import("../../../actions").then((m) => ({
+  import("../../../actions/index.js").then((m) => ({
     default: m.Actions,
   }))
 ) as React.ComponentType<any>;
 
 const Linkouts = lazy(() =>
-  import("@genuin/components/organisms/linkouts").then((m) => ({
+  import("@genuin/components/organisms/linkouts/index.js").then((m) => ({
     default: m.Linkouts,
   }))
 ) as React.ComponentType<any>;
 
 const CommentsDialog = lazy(() =>
-  import("../../../comments").then((m) => ({
+  import("../../../comments/index.js").then((m) => ({
     default: m.CommentsDialog,
   }))
 ) as React.ComponentType<any>;

@@ -1,14 +1,14 @@
 import { cn, detectAccessibilityMode } from "@genuin/ui/utils";
 import { useBaseContext } from "@genuin/components/context/base";
 const ControlLayer = lazy(() =>
-  import("../../molecules/feed-player/control-layer").then((m) => ({
+  import("../../molecules/feed-player/control-layer/index.js").then((m) => ({
     default: m.ControlLayer,
   }))
 ) as React.ComponentType<any>;
 
 // Lazy load video player to defer heavy playback logic
 const FeedPlayer = lazy(() =>
-  import("../../molecules/feed-player").then((m) => ({
+  import("../../molecules/feed-player/index.js").then((m) => ({
     default: m.FeedPlayer,
   }))
 ) as React.ComponentType<any>;

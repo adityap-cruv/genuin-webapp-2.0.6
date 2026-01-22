@@ -3,12 +3,12 @@ import { SwiperSlide } from "swiper/react";
 import { SwiperImplementation } from "./swiper-implementation";
 
 const Player = lazy(() =>
-  import("./player").then((m) => ({ default: m.Player }))
+  import("./player.js").then((m) => ({ default: m.Player }))
 );
 
 const WatchBoundaryOverlay = lazy(() =>
   import(
-    "../../molecules/feed-player/control-layer/watch-boundary-overlay"
+    "../../molecules/feed-player/control-layer/watch-boundary-overlay.js"
   ).then((m) => ({ default: m.default }))
 ) as React.ComponentType<any>;
 

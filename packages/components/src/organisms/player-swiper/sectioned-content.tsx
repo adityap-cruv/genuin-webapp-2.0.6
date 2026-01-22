@@ -7,8 +7,8 @@ import { SwiperImplementation } from "./swiper-implementation";
 
 const WatchBoundaryOverlay = lazy(() =>
   import(
-    "../../molecules/feed-player/control-layer/watch-boundary-overlay"
-  ).then((m) => ({ default: m.default }))
+    "../../molecules/feed-player/control-layer/watch-boundary-overlay.js"
+  ).then((m) => ({ default: m.WatchBoundaryOverlay }))
 ) as React.ComponentType<any>;
 
 interface SectionedContentProps {

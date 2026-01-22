@@ -4,7 +4,7 @@ import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { Button as PrimitiveButton } from "@genuin/ui/button";
 import { Toast } from "@genuin/ui/components/toaster";
 const AuthenticationModal = React.lazy(() =>
-  import("../../organisms/authentication-modal").then((m) => ({
+  import("../../organisms/authentication-modal/index.js").then((m) => ({
     default: m.AuthenticationModal,
   }))
 );
@@ -96,10 +96,7 @@ export const ReactionButton = React.memo(function ReactionButton({
       action: contentType === "COMMENT" ? "comment-spark" : "spark",
       videoSlug: videoSlug,
       commentId: contentType === "COMMENT" ? contentId : undefined,
-      videoId:
-        brandLayoutType === "ted"
-            ? videoSlug
-            : contentId,
+      videoId: brandLayoutType === "ted" ? videoSlug : contentId,
       embedId: embedDetails?.embedData.embed_id,
     },
   });

@@ -6,7 +6,8 @@
   "authors": "Genuin Inc.",
   "version": "1.0.0",
   "exports": {
-    ".": "./src/components/index.ts",
+    ".": "./src/index.ts",
+    "./*": "./src/*",
     "./globals.css": "./src/globals.css",
     "./styles": "./dist/index.css",
     "./assets/*": "./src/assets/*"

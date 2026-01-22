@@ -8,7 +8,11 @@ import { Suspense } from "react";
 import { cn, isValidHTTPS } from "@genuin/ui/lib/utils";
 import { getWebpUrlForImage } from "@genuin/ui/utils";
 
-const AvatarWithZoom = React.lazy(() => import("./avatar-with-zoom"));
+const AvatarWithZoom = React.lazy(() =>
+  import("./avatar-with-zoom.js").then((m) => ({
+    default: m.AvatarWithZoom,
+  }))
+);
 
 const avatarVariants = cva(
   "gencl:relative gencl:flex gencl:w-min gencl:shrink-0 gencl:overflow-hidden gencl:rounded-full",

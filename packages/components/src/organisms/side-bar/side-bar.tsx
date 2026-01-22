@@ -18,13 +18,12 @@ import { lazy, Suspense } from "react";
 import type { AuthenticationModalProps } from "@genuin/components/organisms/authentication-modal";
 
 const AuthenticationModal = lazy(() =>
-  import("../../organisms/authentication-modal").then((m) => ({
+  import("../../organisms/authentication-modal/index.js").then((m) => ({
     default: m.AuthenticationModal,
   }))
 ) as React.ComponentType<AuthenticationModalProps>;
 
 import { LoginIcon, QRIcon, XIcon } from "@genuin/ui/icons";
-
 
 type SideBarProps = ComponentProps<"aside"> &
   VariantProps<typeof sidebarVariants> & {
@@ -115,7 +114,9 @@ function ProxyComponent({
   return (
     <div className={cn(proxyComponentVariant({ variant }))}>
       {!isAuthenticated && showLogin && (
-        <Suspense fallback={<ProxyItem icon={<LoginIcon size="lg" />} text="Log in" />}>
+        <Suspense
+          fallback={<ProxyItem icon={<LoginIcon size="lg" />} text="Log in" />}
+        >
           <AuthenticationModal
             asChild={false}
             customStep="SIGNIN"
@@ -126,7 +127,9 @@ function ProxyComponent({
         </Suspense>
       )}
       {showApp && (
-        <Suspense fallback={<ProxyItem icon={<QRIcon size="lg" />} text="Get app" />}>
+        <Suspense
+          fallback={<ProxyItem icon={<QRIcon size="lg" />} text="Get app" />}
+        >
           <AuthenticationModal
             asChild={false}
             customStep="GET_APP"

@@ -11,7 +11,7 @@ import { lazy, Suspense } from "react";
 import { AuthenticationModalProps } from "@genuin/components/organisms/authentication-modal";
 
 const AuthenticationModal = lazy(() =>
-  import("../../organisms/authentication-modal").then((m) => ({
+  import("../../organisms/authentication-modal/index.js").then((m) => ({
     default: m.AuthenticationModal,
   }))
 ) as React.ComponentType<AuthenticationModalProps>;
@@ -68,6 +68,5 @@ export function VideoPage({ videoId }: { videoId: string }) {
         </Suspense>
       )}
     </>
-
   );
 }

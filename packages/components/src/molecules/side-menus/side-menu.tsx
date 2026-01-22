@@ -4,9 +4,11 @@ import type { MenuItem } from "./side-menu.types";
 import type { AuthenticationModalProps } from "@genuin/components/organisms/authentication-modal";
 
 const AuthenticationModal = lazy(() =>
-  import("@genuin/components/organisms/authentication-modal").then((m) => ({
-    default: m.AuthenticationModal,
-  }))
+  import("@genuin/components/organisms/authentication-modal/index.js").then(
+    (m) => ({
+      default: m.AuthenticationModal,
+    })
+  )
 ) as React.ComponentType<AuthenticationModalProps>;
 
 import { cn } from "@genuin/ui/lib/utils";

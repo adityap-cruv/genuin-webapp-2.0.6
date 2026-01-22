@@ -1,6 +1,6 @@
-import React, { memo, useCallback, Suspense, lazy, ComponentProps } from "react";
+import { useCallback, Suspense, lazy, ComponentProps } from "react";
 const AuthenticationModal = lazy(() =>
-  import("../../organisms/authentication-modal").then((m) => ({
+  import("../../organisms/authentication-modal/index.js").then((m) => ({
     default: m.AuthenticationModal,
   }))
 );

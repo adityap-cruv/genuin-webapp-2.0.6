@@ -2,7 +2,7 @@ import React, { useCallback, memo, Suspense, lazy } from "react";
 import type { CommunityUserRole } from "@genuin/components/types/post";
 import { useAuthContext } from "@genuin/components/context/auth";
 const AuthenticationModal = React.lazy(() =>
-  import("../../organisms/authentication-modal").then((m) => ({
+  import("../../organisms/authentication-modal/index.js").then((m) => ({
     default: m.AuthenticationModal,
   }))
 );

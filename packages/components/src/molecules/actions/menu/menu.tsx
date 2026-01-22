@@ -1,7 +1,7 @@
 import { useBaseContext } from "@genuin/components/context/base";
 import { PlaybackSpeed } from "@genuin/components/molecules/playback-speed";
 const Report = React.lazy(() =>
-  import("@genuin/components/molecules/report").then((m) => ({
+  import("@genuin/components/molecules/report/index.js").then((m) => ({
     default: m.Report,
   }))
 ) as React.ComponentType<any>;
@@ -18,7 +18,7 @@ import {
   DialogTrigger,
 } from "@genuin/ui/components/dialog/dialog";
 import { cn } from "@genuin/ui/lib/utils";
-import React, { ReactNode, useEffect, useMemo, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { ShareButton } from "@genuin/components/molecules/share-button";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { Link } from "../../link";
@@ -126,7 +126,12 @@ export function Menu({
       embedDetails?.embedData.card_layout_id !== 3 &&
       !isIndianExpress && {
         children: (
-          <Suspense fallback={menuItems({ text: "Report Post", className: "gencl:text-red" })}>
+          <Suspense
+            fallback={menuItems({
+              text: "Report Post",
+              className: "gencl:text-red",
+            })}
+          >
             <Report
               type="report-dialog"
               reportFor="VIDEO"
@@ -136,7 +141,9 @@ export function Menu({
               children={menuItems({
                 text: "Report Post",
                 className: "gencl:text-red",
-                ...(isMobile && { icon: <FlagIcon theme="danger" size="lg" /> }),
+                ...(isMobile && {
+                  icon: <FlagIcon theme="danger" size="lg" />,
+                }),
               })}
             />
           </Suspense>

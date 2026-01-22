@@ -8,11 +8,13 @@ import { Controls } from "./controls";
 import { PlayingState } from "./playing-state";
 import { Scrubber } from "./scrubber";
 const ExpandViewDetails = React.lazy(() =>
-  import("./expand-view").then((m) => ({ default: m.ExpandViewDetails }))
+  import("./expand-view/index.js").then((m) => ({
+    default: m.ExpandViewDetails,
+  }))
 ) as React.ComponentType<any>;
 
 const Linkouts = React.lazy(() =>
-  import("@genuin/components/organisms/linkouts").then((m) => ({
+  import("@genuin/components/organisms/linkouts/index.js").then((m) => ({
     default: m.Linkouts,
   }))
 ) as React.ComponentType<any>;
@@ -29,7 +31,6 @@ import {
 import { Button } from "@genuin/ui/button";
 import { useDoubleClick } from "@genuin/components/hooks/use-double-click";
 import { useAuthContext } from "@genuin/components/context";
-import { Toaster } from "@genuin/ui/toaster";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 
 export function Default({

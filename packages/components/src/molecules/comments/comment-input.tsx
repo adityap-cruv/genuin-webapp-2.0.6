@@ -4,14 +4,16 @@ import { lazy, Suspense } from "react";
 import type { AuthenticationModalProps } from "@genuin/components/organisms/authentication-modal";
 
 const AuthenticationModal = lazy(() =>
-  import("@genuin/components/organisms/authentication-modal").then((m) => ({
-    default: m.AuthenticationModal,
-  }))
+  import("@genuin/components/organisms/authentication-modal/index.js").then(
+    (m) => ({
+      default: m.AuthenticationModal,
+    })
+  )
 ) as React.ComponentType<AuthenticationModalProps>;
 
 // Lazy load MentionInput to defer vendor-forms chunks (react-hook-form + zod)
 const MentionInput = lazy(() =>
-  import("../mention-input").then((m) => ({ default: m.MentionInput }))
+  import("../mention-input/index.js").then((m) => ({ default: m.MentionInput }))
 ) as React.ComponentType<any>;
 
 import { type CommentListType } from "@genuin/components/react-query/api/comments";
@@ -61,7 +63,10 @@ export function CommentInputBox({
   const { authenticationStatus, user, handleAuthCallback } = useAuthContext();
   // const { brandDetails } = useBaseContext();
   const embedDetails = useSafeEmbedContext();
-  const { modalConfig , view : {brandLayoutType} } = useEmbedConfigs();
+  const {
+    modalConfig,
+    view: { brandLayoutType },
+  } = useEmbedConfigs();
   const authInfo = embedDetails?.embedData.authInfo;
 
   const returnQueryParams = useMemo(
@@ -141,16 +146,18 @@ export function CommentInputBox({
       );
     }
     return (
-      <Suspense fallback={
-        <div>
-          <MentionInput
-            videoId={videoId}
-            loopId={loopId}
-            onCommentPosted={onCommentPosted}
-            {...commentInputProps}
-          />
-        </div>
-      }>
+      <Suspense
+        fallback={
+          <div>
+            <MentionInput
+              videoId={videoId}
+              loopId={loopId}
+              onCommentPosted={onCommentPosted}
+              {...commentInputProps}
+            />
+          </div>
+        }
+      >
         <AuthenticationModal
           getAppData={{
             data: {
@@ -174,7 +181,6 @@ export function CommentInputBox({
         </AuthenticationModal>
       </Suspense>
     );
-
   }
 
   return (

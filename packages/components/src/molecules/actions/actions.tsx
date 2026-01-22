@@ -6,22 +6,26 @@ import {
 } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/utils";
 import { type ComponentProps, type ReactNode, useMemo } from "react";
-const Menu = lazy(() => import("./menu").then((m) => ({ default: m.Menu }))) as React.ComponentType<any>;
+const Menu = lazy(() =>
+  import("./menu/index.js").then((m) => ({ default: m.Menu }))
+);
 
 import { ReactionButton } from "@genuin/components/molecules/reaction-button";
 import { DynamicReactionIcon } from "@genuin/components/molecules/reaction-button";
 import { ShareButton } from "@genuin/components/molecules/share-button";
 const AuthenticationModal = lazy(() =>
-  import("@genuin/components/organisms/authentication-modal").then((m) => ({
-    default: m.AuthenticationModal,
-  }))
-) as React.ComponentType<any>;
+  import("@genuin/components/organisms/authentication-modal/index.js").then(
+    (m) => ({
+      default: m.AuthenticationModal,
+    })
+  )
+);
 
 const RepostModal = lazy(() =>
-  import("@genuin/components/organisms/repost-modal/repost-modal").then(
+  import("@genuin/components/organisms/repost-modal/repost-modal.js").then(
     (m) => ({ default: m.RepostModal })
   )
-) as React.ComponentType<any>;
+);
 
 import { useAuthContext } from "@genuin/components/context/auth";
 import { TooltipAction } from "./tooltip";

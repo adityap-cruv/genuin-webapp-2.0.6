@@ -1,7 +1,7 @@
 import { useEmbedContext } from "@genuin/components/context";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { useEmbedManagerContext } from "../context";
-import { useEffect, useState, ComponentProps, useMemo } from "react";
+import { ComponentProps, useMemo } from "react";
 import { cn, getAspectRatio } from "@genuin/ui/lib/utils";
 import { useEmbedDimensions } from "@genuin/components/hooks/embed/use-embed-dimensions";
 import { EmbedItem } from "../embed-tile-item";

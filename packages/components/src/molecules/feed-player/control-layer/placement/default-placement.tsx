@@ -3,7 +3,7 @@ import { ControlLayerPropsType } from "../control-layer.types";
 import { type FC, useMemo, lazy, Suspense } from "react";
 
 const Linkouts = lazy(() =>
-  import("@genuin/components/organisms/linkouts").then((m) => ({
+  import("@genuin/components/organisms/linkouts/index.js").then((m) => ({
     default: m.Linkouts,
   }))
 ) as React.ComponentType<any>;

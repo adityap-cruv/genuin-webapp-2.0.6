@@ -6,12 +6,12 @@ import type { PostDetailsType } from "@genuin/components/react-query/api/feed/sc
 import { lazy, Suspense } from "react";
 
 const Comments = lazy(() =>
-  import("../../molecules/comments/comments").then((m) => ({ default: m.Comments }))
+  import("../../molecules/comments/comments.js").then((m) => ({
+    default: m.Comments,
+  }))
 ) as React.ComponentType<any>;
 
-
 import { PostDetails } from "../post-details/post-details";
-
 
 type PostSidePanelPropsType = ComponentProps<"div"> & {
   postDetails: PostDetailsType;

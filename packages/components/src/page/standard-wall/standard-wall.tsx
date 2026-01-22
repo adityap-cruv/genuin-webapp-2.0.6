@@ -16,26 +16,30 @@ type StandardWallProps = {
 } & ComponentProps<"div">;
 
 const ProfileDetails = lazy(() =>
-  import("../profile-details").then((m) => ({ default: m.ProfileDetails }))
+  import("../profile-details/index.js").then((m) => ({
+    default: m.ProfileDetails,
+  }))
 );
 const GroupDetailsPage = lazy(() =>
-  import("../group-details/group-details").then((m) => ({
+  import("../group-details/group-details.js").then((m) => ({
     default: m.GroupDetailsPage,
   }))
 );
 const CommunityDetails = lazy(() =>
-  import("../community-details").then((m) => ({ default: m.CommunityDetails }))
+  import("../community-details/index.js").then((m) => ({
+    default: m.CommunityDetails,
+  }))
 );
 const VideoPage = lazy(() =>
-  import("../video").then((m) => ({ default: m.VideoPage }))
+  import("../video/index.js").then((m) => ({ default: m.VideoPage }))
 );
 const SettingsPage = lazy(() =>
-  import("@genuin/components/organisms/settings").then((m) => ({
+  import("@genuin/components/organisms/settings/index.js").then((m) => ({
     default: m.SettingsPage,
   }))
 );
 const Explore = lazy(() =>
-  import("../explore").then((m) => ({ default: m.Explore }))
+  import("../explore/index.js").then((m) => ({ default: m.Explore }))
 );
 // const MyVideos = lazy(() => import("@genuin/components/organisms/my-videos"));
 // const CreatePost = lazy(

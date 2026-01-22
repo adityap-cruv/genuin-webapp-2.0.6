@@ -4,7 +4,7 @@ import { type FC, lazy, Suspense } from "react";
 import { PriceTagIcon } from "@genuin/ui/icons";
 
 const Linkouts = lazy(() =>
-  import("@genuin/components/organisms/linkouts").then((m) => ({
+  import("@genuin/components/organisms/linkouts/index.js").then((m) => ({
     default: m.Linkouts,
   }))
 ) as React.ComponentType<any>;

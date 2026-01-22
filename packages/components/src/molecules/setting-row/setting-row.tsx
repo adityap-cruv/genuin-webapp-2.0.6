@@ -18,9 +18,11 @@ import { lazy, Suspense } from "react";
 import { AuthenticationModalProps } from "@genuin/components/organisms/authentication-modal";
 
 const AuthenticationModal = lazy(() =>
-  import("@genuin/components/organisms/authentication-modal").then((m) => ({
-    default: m.AuthenticationModal,
-  }))
+  import("@genuin/components/organisms/authentication-modal/index.js").then(
+    (m) => ({
+      default: m.AuthenticationModal,
+    })
+  )
 ) as React.ComponentType<AuthenticationModalProps>;
 import { StepsType } from "@genuin/components/organisms/authentication-modal/context";
 
@@ -154,5 +156,4 @@ export const SettingRow: FC<SettingFieldProps> = ({
       </AuthenticationModal>
     </Suspense>
   );
-
 };

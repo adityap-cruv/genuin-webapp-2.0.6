@@ -19,24 +19,26 @@ import { isMiddlewareOverlayEnabled } from "@genuin/components/lib/utils";
 
 const WatchBoundaryOverlay = lazy(() =>
   import(
-    "@genuin/components/molecules/feed-player/control-layer/watch-boundary-overlay"
-  ).then((m) => ({ default: m.default }))
+    "@genuin/components/molecules/feed-player/control-layer/watch-boundary-overlay.js"
+  ).then((m) => ({
+    default: m.WatchBoundaryOverlay,
+  }))
 );
 
 const ControlLayer = lazy(() =>
-  import("../../molecules/feed-player/control-layer").then((m) => ({
+  import("../../molecules/feed-player/control-layer/index.js").then((m) => ({
     default: m.ControlLayer,
   }))
 );
 
 const FeedPlayer = lazy(() =>
-  import("../../molecules/feed-player").then((m) => ({
+  import("../../molecules/feed-player/index.js").then((m) => ({
     default: m.FeedPlayer,
   }))
 );
 
 const Linkouts = lazy(() =>
-  import("../linkouts").then((m) => ({
+  import("../linkouts/index.js").then((m) => ({
     default: m.Linkouts,
   }))
 ) as React.ComponentType<any>;
