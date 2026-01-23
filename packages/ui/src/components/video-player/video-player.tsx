@@ -167,7 +167,7 @@ export const VideoPlayer = memo(function VideoPlayer({
   useImperativeHandle(ref, () => internalVideoRef.current as HTMLVideoElement, [
     internalVideoRef.current,
   ]);
-  adUrl = undefined;
+  // adUrl = undefined;
   const videoRef = internalVideoRef;
   const playerRef = useRef<OpenPlayerJS | null>(null);
   const isPlayerInitialized = useRef(false); // Track if player has been initialized
