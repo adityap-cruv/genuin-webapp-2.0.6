@@ -11,13 +11,13 @@ const ExpandViewDetails = React.lazy(() =>
   import("./expand-view/index.js").then((m) => ({
     default: m.ExpandViewDetails,
   }))
-) as React.ComponentType<any>;
+);
 
 const Linkouts = React.lazy(() =>
   import("@genuin/components/organisms/linkouts/index.js").then((m) => ({
     default: m.Linkouts,
   }))
-) as React.ComponentType<any>;
+);
 
 import { PlaybackSpeedCapsule } from "@genuin/components/molecules/playback-speed/speed-capsule";
 import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
