@@ -1,16 +1,16 @@
 import { cn } from "@genuin/ui/lib/utils";
 import { ControlLayerPropsType } from "../control-layer.types";
 import { type FC, lazy, Suspense } from "react";
+import { Stats } from "@genuin/components/molecules/stats";
+import { PlayIcon } from "@genuin/ui/icons";
+import { Controls } from "../controls/controls";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 const Linkouts = lazy(() =>
   import("@genuin/components/organisms/linkouts/index.js").then((m) => ({
     default: m.Linkouts,
   }))
-) as React.ComponentType<any>;
-import { Stats } from "@genuin/components/molecules/stats";
-import { PlayIcon } from "@genuin/ui/icons";
-import { Controls } from "../controls/controls";
-import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+);
 
 export const DefaultEmbed: FC<ControlLayerPropsType> = ({
   postDetails,
