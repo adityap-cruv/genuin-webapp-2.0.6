@@ -8,7 +8,6 @@ import {
 } from "@genuin/components/molecules/feed-player/context";
 import { useBoolean } from "usehooks-ts";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import { Linkouts } from "../linkouts";
 import { Stats } from "@genuin/components/molecules/stats";
 import { CommentIcon, PlayIcon } from "@genuin/ui/icons";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
@@ -20,21 +19,29 @@ import { isMiddlewareOverlayEnabled } from "@genuin/components/lib/utils";
 
 const WatchBoundaryOverlay = lazy(() =>
   import(
-    "@genuin/components/molecules/feed-player/control-layer/watch-boundary-overlay"
-  ).then((m) => ({ default: m.default }))
+    "@genuin/components/molecules/feed-player/control-layer/watch-boundary-overlay.js"
+  ).then((m) => ({
+    default: m.WatchBoundaryOverlay,
+  }))
 );
 
 const ControlLayer = lazy(() =>
-  import("../../molecules/feed-player/control-layer").then((m) => ({
+  import("../../molecules/feed-player/control-layer/index.js").then((m) => ({
     default: m.ControlLayer,
   }))
 );
 
 const FeedPlayer = lazy(() =>
-  import("../../molecules/feed-player").then((m) => ({
+  import("../../molecules/feed-player/index.js").then((m) => ({
     default: m.FeedPlayer,
   }))
 );
+
+const Linkouts = lazy(() =>
+  import("../linkouts/index.js").then((m) => ({
+    default: m.Linkouts,
+  }))
+) as React.ComponentType<any>;
 
 import { useEmbedManagerContext } from "../embed/context";
 
@@ -381,16 +388,18 @@ function OutsideComponents({ postDetails }: { postDetails: PostDetailsType }) {
     <>
       {showLinkout && postDetails.video.linkoutId && (
         <div className="gencl:h-27 gencl:w-full gencl:flex gencl:items-center">
-          <Linkouts
-            variant="embed"
-            isActive={true}
-            isOutside
-            showImmediately
-            linkouts={postDetails.video.linkouts}
-            linkoutId={postDetails.video.linkoutId}
-            videoDetails={postDetails.video}
-            autoplay={video.videoAutoplay}
-          />
+          <Suspense fallback={null}>
+            <Linkouts
+              variant="embed"
+              isActive={true}
+              isOutside
+              showImmediately
+              linkouts={postDetails.video.linkouts}
+              linkoutId={postDetails.video.linkoutId}
+              videoDetails={postDetails.video}
+              autoplay={video.videoAutoplay}
+            />
+          </Suspense>
         </div>
       )}
 

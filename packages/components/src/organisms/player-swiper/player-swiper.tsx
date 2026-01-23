@@ -1,36 +1,38 @@
 "use client";
 import "swiper/css";
 import { useBoolean } from "usehooks-ts";
+import type { Swiper } from "swiper/types";
 
 import { useFeedContext } from "@genuin/components/templates/feed/context";
+import { Player } from "./player";
 
 const Actions = lazy(() =>
-  import("../../molecules/actions").then((m) => ({
+  import("../../molecules/actions/index.js").then((m) => ({
     default: m.Actions,
   }))
-) as React.ComponentType<any>;
+);
 // Using any for now to stop the bleed, will refine if possible
 
 // Lazy load heavy comment components to split vendor-forms chunk
 const Comments = lazy(() =>
-  import("../../molecules/comments/comments").then((m) => ({
+  import("../../molecules/comments/comments.js").then((m) => ({
     default: m.Comments,
   }))
 );
 const CommentsDialog = lazy(() =>
-  import("../../molecules/comments/comments-dialog").then((m) => ({
+  import("../../molecules/comments/comments-dialog.js").then((m) => ({
     default: m.CommentsDialog,
   }))
-) as React.ComponentType<any>;
+);
 
 const SectionedContent = lazy(() =>
-  import("./sectioned-content").then((m) => ({
+  import("./sectioned-content.js").then((m) => ({
     default: m.SectionedContent,
   }))
 );
 
 const NonSectionedContent = lazy(() =>
-  import("./non-sectioned-content").then((m) => ({
+  import("./non-sectioned-content.js").then((m) => ({
     default: m.NonSectionedContent,
   }))
 );
@@ -59,26 +61,26 @@ import { useFocusManagement } from "@genuin/components/hooks/use-focus-managemen
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 
 const CloseButton = lazy(() =>
-  import("./player-swiper-buttons").then((m) => ({ default: m.CloseButton }))
+  import("./player-swiper-buttons.js").then((m) => ({ default: m.CloseButton }))
 );
 const NavigationButton = lazy(() =>
-  import("./player-swiper-buttons").then((m) => ({
+  import("./player-swiper-buttons.js").then((m) => ({
     default: m.NavigationButton,
   }))
 );
 
 const PlayerHeader = lazy(() =>
-  import("./player-header").then((m) => ({ default: m.PlayerHeader }))
+  import("./player-header.js").then((m) => ({ default: m.PlayerHeader }))
 );
 
 const IHeartBackButton = lazy(() =>
-  import("./iheart/iheart-back-button").then((m) => ({
+  import("./iheart/iheart-back-button.js").then((m) => ({
     default: m.IHeartBackButton,
   }))
 );
 
 const SectionsTabs = lazy(() =>
-  import("./sections-tabs").then((m) => ({ default: m.SectionsTabs }))
+  import("./sections-tabs.js").then((m) => ({ default: m.SectionsTabs }))
 );
 
 type PlayerListPropsType = {

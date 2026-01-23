@@ -10,7 +10,8 @@ import { ComponentProps } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { cn, sanitizeInput } from "@genuin/ui/lib/utils";
+import { cn } from "@genuin/ui/lib/utils";
+import { sanitizeInput } from "@genuin/ui/lib/sanitize";
 import { useAuthContext } from "@genuin/components/context/auth";
 
 import { SubmitButton } from "../../submit-button";

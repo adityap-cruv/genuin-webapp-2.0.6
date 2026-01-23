@@ -3,13 +3,13 @@ import { type FC, lazy, Suspense } from "react";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 const IHeartControlLayer = lazy(() =>
-  import("./embed/iheart").then((module) => ({
+  import("./embed/iheart/index.js").then((module) => ({
     default: module.IHeartControlLayer,
   }))
 );
 
 const DefaultPlacement = lazy(() =>
-  import("./placement/default-placement").then((module) => ({
+  import("./placement/default-placement.js").then((module) => ({
     default: module.DefaultPlacement,
   }))
 );

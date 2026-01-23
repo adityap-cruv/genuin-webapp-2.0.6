@@ -1,5 +1,4 @@
 import { clsx, type ClassValue } from "clsx";
-import DOMPurify from "dompurify";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -179,19 +178,6 @@ export const abbreviateNumber = (value: number): string => {
   const result = (value < 0 ? "-" : "") + rounded + suffixes[suffixNum];
   return result;
 };
-
-/**
- * Sanitizes user input to prevent XSS attacks
- * Only allows plain text by escaping dangerous HTML characters
- * @param input - The user input to sanitize
- * @returns Sanitized plain text string
- */
-export function sanitizeInput(input: string | null | undefined): string {
-  if (typeof input !== "string" || input.trim() === "") return "";
-  return DOMPurify.sanitize(input, {
-    USE_PROFILES: { html: false },
-  });
-}
 
 /**
  * Converts an ISO 8601 date string to a local date format.

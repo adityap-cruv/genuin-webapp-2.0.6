@@ -17,7 +17,8 @@ import {
   FormMessage,
 } from "@genuin/ui/components/form";
 import { useSendOtpMutation } from "@genuin/components/react-query/api/authentication";
-import { getActionText, sanitizeInput } from "@genuin/components/lib/utils";
+import { getActionText } from "@genuin/components/lib/utils";
+import { sanitizeInput } from "@genuin/ui/lib/sanitize";
 import { useAuthenticationModalContext } from "../../context";
 import { useAuthContext } from "@genuin/components/context/auth";
 import { SubmitButton } from "../../submit-button";

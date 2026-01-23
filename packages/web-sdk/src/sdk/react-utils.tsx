@@ -23,7 +23,6 @@ interface ProviderModules {
   Toaster: ComponentType<any>
   Loader: ComponentType<any>
   Skeleton: ComponentType<any>
-  FeedSkeleton: ComponentType<any>
   getBrandType: (
     cardLayoutId?: number | null,
     videoLayoutId?: number | null,
@@ -181,10 +180,9 @@ async function loadProviders(): Promise<ProviderModules> {
   ])
 
   // Lazy load UI components
-  const [loaderModule, skeletonModule, feedSkeletonModule] = await Promise.all([
+  const [loaderModule, skeletonModule] = await Promise.all([
     import('@genuin/ui/components/loader'),
     import('@genuin/ui/components/skeleton'),
-    import('@genuin/components/templates/feed'),
   ])
 
   return {
@@ -198,7 +196,6 @@ async function loadProviders(): Promise<ProviderModules> {
     Toaster: (await import('@genuin/ui/components/toaster')).Toaster,
     Loader: loaderModule.Loader,
     Skeleton: skeletonModule.Skeleton,
-    FeedSkeleton: feedSkeletonModule.FeedSkeleton,
     getBrandType: brandUtilsModule.getBrandType,
     cn: uiUtilsModule.cn,
     useDeviceDetectMediaQuery: hooksModule.useDeviceDetectMediaQuery,
@@ -288,26 +285,29 @@ function EmbedSkeleton({
   )
 }
 
+// Lazy load FeedSkeleton only when expand view needs it
+const LazyFeedSkeleton = lazy(() =>
+  import('@genuin/components/templates/feed').then((m) => ({
+    default: m.FeedSkeleton,
+  })),
+)
+
 /**
  * React-based expand view skeleton (loaded after providers are available)
  */
-function ExpandViewSkeleton({
-  theme,
-  providers,
-}: {
-  theme?: 'dark' | 'light'
-  providers: ProviderModules
-}) {
+function ExpandViewSkeleton({ theme }: { theme?: 'dark' | 'light' }) {
   const bgClass =
     theme === 'dark' ? 'gencl:bg-secondary-900' : 'gencl:bg-secondary-50'
   return (
     <div
       className={`gencl:fixed gencl:inset-0 gencl:h-full gencl:w-full gencl:z-50 ${bgClass}`}>
-      <providers.FeedSkeleton
-        theme={theme}
-        variant='fullscreen'
-        showCommentsSkeleton={false}
-      />
+      <Suspense fallback={null}>
+        <LazyFeedSkeleton
+          theme={theme}
+          variant='fullscreen'
+          showCommentsSkeleton={false}
+        />
+      </Suspense>
     </div>
   )
 }

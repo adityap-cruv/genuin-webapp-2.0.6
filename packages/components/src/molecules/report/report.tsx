@@ -7,13 +7,7 @@ import {
   DialogHeader,
 } from "@genuin/ui/dialog";
 import { RadioGroup, RadioItem } from "@genuin/ui/radio";
-import React, {
-  ComponentProps,
-  useCallback,
-  useMemo,
-  useState,
-  useEffect,
-} from "react";
+import React, { ComponentProps, useCallback, useMemo, useState } from "react";
 import { REPORT_HEADER_DATA, REPORT_REASON_DATA } from "./report-data";
 import { Button } from "@genuin/ui/button";
 import {
@@ -23,19 +17,20 @@ import {
 import { Loader } from "@genuin/ui/loader";
 import { UseMutationResult } from "@tanstack/react-query";
 const AuthenticationModal = React.lazy(() =>
-  import("@genuin/components/organisms/authentication-modal").then((m) => ({
-    default: m.AuthenticationModal,
-  }))
+  import("@genuin/components/organisms/authentication-modal/index.js").then(
+    (m) => ({
+      default: m.AuthenticationModal,
+    })
+  )
 ) as React.ComponentType<any>;
 
 import { useAuthContext } from "@genuin/components/context/auth";
-import { MEDIA_BASE_URL } from "@genuin/components/lib/utils/env";
 import { useAnalytics } from "@genuin/components/context/analytics";
 import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { Link } from "../link";
 const Success = React.lazy(() =>
-  import("@genuin/components/molecules/success").then((m) => ({
+  import("@genuin/components/molecules/success/index.js").then((m) => ({
     default: m.Success,
   }))
 ) as React.ComponentType<any>;

@@ -4,11 +4,16 @@ import {
   SDKEventEmitter,
   SDKEventName,
 } from "@genuin/components/lib/sdk-event-emitter";
-import { Linkouts } from "@genuin/components/organisms/linkouts";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { cn } from "@genuin/ui/lib/utils";
-import { useCallback } from "react";
+import { useCallback, lazy, Suspense } from "react";
 import { usePlayerContext } from "../../../context";
+
+const Linkouts = lazy(() =>
+  import("@genuin/components/organisms/linkouts/index.js").then((m) => ({
+    default: m.Linkouts,
+  }))
+) as React.ComponentType<any>;
 
 interface ClipPlayerCTAProps {
   websiteType: "polaris" | "legacy";
@@ -67,21 +72,24 @@ export const ClipPlayerCTA = ({
   );
 
   if (!postDetails.video.attributes?.slug) return;
+  if (!postDetails.video.linkoutId) return;
 
   return (
-    <Linkouts
-      linkouts={postDetails.video.linkouts}
-      linkoutId={postDetails.video.linkoutId}
-      isActive={isActive}
-      className={cn("gencl:w-full")}
-      cardVariant="primary"
-      ctaOnly={true}
-      handleCTAClick={handleCTAClick}
-      showImmediately={true}
-      videoDetails={postDetails.video}
-      totalVideos={totalVideos}
-      positionIndex={positionIndex}
-      autoplay={video.videoAutoplay}
-    />
+    <Suspense fallback={null}>
+      <Linkouts
+        linkouts={postDetails.video.linkouts}
+        linkoutId={postDetails.video.linkoutId}
+        isActive={isActive}
+        className={cn("gencl:w-full")}
+        cardVariant="primary"
+        ctaOnly={true}
+        handleCTAClick={handleCTAClick}
+        showImmediately={true}
+        videoDetails={postDetails.video}
+        totalVideos={totalVideos}
+        positionIndex={positionIndex}
+        autoplay={video.videoAutoplay}
+      />
+    </Suspense>
   );
 };

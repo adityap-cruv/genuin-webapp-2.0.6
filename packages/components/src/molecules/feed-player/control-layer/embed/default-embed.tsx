@@ -1,7 +1,12 @@
 import { cn } from "@genuin/ui/lib/utils";
 import { ControlLayerPropsType } from "../control-layer.types";
-import { type FC } from "react";
-import { Linkouts } from "@genuin/components/organisms/linkouts";
+import { type FC, lazy, Suspense } from "react";
+
+const Linkouts = lazy(() =>
+  import("@genuin/components/organisms/linkouts/index.js").then((m) => ({
+    default: m.Linkouts,
+  }))
+) as React.ComponentType<any>;
 import { Stats } from "@genuin/components/molecules/stats";
 import { PlayIcon } from "@genuin/ui/icons";
 import { Controls } from "../controls/controls";
@@ -24,15 +29,19 @@ export const DefaultEmbed: FC<ControlLayerPropsType> = ({
       {...restProps}
     >
       <div className="gencl:absolute gencl:bottom-0 gencl:p-2 gencl:space-y-2 gencl:w-full">
-        {config.links.showLinkInside && isActive && (
-          <Linkouts
-            variant="embed"
-            isActive={isActive}
-            showImmediately
-            linkouts={postDetails.video.linkouts}
-            linkoutId={postDetails.video.linkoutId}
-          />
-        )}
+        {config.links.showLinkInside &&
+          isActive &&
+          postDetails.video.linkoutId && (
+            <Suspense fallback={null}>
+              <Linkouts
+                variant="embed"
+                isActive={isActive}
+                showImmediately
+                linkouts={postDetails.video.linkouts}
+                linkoutId={postDetails.video.linkoutId}
+              />
+            </Suspense>
+          )}
         {config.community.showViewCount && !isActive && (
           <Stats
             className="gencl:gap-1!"

@@ -3,9 +3,11 @@ import { cn } from "@genuin/ui/utils";
 import type { AuthenticationModalProps } from "@genuin/components/organisms/authentication-modal";
 
 const AuthenticationModal = lazy(() =>
-  import("@genuin/components/organisms/authentication-modal").then((m) => ({
-    default: m.AuthenticationModal,
-  }))
+  import("@genuin/components/organisms/authentication-modal/index.js").then(
+    (m) => ({
+      default: m.AuthenticationModal,
+    })
+  )
 ) as React.ComponentType<AuthenticationModalProps>;
 
 import { useAuthContext } from "@genuin/components/context/auth";
@@ -55,26 +57,28 @@ export function SideBarBecomeCreator({
 
   return (
     <>
-      <Suspense fallback={
-        <div
-          className={cn(
-            "gencl:px-4 gencl:block gencl:sm:hidden! gencl:xl:block! gencl:py-3 gencl:border-b gencl:border-secondary-100 gencl:cursor-pointer",
-            className
-          )}
-          {...restProps}
-        >
+      <Suspense
+        fallback={
           <div
             className={cn(
-              "gencl:bg-primary gencl:text-white gencl:break-words gencl:rounded-lg gencl:px-2.5 gencl:py-2 gencl:text-body-1-semi-bold gencl:relative gencl:overflow-hidden",
-              "genuin-become-creator-centerout"
+              "gencl:px-4 gencl:block gencl:sm:hidden! gencl:xl:block! gencl:py-3 gencl:border-b gencl:border-secondary-100 gencl:cursor-pointer",
+              className
             )}
+            {...restProps}
           >
-            <span className="gencl:relative gencl:z-10 gencl:text-white">
-              Become a Creator for {name}, get rewards 🚀
-            </span>
+            <div
+              className={cn(
+                "gencl:bg-primary gencl:text-white gencl:break-words gencl:rounded-lg gencl:px-2.5 gencl:py-2 gencl:text-body-1-semi-bold gencl:relative gencl:overflow-hidden",
+                "genuin-become-creator-centerout"
+              )}
+            >
+              <span className="gencl:relative gencl:z-10 gencl:text-white">
+                Become a Creator for {name}, get rewards 🚀
+              </span>
+            </div>
           </div>
-        </div>
-      }>
+        }
+      >
         <AuthenticationModal asChild customStep="BECOME_CREATOR">
           <div
             className={cn(

@@ -3,24 +3,26 @@ import { lazy, Suspense, type FC } from "react";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 const IHeartControlLayer = lazy(() =>
-  import("./embed/iheart").then((m) => ({ default: m.IHeartControlLayer }))
+  import("./embed/iheart/index.js").then((m) => ({
+    default: m.IHeartControlLayer,
+  }))
 );
 const TedEmbed = lazy(() =>
-  import("./embed/ted-embed").then((m) => ({ default: m.TedEmbed }))
+  import("./embed/ted-embed.js").then((m) => ({ default: m.TedEmbed }))
 );
 const GrubhubEmbed = lazy(() =>
-  import("./embed/grubhub-embed").then((m) => ({ default: m.GrubhubEmbed }))
+  import("./embed/grubhub-embed.js").then((m) => ({ default: m.GrubhubEmbed }))
 );
 const WalmartEmbed = lazy(() =>
-  import("./embed/walmart-embed").then((m) => ({ default: m.WalmartEmbed }))
+  import("./embed/walmart-embed.js").then((m) => ({ default: m.WalmartEmbed }))
 );
 const ResponsivenessEmbed = lazy(() =>
-  import("./embed/responsiveness-embed").then((m) => ({
+  import("./embed/responsiveness-embed.js").then((m) => ({
     default: m.ResponsivenessEmbed,
   }))
 );
 const DefaultEmbed = lazy(() =>
-  import("./embed/default-embed").then((m) => ({ default: m.DefaultEmbed }))
+  import("./embed/default-embed.js").then((m) => ({ default: m.DefaultEmbed }))
 );
 
 export const Embed: FC<ControlLayerPropsType> = ({

@@ -15,7 +15,7 @@ import { useAuthContext } from "@genuin/components/context/auth";
 import { ComponentProps, useCallback, useEffect } from "react";
 import { useSendOtpMutation } from "@genuin/components/react-query/api/authentication";
 import { useAuthenticationModalContext } from "../../context";
-import { sanitizeInput } from "@genuin/components/lib/utils";
+import { sanitizeInput } from "@genuin/ui/lib/sanitize";
 import { cn } from "@genuin/ui/lib/utils";
 import { useBaseContext } from "@genuin/components/context";
 

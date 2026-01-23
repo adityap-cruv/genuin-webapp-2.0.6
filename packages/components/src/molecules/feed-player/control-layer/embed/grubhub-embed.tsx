@@ -1,8 +1,13 @@
 import { cn } from "@genuin/ui/lib/utils";
 import { ControlLayerPropsType } from "../control-layer.types";
-import { type FC } from "react";
+import { type FC, lazy, Suspense } from "react";
 import { PriceTagIcon } from "@genuin/ui/icons";
-import { Linkouts } from "@genuin/components/organisms/linkouts";
+
+const Linkouts = lazy(() =>
+  import("@genuin/components/organisms/linkouts/index.js").then((m) => ({
+    default: m.Linkouts,
+  }))
+) as React.ComponentType<any>;
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 export const GrubhubEmbed: FC<ControlLayerPropsType> = ({
@@ -31,15 +36,19 @@ export const GrubhubEmbed: FC<ControlLayerPropsType> = ({
       )}
 
       <div className="gencl:absolute gencl:bottom-0 gencl:p-2 gencl:space-y-2 gencl:w-full">
-        {config.links.showLinkInside && isActive && (
-          <Linkouts
-            variant="embed"
-            isActive={isActive}
-            showImmediately
-            linkouts={postDetails.video.linkouts}
-            linkoutId={postDetails.video.linkoutId}
-          />
-        )}
+        {config.links.showLinkInside &&
+          isActive &&
+          postDetails.video.linkoutId && (
+            <Suspense fallback={null}>
+              <Linkouts
+                variant="embed"
+                isActive={isActive}
+                showImmediately
+                linkouts={postDetails.video.linkouts}
+                linkoutId={postDetails.video.linkoutId}
+              />
+            </Suspense>
+          )}
       </div>
     </div>
   );

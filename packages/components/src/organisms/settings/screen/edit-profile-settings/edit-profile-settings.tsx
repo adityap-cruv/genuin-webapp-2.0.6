@@ -6,9 +6,11 @@ import { cn } from "@genuin/ui/lib/utils";
 import type { AuthenticationModalProps } from "@genuin/components/organisms/authentication-modal";
 
 const AuthenticationModal = lazy(() =>
-  import("@genuin/components/organisms/authentication-modal").then((m) => ({
-    default: m.AuthenticationModal,
-  }))
+  import("@genuin/components/organisms/authentication-modal/index.js").then(
+    (m) => ({
+      default: m.AuthenticationModal,
+    })
+  )
 ) as React.ComponentType<AuthenticationModalProps>;
 
 import { useAuthContext } from "@genuin/components/context/auth";
@@ -48,11 +50,13 @@ export const EditProfileSettings: FC = () => {
               "gencl:absolute gencl:flex gencl:flex-col gencl:items-center gencl:justify-center gencl:rounded-full gencl:bg-black/50 gencl:top-0 gencl:left-0 gencl:w-full gencl:h-full gencl:opacity-0 gencl:hover:opacity-0 gencl:lg:hover:opacity-100"
             )}
           >
-            <Suspense fallback={
-              <p className="gencl:text-white gencl:text-body-2-medium gencl:cursor-pointer">
-                Edit
-              </p>
-            }>
+            <Suspense
+              fallback={
+                <p className="gencl:text-white gencl:text-body-2-medium gencl:cursor-pointer">
+                  Edit
+                </p>
+              }
+            >
               <AuthenticationModal customStep="EDIT_PROFILE_PICTURE" asChild>
                 <p className="gencl:text-white gencl:text-body-2-medium gencl:cursor-pointer">
                   Edit
@@ -69,16 +73,18 @@ export const EditProfileSettings: FC = () => {
         </div>
         {!isDesktop && (
           <div>
-            <Suspense fallback={
-              <Button
-                size="sm"
-                theme="text"
-                color="primary"
-                className="gencl:text-body-1-semi-bold! gencl:text-red"
-              >
-                Change Profile Photo
-              </Button>
-            }>
+            <Suspense
+              fallback={
+                <Button
+                  size="sm"
+                  theme="text"
+                  color="primary"
+                  className="gencl:text-body-1-semi-bold! gencl:text-red"
+                >
+                  Change Profile Photo
+                </Button>
+              }
+            >
               <AuthenticationModal customStep="EDIT_PROFILE_PICTURE" asChild>
                 <Button
                   size="sm"
@@ -90,7 +96,6 @@ export const EditProfileSettings: FC = () => {
                 </Button>
               </AuthenticationModal>
             </Suspense>
-
           </div>
         )}
       </div>

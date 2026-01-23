@@ -1,5 +1,4 @@
 import type { CommunityUserRole } from "@genuin/components/types/post";
-import DOMPurify from "dompurify";
 
 import { PROTECTED_ROUTES } from "../constants";
 import { GroupUserStatusType } from "@genuin/components/types/roles";
@@ -122,19 +121,6 @@ export function mapGroupJoinStatus(role?: number | null): GroupUserStatusType {
     default:
       return "UNJOINED";
   }
-}
-
-/**
- * Sanitizes user input to prevent XSS attacks
- * Only allows plain text by escaping dangerous HTML characters
- * @param input - The user input to sanitize
- * @returns Sanitized plain text string
- */
-export function sanitizeInput(input: string | null | undefined): string {
-  if (typeof input !== "string" || input.trim() === "") return "";
-  return DOMPurify.sanitize(input, {
-    USE_PROFILES: { html: false },
-  });
 }
 
 /**

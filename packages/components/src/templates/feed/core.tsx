@@ -5,14 +5,14 @@ import { useCallback, useEffect, memo, lazy, Suspense } from "react";
 import "swiper/css";
 
 const PlayerList = lazy(() =>
-  import("../../organisms/player-swiper").then((m) => ({
+  import("../../organisms/player-swiper/index.js").then((m) => ({
     default: m.PlayerList,
   }))
 ) as React.ComponentType<any>;
 
 // Lazy load side panel to split comments/forms from core chunk
 const PostSidePanel = lazy(() =>
-  import("../../organisms/post-side-panel").then((m) => ({
+  import("../../organisms/post-side-panel/index.js").then((m) => ({
     default: m.PostSidePanel,
   }))
 ) as React.ComponentType<any>;
@@ -24,7 +24,6 @@ import {
   setQueryDataForJoinGroupStatusInFeed,
   setQueryDataForCommentCountInFeed,
 } from "@genuin/components/react-query/api/feed";
-import { IheartFullscreenContainer } from "@genuin/components/molecules/iheart-full-screen-contaner";
 import { setQueryDataForCommunityRoleChange } from "@genuin/components/react-query/api/community/details/details";
 import { setQueryDataForSubscribeGroupInGroupDetails } from "@genuin/components/react-query/api/group/details";
 
@@ -36,7 +35,7 @@ import { FeedSkeleton } from "./feed-skeleton";
 import { useInterruptionManager } from "@genuin/components/hooks/use-interruption-manager";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 const AuthenticationModal = lazy(() =>
-  import("../../organisms/authentication-modal").then((m) => ({
+  import("../../organisms/authentication-modal/index.js").then((m) => ({
     default: m.AuthenticationModal,
   }))
 ) as React.ComponentType<any>;
@@ -61,11 +60,11 @@ const FeedContentWrapper = memo(function FeedContentWrapper({
   children: React.ReactNode;
 }) {
   const IheartFullscreenContainerLazy = lazy(() =>
-    import("@genuin/components/molecules/iheart-full-screen-contaner").then(
-      (m) => ({
-        default: m.IheartFullscreenContainer,
-      })
-    )
+    import(
+      "@genuin/components/molecules/iheart-full-screen-contaner/index.js"
+    ).then((m) => ({
+      default: m.IheartFullscreenContainer,
+    }))
   ) as React.ComponentType<any>;
 
   if (isIHeart) {

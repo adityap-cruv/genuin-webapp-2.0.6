@@ -15,7 +15,7 @@ import {
   formatPhoneNumberIntl,
   isValidPhoneNumber,
 } from "react-phone-number-input";
-import { sanitizeInput } from "@genuin/components/lib/utils";
+import { sanitizeInput } from "@genuin/ui/lib/sanitize";
 import { cn } from "@genuin/ui/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuthContext } from "@genuin/components/context/auth";

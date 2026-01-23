@@ -655,6 +655,9 @@ export default defineConfig({
       output: {
         // Single ES module output with multiple entries
         format: 'es',
+        // Auto-merge chunks smaller than 10KB (pre-minification)
+        // This consolidates micro-chunks while preserving lazy loading for larger chunks
+        experimentalMinChunkSize: 10000,
         entryFileNames: (chunkInfo) => {
           if (chunkInfo.name === 'gen_sdk') {
             const isDevelopment = process.env.NODE_ENV === 'development'
