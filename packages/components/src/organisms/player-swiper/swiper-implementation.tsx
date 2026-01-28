@@ -1,14 +1,45 @@
-import { Mousewheel, Keyboard, Virtual } from "swiper/modules";
-import { Swiper } from "swiper/react";
-import { useEffect, useRef, useState, useMemo } from "react";
+import { useEffect, useRef, useState, useMemo, lazy, Suspense } from "react";
+import type { Swiper as SwiperType } from "swiper/types";
 
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import { ComponentProps } from "react";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { dialogManager } from "@genuin/ui/lib/dialog-manager/dialog-manager";
 import { cn } from "@genuin/ui/lib/utils";
+import { Swiper } from "swiper/react";
+
+// Lazy load both Swiper and modules together to avoid separate loading delays
+const SwiperWithModules = lazy(async () => {
+  const [swiperModules] = await Promise.all([import("swiper/modules")]);
+
+  // Return a wrapper component that has modules baked in
+  return {
+    default: ({
+      children,
+      virtualizeSwiper,
+      ...props
+    }: {
+      children: React.ReactNode;
+      virtualizeSwiper?: boolean;
+      [key: string]: any;
+    }) => {
+      const { Mousewheel, Keyboard, Virtual } = swiperModules;
+
+      const modules = useMemo(() => {
+        const baseModules = [Mousewheel, Keyboard];
+        if (virtualizeSwiper) baseModules.push(Virtual);
+        return baseModules;
+      }, [virtualizeSwiper]);
+
+      return (
+        <Swiper {...props} modules={modules}>
+          {children}
+        </Swiper>
+      );
+    },
+  };
+});
 
 const CONFIG = {
   SCROLL_DELAY: 500,
@@ -27,7 +58,12 @@ type SwiperImplementationProps = {
   children: React.ReactNode;
   disableScroll?: boolean;
   spaceBetween?: number;
-} & ComponentProps<typeof Swiper>;
+  direction?: "vertical" | "horizontal";
+  slidesPerView?: number | "auto";
+  className?: string;
+  onSwiper?: (swiper: SwiperType) => void;
+  [key: string]: any;
+};
 
 export function SwiperImplementation({
   children,
@@ -57,12 +93,6 @@ export function SwiperImplementation({
     dialogManager.getRegisteredDialogs().length > 0
   );
 
-  const modules = useMemo(() => {
-    const baseModules = [Mousewheel, Keyboard];
-    if (virtualizeSwiper) baseModules.push(Virtual);
-    return baseModules;
-  }, [virtualizeSwiper]);
-
   useEffect(() => {
     // Subscribe to modal open/close changes and update swiper controls
     const updateModalState = () => {
@@ -82,54 +112,62 @@ export function SwiperImplementation({
   }, []);
 
   return (
-    <Swiper
-      ref={swiperRef}
-      onSwiper={(swiper) => {
-        swiperRef.current = swiper;
-      }}
-      className={cn("gencl:h-full gencl:w-full", className)}
-      enabled={!disableScroll}
-      allowTouchMove={!disableScroll}
-      spaceBetween={swiperSpaceBetween}
-      direction={direction}
-      slidesPerView={swiperSlidesPerView}
-      speed={CONFIG.SCROLL_DELAY}
-      modules={modules}
-      virtual={
-        virtualizeSwiper
-          ? {
-              enabled: true,
-              addSlidesBefore: 2,
-              addSlidesAfter: 2,
-              cache: true,
-            }
-          : undefined
+    <Suspense
+      fallback={
+        <div className={cn("gencl:h-full gencl:w-full", className)}>
+          <div className="gencl:animate-pulse gencl:bg-gray-200 gencl:h-full gencl:w-full" />
+        </div>
       }
-      keyboard={{
-        enabled: true,
-        onlyInViewport: false,
-      }}
-      mousewheel={{
-        forceToAxis: true,
-        releaseOnEdges: true,
-        thresholdDelta: isWindows
-          ? CONFIG.MOUSE_THRESHOLD.WINDOWS
-          : CONFIG.MOUSE_THRESHOLD.DEFAULT,
-        thresholdTime: CONFIG.THRESHOLD_TIME,
-        sensitivity: isWindows
-          ? CONFIG.MOUSE_SENSITIVITY.WINDOWS
-          : CONFIG.MOUSE_SENSITIVITY.DEFAULT,
-      }}
-      a11y={{
-        enabled: true,
-        prevSlideMessage: "Previous Highlight. Playing",
-        nextSlideMessage: "Next Highlight. Playing",
-        scrollOnFocus: true,
-      }}
-      followFinger
-      {...restProps}
     >
-      {children}
-    </Swiper>
+      <SwiperWithModules
+        ref={swiperRef}
+        onSwiper={(swiper: SwiperType) => {
+          swiperRef.current = swiper;
+        }}
+        className={cn("gencl:h-full gencl:w-full", className)}
+        enabled={!disableScroll}
+        allowTouchMove={!disableScroll}
+        spaceBetween={swiperSpaceBetween}
+        direction={direction}
+        slidesPerView={swiperSlidesPerView}
+        speed={CONFIG.SCROLL_DELAY}
+        virtualizeSwiper={virtualizeSwiper}
+        virtual={
+          virtualizeSwiper
+            ? {
+                enabled: true,
+                addSlidesBefore: 2,
+                addSlidesAfter: 2,
+                cache: true,
+              }
+            : undefined
+        }
+        keyboard={{
+          enabled: true,
+          onlyInViewport: false,
+        }}
+        mousewheel={{
+          forceToAxis: true,
+          releaseOnEdges: true,
+          thresholdDelta: isWindows
+            ? CONFIG.MOUSE_THRESHOLD.WINDOWS
+            : CONFIG.MOUSE_THRESHOLD.DEFAULT,
+          thresholdTime: CONFIG.THRESHOLD_TIME,
+          sensitivity: isWindows
+            ? CONFIG.MOUSE_SENSITIVITY.WINDOWS
+            : CONFIG.MOUSE_SENSITIVITY.DEFAULT,
+        }}
+        a11y={{
+          enabled: true,
+          prevSlideMessage: "Previous Highlight. Playing",
+          nextSlideMessage: "Next Highlight. Playing",
+          scrollOnFocus: true,
+        }}
+        followFinger
+        {...restProps}
+      >
+        {children}
+      </SwiperWithModules>
+    </Suspense>
   );
 }
