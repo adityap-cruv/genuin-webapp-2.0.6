@@ -6,16 +6,29 @@ import { useMutation } from "@tanstack/react-query";
 
 type SendOtpProps = Partial<{ email: string; phoneNumber: string }> & {
   isUpdate?: boolean;
-  isInIframe : boolean
+  isInIframe: boolean;
 };
 
-export async function sendOtp({ email, phoneNumber, isUpdate,isInIframe }: SendOtpProps) {
+export async function sendOtp({
+  email,
+  phoneNumber,
+  isUpdate,
+  isInIframe,
+}: SendOtpProps) {
   const deviceId = getDeviceId(isInIframe);
+  const encryptedDeviceId = deviceId
+    ? await encryptText(deviceId, true)
+    : undefined;
+  const encryptedPhoneNumber = phoneNumber
+    ? await encryptText(phoneNumber, false)
+    : undefined;
+  const encryptedEmail = email ? await encryptText(email, false) : undefined;
+
   return await axiosInstance
     .post(API_PATHS.AUTH_SEND_OTP, {
-      phoneNumber: phoneNumber ? encryptText(phoneNumber, false) : undefined,
-      email: email ? encryptText(email, false) : undefined,
-      encrypted_device_id: deviceId ? encryptText(deviceId, true) : undefined,
+      phoneNumber: encryptedPhoneNumber,
+      email: encryptedEmail,
+      encrypted_device_id: encryptedDeviceId,
       is_update_flow: isUpdate,
     })
     .then((res) => {
@@ -31,7 +44,7 @@ export async function sendOtp({ email, phoneNumber, isUpdate,isInIframe }: SendO
       let message = "Something went wrong. Please try again!";
       const retryTime = Number(e.response.data.data?.retryTime);
       if (e.response.data.code === "5262") {
-        message = e.response.data.message
+        message = e.response.data.message;
       }
       if (e.response.data.code === "5263") {
         message = isUpdate

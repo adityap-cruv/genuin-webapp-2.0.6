@@ -66,7 +66,7 @@ export async function getUserDataForSSO({
   // TODO: Update the deviceId to a dynamic one if needed
   return await axiosInstance
     .post(API_PATHS.AUTH_AUTO_LOGIN, {
-      encrypted_device_id: encryptText(deviceId, true),
+      encrypted_device_id: await encryptText(deviceId, true),
       login_source: LOGIN_SOURCE.web,
       // login source is web according to backend.
       device_type: DEVICE_TYPE_WEB,

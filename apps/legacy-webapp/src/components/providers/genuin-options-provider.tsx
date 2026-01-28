@@ -4,7 +4,6 @@ import { getSizeBoxes } from '@lib/utils/common/size-box'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
 import { useLocalStorage } from '@lib/stores/local-storage'
-import FingerprintJS from '@fingerprintjs/fingerprintjs'
 import { setBrandIdInAxiosInstance, ejectAuthTokenInterceptor, setAuthTokenInAxiosInstance } from '@lib/api/instance'
 import dynamic from 'next/dynamic'
 import { saveVisitor, ssoAutoLogin } from '@components/common/modals/authentication/api/auth'
@@ -36,7 +35,7 @@ type Props = {
   user?: User | null
 }
 // it won't log any consoles in production.
- 
+
 if (process.env.NEXT_PUBLIC_CURRENT_ENV === 'prod') console.log = () => {}
 
 // TODO: separate this component into 2 comps with once has auth and second doesn't have auth.
@@ -212,15 +211,20 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
 
   useEffect(() => {
     init()
-    const fpPromise = FingerprintJS.load()
+    // Lazy load FingerprintJS from CDN only when needed
     void (async () => {
-      const fp = await fpPromise
-      const result = await fp.get()
-      if (!visitorAdded) {
-        // Call API for visitor registration
-        setDeviceId(result.visitorId)
-        setVisitor(true)
-        await saveVisitor(result.visitorId, browserType, deviceType, os, config?.brand_id)
+      try {
+        const { getNewDeviceId } = await import('@genuin/components/lib/utils/device-id')
+        await getNewDeviceId((visitorId) => {
+          if (!visitorAdded) {
+            // Call API for visitor registration
+            setDeviceId(visitorId)
+            setVisitor(true)
+            void saveVisitor(visitorId, browserType, deviceType, os, config?.brand_id)
+          }
+        })
+      } catch (error) {
+        console.error('[FingerprintJS] Failed to load or generate device ID:', error)
       }
     })()
 

@@ -5,17 +5,52 @@ import { EventName } from "./context";
  */
 export type EventPayload = Record<string, any>;
 
-type AnalyticsSDK = {
-  // Define methods for your actual analytics SDK, e.g., RudderStack
-  load: (writeKey: string, dataPlaneUrl: string) => void;
+/**
+ * Rudderstack Analytics SDK loaded from CDN
+ * Documentation: https://www.rudderstack.com/docs/sources/event-streams/sdks/rudderstack-javascript-sdk/
+ */
+type RudderstackSDK = {
+  load: (writeKey: string, dataPlaneUrl: string, options?: any) => void;
   ready: (callback: () => void) => void;
-  track: (eventName: EventNameType, payload?: Record<string, any>) => void;
-  page: (name?: string, payload?: Record<string, any>) => void; // Example page tracking
+  track: (
+    eventName: string,
+    payload?: Record<string, any>,
+    options?: any,
+    callback?: () => void
+  ) => void;
+  page: (
+    category?: string,
+    name?: string,
+    properties?: Record<string, any>,
+    options?: any,
+    callback?: () => void
+  ) => void;
+  identify: (
+    userId?: string,
+    traits?: Record<string, any>,
+    options?: any,
+    callback?: () => void
+  ) => void;
+  alias: (
+    to: string,
+    from?: string,
+    options?: any,
+    callback?: () => void
+  ) => void;
+  group: (
+    groupId: string,
+    traits?: Record<string, any>,
+    options?: any,
+    callback?: () => void
+  ) => void;
+  reset: (resetAnonymousId?: boolean) => void;
+  getAnonymousId: (options?: any) => string;
+  setAnonymousId: (anonymousId: string, rudderAmpLinkerParam?: string) => void;
 };
 
 declare global {
   interface Window {
-    rudderanalytics: AnalyticsSDK; // Example for RudderStack
+    rudderanalytics: RudderstackSDK;
   }
 }
 

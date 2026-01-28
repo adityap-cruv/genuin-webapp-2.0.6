@@ -42,9 +42,9 @@ export async function sendOtp({ email, phoneNumber, isUpdate }: Partial<SendOtpP
   const deviceId = useLocalStorage.getState().deviceId
   return await axiosInstance
     .post('/api/v4/auth/signinup/code', {
-      phoneNumber: phoneNumber ? encryptText(phoneNumber, false) : undefined,
-      email: email ? encryptText(email, false) : undefined,
-      encrypted_device_id: encryptText(deviceId, true),
+      phoneNumber: phoneNumber ? await encryptText(phoneNumber, false) : undefined,
+      email: email ? await encryptText(email, false) : undefined,
+      encrypted_device_id: await encryptText(deviceId, true),
       is_update_flow: isUpdate,
     })
     .then((res) => {
@@ -98,12 +98,12 @@ export async function consumeOtp({ email, phoneNumber, code }: Partial<SendOtpPr
   return await axiosInstance
     .post('/api/v4/auth/signinup/code/consume', {
       userInputCode: code,
-      phoneNumber: phoneNumber ? encryptText(phoneNumber, false) : undefined,
-      email: email ? encryptText(email, false) : undefined,
+      phoneNumber: phoneNumber ? await encryptText(phoneNumber, false) : undefined,
+      email: email ? await encryptText(email, false) : undefined,
       login_source: LOGIN_SOURCE.web,
       // login source is web according to backend.
       device_type: 3,
-      encrypted_device_id: encryptText(deviceId, true),
+      encrypted_device_id: await encryptText(deviceId, true),
       preAuthSessionId,
       deviceId: resDeviceId,
     })
@@ -132,7 +132,7 @@ export async function updateEmailOrPhone(code: string) {
     .post('/api/v4/update_email_phone', {
       userInputCode: code,
       deviceId: resDeviceId,
-      encrypted_device_id: encryptText(useLocalStorage.getState().deviceId, true),
+      encrypted_device_id: await encryptText(useLocalStorage.getState().deviceId, true),
       preAuthSessionId,
     })
     .then((res) => {
@@ -317,7 +317,7 @@ export async function saveVisitor(
 ) {
   await axiosInstance
     .post('/api/v3/guestusers/visit', {
-      device_id: encryptText(visitorId || '', true),
+      device_id: await encryptText(visitorId || '', true),
       brand_id: brandId,
       meta_data: {
         os_type: os,
@@ -342,7 +342,7 @@ export async function getUserDataForSSO(
   const deviceId = useLocalStorage.getState().deviceId
   return await axiosInstance
     .post('/api/v4/auth/signinup', {
-      encrypted_device_id: encryptText(deviceId, true),
+      encrypted_device_id: await encryptText(deviceId, true),
       login_source: LOGIN_SOURCE.web,
       // login source is web according to backend.
       device_type: 3,
@@ -370,7 +370,7 @@ export async function ssoAutoLogin(token: string, brandId: string) {
   const deviceId = useLocalStorage.getState().deviceId
   return await axiosInstance
     .post('/api/v4/sso/autologin', {
-      encrypted_device_id: encryptText(deviceId, true),
+      encrypted_device_id: await encryptText(deviceId, true),
       token,
       brand_id: brandId,
       device_type: 3,

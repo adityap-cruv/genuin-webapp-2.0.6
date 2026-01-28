@@ -21,15 +21,8 @@ export { ErrorHandler, ErrorType, type SDKError } from './core/errors'
 export { TokenManager } from './core/token-manager'
 export { ThemeManager, type BrandTheme } from './core/theme'
 
-// Lazy load React-dependent exports to avoid pulling in React on init
-// SDKProvider is only for React users - export as a getter that lazy loads
-export function getSDKProvider() {
-  return import('./core/context').then((m) => ({
-    SDKProvider: m.SDKProvider,
-    useSDK: m.useSDK,
-    useSDKConfig: m.useSDKConfig,
-  }))
-}
+// React context exports
+export { SDKProvider, useSDK, useSDKConfig } from './core/context'
 
 // Type exports (no runtime cost)
 export type { BrandDetailsResponse } from './core/api'

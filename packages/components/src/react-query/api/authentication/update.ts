@@ -14,7 +14,7 @@ type UpdateEmailOrPhoneProps = {
    * The device ID that was returned from the sendOtp API.
    */
   responseDeviceId: string;
-  isInIframe : boolean
+  isInIframe: boolean;
 };
 
 /**
@@ -25,14 +25,16 @@ export async function updateEmailOrPhone({
   code,
   preAuthSessionId,
   responseDeviceId: resDeviceId,
-  isInIframe
+  isInIframe,
 }: UpdateEmailOrPhoneProps) {
   const deviceId = getDeviceId(isInIframe);
   return await axiosInstance
     .post(API_PATHS.AUTH_UPDATE_EMAIL_OF_PHONE, {
       userInputCode: code,
       deviceId: resDeviceId,
-      encrypted_device_id: encryptText(deviceId, true),
+      encrypted_device_id: deviceId
+        ? await encryptText(deviceId, true)
+        : undefined,
       preAuthSessionId,
     })
     .then((res) => {

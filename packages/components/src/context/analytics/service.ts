@@ -3,7 +3,6 @@ import {
   RUDDERSTACK_WRITE_KEY,
 } from "@genuin/components/lib/utils/env";
 import { EventNameType, EventPayload, QueuedEvent } from "./types";
-import { RudderAnalytics } from "@rudderstack/analytics-js";
 import { UAParser } from "ua-parser-js";
 import {
   getLinkDelay,
@@ -59,7 +58,7 @@ class AnalyticsServiceSingleton {
   private initializationPromise: Promise<void> | null = null;
   private defaultPayload: DefaultAnalyticsPayload | null = null;
   private defaultVideoEventPayload: DefaultVideoEventPayload | null = null;
-  private rudderAnalyticsInstance: RudderAnalytics | null = null; // Added RudderAnalytics instance
+  private rudderAnalyticsInstance: any = null; // Will be window.rudderanalytics from CDN
   private uaParser = new UAParser().getResult();
   private constructor() {
     // Private constructor to prevent direct instantiation
@@ -72,12 +71,105 @@ class AnalyticsServiceSingleton {
     return AnalyticsServiceSingleton.instance;
   }
 
+  /**
+   * Loads Rudderstack analytics from CDN with very low priority using official installation method
+   * Based on: https://www.rudderstack.com/docs/sources/event-streams/sdks/rudderstack-javascript-sdk/installation/
+   * @returns Promise that resolves when script is loaded and initialized
+   */
+  private loadRudderStackScript(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      // Check if already loaded
+      if (typeof window !== "undefined" && (window as any).rudderanalytics) {
+        resolve();
+        return;
+      }
+
+      if (typeof window === "undefined") {
+        reject(new Error("[AnalyticsService] Window object not available"));
+        return;
+      }
+
+      try {
+        // Create rudderanalytics stub methods to queue events before SDK loads
+        const rudderanalytics = ((window as any).rudderanalytics = [] as any);
+
+        // Methods to stub
+        const methods = [
+          "load",
+          "page",
+          "track",
+          "identify",
+          "alias",
+          "group",
+          "ready",
+          "reset",
+          "getAnonymousId",
+          "setAnonymousId",
+          "getUserId",
+          "getUserTraits",
+          "getGroupId",
+          "getGroupTraits",
+          "startSession",
+          "endSession",
+          "getSessionId",
+        ];
+
+        // Create stub for each method to queue calls
+        for (let i = 0; i < methods.length; i++) {
+          const method = methods[i];
+          rudderanalytics[method] = (function (methodName: string) {
+            return function () {
+              rudderanalytics.push(
+                [methodName].concat(Array.prototype.slice.call(arguments))
+              );
+            };
+          })(method);
+        }
+
+        // Load the actual SDK script
+        const script = document.createElement("script");
+        script.type = "text/javascript";
+        script.async = true;
+        script.src = "https://cdn.rudderlabs.com/v3/modern/rsa.min.js";
+
+        script.onload = () => {
+          resolve();
+        };
+
+        script.onerror = () => {
+          // Fallback to legacy bundle if modern fails
+          const legacyScript = document.createElement("script");
+          legacyScript.type = "text/javascript";
+          legacyScript.async = true;
+          legacyScript.src = "https://cdn.rudderlabs.com/v3/legacy/rsa.min.js";
+
+          legacyScript.onload = () => {
+            resolve();
+          };
+
+          legacyScript.onerror = () => {
+            reject(
+              new Error(
+                "[AnalyticsService] Failed to load Rudderstack from CDN"
+              )
+            );
+          };
+
+          document.head.appendChild(legacyScript);
+        };
+
+        document.head.appendChild(script);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
   public initialize(
     defaultPayload: DefaultAnalyticsPayload,
     brandDetails?: BrandDetailsConfigType,
     embedData?: EmbedDataType
   ): Promise<void> {
-
     if (this.initializationPromise) {
       return this.initializationPromise;
     }
@@ -106,15 +198,27 @@ class AnalyticsServiceSingleton {
         return;
       }
 
-      const doInitialize = () => {
+      const doInitialize = async () => {
         try {
           if (typeof window !== "undefined") {
-            this.rudderAnalyticsInstance = new RudderAnalytics();
+            // Load Rudderstack from CDN
+            await this.loadRudderStackScript();
+
+            // Use global rudderanalytics from CDN
+            this.rudderAnalyticsInstance = (window as any).rudderanalytics;
+
+            if (!this.rudderAnalyticsInstance) {
+              throw new Error(
+                "[AnalyticsService] Rudderstack failed to load from CDN"
+              );
+            }
+
             if (!RUDDERSTACK_WRITE_KEY || !RUDDERSTACK_DATAPLANE_URL) {
               throw new Error(
                 "[AnalyticsService] RudderStack WRITE_KEY or DATAPLANE_URL is undefined. Please check your environment variables."
               );
             }
+
             this.rudderAnalyticsInstance.load(
               RUDDERSTACK_WRITE_KEY,
               RUDDERSTACK_DATAPLANE_URL,
@@ -158,13 +262,13 @@ class AnalyticsServiceSingleton {
           }
         } catch (error) {
           // console.error(
-          //   "[AnalyticsService] Error during RudderAnalytics initialization via import:",
+          //   "[AnalyticsService] Error during RudderAnalytics initialization from CDN:",
           //   error
           // );
-          // Fallback to simulated initialization if the imported SDK fails in a browser environment
+          // Fallback to simulated initialization if CDN load fails
           if (typeof window !== "undefined") {
             // console.warn(
-            //   "[AnalyticsService] RudderAnalytics initialization via import failed. Simulating initialization as fallback."
+            //   "[AnalyticsService] RudderAnalytics initialization from CDN failed. Simulating initialization as fallback."
             // );
             // Simulate initialization for environments where the SDK failed
             setTimeout(() => {

@@ -1,9 +1,17 @@
-import CryptoJS from "crypto-es";
 import {
   NEXT_PUBLIC_SECRET_STRING,
   NEXT_PUBLIC_AES_KEY,
   NEXT_PUBLIC_AES_IV,
 } from "./env";
+
+/**
+ * Lazy-loads the crypto-es AES and encoding modules
+ */
+async function getCryptoModules() {
+  const response = await import("crypto-es");
+
+  return { AES: response.default.AES, enc: response.default.enc };
+}
 
 /**
  *
@@ -12,24 +20,27 @@ import {
  * (from `process.env.NEXT_PUBLIC_SECRET_STRING`) to the text before encryption.
  * @returns The base64 encoded encrypted string.
  */
-export function encryptText(text?: string, appendString?: boolean): string {
+export async function encryptText(
+  text?: string,
+  appendString?: boolean
+): Promise<string> {
   // console.log("[encryptText] Encrypting text", text);
   if (!text) {
     return "";
   }
-  // TODO: Load these from env variables
-  // console.log(
-  //   "[encryptText] Encrypting text with AES",
-  //   NEXT_PUBLIC_SECRET_STRING
-  // );
+
+  // Lazy-load crypto-es modules
+  const { AES, enc } = await getCryptoModules();
+
   const textToEncrypt = appendString ? text + NEXT_PUBLIC_SECRET_STRING : text;
 
-  const encrypted = CryptoJS.AES.encrypt(
+  const encrypted = AES.encrypt(
     textToEncrypt,
-    CryptoJS.enc.Utf8.parse(NEXT_PUBLIC_AES_KEY),
+    enc.Utf8.parse(NEXT_PUBLIC_AES_KEY),
     {
-      iv: CryptoJS.enc.Utf8.parse(NEXT_PUBLIC_AES_IV),
+      iv: enc.Utf8.parse(NEXT_PUBLIC_AES_IV),
     }
   );
+
   return encrypted.toString();
 }

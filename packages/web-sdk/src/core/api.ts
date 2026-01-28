@@ -208,7 +208,7 @@ export class APIService {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          encrypted_device_id: encryptText(deviceId, true),
+          encrypted_device_id: await encryptText(deviceId, true),
           token,
           brand_id: brandId,
           device_type: 3,
