@@ -11,6 +11,7 @@ import {
   // generateEmbedSkeletonHTML,
   generateExpandViewSkeletonHTML,
 } from '../utils/skeleton-html'
+import { SdkSkeleton } from '@genuin/components'
 
 // Type definitions for lazy-loaded providers
 interface ProviderModules {
@@ -241,8 +242,22 @@ function EmbedSkeleton({
 }: {
   container: HTMLElement
   theme?: 'dark' | 'light'
-  providers: ProviderModules
+  providers?: ProviderModules
 }) {
+  if (!providers) {
+    const bgClass =
+      theme === 'dark' ? 'gencl:bg-secondary-900' : 'gencl:bg-secondary-200'
+    const shimmerBgClass =
+      theme === 'dark' ? 'gencl:bg-secondary-800' : 'gencl:bg-secondary-100'
+    return (
+      <div
+        className={`gencl:relative gencl:h-full gencl:w-full gencl:rounded-md ${bgClass}`}>
+        <div
+          className={`gencl:absolute gencl:top-1/2 gencl:left-1/2 gencl:-translate-x-1/2 gencl:-translate-y-1/2 gencl:w-16 gencl:h-16 gencl:rounded-md ${shimmerBgClass}`}></div>
+      </div>
+    )
+  }
+
   const bgClass =
     theme === 'dark' ? 'gencl:bg-secondary-900' : 'gencl:bg-secondary-200'
   const shimmerBgClass =
@@ -276,9 +291,13 @@ function EmbedSkeleton({
           ))}
         </div>
       ) : (
-        <providers.Loader
-          size='md'
-          className='gencl:absolute gencl:top-1/2 gencl:left-1/2 gencl:-translate-x-1/2 gencl:-translate-y-1/2'
+        <SdkSkeleton
+          containerHeight={container.clientHeight || 400}
+          containerWidth={container.clientWidth || 600}
+          statsHeight={68}
+          linkoutHeight={40}
+          spaceBetweenVideos={8}
+          availableHeight={container.clientHeight || 400}
         />
       )}
     </div>
@@ -286,8 +305,9 @@ function EmbedSkeleton({
 }
 
 // Lazy load FeedSkeleton only when expand view needs it
+// Using specific import path to avoid bundling heavy feed components
 const LazyFeedSkeleton = lazy(() =>
-  import('@genuin/components/templates/feed').then((m) => ({
+  import('@genuin/components/templates/feed/feed-skeleton').then((m) => ({
     default: m.FeedSkeleton,
   })),
 )

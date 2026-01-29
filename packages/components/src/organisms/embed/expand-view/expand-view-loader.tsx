@@ -3,6 +3,7 @@ import { EmbedEventContextType } from "@genuin/components/context/embed/event-bu
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { QueryKey } from "@tanstack/react-query";
+import { FeedSkeleton } from "@genuin/components/templates/feed/feed-skeleton.js";
 
 const EmbedExpandView = lazy(() =>
   import("./expand-view.js").then((m) => ({ default: m.EmbedExpandView }))
@@ -62,14 +63,12 @@ export function ExpandViewLoader({
 
   if (isSectioned) {
     return (
-      <Suspense fallback={null}>
-        <EmbedExpandSectionedView videos={videos} pageSession={pageSession} />
-      </Suspense>
+      <EmbedExpandSectionedView videos={videos} pageSession={pageSession} />
     );
   }
 
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<FeedSkeleton variant="fullscreen" />}>
       <EmbedExpandView
         videos={videos}
         hasNextPage={hasNextPage}

@@ -8,7 +8,6 @@ import {
 } from "react";
 import { Swiper } from "swiper/react";
 import { Swiper as SwiperType } from "swiper/types";
-import { Mousewheel, FreeMode, Keyboard, A11y, Virtual } from "swiper/modules";
 import { getSlidesPerView, SWIPER_CONFIG } from "./utils";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 import "swiper/css";
@@ -21,6 +20,41 @@ const NativeFeedScroll = lazy(() =>
     default: m.NativeFeedScroll,
   }))
 );
+
+// Lazy load Swiper with modules to defer loading until component renders
+const SwiperWithModules = lazy(async () => {
+  const [swiperModules] = await Promise.all([import("swiper/modules")]);
+
+  // Return a wrapper component that has modules baked in
+  return {
+    default: ({
+      children,
+      freeMode,
+      virtualizeSwiper,
+      ...props
+    }: {
+      children: React.ReactNode;
+      freeMode?: boolean;
+      virtualizeSwiper?: boolean;
+      [key: string]: any;
+    }) => {
+      const { Mousewheel, FreeMode, Keyboard, A11y, Virtual } = swiperModules;
+
+      const modules = useMemo(() => {
+        const baseModules = [Mousewheel, Keyboard, A11y];
+        if (freeMode) baseModules.push(FreeMode);
+        if (virtualizeSwiper) baseModules.push(Virtual);
+        return baseModules;
+      }, [freeMode, virtualizeSwiper]);
+
+      return (
+        <Swiper {...props} modules={modules}>
+          {children}
+        </Swiper>
+      );
+    },
+  };
+});
 
 type EmbedSwiperProps = {
   forFeed?: boolean;
@@ -87,13 +121,6 @@ export function EmbedSwiper({
     [forFeed, aspectRatio, containerDimensions, useWindowSwiperMode]
   );
 
-  const modules = useMemo(() => {
-    const baseModules = [Mousewheel, Keyboard, A11y];
-    if (freeMode) baseModules.push(FreeMode);
-    if (virtualizeSwiper) baseModules.push(Virtual);
-    return baseModules;
-  }, [freeMode, virtualizeSwiper]);
-
   // Use native scroll for feed mode
   if (useWindowSwiperMode) {
     return (
@@ -142,67 +169,80 @@ export function EmbedSwiper({
 
   // Use Swiper for carousel mode
   return (
-    <Swiper
-      direction={forFeed ? "vertical" : "horizontal"}
-      slidesPerView={slidesPerView}
-      onActiveIndexChange={(swiper) => {
-        onActiveIndexChange?.(swiper);
-      }}
-      spaceBetween={spaceBetweenVideos}
-      speed={SWIPER_CONFIG.SCROLL_DELAY}
-      modules={modules}
-      freeMode={freeMode}
-      watchOverflow={true}
-      keyboard={{
-        enabled: !isIheartLayout,
-        onlyInViewport: false,
-      }}
-      // a11y={{
-      //   enabled: true,
-      //   prevSlideMessage: "Previous Highlight",
-      //   nextSlideMessage: "Next Highlight",
-      //   // firstSlideMessage: "This is the first clip",
-      //   // lastSlideMessage: "This is the last clip",
-      //   // slideLabelMessage: "Clip {{index}} of {{slidesLength}}",
-      //   // containerMessage:
-      //   //   "Clip carousel. Use arrow keys to navigate between clips.",
-      //   // containerRoleDescriptionMessage: "Clip carousel",
-      //   itemRoleDescriptionMessage: "video clip",
-      //   scrollOnFocus: true,
-      // }}
-      virtual={virtualizeSwiper}
-      allowTouchMove={allowGestureScroll}
-      simulateTouch={allowGestureScroll}
-      touchReleaseOnEdges={!allowGestureScroll || touchReleaseOnEdges}
-      threshold={!allowGestureScroll ? 0 : threshold}
-      mousewheel={{
-        enabled: allowGestureScroll,
-        forceToAxis: true,
-        releaseOnEdges: true,
-        thresholdDelta: isWindows
-          ? SWIPER_CONFIG.MOUSE_THRESHOLD.WINDOWS
-          : SWIPER_CONFIG.MOUSE_THRESHOLD.DEFAULT,
-        thresholdTime: SWIPER_CONFIG.THRESHOLD_TIME,
-        sensitivity: isWindows
-          ? SWIPER_CONFIG.MOUSE_SENSITIVITY.WINDOWS
-          : SWIPER_CONFIG.MOUSE_SENSITIVITY.DEFAULT,
-      }}
-      // role="region"
-      // aria-label={forFeed ? "Video feed carousel" : "Video carousel"}
-      className={cn(
-        "gencl:h-full gencl:w-full gencl:rounded-lg",
-        !allowGestureScroll && "swiper-no-swiping",
-        className
-      )}
-      slidesOffsetBefore={slidesOffsetBefore}
-      onInit={(swiper) => {
-        onInit?.(swiper);
-        swiperRef.current = swiper;
-      }}
-      onSwiper={onSwiper}
-      {...restProps}
+    <Suspense
+      fallback={
+        <div
+          className={cn(
+            "gencl:h-full gencl:w-full gencl:rounded-lg",
+            className
+          )}
+        >
+          <div className="gencl:animate-pulse gencl:bg-gray-200 gencl:h-full gencl:w-full gencl:rounded-lg" />
+        </div>
+      }
     >
-      {children}
-    </Swiper>
+      <SwiperWithModules
+        direction={forFeed ? "vertical" : "horizontal"}
+        slidesPerView={slidesPerView}
+        onActiveIndexChange={(swiper: SwiperType) => {
+          onActiveIndexChange?.(swiper);
+        }}
+        spaceBetween={spaceBetweenVideos}
+        speed={SWIPER_CONFIG.SCROLL_DELAY}
+        freeMode={freeMode}
+        virtualizeSwiper={virtualizeSwiper}
+        watchOverflow={true}
+        keyboard={{
+          enabled: !isIheartLayout,
+          onlyInViewport: false,
+        }}
+        // a11y={{
+        //   enabled: true,
+        //   prevSlideMessage: "Previous Highlight",
+        //   nextSlideMessage: "Next Highlight",
+        //   // firstSlideMessage: "This is the first clip",
+        //   // lastSlideMessage: "This is the last clip",
+        //   // slideLabelMessage: "Clip {{index}} of {{slidesLength}}",
+        //   // containerMessage:
+        //   //   "Clip carousel. Use arrow keys to navigate between clips.",
+        //   // containerRoleDescriptionMessage: "Clip carousel",
+        //   itemRoleDescriptionMessage: "video clip",
+        //   scrollOnFocus: true,
+        // }}
+        virtual={virtualizeSwiper}
+        allowTouchMove={allowGestureScroll}
+        simulateTouch={allowGestureScroll}
+        touchReleaseOnEdges={!allowGestureScroll || touchReleaseOnEdges}
+        threshold={!allowGestureScroll ? 0 : threshold}
+        mousewheel={{
+          enabled: allowGestureScroll,
+          forceToAxis: true,
+          releaseOnEdges: true,
+          thresholdDelta: isWindows
+            ? SWIPER_CONFIG.MOUSE_THRESHOLD.WINDOWS
+            : SWIPER_CONFIG.MOUSE_THRESHOLD.DEFAULT,
+          thresholdTime: SWIPER_CONFIG.THRESHOLD_TIME,
+          sensitivity: isWindows
+            ? SWIPER_CONFIG.MOUSE_SENSITIVITY.WINDOWS
+            : SWIPER_CONFIG.MOUSE_SENSITIVITY.DEFAULT,
+        }}
+        // role="region"
+        // aria-label={forFeed ? "Video feed carousel" : "Video carousel"}
+        className={cn(
+          "gencl:h-full gencl:w-full gencl:rounded-lg",
+          !allowGestureScroll && "swiper-no-swiping",
+          className
+        )}
+        slidesOffsetBefore={slidesOffsetBefore}
+        onInit={(swiper: SwiperType) => {
+          onInit?.(swiper);
+          swiperRef.current = swiper;
+        }}
+        onSwiper={onSwiper}
+        {...restProps}
+      >
+        {children}
+      </SwiperWithModules>
+    </Suspense>
   );
 }

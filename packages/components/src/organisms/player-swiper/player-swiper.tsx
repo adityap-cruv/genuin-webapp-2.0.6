@@ -4,6 +4,7 @@ import { useBoolean } from "usehooks-ts";
 import type { Swiper } from "swiper/types";
 
 import { useFeedContext } from "@genuin/components/templates/feed/context";
+import { Loader } from "@genuin/ui/loader";
 import { Player } from "./player";
 
 const Actions = lazy(() =>
@@ -322,7 +323,7 @@ a swiper inside another swiper.
     >
       {/* Back button for iheart expand view (not on mobile) */}
       {(brandLayoutType === "iheart" || isMobile) && (
-        <Suspense fallback={null}>
+        <Suspense fallback={<Loader size="xs" />}>
           <IHeartBackButton
             websiteType={websiteType}
             isAdsEnabledInIheart={isAdsEnabledInIheart}

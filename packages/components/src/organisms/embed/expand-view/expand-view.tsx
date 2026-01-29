@@ -15,6 +15,7 @@ import {
   SDKEventName,
   SDKListenerEventName,
 } from "@genuin/components/lib/sdk-event-emitter";
+import { FeedSkeleton } from "@genuin/components/templates/feed/feed-skeleton.js";
 
 const FeedView = lazy(() =>
   import("../../../templates/feed/index.js").then((module) => ({
@@ -59,7 +60,7 @@ const ExpandViewContent = ({
   return !(community || group || user) ? (
     defaultComponent
   ) : (
-    <Suspense fallback={null}>
+    <Suspense fallback={<FeedSkeleton variant="fullscreen" />}>
       <StandardWall
         className="gencl:bg-white gencl:h-full gencl:w-full"
         defaultComponent={defaultComponent}
@@ -417,7 +418,7 @@ export function EmbedExpandView({
   }, [showExpandView]);
 
   const defaultComponent = (
-    <Suspense fallback={null}>
+    <Suspense fallback={<FeedSkeleton variant="fullscreen" />}>
       <FeedView
         startIndex={startIndex}
         defaultExpandView
@@ -464,7 +465,7 @@ export function EmbedExpandView({
           )}
         >
           {isIHeart ? (
-            <Suspense fallback={null}>
+            <Suspense fallback={<FeedSkeleton variant="fullscreen" />}>
               <IheartFullscreenContainer>
                 <ExpandViewContent
                   defaultComponent={defaultComponent}

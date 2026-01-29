@@ -1,9 +1,5 @@
 "use client";
-import {
-  useFeed,
-  setQueryDataForJoinCommunityStatusInFeed,
-  setQueryDataForGroupSubscriptionChangeInFeed,
-} from "@genuin/components/react-query/api/feed";
+import { useFeed } from "@genuin/components/react-query/api/feed";
 import { EmbedProps } from "./embed.types";
 import { SdkSkeleton, ShimmerSlide } from "./skeleton";
 import { cn } from "@genuin/ui/lib/utils";
@@ -58,37 +54,42 @@ const GridView = lazy(() =>
 
 import { PipViewLoader } from "./pip-view/pip-view-loader";
 import { ExpandViewLoader } from "./expand-view/expand-view-loader";
+import { FeedSkeleton } from "@genuin/components/templates/feed";
+
+const EmbedExpandView = lazy(() =>
+  import("./expand-view/index.js").then((m) => ({ default: m.EmbedExpandView }))
+);
 
 // Lazy load NavigationButtonsWithContext
 const NavigationButtonsWithContext = lazy(() =>
   import("./navigation-buttons.js").then((m) => ({
     default: m.NavigationButtonsWithContext,
   }))
-) as React.ComponentType<any>;
+);
 
 // Lazy load EmbedSwiper
 const EmbedSwiper = lazy(() =>
   import("../../molecules/embed-swiper/index.js").then((m) => ({
     default: m.EmbedSwiper,
   }))
-) as React.ComponentType<any>;
+);
 
 // Lazy load EmbedHeader
 const EmbedHeader = lazy(() =>
   import("../../molecules/embed-header/index.js").then((m) => ({
     default: m.EmbedHeader,
   }))
-) as React.ComponentType<any>;
+);
 
 // Lazy load Toaster
 // const Toaster = lazy(() =>
 //   import("@genuin/ui").then((m) => ({ default: m.Toaster }))
-// ) as React.ComponentType<any>;
+// );
 
 // Lazy load EmbedItem
 const EmbedItem = lazy(() =>
   import("./embed-tile-item.js").then((m) => ({ default: m.EmbedItem }))
-) as React.ComponentType<any>;
+);
 
 const embedVariants = cva("gencl:rounded-md gencl:overflow-auto", {
   variants: {
@@ -110,6 +111,7 @@ export function Embed({
   className,
   style,
   feedData: externalFeedData,
+  wasLazilyLoaded,
   ...restProps
 }: EmbedProps & VariantProps<typeof embedVariants>) {
   const [swiper, setSwiper] = useState<Swiper | null>(null);
@@ -244,7 +246,7 @@ export function Embed({
 
       // If lazily loaded by SDK, we assume it's already in viewport
       // So we don't need an intersection observer here
-      if (restProps.wasLazilyLoaded) return;
+      if (wasLazilyLoaded) return;
 
       const observer = new IntersectionObserver(
         (entries) => {
@@ -273,7 +275,7 @@ export function Embed({
       return () => observer.disconnect();
     },
     [
-      restProps.wasLazilyLoaded,
+      wasLazilyLoaded,
       isEmbed,
       EventName,
       config.community.communityIds,
@@ -286,7 +288,7 @@ export function Embed({
 
   // Track EMBED_VIEWED/PLACEMENT_VIEWED immediately if was lazily loaded ( SDK handled the intersection )
   useEffect(() => {
-    if (restProps.wasLazilyLoaded) {
+    if (wasLazilyLoaded) {
       track(isEmbed ? EventName.EMBED_VIEWED : EventName.PLACEMENT_VIEWED, {
         community_id: config.community.communityIds,
         group_id: config.community.communityLoopIds,
@@ -298,7 +300,7 @@ export function Embed({
       });
     }
   }, [
-    restProps.wasLazilyLoaded,
+    wasLazilyLoaded,
     isEmbed,
     EventName,
     config.community.communityIds,
@@ -475,21 +477,21 @@ export function Embed({
     [videos, isDesktop, SDKEventEmitter, SDKEventName, embedEventBus]
   );
 
-  // if (config.view.isExpandOnly) {
-  //   return (
-  //     <Suspense fallback={null}>
-  //       <EmbedExpandView
-  //         videos={videos}
-  //         hasNextPage={!!hasNextPage}
-  //         isFetchingNextPage={isFetchingNextPage}
-  //         isLoading={isLoading}
-  //         queryKey={queryKey}
-  //         totalVideos={totalVideos}
-  //         fetchNextPage={fetchNextPage}
-  //       />
-  //     </Suspense>
-  //   );
-  // }
+  if (config.view.isExpandOnly) {
+    return (
+      <Suspense fallback={<FeedSkeleton variant="fullscreen" />}>
+        <EmbedExpandView
+          videos={videos}
+          hasNextPage={!!hasNextPage}
+          isFetchingNextPage={isFetchingNextPage}
+          isLoading={isLoading}
+          queryKey={queryKey}
+          totalVideos={totalVideos}
+          fetchNextPage={fetchNextPage}
+        />
+      </Suspense>
+    );
+  }
 
   if (isError) {
     return (
@@ -630,7 +632,7 @@ export function Embed({
                   <></>
                 ) : (
                   <SwiperSlide key={idx} virtualIndex={idx}>
-                    <Suspense fallback={null}>
+                    <Suspense fallback={<ShimmerSlide />}>
                       <EmbedItem
                         index={idx}
                         postDetails={videoData}

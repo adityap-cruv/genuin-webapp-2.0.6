@@ -8,14 +8,14 @@ const PlayerList = lazy(() =>
   import("../../organisms/player-swiper/index.js").then((m) => ({
     default: m.PlayerList,
   }))
-) as React.ComponentType<any>;
+);
 
 // Lazy load side panel to split comments/forms from core chunk
 const PostSidePanel = lazy(() =>
   import("../../organisms/post-side-panel/index.js").then((m) => ({
     default: m.PostSidePanel,
   }))
-) as React.ComponentType<any>;
+);
 
 import {
   setQueryDataForReactionInFeed,
@@ -306,7 +306,9 @@ export const FeedViewCore = memo(function FeedViewCore({
         {...restProps}
       >
         <FeedContentWrapper isIHeart={isIHeart}>
-          <Suspense fallback={null}>
+          <Suspense
+            fallback={<FeedSkeleton variant="player-list" theme={theme} />}
+          >
             <PlayerList
               isSectioned={isSectioned}
               totalVideos={totalVideos}
@@ -314,7 +316,9 @@ export const FeedViewCore = memo(function FeedViewCore({
             />
           </Suspense>
           {showSidePanel && (
-            <Suspense fallback={null}>
+            <Suspense
+              fallback={<FeedSkeleton variant="side-panel" theme={theme} />}
+            >
               <PostSidePanel
                 onGroupJoinStatusChange={handleGroupJoinStatusChange}
                 onGroupSubscriptionChange={handleGroupSubscriptionChange}
