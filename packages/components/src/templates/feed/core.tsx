@@ -65,7 +65,7 @@ const FeedContentWrapper = memo(function FeedContentWrapper({
     ).then((m) => ({
       default: m.IheartFullscreenContainer,
     }))
-  ) as React.ComponentType<any>;
+  );
 
   if (isIHeart) {
     return (

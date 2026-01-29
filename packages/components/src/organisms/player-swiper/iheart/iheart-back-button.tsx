@@ -2,7 +2,7 @@ import { cn } from "@genuin/ui/lib/utils";
 import { BackButton } from "../player-swiper-buttons";
 
 interface IHeartBackButtonProps {
-  websiteType: string;
+  websiteType: "legacy" | "polaris" | undefined;
   isAdsEnabledInIheart: boolean;
   onBackClick: () => void;
   theme?: "light" | "dark";

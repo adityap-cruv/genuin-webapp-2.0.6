@@ -322,7 +322,7 @@ a swiper inside another swiper.
       )}
     >
       {/* Back button for iheart expand view (not on mobile) */}
-      {(brandLayoutType === "iheart" || isMobile) && (
+      {brandLayoutType === "iheart" && !isMobile && (
         <Suspense fallback={<Loader size="xs" />}>
           <IHeartBackButton
             websiteType={websiteType}
