@@ -83,7 +83,7 @@ const preview: Preview = {
                 container={document.getElementById("gen-sdk") as HTMLElement}
                 embedData={embedData}
               >
-                <BaseContextProvider brandDetails={testBrandDetails} isEmbed>
+                <BaseContextProvider useShadowDOM={false} brandDetails={testBrandDetails} isEmbed>
                   <LinkProvider>
                     <AuthProvider
                       onSignIn={() => {}}
@@ -107,7 +107,7 @@ const preview: Preview = {
       const parsedColor = parseBrandColors(testBrandDetails.brand_colors);
       return (
         <ReactQueryClientProvider>
-          <BaseContextProvider isEmbed={false} brandDetails={testBrandDetails}>
+          <BaseContextProvider useShadowDOM={false} isEmbed={false} brandDetails={testBrandDetails}>
             <LinkProvider>
               <AuthProvider
                 onSignIn={() => {}}

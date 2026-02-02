@@ -22,7 +22,7 @@ const AuthenticationModal = React.lazy(() =>
       default: m.AuthenticationModal,
     })
   )
-) as React.ComponentType<any>;
+);
 
 import { useAuthContext } from "@genuin/components/context/auth";
 import { useAnalytics } from "@genuin/components/context/analytics";
@@ -33,9 +33,11 @@ const Success = React.lazy(() =>
   import("@genuin/components/molecules/success/index.js").then((m) => ({
     default: m.Success,
   }))
-) as React.ComponentType<any>;
+);
 
 import { Suspense } from "react";
+import { useBaseContext } from "@genuin/components/context";
+import { getRootContainer } from "../root-portal/shadow-root/shadow-dom.utils";
 
 type ReportProps = ComponentProps<typeof Dialog> & {
   reportFor: "VIDEO" | "COMMENT";
@@ -56,6 +58,7 @@ export function Report({
   const [selectedReason, setSelectedReason] = useState<string>("");
   const [open, setOpen] = useState(false);
   const { user } = useAuthContext();
+  const { useShadowDOM } = useBaseContext();
   const { track, EventName } = useAnalytics();
   const { handleAuthCallback } = useAuthContext();
   const { modalConfig } = useEmbedConfigs();
@@ -171,7 +174,10 @@ export function Report({
       >
         {children}
       </DialogTrigger>
-      <DialogContent className="gencl:max-w-xl gencl:rounded-t-2xl! gencl:sm:rounded-t-none gencl:sm:rounded-2xl! gencl:flex gencl:flex-col gencl:gap-y-4">
+      <DialogContent
+        container={getRootContainer(useShadowDOM)}
+        className="gencl:max-w-xl gencl:rounded-t-2xl! gencl:sm:rounded-t-none gencl:sm:rounded-2xl! gencl:flex gencl:flex-col gencl:gap-y-4"
+      >
         {reportMutation.isSuccess ? (
           <Suspense fallback={<div>Loading…</div>}>
             <Success

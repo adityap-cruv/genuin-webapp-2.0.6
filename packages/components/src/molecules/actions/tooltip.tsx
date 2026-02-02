@@ -1,9 +1,11 @@
+import { useBaseContext } from "@genuin/components/context";
 import { Button } from "@genuin/ui/components/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@genuin/ui/tooltip";
 import { cn } from "@genuin/ui/utils";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 import { type ComponentProps, type ReactNode } from "react";
+import { getRootContainer } from "../root-portal/shadow-root/shadow-dom.utils";
 
 const tooltipVariants = cva("", {
   variants: {
@@ -35,6 +37,7 @@ export function TooltipAction({
   onClick,
   ...restProps
 }: TooltipActionProps) {
+  const { useShadowDOM } = useBaseContext();
   if (disableTooltip) {
     return (
       <Button
@@ -80,7 +83,11 @@ export function TooltipAction({
           {icon}
         </div>
       </TooltipTrigger>
-      <TooltipContent theme={variant ?? "light"} side="right">
+      <TooltipContent
+        container={getRootContainer(useShadowDOM)}
+        theme={variant ?? "light"}
+        side="right"
+      >
         <p>{tooltipText}</p>
       </TooltipContent>
     </Tooltip>

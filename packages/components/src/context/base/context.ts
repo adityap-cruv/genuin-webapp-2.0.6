@@ -120,6 +120,8 @@ export type BaseContextType = {
    * Set the theme of the application
    */
   setTheme: React.Dispatch<React.SetStateAction<"dark" | "light" | undefined>>;
+
+  useShadowDOM: boolean;
 };
 
 export const BaseContext = createContext<BaseContextType | null>(null);

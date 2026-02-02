@@ -35,6 +35,7 @@ export enum SDKEventName {
   CAUGHT_OVERLAY = "onCaughtOverlay",
   CHECK_FOLLOWING_STATUS = "checkFollowingStatus",
   PLAY_IHEART_CONTENT = "playIHeartContent",
+  VIDEO_CLICKED = "onVideoClicked",
 }
 
 /**
@@ -48,6 +49,7 @@ export enum SDKListenerEventName {
   EXPAND_EMBED = "sdk:expandEmbed",
   COLLAPSE_EMBED = "sdk:collapseEmbed",
   PLAYER_PLAY = "player:play",
+  FEED_LOADED = "onFeedLoaded",
   PLAYER_PAUSE = "player:pause",
   PLAYER_MUTE = "player:mute",
   PLAYER_UNMUTE = "player:unmute",
@@ -79,6 +81,8 @@ export interface SDKFeedLoadedPayload {
   hasNextPage: boolean;
   isSectioned: boolean;
   feedType?: string;
+  thumbnailUrl?: string;
+  videoUrl?: string;
 }
 
 export interface SDKAuthRefreshFailedPayload {
@@ -160,6 +164,11 @@ export interface SDKCheckFollowingPayload {
   type: "podcast" | "station";
 }
 
+export interface SDKVideoClickedPayload {
+  /** The ID of the video that was clicked */
+  videoId: string;
+}
+
 export type PlayIheartContentPayload =
   | ({
       play: boolean;
@@ -227,6 +236,7 @@ export type SDKEventPayloadMap = {
   [SDKEventName.ON_FOLLOW_CHANGED]: SDKFollowChangedPayload;
   [SDKEventName.CHECK_FOLLOWING_STATUS]: SDKCheckFollowingPayload;
   [SDKEventName.PLAY_IHEART_CONTENT]: PlayIheartContentPayload;
+  [SDKEventName.VIDEO_CLICKED]: SDKVideoClickedPayload;
 };
 
 /**

@@ -8,6 +8,7 @@ export type BrandDetailsConfigType = {
   subdomain: string;
   logo: string;
   created_at: number;
+  track_observability_enabled?: boolean;
   integrations: {
     sdk: {
       web: {
@@ -196,7 +197,7 @@ type ReactionKeys = {
   feed_unselected: ReactionKey;
   social_count_white: ReactionKey;
   social_count_black: ReactionKey;
-  feed_animate: ReactionKey
+  feed_animate: ReactionKey;
 };
 
 type ReactionType = {

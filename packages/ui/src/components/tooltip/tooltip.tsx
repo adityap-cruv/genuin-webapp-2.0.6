@@ -80,10 +80,13 @@ function TooltipContent({
   children,
   theme,
   style,
+  container,
   ...props
-}: TooltipContentProps) {
+}: TooltipContentProps & {
+  container?: TooltipPrimitive.TooltipPortalProps["container"];
+}) {
   return (
-    <TooltipPrimitive.Portal>
+    <TooltipPrimitive.Portal container={container ?? document.body}>
       <TooltipPrimitive.Content
         data-slot="tooltip-content"
         sideOffset={sideOffset}

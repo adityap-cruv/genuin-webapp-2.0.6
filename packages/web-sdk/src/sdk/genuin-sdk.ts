@@ -32,7 +32,6 @@ import {
   UpdateConfigByUserType,
 } from '@/type'
 import { queryUtils } from '@/utils/query-utils'
-import { AnalyticsService } from '@genuin/components/context/analytics/service'
 import { FeedContextManager } from '@genuin/components/context/base/feed-context-manager'
 import { loadExpandView } from './react-utils'
 
@@ -52,6 +51,7 @@ const ALLOWED_EVENTS = [
   'checkFollowingStatus',
   'playIHeartContent',
   'onShare',
+  'onVideoClicked',
 ]
 
 const ALLOWED_EMIT_EVENTS = [
@@ -63,6 +63,7 @@ const ALLOWED_EMIT_EVENTS = [
   'player:onMiniPlayerPlayChange',
   'sdk:themeChange',
   'sdk:clearLoginAction',
+
   // 'sdk:expandEmbed',
   // 'sdk:collapseEmbed',
 ]
@@ -78,11 +79,11 @@ export class GenuinSDK {
    * This variable is used to track if the SDK has been initialized.
    */
   private isInitialized = false
+  private sdkInitTime: number
   private embedDetailsManager: EmbedDetailsManager
   private sdkElements: SDKElementsType = {}
   private callbackQueueManager: CallbackQueueManager
   private placementManager: PlacementManager
-  private analyticsManager = AnalyticsService
   private videoManager = FeedContextManager
 
   /**
@@ -109,8 +110,8 @@ export class GenuinSDK {
     this.embedDetailsManager = EmbedDetailsManager.getInstance()
     this.callbackQueueManager = new CallbackQueueManager()
     this.placementManager = PlacementManager.getInstance()
-
     this.setupInternalEventHandlers()
+    this.sdkInitTime = 0
   }
 
   static getInstance(): GenuinSDK {
@@ -164,6 +165,10 @@ export class GenuinSDK {
     this.newInit(config)
   }
 
+  getSDKInitTime(): number {
+    return this.sdkInitTime
+  }
+
   /**
    * Initializes the SDK with the provided configuration.
    * This is new init method which will replace legacyInit.
@@ -179,6 +184,9 @@ export class GenuinSDK {
     }
 
     try {
+      // Store in sdk Init Time
+      this.sdkInitTime = performance.now()
+
       this.getAndSetDivs(config)
       this.setupEmbedProviderReadyHandler()
 
@@ -804,6 +812,17 @@ export class GenuinSDK {
     return
   }
 
+  /** * Ensures the SDK-specific class is present on the given element. 
+        This is used to reliably identify and target elements managed by the SDK.
+        If the required class does not already exist on the element, 
+        it will be explicitly added to avoid duplicate checks elsewhere in the codebase.
+        @param element - The DOM element to validate and update */
+  private validateHTML(element: HTMLElement): void {
+    if (!element.classList.contains('gen-sdk-class')) {
+      element.classList.add('gen-sdk-class')
+    }
+  }
+
   /**
    * Get and set elements with id "gen-sdk", starting with "gen-sdk-", or having gen-sdk-class, and dedupe them.
    */
@@ -817,7 +836,8 @@ export class GenuinSDK {
     const idMap = new Map<string, number>()
     elements.forEach((element) => {
       const elementId = element.id
-      if (elementId) {
+      // Ignore gen-sdk-toaster-root
+      if (elementId && elementId !== 'gen-sdk-toaster-root') {
         const count = idMap.get(elementId) || 0
         idMap.set(elementId, count + 1)
       }
@@ -837,6 +857,10 @@ export class GenuinSDK {
     // Deduplicate using a Set to track element references
     const uniqueElements = new Set<HTMLElement>()
     elements.forEach((element) => {
+      // Ignore gen-sdk-toaster-root
+      if ((element as HTMLElement).id === 'gen-sdk-toaster-root') {
+        return
+      }
       if (this.getInitializationStatus(element as HTMLElement) === 'pending') {
         uniqueElements.add(element as HTMLElement)
       } else {
@@ -846,6 +870,7 @@ export class GenuinSDK {
 
     Array.from(uniqueElements).forEach((element) => {
       const instanceId = this.setInstanceId(element)
+      this.validateHTML(element)
       // Show loading view immediately
       const extractedData = this.extractDataFromSingleDiv(element, configByUser)
       loadLoadingView(element, extractedData.theme)
@@ -1272,6 +1297,8 @@ export class GenuinSDK {
     answerToReturn.params = configByUser?.params
     answerToReturn.authInfo = configByUser?.authInfo
     answerToReturn.brandContext = configByUser?.brand_context
+    answerToReturn.useShadowDOM = configByUser?.useShadowDOM
+
     return answerToReturn
   }
 

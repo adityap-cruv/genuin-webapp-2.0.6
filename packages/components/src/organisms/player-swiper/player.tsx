@@ -4,14 +4,14 @@ const ControlLayer = lazy(() =>
   import("../../molecules/feed-player/control-layer/index.js").then((m) => ({
     default: m.ControlLayer,
   }))
-) as React.ComponentType<any>;
+);
 
 // Lazy load video player to defer heavy playback logic
 const FeedPlayer = lazy(() =>
   import("../../molecules/feed-player/index.js").then((m) => ({
     default: m.FeedPlayer,
   }))
-) as React.ComponentType<any>;
+);
 
 import { PlayerProvider } from "../../molecules/feed-player/context/provider";
 import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
@@ -136,7 +136,10 @@ export function Player({
               id={"feed-player--" + post.video.id}
               poster={post.video.thumbnail ?? ""}
               className={cn(
-                "gencl:bg-secondary-200 gencl:object-cover gencl:w-full gencl:h-full"
+                "gencl:h-full! gencl:w-full",
+                videoCrop
+                  ? "gencl:object-cover gencl:bg-cover!"
+                  : "gencl:object-contain gencl:bg-contain!"
               )}
               playsInline
               onTimeUpdate={handleTimeUpdate}

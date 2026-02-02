@@ -17,6 +17,11 @@ import { EmbedEventContextType } from "@genuin/components/context/embed/event-bu
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { Button } from "@genuin/ui/components/button";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import {
+  SDKEventEmitter,
+  SDKEventName,
+} from "@genuin/components/lib/sdk-event-emitter";
+import { useBaseContext } from "@genuin/components/context";
 
 type EmbedControlsProps = ComponentProps<"div"> & {
   /**
@@ -25,24 +30,27 @@ type EmbedControlsProps = ComponentProps<"div"> & {
    */
   size?: "xs" | "sm" | "md" | "lg";
   section?: PostDetailsType["section"];
+  videoId?: string;
 };
 
 export function EmbedControls({
   className,
   size = "xs",
   section,
+  videoId,
   ...restProps
 }: EmbedControlsProps) {
   const { playingState, togglePlay, muted, toggleMuted } = usePlayerContext();
   const config = useEmbedConfigs();
   const { changeActivePlayerType, updateSelectedSection, embedEventBus } =
     useEmbedContext();
+  const { brand_id } = useBaseContext().brandDetails;
   const [isExpandView, setIsExpandView] = useState(false);
 
   useEffect(() => {
     function handleActivePlayerTypeChange(
       eventData: any,
-      context: EmbedEventContextType
+      context: EmbedEventContextType,
     ) {
       setIsExpandView(context.activePlayerType === "expand-view");
     }
@@ -88,6 +96,25 @@ export function EmbedControls({
             changeActivePlayerType("expand-view");
             if (section) {
               updateSelectedSection(section);
+            }
+
+            if (!isExpandView) {
+              // Emit SDK event for video click
+              SDKEventEmitter.emit(SDKEventName.VIDEO_CLICKED, {
+                videoId: videoId ?? "",
+              });
+
+              const isBrandPeacock = brand_id === 3182;
+              if (isBrandPeacock) {
+                const nativeVideoHandler = (window as any).webkit
+                  ?.messageHandlers?.openNativeVideo;
+                if (nativeVideoHandler) {
+                  nativeVideoHandler.postMessage({
+                    source: "carousel",
+                    videoId: videoId ?? "",
+                  });
+                }
+              }
             }
           }}
         >

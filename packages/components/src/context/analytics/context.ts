@@ -27,6 +27,7 @@ export const EventName = {
   PAGE_VIEW: "Page Viewed",
   BECOME_CREATOR: "Become CB Request Clicked",
   EMBED_INITIALIZED: "Embed Initialized",
+  EMBED_RENDERED: "Embed Rendered",
   PLACEMENT_INITIALIZED: "Placement Initialized",
   PLACEMENT_VIEWED: "Placement Viewed",
   SECTION_CHANGES: "Section Changes",

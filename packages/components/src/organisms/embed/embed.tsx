@@ -116,6 +116,7 @@ export function Embed({
 }: EmbedProps & VariantProps<typeof embedVariants>) {
   const [swiper, setSwiper] = useState<Swiper | null>(null);
   const [slidesOffsetBefore, setSlidesOffsetBefore] = useState<number>(0);
+
   const { isInIframe, theme } = useBaseContext();
   const { embedData, embedEventBus, updateIsSectioned, updateSectionList } =
     useEmbedContext();
@@ -214,13 +215,17 @@ export function Embed({
         updateIsSectioned(sectioned);
         setIsSectioned(sectioned);
       }
-
       // Emit SDK event when feed is loaded
       SDKEventEmitter.emit(SDKEventName.FEED_LOADED, {
         videoCount: filteredPost.length,
         hasNextPage: hasNextPage ?? false,
         isSectioned: sectioned,
         feedType: feedType,
+        thumbnailUrl:
+          filteredPost[0]?.video.thumbnail ||
+          filteredPost[0]?.video.thumbnailM ||
+          "",
+        videoUrl: filteredPost[0]?.video.source || "",
       });
     }
     // In embed mode, the sections list does not need to be updated.
@@ -243,15 +248,11 @@ export function Embed({
   const embedRefCallback = useCallback(
     (node: HTMLDivElement | null) => {
       if (!node) return;
-
-      // If lazily loaded by SDK, we assume it's already in viewport
-      // So we don't need an intersection observer here
-      if (wasLazilyLoaded) return;
-
       const observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
             if (entry.isIntersecting) {
+              // Track EMBED_VIEWED/PLACEMENT_VIEWED event when element comes into view
               track(
                 isEmbed ? EventName.EMBED_VIEWED : EventName.PLACEMENT_VIEWED,
                 {
@@ -310,7 +311,7 @@ export function Embed({
     track,
   ]);
 
-  // Track EMBED_INITIALIZED or PLACEMENT_INITIALIZED event when component mounts
+  // Track EMBED_INITIALIZED event when component mounts
   useEffect(() => {
     if (isEmbed) {
       track(EventName.EMBED_INITIALIZED, {
@@ -650,15 +651,15 @@ export function Embed({
                     <ShimmerSlide />
                   </SwiperSlide>
                 ))}
+              {!isIheartLayout && (
+                <NavigationButtonsWithContext
+                  totalSlides={totalSlides}
+                  theme={theme}
+                  embedVariant={embedVariant}
+                  setSlidesOffsetBefore={setSlidesOffsetBefore}
+                />
+              )}
             </EmbedSwiper>
-            {!isIheartLayout && (
-              <NavigationButtonsWithContext
-                totalSlides={totalSlides}
-                theme={theme}
-                embedVariant={embedVariant}
-                setSlidesOffsetBefore={setSlidesOffsetBefore}
-              />
-            )}
           </div>
         )}
         {isIheartLayout && config.view.isCarousel && (

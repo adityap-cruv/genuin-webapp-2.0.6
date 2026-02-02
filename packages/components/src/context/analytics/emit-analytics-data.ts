@@ -126,7 +126,12 @@ export const EmitAnalyticsData: EmitAnalyticsDataType = {
   },
   [EventName.EMBED_INITIALIZED]: {
     canFire: true,
-    allowed_keys: [...commonAllowedKeys],
+    allowed_keys: [...commonAllowedKeys, "api_details", "resource_details"],
+    description: "",
+  },
+  [EventName.EMBED_RENDERED]: {
+    canFire: true,
+    allowed_keys: [...commonAllowedKeys, "api_details", "resource_details"],
     description: "",
   },
   [EventName.VIDEO_SPARK]: {

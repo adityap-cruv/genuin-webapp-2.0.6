@@ -1,9 +1,33 @@
 import { EventName } from "./context";
 
 /**
+ * Type for resource timing details
+ */
+export type ResourceTimingDetail = {
+  name: string;
+  url: string;
+  path?: string;
+  status_code: number | null;
+  error: string | null;
+  network_latency: number;  // number in ms, 0 if CORS blocked
+  processing_latency: number;  // number in ms, 0 if CORS blocked
+  response_latency: number;  // number in ms, 0 if CORS blocked
+  latency: number;
+  type?: string; // "js" or "css" for resource_details
+  size?: number; // file size in KB
+  cached?: boolean; // true if resource was cached
+  start_time?: number; // timestamp in ms when resource started loading
+  end_time?: number; // timestamp in ms when resource finished loading
+};
+
+/**
  * Type for the payload that can be sent with a tracking event.
  */
-export type EventPayload = Record<string, any>;
+export type EventPayload = {
+  api_details?: ResourceTimingDetail[];
+  resource_details?: ResourceTimingDetail[];
+  [key: string]: any;
+};
 
 /**
  * Rudderstack Analytics SDK loaded from CDN

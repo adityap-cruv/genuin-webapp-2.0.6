@@ -2,11 +2,18 @@ import { useBaseContext } from "@genuin/components/context/base";
 import { cn } from "@genuin/ui/lib/utils";
 import * as React from "react";
 import { createPortal } from "react-dom";
+import {
+  cleanupOverlayShadowHost,
+  getOrCreateOverlayShadowHost,
+} from "./shadow-root/shadow-dom.utils";
+import { Toaster } from "@genuin/ui";
 
 type RootPortalProps = {
   children: React.ReactNode;
   className?: string;
   container?: string | HTMLElement;
+  style?: React.ComponentProps<"div">["style"];
+  enabledToaster?: boolean;
 };
 
 /**
@@ -18,13 +25,15 @@ export function RootPortal({
   children,
   className,
   container,
+  style,
+  enabledToaster = true,
 }: RootPortalProps) {
   // SSR guard: don't render on server
   if (typeof window === "undefined") return null;
   const [mounted, setMounted] = React.useState(false);
   const [containerElement, setContainerElement] =
     React.useState<HTMLElement | null>(null);
-  const { parsedBrandColors, isEmbed } = useBaseContext();
+  const { parsedBrandColors, isEmbed, useShadowDOM } = useBaseContext();
 
   React.useEffect(() => {
     setMounted(true);
@@ -40,20 +49,39 @@ export function RootPortal({
         setContainerElement(container);
       }
     } else {
-      // Default to document.body
-      setContainerElement(document.body);
+      if (useShadowDOM) {
+        // Get or create overlay shadow host
+        const { shadowRoot } = getOrCreateOverlayShadowHost();
+        const container = shadowRoot.querySelector(
+          "[data-portal-container]"
+        ) as HTMLElement;
+        setContainerElement(container);
+      } else {
+        // Default to document.body
+        setContainerElement(document.body);
+      }
     }
+
+    return () => {
+      cleanupOverlayShadowHost();
+    };
   }, [container]);
 
-  if (!isEmbed) return;
+  if (!isEmbed || !mounted || !containerElement) return null;
 
-  if (!mounted || !containerElement) return null;
   const elementToRender = (
     <div
-      style={{ ...parsedBrandColors, zIndex: 30 }}
+      style={{
+        ...parsedBrandColors,
+        ...style,
+        pointerEvents: "auto",
+        position: useShadowDOM ? "relative" : undefined,
+        zIndex: 30,
+      }}
       className={cn("gen-sdk-root-portal", className)}
     >
       {children}
+      {enabledToaster && <Toaster />}
     </div>
   );
   return createPortal(elementToRender, containerElement);

@@ -11,18 +11,20 @@ import PlaybackSpeedControlSlider from "./speed-control-buttons";
 import { useBaseContext } from "@genuin/components/context";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { cn } from "@genuin/ui/lib/utils";
+import { getRootContainer } from "../root-portal/shadow-root/shadow-dom.utils";
 
 type PlaybackSpeedProps = ComponentProps<typeof Dialog> & {
   children: React.ReactNode;
 };
 
 export function PlaybackSpeed({ children, ...props }: PlaybackSpeedProps) {
-  const { playbackSpeed } = useBaseContext();
+  const { playbackSpeed, useShadowDOM } = useBaseContext();
   const { isTablet } = useDeviceDetectMediaQuery();
   return (
     <Dialog modal {...props}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent
+        container={getRootContainer(useShadowDOM)}
         className={cn(
           "gen-sdk-expand-view gencl:text-center gencl:bg-white gencl:sm:min-w-lg! gencl:md:min-w-xl! gencl:rounded-t-2xl! gencl:md:rounded-2xl! gencl:flex gencl:flex-col gencl:gap-4",
           isTablet ? "gencl:p-10" : "gencl:p-6"

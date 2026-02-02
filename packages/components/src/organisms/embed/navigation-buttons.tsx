@@ -294,7 +294,7 @@ export function NavigationButtonsWithContext({
       e.preventDefault();
       goToPreviousVideo();
     },
-    [goToPreviousVideo]
+    [goToPreviousVideo],
   );
 
   const handleNext = useCallback(
@@ -305,10 +305,10 @@ export function NavigationButtonsWithContext({
         () => {
           goToNextVideo();
         },
-        activeIndex > 0 ? 0 : 50
+        activeIndex > 0 ? 0 : 50,
       );
     },
-    [goToNextVideo, activeIndex, setSlidesOffsetBefore]
+    [goToNextVideo, activeIndex, setSlidesOffsetBefore],
   );
 
   // Function to update disabled state based on current swiper state

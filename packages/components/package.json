@@ -10,7 +10,8 @@
     "./*": "./src/*",
     "./globals.css": "./src/globals.css",
     "./styles": "./dist/index.css",
-    "./assets/*": "./src/assets/*"
+    "./assets/*": "./src/assets/*",
+    "./lib/*" : "./src/lib/*"
   },
   "peerDependencies": {
     "@radix-ui/react-slider": "^1.3.5",

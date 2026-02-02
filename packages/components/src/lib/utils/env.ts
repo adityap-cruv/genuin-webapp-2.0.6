@@ -55,3 +55,6 @@ export const NEXT_PUBLIC_SECRET_STRING = isServer
 export const NEXT_PUBLIC_REDIRECT_URI = isServer
   ? (process.env.NEXT_PUBLIC_REDIRECT_URI as string)
   : (import.meta.env.NEXT_PUBLIC_REDIRECT_URI as string);
+export const TRACK_OBSERVABILITY = isServer
+  ? (process.env.TRACK_OBSERVABILITY as string)
+  : (import.meta.env.TRACK_OBSERVABILITY as string);

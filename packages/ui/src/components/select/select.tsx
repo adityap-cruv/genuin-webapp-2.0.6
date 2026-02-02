@@ -53,14 +53,16 @@ function SelectContent({
   showScrollUpButton = true,
   showScrollDownButton = true,
   viewportClassName,
+  container,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Content> & {
   showScrollUpButton?: boolean;
   showScrollDownButton?: boolean;
   viewportClassName?: string;
+  container?: SelectPrimitive.SelectPortalProps["container"];
 }) {
   return (
-    <SelectPrimitive.Portal>
+    <SelectPrimitive.Portal container={container ?? document.body}>
       <SelectPrimitive.Content
         data-slot="select-content"
         className={cn(

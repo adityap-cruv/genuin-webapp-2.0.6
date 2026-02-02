@@ -40,6 +40,7 @@ type BaseContextProviderProps = {
    * Theme of the application - 'dark' or 'light'
    */
   theme?: "dark" | "light";
+  useShadowDOM : boolean;
 };
 
 type AutoplayParams = {
@@ -99,6 +100,7 @@ export function BaseContextProvider({
   children,
   brandDetails,
   isEmbed = false,
+  useShadowDOM,
   theme,
 }: BaseContextProviderProps) {
   useLayoutEffect(() => {
@@ -370,6 +372,7 @@ export function BaseContextProvider({
         baseContextManager,
         theme: currentTheme,
         setTheme: setCurrentTheme,
+        useShadowDOM
       }}
     >
       {children}

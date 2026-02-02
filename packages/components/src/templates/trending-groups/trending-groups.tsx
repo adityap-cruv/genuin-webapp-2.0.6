@@ -143,6 +143,7 @@ function TrendingGroupsMobileView({
           slidesPerView={1.05} // Show 5% of the next slide
           className="gencl:w-full"
           modules={[Navigation]}
+          touchStartPreventDefault={false}
           navigation={{
             prevEl: ".swiper-prev-button",
             nextEl: ".swiper-next-button",

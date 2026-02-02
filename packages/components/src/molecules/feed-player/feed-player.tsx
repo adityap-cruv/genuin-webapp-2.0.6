@@ -292,7 +292,6 @@ export const FeedPlayer = memo(function FeedPlayer({
     },
     [onPause, setPlayingState]
   );
-
   const handleVideoStart = useCallback(
     (duration: number, currentTime: number, latency: number) => {
       track(EventName.VIDEO_STARTED, {
@@ -353,7 +352,7 @@ export const FeedPlayer = memo(function FeedPlayer({
   const handleVideoLoadStart = useCallback(() => {
     setIsLoading(true);
   }, [setIsLoading]);
-
+  
   // Handle video load end - playing state will be updated by onPlay/onPause handlers
   const handleVideoLoadEnd = useCallback(() => {
     setIsLoading(false);

@@ -243,6 +243,7 @@ export function TrendingCommunitiesMobileView({
             onSwiper={handleSwiperInit}
             onSlideChange={handleSlideChange}
             autoHeight={false}
+            touchStartPreventDefault={false}
             watchSlidesProgress={true}
           >
             {communitiesWithUpdatedCounts.map(

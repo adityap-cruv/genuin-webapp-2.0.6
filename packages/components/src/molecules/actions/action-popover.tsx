@@ -3,8 +3,13 @@ import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 
 import { XIcon } from "@genuin/ui/icons";
 import { memo, ReactNode, useEffect, useState } from "react";
-import { Popover, PopoverContent, PopoverTrigger } from "@genuin/ui/components/popover";
-import { Link } from "../link";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@genuin/ui/components/popover";
+import { useBaseContext } from "@genuin/components/context";
+import { getRootContainer } from "../root-portal/shadow-root/shadow-dom.utils";
 
 interface ActionPopoverProps {
   /**
@@ -73,6 +78,7 @@ export const ActionPopover = memo(function ActionPopover({
 }: ActionPopoverProps) {
   const [isOpen, setIsOpen] = useState(initialOpen);
   const embedDetails = useSafeEmbedContext();
+  const { useShadowDOM } = useBaseContext();
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | undefined = undefined;
@@ -150,6 +156,7 @@ export const ActionPopover = memo(function ActionPopover({
         theme="auth"
         showArrow={showArrow}
         align={align}
+        container={getRootContainer(useShadowDOM)}
         customBackgroundColor={backgroundColor}
         className={`gencl:border-none gencl:bg-transparent! gencl:duration-700 gencl:p-0 gencl:w-screen gencl:shadow-none gencl:sm:max-w-sm ${contentClassName}`}
         onInteractOutside={() => handleOpenChange(false)}

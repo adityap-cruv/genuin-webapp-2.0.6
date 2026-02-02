@@ -1,5 +1,9 @@
 import { cn } from "@genuin/ui/lib/utils";
 import type { EmbedTileProps } from "./embed-tile.types";
+import {
+  SDKEventEmitter,
+  SDKEventName,
+} from "@genuin/components/lib/sdk-event-emitter";
 import { cva, VariantProps } from "class-variance-authority";
 import { lazy, Suspense, useCallback, useMemo } from "react";
 import {
@@ -231,6 +235,22 @@ function EmbedPlayer({
       );
 
   const handleClickOnEmbedTile = useCallback(() => {
+    // Emit SDK event for video click
+    SDKEventEmitter.emit(SDKEventName.VIDEO_CLICKED, {
+      videoId: postDetails.video.id,
+    });
+
+    const isBrandPeacock = embedData.brandDetails?.brand_id === 3182;
+    if (isBrandPeacock) {
+      const nativeVideoHandler = (window as any).webkit?.messageHandlers
+        ?.openNativeVideo;
+      if (nativeVideoHandler) {
+        nativeVideoHandler.postMessage({
+          source: "carousel",
+          videoId: postDetails.video.id,
+        });
+      }
+    }
     if (isAdPlaying) {
       return;
     }
@@ -289,8 +309,8 @@ function EmbedPlayer({
           }
           className={
             videoCrop
-              ? "gencl:object-cover gencl:h-full! gencl:w-full"
-              : "gencl:h-full!"
+              ? "gencl:object-cover gencl:h-full! gencl:w-full gencl:bg-cover"
+              : "gencl:h-full! gencl:bg-contain!"
           }
           layoutType={layoutType}
           aria-hidden="true"

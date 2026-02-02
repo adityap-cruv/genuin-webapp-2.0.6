@@ -72,6 +72,7 @@ export type ConfigByUser = {
   website_type?: 'legacy' | 'polaris'
   video_ids?: string
   initial_video_ids?: string
+  useShadowDOM?: boolean
   allow_gesture_scroll?: boolean
 }
 
@@ -128,5 +129,6 @@ export type SingleEmbedDataConfig = {
   expandOnLoad?: boolean
   videoIds: string[]
   initialVideoIds: string[]
+  useShadowDOM?: boolean
   allowGestureScroll: boolean
 }

@@ -50,13 +50,15 @@ function SheetContent({
   side = "right",
   hideCloseIcon = false,
   style,
+  container,
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Content> & {
   side?: "top" | "right" | "bottom" | "left";
   hideCloseIcon?: boolean;
+  container?: SheetPrimitive.DialogPortalProps["container"];
 }) {
   return (
-    <SheetPortal>
+    <SheetPortal container={container ?? document.body}>
       <SheetOverlay />
       <SheetPrimitive.Content
         data-slot="sheet-content"

@@ -41,6 +41,7 @@ import {
   SheetTrigger,
 } from "@genuin/ui/components/sheet";
 import { useAnalytics } from "@genuin/components/context/analytics";
+import { getRootContainer } from "@genuin/components/molecules/root-portal/shadow-root/shadow-dom.utils";
 
 export const iconVariant = cva(
   "gencl:flex gencl:size-9 gencl:items-center gencl:justify-center gencl:rounded-full gencl:sm:rounded-lg!",
@@ -261,7 +262,7 @@ const NotificationItemWrapper = ({
 function Notification() {
   const { user } = useAuthContext();
   const { isMobile } = useDeviceDetectMediaQuery();
-
+  const { useShadowDOM } = useBaseContext();
   // Only enable the query if the user is logged in
   const { data: notificationData, refetch: refreshNotification } =
     useNotificationCount({ enabled: !!user });
@@ -328,6 +329,7 @@ function Notification() {
           side="left"
           className="gencl:gap-0 gencl:w-full"
           hideCloseIcon
+          container={getRootContainer(useShadowDOM)}
         >
           {notificationHeader}
           <div className="gencl:w-full gencl:h-full gencl:p-4">

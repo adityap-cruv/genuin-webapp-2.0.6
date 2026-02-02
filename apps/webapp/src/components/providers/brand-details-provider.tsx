@@ -4,7 +4,7 @@ import { BaseContextProvider } from '@genuin/components/context/base/provider'
 
 export default function BrandDetailsProviderClient({ brandDetails, children }: any) {
   return (
-    <BaseContextProvider isEmbed={false} brandDetails={brandDetails}>
+    <BaseContextProvider useShadowDOM={false} isEmbed={false} brandDetails={brandDetails}>
       {children}
     </BaseContextProvider>
   )

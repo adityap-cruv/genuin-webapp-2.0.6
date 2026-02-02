@@ -133,10 +133,16 @@ function DialogContent({
   bgBlur = false,
   style,
   closeIconClassName,
+  container,
   ...props
-}: DialogContentProps) {
+}: DialogContentProps & {
+  container?: DialogPrimitive.DialogPortalProps["container"];
+}) {
   return (
-    <DialogPortal data-slot="dialog-portal">
+    <DialogPortal
+      data-slot="dialog-portal"
+      container={container ?? document.body}
+    >
       <DialogOverlay className={cn({ "gencl:backdrop-blur-lg": bgBlur })} />
       <DialogPrimitive.Content
         data-slot="dialog-content"

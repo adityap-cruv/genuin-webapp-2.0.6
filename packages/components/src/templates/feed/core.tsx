@@ -47,6 +47,7 @@ import { getQueryKeyForVideoDetails } from "@genuin/components/react-query/keys/
 
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useBaseContext } from "@genuin/components/context";
+import useViewportHeight from "@genuin/components/hooks/use-screen-height";
 
 /**
  * Internal component to conditionally wrap feed content based on brand layout type.
@@ -97,6 +98,7 @@ export const FeedViewCore = memo(function FeedViewCore({
   isSectioned,
   ...restProps
 }: FeedViewPropsType) {
+  const viewportHeight = useViewportHeight();
   const {
     videos,
     isLoading,
@@ -290,9 +292,9 @@ export const FeedViewCore = memo(function FeedViewCore({
       <div
         id="gencl-feed-view"
         className={cn(
-          "gencl:flex gencl:w-full gencl:h-full gencl:gap-4",
+          "gencl:flex gencl:gap-4",
           {
-            [` gencl:sm:p-0! gencl:flex gencl:items-center gencl:mt-0 gencl:z-50 gencl:left-0 gencl:h-full gencl:w-full ${
+            [` gencl:sm:p-0! gencl:flex gencl:items-center gencl:mt-0 gencl:z-50 gencl:left-0 gencl:w-full ${
               theme === "dark" ? "gencl:bg-black" : "gencl:bg-white"
             }`]: showExpandView,
             "gencl:sm:pr-4! gencl:pt-0 gencl:sm:pt-4!": !showExpandView,
@@ -301,8 +303,12 @@ export const FeedViewCore = memo(function FeedViewCore({
             // Apply fixed positioning from top 48px, if it's mobile and iheart(brand)
             "gencl:fixed gencl:top-12": isIHeart && !isDesktop,
           },
+          variant === "expand" ? "gencl:w-screen" : "gencl:w-full gencl:h-full",
           className
         )}
+        style={{
+          height: variant === "expand" ? `${viewportHeight}px` : "100%",
+        }}
         {...restProps}
       >
         <FeedContentWrapper isIHeart={isIHeart}>

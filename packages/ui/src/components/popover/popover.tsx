@@ -5,7 +5,7 @@ import * as PopoverPrimitive from "@radix-ui/react-popover";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 
-import { cn, getGenclStyles } from "@genuin/ui/lib/utils";
+import { cn } from "@genuin/ui/lib/utils";
 
 function Popover({
   ...props
@@ -27,14 +27,13 @@ const popoverContentVariants = cva(
         light:
           "gencl:bg-white gencl:border gencl:border-border gencl:w-72 gencl:p-4 gencl:shadow-md",
         dark: "gencl:bg-secondary-900 gencl:border gencl:border-secondary-700 gencl:text-white gencl:w-72 gencl:p-4 gencl:shadow-md",
-        auth:
-          "gencl:border gencl:border-border gencl:w-72 gencl:p-4 gencl:shadow-md",
+        auth: "gencl:border gencl:border-border gencl:w-72 gencl:p-4 gencl:shadow-md",
       },
     },
     defaultVariants: {
       theme: "light",
     },
-  }
+  },
 );
 
 const popoverArrowVariants = cva("gencl:z-50 gencl:size-3.5 gencl:w-5", {
@@ -42,7 +41,7 @@ const popoverArrowVariants = cva("gencl:z-50 gencl:size-3.5 gencl:w-5", {
     theme: {
       light: "gencl:fill-white",
       dark: "gencl:bg-secondary-900 gencl:border-secondary-700",
-      auth : "gencl:fill-white"
+      auth: "gencl:fill-white",
     },
   },
   defaultVariants: {
@@ -71,8 +70,11 @@ function PopoverContent({
   customBackgroundColor,
   showArrow = false,
   children,
+  container,
   ...props
-}: PopoverContentProps) {
+}: PopoverContentProps & {
+  container?: PopoverPrimitive.PopoverPortalProps["container"];
+}) {
   // const customColorStyle = customBackgroundColor
   //   ? { backgroundColor: customBackgroundColor }
   //   : {};
@@ -81,13 +83,17 @@ function PopoverContent({
     : {};
 
   return (
-    <PopoverPrimitive.Portal>
+    <PopoverPrimitive.Portal container={container ?? document.body}>
       <PopoverPrimitive.Content
         data-slot="popover-content"
         align={align}
         sideOffset={sideOffset}
         // style={customColorStyle}
-        className={cn("gen-sdk-class gen-sdk-root-portal",popoverContentVariants({ theme }), className)}
+        className={cn(
+          "gen-sdk-class gen-sdk-root-portal",
+          popoverContentVariants({ theme }),
+          className,
+        )}
         {...props}
       >
         {children}

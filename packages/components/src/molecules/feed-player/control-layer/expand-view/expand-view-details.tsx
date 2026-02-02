@@ -20,7 +20,6 @@ import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { Pills } from "@genuin/components/molecules/feed-player/pills";
 import { controlLayerVariant } from "../control-layer";
 import { VariantProps } from "class-variance-authority";
-import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { Image } from "@genuin/ui/components/image";
@@ -33,25 +32,26 @@ import { getBaseUrl } from "@genuin/components/lib/utils";
 import { ClipPlayerCTA } from "../embed/iheart/clip-player-cta";
 import { getBaseUrlWithouthighlights } from "../embed/iheart/use-iheart-playback";
 import type { ExpandViewCallbacks } from "./types";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 
 // Lazy load heavy components
 const Actions = lazy(() =>
   import("../../../actions/index.js").then((m) => ({
     default: m.Actions,
   }))
-) as React.ComponentType<any>;
+);
 
 const Linkouts = lazy(() =>
   import("@genuin/components/organisms/linkouts/index.js").then((m) => ({
     default: m.Linkouts,
   }))
-) as React.ComponentType<any>;
+);
 
 const CommentsDialog = lazy(() =>
   import("../../../comments/index.js").then((m) => ({
     default: m.CommentsDialog,
   }))
-) as React.ComponentType<any>;
+);
 
 type BrandLayoutType = "default" | "iheart" | "ted" | "walmart" | "grubhub";
 
@@ -491,8 +491,6 @@ const SharedActions = memo(function SharedActions({
   ) => void;
   isActive: boolean;
 }) {
-  const embedDetails = useSafeEmbedContext();
-
   // Handle iHeart brand controls
   if (brandLayoutType === "iheart") {
     return (

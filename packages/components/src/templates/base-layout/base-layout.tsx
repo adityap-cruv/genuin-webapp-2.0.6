@@ -37,7 +37,6 @@ export function BaseLayout({
   children,
   variant,
   className,
-  showToaster = true,
   ...restProps
 }: BaseLayoutProps & VariantProps<typeof baseLayoutVariant>) {
   const { isMobile } = useDeviceDetectMediaQuery();
@@ -94,7 +93,7 @@ export function BaseLayout({
         >
           {children}
         </section>
-        {showToaster && <Toaster />}
+        <Toaster />
       </main>
     </>
   );

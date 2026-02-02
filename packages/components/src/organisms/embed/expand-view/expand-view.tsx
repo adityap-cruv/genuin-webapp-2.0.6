@@ -16,6 +16,7 @@ import {
   SDKListenerEventName,
 } from "@genuin/components/lib/sdk-event-emitter";
 import { FeedSkeleton } from "@genuin/components/templates/feed/feed-skeleton.js";
+import useViewportHeight from "@genuin/components/hooks/use-screen-height";
 
 const FeedView = lazy(() =>
   import("../../../templates/feed/index.js").then((module) => ({
@@ -94,6 +95,7 @@ export function EmbedExpandView({
     brand: { isIndianExpress },
   } = useEmbedConfigs();
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
+  const viewportHeight = useViewportHeight();
   const previousMuteState = usePrevious(muted);
   const isSectioned = embedEventBus.getContext().isSectioned;
   const [showExpandView, setShowExpandView] = useState(
@@ -453,7 +455,7 @@ export function EmbedExpandView({
       <RemoveScroll>
         <RootPortal
           className={cn(
-            "gen-sdk-class gen-sdk-expand-view gencl:h-full gencl:w-full gencl:flex gencl:justify-center gencl:gap-6 gencl:inset-0 gencl:z-50 gencl:bg-white",
+            "gen-sdk-class gen-sdk-expand-view gencl:h-full gencl:w-full gencl:inset-0 gencl:z-50 gencl:bg-white",
             isMobile && "gencl:flex-col",
             // Apply fixed positioning with full screen dimensions for non-iHeart layouts
             !isIHeart && "gencl:fixed gencl:h-screen gencl:w-screen",
@@ -463,6 +465,8 @@ export function EmbedExpandView({
                 isDesktop ? "gencl:z-[115]!" : "gencl:z-[112]!",
               ]
           )}
+          style={{ height: !isIHeart ? `${viewportHeight}px` : "100%" }}
+          enabledToaster={!(community || group || user)}
         >
           {isIHeart ? (
             <Suspense fallback={<FeedSkeleton variant="fullscreen" />}>

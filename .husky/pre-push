@@ -1,2 +1,62 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
+
+set +e
+
+echo "🔨 Running pre-push checks..."
+echo ""
+
+# Check if Web App .env file exists
+echo "📋 Checking Web App environment file..."
+if [ ! -f ".env" ]; then
+  echo "❌ Error: .env file not found!"
+  echo "📋 Please create .env file at repo root"
+  exit 1
+fi
+echo "✅ Web App .env file exists"
+
+# Check if SDK .env file exists
+echo "📋 Checking SDK environment file..."
+if [ ! -f "packages/web-sdk/.env.development" ]; then
+  echo "❌ Error: packages/web-sdk/.env.development file not found!"
+  echo "📋 Please create .env file at packages/web-sdk/.env.development"
+  exit 1
+fi
+echo "✅ SDK .env file exists"
+
+echo ""
+echo "⚠️  Building production bundles for SDK and Web App..."
+echo "⏳ This may take a few minutes..."
+echo ""
+
+# Build SDK Production
+echo "📦 Building SDK (production)..."
+pnpm --filter=@genuin/web-sdk run build
+SDK_STATUS=$?
+if [ $SDK_STATUS -ne 0 ]; then
+  echo ""
+  echo "❌ SDK production build failed!"
+  echo "❌ Push rejected. Please fix the build errors and try again."
+  exit 1
+fi
+
+echo "✅ SDK production build successful"
+echo ""
+
+# Build Web App Production
+echo "🌐 Building Web App (production)..."
+pnpm --filter=@genuin/webapp run build
+WEBAPP_STATUS=$?
+if [ $WEBAPP_STATUS -ne 0 ]; then
+  echo ""
+  echo "❌ Web App production build failed!"
+  echo "❌ Push rejected. Please fix the build errors and try again."
+  exit 1
+fi
+
+echo "✅ Web App production build successful"
+echo ""
+
+echo "✅ All production builds successful!"
+echo "✅ Proceeding with push..."
+echo ""

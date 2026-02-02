@@ -18,6 +18,8 @@ import {
   FilterItem,
   GroupOption,
 } from "./community-group-selector.types";
+import { useBaseContext } from "@genuin/components/context";
+import { getRootContainer } from "../root-portal/shadow-root/shadow-dom.utils";
 
 const transformCommunityData = (data: any[]): CommunityOption[] =>
   data.map((community) => ({
@@ -46,7 +48,7 @@ function DropdownSelector({
   disabled = false,
 }: DropdownProps) {
   const [query, setQuery] = useState("");
-
+  const { useShadowDOM } = useBaseContext();
   const filteredItems: FilterItem[] = query
     ? items.filter((item) =>
         item.label.toLowerCase().includes(query.toLowerCase())
@@ -79,6 +81,7 @@ function DropdownSelector({
         viewportClassName="gencl:p-0"
         showScrollUpButton={false}
         showScrollDownButton={false}
+        container={getRootContainer(useShadowDOM)}
       >
         <div className="gencl:pt-0 gencl:pr-4 gencl:pb-4 gencl:pl-4">
           <div className="gencl:sticky gencl:top-0 gencl:z-10 gencl:bg-white gencl:border-border gencl:pb-2 gencl:pt-4">

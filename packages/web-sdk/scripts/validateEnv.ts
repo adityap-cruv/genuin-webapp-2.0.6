@@ -58,6 +58,7 @@ function validateEnvironment() {
     RUDDERSTACK_API_KEY: z.string(),
     ENCRYPTION_SALT: z.string(),
     NEXT_PUBLIC_BCC_URL: z.string().url(),
+    TRACK_OBSERVABILITY: z.string(),
   })
 
   // Validate the environment variables

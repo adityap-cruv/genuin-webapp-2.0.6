@@ -3,6 +3,8 @@ import { EmbedContext, type FollowStatusItem } from "./context";
 import { ActivePlayerType, createEmbedEventBus } from "./event-bus";
 import { EmbedDataType } from "./embed.types";
 import {
+  lazy,
+  Suspense,
   useCallback,
   useEffect,
   useInsertionEffect,
@@ -24,7 +26,18 @@ type EmbedProviderProps = {
   children: React.ReactNode;
   container: HTMLElement;
   brandLayoutType: ReturnType<typeof getBrandType>;
+  trackObservability?: boolean;
+  sdkInitTime?: number;
 };
+
+// Lazy load the observability hook wrapper component
+const ObservabilityTracker = lazy(() =>
+  import(
+    "@genuin/components/lib/utils/observability/ObservabilityTracker.js"
+  ).then((module) => ({
+    default: module.ObservabilityTracker,
+  }))
+);
 
 /**
  * EmbedProvider component that provides the embed context to its children.
@@ -37,6 +50,8 @@ export function EmbedProvider({
   children,
   container,
   brandLayoutType,
+  trackObservability,
+  sdkInitTime,
 }: EmbedProviderProps) {
   const [stateEmbedData, setStateEmbedData] = useState(embedData);
 
@@ -81,6 +96,21 @@ export function EmbedProvider({
           !!stateEmbedData.startVideoSlug &&
           action === "share",
         isCaughtUpEventFired: false,
+        hasEmittedEmbedRendered: false,
+        resourceTracking: {
+          thumbnailImages: {
+            expected: 0,
+            loaded: 0,
+            resources: [],
+            thumbnailUrl: "",
+          },
+          videos: {
+            expected: 0,
+            loaded: 0,
+            resources: [],
+            videoUrl: "",
+          },
+        },
       }),
     [
       isIHeartLayout,
@@ -402,6 +432,14 @@ export function EmbedProvider({
         updateFollowStatus: followStatusMethods.updateFollowStatus,
       }}
     >
+      {trackObservability && (
+        <Suspense fallback={null}>
+          <ObservabilityTracker
+            sdkInitTime={sdkInitTime}
+            embedEventBus={embedEventBus}
+          />
+        </Suspense>
+      )}
       {children}
     </EmbedContext.Provider>
   );

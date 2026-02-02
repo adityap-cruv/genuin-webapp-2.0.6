@@ -1,5 +1,4 @@
 "use client";
-
 import { cn } from "@genuin/ui/lib/utils";
 import { IHeartCheckIcon, IHeartPlusIcon } from "@genuin/ui/icons";
 import { type ComponentProps, useMemo, useState, useEffect } from "react";

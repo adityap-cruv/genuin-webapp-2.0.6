@@ -74,6 +74,21 @@ export type EmbedEventContextType = {
    * event emissions and maintains consistent session-level behavior.
    */
   isCaughtUpEventFired?: boolean;
+  hasEmittedEmbedRendered: boolean;
+  resourceTracking: {
+    thumbnailImages: {
+      expected: number;
+      loaded: number;
+      resources: string[];
+      thumbnailUrl: string;
+    };
+    videos: {
+      expected: number;
+      loaded: number;
+      resources: string[];
+      videoUrl: string;
+    };
+  };
 };
 
 export type EmbedEventNameType =
@@ -86,7 +101,8 @@ export type EmbedEventNameType =
   | "disableSwiperChange"
   | "centerActiveSlide"
   | "followStatusChange"
-  | "disableCaughtUpEvent";
+  | "disableCaughtUpEvent"
+  | "updateResourceTracking";
 
 /**
  * Creates a new event bus instance for embed functionality
@@ -106,5 +122,15 @@ export const createEmbedEventBus = (context?: EmbedEventContextType) =>
     disableSwiper: false,
     followStatuses: [],
     isCaughtUpEventFired: false,
+    hasEmittedEmbedRendered : false,
+    resourceTracking: {
+      thumbnailImages: {
+        expected: 0,
+        loaded: 0,
+        resources: [],
+        thumbnailUrl: "",
+      },
+      videos: { expected: 0, loaded: 0, resources: [], videoUrl: "" },
+    },
     ...context,
   });

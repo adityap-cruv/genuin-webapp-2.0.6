@@ -12,25 +12,30 @@ import {
   generateExpandViewSkeletonHTML,
 } from '../utils/skeleton-html'
 import { SdkSkeleton } from '@genuin/components'
+import {
+  cleanupOverlayShadowHost,
+  setupMainShadowDOM,
+} from '@genuin/components/molecules/root-portal/shadow-root/shadow-dom.utils'
+import { Genuin } from './genuin-sdk'
+import { TRACK_OBSERVABILITY } from '@genuin/components/lib/utils/env'
 
-// Type definitions for lazy-loaded providers
-interface ProviderModules {
-  AuthProvider: ComponentType<any>
-  BaseContextProvider: ComponentType<any>
-  EmbedProvider: ComponentType<any>
-  LinkProvider: ComponentType<any>
-  ReactQueryClientProvider: ComponentType<any>
-  AnalyticsProvider: ComponentType<any>
-  Toaster: ComponentType<any>
-  Loader: ComponentType<any>
-  Skeleton: ComponentType<any>
-  getBrandType: (
-    cardLayoutId?: number | null,
-    videoLayoutId?: number | null,
-  ) => string
-  cn: (...args: any[]) => string
-  useDeviceDetectMediaQuery: () => { isDesktop: boolean }
-}
+// Import providers directly instead of lazy loading
+import { AuthProvider } from '@genuin/components/context/auth'
+import { BaseContextProvider } from '@genuin/components/context/base'
+import { EmbedProvider } from '@genuin/components/context/embed'
+import { LinkProvider } from '@genuin/components/context/link'
+import { ReactQueryClientProvider } from '@genuin/components/react-query/react-query-provider'
+import { AnalyticsProvider } from '@genuin/components/context/analytics'
+// Lazy load Toaster for better code splitting
+const LazyToaster = lazy(() =>
+  import('@genuin/ui/components/toaster').then((module) => ({
+    default: module.Toaster,
+  })),
+)
+import { Skeleton } from '@genuin/ui/components/skeleton'
+import { getBrandType } from '@genuin/components/lib/utils/brand-layout'
+import { cn } from '@genuin/ui/lib/utils'
+import { useDeviceDetectMediaQuery } from '@genuin/components/hooks/use-devide-detect-media-query'
 
 // Track React roots per container to support multiple embeds
 const containerRootMap = new Map<HTMLElement, Root>()
@@ -151,58 +156,6 @@ export function loadExpandView(
   loaderDiv.innerHTML = generateExpandViewSkeletonHTML({ theme })
 }
 
-/**
- * Dynamically load all React providers
- * This defers loading of providers until embed is actually rendered
- */
-async function loadProviders(): Promise<ProviderModules> {
-  const [
-    authModule,
-    baseModule,
-    embedModule,
-    linkModule,
-    queryModule,
-    analyticsModule,
-    // uiModule,
-    brandUtilsModule,
-    uiUtilsModule,
-    hooksModule,
-  ] = await Promise.all([
-    import('@genuin/components/context/auth'),
-    import('@genuin/components/context/base'),
-    import('@genuin/components/context/embed'),
-    import('@genuin/components/context/link'),
-    import('@genuin/components/react-query/react-query-provider'),
-    import('@genuin/components/context/analytics'),
-    // import('@genuin/ui'),
-    import('@genuin/components/lib/utils/brand-layout'),
-    import('@genuin/ui/lib/utils'),
-    import('@genuin/components/hooks/use-devide-detect-media-query'),
-  ])
-
-  // Lazy load UI components
-  const [loaderModule, skeletonModule] = await Promise.all([
-    import('@genuin/ui/components/loader'),
-    import('@genuin/ui/components/skeleton'),
-  ])
-
-  return {
-    AuthProvider: authModule.AuthProvider,
-    BaseContextProvider: baseModule.BaseContextProvider,
-    EmbedProvider: embedModule.EmbedProvider,
-    LinkProvider: linkModule.LinkProvider,
-    ReactQueryClientProvider: queryModule.ReactQueryClientProvider,
-    AnalyticsProvider: analyticsModule.AnalyticsProvider,
-    // Toaster: uiModule.Toaster,
-    Toaster: (await import('@genuin/ui/components/toaster')).Toaster,
-    Loader: loaderModule.Loader,
-    Skeleton: skeletonModule.Skeleton,
-    getBrandType: brandUtilsModule.getBrandType,
-    cn: uiUtilsModule.cn,
-    useDeviceDetectMediaQuery: hooksModule.useDeviceDetectMediaQuery,
-  }
-}
-
 // Lazy load the Embed component for better code splitting
 const LazyEmbed = lazy(() =>
   import('@genuin/components/organisms/embed/embed')
@@ -238,31 +191,15 @@ const LazyStandardWall = lazy(() =>
 function EmbedSkeleton({
   container,
   theme,
-  providers,
 }: {
   container: HTMLElement
   theme?: 'dark' | 'light'
-  providers?: ProviderModules
 }) {
-  if (!providers) {
-    const bgClass =
-      theme === 'dark' ? 'gencl:bg-secondary-900' : 'gencl:bg-secondary-200'
-    const shimmerBgClass =
-      theme === 'dark' ? 'gencl:bg-secondary-800' : 'gencl:bg-secondary-100'
-    return (
-      <div
-        className={`gencl:relative gencl:h-full gencl:w-full gencl:rounded-md ${bgClass}`}>
-        <div
-          className={`gencl:absolute gencl:top-1/2 gencl:left-1/2 gencl:-translate-x-1/2 gencl:-translate-y-1/2 gencl:w-16 gencl:h-16 gencl:rounded-md ${shimmerBgClass}`}></div>
-      </div>
-    )
-  }
-
   const bgClass =
     theme === 'dark' ? 'gencl:bg-secondary-900' : 'gencl:bg-secondary-200'
   const shimmerBgClass =
     theme === 'dark' ? 'gencl:bg-secondary-800' : 'gencl:bg-secondary-100'
-  const { isDesktop } = providers.useDeviceDetectMediaQuery()
+  const { isDesktop } = useDeviceDetectMediaQuery()
   const websiteType = container.getAttribute('data-website-type')
 
   return (
@@ -273,14 +210,14 @@ function EmbedSkeleton({
           style={{
             height: !isDesktop ? '100%' : 'calc(100% - 68px)',
           }}
-          className={providers.cn(
+          className={cn(
             'gencl:w-full gencl:flex gencl:overflow-auto gencl:gap-2',
             !isDesktop && websiteType === 'polaris' && 'gencl:flex-col',
           )}>
           {Array.from({ length: 6 }).map((_, idx) => (
-            <providers.Skeleton
+            <Skeleton
               key={idx}
-              className={providers.cn(
+              className={cn(
                 'gencl:aspect-square gencl:flex-shrink-0 gencl:rounded-md',
                 !isDesktop && websiteType === 'polaris'
                   ? 'gencl:w-full'
@@ -358,10 +295,19 @@ export async function loadNewEmbed({
     containerRootMap.delete(container)
   }
 
-  // Dynamically load all providers (defers loading until embed is rendered)
-  const providers = await loadProviders()
+  // Load all providers (no longer lazy loaded)
+  // enable the shadow dom for the brand Id : 2477 for the temporary bases
+  if (brandDetails.brand_id === 2477 || brandDetails.brand_id === 3099) {
+    config.useShadowDOM = true
+  }
 
-  const root = createRoot(container)
+  let targetContainer = container
+
+  if (config.useShadowDOM) {
+    targetContainer = setupMainShadowDOM(container)
+  }
+
+  const root = createRoot(targetContainer)
   containerRootMap.set(container, root)
 
   // Determine brand layout type
@@ -372,20 +318,10 @@ export async function loadNewEmbed({
   const videoLayoutId = isPlacementView
     ? embedData.placement_video_layout_id
     : embedData.video_layout_id
-  const brandLayoutType = providers.getBrandType(
+  const brandLayoutType = getBrandType(
     cardLayoutId ? Number(cardLayoutId) : undefined,
     videoLayoutId ? Number(videoLayoutId) : undefined,
   )
-
-  const {
-    ReactQueryClientProvider,
-    EmbedProvider,
-    BaseContextProvider,
-    LinkProvider,
-    AuthProvider,
-    AnalyticsProvider,
-    Toaster,
-  } = providers
 
   // Initialize toaster on first embed
   if (!toasterRoot) {
@@ -395,13 +331,22 @@ export async function loadNewEmbed({
     div.classList.add('gen-sdk-root-portal')
     document.body.appendChild(div)
     toasterRoot = createRoot(div)
-    toasterRoot.render(<Toaster />)
+    toasterRoot.render(
+      <Suspense fallback={null}>
+        <LazyToaster />
+      </Suspense>,
+    )
   }
 
   const rootToRender: ReactNode = (
     <ReactQueryClientProvider>
       <EmbedProvider
-        container={container}
+        container={targetContainer}
+        trackObservability={
+          (brandDetails.track_observability_enabled ?? true) &&
+          TRACK_OBSERVABILITY === 'true'
+        }
+        sdkInitTime={Genuin.getSDKInitTime()}
         embedData={{
           ...embedData,
           brand_id: embedData.brand_id,
@@ -417,6 +362,7 @@ export async function loadNewEmbed({
         <BaseContextProvider
           brandDetails={brandDetails}
           theme={config.theme}
+          useShadowDOM={config.useShadowDOM ?? false}
           isEmbed>
           <LinkProvider>
             <AnalyticsProvider
@@ -434,7 +380,6 @@ export async function loadNewEmbed({
                     <EmbedSkeleton
                       theme={config.theme}
                       container={container}
-                      providers={providers}
                     />
                   }>
                   {embedData.style === 'standard_wall' ? (
@@ -443,6 +388,11 @@ export async function loadNewEmbed({
                     <LazyEmbed wasLazilyLoaded={wasLazilyLoaded} />
                   )}
                 </Suspense>
+                {config.useShadowDOM && (
+                  <Suspense fallback={null}>
+                    <LazyToaster />
+                  </Suspense>
+                )}
               </AuthProvider>
             </AnalyticsProvider>
           </LinkProvider>
@@ -463,12 +413,30 @@ export async function loadNewEmbed({
   return () => {
     root.unmount()
     containerRootMap.delete(container)
+
     // Cleanup toaster when no embeds remain
-    if (containerRootMap.size === 0 && toasterRoot) {
+    if (containerRootMap.size === 0 && toasterRoot && !config.useShadowDOM) {
       toasterRoot.unmount()
       document.getElementById('gen-sdk-toaster-root')?.remove()
       toasterRoot = null
     }
-    container.remove()
+
+    const rootNode = container.getRootNode()
+    if (
+      rootNode instanceof ShadowRoot &&
+      (rootNode as ShadowRoot).host.hasAttribute('data-genuin-host')
+    ) {
+      ;(rootNode as ShadowRoot).host.remove()
+    } else {
+      container.remove()
+    }
+
+    // Clean up overlay shadow host ONLY if this was the last embed
+    // Clean up overlay shadow host if no other instances are using it
+    const remainingInstances = document.querySelectorAll('[data-genuin-host]')
+    if (remainingInstances.length === 0) {
+      // NOTE: Cleanup is handled in the root portal component; this is kept as a safeguard.
+      cleanupOverlayShadowHost()
+    }
   }
 }

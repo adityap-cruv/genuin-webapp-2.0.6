@@ -106,6 +106,7 @@ export function BecomeCreator({ ...props }: BecomeCreatorProps) {
       <Swiper
         mousewheel={true}
         keyboard={true}
+        touchStartPreventDefault={false}
         modules={[Autoplay, Pagination, Mousewheel, Keyboard]}
         autoplay={{
           delay: 2500,
