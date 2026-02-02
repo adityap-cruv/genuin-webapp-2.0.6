@@ -1,6 +1,9 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+# Exit immediately when Ctrl+C is pressed
+trap 'echo ""; echo "❌ Aborted by user"; exit 130' INT
+
 set +e
 
 echo "🔨 Running pre-push checks..."
