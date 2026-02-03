@@ -9,6 +9,7 @@ import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config
 import { GenericData } from "@genuin/components/context/base/feed-context-manager";
 import { Swiper } from "swiper/types";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
+import { isSlideVisible } from "./utils";
 
 type EmbedItemProps = Omit<
   ComponentProps<typeof EmbedTile>,
@@ -95,14 +96,16 @@ export function EmbedItem({
   const handleMouseEnter = useCallback(() => {
     if (isTablet || isMobile) return;
     setIsHovering(true);
-    debouncedSetActiveIndex();
-  }, [debouncedSetActiveIndex, isTablet, isMobile]);
+    if (swiper && isSlideVisible(swiper, index)) {
+      debouncedSetActiveIndex();
+    }
+  }, [isTablet, isMobile, debouncedSetActiveIndex, index]);
 
   const handleMouseLeave = useCallback(() => {
+    debouncedSetActiveIndex.cancel();
     if (isTablet || isMobile) return;
     setIsHovering(false);
-    debouncedSetActiveIndex.cancel();
-  }, [debouncedSetActiveIndex, isTablet, isMobile]);
+  }, [isTablet, isMobile, debouncedSetActiveIndex]);
 
   // Handle automatic progression when video ends
   const handlePlayerIterationEnd = useCallback(() => {

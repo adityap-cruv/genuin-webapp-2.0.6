@@ -146,6 +146,22 @@
   --text-body-2-medium--line-height: 16px;
   --text-body-2-medium--font-weight: 500;
 
+  --text-body-3-normal: 10px;
+  --text-body-3-normal--line-height: 12px;
+  --text-body-3-normal--font-weight: 400;
+
+  --text-body-3-medium: 10px;
+  --text-body-3-medium--line-height: 12px;
+  --text-body-3-medium--font-weight: 500;
+
+  --text-body-3-semi-bold: 10px;
+  --text-body-3-semi-bold--line-height: 12px;
+  --text-body-3-semi-bold--font-weight: 600;
+
+  --text-body-3-bold: 10px;
+  --text-body-3-bold--line-height: 12px;
+  --text-body-3-bold--font-weight: 700;
+
   /**
   * Theme variable for spacing
   */

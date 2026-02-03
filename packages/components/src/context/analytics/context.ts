@@ -15,6 +15,10 @@ export const EventName = {
   VIDEO_MIDPOINT: "Midpoint",
   VIDEO_THIRD_QUARTILE: "Video Third Quartile",
   VIDEO_COMPLETED: "Video Complete",
+  AD_STARTED: "Ad Started",
+  AD_COMPLETED: "Ad Completed",
+  AD_CTA_CLICKED: "Ad CTA Clicked",
+  AD_PAUSED: "Ad Paused",
   /**
    * this event should be sent to backend only.
    */

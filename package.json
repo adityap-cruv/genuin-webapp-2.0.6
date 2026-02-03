@@ -28,7 +28,8 @@
     "deps:fix": "syncpack fix-mismatches",
     "deps:update": "ncu -u && pnpm install",
     "deps:unused": "depcheck",
-    "deps:validate": "pnpm deps:check && pnpm deps:unused"
+    "deps:validate": "pnpm deps:check && pnpm deps:unused",
+    "postinstall": "node scripts/postinstall-patch-openplayerjs.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",

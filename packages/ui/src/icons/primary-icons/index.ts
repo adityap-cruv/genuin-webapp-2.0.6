@@ -81,3 +81,4 @@ export * from "./import-icon";
 export * from "./octopus-icon";
 export * from "./video-icon";
 export * from "./map-pin";
+export * from "./skip-ad-icon";

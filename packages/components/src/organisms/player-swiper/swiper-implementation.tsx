@@ -57,6 +57,7 @@ const CONFIG = {
 type SwiperImplementationProps = {
   children: React.ReactNode;
   disableScroll?: boolean;
+  disable?: boolean;
   spaceBetween?: number;
   direction?: "vertical" | "horizontal";
   slidesPerView?: number | "auto";
@@ -69,6 +70,7 @@ export function SwiperImplementation({
   children,
   direction = "vertical",
   disableScroll = false,
+  disable = false,
   className,
   slidesPerView: slidesPerViewProp,
   spaceBetween: spaceBetweenProp,

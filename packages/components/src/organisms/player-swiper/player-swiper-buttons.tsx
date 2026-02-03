@@ -105,6 +105,7 @@ export function NavigationButton({
   className,
   theme,
   size,
+  disable = false,
 }: {
   swiper?: Swiper;
   postsLength?: number;
@@ -112,6 +113,7 @@ export function NavigationButton({
   className?: string;
   theme?: "light" | "dark";
   size: ButtonProps["size"];
+  disable?: boolean;
 }) {
   // State to force re-render when swiper state changes
   const [, forceUpdate] = useState({});
@@ -166,8 +168,11 @@ export function NavigationButton({
     return { buttonBg, iconFill };
   };
 
-  const prevStyles = getButtonStyles(swiper.isBeginning, prevHovered);
-  const nextStyles = getButtonStyles(swiper.isEnd, nextHovered);
+  const prevStyles = getButtonStyles(
+    swiper.isBeginning || disable,
+    prevHovered
+  );
+  const nextStyles = getButtonStyles(swiper.isEnd || disable, nextHovered);
 
   return (
     <div
@@ -184,7 +189,9 @@ export function NavigationButton({
       aria-label="Video navigation"
     >
       <div
-        onMouseEnter={() => !swiper.isBeginning && setPrevHovered(true)}
+        onMouseEnter={() =>
+          !(swiper.isBeginning || disable) && setPrevHovered(true)
+        }
         onMouseLeave={() => setPrevHovered(false)}
       >
         <Button
@@ -194,18 +201,20 @@ export function NavigationButton({
           theme="custom"
           className={cn(
             "gencl:transition-all gencl:duration-200",
-            swiper.isBeginning && "gencl:cursor-not-allowed!"
+            (swiper.isBeginning || disable) && "gencl:cursor-not-allowed!"
           )}
           style={{
             background: prevStyles.buttonBg,
           }}
-          disabled={swiper.isBeginning}
+          disabled={swiper.isBeginning || disable}
           onClick={() => {
-            setPrevHovered(false);
-            swiper.slidePrev();
+            if (!disable) {
+              setPrevHovered(false);
+              swiper.slidePrev();
+            }
           }}
           aria-label={`Previous video (${currentSlide - 1} of ${totalSlides})`}
-          aria-disabled={swiper.isBeginning}
+          aria-disabled={swiper.isBeginning || disable}
           tabIndex={0}
         >
           <ChevronUpIcon
@@ -218,7 +227,7 @@ export function NavigationButton({
         </Button>
       </div>
       <div
-        onMouseEnter={() => !swiper.isEnd && setNextHovered(true)}
+        onMouseEnter={() => !(swiper.isEnd || disable) && setNextHovered(true)}
         onMouseLeave={() => setNextHovered(false)}
       >
         <Button
@@ -228,18 +237,20 @@ export function NavigationButton({
           theme="custom"
           className={cn(
             "gencl:transition-all gencl:duration-200",
-            swiper.isEnd && "gencl:cursor-not-allowed!"
+            (swiper.isEnd || disable) && "gencl:cursor-not-allowed!"
           )}
           style={{
             background: nextStyles.buttonBg,
           }}
-          disabled={swiper.isEnd}
+          disabled={swiper.isEnd || disable}
           onClick={() => {
-            setNextHovered(false);
-            swiper.slideNext();
+            if (!disable) {
+              setNextHovered(false);
+              swiper.slideNext();
+            }
           }}
           aria-label={`Next video (${currentSlide + 1} of ${totalSlides})`}
-          aria-disabled={swiper.isEnd}
+          aria-disabled={swiper.isEnd || disable}
           tabIndex={0}
         >
           <ChevronDownIcon

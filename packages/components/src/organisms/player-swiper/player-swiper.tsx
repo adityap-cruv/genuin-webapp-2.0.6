@@ -60,6 +60,7 @@ import { calculateSlideDimensions } from "./utils";
 
 import { useFocusManagement } from "@genuin/components/hooks/use-focus-management";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
+import { type AdInfoType } from "@genuin/components/molecules/feed-player";
 
 const CloseButton = lazy(() =>
   import("./player-swiper-buttons.js").then((m) => ({ default: m.CloseButton }))
@@ -146,8 +147,17 @@ export function PlayerList({
   } = useEmbedConfigs();
   const embedDetails = useSafeEmbedContext();
   const [isEndOfFeedReached, setEndOfFeedReached] = useState<boolean>(false);
+  const [isAdPlaying, setIsAdPlaying] = useState<boolean>(false);
   // if we use directly isTablet from the hook then for desktop it will be true based on useDeviceDetectMediaQuery implementation
   const isTablet = !isMobile && !isDesktop;
+
+  const handleAdStarted = useCallback((e?: AdInfoType) => {
+    setIsAdPlaying(true);
+  }, []);
+
+  const handleAdEnded = useCallback((e?: AdInfoType) => {
+    setIsAdPlaying(false);
+  }, []);
 
   // Container dimensions state
   const containerRef = useRef<HTMLDivElement>(null);
@@ -396,6 +406,8 @@ a swiper inside another swiper.
                     setHorizontalSwiper={setHorizontalSwiper}
                     setActiveHorizontalIndex={setActiveHorizontalIndex}
                     setVerticalSwipers={setVerticalSwipers}
+                    onAdStarted={handleAdStarted}
+                    onAdEnded={handleAdEnded}
                   />
                 </Suspense>
               ) : (
@@ -419,6 +431,8 @@ a swiper inside another swiper.
                     onCommentCountChange={onCommentCountChange}
                     totalVideos={totalVideos}
                     isSectioned={isSectioned}
+                    onAdStarted={handleAdStarted}
+                    onAdEnded={handleAdEnded}
                   />
                 </Suspense>
               )}
@@ -439,6 +453,7 @@ a swiper inside another swiper.
                 className={cn("gencl:pl-10 gencl:justify-center")}
                 theme={theme}
                 size={websiteType === "polaris" ? "lg" : "xl"}
+                disable={isAdPlaying}
               />
             </Suspense>
           )}
@@ -456,12 +471,14 @@ a swiper inside another swiper.
             postsLength={filteredPost.length}
             theme={theme}
             size={websiteType === "polaris" ? "lg" : "xl"}
+            disable={isAdPlaying}
           />
         </Suspense>
       )}
       {!isMobile &&
         brandLayoutType !== "iheart" &&
-        filteredPost[activeIndex] && (
+        filteredPost[activeIndex] &&
+        !isAdPlaying && (
           <Suspense fallback={null}>
             <Actions
               shareUrl={filteredPost[activeIndex]?.video.shareUrl ?? ""}
@@ -576,6 +593,7 @@ a swiper inside another swiper.
       {value &&
         showExpandView &&
         showCommentBox &&
+        !isAdPlaying &&
         filteredPost[activeIndex] &&
         brandLayoutType !== "iheart" &&
         isDesktop && (

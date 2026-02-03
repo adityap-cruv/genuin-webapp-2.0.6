@@ -78,6 +78,18 @@ type VideoProviderProps = {
    * Note: This is not the swiper's activeIndex.
    */
   activeIndex?: number;
+  /**
+   * A callback function that is invoked when an ad starts playing.
+   * @param event
+   * @returns
+   */
+  onAdStarted?: (event?: AdInfoType) => void;
+  /**
+   * A callback function that is invoked when an ad ends.
+   * @param event
+   * @returns
+   */
+  onAdEnded?: (event?: AdInfoType) => void;
 } & ExpandViewProps;
 
 type PlayerConfigType = ReturnType<typeof getVideoPlayerConfigs>;
@@ -115,6 +127,8 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   onPlayerIterationEnd,
   toggleExpandView,
   updateActiveIndex,
+  onAdStarted,
+  onAdEnded,
 }) => {
   const { brandDetails, baseEventBus, baseContextManager, muted, setMuted } =
     useBaseContext();
@@ -1109,6 +1123,14 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   In all other cases, scrolling will trigger the impression event automatically.
 */
   const handleEnded = useCallback(() => {
+    console.log("[feed-player]: handleEnded called", {
+      isEmbed,
+      explicitLoop,
+      isIHeartLayout,
+      websiteType,
+      repeatCount: playerConfigRef.current.repeatCount,
+      shouldSwipeNext: playerConfigRef.current.shouldSwipeNext,
+    });
     // If explicit loop is set to true, just replay the video indefinitely
     if (explicitLoop) {
       playerRef.current?.play();
@@ -1200,8 +1222,13 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   const updateAdInfo = useCallback(
     (isAdPlaying: boolean, adInfo: AdInfoType) => {
       setAdInfo({ isAdPlaying, adInfo });
+      if (isAdPlaying) {
+        onAdStarted?.(adInfo);
+      } else {
+        onAdEnded?.(adInfo);
+      }
     },
-    []
+    [onAdEnded, onAdStarted]
   );
 
   /**

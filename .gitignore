@@ -72,3 +72,5 @@ next-env.d.ts
 *storybook.log
 
 *.html
+
+packages/web-sdk/stats.json

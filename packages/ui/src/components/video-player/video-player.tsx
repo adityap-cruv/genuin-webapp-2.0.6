@@ -8,11 +8,62 @@ import {
   useImperativeHandle,
   useRef,
   useState,
+  lazy,
+  Suspense,
 } from "react";
 
 import { cn, encodeVideoSourceUrl } from "@genuin/ui/lib/utils";
 import { useBrowserDetect } from "@genuin/ui/hooks";
 import { Loader } from "@genuin/ui/loader";
+import type {
+  AdDataType,
+  VideoPlayerStateRef,
+} from "./ad-controls/use-ad-player";
+
+// Lazy load AdControls component to reduce initial bundle size
+const AdControls = lazy(() =>
+  import("./ad-controls/index.js").then((module) => ({
+    default: module.AdControls,
+  }))
+);
+
+const SAMPLE_AD_TAGS = {
+  SINGLE_REDIRECT_LINEAR:
+    "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_ad_samples&sz=640x480&cust_params=sample_ct%3Dredirectlinear&ciu_szs=300x250%2C728x90&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&correlator=",
+  SINGLE_REDIRECT_ERROR:
+    "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_ad_samples&sz=640x480&cust_params=sample_ct%3Dredirecterror&ciu_szs=300x250%2C728x90&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&correlator=",
+  SINGLE_REDIRECT_BROKEN:
+    "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_ad_samples&sz=640x480&cust_params=sample_ct%3Dredirecterror&ciu_szs=300x250%2C728x90&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&nofb=1&correlator=",
+  SINGLE_VERTICAL_INLINE:
+    "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_vertical_ad_samples&sz=360x640&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&correlator=",
+  SINGLE_VPAID_LINEAR:
+    "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_ad_samples&sz=640x480&cust_params=sample_ct%3Dlinearvpaid2js&ciu_szs=300x250%2C728x90&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&correlator=",
+  SINGLE_VPAID_NON_LINEAR:
+    "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_ad_samples&sz=640x480&cust_params=sample_ct%3Dnonlinearvpaid2js&ciu_szs=728x90%2C300x250&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&correlator=",
+  VMAP_PRE_ROLL:
+    "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/vmap_ad_samples&sz=640x480&cust_params=sample_ar%3Dpreonly&ciu_szs=300x250%2C728x90&gdfp_req=1&ad_rule=1&output=vmap&unviewed_position_start=1&env=vp&correlator=",
+  VMAP_PRE_ROLL_BUMPER:
+    "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/vmap_ad_samples&sz=640x480&cust_params=sample_ar%3Dpreonlybumper&ciu_szs=300x250&gdfp_req=1&ad_rule=1&output=vmap&unviewed_position_start=1&env=vp&correlator=",
+  MID_ROLE_WITH_2_SKIPPABLE:
+    "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/vmap_skip_ad_samples&sz=640x480&cust_params=sample_ar%3Dmidskiponly&ciu_szs=300x250&gdfp_req=1&ad_rule=1&output=vmap&unviewed_position_start=1&env=vp&cmsid=496&vid=short_onecue&correlator=",
+  ALL_SINGLES:
+    "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/vmap_ad_samples&sz=640x480&cust_params=sample_ar%3Dpremidpost&ciu_szs=300x250&gdfp_req=1&ad_rule=1&output=vmap&unviewed_position_start=1&env=vp&cmsid=496&vid=short_onecue&correlator=",
+  STANDARD_POD_5_WITH_10_SEC:
+    "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/vmap_ad_samples&sz=640x480&cust_params=sample_ar%3Dpremidpostlongpod&ciu_szs=300x250&gdfp_req=1&ad_rule=1&output=vmap&unviewed_position_start=1&env=vp&cmsid=496&vid=short_onecue&correlator=",
+  ALL_WITH_ALL_BUMPERS:
+    "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/vmap_ad_samples&sz=640x480&cust_params=sample_ar%3Dpremidpostpodbumper&ciu_szs=300x250&gdfp_req=1&ad_rule=1&output=vmap&unviewed_position_start=1&env=vp&cmsid=496&vid=short_onecue&correlator=",
+  POST_ROLL_ONLY:
+    "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/vmap_ad_samples&sz=640x480&cust_params=sample_ar%3Dpostonly&ciu_szs=300x250&gdfp_req=1&ad_rule=1&output=vmap&unviewed_position_start=1&env=vp&correlator=",
+  SKIPPABLE_INLINE:
+    "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_preroll_skippable&sz=640x480&ciu_szs=300x250%2C728x90&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&correlator=",
+} as const;
+
+// Lazy load AdControls component to reduce initial bundle size
+// const AdControls = lazy(() =>
+//   import("./ad-controls/ad-controls").then((module) => ({
+//     default: module.AdControls,
+//   }))
+// );
 
 const hlsConfigs = {
   // debug: true,
@@ -84,11 +135,13 @@ const hlsConfigs = {
 
 export type PlayerProps = ComponentProps<"video"> & {
   volume?: number;
+  muted?: boolean; // Mute state for video and ads
   playbackSpeed?: number;
   play?: boolean;
   adUrl?: string; // URL for video ads
   startTime?: number;
   enableLazyLoading?: boolean; // Enable lazy loading optimization (default: false)
+  isInExpandView?: boolean;
   onOpenPlayerReady?: (player: OpenPlayerJS) => void;
   onPlayerLoad?: (player: OpenPlayerJS | null) => void; // Add custom event prop
   onVideoFirstQuartile?: (duration: number, currentTime: number) => void;
@@ -100,33 +153,17 @@ export type PlayerProps = ComponentProps<"video"> & {
   onAdError?: (error: any) => void; // Callback when ad errors
   onAdClicked?: (adData: AdDataType) => void; // Callback when ad is clicked
   onAdSkipped?: (adData: AdDataType) => void; // Callback when ad is skipped
+  onAdPause?: (adData: AdDataType) => void; // Callback when ad is paused
   onAllAdsCompleted?: () => void; // Callback when all ads are completed
   onVideoStart?: (
     duration: number,
     currentTime: number,
-    latency: number,
+    latency: number
   ) => void; // Add onVideoStart prop
   onMutedChange?: (muted: boolean) => void;
   onVideoLoadStart?: (isPlaying: boolean) => void; // Callback when video loading starts
   onVideoLoadEnd?: (isPlaying: boolean) => void; // Callback when video loading ends
-};
-
-type VideoPlayerStateRef = {
-  firstQuartileFired: boolean;
-  midpointFired: boolean;
-  thirdQuartileFired: boolean;
-  videoWatchedFired: boolean;
-  videoStartFired: boolean;
-  shouldPlay: boolean;
-  isAdErrored?: boolean;
-};
-
-type AdDataType = {
-  adId: string | null;
-  url: string | null;
-  title: string | null;
-  totalAds?: number;
-  currentAdIndex?: number;
+  onEnded?: (obje: { target: HTMLVideoElement | null }) => void; // Callback when video ends
 };
 
 export const VideoPlayer = memo(function VideoPlayer({
@@ -139,11 +176,13 @@ export const VideoPlayer = memo(function VideoPlayer({
   ref,
   playsInline = true,
   volume = 100,
+  muted,
   playbackSpeed = 1,
   play = true,
   loop = false, // loop prop is now destructured
   adUrl,
   enableLazyLoading = false, // Default to false for backward compatibility
+  isInExpandView,
   onVideoFirstQuartile,
   onOpenPlayerReady,
   onPlayerLoad, // Destructure new prop
@@ -156,42 +195,39 @@ export const VideoPlayer = memo(function VideoPlayer({
   onAdError,
   onAdClicked,
   onAdSkipped,
+  onAdPause,
   onAllAdsCompleted,
   onSeeked,
   onMutedChange,
   onVideoLoadStart,
   onVideoLoadEnd,
+  onEnded,
   ...props
 }: PlayerProps) {
+  adUrl =
+    "https://nxs.begenuin.com/ssai/ads?c=1937&t=2799&live=0&ad_breaks=5&ip=[IP]&osv=[DEVICE_OS_VERSION]&metro_ug=[USER_GEO_METRO]&accuracy_ug=[USER_GEO_ACCURACY]&us_privacy_r=1---&AV_PLCMT=[PLACEMENT_MACRO]&len_sc=[CONTENT_LENGTH]&kwarray_s=[SITE_KWARRAY]&flashver_d=[DEVICE_FLASHVER]&country_code=[COUNTRY_ID]&ipservice_ug=[USER_GEO_IPSERVICE]&site_id=2793_3405&skipmin_iv=0&pxratio_d=[DEVICE_PXRATIO]&geofetch_d=[DEVICE_GEOFETCH]&bitness_ds=[DEVICE_SUA_BITNESS]&model_ds=[DEVICE_SUA_MODEL]&zip_ug=[USER_GEO_ZIP]&plcmt_iv=1&mobile_ds=[DEVICE_SUA_MOBILE]&name_s=Indian%20Express&pagecat_s=[SITE_PAGECAT]&max_ad_duration=60&bidfloorcur_i=USD&browsers_version_ds=[DEVICE_SUA_BROWSERS_VERSION]&regionfips104_ug=[USER_GEO_REGIONFIPS104]&session_id=[SESSION_ID]&country_ug=[USER_GEO_COUNTRY]&domain_sp=indianexpress.com&player_height=1280&pos_iv=7&height=[DEVICE_HEIGHT]&carrier_d=[DEVICE_CARRIER]&mccmnc_d=[DEVICE_MCCMNC]&lastfix_dg=[DEVICE_GEO_LASTFIX]&AV_WIDTH=[DEVICE_WIDTH]&langb_d=[DEVICE_LANGB]&connectiontype_d=[DEVICE_CONNECTIONTYPE]&device_language=[DEVICE_LANGUAGE]&browsers_brand_ds=[DEVICE_SUA_BROWSERS_BRAND]&dnt=[DNT]&us_privacy=1---&sectioncat_s=[SITE_SECTIONCAT]&mobile_s=[SITE_MOBILE]&type_dg=[DEVICE_GEO_TYPE]&pub_name=[PUBLISHER_NAME]&player_width=720&skipafter_iv=0&secure_i=1&ua=[UA]&os=[DEVICE_OS]&regionfips104_dg=[DEVICE_GEO_REGIONFIPS104]&metro_dg=[DEVICE_GEO_METRO]&architecture_ds=[DEVICE_SUA_ARCHITECTURE]&width=[DEVICE_WIDTH]&location_lat=[LOCATION_LAT]&location_lon=[LOCATION_LON]&city=[CITY]&utcoffset_ug=[USER_GEO_UTCOFFSET]&city_ug=[USER_GEO_CITY]&is_lat=[LIMITED_AD_TRACKING]&AV_PUBLISHERID=68ef5a3232377dec0f07ce9f&min_ad_duration=5&device_ipv6=[DEVICE_IPV6]&device_model=[DEVICE_MODEL]&region=[REGION]&zip=[ZIP_CODE]&AV_HEIGHT=[DEVICE_HEIGHT]&hwv=[DEVICE_HWV]&site_search=[SITE_SEARCH]&device_js=[DEVICE_JS]&AV_CHANNELID=68ef805c79ec2fcab8047105&AV_URL=https://communities.indianexpress.com/video/catch-surya-kumar-yadav-tomorrow-630-pm-on?community=2025c187b0000f66&loop=2025c2c6f3801402&cat_s=[SITE_CAT]&site_page=[PAGE_URL]&name_sp=[SITE_PUBLISHER_NAME]&privacypolicy_s=[SITE_PRIVACYPOLICY]&content_id_s=a46c6cf9-4384-48b5-909b-544abb2dbcd4&device_type=[DEVICE_TYPE]&device_make=[DEVICE_MAKE]&utcoffset_dg=[DEVICE_GEO_UTCOFFSET]&did=[DID]&user_id=34oxOWuUOxBLqnygol84BDxBhsE&yob=[YOB]&region_ug=[USER_GEO_REGION]&cat_sp=[SITE_PUBLISHER_CAT]&platform_brand_ds=[DEVICE_SUA_PLATFORM_BRAND]&platform_version_ds=[DEVICE_SUA_PLATFORM_VERSION]&gender=[GENDER]&lon_ug=[USER_GEO_LON]&url_sc=https://communities.indianexpress.com/video/catch-surya-kumar-yadav-tomorrow-630-pm-on?community=2025c187b0000f66&loop=2025c2c6f3801402&site_ref=[SITE_REF]&cattax_sp=[SITE_PUBLISHER_CATTAX]&id_sp=2793&source_ds=[DEVICE_SUA_SOURCE]&ppi_d=[DEVICE_PPI]&lastfix_ug=[USER_GEO_LASTFIX]&type_ug=[USER_GEO_TYPE]&cb=1761893693840324274&keywords_s=[SITE_KEYWORDS]&placement_iv=1&linearity_iv=1&accuracy_dg=[DEVICE_ACCURACY]&ipservice_dg=[DEVICE_GEO_IPSERVICE]&lat_ug=[USER_GEO_LAT]&cattax_s=[SITE_CATTAX]&domain_s=[DOMAIN]&tag_id=3405";
+  // adUrl =
+  //   "https://nxs.begenuin.com/ssai/ads?c=2793&t=3405&live=0&ad_breaks=0,-1,48&placement_iv=1&browsers_brand_ds=[DEVICE_SUA_BROWSERS_BRAND]&model_ds=[DEVICE_SUA_MODEL]&source_ds=[DEVICE_SUA_SOURCE]&platform_brand_ds=[DEVICE_SUA_PLATFORM_BRAND]&lastfix_ug=[USER_GEO_LASTFIX]&type_ug=[USER_GEO_TYPE]&lon_ug=[USER_GEO_LON]&site_page=[PAGE_URL]&kwarray_s=[SITE_KWARRAY]&site_id=2793_3405&privacypolicy_s=[SITE_PRIVACYPOLICY]&skipafter_iv=0&device_model=[DEVICE_MODEL]&device_language=[DEVICE_LANGUAGE]&bitness_ds=[DEVICE_SUA_BITNESS]&AV_PLCMT=[PLACEMENT_MACRO]&device_type=[DEVICE_TYPE]&country_code=[COUNTRY_ID]&did=[DID]&site_ref=[SITE_REF]&cattax_s=[SITE_CATTAX]&domain_sp=indianexpress.com&player_width=720&secure_i=1&device_ipv6=[DEVICE_IPV6]&pxratio_d=[DEVICE_PXRATIO]&architecture_ds=[DEVICE_SUA_ARCHITECTURE]&cat_sp=[SITE_PUBLISHER_CAT]&mobile_s=[SITE_MOBILE]&content_id_s=c23461c4-ed66-436d-ab6a-b18fb24ca461&zip_ug=[USER_GEO_ZIP]&us_privacy=1---&AV_WIDTH=[DEVICE_WIDTH]&AV_IP=[IP]&pub_name=[PUBLISHER_NAME]&hwv=[DEVICE_HWV]&pagecat_s=[SITE_PAGECAT]&ua=[UA]&geofetch_d=[DEVICE_GEOFETCH]&platform_version_ds=[DEVICE_SUA_PLATFORM_VERSION]&sectioncat_s=[SITE_SECTIONCAT]&pos_iv=7&accuracy_dg=[DEVICE_ACCURACY]&ipservice_ug=[USER_GEO_IPSERVICE]&region_ug=[USER_GEO_REGION]&AV_URL=https://communities.indianexpress.com/video/after-talks-with-israeli-pm-benjamin-netanyahu-us?community=2025c187b0000f66&loop=2025c23c8b801401&id_sp=2793&tag_id=3405&region=[REGION]&zip=[ZIP_CODE]&mccmnc_d=[DEVICE_MCCMNC]&type_dg=[DEVICE_GEO_TYPE]&ppi_d=[DEVICE_PPI]&accuracy_ug=[USER_GEO_ACCURACY]&country_ug=[USER_GEO_COUNTRY]&domain_s=[DOMAIN]&device_make=[DEVICE_MAKE]&regionfips104_ug=[USER_GEO_REGIONFIPS104]&gender=[GENDER]&metro_ug=[USER_GEO_METRO]&AV_PUBLISHERID=68ef5a3232377dec0f07ce9f&bidfloorcur_i=USD&os=[DEVICE_OS]&osv=[DEVICE_OS_VERSION]&height=[DEVICE_HEIGHT]&connectiontype_d=[DEVICE_CONNECTIONTYPE]&mobile_ds=[DEVICE_SUA_MOBILE]&session_id=[SESSION_ID]&site_search=[SITE_SEARCH]&linearity_iv=1&plcmt_iv=1&location_lon=[LOCATION_LON]&browsers_version_ds=[DEVICE_SUA_BROWSERS_VERSION]&user_id=37ePekY3lsuRfiZ6Y1eGxxxCIUc&us_privacy_r=1---&AV_CHANNELID=68ef805c79ec2fcab8047105&AV_USERAGENT=[UA]&min_ad_duration=5&max_ad_duration=60&width=[DEVICE_WIDTH]&location_lat=[LOCATION_LAT]&langb_d=[DEVICE_LANGB]&utcoffset_dg=[DEVICE_GEO_UTCOFFSET]&yob=[YOB]&is_lat=[LIMITED_AD_TRACKING]&player_height=1280&skipmin_iv=0&dnt=[DNT]&city_ug=[USER_GEO_CITY]&lat_ug=[USER_GEO_LAT]&url_sc=https://communities.indianexpress.com/video/after-talks-with-israeli-pm-benjamin-netanyahu-us?community=2025c187b0000f66&loop=2025c23c8b801401&cat_s=[SITE_CAT]&name_sp=[SITE_PUBLISHER_NAME]&flashver_d=[DEVICE_FLASHVER]&carrier_d=[DEVICE_CARRIER]&lastfix_dg=[DEVICE_GEO_LASTFIX]&regionfips104_dg=[DEVICE_GEO_REGIONFIPS104]&metro_dg=[DEVICE_GEO_METRO]&utcoffset_ug=[USER_GEO_UTCOFFSET]&cb=1767260660013708950&len_sc=[CONTENT_LENGTH]&ip=[IP]&device_js=[DEVICE_JS]&city=[CITY]&ipservice_dg=[DEVICE_GEO_IPSERVICE]&AV_HEIGHT=[DEVICE_HEIGHT]&name_s=Indian Express&cattax_sp=[SITE_PUBLISHER_CATTAX]&keywords_s=[SITE_KEYWORDS]";
+  // adUrl =
+  //   "https://nxs.begenuin.com/tagxml/customer/1937/tag/2799?accuracy_dg=%5BDEVICE_ACCURACY%5D&accuracy_ug=%5BUSER_GEO_ACCURACY%5D&app_bundle=%5BAPP_BUNDLE%5D&app_domain=%5BAPP_DOMAIN%5D&app_name=%5BAPP_NAME%5D&app_store_url=%5BAPP_STORE_URL%5D&app_version=%5BAPP_VERSION%5D&architecture_ds=%5BDEVICE_SUA_ARCHITECTURE%5D&bidfloorcur_i=USD&bitness_ds=%5BDEVICE_SUA_BITNESS%5D&browsers_brand_ds=%5BDEVICE_SUA_BROWSERS_BRAND%5D&browsers_version_ds=%5BDEVICE_SUA_BROWSERS_VERSION%5D&carrier_d=%5BDEVICE_CARRIER%5D&city=%5BCITY%5D&city_ug=%5BUSER_GEO_CITY%5D&connectiontype_d=%5BDEVICE_CONNECTIONTYPE%5D&content_id=85cd8658-34f8-49fe-bdbb-25c152fa2877&country_code=%5BCOUNTRY_ID%5D&country_ug=%5BUSER_GEO_COUNTRY%5D&device_ipv6=%5BDEVICE_IPV6%5D&device_js=%5BDEVICE_JS%5D&device_language=%5BDEVICE_LANGUAGE%5D&device_make=%5BDEVICE_MAKE%5D&device_model=%5BDEVICE_MODEL%5D&device_type=%5BDEVICE_TYPE%5D&did=%5BDID%5D&dnt=0&flashver_d=%5BDEVICE_FLASHVER%5D&gender=%5BGENDER%5D&geofetch_d=%5BDEVICE_GEOFETCH%5D&height=1280&hwv=%5BDEVICE_HWV%5D&id_ap=2357&ip=%5BIP%5D&ipservice_dg=%5BDEVICE_GEO_IPSERVICE%5D&ipservice_ug=%5BUSER_GEO_IPSERVICE%5D&is_lat=%5BLIMITED_AD_TRACKING%5D&langb_d=%5BDEVICE_LANGB%5D&lastfix_dg=%5BDEVICE_GEO_LASTFIX%5D&lastfix_ug=%5BUSER_GEO_LASTFIX%5D&lat_ug=%5BUSER_GEO_LAT%5D&len_sc=%5BCONTENT_LENGTH%5D&linearity_iv=1&live=0&location_lat=%5BLOCATION_LAT%5D&location_lon=%5BLOCATION_LON%5D&lon_ug=%5BUSER_GEO_LON%5D&loop=1e626a56aa0015bb&max_ad_duration=60&max_bitrate=4053&mccmnc_d=%5BDEVICE_MCCMNC%5D&metro_dg=%5BDEVICE_GEO_METRO%5D&metro_ug=%5BUSER_GEO_METRO%5D&min_ad_duration=5&mobile_ds=%5BDEVICE_SUA_MOBILE%5D&model_ds=%5BDEVICE_SUA_MODEL%5D&name_s=%5BCHANNEL_NAME%5D&os=%5BDEVICE_OS%5D&osv=%5BDEVICE_OS_VERSION%5D&placement_iv=1&platform_brand_ds=%5BDEVICE_SUA_PLATFORM_BRAND%5D&platform_version_ds=%5BDEVICE_SUA_PLATFORM_VERSION%5D&player_height=1280&player_width=960&plcmt_iv=1&pos_iv=7&ppi_d=%5BDEVICE_PPI%5D&pub_domain=ted.com&pub_name=%5BPUBLISHER_NAME%5D&pxratio_d=%5BDEVICE_PXRATIO%5D&region=%5BREGION%5D&region_ug=%5BUSER_GEO_REGION%5D&regionfips104_dg=%5BDEVICE_GEO_REGIONFIPS104%5D&regionfips104_ug=%5BUSER_GEO_REGIONFIPS104%5D&secure_i=1&session_id=%5BSESSION_ID%5D&skipafter_iv=0&skipmin_iv=0&source_ds=%5BDEVICE_SUA_SOURCE%5D&startdelay_iv=0&tag_id=3447&type_dg=%5BDEVICE_GEO_TYPE%5D&type_ug=%5BUSER_GEO_TYPE%5D&ua=%5BUA%5D&url_ac=https%3A%2F%2Fshorts.ted.com%2Fvideo%2Fthese-lighter-than-air-machines-called-aerobes%3Fcommunity%3D1f0dbf9a21800dae&url_sc=%5BCONTENT_URL%5D&us_privacy=1---&us_privacy_r=1---&user_id=33BgjSWsCUJTkiCnRHhEdJK7CRI&utcoffset_dg=%5BDEVICE_GEO_UTCOFFSET%5D&utcoffset_ug=%5BUSER_GEO_UTCOFFSET%5D&width=960&yob=%5BYOB%5D&zip=%5BZIP_CODE%5D&zip_ug=%5BUSER_GEO_ZIP%5D";
+  // adUrl =
+  //   "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_ad_samples&sz=640x480&cust_params=sample_ct%3Dredirecterror&ciu_szs=300x250%2C728x90&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&nofb=1&correlator=";
+  // adUrl = SAMPLE_AD_TAGS.VMAP_PRE_ROLL;
   const internalVideoRef = useRef<HTMLVideoElement>(null);
   useImperativeHandle(ref, () => internalVideoRef.current as HTMLVideoElement, [
     internalVideoRef.current,
   ]);
-  adUrl = undefined;
+  // adUrl = undefined;
   const videoRef = internalVideoRef;
   const playerRef = useRef<OpenPlayerJS | null>(null);
   const isPlayerInitialized = useRef(false); // Track if player has been initialized
-  const [adStarted, setAdStarted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  // const [allAdsCompleted, setAllAdsCompleted] = useState(adUrl ? false : true);
+  const setupAdEventListenersRef = useRef<
+    ((player: OpenPlayerJS) => void) | null
+  >(null);
+
   const { isSafari } = useBrowserDetect();
-  // Using refs for ad tracking (no UI updates needed)
-  const adInfoRef = useRef<{
-    isPlaying: boolean;
-    currentIndex: number;
-    totalAds: number;
-    ctaInfo: {
-      url: string | null;
-      title: string | null;
-      adId: string | null;
-    } | null;
-    allCompleted: boolean;
-  }>({
-    isPlaying: false,
-    currentIndex: 0,
-    totalAds: 0,
-    ctaInfo: null,
-    allCompleted: false,
-  });
 
   const playerStateRef = useRef<VideoPlayerStateRef>({
     shouldPlay: play,
@@ -201,6 +237,9 @@ export const VideoPlayer = memo(function VideoPlayer({
     videoWatchedFired: false,
     videoStartFired: false,
     isAdErrored: false,
+    // Flag to track if all ads have completed, if adUrl is provided
+    allAdsCompleted: adUrl ? false : true,
+    videoCompleted: false,
   });
 
   // Centralized loading state handler that triggers callbacks
@@ -218,7 +257,7 @@ export const VideoPlayer = memo(function VideoPlayer({
         return loading;
       });
     },
-    [onVideoLoadStart, onVideoLoadEnd],
+    [onVideoLoadStart, onVideoLoadEnd]
   );
 
   useEffect(() => {
@@ -227,6 +266,13 @@ export const VideoPlayer = memo(function VideoPlayer({
       videoRef.current.volume = volume / 100;
     }
   }, [volume]);
+
+  useEffect(() => {
+    if (typeof muted === "undefined") return;
+    if (videoRef.current) {
+      videoRef.current.muted = muted;
+    }
+  }, [muted]);
 
   useEffect(() => {
     if (videoRef.current) {
@@ -245,302 +291,11 @@ export const VideoPlayer = memo(function VideoPlayer({
     };
   }, [onPlayerLoad]);
 
-  const setupAdPlayerEventListeners = useCallback(
-    (player: OpenPlayerJS) => {
-      if (!player) {
-        console.warn("Player not available for event listeners");
-        return;
-      }
-
-      // Store current video position before ad error occurs
-      let contentTimeBeforeAdError = 0;
-
-      player.getElement().addEventListener("playererror", (e: any) => {
-        if (e.detail?.type === "Ads") {
-          console.error("OpenPlayerJS Ad Error:", e.detail);
-
-          // Store the current content time for potential restoration
-          const media = player.getMedia();
-          if (media && !isNaN(media.currentTime)) {
-            contentTimeBeforeAdError = media.currentTime;
-          }
-
-          // Only mark as errored if it's a fatal error that requires full cleanup
-          // For individual ad failures, we'll handle them in the IMA SDK error handler
-          const errorCode = e.detail?.code;
-          const isFatalError =
-            errorCode &&
-            (errorCode.toString().includes("VAST") ||
-              errorCode.toString().includes("NETWORK") ||
-              errorCode.toString().includes("VIDEO"));
-
-          if (isFatalError) {
-            playerStateRef.current.isAdErrored = true;
-
-            const adsManager = player.getAd();
-            if (adsManager) {
-              try {
-                adsManager.destroy();
-              } catch (error) {
-                console.warn("Error destroying ads manager:", error);
-              }
-            }
-          }
-
-          // Resume content playback from the correct position
-          setTimeout(() => {
-            if (media && contentTimeBeforeAdError > 0) {
-              media.currentTime = contentTimeBeforeAdError;
-            }
-
-            if (playerStateRef.current.shouldPlay) {
-              playThePlayer();
-            } else {
-              pauseThePlayer();
-            }
-          }, 100);
-        }
-      }); // Wait a bit for the player element to be ready
-      setTimeout(() => {
-        try {
-          const playerElement = player.getElement();
-          if (!playerElement || !playerElement.addEventListener) {
-            console.warn("Player element does not support addEventListener");
-            return;
-          }
-
-          // Add AdsLoader error listener (for ad request/loading errors)
-          playerElement.addEventListener("adserror", (e: any) => {
-            console.error("AdsLoader error:", e.detail);
-            // AdsLoader errors are typically fatal for the current ad request
-            // Resume content playback
-            setTimeout(() => {
-              if (playerStateRef.current.shouldPlay) {
-                playThePlayer();
-              }
-            }, 50);
-          });
-
-          // Add an event listener for when ads are loaded
-          playerElement.addEventListener("adsloaded", () => {
-            const adManager = player.getAd();
-            if (!adManager) {
-              console.error("Ad manager is not available.");
-              return;
-            }
-
-            // Use any type to avoid TypeScript errors with IMA SDK
-            const adsManager = adManager.getAdsManager() as any;
-            if (!adsManager) {
-              console.error("AdsManager is not available.");
-              return;
-            }
-
-            // Listen for the STARTED event to handle ad playback start
-            adsManager.addEventListener(
-              (window as any).google.ima.AdEvent.Type.STARTED,
-              (e: any) => {
-                try {
-                  setAdStarted(true);
-                  // Clear loading state when ad starts playing (ad is now playing)
-                  updateLoadingState(false, true);
-
-                  // Track ad info in ref (no UI updates)
-                  adInfoRef.current.totalAds =
-                    e.ad?.data?.adPodInfo?.totalAds || 0;
-                  adInfoRef.current.currentIndex =
-                    e.ad?.data?.adPodInfo?.adPosition || 0;
-
-                  // Extract ad details
-                  if (
-                    e.ad?.data?.clickThroughUrl &&
-                    e.ad?.data?.title &&
-                    e.ad?.data?.adId
-                  ) {
-                    adInfoRef.current.ctaInfo = {
-                      url: e.ad.data.clickThroughUrl || null,
-                      title: e.ad.data.title || null,
-                      adId: e.ad.data.adId || null,
-                    };
-                  }
-
-                  // Track that ad is playing
-                  adInfoRef.current.isPlaying = true;
-
-                  // Call the onAdStarted callback if provided
-                  onAdStarted?.({
-                    adId: adInfoRef.current.ctaInfo?.adId || null,
-                    url: adInfoRef.current.ctaInfo?.url || null,
-                    title: adInfoRef.current.ctaInfo?.title || null,
-                    currentAdIndex: adInfoRef.current.currentIndex,
-                    totalAds: adInfoRef.current.totalAds,
-                  });
-                } catch (error) {
-                  console.error("Error in ad started event:", error);
-                }
-              },
-            );
-
-            // Listen for the SKIPPED event to handle when the ad is skipped by the user
-            adsManager.addEventListener(
-              (window as any).google.ima.AdEvent.Type.SKIPPED,
-              () => {
-                onAdSkipped?.({
-                  adId: adInfoRef.current.ctaInfo?.adId || null,
-                  url: adInfoRef.current.ctaInfo?.url || null,
-                  title: adInfoRef.current.ctaInfo?.title || null,
-                  currentAdIndex: adInfoRef.current.currentIndex,
-                  totalAds: adInfoRef.current.totalAds,
-                });
-              },
-            );
-
-            // Listen for the COMPLETE event to handle when the ad finishes playing
-            adsManager.addEventListener(
-              (window as any).google.ima.AdEvent.Type.COMPLETE,
-              () => {
-                // Call onAdCompleted with the current CTA info before resetting
-                const currentCtaInfo = adInfoRef.current.ctaInfo;
-                // if (currentCtaInfo) {
-                onAdCompleted?.(
-                  currentCtaInfo
-                    ? {
-                        adId: currentCtaInfo.adId,
-                        url: currentCtaInfo.url,
-                        title: currentCtaInfo.title,
-                      }
-                    : { adId: null, url: null, title: null },
-                );
-                // }
-
-                // Reset the ad playing state and CTA info
-                adInfoRef.current.isPlaying = false;
-                adInfoRef.current.ctaInfo = null;
-              },
-            );
-
-            // Listen for ad click events
-            adsManager.addEventListener(
-              (window as any).google.ima.AdEvent.Type.CLICK,
-              (e: any) => {
-                if (e.ad?.data?.clickThroughUrl && e.ad?.data?.title) {
-                  onAdClicked?.({
-                    url: e.ad.data.clickThroughUrl,
-                    title: e.ad.data.title,
-                    adId: e.ad.data.adId,
-                    currentAdIndex: adInfoRef.current.currentIndex,
-                    totalAds: adInfoRef.current.totalAds,
-                  });
-                }
-              },
-            );
-
-            // Listen for when all ads complete
-            adsManager.addEventListener(
-              (window as any).google.ima.AdEvent.Type.ALL_ADS_COMPLETED,
-              () => {
-                onAllAdsCompleted?.();
-                adInfoRef.current.allCompleted = true;
-              },
-            );
-
-            // Listen for ad errors using proper IMA SDK AdErrorEvent
-            adsManager.addEventListener(
-              (window as any).google.ima.AdErrorEvent.Type.AD_ERROR,
-              (adErrorEvent: any) => {
-                const error = adErrorEvent.getError();
-                console.error("IMA SDK Ad Error:", error);
-
-                // Reset current ad state
-                adInfoRef.current.isPlaying = false;
-                adInfoRef.current.ctaInfo = null;
-
-                // Determine error handling strategy based on error type
-                const errorType = error.getType();
-                const errorCode = error.getErrorCode();
-
-                console.log(
-                  `Ad Error - Type: ${errorType}, Code: ${errorCode}`,
-                );
-
-                // For individual ad failures, use discardAdBreak to skip current ad
-                // but keep ads manager alive for future ad breaks (mid-roll, post-roll)
-                if (
-                  errorType ===
-                    (window as any).google.ima.AdError.Type.AD_LOAD ||
-                  errorType ===
-                    (window as any).google.ima.AdError.Type.AD_PLAY ||
-                  (errorCode >= 400 && errorCode < 500) // Client-side errors
-                ) {
-                  console.log(
-                    "Discarding current ad break due to individual ad failure",
-                  );
-
-                  try {
-                    // Get current ad info before discarding
-                    const currentAd = adsManager.getCurrentAd?.();
-                    if (currentAd) {
-                      const universalAdIds =
-                        currentAd.getUniversalAdIds?.() || [];
-                      console.log(
-                        "Discarding ad break with universal ad IDs:",
-                        universalAdIds,
-                      );
-                    }
-
-                    // Discard only the current ad break, keeping ads manager for future ads
-                    adsManager.discardAdBreak();
-                  } catch (discardError) {
-                    console.warn("Error discarding ad break:", discardError);
-                    // If discard fails, mark as errored but don't destroy ads manager yet
-                    playerStateRef.current.isAdErrored = true;
-                  }
-                } else if (
-                  errorType ===
-                    (window as any).google.ima.AdError.Type.ADS_MANAGER_LOAD ||
-                  (errorCode >= 900 && errorCode < 1000) || // General errors
-                  errorCode >= 1000 // Fatal errors
-                ) {
-                  // Fatal errors require destroying the ads manager
-                  console.log("Fatal ad error, destroying ads manager");
-                  playerStateRef.current.isAdErrored = true;
-
-                  try {
-                    adsManager.destroy();
-                  } catch (destroyError) {
-                    console.warn(
-                      "Error destroying ads manager after fatal error:",
-                      destroyError,
-                    );
-                  }
-                } else {
-                  // For other errors, try to continue without destroying ads manager
-                  console.log("Non-fatal ad error, attempting to continue");
-                }
-
-                // Resume content playback
-                setTimeout(() => {
-                  if (playerStateRef.current.shouldPlay) {
-                    playThePlayer();
-                  }
-                }, 50);
-
-                onAdError?.(error);
-              },
-            );
-          });
-        } catch (error) {
-          console.error("Error setting up player event listeners:", error);
-        }
-      }, 100); // Wait 100ms for player element to be ready
-    },
-    [onAdStarted, onAdCompleted, onAdClicked, onAdError],
-  );
-
   const initializePlayer = useCallback(
     async (player: OpenPlayerJS, play?: boolean) => {
       await player.init();
       await player.load();
+
       playerRef.current = player;
 
       // Set playback speed and volume after player is initialized
@@ -552,32 +307,33 @@ export const VideoPlayer = memo(function VideoPlayer({
       }
 
       // Set up ad event listeners if ads are enabled
-      if (adUrl) {
-        setupAdPlayerEventListeners(player);
+      if (adUrl && setupAdEventListenersRef.current) {
+        setupAdEventListenersRef.current(player);
       }
 
       // Dispatch playerLoad event after player is ready
       videoRef.current?.dispatchEvent(new Event("playerLoad"));
 
       if (play) {
-        await player.play().catch((error) => {
-          if (error?.name === "NotAllowedError") {
-            updatePlayerMutedState(true);
-            player
-              .play()
-              .then(() => {
-                // Autoplay started with muted
-              })
-              .catch((err: any) => {
-                console.warn("Could not autoplay video:");
-              });
+        // Attempt to autoplay immediately, handling ads and content
+        try {
+          if (player.isAd()) {
+            await player.getAd().play();
+          } else {
+            await player.getMedia().play();
           }
-        });
+        } catch (error) {
+          if ((error as any)?.name !== "NotAllowedError") {
+            updatePlayerMutedState(true);
+          }
+          console.warn("Autoplay failed on initialization:", { error });
+          await player.play();
+        }
       }
 
       onOpenPlayerReady?.(player);
     },
-    [onOpenPlayerReady, adUrl, setupAdPlayerEventListeners, playbackSpeed],
+    [onOpenPlayerReady, adUrl, playbackSpeed]
   );
 
   const updatePlayerMutedState = useCallback(
@@ -587,7 +343,7 @@ export const VideoPlayer = memo(function VideoPlayer({
         onMutedChange?.(muted);
       }
     },
-    [onMutedChange, videoRef],
+    [onMutedChange, videoRef]
   );
 
   const playThePlayer = useCallback(() => {
@@ -649,7 +405,7 @@ export const VideoPlayer = memo(function VideoPlayer({
       // Fallback to content if player state check fails
       console.warn(
         "Error checking player state, falling back to content:",
-        error,
+        error
       );
       player?.getMedia().play();
     }
@@ -658,7 +414,6 @@ export const VideoPlayer = memo(function VideoPlayer({
   const pauseThePlayer = useCallback(() => {
     const player = playerRef.current;
     if (!player) return;
-
     // If an ad error occurred, just pause the main content
     if (playerStateRef.current.isAdErrored) {
       player?.getMedia().pause();
@@ -681,32 +436,6 @@ export const VideoPlayer = memo(function VideoPlayer({
 
   useEffect(() => {
     return () => {
-      // // Cleanup on unmount or src change
-      // if (playerRef.current) {
-      //   try {
-      //     // Clean up ads if any
-      //     if (adUrl) {
-      //       const ad = playerRef.current.getAd?.();
-      //       if (ad) {
-      //         const adsManager = ad.getAdsManager?.() as any;
-      //         if (adsManager && typeof adsManager.stop === "function") {
-      //           adsManager.stop();
-      //         }
-      //         if (typeof ad.destroy === "function") {
-      //           ad.destroy();
-      //         }
-      //       }
-      //     }
-
-      //     // Destroy the player
-      //     if (typeof playerRef.current.destroy === "function") {
-      //       playerRef.current.destroy();
-      //     }
-      //   } catch (error) {
-      //     console.warn("Error cleaning up player:", error);
-      //   }
-      // }
-
       playerStateRef.current = {
         firstQuartileFired: false,
         midpointFired: false,
@@ -715,15 +444,6 @@ export const VideoPlayer = memo(function VideoPlayer({
         videoStartFired: false,
         shouldPlay: false,
         isAdErrored: false, // Reset ad error state on cleanup
-      };
-
-      // Reset ad tracking
-      adInfoRef.current = {
-        isPlaying: false,
-        currentIndex: 0,
-        totalAds: 0,
-        ctaInfo: null,
-        allCompleted: false,
       };
 
       changePlayerStateRef(true);
@@ -757,6 +477,8 @@ export const VideoPlayer = memo(function VideoPlayer({
     // - If enableLazyLoading is true: Initialize only when play becomes true
     if (enableLazyLoading && !play) return;
 
+    // OpenPlayerJS is patched to disable IMA's native UI; no runtime prototype patching required.
+
     const player = new OpenPlayerJS(videoRef.current, {
       controls: {
         alwaysVisible: false,
@@ -770,7 +492,15 @@ export const VideoPlayer = memo(function VideoPlayer({
       ads: adUrl
         ? {
             src: adUrl,
-            sdkPath: "https://imasdk.googleapis.com/js/sdkloader/ima3.js",
+            // debug: true,
+            // sdkPath: "https://imasdk.googleapis.com/js/sdkloader/ima3.js",
+            enablePreloading: false,
+            customClick: isInExpandView
+              ? {
+                  enabled: true,
+                  label: "Learn More",
+                }
+              : undefined,
           }
         : undefined,
     });
@@ -802,6 +532,30 @@ export const VideoPlayer = memo(function VideoPlayer({
     updateLoadingState,
   ]);
 
+  // A function to check and call onEnded if both ads and video are completed
+  const tryCallingEnd = useCallback(() => {
+    const allAdsCompleted = playerStateRef.current.allAdsCompleted;
+    const videoCompleted = playerStateRef.current.videoCompleted;
+    console.log("tryCallingEnd: ", {
+      allAdsCompleted,
+      videoCompleted,
+    });
+
+    // only call onEnded if both ads and video are completed
+    if (allAdsCompleted && videoCompleted) {
+      if (adUrl) {
+        playerRef.current?.loadAd(adUrl).then((e) => {
+          // console.log("Ad reloaded after video ended");
+        });
+        playerStateRef.current.allAdsCompleted = false;
+      }
+      playerStateRef.current.videoCompleted = false;
+      if (videoRef.current) videoRef.current.currentTime = 0;
+      onEnded?.({ target: videoRef.current });
+      changePlayerStateRef(true);
+    }
+  }, [onEnded]);
+
   useEffect(() => {
     const videoElement = videoRef.current;
     if (!videoElement) return;
@@ -814,6 +568,19 @@ export const VideoPlayer = memo(function VideoPlayer({
       // Clear loading state when video actually starts playing
       updateLoadingState(false, true);
 
+      // Check if shouldPlay is false and pause if needed
+      if (!playerStateRef.current.shouldPlay) {
+        const player = playerRef.current;
+        if (player) {
+          try {
+            pauseThePlayer();
+          } catch (pauseErr) {
+            console.warn("Error pausing video:", pauseErr);
+          }
+        }
+        return;
+      }
+
       if (!playerStateRef.current.videoStartFired) {
         playerStateRef.current.videoStartFired = true;
         const endTime = performance.now();
@@ -823,21 +590,38 @@ export const VideoPlayer = memo(function VideoPlayer({
           videoElement.currentTime,
           typeof startTime === "number" && startTime !== -1
             ? Math.floor(latency)
-            : 0,
+            : 0
         );
       }
     };
 
+    const handleAllAdsCompleted = () => {
+      playerStateRef.current.allAdsCompleted = true;
+      onAllAdsCompleted?.();
+      tryCallingEnd();
+    };
+
+    const handleEnded = (e: any) => {
+      playerStateRef.current.videoCompleted = true;
+      tryCallingEnd();
+    };
+
     videoElement.addEventListener("play", handlePlay);
     videoElement.addEventListener("playing", handlePlaying);
+    // Added listener for all ads completed
+    videoElement.addEventListener("adsallAdsCompleted", handleAllAdsCompleted);
     videoElement.addEventListener("ended", handleEnded);
 
     return () => {
       videoElement.removeEventListener("playing", handlePlaying);
       videoElement.removeEventListener("play", handlePlay);
+      videoElement.removeEventListener(
+        "adsallAdsCompleted",
+        handleAllAdsCompleted
+      );
       videoElement.removeEventListener("ended", handleEnded);
     };
-  }, [onVideoStart, src, updateLoadingState]);
+  }, [onVideoStart, src, updateLoadingState, pauseThePlayer, tryCallingEnd]);
 
   const changePlayerStateRef = useCallback(
     (isReset: boolean, duration?: number, currentTime?: number) => {
@@ -849,6 +633,7 @@ export const VideoPlayer = memo(function VideoPlayer({
           videoWatchedFired: false,
           videoStartFired: playerStateRef.current.videoStartFired,
           shouldPlay: playerStateRef.current.shouldPlay,
+          allAdsCompleted: adUrl ? false : true,
         };
         return;
       }
@@ -875,12 +660,8 @@ export const VideoPlayer = memo(function VideoPlayer({
         playerStateRef.current.thirdQuartileFired = false;
       }
     },
-    [playerStateRef],
+    [playerStateRef]
   );
-
-  const handleEnded = useCallback(() => {
-    changePlayerStateRef(true);
-  }, [changePlayerStateRef]);
 
   useEffect(() => {
     const videoElement = videoRef.current;
@@ -925,11 +706,11 @@ export const VideoPlayer = memo(function VideoPlayer({
       }
     };
 
-    videoElement.addEventListener("ended", handleEnded);
+    // videoElement.addEventListener("ended", handleEnded);
     videoElement.addEventListener("timeupdate", handleTimeUpdate);
 
     return () => {
-      videoElement.removeEventListener("ended", handleEnded);
+      // videoElement.removeEventListener("ended", handleEnded);
       // Clean up the timeupdate event listener
       videoElement.removeEventListener("timeupdate", handleTimeUpdate);
     };
@@ -947,10 +728,10 @@ export const VideoPlayer = memo(function VideoPlayer({
       changePlayerStateRef(
         false,
         videoRef.current?.duration,
-        videoRef.current?.currentTime,
+        videoRef.current?.currentTime
       );
     },
-    [playerStateRef, changePlayerStateRef, onSeeked],
+    [playerStateRef, changePlayerStateRef, onSeeked]
   );
 
   return (
@@ -958,7 +739,7 @@ export const VideoPlayer = memo(function VideoPlayer({
       <video
         id={id}
         className={cn(
-          "gencl:h-auto gencl:w-auto gencl:bg-center gencl:bg-no-repeat gencl:object-cover",
+          "gencl:h-auto gencl:w-auto gencl:bg-center gencl:bg-no-repeat gencl:object-cover gencl:bg-cover",
           className
         )}
         style={{
@@ -967,11 +748,12 @@ export const VideoPlayer = memo(function VideoPlayer({
         }}
         // poster={poster}
         ref={videoRef}
+        loop={loop}
+        playsInline={playsInline}
         preload="none"
         onSeeked={onVideoSeeked}
         src={encodeVideoSourceUrl(src ?? "")}
-        playsInline={playsInline}
-        loop={loop}
+        // onEnded={handleEnded}
         {...props}
       />
       {isLoading && (
@@ -984,6 +766,29 @@ export const VideoPlayer = memo(function VideoPlayer({
             <Loader size="md" aria-hidden="true" />
           </div>
         </div>
+      )}
+      {adUrl && (
+        <Suspense fallback={null}>
+          <AdControls
+            player={playerRef.current}
+            adUrl={adUrl}
+            muted={muted}
+            volume={volume}
+            playerStateRef={playerStateRef}
+            updateLoadingState={updateLoadingState}
+            isInExpandView={isInExpandView}
+            onSetupReady={(fn) => {
+              setupAdEventListenersRef.current = fn;
+            }}
+            onAdStarted={onAdStarted}
+            onAdCompleted={onAdCompleted}
+            onAdError={onAdError}
+            onAdClicked={onAdClicked}
+            onAdSkipped={onAdSkipped}
+            onAdPause={onAdPause}
+            playThePlayer={playThePlayer}
+          />
+        </Suspense>
       )}
     </div>
   );

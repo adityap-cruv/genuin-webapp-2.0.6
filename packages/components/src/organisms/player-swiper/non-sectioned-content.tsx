@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { SwiperSlide } from "swiper/react";
 import { SwiperImplementation } from "./swiper-implementation";
+import { AdInfoType } from "@genuin/components/molecules/feed-player";
 
 const Player = lazy(() =>
   import("./player.js").then((m) => ({ default: m.Player }))
@@ -9,8 +10,8 @@ const Player = lazy(() =>
 const WatchBoundaryOverlay = lazy(() =>
   import(
     "../../molecules/feed-player/control-layer/watch-boundary-overlay.js"
-  ).then((m) => ({ default: m.default }))
-) as React.ComponentType<any>;
+  ).then((m) => ({ default: m.WatchBoundaryOverlay }))
+);
 
 interface NonSectionedContentProps {
   startIndex: number;
@@ -39,6 +40,8 @@ interface NonSectionedContentProps {
   onCommentCountChange?: any;
   totalVideos?: number;
   isSectioned: boolean;
+  onAdStarted?: (event?: AdInfoType) => void;
+  onAdEnded?: (event?: AdInfoType) => void;
 }
 
 export function NonSectionedContent({
@@ -60,6 +63,8 @@ export function NonSectionedContent({
   onCommentCountChange,
   totalVideos,
   isSectioned,
+  onAdEnded,
+  onAdStarted,
 }: NonSectionedContentProps) {
   return (
     <SwiperImplementation
@@ -78,7 +83,7 @@ export function NonSectionedContent({
           [0]: swiper,
         }));
       }}
-      onActiveIndexChange={(swiper) => {
+      onActiveIndexChange={(swiper: any) => {
         onActiveIndexChange?.(swiper.activeIndex);
 
         if (brandLayoutType === "iheart" && isDesktop) {
@@ -127,6 +132,8 @@ export function NonSectionedContent({
                     onReactionStateChange={onReactionStateChange}
                     onCommentCountChange={onCommentCountChange}
                     index={index}
+                    onAdEnded={onAdEnded}
+                    onAdStarted={onAdStarted}
                   />
                 </Suspense>
               ) : post.video.type === "complete" ? (

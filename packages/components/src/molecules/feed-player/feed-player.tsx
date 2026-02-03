@@ -16,6 +16,7 @@ import { useAnalytics } from "@genuin/components/context/analytics";
 import { cn } from "@genuin/ui/lib/utils";
 import { BrandType } from "@genuin/components/lib/utils/brand-layout";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 
 type FeedPlayerProps = Omit<
   ComponentProps<typeof VideoPlayer>,
@@ -61,7 +62,7 @@ export const FeedPlayer = memo(function FeedPlayer({
 }: FeedPlayerProps) {
   // adUrl = undefined;
   const { muted, volume, playbackSpeed, baseContextManager } = useBaseContext();
-  // const embedDetails = useSafeEmbedContext();
+  const embedDetails = useSafeEmbedContext();
   const {
     feedPlayerShouldPlay,
     setVideoTimeState,
@@ -74,6 +75,7 @@ export const FeedPlayer = memo(function FeedPlayer({
     totalVideos,
     positionIndex,
     setIsLoading,
+    showExpandView,
   } = usePlayerContext();
   const { track, EventName } = useAnalytics();
   const id = useId();
@@ -83,6 +85,12 @@ export const FeedPlayer = memo(function FeedPlayer({
     video,
     useWindowSwiperMode,
   } = useEmbedConfigs();
+
+  // TODO: this is temporary code for qa-testing, need to remove once qa is done.
+  adUrl = useMemo(
+    () => embedDetails?.rootElement?.getAttribute("data-ad-url") ?? adUrl,
+    [adUrl]
+  );
 
   useEffect(() => {
     baseContextManager.registerVideo({
@@ -194,7 +202,7 @@ export const FeedPlayer = memo(function FeedPlayer({
 
   const handleEnded = useCallback(
     (e: any) => {
-      onEnded?.(e);
+      onEnded?.({ target: e?.target });
       stateHandleEnded?.();
       const target = e?.target as HTMLVideoElement | undefined;
       track(EventName.VIDEO_COMPLETED, {
@@ -304,23 +312,41 @@ export const FeedPlayer = memo(function FeedPlayer({
     [track, EventName.VIDEO_STARTED, analyticsEventData]
   );
 
-  const handleAdStarted = useCallback((event: any) => {
-    // Handle ad started event if needed
-    console.log("Ad started", event);
-    updateAdInfo(true, event);
-  }, []);
+  const handleAdStarted = useCallback(
+    (event: any) => {
+      track(EventName.AD_STARTED, {
+        ad_id: event?.adId,
+        video_id: videoId,
+        cta_url: event?.url,
+        cta_name: event?.title,
+      });
+      // Handle ad started event if needed
+      updateAdInfo(true, event);
+    },
+    [updateAdInfo, track]
+  );
 
-  const handleAdCompleted = useCallback((event: any) => {
-    // Handle ad ended event if needed
-    console.log("Ad ended", event);
-    updateAdInfo(false, event);
-  }, []);
+  const handleAdCompleted = useCallback(
+    (event: any) => {
+      track(EventName.AD_COMPLETED, {
+        ad_id: event?.adId,
+        video_id: videoId,
+        cta_url: event?.url,
+        cta_name: event?.title,
+      });
+      // Handle ad ended event if needed
+      updateAdInfo(false, event);
+    },
+    [updateAdInfo, track, videoId]
+  );
 
-  const handleAdSkipped = useCallback((event: any) => {
-    // Handle ad skipped event if needed
-    console.log("Ad skipped", event);
-    updateAdInfo(false, event);
-  }, []);
+  const handleAdSkipped = useCallback(
+    (event: any) => {
+      // Handle ad skipped event if needed
+      updateAdInfo(false, event);
+    },
+    [updateAdInfo]
+  );
 
   const handleAdError = useCallback(
     (error: any) => {
@@ -343,10 +369,18 @@ export const FeedPlayer = memo(function FeedPlayer({
     [updateAdInfo]
   );
 
-  const handleAdClicked = useCallback((event: any) => {
-    // Handle ad clicked event if needed
-    console.log("Ad clicked", event);
-  }, []);
+  const handleAdClicked = useCallback(
+    (event: any) => {
+      // Handle ad clicked event if needed
+      track(EventName.AD_CTA_CLICKED, {
+        ad_id: event?.adId,
+        video_id: videoId,
+        cta_url: event?.url,
+        cta_name: event?.title,
+      });
+    },
+    [track, videoId]
+  );
 
   // Handle video load start - set playing state to LOADING
   const handleVideoLoadStart = useCallback(() => {
@@ -358,11 +392,24 @@ export const FeedPlayer = memo(function FeedPlayer({
     setIsLoading(false);
   }, [setIsLoading]);
 
+  const handleAdPaused = useCallback(
+    (event: any) => {
+      track(EventName.AD_PAUSED, {
+        ad_id: event?.adId,
+        video_id: videoId,
+        cta_url: event?.url,
+        cta_name: event?.title,
+      });
+    },
+    [track, videoId]
+  );
+
   // If the videoid is registered already start it with that start tiime.
   const startTime = useMemo(
     () => baseContextManager.getTimeInfo(videoId).currentTime,
     [baseContextManager]
   );
+
   return (
     <VideoPlayer
       ref={playerRef}
@@ -378,6 +425,7 @@ export const FeedPlayer = memo(function FeedPlayer({
       volume={volume}
       play={feedPlayerShouldPlay}
       playbackSpeed={playbackSpeed?.speed}
+      isInExpandView={showExpandView}
       onPlayerLoad={handlePlayerLoad}
       onOpenPlayerReady={handleOpenPlayerReady}
       onPlay={handleOnPlay}
@@ -397,6 +445,7 @@ export const FeedPlayer = memo(function FeedPlayer({
       onMutedChange={handleMutedChange}
       onVideoLoadStart={handleVideoLoadStart}
       onVideoLoadEnd={handleVideoLoadEnd}
+      onAdPause={handleAdPaused}
       {...props}
     />
   );

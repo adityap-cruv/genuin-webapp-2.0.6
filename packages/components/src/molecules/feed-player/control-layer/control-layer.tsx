@@ -6,7 +6,7 @@ import { ControlLayerPropsType } from "./control-layer.types";
 import { usePlayerContext } from "../context";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 
-const Ad = lazy(() => import("./ad.js").then((m) => ({ default: m.Ad })));
+// const Ad = lazy(() => import("./ad.js").then((m) => ({ default: m.default })));
 const Default = lazy(() =>
   import("./default.js").then((m) => ({ default: m.Default }))
 );
@@ -59,11 +59,8 @@ export const ControlLayer = memo(function ControlLayer(
       : {};
 
   if (isAdPlaying) {
-    return (
-      <Suspense fallback={null}>
-        <Ad {...props} />
-      </Suspense>
-    );
+    return;
+    // return <Ad {...props} />;
   }
 
   /**

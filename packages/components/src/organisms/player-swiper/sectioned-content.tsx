@@ -4,6 +4,7 @@ import { cn } from "@genuin/ui/lib/utils";
 import { useAnalytics } from "@genuin/components/context";
 import { Player } from "./player";
 import { SwiperImplementation } from "./swiper-implementation";
+import { AdInfoType } from "@genuin/components/molecules/feed-player";
 
 const WatchBoundaryOverlay = lazy(() =>
   import(
@@ -41,6 +42,8 @@ interface SectionedContentProps {
   setHorizontalSwiper: (swiper: any) => void;
   setActiveHorizontalIndex: (index: number) => void;
   setVerticalSwipers: (swipers: Record<number, any>) => void;
+  onAdStarted: (event?: AdInfoType) => void;
+  onAdEnded: (event?: AdInfoType) => void;
 }
 
 export function SectionedContent({
@@ -65,6 +68,8 @@ export function SectionedContent({
   setHorizontalSwiper,
   setActiveHorizontalIndex,
   setVerticalSwipers,
+  onAdEnded,
+  onAdStarted,
 }: SectionedContentProps) {
   const { track, EventName } = useAnalytics();
 
@@ -76,7 +81,7 @@ export function SectionedContent({
         isMobile && "gencl:h-full gencl:w-full"
       )}
       onSwiper={setHorizontalSwiper}
-      onActiveIndexChange={(swiper) => {
+      onActiveIndexChange={(swiper: any) => {
         setActiveHorizontalIndex(swiper.activeIndex);
         if (sectionList) {
           embedDetails?.updateSelectedSection(sectionList[swiper.activeIndex]);
@@ -104,7 +109,7 @@ export function SectionedContent({
                   [sectionIdx]: swiper,
                 }));
               }}
-              onActiveIndexChange={(swiper) => {
+              onActiveIndexChange={(swiper: any) => {
                 onActiveIndexChange?.(swiper.activeIndex);
                 track(EventName.SECTION_CHANGES, {
                   section_id: item?.id,
@@ -161,6 +166,8 @@ export function SectionedContent({
                         onCommentCountChange={onCommentCountChange}
                         index={index}
                         totalVideos={totalVideos}
+                        onAdEnded={onAdEnded}
+                        onAdStarted={onAdStarted}
                       />
                     ) : post.video.type === "complete" ? (
                       <Suspense fallback={null}>

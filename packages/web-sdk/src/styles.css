@@ -78,3 +78,22 @@
 .web-sdk-container textarea {
     font-family: inherit;
 } */
+
+.op-ads__click-container {
+  cursor: pointer;
+  position: absolute;
+  bottom: 50px;
+  left: 12px;
+  width: calc(100% - 150px);
+  background-color: white;
+  color: black;
+  padding: 8px 16px;
+  border-radius: 12px;
+  z-index: 1;
+}
+
+.op-ads__click-label {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+}

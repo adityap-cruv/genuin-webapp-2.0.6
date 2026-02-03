@@ -49,6 +49,8 @@ type PlayerProps = {
   onCommentCountChange: ComponentProps<
     typeof ControlLayer
   >["onCommentCountChange"];
+  onAdStarted?: ComponentProps<typeof PlayerProvider>["onAdStarted"];
+  onAdEnded?: ComponentProps<typeof PlayerProvider>["onAdEnded"];
   onSwiperToggle?: (disable: boolean) => void;
 };
 
@@ -67,6 +69,8 @@ export function Player({
   onGroupSubscriptionChange,
   onReactionStateChange,
   onCommentCountChange,
+  onAdStarted,
+  onAdEnded,
   onSwiperToggle,
 }: PlayerProps) {
   const { showExpandView, toggleExpandView, activeIndex, variant } =
@@ -112,6 +116,8 @@ export function Player({
         onPlayerIterationEnd={() => swiper.slideNext()}
         totalVideos={totalVideos}
         activeIndex={activeIndex}
+        onAdStarted={onAdStarted}
+        onAdEnded={onAdEnded}
       >
         <div
           className={cn(
