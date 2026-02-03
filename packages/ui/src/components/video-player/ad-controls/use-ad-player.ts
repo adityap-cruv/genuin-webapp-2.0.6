@@ -58,38 +58,34 @@ export function useAdPlayer({
   const [adTimeCountdown, setAdTimeCountdown] = useState<number | null>(null);
 
   // Refs for callbacks to avoid dependencies in useCallback
+  // We update refs synchronously during render to avoid race conditions
+  // on mobile where IMA events fire before useEffect runs
   const onAdStartedRef = useRef(onAdStarted);
+  onAdStartedRef.current = onAdStarted;
+
   const onAdCompletedRef = useRef(onAdCompleted);
+  onAdCompletedRef.current = onAdCompleted;
+
   const onAdErrorRef = useRef(onAdError);
+  onAdErrorRef.current = onAdError;
+
   const onAdClickedRef = useRef(onAdClicked);
+  onAdClickedRef.current = onAdClicked;
+
   const onAdSkippedRef = useRef(onAdSkipped);
+  onAdSkippedRef.current = onAdSkipped;
+
   const onAdPauseRef = useRef(onAdPause);
+  onAdPauseRef.current = onAdPause;
+
   const onAllAdsCompletedRef = useRef(onAllAdsCompleted);
+  onAllAdsCompletedRef.current = onAllAdsCompleted;
+
   const updateLoadingStateRef = useRef(updateLoadingState);
+  updateLoadingStateRef.current = updateLoadingState;
 
   // Ref to store IMA AdsManager for volume/mute sync
   const adsManagerRef = useRef<any>(null);
-
-  // Update refs when props change
-  useEffect(() => {
-    onAdStartedRef.current = onAdStarted;
-    onAdCompletedRef.current = onAdCompleted;
-    onAdErrorRef.current = onAdError;
-    onAdClickedRef.current = onAdClicked;
-    onAdSkippedRef.current = onAdSkipped;
-    onAdPauseRef.current = onAdPause;
-    onAllAdsCompletedRef.current = onAllAdsCompleted;
-    updateLoadingStateRef.current = updateLoadingState;
-  }, [
-    onAdStarted,
-    onAdCompleted,
-    onAdError,
-    onAdClicked,
-    onAdSkipped,
-    onAdPause,
-    onAllAdsCompleted,
-    updateLoadingState,
-  ]);
 
   // Sync mute/volume state with IMA AdsManager
   useEffect(() => {
