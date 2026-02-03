@@ -12,6 +12,7 @@
   ],
   "scripts": {
     "build": "turbo run build",
+    "check-build": "node ./scripts/check-chunk-size.js",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "dev:web": "npx concurrently \"pnpm  --filter=@genuin/ui dev:styles\" \"pnpm --filter=@genuin/components dev:styles\" \"pnpm dev --filter=@genuin/webapp -- --turbo\"",

@@ -34,7 +34,7 @@ echo ""
 
 # Build SDK Production
 echo "📦 Building SDK (production)..."
-pnpm --filter=@genuin/web-sdk run build
+pnpm --filter=@genuin/web-sdk run build:prod 
 SDK_STATUS=$?
 if [ $SDK_STATUS -ne 0 ]; then
   echo ""
@@ -58,6 +58,18 @@ if [ $WEBAPP_STATUS -ne 0 ]; then
 fi
 
 echo "✅ Web App production build successful"
+echo ""
+
+echo "📏 Checking bundle size..."
+node scripts/check-chunk-size.js
+BUNDLE_CHECK_STATUS=$?
+if [ $BUNDLE_CHECK_STATUS -ne 0 ]; then
+  echo ""
+  echo "❌ Bundle size check failed!"
+  echo "❌ Push rejected. Please optimize bundle size and try again."
+  exit 1
+fi
+echo "✅ Bundle size check passed"
 echo ""
 
 echo "✅ All production builds successful!"
