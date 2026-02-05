@@ -1,5 +1,4 @@
 import { useEmbedContext } from "@genuin/components/context/embed";
-import { EmbedEventContextType } from "@genuin/components/context/embed/event-bus";
 import { useAnalytics } from "@genuin/components/context/analytics/context";
 import {
   ControlLayer,
@@ -18,44 +17,34 @@ type PipViewProps = {
   totalVideos: number;
 };
 
+/**
+ * PipView component for displaying videos in Picture-in-Picture mode.
+ * This component should not be used directly. Instead, use it via PipViewLoader.
+ */
 export function PipView({ videos, isLoading, totalVideos }: PipViewProps) {
-  const [isPipViewOpen, setIsPipViewOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const { track, EventName } = useAnalytics();
   const { embedEventBus, changeActiveIndex, changeActivePlayerType } =
     useEmbedContext();
 
+  // Initialize active index from embed context and track floating embed event on mount
   useEffect(() => {
-    const handleActivePlayerTypeChange = (
-      eventData: any,
-      context: EmbedEventContextType
-    ) => {
-      if (context.activePlayerType === "pip") {
-        setActiveIndex(context.activeIndex);
-        setIsPipViewOpen(true);
+    const context = embedEventBus.getContext();
+    setActiveIndex(context.activeIndex);
 
-        // Track FLOATING_EMBED event when PiP mode is enabled
-        if (videos.length > context.activeIndex) {
-          const currentVideo = videos[context.activeIndex];
-          if (currentVideo) {
-            track(EventName.FLOATING_EMBED, {
-              videoId: currentVideo.video.id,
-              postSlug: currentVideo.video.slug,
-              communityId: currentVideo.community.id,
-              brandId: currentVideo.community.brand?.id,
-              creatorName: currentVideo.owner.userName,
-            });
-          }
-        }
-      } else {
-        setIsPipViewOpen(false);
+    // Track FLOATING_EMBED event when PiP mode is enabled
+    if (videos.length > context.activeIndex) {
+      const currentVideo = videos[context.activeIndex];
+      if (currentVideo) {
+        track(EventName.FLOATING_EMBED, {
+          videoId: currentVideo.video.id,
+          postSlug: currentVideo.video.slug,
+          communityId: currentVideo.community.id,
+          brandId: currentVideo.community.brand?.id,
+          creatorName: currentVideo.owner.userName,
+        });
       }
-    };
-
-    embedEventBus.on("activePlayerTypeChange", handleActivePlayerTypeChange);
-    return () => {
-      embedEventBus.off("activePlayerTypeChange", handleActivePlayerTypeChange);
-    };
+    }
   }, []);
 
   const handleIterationEnd = useCallback(() => {
@@ -74,7 +63,7 @@ export function PipView({ videos, isLoading, totalVideos }: PipViewProps) {
     changeActivePlayerType("embed");
   }, [changeActivePlayerType]);
 
-  if (isPipViewOpen && videos.length > 0 && !isLoading) {
+  if (videos.length > 0 && !isLoading) {
     // Ensure activeIndex is valid
     const validIndex =
       activeIndex >= 0 && activeIndex < videos.length ? activeIndex : 0;
@@ -89,7 +78,7 @@ export function PipView({ videos, isLoading, totalVideos }: PipViewProps) {
                 videoDetails={videoDetails}
                 onInterationEnd={handleIterationEnd}
                 totalVideos={totalVideos}
-                isPipActive={isPipViewOpen}
+                isPipActive
                 onClick={handlePipPlayerClick}
               />
             </div>

@@ -277,10 +277,11 @@ export const FeedViewCore = memo(function FeedViewCore({
     theme,
   };
 
+  const skeletonTheme = variant === "page" ? "light" : theme;
   if (isLoading && !isIHeart) {
     return (
       <FeedSkeleton
-        theme={theme}
+        theme={skeletonTheme}
         variant={showExpandView ? "fullscreen" : "default"}
         showCommentsSkeleton={showCommentBox && isDesktop}
       />
@@ -313,7 +314,9 @@ export const FeedViewCore = memo(function FeedViewCore({
       >
         <FeedContentWrapper isIHeart={isIHeart}>
           <Suspense
-            fallback={<FeedSkeleton variant="player-list" theme={theme} />}
+            fallback={
+              <FeedSkeleton variant="player-list" theme={skeletonTheme} />
+            }
           >
             <PlayerList
               isSectioned={isSectioned}
@@ -323,7 +326,9 @@ export const FeedViewCore = memo(function FeedViewCore({
           </Suspense>
           {showSidePanel && (
             <Suspense
-              fallback={<FeedSkeleton variant="side-panel" theme={theme} />}
+              fallback={
+                <FeedSkeleton variant="side-panel" theme={skeletonTheme} />
+              }
             >
               <PostSidePanel
                 onGroupJoinStatusChange={handleGroupJoinStatusChange}

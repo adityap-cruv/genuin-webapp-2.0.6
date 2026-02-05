@@ -71,6 +71,17 @@ const ExpandViewContent = ({
   );
 };
 
+/**
+ * EmbedExpandView component for displaying an expanded video feed view in an embedded context.
+ *
+ * @remarks
+ * This component should only be used through the ExpandViewLoader component.
+ * Direct usage is not recommended as it relies on the loader to manage the component's
+ * mounting/unmounting based on the activePlayerType state. The loader ensures that
+ * this component only renders when activePlayerType is "expand-view".
+ *
+ * @param props - EmbedExpandViewProps containing video feed data, pagination, loading state, and context handlers.
+ */
 export function EmbedExpandView({
   videos,
   hasNextPage,
@@ -98,9 +109,6 @@ export function EmbedExpandView({
   const viewportHeight = useViewportHeight();
   const previousMuteState = usePrevious(muted);
   const isSectioned = embedEventBus.getContext().isSectioned;
-  const [showExpandView, setShowExpandView] = useState(
-    embedEventBus.getContext().activePlayerType === "expand-view"
-  );
   const {
     engagement: {
       engagementTools: { comment, share, repost, spark },
@@ -172,62 +180,61 @@ export function EmbedExpandView({
   };
 
   useEffect(() => {
-    const handleActivePlayerTypeChange = (
-      eventData: any,
-      context: EmbedEventContextType
-    ) => {
-      if (context.activePlayerType === "expand-view") {
-        // Store current mute state when entering expand view
-        setShowExpandView(true);
-        const currentActiveIndex = context.isSectioned
-          ? 0
-          : context.activeIndex;
-        const overlayIndex = videos.findIndex(
-          (post) => post.video.type === "overlay"
+    /**
+     * Initialization effect for EmbedExpandView component.
+     *
+     * This component is designed to only mount when the expand view is active.
+     * The ExpandViewLoader component manages the mounting/unmounting lifecycle
+     * based on the activePlayerType state, ensuring this component only renders
+     * when activePlayerType equals "expand-view".
+     *
+     * Direct usage of EmbedExpandView without ExpandViewLoader is not recommended
+     * as it may lead to unexpected behavior or rendering issues.
+     */
+
+    const context = embedEventBus.getContext();
+    // Store current mute state when entering expand view
+    const currentActiveIndex = context.isSectioned ? 0 : context.activeIndex;
+    const overlayIndex = videos.findIndex(
+      (post) => post.video.type === "overlay"
+    );
+    setStartIndex(
+      overlayIndex === -1
+        ? currentActiveIndex
+        : currentActiveIndex >= overlayIndex
+          ? currentActiveIndex - 1
+          : currentActiveIndex
+    );
+    if (brandLayoutType === "iheart") {
+      setTimeout(() => {
+        setMuted(muted);
+      }, 100);
+      if (
+        websiteType === "legacy" &&
+        !baseEventBus.getContext().globalPlayingState
+      ) {
+        baseEventBus.emit(
+          "globalPlayingStateChange",
+          undefined,
+          (oldContext) => ({ ...oldContext, globalPlayingState: true })
         );
-        setStartIndex(
-          overlayIndex === -1
-            ? currentActiveIndex
-            : currentActiveIndex >= overlayIndex
-              ? currentActiveIndex - 1
-              : currentActiveIndex
-        );
-        if (brandLayoutType === "iheart") {
-          setTimeout(() => {
-            setMuted(muted);
-          }, 100);
-          if (
-            websiteType === "legacy" &&
-            !baseEventBus.getContext().globalPlayingState
-          ) {
-            baseEventBus.emit(
-              "globalPlayingStateChange",
-              undefined,
-              (oldContext) => ({ ...oldContext, globalPlayingState: true })
-            );
-          }
-        } else if (brandLayoutType === "ted") {
-          setTimeout(() => {
-            setMuted(false);
-          }, 300);
-        }
-      } else {
-        setShowExpandView(false);
       }
-    };
+    } else if (brandLayoutType === "ted") {
+      setTimeout(() => {
+        setMuted(false);
+      }, 300);
+    }
 
     const handleUpdateStartVideoSlug = () => {
       setStartIndex(0);
     };
 
-    embedEventBus.on("activePlayerTypeChange", handleActivePlayerTypeChange);
     SDKEventEmitter.on(
       SDKListenerEventName.UPDATE_START_VIDEO_SLUG,
       handleUpdateStartVideoSlug
     );
 
     return () => {
-      embedEventBus.off("activePlayerTypeChange", handleActivePlayerTypeChange);
       SDKEventEmitter.off(
         SDKListenerEventName.UPDATE_START_VIDEO_SLUG,
         handleUpdateStartVideoSlug
@@ -237,8 +244,6 @@ export function EmbedExpandView({
 
   // Add keyboard event listener for ESC key
   useEffect(() => {
-    if (!showExpandView) return;
-
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         handleCloseExpandView(true);
@@ -249,7 +254,7 @@ export function EmbedExpandView({
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [showExpandView, handleCloseExpandView]);
+  }, [handleCloseExpandView]);
 
   // Handle entering/exiting browser fullscreen for expand-view
   useEffect(() => {
@@ -301,20 +306,14 @@ export function EmbedExpandView({
     };
 
     // If expand-view is shown, request fullscreen; otherwise exit it
-    if (showExpandView) {
-      if (!isFullscreen()) {
-        void requestFullscreen();
-      }
-    } else {
-      if (isFullscreen()) {
-        void exitFullscreen();
-      }
+    if (!isFullscreen()) {
+      void requestFullscreen();
     }
 
     // Listen for user exiting fullscreen (e.g., ESC), then revert expand-view
     const handleFsChange = () => {
       const stillFs = isFullscreen();
-      if (!stillFs && showExpandView) {
+      if (!stillFs) {
         // Only revert if our UI still thinks we're expanded
         handleCloseExpandView();
       }
@@ -330,11 +329,11 @@ export function EmbedExpandView({
         handleFsChange as any
       );
       // On cleanup, ensure we leave fullscreen if we were in expand-view
-      if (showExpandView && isFullscreen()) {
+      if (isFullscreen()) {
         void exitFullscreen();
       }
     };
-  }, [showExpandView, isInIframe, isIndianExpress]);
+  }, [isInIframe, isIndianExpress]);
 
   useEffect(() => {
     /**
@@ -360,34 +359,24 @@ export function EmbedExpandView({
     // const originalPriority = hasInlineStyle
     //   ? htmlElement.style.getPropertyPriority("overflow")
     //   : ""; // Computed styles don't have priority info
-    if (showExpandView) {
-      /**
-       * EmbedExpandView component for displaying an expanded video feed view in an embedded context.
-       *
-       * @remarks
-       * - When the expand view is successfully opened, it emits the `"sdk:expand-view-loaded"` event
-       *   via SDKEventEmitter. This event is used to signal that the expand view UI is ready,
-       *   allowing to close any skeleton loaders or overlays that may have been shown while waiting
-       *   for the expand view to initialize (such as those triggered by a "start video slug" pass-through).
-       *
-       * @param props - EmbedExpandViewProps containing video feed data, pagination, loading state, and context handlers.
-       *
-       * @fires SDKEventEmitter.emit(SDKEventName.EXPAND_VIEW_LOADED, true) when expand view is loaded.
-       */
-      SDKEventEmitter.emit(SDKEventName.EXPAND_VIEW_CHANGED, true);
-      // htmlElement.style.setProperty("overflow", "hidden", "important");
-    } else {
-      // htmlElement.style.setProperty(
-      //   "overflow",
-      //   originalOverflow,
-      //   originalPriority
-      // );
-    }
+    /**
+     * EmbedExpandView component for displaying an expanded video feed view in an embedded context.
+     *
+     * @remarks
+     * - When the expand view is successfully opened, it emits the `"sdk:expand-view-loaded"` event
+     *   via SDKEventEmitter. This event is used to signal that the expand view UI is ready,
+     *   allowing to close any skeleton loaders or overlays that may have been shown while waiting
+     *   for the expand view to initialize (such as those triggered by a "start video slug" pass-through).
+     *
+     * @param props - EmbedExpandViewProps containing video feed data, pagination, loading state, and context handlers.
+     *
+     * @fires SDKEventEmitter.emit(SDKEventName.EXPAND_VIEW_LOADED, true) when expand view is loaded.
+     */
+    SDKEventEmitter.emit(SDKEventName.EXPAND_VIEW_CHANGED, true);
+    // htmlElement.style.setProperty("overflow", "hidden", "important");
 
     return () => {
-      if (showExpandView) {
-        SDKEventEmitter.emit(SDKEventName.EXPAND_VIEW_CHANGED, false);
-      }
+      SDKEventEmitter.emit(SDKEventName.EXPAND_VIEW_CHANGED, false);
       // if (hasInlineStyle) {
       //   htmlElement.style.setProperty(
       //     "overflow",
@@ -399,12 +388,10 @@ export function EmbedExpandView({
       //   htmlElement.style.removeProperty("overflow");
       // }
     };
-  }, [showExpandView]);
+  }, []);
 
   // Make underlying embed content inert when expand view is active
   useEffect(() => {
-    if (!showExpandView) return;
-
     // Find the main embed container
     const embedContainer = document.querySelector(".gen-sdk-embed");
 
@@ -417,7 +404,7 @@ export function EmbedExpandView({
         embedContainer.inert = false;
       };
     }
-  }, [showExpandView]);
+  }, []);
 
   const defaultComponent = (
     <Suspense fallback={<FeedSkeleton variant="fullscreen" />}>
@@ -450,44 +437,43 @@ export function EmbedExpandView({
     </Suspense>
   );
 
-  if (showExpandView)
-    return (
-      <RemoveScroll>
-        <RootPortal
-          className={cn(
-            "gen-sdk-class gen-sdk-expand-view gencl:h-full gencl:w-full gencl:inset-0 gencl:z-50 gencl:bg-white",
-            isMobile && "gencl:flex-col",
-            // Apply fixed positioning with full screen dimensions for non-iHeart layouts
-            !isIHeart && "gencl:fixed gencl:h-screen gencl:w-screen",
-            isIHeart &&
-              websiteType === "legacy" && [
-                "gencl:fixed",
-                isDesktop ? "gencl:z-[115]!" : "gencl:z-[112]!",
-              ]
-          )}
-          style={{ height: !isIHeart ? `${viewportHeight}px` : "100%" }}
-          enabledToaster={!(community || group || user)}
-        >
-          {isIHeart ? (
-            <Suspense fallback={<FeedSkeleton variant="fullscreen" />}>
-              <IheartFullscreenContainer>
-                <ExpandViewContent
-                  defaultComponent={defaultComponent}
-                  community={community}
-                  group={group}
-                  user={user}
-                />
-              </IheartFullscreenContainer>
-            </Suspense>
-          ) : (
-            <ExpandViewContent
-              defaultComponent={defaultComponent}
-              community={community}
-              group={group}
-              user={user}
-            />
-          )}
-        </RootPortal>
-      </RemoveScroll>
-    );
+  return (
+    <RemoveScroll>
+      <RootPortal
+        className={cn(
+          "gen-sdk-class gen-sdk-expand-view gencl:h-full gencl:w-full gencl:inset-0 gencl:z-50 gencl:bg-white",
+          isMobile && "gencl:flex-col",
+          // Apply fixed positioning with full screen dimensions for non-iHeart layouts
+          !isIHeart && "gencl:fixed gencl:h-screen gencl:w-screen",
+          isIHeart &&
+            websiteType === "legacy" && [
+              "gencl:fixed",
+              isDesktop ? "gencl:z-[115]!" : "gencl:z-[112]!",
+            ]
+        )}
+        style={{ height: !isIHeart ? `${viewportHeight}px` : "100%" }}
+        enabledToaster={!(community || group || user)}
+      >
+        {isIHeart ? (
+          <Suspense fallback={<FeedSkeleton variant="fullscreen" />}>
+            <IheartFullscreenContainer>
+              <ExpandViewContent
+                defaultComponent={defaultComponent}
+                community={community}
+                group={group}
+                user={user}
+              />
+            </IheartFullscreenContainer>
+          </Suspense>
+        ) : (
+          <ExpandViewContent
+            defaultComponent={defaultComponent}
+            community={community}
+            group={group}
+            user={user}
+          />
+        )}
+      </RootPortal>
+    </RemoveScroll>
+  );
 }

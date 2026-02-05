@@ -40,7 +40,7 @@ type BaseContextProviderProps = {
    * Theme of the application - 'dark' or 'light'
    */
   theme?: "dark" | "light";
-  useShadowDOM : boolean;
+  useShadowDOM: boolean;
 };
 
 type AutoplayParams = {
@@ -372,7 +372,7 @@ export function BaseContextProvider({
         baseContextManager,
         theme: currentTheme,
         setTheme: setCurrentTheme,
-        useShadowDOM
+        useShadowDOM,
       }}
     >
       {children}

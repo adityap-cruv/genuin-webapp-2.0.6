@@ -257,13 +257,15 @@ export async function loadNewEmbed({
     containerRootMap.delete(container)
   }
 
-  // Load all providers (no longer lazy loaded)
   // enable the shadow dom for the brand Id : 2477 for the temporary bases
-  if (brandDetails.brand_id === 2477 || brandDetails.brand_id === 3099) {
-    config.useShadowDOM = true
-  }
+  // if (brandDetails.brand_id === 2477 || brandDetails.brand_id === 3099) {
+  //   config.useShadowDOM = true
+  // }
 
   let targetContainer = container
+
+  // TODO: This config flag should be removed in future once we have verified that shadow DOM works well with all use cases. For now, it can be enabled on demand for testing and specific brands.
+  config.useShadowDOM = true
 
   if (config.useShadowDOM) {
     targetContainer = setupMainShadowDOM(container)
@@ -286,7 +288,7 @@ export async function loadNewEmbed({
   )
 
   // Initialize toaster on first embed
-  if (!toasterRoot) {
+  if (!toasterRoot && !config.useShadowDOM) {
     const div = document.createElement('div')
     div.id = 'gen-sdk-toaster-root'
     div.classList.add('gen-sdk-class')

@@ -81,6 +81,16 @@ function createShadowRoot(container: HTMLElement): HTMLElement {
   root.id = container.id;
   root.className = container.className;
 
+  // Copy all non-id/class attributes from container to shadow root
+  container.getAttributeNames().forEach((attrName) => {
+    if (attrName !== "id" && attrName !== "class") {
+      const attrValue = container.getAttribute(attrName);
+      if (attrValue !== null) {
+        root.setAttribute(attrName, attrValue);
+      }
+    }
+  });
+  
   const originalStyle = container.getAttribute("style");
   if (originalStyle) {
     root.setAttribute("style", originalStyle);
@@ -153,6 +163,16 @@ export function setupMainShadowDOM(container: HTMLElement): HTMLElement {
   if (!isInShadow && container.parentNode) {
     // Create new shadow DOM
     root = createShadowRoot(container);
+    // Some external dependencies apply styles directly to the host (e.g. `:host { margin-left/right: auto; }`),
+    // which can break the embed layout.
+    // To avoid this, reset the container margins to `inherit`,
+    // but only if the client hasn’t explicitly set them.
+    if (!container.style.marginLeft) {
+      container.style.marginLeft = "inherit";
+    }
+    if (!container.style.marginRight) {
+      container.style.marginRight = "inherit";
+    }
     container.setAttribute("data-genuin-host", "true");
     shadowRoot = container.attachShadow({ mode: "open" });
     shadowRoot.appendChild(root);
@@ -195,7 +215,7 @@ export function getOrCreateOverlayShadowHost(): {
     host.style.width = "100%";
     host.style.height = "100%";
     host.style.border = "none";
-    
+
     host.classList.add("gen-sdk-root-portal");
 
     // Append to body
