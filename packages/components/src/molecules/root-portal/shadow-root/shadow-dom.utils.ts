@@ -90,7 +90,7 @@ function createShadowRoot(container: HTMLElement): HTMLElement {
       }
     }
   });
-  
+
   const originalStyle = container.getAttribute("style");
   if (originalStyle) {
     root.setAttribute("style", originalStyle);
@@ -165,13 +165,13 @@ export function setupMainShadowDOM(container: HTMLElement): HTMLElement {
     root = createShadowRoot(container);
     // Some external dependencies apply styles directly to the host (e.g. `:host { margin-left/right: auto; }`),
     // which can break the embed layout.
-    // To avoid this, reset the container margins to `inherit`,
+    // To avoid this, reset the container margins to `0px`,
     // but only if the client hasn’t explicitly set them.
     if (!container.style.marginLeft) {
-      container.style.marginLeft = "inherit";
+      container.style.marginLeft = "0px";
     }
     if (!container.style.marginRight) {
-      container.style.marginRight = "inherit";
+      container.style.marginRight = "0px";
     }
     container.setAttribute("data-genuin-host", "true");
     shadowRoot = container.attachShadow({ mode: "open" });
