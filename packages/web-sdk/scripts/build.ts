@@ -1,6 +1,6 @@
 import { spawn } from 'child_process'
 import promptVersion from './npmVersionManager'
-import { uploadBuildsToS3 } from './uploadToS3'
+import { uploadBuildsToOracle } from './uploadToOracle'
 
 export async function runCommand(command: string): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -35,7 +35,8 @@ export async function build(): Promise<void> {
     await runCommand(`cross-env NODE_ENV=${NODE_ENV} rollup -c`)
 
     // Try to upload to S3 if configured
-    await uploadBuildsToS3()
+    // await uploadBuildsToS3()
+    await uploadBuildsToOracle()
 
     console.log('\n\x1b[32m✓ Build completed successfully\x1b[0m\n')
   } catch (error) {
