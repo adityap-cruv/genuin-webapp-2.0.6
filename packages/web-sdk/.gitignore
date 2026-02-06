@@ -15,6 +15,7 @@ build/
 .env.development
 .env.qa
 .env.production
+.env.common
 
 # Index filesxp
 *.html
