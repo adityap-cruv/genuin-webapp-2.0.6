@@ -19,13 +19,14 @@ import type {
   AdDataType,
   VideoPlayerStateRef,
 } from "./ad-controls/use-ad-player";
+import { AdControls } from "./ad-controls";
 
 // Lazy load AdControls component to reduce initial bundle size
-const AdControls = lazy(() =>
-  import("./ad-controls/index.js").then((module) => ({
-    default: module.AdControls,
-  })),
-);
+// const AdControls = lazy(() =>
+//   import("./ad-controls/index.js").then((module) => ({
+//     default: module.AdControls,
+//   })),
+// );
 
 const SAMPLE_AD_TAGS = {
   SINGLE_REDIRECT_LINEAR:
@@ -158,7 +159,7 @@ export type PlayerProps = ComponentProps<"video"> & {
   onVideoStart?: (
     duration: number,
     currentTime: number,
-    latency: number,
+    latency: number
   ) => void; // Add onVideoStart prop
   onMutedChange?: (muted: boolean) => void;
   onVideoLoadStart?: (isPlaying: boolean) => void; // Callback when video loading starts
@@ -248,7 +249,7 @@ export const VideoPlayer = memo(function VideoPlayer({
         return loading;
       });
     },
-    [onVideoLoadStart, onVideoLoadEnd],
+    [onVideoLoadStart, onVideoLoadEnd]
   );
 
   useEffect(() => {
@@ -324,7 +325,7 @@ export const VideoPlayer = memo(function VideoPlayer({
 
       onOpenPlayerReady?.(player);
     },
-    [onOpenPlayerReady, adUrl, playbackSpeed],
+    [onOpenPlayerReady, adUrl, playbackSpeed]
   );
 
   const updatePlayerMutedState = useCallback(
@@ -334,7 +335,7 @@ export const VideoPlayer = memo(function VideoPlayer({
         onMutedChange?.(muted);
       }
     },
-    [onMutedChange, videoRef],
+    [onMutedChange, videoRef]
   );
 
   const playThePlayer = useCallback(() => {
@@ -396,7 +397,7 @@ export const VideoPlayer = memo(function VideoPlayer({
       // Fallback to content if player state check fails
       console.warn(
         "Error checking player state, falling back to content:",
-        error,
+        error
       );
       player?.getMedia().play();
     }
@@ -581,7 +582,7 @@ export const VideoPlayer = memo(function VideoPlayer({
           videoElement.currentTime,
           typeof startTime === "number" && startTime !== -1
             ? Math.floor(latency)
-            : 0,
+            : 0
         );
       }
     };
@@ -608,7 +609,7 @@ export const VideoPlayer = memo(function VideoPlayer({
       videoElement.removeEventListener("play", handlePlay);
       videoElement.removeEventListener(
         "adsallAdsCompleted",
-        handleAllAdsCompleted,
+        handleAllAdsCompleted
       );
       videoElement.removeEventListener("ended", handleEnded);
     };
@@ -651,7 +652,7 @@ export const VideoPlayer = memo(function VideoPlayer({
         playerStateRef.current.thirdQuartileFired = false;
       }
     },
-    [playerStateRef],
+    [playerStateRef]
   );
 
   useEffect(() => {
@@ -719,10 +720,10 @@ export const VideoPlayer = memo(function VideoPlayer({
       changePlayerStateRef(
         false,
         videoRef.current?.duration,
-        videoRef.current?.currentTime,
+        videoRef.current?.currentTime
       );
     },
-    [playerStateRef, changePlayerStateRef, onSeeked],
+    [playerStateRef, changePlayerStateRef, onSeeked]
   );
 
   return (
@@ -730,8 +731,8 @@ export const VideoPlayer = memo(function VideoPlayer({
       <video
         id={id}
         className={cn(
-          "gencl:h-auto gencl:w-auto gencl:bg-center gencl:bg-no-repeat gencl:object-cover gencl:bg-cover",
-          className,
+          "gencl:h-auto gencl:w-auto gencl:bg-center gencl:bg-no-repeat gencl:object-cover",
+          className
         )}
         style={{
           backgroundImage: `url(${poster})`,
@@ -759,27 +760,25 @@ export const VideoPlayer = memo(function VideoPlayer({
         </div>
       )}
       {adUrl && (
-        <Suspense fallback={null}>
-          <AdControls
-            player={playerRef.current}
-            adUrl={adUrl}
-            muted={muted}
-            volume={volume}
-            playerStateRef={playerStateRef}
-            updateLoadingState={updateLoadingState}
-            isInExpandView={isInExpandView}
-            onSetupReady={(fn) => {
-              setupAdEventListenersRef.current = fn;
-            }}
-            onAdStarted={onAdStarted}
-            onAdCompleted={onAdCompleted}
-            onAdError={onAdError}
-            onAdClicked={onAdClicked}
-            onAdSkipped={onAdSkipped}
-            onAdPause={onAdPause}
-            playThePlayer={playThePlayer}
-          />
-        </Suspense>
+        <AdControls
+          player={playerRef.current}
+          adUrl={adUrl}
+          muted={muted}
+          volume={volume}
+          playerStateRef={playerStateRef}
+          updateLoadingState={updateLoadingState}
+          isInExpandView={isInExpandView}
+          onSetupReady={(fn) => {
+            setupAdEventListenersRef.current = fn;
+          }}
+          onAdStarted={onAdStarted}
+          onAdCompleted={onAdCompleted}
+          onAdError={onAdError}
+          onAdClicked={onAdClicked}
+          onAdSkipped={onAdSkipped}
+          onAdPause={onAdPause}
+          playThePlayer={playThePlayer}
+        />
       )}
     </div>
   );
