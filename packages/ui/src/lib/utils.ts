@@ -15,7 +15,7 @@ export function isValidHTTPS(link: string) {
  */
 export function openUrlInNewTab(
   url: string,
-  target: "_blank" | "_self" = "_blank"
+  target: "_blank" | "_self" = "_blank",
 ): void {
   // Create a temporary anchor element
   const anchor = document.createElement("a");
@@ -60,10 +60,10 @@ export function tryJsonParse<T = unknown>(data: string): T | null {
 export function getWebpUrlForImage(url?: string | null): string {
   if (!url) return "";
   if (url.includes(".webp")) return url;
-  // return url;
-  return url.includes("/uploads/")
-    ? url.replace(/(\/)([^/]+)\.([^/.]+)$/, "$1webp/$2.webp")
-    : url;
+  return url;
+  // return url.includes("/uploads/")
+  //   ? url.replace(/(\/)([^/]+)\.([^/.]+)$/, "$1webp/$2.webp")
+  //   : url;
 }
 
 /**
@@ -116,7 +116,7 @@ export function getUrlForReaction(
   reaction: string,
   isReacted: boolean,
   forComment: boolean = false,
-  theme: string = "light"
+  theme: string = "light",
 ) {
   return `https://media.begenuin.com/webapp_assets/reactions/${reaction}/${theme === "dark" ? "dark/" : ""}${forComment ? "comment_" : "feed_"}${
     isReacted ? "selected" : "unselected"
@@ -295,12 +295,12 @@ export function getMonthYear(timestamp: number): string {
   const dateOnly = new Date(
     date.getFullYear(),
     date.getMonth(),
-    date.getDate()
+    date.getDate(),
   );
   const todayOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
   const diffDays = Math.floor(
-    (todayOnly.getTime() - dateOnly.getTime()) / (1000 * 60 * 60 * 24)
+    (todayOnly.getTime() - dateOnly.getTime()) / (1000 * 60 * 60 * 24),
   );
 
   if (diffDays === 0) return "Today";
@@ -482,7 +482,7 @@ export function getAspectRatio(ratio?: string): {
 /**
  * Detects if accessibility mode is active based on browser accessibility preferences
  * and assistive technology indicators.
- * 
+ *
  * @returns {boolean} True if any accessibility indicators are detected
  */
 export function detectAccessibilityMode(): boolean {
@@ -512,97 +512,96 @@ export function detectAccessibilityMode(): boolean {
 }
 
 export function getTabindexElementsInViewport(container?: HTMLElement | null) {
-    // Define the root element to search within
-    const root = container || document;
-    
-    // Get all focusable elements (not just tabindex="0")
-    const focusableSelector = [
-        'a[href]:not([tabindex="-1"])',
-        'button:not([disabled]):not([tabindex="-1"])',
-        'textarea:not([disabled]):not([tabindex="-1"])',
-        'input:not([disabled]):not([tabindex="-1"])',
-        'select:not([disabled]):not([tabindex="-1"])',
-        '[tabindex]:not([tabindex="-1"])',
-        '[contenteditable="true"]:not([tabindex="-1"])'
-    ].join(', ');
-    
-    const elements = root.querySelectorAll<HTMLElement>(focusableSelector);
-    
-    // Filter to only those that are truly visible
-    const visibleElements = Array.from(elements).filter(element => {
-        const rect = element.getBoundingClientRect();
-        const style = window.getComputedStyle(element);
-        
-        // Check if element has size and is visible
-        const hasSize = rect.width > 0 && rect.height > 0;
-        
-        // Check CSS visibility properties
-        const isVisible = (
-            style.display !== 'none' &&
-            style.visibility !== 'hidden' &&
-            style.opacity !== '0' &&
-            element.offsetParent !== null // checks if element or parent has display:none
-        );
-        
-        // If container is provided, check if element is within container bounds
-        // Otherwise, check if element is in viewport
-        let inBounds = true;
-        if (container) {
-            const containerRect = container.getBoundingClientRect();
-            inBounds = (
-                rect.top >= containerRect.top &&
-                rect.left >= containerRect.left &&
-                rect.bottom <= containerRect.bottom &&
-                rect.right <= containerRect.right
-            );
-        } else {
-            // Check if element is in viewport
-            inBounds = (
-                rect.top >= 0 &&
-                rect.left >= 0 &&
-                rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-                rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-            );
-        }
-        
-        return hasSize && isVisible && inBounds;
-    });
-    
-    // Sort elements by their tabindex and DOM order
-    const sortedElements = visibleElements.sort((a, b) => {
-        const aTabIndex = a.getAttribute('tabindex');
-        const bTabIndex = b.getAttribute('tabindex');
-        const aIndex = aTabIndex ? parseInt(aTabIndex, 10) : 0;
-        const bIndex = bTabIndex ? parseInt(bTabIndex, 10) : 0;
-        
-        // Elements with positive tabindex come first, in numerical order
-        if (aIndex > 0 && bIndex > 0) return aIndex - bIndex;
-        if (aIndex > 0) return -1;
-        if (bIndex > 0) return 1;
-        
-        // For elements with tabindex 0 or no tabindex, maintain DOM order
-        return 0;
-    });
-    
-    // Return detailed information about each element
-    return sortedElements.map((element, index) => {
-        const rect = element.getBoundingClientRect();
-        return {
-            index: index,
-            tagName: element.tagName,
-            id: element.id || null,
-            className: element.className || null,
-            text: element.innerText?.substring(0, 50) || null,
-            tabIndex: element.getAttribute('tabindex') || 'default',
-            position: {
-                top: rect.top,
-                left: rect.left,
-                bottom: rect.bottom,
-                right: rect.right,
-                width: rect.width,
-                height: rect.height
-            },
-            element: element
-        };
-    });
+  // Define the root element to search within
+  const root = container || document;
+
+  // Get all focusable elements (not just tabindex="0")
+  const focusableSelector = [
+    'a[href]:not([tabindex="-1"])',
+    'button:not([disabled]):not([tabindex="-1"])',
+    'textarea:not([disabled]):not([tabindex="-1"])',
+    'input:not([disabled]):not([tabindex="-1"])',
+    'select:not([disabled]):not([tabindex="-1"])',
+    '[tabindex]:not([tabindex="-1"])',
+    '[contenteditable="true"]:not([tabindex="-1"])',
+  ].join(", ");
+
+  const elements = root.querySelectorAll<HTMLElement>(focusableSelector);
+
+  // Filter to only those that are truly visible
+  const visibleElements = Array.from(elements).filter((element) => {
+    const rect = element.getBoundingClientRect();
+    const style = window.getComputedStyle(element);
+
+    // Check if element has size and is visible
+    const hasSize = rect.width > 0 && rect.height > 0;
+
+    // Check CSS visibility properties
+    const isVisible =
+      style.display !== "none" &&
+      style.visibility !== "hidden" &&
+      style.opacity !== "0" &&
+      element.offsetParent !== null; // checks if element or parent has display:none
+
+    // If container is provided, check if element is within container bounds
+    // Otherwise, check if element is in viewport
+    let inBounds = true;
+    if (container) {
+      const containerRect = container.getBoundingClientRect();
+      inBounds =
+        rect.top >= containerRect.top &&
+        rect.left >= containerRect.left &&
+        rect.bottom <= containerRect.bottom &&
+        rect.right <= containerRect.right;
+    } else {
+      // Check if element is in viewport
+      inBounds =
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <=
+          (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <=
+          (window.innerWidth || document.documentElement.clientWidth);
+    }
+
+    return hasSize && isVisible && inBounds;
+  });
+
+  // Sort elements by their tabindex and DOM order
+  const sortedElements = visibleElements.sort((a, b) => {
+    const aTabIndex = a.getAttribute("tabindex");
+    const bTabIndex = b.getAttribute("tabindex");
+    const aIndex = aTabIndex ? parseInt(aTabIndex, 10) : 0;
+    const bIndex = bTabIndex ? parseInt(bTabIndex, 10) : 0;
+
+    // Elements with positive tabindex come first, in numerical order
+    if (aIndex > 0 && bIndex > 0) return aIndex - bIndex;
+    if (aIndex > 0) return -1;
+    if (bIndex > 0) return 1;
+
+    // For elements with tabindex 0 or no tabindex, maintain DOM order
+    return 0;
+  });
+
+  // Return detailed information about each element
+  return sortedElements.map((element, index) => {
+    const rect = element.getBoundingClientRect();
+    return {
+      index: index,
+      tagName: element.tagName,
+      id: element.id || null,
+      className: element.className || null,
+      text: element.innerText?.substring(0, 50) || null,
+      tabIndex: element.getAttribute("tabindex") || "default",
+      position: {
+        top: rect.top,
+        left: rect.left,
+        bottom: rect.bottom,
+        right: rect.right,
+        width: rect.width,
+        height: rect.height,
+      },
+      element: element,
+    };
+  });
 }

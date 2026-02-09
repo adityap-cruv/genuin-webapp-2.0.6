@@ -33,7 +33,8 @@ export function RootPortal({
   const [mounted, setMounted] = React.useState(false);
   const [containerElement, setContainerElement] =
     React.useState<HTMLElement | null>(null);
-  const { parsedBrandColors, isEmbed, useShadowDOM } = useBaseContext();
+  const { parsedBrandColors, isEmbed, useShadowDOM, brandDetails } =
+    useBaseContext();
 
   React.useEffect(() => {
     setMounted(true);
@@ -51,9 +52,20 @@ export function RootPortal({
     } else {
       if (useShadowDOM) {
         // Get or create overlay shadow host
-        const { shadowRoot } = getOrCreateOverlayShadowHost();
+        const { shadowRoot, host } = getOrCreateOverlayShadowHost();
+        // TODO: Apply z-index conditionally since we don’t want clients to set this manually. This can be removed once full custom CSS support for brands is added in BCC.
+        // Brand : Adland
+        if (brandDetails.brand_id === 2764) {
+          host.style.zIndex = "2147483647";
+        } else if (
+          // Brand : Fansided or Minute Media
+          brandDetails.brand_id === 3211 ||
+          brandDetails.brand_id === 2633
+        ) {
+          host.style.zIndex = "50";
+        }
         const container = shadowRoot.querySelector(
-          "[data-portal-container]"
+          "[data-portal-container]",
         ) as HTMLElement;
         setContainerElement(container);
       } else {
