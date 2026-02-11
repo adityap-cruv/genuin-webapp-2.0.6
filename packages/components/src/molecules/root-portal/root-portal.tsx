@@ -54,8 +54,8 @@ export function RootPortal({
         // Get or create overlay shadow host
         const { shadowRoot, host } = getOrCreateOverlayShadowHost();
         // TODO: Apply z-index conditionally since we don’t want clients to set this manually. This can be removed once full custom CSS support for brands is added in BCC.
-        // Brand : Adland
-        if (brandDetails.brand_id === 2764) {
+        // Brand : Adland, India-exppress
+        if (brandDetails.brand_id === 2764 || brandDetails.brand_id === 2793) {
           host.style.zIndex = "2147483647";
         } else if (
           // Brand : Fansided or Minute Media
