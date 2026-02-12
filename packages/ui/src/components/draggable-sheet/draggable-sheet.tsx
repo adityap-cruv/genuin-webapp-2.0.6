@@ -32,14 +32,15 @@ import { NavigationBar } from "./draggable-sheet-nav-bar";
 import { Overlay } from "./draggable-sheet-overlay";
 
 const DEFAULT_HEIGHTS: Record<DraggableSheetState, HeightValue> = {
-  default: 20,
-  "default-active": 25,
+  default: 15,
+  "default-active": 18,
   "expand-view": 40,
   "panel-view": 70,
   "full-view": 100,
 };
 
 const DRAG_THRESHOLD = 3;
+const DRAG_TIME_THRESHOLD = 150; // ms - minimum time to consider as drag vs click
 const DEFAULT_EXPAND_DELAY = 3000;
 const INTERACTION_RESET_DELAY = 500;
 
@@ -62,6 +63,9 @@ function DraggableSheet({
   contentClassName,
   navClassName,
   transitionDuration = 350,
+  closeState,
+  swipeDownState,
+  swipeDownBehavior = "step",
   className,
   style,
   children,
@@ -92,6 +96,9 @@ function DraggableSheet({
   const interactionTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
+  const currentStateRef = useRef<DraggableSheetState>(currentState);
+  const isPendingTransitionRef = useRef(false);
+  const isMountedRef = useRef(true);
   const dragState = useRef<DragState>({
     initialY: 0,
     initialHeightPx: 0,
@@ -100,6 +107,12 @@ function DraggableSheet({
     flickVelocity: 0,
     hasMovedBeyondThreshold: false,
   });
+  const pointerDownTimeRef = useRef<number>(0);
+
+  // Keep currentStateRef in sync
+  useEffect(() => {
+    currentStateRef.current = currentState;
+  }, [currentState]);
 
   const convertStateHeightToPixels = useCallback(
     (state: DraggableSheetState) => convertHeightToPixels(heightConfig[state]),
@@ -130,21 +143,53 @@ function DraggableSheet({
 
   const transitionToState = useCallback(
     (nextState: DraggableSheetState) => {
+      if (!isMountedRef.current) return;
       if (!enabledStates.includes(nextState)) return;
+      if (isPendingTransitionRef.current) return;
+      if (currentStateRef.current === nextState) return;
+
+      isPendingTransitionRef.current = true;
       setTransientHeightPx(null);
       setCurrentState(nextState);
       onStateChange?.(nextState);
+
+      // Reset pending flag after transition duration
+      setTimeout(() => {
+        isPendingTransitionRef.current = false;
+      }, 100);
     },
     [enabledStates, onStateChange],
   );
 
   const closeSheet = useCallback(() => {
+    // Cancel all pending timers
+    if (autoExpandTimerRef.current) {
+      clearTimeout(autoExpandTimerRef.current);
+      autoExpandTimerRef.current = null;
+    }
+    if (interactionTimerRef.current) {
+      clearTimeout(interactionTimerRef.current);
+      interactionTimerRef.current = null;
+    }
+
     onClose?.();
-    const firstState = enabledStates[0];
-    if (firstState) transitionToState(firstState);
-  }, [onClose, enabledStates, transitionToState]);
+
+    // Use closeState prop if provided, otherwise use first enabled state
+    const targetState =
+      closeState && enabledStates.includes(closeState)
+        ? closeState
+        : enabledStates[0];
+
+    if (targetState) transitionToState(targetState);
+  }, [onClose, enabledStates, closeState, transitionToState]);
 
   const markUserInteraction = useCallback(() => {
+    // Cancel auto-expand immediately on user interaction
+    if (autoExpandTimerRef.current) {
+      clearTimeout(autoExpandTimerRef.current);
+      autoExpandTimerRef.current = null;
+    }
+
     setIsUserInteracting(true);
 
     if (interactionTimerRef.current) {
@@ -152,7 +197,9 @@ function DraggableSheet({
     }
 
     interactionTimerRef.current = setTimeout(() => {
-      setIsUserInteracting(false);
+      if (isMountedRef.current) {
+        setIsUserInteracting(false);
+      }
     }, INTERACTION_RESET_DELAY);
   }, []);
 
@@ -165,9 +212,15 @@ function DraggableSheet({
     if (currentState !== "default-active") return;
     if (!enabledStates.includes("expand-view")) return;
     if (isUserInteracting) return;
+    if (isDragging) return; // Don't auto-expand during drag
     if (isStateHigherThan(currentState, "expand-view")) return;
 
     autoExpandTimerRef.current = setTimeout(() => {
+      // Double-check conditions before transitioning
+      if (!isMountedRef.current) return;
+      if (currentStateRef.current !== "default-active") return;
+      if (isDragging) return;
+
       transitionToState("expand-view");
     }, expandDelay);
 
@@ -182,6 +235,7 @@ function DraggableSheet({
     expandDelay,
     enabledStates,
     isUserInteracting,
+    isDragging,
     isStateHigherThan,
     transitionToState,
   ]);
@@ -191,19 +245,29 @@ function DraggableSheet({
       if (e.button !== 0) return;
       e.preventDefault();
 
+      // Cancel any pending transitions immediately
+      markUserInteraction();
+      isPendingTransitionRef.current = false;
+
       const drag = dragState.current;
+      const now = Date.now();
+
       drag.initialY = e.clientY;
-      drag.initialHeightPx = convertStateHeightToPixels(currentState);
+      drag.initialHeightPx = convertStateHeightToPixels(
+        currentStateRef.current,
+      );
       drag.lastY = e.clientY;
-      drag.lastTimestamp = Date.now();
+      drag.lastTimestamp = now;
       drag.flickVelocity = 0;
       drag.hasMovedBeyondThreshold = false;
 
+      // Track when pointer went down
+      pointerDownTimeRef.current = now;
+
       setIsDragging(true);
-      markUserInteraction();
       (e.target as HTMLElement).setPointerCapture(e.pointerId);
     },
-    [currentState, convertStateHeightToPixels, markUserInteraction],
+    [convertStateHeightToPixels, markUserInteraction],
   );
 
   useEffect(() => {
@@ -221,8 +285,13 @@ function DraggableSheet({
       drag.lastTimestamp = currentTime;
 
       const dragDelta = drag.initialY - e.clientY;
+      const timeSincePointerDown = currentTime - pointerDownTimeRef.current;
 
-      if (Math.abs(dragDelta) > DRAG_THRESHOLD) {
+      // Consider it a drag if moved beyond threshold OR held for minimum time
+      if (
+        Math.abs(dragDelta) > DRAG_THRESHOLD ||
+        timeSincePointerDown > DRAG_TIME_THRESHOLD
+      ) {
         drag.hasMovedBeyondThreshold = true;
       }
 
@@ -244,8 +313,9 @@ function DraggableSheet({
       const potentialStateHeight = convertStateHeightToPixels(potentialState);
       if (
         Math.abs(newHeightPx - potentialStateHeight) < 10 &&
-        potentialState !== currentState
+        potentialState !== currentStateRef.current
       ) {
+        currentStateRef.current = potentialState;
         setCurrentState(potentialState);
         onStateChange?.(potentialState);
       }
@@ -253,17 +323,70 @@ function DraggableSheet({
 
     const handleDragEnd = () => {
       const drag = dragState.current;
+      const heldDuration = Date.now() - pointerDownTimeRef.current;
       setIsDragging(false);
 
-      const finalHeightPx = drag.initialHeightPx + (drag.initialY - drag.lastY);
-      const targetState = findNearestSnapState(
-        finalHeightPx,
-        drag.flickVelocity,
-        enabledStates,
-        convertStateHeightToPixels,
-      );
+      if (!isMountedRef.current) return;
 
-      transitionToState(targetState);
+      // Only snap to new state if it was a real drag (moved or held long enough)
+      const wasRealDrag =
+        drag.hasMovedBeyondThreshold || heldDuration > DRAG_TIME_THRESHOLD;
+
+      if (wasRealDrag) {
+        const finalHeightPx =
+          drag.initialHeightPx + (drag.initialY - drag.lastY);
+        const dragDelta = drag.initialY - drag.lastY;
+        const isSwipingDown = dragDelta < 0;
+
+        let targetState: DraggableSheetState;
+
+        // Handle swipe down with custom behavior
+        if (
+          isSwipingDown &&
+          swipeDownState &&
+          enabledStates.includes(swipeDownState)
+        ) {
+          if (swipeDownBehavior === "direct") {
+            // Go directly to the specified swipe down state
+            targetState = swipeDownState;
+          } else {
+            // Step-by-step: go one state down
+            const currentIndex = getStateIndex(currentStateRef.current);
+            const swipeDownIndex = getStateIndex(swipeDownState);
+
+            if (currentIndex > swipeDownIndex) {
+              // Move one step down towards swipeDownState
+              targetState =
+                enabledStates[currentIndex - 1] || currentStateRef.current;
+            } else {
+              // Already at or below swipeDownState, use normal snap
+              targetState = findNearestSnapState(
+                finalHeightPx,
+                drag.flickVelocity,
+                enabledStates,
+                convertStateHeightToPixels,
+              );
+            }
+          }
+        } else {
+          // Normal behavior - find nearest snap state
+          targetState = findNearestSnapState(
+            finalHeightPx,
+            drag.flickVelocity,
+            enabledStates,
+            convertStateHeightToPixels,
+          );
+        }
+
+        console.log("targetState", targetState);
+
+        // Reset pending transition flag and transition to target state
+        isPendingTransitionRef.current = false;
+        transitionToState(targetState);
+      } else {
+        // Quick tap - just reset transient height without changing state
+        setTransientHeightPx(null);
+      }
     };
 
     window.addEventListener("pointermove", handleDragMove);
@@ -287,13 +410,20 @@ function DraggableSheet({
 
   const handleHoverOrTouch = useCallback(() => {
     markUserInteraction();
+
+    // Use ref to prevent stale closure and add guard
     if (
-      currentState === "default" &&
-      enabledStates.includes("default-active")
+      currentStateRef.current === "default" &&
+      !isPendingTransitionRef.current
     ) {
-      transitionToState("default-active");
+      const nextState = enabledStates.includes("default-active")
+        ? "default-active"
+        : enabledStates[enabledStates.indexOf("default") + 1];
+      if (nextState) {
+        transitionToState(nextState);
+      }
     }
-  }, [currentState, enabledStates, transitionToState, markUserInteraction]);
+  }, [enabledStates, transitionToState, markUserInteraction]);
 
   const handleTapOrClick = useCallback(
     (e: MouseEvent) => {
@@ -304,15 +434,36 @@ function DraggableSheet({
 
       markUserInteraction();
 
+      // Use ref to prevent stale closure
       if (
-        currentState === "expand-view" &&
-        enabledStates.includes("panel-view")
+        currentStateRef.current === "expand-view" &&
+        enabledStates.includes("panel-view") &&
+        !isPendingTransitionRef.current
       ) {
         transitionToState("panel-view");
       }
     },
-    [currentState, enabledStates, transitionToState, markUserInteraction],
+    [enabledStates, transitionToState, markUserInteraction],
   );
+
+  // Cleanup on unmount
+  useEffect(() => {
+    isMountedRef.current = true;
+
+    return () => {
+      isMountedRef.current = false;
+
+      if (autoExpandTimerRef.current) {
+        clearTimeout(autoExpandTimerRef.current);
+        autoExpandTimerRef.current = null;
+      }
+
+      if (interactionTimerRef.current) {
+        clearTimeout(interactionTimerRef.current);
+        interactionTimerRef.current = null;
+      }
+    };
+  }, []);
 
   if (!visible) return null;
 
