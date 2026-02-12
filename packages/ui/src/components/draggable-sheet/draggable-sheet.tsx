@@ -11,6 +11,7 @@ import {
 } from "react";
 
 import { cn } from "@genuin/ui/lib/utils";
+import { Skeleton } from "@genuin/ui/components/skeleton";
 
 import {
   normalizeHeight,
@@ -66,6 +67,7 @@ function DraggableSheet({
   stepByStepSwipeDown = true,
   footer,
   footerClassName,
+  loading = false,
   className,
   style,
   children,
@@ -516,17 +518,56 @@ function DraggableSheet({
           )}
           style={{ touchAction: "pan-y" }}
         >
-          {children}
+          {loading ? (
+            <>
+              {/* Prompt shimmer section */}
+              <div className="gencl:flex gencl:flex-col gencl:items-end gencl:p-4">
+                <div className="gencl:flex gencl:flex-col gencl:gap-4 gencl:w-full">
+                  <Skeleton className="gencl:h-4 gencl:w-full gencl:rounded" />
+                  <Skeleton className="gencl:h-4 gencl:w-1/2 gencl:rounded" />
+                </div>
+              </div>
+              {/* Response shimmer section */}
+              <div className="gencl:flex gencl:flex-col gencl:items-start gencl:p-4">
+                <div className="gencl:h-[47px] gencl:w-full" />
+              </div>
+            </>
+          ) : (
+            children
+          )}
         </div>
 
-        {footer && (
-          <div
-            data-slot="draggable-sheet-footer"
-            className={cn("gencl:w-full gencl:flex-shrink-0", footerClassName)}
-          >
-            {footer}
-          </div>
-        )}
+        {currentState !== "default" &&
+          currentState !== "default-active" &&
+          (loading ? (
+            <div
+              data-slot="draggable-sheet-footer"
+              className={cn(
+                "gencl:w-full gencl:flex-shrink-0",
+                isDarkTheme
+                  ? "gencl:backdrop-blur-sm gencl:bg-black/50 gencl:border-t gencl:border-white/10"
+                  : "gencl:bg-white gencl:border-t gencl:border-secondary-150",
+                "gencl:flex gencl:items-center gencl:px-4 gencl:py-3.5",
+                footerClassName,
+              )}
+            >
+              <div className="gencl:flex-1 gencl:flex gencl:items-center">
+                <Skeleton className="gencl:h-4 gencl:w-full gencl:rounded" />
+              </div>
+            </div>
+          ) : (
+            footer && (
+              <div
+                data-slot="draggable-sheet-footer"
+                className={cn(
+                  "gencl:w-full gencl:flex-shrink-0",
+                  footerClassName,
+                )}
+              >
+                {footer}
+              </div>
+            )
+          ))}
       </div>
     </>
   );

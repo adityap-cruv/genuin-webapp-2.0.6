@@ -38,6 +38,7 @@ export interface DraggableSheetProps extends ComponentProps<"div"> {
   stepByStepSwipeDown?: boolean;
   footer?: ReactNode;
   footerClassName?: string;
+  loading?: boolean;
 }
 
 export interface DragState {
