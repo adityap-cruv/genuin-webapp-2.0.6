@@ -63,9 +63,9 @@ function DraggableSheet({
   contentClassName,
   navClassName,
   transitionDuration = 350,
-  closeState,
-  swipeDownState,
-  swipeDownBehavior = "step",
+  stepByStepSwipeDown = true,
+  footer,
+  footerClassName,
   className,
   style,
   children,
@@ -174,14 +174,11 @@ function DraggableSheet({
 
     onClose?.();
 
-    // Use closeState prop if provided, otherwise use first enabled state
-    const targetState =
-      closeState && enabledStates.includes(closeState)
-        ? closeState
-        : enabledStates[0];
+    // Always go to the first enabled state (lowest state)
+    const targetState = enabledStates[0];
 
     if (targetState) transitionToState(targetState);
-  }, [onClose, enabledStates, closeState, transitionToState]);
+  }, [onClose, enabledStates, transitionToState]);
 
   const markUserInteraction = useCallback(() => {
     // Cancel auto-expand immediately on user interaction
@@ -340,33 +337,19 @@ function DraggableSheet({
 
         let targetState: DraggableSheetState;
 
-        // Handle swipe down with custom behavior
-        if (
-          isSwipingDown &&
-          swipeDownState &&
-          enabledStates.includes(swipeDownState)
-        ) {
-          if (swipeDownBehavior === "direct") {
-            // Go directly to the specified swipe down state
-            targetState = swipeDownState;
-          } else {
+        // Handle swipe down behavior
+        if (isSwipingDown) {
+          if (stepByStepSwipeDown) {
             // Step-by-step: go one state down
             const currentIndex = getStateIndex(currentStateRef.current);
-            const swipeDownIndex = getStateIndex(swipeDownState);
-
-            if (currentIndex > swipeDownIndex) {
-              // Move one step down towards swipeDownState
-              targetState =
-                enabledStates[currentIndex - 1] || currentStateRef.current;
+            if (currentIndex > 0) {
+              targetState = enabledStates[currentIndex - 1]!;
             } else {
-              // Already at or below swipeDownState, use normal snap
-              targetState = findNearestSnapState(
-                finalHeightPx,
-                drag.flickVelocity,
-                enabledStates,
-                convertStateHeightToPixels,
-              );
+              targetState = currentStateRef.current;
             }
+          } else {
+            // Direct: go to the lowest enabled state
+            targetState = enabledStates[0]!;
           }
         } else {
           // Normal behavior - find nearest snap state
@@ -535,6 +518,15 @@ function DraggableSheet({
         >
           {children}
         </div>
+
+        {footer && (
+          <div
+            data-slot="draggable-sheet-footer"
+            className={cn("gencl:w-full gencl:flex-shrink-0", footerClassName)}
+          >
+            {footer}
+          </div>
+        )}
       </div>
     </>
   );

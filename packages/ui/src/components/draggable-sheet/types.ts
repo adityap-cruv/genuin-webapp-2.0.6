@@ -35,9 +35,9 @@ export interface DraggableSheetProps extends ComponentProps<"div"> {
   contentClassName?: string;
   navClassName?: string;
   transitionDuration?: number;
-  closeState?: DraggableSheetState;
-  swipeDownState?: DraggableSheetState;
-  swipeDownBehavior?: "step" | "direct";
+  stepByStepSwipeDown?: boolean;
+  footer?: ReactNode;
+  footerClassName?: string;
 }
 
 export interface DragState {
