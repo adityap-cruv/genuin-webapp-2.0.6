@@ -1,25 +1,32 @@
+import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@genuin/ui/lib/utils";
+import type { ComponentPropsWithoutRef } from "react";
 
-interface OverlayProps {
-  isDarkTheme: boolean;
-  overlayClassName?: string;
-  onClick: () => void;
-}
+const overlayVariants = cva(
+  "gencl:fixed gencl:inset-0 gencl:pointer-events-auto gencl:transition-opacity gencl:duration-200 gencl:z-40",
+  {
+    variants: {
+      theme: {
+        light: "gencl:bg-black/20",
+        dark: "gencl:bg-black/40",
+      },
+    },
+    defaultVariants: {
+      theme: "light",
+    },
+  },
+);
 
-export function Overlay({
-  isDarkTheme,
-  overlayClassName,
-  onClick,
-}: OverlayProps) {
+interface OverlayProps
+  extends ComponentPropsWithoutRef<"div">,
+    VariantProps<typeof overlayVariants> {}
+
+export function Overlay({ theme, className, ...props }: OverlayProps) {
   return (
     <div
       data-slot="draggable-sheet-overlay"
-      className={cn(
-        "gencl:fixed gencl:inset-0 gencl:pointer-events-auto gencl:transition-opacity gencl:duration-200 gencl:z-40",
-        isDarkTheme ? "gencl:bg-black/40" : "gencl:bg-black/20",
-        overlayClassName,
-      )}
-      onClick={onClick}
+      className={cn(overlayVariants({ theme }), className)}
+      {...props}
     />
   );
 }

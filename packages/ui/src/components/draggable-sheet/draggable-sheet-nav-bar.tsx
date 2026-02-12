@@ -1,52 +1,68 @@
+import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@genuin/ui/lib/utils";
 import { XIcon } from "@genuin/ui/icons";
-import type { ReactNode, PointerEvent as ReactPointerEvent } from "react";
+import type { ReactNode, ComponentPropsWithoutRef } from "react";
 
-interface NavigationBarProps {
-  isDarkTheme: boolean;
+const navigationBarVariants = cva(
+  "gencl:flex gencl:items-center gencl:touch-none gencl:gap-3 gencl:px-4 gencl:py-3.5 gencl:w-full gencl:shrink-0 gencl:border-b gencl:border-solid gencl:cursor-grab active:gencl:cursor-grabbing",
+  {
+    variants: {
+      theme: {
+        light: "gencl:bg-white gencl:border-secondary-50",
+        dark: "gencl:bg-transparent gencl:border-white/10",
+      },
+    },
+    defaultVariants: {
+      theme: "light",
+    },
+  },
+);
+
+const navigationBarTitleVariants = cva(
+  "gencl:flex-1 gencl:min-w-0 gencl:text-body-0-medium gencl:truncate",
+  {
+    variants: {
+      theme: {
+        light: "gencl:text-secondary-900",
+        dark: "gencl:text-white",
+      },
+    },
+    defaultVariants: {
+      theme: "light",
+    },
+  },
+);
+
+interface NavigationBarProps
+  extends Omit<ComponentPropsWithoutRef<"div">, "onPointerDown">,
+    VariantProps<typeof navigationBarVariants> {
   navTitle?: string;
-  showClose: boolean;
+  showClose?: boolean;
   closeIcon?: ReactNode;
-  theme: "light" | "dark";
-  navClassName?: string;
-  onPointerDown: (e: ReactPointerEvent) => void;
-  onClose: () => void;
+  onPointerDown?: (e: React.PointerEvent<HTMLDivElement>) => void;
+  onClose?: () => void;
 }
 
 export function NavigationBar({
-  isDarkTheme,
   navTitle,
-  showClose,
+  showClose = true,
   closeIcon,
   theme,
-  navClassName,
+  className,
   onPointerDown,
   onClose,
+  style,
+  ...props
 }: NavigationBarProps) {
   return (
     <div
       data-slot="draggable-sheet-nav"
-      className={cn(
-        "gencl:flex gencl:items-center gencl:gap-3 gencl:px-4 gencl:py-3.5 gencl:w-full gencl:shrink-0",
-        "gencl:border-b gencl:border-solid",
-        isDarkTheme
-          ? "gencl:bg-transparent gencl:border-white/10"
-          : "gencl:bg-white gencl:border-secondary-50",
-        "gencl:cursor-grab active:gencl:cursor-grabbing",
-        navClassName,
-      )}
+      className={cn(navigationBarVariants({ theme }), className)}
       onPointerDown={onPointerDown}
-      style={{ touchAction: "none" }}
+      {...props}
     >
       {navTitle ? (
-        <p
-          className={cn(
-            "gencl:flex-1 gencl:min-w-0 gencl:text-body-0-medium gencl:truncate",
-            isDarkTheme ? "gencl:text-white" : "gencl:text-secondary-900",
-          )}
-        >
-          {navTitle}
-        </p>
+        <p className={navigationBarTitleVariants({ theme })}>{navTitle}</p>
       ) : (
         <span className="gencl:flex-1" />
       )}
@@ -60,7 +76,7 @@ export function NavigationBar({
           )}
           onClick={(e) => {
             e.stopPropagation();
-            onClose();
+            onClose?.();
           }}
           onPointerDown={(e) => e.stopPropagation()}
           aria-label="Close"

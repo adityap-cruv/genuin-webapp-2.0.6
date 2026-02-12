@@ -414,14 +414,10 @@ function DraggableSheet({
     // Use ref to prevent stale closure and add guard
     if (
       currentStateRef.current === "default" &&
+      enabledStates.includes("default-active") &&
       !isPendingTransitionRef.current
     ) {
-      const nextState = enabledStates.includes("default-active")
-        ? "default-active"
-        : enabledStates[enabledStates.indexOf("default") + 1];
-      if (nextState) {
-        transitionToState(nextState);
-      }
+      transitionToState("default-active");
     }
   }, [enabledStates, transitionToState, markUserInteraction]);
 
@@ -484,8 +480,8 @@ function DraggableSheet({
     <>
       {shouldShowOverlay && (
         <Overlay
-          isDarkTheme={isDarkTheme}
-          overlayClassName={overlayClassName}
+          theme={theme}
+          className={overlayClassName}
           onClick={closeSheet}
         />
       )}
@@ -514,20 +510,16 @@ function DraggableSheet({
         {...rest}
       >
         {showIndicator && currentState !== "default" && (
-          <DragIndicator
-            isDarkTheme={isDarkTheme}
-            onPointerDown={handleDragStart}
-          />
+          <DragIndicator theme={theme} onPointerDown={handleDragStart} />
         )}
 
         {showNav && (
           <NavigationBar
-            isDarkTheme={isDarkTheme}
             navTitle={navTitle}
             showClose={showClose}
             closeIcon={closeIcon}
             theme={theme}
-            navClassName={navClassName}
+            className={navClassName}
             onPointerDown={handleDragStart}
             onClose={closeSheet}
           />
