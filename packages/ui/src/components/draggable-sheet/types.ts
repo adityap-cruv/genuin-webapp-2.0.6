@@ -12,10 +12,10 @@ export type DraggableSheetState = (typeof DRAGGABLE_SHEET_STATES)[number];
 
 export type HeightValue = string | number;
 
-export type DraggableSheetHeightConfig = Record<
+export type DraggableSheetHeightConfig = Partial<Record<
   DraggableSheetState,
   HeightValue
->;
+>>;
 
 export interface DraggableSheetConfig {
   heights?: DraggableSheetHeightConfig;
@@ -38,12 +38,17 @@ export interface DraggableSheetConfig {
   onClose?: () => void;
   visible?: boolean;
   loading?: boolean;
+  disableAnimations?: boolean;
+  disableDragAndSwipe?: boolean;
 }
 
 export interface DraggableSheetProps extends ComponentProps<"div"> {
   config: DraggableSheetConfig;
   header?: React.ReactNode;
   footer?: React.ReactNode;
+  headerClassName?: string;
+  contentClassName?: string;
+  footerClassName?: string;
 }
 
 export interface DragState {
@@ -68,8 +73,11 @@ export const DEFAULT_CONFIG: DraggableSheetConfig = {
   showOverlay: false,
   showIndicator: true,
   showClose: false,
+  showHeader: false,
+  showFooter: false,
+    
   theme: "light",
-  transitionDuration: 350,
+  transitionDuration: 250,
   stepByStepSwipeDown: true,
   expandDelay: 3000,
   enabledStates: [...DRAGGABLE_SHEET_STATES],

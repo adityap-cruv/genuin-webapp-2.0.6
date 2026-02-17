@@ -77,6 +77,9 @@ function DraggableSheet({
   children,
   header,
   footer,
+  headerClassName,
+  contentClassName,
+  footerClassName,
   ...rest
 }: DraggableSheetProps) {
   const config = useMemo<DraggableSheetConfig>(
@@ -116,7 +119,7 @@ function DraggableSheet({
   const computedSheetHeight =
     isDragging && transientHeightPx !== null
       ? `${transientHeightPx}px`
-      : normalizeHeight(heights[currentState]);
+      : normalizeHeight(heights[currentState] ?? DEFAULT_HEIGHTS[currentState]);
 
   const heightTransition = isDragging
     ? "none"
@@ -152,6 +155,7 @@ function DraggableSheet({
         }}
         onMouseEnter={handleHoverOrTouch}
         onTouchStart={handleHoverOrTouch}
+        onPointerDown={handleDragStart}
         onClick={handleTapOrClick}
         {...rest}
       >
@@ -169,6 +173,7 @@ function DraggableSheet({
               isDarkTheme
                 ? "gencl:border-white/10"
                 : "gencl:border-secondary-300",
+              headerClassName,
             )}
           >
             {config.loading ? <HeaderShimmer theme={config.theme} /> : header}
@@ -182,6 +187,7 @@ function DraggableSheet({
                 isDarkTheme
                   ? "gencl:border-white/10"
                   : "gencl:border-secondary-300",
+                headerClassName,
               )}
             >
               {config.navTitle ? (
@@ -228,6 +234,7 @@ function DraggableSheet({
           className={cn(
             "gencl:flex-1 gencl:min-h-0 gencl:overflow-y-auto gencl:overflow-x-hidden gencl:w-full gencl:touch-pan-y",
             isDarkTheme ? "gencl:text-white" : "gencl:text-black",
+            contentClassName,
           )}
         >
           {config.loading ? <ContentShimmer theme={config.theme} /> : children}
@@ -245,6 +252,7 @@ function DraggableSheet({
                 isDarkTheme
                   ? "gencl:border-white/10 gencl:text-white"
                   : "gencl:border-secondary-300 gencl:text-black",
+                footerClassName,
               )}
             >
               {config.loading ? <FooterShimmer theme={config.theme} /> : footer}

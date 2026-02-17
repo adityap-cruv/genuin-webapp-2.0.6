@@ -24,7 +24,7 @@ import {
 
 const DRAG_THRESHOLD = 3;
 const DRAG_TIME_THRESHOLD = 150;
-const DEFAULT_EXPAND_DELAY = 3000;
+const DEFAULT_EXPAND_DELAY = 1500;
 const INTERACTION_RESET_DELAY = 500;
 
 export interface UseDraggableSheetOptions {
@@ -48,8 +48,18 @@ export function useDraggableSheet({
   );
   const heights = config.heights ?? DEFAULT_HEIGHTS;
   
+  // Determine the valid initial state
+  const validInitialState = useMemo(() => {
+    // If the provided initial state is in enabled states, use it
+    if (enabledStates.includes(initialState)) {
+      return initialState;
+    }
+    // Otherwise, use the lowest enabled state (first in the sorted array)
+    return enabledStates[0] || "default";
+  }, [enabledStates, initialState]);
+  
   const [currentState, setCurrentState] =
-    useState<DraggableSheetState>(initialState);
+    useState<DraggableSheetState>(validInitialState);
   const [isDragging, setIsDragging] = useState(false);
   const [transientHeightPx, setTransientHeightPx] = useState<number | null>(
     null,
@@ -60,7 +70,7 @@ export function useDraggableSheet({
   const interactionTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
-  const currentStateRef = useRef<DraggableSheetState>(currentState);
+  const currentStateRef = useRef<DraggableSheetState>(validInitialState);
   const isPendingTransitionRef = useRef(false);
   const isMountedRef = useRef(true);
   const dragState = useRef<DragState>({
@@ -80,7 +90,7 @@ export function useDraggableSheet({
 
   const convertStateHeightToPixels = useCallback(
     (state: DraggableSheetState) =>
-      convertHeightToPixels(heights[state]),
+      convertHeightToPixels(heights[state] ?? DEFAULT_HEIGHTS[state]),
     [heights],
   );
 
@@ -99,7 +109,7 @@ export function useDraggableSheet({
     const firstState = enabledStates[0];
     const lastState = enabledStates[enabledStates.length - 1];
     return {
-      minHeightPx: firstState ? convertStateHeightToPixels(firstState) : 0,
+      minHeightPx: firstState ? convertStateHeightToPixels(firstState) - 60 : 0,
       maxHeightPx: lastState
         ? convertStateHeightToPixels(lastState)
         : window.innerHeight,
@@ -167,6 +177,8 @@ export function useDraggableSheet({
       autoExpandTimerRef.current = null;
     }
 
+    // Disable auto-expand if drag and swipe is disabled
+    if (config.disableDragAndSwipe) return;
     if (currentState !== "default-active") return;
     if (!enabledStates.includes("expand-view")) return;
     if (isUserInteracting) return;
@@ -199,6 +211,9 @@ export function useDraggableSheet({
 
   const handleDragStart = useCallback(
     (e: ReactPointerEvent) => {
+      // Disable dragging if flag is set
+      if (config.disableDragAndSwipe) return;
+      
       if (e.button !== 0) return;
       e.preventDefault();
 
@@ -222,7 +237,7 @@ export function useDraggableSheet({
       setIsDragging(true);
       (e.target as HTMLElement).setPointerCapture(e.pointerId);
     },
-    [convertStateHeightToPixels, markUserInteraction],
+    [config.disableDragAndSwipe, convertStateHeightToPixels, markUserInteraction],
   );
 
   // Drag move and end handlers
@@ -354,6 +369,9 @@ export function useDraggableSheet({
   ]);
 
   const handleHoverOrTouch = useCallback(() => {
+    // Disable hover/touch state changes if flag is set
+    if (config.disableDragAndSwipe) return;
+    
     markUserInteraction();
 
     if (
@@ -363,12 +381,15 @@ export function useDraggableSheet({
     ) {
       transitionToState("default-active");
     }
-  }, [enabledStates, transitionToState, markUserInteraction]);
+  }, [config.disableDragAndSwipe, enabledStates, transitionToState, markUserInteraction]);
 
   const handleTapOrClick = useCallback(() => {
     if (dragState.current.hasMovedBeyondThreshold) {
       return;
     }
+
+    // Disable tap/click state changes if flag is set
+    if (config.disableDragAndSwipe) return;
 
     markUserInteraction();
 
@@ -379,7 +400,7 @@ export function useDraggableSheet({
     ) {
       transitionToState("panel-view");
     }
-  }, [enabledStates, transitionToState, markUserInteraction]);
+  }, [config.disableDragAndSwipe, enabledStates, transitionToState, markUserInteraction]);
 
   // Cleanup on unmount
   useEffect(() => {
