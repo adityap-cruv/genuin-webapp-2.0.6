@@ -37,6 +37,9 @@ export const RUDDERSTACK_DATAPLANE_URL = isServer
 export const MEDIA_BASE_URL = isServer
   ? process.env.NEXT_PUBLIC_MEDIA_BASE_URL
   : (import.meta.env.NEXT_PUBLIC_MEDIA_BASE_URL as string);
+export const GENAI_ASSETS_BASE_URL = isServer
+  ? process.env.NEXT_PUBLIC_GENAI_ASSETS_BASE_URL
+  : (import.meta.env.NEXT_PUBLIC_GENAI_ASSETS_BASE_URL as string);
 export const NEXT_PUBLIC_HOST_URL = isServer
   ? process.env.NEXT_PUBLIC_HOST_URL
   : (import.meta.env.NEXT_PUBLIC_HOST_URL as string);

@@ -55,6 +55,8 @@ export function EmbedProvider({
 }: EmbedProviderProps) {
   const [stateEmbedData, setStateEmbedData] = useState(embedData);
 
+  const isExpandViewDisabled = stateEmbedData.disable_expand_view === true;
+
   const isIHeartLayout = brandLayoutType === "iheart";
 
   const urlParams = new URLSearchParams(
@@ -152,23 +154,51 @@ export function EmbedProvider({
 
     const handleUpdateStartVideoSlug = (props: any) => {
       const payload = props.payload;
+      const instanceId = container.getAttribute("data-instance-id");
+
+      // Check if this event is for this instance
+      // Either by instanceId match (for child->parent communication)
+      // OR by embedId/placementId match (for normal SDK operations)
+      const isTargetedToThisInstance = payload.instanceId
+        ? instanceId === payload.instanceId || instanceId === payload.sourceInstanceId
+        : ((payload.embedId && payload.embedId === stateEmbedData.embed_id) ||
+           (payload.placementId && payload.placementId === stateEmbedData.placement_id));
+
       if (
         payload &&
-        ((payload.embedId && payload.embedId === stateEmbedData.embed_id) ||
-          (payload.placementId &&
-            payload.placementId === stateEmbedData.placement_id)) &&
+        isTargetedToThisInstance &&
         payload.startVideoSlug
       ) {
+        const sourceInstanceId =
+          typeof payload?.sourceInstanceId === "string"
+            ? payload.sourceInstanceId
+            : payload.instanceId;
+        const isNestedOctoUpdate =
+          typeof sourceInstanceId === "string" &&
+          sourceInstanceId.startsWith("octo-panel-");
+
+        if (embedEventBus.getContext().activePlayerType === "expand-view") {
+          return;
+        }
+
+        // Update state so feed query can refetch when expand view is closed
+        // The useEffect below will only open expand view if it's not already open
         setStateEmbedData((prev) => ({
           ...prev,
           startVideoSlug: payload.startVideoSlug,
-          autoUserInteractionToPerform: payload.action,
-          commentId: payload.commentId,
+          autoUserInteractionToPerform: isNestedOctoUpdate
+            ? undefined
+            : payload.action,
+          commentId: isNestedOctoUpdate ? undefined : payload.commentId,
         }));
       }
     };
 
     const handleExpandEmbed = (props: any) => {
+      if (isExpandViewDisabled) {
+        return;
+      }
+
       const payload = props.payload;
       const instanceId = container.getAttribute("data-instance-id");
       if (
@@ -232,7 +262,7 @@ export function EmbedProvider({
         handleCollapseEmbed
       );
     };
-  }, [stateEmbedData]);
+  }, [stateEmbedData, isExpandViewDisabled]);
 
   // Notify that the embed provider is ready
   useEffect(() => {
@@ -243,15 +273,50 @@ export function EmbedProvider({
     });
   }, []);
 
-  useEffect(() => {
-    if (embedData.startVideoSlug) {
-      changeActivePlayerTypeToExpandView();
-    }
-  }, [embedData]);
+  // Define callback functions before useEffects that use them
+  const changeActivePlayerType = useCallback(
+    (newActiveType: ActivePlayerType, activeIndex?: number) => {
+      if (newActiveType === embedEventBus.getContext().activePlayerType) return;
+      embedEventBus.emit(
+        "activePlayerTypeChange",
+        undefined,
+        (currentContext) => ({
+          ...currentContext,
+          previousPlayerType: currentContext.activePlayerType,
+          activePlayerType: newActiveType,
+          activeIndex: activeIndex ?? currentContext.activeIndex,
+          skipTimeOffsetOnce: true,
+          previousActiveIndex: currentContext.activeIndex,
+          shouldTrackImpression: activeIndex !== currentContext.activeIndex,
+        })
+      );
+    },
+    [embedEventBus]
+  );
 
   const changeActivePlayerTypeToExpandView = useCallback(() => {
+    if (isExpandViewDisabled) {
+      return;
+    }
     changeActivePlayerType("expand-view");
-  }, []);
+  }, [changeActivePlayerType, isExpandViewDisabled]);
+
+  useEffect(() => {
+    // Only open expand view if it's not already open
+    // When expand view is already open, it will handle the video change itself
+    if (
+      !isExpandViewDisabled &&
+      embedData.startVideoSlug &&
+      embedEventBus.getContext().activePlayerType !== "expand-view"
+    ) {
+      changeActivePlayerTypeToExpandView();
+    }
+  }, [
+    embedData,
+    embedEventBus,
+    changeActivePlayerTypeToExpandView,
+    isExpandViewDisabled,
+  ]);
 
   const updateSectionList = useCallback(
     // Updates the section list in the embed context and emits a sectionListChange event
@@ -298,26 +363,6 @@ export function EmbedProvider({
         previousActiveIndex: currentContext.activeIndex,
         shouldTrackImpression: newIndex !== currentContext.activeIndex,
       }));
-    },
-    [embedEventBus]
-  );
-
-  const changeActivePlayerType = useCallback(
-    (newActiveType: ActivePlayerType, activeIndex?: number) => {
-      if (newActiveType === embedEventBus.getContext().activePlayerType) return;
-      embedEventBus.emit(
-        "activePlayerTypeChange",
-        undefined,
-        (currentContext) => ({
-          ...currentContext,
-          previousPlayerType: currentContext.activePlayerType,
-          activePlayerType: newActiveType,
-          activeIndex: activeIndex ?? currentContext.activeIndex,
-          skipTimeOffsetOnce: true,
-          previousActiveIndex: currentContext.activeIndex,
-          shouldTrackImpression: activeIndex !== currentContext.activeIndex,
-        })
-      );
     },
     [embedEventBus]
   );

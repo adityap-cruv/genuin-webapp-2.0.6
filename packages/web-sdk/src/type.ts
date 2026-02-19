@@ -74,6 +74,10 @@ export type ConfigByUser = {
   initial_video_ids?: string
   useShadowDOM?: boolean
   allow_gesture_scroll?: boolean
+  /**
+   * Parent SDK instance ID for nested child SDK communication.
+   */
+  parent_instance_id?: string
 }
 
 export type UpdateConfigByUserType = {
@@ -88,6 +92,7 @@ export type UpdateConfigByUserType = {
   action?: ActionType
   start_video_slug?: string
   comment_id?: string
+  source_instance_id?: string
 }
 
 export type SDKElementsType = Record<

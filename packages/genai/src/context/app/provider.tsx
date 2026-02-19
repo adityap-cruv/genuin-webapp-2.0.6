@@ -1,0 +1,1176 @@
+import { getBrandSessions, getChatHistoryV2, getSuggestedPrompts, getVideoSuggestedPrompts, updateSessionTitle } from '@/lib/api';
+import { ingestDataToBCC } from '@/lib/ingestDataToBCC';
+import { useRudderEvents } from '@/services/analytics/useRudderAnalytics';
+import type {
+    Agent,
+    AgentType,
+    ChatHistoryEvent,
+    HandleSSEMessageData,
+    IpInfo,
+    PendingMessage,
+    Session,
+    ToolMetadataPayload
+} from '@/types';
+import React, { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { toast } from 'sonner';
+import { v4 as uuidv4 } from 'uuid';
+import { AgentsContext } from './context';
+import { convertChatHistoryV2ToEvents } from './conversationUtils';
+import { useAppBootstrap } from './hooks/useAppBootstrap';
+import { useSSEHandler, type SSEMessagePayload } from './hooks/useSSEHandler';
+import { useVideoStyles } from './hooks/useVideoStyles';
+
+interface AgentsProviderProps {
+    children: ReactNode;
+    userId: string;
+    brandId: number;
+    currentSessionId?: string;
+    view: 'page' | 'floater' | 'dialog' | 'web-sdk';
+    pendingMessages?: Array<PendingMessage>;
+    userEmail?: string;
+    userUUID?: string;
+    isMaya?: boolean;
+    parentWebSdkInstanceId?: string;
+    parentWebSdkContainerId?: string;
+    parentWebSdkEmbedId?: string;
+    parentWebSdkPlacementId?: string;
+    parentOctoPanelId?: string;
+    webSdkVideoId?: string;
+}
+
+export interface HandleSendMessageParams {
+    targetSessionId?: string | null;
+    messageInput?: string;
+    agent_id?: string;
+    editedChatId?: string | null;
+    metadata?: Record<string, any> | null;
+    onMessageQueued?: () => void; // Callback called after message is successfully queued (after session creation if needed)
+}
+
+type HandleSendMessageFn = (params: HandleSendMessageParams) => Promise<void>;
+
+// Prevent duplicate processing of the same pendingMessages payload across StrictMode double-mounts
+let lastProcessedPendingMessagesSignature: string | null = null;
+
+export const AgentsProvider: React.FC<AgentsProviderProps> = ({
+    children,
+    userId,
+    brandId,
+    userEmail,
+    userUUID,
+    currentSessionId: currentSessionIdProp,
+    view: viewProp,
+    pendingMessages: pendingMessagesProp,
+    isMaya,
+    parentWebSdkInstanceId,
+    parentWebSdkContainerId,
+    parentWebSdkEmbedId,
+    parentWebSdkPlacementId,
+    parentOctoPanelId,
+    webSdkVideoId,
+}) => {
+    const initialAgent = isMaya ? 'maya' : '695cefa2c19e333c687787f7';
+    // State
+    const [pendingMessages, setPendingMessages] = useState<
+        Array<{ message: string; agent_id?: string; session_id?: string }>
+    >(pendingMessagesProp || []);
+    const [view, _setView] = useState<'page' | 'floater' | 'dialog' | 'web-sdk'>(viewProp);
+    const [currentAgent, setCurrentAgentState] = useState<string>(initialAgent);
+    const [currentSessionId, setCurrentSessionIdState] = useState<string | null>(currentSessionIdProp || null);
+    const [sessions, setSessions] = useState<Session[]>([]);
+    const [enteredInChatMode, setEnteredInChatMode] = useState<boolean>(
+        currentSessionIdProp ? true : isMaya ? true : false
+    );
+    const [creatingSession, _setCreatingSession] = useState<boolean>(false);
+    const [agents, setAgentsState] = useState<Agent[]>([]);
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(false);
+    const [sessionsFetched, setSessionsFetched] = useState<boolean>(false);
+    const [s3_keys, setS3KeysState] = useState<string[]>([]);
+    const [showAllObjectives, setShowAllObjectives] = useState<boolean>(false);
+    const [_agentsFetched, _setAgentsFetched] = useState<boolean>(false);
+    const [ipInfo, setIpInfo] = useState<IpInfo | null>(null);
+    const [isSuggestionsOpen, setIsSuggestionsOpen] = useState<boolean>(false);
+    const [textAreaRef, setTextAreaRef] = useState<HTMLTextAreaElement | null>(null);
+    const [suggestedPrompts, setSuggestedPrompts] = useState<string[]>([]);
+    const [isLoadingSuggestedPrompts, setIsLoadingSuggestedPrompts] = useState<boolean>(false);
+    const { videoStyles, toggleStyleSelection, toggleOptionSelection, resetVideoStyles } =
+        useVideoStyles(brandId);
+    const handleSendMessageRef = useRef<HandleSendMessageFn | null>(null);
+    // Map to track temp session IDs to real session IDs for handling race conditions
+    const sessionIdMapRef = useRef<Map<string, string>>(new Map());
+    // Ref to store connectToStream function to avoid circular dependency
+    const connectToStreamRef = useRef<((sessionId: string) => Promise<{ isCompleted: boolean }>) | null>(null);
+    const onBoardingAgents = useMemo(
+        () => [
+            'brand_asset_agent',
+            'brand_ctkws_agent',
+            'brand_guidelines_agent',
+            'brand_persona_agent',
+            'industry_type_agent',
+            'consumer_brands_agent',
+            // 'video_generator_agent',
+            'social_handle_fetcher_agent',
+        ],
+        []
+    );
+    const { track } = useRudderEvents();
+
+    // Filter agents based on isMaya mode
+    // When isMaya is true, only show Maya agent; otherwise show all agents
+    const filteredAgents = useMemo(() => {
+        if (isMaya) {
+            // In Maya-only mode, filter to only show Maya agent
+            return agents.filter(agent => agent.id === 'maya');
+        }
+        // Normal mode - show all agents
+        return agents;
+    }, [agents, isMaya]);
+
+    // Update currentAgent to proper agent ID once agents are loaded
+    // initialAgent is a slug, so we need to convert it to an ID
+    useEffect(() => {
+        if (agents.length > 0 && currentAgent === initialAgent) {
+            const agent = agents.find(a => a.id === initialAgent);
+            if (agent && agent.id !== currentAgent) {
+                setCurrentAgentState(agent.id);
+            }
+        }
+    }, [agents, currentAgent, initialAgent]);
+
+    // Fetch suggested prompts when agent changes (for AgentIntro screen)
+    useEffect(() => {
+        if (!currentAgent || !enteredInChatMode || currentSessionId) {
+            return;
+        }
+
+        let isCancelled = false;
+
+        const fetchPrompts = async () => {
+            setSuggestedPrompts([]);
+            setIsLoadingSuggestedPrompts(true);
+
+            let prompts: string[] | null = null;
+
+            if (view === 'web-sdk' && webSdkVideoId) {
+                try {
+                    const response = await getVideoSuggestedPrompts({
+                        video_id: webSdkVideoId,
+                    });
+                    const videoPrompts = (response?.data?.response || [])
+                        .map(item => item.prompt)
+                        .filter((prompt): prompt is string => typeof prompt === 'string' && prompt.length > 0);
+                    if (videoPrompts.length > 0) {
+                        const randomPrompt = videoPrompts[Math.floor(Math.random() * videoPrompts.length)];
+                        prompts = randomPrompt ? [randomPrompt] : [];
+                    }
+                } catch (error) {
+                    console.error('Failed to fetch video suggested prompts:', error);
+                }
+            }
+
+            if (prompts === null) {
+                try {
+                    const response = await getSuggestedPrompts(currentAgent);
+                    const agentPrompts = response.data?.prompts ?? [];
+                    if (agentPrompts.length > 0) {
+                        const randomPrompt = agentPrompts[Math.floor(Math.random() * agentPrompts.length)];
+                        prompts = randomPrompt ? [randomPrompt] : [];
+                    } else {
+                        prompts = [];
+                    }
+                } catch (error) {
+                    console.error('Failed to fetch suggested prompts:', error);
+                    prompts = [];
+                }
+            }
+
+            if (!isCancelled) {
+                setSuggestedPrompts(prompts ?? []);
+                setIsLoadingSuggestedPrompts(false);
+            }
+        };
+
+        void fetchPrompts();
+
+        return () => {
+            isCancelled = true;
+        };
+    }, [brandId, currentAgent, currentSessionId, enteredInChatMode, view, webSdkVideoId]);
+
+    // Helper to get initial agent ID (falls back to slug if agents not loaded)
+    const getInitialAgentId = useCallback(() => {
+        const agent = agents.find(a => a.id === initialAgent);
+        return agent?.id || initialAgent;
+    }, [agents, initialAgent]);
+
+    // Functions
+    const setAgents = useCallback((newAgents: Agent[]) => {
+        setAgentsState(prev => [...prev, ...newAgents.filter((agent: Agent) => !prev.some(a => a.id === agent.id))]);
+        // setCurrentAgentState();
+    }, []);
+
+    const setCurrentAgent = useCallback(
+        (agentId: string) => {
+            if (currentAgent === agentId) return;
+
+            if (ipInfo) {
+                const agent = agents.find(a => a.id === agentId);
+                const payload = {
+                    ipInfo,
+                    id: agent?.id,
+                    name: agent?.name,
+                    session_id: currentSessionId,
+                };
+                track('genai:agent_selected', payload);
+            }
+
+            setCurrentAgentState(agentId);
+            setCurrentSessionIdState(null);
+            setEnteredInChatMode(agentId === getInitialAgentId() ? (isMaya ? true : false) : true);
+        },
+        [agents, currentAgent, currentSessionId, ipInfo, track, initialAgent, isMaya]
+    );
+
+    /**
+     * Check and reconnect to an ongoing stream for a session.
+     * Called after chat history is loaded to handle browser refresh scenarios.
+     */
+    const checkAndReconnectStream = useCallback(
+        async (sessionId: string) => {
+            const connectToStream = connectToStreamRef.current;
+            if (!connectToStream) {
+                console.warn('connectToStream not yet available');
+                return;
+            }
+
+            // Set session to thinking state before connecting
+            setSessions(prev =>
+                prev.map(s => {
+                    if (s.id !== sessionId) return s;
+                    // Add a thinking agent event if the last message was from user
+                    const lastEvent = s.chat[s.chat.length - 1];
+                    if (lastEvent && lastEvent.role === 'user') {
+                        const thinkingAgentEvent: ChatHistoryEvent = {
+                            id: `agent-${Date.now()}`,
+                            message: { content: '' },
+                            role: 'agent',
+                            parent_id: lastEvent.id,
+                            feedback: null,
+                            created_at: new Date().toISOString(),
+                        };
+                        return {
+                            ...s,
+                            chat: [...s.chat, thinkingAgentEvent],
+                            thinking: true,
+                        };
+                    }
+                    return { ...s, thinking: true };
+                })
+            );
+
+            try {
+                const result = await connectToStream(sessionId);
+
+                if (result.isCompleted) {
+                    // Stream is completed or not found - update session state
+                    setSessions(prev =>
+                        prev.map(s => {
+                            if (s.id !== sessionId) return s;
+                            // Remove empty thinking event if it exists
+                            const chat = s.chat.filter(e => !(e.role === 'agent' && !e.message?.content?.trim() && e.id.startsWith('agent-')));
+                            return {
+                                ...s,
+                                chat,
+                                thinking: false,
+                            };
+                        })
+                    );
+                }
+                // If not completed, the stream will continue and handleSSEMessage will handle updates
+            } catch (error) {
+                console.error('Failed to reconnect to stream:', error);
+                // Clean up thinking state on error
+                setSessions(prev =>
+                    prev.map(s => {
+                        if (s.id !== sessionId) return s;
+                        const chat = s.chat.filter(e => !(e.role === 'agent' && !e.message?.content?.trim() && e.id.startsWith('agent-')));
+                        return {
+                            ...s,
+                            chat,
+                            thinking: false,
+                        };
+                    })
+                );
+            }
+        },
+        []
+    );
+
+    const setCurrentSessionId = useCallback(
+        async (sessionId: string | null, forceSessionsFetched = false, fetchedSessions?: Session[]) => {
+            if (!sessionId) {
+                setCurrentSessionIdState(null);
+                setCurrentAgentState(getInitialAgentId());
+                setEnteredInChatMode(isMaya ? true : false);
+                return;
+            }
+            const sessionsToSearch = fetchedSessions || sessions;
+            const targetSession = sessionsToSearch.find(s => s.id === sessionId);
+
+            if (currentSessionId === sessionId && targetSession && targetSession.status === 'fetched') return;
+
+            if (targetSession && targetSession.thinking) {
+                setCurrentSessionIdState(sessionId);
+                setCurrentAgentState(targetSession?.agentId || getInitialAgentId());
+                setEnteredInChatMode(true);
+                return;
+            }
+
+            try {
+                if (forceSessionsFetched && fetchedSessions) {
+                    setSessions(fetchedSessions.map(s => (s.id === sessionId ? { ...s, status: 'fetching' } : s)));
+                } else {
+                    setSessions(prev => prev.map(s => (s.id === sessionId ? { ...s, status: 'fetching' } : s)));
+                }
+
+                setCurrentSessionIdState(sessionId);
+                setCurrentAgentState(targetSession?.agentId || getInitialAgentId());
+                setEnteredInChatMode(true);
+
+                const response = await getChatHistoryV2(sessionId);
+
+                // Convert V2 linear history to ChatHistoryEvent format
+                const chat = convertChatHistoryV2ToEvents(response.data.history);
+                console.log('chat', chat);
+                const agentId = response.data.agent_id;
+
+                setSessions(prev =>
+                    prev.map(s => {
+                        if (s.id !== sessionId) return s;
+
+                        const agent = agentId || s.agentId || currentAgent;
+                        return {
+                            ...s,
+                            chat,
+                            status: 'fetched',
+                            hasNewMessage: false,
+                            agentId: agent,
+                        };
+                    })
+                );
+
+                // After loading chat history, check if there's an ongoing stream to reconnect to
+                // This handles browser refresh scenarios where the stream was interrupted
+                checkAndReconnectStream(sessionId);
+            } catch {
+                toast.error('Failed to load session history.');
+            }
+        },
+        [currentSessionId, sessions, currentAgent, checkAndReconnectStream]
+    );
+
+    const deleteSession = useCallback((sessionId: string) => {
+        setSessions(prev => prev.filter(s => s.id !== sessionId));
+    }, []);
+
+    const markSessionNameAnimationComplete = useCallback((sessionId: string) => {
+        setSessions(prev => prev.map(s => (s.id === sessionId ? { ...s, hasNewName: false } : s)));
+    }, []);
+
+    const setFeedback = useCallback(async (sessionId: string, responseId: string, liked: boolean) => {
+        setSessions(prev =>
+            prev.map(s =>
+                s.id === sessionId
+                    ? {
+                          ...s,
+                          chat: s.chat.map(event => (event.id === responseId ? { ...event, feedback: liked } : event)),
+                      }
+                    : s
+            )
+        );
+    }, []);
+
+    function removeSession(sessionId: string) {
+        setSessions(prev => prev.filter(s => s.id !== sessionId));
+        if (currentSessionId === sessionId) {
+            setCurrentSessionIdState(null);
+            setCurrentAgentState(getInitialAgentId());
+            setEnteredInChatMode(isMaya ? true : false);
+        }
+    }
+
+    async function updateSessionName(sessionId: string, newSessionName: string) {
+        const oldName = sessions.find(s => s.id === sessionId)?.name || '';
+        try {
+            setSessions(prev => prev.map(s => (s.id === sessionId ? { ...s, name: newSessionName } : s)));
+
+            await updateSessionTitle({
+                session_id: sessionId,
+                title: newSessionName,
+            });
+        } catch {
+            setSessions(prev => prev.map(s => (s.id === sessionId ? { ...s, name: oldName } : s)));
+            toast.error('Failed to update session name.');
+        }
+    }
+
+    function setEnteteredInChatMode(entered: boolean) {
+        setEnteredInChatMode(entered);
+    }
+
+    function updateAgentMessageContent(sessionId: string, messageId: string, newContent: string) {
+        setSessions(prev =>
+            prev.map(s =>
+                s.id === sessionId
+                    ? {
+                          ...s,
+                          chat: s.chat.map(event =>
+                              event.id === messageId ? { ...event, message: { content: newContent } } : event
+                          ),
+                      }
+                    : s
+            )
+        );
+    }
+
+    // Fetch suggested prompts for the given agent
+    const fetchSuggestedPrompts = useCallback(
+        async (agentId: string, params?: { user_query: string; agent_response: string }) => {
+            if (!agentId) return;
+            setIsLoadingSuggestedPrompts(true);
+            try {
+                const response = await getSuggestedPrompts(agentId, params);
+                if (response.data?.prompts) {
+                    setSuggestedPrompts(response.data.prompts);
+                }
+            } catch (error) {
+                console.error('Failed to fetch suggested prompts:', error);
+                setSuggestedPrompts([]);
+            } finally {
+                setIsLoadingSuggestedPrompts(false);
+            }
+        },
+        []
+    );
+
+    function handleOnSocketError(sessionId: string | null | undefined, error: string | any) {
+        // Handle error message - extract string from object if needed
+        let errorMessage = 'Something went wrong. Please try again.';
+        if (typeof error === 'string') {
+            errorMessage = error || errorMessage;
+        } else if (error && typeof error === 'object') {
+            // If error is an object with a message property, use that
+            errorMessage = error.message || error.error || errorMessage;
+        }
+
+        setSessions(prev =>
+            prev.map((s: Session) => {
+                if (s.id !== sessionId) return s;
+
+                // Update last chat event or append a new one
+                const chat = [...s.chat];
+
+                if (chat.length > 0) {
+                    const lastIndex = chat.length - 1;
+                    chat[lastIndex] = {
+                        ...chat[lastIndex],
+                        message: { content: 'Something went wrong. Please try again.' },
+                        role: 'agent',
+                        isCompleted: true,
+                        error: errorMessage,
+                    };
+                } else {
+                    const errorChatEvent: ChatHistoryEvent = {
+                        id: `${new Date().toISOString()}-error`,
+                        message: { content: 'Something went wrong. Please try again.' },
+                        role: 'agent',
+                        parent_id: null,
+                        feedback: null,
+                        created_at: new Date().toISOString(),
+                        artifacts: [],
+                        isCompleted: true,
+                        error: errorMessage,
+                    };
+
+                    chat.push(errorChatEvent);
+                }
+
+                return {
+                    ...s,
+                    chat,
+                    thinking: false,
+                    status: 'error',
+                };
+            })
+        );
+
+        toast.error(errorMessage);
+    }
+
+    const handleSSEMessage = useCallback(
+        (data: HandleSSEMessageData) => {
+            const sessionId = data.session_id;
+            if (!sessionId) return;
+
+            // Check if this sessionId maps to a temp session that hasn't been updated yet
+            const tempSessionId = sessionIdMapRef.current.get(sessionId);
+
+            setSessions(prev => {
+                return prev.map((s: Session) => {
+                    // Match either the real session ID or the temp session ID
+                    if (s.id !== sessionId && s.id !== tempSessionId) return s;
+
+                    // If we matched via temp ID, we need to update the session ID
+                    const isMatchedByTempId = s.id === tempSessionId;
+
+                    // Create a new chat array to ensure React detects the change
+                    const chat = [...s.chat];
+                    const wasThinking = s.thinking;
+                    // let hasChanges = isMatchedByTempId; // If matched by temp ID, we have changes (ID update)
+
+                    // Handle user_message_id - typically received first
+                    if (data.user_message_id !== undefined) {
+                        // This is usually just for tracking, no state update needed
+                        // But we can use it to identify which user message this response belongs to
+                    }
+
+                    // Track if we're receiving streaming data (actual agent response chunks)
+                    let hasStreamingUpdate = wasThinking;
+                    const lastEvent = chat[chat.length - 1];
+                    let shouldStopThinking = false;
+
+                    if (data.type === 'tool_metadata' && data.tool_metadata) {
+                        let toolMetadataPayload: ToolMetadataPayload | undefined;
+                        if (typeof data.tool_metadata === 'string') {
+                            try {
+                                toolMetadataPayload = JSON.parse(data.tool_metadata) as ToolMetadataPayload;
+                            } catch (err) {
+                                console.error('[SSE] Failed to parse tool_metadata payload', err);
+                            }
+                        } else {
+                            toolMetadataPayload = data.tool_metadata as ToolMetadataPayload;
+                        }
+
+                        if (toolMetadataPayload) {
+                            const requestId = toolMetadataPayload._meta?.request_id;
+                            const toolEventId = requestId ? `tool-${requestId}` : `tool-${Date.now()}`;
+                            const existingIndex = chat.findIndex(event => event.id === toolEventId);
+
+                            const baseEvent: ChatHistoryEvent =
+                                existingIndex >= 0
+                                    ? chat[existingIndex]
+                                    : {
+                                          id: toolEventId,
+                                          message: { content: '' },
+                                          role: 'agent',
+                                          parent_id: lastEvent?.id || null,
+                                          feedback: null,
+                                          created_at: new Date().toISOString(),
+                                      };
+
+                            const updatedEvent: ChatHistoryEvent = {
+                                ...baseEvent,
+                                message: {
+                                    ...baseEvent.message,
+                                    content: '',
+                                },
+                                metadata: {
+                                    ...baseEvent.metadata,
+                                    toolMetadata: toolMetadataPayload,
+                                },
+                                isCompleted: true,
+                            };
+
+                            if (existingIndex >= 0) {
+                                chat[existingIndex] = updatedEvent;
+                            } else {
+                                chat.push(updatedEvent);
+                            }
+
+                            shouldStopThinking = true;
+                        }
+                    }
+
+                    if (data.function_name !== undefined) {
+                        hasStreamingUpdate = true;
+                        if (lastEvent) {
+                            chat[chat.length - 1] = {
+                                ...lastEvent,
+                                message: { ...lastEvent.message, function_name: data.function_name },
+                            };
+                        }
+                    }
+                    if (data.function_response !== undefined) {
+                        hasStreamingUpdate = true;
+                        if (lastEvent) {
+                            chat[chat.length - 1] = {
+                                ...lastEvent,
+                                message: {
+                                    ...lastEvent.message,
+                                    function_response: JSON.parse(data.function_response),
+                                },
+                            };
+                        }
+                    }
+
+                    // Handle kws (carousel keywords) from SSE stream
+                    if (data.carousel_metadata !== undefined) {
+                        if (lastEvent) {
+                            chat[chat.length - 1] = {
+                                ...lastEvent,
+                                carousel_metadata: JSON.parse(data.carousel_metadata),
+                            };
+                        }
+                    }
+
+                    // Handle message chunks - streaming agent response
+                    if (data.message !== undefined) {
+                        hasStreamingUpdate = true;
+
+                        if (data.agent_message_id) {
+                            // Find or create agent event with this agent_message_id
+                            const existingAgentEvent = chat.find(
+                                e => e.role === 'agent' && e.id === data.agent_message_id
+                            );
+
+                            if (existingAgentEvent) {
+                                // Append to existing agent event
+                                const index = chat.findIndex(e => e.id === data.agent_message_id);
+                                chat[index] = {
+                                    ...existingAgentEvent,
+                                    message: {
+                                        ...existingAgentEvent.message,
+                                        content: (existingAgentEvent.message?.content || '') + (data.message || ''),
+                                    },
+                                };
+                            } else {
+                                // Find last agent event (might be the thinking event we created)
+                                const lastAgentEvent = chat
+                                    .slice()
+                                    .reverse()
+                                    .find(e => e.role === 'agent' && !e.message?.content?.trim());
+
+                                if (lastAgentEvent) {
+                                    // Replace empty thinking event with real agent event
+                                    const index = chat.findIndex(e => e.id === lastAgentEvent.id);
+                                    chat[index] = {
+                                        ...lastAgentEvent,
+                                        id: data.agent_message_id,
+                                        message: {
+                                            ...lastAgentEvent.message,
+                                            content: data.message || '',
+                                        },
+                                    };
+                                } else {
+                                    // Create new agent event (first chunk of agent response)
+                                    const previousEventId = lastEvent?.id || '';
+                                    const agentEvent: ChatHistoryEvent = {
+                                        id: data.agent_message_id,
+                                        message: { content: data.message || '' },
+                                        role: 'agent',
+                                        parent_id: previousEventId || null,
+                                        feedback: null,
+                                        created_at: new Date().toISOString(),
+                                    };
+                                    chat.push(agentEvent);
+                                }
+                            }
+                        } else {
+                            // Message chunk without agent_message_id - append to last agent event
+                            const lastAgentEvent = chat
+                                .slice()
+                                .reverse()
+                                .find(e => e.role === 'agent');
+
+                            if (lastAgentEvent) {
+                                const index = chat.findIndex(e => e.id === lastAgentEvent.id);
+                                chat[index] = {
+                                    ...lastAgentEvent,
+                                    message: {
+                                        ...lastAgentEvent.message,
+                                        content: (lastAgentEvent.message?.content || '') + (data.message || ''),
+                                    },
+                                };
+                            } else {
+                                // No agent event exists yet, create one
+                                const previousEventId = lastEvent?.id || '';
+                                const agentEvent: ChatHistoryEvent = {
+                                    id: `agent-${Date.now()}`,
+                                    message: { content: data.message || '' },
+                                    role: 'agent',
+                                    parent_id: previousEventId || null,
+                                    feedback: null,
+                                    created_at: new Date().toISOString(),
+                                };
+                                chat.push(agentEvent);
+                            }
+                        }
+                    }
+
+                    // Handle agent_message_id - when received, ensure agent event exists and has correct ID
+                    if (data.agent_message_id !== undefined && data.message === undefined) {
+                        if (wasThinking) {
+                            hasStreamingUpdate = true;
+                        }
+                        const existingAgentEvent = chat.find(e => e.role === 'agent' && e.id === data.agent_message_id);
+
+                        if (!existingAgentEvent) {
+                            // Find last agent event with temporary ID (starts with 'agent-') to update its ID
+                            const lastTempAgentEvent = chat
+                                .slice()
+                                .reverse()
+                                .find(e => e.role === 'agent' && e.id.startsWith('agent-'));
+
+                            if (lastTempAgentEvent) {
+                                // Update the temporary agent event with the real agent_message_id
+                                const index = chat.findIndex(e => e.id === lastTempAgentEvent.id);
+                                chat[index] = {
+                                    ...lastTempAgentEvent,
+                                    id: data.agent_message_id,
+                                };
+                            } else {
+                                // No temp agent event found - check if there's any agent event without this ID
+                                const lastAgentEvent = chat
+                                    .slice()
+                                    .reverse()
+                                    .find(e => e.role === 'agent');
+
+                                if (!lastAgentEvent) {
+                                    // Create agent event only if no agent event exists at all
+                                    const lastEvent = chat[chat.length - 1];
+                                    const previousEventId = lastEvent?.id || '';
+                                    const agentEvent: ChatHistoryEvent = {
+                                        id: data.agent_message_id,
+                                        message: { content: '' },
+                                        role: 'agent',
+                                        parent_id: previousEventId || null,
+                                        feedback: null,
+                                        created_at: new Date().toISOString(),
+                                    };
+                                    chat.push(agentEvent);
+                                }
+                                // If lastAgentEvent exists but doesn't have temp ID, don't create duplicate
+                            }
+                        }
+                    }
+
+                    // Handle session_name update
+                    let sessionNameUpdated = false;
+                    if (data.session_name !== undefined && data.session_name !== null && data.session_name !== s.name) {
+                        // hasChanges = true;
+                        sessionNameUpdated = true;
+                    }
+
+                    // Handle response_completed - mark agent message as completed
+                    if (data.response_completed === true) {
+                        // hasChanges = true;
+                        const lastEvent = chat[chat.length - 1];
+                        console.log('lastEvent.role', lastEvent.role);
+                        console.log(
+                            'lastEvent.message?.function_response when response_completed is true',
+                            lastEvent.message?.function_response
+                        );
+                        console.log('lastEvent.message?.function_name', lastEvent.message?.function_name);
+                        if (lastEvent && lastEvent.role === 'agent') {
+                            chat[chat.length - 1] = {
+                                ...lastEvent,
+                                isCompleted: true,
+                            };
+
+                            // Check if response is JSON for BCC ingestion
+                            if (lastEvent.message?.function_response) {
+                                if (lastEvent.message?.function_name && lastEvent.message?.function_response) {
+                                    try {
+                                        const functionData = lastEvent.message?.function_response;
+                                        ingestDataToBCC(functionData, lastEvent.message?.function_name).catch(error => {
+                                            console.error(error);
+                                        });
+                                    } catch (parseError) {
+                                        console.error('Failed to parse function_response:', parseError);
+                                    }
+                                }
+                            }
+                        }
+
+                        // Fetch suggested prompts when response is completed
+                        const sessionAgentId = s.agentId;
+                        if (sessionAgentId) {
+                            // Get the last user message and agent response for contextual prompts
+                            const lastUserMessage = chat
+                                .slice()
+                                .reverse()
+                                .find(e => e.role === 'user');
+                            const agentResponse = lastEvent?.message?.content || '';
+                            
+                            fetchSuggestedPrompts(sessionAgentId, {
+                                user_query: lastUserMessage?.message?.content || '',
+                                agent_response: agentResponse,
+                            });
+                        }
+
+                        // Clean up the session ID mapping after response is completed
+                        if (tempSessionId) {
+                            sessionIdMapRef.current.delete(sessionId);
+                        }
+                    }
+
+                    // Determine thinking state
+                    let thinking = s.thinking;
+
+                    if (shouldStopThinking) {
+                        thinking = false;
+                    } else if (data.response_completed === true) {
+                        // SSE completed - stop thinking
+                        thinking = false;
+                    } else if (hasStreamingUpdate) {
+                        thinking = true;
+                    }
+                    // Otherwise, keep existing state
+
+                    // Always return updated session with chat array
+                    // Use the real sessionId if we matched by temp ID
+                    const responseCompleted = data.response_completed === true;
+                    return {
+                        ...s,
+                        id: isMatchedByTempId ? sessionId : s.id,
+                        chat,
+                        updatedAt: responseCompleted ? new Date().toISOString() : s.updatedAt,
+                        name: sessionNameUpdated && data.session_name ? data.session_name : s.name,
+                        hasNewName: sessionNameUpdated ? Boolean(isSidebarCollapsed) : s.hasNewName,
+                        thinking,
+                        hasNewMessage: currentSessionId !== sessionId,
+                    };
+                });
+            });
+        },
+        [currentSessionId, isSidebarCollapsed, handleSendMessageRef, setSessions, fetchSuggestedPrompts]
+    );
+
+    // Handler for when a new session is created from streaming response
+    const handleSessionCreated = useCallback((tempSessionId: string, realSessionId: string) => {
+        // Store the mapping immediately (synchronous) so handleSSEMessage can use it
+        sessionIdMapRef.current.set(realSessionId, tempSessionId);
+
+        // Update the temporary session with the real session ID
+        setSessions(prev => prev.map(s => (s.id === tempSessionId ? { ...s, id: realSessionId } : s)));
+        // Update current session ID if it matches the temp ID
+        setCurrentSessionIdState(prev => (prev === tempSessionId ? realSessionId : prev));
+    }, []);
+
+    const { sendSSEMessage, connectToStream } = useSSEHandler({
+        onMessage: handleSSEMessage,
+        onError: handleOnSocketError,
+        onSessionCreated: handleSessionCreated,
+    });
+
+    // Store connectToStream in ref for use in checkAndReconnectStream
+    connectToStreamRef.current = connectToStream;
+
+    function trackChatStarted(messageInput: string) {
+        if (ipInfo) {
+            const payload = {
+                ipInfo,
+                session_id: currentSessionId,
+                message: messageInput,
+            };
+            track('genai:chat_started', payload);
+        }
+    }
+
+    async function handleSendMessage(params: HandleSendMessageParams) {
+        const { targetSessionId, messageInput, agent_id, editedChatId, onMessageQueued } = params;
+
+        const currentSession = sessions.find((s: Session) => s.id === targetSessionId);
+        if (!messageInput?.trim() || currentSession?.thinking || currentSession?.status === 'fetching') return;
+
+        const newNodeId = uuidv4();
+        let sessionId = targetSessionId;
+        let tempSessionId: string | undefined;
+        // let chat_id: string | null = null;
+        let parent_id: string | null = null;
+        // let isRegeneration = false;
+        let timestamp = new Date().toISOString();
+
+        try {
+            const sessionForChatId = sessions.find((s: Session) => s.id === sessionId);
+
+            // Get the last message id (chat_id) BEFORE updating sessions
+            if (editedChatId) {
+                // When editing/regenerating a previous message, use the edited chat id
+                // chat_id = editedChatId;
+                // isRegeneration = true;
+                // Find the parent_id from the chat array
+                const editedEvent = sessionForChatId?.chat.find(e => e.id === editedChatId);
+                parent_id = editedEvent?.parent_id || null;
+            } else if (sessionId && sessionForChatId) {
+                // Use the last message id as parent
+                const lastEvent = sessionForChatId.chat[sessionForChatId.chat.length - 1];
+                // chat_id = lastEvent?.id || null;
+                parent_id = lastEvent?.id || null;
+            }
+            // For new sessions, chat_id and parent_id will be null (no previous message)
+
+            // Create user message event
+            const userEvent: ChatHistoryEvent = {
+                id: newNodeId,
+                message: { content: messageInput },
+                role: 'user',
+                parent_id: parent_id || '',
+                feedback: null,
+                created_at: timestamp,
+                isCompleted: true,
+            };
+
+            if (!sessionId) {
+                // Generate a temporary session ID for UI state
+                // The real session_id will come from the first streaming chunk
+                tempSessionId = `temp-${uuidv4()}`;
+
+                trackChatStarted(messageInput);
+
+                // Create empty agent event to show thinking indicator immediately
+                const thinkingAgentEvent: ChatHistoryEvent = {
+                    id: `agent-${Date.now()}`,
+                    message: { content: '' },
+                    role: 'agent',
+                    parent_id: userEvent.id,
+                    feedback: null,
+                    created_at: new Date().toISOString(),
+                };
+
+                setSessions(prev => [
+                    ...prev,
+                    {
+                        id: tempSessionId || '',
+                        name: 'New chat',
+                        chat: [userEvent, thinkingAgentEvent],
+                        updatedAt: timestamp,
+                        thinking: true,
+                        agentId: agent_id || currentAgent || getInitialAgentId(),
+                        hasNewName: false,
+                        status: 'fetched',
+                        hasNewMessage: false,
+                    },
+                ]);
+                setCurrentSessionIdState(tempSessionId);
+                setEnteredInChatMode(true);
+                setCurrentAgentState(agent_id || currentAgent || getInitialAgentId());
+            } else {
+                // Create empty agent event to show thinking indicator immediately
+                const thinkingAgentEvent: ChatHistoryEvent = {
+                    id: `agent-${Date.now()}`,
+                    message: { content: '' },
+                    role: 'agent',
+                    parent_id: userEvent.id,
+                    feedback: null,
+                    created_at: new Date().toISOString(),
+                };
+
+                setSessions(prev =>
+                    prev.map(s =>
+                        s.id === sessionId
+                            ? {
+                                  ...s,
+                                  chat: [...s.chat, userEvent, thinkingAgentEvent],
+                                  updatedAt: timestamp,
+                                  thinking: true,
+                              }
+                            : s
+                    )
+                );
+            }
+            const agentsIncludingMaya = [...agents, { type: 'maya' as AgentType, id: 'maya' }];
+            const agent = agentsIncludingMaya.find(a => a.id === agent_id) || agentsIncludingMaya.find(a => a.id === currentAgent);
+            if (!agent) {
+                toast.error('Agent not found.');
+                return;
+            }
+            // Call callback after message is successfully queued and agent is found
+            onMessageQueued?.();
+            clearS3Keys();
+            // const effectiveAgent = agent_id || currentAgent;
+            const payload: SSEMessagePayload = {
+                brand_id: brandId,
+                message: messageInput,
+                agent_id: agent.id,
+                agent_type: agent.type,
+                session_id: sessionId || null, // Send null for new sessions
+                user_id: userId,
+                s3_keys: s3_keys,
+                temp_session_id: tempSessionId, // Include temp ID for session creation callback
+            };
+
+            // if (effectiveAgent === 'video_generator_agent') {
+            //     payload.metadata = buildVideoGenerationMetadata(userEmail, userUUID);
+            // }
+
+            await sendSSEMessage(payload);
+        } catch (error) {
+            handleOnSocketError(targetSessionId || tempSessionId || '', 'Failed to send message. Please try again.');
+        }
+    }
+
+    useEffect(() => {
+        handleSendMessageRef.current = handleSendMessage;
+    }, [handleSendMessage]);
+
+    function setS3Keys(s3Keys: string[]) {
+        setS3KeysState(prev => [...prev, ...s3Keys]);
+    }
+
+    function clearS3Keys() {
+        setS3KeysState([]);
+    }
+
+    function handleNewChat() {
+        setCurrentSessionIdState(null);
+        setCurrentAgent(getInitialAgentId());
+        setEnteredInChatMode(isMaya ? true : false);
+        clearS3Keys();
+    }
+
+    async function fetchAndSetSessions(currentSessionIdProp?: string, forceRefetch = false) {
+        if (brandId === -1) {
+            const sessions: Session[] = [];
+            if (currentSessionIdProp) {
+                sessions.push({
+                    id: currentSessionIdProp,
+                    name: 'New chat',
+                    updatedAt: new Date().toISOString(),
+                    agentId: getInitialAgentId(),
+                    status: 'idle',
+                    hasNewName: false,
+                    hasNewMessage: false,
+                    thinking: false,
+                    chat: [],
+                });
+            }
+            return sessions;
+        }
+        if (sessionsFetched && !forceRefetch) return sessions;
+        const res = await getBrandSessions(brandId);
+        const fetchedSessions = res.data.sessions.map((s: any) => ({
+            id: s.session_id,
+            name: s.session_title,
+            updatedAt: s.update_time,
+            agentId: s.agent_id || getInitialAgentId(),
+            status: 'idle',
+            hasNewName: false,
+            hasNewMessage: false,
+            thinking: false,
+            chat: [],
+        }));
+        // don't set if session already exists
+        const existingSessions = sessions.map(s => s.id);
+        const newSessions = fetchedSessions.filter((s: Session) => !existingSessions.includes(s.id));
+        setSessions([...existingSessions, ...newSessions]);
+        setSessionsFetched(true);
+        return [...existingSessions, ...newSessions];
+    }
+
+    function refreshData() {
+        return Promise.all([fetchAndSetSessions(currentSessionIdProp, true)]);
+    }
+
+    useAppBootstrap({
+        brandId,
+        userEmail,
+        userUUID,
+        userId,
+        currentSessionIdProp,
+        currentSessionId,
+        setCurrentSessionId,
+        setSessions,
+        setSessionsFetched,
+        setIpInfo,
+        setAgentsState,
+        setPendingMessages,
+        setEnteredInChatMode,
+        setCurrentAgent,
+        handleSendMessage,
+        view,
+        isMaya: isMaya || false,
+    });
+
+    // Pending messages (process once per unique payload, avoid StrictMode double-mount duplication)
+    useEffect(() => {
+        (() => {
+            if (!pendingMessages || pendingMessages.length === 0 || !sessionsFetched) return;
+
+            const signature = JSON.stringify(pendingMessages);
+            if (signature === lastProcessedPendingMessagesSignature) return;
+            lastProcessedPendingMessagesSignature = signature;
+
+            for (const message of pendingMessages) {
+                handleSendMessage({
+                    targetSessionId: message.session_id,
+                    messageInput: message.message,
+                    agent_id: message.agent_id,
+                });
+            }
+            setPendingMessages([]);
+        })();
+    }, [pendingMessages, sessionsFetched, handleSendMessage]);
+
+    const contextValue = {
+        // State
+        initialAgent,
+        isMaya: isMaya || false,
+        currentAgent,
+        currentSessionId,
+        sessions,
+        enteredInChatMode,
+        creatingSession,
+        agents: filteredAgents, // Use filtered agents (only Maya when isMaya: true)
+        isSidebarCollapsed,
+        s3_keys,
+        showAllObjectives,
+        user_id: userId,
+        brand_id: brandId,
+        isSuggestionsOpen,
+        textAreaRef,
+        sessionsFetched,
+        ipInfo,
+        view,
+        pendingMessages: pendingMessages || [],
+        userEmail,
+        videoStyles,
+        onBoardingAgents,
+        suggestedPrompts,
+        isLoadingSuggestedPrompts,
+        parentWebSdkInstanceId,
+        parentWebSdkContainerId,
+        parentWebSdkEmbedId,
+        parentWebSdkPlacementId,
+        parentOctoPanelId,
+        webSdkVideoId,
+        // Actions
+        setSessionsFetched,
+        setAgents,
+        setCurrentAgent,
+        setSessions,
+        setCurrentSessionId,
+        deleteSession,
+        handleSendMessage,
+        markSessionNameAnimationComplete,
+        setIsSidebarCollapsed,
+        setFeedback,
+        removeSession,
+        updateSessionName,
+        setEnteteredInChatMode,
+        handleOnSocketError,
+        setS3Keys,
+        clearS3Keys,
+        setShowAllObjectives,
+        handleNewChat,
+        setIsSuggestionsOpen,
+        setTextAreaRef,
+        refreshData,
+        toggleStyleSelection,
+        toggleOptionSelection,
+        resetVideoStyles,
+        updateAgentMessageContent,
+    };
+
+    return <AgentsContext.Provider value={contextValue}>{children}</AgentsContext.Provider>;
+};

@@ -17,6 +17,7 @@ export type LinkPosition = "overlay" | "outside";
 
 // Shared engagement tools type
 export type EngagementTools = {
+  octo: boolean;
   repost: boolean;
   spark: boolean;
   comment: boolean;
@@ -564,6 +565,18 @@ export type EmbedDataType = {
   configs?: {
     allowGestureScroll?: boolean;
   };
+  /**
+   * Internal flag set by auto-detection when web-sdk is nested.
+   * Auto-set by DOM traversal looking for data-web-sdk-nested attribute.
+   * Not exposed as user-facing config option.
+   */
+  disable_expand_view?: boolean;
+  /**
+   * Parent SDK instance ID for nested child SDK communication.
+   * When a child SDK is rendered inside a parent SDK (e.g., GenAI chat),
+   * this allows the child to notify the parent about video selections.
+   */
+  parentInstanceId?: string;
 };
 
 export type CustomizationType = {

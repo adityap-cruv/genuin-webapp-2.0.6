@@ -27,6 +27,7 @@
     "ua-parser-js": "^2.0.3"
   },
   "dependencies": {
+    "@genuin/genai-sdk": "workspace:*",
     "@genuin/ui": "workspace:*",
     "@radix-ui/react-checkbox": "^1.3.1",
     "@tanstack/react-query": "^5.76.1",

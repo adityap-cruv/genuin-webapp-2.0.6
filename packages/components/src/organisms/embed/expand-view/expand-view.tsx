@@ -1,9 +1,9 @@
 import { useEmbedContext } from "@genuin/components/context/embed";
 import { EmbedEventContextType } from "@genuin/components/context/embed/event-bus";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
-import { useEffect, useState, lazy, Suspense } from "react";
+import { useEffect, useState, useMemo, lazy, Suspense } from "react";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import { QueryKey } from "@tanstack/react-query";
+import { QueryKey, type InfiniteData } from "@tanstack/react-query";
 import { RootPortal } from "@genuin/components/molecules/root-portal";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { cn } from "@genuin/ui/lib/utils";
@@ -17,6 +17,10 @@ import {
 } from "@genuin/components/lib/sdk-event-emitter";
 import { FeedSkeleton } from "@genuin/components/templates/feed/feed-skeleton.js";
 import useViewportHeight from "@genuin/components/hooks/use-screen-height";
+import { isMiddlewareOverlayEnabled } from "@genuin/components/lib/utils";
+import { fetchVideoDetails } from "@genuin/components/react-query/api/video";
+import { queryClient } from "@genuin/components/react-query/client";
+import type { FeedPage } from "@genuin/components/react-query/api/feed/feed";
 
 const FeedView = lazy(() =>
   import("../../../templates/feed/index.js").then((module) => ({
@@ -92,7 +96,7 @@ export function EmbedExpandView({
   fetchNextPage,
 }: EmbedExpandViewProps) {
   const [startIndex, setStartIndex] = useState(0);
-  const { changeActiveIndex, embedEventBus, goBackToPreviousPlayerType } =
+  const { changeActiveIndex, embedEventBus, goBackToPreviousPlayerType, embedData } =
     useEmbedContext();
   const {
     setMuted,
@@ -117,6 +121,16 @@ export function EmbedExpandView({
     view: { brandLayoutType, websiteType },
   } = useEmbedConfigs();
   const isIHeart = brandLayoutType === "iheart";
+  const shouldShowMiddlewareOverlay = isMiddlewareOverlayEnabled({
+    videoLayoutId: embedData?.placement_video_layout_id,
+    cardLayoutId: embedData?.placement_card_layout_id,
+  });
+  const brandContext = useMemo(() => {
+    return embedData?.brand_context?.map(({ id, type }) => ({
+      id,
+      type,
+    }));
+  }, [embedData?.brand_context]);
 
   // Function to handle closing expand view - restores mute state and goes back
   const handleCloseExpandView = (isEscapeKey?: boolean) => {
@@ -225,22 +239,169 @@ export function EmbedExpandView({
       }, 300);
     }
 
-    const handleUpdateStartVideoSlug = () => {
-      setStartIndex(0);
+    const handleUpdateStartVideoSlug = (props: any) => {
+      const payload = props?.payload;
+      const newVideoSlug = payload?.startVideoSlug;
+
+      console.log('[Expand View] Received sdk:updateStartVideoSlug event', {
+        payload,
+        videosLength: videos.length,
+      });
+
+      const sourceInstanceId =
+        typeof payload?.sourceInstanceId === 'string'
+          ? payload.sourceInstanceId
+          : payload.instanceId;
+
+      const isNestedOctoUpdate =
+        typeof sourceInstanceId === 'string' &&
+        sourceInstanceId.startsWith('octo-panel-');
+
+      if (isNestedOctoUpdate) {
+        const context = embedEventBus.getContext();
+        if (!context.autoInteractionActionDone) {
+          console.log('[Expand View] Marking auto interaction done for nested Octo update');
+          embedEventBus.updateContext({
+            ...context,
+            autoInteractionActionDone: true,
+          });
+        }
+      }
+
+      if (!newVideoSlug) {
+        console.warn('[Expand View] Received update without startVideoSlug');
+        return;
+      }
+
+      const videoIndex = videos.findIndex(
+        (video) => video.video.slug === newVideoSlug || video.video.id === newVideoSlug,
+      );
+
+      if (videoIndex !== -1) {
+        console.log('[Expand View] Navigating to video at index:', videoIndex, 'slug:', newVideoSlug);
+        changeActiveIndex(videoIndex);
+        setStartIndex(videoIndex);
+        return;
+      }
+
+      console.warn('[Expand View] Video not in current feed:', newVideoSlug);
+
+      const targetIndex = context.activeIndex;
+
+      void (async () => {
+        try {
+          const videoDetails = await fetchVideoDetails(
+            newVideoSlug,
+            embedData?.embed_id,
+            embedData?.placement_id,
+            shouldShowMiddlewareOverlay,
+            brandContext,
+          );
+
+          if (!videoDetails || videoDetails.length === 0) {
+            console.warn('[Expand View] No details returned for video:', newVideoSlug);
+            return;
+          }
+
+          const videoToInsert = videoDetails[0];
+
+          let didInsert = false;
+
+          queryClient.setQueryData<InfiniteData<FeedPage>>(queryKey, (oldData) => {
+            if (!oldData) return oldData;
+
+            let remainingIndex = Math.max(targetIndex, 0);
+
+            const updatedPages = oldData.pages.map((page) => {
+              const feed = [...page.feed];
+              let insertedOnThisPage = false;
+              if (!didInsert) {
+                if (remainingIndex <= feed.length) {
+                  // Avoid duplicate insertions if the video already exists in this page
+                  const alreadyExists = feed.some(
+                    (item) =>
+                      item.video.slug === newVideoSlug ||
+                      item.video.id === newVideoSlug,
+                  );
+
+                  if (!alreadyExists) {
+                    feed.splice(remainingIndex, 0, videoToInsert);
+                    insertedOnThisPage = true;
+                    didInsert = true;
+                  }
+                }
+                remainingIndex = Math.max(remainingIndex - feed.length, 0);
+              }
+              return {
+                ...page,
+                feed,
+                totalVideos:
+                  typeof page.totalVideos === 'number'
+                    ? page.totalVideos + (insertedOnThisPage ? 1 : 0)
+                    : page.totalVideos,
+              };
+            });
+
+            if (!didInsert) {
+              const lastPageIndex = updatedPages.length - 1;
+              const lastPage = updatedPages[lastPageIndex];
+              const alreadyExists = lastPage.feed.some(
+                (item) =>
+                  item.video.slug === newVideoSlug ||
+                  item.video.id === newVideoSlug,
+              );
+              if (!alreadyExists) {
+                updatedPages[lastPageIndex] = {
+                  ...lastPage,
+                  feed: [...lastPage.feed, videoToInsert],
+                  totalVideos:
+                    typeof lastPage.totalVideos === 'number'
+                      ? lastPage.totalVideos + 1
+                      : lastPage.totalVideos,
+                };
+                didInsert = true;
+              }
+            }
+
+            return {
+              ...oldData,
+              pages: updatedPages,
+            };
+          });
+
+          if (didInsert) {
+            changeActiveIndex(targetIndex);
+            setStartIndex(targetIndex);
+          }
+        } catch (error) {
+          console.error('[Expand View] Failed to fetch/append video:', error);
+        }
+      })();
     };
 
     SDKEventEmitter.on(
       SDKListenerEventName.UPDATE_START_VIDEO_SLUG,
-      handleUpdateStartVideoSlug
+      handleUpdateStartVideoSlug,
     );
 
     return () => {
       SDKEventEmitter.off(
         SDKListenerEventName.UPDATE_START_VIDEO_SLUG,
-        handleUpdateStartVideoSlug
+        handleUpdateStartVideoSlug,
       );
     };
-  }, [embedEventBus, brandLayoutType, setMuted, muted, videos]);
+  }, [
+    embedEventBus,
+    brandLayoutType,
+    setMuted,
+    muted,
+    videos,
+    queryKey,
+    embedData,
+    changeActiveIndex,
+    brandContext,
+    shouldShowMiddlewareOverlay,
+  ]);
 
   // Add keyboard event listener for ESC key
   useEffect(() => {

@@ -41,6 +41,9 @@ module.exports = {
         'process.env.NEXT_PUBLIC_MEDIA_BASE_URL': JSON.stringify(
           process.env.NEXT_PUBLIC_MEDIA_BASE_URL || '',
         ),
+        'process.env.NEXT_PUBLIC_GENAI_ASSETS_BASE_URL': JSON.stringify(
+          process.env.NEXT_PUBLIC_GENAI_ASSETS_BASE_URL || '',
+        ),
         'process.env.NEXT_PUBLIC_RUDDERSTACK_KEY': JSON.stringify(
           process.env.NEXT_PUBLIC_RUDDERSTACK_KEY || '',
         ),

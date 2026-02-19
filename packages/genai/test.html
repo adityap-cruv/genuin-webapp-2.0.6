@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>My Website with SDK</title>
+        <!-- <link rel="stylesheet" href="dist/genai.css" /> -->
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                line-height: 1.6;
+                margin: 0;
+                padding: 20px;
+                background-color: #f4f4f4;
+            }
+
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+
+            h1 {
+                color: #333;
+                margin-bottom: 10px;
+            }
+
+            .description {
+                color: #666;
+                margin-bottom: 30px;
+            }
+
+            .controls {
+                background: white;
+                padding: 20px;
+                border-radius: 8px;
+                margin-bottom: 20px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+
+            .button-group {
+                display: flex;
+                gap: 10px;
+                margin-bottom: 15px;
+                flex-wrap: wrap;
+            }
+
+            .button-group label {
+                font-weight: bold;
+                color: #333;
+                margin-right: 10px;
+                align-self: center;
+            }
+
+            button {
+                padding: 10px 20px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 14px;
+                transition: all 0.3s;
+            }
+
+            .init-btn {
+                background-color: #28a745;
+                color: white;
+            }
+
+            .init-btn:hover {
+                background-color: #218838;
+            }
+
+            .destroy-btn {
+                background-color: #dc3545;
+                color: white;
+            }
+
+            .destroy-btn:hover {
+                background-color: #c82333;
+            }
+
+            .view-btn {
+                background-color: #007bff;
+                color: white;
+                padding: 8px 16px;
+            }
+
+            .view-btn:hover {
+                background-color: #0056b3;
+            }
+
+            .view-btn.active {
+                background-color: #0056b3;
+                box-shadow: 0 0 0 3px rgba(0,123,255,0.3);
+            }
+
+            .parent {
+                border: 2px solid #ddd;
+                border-radius: 8px;
+                height: 800px;
+                width: 100%;
+                background: white;
+            }
+
+            .widget {
+                height: 100%;
+                width: 100%;
+            }
+
+            .status {
+                padding: 10px;
+                background: #e9ecef;
+                border-radius: 4px;
+                margin-bottom: 15px;
+                color: #495057;
+            }
+
+            .info-box {
+                background: #d1ecf1;
+                border: 1px solid #bee5eb;
+                padding: 15px;
+                border-radius: 4px;
+                margin-top: 20px;
+            }
+
+            .info-box h3 {
+                margin-top: 0;
+                color: #0c5460;
+            }
+
+            .info-box ul {
+                margin: 10px 0;
+                padding-left: 20px;
+            }
+
+            .info-box li {
+                margin: 5px 0;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>GenAI SDK Test Page</h1>
+            <p class="description">Test all four view modes: Page, Dialog, Floater, and Web-SDK</p>
+
+            <div class="controls">
+                <div class="status" id="status">
+                    Status: Not initialized
+                </div>
+
+                <div class="button-group">
+                    <label>View Mode:</label>
+                    <button class="view-btn active" id="btn-page" onclick="setViewMode('page')">
+                        📄 Page View
+                    </button>
+                    <button class="view-btn" id="btn-dialog" onclick="setViewMode('dialog')">
+                        💬 Dialog View
+                    </button>
+                    <button class="view-btn" id="btn-floater" onclick="setViewMode('floater')">
+                        🎈 Floater View
+                    </button>
+                    <button class="view-btn" id="btn-web-sdk" onclick="setViewMode('web-sdk')">
+                        🌐 Web-SDK View
+                    </button>
+                </div>
+
+                <div class="button-group">
+                    <button class="init-btn" onclick="initWidget()">
+                        🚀 Initialize SDK
+                    </button>
+                    <button class="destroy-btn" onclick="destroyWidget()">
+                        🗑️ Destroy SDK
+                    </button>
+                </div>
+            </div>
+
+            <!-- This is where your React component will render (for page view) -->
+            <div class="parent" id="page-container" style="display: block;">
+                <div id="my-widget" class="widget genai-sdk-container"></div>
+            </div>
+
+            <div class="info-box">
+                <h3>📋 View Mode Descriptions:</h3>
+                <ul>
+                    <li><strong>Page View:</strong> SDK renders directly inside the container below (embedded mode with full chat interface)</li>
+                    <li><strong>Dialog View:</strong> SDK opens as a modal dialog overlay (default mode)</li>
+                    <li><strong>Floater View:</strong> SDK appears as a floating chat bubble button (bottom-right corner)</li>
+                    <li><strong>Web-SDK View:</strong> Simplified interface with no history sidebar - each chat is new (embedded mode)</li>
+                </ul>
+                <p><strong>Note:</strong> For Dialog and Floater views, the container below won't be used. The SDK will overlay on top of the page.</p>
+            </div>
+        </div>
+
+        <!-- Include your bundled SDK -->
+        <script src="dist/genai-loader.js"></script>
+
+        <script>
+            let currentView = 'page';
+            let isInitialized = false;
+
+            function updateStatus(message) {
+                document.getElementById('status').textContent = 'Status: ' + message;
+            }
+
+            function setViewMode(view) {
+                // Update button states
+                document.querySelectorAll('.view-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.getElementById('btn-' + view).classList.add('active');
+
+                // Destroy current instance if initialized
+                if (isInitialized) {
+                    destroyWidget();
+                }
+
+                currentView = view;
+
+                // Show/hide page container based on view
+                const pageContainer = document.getElementById('page-container');
+                if (view === 'page' || view === 'web-sdk') {
+                    pageContainer.style.display = 'block';
+                } else {
+                    pageContainer.style.display = 'none';
+                }
+
+                updateStatus('View mode set to "' + view + '". Click Initialize to load SDK.');
+            }
+
+            function initWidget() {
+                if (isInitialized) {
+                    alert('SDK is already initialized. Please destroy it first.');
+                    return;
+                }
+
+                const config = {
+                    brandId: 99,
+                    userId: '123',
+                    view: currentView,
+                    userEmail: 'test@test.com',
+                    // sessionId: '00087e0d-c310-4104-a7b8-ebbc14cf78aa' // Uncomment to resume session
+                };
+
+                // Add containerId for page and web-sdk views
+                if (currentView === 'page' || currentView === 'web-sdk') {
+                    config.containerId = 'my-widget';
+                }
+
+                // For web-sdk view, add configuration
+                if (currentView === 'web-sdk') {
+                    config.webSdkConfig = {
+                        title: 'Generate Videos for your Car Listings',
+                        subtitle: 'Produce content for better engagement for your users.',
+                        // allowedAgents: ['maya'], // Optional: limit available agents
+                        // defaultAgents: ['maya'], // Optional: pre-select agents
+                        enableHistory: false // No session history in web-sdk view
+                    };
+                }
+
+                // For floater view, you can add draggable option
+                if (currentView === 'floater') {
+                    config.draggable = true; // Optional: makes floater draggable
+                }
+
+                try {
+                    GenAISDK.init(config);
+                    isInitialized = true;
+                    updateStatus('SDK initialized in "' + currentView + '" mode ✅');
+
+                    if (currentView === 'dialog') {
+                        updateStatus('SDK initialized in "dialog" mode ✅ - Look for the dialog overlay');
+                    } else if (currentView === 'floater') {
+                        updateStatus('SDK initialized in "floater" mode ✅ - Look for floating button (bottom-right)');
+                    } else if (currentView === 'web-sdk') {
+                        updateStatus('SDK initialized in "web-sdk" mode ✅ - Simplified interface with no history');
+                    }
+                } catch (error) {
+                    updateStatus('Error initializing SDK: ' + error.message + ' ❌');
+                    console.error('SDK initialization error:', error);
+                }
+            }
+
+            function destroyWidget() {
+                if (!isInitialized) {
+                    alert('SDK is not initialized yet.');
+                    return;
+                }
+
+                try {
+                    GenAISDK.destroy();
+                    isInitialized = false;
+                    updateStatus('SDK destroyed. Ready to initialize again.');
+
+                    if (currentView === 'page' || currentView === 'web-sdk') {
+                        document.getElementById('my-widget').innerHTML = '';
+                    }
+                } catch (error) {
+                    updateStatus('Error destroying SDK: ' + error.message + ' ❌');
+                    console.error('SDK destroy error:', error);
+                }
+            }
+
+            // Listen for custom events from SDK
+            window.addEventListener('genai:sessionIdUpdate', (event) => {
+                console.log('Session created:', event.detail.sessionId);
+            });
+
+            window.addEventListener('genai:onboardingStepUpdate', (event) => {
+                console.log('Onboarding step completed:', event.detail.step);
+            });
+
+            // Initialize on load
+            window.addEventListener('load', () => {
+                updateStatus('Ready to initialize. Select a view mode and click "Initialize SDK"');
+            });
+        </script>
+    </body>
+</html>

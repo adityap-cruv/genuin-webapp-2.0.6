@@ -1,0 +1,289 @@
+import Button from '@components/bootstrap/Button';
+import Icon from '@components/icon/Icon';
+import { forwardRef, useEffect, useRef, useState } from 'react';
+import { useAgentStore } from '../store/store';
+import { UploadedFile } from '../types/types';
+import PromptFormLeftButtons from './PromptFormLeftButtons';
+import PromptFormRightButtons from './PromptFormRightButtons';
+import Skeleton from './Skeleton';
+
+const MessageInput = forwardRef<HTMLDivElement, unknown>((_props, ref) => {
+	const {
+		input,
+		setInput,
+		handleSendMessage,
+		agents,
+		enteredInChatMode,
+		currentSessionId,
+		currentAgent,
+	} = useAgentStore();
+	const [isFocused, setIsFocused] = useState(false);
+	const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+	const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+	const MAX_HEIGHT = 120;
+	useEffect(() => {
+		const textarea = textareaRef.current;
+
+		if (textarea) {
+			textarea.style.height = 'auto'; // Reset height
+			const newHeight = Math.min(textarea.scrollHeight, MAX_HEIGHT);
+			textarea.style.height = `${newHeight}px`;
+		}
+	}, [input]);
+
+	// Focus textarea when input changes
+	useEffect(() => {
+		if (textareaRef.current) {
+			textareaRef.current.focus();
+		}
+	}, [input]);
+
+	const promptSuggestions: string[] = [];
+	const selectedAgent = agents.find((agent) => agent.slug === currentAgent);
+	if (selectedAgent && selectedAgent.slug !== 'root_agent') {
+		promptSuggestions.push(
+			selectedAgent.presets?.find((preset) => preset.objective === null)?.prompt ?? '',
+		);
+	} else {
+		agents.forEach((agent) => {
+			if (agent.presets) {
+				agent.presets.forEach((preset) => {
+					if (preset.prompt && preset.objective === null) {
+						promptSuggestions.push(preset.prompt);
+					}
+				});
+			}
+		});
+	}
+	const handleRemoveFile = (fileId: string) => {
+		setUploadedFiles((prev) => prev.filter((file) => file.id !== fileId));
+	};
+	const getFileIcon = (type: string): string => {
+		if (type.includes('pdf')) return '📄';
+		if (type.includes('word') || type.includes('document')) return '📝';
+		if (type.includes('text')) return '📝';
+		if (type.startsWith('image/')) return '🖼️';
+		return '📎';
+	};
+
+	const getUploadStatusIcon = (status?: string): string => {
+		switch (status) {
+			case 'uploading':
+				return '⏳';
+			case 'success':
+				return '✅';
+			case 'error':
+				return '❌';
+			default:
+				return '';
+		}
+	};
+	return (
+		<div className='w-100 message-input-container'>
+			<div
+				className={`message-input-border ${
+					isFocused ? 'message-input-border--focused' : ''
+				}`}
+				ref={ref}>
+				<div className='message-input-content'>
+					{/* Suggested Prompts */}
+					{!currentSessionId && (
+						<div className='suggestions-container'>
+							{promptSuggestions.length > 0
+								? promptSuggestions.map((prompt, idx) => (
+										<Button
+											onClick={() => setInput(prompt + ' my brand.')}
+											key={idx}
+											// color='light'
+											className='suggestions-container__button'>
+											{prompt}
+										</Button>
+								  ))
+								: // Show 3 skeleton buttons while loading
+								  Array.from({ length: 4 }).map((_, idx) => (
+										<div key={idx} className='skeleton-suggestion-button'>
+											<Skeleton
+												type='thumbnail'
+												styles={{
+													width: '250px',
+													height: '19.5px',
+													margin: 0,
+												}}
+											/>
+										</div>
+								  ))}
+						</div>
+					)}
+					<form
+						onSubmit={(e) => {
+							e.preventDefault();
+							handleSendMessage(currentSessionId);
+						}}>
+						<div className='mb-1'>
+							{uploadedFiles.length > 0 && (
+								<div className='uploaded-files-container'>
+									<div className='uploaded-files-scroll'>
+										{uploadedFiles.length > 0 && (
+											<div className='uploaded-files-wrapper'>
+												<div className='uploaded-files-list'>
+													{uploadedFiles.map((file) => (
+														<div
+															key={file.id}
+															className={`uploaded-file-item ${
+																file.preview
+																	? 'uploaded-file-item--image'
+																	: 'uploaded-file-item--document'
+															}`}>
+															{file.preview ? (
+																// Square image preview with border
+																<div className='image-preview-container'>
+																	<img
+																		src={file.preview}
+																		alt={file.name}
+																		className={`image-preview ${
+																			file.uploadStatus ===
+																			'uploading'
+																				? 'image-preview--uploading'
+																				: ''
+																		}`}
+																	/>
+																	{/* Upload status indicator */}
+																	{file.uploadStatus &&
+																		file.uploadStatus !==
+																			'success' && (
+																			<div className='upload-status-overlay'>
+																				{getUploadStatusIcon(
+																					file.uploadStatus,
+																				)}
+																			</div>
+																		)}
+																	<Button
+																		className='file-remove-button file-remove-button--image'
+																		onClick={() =>
+																			handleRemoveFile(
+																				file.id,
+																			)
+																		}
+																		title='Remove file'>
+																		<Icon
+																			icon='Close'
+																			size={'md'}
+																		/>
+																	</Button>
+																</div>
+															) : (
+																// Document file preview with improved border and button
+																<div className='document-preview-container'>
+																	<div
+																		className={`document-preview ${
+																			file.uploadStatus ===
+																			'uploading'
+																				? 'document-preview--uploading'
+																				: ''
+																		}`}>
+																		<div className='document-icon-container'>
+																			<span className='document-icon'>
+																				{getFileIcon(
+																					file.type,
+																				)}
+																			</span>
+																		</div>
+																		<div className='document-info'>
+																			<div
+																				className='document-name'
+																				title={file.name}>
+																				{file.name}
+																			</div>
+																			<div className='document-type'>
+																				{file.type.includes(
+																					'pdf',
+																				)
+																					? 'PDF'
+																					: file.type.includes(
+																								'word',
+																					    ) ||
+																					    file.type.includes(
+																								'document',
+																					    )
+																					  ? 'DOC'
+																					  : file.type.includes(
+																									'text',
+																					      )
+																					    ? 'TXT'
+																					    : 'FILE'}
+																				{file.uploadStatus && (
+																					<span className='ms-1'>
+																						{getUploadStatusIcon(
+																							file.uploadStatus,
+																						)}
+																					</span>
+																				)}
+																			</div>
+																		</div>
+																	</div>
+																	<Button
+																		className='file-remove-button file-remove-button--document'
+																		onClick={() =>
+																			handleRemoveFile(
+																				file.id,
+																			)
+																		}
+																		title='Remove file'>
+																		<Icon
+																			icon='Close'
+																			size={'md'}
+																		/>
+																	</Button>
+																</div>
+															)}
+														</div>
+													))}
+												</div>
+											</div>
+										)}
+									</div>
+								</div>
+							)}
+
+							<textarea
+								ref={textareaRef}
+								className='message-textarea'
+								rows={2}
+								placeholder='Ask anything to build and grow your brand.'
+								value={input}
+								onChange={(e) => setInput(e.target.value)}
+								onKeyDown={(e) => {
+									if (e.key === 'Enter' && !e.shiftKey) {
+										e.preventDefault();
+										handleSendMessage(currentSessionId);
+									}
+								}}
+								onFocus={() => setIsFocused(true)}
+								onBlur={() => setIsFocused(false)}
+							/>
+						</div>
+
+						{/* Action Buttons */}
+						<div className='action-buttons-container'>
+							<PromptFormLeftButtons
+								uploadedFiles={uploadedFiles}
+								setUploadedFiles={setUploadedFiles}
+							/>
+							<PromptFormRightButtons />
+						</div>
+					</form>
+				</div>
+			</div>
+			{enteredInChatMode && (
+				<div className='disclaimer-container'>
+					<small className='text-muted'>
+						gAI can make mistakes. Check important info.
+					</small>
+				</div>
+			)}
+		</div>
+	);
+});
+
+export default MessageInput;

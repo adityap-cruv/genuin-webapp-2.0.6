@@ -79,6 +79,7 @@ export * from "./image-icon";
 export * from "./arrow-left-icon";
 export * from "./import-icon";
 export * from "./octopus-icon";
+export * from "./octo-icon-animated";
 export * from "./video-icon";
 export * from "./map-pin";
 export * from "./skip-ad-icon";

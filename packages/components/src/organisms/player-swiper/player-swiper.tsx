@@ -26,6 +26,12 @@ const CommentsDialog = lazy(() =>
   }))
 );
 
+const OctoPanel = lazy(() =>
+  import("../../molecules/octo-panel/index.js").then((m) => ({
+    default: m.OctoPanel,
+  }))
+);
+
 const SectionedContent = lazy(() =>
   import("./sectioned-content.js").then((m) => ({
     default: m.SectionedContent,
@@ -61,6 +67,7 @@ import { calculateSlideDimensions } from "./utils";
 import { useFocusManagement } from "@genuin/components/hooks/use-focus-management";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 import { type AdInfoType } from "@genuin/components/molecules/feed-player";
+import type { OctoPanelHandle } from "../../molecules/octo-panel";
 
 const CloseButton = lazy(() =>
   import("./player-swiper-buttons.js").then((m) => ({ default: m.CloseButton }))
@@ -137,7 +144,15 @@ export function PlayerList({
   const { showExpandView, activeIndex, toggleExpandView } = useFeedContext();
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
   const { isIpad } = useDeviceDetection();
-  const { value, toggle, setValue } = useBoolean(isDesktop && !isIpad);
+
+  // Comment panel state
+  const { value: isCommentOpen, toggle: toggleComment, setValue: setCommentOpen } = useBoolean(isDesktop && !isIpad);
+
+  // OCTO panel state
+  const { value: isOctoOpen, setValue: setOctoOpen } = useBoolean(false);
+  const octoPanelRef = useRef<OctoPanelHandle | null>(null);
+  const lastOctoVideoIdRef = useRef<string | null>(null);
+
   const { track, EventName } = useAnalytics();
   const {
     engagement: {
@@ -279,6 +294,30 @@ a swiper inside another swiper.
     return posts.filter((post) => post.video.type !== "overlay");
   }, [posts]);
 
+  const activeVideoId = filteredPost[activeIndex]?.video.id;
+
+  useEffect(() => {
+    if (!activeVideoId) {
+      lastOctoVideoIdRef.current = null;
+      return;
+    }
+
+    if (
+      isOctoOpen &&
+      lastOctoVideoIdRef.current &&
+      lastOctoVideoIdRef.current !== activeVideoId
+    ) {
+      try {
+        octoPanelRef.current?.resetForVideo(activeVideoId);
+      } catch (error) {
+        console.error('[PlayerList] Failed to reset OctoPanel for video change:', error);
+      }
+    }
+
+    lastOctoVideoIdRef.current = activeVideoId;
+  }, [activeVideoId, isOctoOpen]);
+
+
   // Focus management hook (only for iHeart)
   const {
     containerRef: playerListRef,
@@ -306,6 +345,27 @@ a swiper inside another swiper.
       }
     }
   }, [isSectioned, horizontalSwiper, selectedSection, sectionList]);
+
+  // Effect to navigate swiper when activeIndex changes programmatically (e.g., from child SDK)
+  useEffect(() => {
+    if (!embedDetails || !activeSwiper) return;
+
+    const handleContextActiveIndexChange = (event: any, context: any) => {
+      const newIndex = context.activeIndex;
+
+      // Only navigate if the index actually changed and swiper is not already at that index
+      if (activeSwiper.activeIndex !== newIndex && newIndex >= 0) {
+        console.log('[PlayerList] Programmatic navigation to index:', newIndex, 'current:', activeSwiper.activeIndex);
+        activeSwiper.slideTo(newIndex, 300); // Navigate with animation
+      }
+    };
+
+    embedDetails.embedEventBus.on('activeIndexChange', handleContextActiveIndexChange);
+
+    return () => {
+      embedDetails.embedEventBus.off('activeIndexChange', handleContextActiveIndexChange);
+    };
+  }, [embedDetails, activeSwiper]);
 
   // Handler for section tab click
   const handleSectionSelect = (section: any) => {
@@ -492,7 +552,7 @@ a swiper inside another swiper.
                 "gencl:shrink-0",
                 showExpandView ? "gencl:pb-4" : "gencl:pb-7"
               )}
-              isCommentBoxOpen={value}
+              isCommentBoxOpen={isCommentOpen}
               actionWrapper={{
                 COMMENT: (defaultNode) => {
                   if (!showCommentBox) return;
@@ -538,7 +598,7 @@ a swiper inside another swiper.
                   if (
                     !isDesktop &&
                     filteredPost[activeIndex] &&
-                    (value || defaultOpen)
+                    (isCommentOpen || defaultOpen)
                   )
                     return (
                       <Suspense fallback={null}>
@@ -551,14 +611,14 @@ a swiper inside another swiper.
                           videoId={filteredPost[activeIndex]?.video.id}
                           videoSlug={filteredPost[activeIndex]?.video.slug}
                           shareUrl={filteredPost[activeIndex]?.video.shareUrl}
-                          defaultOpen={value}
+                          defaultOpen={isCommentOpen}
                           key={
                             "feed-comment-box" +
                             filteredPost[activeIndex]?.video.id
                           }
                           onCommentCountChange={onCommentCountChange}
-                          onOpenChange={(value) => {
-                            setValue(value);
+                          onOpenChange={(open) => {
+                            setCommentOpen(open);
                           }}
                         >
                           <CommentBox>{defaultNode}</CommentBox>
@@ -571,10 +631,32 @@ a swiper inside another swiper.
                         "feed-comment-box" + filteredPost[activeIndex]?.video.id
                       }
                       onClick={() => {
-                        if (showExpandView) toggle();
+                        if (showExpandView) {
+                          // Close OCTO if open
+                          if (isOctoOpen) setOctoOpen(false);
+                          // Toggle comments
+                          toggleComment();
+                        }
                       }}
                     >
                       <CommentBox>{defaultNode}</CommentBox>
+                    </span>
+                  );
+                },
+                OCTO: (defaultNode) => {
+                  if (!showExpandView) return defaultNode;
+
+                  return (
+                    <span
+                      key={"octo-panel-" + filteredPost[activeIndex]?.video.id}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        const nextState = !isOctoOpen;
+                        if (nextState && isCommentOpen) setCommentOpen(false);
+                        setOctoOpen(nextState);
+                      }}
+                    >
+                      {defaultNode}
                     </span>
                   );
                 },
@@ -589,8 +671,8 @@ a swiper inside another swiper.
             />
           </Suspense>
         )}
-      {/* show this only if expand view is open  */}
-      {value &&
+      {/* Comment panel - show this only if expand view is open  */}
+      {isCommentOpen &&
         showExpandView &&
         showCommentBox &&
         !isAdPlaying &&
@@ -605,10 +687,32 @@ a swiper inside another swiper.
                 communityId={filteredPost[activeIndex].community?.id}
                 videoSlug={filteredPost[activeIndex].video.slug}
                 className="gencl:h-full"
-                showCloseButton={value}
-                onClose={toggle}
+                showCloseButton={isCommentOpen}
+                onClose={toggleComment}
                 onCommentCountChange={onCommentCountChange}
                 shareUrl={filteredPost[activeIndex].video.shareUrl}
+              />
+            </Suspense>
+          </div>
+        )}
+      {isOctoOpen &&
+        showExpandView &&
+        !isAdPlaying &&
+        filteredPost[activeIndex] &&
+        brandLayoutType !== "iheart" &&
+        isDesktop && (
+          <div className="gencl:max-w-118 gencl:w-full gencl:h-full gencl:hidden gencl:sm:block! gencl:py-6">
+            <Suspense fallback={null}>
+              <OctoPanel
+                ref={octoPanelRef}
+                videoId={filteredPost[activeIndex].video.id}
+                videoSlug={filteredPost[activeIndex].video.slug}
+                open={isOctoOpen}
+                onOpenChange={(open) => {
+                  if (!open) setOctoOpen(false);
+                }}
+                onClose={() => setOctoOpen(false)}
+                panelClassName="gencl:h-full"
               />
             </Suspense>
           </div>

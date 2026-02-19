@@ -236,18 +236,20 @@ export function useEmbedConfigs() {
 
     // Default and disabled engagement tool states
     const defaultEngagementTools = {
+      octo: true, 
       repost: true,
       spark: true,
       comment: true,
       share: true,
     };
     const disabledEngagementTools = {
+      octo: false,
       repost: false,
       spark: false,
       comment: false,
       share: false,
     };
-    // Use customized engagement tools if provided, otherwise fallback to defaults
+
     let engagementTools = showEngagementTools
       ? (customization?.enable_engagement_tools ?? defaultEngagementTools)
       : disabledEngagementTools;
@@ -355,11 +357,14 @@ export function useEmbedConfigs() {
   // Expand View Configuration
   // ============================================================
   const expandView = useMemo(() => {
+    const isDisabled = embedData?.disable_expand_view === true;
+
     return {
-      enable: customization?.is_popup_view ?? true,
-      isShowByDefault: !!customization?.is_show_popup_by_default,
+      enable: !isDisabled && (customization?.is_popup_view ?? true),
+      isShowByDefault:
+        !isDisabled && !!customization?.is_show_popup_by_default,
     };
-  }, [customization]);
+  }, [customization, embedData?.disable_expand_view]);
 
   // ============================================================
   // Layout configs for the standard wall component.

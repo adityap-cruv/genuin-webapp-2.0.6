@@ -1,0 +1,300 @@
+import Button from '@components/bootstrap/Button';
+import Icon from '@components/icon/Icon';
+import { useRef, useState } from 'react';
+import { useAgentStore } from '../store/store';
+import { useOptionsStore } from '@providers/store';
+import { UploadedFile } from '../types/types';
+import showNotification from '@components/extras/showNotification';
+
+interface UploadResponse {
+	data: {
+		content_type: string;
+		s3_key: string;
+		url: string;
+	};
+}
+
+interface PromptFormLeftButtonsProps {
+	uploadedFiles: UploadedFile[];
+	setUploadedFiles: React.Dispatch<React.SetStateAction<UploadedFile[]>>;
+}
+
+const PromptFormLeftButtons = ({ uploadedFiles, setUploadedFiles }: PromptFormLeftButtonsProps) => {
+	const [isSearchSelected, setIsSearchSelected] = useState<boolean>(false);
+	const [isReasonSelected, setIsReasonSelected] = useState<boolean>(false);
+	const [isUploadingFiles, setIsUploadingFiles] = useState<boolean>(false);
+	const { input, currentSessionId, sessions, setS3Keys } = useAgentStore();
+
+	const fileInputRef = useRef<HTMLInputElement>(null);
+
+	const handleSearchClick = () => {
+		setIsSearchSelected((prev) => !prev); // Toggle Search independently
+	};
+
+	const handleReasonClick = () => {
+		setIsReasonSelected((prev) => !prev); // Toggle Reason independently
+	};
+
+	const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB (increased from 5MB to match S3 logic)
+	const ALLOWED_TYPES = {
+		'application/pdf': '.pdf',
+		// 'application/msword': '.doc',
+		// 'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '.docx',
+		'image/jpeg': '.jpg,.jpeg',
+		'image/png': '.png',
+		// 'image/gif': '.gif',
+		'image/webp': '.webp',
+		'text/plain': '.txt',
+		'text/csv': '.csv',
+	};
+
+	const triggerFileUpload = () => {
+		fileInputRef.current?.click();
+	};
+
+	const requestPreSignedUrl = async (
+		fileName: string,
+		fileType: string,
+		fileSize: number,
+	): Promise<UploadResponse> => {
+		try {
+			const brand_id = useOptionsStore.getState().brand?.brand_id;
+			const user_id = useOptionsStore.getState().user?.user_id;
+			const response = await fetch(
+				`${process.env.NEXT_PUBLIC_AGENTS_URL}/presigned-url?file_name=${fileName}&brand_id=${brand_id}&user_id=${user_id}`,
+				{
+					method: 'GET',
+					headers: {
+						'Content-Type': 'application/json',
+						// Add your auth headers here if needed
+						// 'Authorization': `Bearer ${token}`,
+					},
+				},
+			);
+
+			if (!response.ok) {
+				throw new Error(`Failed to get pre-signed URL: ${response.statusText}`);
+			}
+
+			const data: UploadResponse = await response.json();
+			return data;
+		} catch (error) {
+			console.error('Error requesting pre-signed URL:', error);
+			throw error;
+		}
+	};
+	// Upload file to pre-signed URL
+	const uploadFileToPreSignedUrl = async (
+		file: File,
+		preSignedUrl: string,
+		s3_key: string,
+	): Promise<void> => {
+		try {
+			const response = await fetch(preSignedUrl, {
+				method: 'PUT',
+				body: file,
+				headers: {
+					'Content-Type': file.type,
+				},
+			});
+
+			// console.log(response.url)
+
+			// let s3_key: string = response.url.split('https://ds-dataset-rvc.s3.amazonaws.com/')[1];
+			// s3_key = s3_key.split('?')[0].replaceAll('%20', ' ');
+
+			console.log(s3_key);
+			setS3Keys([s3_key]);
+
+			if (!response.ok) {
+				throw new Error(`Upload failed: ${response.statusText}`);
+			}
+		} catch (error) {
+			console.error('Error uploading file:', error);
+			throw error;
+		}
+	};
+
+	const uploadFilesToS3 = async (filesToUpload: UploadedFile[]): Promise<boolean> => {
+		if (filesToUpload.length === 0) {
+			return true; // No files to upload, proceed
+		}
+
+		setIsUploadingFiles(true);
+
+		try {
+			// Upload each file to S3
+			for (const uploadedFile of filesToUpload) {
+				try {
+					// Update status to uploading
+					setUploadedFiles((prev) =>
+						prev.map((f) =>
+							f.id === uploadedFile.id ? { ...f, uploadStatus: 'uploading' } : f,
+						),
+					);
+
+					// Step 1: Request pre-signed URL
+					const {
+						data: { url, s3_key, content_type },
+					} = await requestPreSignedUrl(
+						uploadedFile.file.name,
+						uploadedFile.file.type,
+						uploadedFile.file.size,
+					);
+
+					// Step 2: Upload file to pre-signed URL
+					await uploadFileToPreSignedUrl(uploadedFile.file, url, s3_key);
+
+					// Update file with S3 key and success status
+					setUploadedFiles((prev) =>
+						prev.map((f) =>
+							f.id === uploadedFile.id
+								? { ...f, s3Key: s3_key, uploadStatus: 'success' }
+								: f,
+						),
+					);
+
+					console.log(`File ${uploadedFile.name} uploaded successfully to S3`);
+				} catch (error) {
+					console.error(`Error uploading file ${uploadedFile.name}:`, error);
+
+					// Update status to error
+					setUploadedFiles((prev) =>
+						prev.map((f) =>
+							f.id === uploadedFile.id ? { ...f, uploadStatus: 'error' } : f,
+						),
+					);
+				}
+			}
+
+			return true;
+		} catch (error) {
+			console.error('Error in upload process:', error);
+			alert('Failed to upload some files. Please try again.');
+			return false;
+		} finally {
+			setIsUploadingFiles(false);
+		}
+	};
+
+	const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+		const files = Array.from(e.target.files || []);
+		const validFiles: UploadedFile[] = [];
+
+		// First validate all files
+		for (const file of files) {
+			// Validate file type
+			if (!Object.keys(ALLOWED_TYPES).includes(file.type)) {
+				alert(
+					`File type ${file.type} is not allowed. Please upload PDF, TXT, or image files.`,
+				);
+				continue;
+			}
+
+			// Validate file size
+			if (file.size > MAX_FILE_SIZE) {
+				alert(`File ${file.name} is too large. Maximum size is 10MB.`);
+				continue;
+			}
+
+			// Create file object
+			const uploadedFile: UploadedFile = {
+				id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+				file,
+				name: file.name,
+				size: file.size,
+				type: file.type,
+				uploadStatus: 'uploading',
+			};
+
+			validFiles.push(uploadedFile);
+		}
+
+		// If no valid files, return early
+		if (validFiles.length === 0) {
+			if (fileInputRef.current) {
+				fileInputRef.current.value = '';
+			}
+			return;
+		}
+
+		// Add files to state first (for immediate UI feedback)
+		for (const uploadedFile of validFiles) {
+			if (uploadedFile.file.type.startsWith('image/')) {
+				const reader = new FileReader();
+				reader.onload = (e) => {
+					uploadedFile.preview = e.target?.result as string;
+					setUploadedFiles((prev) => [...prev, uploadedFile]);
+				};
+				reader.readAsDataURL(uploadedFile.file);
+			} else {
+				setUploadedFiles((prev) => [...prev, uploadedFile]);
+			}
+		}
+
+		// Now upload to S3 using pre-signed URLs
+		await uploadFilesToS3(validFiles);
+
+		// Reset file input
+		if (fileInputRef.current) {
+			fileInputRef.current.value = '';
+		}
+	};
+
+	// Determine if sending should be disabled
+	const currentSession = currentSessionId
+		? sessions.find((s) => s.id === currentSessionId)
+		: null;
+	const isTyping = currentSession?.isTyping ?? false;
+	const hasUploadingFiles = uploadedFiles.some((f) => f.uploadStatus === 'uploading');
+	const isSendDisabled = !input.trim() || isTyping || hasUploadingFiles;
+
+	return (
+		<div className='prompt-form-left-buttons'>
+			<Button
+				type='button'
+				color='light'
+				icon='CustomAdd'
+				className='upload-button'
+				title='Coming Soon...'
+				// onClick={triggerFileUpload}
+				onClick={() => showNotification('Update!', 'Coming soon...')}
+			/>
+
+			<Button
+				color='light'
+				className={`toggle-button ${isSearchSelected ? 'toggle-button--selected' : ''}`}
+				onClick={handleSearchClick}
+				title='Coming soon...'>
+				<Icon
+					icon='CustomGlobe'
+					size={'lg'}
+					// color={isSearchSelected ? '#212529' : undefined}
+				/>
+				Search
+			</Button>
+
+			<Button
+				color='light'
+				className={`toggle-button ${isReasonSelected ? 'toggle-button--selected' : ''}`}
+				onClick={handleReasonClick}>
+				<Icon
+					icon='CustomBulb'
+					size={'lg'}
+					// color={isSearchSelected ? '#212529' : undefined}
+				/>
+				Reason
+			</Button>
+			<input
+				ref={fileInputRef}
+				type='file'
+				multiple
+				accept='.pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif,.webp'
+				className='file-input-hidden'
+				onChange={handleFileSelect}
+			/>
+		</div>
+	);
+};
+
+export default PromptFormLeftButtons;

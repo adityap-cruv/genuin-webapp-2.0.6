@@ -334,6 +334,7 @@ type DefaultEmbedType = {
     carousel_style?: string;
     video_crop?: boolean;
     enable_engagement_tools: {
+      octo: boolean;
       repost: boolean;
       spark: boolean;
       comment: boolean;

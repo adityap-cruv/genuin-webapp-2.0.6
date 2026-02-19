@@ -135,6 +135,65 @@ const genuinResolver = () => ({
       }
     }
 
+    // Handle @genuin/genai-sdk → resolve JS from source so Vite can deduplicate
+    // shared deps (React, LottieFiles, Radix UI, etc.) with the rest of the web-sdk bundle.
+    // This avoids bundling pre-compiled dist chunks that already contain those deps.
+    if (id === '@genuin/genai-sdk') {
+      const mainPath = resolve(__dirname, '../genai/src/index.tsx')
+      if (fs.existsSync(mainPath)) {
+        return mainPath
+      }
+    }
+
+    // @genuin/genai-sdk/styles → always use the pre-built dist CSS.
+    // genai uses its own Tailwind v4 config (with gai: prefix) that cannot be
+    // processed through the web-sdk's CSS pipeline.
+    if (id === '@genuin/genai-sdk/styles') {
+      const cssPath = resolve(__dirname, '../genai/dist/genai-sdk.css')
+      if (fs.existsSync(cssPath)) {
+        return cssPath
+      }
+    }
+
+    // When genai/src/index.tsx imports its own './index.css', redirect to the
+    // pre-built dist CSS for the same reason as above.
+    const genaiSrcIndex = resolve(__dirname, '../genai/src/index.tsx')
+    if (importer === genaiSrcIndex && id === './index.css') {
+      const cssPath = resolve(__dirname, '../genai/dist/genai-sdk.css')
+      if (fs.existsSync(cssPath)) {
+        return cssPath
+      }
+    }
+
+    // Genai source files use '@/' as an alias to their own 'genai/src/' directory.
+    // Vite's built-in aliasPlugin runs before enforce:'pre' user plugins, so by the
+    // time our resolveId is called, '@/' has already been expanded to the absolute
+    // 'web-sdk/src/' path (the wrong one). We catch both forms:
+    //   Case A: id still has '@/' prefix  (if somehow our hook runs first)
+    //   Case B: id is already 'web-sdk/src/...' (the common case after alias expansion)
+    const genaiSrcDir = resolve(__dirname, '../genai/src')
+    const webSdkSrcDir = resolve(__dirname, 'src')
+    if (importer && importer.startsWith(genaiSrcDir + '/')) {
+      let subPath = null
+      if (id.startsWith('@/')) {
+        subPath = id.slice(2)
+      } else if (id.startsWith(webSdkSrcDir + '/')) {
+        subPath = id.slice(webSdkSrcDir.length + 1)
+      }
+      if (subPath !== null) {
+        const extensions = ['.ts', '.tsx', '.js', '.jsx']
+        const base = resolve(genaiSrcDir, subPath)
+        if (fs.existsSync(base)) return base
+        for (const ext of extensions) {
+          if (fs.existsSync(base + ext)) return base + ext
+        }
+        for (const ext of extensions) {
+          const idx = resolve(base, `index${ext}`)
+          if (fs.existsSync(idx)) return idx
+        }
+      }
+    }
+
     return null
   },
 })
@@ -783,6 +842,13 @@ export default defineConfig({
         process.env.MEDIA_BASE_URL ||
         'https://media.qa.begenuin.com',
     ),
+    'process.env.NEXT_PUBLIC_GENAI_ASSETS_BASE_URL': JSON.stringify(
+      process.env.NEXT_PUBLIC_GENAI_ASSETS_BASE_URL ||
+        (process.env.MEDIA_BASE_URL
+          ? `${process.env.MEDIA_BASE_URL.replace(/\/?$/, '')}/webapp_assets/assets/genai`
+          : '') ||
+        'https://media.qa.begenuin.com/webapp_assets/assets/genai',
+    ),
     'process.env.NEXT_PUBLIC_HOST_URL': JSON.stringify(
       process.env.NEXT_PUBLIC_HOST_URL ||
         process.env.BASE_URL ||
@@ -829,6 +895,13 @@ export default defineConfig({
       process.env.NEXT_PUBLIC_MEDIA_BASE_URL ||
         process.env.MEDIA_BASE_URL ||
         'https://media.qa.begenuin.com',
+    ),
+    'import.meta.env.NEXT_PUBLIC_GENAI_ASSETS_BASE_URL': JSON.stringify(
+      process.env.NEXT_PUBLIC_GENAI_ASSETS_BASE_URL ||
+        (process.env.MEDIA_BASE_URL
+          ? `${process.env.MEDIA_BASE_URL.replace(/\/?$/, '')}/webapp_assets/assets/genai`
+          : '') ||
+        'https://media.qa.begenuin.com/webapp_assets/assets/genai',
     ),
     'import.meta.env.NEXT_PUBLIC_HOST_URL': JSON.stringify(
       process.env.NEXT_PUBLIC_HOST_URL ||

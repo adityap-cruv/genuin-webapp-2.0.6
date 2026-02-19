@@ -5,7 +5,13 @@ import {
   ThreeDotsIcon,
 } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/utils";
-import { type ComponentProps, type ReactNode, useMemo } from "react";
+import {
+  type ComponentProps,
+  type ReactNode,
+  useMemo,
+  cloneElement,
+  isValidElement,
+} from "react";
 const Menu = lazy(() =>
   import("./menu/index.js").then((m) => ({ default: m.Menu }))
 );
@@ -13,6 +19,7 @@ const Menu = lazy(() =>
 import { ReactionButton } from "@genuin/components/molecules/reaction-button";
 import { DynamicReactionIcon } from "@genuin/components/molecules/reaction-button";
 import { ShareButton } from "@genuin/components/molecules/share-button";
+import { OctoActionIcon } from "@genuin/components/molecules/octo-action-icon";
 const AuthenticationModal = lazy(() =>
   import("@genuin/components/organisms/authentication-modal/index.js").then(
     (m) => ({
@@ -29,7 +36,7 @@ const RepostModal = lazy(() =>
 
 import { useAuthContext } from "@genuin/components/context/auth";
 import { TooltipAction } from "./tooltip";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useState, useEffect, useRef } from "react";
 import { cva, VariantProps } from "class-variance-authority";
 import { useBaseContext } from "@genuin/components/context/base";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
@@ -39,7 +46,7 @@ import { ActionPopover } from "./action-popover";
 import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
 import { Link } from "../link";
 
-type ActionType = "REPOST" | "REACTION" | "COMMENT" | "SHARE" | "MORE";
+type ActionType = "OCTO" | "REPOST" | "REACTION" | "COMMENT" | "SHARE" | "MORE";
 
 // Define a new type for the context object
 type ActionWrapperContextType = {
@@ -97,6 +104,7 @@ const defaultActionWrappers: Record<
   ActionType,
   (defaultNode: ReactNode, context: ActionWrapperContextType) => ReactNode
 > = {
+  OCTO: (node) => node,
   REPOST: (node, _context) => {
     const { authenticationStatus, handleAuthCallback } = useAuthContext();
     const embedDetails = useSafeEmbedContext();
@@ -296,13 +304,21 @@ export function Actions({
   const { engagement } = useEmbedConfigs();
 
   const {
-    engagementTools: { comment, repost, share, spark },
+    engagementTools: { octo, comment, repost, share, spark },
     showEngagementTools,
   } = engagement;
 
   // Only include actions if enabled in engagementTools config
   // If showEngagementTools is false, only show the MORE action
   const actions = [
+    // OCTO ACTION - Appears first (at the top)
+    showEngagementTools && octo
+      ? {
+          icon: <OctoActionIcon size={32} />,
+          actionType: "OCTO" as const,
+          tooltipText: "Octo",
+        }
+      : null,
     showEngagementTools && repost
       ? {
           icon: <RepostIcon theme={theme} />, // fallback to light for mobile
@@ -373,34 +389,70 @@ export function Actions({
           variant:
             (variant === "mobile" ? "dark" : theme) ?? ("light" as const),
         };
+
+        // Use action type as key for better stability (action types are unique)
+        const key = `action-${action.actionType}`;
+        const isOctoAction = action.actionType === "OCTO";
+
+        const iconElement =
+          isOctoAction && variant !== "mobile" && isValidElement(action.icon)
+            ? cloneElement(action.icon, {
+                size: "100%",
+                className: cn(
+                  "gencl:h-full gencl:w-full",
+                  (action.icon.props as { className?: string }).className
+                ),
+              })
+            : action.icon;
+
         // For mobile variant, render icon directly without TooltipAction
         if (variant === "mobile") {
           if (actionWrapper?.[action.actionType]) {
-            return actionWrapper[action.actionType]!(action.icon, context);
+            return (
+              <div key={key}>
+                {actionWrapper[action.actionType]!(iconElement, context)}
+              </div>
+            );
           }
-          return defaultActionWrappers[action.actionType](action.icon, context);
+          return (
+            <div key={key}>
+              {defaultActionWrappers[action.actionType](iconElement, context)}
+            </div>
+          );
         }
 
+        const isCommentActionOpen = action.actionType === "COMMENT" && isCommentBoxOpen;
         const defaultNode = (
           <TooltipAction
-            key={`action-${index}`}
-            icon={action.icon}
+            icon={iconElement}
             tooltipText={action.tooltipText}
             variant={theme}
-            className={
-              action.actionType === "COMMENT" && isCommentBoxOpen
+            iconSize={isOctoAction ? "fill" : "default"}
+            className={cn(
+              isCommentActionOpen
                 ? theme === "dark"
                   ? "gencl:bg-secondary-800"
                   : "gencl:bg-secondary-50 gencl:border-secondary-50"
-                : ""
-            }
-            disableTooltip={action.actionType === "COMMENT" && isCommentBoxOpen}
+                : undefined,
+              isOctoAction
+                ? "gencl:bg-transparent gencl:hover:bg-transparent gencl:border-0 gencl:shadow-none"
+                : undefined
+            )}
+            disableTooltip={isCommentActionOpen}
           />
         );
         if (actionWrapper?.[action.actionType]) {
-          return actionWrapper[action.actionType]!(defaultNode, context);
+          return (
+            <div key={key}>
+              {actionWrapper[action.actionType]!(defaultNode, context)}
+            </div>
+          );
         }
-        return defaultActionWrappers[action.actionType](defaultNode, context);
+        return (
+          <div key={key}>
+            {defaultActionWrappers[action.actionType](defaultNode, context)}
+          </div>
+        );
       })}
     </div>
   );

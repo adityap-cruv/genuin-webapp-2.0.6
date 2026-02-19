@@ -34,6 +34,9 @@ const LazyEmbedRoot = lazy(() =>
 
 // Track React roots per container to support multiple embeds
 const containerRootMap = new Map<HTMLElement, Root>()
+// Remember whether a container created its own shadow host so cleanup
+// doesn't tear down shared hosts in nested embed scenarios.
+const containerOwnsHostMap = new WeakMap<HTMLElement, boolean>()
 
 // Global toaster singleton
 let toasterRoot: Root | null = null
@@ -122,6 +125,8 @@ export function loadLoadingView(
   if (prevRoot) {
     prevRoot.unmount()
     containerRootMap.delete(container)
+    const ownsShadowHost = containerOwnsHostMap.get(container) ?? false
+    containerOwnsHostMap.delete(container)
   }
 
   const root = createRoot(container)
@@ -140,6 +145,10 @@ export function loadExpandView(
   container: HTMLElement,
   theme?: 'dark' | 'light',
 ): void {
+  if (container.getAttribute('data-web-sdk-nested') === 'true') {
+    return
+  }
+
   // Check if loader div already exists, if not, create it
   let loaderDiv = document.getElementById(
     'gen-sdk-expand-view-loader',
@@ -271,6 +280,9 @@ export async function loadNewEmbed({
     targetContainer = setupMainShadowDOM(container)
   }
 
+  const ownsShadowHost = targetContainer !== container
+  containerOwnsHostMap.set(container, ownsShadowHost)
+
   const root = createRoot(targetContainer)
   containerRootMap.set(container, root)
 
@@ -335,6 +347,7 @@ export async function loadNewEmbed({
   return () => {
     root.unmount()
     containerRootMap.delete(container)
+    containerOwnsHostMap.delete(container)
 
     // Cleanup toaster when no embeds remain
     if (containerRootMap.size === 0 && toasterRoot && !config.useShadowDOM) {
@@ -344,11 +357,13 @@ export async function loadNewEmbed({
     }
 
     const rootNode = container.getRootNode()
-    if (
-      rootNode instanceof ShadowRoot &&
-      (rootNode as ShadowRoot).host.hasAttribute('data-genuin-host')
-    ) {
-      ;(rootNode as ShadowRoot).host.remove()
+    if (rootNode instanceof ShadowRoot) {
+      if (ownsShadowHost) {
+        const host = rootNode.host as HTMLElement
+        host.remove()
+      } else {
+        container.remove()
+      }
     } else {
       container.remove()
     }

@@ -302,6 +302,7 @@ export class GenuinSDK {
         containerId: config.container_id,
         action: config.action,
         commentId: config.comment_id,
+        sourceInstanceId: config.source_instance_id,
       })
     }
   }
@@ -374,10 +375,14 @@ export class GenuinSDK {
 
       const embedDetails = config.embedDetails!
 
-      // Load expand view if expandOnLoad is true, or startVideoSlug is set and expandOnLoad is not explicitly false
+      if (config.disableExpandView) {
+        embedDetails.disable_expand_view = true
+      }
+
       if (
-        embedDetails.expandOnLoad === true ||
-        (embedDetails.startVideoSlug && embedDetails.expandOnLoad !== false)
+        !config.disableExpandView &&
+        (embedDetails.expandOnLoad === true ||
+          (embedDetails.startVideoSlug && embedDetails.expandOnLoad !== false))
       ) {
         const instanceId = element.getAttribute('data-instance-id')
         if (instanceId && this.sdkElements[instanceId]) {
@@ -589,7 +594,7 @@ export class GenuinSDK {
       if (!embedDetails.startVideoSlug && pendingAction.videoId) {
         embedDetails.startVideoSlug = pendingAction.videoId
         // Load expand view when startVideoSlug is set from pending action, only if expandOnLoad is not explicitly false
-        if (embedDetails.expandOnLoad !== false) {
+        if (embedDetails.expandOnLoad !== false && !embedDetails.disable_expand_view) {
           const instanceId = element.getAttribute('data-instance-id')
           if (instanceId && this.sdkElements[instanceId]) {
             loadExpandView(element, this.sdkElements[instanceId].config.theme)
@@ -691,11 +696,13 @@ export class GenuinSDK {
     containerId,
     action,
     commentId,
+    sourceInstanceId,
   }: {
     startVideoSlug: string
     containerId?: string
     action?: ActionType
     commentId?: string
+    sourceInstanceId?: string
   }) {
     if (!containerId) {
       console.warn(
@@ -711,7 +718,14 @@ export class GenuinSDK {
     if (!targetUpdateElement) return
     embedId = targetUpdateElement.config.embedDetails?.embed_id
     placementId = targetUpdateElement.config.embedDetails?.placement_id
-    if (targetUpdateElement?.element)
+    const targetParentInstanceId = targetUpdateElement.element.getAttribute(
+      'data-instance-id',
+    )
+    const isNestedOctoUpdate = typeof sourceInstanceId === 'string'
+    const shouldHandleExpandView =
+      !targetUpdateElement?.config?.disableExpandView && !isNestedOctoUpdate
+
+    if (shouldHandleExpandView && targetUpdateElement?.element)
       loadExpandView(
         targetUpdateElement.element,
         targetUpdateElement.config.theme,
@@ -723,12 +737,16 @@ export class GenuinSDK {
       action,
       placementId,
       commentId,
+      sourceInstanceId,
+      instanceId: targetParentInstanceId ?? undefined,
     })
-    this.eventManager.emit(SDKEventType.SDK_EXPAND_EMBED, {
-      embedId: embedId,
-      placementId: placementId,
-      instanceId: targetUpdateElement.element.getAttribute('data-instance-id'),
-    })
+    if (shouldHandleExpandView && targetUpdateElement?.element) {
+      this.eventManager.emit(SDKEventType.SDK_EXPAND_EMBED, {
+        embedId: embedId,
+        placementId: placementId,
+        instanceId: targetParentInstanceId ?? undefined,
+      })
+    }
   }
 
   /**
@@ -827,10 +845,28 @@ export class GenuinSDK {
    * Get and set elements with id "gen-sdk", starting with "gen-sdk-", or having gen-sdk-class, and dedupe them.
    */
   private getAndSetDivs(configByUser?: ConfigByUser) {
-    // Get elements with ID exactly "gen-sdk", starting with "gen-sdk-", or class "gen-sdk-class"
-    const elements = document.querySelectorAll(
-      '[id="gen-sdk"], [id^="gen-sdk-"], .gen-sdk-class',
-    )
+    const selector =
+      '[id="gen-sdk"]:not(.gen-sdk-root-portal), [id^="gen-sdk-"]:not(.gen-sdk-root-portal), .gen-sdk-class:not(.gen-sdk-root-portal)'
+
+    const elements: HTMLElement[] = Array.from(
+      document.querySelectorAll(selector),
+    ).filter((el): el is HTMLElement => el instanceof HTMLElement)
+
+    const shadowHosts = Array.from(
+      document.querySelectorAll('[data-genuin-host], [data-genuin-overlay-host]'),
+    ).filter((el): el is HTMLElement => el instanceof HTMLElement)
+
+    shadowHosts.forEach((host) => {
+      const { shadowRoot } = host
+      if (!shadowRoot) return
+      shadowRoot
+        .querySelectorAll(selector)
+        .forEach((el) => {
+          if (el instanceof HTMLElement) {
+            elements.push(el)
+          }
+        })
+    })
 
     // Check for duplicate IDs and warn the user
     const idMap = new Map<string, number>()
@@ -874,7 +910,6 @@ export class GenuinSDK {
       // Show loading view immediately
       const extractedData = this.extractDataFromSingleDiv(element, configByUser)
       loadLoadingView(element, extractedData.theme)
-      // Load expand view if expandOnLoad is true, or startVideoSlug is set and expandOnLoad is not explicitly false
       if (
         extractedData.expandOnLoad === true ||
         (extractedData.startVideoSlug && extractedData.expandOnLoad !== false)
@@ -1298,6 +1333,21 @@ export class GenuinSDK {
     answerToReturn.authInfo = configByUser?.authInfo
     answerToReturn.brandContext = configByUser?.brand_context
     answerToReturn.useShadowDOM = configByUser?.useShadowDOM
+    answerToReturn.parentInstanceId = configByUser?.parent_instance_id
+
+    let currentElement: HTMLElement | null = singleElement
+    let isNested = false
+
+    while (currentElement) {
+      if (currentElement.getAttribute('data-web-sdk-nested') === 'true') {
+        isNested = true
+        console.log('[Web-SDK] Detected nested rendering - expand view will be disabled')
+        break
+      }
+      currentElement = currentElement.parentElement
+    }
+
+    answerToReturn.disableExpandView = isNested
 
     return answerToReturn
   }
