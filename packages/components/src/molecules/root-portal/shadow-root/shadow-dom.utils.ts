@@ -185,6 +185,24 @@ export function setupMainShadowDOM(container: HTMLElement): HTMLElement {
   // Ensure all required styles exist
   if (shadowRoot) {
     ensureStylesInShadowRoot(shadowRoot);
+    /**
+     * Selects the link element containing the web-sdk.css stylesheet from the document head.
+     * This CSS file is initially added by the loader JS and needs to be removed from the head
+     * when the shadow DOM is active, as the styles will be scoped within the shadow root instead.
+     * 
+     * @remarks
+     * Searches for a link element with:
+     * - href attribute containing "web-sdk.css"
+     * - rel attribute set to "stylesheet"
+     * 
+     * @returns {HTMLLinkElement | null} The link element if found, null otherwise
+     */
+    const linkComponentsCss = document.head.querySelector(
+      'link[href*="web-sdk.css"][rel="stylesheet"]',
+    );
+    if (linkComponentsCss) {
+      document.head.removeChild(linkComponentsCss);
+    }
   }
 
   return root || container;

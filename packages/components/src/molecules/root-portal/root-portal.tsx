@@ -96,10 +96,12 @@ export function RootPortal({
     } else {
       containerElement?.classList.add("gen-sdk-class");
       containerElement?.classList.add(
-        theme === "dark" ? "gencl:bg-black" : "gencl:bg-white",
+        theme === "dark" || theme === undefined
+          ? "gencl:bg-black"
+          : "gencl:bg-white",
       );
     }
-  }, [containerElement]);
+  }, [containerElement, theme]);
 
   if (!isEmbed || !mounted || !containerElement) return null;
 
