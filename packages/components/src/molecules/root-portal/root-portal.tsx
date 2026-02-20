@@ -7,6 +7,7 @@ import {
   getOrCreateOverlayShadowHost,
 } from "./shadow-root/shadow-dom.utils";
 import { Toaster } from "@genuin/ui";
+import { useEffect } from "react";
 
 type RootPortalProps = {
   children: React.ReactNode;
@@ -33,7 +34,7 @@ export function RootPortal({
   const [mounted, setMounted] = React.useState(false);
   const [containerElement, setContainerElement] =
     React.useState<HTMLElement | null>(null);
-  const { parsedBrandColors, isEmbed, useShadowDOM, brandDetails } =
+  const { parsedBrandColors, isEmbed, useShadowDOM, brandDetails, theme } =
     useBaseContext();
 
   React.useEffect(() => {
@@ -64,6 +65,13 @@ export function RootPortal({
         ) {
           host.style.zIndex = "50";
         }
+        // Brand : Carlist
+        else if (
+          brandDetails.brand_id === 3075 ||
+          brandDetails.brand_id === 2314
+        ) {
+          host.style.zIndex = "999999";
+        }
         const container = shadowRoot.querySelector(
           "[data-portal-container]",
         ) as HTMLElement;
@@ -78,6 +86,20 @@ export function RootPortal({
       cleanupOverlayShadowHost();
     };
   }, [container]);
+
+  useEffect(() => {
+    if (!containerElement) return;
+    const isCarlistBrand =
+      brandDetails.brand_id === 3075 || brandDetails.brand_id === 2314;
+    if (isCarlistBrand) {
+      containerElement.style.backgroundColor = "rgba(0, 0, 0, 0.85)";
+    } else {
+      containerElement?.classList.add("gen-sdk-class");
+      containerElement?.classList.add(
+        theme === "dark" ? "gencl:bg-black" : "gencl:bg-white",
+      );
+    }
+  }, [containerElement]);
 
   if (!isEmbed || !mounted || !containerElement) return null;
 

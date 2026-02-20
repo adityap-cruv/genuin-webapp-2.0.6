@@ -63,7 +63,7 @@ const ExpandViewContent = ({
   ) : (
     <Suspense fallback={<FeedSkeleton variant="fullscreen" />}>
       <StandardWall
-        className="gencl:bg-white gencl:h-full gencl:w-full"
+        className="gencl:h-full gencl:w-full"
         defaultComponent={defaultComponent}
         baseLayoutVariant="embed-expand-view"
       />
@@ -441,7 +441,7 @@ export function EmbedExpandView({
     <RemoveScroll>
       <RootPortal
         className={cn(
-          "gen-sdk-class gen-sdk-expand-view gencl:h-full gencl:w-full gencl:inset-0 gencl:z-50 gencl:bg-white",
+          "gen-sdk-class gen-sdk-expand-view gencl:h-full gencl:w-full gencl:inset-0 gencl:z-50",
           isMobile && "gencl:flex-col",
           // Apply fixed positioning with full screen dimensions for non-iHeart layouts
           !isIHeart && "gencl:fixed gencl:h-screen gencl:w-screen",
