@@ -1,7 +1,11 @@
 "use client";
 
 import { cn } from "@genuin/ui/lib/utils";
-import { Dialog, DialogContent, DialogTrigger } from "@genuin/ui/components/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@genuin/ui/components/dialog";
 import { Button } from "@genuin/ui/components/button";
 
 import { Link } from "@genuin/components/molecules/link";
@@ -40,7 +44,9 @@ export function LinkoutsListModal({
           {children}
         </DialogTrigger>
       )}
-      <DialogContent className="gencl:max-w-md gencl:max-h-[80vh] gencl:overflow-hidden">
+      <DialogContent
+        className="gencl:max-w-md gencl:max-h-[80vh] gencl:overflow-hidden"
+      >
         <div className="gencl:p-6 gencl:pb-0!">
           <div className="gencl:space-y-6 gencl:mb-6">
             <h3 className="gencl:text-left gencl:text-headline-3-semi-bold">

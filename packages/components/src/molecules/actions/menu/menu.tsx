@@ -26,7 +26,6 @@ import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { FlagIcon, GroupIcon, PlayIcon } from "@genuin/ui/icons";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
-import { getRootContainer } from "../../root-portal/shadow-root/shadow-dom.utils";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
 type MenuProps = {
@@ -75,7 +74,7 @@ export function Menu({
     brand: { isIndianExpress },
   } = useEmbedConfigs();
   const { isMobile } = useDeviceDetectMediaQuery();
-  const { brandDetails, useShadowDOM } = useBaseContext();
+  const { brandDetails } = useBaseContext();
   const embedDetails = useSafeEmbedContext();
   const [isOpen, setIsOpen] = useState(false);
   const { activeIndex } = useFeedContext();
@@ -163,7 +162,6 @@ export function Menu({
       <Dialog type="menu-dialog">
         <DialogTrigger>{children}</DialogTrigger>
         <DialogContent
-          container={getRootContainer(useShadowDOM)}
           className="gen-sdk-expand-view gencl:p-4 gencl:border gencl:border-secondary-100 gencl:rounded-none gencl:!rounded-t-2xl gencl:flex gencl:flex-col gencl:gap-1 gencl:z-50 gencl:!bg-white gencl:focus-visible:outline-none gencl:focus-visible:ring-0"
         >
           <p className="gencl:text-body-0-semi-bold gencl:p-1">More options</p>
@@ -178,7 +176,6 @@ export function Menu({
     <Popover open={isOpen} onOpenChange={setIsOpen} {...props}>
       <PopoverTrigger asChild>{children}</PopoverTrigger>
       <PopoverContent
-        container={getRootContainer(useShadowDOM)}
         align="start"
         className="gen-sdk-class gen-sdk-root-portal gen-sdk-expand-view gencl:w-fit gencl:p-3 gencl:border gencl:border-secondary-100 gencl:rounded-xl gencl:flex gencl:flex-col gencl:gap-0.5 gencl:z-50 gencl:!bg-white gencl:focus-visible:outline-none gencl:focus-visible:ring-0"
       >

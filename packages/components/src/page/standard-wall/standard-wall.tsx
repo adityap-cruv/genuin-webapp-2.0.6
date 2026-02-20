@@ -5,6 +5,7 @@ import { Route, Router, Switch } from "wouter";
 import { ComponentProps, useEffect, useState, lazy, Suspense } from "react";
 import { useRouter } from "@genuin/components/hooks/use-router";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import { Toaster } from "@genuin/ui";
 
 type StandardWallProps = {
   /**
@@ -203,6 +204,8 @@ export function StandardWall({
             </Route>
           </Switch>
         </Router>
+        <Toaster className="gencl:fixed gencl:bottom-0 gencl:right-0 gencl:z-50" />
       </div>
+      
     );
 }

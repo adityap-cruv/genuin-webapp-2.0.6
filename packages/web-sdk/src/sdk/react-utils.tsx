@@ -10,6 +10,7 @@ import { metrics } from '../utils/metrics'
 import { generateExpandViewSkeletonHTML } from '../utils/skeleton-html'
 import {
   cleanupOverlayShadowHost,
+  ensureStylesInShadowRoot,
   setupMainShadowDOM,
 } from '@genuin/components/molecules/root-portal/shadow-root/shadow-dom.utils'
 
@@ -19,9 +20,26 @@ import { cn } from '@genuin/ui'
 import { getBrandType } from '@genuin/components/lib/utils/brand-layout'
 import { Loader } from '@genuin/ui/components/loader'
 // Lazy load Toaster for better code splitting
-const LazyToaster = lazy(() =>
+export const LazyToaster = lazy(() =>
   import('@genuin/ui/components/toaster').then((module) => ({
     default: module.Toaster,
+    then: () => {
+      // Ensure required styles are injected into all relevant shadow roots
+      const injectStylesIntoShadowRoots = () => {
+        const mainHost = document.querySelector('[data-genuin-host]')
+        if (mainHost?.shadowRoot) {
+          ensureStylesInShadowRoot(mainHost.shadowRoot)
+        }
+
+        const overlayHost = document.querySelector('[data-genuin-overlay-host]')
+        if (overlayHost?.shadowRoot) {
+          ensureStylesInShadowRoot(overlayHost.shadowRoot)
+        }
+      }
+
+      // Inject styles once the toaster module is loaded
+      injectStylesIntoShadowRoots()
+    },
   })),
 )
 

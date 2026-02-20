@@ -72,6 +72,11 @@ export function RootPortal({
         ) {
           host.style.zIndex = "999999";
         }
+        // Apply custom styles to the overlay host when provided via props
+        if (style) {
+          Object.assign(host.style, style);
+        }
+
         const container = shadowRoot.querySelector(
           "[data-portal-container]",
         ) as HTMLElement;

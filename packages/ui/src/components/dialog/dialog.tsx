@@ -7,6 +7,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn, getGenclStyles } from "@genuin/ui/lib/utils";
 import { dialogManager } from "@genuin/ui/lib/dialog-manager";
+import { getRootContainer } from "@genuin/ui/lib/shadow-dom.utils";
 
 /**
  * Dialog component with registry tracking.
@@ -86,7 +87,7 @@ function DialogOverlay({
       data-slot="dialog-overlay"
       className={cn(
         "gen-sdk-class gen-sdk-root-portal gencl:data-[state=open]:animate-in gencl:data-[state=closed]:animate-out gencl:data-[state=closed]:fade-out-0 gencl:data-[state=open]:fade-in-0 gencl:fixed gencl:inset-0 gencl:z-50 gencl:bg-black/50",
-        className
+        className,
       )}
       {...props}
     />
@@ -114,10 +115,10 @@ const dialogContentVariants = cva(
     defaultVariants: {
       variant: "default",
     },
-  }
+  },
 );
 
-interface DialogContentProps
+export interface DialogContentProps
   extends React.ComponentProps<typeof DialogPrimitive.Content>,
     VariantProps<typeof dialogContentVariants> {
   showClose?: boolean;
@@ -133,23 +134,18 @@ function DialogContent({
   bgBlur = false,
   style,
   closeIconClassName,
-  container,
   ...props
-}: DialogContentProps & {
-  container?: DialogPrimitive.DialogPortalProps["container"];
-}) {
+}: DialogContentProps) {
+  const portalContainer = getRootContainer();
   return (
-    <DialogPortal
-      data-slot="dialog-portal"
-      container={container ?? document.body}
-    >
+    <DialogPortal data-slot="dialog-portal" container={portalContainer}>
       <DialogOverlay className={cn({ "gencl:backdrop-blur-lg": bgBlur })} />
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
           dialogContentVariants({ variant }),
           className,
-          "gen-sdk-class gen-sdk-root-portal"
+          "gen-sdk-class gen-sdk-root-portal",
         )}
         style={{ ...style, ...getGenclStyles() }}
         autoFocus={false}
@@ -164,7 +160,7 @@ function DialogContent({
               "gencl:disabled:pointer-events-none gencl:[&_svg]:pointer-events-none",
               "gencl:[&_svg]:shrink-0 gencl:[&_svg:not([class*=size-])]:size-5",
               "gencl:cursor-pointer",
-              closeIconClassName
+              closeIconClassName,
             )}
             tabIndex={-1}
           >
@@ -183,7 +179,7 @@ function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
       data-slot="dialog-header"
       className={cn(
         "gencl:flex gencl:flex-col gencl:gap-2 gencl:text-center gencl:border-b gencl:border-secondary-150",
-        className
+        className,
       )}
       {...props}
     />
@@ -196,7 +192,7 @@ function DialogFooter({ className, ...props }: React.ComponentProps<"div">) {
       data-slot="dialog-footer"
       className={cn(
         "gencl:flex gencl:flex-col-reverse gencl:gap-2 gencl:sm:flex-row! gencl:sm:justify-end!",
-        className
+        className,
       )}
       {...props}
     />

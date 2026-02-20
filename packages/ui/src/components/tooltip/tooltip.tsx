@@ -6,6 +6,7 @@ import { cva } from "class-variance-authority";
 import * as React from "react";
 
 import { cn, getGenclStyles } from "@genuin/ui/lib/utils";
+import { getRootContainer } from "@genuin/ui/lib/shadow-dom.utils";
 
 function TooltipProvider({
   delayDuration = 0,
@@ -48,7 +49,7 @@ const tooltipContentVariants = cva(
     defaultVariants: {
       theme: "light",
     },
-  }
+  },
 );
 
 const tooltipArrowVariants = cva(
@@ -63,7 +64,7 @@ const tooltipArrowVariants = cva(
     defaultVariants: {
       theme: "light",
     },
-  }
+  },
 );
 
 type TooltipContentProps = React.ComponentProps<
@@ -80,20 +81,18 @@ function TooltipContent({
   children,
   theme,
   style,
-  container,
   ...props
-}: TooltipContentProps & {
-  container?: TooltipPrimitive.TooltipPortalProps["container"];
-}) {
+}: TooltipContentProps) {
+  const portalContainer = getRootContainer();
   return (
-    <TooltipPrimitive.Portal container={container ?? document.body}>
+    <TooltipPrimitive.Portal container={portalContainer}>
       <TooltipPrimitive.Content
         data-slot="tooltip-content"
         sideOffset={sideOffset}
         className={cn(
           "gen-sdk-class gen-sdk-root-portal",
           className,
-          tooltipContentVariants({ theme })
+          tooltipContentVariants({ theme }),
         )}
         style={{ fontSize: "16px", ...style, ...getGenclStyles() }}
         {...props}

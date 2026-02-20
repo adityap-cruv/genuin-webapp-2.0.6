@@ -71,7 +71,10 @@ export function PipView({ videos, isLoading, totalVideos }: PipViewProps) {
 
     if (videoDetails)
       return (
-        <RootPortal className="gen-sdk-class">
+        <RootPortal
+          className="gen-sdk-class"
+          style={{ height: "0px", width: "0px" }}
+        >
           <div className="gencl:fixed gencl:bottom-4 gencl:z-999999 gencl:flex gencl:right-4 gencl:h-75 gencl:w-50">
             <div className="gencl:rounded-lg gencl:h-full gencl:w-45">
               <PipPlayer
@@ -113,7 +116,7 @@ function PipPlayer({
     <div
       className={cn(
         "gencl:relative gencl:h-full gencl:w-full gencl:rounded-lg gencl:overflow-clip",
-        className
+        className,
       )}
       {...restProps}
     >

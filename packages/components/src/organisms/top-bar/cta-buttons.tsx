@@ -262,7 +262,6 @@ const NotificationItemWrapper = ({
 function Notification() {
   const { user } = useAuthContext();
   const { isMobile } = useDeviceDetectMediaQuery();
-  const { useShadowDOM } = useBaseContext();
   // Only enable the query if the user is logged in
   const { data: notificationData, refetch: refreshNotification } =
     useNotificationCount({ enabled: !!user });
@@ -329,7 +328,6 @@ function Notification() {
           side="left"
           className="gencl:gap-0 gencl:w-full"
           hideCloseIcon
-          container={getRootContainer(useShadowDOM)}
         >
           {notificationHeader}
           <div className="gencl:w-full gencl:h-full gencl:p-4">

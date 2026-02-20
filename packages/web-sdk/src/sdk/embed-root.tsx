@@ -6,7 +6,6 @@ import { SingleEmbedDataConfig } from '@/type'
 import { Genuin } from './genuin-sdk'
 import { TRACK_OBSERVABILITY } from '@genuin/components/lib/utils/env'
 import {
-  getBrandType,
   type BrandType,
 } from '@genuin/components/lib/utils/brand-layout'
 
@@ -23,13 +22,7 @@ import { Skeleton } from '@genuin/ui/components/skeleton'
 import { SdkSkeleton } from '@genuin/components'
 import { useDeviceDetectMediaQuery } from '@genuin/components/hooks/use-devide-detect-media-query'
 import { cn } from '@genuin/ui/lib/utils'
-
-// Lazy load components
-const LazyToaster = lazy(() =>
-  import('@genuin/ui/components/toaster').then((module) => ({
-    default: module.Toaster,
-  })),
-)
+import { LazyToaster } from './react-utils'
 
 const LazyEmbed = lazy(() =>
   import('@genuin/components/organisms/embed/embed')

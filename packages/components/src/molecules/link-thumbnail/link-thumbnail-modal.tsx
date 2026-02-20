@@ -137,7 +137,7 @@ export function MediaModal({
                   {
                     "gencl:border-primary": isDragging,
                     "gencl:border-secondary-300": !isDragging,
-                  }
+                  },
                 )}
               >
                 <FileUploader
@@ -154,7 +154,7 @@ export function MediaModal({
                   }}
                   onSizeError={() =>
                     setFileError(
-                      "Upload failed. Make sure file size is upto 3MB and in .jpg, .png, .jpeg format"
+                      "Upload failed. Make sure file size is upto 3MB and in .jpg, .png, .jpeg format",
                     )
                   }
                   hoverTitle=" "

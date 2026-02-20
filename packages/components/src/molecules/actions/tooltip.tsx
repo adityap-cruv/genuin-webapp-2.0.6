@@ -1,11 +1,9 @@
-import { useBaseContext } from "@genuin/components/context";
 import { Button } from "@genuin/ui/components/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@genuin/ui/tooltip";
 import { cn } from "@genuin/ui/utils";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 import { type ComponentProps, type ReactNode } from "react";
-import { getRootContainer } from "../root-portal/shadow-root/shadow-dom.utils";
 
 const tooltipVariants = cva("", {
   variants: {
@@ -37,7 +35,6 @@ export function TooltipAction({
   onClick,
   ...restProps
 }: TooltipActionProps) {
-  const { useShadowDOM } = useBaseContext();
   if (disableTooltip) {
     return (
       <Button
@@ -47,7 +44,7 @@ export function TooltipAction({
           "gencl:hover:cursor-pointer ",
           "gencl:h-12 gencl:p-0 gencl:w-12 gencl:flex gencl:items-center gencl:justify-center  gencl:rounded-full",
           "gencl:[&_svg]:w-8 gencl:[&_svg]:h-8",
-          className
+          className,
         )}
         onClick={onClick}
         {...restProps}
@@ -65,7 +62,7 @@ export function TooltipAction({
           "gencl:hover:cursor-pointer",
           "gencl:h-12 gencl:w-12 gencl:flex gencl:items-center gencl:justify-center  gencl:rounded-full",
           "gencl:[&_svg]:w-8 gencl:[&_svg]:h-8",
-          className
+          className,
         )}
         onClick={onClick}
         {...restProps}
@@ -77,17 +74,13 @@ export function TooltipAction({
             "gencl:hover:cursor-pointer gen-sdk-class gen-sdk-root-portal",
             "gencl:h-12 gencl:p-0 gencl:w-12 gencl:flex gencl:items-center gencl:justify-center  gencl:rounded-full",
             "gencl:[&_svg]:w-8 gencl:[&_svg]:h-8",
-            className
+            className,
           )}
         >
           {icon}
         </div>
       </TooltipTrigger>
-      <TooltipContent
-        container={getRootContainer(useShadowDOM)}
-        theme={variant ?? "light"}
-        side="right"
-      >
+      <TooltipContent theme={variant ?? "light"} side="right">
         <p>{tooltipText}</p>
       </TooltipContent>
     </Tooltip>

@@ -8,7 +8,6 @@ import { ComponentProps, ReactNode } from "react";
 import { CommentsList } from "./comments-list";
 import { CommentInputBox } from "./comment-input";
 import { setQueryDataForNewComment } from "@genuin/components/react-query/api/comments";
-import { getRootContainer } from "../root-portal/shadow-root/shadow-dom.utils";
 import { useBaseContext } from "@genuin/components/context";
 
 type CommentDialogProps = {
@@ -54,7 +53,6 @@ export function CommentsDialog({
       </DialogTrigger>
       <DialogContent
         autoFocus={false}
-        container={getRootContainer(useShadowDOM)}
         onOpenAutoFocus={(e) => e.preventDefault()}
         className="gencl:max-h-[80vh] gencl:flex gencl:flex-col gencl:overflow-clip gencl:h-full gencl:p-0 gencl:gap-0"
       >

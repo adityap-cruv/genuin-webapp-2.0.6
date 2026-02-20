@@ -14,7 +14,10 @@ import {
 } from "@genuin/components/react-query/api/search";
 import { useAnalytics } from "@genuin/components/context/analytics";
 
-type SearchModalProps = ComponentProps<typeof CommandDialog> & {
+type SearchModalProps = Omit<
+  ComponentProps<typeof CommandDialog>,
+  "container"
+> & {
   placeholder?: string;
   onSearch?: (query: string) => void;
   onSeeAll?: () => void;
@@ -29,6 +32,7 @@ export function SearchModal({
   title = "Search",
   description = "Search...",
   variant = "top",
+
   ...props
 }: SearchModalProps) {
   const [query, setQuery] = useState("");
@@ -49,9 +53,9 @@ export function SearchModal({
       suggestions.filter(
         (s) =>
           s.type !== undefined &&
-          SEARCH_CONFIG.VALID_SUGGESTION_TYPES.includes(s.type as any)
+          SEARCH_CONFIG.VALID_SUGGESTION_TYPES.includes(s.type as any),
       ),
-    [suggestions]
+    [suggestions],
   );
 
   // Memoize computed values
@@ -83,7 +87,7 @@ export function SearchModal({
       query,
       track,
       EventName.KEYWORD_SEARCH_CANCEL,
-    ]
+    ],
   );
 
   const handleSearch = useCallback(
@@ -97,7 +101,7 @@ export function SearchModal({
         query: searchQuery,
       });
     },
-    [onSearch, resetToSuggestions, track, EventName.CHECK_RECENT_SEARCH]
+    [onSearch, resetToSuggestions, track, EventName.CHECK_RECENT_SEARCH],
   );
 
   const handleSeeAll = useCallback(() => {

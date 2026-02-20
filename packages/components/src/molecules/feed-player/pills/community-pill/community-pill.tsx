@@ -16,8 +16,6 @@ import { CommunityHoverCard } from "../community-hover-card";
 import { ComponentProps, useEffect, useState, useRef } from "react";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { usePrevious } from "@genuin/components/hooks/use-previous";
-import { useBaseContext } from "@genuin/components/context";
-import { getRootContainer } from "@genuin/components/molecules/root-portal/shadow-root/shadow-dom.utils";
 
 const communityPillVariants = cva(
   "gencl:flex gencl:w-fit gencl:items-center gencl:gap-1 gencl:p-1 gencl:pr-2 gencl:rounded-full gencl:transition-all gencl:cursor-pointer",
@@ -36,7 +34,7 @@ const communityPillVariants = cva(
     defaultVariants: {
       variant: "light",
     },
-  }
+  },
 );
 
 type CommunityPillProps = {
@@ -62,7 +60,6 @@ export function CommunityPill({
 }: CommunityPillProps) {
   const { authenticationStatus } = useAuthContext();
   const embedDetails = useSafeEmbedContext();
-  const { useShadowDOM } = useBaseContext();
   // Truncate name to 24 characters for compact variant
   const displayName =
     variant === "compact" &&
@@ -72,7 +69,7 @@ export function CommunityPill({
       : communityDetails.name;
 
   const [localJoinStatus, setLocalJoinStatus] = useState(
-    communityDetails.userRole
+    communityDetails.userRole,
   );
   const prevJoinStatus = usePrevious(communityDetails.userRole);
 
@@ -170,7 +167,6 @@ export function CommunityPill({
       <HoverCardContent
         align="start"
         className="gencl:max-w-md! gencl:min-w-80"
-        container={getRootContainer(useShadowDOM)}
       >
         <CommunityHoverCard
           communityDetails={communityDetails}

@@ -46,7 +46,7 @@ const overlayShadowHostCache = new WeakMap<
  * Ensures shadow root has all required styles (idempotent)
  * Can be called multiple times safely - checks before cloning
  */
-function ensureStylesInShadowRoot(shadowRoot: ShadowRoot): void {
+export function ensureStylesInShadowRoot(shadowRoot: ShadowRoot): void {
   REQUIRED_STYLES.forEach(({ name, selector, check }) => {
     // Check if this style type already exists in shadow root
     const existsInShadow = Array.from(
@@ -268,28 +268,6 @@ export function getOrCreateOverlayShadowHost(): {
   }
 
   return cached;
-}
-
-/**
- * Gets the appropriate container for portaling Shadcn/Radix components
- * Returns overlay shadow root if shadow DOM is enabled, otherwise document.body
- */
-export function getRootContainer(
-  isShadowDomEnabled: boolean,
-): HTMLElement | ShadowRoot {
-  if (!isShadowDomEnabled) {
-    return document.body;
-  }
-
-  const cached = overlayShadowHostCache.get(document);
-  if (cached?.shadowRoot) {
-    const portalContainer = cached.shadowRoot.querySelector(
-      "[data-portal-container]",
-    );
-    return (portalContainer as HTMLElement) || cached.shadowRoot;
-  }
-
-  return document.body;
 }
 
 /**

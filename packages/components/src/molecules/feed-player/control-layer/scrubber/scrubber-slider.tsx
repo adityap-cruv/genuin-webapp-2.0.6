@@ -212,7 +212,7 @@ const ScrubberSlider = React.forwardRef<
         aria-valuetext={ariaValueText}
         onKeyDown={handleKeyDown}
         className={cn(
-          "gencl:relative gencl:left-1/2 gencl:flex gencl:w-full gencl:-translate-x-1/2 gencl:touch-none gencl:select-none gencl:items-center gencl:transition-all",
+          "gencl:relative gencl:flex gencl:w-full gencl:touch-none gencl:select-none gencl:items-center gencl:transition-all",
           "gencl:rounded-md",
           "focus:gencl:ring-2 focus:gencl:ring-primary focus:gencl:ring-opacity-50 focus:gencl:bg-black/10",
           className
