@@ -96,6 +96,7 @@ export function parsePlacementToEmbedData(
 
       // Engagement tools mapping from expand_view
       enable_engagement_tools: {
+        octo: expandView?.enable_engagement_tools?.octo ?? false,
         repost: expandView?.enable_engagement_tools?.repost ?? false,
         spark: expandView?.enable_engagement_tools?.spark ?? false,
         comment: expandView?.enable_engagement_tools?.comment ?? false,
