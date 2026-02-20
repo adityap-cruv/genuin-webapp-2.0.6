@@ -438,12 +438,17 @@ export class GenuinSDK {
         this.storeCleanupFunction(element, cleanup)
       }
 
+      // A flag to check if the component is only for expand view based on the initial size check, if true we will not lazy load this component as it might cause issues in loading the expand view.
+      const ifComponentIsOnlyForExpand =
+        this.checkIfEmbedIsOnlyForExpand(element)
+
       // Check for IntersectionObserver support for lazy loading
       // We can also add a config flag to disable this if needed
       const canLazyLoad =
         'IntersectionObserver' in window &&
         !embedDetails.startVideoSlug && // Don't lazy load if deep linking
-        !embedDetails.expandOnLoad // Don't lazy load if auto-expanding
+        !embedDetails.expandOnLoad && // Don't lazy load if expand on load is true
+        !ifComponentIsOnlyForExpand // Don't lazy load if the component is only for expand view (based on initial size check)
 
       if (canLazyLoad) {
         const observer = new IntersectionObserver(
@@ -684,6 +689,16 @@ export class GenuinSDK {
       console.warn('No embed details found for configuration.')
       throw new Error('No embed details found for configuration.')
     }
+  }
+
+  /**
+   * A function to check if the embed is only for expand view based on the configuration.
+   */
+  private checkIfEmbedIsOnlyForExpand(container: HTMLElement) {
+    const clientWidth = container.clientWidth
+    const clientHeight = container.clientHeight
+
+    return clientWidth === 0 || clientHeight === 0
   }
 
   private async updateStartVideoId({
