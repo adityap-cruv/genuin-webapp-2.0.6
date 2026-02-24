@@ -15,7 +15,7 @@
     "./loader": "./src/components/loader/index.ts",
     "./video-player": "./src/components/video-player/index.ts",
     "./dialog": "./src/components/dialog/index.ts",
-    "./draggable-sheet": "./src/components/draggable-sheet/index.tsx",
+    "./dynamic-sheet": "./src/components/dynamic-sheet/index.ts",
     "./input": "./src/components/input/index.ts",
     "./input-otp": "./src/components/input-otp/index.ts",
     "./label": "./src/components/label/index.ts",

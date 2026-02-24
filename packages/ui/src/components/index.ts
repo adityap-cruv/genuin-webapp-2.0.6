@@ -18,7 +18,7 @@ export * from "./hover-card";
 export * from "./tabs";
 export * from "./toaster";
 export * from "./sheet";
-export * from "./draggable-sheet";
+export * from "./dynamic-sheet";
 export * from "./textarea";
 export * from "./select";
 export * from "./table";
