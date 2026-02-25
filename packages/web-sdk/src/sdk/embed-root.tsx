@@ -5,9 +5,7 @@ import { AuthUser } from '@genuin/components/types/auth'
 import { SingleEmbedDataConfig } from '@/type'
 import { Genuin } from './genuin-sdk'
 import { TRACK_OBSERVABILITY } from '@genuin/components/lib/utils/env'
-import {
-  type BrandType,
-} from '@genuin/components/lib/utils/brand-layout'
+import { type BrandType } from '@genuin/components/lib/utils/brand-layout'
 
 // Import providers directly instead of lazy loading
 import { AuthProvider } from '@genuin/components/context/auth'
@@ -140,6 +138,7 @@ export function EmbedRoot({
           initialVideoIds: config.initialVideoIds,
           videoIds: config.videoIds,
           websiteType: config.websiteType,
+          startVideoSlug: config.startVideoSlug,
           configs: {
             allowGestureScroll: config.allowGestureScroll,
           },

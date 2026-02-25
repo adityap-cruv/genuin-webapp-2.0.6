@@ -36,7 +36,7 @@ const ObservabilityTracker = lazy(() =>
     "@genuin/components/lib/utils/observability/ObservabilityTracker.js"
   ).then((module) => ({
     default: module.ObservabilityTracker,
-  }))
+  })),
 );
 
 /**
@@ -58,7 +58,7 @@ export function EmbedProvider({
   const isIHeartLayout = brandLayoutType === "iheart";
 
   const urlParams = new URLSearchParams(
-    typeof window !== "undefined" ? window.location.search : ""
+    typeof window !== "undefined" ? window.location.search : "",
   );
   const action = urlParams.get("action");
 
@@ -118,7 +118,7 @@ export function EmbedProvider({
       action,
       initialFollowStatuses,
       embedData.expandOnLoad,
-    ]
+    ],
   );
 
   // Create a unique router for this provider instance
@@ -205,31 +205,31 @@ export function EmbedProvider({
 
     SDKEventEmitter.on(
       SDKListenerEventName.UPDATE_CONTEXTUAL_PARAMS,
-      handleUpdateContextualParams
+      handleUpdateContextualParams,
     );
     SDKEventEmitter.on(
       SDKListenerEventName.UPDATE_START_VIDEO_SLUG,
-      handleUpdateStartVideoSlug
+      handleUpdateStartVideoSlug,
     );
     SDKEventEmitter.on(SDKListenerEventName.EXPAND_EMBED, handleExpandEmbed);
     SDKEventEmitter.on(
       SDKListenerEventName.COLLAPSE_EMBED,
-      handleCollapseEmbed
+      handleCollapseEmbed,
     );
 
     return () => {
       SDKEventEmitter.off(
         SDKListenerEventName.UPDATE_CONTEXTUAL_PARAMS,
-        handleUpdateContextualParams
+        handleUpdateContextualParams,
       );
       SDKEventEmitter.off(
         SDKListenerEventName.UPDATE_START_VIDEO_SLUG,
-        handleUpdateStartVideoSlug
+        handleUpdateStartVideoSlug,
       );
       SDKEventEmitter.off(SDKListenerEventName.EXPAND_EMBED, handleExpandEmbed);
       SDKEventEmitter.off(
         SDKListenerEventName.COLLAPSE_EMBED,
-        handleCollapseEmbed
+        handleCollapseEmbed,
       );
     };
   }, [stateEmbedData]);
@@ -244,10 +244,10 @@ export function EmbedProvider({
   }, []);
 
   useEffect(() => {
-    if (embedData.startVideoSlug) {
+    if (stateEmbedData.startVideoSlug) {
       changeActivePlayerTypeToExpandView();
     }
-  }, [embedData]);
+  }, [stateEmbedData]);
 
   const changeActivePlayerTypeToExpandView = useCallback(() => {
     changeActivePlayerType("expand-view");
@@ -261,7 +261,7 @@ export function EmbedProvider({
         sectionList: newSectionList,
       }));
     },
-    [embedEventBus]
+    [embedEventBus],
   );
 
   const updateIsSectioned = useCallback(
@@ -272,7 +272,7 @@ export function EmbedProvider({
         isSectioned: sectioned,
       }));
     },
-    [embedEventBus]
+    [embedEventBus],
   );
 
   const updateSelectedSection = useCallback(
@@ -284,10 +284,10 @@ export function EmbedProvider({
         (currentContext) => ({
           ...currentContext,
           selectedSection: section,
-        })
+        }),
       );
     },
-    [embedEventBus]
+    [embedEventBus],
   );
 
   const changeActiveIndex = useCallback(
@@ -299,7 +299,7 @@ export function EmbedProvider({
         shouldTrackImpression: newIndex !== currentContext.activeIndex,
       }));
     },
-    [embedEventBus]
+    [embedEventBus],
   );
 
   const changeActivePlayerType = useCallback(
@@ -316,10 +316,10 @@ export function EmbedProvider({
           skipTimeOffsetOnce: true,
           previousActiveIndex: currentContext.activeIndex,
           shouldTrackImpression: activeIndex !== currentContext.activeIndex,
-        })
+        }),
       );
     },
-    [embedEventBus]
+    [embedEventBus],
   );
 
   const goBackToPreviousPlayerType = useCallback(() => {
@@ -330,7 +330,7 @@ export function EmbedProvider({
         ...currentContext,
         previousPlayerType: currentContext.activePlayerType,
         activePlayerType: currentContext.previousPlayerType ?? "embed",
-      })
+      }),
     );
   }, [embedEventBus]);
 
@@ -359,7 +359,7 @@ export function EmbedProvider({
           (currentContext) => ({
             ...currentContext,
             disableSwiper: false,
-          })
+          }),
         );
       }
     }
@@ -388,7 +388,7 @@ export function EmbedProvider({
             (currentContext) => ({
               ...currentContext,
               containerInView: inView,
-            })
+            }),
           );
         }
 

@@ -480,12 +480,12 @@
         callOnGenuinReadyCallback(genuinSDKInstance)
         return
       }
-      loadMainCSS().then(() => {
-        loadSDK().then((sdk) => {
-          const genuinSDKInstance = sdk.default || sdk.Genuin
-          callOnGenuinReadyCallback(genuinSDKInstance)
-        })
+      // loadMainCSS().then(() => {
+      loadSDK().then((sdk) => {
+        const genuinSDKInstance = sdk.default || sdk.Genuin
+        callOnGenuinReadyCallback(genuinSDKInstance)
       })
+      // })
     } else {
       Object.defineProperty(window, 'onGenuinReady', {
         configurable: true,

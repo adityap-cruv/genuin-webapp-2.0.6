@@ -377,7 +377,7 @@ export class GenuinSDK {
       // Load expand view if expandOnLoad is true, or startVideoSlug is set and expandOnLoad is not explicitly false
       if (
         embedDetails.expandOnLoad === true ||
-        (embedDetails.startVideoSlug && embedDetails.expandOnLoad !== false)
+        (config.startVideoSlug && config.expandOnLoad !== false)
       ) {
         const instanceId = element.getAttribute('data-instance-id')
         if (instanceId && this.sdkElements[instanceId]) {
@@ -446,8 +446,8 @@ export class GenuinSDK {
       // We can also add a config flag to disable this if needed
       const canLazyLoad =
         'IntersectionObserver' in window &&
-        !embedDetails.startVideoSlug && // Don't lazy load if deep linking
-        !embedDetails.expandOnLoad && // Don't lazy load if expand on load is true
+        !config.startVideoSlug && // Don't lazy load if deep linking
+        !config.expandOnLoad && // Don't lazy load if expand on load is true
         !ifComponentIsOnlyForExpand // Don't lazy load if the component is only for expand view (based on initial size check)
 
       if (canLazyLoad) {
@@ -565,7 +565,10 @@ export class GenuinSDK {
   ): void {
     // brandId 2801 is for bargainhunter, 2476 is for usmagazine & 2808 is for lifeandstylemag.
     const ignoreExpiry =
-      brandId === 2801 || brandId === 2476 || brandId === 2808
+      brandId === 2801 ||
+      brandId === 2476 ||
+      brandId === 2808 ||
+      brandId === 3219
     const pendingAction = getPendingAction(ignoreExpiry)
     if (!pendingAction) return
     if (ignoreExpiry) {

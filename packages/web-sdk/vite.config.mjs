@@ -764,8 +764,8 @@ export default defineConfig({
     'process.env.NEXT_PUBLIC_BCC_URL': JSON.stringify(
       process.env.NEXT_PUBLIC_BCC_URL || 'https://brands.qa.begenuin.com',
     ),
-    "process.env.TRACK_OBSERVABILITY": JSON.stringify(
-      process.env.TRACK_OBSERVABILITY || 'false'
+    'process.env.TRACK_OBSERVABILITY': JSON.stringify(
+      process.env.TRACK_OBSERVABILITY || 'false',
     ),
     // NEXT_PUBLIC_* environment variables for process.env access (components package compatibility)
     'process.env.NEXT_PUBLIC_RUDDERSTACK_KEY': JSON.stringify(
@@ -817,8 +817,8 @@ export default defineConfig({
         process.env.RUDDERSTACK_API_KEY ||
         '',
     ),
-     "import.meta.env.TRACK_OBSERVABILITY": JSON.stringify(
-      process.env.TRACK_OBSERVABILITY || 'false'
+    'import.meta.env.TRACK_OBSERVABILITY': JSON.stringify(
+      process.env.TRACK_OBSERVABILITY || 'false',
     ),
     'import.meta.env.NEXT_PUBLIC_RUDDERSTACK_URL': JSON.stringify(
       process.env.NEXT_PUBLIC_RUDDERSTACK_URL ||
