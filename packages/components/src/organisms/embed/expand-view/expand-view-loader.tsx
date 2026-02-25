@@ -6,13 +6,13 @@ import { QueryKey } from "@tanstack/react-query";
 import { FeedSkeleton } from "@genuin/components/templates/feed/feed-skeleton.js";
 
 const EmbedExpandView = lazy(() =>
-  import("./expand-view.js").then((m) => ({ default: m.EmbedExpandView }))
+  import("./expand-view.js").then((m) => ({ default: m.EmbedExpandView })),
 );
 
 const EmbedExpandSectionedView = lazy(() =>
   import("./embed-expand-sectioned-view.js").then((m) => ({
     default: m.EmbedExpandSectionedView,
-  }))
+  })),
 );
 
 type ExpandViewLoaderProps = {
@@ -40,13 +40,13 @@ export function ExpandViewLoader({
 }: ExpandViewLoaderProps) {
   const { embedEventBus } = useEmbedContext();
   const [isExpandMode, setIsExpandMode] = useState(
-    embedEventBus.getContext().activePlayerType === "expand-view"
+    embedEventBus.getContext().activePlayerType === "expand-view",
   );
 
   useEffect(() => {
     const handleActivePlayerTypeChange = (
       _eventData: any,
-      context: EmbedEventContextType
+      context: EmbedEventContextType,
     ) => {
       setIsExpandMode(context.activePlayerType === "expand-view");
     };
