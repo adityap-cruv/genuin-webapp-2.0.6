@@ -28,12 +28,12 @@ export const LazyToaster = lazy(() =>
       const injectStylesIntoShadowRoots = () => {
         const mainHost = document.querySelector('[data-genuin-host]')
         if (mainHost?.shadowRoot) {
-          ensureStylesInShadowRoot(mainHost.shadowRoot)
+          void ensureStylesInShadowRoot(mainHost.shadowRoot)
         }
 
         const overlayHost = document.querySelector('[data-genuin-overlay-host]')
         if (overlayHost?.shadowRoot) {
-          ensureStylesInShadowRoot(overlayHost.shadowRoot)
+          void ensureStylesInShadowRoot(overlayHost.shadowRoot)
         }
       }
 
@@ -286,7 +286,7 @@ export async function loadNewEmbed({
   config.useShadowDOM = true
 
   if (config.useShadowDOM) {
-    targetContainer = setupMainShadowDOM(container)
+    targetContainer = await setupMainShadowDOM(container)
   }
 
   const root = createRoot(targetContainer)

@@ -175,61 +175,36 @@
    * Initialize SDK and create embed based on configuration
    */
   function init(config) {
-    return loadMainCSS().then(() => {
-      return loadSDK().then((sdk) => {
-        const GenuinClass = getSDKClass(sdk)
-        return GenuinClass.newInit(config)
-      })
+    return loadSDK().then((sdk) => {
+      const GenuinClass = getSDKClass(sdk)
+      return GenuinClass.newInit(config)
     })
   }
 
-  /**
-   * Load the main CSS file from the CDN
-   * URL format: {MEDIA_BASE_URL}/sdk/{VERSION_PATH}assets/{CSS_FILENAME}
-   * - MEDIA_BASE_URL: Environment-specific CDN URL (replaced at build time)
-   * - VERSION_PATH: Optional version-specific path (e.g., "2.0.0/" or empty)
-   * - CSS_FILENAME: Hashed CSS filename (replaced at build time)
-   */
-  function loadMainCSS() {
-    return new Promise((resolve, reject) => {
-      const link = document.createElement('link')
-      link.rel = 'stylesheet'
-
-      let cssUrl
-      if (
-        __DEV_ENVIRONMENT__ ||
-        SDK_BASE_URL.includes('localhost') ||
-        SDK_BASE_URL.includes('192.168') ||
-        SDK_BASE_URL.includes('127.0.0.1')
-      ) {
-        // In development or local serving, use the same base URL detection as the JS SDK
-        if (SDK_BASE_URL.startsWith('http') || SDK_BASE_URL.startsWith('/')) {
-          // Absolute URL or root-relative path
-          cssUrl = SDK_BASE_URL + 'assets/__CSS_FILENAME_PLACEHOLDER__'
-        } else {
-          // Relative path - resolve relative to current page
-          const baseUrl = new URL(window.location.href)
-          cssUrl = new URL(
-            SDK_BASE_URL + 'assets/__CSS_FILENAME_PLACEHOLDER__',
-            baseUrl,
-          ).href
-        }
+  function getCSSUrl() {
+    let cssUrl
+    if (
+      __DEV_ENVIRONMENT__ ||
+      SDK_BASE_URL.includes('localhost') ||
+      SDK_BASE_URL.includes('192.168') ||
+      SDK_BASE_URL.includes('127.0.0.1')
+    ) {
+      // In development or local serving, use the same base URL detection as the JS SDK
+      if (SDK_BASE_URL.startsWith('http') || SDK_BASE_URL.startsWith('/')) {
+        // Absolute URL or root-relative path
+        cssUrl = SDK_BASE_URL + 'assets/__CSS_FILENAME_PLACEHOLDER__'
       } else {
-        cssUrl = `__MEDIA_BASE_URL__/sdk/__SDK_VERSION_PATH__assets/__CSS_FILENAME_PLACEHOLDER__`
+        // Relative path - resolve relative to current page
+        const baseUrl = new URL(window.location.href)
+        cssUrl = new URL(
+          SDK_BASE_URL + 'assets/__CSS_FILENAME_PLACEHOLDER__',
+          baseUrl,
+        ).href
       }
-
-      link.href = cssUrl
-
-      link.onload = () => {
-        resolve(true)
-      }
-
-      link.onerror = () => {
-        reject(new Error('Failed to load the CSS file.'))
-      }
-
-      document.head.appendChild(link)
-    })
+    } else {
+      cssUrl = `__MEDIA_BASE_URL__/sdk/__SDK_VERSION_PATH__assets/__CSS_FILENAME_PLACEHOLDER__`
+    }
+    return cssUrl
   }
 
   /**
@@ -464,6 +439,7 @@
     version: SDK_VERSION,
     isLoaded: () => sdkLoaded,
     isLoading: () => sdkLoading,
+    cssUrl: getCSSUrl(),
   }
 
   // Setup iframe message handling for legacy compatibility
@@ -480,7 +456,6 @@
         callOnGenuinReadyCallback(genuinSDKInstance)
         return
       }
-      // loadMainCSS().then(() => {
       loadSDK().then((sdk) => {
         const genuinSDKInstance = sdk.default || sdk.Genuin
         callOnGenuinReadyCallback(genuinSDKInstance)
@@ -502,11 +477,9 @@
           if (sdkLoaded && genuinSDKInstance) {
             callOnGenuinReadyCallback(genuinSDKInstance)
           } else {
-            loadMainCSS().then(() => {
-              loadSDK().then((sdk) => {
-                const genuinSDKInstance = sdk.default || sdk.Genuin
-                callOnGenuinReadyCallback(genuinSDKInstance)
-              })
+            loadSDK().then((sdk) => {
+              const genuinSDKInstance = sdk.default || sdk.Genuin
+              callOnGenuinReadyCallback(genuinSDKInstance)
             })
           }
           // Otherwise, it will be called when SDK finishes loading

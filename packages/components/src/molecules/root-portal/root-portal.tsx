@@ -94,12 +94,13 @@ export function RootPortal({
 
   useEffect(() => {
     if (!containerElement) return;
+    containerElement?.classList.add("gen-sdk-class");
+
     const isCarlistBrand =
       brandDetails.brand_id === 3075 || brandDetails.brand_id === 2314;
     if (isCarlistBrand) {
       containerElement.style.backgroundColor = "rgba(0, 0, 0, 0.85)";
     } else {
-      containerElement?.classList.add("gen-sdk-class");
       containerElement?.classList.add(
         theme === "dark" || theme === undefined
           ? "gencl:bg-black"
@@ -119,7 +120,7 @@ export function RootPortal({
         position: useShadowDOM ? "relative" : undefined,
         zIndex: 30,
       }}
-      className={cn("gen-sdk-root-portal", className)}
+      className={cn("gen-sdk-root-portal gen-sdk-class", className)}
     >
       {children}
       {enabledToaster && <Toaster />}

@@ -35,6 +35,8 @@ interface GenuinSDK {
    * Version of the Genuin SDK currently loaded on the page.
    */
   version?: string;
+  // URL of the CSS file for the currently loaded SDK version.
+  cssUrl?: string;
 }
 
 declare global {
