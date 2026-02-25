@@ -698,10 +698,22 @@ export class GenuinSDK {
    * A function to check if the embed is only for expand view based on the configuration.
    */
   private checkIfEmbedIsOnlyForExpand(container: HTMLElement) {
-    const clientWidth = container.clientWidth
-    const clientHeight = container.clientHeight
+    // Treat elements with zero dimensions or hidden visibility as expand-only
+    // (these should not be lazy-loaded since they may be shown via an expand action)
+    try {
+      const clientWidth = container.clientWidth
+      const clientHeight = container.clientHeight
+      const style = window.getComputedStyle(container)
+      const isVisibilityHidden =
+        style.visibility === 'hidden' ||
+        style.visibility === 'collapse' ||
+        container.hidden
 
-    return clientWidth === 0 || clientHeight === 0
+      return clientWidth === 0 || clientHeight === 0 || isVisibilityHidden
+    } catch (e) {
+      // Fallback to size-based detection if computed style access fails
+      return container.clientWidth === 0 || container.clientHeight === 0
+    }
   }
 
   private async updateStartVideoId({
