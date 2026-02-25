@@ -68,7 +68,7 @@ export function ExpandViewLoader({
   }
 
   return (
-    <Suspense fallback={<FeedSkeleton variant="fullscreen" />}>
+    <Suspense fallback={null}>
       <EmbedExpandView
         videos={videos}
         hasNextPage={hasNextPage}

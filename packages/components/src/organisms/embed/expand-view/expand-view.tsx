@@ -1,6 +1,7 @@
 import { useEmbedContext } from "@genuin/components/context/embed";
+import { EmbedEventContextType } from "@genuin/components/context/embed/event-bus";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
-import { useEffect, useState, lazy } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { QueryKey } from "@tanstack/react-query";
 import { RootPortal } from "@genuin/components/molecules/root-portal";
@@ -14,26 +15,27 @@ import {
   SDKEventName,
   SDKListenerEventName,
 } from "@genuin/components/lib/sdk-event-emitter";
+import { FeedSkeleton } from "@genuin/components/templates/feed/feed-skeleton.js";
 import useViewportHeight from "@genuin/components/hooks/use-screen-height";
 
 const FeedView = lazy(() =>
   import("../../../templates/feed/index.js").then((module) => ({
     default: module.FeedView,
-  })),
+  }))
 );
 
 const StandardWall = lazy(() =>
   import("../../../page/standard-wall/standard-wall.js").then((module) => ({
     default: module.StandardWall,
-  })),
+  }))
 );
 
 const IheartFullscreenContainer = lazy(() =>
   import("../../../molecules/iheart-full-screen-contaner/index.js").then(
     (module) => ({
       default: module.IheartFullscreenContainer,
-    }),
-  ),
+    })
+  )
 );
 type EmbedExpandViewProps = {
   videos: PostDetailsType[];
@@ -59,11 +61,13 @@ const ExpandViewContent = ({
   return !(community || group || user) ? (
     defaultComponent
   ) : (
-    <StandardWall
-      className="gencl:h-full gencl:w-full"
-      defaultComponent={defaultComponent}
-      baseLayoutVariant="embed-expand-view"
-    />
+    <Suspense fallback={<FeedSkeleton variant="fullscreen" />}>
+      <StandardWall
+        className="gencl:h-full gencl:w-full"
+        defaultComponent={defaultComponent}
+        baseLayoutVariant="embed-expand-view"
+      />
+    </Suspense>
   );
 };
 
@@ -160,7 +164,7 @@ export function EmbedExpandView({
     // Case 3: Closed via Escape key - sync indices if overlay card was skipped
     // Overlay card exists in embed view but not in expand view
     const overlayIndex = videos.findIndex(
-      (post) => post.video.type === "overlay",
+      (post) => post.video.type === "overlay"
     );
     const hasPassedOverlay = activeIndex > overlayIndex && overlayIndex !== -1;
     if (
@@ -192,14 +196,14 @@ export function EmbedExpandView({
     // Store current mute state when entering expand view
     const currentActiveIndex = context.isSectioned ? 0 : context.activeIndex;
     const overlayIndex = videos.findIndex(
-      (post) => post.video.type === "overlay",
+      (post) => post.video.type === "overlay"
     );
     setStartIndex(
       overlayIndex === -1
         ? currentActiveIndex
         : currentActiveIndex >= overlayIndex
           ? currentActiveIndex - 1
-          : currentActiveIndex,
+          : currentActiveIndex
     );
     if (brandLayoutType === "iheart") {
       setTimeout(() => {
@@ -212,7 +216,7 @@ export function EmbedExpandView({
         baseEventBus.emit(
           "globalPlayingStateChange",
           undefined,
-          (oldContext) => ({ ...oldContext, globalPlayingState: true }),
+          (oldContext) => ({ ...oldContext, globalPlayingState: true })
         );
       }
     } else if (brandLayoutType === "ted") {
@@ -227,13 +231,13 @@ export function EmbedExpandView({
 
     SDKEventEmitter.on(
       SDKListenerEventName.UPDATE_START_VIDEO_SLUG,
-      handleUpdateStartVideoSlug,
+      handleUpdateStartVideoSlug
     );
 
     return () => {
       SDKEventEmitter.off(
         SDKListenerEventName.UPDATE_START_VIDEO_SLUG,
-        handleUpdateStartVideoSlug,
+        handleUpdateStartVideoSlug
       );
     };
   }, [embedEventBus, brandLayoutType, setMuted, muted, videos]);
@@ -322,7 +326,7 @@ export function EmbedExpandView({
       document.removeEventListener("fullscreenchange", handleFsChange);
       document.removeEventListener(
         "webkitfullscreenchange",
-        handleFsChange as any,
+        handleFsChange as any
       );
       // On cleanup, ensure we leave fullscreen if we were in expand-view
       if (isFullscreen()) {
@@ -403,32 +407,34 @@ export function EmbedExpandView({
   }, []);
 
   const defaultComponent = (
-    <FeedView
-      startIndex={startIndex}
-      defaultExpandView
-      onCloseExpandView={handleCloseExpandView}
-      variant="expand"
-      isSectioned={isSectioned}
-      feedData={{
-        videos,
-        fetchNextPage,
-        hasNextPage,
-        isFetchingNextPage,
-        isLoading,
-        queryKey,
-        totalVideos,
-      }}
-      embedOptions={{
-        actions: {
-          comments: comment,
-          share: share,
-          reaction: spark,
-          repost: repost,
-        },
-      }}
-      onActiveIndexChange={changeActiveIndex}
-      disableNativeFullscreenApi
-    />
+    <Suspense fallback={<FeedSkeleton variant="fullscreen" />}>
+      <FeedView
+        startIndex={startIndex}
+        defaultExpandView
+        onCloseExpandView={handleCloseExpandView}
+        variant="expand"
+        isSectioned={isSectioned}
+        feedData={{
+          videos,
+          fetchNextPage,
+          hasNextPage,
+          isFetchingNextPage,
+          isLoading,
+          queryKey,
+          totalVideos,
+        }}
+        embedOptions={{
+          actions: {
+            comments: comment,
+            share: share,
+            reaction: spark,
+            repost: repost,
+          },
+        }}
+        onActiveIndexChange={changeActiveIndex}
+        disableNativeFullscreenApi
+      />
+    </Suspense>
   );
 
   return (
@@ -443,20 +449,22 @@ export function EmbedExpandView({
             websiteType === "legacy" && [
               "gencl:fixed",
               isDesktop ? "gencl:z-[115]!" : "gencl:z-[112]!",
-            ],
+            ]
         )}
         style={{ height: !isIHeart ? `${viewportHeight}px` : "100%" }}
         enabledToaster={!(community || group || user)}
       >
         {isIHeart ? (
-          <IheartFullscreenContainer>
-            <ExpandViewContent
-              defaultComponent={defaultComponent}
-              community={community}
-              group={group}
-              user={user}
-            />
-          </IheartFullscreenContainer>
+          <Suspense fallback={<FeedSkeleton variant="fullscreen" />}>
+            <IheartFullscreenContainer>
+              <ExpandViewContent
+                defaultComponent={defaultComponent}
+                community={community}
+                group={group}
+                user={user}
+              />
+            </IheartFullscreenContainer>
+          </Suspense>
         ) : (
           <ExpandViewContent
             defaultComponent={defaultComponent}
