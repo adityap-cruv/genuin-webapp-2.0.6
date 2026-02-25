@@ -17,6 +17,7 @@ import type { PostDetailsType } from "@genuin/components/react-query/api/feed/sc
 import { usePlayerContext } from "../../context";
 import { ProfileLink } from "@genuin/components/molecules/profile-link";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
+import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
 import { Pills } from "@genuin/components/molecules/feed-player/pills";
 import { controlLayerVariant } from "../control-layer";
 import { VariantProps } from "class-variance-authority";
@@ -33,6 +34,9 @@ import { ClipPlayerCTA } from "../embed/iheart/clip-player-cta";
 import { getBaseUrlWithouthighlights } from "../embed/iheart/use-iheart-playback";
 import type { ExpandViewCallbacks } from "./types";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import { DynamicSheet } from "@genuin/ui";
+import useViewportHeight from "@genuin/components/hooks/use-screen-height";
+import { OctoPanel } from "@genuin/components/molecules/octo-panel";
 
 // Lazy load heavy components
 const Actions = lazy(() =>
@@ -491,6 +495,9 @@ const SharedActions = memo(function SharedActions({
   ) => void;
   isActive: boolean;
 }) {
+  const { updateSheetState, updateSheetContentType } = useSheetState();
+  const { isMobile } = useDeviceDetectMediaQuery();
+
   // Handle iHeart brand controls
   if (brandLayoutType === "iheart") {
     return (
@@ -531,26 +538,18 @@ const SharedActions = memo(function SharedActions({
         slug={postDetails.video.slug}
         groupSlug={postDetails.group.slug}
         actionWrapper={{
-          COMMENT: (defaultNode) => {
+          OCTO: (defaultNode) => {
             return (
-              <CommentsDialog
-                key="comment-dialog"
-                shareUrl={postDetails.video.shareUrl}
-                communityId={postDetails.community.id}
-                loopId={postDetails.group.id}
-                videoId={postDetails.video.id}
-                videoSlug={postDetails.video.slug}
-                commentCount={postDetails.video.commentCount}
-                defaultOpen={defaultOpenCommentDialog}
-                onCommentCountChange={(videoId, increment) => {
-                  onCommentCountChange?.(videoId, increment);
+              <div
+                key="octo-action"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  updateSheetContentType("octo");
+                  updateSheetState("panel-view");
                 }}
               >
                 {defaultNode}
-                <p className="gencl:text-body-2-medium gencl:text-white!">
-                  {postDetails.video.commentCount}
-                </p>
-              </CommentsDialog>
+              </div>
             );
           },
         }}
@@ -596,6 +595,16 @@ export function ExpandViewDetails({
     videoAutoplay,
   } = useExpandViewConfig(postDetails);
   const { brand } = useEmbedConfigs();
+  const viewportHeight = useViewportHeight();
+  const { isDesktop } = useDeviceDetectMediaQuery();
+  const {
+    sheetState,
+    sheetContentType,
+    updateSheetState,
+    updateSheetContentType,
+    resetSheet,
+  } = useSheetState();
+  const isNonDesktop = !isDesktop; // Mobile + Tablet (< 1024px)
   const [isExpanded, setIsExpanded] = useState(false);
   const scrubberRef = useRef<HTMLDivElement>(null);
 
@@ -679,6 +688,45 @@ export function ExpandViewDetails({
             layoutType={brandLayoutType}
             onSwiperToggle={onSwiperToggle}
           />
+
+          <DynamicSheet
+            isOpen={isNonDesktop && sheetContentType === "octo" && isActive}
+            renderMode="container"
+            config={{
+              initialState: "panel-view",
+              enabledStates: ["panel-view", "full-view"],
+              heights: {
+                default: "100px",
+                "default-active": "160px",
+                "expand-view": "300px",
+                "panel-view": "70vh",
+                "full-view": `${viewportHeight}px`,
+              },
+              showClose: true,
+              showOverlay: true,
+              showIndicator: true,
+              navTitle: "Octo",
+              onStateChange: updateSheetState,
+              onClose: resetSheet,
+              theme:
+                sheetState === "full-view" || sheetState === "panel-view"
+                  ? "light"
+                  : "dark",
+            }}
+            onSwiperToggle={onSwiperToggle}
+            className={cn(
+              (sheetState === "panel-view" || sheetState === "full-view") &&
+                "gencl:rounded-t-2xl! gencl:rounded-b-none!",
+            )}
+          >
+            <OctoPanel
+              videoId={postDetails.video.id}
+              videoSlug={postDetails.video.slug}
+              variant="sheet"
+              open={isNonDesktop && sheetContentType === "octo" && isActive}
+              panelClassName="gencl:h-full"
+            />
+          </DynamicSheet>
         </div>
 
         <SharedActions

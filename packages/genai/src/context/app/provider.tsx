@@ -9,6 +9,7 @@ import type {
     IpInfo,
     PendingMessage,
     Session,
+    ThinkingStep,
     ToolMetadataPayload
 } from '@/types';
 import React, { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
@@ -51,6 +52,67 @@ type HandleSendMessageFn = (params: HandleSendMessageParams) => Promise<void>;
 
 // Prevent duplicate processing of the same pendingMessages payload across StrictMode double-mounts
 let lastProcessedPendingMessagesSignature: string | null = null;
+
+const MAX_THINKING_STEPS = 4;
+
+const truncateText = (value: string, max = 140) => {
+    if (!value) return '';
+    return value.length > max ? `${value.slice(0, max - 1)}…` : value;
+};
+
+const normalizeWhitespace = (value: string) => value.replace(/\s+/g, ' ').trim();
+
+const humanizeIdentifier = (value: string) =>
+    value
+        .replace(/[_-]+/g, ' ')
+        .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+const parseFunctionResponse = (value: unknown) => {
+    if (value == null) return '';
+    if (typeof value === 'string') {
+        const trimmed = value.trim();
+        if (!trimmed) return '';
+        try {
+            const parsed = JSON.parse(trimmed);
+            if (typeof parsed === 'string') {
+                return parsed;
+            }
+        } catch {
+            // ignore parse errors - fall back to trimmed string
+        }
+        return trimmed.replace(/^"|"$/g, '');
+    }
+    try {
+        return JSON.stringify(value);
+    } catch {
+        return String(value);
+    }
+};
+
+const extractToolMetadataSummary = (payload: ToolMetadataPayload | undefined) => {
+    if (!payload) return undefined;
+    if (Array.isArray(payload.content)) {
+        const textEntry = payload.content.find(item => typeof item?.text === 'string');
+        if (textEntry?.text) {
+            return textEntry.text;
+        }
+    }
+
+    const displayName = payload.structuredContent?.templates?.display_name;
+    const totalCount = payload.structuredContent?.total_count;
+
+    if (displayName && typeof totalCount === 'number') {
+        return `Received ${totalCount} results from ${displayName}`;
+    }
+
+    if (displayName) {
+        return `Received results from ${displayName}`;
+    }
+
+    return undefined;
+};
 
 export const AgentsProvider: React.FC<AgentsProviderProps> = ({
     children,
@@ -160,8 +222,14 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                         .map(item => item.prompt)
                         .filter((prompt): prompt is string => typeof prompt === 'string' && prompt.length > 0);
                     if (videoPrompts.length > 0) {
-                        const randomPrompt = videoPrompts[Math.floor(Math.random() * videoPrompts.length)];
-                        prompts = randomPrompt ? [randomPrompt] : [];
+                        const randomIndex = Math.floor(Math.random() * videoPrompts.length);
+                        const randomPrompt = videoPrompts[randomIndex];
+                        const orderedPrompts = randomPrompt
+                            ? [randomPrompt, ...videoPrompts.filter((_, index) => index !== randomIndex)]
+                            : videoPrompts;
+                        prompts = orderedPrompts;
+                    } else {
+                        prompts = [];
                     }
                 } catch (error) {
                     console.error('Failed to fetch video suggested prompts:', error);
@@ -173,8 +241,12 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                     const response = await getSuggestedPrompts(currentAgent);
                     const agentPrompts = response.data?.prompts ?? [];
                     if (agentPrompts.length > 0) {
-                        const randomPrompt = agentPrompts[Math.floor(Math.random() * agentPrompts.length)];
-                        prompts = randomPrompt ? [randomPrompt] : [];
+                        const randomIndex = Math.floor(Math.random() * agentPrompts.length);
+                        const randomPrompt = agentPrompts[randomIndex];
+                        const orderedPrompts = randomPrompt
+                            ? [randomPrompt, ...agentPrompts.filter((_, index) => index !== randomIndex)]
+                            : agentPrompts;
+                        prompts = orderedPrompts;
                     } else {
                         prompts = [];
                     }
@@ -262,9 +334,10 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                             ...s,
                             chat: [...s.chat, thinkingAgentEvent],
                             thinking: true,
+                            thinkingSteps: [],
                         };
                     }
-                    return { ...s, thinking: true };
+                    return { ...s, thinking: true, thinkingSteps: [] };
                 })
             );
 
@@ -282,6 +355,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                                 ...s,
                                 chat,
                                 thinking: false,
+                                thinkingSteps: [],
                             };
                         })
                     );
@@ -298,6 +372,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                             ...s,
                             chat,
                             thinking: false,
+                            thinkingSteps: [],
                         };
                     })
                 );
@@ -500,6 +575,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                     chat,
                     thinking: false,
                     status: 'error',
+                    thinkingSteps: [],
                 };
             })
         );
@@ -538,6 +614,79 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                     let hasStreamingUpdate = wasThinking;
                     const lastEvent = chat[chat.length - 1];
                     let shouldStopThinking = false;
+
+                    const existingSteps = s.thinkingSteps ?? [];
+                    let thinkingSteps: ThinkingStep[] = existingSteps;
+                    let stepsMutated = false;
+
+                    const ensureStepsClone = () => {
+                        if (!stepsMutated) {
+                            thinkingSteps = [...thinkingSteps];
+                            stepsMutated = true;
+                        }
+                    };
+
+                    const resetThinkingSteps = () => {
+                        if (thinkingSteps.length > 0 || !stepsMutated) {
+                            thinkingSteps = [];
+                            stepsMutated = true;
+                        }
+                    };
+
+                    const addThinkingStep = (step: ThinkingStep) => {
+                        ensureStepsClone();
+                        thinkingSteps = [...thinkingSteps, step];
+                        if (thinkingSteps.length > MAX_THINKING_STEPS) {
+                            thinkingSteps = thinkingSteps.slice(-MAX_THINKING_STEPS);
+                        }
+                    };
+
+                    const updateThinkingStepAtIndex = (index: number, updater: (current: ThinkingStep) => ThinkingStep) => {
+                        if (index < 0 || index >= thinkingSteps.length) return;
+                        ensureStepsClone();
+                        thinkingSteps[index] = updater(thinkingSteps[index]);
+                    };
+
+                    const newCycleTriggered =
+                        !wasThinking &&
+                        (data.type === 'function_call' ||
+                            data.type === 'function_response' ||
+                            data.type === 'message' ||
+                            data.function_name !== undefined ||
+                            data.function_response !== undefined ||
+                            data.agent_message_id !== undefined);
+
+                    if (newCycleTriggered) {
+                        resetThinkingSteps();
+                    }
+
+                    if (
+                        data.type === 'metadata' &&
+                        typeof data.session_name === 'string' &&
+                        data.session_name.trim()
+                    ) {
+                        const stepId = `session-name-${sessionId}`;
+                        const summary = truncateText(
+                            normalizeWhitespace(data.session_name),
+                            80
+                        );
+                        const existingIndex = thinkingSteps.findIndex(step => step.id === stepId);
+                        const payload: ThinkingStep = {
+                            id: stepId,
+                            type: 'metadata',
+                            title: 'Naming conversation',
+                            detail: summary,
+                        };
+
+                        if (existingIndex >= 0) {
+                            updateThinkingStepAtIndex(existingIndex, current => ({
+                                ...current,
+                                ...payload,
+                            }));
+                        } else {
+                            addThinkingStep(payload);
+                        }
+                    }
 
                     if (data.type === 'tool_metadata' && data.tool_metadata) {
                         let toolMetadataPayload: ToolMetadataPayload | undefined;
@@ -587,12 +736,37 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                                 chat.push(updatedEvent);
                             }
 
+                            const summary = extractToolMetadataSummary(toolMetadataPayload);
+                            if (summary) {
+                                addThinkingStep({
+                                    id: uuidv4(),
+                                    type: 'tool',
+                                    title: 'Tool results ready',
+                                    detail: truncateText(normalizeWhitespace(summary), 160),
+                                });
+                            }
+
                             shouldStopThinking = true;
                         }
                     }
 
                     if (data.function_name !== undefined) {
                         hasStreamingUpdate = true;
+                        if (typeof data.function_name === 'string' && data.function_name.trim()) {
+                            const functionName = data.function_name.trim();
+                            const existingFunctionStep = thinkingSteps.find(
+                                step => step.functionName === functionName
+                            );
+
+                            if (!existingFunctionStep && data.type === 'function_call') {
+                                addThinkingStep({
+                                    id: uuidv4(),
+                                    type: 'function_call',
+                                    title: `Calling ${humanizeIdentifier(functionName)}`,
+                                    functionName,
+                                });
+                            }
+                        }
                         if (lastEvent) {
                             chat[chat.length - 1] = {
                                 ...lastEvent,
@@ -603,13 +777,58 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                     if (data.function_response !== undefined) {
                         hasStreamingUpdate = true;
                         if (lastEvent) {
+                            let parsedResponse: unknown = data.function_response;
+                            if (typeof data.function_response === 'string') {
+                                try {
+                                    parsedResponse = JSON.parse(data.function_response);
+                                } catch (err) {
+                                    parsedResponse = data.function_response;
+                                }
+                            }
                             chat[chat.length - 1] = {
                                 ...lastEvent,
                                 message: {
                                     ...lastEvent.message,
-                                    function_response: JSON.parse(data.function_response),
+                                    function_response: parsedResponse,
                                 },
                             };
+                        }
+
+                        const responseSummary = truncateText(
+                            normalizeWhitespace(parseFunctionResponse(data.function_response)),
+                            160
+                        );
+
+                        if (responseSummary) {
+                            let targetIndex = -1;
+                            for (let i = thinkingSteps.length - 1; i >= 0; i--) {
+                                const step = thinkingSteps[i];
+                                if (
+                                    (step.type === 'function_call' || step.type === 'function_response') &&
+                                    step.functionName
+                                ) {
+                                    targetIndex = i;
+                                    break;
+                                }
+                            }
+
+                            if (targetIndex >= 0) {
+                                const step = thinkingSteps[targetIndex];
+                                const friendlyName = humanizeIdentifier(step.functionName ?? 'Function');
+                                updateThinkingStepAtIndex(targetIndex, current => ({
+                                    ...current,
+                                    type: 'function_response',
+                                    title: `${friendlyName} responded`,
+                                    detail: responseSummary,
+                                }));
+                            } else {
+                                addThinkingStep({
+                                    id: uuidv4(),
+                                    type: 'function_response',
+                                    title: 'Function responded',
+                                    detail: responseSummary,
+                                });
+                            }
                         }
                     }
 
@@ -626,6 +845,30 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                     // Handle message chunks - streaming agent response
                     if (data.message !== undefined) {
                         hasStreamingUpdate = true;
+
+                        if (typeof data.message === 'string' && data.message.trim()) {
+                            const chunk = normalizeWhitespace(data.message);
+                            const responseStepId = 'agent-response';
+                            const existingIndex = thinkingSteps.findIndex(step => step.id === responseStepId);
+
+                            if (existingIndex >= 0) {
+                                updateThinkingStepAtIndex(existingIndex, current => {
+                                    const base = current.detail ? `${current.detail} ${chunk}` : chunk;
+                                    return {
+                                        ...current,
+                                        title: 'Drafting response',
+                                        detail: truncateText(normalizeWhitespace(base), 160),
+                                    };
+                                });
+                            } else {
+                                addThinkingStep({
+                                    id: responseStepId,
+                                    type: 'message',
+                                    title: 'Drafting response',
+                                    detail: truncateText(chunk, 160),
+                                });
+                            }
+                        }
 
                         if (data.agent_message_id) {
                             // Find or create agent event with this agent_message_id
@@ -839,6 +1082,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                         hasNewName: sessionNameUpdated ? Boolean(isSidebarCollapsed) : s.hasNewName,
                         thinking,
                         hasNewMessage: currentSessionId !== sessionId,
+                        thinkingSteps: thinking ? thinkingSteps : [],
                     };
                 });
             });
@@ -950,6 +1194,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                         hasNewName: false,
                         status: 'fetched',
                         hasNewMessage: false,
+                        thinkingSteps: [],
                     },
                 ]);
                 setCurrentSessionIdState(tempSessionId);
@@ -974,6 +1219,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                                   chat: [...s.chat, userEvent, thinkingAgentEvent],
                                   updatedAt: timestamp,
                                   thinking: true,
+                                  thinkingSteps: [],
                               }
                             : s
                     )
@@ -1043,6 +1289,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                     hasNewMessage: false,
                     thinking: false,
                     chat: [],
+                    thinkingSteps: [],
                 });
             }
             return sessions;
@@ -1059,6 +1306,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
             hasNewMessage: false,
             thinking: false,
             chat: [],
+            thinkingSteps: [],
         }));
         // don't set if session already exists
         const existingSessions = sessions.map(s => s.id);

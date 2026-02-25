@@ -11,8 +11,8 @@ import type {
 import axios from 'axios';
 import type {
     CreateSessionV2Response,
+    GetAgentIdResponse,
     GetAgentsV2Response,
-    GetBrandOctoHeadResponse,
     GetChatHistoryV2Response,
     GetSessionsV2Response,
     StartChatResponse,
@@ -104,7 +104,7 @@ const routes = {
     deleteSessionV2: `/api/v1/maya/sessions`,
     startChat: `/api/v1/maya/chat/start`,
     chatStream: `/api/v1/maya/chat/stream`,
-    getBrandOctoHead: `/api/v1/maya/brand_octo_head`,
+    getAgentId: `/api/v1/maya/agent_id`,
     getVideoSuggestedPrompts: `/api/v1/maya/agents/get_video_suggested_prompts`,
     renderInventory: `/api/v1/maya/inventory/render`,
 
@@ -127,9 +127,28 @@ const routes = {
 };
 
 
-export async function getBrandOctoHead(brand_id: number) {
-    return api.get<GetBrandOctoHeadResponse>(routes.getBrandOctoHead, {
-        params: { brand_id },
+export async function getBrandAgentId(
+    brand_id: number,
+    options?: {
+        agent_facing?: string | null;
+        agent_type?: string | null;
+    }
+) {
+    const params: Record<string, string | number> = {
+        brand_id,
+    };
+
+    const agentFacing = options?.agent_facing ?? 'consumer_facing';
+    if (agentFacing) {
+        params.agent_facing = agentFacing;
+    }
+
+    if (options?.agent_type) {
+        params.agent_type = options.agent_type;
+    }
+
+    return api.get<GetAgentIdResponse>(routes.getAgentId, {
+        params,
     });
 }
 

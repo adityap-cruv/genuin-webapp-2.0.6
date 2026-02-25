@@ -3,14 +3,14 @@ import { useBaseContext } from "@genuin/components/context/base";
 const ControlLayer = lazy(() =>
   import("../../molecules/feed-player/control-layer/index.js").then((m) => ({
     default: m.ControlLayer,
-  }))
+  })),
 );
 
 // Lazy load video player to defer heavy playback logic
 const FeedPlayer = lazy(() =>
   import("../../molecules/feed-player/index.js").then((m) => ({
     default: m.FeedPlayer,
-  }))
+  })),
 );
 
 import { PlayerProvider } from "../../molecules/feed-player/context/provider";
@@ -22,6 +22,8 @@ import { useCallback, useMemo, lazy, Suspense } from "react";
 import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
 import { ComponentProps } from "react";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 
 type PlayerProps = {
   post: PostDetailsType;
@@ -83,6 +85,9 @@ export function Player({
     view: { brandLayoutType },
     video: { videoCrop },
   } = useEmbedConfigs();
+  const { sheetState } = useSheetState();
+  const { isDesktop } = useDeviceDetectMediaQuery();
+  const isNonDesktop = !isDesktop; // Mobile + Tablet (< 1024px)
 
   // Detect accessibility mode based on browser accessibility preferences
   const isAccessibilityMode = useMemo(() => detectAccessibilityMode(), []);
@@ -98,7 +103,7 @@ export function Player({
         }
       }
     },
-    [activeIndex, muted, showGestureOverlay]
+    [activeIndex, muted, showGestureOverlay],
   );
 
   // load player when the post is active or previous/next post is active or the post is visible
@@ -121,40 +126,59 @@ export function Player({
       >
         <div
           className={cn(
-            "gencl:group gencl:relative gencl:h-full gencl:w-full gencl:overflow-clip",
+            "gencl:group gencl:relative gencl:h-full gencl:w-full gencl:overflow-clip gencl:transition-all gencl:duration-300 gencl:ease-in-out",
             {
               "gencl:sm:rounded-xl!": !showExpandView,
             },
             {
               "gencl:sm:rounded!": brandLayoutType === "iheart",
-            }
+            },
+            isNonDesktop &&
+              isActive &&
+              (sheetState === "panel-view" || sheetState === "full-view") &&
+              "gencl:flex gencl:flex-col",
           )}
           // tabIndex={showExpandView ? 0 : -1}
           // role="region"
           // aria-label={`Video ${index + 1} - ${post.video.attributes?.title || post.video.descritptionText || "Video content"}`}
         >
-          <Suspense fallback={null}>
-            <FeedPlayer
-              videoId={post.video.id}
-              videoDescription={post.video.descritptionText}
-              src={post.video.source}
-              adUrl={post.video.adUrl ?? undefined}
-              id={"feed-player--" + post.video.id}
-              poster={post.video.thumbnail ?? ""}
-              className={cn(
-                "gencl:h-full! gencl:w-full",
-                videoCrop
-                  ? "gencl:object-cover gencl:bg-cover!"
-                  : "gencl:object-contain gencl:bg-contain!"
-              )}
-              playsInline
-              onTimeUpdate={handleTimeUpdate}
-              onEnded={() => {
-                showGestureOverlay("SWIPE");
-              }}
-              style={{ height: "inherit" }}
-            />
-          </Suspense>
+          <div
+            className={cn(
+              "gencl:relative gencl:transition-all gencl:duration-300 gencl:ease-in-out",
+              isNonDesktop && isActive && sheetState === "panel-view"
+                ? "gencl:h-[30vh] gencl:flex-shrink-0"
+                : isNonDesktop && isActive && sheetState === "full-view"
+                  ? "gencl:h-0 gencl:flex-shrink-0"
+                  : "gencl:h-full",
+            )}
+          >
+            <Suspense fallback={null}>
+              <FeedPlayer
+                videoId={post.video.id}
+                videoDescription={post.video.descritptionText}
+                src={post.video.source}
+                adUrl={post.video.adUrl ?? undefined}
+                id={"feed-player--" + post.video.id}
+                poster={post.video.thumbnail ?? ""}
+                className={cn(
+                  "gencl:h-full! gencl:w-full",
+                  videoCrop ||
+                    (isNonDesktop &&
+                      isActive &&
+                      (sheetState === "panel-view" ||
+                        sheetState === "full-view"))
+                    ? "gencl:object-contain gencl:bg-contain!"
+                    : "gencl:object-cover gencl:bg-cover!",
+                )}
+                playsInline
+                onTimeUpdate={handleTimeUpdate}
+                onEnded={() => {
+                  showGestureOverlay("SWIPE");
+                }}
+                style={{ height: "inherit" }}
+              />
+            </Suspense>
+          </div>
           <Suspense fallback={null}>
             <ControlLayer
               index={index}
@@ -167,6 +191,7 @@ export function Player({
               showCloseButton={variant === "expand"}
               onReactionStateChange={onReactionStateChange}
               onCommentCountChange={onCommentCountChange}
+              onSwiperToggle={onSwiperToggle}
               // Applies GPU acceleration to prevent layer flickering on iOS devices during animations
               className="gencl:translate-x-0"
             />

@@ -11,7 +11,7 @@ import {
     Regenerate,
 } from '@/assets/SvgIcons/icons';
 // import { responseFeedback } from '@/lib/api';
-import type { Agent, Artifact, ChatHistoryEvent } from '@/types';
+import type { Agent, Artifact, ChatHistoryEvent, ThinkingStep } from '@/types';
 import type { HandleSendMessageParams } from '@/context/app/provider';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
@@ -36,6 +36,7 @@ import VideoMetadata from './VideoMetadata';
 import InventoryWidget from './InventoryWidget';
 import { Player } from '@lottiefiles/react-lottie-player';
 import { getCachedRemoteLottie, loadRemoteLottie } from '@/lib/lottie/load-remote-lottie';
+import ThinkingStatusList from './ThinkingStatusList';
 
 const AGENT_THINKING_ANIMATION_PATH =
     'Small thinking/animations/f151a6e3-0e0c-414c-9c71-621a2d9f4a2b.json';
@@ -153,6 +154,7 @@ type ItemProps = {
     setFeedback: (sessionId: string, responseId: string, liked: boolean) => void;
     handleSendMessage: (params: HandleSendMessageParams) => Promise<void>;
     view: 'page' | 'floater' | 'dialog' | 'web-sdk';
+    thinkingSteps: ThinkingStep[];
 };
 
 // Tune chunk sizes to balance timeliness vs. smooth streaming feel.
@@ -296,6 +298,7 @@ const ItemComponent: React.FC<ItemProps> = ({
     // setFeedback,
     handleSendMessage,
     view,
+    thinkingSteps,
 }) => {
     // Get the message content
     const content = event.message.content;
@@ -413,8 +416,8 @@ const ItemComponent: React.FC<ItemProps> = ({
 
     const toolMetadata = event.metadata?.toolMetadata;
     const isToolMetadataEvent = Boolean(toolMetadata);
-    const shouldRenderCarousel =
-        messageType === 'agent' && Boolean(event.carousel_metadata);
+
+    const shouldRenderCarousel = messageType === 'agent' && Boolean(event.carousel_metadata);
 
     // const handleFeedback = async (e: React.MouseEvent, liked: boolean) => {
     //     e.preventDefault();
@@ -486,20 +489,24 @@ const ItemComponent: React.FC<ItemProps> = ({
                             const loadFailed = isThinking
                                 ? thinkingLottieError
                                 : idleLottieError;
+                            const shouldShowStatus =
+                                isThinking && isLastMessage && thinkingSteps.length > 0;
 
                             return (
-                                <div className='gai:flex gai:h-12 gai:w-12 gai:items-center gai:justify-center gai:overflow-hidden gai:rounded-full gai:bg-primary-50'>
-                                    {activeLottieSrc && !loadFailed ? (
-                                        <Player
-                                            autoplay
-                                            loop
-                                            src={activeLottieSrc}
-                                            style={{ width: '100%', height: '100%' }}
-                                        />
-                                    ) : (
-                                        <div className='gai:flex gai:h-full gai:w-full gai:items-center gai:justify-center gai:text-xl'>
-                                        </div>
-                                    )}
+                                <div className='gai:flex gai:w-full gai:items-start gai:gap-3'>
+                                    <div className='gai:flex gai:h-12 gai:w-12 gai:flex-shrink-0 gai:items-center gai:justify-center gai:overflow-hidden gai:rounded-full gai:bg-primary-50'>
+                                        {activeLottieSrc && !loadFailed ? (
+                                            <Player
+                                                autoplay
+                                                loop
+                                                src={activeLottieSrc}
+                                                style={{ width: '100%', height: '100%' }}
+                                            />
+                                        ) : (
+                                            <div className='gai:flex gai:h-full gai:w-full gai:items-center gai:justify-center gai:text-xl' />
+                                        )}
+                                    </div>
+                                    {shouldShowStatus && <ThinkingStatusList steps={thinkingSteps} />}
                                 </div>
                             );
                         }

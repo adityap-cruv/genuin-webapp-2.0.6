@@ -46,7 +46,7 @@ export function WebSDKPresetPrompts({ setIsSuggestionsOpen, onClose }: WebSDKPre
         track('genai:suggested_prompt', payload);
     };
 
-    const containerClasses = `gai:absolute gai:z-21 gai:right-0 ${showAllObjectives ? 'gai:top-full gai:bottom-auto gai:mt-3' : 'gai:bottom-full gai:mb-3'} gai:left-0 ${enteredInChatMode ? 'gai:bg-utility-white' : 'gai:bg-primary-50'}'}`;
+    const containerClasses = `gai:absolute gai:z-21 gai:right-0 ${showAllObjectives ? 'gai:top-full gai:bottom-auto gai:mt-3' : 'gai:bottom-full gai:mb-3'} gai:left-0 ${enteredInChatMode ? 'gai:bg-utility-white' : 'gai:bg-primary-50'}`;
     const itemClasses = `gai:cursor-pointer gai:border-b gai:border-b-secondary-gray-150 gai:px-4 gai:py-3 gai:font-body-1-med gai:text-secondary-gray-700 gai:last:border-b-0 gai:first:rounded-t-xl gai:last:rounded-b-xl ${enteredInChatMode ? 'gai:hover:bg-primary-50' : 'gai:hover:bg-primary-100'}`;
 
     if (isLoadingSuggestedPrompts) {

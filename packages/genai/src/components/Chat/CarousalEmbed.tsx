@@ -90,6 +90,7 @@ const GenuinEmbed = ({
             }
 
             window.genuin.init({
+                container_id: containerRef.current.id,
                 style_id: import.meta.env.VITE_GEN_SDK_STYLE_ID,
                 placement_id: import.meta.env.VITE_GEN_SDK_PLACEMENT_ID,
                 api_key: import.meta.env.VITE_API_KEY,
@@ -119,19 +120,9 @@ const GenuinEmbed = ({
 
         isInitializedRef.current = true;
 
-        return () => {
-            if (!isInitializedRef.current || !window.genuin) {
-                return;
-            }
-
-            if (!isWebSdkView && containerRef.current?.id) {
-                try {
-                    window.genuin.destroy();
-                } catch (error) {
-                    console.error('[CarousalEmbed] Error destroying standalone SDK instance', error);
-                }
-            }
-        };
+        // NO CLEANUP - Let React's normal unmounting handle it
+        // The web-sdk's own cleanup in react-utils.tsx will handle React roots properly
+        // Prevents cascade destroy when dependencies change during re-renders
     }, [
         carousalMetadata,
         isSdkLoaded,

@@ -1,5 +1,5 @@
-import { getBrandOctoHead, getIpInfo, getSessionsV2, getSubAgentsV2, userContext } from '@/lib/api';
-import type { GetBrandOctoHeadResponse, SessionV2, SubAgentV2 } from '@/lib/apiTypes';
+import { getBrandAgentId, getIpInfo, getSessionsV2, getSubAgentsV2, userContext } from '@/lib/api';
+import type { GetAgentIdResponse, SessionV2, SubAgentV2 } from '@/lib/apiTypes';
 import type { AxiosResponse } from 'axios';
 import type { Agent, AgentType, PendingMessage, Session } from '@/types';
 import type { HandleSendMessageParams } from '../provider';
@@ -59,8 +59,10 @@ export const useAppBootstrap = ({
             const isWebSdkView = view === 'web-sdk';
             const shouldFetchAgents = shouldFetchBackendData && !isWebSdkView;
 
-            const [brandOctoHeadRes, agentsRes, sessionsRes, ipRes] = await Promise.allSettled([
-                shouldFetchBackendData && isWebSdkView ? getBrandOctoHead(brandId) : Promise.resolve(null),
+            const [agentIdRes, agentsRes, sessionsRes, ipRes] = await Promise.allSettled([
+                shouldFetchBackendData && isWebSdkView
+                    ? getBrandAgentId(brandId, { agent_facing: 'consumer_facing' })
+                    : Promise.resolve(null),
                 shouldFetchAgents ? getSubAgentsV2(brandId) : Promise.resolve(null),
                 shouldFetchBackendData ? getSessionsV2(brandId, isMaya) : Promise.resolve(null),
                 getIpInfo(),
@@ -69,25 +71,17 @@ export const useAppBootstrap = ({
             let webSdkAgentId: string | undefined;
 
             if (isWebSdkView) {
-                if (brandOctoHeadRes.status === 'fulfilled' && brandOctoHeadRes.value) {
-                    const response = brandOctoHeadRes.value as AxiosResponse<GetBrandOctoHeadResponse> | null;
-                    const payload = response?.data;
-                    const data = payload?.data;
+                if (agentIdRes.status === 'fulfilled' && agentIdRes.value) {
+                    const response = agentIdRes.value as AxiosResponse<GetAgentIdResponse> | null;
+                    const agentId = response?.data?.data;
 
-                    if (typeof data === 'string') {
-                        webSdkAgentId = data;
-                    } else if (data && typeof data === 'object') {
-                        const possibleId = (data as { agent_id?: string; id?: string }).agent_id || (data as { id?: string }).id;
-                        if (typeof possibleId === 'string') {
-                            webSdkAgentId = possibleId;
-                        }
+                    if (typeof agentId === 'string' && agentId.length > 0) {
+                        webSdkAgentId = agentId;
+                    } else {
+                        console.error('Agent id response missing agent id');
                     }
-
-                    if (!webSdkAgentId) {
-                        console.error('Brand octo head response missing agent id');
-                    }
-                } else if (brandOctoHeadRes.status === 'rejected') {
-                    console.error('Failed to fetch brand octo head agent id:', brandOctoHeadRes.reason);
+                } else if (agentIdRes.status === 'rejected') {
+                    console.error('Failed to fetch agent id:', agentIdRes.reason);
                 }
             }
 
@@ -147,6 +141,7 @@ export const useAppBootstrap = ({
                     hasNewMessage: false,
                     thinking: false,
                     chat: [],
+                    thinkingSteps: [],
                 }));
 
                 setSessions(prev => {
@@ -178,6 +173,7 @@ export const useAppBootstrap = ({
                     hasNewMessage: false,
                     thinking: false,
                     chat: [],
+                    thinkingSteps: [],
                 };
                 setSessions([localSession]);
             }

@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import type { SyntheticEvent } from 'react';
 import Spinner from '../ui/spinner';
 import type { ToolMetadataPayload } from '@/types';
 import { renderInventoryWidget, type InventoryRenderRequest, type InventoryRenderResponse } from '@/lib/api';
@@ -68,10 +69,55 @@ const InventoryWidget = ({ metadata }: InventoryWidgetProps) => {
     const [htmlContents, setHtmlContents] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
+    const [iframeHeights, setIframeHeights] = useState<number[]>([]);
 
-    const renderPayloads = useMemo(() => deriveRenderPayloads(metadata), [metadata]);
+    const renderPayloads = useMemo(() => deriveRenderPayloads(metadata).slice(0, 2), [metadata]);
     const requestId = metadata?._meta?.request_id ?? 'inventory-widget';
     const isWebSdkView = view === 'web-sdk';
+    const defaultFrameWidth = isWebSdkView ? '100%' : '408px';
+    const defaultIframeHeight = 320;
+    const overflowPadding = 10;
+
+    useEffect(() => {
+        if (htmlContents.length === 0) {
+            setIframeHeights([]);
+            return;
+        }
+
+        setIframeHeights(Array(htmlContents.length).fill(defaultIframeHeight));
+    }, [htmlContents, defaultIframeHeight]);
+
+    const handleIframeLoad = useCallback(
+        (index: number) => (event: SyntheticEvent<HTMLIFrameElement>) => {
+            const iframe = event.currentTarget;
+
+            try {
+                const doc = iframe.contentDocument ?? iframe.contentWindow?.document;
+                if (!doc) {
+                    return;
+                }
+
+                const bodyHeight = doc.body?.scrollHeight ?? 0;
+                const docHeight = doc.documentElement?.scrollHeight ?? 0;
+                const contentHeight = Math.max(bodyHeight, docHeight);
+
+                if (contentHeight <= 0) {
+                    return;
+                }
+
+                setIframeHeights((prev) => {
+                    const next = [...prev];
+                    const hasOverflow = contentHeight > defaultIframeHeight;
+                    const heightWithPadding = hasOverflow ? contentHeight + overflowPadding : Math.max(contentHeight, defaultIframeHeight);
+                    next[index] = heightWithPadding;
+                    return next;
+                });
+            } catch (err) {
+                console.error('[InventoryWidget] Unable to resize iframe', err);
+            }
+        },
+        [defaultIframeHeight, overflowPadding],
+    );
 
     useEffect(() => {
         if (!isWebSdkView) {
@@ -91,7 +137,7 @@ const InventoryWidget = ({ metadata }: InventoryWidgetProps) => {
 
                 const responses = await Promise.all(renderPayloads.map((payload) => renderInventoryWidget(payload)));
                 if (!isActive) return;
-                const htmlSnippets = responses.map((response) => extractHtml(response)).filter(Boolean);
+                const htmlSnippets = responses.map((response) => extractHtml(response)).filter(Boolean).slice(0, 2);
 
                 if (htmlSnippets.length === 0) {
                     setError('Unable to load inventory widget.');
@@ -125,10 +171,8 @@ const InventoryWidget = ({ metadata }: InventoryWidgetProps) => {
         return null;
     }
 
-    const frameWidth = isWebSdkView ? '100%' : '408px';
-
     return (
-        <div style={{ width: frameWidth, maxWidth: frameWidth }}>
+        <div style={{ width: defaultFrameWidth, maxWidth: defaultFrameWidth }}>
             {isLoading ? (
                 <div className='gai:overflow-hidden gai:rounded-xl gai:border gai:border-secondary-gray-200 gai:bg-white'>
                     <div className='gai:flex gai:h-[320px] gai:w-full gai:items-center gai:justify-center'>
@@ -152,9 +196,14 @@ const InventoryWidget = ({ metadata }: InventoryWidgetProps) => {
                                 title={`inventory-widget-${requestId}-${index}`}
                                 srcDoc={content}
                                 className='gai:w-full'
-                                style={{ width: frameWidth, maxWidth: frameWidth, height: '320px', maxHeight: '320px' }}
+                                style={{
+                                    width: defaultFrameWidth,
+                                    maxWidth: defaultFrameWidth,
+                                    height: iframeHeights[index] ?? defaultIframeHeight,
+                                }}
                                 sandbox='allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation'
                                 loading='lazy'
+                                onLoad={handleIframeLoad(index)}
                             />
                         </div>
                     ))}

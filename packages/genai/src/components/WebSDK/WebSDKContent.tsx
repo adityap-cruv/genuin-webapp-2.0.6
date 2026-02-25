@@ -18,6 +18,7 @@ export function WebSDKContent() {
         handleSendMessage,
         isLoadingSuggestedPrompts,
         textAreaRef,
+        setIsSuggestionsOpen,
     } = useAgentsContext();
     const { setInput } = useInputContext();
 
@@ -26,6 +27,7 @@ export function WebSDKContent() {
     const [showDummyMessage, setShowDummyMessage] = useState(false);
     const [countdown, setCountdown] = useState<number | null>(null);
     const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
+    const [showPresetPrompts, setShowPresetPrompts] = useState(false);
 
     // Handle click on auto-prompt message - cancel countdown and copy to input
     const handleAutoPromptClick = () => {
@@ -43,6 +45,10 @@ export function WebSDKContent() {
         // Hide dummy message
         setShowDummyMessage(false);
 
+        // Show preset prompts dropdown once user interacts with auto prompt
+        setShowPresetPrompts(true);
+        setIsSuggestionsOpen(true);
+
         // Copy message to input
         setInput(firstPrompt);
 
@@ -50,6 +56,11 @@ export function WebSDKContent() {
         if (textAreaRef) {
             textAreaRef.focus();
         }
+    };
+
+    const handleClosePresetPrompts = () => {
+        setShowPresetPrompts(false);
+        setIsSuggestionsOpen(false);
     };
 
     // Ensure chat mode is enabled for web-sdk and select first agent on initial load
@@ -70,6 +81,8 @@ export function WebSDKContent() {
             const firstPrompt = suggestedPrompts[0];
             setShowDummyMessage(true);
             setCountdown(5);
+            setShowPresetPrompts(false);
+            setIsSuggestionsOpen(false);
 
             // Start countdown timer
             let timeLeft = 5;
@@ -97,6 +110,8 @@ export function WebSDKContent() {
             // Clear dummy message if session exists
             setShowDummyMessage(false);
             setCountdown(null);
+            setShowPresetPrompts(false);
+            setIsSuggestionsOpen(false);
             if (countdownIntervalRef.current) {
                 clearInterval(countdownIntervalRef.current);
                 countdownIntervalRef.current = null;
@@ -189,7 +204,12 @@ export function WebSDKContent() {
             </div>
             <div className={`${shouldShowLoader ? 'gai:bg-transparent' : 'gai:bg-white'} gai:px-4 gai:py-4`}>
                 <div className='gai:mx-auto gai:w-full'>
-                    <WebSDKInput hideBackground={shouldShowLoader} />
+                    <WebSDKInput
+                        hideBackground={shouldShowLoader}
+                        showPresetPrompts={showPresetPrompts}
+                        onClosePresetPrompts={handleClosePresetPrompts}
+                        setIsSuggestionsOpen={setIsSuggestionsOpen}
+                    />
                 </div>
             </div>
         </div>

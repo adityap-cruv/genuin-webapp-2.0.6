@@ -313,9 +313,12 @@ function initializeDraggability(floaterElement: HTMLElement) {
 export async function init(initConfig: SDKConfig) {
     currentConfig = { ...initConfig };
     window.GenAISDK.forceOpen = true;
-    if (appInstance?.unmount) {
-        appInstance.unmount();
-        appInstance = null;
+
+    // ✅ Don't unmount existing instance on re-init
+    // This keeps chat history alive and prevents breaking nested carousels
+    if (appInstance) {
+        console.log('[GenAI SDK] Already initialized, reusing existing instance');
+        return;
     }
 
     if (!initConfig.brandId || !initConfig.userId) {

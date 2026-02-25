@@ -4,13 +4,13 @@ import { SwiperImplementation } from "./swiper-implementation";
 import { AdInfoType } from "@genuin/components/molecules/feed-player";
 
 const Player = lazy(() =>
-  import("./player.js").then((m) => ({ default: m.Player }))
+  import("./player.js").then((m) => ({ default: m.Player })),
 );
 
 const WatchBoundaryOverlay = lazy(() =>
   import(
     "../../molecules/feed-player/control-layer/watch-boundary-overlay.js"
-  ).then((m) => ({ default: m.WatchBoundaryOverlay }))
+  ).then((m) => ({ default: m.WatchBoundaryOverlay })),
 );
 
 interface NonSectionedContentProps {
@@ -35,13 +35,14 @@ interface NonSectionedContentProps {
   onReactionStateChange?: (
     videoId: string,
     videoSlug: string,
-    isReacted: boolean
+    isReacted: boolean,
   ) => void;
   onCommentCountChange?: any;
   totalVideos?: number;
   isSectioned: boolean;
   onAdStarted?: (event?: AdInfoType) => void;
   onAdEnded?: (event?: AdInfoType) => void;
+  onSwiperToggle?: (disable: boolean) => void;
 }
 
 export function NonSectionedContent({
@@ -65,6 +66,7 @@ export function NonSectionedContent({
   isSectioned,
   onAdEnded,
   onAdStarted,
+  onSwiperToggle,
 }: NonSectionedContentProps) {
   return (
     <SwiperImplementation
@@ -134,6 +136,7 @@ export function NonSectionedContent({
                     index={index}
                     onAdEnded={onAdEnded}
                     onAdStarted={onAdStarted}
+                    onSwiperToggle={onSwiperToggle}
                   />
                 </Suspense>
               ) : post.video.type === "complete" ? (

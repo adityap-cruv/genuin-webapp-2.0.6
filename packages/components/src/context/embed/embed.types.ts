@@ -118,7 +118,7 @@ export type SDKConfig = {
   embed_page?: string;
   embed_id?: string;
   brand_colors?: any;
-  live_customization_data?: any;
+  live_customization_data?: Partial<CustomizationType>;
   token?: string;
   name?: string;
   contextualParams?: ContextualParamsType;
@@ -422,6 +422,7 @@ export type UserParam = {
  * - "comment": Represents a user adding a comment to the content.
  * - "become-a-creator": Represents a user signing up to become a content creator.
  * - "iheart-follow": Represents a user following an iHeart station or podcast.
+ * - "octo": Represents a user opening the Octo panel in the embed.
  *
  * Use these types to specify which automatic user interaction should be performed in the embed context.
  */
@@ -435,7 +436,8 @@ export type ActionType =
   | "join-group"
   | "subscribe-group"
   | "become-a-creator"
-  | "iheart-follow";
+  | "iheart-follow"
+  | "octo";
 
 type AutoUserInteractionToPerformType = ActionType;
 

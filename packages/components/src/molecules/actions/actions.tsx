@@ -405,18 +405,43 @@ export function Actions({
               })
             : action.icon;
 
-        // For mobile variant, render icon directly without TooltipAction
+        // For mobile variant, render icon directly (Octo gets circular treatment)
         if (variant === "mobile") {
+          const mobileIcon =
+            isOctoAction && isValidElement(action.icon)
+              ? cloneElement(action.icon, {
+                  size: "100%",
+                  className: cn(
+                    "gencl:h-full gencl:w-full",
+                    (action.icon.props as { className?: string }).className
+                  ),
+                })
+              : iconElement;
+
+          const mobileNode = isOctoAction ? (
+            <TooltipAction
+              icon={mobileIcon}
+              tooltipText={action.tooltipText}
+              variant={theme}
+              iconSize="fill"
+              disableTooltip
+            />
+          ) : (
+            <div className="gencl:flex gencl:h-12 gencl:w-12 gencl:items-center gencl:justify-center">
+              {mobileIcon}
+            </div>
+          );
+
           if (actionWrapper?.[action.actionType]) {
             return (
               <div key={key}>
-                {actionWrapper[action.actionType]!(iconElement, context)}
+                {actionWrapper[action.actionType]!(mobileNode, context)}
               </div>
             );
           }
           return (
             <div key={key}>
-              {defaultActionWrappers[action.actionType](iconElement, context)}
+              {defaultActionWrappers[action.actionType](mobileNode, context)}
             </div>
           );
         }

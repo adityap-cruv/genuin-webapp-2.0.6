@@ -510,12 +510,6 @@ export class GenuinSDK {
       }
 
       embedDetails = { ...embedDetails, ...config.live }
-
-      Object.assign(
-        embedDetails.customization,
-        config.live.live_customization_data || {},
-      )
-
       config.embedDetails = embedDetails
     }
 
@@ -525,6 +519,13 @@ export class GenuinSDK {
         config.styleId,
       )
       config.embedDetails = embedDetails
+    }
+
+    if (config.live?.live_customization_data && config.embedDetails) {
+      config.embedDetails.customization = this.deepMergeObjects(
+        config.embedDetails.customization ?? {},
+        config.live.live_customization_data,
+      )
     }
 
     this.themeManager.applyBrandColors(element, brandDetails.brand_colors)

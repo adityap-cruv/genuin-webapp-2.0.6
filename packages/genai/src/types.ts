@@ -123,6 +123,16 @@ export type ChatHistoryEvent = BaseChatMessage & {
     agent_id?: string | null;
 };
 
+export type ThinkingStepType = 'metadata' | 'function_call' | 'function_response' | 'message' | 'tool';
+
+export type ThinkingStep = {
+    id: string;
+    type: ThinkingStepType;
+    title: string;
+    detail?: string;
+    functionName?: string;
+};
+
 export type Session = {
     id: string;
     thinking: boolean;
@@ -133,6 +143,7 @@ export type Session = {
     updatedAt: string;
     hasNewName: boolean; // Flag to trigger typewriter effect for new session names
     hasNewMessage: boolean; // Flag to indicate if there are new messages in the session
+    thinkingSteps: ThinkingStep[];
 };
 
 export type SessionsPanelProps = {

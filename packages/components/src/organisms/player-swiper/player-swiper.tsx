@@ -67,6 +67,11 @@ import { calculateSlideDimensions } from "./utils";
 import { useFocusManagement } from "@genuin/components/hooks/use-focus-management";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 import { type AdInfoType } from "@genuin/components/molecules/feed-player";
+import { DynamicSheet } from "@genuin/ui";
+import { CommentsList } from "@genuin/components/molecules/comments/comments-list";
+import { setQueryDataForNewComment } from "@genuin/components/react-query/api/comments";
+import { CommentInputBox } from "@genuin/components/molecules/comments/comment-input";
+import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
 import type { OctoPanelHandle } from "../../molecules/octo-panel";
 
 const CloseButton = lazy(() =>
@@ -161,6 +166,7 @@ export function PlayerList({
     view: { brandLayoutType, websiteType, isAdsEnabledInIheart },
   } = useEmbedConfigs();
   const embedDetails = useSafeEmbedContext();
+  const { sheetState, updateSheetState, updateSheetContentType } = useSheetState();
   const [isEndOfFeedReached, setEndOfFeedReached] = useState<boolean>(false);
   const [isAdPlaying, setIsAdPlaying] = useState<boolean>(false);
   // if we use directly isTablet from the hook then for desktop it will be true based on useDeviceDetectMediaQuery implementation
@@ -282,8 +288,15 @@ export function PlayerList({
         }
       }
     },
-    [isSectioned, horizontalSwiper, activeSwiper]
+    [isSectioned, horizontalSwiper, activeSwiper],
   );
+
+  // Disable swiper when sheet is in panel-view or full-view, enable otherwise
+  useEffect(() => {
+    const shouldDisable =
+      sheetState === "full-view" || sheetState === "panel-view";
+    handleSwiperToggle(shouldDisable);
+  }, [sheetState, handleSwiperToggle]);
 
   /*
 We need to filter out these posts because we shouldn't show the overlay middleware
@@ -493,6 +506,7 @@ a swiper inside another swiper.
                     isSectioned={isSectioned}
                     onAdStarted={handleAdStarted}
                     onAdEnded={handleAdEnded}
+                    onSwiperToggle={handleSwiperToggle}
                   />
                 </Suspense>
               )}
@@ -651,8 +665,24 @@ a swiper inside another swiper.
                       key={"octo-panel-" + filteredPost[activeIndex]?.video.id}
                       onClick={(event) => {
                         event.stopPropagation();
+
+                        const sheetActive =
+                          sheetState === "panel-view" ||
+                          sheetState === "full-view";
+
+                        if (!isDesktop) {
+                          if (!sheetActive && isCommentOpen) {
+                            setCommentOpen(false);
+                          }
+                          updateSheetContentType("octo");
+                          updateSheetState("panel-view");
+                          return;
+                        }
+
                         const nextState = !isOctoOpen;
-                        if (nextState && isCommentOpen) setCommentOpen(false);
+                        if (nextState && isCommentOpen) {
+                          setCommentOpen(false);
+                        }
                         setOctoOpen(nextState);
                       }}
                     >
@@ -679,19 +709,59 @@ a swiper inside another swiper.
         filteredPost[activeIndex] &&
         brandLayoutType !== "iheart" &&
         isDesktop && (
-          <div className="gencl:max-w-118 gencl:w-full gencl:h-full gencl:hidden gencl:sm:block! gencl:py-6">
+          <div className="gencl:max-w-118 gencl:w-full gencl:h-[calc(100%-48px)] gencl:hidden gencl:sm:block! gencl:py-6">
             <Suspense fallback={null}>
-              <Comments
-                videoId={filteredPost[activeIndex].video.id}
-                loopId={filteredPost[activeIndex].group.id}
-                communityId={filteredPost[activeIndex].community?.id}
-                videoSlug={filteredPost[activeIndex].video.slug}
-                className="gencl:h-full"
-                showCloseButton={isCommentOpen}
-                onClose={toggleComment}
-                onCommentCountChange={onCommentCountChange}
-                shareUrl={filteredPost[activeIndex].video.shareUrl}
-              />
+              <DynamicSheet
+                isOpen
+                renderMode="inline"
+                config={{
+                  initialState: "full-view",
+                  enabledStates: ["full-view"],
+                  heights: {
+                    "full-view": "100%",
+                  },
+                  showClose: true,
+                  showIndicator: false,
+                  navTitle: "Comments",
+                  disableDragAndSwipe: true,
+                  disableAnimation: true,
+                  onClose: () => {
+                    toggleComment();
+                  },
+                  theme: "light",
+                }}
+                onDragging={handleSwiperToggle}
+                footer={
+                  <CommentInputBox
+                    communityId={filteredPost[activeIndex].community.id}
+                    shareUrl={filteredPost[activeIndex].video.shareUrl}
+                    loopId={filteredPost[activeIndex].group.id}
+                    videoId={filteredPost[activeIndex].video.id}
+                    videoSlug={filteredPost[activeIndex].video.slug}
+                    onCommentPosted={(comments) => {
+                      if (filteredPost[activeIndex]) {
+                        setQueryDataForNewComment(
+                          filteredPost[activeIndex].video.id,
+                          comments,
+                        );
+                        onCommentCountChange?.(
+                          filteredPost[activeIndex].video.id,
+                        );
+                      }
+                    }}
+                  />
+                }
+                footerClassName="gencl:px-0 gencl:py-0"
+              >
+                <CommentsList
+                  videoId={filteredPost[activeIndex].video.id}
+                  showCloseButton={false}
+                  shareUrl={filteredPost[activeIndex].video.shareUrl}
+                  className="gencl:pt-4"
+                  videoSlug={filteredPost[activeIndex].video.slug}
+                  onCommentCountChange={onCommentCountChange}
+                />
+              </DynamicSheet>
             </Suspense>
           </div>
         )}

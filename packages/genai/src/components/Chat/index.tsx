@@ -58,6 +58,7 @@ const Chat = () => {
     const events = currentSession?.chat || [];
     const lastEventId = events.length > 0 ? events[events.length - 1].id : null;
     const sessionThinking = currentSession?.thinking;
+    const thinkingSteps = currentSession?.thinkingSteps || [];
     return (
         <>
             <SDKLoader onLoad={() => setSdkLoaded(true)} />
@@ -79,6 +80,7 @@ const Chat = () => {
                             isSdkLoaded={sdkLoaded}
                             handleSendMessage={handleSendMessage}
                             view={view}
+                            thinkingSteps={thinkingSteps}
                         />
                     );
                 })}

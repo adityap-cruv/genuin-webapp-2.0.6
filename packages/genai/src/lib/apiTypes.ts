@@ -5,16 +5,8 @@ export interface BaseResponse {
     message: string;
 }
 
-export type BrandOctoHeadData =
-    | string
-    | {
-          agent_id?: string;
-          id?: string;
-          [key: string]: unknown;
-      };
-
-export interface GetBrandOctoHeadResponse extends BaseResponse {
-    data: BrandOctoHeadData;
+export interface GetAgentIdResponse extends BaseResponse {
+    data: string;
 }
 
 export interface VideoSuggestedPromptItem {
