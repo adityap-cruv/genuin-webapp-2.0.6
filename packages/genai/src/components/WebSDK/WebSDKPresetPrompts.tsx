@@ -67,11 +67,13 @@ export function WebSDKPresetPrompts({ setIsSuggestionsOpen, onClose }: WebSDKPre
                 <div
                     key={index}
                     className={itemClasses}
-                    onClick={() => {
+                    onMouseDown={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
                         trackEvent(prompt);
                         setInput(prompt);
-                        setIsSuggestionsOpen(true);
                         focusInput();
+                        setIsSuggestionsOpen(true);
                         onClose?.();
                     }}
                 >

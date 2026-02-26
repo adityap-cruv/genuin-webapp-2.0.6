@@ -45,6 +45,14 @@ export function CustomInput({ hideBackground = false }: CustomInputProps) {
         setTextAreaRef(textareaRef.current);
     }, [setTextAreaRef]);
 
+    // Auto-resize textarea when input changes (for preset prompts, auto-prompt, etc.)
+    useEffect(() => {
+        if (textareaRef.current) {
+            textareaRef.current.style.height = 'auto';
+            textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 120) + 'px';
+        }
+    }, [input]);
+
     const currentSession = sessions.find(session => session.id === currentSessionId);
 
     const handleOnClick = async () => {
@@ -73,6 +81,11 @@ export function CustomInput({ hideBackground = false }: CustomInputProps) {
             if (!creatingSession && (input || currentSession?.thinking)) {
                 handleOnClick();
             }
+        }
+
+        // Prevent arrow keys from propagating to parent player-swiper
+        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+            e.stopPropagation();
         }
     };
 
