@@ -297,12 +297,29 @@ export class GenuinSDK {
     }
     // Update start video slug in the embed/placement where the instance id matches.
     if (config?.start_video_slug && config.container_id) {
+      // User-provided data takes priority
       await this.updateStartVideoId({
         startVideoSlug: config.start_video_slug,
         containerId: config.container_id,
         action: config.action,
         commentId: config.comment_id,
       })
+    } else {
+      // No start_video_slug from user — check localStorage for a pending action
+      const pendingAction = getPendingAction()
+      if (pendingAction?.videoSlug) {
+        // Use container_id from config if available, otherwise fall back to the divId stored in the pending action
+        const containerId = config?.container_id ?? pendingAction.divId
+        if (containerId) {
+          await this.updateStartVideoId({
+            startVideoSlug: pendingAction.videoSlug,
+            containerId,
+            action: pendingAction.action as ActionType | undefined,
+            commentId: pendingAction.commentId,
+          })
+          clearPendingAction()
+        }
+      }
     }
   }
 
