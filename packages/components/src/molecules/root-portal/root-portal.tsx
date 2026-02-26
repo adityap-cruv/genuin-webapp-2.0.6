@@ -70,7 +70,7 @@ export function RootPortal({
           brandDetails.brand_id === 3075 ||
           brandDetails.brand_id === 2314
         ) {
-          host.style.zIndex = "999999";
+          host.style.zIndex = "1000000";
         }
         // Apply custom styles to the overlay host when provided via props
         if (style) {

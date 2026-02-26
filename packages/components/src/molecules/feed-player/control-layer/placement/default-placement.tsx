@@ -196,6 +196,7 @@ export const DefaultPlacement: FC<ControlLayerPropsType> = ({
               showImmediately
               linkouts={postDetails.video.linkouts}
               linkoutId={postDetails.video.linkoutId}
+              videoDetails={postDetails.video}
             />
           </Suspense>
         )}

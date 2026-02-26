@@ -39,6 +39,7 @@ export const DefaultEmbed: FC<ControlLayerPropsType> = ({
                 showImmediately
                 linkouts={postDetails.video.linkouts}
                 linkoutId={postDetails.video.linkoutId}
+                videoDetails={postDetails.video}
               />
             </Suspense>
           )}

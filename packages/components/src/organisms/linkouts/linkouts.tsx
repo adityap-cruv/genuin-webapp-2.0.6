@@ -10,6 +10,7 @@ import { useAnalytics } from "@genuin/components/context/analytics/context";
 import { cva, VariantProps } from "class-variance-authority";
 import { CTAOnlyCard } from "@genuin/components/molecules/linkouts";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+import { buildLinkoutsAnalyticsData } from "..";
 
 export const linkOutVariant = cva("gencl:space-y-4", {
   variants: {
@@ -105,9 +106,20 @@ export function Linkouts({
   const { track, EventName } = useAnalytics();
   const [isVisible, setIsVisible] = useState(showImmediately);
   const [shouldRender, setShouldRender] = useState(
-    showImmediately || showLinkouts
+    showImmediately || showLinkouts,
   );
   const isEmbed = variant === "embed";
+
+  const analyticsEventData = useMemo(
+    () =>
+      buildLinkoutsAnalyticsData({
+        videoDetails,
+        totalVideos,
+        positionIndex,
+        autoplay,
+      }),
+    [videoDetails, totalVideos, positionIndex, autoplay],
+  );
 
   useEffect(() => {
     // Handle immediate display without animation
@@ -116,7 +128,9 @@ export function Linkouts({
       setIsVisible(true);
 
       if (linkouts && linkouts.length > 0) {
+        console.log({ analyticsEventData });
         track(EventName.LINKOUTS_VIEWED, {
+          ...analyticsEventData,
           linkoutId,
           count: linkouts.length,
         });
@@ -132,7 +146,9 @@ export function Linkouts({
         setIsVisible(true);
 
         if (linkouts && linkouts.length > 0) {
+          console.log({ analyticsEventData });
           track(EventName.LINKOUTS_VIEWED, {
+            ...analyticsEventData,
             linkoutId,
             count: linkouts.length,
           });
@@ -154,6 +170,7 @@ export function Linkouts({
     track,
     EventName.LINKOUTS_VIEWED,
     showImmediately,
+    analyticsEventData,
   ]);
 
   // Memoize rendered linkouts to avoid unnecessary re-renders
@@ -171,7 +188,7 @@ export function Linkouts({
 
       // Sort links by position if available
       const sortedLinks = [...links].sort(
-        (a, b) => (a.position || 0) - (b.position || 0)
+        (a, b) => (a.position || 0) - (b.position || 0),
       );
 
       // Render CTA-only card if configured
@@ -254,7 +271,7 @@ export function Linkouts({
     ? "gencl:w-full"
     : cn(
         "gencl:transition-transform gencl:duration-300 gencl:ease-out gencl:w-full",
-        isVisible ? "gencl:translate-y-0" : "gencl:translate-y-full"
+        isVisible ? "gencl:translate-y-0" : "gencl:translate-y-full",
       );
 
   return (
@@ -262,7 +279,7 @@ export function Linkouts({
       className={cn(
         animationClasses,
         linkOutVariant({ variant, cardVariant }),
-        className
+        className,
       )}
       {...restProps}
     >
