@@ -57,6 +57,7 @@ interface EmbedRootProps {
   user?: AuthUser | null
   wasLazilyLoaded?: boolean
   brandLayoutType: BrandType
+  isOnlyForExpand?: boolean
 }
 
 function EmbedSkeleton({
@@ -121,6 +122,7 @@ export function EmbedRoot({
   user,
   wasLazilyLoaded,
   brandLayoutType,
+  isOnlyForExpand,
 }: EmbedRootProps) {
   return (
     <ReactQueryClientProvider>
@@ -170,7 +172,10 @@ export function EmbedRoot({
                   {embedData.style === 'standard_wall' ? (
                     <LazyStandardWall />
                   ) : (
-                    <LazyEmbed wasLazilyLoaded={wasLazilyLoaded} />
+                    <LazyEmbed
+                      wasLazilyLoaded={wasLazilyLoaded}
+                      isOnlyForExpand={isOnlyForExpand}
+                    />
                   )}
                 </Suspense>
                 {config.useShadowDOM && (

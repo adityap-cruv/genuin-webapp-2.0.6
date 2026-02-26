@@ -7,4 +7,5 @@ export type EmbedProps = ComponentProps<"div"> & {
     pageParams?: any[];
   };
   wasLazilyLoaded?: boolean;
+  isOnlyForExpand?: boolean;
 };

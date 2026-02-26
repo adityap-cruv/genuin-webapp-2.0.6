@@ -441,7 +441,10 @@ export class GenuinSDK {
       // loadLoadingView(element, config.theme)
 
       // Function to perform the actual render
-      const renderEmbed = async (wasLazilyLoaded = false) => {
+      const renderEmbed = async (
+        wasLazilyLoaded = false,
+        isOnlyForExpand: boolean,
+      ) => {
         const { loadNewEmbed } = await import('./react-utils')
         const cleanup = await loadNewEmbed({
           container: element,
@@ -450,6 +453,7 @@ export class GenuinSDK {
           config,
           user,
           wasLazilyLoaded,
+          isOnlyForExpand,
         })
         // Store the cleanup function in sdkElements
         this.storeCleanupFunction(element, cleanup)
@@ -458,6 +462,7 @@ export class GenuinSDK {
       // A flag to check if the component is only for expand view based on the initial size check, if true we will not lazy load this component as it might cause issues in loading the expand view.
       const ifComponentIsOnlyForExpand =
         this.checkIfEmbedIsOnlyForExpand(element)
+      // const ifComponentIsOnlyForExpand = true
 
       // Check for IntersectionObserver support for lazy loading
       // We can also add a config flag to disable this if needed
@@ -472,7 +477,7 @@ export class GenuinSDK {
           (entries) => {
             entries.forEach((entry) => {
               if (entry.isIntersecting) {
-                renderEmbed(true) // Pass true for wasLazilyLoaded
+                renderEmbed(true, ifComponentIsOnlyForExpand) // Pass true for wasLazilyLoaded
                 observer.disconnect()
               }
             })
@@ -488,7 +493,7 @@ export class GenuinSDK {
         this.storeCleanupFunction(element, () => observer.disconnect())
       } else {
         // Fallback to eager release
-        await renderEmbed(false)
+        await renderEmbed(false, ifComponentIsOnlyForExpand)
       }
     } catch (error) {
       console.error('Error initializing embed:', error)

@@ -256,6 +256,7 @@ export async function loadNewEmbed({
   config,
   user,
   wasLazilyLoaded,
+  isOnlyForExpand,
 }: {
   container: HTMLElement
   embedData: EmbedDataType
@@ -263,6 +264,7 @@ export async function loadNewEmbed({
   config: Partial<SingleEmbedDataConfig>
   user?: AuthUser | null
   wasLazilyLoaded?: boolean
+  isOnlyForExpand?: boolean
 }): Promise<() => void> {
   // Performance marker: Embed render start
   const embedId = embedData.embed_id || embedData.placement_id || 'unknown'
@@ -337,6 +339,7 @@ export async function loadNewEmbed({
         user={user}
         wasLazilyLoaded={wasLazilyLoaded}
         brandLayoutType={brandLayoutType}
+        isOnlyForExpand={isOnlyForExpand}
       />
     </Suspense>
   )
