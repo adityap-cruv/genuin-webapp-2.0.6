@@ -72,6 +72,10 @@ export function RootPortal({
         ) {
           host.style.zIndex = "1000000";
         }
+        // Brand : Bargain Hunter
+        else if (brandDetails.brand_id === 2801) {
+          host.style.zIndex = "10000";
+        }
         // Apply custom styles to the overlay host when provided via props
         if (style) {
           Object.assign(host.style, style);
