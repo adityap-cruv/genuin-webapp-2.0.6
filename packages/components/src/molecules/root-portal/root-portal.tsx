@@ -2,13 +2,9 @@ import { useBaseContext } from "@genuin/components/context/base";
 import { cn } from "@genuin/ui/lib/utils";
 import * as React from "react";
 import { createPortal } from "react-dom";
-import { getOrCreateOverlayShadowHost } from "./shadow-root/shadow-dom.utils";
+import { cleanupOverlayShadowHost,getOrCreateOverlayShadowHost } from "./shadow-root/shadow-dom.utils";
 import { Toaster } from "@genuin/ui";
 
-// Track how many portals rely on the shared overlay host so we only
-// destroy it when the final consumer unmounts. Destroying it eagerly
-// breaks other embeds that still expect the host to exist.
-let overlayHostUsageCount = 0;
 
 type RootPortalProps = {
   children: React.ReactNode;
@@ -37,11 +33,9 @@ export function RootPortal({
     React.useState<HTMLElement | null>(null);
   const { parsedBrandColors, isEmbed, useShadowDOM, brandDetails } =
     useBaseContext();
-  const usingOverlayHostRef = React.useRef(false);
 
   React.useEffect(() => {
     setMounted(true);
-    usingOverlayHostRef.current = false;
 
     // Resolve the container element
     if (container) {
@@ -68,8 +62,6 @@ export function RootPortal({
         ) {
           host.style.zIndex = "50";
         }
-        usingOverlayHostRef.current = true;
-        overlayHostUsageCount += 1;
         const container = shadowRoot.querySelector(
           "[data-portal-container]",
         ) as HTMLElement;
@@ -81,9 +73,7 @@ export function RootPortal({
     }
 
     return () => {
-      if (usingOverlayHostRef.current) {
-        overlayHostUsageCount = Math.max(overlayHostUsageCount - 1, 0);
-      }
+      cleanupOverlayShadowHost();
     };
   }, [container]);
 

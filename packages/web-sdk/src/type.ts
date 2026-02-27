@@ -136,4 +136,15 @@ export type SingleEmbedDataConfig = {
   initialVideoIds: string[]
   useShadowDOM?: boolean
   allowGestureScroll: boolean
+  /**
+   * Internal flag set by auto-detection when web-sdk is nested.
+   * Auto-set by DOM traversal looking for data-web-sdk-nested attribute.
+   * Prevents expand view from being loaded for nested embeds.
+   */
+  disableExpandView?: boolean
+  /**
+   * Parent SDK instance ID for nested child SDK communication.
+   * Used when a child SDK is nested within a parent SDK instance.
+   */
+  parentInstanceId?: string
 }
