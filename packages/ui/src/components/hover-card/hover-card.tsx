@@ -4,6 +4,7 @@ import * as React from "react";
 import * as HoverCardPrimitive from "@radix-ui/react-hover-card";
 
 import { cn, getGenclStyles } from "@genuin/ui/lib/utils";
+import { getRootContainer } from "@genuin/ui/lib/shadow-dom.utils";
 
 function HoverCard({
   ...props
@@ -24,15 +25,13 @@ function HoverCardContent({
   align = "center",
   sideOffset = 4,
   style,
-  container,
   ...props
-}: React.ComponentProps<typeof HoverCardPrimitive.Content> & {
-  container?: HoverCardPrimitive.HoverCardPortalProps["container"];
-}) {
+}: React.ComponentProps<typeof HoverCardPrimitive.Content>) {
+  const portalContainer = getRootContainer();
   return (
     <HoverCardPrimitive.Portal
       data-slot="hover-card-portal"
-      container={container ?? document.body}
+      container={portalContainer}
     >
       <HoverCardPrimitive.Content
         data-slot="hover-card-content"
@@ -40,7 +39,7 @@ function HoverCardContent({
         sideOffset={sideOffset}
         className={cn(
           "gen-sdk-class gencl:bg-white gencl:data-[state=open]:animate-in gencl:data-[state=closed]:animate-out gencl:data-[state=closed]:fade-out-0 gencl:data-[state=open]:fade-in-0 gencl:data-[state=closed]:zoom-out-95 gencl:data-[state=open]:zoom-in-95 gencl:data-[side=bottom]:slide-in-from-top-2 gencl:data-[side=left]:slide-in-from-right-2 gencl:data-[side=right]:slide-in-from-left-2 gencl:data-[side=top]:slide-in-from-bottom-2 gencl:z-50 gencl:w-80 gencl:origin-(--radix-hover-card-content-transform-origin) gencl:rounded-2xl gencl:border gencl:border-secondary-150 gencl:p-4 gencl:shadow-md gencl:outline-hidden",
-          className
+          className,
         )}
         style={{ ...style, ...getGenclStyles() }}
         {...props}

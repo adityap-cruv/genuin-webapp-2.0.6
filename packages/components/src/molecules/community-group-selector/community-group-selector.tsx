@@ -19,7 +19,6 @@ import {
   GroupOption,
 } from "./community-group-selector.types";
 import { useBaseContext } from "@genuin/components/context";
-import { getRootContainer } from "../root-portal/shadow-root/shadow-dom.utils";
 
 const transformCommunityData = (data: any[]): CommunityOption[] =>
   data.map((community) => ({
@@ -34,7 +33,7 @@ const transformCommunityData = (data: any[]): CommunityOption[] =>
         (chat: { chat_id: string; group: { group_name: string } }) => ({
           value: chat.chat_id,
           label: chat.group.group_name,
-        })
+        }),
       ) || [],
   }));
 
@@ -51,7 +50,7 @@ function DropdownSelector({
   const { useShadowDOM } = useBaseContext();
   const filteredItems: FilterItem[] = query
     ? items.filter((item) =>
-        item.label.toLowerCase().includes(query.toLowerCase())
+        item.label.toLowerCase().includes(query.toLowerCase()),
       )
     : items;
 
@@ -81,7 +80,6 @@ function DropdownSelector({
         viewportClassName="gencl:p-0"
         showScrollUpButton={false}
         showScrollDownButton={false}
-        container={getRootContainer(useShadowDOM)}
       >
         <div className="gencl:pt-0 gencl:pr-4 gencl:pb-4 gencl:pl-4">
           <div className="gencl:sticky gencl:top-0 gencl:z-10 gencl:bg-white gencl:border-border gencl:pb-2 gencl:pt-4">
@@ -132,7 +130,7 @@ export function CommunityGroupSelector({
   const { data: communityData } = useGetCommunityGroupList();
   const communityOptions = useMemo(
     () => transformCommunityData(communityData || []),
-    [communityData]
+    [communityData],
   );
 
   const [selectedCommunity, setSelectedCommunity] =
@@ -159,11 +157,11 @@ export function CommunityGroupSelector({
     if (!communityOptions?.length) return;
 
     const matchedCommunity = communityOptions.find(
-      (community) => community.value === communityId
+      (community) => community.value === communityId,
     );
 
     const matchedGroup = matchedCommunity?.groups?.find(
-      (group) => group.value === groupId
+      (group) => group.value === groupId,
     );
 
     setSelectedCommunity(matchedCommunity ?? null);

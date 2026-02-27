@@ -5,7 +5,6 @@ import { cn } from "@genuin/ui/utils";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 import { type ComponentProps, type ReactNode } from "react";
-import { getRootContainer } from "../root-portal/shadow-root/shadow-dom.utils";
 
 const tooltipVariants = cva("", {
   variants: {
@@ -59,6 +58,9 @@ export function TooltipAction({
         theme={"custom"}
         className={cn(
           tooltipVariants({ variant }),
+          "gencl:hover:cursor-pointer ",
+          "gencl:h-12 gencl:p-0 gencl:w-12 gencl:flex gencl:items-center gencl:justify-center  gencl:rounded-full",
+          "gencl:[&_svg]:w-8 gencl:[&_svg]:h-8",
           baseClasses,
           !isFillSize && defaultIconClasses,
           fillIconClasses,
@@ -80,6 +82,9 @@ export function TooltipAction({
           baseClasses,
           !isFillSize && defaultIconClasses,
           fillIconClasses,
+          baseClasses,
+          !isFillSize && defaultIconClasses,
+          fillIconClasses,
           className
         )}
         onClick={onClick}
@@ -90,6 +95,9 @@ export function TooltipAction({
           className={cn(
             tooltipVariants({ variant }),
             "gen-sdk-class gen-sdk-root-portal",
+            "gencl:hover:cursor-pointer gen-sdk-class gen-sdk-root-portal",
+            "gencl:h-12 gencl:p-0 gencl:w-12 gencl:flex gencl:items-center gencl:justify-center  gencl:rounded-full",
+            "gencl:[&_svg]:w-8 gencl:[&_svg]:h-8",
             baseClasses,
             !isFillSize && defaultIconClasses,
             fillIconClasses,
@@ -99,11 +107,7 @@ export function TooltipAction({
           {icon}
         </div>
       </TooltipTrigger>
-      <TooltipContent
-        container={getRootContainer(useShadowDOM)}
-        theme={variant ?? "light"}
-        side="right"
-      >
+      <TooltipContent theme={variant ?? "light"} side="right">
         <p>{tooltipText}</p>
       </TooltipContent>
     </Tooltip>

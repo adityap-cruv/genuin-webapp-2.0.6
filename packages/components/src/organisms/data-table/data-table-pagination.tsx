@@ -11,8 +11,6 @@ import {
   ChevronLeftIcon,
   ChevronLastIcon,
 } from "@genuin/ui/icons";
-import { getRootContainer } from "@genuin/components/molecules/root-portal/shadow-root/shadow-dom.utils";
-import { useBaseContext } from "@genuin/components/context";
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;
@@ -22,7 +20,6 @@ export function DataTablePagination<TData>(
   props: DataTablePaginationProps<TData>
 ) {
   const { table, totalCount } = props;
-  const { useShadowDOM } = useBaseContext();
   // Common style for all pagination buttons
   const baseBtnClass =
     "gencl:h-8 gencl:w-6 gencl:px-3 gencl:py-2 gencl:rounded-none gencl:border-0 gencl:text-body-2-medium gencl:shadow-none";
@@ -261,7 +258,6 @@ export function DataTablePagination<TData>(
               <SelectValue />
             </SelectTrigger>
             <SelectContent
-              container={getRootContainer(useShadowDOM)}
               side="top"
               className="gencl:w-18"
             >

@@ -1,6 +1,11 @@
 // shadow-dom.utils.ts
 // Centralized Shadow DOM management for main embed and overlay elements
 
+import {
+  hoistTailwindPropertyAtRulesFromShadowRoot,
+} from "./hoist-tailwind-property-rules";
+
+
 interface StyleRequirement {
   name: string;
   selector: string;
@@ -12,11 +17,6 @@ interface StyleRequirement {
  * Add new style types here to automatically include them
  */
 const REQUIRED_STYLES: StyleRequirement[] = [
-  {
-    name: "web-sdk",
-    selector: 'link[href*="web-sdk"][rel="stylesheet"]',
-    check: (el: Element) => (el as HTMLLinkElement).href.includes("web-sdk"),
-  },
   {
     name: "sonner",
     selector: "style",
@@ -46,7 +46,37 @@ const overlayShadowHostCache = new WeakMap<
  * Ensures shadow root has all required styles (idempotent)
  * Can be called multiple times safely - checks before cloning
  */
-function ensureStylesInShadowRoot(shadowRoot: ShadowRoot): void {
+export async function ensureStylesInShadowRoot(
+  shadowRoot: ShadowRoot,
+): Promise<void> {
+  const cssURL = window.genuin?.cssUrl;
+
+  if (cssURL) {
+    const resolvedCssUrl = new URL(cssURL, window.location.href).href;
+    const existingCssLink = Array.from(
+      shadowRoot.querySelectorAll('link[rel="stylesheet"]'),
+    ).find(
+      (styleLink) => (styleLink as HTMLLinkElement).href === resolvedCssUrl,
+    );
+
+    if (!existingCssLink) {
+      const cssLink = document.createElement("link");
+      cssLink.rel = "stylesheet";
+      cssLink.href = cssURL;
+      shadowRoot.appendChild(cssLink);
+      console.log("✅ Added web-sdk stylesheet from cssUrl to shadow root");
+    }
+
+    // Fetch all @property rules from the CSS URL and inject them into this
+    // shadow root with inherits: true. This must complete before React renders
+    // so that CSS custom properties have their initial values available.
+    await hoistTailwindPropertyAtRulesFromShadowRoot(shadowRoot);
+  } else {
+    console.warn(
+      "⚠️ No cssUrl found in window.genuin. Required styles may not be applied to shadow root.",
+    );
+  }
+
   REQUIRED_STYLES.forEach(({ name, selector, check }) => {
     // Check if this style type already exists in shadow root
     const existsInShadow = Array.from(
@@ -154,7 +184,9 @@ function copyStylesBetweenShadowRoots(
  * Sets up shadow DOM for the main embed container
  * Returns the shadow root that was created or already exists
  */
-export function setupMainShadowDOM(container: HTMLElement): HTMLElement {
+export async function setupMainShadowDOM(
+  container: HTMLElement,
+): Promise<HTMLElement> {
   const rootNode = container.getRootNode();
   const isInShadow = rootNode instanceof ShadowRoot;
   let shadowRoot: ShadowRoot | null = null;
@@ -184,7 +216,7 @@ export function setupMainShadowDOM(container: HTMLElement): HTMLElement {
 
   // Ensure all required styles exist
   if (shadowRoot) {
-    ensureStylesInShadowRoot(shadowRoot);
+    await ensureStylesInShadowRoot(shadowRoot);
   }
 
   return root || container;
@@ -234,7 +266,7 @@ export function getOrCreateOverlayShadowHost(): {
     }
 
     // Then, ensure all required styles from document are present
-    ensureStylesInShadowRoot(shadowRoot);
+    void ensureStylesInShadowRoot(shadowRoot);
 
     // Create portal container for overlay content
     const portalContainer = document.createElement("div");
@@ -250,28 +282,6 @@ export function getOrCreateOverlayShadowHost(): {
   }
 
   return cached;
-}
-
-/**
- * Gets the appropriate container for portaling Shadcn/Radix components
- * Returns overlay shadow root if shadow DOM is enabled, otherwise document.body
- */
-export function getRootContainer(
-  isShadowDomEnabled: boolean,
-): HTMLElement | ShadowRoot {
-  if (!isShadowDomEnabled) {
-    return document.body;
-  }
-
-  const cached = overlayShadowHostCache.get(document);
-  if (cached?.shadowRoot) {
-    const portalContainer = cached.shadowRoot.querySelector(
-      "[data-portal-container]",
-    );
-    return (portalContainer as HTMLElement) || cached.shadowRoot;
-  }
-
-  return document.body;
 }
 
 /**

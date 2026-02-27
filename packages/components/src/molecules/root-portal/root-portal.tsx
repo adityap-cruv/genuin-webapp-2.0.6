@@ -4,6 +4,7 @@ import * as React from "react";
 import { createPortal } from "react-dom";
 import { cleanupOverlayShadowHost,getOrCreateOverlayShadowHost } from "./shadow-root/shadow-dom.utils";
 import { Toaster } from "@genuin/ui";
+import { useEffect } from "react";
 
 
 type RootPortalProps = {
@@ -31,7 +32,7 @@ export function RootPortal({
   const [mounted, setMounted] = React.useState(false);
   const [containerElement, setContainerElement] =
     React.useState<HTMLElement | null>(null);
-  const { parsedBrandColors, isEmbed, useShadowDOM, brandDetails } =
+  const { parsedBrandColors, isEmbed, useShadowDOM, brandDetails, theme } =
     useBaseContext();
 
   React.useEffect(() => {
@@ -62,6 +63,22 @@ export function RootPortal({
         ) {
           host.style.zIndex = "50";
         }
+        // Brand : Carlist
+        else if (
+          brandDetails.brand_id === 3075 ||
+          brandDetails.brand_id === 2314
+        ) {
+          host.style.zIndex = "1000000";
+        }
+        // Brand : Bargain Hunter
+        else if (brandDetails.brand_id === 2801) {
+          host.style.zIndex = "10000";
+        }
+        // Apply custom styles to the overlay host when provided via props
+        if (style) {
+          Object.assign(host.style, style);
+        }
+
         const container = shadowRoot.querySelector(
           "[data-portal-container]",
         ) as HTMLElement;
@@ -77,6 +94,23 @@ export function RootPortal({
     };
   }, [container]);
 
+  useEffect(() => {
+    if (!containerElement) return;
+    containerElement?.classList.add("gen-sdk-class");
+
+    const isCarlistBrand =
+      brandDetails.brand_id === 3075 || brandDetails.brand_id === 2314;
+    if (isCarlistBrand) {
+      containerElement.style.backgroundColor = "rgba(0, 0, 0, 0.85)";
+    } else {
+      containerElement?.classList.add(
+        theme === "dark" || theme === undefined
+          ? "gencl:bg-black"
+          : "gencl:bg-white",
+      );
+    }
+  }, [containerElement, theme]);
+
   if (!isEmbed || !mounted || !containerElement) return null;
 
   const elementToRender = (
@@ -88,7 +122,7 @@ export function RootPortal({
         position: useShadowDOM ? "relative" : undefined,
         zIndex: 30,
       }}
-      className={cn("gen-sdk-root-portal", className)}
+      className={cn("gen-sdk-root-portal gen-sdk-class", className)}
     >
       {children}
       {enabledToaster && <Toaster />}

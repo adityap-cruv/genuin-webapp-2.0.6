@@ -9,7 +9,7 @@ import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config
 const Linkouts = lazy(() =>
   import("@genuin/components/organisms/linkouts/index.js").then((m) => ({
     default: m.Linkouts,
-  }))
+  })),
 );
 
 export const DefaultEmbed: FC<ControlLayerPropsType> = ({
@@ -24,7 +24,7 @@ export const DefaultEmbed: FC<ControlLayerPropsType> = ({
     <div
       className={cn(
         "gencl:flex gencl:h-full gencl:flex-col gencl:justify-between",
-        className
+        className,
       )}
       {...restProps}
     >
@@ -39,6 +39,7 @@ export const DefaultEmbed: FC<ControlLayerPropsType> = ({
                 showImmediately
                 linkouts={postDetails.video.linkouts}
                 linkoutId={postDetails.video.linkoutId}
+                videoDetails={postDetails.video}
               />
             </Suspense>
           )}
@@ -48,7 +49,7 @@ export const DefaultEmbed: FC<ControlLayerPropsType> = ({
             valueClassName="gencl:text-white!"
             stats={{
               Views: {
-                value: 0,
+                value: postDetails.video.viewCount,
                 icon: <PlayIcon theme="dark" size="md" />,
               },
             }}

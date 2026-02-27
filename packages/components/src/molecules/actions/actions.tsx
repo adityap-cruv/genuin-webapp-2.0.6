@@ -13,7 +13,7 @@ import {
   isValidElement,
 } from "react";
 const Menu = lazy(() =>
-  import("./menu/index.js").then((m) => ({ default: m.Menu }))
+  import("./menu/index.js").then((m) => ({ default: m.Menu })),
 );
 
 import { ReactionButton } from "@genuin/components/molecules/reaction-button";
@@ -24,14 +24,14 @@ const AuthenticationModal = lazy(() =>
   import("@genuin/components/organisms/authentication-modal/index.js").then(
     (m) => ({
       default: m.AuthenticationModal,
-    })
-  )
+    }),
+  ),
 );
 
 const RepostModal = lazy(() =>
   import("@genuin/components/organisms/repost-modal/repost-modal.js").then(
-    (m) => ({ default: m.RepostModal })
-  )
+    (m) => ({ default: m.RepostModal }),
+  ),
 );
 
 import { useAuthContext } from "@genuin/components/context/auth";
@@ -125,7 +125,7 @@ const defaultActionWrappers: Record<
             videoSlug: _context.slug ?? undefined,
           },
         }),
-      [_context.shareUrl, _context.slug]
+      [_context.shareUrl, _context.slug],
     );
 
     // Setup authentication callback handler
@@ -203,7 +203,11 @@ const defaultActionWrappers: Record<
 
     return (
       <Suspense fallback={node}>
-        <RepostModal key="repost-modal" videoId={_context.contentId} asChild>
+        <RepostModal
+          key="repost-modal"
+          videoId={_context.contentId}
+          asChild
+        >
           <div onClick={handleRepostClick}>{node}</div>
         </RepostModal>
       </Suspense>
@@ -369,7 +373,7 @@ export function Actions({
     <div
       className={cn(
         "gencl:gap-4 gencl:flex gencl:flex-col gencl:justify-end gencl:[&_svg]:size-8 gencl:[&_img]:size-8! gencl:z-10",
-        className
+        className,
       )}
       onClick={(e) => {
         e.stopPropagation();
@@ -387,7 +391,7 @@ export function Actions({
           slug,
           groupSlug,
           variant:
-            (variant === "mobile" ? "dark" : theme) ?? ("light" as const),
+            (variant === "mobile" ? "dark" : theme) ?? ("light" as const)
         };
 
         // Use action type as key for better stability (action types are unique)

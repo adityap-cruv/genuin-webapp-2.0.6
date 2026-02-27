@@ -6,7 +6,7 @@ import { Toast } from "@genuin/ui/components/toaster";
 const AuthenticationModal = React.lazy(() =>
   import("../../organisms/authentication-modal/index.js").then((m) => ({
     default: m.AuthenticationModal,
-  }))
+  })),
 );
 import { useVideoReationMutation } from "@genuin/components/react-query/api/feed/spark";
 import React, { ComponentProps, useCallback, useEffect, useMemo } from "react";
@@ -52,6 +52,7 @@ type ReactionButtonProps = ComponentProps<typeof PrimitiveButton> & {
   withCustomChildren?: boolean;
   onReactionStateChange?: (isReacted: boolean) => void;
   videoId?: string;
+  isCommentsLoaded?: boolean;
 } & VariantProps<typeof reactionButtonVariant>;
 
 export const ReactionButton = React.memo(function ReactionButton({
@@ -64,6 +65,7 @@ export const ReactionButton = React.memo(function ReactionButton({
   onClick,
   videoId,
   contentType,
+  isCommentsLoaded,
   ...restProps
 }: ReactionButtonProps) {
   const { authenticationStatus, handleAuthCallback } = useAuthContext();
@@ -86,7 +88,7 @@ export const ReactionButton = React.memo(function ReactionButton({
           ...(contentType === "COMMENT" && { commentId: contentId }),
         },
       }),
-    [contentType, videoSlug]
+    [contentType, videoSlug],
   );
 
   const clickHandler = handleAuthCallback({
@@ -110,6 +112,7 @@ export const ReactionButton = React.memo(function ReactionButton({
       videoId={videoId}
       videoSlug={videoSlug}
       contentType={contentType}
+      isCommentsLoaded={isCommentsLoaded}
       onClick={(e) => {
         // Only trigger clickHandler for the default case, not for popover
         onClick?.(e);
@@ -128,7 +131,7 @@ export const ReactionButton = React.memo(function ReactionButton({
         "gencl:p-0 gencl:text-center gencl:text-body-2-medium",
         reactionButtonVariant({
           reactionButtonTheme,
-        })
+        }),
       )}
     >
       {reactionCount}
@@ -216,6 +219,7 @@ function Button({
   videoId,
   videoSlug,
   onReactionStateChange,
+  isCommentsLoaded,
   ...restProps
 }: ReactionButtonProps) {
   const { user } = useAuthContext();
@@ -245,7 +249,7 @@ function Button({
           event_record_screen: "feed",
           event_target_screen: "none",
           is_reacted: isReacted,
-        }
+        },
       );
     },
     onError: (error) => {
@@ -291,7 +295,7 @@ function Button({
       onClick?.(e);
       performReaction();
     },
-    [onClick, performReaction]
+    [onClick, performReaction],
   );
 
   useEffect(() => {
@@ -323,6 +327,9 @@ function Button({
     )
       return;
 
+    // For comment sparks, wait until the comments data has been received before reacting
+    if (shouldAutoSparkForComment && !isCommentsLoaded) return;
+
     embedContext.markAutoInteractionActionDone();
 
     // We don't need to add contentType to the dependency array
@@ -332,7 +339,7 @@ function Button({
     if (shouldAutoSparkForVideo || shouldAutoSparkForComment) {
       performReaction();
     }
-  }, [performReaction, contentId, brandLayoutType]);
+  }, [performReaction, contentId, brandLayoutType, isCommentsLoaded]);
 
   // If withCustomChildren is true, just return the children with logic attached
   if (withCustomChildren) {

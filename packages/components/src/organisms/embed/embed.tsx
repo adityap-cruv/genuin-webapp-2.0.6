@@ -44,12 +44,12 @@ import { FetchNextPageHandler } from "./fetch-next-page-handler";
 const IheartUrlManager = lazy(() =>
   import("./iheart-url-manager.js").then((m) => ({
     default: m.IheartUrlManager,
-  }))
+  })),
 );
 
 // Lazy load GridView
 const GridView = lazy(() =>
-  import("./grid-view/grid-view.js").then((m) => ({ default: m.GridView }))
+  import("./grid-view/grid-view.js").then((m) => ({ default: m.GridView })),
 );
 
 import { PipViewLoader } from "./pip-view/pip-view-loader";
@@ -57,28 +57,30 @@ import { ExpandViewLoader } from "./expand-view/expand-view-loader";
 import { FeedSkeleton } from "@genuin/components/templates/feed";
 
 const EmbedExpandView = lazy(() =>
-  import("./expand-view/index.js").then((m) => ({ default: m.EmbedExpandView }))
+  import("./expand-view/index.js").then((m) => ({
+    default: m.EmbedExpandView,
+  })),
 );
 
 // Lazy load NavigationButtonsWithContext
 const NavigationButtonsWithContext = lazy(() =>
   import("./navigation-buttons.js").then((m) => ({
     default: m.NavigationButtonsWithContext,
-  }))
+  })),
 );
 
 // Lazy load EmbedSwiper
 const EmbedSwiper = lazy(() =>
   import("../../molecules/embed-swiper/index.js").then((m) => ({
     default: m.EmbedSwiper,
-  }))
+  })),
 );
 
 // Lazy load EmbedHeader
 const EmbedHeader = lazy(() =>
   import("../../molecules/embed-header/index.js").then((m) => ({
     default: m.EmbedHeader,
-  }))
+  })),
 );
 
 // Lazy load Toaster
@@ -88,7 +90,7 @@ const EmbedHeader = lazy(() =>
 
 // Lazy load EmbedItem
 const EmbedItem = lazy(() =>
-  import("./embed-tile-item.js").then((m) => ({ default: m.EmbedItem }))
+  import("./embed-tile-item.js").then((m) => ({ default: m.EmbedItem })),
 );
 
 const embedVariants = cva("gencl:rounded-md gencl:overflow-auto", {
@@ -112,6 +114,7 @@ export function Embed({
   style,
   feedData: externalFeedData,
   wasLazilyLoaded,
+  isOnlyForExpand,
   ...restProps
 }: EmbedProps & VariantProps<typeof embedVariants>) {
   const [swiper, setSwiper] = useState<Swiper | null>(null);
@@ -122,15 +125,15 @@ export function Embed({
     useEmbedContext();
   // Local state for isSectioned synced with event bus
   const [isSectioned, setIsSectioned] = useState(
-    embedEventBus.getContext().isSectioned
+    embedEventBus.getContext().isSectioned,
   );
   // Local state for activePlayerType synced with event bus
   const [activePlayerType, setActivePlayerType] = useState(
-    embedEventBus.getContext().activePlayerType
+    embedEventBus.getContext().activePlayerType,
   );
   // Local state for activeIndex synced with event bus
   const [activeIndex, setActiveIndex] = useState(
-    embedEventBus.getContext().activeIndex
+    embedEventBus.getContext().activeIndex,
   );
   const { track, EventName } = useAnalytics();
   const config = useEmbedConfigs();
@@ -174,7 +177,7 @@ export function Embed({
   const feedData = externalFeedData ?? apiFeedData;
   const videos = useMemo(
     () => feedData?.pages?.flatMap((page) => page.feed) || [],
-    [feedData]
+    [feedData],
   );
   const { isDesktop, isMobile } = useDeviceDetectMediaQuery();
   const totalVideos = feedData?.pages?.[0]?.totalVideos as number;
@@ -204,7 +207,7 @@ export function Embed({
   // Extract video titles from postDetails
   const sectionList = useMemo(
     () => filteredPost.map((videoData) => videoData.section || null),
-    [filteredPost]
+    [filteredPost],
   );
 
   // Extract sectioned property from feedData and update the context
@@ -235,8 +238,8 @@ export function Embed({
       AnalyticsService.updatePayload(
         "section_name",
         sectionList.filter(
-          (section) => section?.title !== null && section?.title !== undefined
-        )
+          (section) => section?.title !== null && section?.title !== undefined,
+        ),
       );
     } else {
       AnalyticsService.updatePayload("section_name", []);
@@ -263,13 +266,13 @@ export function Embed({
                     section_count: sectionList.length,
                   }),
                   activeIndex: 10,
-                }
+                },
               );
               observer.disconnect();
             }
           });
         },
-        { threshold: 0.01 }
+        { threshold: 0.01 },
       );
 
       observer.observe(node);
@@ -284,7 +287,7 @@ export function Embed({
       isSectioned,
       sectionList.length,
       track,
-    ]
+    ],
   );
 
   // Track EMBED_VIEWED/PLACEMENT_VIEWED immediately if was lazily loaded ( SDK handled the intersection )
@@ -352,7 +355,7 @@ export function Embed({
   useEffect(() => {
     function handleActivePlayerTypeChange(
       eventData: any,
-      context: EmbedEventContextType
+      context: EmbedEventContextType,
     ) {
       setActivePlayerType(context.activePlayerType);
     }
@@ -367,7 +370,7 @@ export function Embed({
   useEffect(() => {
     function handleActiveIndexChange(
       eventData: any,
-      context: EmbedEventContextType
+      context: EmbedEventContextType,
     ) {
       setActiveIndex(context.activeIndex);
     }
@@ -470,12 +473,12 @@ export function Embed({
           (currentContext) => ({
             ...currentContext,
             isCaughtUpEventFired: true,
-          })
+          }),
         );
         SDKEventEmitter.emit(SDKEventName.CAUGHT_OVERLAY, true);
       }
     },
-    [videos, isDesktop, SDKEventEmitter, SDKEventName, embedEventBus]
+    [videos, isDesktop, SDKEventEmitter, SDKEventName, embedEventBus],
   );
 
   if (config.view.isExpandOnly) {
@@ -532,7 +535,7 @@ export function Embed({
       className={cn(
         "gen-sdk-embed",
         embedVariants({ variant: embedVariant }),
-        className
+        className,
       )}
       style={{
         ...(!config.useWindowSwiperMode && {
@@ -571,96 +574,98 @@ export function Embed({
             totalVideos={feedData?.pages?.[0]?.totalVideos}
           />
         ) : (
-          <div className="gencl:relative">
-            <EmbedHeader
-              style={{
-                height: headerHeight,
-              }}
-              variant={embedVariant}
-            />
-            <EmbedSwiper
-              onSwiper={(swiperInstance: any) => setSwiper(swiperInstance)}
-              forFeed={config.view.isFeed}
-              aspectRatio={embedData.aspect_ratio}
-              spaceBetweenVideos={spaceBetweenVideos}
-              isIheartLayout={isIheartLayout}
-              onSlideChange={(swiperInstance: any) => {
-                // Early safety check
-                if (!swiperInstance) return;
+          !isOnlyForExpand && (
+            <div className="gencl:relative">
+              <EmbedHeader
+                style={{
+                  height: headerHeight,
+                }}
+                variant={embedVariant}
+              />
+              <EmbedSwiper
+                onSwiper={(swiperInstance: any) => setSwiper(swiperInstance)}
+                forFeed={config.view.isFeed}
+                aspectRatio={embedData.aspect_ratio}
+                spaceBetweenVideos={spaceBetweenVideos}
+                isIheartLayout={isIheartLayout}
+                onSlideChange={(swiperInstance: any) => {
+                  // Early safety check
+                  if (!swiperInstance) return;
 
-                // Handle slides offset
-                if (swiperInstance.isBeginning) {
+                  // Handle slides offset
+                  if (swiperInstance.isBeginning) {
+                    setSlidesOffsetBefore(0);
+                  } else {
+                    setSlidesOffsetBefore(48);
+                  }
+                  onFeedSlideChange(swiperInstance);
+                }}
+                onReachBeginning={() => {
                   setSlidesOffsetBefore(0);
-                } else {
-                  setSlidesOffsetBefore(48);
+                }}
+                containerDimensions={{
+                  height: config.view.isFeed
+                    ? availableHeight - spaceBetweenVideos
+                    : availableHeight + spaceBetweenVideos,
+                  width: containerWidth,
+                }}
+                style={{
+                  height: availableHeight,
+                }}
+                freeMode={config.view.scrollBehavior === "free_scroll"}
+                centeredSlides={config.view.centeredSlides}
+                centeredSlidesBounds={config.view.centeredSlides}
+                slidesOffsetBefore={
+                  config.view.isCarousel && isIheartLayout && !isMobile
+                    ? slidesOffsetBefore
+                    : 0
                 }
-                onFeedSlideChange(swiperInstance);
-              }}
-              onReachBeginning={() => {
-                setSlidesOffsetBefore(0);
-              }}
-              containerDimensions={{
-                height: config.view.isFeed
-                  ? availableHeight - spaceBetweenVideos
-                  : availableHeight + spaceBetweenVideos,
-                width: containerWidth,
-              }}
-              style={{
-                height: availableHeight,
-              }}
-              freeMode={config.view.scrollBehavior === "free_scroll"}
-              centeredSlides={config.view.centeredSlides}
-              centeredSlidesBounds={config.view.centeredSlides}
-              slidesOffsetBefore={
-                config.view.isCarousel && isIheartLayout && !isMobile
-                  ? slidesOffsetBefore
-                  : 0
-              }
-              customHeightFor={{
-                index: filteredPost.findIndex(
-                  (feed) => feed.video.type === "overlay"
-                ),
-                height: 160,
-              }}
-            >
-              {filteredPost?.map((videoData, idx) => {
-                return videoData.video.type === "complete" ? (
-                  <></>
-                ) : videoData.video.type === "overlay" &&
-                  config.view.brandLayoutType === "iheart" &&
-                  isDesktop &&
-                  websiteType !== "legacy" ? (
-                  <></>
-                ) : (
-                  <SwiperSlide key={idx} virtualIndex={idx}>
-                    <Suspense fallback={<ShimmerSlide />}>
-                      <EmbedItem
-                        index={idx}
-                        postDetails={videoData}
-                        totalVideos={feedData?.pages?.[0]?.totalVideos}
-                        swiper={swiper}
-                      />
-                    </Suspense>
-                  </SwiperSlide>
-                );
-              })}
-              {/* Add shimmer slides when fetching next page */}
-              {isFetchingNextPage &&
-                Array.from({ length: 3 }).map((_, idx) => (
-                  <SwiperSlide key={`shimmer-${idx}`}>
-                    <ShimmerSlide />
-                  </SwiperSlide>
-                ))}
-              {!isIheartLayout && (
-                <NavigationButtonsWithContext
-                  totalSlides={totalSlides}
-                  theme={theme}
-                  embedVariant={embedVariant}
-                  setSlidesOffsetBefore={setSlidesOffsetBefore}
-                />
-              )}
-            </EmbedSwiper>
-          </div>
+                customHeightFor={{
+                  index: filteredPost.findIndex(
+                    (feed) => feed.video.type === "overlay",
+                  ),
+                  height: 160,
+                }}
+              >
+                {filteredPost?.map((videoData, idx) => {
+                  return videoData.video.type === "complete" ? (
+                    <></>
+                  ) : videoData.video.type === "overlay" &&
+                    config.view.brandLayoutType === "iheart" &&
+                    isDesktop &&
+                    websiteType !== "legacy" ? (
+                    <></>
+                  ) : (
+                    <SwiperSlide key={idx} virtualIndex={idx}>
+                      <Suspense fallback={<ShimmerSlide />}>
+                        <EmbedItem
+                          index={idx}
+                          postDetails={videoData}
+                          totalVideos={feedData?.pages?.[0]?.totalVideos}
+                          swiper={swiper}
+                        />
+                      </Suspense>
+                    </SwiperSlide>
+                  );
+                })}
+                {/* Add shimmer slides when fetching next page */}
+                {isFetchingNextPage &&
+                  Array.from({ length: 3 }).map((_, idx) => (
+                    <SwiperSlide key={`shimmer-${idx}`}>
+                      <ShimmerSlide />
+                    </SwiperSlide>
+                  ))}
+                {!isIheartLayout && (
+                  <NavigationButtonsWithContext
+                    totalSlides={totalSlides}
+                    theme={theme}
+                    embedVariant={embedVariant}
+                    setSlidesOffsetBefore={setSlidesOffsetBefore}
+                  />
+                )}
+              </EmbedSwiper>
+            </div>
+          )
         )}
         {isIheartLayout && config.view.isCarousel && (
           <NavigationButtonsWithContext

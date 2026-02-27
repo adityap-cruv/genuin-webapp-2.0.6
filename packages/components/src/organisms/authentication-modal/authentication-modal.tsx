@@ -41,6 +41,7 @@ export function AuthenticationModal({
 }: AuthenticationModalProps) {
   const {
     brandDetails: { web_cta },
+    useShadowDOM,
   } = useBaseContext();
   const { user } = useAuthContext();
 
@@ -64,7 +65,7 @@ export function AuthenticationModal({
       ? "gencl:max-w-[500px]"
       : expandedSteps.includes(step)
         ? "gencl:!max-w-4xl"
-        : "gencl:!max-w-xl"
+        : "gencl:!max-w-xl",
   );
 
   const isControlled = controlledOpen !== undefined;

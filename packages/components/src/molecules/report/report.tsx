@@ -20,8 +20,8 @@ const AuthenticationModal = React.lazy(() =>
   import("@genuin/components/organisms/authentication-modal/index.js").then(
     (m) => ({
       default: m.AuthenticationModal,
-    })
-  )
+    }),
+  ),
 );
 
 import { useAuthContext } from "@genuin/components/context/auth";
@@ -32,13 +32,11 @@ import { Link } from "../link";
 const Success = React.lazy(() =>
   import("@genuin/components/molecules/success/index.js").then((m) => ({
     default: m.Success,
-  }))
+  })),
 );
 
 import { Suspense } from "react";
 import { useBaseContext } from "@genuin/components/context";
-import { getRootContainer } from "../root-portal/shadow-root/shadow-dom.utils";
-
 type ReportProps = ComponentProps<typeof Dialog> & {
   reportFor: "VIDEO" | "COMMENT";
   contentId: string;
@@ -73,7 +71,7 @@ export function Report({
           videoSlug: videoSlug ?? undefined,
         },
       }),
-    [shareUrl, videoSlug]
+    [shareUrl, videoSlug],
   );
 
   // Setup authentication callback handler
@@ -120,7 +118,7 @@ export function Report({
             event_target_screen: "none",
             report_reason: selectedReason,
             report_type: reportFor,
-          }
+          },
         );
       },
     });
@@ -174,10 +172,7 @@ export function Report({
       >
         {children}
       </DialogTrigger>
-      <DialogContent
-        container={getRootContainer(useShadowDOM)}
-        className="gencl:max-w-xl gencl:rounded-t-2xl! gencl:sm:rounded-t-none gencl:sm:rounded-2xl! gencl:flex gencl:flex-col gencl:gap-y-4"
-      >
+      <DialogContent className="gencl:max-w-xl gencl:rounded-t-2xl! gencl:sm:rounded-t-none gencl:sm:rounded-2xl! gencl:flex gencl:flex-col gencl:gap-y-4">
         {reportMutation.isSuccess ? (
           <Suspense fallback={<div>Loading…</div>}>
             <Success

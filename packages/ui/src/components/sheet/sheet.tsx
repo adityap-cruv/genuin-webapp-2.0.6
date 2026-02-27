@@ -5,6 +5,7 @@ import * as SheetPrimitive from "@radix-ui/react-dialog";
 import { XIcon } from "lucide-react";
 
 import { cn, getGenclStyles } from "@genuin/ui/lib/utils";
+import { getRootContainer } from "@genuin/ui/lib/shadow-dom.utils";
 
 function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
   return <SheetPrimitive.Root data-slot="sheet" {...props} />;
@@ -37,7 +38,7 @@ function SheetOverlay({
       data-slot="sheet-overlay"
       className={cn(
         "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 gencl:fixed gencl:inset-0 gencl:z-50 gencl:bg-black/50",
-        className
+        className,
       )}
       {...props}
     />
@@ -50,15 +51,14 @@ function SheetContent({
   side = "right",
   hideCloseIcon = false,
   style,
-  container,
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Content> & {
   side?: "top" | "right" | "bottom" | "left";
   hideCloseIcon?: boolean;
-  container?: SheetPrimitive.DialogPortalProps["container"];
 }) {
+  const portalContainer = getRootContainer();
   return (
-    <SheetPortal container={container ?? document.body}>
+    <SheetPortal container={portalContainer}>
       <SheetOverlay />
       <SheetPrimitive.Content
         data-slot="sheet-content"
@@ -72,7 +72,7 @@ function SheetContent({
             "gencl:data-[state=closed]:slide-out-to-top gencl:data-[state=open]:slide-in-from-top gencl:inset-x-0 gencl:top-0 gencl:h-auto",
           side === "bottom" &&
             "gencl:data-[state=closed]:slide-out-to-bottom gencl:data-[state=open]:slide-in-from-bottom gencl:inset-x-0 gencl:bottom-0 gencl:h-auto",
-          className
+          className,
         )}
         style={{ ...style, ...getGenclStyles() }}
         {...props}
@@ -95,7 +95,7 @@ function SheetHeader({ className, ...props }: React.ComponentProps<"div">) {
       data-slot="sheet-header"
       className={cn(
         "gencl:flex gencl:flex-col gencl:gap-1.5 gencl:p-4",
-        className
+        className,
       )}
       {...props}
     />
@@ -108,7 +108,7 @@ function SheetFooter({ className, ...props }: React.ComponentProps<"div">) {
       data-slot="sheet-footer"
       className={cn(
         "gencl:mt-auto gencl:flex gencl:flex-col gencl:gap-2 gencl:p-4",
-        className
+        className,
       )}
       {...props}
     />

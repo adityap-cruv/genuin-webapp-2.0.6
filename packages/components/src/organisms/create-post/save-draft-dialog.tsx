@@ -1,5 +1,13 @@
 import { Button } from "@genuin/ui/components/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@genuin/ui/components/dialog";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@genuin/ui/components/dialog";
 
 import { Loader } from "@genuin/ui/components/loader";
 

@@ -7,14 +7,14 @@ import "swiper/css";
 const PlayerList = lazy(() =>
   import("../../organisms/player-swiper/index.js").then((m) => ({
     default: m.PlayerList,
-  }))
+  })),
 );
 
 // Lazy load side panel to split comments/forms from core chunk
 const PostSidePanel = lazy(() =>
   import("../../organisms/post-side-panel/index.js").then((m) => ({
     default: m.PostSidePanel,
-  }))
+  })),
 );
 
 import {
@@ -37,7 +37,7 @@ import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-d
 const AuthenticationModal = lazy(() =>
   import("../../organisms/authentication-modal/index.js").then((m) => ({
     default: m.AuthenticationModal,
-  }))
+  })),
 ) as React.ComponentType<any>;
 
 import { FeedViewPropsType } from "./feed.type";
@@ -48,6 +48,7 @@ import { getQueryKeyForVideoDetails } from "@genuin/components/react-query/keys/
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useBaseContext } from "@genuin/components/context";
 import useViewportHeight from "@genuin/components/hooks/use-screen-height";
+import { useRouter } from "@genuin/components/hooks/use-router";
 
 /**
  * Internal component to conditionally wrap feed content based on brand layout type.
@@ -65,7 +66,7 @@ const FeedContentWrapper = memo(function FeedContentWrapper({
       "@genuin/components/molecules/iheart-full-screen-contaner/index.js"
     ).then((m) => ({
       default: m.IheartFullscreenContainer,
-    }))
+    })),
   );
 
   if (isIHeart) {
@@ -112,6 +113,7 @@ export const FeedViewCore = memo(function FeedViewCore({
   const { hideGestureOverlay } = useGestureOverlayManager();
   const { handleSwipeCount, dialogType, shouldShowDialog, closeDialog } =
     useInterruptionManager();
+  const { canGoBack } = useRouter();
   const embedDetails = useSafeEmbedContext();
   const { theme = "dark" } = useBaseContext();
   const {
@@ -174,10 +176,10 @@ export const FeedViewCore = memo(function FeedViewCore({
 
       setQueryDataForCommunityRoleChange(
         videos[activeIndex].community.slug,
-        newRole
+        newRole,
       );
     },
-    [videos, activeIndex, queryKey]
+    [videos, activeIndex, queryKey],
   );
 
   const handleGroupJoinStatusChange = useCallback(
@@ -189,7 +191,7 @@ export const FeedViewCore = memo(function FeedViewCore({
         newRole,
       });
     },
-    [videos, activeIndex, queryKey]
+    [videos, activeIndex, queryKey],
   );
 
   const handleGroupSubscriptionChange = useCallback(
@@ -203,10 +205,10 @@ export const FeedViewCore = memo(function FeedViewCore({
 
       setQueryDataForSubscribeGroupInGroupDetails(
         videos[activeIndex].group.slug,
-        isSubscribed
+        isSubscribed,
       );
     },
-    [videos, activeIndex, queryKey]
+    [videos, activeIndex, queryKey],
   );
 
   const handleReactionStateChange = useCallback(
@@ -217,7 +219,7 @@ export const FeedViewCore = memo(function FeedViewCore({
         isReacted,
       });
     },
-    [queryKey, getQueryKeyForVideoDetails]
+    [queryKey, getQueryKeyForVideoDetails],
   );
 
   const handleCommentCountChange = useCallback(
@@ -228,7 +230,7 @@ export const FeedViewCore = memo(function FeedViewCore({
         increment,
       });
     },
-    [queryKey]
+    [queryKey],
   );
 
   const handleActiveIndexChange = useCallback(
@@ -261,7 +263,7 @@ export const FeedViewCore = memo(function FeedViewCore({
       //   }, 100);
       // }
     },
-    [setActiveIndex, hideGestureOverlay, showExpandView, videos]
+    [setActiveIndex, hideGestureOverlay, showExpandView, videos],
   );
 
   const playerListProps = {
@@ -276,6 +278,8 @@ export const FeedViewCore = memo(function FeedViewCore({
     disableSwiper,
     theme,
   };
+
+  console.log({ embedDetails, showExpandView, canGoBack: canGoBack() });
 
   const skeletonTheme = variant === "page" ? "light" : theme;
   if (isLoading && !isIHeart) {
@@ -295,17 +299,22 @@ export const FeedViewCore = memo(function FeedViewCore({
         className={cn(
           "gencl:flex gencl:gap-4",
           {
-            [` gencl:sm:p-0! gencl:flex gencl:items-center gencl:mt-0 gencl:z-50 gencl:left-0 gencl:w-full ${
-              theme === "dark" ? "gencl:bg-black" : "gencl:bg-white"
-            }`]: showExpandView,
+            [` gencl:sm:p-0! gencl:flex gencl:items-center gencl:mt-0 gencl:z-50 gencl:left-0 gencl:w-full`]:
+              showExpandView,
             "gencl:sm:pr-4! gencl:pt-0 gencl:sm:pt-4!": !showExpandView,
             // Apply fixed positioning from top for non-iHeart layouts in expand view
             "gencl:fixed gencl:top-0": !isIHeart && showExpandView,
             // Apply fixed positioning from top 48px, if it's mobile and iheart(brand)
             "gencl:fixed gencl:top-12": isIHeart && !isDesktop,
           },
+          {
+            [theme === "dark" ? "gencl:bg-black" : "gencl:bg-white"]:
+              showExpandView &&
+              (embedDetails == null || // null OR undefined
+                (embedDetails && canGoBack())),
+          },
           variant === "expand" ? "gencl:w-screen" : "gencl:w-full gencl:h-full",
-          className
+          className,
         )}
         style={{
           height: variant === "expand" ? `${viewportHeight}px` : "100%",

@@ -405,6 +405,30 @@ const addImportantToGenclProps = () => ({
 })
 addImportantToGenclProps.postcss = true
 
+// PostCSS plugin to normalize CSS Houdini @property inheritance for Shadow DOM.
+// Tailwind emits many `inherits: false` declarations, which can block variables
+// from flowing from SDK host containers into nested Shadow DOM content.
+const forcePropertyInheritsTrue = () => ({
+  postcssPlugin: 'postcss-force-property-inherits-true',
+  Once(root) {
+    root.walkAtRules('property', (rule) => {
+      let hasInheritsDescriptor = false
+
+      rule.walkDecls('inherits', (decl) => {
+        hasInheritsDescriptor = true
+        if (decl.value.trim() !== 'true') {
+          decl.value = 'true'
+        }
+      })
+
+      if (!hasInheritsDescriptor) {
+        rule.append({ prop: 'inherits', value: 'true' })
+      }
+    })
+  },
+})
+forcePropertyInheritsTrue.postcss = true
+
 // PostCSS plugin to scope Tailwind preflight CSS to .gen-sdk-class
 const scopePreflightCss = () => ({
   postcssPlugin: 'postcss-scope-preflight',
@@ -534,11 +558,12 @@ const postBuildCssPlugin = () => ({
         postcssNested({ preserveEmpty: true }),
         scopePreflightCss,
         renameTwVars,
+        forcePropertyInheritsTrue,
         addImportantToGenclProps,
       ]).process(css, { from: cssPath, to: cssPath })
       fs.writeFileSync(cssPath, result.css)
       console.log(
-        `✓ PostCSS applied on generated CSS: ${cssFile} (preflight scoped, variables renamed, !important added to gencl properties)`,
+        `✓ PostCSS applied on generated CSS: ${cssFile} (preflight scoped, variables renamed, @property inherits normalized, !important added to gencl properties)`,
       )
     } else {
       console.warn(`⚠️ CSS file not found: ${cssPath}`)
@@ -823,8 +848,8 @@ export default defineConfig({
     'process.env.NEXT_PUBLIC_BCC_URL': JSON.stringify(
       process.env.NEXT_PUBLIC_BCC_URL || 'https://brands.qa.begenuin.com',
     ),
-    "process.env.TRACK_OBSERVABILITY": JSON.stringify(
-      process.env.TRACK_OBSERVABILITY || 'false'
+    'process.env.TRACK_OBSERVABILITY': JSON.stringify(
+      process.env.TRACK_OBSERVABILITY || 'false',
     ),
     // NEXT_PUBLIC_* environment variables for process.env access (components package compatibility)
     'process.env.NEXT_PUBLIC_RUDDERSTACK_KEY': JSON.stringify(
@@ -883,8 +908,8 @@ export default defineConfig({
         process.env.RUDDERSTACK_API_KEY ||
         '',
     ),
-     "import.meta.env.TRACK_OBSERVABILITY": JSON.stringify(
-      process.env.TRACK_OBSERVABILITY || 'false'
+    'import.meta.env.TRACK_OBSERVABILITY': JSON.stringify(
+      process.env.TRACK_OBSERVABILITY || 'false',
     ),
     'import.meta.env.NEXT_PUBLIC_RUDDERSTACK_URL': JSON.stringify(
       process.env.NEXT_PUBLIC_RUDDERSTACK_URL ||

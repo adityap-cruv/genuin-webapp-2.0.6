@@ -5,10 +5,7 @@ import { AuthUser } from '@genuin/components/types/auth'
 import { SingleEmbedDataConfig } from '@/type'
 import { Genuin } from './genuin-sdk'
 import { TRACK_OBSERVABILITY } from '@genuin/components/lib/utils/env'
-import {
-  getBrandType,
-  type BrandType,
-} from '@genuin/components/lib/utils/brand-layout'
+import { type BrandType } from '@genuin/components/lib/utils/brand-layout'
 
 // Import providers directly instead of lazy loading
 import { AuthProvider } from '@genuin/components/context/auth'
@@ -23,13 +20,7 @@ import { Skeleton } from '@genuin/ui/components/skeleton'
 import { SdkSkeleton } from '@genuin/components'
 import { useDeviceDetectMediaQuery } from '@genuin/components/hooks/use-devide-detect-media-query'
 import { cn } from '@genuin/ui/lib/utils'
-
-// Lazy load components
-const LazyToaster = lazy(() =>
-  import('@genuin/ui/components/toaster').then((module) => ({
-    default: module.Toaster,
-  })),
-)
+import { LazyToaster } from './react-utils'
 
 const LazyEmbed = lazy(() =>
   import('@genuin/components/organisms/embed/embed')
@@ -66,6 +57,7 @@ interface EmbedRootProps {
   user?: AuthUser | null
   wasLazilyLoaded?: boolean
   brandLayoutType: BrandType
+  isOnlyForExpand?: boolean
 }
 
 function EmbedSkeleton({
@@ -130,6 +122,7 @@ export function EmbedRoot({
   user,
   wasLazilyLoaded,
   brandLayoutType,
+  isOnlyForExpand,
 }: EmbedRootProps) {
   return (
     <ReactQueryClientProvider>
@@ -147,6 +140,7 @@ export function EmbedRoot({
           initialVideoIds: config.initialVideoIds,
           videoIds: config.videoIds,
           websiteType: config.websiteType,
+          startVideoSlug: config.startVideoSlug,
           configs: {
             allowGestureScroll: config.allowGestureScroll,
           },
@@ -178,7 +172,10 @@ export function EmbedRoot({
                   {embedData.style === 'standard_wall' ? (
                     <LazyStandardWall />
                   ) : (
-                    <LazyEmbed wasLazilyLoaded={wasLazilyLoaded} />
+                    <LazyEmbed
+                      wasLazilyLoaded={wasLazilyLoaded}
+                      isOnlyForExpand={isOnlyForExpand}
+                    />
                   )}
                 </Suspense>
                 {config.useShadowDOM && (

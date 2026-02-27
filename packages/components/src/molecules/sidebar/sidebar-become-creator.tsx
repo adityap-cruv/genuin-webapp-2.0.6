@@ -6,8 +6,8 @@ const AuthenticationModal = lazy(() =>
   import("@genuin/components/organisms/authentication-modal/index.js").then(
     (m) => ({
       default: m.AuthenticationModal,
-    })
-  )
+    }),
+  ),
 ) as React.ComponentType<AuthenticationModalProps>;
 
 import { useAuthContext } from "@genuin/components/context/auth";
@@ -30,7 +30,7 @@ const sideBarBecomeCreatorVariants = cva(
     defaultVariants: {
       variant: "default",
     },
-  }
+  },
 );
 
 export type SideBarBecomeCreatorProps = ComponentProps<"div"> &
@@ -47,7 +47,9 @@ export function SideBarBecomeCreator({
   ...restProps
 }: SideBarBecomeCreatorProps) {
   const { user, updateUser } = useAuthContext();
-  const { name } = useBaseContext().brandDetails;
+  const {
+    brandDetails: { name },
+  } = useBaseContext();
 
   if (user?.ksCbRequestStatus === "Success") {
     return null;
@@ -62,14 +64,14 @@ export function SideBarBecomeCreator({
           <div
             className={cn(
               "gencl:px-4 gencl:block gencl:sm:hidden! gencl:xl:block! gencl:py-3 gencl:border-b gencl:border-secondary-100 gencl:cursor-pointer",
-              className
+              className,
             )}
             {...restProps}
           >
             <div
               className={cn(
                 "gencl:bg-primary gencl:text-white gencl:break-words gencl:rounded-lg gencl:px-2.5 gencl:py-2 gencl:text-body-1-semi-bold gencl:relative gencl:overflow-hidden",
-                "genuin-become-creator-centerout"
+                "genuin-become-creator-centerout",
               )}
             >
               <span className="gencl:relative gencl:z-10 gencl:text-white">
@@ -83,14 +85,14 @@ export function SideBarBecomeCreator({
           <div
             className={cn(
               "gencl:px-4 gencl:block gencl:sm:hidden! gencl:xl:block! gencl:py-3 gencl:border-b gencl:border-secondary-100 gencl:cursor-pointer",
-              className
+              className,
             )}
             {...restProps}
           >
             <div
               className={cn(
                 "gencl:bg-primary gencl:text-white gencl:break-words gencl:rounded-lg gencl:px-2.5 gencl:py-2 gencl:text-body-1-semi-bold gencl:relative gencl:overflow-hidden",
-                "genuin-become-creator-centerout"
+                "genuin-become-creator-centerout",
               )}
             >
               <span className="gencl:relative gencl:z-10 gencl:text-white">

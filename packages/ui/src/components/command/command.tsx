@@ -7,6 +7,7 @@ import * as React from "react";
 import {
   Dialog,
   DialogContent,
+  DialogContentProps,
   DialogDescription,
   DialogHeader,
   DialogTitle,
@@ -22,7 +23,7 @@ function Command({
       data-slot="command"
       className={cn(
         "gencl:flex gencl:h-full gencl:w-full gencl:flex-col gencl:overflow-hidden gencl:rounded-md",
-        className
+        className,
       )}
       {...props}
     />
@@ -66,7 +67,7 @@ function CommandDialog({
             " gencl:[&_[cmdk-group-heading]]:font-medium gencl:[&_[cmdk-group]]:px-2",
             " gencl:[&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 gencl:[&_[cmdk-input-wrapper]_svg]:h-5",
             " gencl:[&_[cmdk-input-wrapper]_svg]:w-5 gencl:[&_[cmdk-input]]:h-12",
-            " gencl:[&_[cmdk-item]]:px-2 gencl:[&_[cmdk-item]]:py-3 gencl:[&_[cmdk-item]_svg]:h-5 gencl:[&_[cmdk-item]_svg]:w-5"
+            " gencl:[&_[cmdk-item]]:px-2 gencl:[&_[cmdk-item]]:py-3 gencl:[&_[cmdk-item]_svg]:h-5 gencl:[&_[cmdk-item]_svg]:w-5",
           )}
         >
           {children}
@@ -91,7 +92,7 @@ function CommandInput({
         className={cn(
           "gencl:flex gencl:h-10 gencl:w-full gencl:rounded-md",
           " gencl:py-3 gencl:text-sm gencl:outline-hidden gencl:disabled:cursor-not-allowed gencl:disabled:opacity-50",
-          className
+          className,
         )}
         {...props}
       />
@@ -108,7 +109,7 @@ function CommandList({
       data-slot="command-list"
       className={cn(
         "gencl:max-h-[300px] gencl:scroll-py-1 gencl:overflow-x-hidden gencl:overflow-y-auto",
-        className
+        className,
       )}
       {...props}
     />
@@ -137,7 +138,7 @@ function CommandGroup({
       className={cn(
         "gencl:overflow-hidden gencl:p-1 gencl:[&_[cmdk-group-heading]]:px-2",
         " gencl:[&_[cmdk-group-heading]]:py-1.5 gencl:[&_[cmdk-group-heading]]:font-medium",
-        className
+        className,
       )}
       {...props}
     />
@@ -172,7 +173,7 @@ function CommandItem({
         "gencl:select-none gencl:data-[disabled=true]:pointer-events-none gencl:data-[disabled=true]:opacity-50",
         "[&_svg]:gencl:pointer-events-none [&_svg]:gencl:shrink-0",
         "[&_svg:not([class*='size-'])]:gencl:size-4",
-        className
+        className,
       )}
       {...props}
     />
@@ -188,7 +189,7 @@ function CommandShortcut({
       data-slot="command-shortcut"
       className={cn(
         "gencl:text-muted-foreground gencl:ml-auto gencl:text-xs gencl:tracking-widest",
-        className
+        className,
       )}
       {...props}
     />

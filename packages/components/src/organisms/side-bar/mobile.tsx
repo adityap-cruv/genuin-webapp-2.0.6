@@ -11,8 +11,6 @@ import { AlignJustifyIcon, XIcon } from "@genuin/ui/icons";
 import { cva, VariantProps } from "class-variance-authority";
 import { BrandLogo } from "@genuin/components/molecules/brand";
 import { cn } from "@genuin/ui/lib/utils";
-import { useBaseContext } from "@genuin/components/context";
-import { getRootContainer } from "@genuin/components/molecules/root-portal/shadow-root/shadow-dom.utils";
 
 const mobileSidebarVariants = cva("", {
   variants: {
@@ -36,7 +34,6 @@ export function MobileSidebar({
   ...restProps
 }: MobileSidebarProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
-  const {useShadowDOM} = useBaseContext();
   const handleCloseSheet = () => {
     closeButtonRef.current?.click();
   };
@@ -49,7 +46,7 @@ export function MobileSidebar({
       >
         <AlignJustifyIcon size="md" theme={theme} />
       </SheetTrigger>
-      <SheetContent container={getRootContainer(useShadowDOM)} side="left" hideCloseIcon>
+      <SheetContent side="left" hideCloseIcon>
         <div className="gencl:py-5 gencl:px-4 gencl:flex gencl:justify-between gencl:items-center gencl:bg-secondary-50">
           <BrandLogo
             logoType="brand_web_logo"

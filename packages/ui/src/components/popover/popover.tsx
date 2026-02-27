@@ -6,6 +6,7 @@ import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 
 import { cn } from "@genuin/ui/lib/utils";
+import { getRootContainer } from "@genuin/ui/lib/shadow-dom.utils";
 
 function Popover({
   ...props
@@ -70,11 +71,9 @@ function PopoverContent({
   customBackgroundColor,
   showArrow = false,
   children,
-  container,
   ...props
-}: PopoverContentProps & {
-  container?: PopoverPrimitive.PopoverPortalProps["container"];
-}) {
+}: PopoverContentProps) {
+  const portalContainer = getRootContainer();
   // const customColorStyle = customBackgroundColor
   //   ? { backgroundColor: customBackgroundColor }
   //   : {};
@@ -83,7 +82,7 @@ function PopoverContent({
     : {};
 
   return (
-    <PopoverPrimitive.Portal container={container ?? document.body}>
+    <PopoverPrimitive.Portal container={portalContainer}>
       <PopoverPrimitive.Content
         data-slot="popover-content"
         align={align}

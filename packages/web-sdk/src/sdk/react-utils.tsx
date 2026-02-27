@@ -10,6 +10,7 @@ import { metrics } from '../utils/metrics'
 import { generateExpandViewSkeletonHTML } from '../utils/skeleton-html'
 import {
   cleanupOverlayShadowHost,
+  ensureStylesInShadowRoot,
   setupMainShadowDOM,
 } from '@genuin/components/molecules/root-portal/shadow-root/shadow-dom.utils'
 
@@ -19,9 +20,26 @@ import { cn } from '@genuin/ui'
 import { getBrandType } from '@genuin/components/lib/utils/brand-layout'
 import { Loader } from '@genuin/ui/components/loader'
 // Lazy load Toaster for better code splitting
-const LazyToaster = lazy(() =>
+export const LazyToaster = lazy(() =>
   import('@genuin/ui/components/toaster').then((module) => ({
     default: module.Toaster,
+    then: () => {
+      // Ensure required styles are injected into all relevant shadow roots
+      const injectStylesIntoShadowRoots = () => {
+        const mainHost = document.querySelector('[data-genuin-host]')
+        if (mainHost?.shadowRoot) {
+          void ensureStylesInShadowRoot(mainHost.shadowRoot)
+        }
+
+        const overlayHost = document.querySelector('[data-genuin-overlay-host]')
+        if (overlayHost?.shadowRoot) {
+          void ensureStylesInShadowRoot(overlayHost.shadowRoot)
+        }
+      }
+
+      // Inject styles once the toaster module is loaded
+      injectStylesIntoShadowRoots()
+    },
   })),
 )
 
@@ -247,6 +265,7 @@ export async function loadNewEmbed({
   config,
   user,
   wasLazilyLoaded,
+  isOnlyForExpand,
 }: {
   container: HTMLElement
   embedData: EmbedDataType
@@ -254,6 +273,7 @@ export async function loadNewEmbed({
   config: Partial<SingleEmbedDataConfig>
   user?: AuthUser | null
   wasLazilyLoaded?: boolean
+  isOnlyForExpand?: boolean
 }): Promise<() => void> {
   // Performance marker: Embed render start
   const embedId = embedData.embed_id || embedData.placement_id || 'unknown'
@@ -277,7 +297,7 @@ export async function loadNewEmbed({
   config.useShadowDOM = true
 
   if (config.useShadowDOM) {
-    targetContainer = setupMainShadowDOM(container)
+    targetContainer = await setupMainShadowDOM(container)
   }
 
   const ownsShadowHost = targetContainer !== container
@@ -331,6 +351,7 @@ export async function loadNewEmbed({
         user={user}
         wasLazilyLoaded={wasLazilyLoaded}
         brandLayoutType={brandLayoutType}
+        isOnlyForExpand={isOnlyForExpand}
       />
     </Suspense>
   )

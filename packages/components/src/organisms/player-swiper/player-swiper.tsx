@@ -10,7 +10,7 @@ import { Player } from "./player";
 const Actions = lazy(() =>
   import("../../molecules/actions/index.js").then((m) => ({
     default: m.Actions,
-  }))
+  })),
 );
 // Using any for now to stop the bleed, will refine if possible
 
@@ -18,12 +18,12 @@ const Actions = lazy(() =>
 const Comments = lazy(() =>
   import("../../molecules/comments/comments.js").then((m) => ({
     default: m.Comments,
-  }))
+  })),
 );
 const CommentsDialog = lazy(() =>
   import("../../molecules/comments/comments-dialog.js").then((m) => ({
     default: m.CommentsDialog,
-  }))
+  })),
 );
 
 const OctoPanel = lazy(() =>
@@ -35,13 +35,13 @@ const OctoPanel = lazy(() =>
 const SectionedContent = lazy(() =>
   import("./sectioned-content.js").then((m) => ({
     default: m.SectionedContent,
-  }))
+  })),
 );
 
 const NonSectionedContent = lazy(() =>
   import("./non-sectioned-content.js").then((m) => ({
     default: m.NonSectionedContent,
-  }))
+  })),
 );
 
 import { abbreviateNumber, cn } from "@genuin/ui/lib/utils";
@@ -75,26 +75,28 @@ import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
 import type { OctoPanelHandle } from "../../molecules/octo-panel";
 
 const CloseButton = lazy(() =>
-  import("./player-swiper-buttons.js").then((m) => ({ default: m.CloseButton }))
+  import("./player-swiper-buttons.js").then((m) => ({
+    default: m.CloseButton,
+  })),
 );
 const NavigationButton = lazy(() =>
   import("./player-swiper-buttons.js").then((m) => ({
     default: m.NavigationButton,
-  }))
+  })),
 );
 
 const PlayerHeader = lazy(() =>
-  import("./player-header.js").then((m) => ({ default: m.PlayerHeader }))
+  import("./player-header.js").then((m) => ({ default: m.PlayerHeader })),
 );
 
 const IHeartBackButton = lazy(() =>
   import("./iheart/iheart-back-button.js").then((m) => ({
     default: m.IHeartBackButton,
-  }))
+  })),
 );
 
 const SectionsTabs = lazy(() =>
-  import("./sections-tabs.js").then((m) => ({ default: m.SectionsTabs }))
+  import("./sections-tabs.js").then((m) => ({ default: m.SectionsTabs })),
 );
 
 type PlayerListPropsType = {
@@ -113,7 +115,7 @@ type PlayerListPropsType = {
   onReactionStateChange?: (
     videoId: string,
     videoSlug: string,
-    isReacted: boolean
+    isReacted: boolean,
   ) => void;
   onCommunityJoinStatusChange: ComponentProps<
     typeof Player
@@ -237,7 +239,7 @@ export function PlayerList({
      * when transitioning to maintain the correct video position.
      */
     const overlayIndex = posts.findIndex(
-      (post) => post.video.type === "overlay"
+      (post) => post.video.type === "overlay",
     );
     const isNotAtEndOfFeed = posts[activeIndex + 1]?.video.type !== "complete";
     // increment by 1 to account for overlay card that won't be shown in expand view
@@ -348,7 +350,7 @@ a swiper inside another swiper.
   useEffect(() => {
     if (isSectioned && horizontalSwiper && selectedSection && sectionList) {
       const selectedSectionIndex = sectionList.findIndex(
-        (section: any) => section.id === selectedSection.id
+        (section: any) => section.id === selectedSection.id,
       );
       if (
         selectedSectionIndex !== -1 &&
@@ -401,7 +403,7 @@ a swiper inside another swiper.
           websiteType === "legacy" &&
           isAdsEnabledInIheart &&
           "gencl:pt-[72px]! gencl:md:pt-8!",
-        brandLayoutType !== "iheart" && "gencl:gap-6"
+        brandLayoutType !== "iheart" && "gencl:gap-6",
       )}
     >
       {/* Back button for iheart expand view (not on mobile) */}
@@ -418,14 +420,14 @@ a swiper inside another swiper.
       <div
         className={cn(
           "gencl:flex gencl:justify-center gencl:h-full gencl:w-full gencl:sm:w-fit! gencl:relative",
-          brandLayoutType !== "iheart" && "gencl:gap-6"
+          brandLayoutType !== "iheart" && "gencl:gap-6",
         )}
       >
         <div
           ref={containerRef}
           className={cn(
             "gencl:h-full gencl:aspect-reel gencl:relative",
-            isMobile && "gencl:h-full gencl:w-full"
+            isMobile && "gencl:h-full gencl:w-full",
           )}
           style={
             slideDimensions
@@ -564,7 +566,7 @@ a swiper inside another swiper.
               theme={showExpandView ? "dark" : "light"}
               className={cn(
                 "gencl:shrink-0",
-                showExpandView ? "gencl:pb-4" : "gencl:pb-7"
+                showExpandView ? "gencl:pb-4" : "gencl:pb-7",
               )}
               isCommentBoxOpen={isCommentOpen}
               actionWrapper={{
@@ -572,10 +574,8 @@ a swiper inside another swiper.
                   if (!showCommentBox) return;
                   //
                   const defaultOpen =
-                    (embedDetails?.embedData?.autoUserInteractionToPerform ===
-                      "comment-spark" ||
-                      embedDetails?.embedData.autoUserInteractionToPerform ===
-                        "comment") &&
+                    embedDetails?.embedData.autoUserInteractionToPerform ===
+                      "comment" &&
                     filteredPost[activeIndex]?.video.slug ===
                       embedDetails.embedData?.startVideoSlug &&
                     !embedDetails.embedEventBus.getContext()
@@ -599,7 +599,7 @@ a swiper inside another swiper.
                         <p
                           className={cn(
                             "gencl:p-0 gencl:text-center gencl:text-black gencl:text-body-2-medium",
-                            showExpandView && "gencl:text-white!"
+                            showExpandView && "gencl:text-white!",
                           )}
                           aria-label={`${commentCount} ${commentCount === 1 ? "comment" : "comments"}`}
                         >
@@ -695,7 +695,7 @@ a swiper inside another swiper.
                 onReactionStateChange?.(
                   filteredPost[activeIndex]?.video.id ?? "",
                   filteredPost[activeIndex]?.video.slug ?? "",
-                  isReacted
+                  isReacted,
                 );
               }}
             />

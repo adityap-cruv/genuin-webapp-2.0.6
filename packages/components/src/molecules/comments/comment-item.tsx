@@ -29,6 +29,7 @@ export type CommentItemProps = {
   onCommentCountChange?: ComponentProps<
     typeof DeleteComment
   >["onCommentCountChange"];
+  isCommentsLoaded?: boolean;
 };
 
 // TODO: Check why brand is not handled in the comment item
@@ -39,10 +40,12 @@ export const CommentItem = memo(function CommentItem({
   onReactionStateChange,
   onCommentCountChange,
   videoSlug,
+  isCommentsLoaded,
 }: CommentItemProps) {
   const { owner } = comment;
   const { user } = useAuthContext();
   const { isMobile } = useDeviceDetectMediaQuery();
+
   return (
     <div
       className="comment gencl:last:pb-16 gencl:flex gencl:gap-2 gencl:group"
@@ -80,7 +83,7 @@ export const CommentItem = memo(function CommentItem({
               className={cn(
                 "gencl:block",
                 !isMobile &&
-                  "gencl:group-hover:block gencl:data-[state=open]:block gencl:hidden"
+                  "gencl:group-hover:block gencl:data-[state=open]:block gencl:hidden",
               )}
             />
           )}
@@ -100,6 +103,7 @@ export const CommentItem = memo(function CommentItem({
             showReactionCount={false}
             shareUrl={shareUrl}
             videoSlug={videoSlug}
+            isCommentsLoaded={isCommentsLoaded}
           >
             <div className="gencl:flex gencl:gap-1 gencl:items-center gencl:cursor-pointer">
               <DynamicReactionIcon

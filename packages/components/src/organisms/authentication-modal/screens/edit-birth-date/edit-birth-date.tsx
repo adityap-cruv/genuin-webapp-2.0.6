@@ -17,8 +17,6 @@ import { useAuthenticationModalContext } from "../../context";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@genuin/ui/components/select";
 import { Toast } from "@genuin/ui/components/toaster";
 import { SubmitButton } from "../../submit-button";
-import { useBaseContext } from "@genuin/components/context";
-import { getRootContainer } from "@genuin/components/molecules/root-portal/shadow-root/shadow-dom.utils";
 
 const MONTHS = [
   { value: "1", label: "January" },
@@ -51,7 +49,6 @@ export function EditBirthDate({
 }: ComponentProps<"div">) {
   const { user, updateUser } = useAuthContext();
   const { closeModal } = useAuthenticationModalContext();
-  const { useShadowDOM } = useBaseContext();
   function parseBirthday() {
     if (user?.birth && typeof user.birth === "string") {
       const [day, month, year] = user.birth.split("/");
@@ -183,7 +180,7 @@ export function EditBirthDate({
                       <SelectTrigger className="gencl:max-w-28 gencl:sm:max-w-full!">
                         <SelectValue placeholder="MM" />
                       </SelectTrigger>
-                      <SelectContent container={getRootContainer(useShadowDOM)}>
+                      <SelectContent>
                         {monthOptions.map((m) => (
                           <SelectItem
                             key={m.value}
@@ -209,7 +206,7 @@ export function EditBirthDate({
                       <SelectTrigger className="gencl:max-w-28 gencl:sm:max-w-full!">
                         <SelectValue placeholder="DD" />
                       </SelectTrigger>
-                      <SelectContent container={getRootContainer(useShadowDOM)}>
+                      <SelectContent>
                         {dayOptions.map((d) => (
                           <SelectItem
                             key={d.toString()}
@@ -235,7 +232,7 @@ export function EditBirthDate({
                       <SelectTrigger className="gencl:max-w-28 gencl:sm:max-w-full!">
                         <SelectValue placeholder="YYYY" />
                       </SelectTrigger>
-                      <SelectContent container={getRootContainer(useShadowDOM)}>
+                      <SelectContent>
                         {yearOptions.map((y) => (
                           <SelectItem
                             key={y}

@@ -297,6 +297,7 @@ export class GenuinSDK {
     }
     // Update start video slug in the embed/placement where the instance id matches.
     if (config?.start_video_slug && config.container_id) {
+      // User-provided data takes priority
       await this.updateStartVideoId({
         startVideoSlug: config.start_video_slug,
         containerId: config.container_id,
@@ -304,6 +305,22 @@ export class GenuinSDK {
         commentId: config.comment_id,
         sourceInstanceId: config.source_instance_id,
       })
+    } else {
+      // No start_video_slug from user — check localStorage for a pending action
+      const pendingAction = getPendingAction()
+      if (pendingAction?.videoSlug) {
+        // Use container_id from config if available, otherwise fall back to the divId stored in the pending action
+        const containerId = config?.container_id ?? pendingAction.divId
+        if (containerId) {
+          await this.updateStartVideoId({
+            startVideoSlug: pendingAction.videoSlug,
+            containerId,
+            action: pendingAction.action as ActionType | undefined,
+            commentId: pendingAction.commentId,
+          })
+          clearPendingAction()
+        }
+      }
     }
   }
 
@@ -382,6 +399,7 @@ export class GenuinSDK {
       if (
         !config.disableExpandView &&
         (embedDetails.expandOnLoad === true ||
+          (config.startVideoSlug && config.expandOnLoad !== false)||
           (embedDetails.startVideoSlug && embedDetails.expandOnLoad !== false))
       ) {
         const instanceId = element.getAttribute('data-instance-id')
@@ -429,7 +447,10 @@ export class GenuinSDK {
       // loadLoadingView(element, config.theme)
 
       // Function to perform the actual render
-      const renderEmbed = async (wasLazilyLoaded = false) => {
+      const renderEmbed = async (
+        wasLazilyLoaded = false,
+        isOnlyForExpand: boolean,
+      ) => {
         const { loadNewEmbed } = await import('./react-utils')
         const cleanup = await loadNewEmbed({
           container: element,
@@ -438,24 +459,31 @@ export class GenuinSDK {
           config,
           user,
           wasLazilyLoaded,
+          isOnlyForExpand,
         })
         // Store the cleanup function in sdkElements
         this.storeCleanupFunction(element, cleanup)
       }
 
+      // A flag to check if the component is only for expand view based on the initial size check, if true we will not lazy load this component as it might cause issues in loading the expand view.
+      const ifComponentIsOnlyForExpand =
+        this.checkIfEmbedIsOnlyForExpand(element)
+      // const ifComponentIsOnlyForExpand = true
+
       // Check for IntersectionObserver support for lazy loading
       // We can also add a config flag to disable this if needed
       const canLazyLoad =
         'IntersectionObserver' in window &&
-        !embedDetails.startVideoSlug && // Don't lazy load if deep linking
-        !embedDetails.expandOnLoad // Don't lazy load if auto-expanding
+        !config.startVideoSlug && // Don't lazy load if deep linking
+        !config.expandOnLoad && // Don't lazy load if expand on load is true
+        !ifComponentIsOnlyForExpand // Don't lazy load if the component is only for expand view (based on initial size check)
 
       if (canLazyLoad) {
         const observer = new IntersectionObserver(
           (entries) => {
             entries.forEach((entry) => {
               if (entry.isIntersecting) {
-                renderEmbed(true) // Pass true for wasLazilyLoaded
+                renderEmbed(true, ifComponentIsOnlyForExpand) // Pass true for wasLazilyLoaded
                 observer.disconnect()
               }
             })
@@ -471,7 +499,7 @@ export class GenuinSDK {
         this.storeCleanupFunction(element, () => observer.disconnect())
       } else {
         // Fallback to eager release
-        await renderEmbed(false)
+        await renderEmbed(false, ifComponentIsOnlyForExpand)
       }
     } catch (error) {
       console.error('Error initializing embed:', error)
@@ -566,7 +594,10 @@ export class GenuinSDK {
   ): void {
     // brandId 2801 is for bargainhunter, 2476 is for usmagazine & 2808 is for lifeandstylemag.
     const ignoreExpiry =
-      brandId === 2801 || brandId === 2476 || brandId === 2808
+      brandId === 2801 ||
+      brandId === 2476 ||
+      brandId === 2808 ||
+      brandId === 3219
     const pendingAction = getPendingAction(ignoreExpiry)
     if (!pendingAction) return
     if (ignoreExpiry) {
@@ -689,6 +720,28 @@ export class GenuinSDK {
     } else {
       console.warn('No embed details found for configuration.')
       throw new Error('No embed details found for configuration.')
+    }
+  }
+
+  /**
+   * A function to check if the embed is only for expand view based on the configuration.
+   */
+  private checkIfEmbedIsOnlyForExpand(container: HTMLElement) {
+    // Treat elements with zero dimensions or hidden visibility as expand-only
+    // (these should not be lazy-loaded since they may be shown via an expand action)
+    try {
+      const clientWidth = container.clientWidth
+      const clientHeight = container.clientHeight
+      const style = window.getComputedStyle(container)
+      const isVisibilityHidden =
+        style.visibility === 'hidden' ||
+        style.visibility === 'collapse' ||
+        container.hidden
+
+      return clientWidth === 0 || clientHeight === 0 || isVisibilityHidden
+    } catch (e) {
+      // Fallback to size-based detection if computed style access fails
+      return container.clientWidth === 0 || container.clientHeight === 0
     }
   }
 

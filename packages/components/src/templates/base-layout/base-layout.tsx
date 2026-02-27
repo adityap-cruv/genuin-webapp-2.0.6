@@ -73,7 +73,7 @@ export function BaseLayout({
             layoutConfig.showBackAndCloseButton) &&
             !isMobile
             ? "gencl:h-[calc(100%_-_64px)]"
-            : "gencl:h-full"
+            : "gencl:h-full",
         )}
         // style={{
         //   height: calculatedHeight,
@@ -87,13 +87,12 @@ export function BaseLayout({
           className={cn(
             "gencl:w-full gencl:flex-grow gencl:!h-full gencl:relative",
             variant === "embed-expand-view" && "gencl:xl:px-15",
-            className
+            className,
           )}
           {...restProps}
         >
           {children}
         </section>
-        <Toaster />
       </main>
     </>
   );
