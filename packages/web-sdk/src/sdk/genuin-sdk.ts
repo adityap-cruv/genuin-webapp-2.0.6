@@ -900,7 +900,7 @@ export class GenuinSDK {
    */
   private getAndSetDivs(configByUser?: ConfigByUser) {
     const selector =
-      '[id="gen-sdk"]:not(.gen-sdk-root-portal), [id^="gen-sdk-"]:not(.gen-sdk-root-portal), .gen-sdk-class:not(.gen-sdk-root-portal)'
+      '[id="gen-sdk"]:not(.gen-sdk-root-portal):not([data-portal-container]), [id^="gen-sdk-"]:not(.gen-sdk-root-portal):not([data-portal-container]), .gen-sdk-class:not(.gen-sdk-root-portal):not([data-portal-container])'
 
     const elements: HTMLElement[] = Array.from(
       document.querySelectorAll(selector),
