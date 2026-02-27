@@ -1,7 +1,15 @@
+"use client";
 import { InfiniteScroll } from "@genuin/ui/infinite-scroll";
 import { CommentIcon, ErrorIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/utils";
-import React, { ComponentProps, memo, useCallback, useMemo } from "react";
+import React, {
+  ComponentProps,
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 import {
   handleReactionStateChangeInComments,
@@ -43,8 +51,17 @@ export const CommentsList = memo(function CommentsList({
     (commentId: string, isReacted: boolean) => {
       handleReactionStateChangeInComments(videoId, commentId, isReacted);
     },
-    [videoId]
+    [videoId],
   );
+
+  const [isCommentsLoaded, setIsCommentsLoaded] = useState(false);
+  useEffect(() => {
+    if (!data) return;
+    const timer = setTimeout(() => {
+      setIsCommentsLoaded(true);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [data]);
 
   const comments = useMemo(() => {
     return data?.pages.flatMap((page) => page.comments);
@@ -55,7 +72,7 @@ export const CommentsList = memo(function CommentsList({
       <div
         className={cn(
           "gencl:flex gencl:items-center gencl:justify-center gencl:h-full gencl:flex-col gencl:gap-4",
-          className
+          className,
         )}
         {...restProps}
       >
@@ -72,7 +89,7 @@ export const CommentsList = memo(function CommentsList({
       <div
         className={cn(
           "gencl:w-full gencl:h-full gencl:flex gencl:flex-col gencl:shrink-0 gencl:p-4",
-          className
+          className,
         )}
         {...restProps}
       >
@@ -88,7 +105,7 @@ export const CommentsList = memo(function CommentsList({
       <div
         className={cn(
           "gencl:w-full gencl:h-full gencl:flex gencl:flex-col gencl:gap-4 gencl:items-center gencl:justify-center",
-          className
+          className,
         )}
         {...restProps}
       >
@@ -109,7 +126,7 @@ export const CommentsList = memo(function CommentsList({
     <div
       className={cn(
         "gencl:h-full gencl:w-full gencl:overflow-auto gencl:p-4 gencl:space-y-4 gencl:!pb-16",
-        className
+        className,
       )}
       {...restProps}
     >
@@ -127,6 +144,7 @@ export const CommentsList = memo(function CommentsList({
             videoSlug={videoSlug}
             onCommentCountChange={onCommentCountChange}
             onReactionStateChange={handleReactionStateChange}
+            isCommentsLoaded={isCommentsLoaded}
           />
         ))}
       </InfiniteScroll>
