@@ -305,6 +305,11 @@ export function EmbedExpandView({
 
           const videoToInsert = videoDetails[0];
 
+          if (!videoToInsert) {
+            console.warn('[Expand View] Video details incomplete');
+            return;
+          }
+
           let didInsert = false;
 
           queryClient.setQueryData<InfiniteData<FeedPage>>(queryKey, (oldData) => {
@@ -342,24 +347,27 @@ export function EmbedExpandView({
               };
             });
 
-            if (!didInsert) {
+            if (!didInsert && updatedPages.length > 0) {
               const lastPageIndex = updatedPages.length - 1;
               const lastPage = updatedPages[lastPageIndex];
-              const alreadyExists = lastPage.feed.some(
-                (item) =>
-                  item.video.slug === newVideoSlug ||
-                  item.video.id === newVideoSlug,
-              );
-              if (!alreadyExists) {
-                updatedPages[lastPageIndex] = {
-                  ...lastPage,
-                  feed: [...lastPage.feed, videoToInsert],
-                  totalVideos:
-                    typeof lastPage.totalVideos === 'number'
-                      ? lastPage.totalVideos + 1
-                      : lastPage.totalVideos,
-                };
-                didInsert = true;
+
+              if (lastPage) {
+                const alreadyExists = lastPage.feed.some(
+                  (item) =>
+                    item.video.slug === newVideoSlug ||
+                    item.video.id === newVideoSlug,
+                );
+                if (!alreadyExists) {
+                  updatedPages[lastPageIndex] = {
+                    ...lastPage,
+                    feed: [...lastPage.feed, videoToInsert],
+                    totalVideos:
+                      typeof lastPage.totalVideos === 'number'
+                        ? lastPage.totalVideos + 1
+                        : lastPage.totalVideos,
+                  } as FeedPage;
+                  didInsert = true;
+                }
               }
             }
 
