@@ -1,4 +1,3 @@
-
 import {
   ChevronDownIcon,
   ChevronLeftIcon,
@@ -8,7 +7,8 @@ import {
 import { useEmbedManagerContext } from "./context";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { Button } from "@genuin/ui/components/button";
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useState, useEffect, CSSProperties } from "react";
+import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 
 // Common types
 type Theme = "light" | "dark";
@@ -82,6 +82,8 @@ export function NavigationButtons({
   isNextDisabled = false,
   hideNavButtons,
 }: NavigationButtonsProps) {
+  const { isIOS, isMac } = useDeviceDetection();
+
   // Early return if navigation is disabled
   if (!isNavigationControlEnabled || hideNavButtons) return null;
 
@@ -91,6 +93,18 @@ export function NavigationButtons({
 
   // Theme configuration
   const iconTheme = theme === "dark" ? "dark" : "light";
+
+  // Safari-specific optimization styles to prevent flickering during swiper transitions
+  const safariOptimizationStyles: CSSProperties =
+    isIOS || isMac
+      ? {
+          transform: "translateZ(0)",
+          backfaceVisibility: "hidden",
+          WebkitBackfaceVisibility: "hidden",
+          WebkitTransform: "translateZ(0)",
+          willChange: "transform",
+        }
+      : {};
 
   // Click handlers
   const handlePrevClick = onPrev;
@@ -118,12 +132,12 @@ export function NavigationButtons({
       onClick={onClick}
       aria-label={label}
       className={className}
-      style={style}
+      style={{ ...style, ...safariOptimizationStyles }}
     >
       <Icon
         theme={iconTheme}
         className={iconClassName}
-        style={iconStyle}
+        style={{ ...iconStyle, ...safariOptimizationStyles }}
         size="lg"
       />
     </Button>
