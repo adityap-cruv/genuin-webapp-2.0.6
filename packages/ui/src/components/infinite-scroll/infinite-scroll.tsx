@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useEffect, useId } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 
 import { Loader } from "../loader";
 
@@ -27,8 +27,7 @@ export const InfiniteScroll = ({
   hasNextPage,
   loader,
 }: InfiniteScrollProps) => {
-  const lastElementId = useId();
-
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
   const elementLoader = loader ?? (
     <div className="gencl:h-10 gencl:w-full gencl:flex gencl:items-center gencl:justify-center">
       <Loader size="md" />
@@ -42,11 +41,13 @@ export const InfiniteScroll = ({
   }, [getNextPage, hasNextPage, isLoadingNextPage]);
 
   useEffect(() => {
-    const lastElement = document.getElementById(lastElementId);
-    if (!lastElement) return;
+    const sentinelElement = sentinelRef.current;
+    if (!sentinelElement) return;
+
     const observer = new IntersectionObserver(
       (entries) => {
         const lastEntry = entries[0];
+
         if (
           lastEntry &&
           lastEntry.isIntersecting &&
@@ -55,20 +56,20 @@ export const InfiniteScroll = ({
           callNextPage();
         }
       },
-      { threshold: 0.95 }
+      { threshold: 0.95 },
     );
 
-    observer.observe(lastElement);
+    observer.observe(sentinelElement);
 
     return () => {
-      observer.unobserve(lastElement);
+      observer.disconnect();
     };
-  }, [callNextPage, lastElementId]);
+  }, [callNextPage]);
 
   return (
     <>
       {children}
-      <div id={lastElementId} className="gencl:h-2" />
+      <div ref={sentinelRef} className="gencl:h-2" />
       {hasNextPage && elementLoader}
     </>
   );
