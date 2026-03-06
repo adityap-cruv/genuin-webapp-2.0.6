@@ -96,7 +96,7 @@ type PlayerConfigType = ReturnType<typeof getVideoPlayerConfigs>;
 
 function getInitialShouldPlayState(
   playerConfig: PlayerConfigType | undefined,
-  explicitAutoPlay?: boolean
+  explicitAutoPlay?: boolean,
 ) {
   // If explicit autoplay is provided and set to false, it should override config
   if (explicitAutoPlay === false) return false;
@@ -172,14 +172,14 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
    * This state is used to play or pause the video player.
    */
   const [feedPlayerShouldPlay, setFeedPlayerShouldPlay] = useState(
-    getInitialShouldPlayState(playerConfigRef.current, explicitAutoPlay)
+    getInitialShouldPlayState(playerConfigRef.current, explicitAutoPlay),
   );
 
   // To check whether video is fully watched or not..
   const [isVideoWatched, setIsVideoWatched] = useState<boolean>(
     isEmbed
       ? (baseContextManager.getVideoState(videoId)?.isWatched ?? false)
-      : false
+      : false,
   );
 
   // State to track user focus and container visibility for controlling video playback
@@ -212,12 +212,12 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       video_id: videoId,
       video_url: videoUrl,
     }),
-    [videoId, totalVideos, videoDescription]
+    [videoId, totalVideos, videoDescription],
   );
 
   // Track globalPlayState from baseEventBus - controls if ANY player can play based on user action
   const [globalPlayState, setGlobalPlayState] = useState(
-    baseEventBus.getContext().globalPlayingState
+    baseEventBus.getContext().globalPlayingState,
   );
 
   const videoStateRef = useRef<VideoTimeStateType>({
@@ -338,7 +338,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
 
       const prevSlide = swiper?.slides?.[previousActiveIndex];
       const videoRef = prevSlide?.querySelector(
-        "video"
+        "video",
       ) as HTMLVideoElement | null;
       if (!videoRef) return;
 
@@ -358,7 +358,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         video_view_length: currentTime,
       });
     },
-    [videoId, index, swiper, track]
+    [videoId, index, swiper, track],
   );
 
   useEffect(() => {
@@ -610,7 +610,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     // Used in the embed/feed clip-card view to fire the video impression event.
     function handleActiveIndexChange(
       eventData: any,
-      context: EmbedEventContextType
+      context: EmbedEventContextType,
     ) {
       const prevIndex = context.previousActiveIndex;
       /*
@@ -641,7 +641,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     // Used when the user switches from the clip card/embed view to the clip player/full-screen player.
     function handleActivePlayerChange(
       eventData: any,
-      context: EmbedEventContextType
+      context: EmbedEventContextType,
     ) {
       const prevIndex = context.previousActiveIndex;
       if (!context.shouldTrackImpression) {
@@ -690,7 +690,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         (currentContext) => ({
           ...currentContext,
           globalPlayingState: buttonAction === "PLAY",
-        })
+        }),
       );
     }
   }, [buttonAction, baseEventBus, isIHeartLayout]);
@@ -818,7 +818,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         timeUpdateEventEmitterRef.current?.off("timeUpdate", handler);
       };
     },
-    []
+    [],
   );
 
   // TODO: This function takes very heavy logical decision, refactor it with more maintainable code, If you want to do any changed contact himanshu@begenuin.com first.
@@ -964,7 +964,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       baseAnalyticsData,
       feedPlayerShouldPlay,
       isLoading,
-    ]
+    ],
   );
 
   // setPlayerRef: Sets the player reference to the current OpenPlayerJS instance or null.
@@ -1002,7 +1002,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       baseAnalyticsData,
       baseContextManager,
       isLoading,
-    ]
+    ],
   );
 
   // pause: Sets the feed player to pause state.
@@ -1028,7 +1028,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       track,
       baseAnalyticsData,
       isLoading,
-    ]
+    ],
   );
 
   // toggleMuted: Toggles the muted state of the player.
@@ -1090,7 +1090,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       }
       setMuted((oldMuted) => !oldMuted);
     },
-    [setMuted, muted, track, EventName, baseAnalyticsData]
+    [setMuted, muted, track, EventName, baseAnalyticsData],
   );
 
   // mute: Mutes the player.
@@ -1104,7 +1104,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         });
       }
     },
-    [setMuted, track, EventName.VIDEO_MUTED, baseAnalyticsData]
+    [setMuted, track, EventName.VIDEO_MUTED, baseAnalyticsData],
   );
 
   // unmute: Unmutes the player.
@@ -1115,7 +1115,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         setButtonAction("UNMUTE");
       }
     },
-    [setMuted]
+    [setMuted],
   );
 
   /*
@@ -1228,7 +1228,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         onAdEnded?.(adInfo);
       }
     },
-    [onAdEnded, onAdStarted]
+    [onAdEnded, onAdStarted],
   );
 
   /**
@@ -1239,7 +1239,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     (
       newState:
         | PlayingStateType
-        | ((prevState: PlayingStateType) => PlayingStateType)
+        | ((prevState: PlayingStateType) => PlayingStateType),
     ) => {
       const isPreviewActive =
         index !== undefined
@@ -1256,7 +1256,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       // Call the original setPlayingState
       setPlayingState(newState);
     },
-    [baseContextManager, index]
+    [baseContextManager, index],
   );
 
   const value: PlayerContextType = {

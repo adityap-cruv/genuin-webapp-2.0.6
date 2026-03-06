@@ -125,13 +125,6 @@ export function EmbedExpandView({
     // Update the screen type based on the current view
     updateScreen(isPlacementView ? "view_placement" : "view_embed");
 
-    // For iHeart layout, maintain the current mute state (preserve user preference)
-    if (
-      brandLayoutType !== "iheart" &&
-      typeof previousMuteState === "boolean"
-    ) {
-      setMuted(true);
-    }
     setPlaybackSpeed((x) => {
       if (x.speed !== 1) {
         return { ...x, speed: 1 };
@@ -235,9 +228,6 @@ export function EmbedExpandView({
   // Handle mute state and global playing state when entering expand view
   useEffect(() => {
     if (brandLayoutType === "iheart") {
-      setTimeout(() => {
-        setMuted(muted);
-      }, 100);
       if (
         websiteType === "legacy" &&
         !baseEventBus.getContext().globalPlayingState
@@ -253,7 +243,7 @@ export function EmbedExpandView({
         setMuted(false);
       }, 300);
     }
-  }, [brandLayoutType, setMuted, muted, baseEventBus, websiteType]);
+  }, [brandLayoutType, setMuted, baseEventBus, websiteType]);
 
   // Add keyboard event listener for ESC key
   useEffect(() => {

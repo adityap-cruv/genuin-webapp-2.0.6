@@ -279,7 +279,6 @@ export const FeedViewCore = memo(function FeedViewCore({
     theme,
   };
 
-  console.log({ embedDetails, showExpandView, canGoBack: canGoBack() });
 
   const skeletonTheme = variant === "page" ? "light" : theme;
   if (isLoading && !isIHeart) {
