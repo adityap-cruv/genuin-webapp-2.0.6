@@ -1,6 +1,6 @@
 import { useEmbedContext } from "@genuin/components/context/embed";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
-import { useEffect, useState, lazy, Suspense } from "react";
+import { useEffect, useState, lazy, Suspense, use } from "react";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { QueryKey } from "@tanstack/react-query";
 import { RootPortal } from "@genuin/components/molecules/root-portal";
@@ -16,6 +16,7 @@ import {
 } from "@genuin/components/lib/sdk-event-emitter";
 import { FeedSkeleton } from "@genuin/components/templates/feed/feed-skeleton.js";
 import useViewportHeight from "@genuin/components/hooks/use-screen-height";
+import { useAnalytics } from "@genuin/components/context/index.js";
 
 const FeedView = lazy(() =>
   import("../../../templates/feed/index.js").then((module) => ({
@@ -103,9 +104,11 @@ export function EmbedExpandView({
   } = useBaseContext();
   const {
     brand: { isIndianExpress },
+    view: { isPlacementView },
   } = useEmbedConfigs();
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
   const viewportHeight = useViewportHeight();
+  const { updateScreen } = useAnalytics();
   const previousMuteState = usePrevious(muted);
   const isSectioned = embedEventBus.getContext().isSectioned;
   const {
@@ -119,6 +122,9 @@ export function EmbedExpandView({
 
   // Function to handle closing expand view - restores mute state and goes back
   const handleCloseExpandView = (isEscapeKey?: boolean) => {
+    // Update the screen type based on the current view
+    updateScreen(isPlacementView ? "view_placement" : "view_embed");
+
     // For iHeart layout, maintain the current mute state (preserve user preference)
     if (
       brandLayoutType !== "iheart" &&
@@ -179,6 +185,8 @@ export function EmbedExpandView({
   };
 
   useEffect(() => {
+    // Update the screen type based on the current view
+    updateScreen("expanded_view");
     /**
      * Initialization effect for EmbedExpandView component.
      *
@@ -294,6 +302,8 @@ export function EmbedExpandView({
         }
       } catch (e) {
         // Silently ignore if the browser blocks without user gesture
+        // Update the screen type based on the current view
+        updateScreen(isPlacementView ? "view_placement" : "view_embed");
       }
     };
 
