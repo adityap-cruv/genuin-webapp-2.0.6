@@ -167,6 +167,7 @@ export function Player({
               showCloseButton={variant === "expand"}
               onReactionStateChange={onReactionStateChange}
               onCommentCountChange={onCommentCountChange}
+              onSwiperToggle={onSwiperToggle}
               // Applies GPU acceleration to prevent layer flickering on iOS devices during animations
               className="gencl:translate-x-0"
             />

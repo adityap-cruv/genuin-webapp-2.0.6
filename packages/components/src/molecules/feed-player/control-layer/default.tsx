@@ -186,6 +186,7 @@ export function Default({
                   onCommentCountChange={onCommentCountChange}
                   variant={variant}
                   className={cn(playbackSpeed.speed !== 1 && "gencl:invisible")}
+                  onSwiperToggle={onSwiperToggle}
                 />
               </Suspense>
             )}
@@ -303,6 +304,7 @@ export function Default({
                   onGroupSubscriptionChange={onGroupSubscriptionChange}
                   onReactionStateChange={onReactionStateChange}
                   onCommentCountChange={onCommentCountChange}
+                  onSwiperToggle={onSwiperToggle}
                   variant={variant}
                   className={cn(
                     playbackSpeed.speed !== 1 &&

@@ -410,6 +410,7 @@ a swiper inside another swiper.
                     setVerticalSwipers={setVerticalSwipers}
                     onAdStarted={handleAdStarted}
                     onAdEnded={handleAdEnded}
+                    onSwiperToggle={handleSwiperToggle}
                   />
                 </Suspense>
               ) : (
@@ -435,6 +436,7 @@ a swiper inside another swiper.
                     isSectioned={isSectioned}
                     onAdStarted={handleAdStarted}
                     onAdEnded={handleAdEnded}
+                    onSwiperToggle={handleSwiperToggle}
                   />
                 </Suspense>
               )}

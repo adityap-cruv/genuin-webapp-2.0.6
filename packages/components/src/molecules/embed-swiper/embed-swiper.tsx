@@ -48,7 +48,7 @@ const SwiperWithModules = lazy(async () => {
       }, [freeMode, virtualizeSwiper]);
 
       return (
-        <Swiper {...props} modules={modules}>
+        <Swiper {...props} modules={modules} freeMode={freeMode}>
           {children}
         </Swiper>
       );
