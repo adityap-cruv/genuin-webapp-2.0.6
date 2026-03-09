@@ -69,11 +69,11 @@ export const DefaultPlacement: FC<ControlLayerPropsType> = ({
               )}
             />
           )}
-        <div className="gencl:flex gencl:flex-col gencl:justify-center gencl:items-start">
+        <div className="gencl:flex gencl:flex-col gencl:justify-center gencl:min-w-0 gencl:flex-1">
           {contentDisplay.showSectionTitle && (
             <p
               className={cn(
-                "gencl:line-clamp-1",
+                "gencl:truncate",
                 shouldUseCompactText
                   ? "gencl:!text-[10px] gencl:font-semibold"
                   : "gencl:text-body-2-semi-bold"
@@ -85,7 +85,7 @@ export const DefaultPlacement: FC<ControlLayerPropsType> = ({
           {contentDisplay.showSectionSubTitle && !isXs && (
             <p
               className={cn(
-                "gencl:line-clamp-2",
+                "gencl:truncate",
                 shouldUseCompactText
                   ? "gencl:!text-[10px] gencl:font-normal"
                   : "gencl:text-body-2-normal"
@@ -309,7 +309,7 @@ export const DefaultPlacement: FC<ControlLayerPropsType> = ({
       >
         {/* Top Layout */}
         {!(isLg && isActive) ? (
-          <div className="gencl:space-y-2">
+          <div className="gencl:flex gencl:flex-col gencl:space-y-2 gencl:flex-1 gencl:min-w-0">
             {layoutSections.top.map((element, index) => (
               <div key={index}>{element}</div>
             ))}
@@ -319,13 +319,13 @@ export const DefaultPlacement: FC<ControlLayerPropsType> = ({
         )}
 
         {isActive && (
-          <div>
+          <div className="gencl:shrink-0">
             <EmbedControls
               size={isXs ? "xs" : "sm"}
               section={postDetails.section}
             />
           </div>
-        )}
+         )} 
       </div>
 
       {/* Bottom Layout */}
