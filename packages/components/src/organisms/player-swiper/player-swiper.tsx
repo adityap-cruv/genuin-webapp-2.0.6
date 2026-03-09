@@ -153,14 +153,6 @@ export function PlayerList({
   // if we use directly isTablet from the hook then for desktop it will be true based on useDeviceDetectMediaQuery implementation
   const isTablet = !isMobile && !isDesktop;
 
-  const handleAdStarted = useCallback((e?: AdInfoType) => {
-    setIsAdPlaying(true);
-  }, []);
-
-  const handleAdEnded = useCallback((e?: AdInfoType) => {
-    setIsAdPlaying(false);
-  }, []);
-
   // Container dimensions state
   const containerRef = useRef<HTMLDivElement>(null);
   const [slideDimensions, setSlideDimensions] = useState<{
@@ -270,6 +262,22 @@ export function PlayerList({
       }
     },
     [isSectioned, horizontalSwiper, activeSwiper],
+  );
+
+  const handleAdStarted = useCallback(
+    (e?: AdInfoType) => {
+      setIsAdPlaying(true);
+      handleSwiperToggle(true); // Disable swiper during ad playback
+    },
+    [handleSwiperToggle],
+  );
+
+  const handleAdEnded = useCallback(
+    (e?: AdInfoType) => {
+      setIsAdPlaying(false);
+      handleSwiperToggle(false); // Re-enable swiper after ad playback
+    },
+    [handleSwiperToggle],
   );
 
   /*
