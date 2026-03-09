@@ -66,7 +66,7 @@ const showCustomToast = (
         {variant === "success" ? (
           <div
             className={cn(
-              "gencl:size-5 gencl:rounded-2xl gencl:flex gencl:justify-center gencl:items-center",
+              "gencl:size-5 gencl:rounded-2xl gencl:flex gencl:justify-center gencl:items-center gencl:shrink-0",
               isIheart
                 ? "gencl:bg-[#46815A]!"
                 : "gencl:bg-success-status gencl:border gencl:border-white"

@@ -149,6 +149,7 @@ export const ReadMore = memo(function ReadMore({
                 : "",
             );
             setCalculatedMaxChars(limit);
+            console.log("Calculated max characters:", limit);
           }
         });
       });
