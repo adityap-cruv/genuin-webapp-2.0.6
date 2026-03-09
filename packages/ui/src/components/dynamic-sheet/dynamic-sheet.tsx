@@ -58,6 +58,7 @@ function DynamicSheet({
   contentClassName = "",
   footerClassName = "",
   onDragging,
+  onSwiperToggle,
   ...rest
 }: DynamicSheetProps) {
   const isFixedMode = renderMode === "fixed";
@@ -195,26 +196,51 @@ function DynamicSheet({
   // ── Notify parent when dragging state changes ─────────────────────────
   useEffect(() => {
     onDragging?.(isDragging);
-  }, [isDragging, onDragging]);
+    // Keep swiper disabled while the sheet is being dragged
+    onSwiperToggle?.(isDragging);
+  }, [isDragging, onDragging, onSwiperToggle]);
+
+  // ── Sheet-level pointer handlers (disable swiper on any touch/click) ───
+  const disableDragAndSwipe = config.disableDragAndSwipe ?? false;
+
+  const handleSheetPointerDown = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      if (disableDragAndSwipe) return;
+      onSwiperToggle?.(true);
+      handleDragStart(e);
+    },
+    [disableDragAndSwipe, onSwiperToggle, handleDragStart],
+  );
+
+  const handleSheetPointerUp = useCallback(() => {
+    if (disableDragAndSwipe) return;
+    onSwiperToggle?.(false);
+  }, [disableDragAndSwipe, onSwiperToggle]);
 
   // ── Content pull-to-close gesture ─────────────────────────────────────
-  // We need our own mini-gesture detector on the content area so that:
-  //   • We ALWAYS block the sheet drag handler from the content (prevents
-  //     setPointerCapture stealing native scroll at every touch).
-  //   • When the user is at scrollTop === 0 and swipes DOWN, we hand off
-  //     to the sheet's close/lower-state logic (Instagram-like behaviour).
   const contentRef = useRef<HTMLDivElement>(null);
+  const scrollEndTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const contentGesture = useRef<{
     startY: number;
     pointerId: number;
     active: boolean;
   } | null>(null);
 
+  const handleContentScroll = useCallback(() => {
+    onSwiperToggle?.(true);
+    if (scrollEndTimerRef.current) clearTimeout(scrollEndTimerRef.current);
+    scrollEndTimerRef.current = setTimeout(() => {
+      onSwiperToggle?.(false);
+    }, 150);
+  }, [onSwiperToggle]);
+
   const handleContentPointerDown = useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
       // Always stop propagation so the sheet's handleDragStart is NEVER
       // triggered from points inside the scrollable content area.
       e.stopPropagation();
+      if (disableDragAndSwipe) return;
+      onSwiperToggle?.(true);
 
       const el = e.currentTarget;
       if (el.scrollTop === 0 && e.button === 0) {
@@ -227,11 +253,12 @@ function DynamicSheet({
         el.setPointerCapture(e.pointerId);
       }
     },
-    [],
+    [disableDragAndSwipe, onSwiperToggle],
   );
 
   const handleContentPointerMove = useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
+      if (disableDragAndSwipe) return;
       const gesture = contentGesture.current;
       if (!gesture?.active) return;
 
@@ -260,7 +287,9 @@ function DynamicSheet({
 
   const handleContentPointerUp = useCallback(() => {
     contentGesture.current = null;
-  }, []);
+    if (disableDragAndSwipe) return;
+    onSwiperToggle?.(false);
+  }, [disableDragAndSwipe, onSwiperToggle]);
 
   // ── Computed height & transitions ──────────────────────────────────────
   const snappedHeight =
@@ -299,11 +328,6 @@ function DynamicSheet({
     config.showOverlay &&
     (currentState === "panel-view" || currentState === "full-view");
 
-  const overlayPosition = isFixedMode ? "fixed" : "absolute";
-
-  const showFooter =
-    currentState !== "default" && currentState !== "default-active";
-
   // ── Sheet panel style ──────────────────────────────────────────────────
   const panelPositionStyle: React.CSSProperties = isInlineMode
     ? {
@@ -339,7 +363,9 @@ function DynamicSheet({
         data-slot="dynamic-sheet"
         data-state={currentState}
         data-render-mode={renderMode}
-        onPointerDown={handleDragStart}
+        onPointerDown={handleSheetPointerDown}
+        onPointerUp={handleSheetPointerUp}
+        onPointerCancel={handleSheetPointerUp}
         className={cn(
           // Positioned modes pin to bottom edge of their containing block.
           !isInlineMode && "gencl:bottom-0 gencl:left-0 gencl:right-0",
@@ -347,7 +373,8 @@ function DynamicSheet({
           isContainerMode && "gencl:z-[999]",
           "gencl:flex gencl:flex-col gencl:overflow-hidden gencl:pointer-events-auto",
           "gencl:rounded-2xl gencl:will-change-[transform,height]",
-          "gencl:cursor-grab gencl:active:cursor-grabbing",
+          !disableDragAndSwipe &&
+            "gencl:cursor-grab gencl:active:cursor-grabbing",
           isDarkTheme
             ? "gencl:bg-black/50 gencl:backdrop-blur-sm"
             : "gencl:bg-white",
@@ -357,22 +384,26 @@ function DynamicSheet({
         {...rest}
       >
         {/* Drag indicator */}
-        {config.showIndicator !== false && currentState !== "default" && (
-          <DynamicSheetDragIndicator
-            theme={config.theme}
-            isDragging={isDragging}
-            onPointerDown={handleDragStart}
-          />
-        )}
+        {!disableDragAndSwipe &&
+          config.showIndicator !== false &&
+          currentState !== "default" && (
+            <DynamicSheetDragIndicator
+              theme={config.theme}
+              isDragging={isDragging}
+              onPointerDown={handleSheetPointerDown}
+            />
+          )}
 
         {/* Header */}
         {header ? (
           <div
             data-slot="dynamic-sheet-header"
-            onPointerDown={handleDragStart}
+            onPointerDown={disableDragAndSwipe ? undefined : handleDragStart}
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
             className={cn(
-              "gencl:w-full gencl:shrink-0 gencl:flex gencl:items-center gencl:px-4 gencl:py-2 gencl:pb-2.5",
-              "gencl:cursor-grab gencl:touch-none gencl:border-b",
+              "gencl:border-b gencl:z-50",
               isDarkTheme
                 ? "gencl:border-white/10"
                 : "gencl:border-secondary-150",
@@ -384,10 +415,13 @@ function DynamicSheet({
         ) : config.navTitle || config.showClose ? (
           <div
             data-slot="dynamic-sheet-header"
-            onPointerDown={handleDragStart}
+            onPointerDown={disableDragAndSwipe ? undefined : handleDragStart}
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
             className={cn(
               "gencl:w-full gencl:shrink-0 gencl:flex gencl:items-center gencl:justify-between gencl:relative",
-              "gencl:px-4 gencl:py-2 gencl:pb-2.5 gencl:border-b",
+              "gencl:p-3 gencl:border-b",
               "gencl:cursor-grab gencl:touch-none",
               isDarkTheme
                 ? "gencl:border-white/10"
@@ -441,6 +475,8 @@ function DynamicSheet({
             onPointerMove={handleContentPointerMove}
             onPointerUp={handleContentPointerUp}
             onPointerCancel={handleContentPointerUp}
+            onScroll={handleContentScroll}
+            onClick={(e) => e.stopPropagation()}
             className={cn(
               "gencl:flex-1 gencl:min-h-0 gencl:overflow-y-auto gencl:overflow-x-hidden",
               "gencl:touch-pan-y gencl:cursor-auto",
@@ -454,11 +490,11 @@ function DynamicSheet({
         )}
 
         {/* Footer */}
-        {footer && showFooter && (
+        {footer && config.showFooter && (
           <div
             data-slot="dynamic-sheet-footer"
             className={cn(
-              "gencl:shrink-0 gencl:px-4 gencl:py-2.5 gencl:border-t",
+              "gencl:shrink-0 gencl:p-2 gencl:border-t",
               isDarkTheme
                 ? "gencl:border-white/10 gencl:text-white"
                 : "gencl:border-secondary-150 gencl:text-black",

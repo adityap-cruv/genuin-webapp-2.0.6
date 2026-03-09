@@ -20,14 +20,14 @@ const meta: Meta<typeof DynamicSheet> = {
   decorators: [
     (Story: any) => (
       <div className="gencl:relative gencl:h-screen gencl:w-full gencl:bg-secondary-100 gencl:overflow-hidden">
-        {/* <div className="gencl:p-8">
+        <div className="gencl:p-8">
           <h1 className="gencl:text-heading-2 gencl:mb-4">
             Dynamic Sheet Demo
           </h1>
           <p className="gencl:text-body-1 gencl:mb-4">
             Drag the indicator to adjust height. Drag down to close.
           </p>
-        </div> */}
+        </div>
         <Story />
       </div>
     ),
@@ -105,6 +105,116 @@ export const Basic: Story = {
 };
 
 /**
+ * Dark theme variant with backdrop blur effect.
+ */
+export const DarkTheme: Story = {
+  render: () => {
+    const [isOpen, setIsOpen] = useState(true);
+
+    return (
+      <DynamicSheet
+        isOpen={isOpen}
+        onDismissed={() => setIsOpen(false)}
+        renderMode="container"
+        config={{
+          ...defaultConfig,
+          theme: "dark",
+          onClose: () => setIsOpen(false),
+        }}
+        header={
+          <div>
+            <h2 className="gencl:text-body-0-semi-bold gencl:text-white">
+              Dark Theme Sheet
+            </h2>
+            <p className="gencl:text-body-2-normal gencl:text-white/70">
+              Backdrop blur with dark overlay
+            </p>
+          </div>
+        }
+      >
+        <div className="gencl:px-4 gencl:py-3 gencl:space-y-4 gencl:text-white">
+          <p>This sheet uses the dark theme configuration.</p>
+          <p className="gencl:text-white/70">
+            Perfect for dark mode interfaces.
+          </p>
+        </div>
+      </DynamicSheet>
+    );
+  },
+};
+
+/**
+ * Custom heights configuration.
+ */
+export const CustomHeights: Story = {
+  render: () => {
+    const [isOpen, setIsOpen] = useState(true);
+
+    return (
+      <DynamicSheet
+        isOpen={isOpen}
+        onDismissed={() => setIsOpen(false)}
+        renderMode="container"
+        config={{
+          ...defaultConfig,
+          navTitle: "Custom Heights",
+          heights: {
+            default: 20,
+            "default-active": 25,
+            "expand-view": 50,
+            "panel-view": 80,
+            "full-view": 95,
+          },
+          onClose: () => setIsOpen(false),
+        }}
+      >
+        <div className="gencl:px-4 gencl:py-3 gencl:space-y-2">
+          <p className="gencl:font-semibold">Custom height values:</p>
+          <ul className="gencl:list-disc gencl:pl-5 gencl:space-y-1 gencl:text-body-2-normal">
+            <li>default: 20%</li>
+            <li>default-active: 25%</li>
+            <li>expand-view: 50%</li>
+            <li>panel-view: 80%</li>
+            <li>full-view: 95%</li>
+          </ul>
+        </div>
+      </DynamicSheet>
+    );
+  },
+};
+
+/**
+ * Content only — no header or footer.
+ */
+export const ContentOnly: Story = {
+  render: () => {
+    const [isOpen, setIsOpen] = useState(true);
+
+    return (
+      <DynamicSheet
+        isOpen={isOpen}
+        onDismissed={() => setIsOpen(false)}
+        renderMode="container"
+        config={{
+          ...defaultConfig,
+          showClose: false,
+          onClose: () => setIsOpen(false),
+        }}
+      >
+        <div className="gencl:px-4 gencl:py-3 gencl:flex gencl:flex-col gencl:justify-center gencl:h-full">
+          <div className="gencl:text-center gencl:space-y-4">
+            <h2 className="gencl:text-heading-1">Hello!</h2>
+            <p className="gencl:text-body-1">
+              This sheet has content only — no header or footer.
+            </p>
+          </div>
+        </div>
+      </DynamicSheet>
+    );
+  },
+};
+
+/**
  * Auto-advance — sheet automatically progresses through states.
  */
 export const AutoAdvance: Story = {
@@ -123,11 +233,8 @@ export const AutoAdvance: Story = {
           onStateChange: setState,
           onClose: () => setIsOpen(false),
           autoAdvance: [
-            { from: "default", to: "default-active", delayMs: 2000 },
-            { from: "default-active", to: "expand-view", delayMs: 2000 },
-            { from: "expand-view", to: "panel-view", delayMs: 2000 },
-            { from: "panel-view", to: "full-view", delayMs: 2000 },
-            { from: "full-view", to: "default", delayMs: 2000 },
+            { from: "default", to: "default-active", delayMs: 1500 },
+            { from: "default-active", to: "expand-view", delayMs: 3000 },
           ],
         }}
       >
@@ -136,8 +243,8 @@ export const AutoAdvance: Story = {
             Current state: <strong>{state}</strong>
           </p>
           <p className="gencl:text-body-2-normal">
-            Sheet auto-advances: default → default-active (2 s) → expand-view (2
-            s) → panel-view (2 s) → full-view (2 s) → default (2 s).
+            Sheet auto-advances: default → default-active (1.5 s) → expand-view
+            (3 s).
           </p>
         </div>
       </DynamicSheet>
@@ -183,9 +290,6 @@ export const MobileDemo: Story = {
               navTitle: "Mobile Sheet Demo",
               onStateChange: setState,
               onClose: () => setIsOpen(false),
-              autoAdvance: [
-                { from: "default-active", to: "expand-view", delayMs: 3000 },
-              ],
             }}
             footer={
               <button
@@ -321,7 +425,6 @@ export const DesktopDemo: Story = {
               onDismissed={() => setIsMounted(false)}
               renderMode="container"
               config={{
-                disableAnimation: true,
                 enabledStates: ["full-view"],
                 initialState: "full-view",
                 heights: {

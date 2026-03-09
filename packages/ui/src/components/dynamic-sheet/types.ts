@@ -73,6 +73,8 @@ export interface DynamicSheetConfig {
   showIndicator?: boolean;
   /** Show the built-in close button in header */
   showClose?: boolean;
+  /** Show the footer section */
+  showFooter?: boolean;
   /** Title shown in the center of the built-in header */
   navTitle?: string;
   /** Visual theme */
