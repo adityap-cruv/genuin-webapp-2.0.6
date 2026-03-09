@@ -3,6 +3,7 @@ import { NEXT_PUBLIC_API_URL } from "../lib/utils/env";
 
 let authTokenInterceptorId: number | null = null;
 let brandIdInterceptorId: number | null = null;
+let sdkVersionInterceptorId: number | null = null;
 
 /**
  * This is the axios instance that will be used for all requests.
@@ -27,7 +28,7 @@ export function setAuthTokenInAxiosInstance(token?: string) {
       (config) => {
         config.headers.Authorization = "Bearer " + token;
         return config;
-      }
+      },
     );
   }
 }
@@ -53,6 +54,22 @@ export function setBrandIdInAxiosInstance(brandId?: number) {
       config.headers["x-brand-id"] = brandId;
       return config;
     });
+  }
+}
+
+export function setSDKVersionInAxiosInstance(sdkVersion?: string) {
+  // Eject previous interceptor if it exists
+  if (sdkVersionInterceptorId !== null) {
+    axiosInstance.interceptors.request.eject(sdkVersionInterceptorId);
+    sdkVersionInterceptorId = null;
+  }
+  if (sdkVersion) {
+    sdkVersionInterceptorId = axiosInstance.interceptors.request.use(
+      (config) => {
+        config.headers["x-sdk-version"] = sdkVersion;
+        return config;
+      },
+    );
   }
 }
 

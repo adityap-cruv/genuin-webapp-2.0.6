@@ -20,6 +20,16 @@ export type BrandDetailsResponse = BrandDetailsConfigType
 export class APIService {
   private static instance: APIService
   private errorHandler: ErrorHandler
+  private sdkVersion: string | undefined = window.genuin?.version
+
+  private getRequestHeaders(
+    additionalHeaders: Record<string, string> = {},
+  ): Record<string, string> {
+    return {
+      ...additionalHeaders,
+      ...(this.sdkVersion ? { 'x-sdk-version': this.sdkVersion } : {}),
+    }
+  }
 
   private constructor() {
     this.errorHandler = ErrorHandler.getInstance()
@@ -43,6 +53,9 @@ export class APIService {
 
       const response = await fetch(
         `${API_BASE_URL}/goservices/brand/details?${searchParams}`,
+        {
+          headers: this.getRequestHeaders(),
+        },
       )
 
       if (!response.ok) {
@@ -75,6 +88,9 @@ export class APIService {
     try {
       const response = await fetch(
         `${API_BASE_URL}/goservices/embed?id=${embedId}`,
+        {
+          headers: this.getRequestHeaders(),
+        },
       )
 
       if (!response.ok) {
@@ -107,6 +123,9 @@ export class APIService {
     try {
       const response = await fetch(
         `${API_BASE_URL}/goservices/placement?placement_id=${placementId}`,
+        {
+          headers: this.getRequestHeaders(),
+        },
       )
 
       if (!response.ok) {
@@ -204,9 +223,9 @@ export class APIService {
       // Implementation based on auth.ts reference
       const response = await fetch(`${API_BASE_URL}/api/v4/sso/autologin`, {
         method: 'POST',
-        headers: {
+        headers: this.getRequestHeaders({
           'Content-Type': 'application/json',
-        },
+        }),
         body: JSON.stringify({
           encrypted_device_id: await encryptText(deviceId, true),
           token,
@@ -262,6 +281,7 @@ export class APIService {
   async getMiniProfile(): Promise<{ data: any }> {
     try {
       const response = await fetch(`${API_BASE_URL}/api/v3/auth/profile`, {
+        headers: this.getRequestHeaders(),
         credentials: 'include', // Include cookies/session data
       })
 
