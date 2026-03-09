@@ -139,36 +139,37 @@ function DialogContent({
   const portalContainer = getRootContainer();
   return (
     <DialogPortal data-slot="dialog-portal" container={portalContainer}>
-      <DialogOverlay className={cn({ "gencl:backdrop-blur-lg": bgBlur })} />
-      <DialogPrimitive.Content
-        data-slot="dialog-content"
-        className={cn(
-          dialogContentVariants({ variant }),
-          className,
-          "gen-sdk-class gen-sdk-root-portal",
-        )}
-        style={{ ...style, ...getGenclStyles() }}
-        autoFocus={false}
-        {...props}
-      >
-        {children}
-        {showClose && (
-          <DialogPrimitive.Close
-            className={cn(
-              "gencl:absolute gencl:top-4 gencl:right-4 gencl:rounded-xs gencl:p-1.5",
-              "gencl:opacity-70 gencl:transition-opacity gencl:hover:opacity-100",
-              "gencl:disabled:pointer-events-none gencl:[&_svg]:pointer-events-none",
-              "gencl:[&_svg]:shrink-0 gencl:[&_svg:not([class*=size-])]:size-5",
-              "gencl:cursor-pointer",
-              closeIconClassName,
-            )}
-            tabIndex={-1}
-          >
-            <XIcon className="gencl:stroke-secondary-600" />
-            <span className="gencl:sr-only">Close</span>
-          </DialogPrimitive.Close>
-        )}
-      </DialogPrimitive.Content>
+      <DialogOverlay className={cn({ "gencl:backdrop-blur-lg": bgBlur })}>
+        <DialogPrimitive.Content
+          data-slot="dialog-content"
+          className={cn(
+            dialogContentVariants({ variant }),
+            className,
+            "gen-sdk-class gen-sdk-root-portal",
+          )}
+          style={{ ...style, ...getGenclStyles() }}
+          autoFocus={false}
+          {...props}
+        >
+          {children}
+          {showClose && (
+            <DialogPrimitive.Close
+              className={cn(
+                "gencl:absolute gencl:top-4 gencl:right-4 gencl:rounded-xs gencl:p-1.5",
+                "gencl:opacity-70 gencl:transition-opacity gencl:hover:opacity-100",
+                "gencl:disabled:pointer-events-none gencl:[&_svg]:pointer-events-none",
+                "gencl:[&_svg]:shrink-0 gencl:[&_svg:not([class*=size-])]:size-5",
+                "gencl:cursor-pointer",
+                closeIconClassName,
+              )}
+              tabIndex={-1}
+            >
+              <XIcon className="gencl:stroke-secondary-600" />
+              <span className="gencl:sr-only">Close</span>
+            </DialogPrimitive.Close>
+          )}
+        </DialogPrimitive.Content>
+      </DialogOverlay>
     </DialogPortal>
   );
 }

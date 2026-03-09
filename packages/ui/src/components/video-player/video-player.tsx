@@ -159,7 +159,7 @@ export type PlayerProps = ComponentProps<"video"> & {
   onVideoStart?: (
     duration: number,
     currentTime: number,
-    latency: number
+    latency: number,
   ) => void; // Add onVideoStart prop
   onMutedChange?: (muted: boolean) => void;
   onVideoLoadStart?: (isPlaying: boolean) => void; // Callback when video loading starts
@@ -249,7 +249,7 @@ export const VideoPlayer = memo(function VideoPlayer({
         return loading;
       });
     },
-    [onVideoLoadStart, onVideoLoadEnd]
+    [onVideoLoadStart, onVideoLoadEnd],
   );
 
   useEffect(() => {
@@ -325,7 +325,7 @@ export const VideoPlayer = memo(function VideoPlayer({
 
       onOpenPlayerReady?.(player);
     },
-    [onOpenPlayerReady, adUrl, playbackSpeed]
+    [onOpenPlayerReady, adUrl, playbackSpeed],
   );
 
   const updatePlayerMutedState = useCallback(
@@ -335,7 +335,7 @@ export const VideoPlayer = memo(function VideoPlayer({
         onMutedChange?.(muted);
       }
     },
-    [onMutedChange, videoRef]
+    [onMutedChange, videoRef],
   );
 
   const playThePlayer = useCallback(() => {
@@ -397,7 +397,7 @@ export const VideoPlayer = memo(function VideoPlayer({
       // Fallback to content if player state check fails
       console.warn(
         "Error checking player state, falling back to content:",
-        error
+        error,
       );
       player?.getMedia().play();
     }
@@ -582,7 +582,7 @@ export const VideoPlayer = memo(function VideoPlayer({
           videoElement.currentTime,
           typeof startTime === "number" && startTime !== -1
             ? Math.floor(latency)
-            : 0
+            : 0,
         );
       }
     };
@@ -609,7 +609,7 @@ export const VideoPlayer = memo(function VideoPlayer({
       videoElement.removeEventListener("play", handlePlay);
       videoElement.removeEventListener(
         "adsallAdsCompleted",
-        handleAllAdsCompleted
+        handleAllAdsCompleted,
       );
       videoElement.removeEventListener("ended", handleEnded);
     };
@@ -652,7 +652,7 @@ export const VideoPlayer = memo(function VideoPlayer({
         playerStateRef.current.thirdQuartileFired = false;
       }
     },
-    [playerStateRef]
+    [playerStateRef],
   );
 
   useEffect(() => {
@@ -720,10 +720,10 @@ export const VideoPlayer = memo(function VideoPlayer({
       changePlayerStateRef(
         false,
         videoRef.current?.duration,
-        videoRef.current?.currentTime
+        videoRef.current?.currentTime,
       );
     },
-    [playerStateRef, changePlayerStateRef, onSeeked]
+    [playerStateRef, changePlayerStateRef, onSeeked],
   );
 
   return (
@@ -732,7 +732,7 @@ export const VideoPlayer = memo(function VideoPlayer({
         id={id}
         className={cn(
           "gencl:h-auto gencl:w-auto gencl:bg-center gencl:bg-no-repeat gencl:object-cover",
-          className
+          className,
         )}
         style={{
           backgroundImage: `url(${poster})`,
