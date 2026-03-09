@@ -175,6 +175,11 @@ export class GenuinSDK {
    * @param config User-provided configuration for the SDK.
    */
   async newInit(config?: ConfigByUser) {
+    // Check if sdk initialization is disabled via URL parameter
+    if (this.shouldDisableSdkInitialization()) {
+      console.warn('SDK initialization is disabled via URL parameter.')
+      return
+    }
     // Performance marker: Init start
     try {
       const { metrics } = await import('../utils/metrics')
@@ -214,6 +219,42 @@ export class GenuinSDK {
         // Metrics not available, continue
       }
     }
+  }
+
+  /**
+   * Checks if SDK initialization should be disabled based on URL parameter.
+   * Works for both regular pages and iframes by checking the top-most window URL (browser address bar).
+   * Falls back to current window if cross-origin restrictions prevent access.
+   *
+   * @returns {boolean} True if SDK initialization is disabled via URL parameter
+   */
+  private shouldDisableSdkInitialization(): boolean {
+    // Check if we're running inside an iframe
+    const isEmbeddedInIframe = window.self !== window.top
+    let searchParams: URLSearchParams
+    if (!isEmbeddedInIframe) {
+      // Not in iframe - use current window's URL
+      searchParams = new URLSearchParams(window.location.search)
+    } else {
+      try {
+        // In iframe - try to access parent/top window URL (browser address bar)
+        // This may fail due to cross-origin restrictions
+        searchParams = new URLSearchParams(
+          window.top?.location.search ||
+            window.parent?.location.search ||
+            window.location.search,
+        )
+      } catch (error) {
+        // Cross-origin access blocked - fall back to current window
+        console.warn(
+          'Unable to access parent window URL, falling back to iframe URL:',
+          error,
+        )
+        searchParams = new URLSearchParams(window.location.search)
+      }
+    }
+    // Check if the disable parameter is set to 'true'
+    return searchParams.get('disableGenSdk') === 'true'
   }
 
   /**
