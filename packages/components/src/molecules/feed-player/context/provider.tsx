@@ -425,7 +425,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   // specifically for iheart to maintain the -n sec player replay.
   useEffect(() => {
     if (
-      brandLayoutType !== "iheart" ||
       !playerRef.current ||
       !embedDetails?.embedEventBus
     )
