@@ -168,12 +168,14 @@ const useStreamingDisplay = ({
     isStreaming,
     isCompleted,
     initialDisplay,
+    isCached,
 }: {
     messageId: string | null;
     content: string;
     isStreaming: boolean;
     isCompleted: boolean;
     initialDisplay: string;
+    isCached?: boolean;
 }) => {
     const [displayText, setDisplayText] = useState(content);
     const pendingRef = useRef('');
@@ -181,6 +183,7 @@ const useStreamingDisplay = ({
     const displayRef = useRef(content);
     const frameRef = useRef<number | null>(null);
     const hasStreamedRef = useRef(false);
+    const animationInitializedRef = useRef(false); // Guard to prevent re-initialization
 
     const cancelFrame = () => {
         if (frameRef.current !== null) {
@@ -221,6 +224,7 @@ const useStreamingDisplay = ({
         pendingRef.current = '';
         lastContentRef.current = '';
         hasStreamedRef.current = false;
+        animationInitializedRef.current = false; // Reset initialization flag for new message
         displayRef.current = initialDisplay;
         setDisplayText(initialDisplay);
     }, [messageId, initialDisplay]);
@@ -230,7 +234,15 @@ const useStreamingDisplay = ({
         const prevContent = lastContentRef.current;
         if (nextContent === prevContent) return;
 
-        if (!isStreaming) {
+        // For cached messages, treat them as streaming even if isStreaming is false
+        const shouldStream = isStreaming || (isCached && !hasStreamedRef.current);
+
+        // If animation already initialized for cached message, skip
+        if (isCached && animationInitializedRef.current) {
+            return;
+        }
+
+        if (!shouldStream) {
             if (!hasStreamedRef.current) {
                 lastContentRef.current = nextContent;
                 pendingRef.current = '';
@@ -239,6 +251,11 @@ const useStreamingDisplay = ({
                 cancelFrame();
             }
             return;
+        }
+
+        // Mark animation as initialized for cached messages
+        if (isCached && !animationInitializedRef.current) {
+            animationInitializedRef.current = true;
         }
 
         if (nextContent.length < prevContent.length) {
@@ -261,7 +278,7 @@ const useStreamingDisplay = ({
         if (frameRef.current === null) {
             frameRef.current = requestAnimationFrame(stepReveal);
         }
-    }, [content, isStreaming, stepReveal]);
+    }, [content, isStreaming, isCached, stepReveal]);
 
     useEffect(() => {
         if (!isStreaming && isCompleted) {
@@ -403,15 +420,16 @@ const ItemComponent: React.FC<ItemProps> = ({
         !event.isCompleted;
     const shouldAnimateOnMount =
         messageType === 'agent' &&
-        isLastMessage &&
-        (!event.isCompleted || Boolean(sessionThinking));
+        (event.is_cached || (isLastMessage && (!event.isCompleted || Boolean(sessionThinking))));
     const initialDisplay = shouldAnimateOnMount ? '' : normalizedContent;
+
     const { displayText, isAnimating, hasFinished } = useStreamingDisplay({
         messageId,
         content: normalizedContent,
         isStreaming: streamingActive,
         isCompleted: Boolean(event.isCompleted),
         initialDisplay,
+        isCached: event.is_cached,
     });
 
     const toolMetadata = event.metadata?.toolMetadata;
@@ -656,6 +674,17 @@ const ItemComponent: React.FC<ItemProps> = ({
     );
 };
 
-const Item = React.memo(ItemComponent);
+const Item = React.memo(ItemComponent, (prevProps, nextProps) => {
+    // Custom comparison to prevent unnecessary re-renders
+    return (
+        prevProps.event.id === nextProps.event.id &&
+        prevProps.event.message.content === nextProps.event.message.content &&
+        prevProps.event.isCompleted === nextProps.event.isCompleted &&
+        prevProps.event.is_cached === nextProps.event.is_cached &&
+        prevProps.isLastMessage === nextProps.isLastMessage &&
+        prevProps.sessionThinking === nextProps.sessionThinking &&
+        prevProps.thinkingSteps.length === nextProps.thinkingSteps.length
+    );
+});
 
 export default Item;

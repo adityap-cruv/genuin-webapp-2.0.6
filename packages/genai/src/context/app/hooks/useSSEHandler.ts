@@ -10,6 +10,7 @@ export interface SSEMessagePayload {
     session_id: string | null;
     user_id: string;
     s3_keys: string[];
+    video_id?: string;
     temp_session_id?: string; // Used to track the temporary session ID for new sessions
 }
 
@@ -34,6 +35,9 @@ export const useSSEHandler = ({
     // One AbortController per session
     const abortControllersRef = useRef<Map<string, AbortController>>(new Map());
 
+    // Track cached sessions for artificial chunking
+    const cachedSessionsRef = useRef<Set<string>>(new Set());
+
     const splitConcatenatedJson = (chunk: string): string[] => {
         const results: string[] = [];
         let depth = 0;
@@ -56,6 +60,7 @@ export const useSSEHandler = ({
 
     const createChunkProcessor = (sessionId: string) => {
         let pendingSessionName: string | null = null;
+        const isCachedSession = cachedSessionsRef.current.has(sessionId);
 
         const processSingleJson = (jsonStr: string): { isCompleted: boolean; isError: boolean } => {
             if (!jsonStr.trim()) return { isCompleted: false, isError: false };
@@ -83,6 +88,10 @@ export const useSSEHandler = ({
 
                 if (parsed.message !== undefined) {
                     messageData.message = parsed.message;
+                    // Mark message as cached if this session is from cached response
+                    if (isCachedSession) {
+                        messageData.is_cached = true;
+                    }
                     hasData = true;
                 }
 
@@ -276,10 +285,17 @@ export const useSSEHandler = ({
                 session_id: payload.session_id,
                 user_id: payload.user_id,
                 s3_keys: payload.s3_keys,
+                video_id: payload.video_id,
             };
 
             const startResponse = await startChatSession(startPayload);
             const { session_id: realSessionId, user_message_id } = startResponse.data;
+
+            // Check if response is cached based on the message field
+            const isCached = startResponse.message?.includes('(cached)') || false;
+            if (isCached) {
+                cachedSessionsRef.current.add(realSessionId);
+            }
 
             // If this was a new session (temp_session_id), notify about the real session ID
             if (payload.temp_session_id && realSessionId) {

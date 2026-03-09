@@ -885,6 +885,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                                         ...existingAgentEvent.message,
                                         content: (existingAgentEvent.message?.content || '') + (data.message || ''),
                                     },
+                                    is_cached: data.is_cached || existingAgentEvent.is_cached,
                                 };
                             } else {
                                 // Find last agent event (might be the thinking event we created)
@@ -903,6 +904,8 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                                             ...lastAgentEvent.message,
                                             content: data.message || '',
                                         },
+                                        is_cached: data.is_cached,
+                                        isCompleted: false, // Explicitly set to false for streaming
                                     };
                                 } else {
                                     // Create new agent event (first chunk of agent response)
@@ -914,6 +917,8 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                                         parent_id: previousEventId || null,
                                         feedback: null,
                                         created_at: new Date().toISOString(),
+                                        is_cached: data.is_cached,
+                                        isCompleted: false, // Explicitly set to false for streaming
                                     };
                                     chat.push(agentEvent);
                                 }
@@ -933,6 +938,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                                         ...lastAgentEvent.message,
                                         content: (lastAgentEvent.message?.content || '') + (data.message || ''),
                                     },
+                                    is_cached: data.is_cached || lastAgentEvent.is_cached,
                                 };
                             } else {
                                 // No agent event exists yet, create one
@@ -944,6 +950,8 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                                     parent_id: previousEventId || null,
                                     feedback: null,
                                     created_at: new Date().toISOString(),
+                                    is_cached: data.is_cached,
+                                    isCompleted: false, // Explicitly set to false for streaming
                                 };
                                 chat.push(agentEvent);
                             }
@@ -989,6 +997,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                                         parent_id: previousEventId || null,
                                         feedback: null,
                                         created_at: new Date().toISOString(),
+                                        isCompleted: false, // Explicitly set to false for streaming
                                     };
                                     chat.push(agentEvent);
                                 }
@@ -1243,6 +1252,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                 session_id: sessionId || null, // Send null for new sessions
                 user_id: userId,
                 s3_keys: s3_keys,
+                video_id: view === 'web-sdk' ? webSdkVideoId : undefined,
                 temp_session_id: tempSessionId, // Include temp ID for session creation callback
             };
 

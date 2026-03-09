@@ -121,6 +121,7 @@ export type ChatHistoryEvent = BaseChatMessage & {
     isCompleted?: boolean;
     error?: string;
     agent_id?: string | null;
+    is_cached?: boolean; // Flag to indicate if this message is from cached response
 };
 
 export type ThinkingStepType = 'metadata' | 'function_call' | 'function_response' | 'message' | 'tool';
@@ -284,6 +285,7 @@ export type HandleSSEMessageData = {
     carousel_metadata?: string;
     type?: string;
     tool_metadata?: string | ToolMetadataPayload;
+    is_cached?: boolean; // Flag to indicate if this message is from cached response
 };
 
 export type PendingMessage = {

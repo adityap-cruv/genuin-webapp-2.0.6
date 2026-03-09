@@ -100,4 +100,5 @@ export interface StartChatResponse extends BaseResponse {
         session_id: string;
         user_message_id: string;
     };
+    is_cached?: boolean; // Derived from message containing "(cached)"
 }
