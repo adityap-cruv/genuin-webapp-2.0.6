@@ -214,6 +214,7 @@ export const VideoPlayer = memo(function VideoPlayer({
   const playerRef = useRef<OpenPlayerJS | null>(null);
   const isPlayerInitialized = useRef(false); // Track if player has been initialized
   const [isLoading, setIsLoading] = useState(false);
+  const [showPosterOverlay, setShowPosterOverlay] = useState(true);
   // const [allAdsCompleted, setAllAdsCompleted] = useState(adUrl ? false : true);
   const setupAdEventListenersRef = useRef<
     ((player: OpenPlayerJS) => void) | null
@@ -427,6 +428,7 @@ export const VideoPlayer = memo(function VideoPlayer({
   }, []);
 
   useEffect(() => {
+    setShowPosterOverlay(true);
     return () => {
       playerStateRef.current = {
         firstQuartileFired: false,
@@ -557,6 +559,8 @@ export const VideoPlayer = memo(function VideoPlayer({
     };
 
     const handlePlaying = () => {
+      // Hide the poster overlay once the video actually starts playing
+      setShowPosterOverlay(false);
       // Clear loading state when video actually starts playing
       updateLoadingState(false, true);
 
@@ -734,10 +738,7 @@ export const VideoPlayer = memo(function VideoPlayer({
           "gencl:h-auto gencl:w-auto gencl:bg-center gencl:bg-no-repeat gencl:object-cover",
           className,
         )}
-        style={{
-          backgroundImage: `url(${poster})`,
-          ...style,
-        }}
+        style={style}
         // poster={poster}
         ref={videoRef}
         loop={loop}
@@ -748,6 +749,19 @@ export const VideoPlayer = memo(function VideoPlayer({
         // onEnded={handleEnded}
         {...props}
       />
+      {/* Poster overlay: covers the video element until it starts playing.
+          Allows full preloading without the decoded first frame flashing
+          through on inactive players. Hidden once `playing` fires. */}
+      {showPosterOverlay && poster && (
+        <img
+          aria-hidden="true"
+          src={poster}
+          className={cn(
+            "gencl:absolute gencl:inset-0 gencl:h-full gencl:w-full gencl:object-cover gencl:pointer-events-none",
+            className,
+          )}
+        />
+      )}
       {isLoading && (
         <div
           role="status"
