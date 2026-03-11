@@ -100,7 +100,7 @@ export function DynamicSheetDragIndicator({
     <div
       data-slot="dynamic-sheet-indicator"
       className={cn(
-        "gencl:flex gencl:w-full gencl:items-center gencl:justify-center gencl:shrink-0 gencl:pt-2.5 gencl:pb-1 gencl:touch-none",
+        "gencl:flex gencl:w-full gencl:items-center gencl:justify-center gencl:shrink-0 gencl:py-2 gencl:touch-none",
         isDragging ? "gencl:cursor-grabbing" : "gencl:cursor-grab",
         className,
       )}
