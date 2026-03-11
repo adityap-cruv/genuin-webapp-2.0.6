@@ -336,7 +336,7 @@ export const VideoPlayer = memo(function VideoPlayer({
         onMutedChange?.(muted);
       }
     },
-    [onMutedChange, videoRef],
+    [onMutedChange],
   );
 
   const playThePlayer = useCallback(() => {
@@ -525,6 +525,23 @@ export const VideoPlayer = memo(function VideoPlayer({
     initializePlayer,
     updateLoadingState,
   ]);
+
+  useEffect(() => {
+    if (!videoRef.current) return;
+
+    const videoElement = videoRef.current;
+
+    const handleMuteAndPlay = () => {
+      updatePlayerMutedState(true);
+      playThePlayer();
+    };
+
+    videoElement.addEventListener("muteAndPlay", handleMuteAndPlay);
+
+    return () => {
+      videoElement.removeEventListener("muteAndPlay", handleMuteAndPlay);
+    };
+  }, [updatePlayerMutedState, playThePlayer]);
 
   // A function to check and call onEnded if both ads and video are completed
   const tryCallingEnd = useCallback(() => {
