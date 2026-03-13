@@ -22,6 +22,13 @@ export type ExpandableWrapperState = SheetState;
 export type SheetContentType = "default" | "octo" | "linkouts" | "comments";
 
 /**
+ * Where the content type should be rendered relative to the video player.
+ * - "inside"  — rendered overlaid / inside the video player bounds
+ * - "outside" — rendered outside / below the video player bounds
+ */
+export type SheetContentPlacement = "inside" | "outside";
+
+/**
  * @deprecated Use `SheetContentType` instead. Will be removed in a future version.
  */
 export type ExpandableLayout = SheetContentType;
@@ -36,13 +43,23 @@ export type BaseEventBusContext = {
    */
   globalPlayingState: boolean;
   /**
-   * The current visual state of the bottom sheet (e.g. "default", "panel-view", "full-view").
+   * Per-content-type sheet states. Each active content type independently tracks its own
+   * visual state (e.g. "default", "panel-view", "full-view").
    */
-  sheetState: SheetState;
+  sheetContentStates: Partial<Record<SheetContentType, SheetState>>;
   /**
-   * The content type currently loaded in the bottom sheet (e.g. "comments", "linkouts").
+   * All content types that are currently open / active.
+   * Multiple types can be open simultaneously.
    */
-  sheetContentType: SheetContentType;
+  activeSheetContentTypes: SheetContentType[];
+  /**
+   * Specifies where each active content type should be rendered.
+   * "inside"  — overlaid inside the video player.
+   * "outside" — rendered outside / below the video player.
+   */
+  sheetContentPlacements: Partial<
+    Record<SheetContentType, SheetContentPlacement>
+  >;
 };
 
 type EventNames =
@@ -57,7 +74,8 @@ export function createBaseEventBus(initialGlobalPlayingState: boolean = true) {
     muted: true,
     volume: 100,
     globalPlayingState: initialGlobalPlayingState,
-    sheetState: "default",
-    sheetContentType: "default",
+    sheetContentStates: {},
+    activeSheetContentTypes: [],
+    sheetContentPlacements: {},
   });
 }

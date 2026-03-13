@@ -9,6 +9,7 @@ interface SDKConfig {
     brandId: number;
     sessionId?: string;
     view?: 'page' | 'floater' | 'dialog' | 'web-sdk';
+    renderMode?: 'compact' | 'full';
     draggable?: boolean;
     userEmail?: string;
     userUUID?: string;
@@ -110,6 +111,7 @@ async function loadFloaterApp(config: SDKConfig): Promise<void> {
             userId: config.userId,
             brandId: config.brandId,
             sessionId: config.sessionId,
+            renderMode: config.renderMode,
             pendingMessages: [...pendingMessages],
             userEmail: config.userEmail,
             userUUID: config.userUUID,
@@ -136,6 +138,7 @@ async function loadDialogApp(config: SDKConfig): Promise<void> {
             userId: config.userId,
             brandId: config.brandId,
             sessionId: config.sessionId,
+            renderMode: config.renderMode,
             pendingMessages: [...pendingMessages],
             userEmail: config.userEmail,
             userUUID: config.userUUID,
@@ -310,8 +313,54 @@ function initializeDraggability(floaterElement: HTMLElement) {
     }
 }
 
+export function setWebSdkRenderMode(mode: 'compact' | 'full') {
+    if (typeof window === 'undefined') {
+        return;
+    }
+
+    if (!currentConfig) {
+        console.warn('[GenAI SDK] Cannot set render mode before initialization');
+        return;
+    }
+
+    if (currentConfig.view !== 'web-sdk') {
+        console.warn('[GenAI SDK] Render mode changes are only applicable in web-sdk view');
+        return;
+    }
+
+    if (currentConfig.renderMode === mode) {
+        return;
+    }
+
+    currentConfig = {
+        ...currentConfig,
+        renderMode: mode,
+    };
+
+    window.dispatchEvent(
+        new CustomEvent('genai:webSdkRenderMode', {
+            detail: {
+                mode,
+                parentOctoPanelId: currentConfig.parentOctoPanelId,
+            },
+        })
+    );
+}
+
 export async function init(initConfig: SDKConfig) {
-    currentConfig = { ...initConfig };
+    const viewMode = initConfig.view || 'dialog';
+    const normalizedRenderMode = initConfig.renderMode ?? (viewMode === 'web-sdk' ? 'full' : undefined);
+
+    const normalizedConfig: SDKConfig = {
+        ...initConfig,
+        view: viewMode,
+    };
+
+    if (normalizedRenderMode) {
+        normalizedConfig.renderMode = normalizedRenderMode;
+    }
+
+    currentConfig = normalizedConfig;
     window.GenAISDK.forceOpen = true;
 
     // ✅ Don't unmount existing instance on re-init
@@ -321,29 +370,27 @@ export async function init(initConfig: SDKConfig) {
         return;
     }
 
-    if (!initConfig.brandId || !initConfig.userId) {
+    if (!normalizedConfig.brandId || !normalizedConfig.userId) {
         console.error('Brand ID is required');
         return;
     }
-    if (initConfig.brandId < -1) {
+    if (normalizedConfig.brandId < -1) {
         console.error('Brand ID is required');
         return;
     }
-
-    const viewMode = initConfig.view || 'dialog'; // Default to dialog mode
 
     setupPersistentEventListener();
 
     try {
         if (viewMode === 'page' || viewMode === 'web-sdk') {
-            if (!initConfig.containerId && !initConfig.containerElement) {
+            if (!normalizedConfig.containerId && !normalizedConfig.containerElement) {
                 console.error(`Container ID or container element is required for ${viewMode} view`);
                 return;
             }
 
-            const container = initConfig.containerElement || document.getElementById(initConfig.containerId!);
+            const container = normalizedConfig.containerElement || document.getElementById(normalizedConfig.containerId!);
             if (!container) {
-                console.error(`Container with ID '${initConfig.containerId}' not found`);
+                console.error(`Container with ID '${normalizedConfig.containerId}' not found`);
                 return;
             }
 
@@ -353,19 +400,20 @@ export async function init(initConfig: SDKConfig) {
 
             appInstance = {
                 unmount: await mount(container, {
-                    userId: initConfig.userId,
-                    brandId: initConfig.brandId,
-                    sessionId: viewMode === 'web-sdk' ? undefined : initConfig.sessionId, // web-sdk is always ephemeral
-                    userEmail: initConfig.userEmail,
-                    userUUID: initConfig.userUUID,
-                    isMaya: initConfig.isMaya,
+                    userId: normalizedConfig.userId,
+                    brandId: normalizedConfig.brandId,
+                    sessionId: viewMode === 'web-sdk' ? undefined : normalizedConfig.sessionId, // web-sdk is always ephemeral
+                    renderMode: normalizedConfig.renderMode,
+                    userEmail: normalizedConfig.userEmail,
+                    userUUID: normalizedConfig.userUUID,
+                    isMaya: normalizedConfig.isMaya,
                     view: viewMode,
-                    parentWebSdkInstanceId: initConfig.parentWebSdkInstanceId,
-                    parentWebSdkContainerId: initConfig.parentWebSdkContainerId,
-                    parentWebSdkEmbedId: initConfig.parentWebSdkEmbedId,
-                    parentWebSdkPlacementId: initConfig.parentWebSdkPlacementId,
-                    parentOctoPanelId: initConfig.parentOctoPanelId,
-                    videoId: initConfig.videoId,
+                    parentWebSdkInstanceId: normalizedConfig.parentWebSdkInstanceId,
+                    parentWebSdkContainerId: normalizedConfig.parentWebSdkContainerId,
+                    parentWebSdkEmbedId: normalizedConfig.parentWebSdkEmbedId,
+                    parentWebSdkPlacementId: normalizedConfig.parentWebSdkPlacementId,
+                    parentOctoPanelId: normalizedConfig.parentOctoPanelId,
+                    videoId: normalizedConfig.videoId,
                 }),
             };
         } else if (viewMode === 'floater') {
@@ -373,7 +421,7 @@ export async function init(initConfig: SDKConfig) {
             createFloater();
 
             // Load draggabilly if draggable is enabled
-            if (initConfig.draggable) {
+            if (normalizedConfig.draggable) {
                 const script = document.createElement('script');
                 script.src = 'https://unpkg.com/draggabilly@3/dist/draggabilly.pkgd.min.js';
                 document.head.appendChild(script);
@@ -394,7 +442,7 @@ export async function init(initConfig: SDKConfig) {
             const loadingOverlay = createLoadingOverlay();
 
             try {
-                await loadDialogApp(initConfig);
+                await loadDialogApp(normalizedConfig);
                 removeLoadingOverlay(loadingOverlay);
             } catch (error) {
                 console.error('Failed to load GenAI content in dialog:', error);
@@ -424,5 +472,6 @@ if (typeof window !== 'undefined') {
     (window as any).GenAISDK = {
         init,
         destroy,
+        setWebSdkRenderMode,
     };
 }

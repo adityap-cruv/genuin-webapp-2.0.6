@@ -10,16 +10,12 @@ export interface GetAgentIdResponse extends BaseResponse {
 }
 
 export interface VideoSuggestedPromptItem {
-    agent_id?: string;
-    prompt?: string;
+    prompt: string;
+    response: string | null;
 }
 
 export interface VideoSuggestedPromptsResponse extends BaseResponse {
-    data?: {
-        response?: VideoSuggestedPromptItem[];
-        is_contextual?: boolean;
-        expires_at?: string;
-    } | null;
+    data: VideoSuggestedPromptItem[];
 }
 
 export interface SubAgentV2 {

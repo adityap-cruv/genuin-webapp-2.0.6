@@ -37,6 +37,7 @@ import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { DynamicSheet } from "@genuin/ui";
 import useViewportHeight from "@genuin/components/hooks/use-screen-height";
 import { OctoPanel } from "@genuin/components/molecules/octo-panel";
+import { getOctoSheetConfig } from "@genuin/components/molecules/octo-panel/octo-sheet-config";
 
 // Lazy load heavy components
 const Actions = lazy(() =>
@@ -495,8 +496,7 @@ const SharedActions = memo(function SharedActions({
   ) => void;
   isActive: boolean;
 }) {
-  const { updateSheetState, updateSheetContentType } = useSheetState();
-  const { isMobile } = useDeviceDetectMediaQuery();
+  const { openContentType, setContentTypeState } = useSheetState();
 
   // Handle iHeart brand controls
   if (brandLayoutType === "iheart") {
@@ -544,8 +544,8 @@ const SharedActions = memo(function SharedActions({
                 key="octo-action"
                 onClick={(e) => {
                   e.stopPropagation();
-                  updateSheetContentType("octo");
-                  updateSheetState("panel-view");
+                  openContentType("octo", "inside", "default");
+                  setContentTypeState("octo", "default");
                 }}
               >
                 {defaultNode}
@@ -599,9 +599,9 @@ export function ExpandViewDetails({
   const { isDesktop } = useDeviceDetectMediaQuery();
   const {
     sheetState,
-    sheetContentType,
-    updateSheetState,
-    updateSheetContentType,
+    hasContentType,
+    getContentTypeState,
+    setContentTypeState,
     resetSheet,
   } = useSheetState();
   const isNonDesktop = !isDesktop; // Mobile + Tablet (< 1024px)
@@ -616,6 +616,74 @@ export function ExpandViewDetails({
   const onExpand = useCallback(() => {
     setIsExpanded((prev) => !prev);
   }, []);
+
+  const octoSheetState = getContentTypeState("octo");
+
+  const isCompactOctoState = !octoSheetState
+    ? true
+    : octoSheetState === "default" ||
+      octoSheetState === "default-active" ||
+      octoSheetState === "expand-view";
+  const octoRenderMode: "compact" | "full" = isCompactOctoState ? "compact" : "full";
+
+  // Get Octo sheet configuration
+  const {
+    config: octoConfig,
+    className: octoClassName,
+    footerClassName: octoFooterClassName,
+  } = getOctoSheetConfig({
+    isMobile: isNonDesktop,
+    octoState: octoSheetState,
+    viewportHeight,
+  });
+
+  console.log('[ExpandViewDetails] Current octo state and config', {
+    octoSheetState,
+    isCompactOctoState,
+    octoRenderMode,
+    configuredHeight: octoConfig.heights?.[octoSheetState || 'default'],
+  });
+
+  const handleOctoExpandRequest = useCallback(() => {
+    if (octoSheetState === "panel-view" || octoSheetState === "full-view") {
+      return;
+    }
+
+    // Go directly to panel-view when agent response is ready
+    setContentTypeState("octo", "panel-view");
+  }, [octoSheetState, setContentTypeState]);
+
+  const handleOctoCompactExpand = useCallback(() => {
+    // Transition to expand-view when user sends message and agent starts thinking
+    if (octoSheetState === "default" || octoSheetState === "default-active") {
+      setContentTypeState("octo", "expand-view");
+    }
+  }, [octoSheetState, setContentTypeState]);
+
+  const handleOctoCountdownActive = useCallback((isActive: boolean) => {
+    console.log('[ExpandViewDetails] handleOctoCountdownActive called', {
+      isActive,
+      currentOctoSheetState: octoSheetState,
+    });
+
+    if (isActive) {
+      // Transition to default-active when countdown starts
+      if (octoSheetState === "default") {
+        console.log('[ExpandViewDetails] Transitioning from default to default-active');
+        setContentTypeState("octo", "default-active");
+      } else {
+        console.log('[ExpandViewDetails] Not transitioning - current state is not "default"');
+      }
+    } else {
+      // Transition back to default when countdown is cancelled
+      if (octoSheetState === "default-active") {
+        console.log('[ExpandViewDetails] Transitioning from default-active to default');
+        setContentTypeState("octo", "default");
+      } else {
+        console.log('[ExpandViewDetails] Not transitioning - current state is not "default-active"');
+      }
+    }
+  }, [octoSheetState, setContentTypeState]);
 
   return (
     <div
@@ -661,6 +729,35 @@ export function ExpandViewDetails({
             )}
           </div>
 
+          <DynamicSheet
+            isOpen={isNonDesktop && hasContentType("octo") && isActive}
+            renderMode="inline"
+            config={{
+              ...octoConfig,
+              onStateChange: (state) => {
+                console.log('[ExpandViewDetails] DynamicSheet state changed to:', state);
+                setContentTypeState("octo", state);
+              },
+              onClose: () => resetSheet(),
+            }}
+            onSwiperToggle={onSwiperToggle}
+            className={octoClassName(octoSheetState)}
+            contentClassName="gencl:bg-transparent"
+            footerClassName={octoFooterClassName(octoSheetState)}
+          >
+            <OctoPanel
+              videoId={postDetails.video.id}
+              videoSlug={postDetails.video.slug}
+              variant="sheet"
+              open={isNonDesktop && hasContentType("octo") && isActive}
+              panelClassName="gencl:h-full"
+              renderMode={octoRenderMode}
+              onExpandRequest={handleOctoExpandRequest}
+              onCompactExpand={handleOctoCompactExpand}
+              onCountdownActive={handleOctoCountdownActive}
+            />
+          </DynamicSheet>
+
           {showLinkoutInExpand &&
             brandLayoutType !== "iheart" &&
             postDetails.video.linkoutId && (
@@ -688,45 +785,6 @@ export function ExpandViewDetails({
             layoutType={brandLayoutType}
             onSwiperToggle={onSwiperToggle}
           />
-
-          <DynamicSheet
-            isOpen={isNonDesktop && sheetContentType === "octo" && isActive}
-            renderMode="container"
-            config={{
-              initialState: "panel-view",
-              enabledStates: ["panel-view", "full-view"],
-              heights: {
-                default: "100px",
-                "default-active": "160px",
-                "expand-view": "300px",
-                "panel-view": "70vh",
-                "full-view": `${viewportHeight}px`,
-              },
-              showClose: true,
-              showOverlay: true,
-              showIndicator: true,
-              navTitle: "Octo",
-              onStateChange: updateSheetState,
-              onClose: resetSheet,
-              theme:
-                sheetState === "full-view" || sheetState === "panel-view"
-                  ? "light"
-                  : "dark",
-            }}
-            onSwiperToggle={onSwiperToggle}
-            className={cn(
-              (sheetState === "panel-view" || sheetState === "full-view") &&
-                "gencl:rounded-t-2xl! gencl:rounded-b-none!",
-            )}
-          >
-            <OctoPanel
-              videoId={postDetails.video.id}
-              videoSlug={postDetails.video.slug}
-              variant="sheet"
-              open={isNonDesktop && sheetContentType === "octo" && isActive}
-              panelClassName="gencl:h-full"
-            />
-          </DynamicSheet>
         </div>
 
         <SharedActions

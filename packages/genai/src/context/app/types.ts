@@ -48,6 +48,7 @@ export interface AgentsContextType {
     parentWebSdkPlacementId?: string;
     parentOctoPanelId?: string;
     webSdkVideoId?: string;
+    webSdkRenderMode: 'compact' | 'full';
     // Actions
     setAgents: (agents: Agent[]) => void;
     setCurrentAgent: (agentId: string) => void;
@@ -74,4 +75,5 @@ export interface AgentsContextType {
     toggleOptionSelection: (styleIndex: number, optionIndex: number) => void;
     resetVideoStyles: () => void;
     updateAgentMessageContent: (sessionId: string, messageId: string, newContent: string) => void;
+    setWebSdkRenderMode: (mode: 'compact' | 'full') => void;
 }

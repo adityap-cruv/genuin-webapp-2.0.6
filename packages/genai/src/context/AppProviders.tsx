@@ -10,6 +10,7 @@ interface AppProvidersProps {
     brandId: number;
     currentSessionId?: string;
     view: 'page' | 'floater' | 'dialog' | 'web-sdk';
+    webSdkRenderMode?: 'compact' | 'full';
     pendingMessages?: Array<PendingMessage>;
     userEmail?: string;
     userUUID?: string;
@@ -28,6 +29,7 @@ export const AppProviders: React.FC<AppProvidersProps> = ({
     brandId,
     currentSessionId,
     view,
+    webSdkRenderMode,
     pendingMessages,
     userEmail,
     userUUID,
@@ -46,6 +48,7 @@ export const AppProviders: React.FC<AppProvidersProps> = ({
                 brandId={brandId}
                 currentSessionId={currentSessionId}
                 view={view}
+                webSdkRenderMode={webSdkRenderMode}
                 pendingMessages={pendingMessages}
                 userEmail={userEmail}
                 userUUID={userUUID}

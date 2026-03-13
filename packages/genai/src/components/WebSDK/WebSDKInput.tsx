@@ -6,6 +6,11 @@ type WebSDKInputProps = {
     showPresetPrompts: boolean;
     onClosePresetPrompts: () => void;
     setIsSuggestionsOpen: (isSuggestionsOpen: boolean) => void;
+    mode?: 'compact' | 'full';
+    suggestedPrompt?: string | null;
+    countdown?: number | null;
+    onCompactPromptSend?: () => void;
+    isLoadingPrompt?: boolean;
 };
 
 export function WebSDKInput({
@@ -13,10 +18,22 @@ export function WebSDKInput({
     showPresetPrompts,
     onClosePresetPrompts,
     setIsSuggestionsOpen,
+    mode = 'full',
+    suggestedPrompt,
+    countdown,
+    onCompactPromptSend,
+    isLoadingPrompt,
 }: WebSDKInputProps) {
     return (
         <div className='gai:relative gai:w-full'>
-            <CustomInput hideBackground={hideBackground} />
+            <CustomInput
+                hideBackground={hideBackground}
+                mode={mode}
+                suggestedPrompt={suggestedPrompt}
+                countdown={countdown}
+                onSuggestedPromptSend={onCompactPromptSend}
+                isLoading={isLoadingPrompt}
+            />
             {showPresetPrompts && (
                 <WebSDKPresetPrompts
                     setIsSuggestionsOpen={setIsSuggestionsOpen}

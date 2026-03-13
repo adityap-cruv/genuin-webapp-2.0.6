@@ -168,7 +168,7 @@ export function PlayerList({
     view: { brandLayoutType, websiteType, isAdsEnabledInIheart },
   } = useEmbedConfigs();
   const embedDetails = useSafeEmbedContext();
-  const { sheetState, updateSheetState, updateSheetContentType } = useSheetState();
+  const { sheetState, openContentType, setContentTypeState } = useSheetState();
   const [isEndOfFeedReached, setEndOfFeedReached] = useState<boolean>(false);
   const [isAdPlaying, setIsAdPlaying] = useState<boolean>(false);
   // if we use directly isTablet from the hook then for desktop it will be true based on useDeviceDetectMediaQuery implementation
@@ -674,8 +674,8 @@ a swiper inside another swiper.
                           if (!sheetActive && isCommentOpen) {
                             setCommentOpen(false);
                           }
-                          updateSheetContentType("octo");
-                          updateSheetState("panel-view");
+                          openContentType("octo", "inside", "default");
+                          setContentTypeState("octo", "default");
                           return;
                         }
 

@@ -45,6 +45,7 @@ interface AppProps {
     brandId: number;
     sessionId?: string;
     view?: 'page' | 'floater' | 'dialog' | 'web-sdk';
+    renderMode?: 'compact' | 'full';
     onClose?: () => void;
     pendingMessages?: Array<PendingMessage>;
     userEmail?: string;
@@ -63,6 +64,7 @@ function App({
     brandId,
     sessionId,
     view = 'page',
+    renderMode,
     onClose,
     pendingMessages,
     userEmail,
@@ -138,6 +140,7 @@ function App({
             brandId={brandId}
             currentSessionId={currentSessionId}
             view={view}
+            webSdkRenderMode={renderMode}
             pendingMessages={pendingMessages}
             userEmail={userEmail}
             userUUID={userUUID}
@@ -159,6 +162,7 @@ function App({
             brandId={brandId}
             currentSessionId={currentSessionId}
             view={view}
+            webSdkRenderMode={renderMode}
             pendingMessages={pendingMessages}
             userEmail={userEmail}
             userUUID={userUUID}
@@ -202,6 +206,7 @@ function App({
             brandId={brandId}
             currentSessionId={currentSessionId}
             view={view}
+            webSdkRenderMode={renderMode}
             pendingMessages={pendingMessages}
             userEmail={userEmail}
             userUUID={userUUID}

@@ -52,6 +52,10 @@ type OctoPanelPropsType = {
    * - "sheet": Only renders SDK container without wrapper - for use inside DynamicSheet
    */
   variant?: "standalone" | "sheet";
+  renderMode?: "compact" | "full";
+  onExpandRequest?: () => void;
+  onCompactExpand?: () => void;
+  onCountdownActive?: (isActive: boolean) => void;
 } & ComponentProps<"div">;
 
 export type OctoPanelHandle = {
@@ -83,6 +87,10 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
       panelClassName,
       onClose,
       variant = "standalone",
+      renderMode,
+      onExpandRequest,
+      onCompactExpand,
+      onCountdownActive,
       ...triggerProps
     },
     ref
@@ -99,6 +107,7 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
   const [sdkModule, setSDKModule] = useState<any>(null);
   const [panelIdentity, setPanelIdentity] = useState(createPanelIdentity);
   const [isReinitializing, setIsReinitializing] = useState(false);
+  const previousRenderModeRef = useRef<"compact" | "full" | undefined>(renderMode);
 
   const [parentInstanceId, setParentInstanceId] = useState<string | null>(null);
   const [parentContainerId, setParentContainerId] = useState<string | null>(null);
@@ -269,6 +278,7 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
         userId: user?.id || "anonymous",
         brandId: brandDetails.brand_id,
         view: "web-sdk",
+        renderMode,
         sessionId: undefined,
         parentWebSdkInstanceId: parentInstanceId,
         parentWebSdkContainerId: parentContainerId ?? undefined,
@@ -280,6 +290,7 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
       sdkInitializedRef.current = true;
       previousVideoIdRef.current = videoId;
       setIsReinitializing(false);
+      previousRenderModeRef.current = renderMode;
       console.log('[OctoPanel] SDK initialized successfully for video:', videoId, 'with parent instance ID:', parentInstanceId);
     } catch (error) {
       console.error('[OctoPanel] Failed to initialize GenAI SDK:', error);
@@ -377,6 +388,93 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
     }),
     [isOpen, sdkModule, videoId]
   );
+
+  useEffect(() => {
+    if (!renderMode) return;
+    if (!sdkModule || typeof sdkModule.setWebSdkRenderMode !== "function") return;
+    if (!sdkInitializedRef.current) return;
+    if (previousRenderModeRef.current === renderMode) return;
+
+    try {
+      sdkModule.setWebSdkRenderMode(renderMode);
+      previousRenderModeRef.current = renderMode;
+    } catch (error) {
+      console.error("[OctoPanel] Failed to update web-sdk render mode", error);
+    }
+  }, [renderMode, sdkModule]);
+
+  useEffect(() => {
+    if (!onExpandRequest) return;
+
+    const handleExpandRequest = (event: Event) => {
+      const { detail } = event as CustomEvent<{ parentOctoPanelId?: string }>;
+      const targetPanelId = detail?.parentOctoPanelId;
+
+      if (targetPanelId && targetPanelId !== panelIdentity.panelId) {
+        return;
+      }
+
+      onExpandRequest();
+    };
+
+    window.addEventListener("genai:webSdkRequestExpand", handleExpandRequest);
+    return () => {
+      window.removeEventListener("genai:webSdkRequestExpand", handleExpandRequest);
+    };
+  }, [onExpandRequest, panelIdentity.panelId]);
+
+  useEffect(() => {
+    if (!onCompactExpand) {
+      return;
+    }
+
+    const handleCompactExpand = (event: Event) => {
+      const { detail } = event as CustomEvent<{ parentOctoPanelId?: string }>;
+      const targetPanelId = detail?.parentOctoPanelId;
+
+      if (targetPanelId && targetPanelId !== panelIdentity.panelId) {
+        return;
+      }
+
+      onCompactExpand();
+    };
+
+    window.addEventListener("genai:webSdkCompactExpand", handleCompactExpand);
+    return () => {
+      window.removeEventListener("genai:webSdkCompactExpand", handleCompactExpand);
+    };
+  }, [onCompactExpand, panelIdentity.panelId]);
+
+  useEffect(() => {
+    if (!onCountdownActive) {
+      return;
+    }
+
+    const handleCountdownActive = (event: Event) => {
+      const { detail } = event as CustomEvent<{ parentOctoPanelId?: string; isActive: boolean }>;
+      const targetPanelId = detail?.parentOctoPanelId;
+
+      console.log('[OctoPanel] Received countdown active event', {
+        targetPanelId,
+        currentPanelId: panelIdentity.panelId,
+        isActive: detail.isActive,
+        matches: targetPanelId === panelIdentity.panelId,
+      });
+
+      if (targetPanelId && targetPanelId !== panelIdentity.panelId) {
+        console.log('[OctoPanel] Ignoring event - panel ID mismatch');
+        return;
+      }
+
+      console.log('[OctoPanel] Calling onCountdownActive callback', { isActive: detail.isActive });
+      onCountdownActive(detail.isActive);
+    };
+
+    window.addEventListener("genai:webSdkCountdownActive", handleCountdownActive);
+    return () => {
+      window.removeEventListener("genai:webSdkCountdownActive", handleCountdownActive);
+    };
+  }, [onCountdownActive, panelIdentity.panelId]);
 
   // Render SDK container content (used in both variants)
   const sdkContainerContent = (

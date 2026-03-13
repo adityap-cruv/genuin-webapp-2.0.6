@@ -27,6 +27,7 @@ interface AgentsProviderProps {
     brandId: number;
     currentSessionId?: string;
     view: 'page' | 'floater' | 'dialog' | 'web-sdk';
+    webSdkRenderMode?: 'compact' | 'full';
     pendingMessages?: Array<PendingMessage>;
     userEmail?: string;
     userUUID?: string;
@@ -130,6 +131,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
     parentWebSdkPlacementId,
     parentOctoPanelId,
     webSdkVideoId,
+    webSdkRenderMode,
 }) => {
     const initialAgent = isMaya ? 'maya' : '695cefa2c19e333c687787f7';
     // State
@@ -155,6 +157,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
     const [textAreaRef, setTextAreaRef] = useState<HTMLTextAreaElement | null>(null);
     const [suggestedPrompts, setSuggestedPrompts] = useState<string[]>([]);
     const [isLoadingSuggestedPrompts, setIsLoadingSuggestedPrompts] = useState<boolean>(false);
+    const [webSdkRenderModeState, setWebSdkRenderModeState] = useState<'compact' | 'full'>(webSdkRenderMode ?? 'full');
     const { videoStyles, toggleStyleSelection, toggleOptionSelection, resetVideoStyles } =
         useVideoStyles(brandId);
     const handleSendMessageRef = useRef<HandleSendMessageFn | null>(null);
@@ -218,7 +221,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                     const response = await getVideoSuggestedPrompts({
                         video_id: webSdkVideoId,
                     });
-                    const videoPrompts = (response?.data?.response || [])
+                    const videoPrompts = (response?.data || [])
                         .map(item => item.prompt)
                         .filter((prompt): prompt is string => typeof prompt === 'string' && prompt.length > 0);
                     if (videoPrompts.length > 0) {
@@ -1370,6 +1373,55 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
         })();
     }, [pendingMessages, sessionsFetched, handleSendMessage]);
 
+    useEffect(() => {
+        if (webSdkRenderMode && webSdkRenderMode !== webSdkRenderModeState) {
+            setWebSdkRenderModeState(webSdkRenderMode);
+        }
+    }, [webSdkRenderMode]);
+
+    useEffect(() => {
+        const listener = (event: Event) => {
+            const { detail } = event as CustomEvent<{ mode?: 'compact' | 'full'; parentOctoPanelId?: string }>;
+            const { mode, parentOctoPanelId: targetPanelId } = detail || {};
+
+            if (!mode) {
+                return;
+            }
+
+            if (targetPanelId && parentOctoPanelId && targetPanelId !== parentOctoPanelId) {
+                return;
+            }
+
+            setWebSdkRenderModeState(mode);
+        };
+
+        window.addEventListener('genai:webSdkRenderMode', listener);
+        return () => {
+            window.removeEventListener('genai:webSdkRenderMode', listener);
+        };
+    }, [parentOctoPanelId]);
+
+    const setWebSdkRenderModeValue = useCallback(
+        (mode: 'compact' | 'full') => {
+            setWebSdkRenderModeState(prev => {
+                if (prev === mode) {
+                    return prev;
+                }
+                return mode;
+            });
+
+            if (typeof window !== 'undefined') {
+                const globalSdk = (window as unknown as { GenAISDK?: { setWebSdkRenderMode?: (mode: 'compact' | 'full') => void } }).GenAISDK;
+                try {
+                    globalSdk?.setWebSdkRenderMode?.(mode);
+                } catch (error) {
+                    console.error('[AgentsProvider] Failed to propagate render mode to SDK', error);
+                }
+            }
+        },
+        []
+    );
+
     const contextValue = {
         // State
         initialAgent,
@@ -1402,6 +1454,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
         parentWebSdkPlacementId,
         parentOctoPanelId,
         webSdkVideoId,
+        webSdkRenderMode: webSdkRenderModeState,
         // Actions
         setSessionsFetched,
         setAgents,
@@ -1428,6 +1481,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
         toggleOptionSelection,
         resetVideoStyles,
         updateAgentMessageContent,
+        setWebSdkRenderMode: setWebSdkRenderModeValue,
     };
 
     return <AgentsContext.Provider value={contextValue}>{children}</AgentsContext.Provider>;

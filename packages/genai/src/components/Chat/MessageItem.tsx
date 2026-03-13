@@ -491,45 +491,10 @@ const ItemComponent: React.FC<ItemProps> = ({
                 </div>
             ) : (
                 <div className={`gai:flex gai:w-full ${view === 'web-sdk' ? 'gai:flex-col' : 'gai:flex-row'} gai:gap-2`}>
-                    {/* Show agent lottie animation on first line for web-sdk view */}
-                    {view === 'web-sdk' && !isToolMetadataEvent && (() => {
-                        const agentData = event.agent_id
-                            ? agents.find(a => a.id === event.agent_id)
-                            : agents.find(a => a.id === currentAgent);
-
-                        if (agentData) {
-                            // Show thinking lottie while message is streaming, sleeping lottie after completion
-                            const isThinking = isLastMessage && sessionThinking;
-
-                            const activeLottieSrc = isThinking
-                                ? agentThinkingLottieData
-                                : agentIdleLottieData;
-                            const loadFailed = isThinking
-                                ? thinkingLottieError
-                                : idleLottieError;
-                            const shouldShowStatus =
-                                isThinking && isLastMessage && thinkingSteps.length > 0;
-
-                            return (
-                                <div className='gai:flex gai:w-full gai:items-start gai:gap-3'>
-                                    <div className='gai:flex gai:h-12 gai:w-12 gai:flex-shrink-0 gai:items-center gai:justify-center gai:overflow-hidden gai:rounded-full gai:bg-primary-50'>
-                                        {activeLottieSrc && !loadFailed ? (
-                                            <Player
-                                                autoplay
-                                                loop
-                                                src={activeLottieSrc}
-                                                style={{ width: '100%', height: '100%' }}
-                                            />
-                                        ) : (
-                                            <div className='gai:flex gai:h-full gai:w-full gai:items-center gai:justify-center gai:text-xl' />
-                                        )}
-                                    </div>
-                                    {shouldShowStatus && <ThinkingStatusList steps={thinkingSteps} />}
-                                </div>
-                            );
-                        }
-                        return null;
-                    })()}
+                    {/* Show agent thinking status (without avatar animation) for web-sdk view */}
+                    {view === 'web-sdk' && !isToolMetadataEvent && isLastMessage && sessionThinking && thinkingSteps.length > 0 && (
+                        <ThinkingStatusList steps={thinkingSteps} />
+                    )}
 
                     <div className='gai:flex gai:w-full gai:flex-col gai:gap-2'>
                         {(() => {
@@ -683,7 +648,8 @@ const Item = React.memo(ItemComponent, (prevProps, nextProps) => {
         prevProps.event.is_cached === nextProps.event.is_cached &&
         prevProps.isLastMessage === nextProps.isLastMessage &&
         prevProps.sessionThinking === nextProps.sessionThinking &&
-        prevProps.thinkingSteps.length === nextProps.thinkingSteps.length
+        prevProps.thinkingSteps.length === nextProps.thinkingSteps.length &&
+        Boolean(prevProps.event.carousel_metadata) === Boolean(nextProps.event.carousel_metadata)
     );
 });
 
