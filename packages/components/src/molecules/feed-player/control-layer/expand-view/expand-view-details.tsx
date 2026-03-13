@@ -637,13 +637,6 @@ export function ExpandViewDetails({
     viewportHeight,
   });
 
-  console.log('[ExpandViewDetails] Current octo state and config', {
-    octoSheetState,
-    isCompactOctoState,
-    octoRenderMode,
-    configuredHeight: octoConfig.heights?.[octoSheetState || 'default'],
-  });
-
   const handleOctoExpandRequest = useCallback(() => {
     if (octoSheetState === "panel-view" || octoSheetState === "full-view") {
       return;
@@ -661,26 +654,15 @@ export function ExpandViewDetails({
   }, [octoSheetState, setContentTypeState]);
 
   const handleOctoCountdownActive = useCallback((isActive: boolean) => {
-    console.log('[ExpandViewDetails] handleOctoCountdownActive called', {
-      isActive,
-      currentOctoSheetState: octoSheetState,
-    });
-
     if (isActive) {
       // Transition to default-active when countdown starts
       if (octoSheetState === "default") {
-        console.log('[ExpandViewDetails] Transitioning from default to default-active');
         setContentTypeState("octo", "default-active");
-      } else {
-        console.log('[ExpandViewDetails] Not transitioning - current state is not "default"');
       }
     } else {
       // Transition back to default when countdown is cancelled
       if (octoSheetState === "default-active") {
-        console.log('[ExpandViewDetails] Transitioning from default-active to default');
         setContentTypeState("octo", "default");
-      } else {
-        console.log('[ExpandViewDetails] Not transitioning - current state is not "default-active"');
       }
     }
   }, [octoSheetState, setContentTypeState]);
@@ -734,10 +716,7 @@ export function ExpandViewDetails({
             renderMode="inline"
             config={{
               ...octoConfig,
-              onStateChange: (state) => {
-                console.log('[ExpandViewDetails] DynamicSheet state changed to:', state);
-                setContentTypeState("octo", state);
-              },
+              onStateChange: (state) => setContentTypeState("octo", state),
               onClose: () => resetSheet(),
             }}
             onSwiperToggle={onSwiperToggle}

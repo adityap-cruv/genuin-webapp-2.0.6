@@ -57,10 +57,6 @@ export function WebSDKContent() {
 
         // Dispatch event to deactivate countdown state
         if (parentOctoPanelId && webSdkRenderMode === 'compact') {
-            console.log('[WebSDKContent] User clicked auto-prompt, dispatching countdown inactive event', {
-                parentOctoPanelId,
-                isActive: false,
-            });
             window.dispatchEvent(
                 new CustomEvent('genai:webSdkCountdownActive', {
                     detail: {
@@ -99,10 +95,6 @@ export function WebSDKContent() {
 
         // Dispatch event to deactivate countdown state
         if (parentOctoPanelId && webSdkRenderMode === 'compact') {
-            console.log('[WebSDKContent] User sent compact prompt, dispatching countdown inactive event', {
-                parentOctoPanelId,
-                isActive: false,
-            });
             window.dispatchEvent(
                 new CustomEvent('genai:webSdkCountdownActive', {
                     detail: {
@@ -150,10 +142,6 @@ export function WebSDKContent() {
 
             // Dispatch event to transition to default-active state when countdown starts
             if (parentOctoPanelId && webSdkRenderMode === 'compact') {
-                console.log('[WebSDKContent] Dispatching countdown active event', {
-                    parentOctoPanelId,
-                    isActive: true,
-                });
                 window.dispatchEvent(
                     new CustomEvent('genai:webSdkCountdownActive', {
                         detail: {
@@ -199,10 +187,6 @@ export function WebSDKContent() {
 
             // Dispatch event to deactivate countdown state
             if (parentOctoPanelId && webSdkRenderMode === 'compact') {
-                console.log('[WebSDKContent] Dispatching countdown inactive event', {
-                    parentOctoPanelId,
-                    isActive: false,
-                });
                 window.dispatchEvent(
                     new CustomEvent('genai:webSdkCountdownActive', {
                         detail: {
@@ -363,19 +347,6 @@ export function WebSDKContent() {
 
     // Guard: Don't show content in default/default-active states (compact mode without session)
     const shouldHideContent = isCompactMode && !currentSessionId;
-
-    console.log('[WebSDKContent] Render logic', {
-        isCompactMode,
-        hasCompactContent,
-        hasSession: !!currentSessionId,
-        shouldHideContent,
-        thinking: currentSession?.thinking,
-        hasUserMessage: currentSession?.chat?.some(msg => msg.role === 'user'),
-        renderMode: webSdkRenderMode,
-        countdown,
-        scrollContainerClasses,
-        inputSectionClasses,
-    });
 
     return (
         <div className={`gai:flex gai:h-full gai:flex-col ${backgroundClass}`}>

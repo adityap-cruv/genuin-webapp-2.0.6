@@ -1,9 +1,11 @@
 import { getBrandSessions, getChatHistoryV2, getSuggestedPrompts, getVideoSuggestedPrompts, updateSessionTitle } from '@/lib/api';
+import type { CachedResponseItem } from '@/lib/apiTypes';
 import { ingestDataToBCC } from '@/lib/ingestDataToBCC';
 import { useRudderEvents } from '@/services/analytics/useRudderAnalytics';
 import type {
     Agent,
     AgentType,
+    CarousalMetadata,
     ChatHistoryEvent,
     HandleSSEMessageData,
     IpInfo,
@@ -115,6 +117,92 @@ const extractToolMetadataSummary = (payload: ToolMetadataPayload | undefined) =>
     return undefined;
 };
 
+function parseMaybeJson<T>(value: unknown): T | undefined {
+    if (value == null) return undefined;
+    if (typeof value === 'string') {
+        const trimmed = value.trim();
+        if (!trimmed) return undefined;
+        try {
+            return JSON.parse(trimmed) as T;
+        } catch (err) {
+            console.warn('[Provider] Failed to parse JSON payload', err, trimmed);
+            return undefined;
+        }
+    }
+    if (typeof value === 'object') {
+        return value as T;
+    }
+    return undefined;
+}
+
+const toNumberArray = (value: unknown): number[] => {
+    if (value == null) return [];
+    const input = Array.isArray(value) ? value : [value];
+    return input
+        .map(item => {
+            const num = typeof item === 'number' ? item : Number(item);
+            return Number.isFinite(num) ? num : null;
+        })
+        .filter((num): num is number => num !== null);
+};
+
+const toStringArray = (value: unknown): string[] => {
+    if (value == null) return [];
+    if (Array.isArray(value)) {
+        return value
+            .map(item => String(item ?? '').trim())
+            .filter((item): item is string => Boolean(item));
+    }
+    if (typeof value === 'string') {
+        const trimmed = value.trim();
+        if (!trimmed) return [];
+        return trimmed
+            .split(',')
+            .map(item => item.trim())
+            .filter(Boolean);
+    }
+    const single = String(value ?? '').trim();
+    return single ? [single] : [];
+};
+
+const normalizeCarouselMetadata = (value: unknown): CarousalMetadata | null => {
+    const parsed = parseMaybeJson<Record<string, unknown>>(value);
+    if (!parsed) return null;
+
+    const videoIds = toStringArray(parsed.video_ids);
+    const keywordsValue = parsed.keywords;
+    const keywords = typeof keywordsValue === 'string'
+        ? keywordsValue
+        : Array.isArray(keywordsValue)
+            ? keywordsValue
+                  .map(item => (typeof item === 'string' ? item.trim() : ''))
+                  .filter(Boolean)
+                  .join(', ')
+            : '';
+
+    if (!videoIds.length && !keywords) {
+        return null;
+    }
+
+    return {
+        brand_ids: toNumberArray(parsed.brand_ids),
+        cta: typeof parsed.cta === 'string' ? parsed.cta : '',
+        url: typeof parsed.url === 'string' ? parsed.url : '',
+        h1: typeof parsed.h1 === 'string' ? parsed.h1 : '',
+        h2: typeof parsed.h2 === 'string' ? parsed.h2 : '',
+        keywords,
+        video_ids: videoIds,
+    };
+};
+
+const normalizeToolMetadata = (value: unknown): ToolMetadataPayload | undefined => {
+    const parsed = parseMaybeJson<ToolMetadataPayload>(value);
+    if (!parsed || typeof parsed !== 'object') {
+        return undefined;
+    }
+    return parsed;
+};
+
 export const AgentsProvider: React.FC<AgentsProviderProps> = ({
     children,
     userId,
@@ -157,6 +245,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
     const [textAreaRef, setTextAreaRef] = useState<HTMLTextAreaElement | null>(null);
     const [suggestedPrompts, setSuggestedPrompts] = useState<string[]>([]);
     const [isLoadingSuggestedPrompts, setIsLoadingSuggestedPrompts] = useState<boolean>(false);
+    const [cachedPromptResponses, setCachedPromptResponses] = useState<Map<string, CachedResponseItem[]>>(new Map());
     const [webSdkRenderModeState, setWebSdkRenderModeState] = useState<'compact' | 'full'>(webSdkRenderMode ?? 'full');
     const { videoStyles, toggleStyleSelection, toggleOptionSelection, resetVideoStyles } =
         useVideoStyles(brandId);
@@ -213,6 +302,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
         const fetchPrompts = async () => {
             setSuggestedPrompts([]);
             setIsLoadingSuggestedPrompts(true);
+            setCachedPromptResponses(new Map());
 
             let prompts: string[] | null = null;
 
@@ -221,9 +311,19 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                     const response = await getVideoSuggestedPrompts({
                         video_id: webSdkVideoId,
                     });
+
+                    // Extract prompts and build cached responses map
+                    const cachedMap = new Map<string, CachedResponseItem[]>();
                     const videoPrompts = (response?.data || [])
-                        .map(item => item.prompt)
+                        .map(item => {
+                            // Store cached response if it exists
+                            if (item.response && Array.isArray(item.response) && item.response.length > 0) {
+                                cachedMap.set(item.prompt, item.response);
+                            }
+                            return item.prompt;
+                        })
                         .filter((prompt): prompt is string => typeof prompt === 'string' && prompt.length > 0);
+
                     if (videoPrompts.length > 0) {
                         const randomIndex = Math.floor(Math.random() * videoPrompts.length);
                         const randomPrompt = videoPrompts[randomIndex];
@@ -231,6 +331,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                             ? [randomPrompt, ...videoPrompts.filter((_, index) => index !== randomIndex)]
                             : videoPrompts;
                         prompts = orderedPrompts;
+                        setCachedPromptResponses(cachedMap);
                     } else {
                         prompts = [];
                     }
@@ -692,17 +793,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                     }
 
                     if (data.type === 'tool_metadata' && data.tool_metadata) {
-                        let toolMetadataPayload: ToolMetadataPayload | undefined;
-                        if (typeof data.tool_metadata === 'string') {
-                            try {
-                                toolMetadataPayload = JSON.parse(data.tool_metadata) as ToolMetadataPayload;
-                            } catch (err) {
-                                console.error('[SSE] Failed to parse tool_metadata payload', err);
-                            }
-                        } else {
-                            toolMetadataPayload = data.tool_metadata as ToolMetadataPayload;
-                        }
-
+                        const toolMetadataPayload = normalizeToolMetadata(data.tool_metadata);
                         if (toolMetadataPayload) {
                             const requestId = toolMetadataPayload._meta?.request_id;
                             const toolEventId = requestId ? `tool-${requestId}` : `tool-${Date.now()}`;
@@ -837,10 +928,11 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
 
                     // Handle kws (carousel keywords) from SSE stream
                     if (data.carousel_metadata !== undefined) {
-                        if (lastEvent) {
+                        const normalizedCarousel = normalizeCarouselMetadata(data.carousel_metadata);
+                        if (normalizedCarousel && lastEvent) {
                             chat[chat.length - 1] = {
                                 ...lastEvent,
-                                carousel_metadata: JSON.parse(data.carousel_metadata),
+                                carousel_metadata: normalizedCarousel,
                             };
                         }
                     }
@@ -1133,11 +1225,99 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
         }
     }
 
+    // Convert cached response array to ChatHistoryEvent format
+    function convertCachedResponseToEvents(
+        cachedResponse: CachedResponseItem[],
+        userMessageId: string,
+    ): { agentEvent: ChatHistoryEvent; sessionName: string | null } {
+        let agentMessageContent = '';
+        let carouselMetadata: CarousalMetadata | null = null;
+        let toolMetadata: ToolMetadataPayload | null = null;
+        let sessionName: string | null = null;
+
+        for (const item of cachedResponse) {
+            if (item.type === 'metadata' && item.session_name) {
+                sessionName = item.session_name;
+            } else if (item.type === 'message' && item.message) {
+                agentMessageContent = item.message;
+            } else if (item.type === 'carousel_metadata' && item.carousel_metadata !== undefined) {
+                carouselMetadata = normalizeCarouselMetadata(item.carousel_metadata);
+            } else if (item.type === 'tool_metadata' && item.tool_metadata !== undefined) {
+                toolMetadata = normalizeToolMetadata(item.tool_metadata) ?? null;
+            }
+        }
+
+        const agentMessageId = `agent-${Date.now()}`;
+        const agentEvent: ChatHistoryEvent = {
+            id: agentMessageId,
+            message: { content: agentMessageContent },
+            role: 'agent',
+            is_cached: true, // Mark as cached so it animates
+            isCompleted: true,
+            carousel_metadata: carouselMetadata ?? undefined,
+            metadata: toolMetadata ? { toolMetadata } : undefined,
+        };
+
+        return { agentEvent, sessionName };
+    }
+
     async function handleSendMessage(params: HandleSendMessageParams) {
         const { targetSessionId, messageInput, agent_id, editedChatId, onMessageQueued } = params;
 
         const currentSession = sessions.find((s: Session) => s.id === targetSessionId);
         if (!messageInput?.trim() || currentSession?.thinking || currentSession?.status === 'fetching') return;
+
+        // Check if this prompt has a cached response (Type 2 caching)
+        const cachedResponse = cachedPromptResponses.get(messageInput.trim());
+        if (cachedResponse && !targetSessionId) {
+            // Handle cached response - skip SSE call entirely
+
+            const newNodeId = uuidv4();
+            const timestamp = new Date().toISOString();
+            const tempSessionId = `temp-${uuidv4()}`;
+
+            // Create user message event
+            const userEvent: ChatHistoryEvent = {
+                id: newNodeId,
+                message: { content: messageInput },
+                role: 'user',
+                parent_id: '',
+                feedback: null,
+                created_at: timestamp,
+                isCompleted: true,
+            };
+
+            // Convert cached response to agent event
+            const { agentEvent, sessionName } = convertCachedResponseToEvents(cachedResponse, newNodeId);
+            agentEvent.parent_id = userEvent.id;
+            agentEvent.created_at = new Date().toISOString();
+
+            trackChatStarted(messageInput);
+
+            // Create session with cached data
+            const newSession: Session = {
+                id: tempSessionId,
+                name: sessionName || 'New chat',
+                chat: [userEvent, agentEvent],
+                updatedAt: timestamp,
+                thinking: false, // Not thinking - response is complete
+                agentId: agent_id || currentAgent || getInitialAgentId(),
+                hasNewName: false,
+                status: 'fetched',
+                hasNewMessage: false,
+                thinkingSteps: [],
+            };
+
+            setSessions(prev => [...prev, newSession]);
+            setCurrentSessionIdState(tempSessionId);
+            setEnteredInChatMode(true);
+            setCurrentAgentState(agent_id || currentAgent || getInitialAgentId());
+
+            onMessageQueued?.();
+            clearS3Keys();
+
+            return; // Skip SSE call
+        }
 
         const newNodeId = uuidv4();
         let sessionId = targetSessionId;

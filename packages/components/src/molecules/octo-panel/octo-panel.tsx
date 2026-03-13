@@ -454,19 +454,10 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
       const { detail } = event as CustomEvent<{ parentOctoPanelId?: string; isActive: boolean }>;
       const targetPanelId = detail?.parentOctoPanelId;
 
-      console.log('[OctoPanel] Received countdown active event', {
-        targetPanelId,
-        currentPanelId: panelIdentity.panelId,
-        isActive: detail.isActive,
-        matches: targetPanelId === panelIdentity.panelId,
-      });
-
       if (targetPanelId && targetPanelId !== panelIdentity.panelId) {
-        console.log('[OctoPanel] Ignoring event - panel ID mismatch');
         return;
       }
 
-      console.log('[OctoPanel] Calling onCountdownActive callback', { isActive: detail.isActive });
       onCountdownActive(detail.isActive);
     };
 

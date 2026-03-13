@@ -21,7 +21,6 @@ const SDKLoader = ({ onLoad }: { onLoad?: () => void }) => {
         script.async = true;
 
         script.onload = () => {
-            // console.log('Genuin SDK loaded');
             onLoad?.();
         };
 

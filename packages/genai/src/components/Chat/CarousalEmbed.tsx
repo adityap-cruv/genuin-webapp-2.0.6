@@ -64,13 +64,14 @@ const GenuinEmbed = ({
     }, [isSidebarCollapsed]);
 
     useLayoutEffect(() => {
+        const sdkUnavailable = !isSdkLoaded && !window.genuin;
+
         if (
             isInitializedRef.current ||
             !containerRef.current ||
-            !isSdkLoaded ||
+            sdkUnavailable ||
             !carousalMetadata ||
-            (!carousalMetadata.video_ids && !carousalMetadata.keywords) ||
-            !window.genuin
+            (!carousalMetadata.video_ids && !carousalMetadata.keywords)
         ) {
             return;
         }
@@ -78,12 +79,6 @@ const GenuinEmbed = ({
         const isWebSdkView = view === 'web-sdk';
 
         if (isWebSdkView) {
-            console.log('[CarousalEmbed] Initializing nested SDK for carousel', {
-                hasContainer: !!containerRef.current,
-                containerId: containerRef.current?.id,
-                parentInstanceId: parentWebSdkInstanceId,
-            });
-
             if (!parentWebSdkInstanceId) {
                 console.error('[CarousalEmbed] Cannot initialize nested SDK: parent instance ID not found');
                 return;
@@ -101,14 +96,9 @@ const GenuinEmbed = ({
                 const instanceId = containerRef.current?.getAttribute('data-instance-id') || null;
                 if (instanceId) {
                     childInstanceIdRef.current = instanceId;
-                    console.log('[CarousalEmbed] Captured nested instance ID:', instanceId);
                 }
             });
         } else {
-            console.log('[CarousalEmbed] Initializing standalone SDK for carousel', {
-                hasContainer: !!containerRef.current,
-                containerId: containerRef.current?.id,
-            });
 
             window.genuin.init({
                 container_id: containerRef.current.id,

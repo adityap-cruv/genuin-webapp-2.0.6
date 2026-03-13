@@ -9,9 +9,18 @@ export interface GetAgentIdResponse extends BaseResponse {
     data: string;
 }
 
+export interface CachedResponseItem {
+    type: 'metadata' | 'message' | 'carousel_metadata' | 'tool_metadata';
+    session_name?: string;
+    message?: string;
+    carousel_metadata?: string | Record<string, unknown>;
+    tool_metadata?: string | Record<string, unknown>;
+    _timestamp?: number;
+}
+
 export interface VideoSuggestedPromptItem {
     prompt: string;
-    response: string | null;
+    response: CachedResponseItem[] | null;
 }
 
 export interface VideoSuggestedPromptsResponse extends BaseResponse {
