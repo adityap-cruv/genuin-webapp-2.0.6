@@ -836,6 +836,11 @@ export interface StartChatPayload {
     user_id: string;
     s3_keys: string[];
     video_id?: string;
+    previous_context?: {
+        message: string;
+        agent_response: string;
+        session_name: string;
+    };
 }
 
 export async function startChatSession(payload: StartChatPayload): Promise<StartChatResponse> {

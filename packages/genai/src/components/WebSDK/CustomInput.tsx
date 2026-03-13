@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Player } from '@lottiefiles/react-lottie-player';
 import { useAgentsContext } from '@/context/app/context';
 import { useInputContext } from '@/context/input/context';
@@ -16,10 +16,11 @@ type CustomInputProps = {
     countdown?: number | null;
     onSuggestedPromptSend?: () => void;
     isLoading?: boolean;
+    onActivate?: () => void;
 };
 
-const OCTO_IDLE_ANIMATION_PATH = 'sleeping/animations/51914e32-e62c-43d5-b17d-50369bbbf7d6.json';
-const OCTO_IDLE_IMAGES_PATH = 'sleeping/';
+const OCTO_IDLE_ANIMATION_PATH = 'updating/animations/57d84bf1-8b2c-481d-b47f-69cd84633961.json';
+const OCTO_IDLE_IMAGES_PATH = 'updating/';
 
 export function CustomInput({
     hideBackground = false,
@@ -28,6 +29,7 @@ export function CustomInput({
     countdown = null,
     onSuggestedPromptSend,
     isLoading = false,
+    onActivate,
 }: CustomInputProps) {
     const {
         creatingSession,
@@ -78,7 +80,14 @@ export function CustomInput({
     const displayPrompt = isLoading ? 'Loading...' : suggestedPrompt || '';
     const showCountdownTimer = countdown !== null && countdown > 0;
 
+    const handleActivate = useCallback(() => {
+        if (isCompactMode) {
+            onActivate?.();
+        }
+    }, [isCompactMode, onActivate]);
+
     const handleOnClick = async () => {
+        handleActivate();
         if (currentSession?.thinking) {
             setStopping(true);
             await stopAgent({
@@ -118,8 +127,8 @@ export function CustomInput({
             : 'gai:bg-primary-50';
 
     return (
-        <div className={backgroundClass}>
-            <div className='gai:flex gai:w-full gai:justify-center'>
+        <div className={`${backgroundClass} ${isCompactMode ? 'gai:pt-0' : ''}`}>
+            <div className={`gai:flex gai:w-full gai:justify-center ${isCompactMode ? 'gai:mt-0' : ''}`}>
                 <div
                     className='gai:flex gai:w-full gai:max-w-full gai:items-center'
                     style={{
@@ -129,11 +138,11 @@ export function CustomInput({
                         padding: '8px',
                         gap: '8px',
                         background: isCompactMode ? 'transparent' : '#FFFFFF',
-                        borderTop: isCompactMode
-                            ? '1px solid rgba(255, 255, 255, 0.12)'
-                            : '1px solid #DFE1E3',
+                        borderTop: isCompactMode ? 'none' : '1px solid #DFE1E3',
                         boxSizing: 'border-box',
+                        cursor: isCompactMode ? 'pointer' : 'default',
                     }}
+                    onClick={handleActivate}
                 >
                     <div
                         className='gai:flex gai:flex-shrink-0 gai:items-center gai:justify-center'
@@ -148,7 +157,9 @@ export function CustomInput({
                                 ? 'rgba(255, 255, 255, 0.12)'
                                 : '#F7F9FF',
                             overflow: 'hidden',
+                            cursor: isCompactMode ? 'pointer' : 'initial',
                         }}
+                        onClick={handleActivate}
                     >
                         {octoLottie && !octoLottieError ? (
                             <Player autoplay loop src={octoLottie} style={{ width: '100%', height: '100%' }} />
@@ -167,7 +178,7 @@ export function CustomInput({
                             minHeight: shouldShowCompactPrompt && showCountdownTimer ? '64px' : '44px',
                             padding: shouldShowCompactPrompt && showCountdownTimer ? '12px 16px' : '6px',
                             gap: shouldShowCompactPrompt && showCountdownTimer ? '8px' : '16px',
-                            background: '#FFFFFF',
+                            background: isCompactMode ? '#FFFFFF' : '#EFF3FF',
                             alignItems: shouldShowCompactPrompt && showCountdownTimer ? 'stretch' : 'center',
                             borderRadius: '24px',
                             boxSizing: 'border-box',
@@ -178,7 +189,7 @@ export function CustomInput({
                                 {showCountdownTimer ? (
                                     <>
                                         <div className='gai:flex gai:flex-1 gai:overflow-hidden' style={{ minWidth: 0 }}>
-                                            <span className='gai:truncate gai:text-sm gai:font-semibold gai:text-secondary-gray-900'>
+                                            <span className='gai:line-clamp-3 gai:text-sm gai:font-semibold gai:text-secondary-gray-900'>
                                                 {displayPrompt}
                                             </span>
                                         </div>
@@ -193,11 +204,11 @@ export function CustomInput({
                                     </>
                                 ) : (
                                     <>
-                                        <div className='gai:flex gai:flex-1 gai:flex-col gai:gap-1 gai:overflow-hidden' style={{ minWidth: 0 }}>
+                                        <div className='gai:flex gai:flex-1 gai:flex-col gai:gap-1 gai:overflow-hidden gai:pl-4' style={{ minWidth: 0 }}>
                                             <span className='gai:text-[10px] gai:font-medium gai:uppercase gai:tracking-wide gai:text-secondary-gray-500'>
                                                 Suggested
                                             </span>
-                                            <span className='gai:truncate gai:text-sm gai:font-semibold gai:text-secondary-gray-900'>
+                                            <span className='gai:line-clamp-3 gai:text-sm gai:font-semibold gai:text-secondary-gray-900'>
                                                 {displayPrompt}
                                             </span>
                                         </div>
@@ -205,6 +216,7 @@ export function CustomInput({
                                             disabled={creatingSession || isLoading || !displayPrompt || !onSuggestedPromptSend}
                                             size={'icon'}
                                             onClick={() => {
+                                                handleActivate();
                                                 if (onSuggestedPromptSend) {
                                                     onSuggestedPromptSend();
                                                 }
@@ -244,6 +256,7 @@ export function CustomInput({
                                     }}
                                     onFocus={() => {
                                         setIsFocused(true);
+                                        handleActivate();
                                     }}
                                     onBlur={() => {
                                         setIsFocused(false);

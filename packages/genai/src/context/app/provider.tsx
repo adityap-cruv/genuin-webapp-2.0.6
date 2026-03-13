@@ -1200,7 +1200,20 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
         sessionIdMapRef.current.set(realSessionId, tempSessionId);
 
         // Update the temporary session with the real session ID
-        setSessions(prev => prev.map(s => (s.id === tempSessionId ? { ...s, id: realSessionId } : s)));
+        // Also clear cached context flags if this was a cached context session
+        setSessions(prev => prev.map(s => {
+            if (s.id === tempSessionId) {
+                return {
+                    ...s,
+                    id: realSessionId,
+                    // Clear cached context flags after getting real session_id
+                    isCachedContextSession: false,
+                    cachedContext: undefined,
+                    backendSessionId: realSessionId,
+                };
+            }
+            return s;
+        }));
         // Update current session ID if it matches the temp ID
         setCurrentSessionIdState(prev => (prev === tempSessionId ? realSessionId : prev));
     }, []);
@@ -1294,24 +1307,40 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
 
             trackChatStarted(messageInput);
 
-            // Create session with cached data
-            const newSession: Session = {
-                id: tempSessionId,
-                name: sessionName || 'New chat',
-                chat: [userEvent, agentEvent],
-                updatedAt: timestamp,
-                thinking: false, // Not thinking - response is complete
-                agentId: agent_id || currentAgent || getInitialAgentId(),
-                hasNewName: false,
-                status: 'fetched',
-                hasNewMessage: false,
-                thinkingSteps: [],
-            };
+            // Extract agent response content for previous_context
+            const agentResponseContent = typeof agentEvent.message === 'string'
+                ? agentEvent.message
+                : agentEvent.message?.content || '';
 
-            setSessions(prev => [...prev, newSession]);
-            setCurrentSessionIdState(tempSessionId);
-            setEnteredInChatMode(true);
-            setCurrentAgentState(agent_id || currentAgent || getInitialAgentId());
+            // Wait a small delay to ensure SDK has time to load
+            // This prevents race condition where carousel renders before SDK is ready
+            setTimeout(() => {
+                // Create session with cached data
+                const newSession: Session = {
+                    id: tempSessionId,
+                    name: sessionName || 'New chat',
+                    chat: [userEvent, agentEvent],
+                    updatedAt: timestamp,
+                    thinking: false, // Not thinking - response is complete
+                    agentId: agent_id || currentAgent || getInitialAgentId(),
+                    hasNewName: false,
+                    status: 'fetched',
+                    hasNewMessage: false,
+                    thinkingSteps: [],
+                    // Mark as cached context session for handling follow-up messages
+                    isCachedContextSession: true,
+                    cachedContext: {
+                        message: messageInput,
+                        agent_response: agentResponseContent,
+                        session_name: sessionName || 'New chat',
+                    },
+                };
+
+                setSessions(prev => [...prev, newSession]);
+                setCurrentSessionIdState(tempSessionId);
+                setEnteredInChatMode(true);
+                setCurrentAgentState(agent_id || currentAgent || getInitialAgentId());
+            }, 100); // 100ms delay
 
             onMessageQueued?.();
             clearS3Keys();
@@ -1426,18 +1455,40 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
             // Call callback after message is successfully queued and agent is found
             onMessageQueued?.();
             clearS3Keys();
+
+            // Check if this is a follow-up to cached response
+            const sessionForPayload = sessions.find((s: Session) => s.id === sessionId);
+            const needsPreviousContext = sessionForPayload?.isCachedContextSession && !sessionForPayload?.backendSessionId;
+
+            console.log('[Provider] Preparing payload:', {
+                sessionId,
+                hasSession: !!sessionForPayload,
+                isCachedContextSession: sessionForPayload?.isCachedContextSession,
+                hasBackendSessionId: !!sessionForPayload?.backendSessionId,
+                needsPreviousContext,
+                cachedContext: sessionForPayload?.cachedContext,
+            });
+
             // const effectiveAgent = agent_id || currentAgent;
             const payload: SSEMessagePayload = {
                 brand_id: brandId,
                 message: messageInput,
                 agent_id: agent.id,
                 agent_type: agent.type,
-                session_id: sessionId || null, // Send null for new sessions
+                session_id: needsPreviousContext ? null : (sessionId || null), // Send null if using previous_context
                 user_id: userId,
                 s3_keys: s3_keys,
                 video_id: view === 'web-sdk' ? webSdkVideoId : undefined,
-                temp_session_id: tempSessionId, // Include temp ID for session creation callback
+                // For cached context follow-ups, use sessionId as temp_session_id for tracking
+                temp_session_id: needsPreviousContext ? sessionId : tempSessionId,
+                previous_context: needsPreviousContext ? sessionForPayload?.cachedContext : undefined,
             };
+
+            console.log('[Provider] Sending SSE message with payload:', {
+                hasSessionId: !!payload.session_id,
+                hasPreviousContext: !!payload.previous_context,
+                previousContext: payload.previous_context,
+            });
 
             // if (effectiveAgent === 'video_generator_agent') {
             //     payload.metadata = buildVideoGenerationMetadata(userEmail, userUUID);

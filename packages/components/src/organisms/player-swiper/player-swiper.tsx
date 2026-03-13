@@ -163,12 +163,19 @@ export function PlayerList({
   const { track, EventName } = useAnalytics();
   const {
     engagement: {
-      engagementTools: { comment: showCommentBox },
+      engagementTools: { comment: showCommentBox, octo: isOctoToolEnabled },
+      showEngagementTools,
     },
     view: { brandLayoutType, websiteType, isAdsEnabledInIheart },
   } = useEmbedConfigs();
   const embedDetails = useSafeEmbedContext();
-  const { sheetState, openContentType, setContentTypeState } = useSheetState();
+  const {
+    sheetState,
+    openContentType,
+    setContentTypeState,
+    hasContentType,
+    closeContentType,
+  } = useSheetState();
   const [isEndOfFeedReached, setEndOfFeedReached] = useState<boolean>(false);
   const [isAdPlaying, setIsAdPlaying] = useState<boolean>(false);
   // if we use directly isTablet from the hook then for desktop it will be true based on useDeviceDetectMediaQuery implementation
@@ -331,6 +338,86 @@ a swiper inside another swiper.
 
     lastOctoVideoIdRef.current = activeVideoId;
   }, [activeVideoId, isOctoOpen]);
+
+  const shouldAutoOpenOcto =
+    !isDesktop && showEngagementTools && isOctoToolEnabled;
+
+  const prevMobileVideoIdRef = useRef<string | null>(null);
+  const octoReopenTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [pendingOctoReopen, setPendingOctoReopen] = useState(false);
+
+  useEffect(() => {
+    if (isDesktop) {
+      prevMobileVideoIdRef.current = activeVideoId ?? null;
+      return;
+    }
+
+    if (!shouldAutoOpenOcto) {
+      prevMobileVideoIdRef.current = activeVideoId ?? null;
+      return;
+    }
+
+    const prevId = prevMobileVideoIdRef.current;
+    prevMobileVideoIdRef.current = activeVideoId ?? null;
+
+    if (!activeVideoId) return;
+
+    if (!prevId) {
+      setPendingOctoReopen(true);
+      return;
+    }
+
+    if (prevId !== activeVideoId) {
+      if (octoReopenTimerRef.current) {
+        clearTimeout(octoReopenTimerRef.current);
+        octoReopenTimerRef.current = null;
+      }
+
+      if (hasContentType("octo")) {
+        closeContentType("octo");
+      }
+
+      octoReopenTimerRef.current = setTimeout(() => {
+        setPendingOctoReopen(true);
+        octoReopenTimerRef.current = null;
+      }, 400);
+    }
+  }, [
+    activeVideoId,
+    isDesktop,
+    shouldAutoOpenOcto,
+    hasContentType,
+    closeContentType,
+  ]);
+
+  useEffect(() => () => {
+    if (octoReopenTimerRef.current) {
+      clearTimeout(octoReopenTimerRef.current);
+      octoReopenTimerRef.current = null;
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!shouldAutoOpenOcto) return;
+    if (!showExpandView) return;
+    if (!activeVideoId) return;
+    if (isAdPlaying) return;
+    if (!pendingOctoReopen) return;
+    if (hasContentType("octo")) return;
+
+    openContentType("octo", "inside", "default");
+    setContentTypeState("octo", "default");
+    setPendingOctoReopen(false);
+  }, [
+    shouldAutoOpenOcto,
+    showExpandView,
+    activeVideoId,
+    hasContentType,
+    openContentType,
+    setContentTypeState,
+    isAdPlaying,
+    pendingOctoReopen,
+  ]);
 
 
   // Focus management hook (only for iHeart)

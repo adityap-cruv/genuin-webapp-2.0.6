@@ -51,6 +51,11 @@ export function getOctoSheetConfig({
 
   const autoAdvanceRules: DynamicSheetConfig["autoAdvance"] = (() => {
     switch (octoState) {
+      case "default-active":
+        return [
+          { from: "default", to: "default-active", delayMs: 1 },
+          { from: "expand-view", to: "default-active", delayMs: 1 },
+        ];
       case "expand-view":
         return [
           { from: "default", to: "expand-view", delayMs: 1 },
@@ -87,9 +92,9 @@ export function getOctoSheetConfig({
         "full-view",
       ],
       heights: {
-        default: "160px",
+        default: "120px",
         "default-active": "220px",
-        "expand-view": "300px",
+        "expand-view": "460px",
         "panel-view": "70vh",
         "full-view": `${viewportHeight}px`,
       },

@@ -12,6 +12,11 @@ export interface SSEMessagePayload {
     s3_keys: string[];
     video_id?: string;
     temp_session_id?: string; // Used to track the temporary session ID for new sessions
+    previous_context?: {
+        message: string;
+        agent_response: string;
+        session_name: string;
+    };
 }
 
 interface UseSSEHandlerParams {
@@ -286,6 +291,7 @@ export const useSSEHandler = ({
                 user_id: payload.user_id,
                 s3_keys: payload.s3_keys,
                 video_id: payload.video_id,
+                previous_context: payload.previous_context,
             };
 
             const startResponse = await startChatSession(startPayload);

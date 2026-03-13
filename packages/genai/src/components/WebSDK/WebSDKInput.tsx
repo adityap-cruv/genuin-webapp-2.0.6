@@ -11,6 +11,7 @@ type WebSDKInputProps = {
     countdown?: number | null;
     onCompactPromptSend?: () => void;
     isLoadingPrompt?: boolean;
+    onActivate?: () => void;
 };
 
 export function WebSDKInput({
@@ -23,6 +24,7 @@ export function WebSDKInput({
     countdown,
     onCompactPromptSend,
     isLoadingPrompt,
+    onActivate,
 }: WebSDKInputProps) {
     return (
         <div className='gai:relative gai:w-full'>
@@ -33,6 +35,7 @@ export function WebSDKInput({
                 countdown={countdown}
                 onSuggestedPromptSend={onCompactPromptSend}
                 isLoading={isLoadingPrompt}
+                onActivate={onActivate}
             />
             {showPresetPrompts && (
                 <WebSDKPresetPrompts

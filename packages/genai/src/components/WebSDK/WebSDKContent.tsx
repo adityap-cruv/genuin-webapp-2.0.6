@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { WebSDKInput } from './WebSDKInput';
 import { useAgentsContext } from '@/context/app/context';
 import { useInputContext } from '@/context/input/context';
 import Chat from '../Chat';
 import { Skeleton } from '../ui/skeleton';
+import { CompactSkeleton } from '../ui/compact-skeleton';
 import { getCachedRemoteLottie, loadRemoteLottie } from '@/lib/lottie/load-remote-lottie';
 
 const OCTO_IDLE_ANIMATION_PATH = 'sleeping/animations/51914e32-e62c-43d5-b17d-50369bbbf7d6.json';
@@ -301,6 +302,25 @@ export function WebSDKContent() {
     const currentSession = sessions.find(session => session.id === currentSessionId);
     const primaryPrompt = suggestedPrompts[0];
 
+    const handleCompactInputActivate = useCallback(() => {
+        if (webSdkRenderMode !== 'compact') {
+            return;
+        }
+
+        setWebSdkRenderMode('full');
+
+        if (parentOctoPanelId) {
+            window.dispatchEvent(
+                new CustomEvent('genai:webSdkRequestExpand', {
+                    detail: {
+                        parentOctoPanelId,
+                        sessionId: currentSessionId,
+                    },
+                })
+            );
+        }
+    }, [webSdkRenderMode, setWebSdkRenderMode, parentOctoPanelId, currentSessionId]);
+
     // Handle sheet expansion when message is sent in compact mode
     useEffect(() => {
         if (webSdkRenderMode !== 'compact' || !parentOctoPanelId) {
@@ -354,18 +374,27 @@ export function WebSDKContent() {
                 <div className={contentWrapperClasses}>
                     {!shouldHideContent && currentSession ? (
                         <Chat />
-                    ) : !shouldHideContent && shouldShowLoader && !isCompactMode ? (
-                        <div className='gai:mx-auto gai:flex gai:w-full gai:flex-col gai:gap-6 gai:pb-6'>
-                            {/* Shimmer user message while loading */}
+                    ) : !shouldHideContent && shouldShowLoader ? (
+                        isCompactMode ? (
                             <div className='gai:flex gai:w-full gai:justify-end'>
                                 <div className='gai:flex gai:w-[80%] gai:flex-col gai:items-end gai:gap-2'>
-                                    <div className='gai:flex gai:w-full gai:max-w-[80%] gai:flex-col gai:gap-2 gai:rounded-3xl gai:rounded-br-none gai:bg-primary-50 gai:px-4 gai:py-3'>
-                                        <Skeleton className='gai:h-4 gai:w-full gai:max-w-[16rem] gai:bg-primary-200' />
-                                        <Skeleton className='gai:h-4 gai:w-3/4 gai:bg-primary-200' />
+                                    <div className='gai:flex gai:w-full gai:max-w-[70%] gai:flex-col gai:gap-2 gai:rounded-3xl gai:rounded-br-none gai:bg-primary-50 gai:px-4 gai:py-3'>
+                                        <CompactSkeleton width='55%' />
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        ) : (
+                            <div className='gai:mx-auto gai:flex gai:w-full gai:flex-col gai:gap-6 gai:pb-6'>
+                                <div className='gai:flex gai:w-full gai:justify-end'>
+                                    <div className='gai:flex gai:w-[80%] gai:flex-col gai:items-end gai:gap-2'>
+                                        <div className='gai:flex gai:w-full gai:max-w-[80%] gai:flex-col gai:gap-2 gai:rounded-3xl gai:rounded-br-none gai:bg-primary-50 gai:px-4 gai:py-3'>
+                                            <Skeleton className='gai:h-4 gai:w-full gai:max-w-[16rem] gai:bg-primary-200' />
+                                            <Skeleton className='gai:h-4 gai:w-3/4 gai:bg-primary-200' />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )
                     ) : !shouldHideContent && !isCompactMode && showDummyMessage && primaryPrompt ? (
                         <div className='gai:mx-auto gai:flex gai:w-full gai:flex-col gai:gap-6 gai:pb-6'>
                             {/* Dummy user message - clickable to copy to input */}
@@ -408,6 +437,7 @@ export function WebSDKContent() {
                         showPresetPrompts={showPresetPrompts}
                         onClosePresetPrompts={handleClosePresetPrompts}
                         setIsSuggestionsOpen={setIsSuggestionsOpen}
+                        onActivate={isCompactMode ? handleCompactInputActivate : undefined}
                     />
                 </div>
             </div>

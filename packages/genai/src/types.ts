@@ -145,6 +145,14 @@ export type Session = {
     hasNewName: boolean; // Flag to trigger typewriter effect for new session names
     hasNewMessage: boolean; // Flag to indicate if there are new messages in the session
     thinkingSteps: ThinkingStep[];
+    // Cached context fields for Type 2 caching
+    isCachedContextSession?: boolean; // True if session started with cached response
+    cachedContext?: {
+        message: string; // Original user prompt
+        agent_response: string; // Cached agent response we showed
+        session_name: string; // Session name from cached metadata
+    };
+    backendSessionId?: string; // Real session ID from backend after first follow-up
 };
 
 export type SessionsPanelProps = {

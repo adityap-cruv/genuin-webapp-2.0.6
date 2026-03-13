@@ -35,6 +35,7 @@ import { getBaseUrlWithouthighlights } from "../embed/iheart/use-iheart-playback
 import type { ExpandViewCallbacks } from "./types";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { DynamicSheet } from "@genuin/ui";
+import type { DynamicSheetState } from "@genuin/ui/dynamic-sheet";
 import useViewportHeight from "@genuin/components/hooks/use-screen-height";
 import { OctoPanel } from "@genuin/components/molecules/octo-panel";
 import { getOctoSheetConfig } from "@genuin/components/molecules/octo-panel/octo-sheet-config";
@@ -646,6 +647,27 @@ export function ExpandViewDetails({
     setContentTypeState("octo", "panel-view");
   }, [octoSheetState, setContentTypeState]);
 
+  const prevOctoSheetStateRef = useRef<DynamicSheetState>(octoSheetState);
+
+  const handleOctoSheetStateChange = useCallback(
+    (next: DynamicSheetState) => {
+      const prev = prevOctoSheetStateRef.current;
+      prevOctoSheetStateRef.current = next;
+
+      if (prev === "panel-view" && next !== "panel-view") {
+        resetSheet();
+        return;
+      }
+
+      setContentTypeState("octo", next);
+    },
+    [resetSheet, setContentTypeState],
+  );
+
+  useEffect(() => {
+    prevOctoSheetStateRef.current = octoSheetState;
+  }, [octoSheetState]);
+
   const handleOctoCompactExpand = useCallback(() => {
     // Transition to expand-view when user sends message and agent starts thinking
     if (octoSheetState === "default" || octoSheetState === "default-active") {
@@ -716,7 +738,7 @@ export function ExpandViewDetails({
             renderMode="inline"
             config={{
               ...octoConfig,
-              onStateChange: (state) => setContentTypeState("octo", state),
+              onStateChange: handleOctoSheetStateChange,
               onClose: () => resetSheet(),
             }}
             onSwiperToggle={onSwiperToggle}
