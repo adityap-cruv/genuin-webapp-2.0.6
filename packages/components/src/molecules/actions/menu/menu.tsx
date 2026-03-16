@@ -27,6 +27,7 @@ import { FlagIcon, GroupIcon, PlayIcon } from "@genuin/ui/icons";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { VideoTypes } from "@genuin/components/context";
 
 type MenuProps = {
   children?: React.ReactNode;
@@ -34,6 +35,7 @@ type MenuProps = {
   videoSlug?: string;
   shareUrl?: string;
   groupSlug: string;
+  videoType: VideoTypes;
 };
 
 type MenuItemProps = {
@@ -68,6 +70,7 @@ export function Menu({
   videoSlug,
   children,
   groupSlug,
+  videoType,
   ...props
 }: MenuProps) {
   const {
@@ -138,6 +141,7 @@ export function Menu({
               contentId={contentId}
               shareUrl={shareUrl ?? ""}
               videoSlug={videoSlug ?? ""}
+              videoType={videoType}
               children={menuItems({
                 text: "Report Post",
                 className: "gencl:text-red",

@@ -38,19 +38,19 @@ import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 const Actions = lazy(() =>
   import("../../../actions/index.js").then((m) => ({
     default: m.Actions,
-  }))
+  })),
 );
 
 const Linkouts = lazy(() =>
   import("@genuin/components/organisms/linkouts/index.js").then((m) => ({
     default: m.Linkouts,
-  }))
+  })),
 );
 
 const CommentsDialog = lazy(() =>
   import("../../../comments/index.js").then((m) => ({
     default: m.CommentsDialog,
-  }))
+  })),
 );
 
 type BrandLayoutType = "default" | "iheart" | "ted" | "walmart" | "grubhub";
@@ -223,7 +223,7 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
                   src={attributes.image_url}
                   alt={`${postDetails.video.attributes?.title || contentType} podcast artwork`}
                   className={cn(
-                    "gencl:rounded-md gencl:object-cover gencl:size-[68px]"
+                    "gencl:rounded-md gencl:object-cover gencl:size-[68px]",
                   )}
                 />
               </Link>
@@ -250,7 +250,7 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
                       "gencl:my-3! gencl:h-5 gencl:flex gencl:items-center gencl:gap-2 gencl:font-semibold gencl:leading-[24px] gencl:tracking-[-0.2px] gencl:lg:font-semibold! gencl:lg:leading-[24px]! gencl:lg:tracking-[-0.2px]! gencl:break-all!",
                       websiteType === "polaris"
                         ? "gencl:text-[16px] gencl:lg:text-[17px]!"
-                        : "gencl:text-[16px]"
+                        : "gencl:text-[16px]",
                     )}
                   />
                 </Link>
@@ -459,7 +459,7 @@ const AdaptiveDescription = memo(function AdaptiveDescription({
  */
 function useIHeartScrubberVisibility(
   showScrubber: boolean,
-  brandLayoutType: BrandLayoutType
+  brandLayoutType: BrandLayoutType,
 ) {
   return {
     shouldHide: showScrubber && brandLayoutType === "iheart",
@@ -487,7 +487,7 @@ const SharedActions = memo(function SharedActions({
   onReactionStateChange?: (
     videoId: string,
     videoSlug: string,
-    isReacted: boolean
+    isReacted: boolean,
   ) => void;
   isActive: boolean;
 }) {
@@ -508,7 +508,7 @@ const SharedActions = memo(function SharedActions({
           onReactionStateChange?.(
             postDetails.video.id,
             postDetails.video.slug,
-            isReacted
+            isReacted,
           );
         }}
         videoDetails={postDetails.video}
@@ -529,6 +529,7 @@ const SharedActions = memo(function SharedActions({
         reactionCount={postDetails.video.sparkCount}
         shareUrl={postDetails.video.shareUrl}
         slug={postDetails.video.slug}
+        videoType={postDetails.video.video_type}
         groupSlug={postDetails.group.slug}
         actionWrapper={{
           COMMENT: (defaultNode) => {
@@ -558,7 +559,7 @@ const SharedActions = memo(function SharedActions({
           onReactionStateChange?.(
             postDetails.video.id,
             postDetails.video.slug,
-            isReacted
+            isReacted,
           );
         }}
       />
@@ -601,7 +602,7 @@ export function ExpandViewDetails({
 
   const { shouldHide, hiddenClassName } = useIHeartScrubberVisibility(
     showScrubber,
-    brandLayoutType
+    brandLayoutType,
   );
 
   const onExpand = useCallback(() => {
@@ -615,7 +616,7 @@ export function ExpandViewDetails({
         "gencl:absolute gencl:gap-2 gencl:w-full gencl:z-20 gencl:right-0 gencl:bottom-0 gencl:p-4 gencl:focus:outline-none",
         brandLayoutType !== "iheart" &&
           "gencl:bg-gradient-to-t gencl:from-black/50 gencl:to-transparent",
-        className
+        className,
       )}
       {...restProps}
     >
@@ -623,14 +624,14 @@ export function ExpandViewDetails({
         className={cn(
           "gencl:flex gencl:w-full gencl:gap-4 gencl:justify-between gencl:items-end gencl:transition-opacity gencl:duration-200",
           brandLayoutType === "ted" && "gencl:gap-3",
-          shouldHide && hiddenClassName
+          shouldHide && hiddenClassName,
         )}
       >
         <div
           className={cn(
             "gencl:flex gencl:flex-col gencl:gap-4 gencl:sm:gap-2 gencl:w-5/6 gencl:sm:w-full gencl:transition-all",
             brandLayoutType === "ted" ||
-              (brandLayoutType === "iheart" && "gencl:gap-3")
+              (brandLayoutType === "iheart" && "gencl:gap-3"),
           )}
           onClick={(e) => e.stopPropagation()}
         >
@@ -697,7 +698,7 @@ export function ExpandViewDetails({
           tabIndex={0}
           className={cn(
             "swiper-no-swiping gencl:w-full gencl:overflow-x-auto gencl:scrollbar-none gencl:transition-opacity",
-            shouldHide && hiddenClassName
+            shouldHide && hiddenClassName,
           )}
           onClick={(e) => {
             e.stopPropagation();
@@ -751,7 +752,7 @@ export function ExpandViewDetails({
           aria-hidden="true"
           className={cn(
             "gencl:h-0 gencl:transition-all",
-            showSeeker && "gencl:h-4"
+            showSeeker && "gencl:h-4",
           )}
         />
       )}

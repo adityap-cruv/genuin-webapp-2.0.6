@@ -101,6 +101,12 @@ export type ScreenType =
   | "popular"
   | "latest";
 
+export enum VideoTypes {
+  Content = "content",
+  HouseAd = "house_ad",
+  Sponsored = "sponsored",
+}
+
 type AnalyticsContextType = {
   /**
    * Tracks an event with an optional payload using the AnalyticsService.

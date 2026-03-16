@@ -12,7 +12,7 @@ import {
 import { useBaseContext } from "@genuin/components/context/base";
 import { audioManager } from "@genuin/components/lib/audio-manager";
 import { usePlayerContext } from "./context/context";
-import { useAnalytics } from "@genuin/components/context/analytics";
+import { useAnalytics, VideoTypes } from "@genuin/components/context/analytics";
 import { cn } from "@genuin/ui/lib/utils";
 import { BrandType } from "@genuin/components/lib/utils/brand-layout";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
@@ -38,6 +38,7 @@ type FeedPlayerProps = Omit<
    * Index is needed so passing it.
    */
   index?: number;
+  videoType: VideoTypes;
 };
 
 /**
@@ -58,6 +59,7 @@ export const FeedPlayer = memo(function FeedPlayer({
   onPlay,
   onPause,
   onLoadStart,
+  videoType,
   ...props
 }: FeedPlayerProps) {
   // adUrl = undefined;
@@ -123,8 +125,9 @@ export const FeedPlayer = memo(function FeedPlayer({
       title: videoDescription,
       video_id: videoId,
       video_url: src,
+      video_type: videoType,
     };
-  }, [videoId, totalVideos, src]);
+  }, [videoId, totalVideos, src, videoType]);
 
   // Track when video comes into view using IntersectionObserver
   useEffect(() => {

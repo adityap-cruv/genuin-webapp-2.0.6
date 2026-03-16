@@ -17,7 +17,7 @@ import {
 import { AdInfoType, PlayerContext, PlayerContextType } from "./context";
 import mitt from "mitt";
 import { useBaseContext } from "@genuin/components/context/base";
-import { useAnalytics } from "@genuin/components/context/analytics";
+import { useAnalytics, VideoTypes } from "@genuin/components/context/analytics";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { Swiper } from "swiper/types";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
@@ -90,6 +90,7 @@ type VideoProviderProps = {
    * @returns
    */
   onAdEnded?: (event?: AdInfoType) => void;
+  videoType: VideoTypes;
 } & ExpandViewProps;
 
 type PlayerConfigType = ReturnType<typeof getVideoPlayerConfigs>;
@@ -124,6 +125,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   totalVideos,
   videoDescription,
   activeIndex,
+  videoType,
   onPlayerIterationEnd,
   toggleExpandView,
   updateActiveIndex,
@@ -211,8 +213,9 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       title: videoDescription,
       video_id: videoId,
       video_url: videoUrl,
+      video_type: videoType,
     }),
-    [videoId, totalVideos, videoDescription],
+    [videoId, totalVideos, videoDescription, videoType],
   );
 
   // Track globalPlayState from baseEventBus - controls if ANY player can play based on user action
@@ -424,11 +427,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
 
   // specifically for iheart to maintain the -n sec player replay.
   useEffect(() => {
-    if (
-      !playerRef.current ||
-      !embedDetails?.embedEventBus
-    )
-      return;
+    if (!playerRef.current || !embedDetails?.embedEventBus) return;
 
     const embedEventBus = embedDetails.embedEventBus;
 

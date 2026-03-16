@@ -25,7 +25,7 @@ const AuthenticationModal = React.lazy(() =>
 );
 
 import { useAuthContext } from "@genuin/components/context/auth";
-import { useAnalytics } from "@genuin/components/context/analytics";
+import { useAnalytics, VideoTypes } from "@genuin/components/context/analytics";
 import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { Link } from "../link";
@@ -42,6 +42,7 @@ type ReportProps = ComponentProps<typeof Dialog> & {
   contentId: string;
   shareUrl?: string;
   videoSlug?: string;
+  videoType?: VideoTypes;
   children: React.ReactNode;
 };
 
@@ -50,6 +51,7 @@ export function Report({
   contentId,
   shareUrl,
   videoSlug,
+  videoType,
   children,
   ...props
 }: ReportProps) {
@@ -113,6 +115,7 @@ export function Report({
             : EventName.VIDEO_REPORT,
           {
             content_id: contentId,
+            video_type: videoType,
             content_category: "loop",
             event_record_screen: "feed",
             event_target_screen: "none",
@@ -122,7 +125,7 @@ export function Report({
         );
       },
     });
-  }, [reportMutation, selectedReason, contentId, reportFor, track, EventName]);
+  }, [reportMutation, selectedReason, contentId, reportFor, track, EventName, videoType]);
 
   if (!user) {
     if (clickHandler) {

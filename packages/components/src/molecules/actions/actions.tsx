@@ -33,7 +33,7 @@ import { lazy, Suspense } from "react";
 import { cva, VariantProps } from "class-variance-authority";
 import { useBaseContext } from "@genuin/components/context/base";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import { useAnalytics } from "@genuin/components/context/analytics";
+import { useAnalytics, VideoTypes } from "@genuin/components/context/analytics";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { ActionPopover } from "./action-popover";
 import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
@@ -51,6 +51,7 @@ type ActionWrapperContextType = {
   groupSlug: string;
   variant?: VariantProps<typeof actionVariants>["theme"];
   onReactionStateChange?: (isReacted: boolean) => void;
+  videoType?: VideoTypes;
 };
 
 const actionVariants = cva("", {
@@ -80,6 +81,7 @@ type ActionsPropsType = ComponentProps<"div"> & {
   slug: string;
   groupSlug: string;
   isCommentBoxOpen?: boolean;
+  videoType?: VideoTypes;
   /**
    * If you want to override the default action wrappers, you can pass a namedActionWrapper object.
    * Each key in the object should correspond to an action type (e.g., "REPOST", "REACTION", etc.),
@@ -198,6 +200,7 @@ const defaultActionWrappers: Record<
         <RepostModal
           key="repost-modal"
           videoId={_context.contentId}
+          videoType={_context.videoType ?? VideoTypes.Content}
           asChild
         >
           <div onClick={handleRepostClick}>{node}</div>
@@ -219,6 +222,7 @@ const defaultActionWrappers: Record<
         children={node}
         reactionButtonTheme={context.variant}
         showReactionCount
+        videoType={context.videoType ?? VideoTypes.Content}
         withCustomChildren
         asChild
       />
@@ -234,6 +238,7 @@ const defaultActionWrappers: Record<
         content_category: "loop",
         event_record_screen: "feed",
         event_target_screen: "none",
+        video_type: _context.videoType,
       });
     };
 
@@ -249,6 +254,7 @@ const defaultActionWrappers: Record<
         content_category: "loop",
         event_record_screen: "feed",
         event_target_screen: "none",
+        video_type: _context.videoType,
       });
     };
 
@@ -272,6 +278,7 @@ const defaultActionWrappers: Record<
           shareUrl={context.shareUrl}
           videoSlug={context.slug}
           groupSlug={context.groupSlug}
+          videoType={context.videoType ?? VideoTypes.Content}
           children={node}
         />
       </Suspense>
@@ -292,6 +299,7 @@ export function Actions({
   onReactionStateChange,
   slug,
   isCommentBoxOpen = false,
+  videoType,
   onClick,
   ...restProps
 }: ActionsPropsType) {
@@ -375,7 +383,8 @@ export function Actions({
           slug,
           groupSlug,
           variant:
-            (variant === "mobile" ? "dark" : theme) ?? ("light" as const)
+            (variant === "mobile" ? "dark" : theme) ?? ("light" as const),
+          videoType,
         };
         // For mobile variant, render icon directly without TooltipAction
         if (variant === "mobile") {

@@ -48,6 +48,7 @@ const Linkouts = lazy(() =>
 ) as React.ComponentType<any>;
 
 import { useEmbedManagerContext } from "../embed/context";
+import { VideoTypes } from "@genuin/components/context";
 
 /**
  * Helper function to extract the most appropriate URL from linkouts based on priority:
@@ -149,7 +150,6 @@ export function EmbedTile({
       postDetails.video.attributes?.type,
     ],
   );
-
   return (
     <>
       {shouldShowMiddlewareOverlay && postDetails.video.type === "overlay" ? (
@@ -196,6 +196,7 @@ export function EmbedTile({
             totalVideos={totalVideos}
             swiper={swiper}
             activeIndex={activeIndex}
+            videoType={postDetails.video.video_type ?? VideoTypes.Content}
           >
             <EmbedPlayer
               postDetails={postDetails}
@@ -307,6 +308,7 @@ function EmbedPlayer({
               ? postDetails.section?.cover_url
               : postDetails.video.thumbnail
           }
+          videoType={postDetails.video.video_type ?? VideoTypes.Content}
           className={cn(
             "gencl:h-full! gencl:w-full",
             videoCrop

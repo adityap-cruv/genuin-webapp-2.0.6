@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import { CommunityUserRoleSchema } from "@genuin/components/types/post";
 import { GroupUserStatusSchema } from "@genuin/components/types/roles";
+import { VideoTypes } from "@genuin/components/context";
 
 const description = z.array(
   z
@@ -13,6 +14,7 @@ const description = z.array(
 // Define the video schema
 export const videoSchema = z.object({
   id: z.string(),
+  video_type: z.nativeEnum(VideoTypes).optional(),
   createdAt: z.number().default(-1).nullish(),
   commentCount: z.number(),
   viewCount: z.number(),

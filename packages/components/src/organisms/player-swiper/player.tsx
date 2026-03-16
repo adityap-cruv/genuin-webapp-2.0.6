@@ -3,14 +3,14 @@ import { useBaseContext } from "@genuin/components/context/base";
 const ControlLayer = lazy(() =>
   import("../../molecules/feed-player/control-layer/index.js").then((m) => ({
     default: m.ControlLayer,
-  }))
+  })),
 );
 
 // Lazy load video player to defer heavy playback logic
 const FeedPlayer = lazy(() =>
   import("../../molecules/feed-player/index.js").then((m) => ({
     default: m.FeedPlayer,
-  }))
+  })),
 );
 
 import { PlayerProvider } from "../../molecules/feed-player/context/provider";
@@ -22,6 +22,7 @@ import { useCallback, useMemo, lazy, Suspense } from "react";
 import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
 import { ComponentProps } from "react";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { VideoTypes } from "@genuin/components/context";
 
 type PlayerProps = {
   post: PostDetailsType;
@@ -35,7 +36,7 @@ type PlayerProps = {
   onReactionStateChange?: (
     videoId: string,
     videoSlug: string,
-    isReacted: boolean
+    isReacted: boolean,
   ) => void;
   onCommunityJoinStatusChange: ComponentProps<
     typeof ControlLayer
@@ -98,7 +99,7 @@ export function Player({
         }
       }
     },
-    [activeIndex, muted, showGestureOverlay]
+    [activeIndex, muted, showGestureOverlay],
   );
 
   // load player when the post is active or previous/next post is active or the post is visible
@@ -118,6 +119,7 @@ export function Player({
         activeIndex={activeIndex}
         onAdStarted={onAdStarted}
         onAdEnded={onAdEnded}
+        videoType={post.video.video_type ?? VideoTypes.Content}
       >
         <div
           className={cn(
@@ -127,7 +129,7 @@ export function Player({
             },
             {
               "gencl:sm:rounded!": brandLayoutType === "iheart",
-            }
+            },
           )}
           // tabIndex={showExpandView ? 0 : -1}
           // role="region"
@@ -141,11 +143,12 @@ export function Player({
               adUrl={post.video.adUrl ?? undefined}
               id={"feed-player--" + post.video.id}
               poster={post.video.thumbnail ?? ""}
+              videoType={post.video.video_type ?? VideoTypes.Content}
               className={cn(
                 "gencl:h-full! gencl:w-full",
                 videoCrop
                   ? "gencl:object-cover gencl:bg-cover!"
-                  : "gencl:object-contain gencl:bg-contain!"
+                  : "gencl:object-contain gencl:bg-contain!",
               )}
               playsInline
               onTimeUpdate={handleTimeUpdate}

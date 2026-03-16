@@ -55,7 +55,7 @@ import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config
 import { type PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 
-import { useAnalytics } from "@genuin/components/context";
+import { useAnalytics, VideoTypes } from "@genuin/components/context";
 import { calculateSlideDimensions } from "./utils";
 
 import { useFocusManagement } from "@genuin/components/hooks/use-focus-management";
@@ -395,7 +395,7 @@ a swiper inside another swiper.
               {isSectioned ? (
                 <Suspense fallback={null}>
                   <SectionedContent
-                    sectionList={sectionList}
+                    sectionList={sectionList ?? []}
                     embedDetails={embedDetails}
                     filteredPost={filteredPost}
                     startIndex={startIndex}
@@ -498,6 +498,7 @@ a swiper inside another swiper.
               contentId={filteredPost[activeIndex]?.video.id}
               groupSlug={filteredPost[activeIndex]?.group.slug}
               slug={filteredPost[activeIndex]?.video.slug}
+              videoType={filteredPost[activeIndex]?.video.video_type ?? VideoTypes.Content}
               reactionCount={filteredPost[activeIndex]?.video.sparkCount}
               theme={showExpandView ? "dark" : "light"}
               className={cn(
