@@ -73,8 +73,6 @@ export const useSSEHandler = ({
             try {
                 const parsed = JSON.parse(jsonStr) as Partial<HandleSSEMessageData> & { error?: string };
 
-                console.log('[SSE] Incoming payload from backend:', parsed);
-
                 // Check for error response (e.g., "Stream not found")
                 if (parsed.error) {
                     return { isCompleted: false, isError: true };
@@ -128,6 +126,9 @@ export const useSSEHandler = ({
 
                 if (parsed.tool_metadata !== undefined) {
                     messageData.tool_metadata = parsed.tool_metadata as HandleSSEMessageData['tool_metadata'];
+                    if (isCachedSession) {
+                        messageData.is_cached = true;
+                    }
                     hasData = true;
                 }
 
@@ -146,6 +147,9 @@ export const useSSEHandler = ({
                 const carousel_metadata = parsed.carousel_metadata ?? (parsed as any)["carousel_metadata:"];
                 if (carousel_metadata !== undefined) {
                     messageData.carousel_metadata = carousel_metadata;
+                    if (isCachedSession) {
+                        messageData.is_cached = true;
+                    }
                     hasData = true;
                 }
 

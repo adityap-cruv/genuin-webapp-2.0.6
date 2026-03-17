@@ -822,6 +822,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                                     toolMetadata: toolMetadataPayload,
                                 },
                                 isCompleted: true,
+                                is_cached: data.is_cached,
                             };
 
                             if (existingIndex >= 0) {

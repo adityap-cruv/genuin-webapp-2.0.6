@@ -325,6 +325,8 @@ const ItemComponent: React.FC<ItemProps> = ({
     const [copied, setCopied] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [editedText, setEditedText] = useState(content);
+    const [showInventoryWidget, setShowInventoryWidget] = useState(!event.is_cached);
+    const [showCarousel, setShowCarousel] = useState(!event.is_cached);
     const handleCopy = async () => {
         try {
             await navigator.clipboard.writeText(content);
@@ -432,6 +434,30 @@ const ItemComponent: React.FC<ItemProps> = ({
         isCached: event.is_cached,
     });
 
+    // Handle delayed rendering for cached messages
+    useEffect(() => {
+        if (!event.is_cached) {
+            // Non-cached: show everything immediately
+            setShowInventoryWidget(true);
+            setShowCarousel(true);
+            return;
+        }
+
+        // Cached: wait for text animation to finish, then show components sequentially
+        if (hasFinished) {
+            const timer1 = setTimeout(() => {
+                setShowInventoryWidget(true);
+            }, 300);
+            const timer2 = setTimeout(() => {
+                setShowCarousel(true);
+            }, 600);
+            return () => {
+                clearTimeout(timer1);
+                clearTimeout(timer2);
+            };
+        }
+    }, [hasFinished, event.is_cached]);
+
     const toolMetadata = event.metadata?.toolMetadata;
     const isToolMetadataEvent = Boolean(toolMetadata);
 
@@ -516,7 +542,7 @@ const ItemComponent: React.FC<ItemProps> = ({
                             //         </div>
                             //     );
                             // }
-                            if (toolMetadata) {
+                            if (toolMetadata && showInventoryWidget) {
                                 return <InventoryWidget metadata={toolMetadata} />;
                             }
 
@@ -570,7 +596,7 @@ const ItemComponent: React.FC<ItemProps> = ({
                             }
                         })()}
                         {/* Show carousel/skeleton for web-sdk view */}
-                        {shouldRenderCarousel && (
+                        {shouldRenderCarousel && showCarousel && (
                             <CarousalEmbed
                                 carousalMetadata={event.carousel_metadata}
                                 isLastMessage={isLastMessage}

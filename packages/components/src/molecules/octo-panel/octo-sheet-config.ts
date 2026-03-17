@@ -22,11 +22,11 @@ const TRANSITION =
 function panelFullClassName(state: DynamicSheetState): string {
   return cn(
     TRANSITION,
-    state === "default" && "gencl:bg-transparent! gencl:shadow-none! gencl:rounded-none!",
+    state === "default" && "gencl:bg-transparent! gencl:shadow-none!",
     state === "default-active" &&
-      "gencl:bg-transparent! gencl:shadow-none! gencl:rounded-none!",
+      "gencl:bg-transparent! gencl:shadow-none!",
     state === "expand-view" &&
-      "gencl:bg-transparent! gencl:shadow-none! gencl:rounded-none!",
+      "gencl:bg-transparent! gencl:shadow-none!",
     state === "panel-view" &&
       "gencl:fixed! gencl:bottom-0! gencl:left-0! gencl:right-0! gencl:h-[70vh]! gencl:w-screen! gencl:rounded-t-2xl! gencl:rounded-b-none! gencl:z-50! gencl:bg-white!",
     state === "full-view" &&
