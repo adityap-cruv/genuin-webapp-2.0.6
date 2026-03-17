@@ -40,8 +40,8 @@ export const useSSEHandler = ({
     // One AbortController per session
     const abortControllersRef = useRef<Map<string, AbortController>>(new Map());
 
-    // Track cached sessions for artificial chunking
-    const cachedSessionsRef = useRef<Set<string>>(new Set());
+    // Track sessions with pending cached responses (cleared after each response completes)
+    const pendingCachedResponsesRef = useRef<Set<string>>(new Set());
 
     const splitConcatenatedJson = (chunk: string): string[] => {
         const results: string[] = [];
@@ -65,7 +65,7 @@ export const useSSEHandler = ({
 
     const createChunkProcessor = (sessionId: string) => {
         let pendingSessionName: string | null = null;
-        const isCachedSession = cachedSessionsRef.current.has(sessionId);
+        const isCachedSession = pendingCachedResponsesRef.current.has(sessionId);
 
         const processSingleJson = (jsonStr: string): { isCompleted: boolean; isError: boolean } => {
             if (!jsonStr.trim()) return { isCompleted: false, isError: false };
@@ -116,6 +116,10 @@ export const useSSEHandler = ({
 
                 if (parsed.response_completed !== undefined) {
                     messageData.response_completed = parsed.response_completed;
+                    // Clear cached flag when response completes
+                    if (parsed.response_completed === true) {
+                        pendingCachedResponsesRef.current.delete(sessionId);
+                    }
                     hasData = true;
                 }
 
@@ -304,7 +308,7 @@ export const useSSEHandler = ({
             // Check if response is cached based on the message field
             const isCached = startResponse.message?.includes('(cached)') || false;
             if (isCached) {
-                cachedSessionsRef.current.add(realSessionId);
+                pendingCachedResponsesRef.current.add(realSessionId);
             }
 
             // If this was a new session (temp_session_id), notify about the real session ID

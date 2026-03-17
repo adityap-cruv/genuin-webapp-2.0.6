@@ -55,7 +55,7 @@ export function ExpandViewLoader({
     return () => {
       embedEventBus.off("activePlayerTypeChange", handleActivePlayerTypeChange);
     };
-  }, [embedEventBus]);
+  }, [embedEventBus, isExpandMode]);
 
   if (!isExpandMode) {
     return null;

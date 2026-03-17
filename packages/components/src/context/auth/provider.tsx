@@ -16,7 +16,7 @@ import { useCallback, useLayoutEffect, useEffect, useState } from "react";
 import { useSearchParams } from "@genuin/components/hooks/use-search-params";
 import { useGetUserDataForSSOMutation } from "@genuin/components/react-query/api/authentication/auto-login";
 import { Toast } from "@genuin/ui/components/toaster";
-import { invalidateAllQueries } from "@genuin/components/react-query/client";
+import { queryClient } from "@genuin/components/react-query/client";
 import { useBaseContext } from "../base";
 import {
   SDKEventEmitter,
@@ -183,10 +183,39 @@ export function AuthProvider({
         : (authenticatedUser?.accessToken ?? user?.accessToken);
     if (!!token) {
       setAuthTokenInAxiosInstance(token);
-      invalidateAllQueries();
+      // IMPORTANT: Do NOT use invalidateAllQueries() as it will invalidate ALL queries
+      // including feed queries in parent SDK instances when nested SDKs initialize.
+      // Only invalidate auth-dependent queries like user profile, settings, etc.
+      // Feed queries are independent of auth state and should not be invalidated.
+      queryClient.invalidateQueries({
+        predicate: (query) => {
+          const queryKey = query.queryKey;
+          // Only invalidate queries that are explicitly auth-dependent
+          // Do NOT invalidate 'feed' queries as they work independently
+          return (
+            Array.isArray(queryKey) &&
+            (queryKey.includes('user') ||
+             queryKey.includes('profile') ||
+             queryKey.includes('settings') ||
+             queryKey.includes('auth'))
+          );
+        },
+      });
     } else {
       clearAuthTokenInterceptor();
-      invalidateAllQueries();
+      // Same targeted invalidation on logout
+      queryClient.invalidateQueries({
+        predicate: (query) => {
+          const queryKey = query.queryKey;
+          return (
+            Array.isArray(queryKey) &&
+            (queryKey.includes('user') ||
+             queryKey.includes('profile') ||
+             queryKey.includes('settings') ||
+             queryKey.includes('auth'))
+          );
+        },
+      });
     }
   }, [authenticatedUser, user]);
 

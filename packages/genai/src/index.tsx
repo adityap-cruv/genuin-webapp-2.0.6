@@ -366,7 +366,6 @@ export async function init(initConfig: SDKConfig) {
     // ✅ Don't unmount existing instance on re-init
     // This keeps chat history alive and prevents breaking nested carousels
     if (appInstance) {
-        console.log('[GenAI SDK] Already initialized, reusing existing instance');
         return;
     }
 
@@ -456,13 +455,19 @@ export async function init(initConfig: SDKConfig) {
 
 export function destroy() {
     if (appInstance?.unmount) {
-        appInstance.unmount();
+        try {
+            appInstance.unmount();
+        } catch (error) {
+            console.error('[GenAI SDK] Failed to unmount React app:', error);
+        }
         appInstance = null;
     }
+
     if (floater) {
         floater.remove();
         floater = null;
     }
+
     removePersistentEventListener();
     currentConfig = null;
 }

@@ -108,6 +108,10 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
   const [panelIdentity, setPanelIdentity] = useState(createPanelIdentity);
   const [isReinitializing, setIsReinitializing] = useState(false);
   const previousRenderModeRef = useRef<"compact" | "full" | undefined>(renderMode);
+  const mountTimestamp = useRef(Date.now());
+  const isDestroyingRef = useRef(false);
+  const [destroyCompleteCounter, setDestroyCompleteCounter] = useState(0);
+
 
   const [parentInstanceId, setParentInstanceId] = useState<string | null>(null);
   const [parentContainerId, setParentContainerId] = useState<string | null>(null);
@@ -121,34 +125,58 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
 
   useEffect(() => {
     if (!embedContext?.rootElement) {
-      console.log('[OctoPanel] No parent root element found, using fallback instance id');
       setParentInstanceId((prev) => prev ?? panelIdentity.panelId);
       return;
     }
 
-    const instanceId = embedContext.rootElement.getAttribute('data-instance-id');
-    if (instanceId) {
-      console.log('[OctoPanel] Retrieved parent instance id from embed context:', instanceId);
-      setParentInstanceId(instanceId);
-    } else {
-      console.log('[OctoPanel] Parent root element missing data-instance-id attribute, using fallback');
-      setParentInstanceId((prev) => prev ?? panelIdentity.panelId);
+    const updateParentIds = () => {
+      const instanceId = embedContext.rootElement?.getAttribute('data-instance-id');
+      if (instanceId) {
+        setParentInstanceId(instanceId);
+      } else {
+        setParentInstanceId((prev) => prev ?? panelIdentity.panelId);
+      }
+
+      const containerId = embedContext.rootElement?.id;
+      if (containerId) {
+        setParentContainerId(containerId);
+      }
+
+      const embedId = embedContext.embedData?.embed_id;
+      if (embedId) {
+        setParentEmbedId(embedId);
+      }
+
+      const placementId = embedContext.embedData?.placement_id;
+      if (placementId) {
+        setParentPlacementId(String(placementId));
+      }
+    };
+
+    // Initial update
+    updateParentIds();
+
+    // Set up a MutationObserver to watch for attribute changes on the parent element
+    // This ensures we pick up instance ID changes when the parent SDK re-initializes
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'data-instance-id') {
+          updateParentIds();
+          break;
+        }
+      }
+    });
+
+    if (embedContext.rootElement) {
+      observer.observe(embedContext.rootElement, {
+        attributes: true,
+        attributeFilter: ['data-instance-id', 'id'],
+      });
     }
 
-    const containerId = embedContext.rootElement.id;
-    if (containerId) {
-      setParentContainerId(containerId);
-    }
-
-    const embedId = embedContext.embedData.embed_id;
-    if (embedId) {
-      setParentEmbedId(embedId);
-    }
-
-    const placementId = embedContext.embedData.placement_id;
-    if (placementId) {
-      setParentPlacementId(String(placementId));
-    }
+    return () => {
+      observer.disconnect();
+    };
   }, [
     embedContext?.rootElement,
     embedContext?.embedData.embed_id,
@@ -160,6 +188,7 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
   const isControlled = open !== undefined;
   const [internalOpen, setInternalOpen] = useState(defaultOpen ?? false);
   const isOpen = isControlled ? open! : internalOpen;
+
 
   const {
     onClick: triggerOnClick,
@@ -199,22 +228,18 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
   // Load GenAI SDK dynamically when panel opens
   useEffect(() => {
     if (!isOpen) {
-      console.log('[OctoPanel] Panel closed, skipping SDK load');
       return;
     }
 
     if (isSDKLoaded || isInitializing) {
-      console.log('[OctoPanel] SDK already loaded or loading');
       return;
     }
 
-    console.log('[OctoPanel] Panel opened, loading SDK module...');
     setIsInitializing(true);
 
     const loadSDK = async () => {
       try {
         const module = await import('@genuin/genai-sdk');
-        console.log('[OctoPanel] SDK module loaded successfully:', module);
         setSDKModule(module);
         setIsSDKLoaded(true);
       } catch (error) {
@@ -231,16 +256,6 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
     const effectiveContainer = containerNode ?? containerRef.current;
 
     if (!isOpen || !isSDKLoaded || !sdkModule || !effectiveContainer || !parentInstanceId) {
-      if (!parentInstanceId) {
-        console.warn('[OctoPanel] Skipping SDK init: parent instance id not ready');
-      }
-      if (!effectiveContainer && isOpen && isSDKLoaded && sdkModule) {
-        if (isReinitializing) {
-          console.log('[OctoPanel] Waiting for container ref before reinitializing');
-        } else {
-          console.error('[OctoPanel] Container ref not set for video:', videoId);
-        }
-      }
       return;
     }
 
@@ -252,26 +267,40 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
       return;
     }
 
-    if (sdkInitializedRef.current && hasVideoChanged) {
-      console.log('[OctoPanel] Video changed, keeping GenAI SDK running', {
-        previousVideoId: previousVideoIdRef.current,
-        nextVideoId: videoId,
-      });
-      // ✅ GenAI SDK is session-based, not video-based
-      // Keep it running across video changes to maintain chat context and nested carousels
-      // Just update the tracking ref and return early
-      previousVideoIdRef.current = videoId;
-      return; // ❌ CRITICAL: Must return here to prevent re-init!
+    // If we're currently destroying, wait for it to complete
+    if (isDestroyingRef.current) {
+      return;
     }
 
-    console.log('[OctoPanel] Initializing SDK', {
-      videoId,
-      containerRef: effectiveContainer,
-      parentInstanceId,
-    });
+    if (sdkInitializedRef.current && hasVideoChanged) {
+      // Mark that we're destroying
+      isDestroyingRef.current = true;
+      setIsReinitializing(true);
+
+      // Destroy the current SDK instance asynchronously
+      const destroyAndReinit = async () => {
+        try {
+          await Promise.resolve(sdkModule.destroy());
+          sdkInitializedRef.current = false;
+          previousVideoIdRef.current = null;
+
+          // Wait a bit to ensure cleanup is complete
+          await new Promise(resolve => setTimeout(resolve, 100));
+
+        } catch (error) {
+          console.error('[OctoPanel] Failed to destroy SDK during video change:', error);
+        } finally {
+          isDestroyingRef.current = false;
+          // Increment counter to trigger re-initialization
+          setDestroyCompleteCounter(prev => prev + 1);
+        }
+      };
+
+      destroyAndReinit();
+      return; // Exit and let the effect re-run after destroy completes
+    }
 
     try {
-      console.log('[OctoPanel] Calling GenAI SDK init');
       sdkModule.init({
         containerId: panelIdentity.containerId,
         containerElement: effectiveContainer,
@@ -291,7 +320,6 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
       previousVideoIdRef.current = videoId;
       setIsReinitializing(false);
       previousRenderModeRef.current = renderMode;
-      console.log('[OctoPanel] SDK initialized successfully for video:', videoId, 'with parent instance ID:', parentInstanceId);
     } catch (error) {
       console.error('[OctoPanel] Failed to initialize GenAI SDK:', error);
       sdkInitializedRef.current = false;
@@ -312,6 +340,7 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
     panelIdentity.containerId,
     panelIdentity.panelId,
     videoId,
+    destroyCompleteCounter,
   ]);
 
   // Panel close logic with grace period to prevent rapid open/close cycles
@@ -321,7 +350,6 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
     // Panel closed - wait a bit to see if it reopens (prevents unnecessary destroy)
     const timeout = setTimeout(() => {
       if (!isOpen && sdkModule && sdkInitializedRef.current) {
-        console.log('[OctoPanel] Panel closed: destroying SDK instance');
         try {
           sdkModule.destroy();
           sdkInitializedRef.current = false;
@@ -340,12 +368,17 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
   // This prevents cascade destroy when component re-renders in nested contexts
   useUnmount(() => {
     if (sdkModule && sdkInitializedRef.current) {
-      console.log('[OctoPanel] Component unmounting: destroying SDK');
-      try {
-        sdkModule.destroy();
-      } catch (error) {
-        console.error('[OctoPanel] Cleanup failed:', error);
-      }
+      // CRITICAL: Defer destroy to after React render completes
+      // This prevents "Attempted to synchronously unmount a root while React was already rendering"
+      // Use setTimeout to push destroy to next tick, allowing React to finish current render
+      setTimeout(() => {
+        try {
+          sdkModule.destroy();
+        } catch (error) {
+          console.error('[OctoPanel] Cleanup failed:', error);
+        }
+      }, 0);
+
       sdkInitializedRef.current = false;
     }
     previousVideoIdRef.current = null;
@@ -357,33 +390,42 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
     () => ({
       resetForVideo: (nextVideoId: string) => {
         if (!isOpen) {
-          console.warn('[OctoPanel] Reset requested while panel closed');
           return;
         }
 
-        // ✅ Prevent unnecessary reset if video is already current
+        // Prevent unnecessary reset if video is already current
         if (nextVideoId === videoId && sdkInitializedRef.current) {
-          console.log('[OctoPanel] Reset skipped: already showing this video', { nextVideoId, currentVideoId: videoId });
           return;
         }
 
-        console.log('[OctoPanel] Resetting SDK for next video', {
-          nextVideoId,
-          currentVideoId: videoId,
-        });
+        // Trigger destroy by setting flag - useLayoutEffect will handle re-init
+        if (sdkModule && sdkInitializedRef.current && !isDestroyingRef.current) {
+          isDestroyingRef.current = true;
+          setIsReinitializing(true);
 
-        setIsReinitializing(true);
+          const destroyForReset = async () => {
+            try {
+              await Promise.resolve(sdkModule.destroy());
+              sdkInitializedRef.current = false;
 
-        // ✅ Don't destroy SDK on video reset - just mark as uninitialized
-        // Destroying would kill all nested carousel instances
-        // The useLayoutEffect will handle re-initialization with new videoId
-        sdkInitializedRef.current = false;
-        previousVideoIdRef.current = null;
+              // Wait a bit to ensure cleanup is complete
+              await new Promise(resolve => setTimeout(resolve, 100));
 
-        // ✅ Keep panelIdentity stable - don't recreate it
-        // Only reset container refs to force re-initialization
-        containerRef.current = null;
-        setContainerNode(null);
+            } catch (error) {
+              console.error('[OctoPanel] Failed to destroy SDK during reset:', error);
+            } finally {
+              isDestroyingRef.current = false;
+              // Increment counter to trigger re-initialization
+              setDestroyCompleteCounter(prev => prev + 1);
+            }
+          };
+
+          destroyForReset();
+        }
+
+        // Keep the previous video ID as current so useLayoutEffect detects the change
+        // This will trigger re-initialization with nextVideoId in the next render
+        previousVideoIdRef.current = videoId;
       },
     }),
     [isOpen, sdkModule, videoId]

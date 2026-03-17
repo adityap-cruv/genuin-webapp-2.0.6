@@ -1,6 +1,6 @@
 import { useEmbedContext } from "@genuin/components/context/embed";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
-import { useEffect, useState, useMemo, lazy, Suspense } from "react";
+import { useEffect, useState, useMemo, lazy, Suspense, useRef } from "react";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { QueryKey, type InfiniteData } from "@tanstack/react-query";
 import { RootPortal } from "@genuin/components/molecules/root-portal";
@@ -97,6 +97,8 @@ export function EmbedExpandView({
   const [startIndex, setStartIndex] = useState(0);
   const { changeActiveIndex, embedEventBus, goBackToPreviousPlayerType, embedData } =
     useEmbedContext();
+  const lastProcessedVideoRef = useRef<{ slug: string; timestamp: number } | null>(null);
+
   const {
     setMuted,
     muted,
@@ -224,10 +226,23 @@ export function EmbedExpandView({
       const payload = props?.payload;
       const newVideoSlug = payload?.startVideoSlug;
 
-      console.log('[Expand View] Received sdk:updateStartVideoSlug event', {
-        payload,
-        videosLength: videos.length,
-      });
+      if (!newVideoSlug) {
+        return;
+      }
+
+      // Guard against infinite loops: Check if we recently processed this same video
+      const now = Date.now();
+      const lastProcessed = lastProcessedVideoRef.current;
+      if (lastProcessed && lastProcessed.slug === newVideoSlug && now - lastProcessed.timestamp < 3000) {
+        return;
+      }
+
+      // Check if this video is already active
+      const context = embedEventBus.getContext();
+      const currentVideo = videos[context.activeIndex];
+      if (currentVideo && (currentVideo.video.slug === newVideoSlug || currentVideo.video.id === newVideoSlug)) {
+        return;
+      }
 
       const sourceInstanceId =
         typeof payload?.sourceInstanceId === 'string'
@@ -239,9 +254,7 @@ export function EmbedExpandView({
         sourceInstanceId.startsWith('octo-panel-');
 
       if (isNestedOctoUpdate) {
-        const context = embedEventBus.getContext();
         if (!context.autoInteractionActionDone) {
-          console.log('[Expand View] Marking auto interaction done for nested Octo update');
           embedEventBus.updateContext({
             ...context,
             autoInteractionActionDone: true,
@@ -249,23 +262,16 @@ export function EmbedExpandView({
         }
       }
 
-      if (!newVideoSlug) {
-        console.warn('[Expand View] Received update without startVideoSlug');
-        return;
-      }
-
       const videoIndex = videos.findIndex(
         (video) => video.video.slug === newVideoSlug || video.video.id === newVideoSlug,
       );
 
       if (videoIndex !== -1) {
-        console.log('[Expand View] Navigating to video at index:', videoIndex, 'slug:', newVideoSlug);
+        lastProcessedVideoRef.current = { slug: newVideoSlug, timestamp: Date.now() };
         changeActiveIndex(videoIndex);
         setStartIndex(videoIndex);
         return;
       }
-
-      console.warn('[Expand View] Video not in current feed:', newVideoSlug);
 
       const targetIndex = context.activeIndex;
 
@@ -280,14 +286,12 @@ export function EmbedExpandView({
           );
 
           if (!videoDetails || videoDetails.length === 0) {
-            console.warn('[Expand View] No details returned for video:', newVideoSlug);
             return;
           }
 
           const videoToInsert = videoDetails[0];
 
           if (!videoToInsert) {
-            console.warn('[Expand View] Video details incomplete');
             return;
           }
 
@@ -359,11 +363,12 @@ export function EmbedExpandView({
           });
 
           if (didInsert) {
+            lastProcessedVideoRef.current = { slug: newVideoSlug, timestamp: Date.now() };
             changeActiveIndex(targetIndex);
             setStartIndex(targetIndex);
           }
         } catch (error) {
-          console.error('[Expand View] Failed to fetch/append video:', error);
+          console.error('Failed to fetch/append video:', error);
         }
       })();
     };

@@ -99,7 +99,6 @@ const GenuinEmbed = ({
                 }
             });
         } else {
-
             window.genuin.init({
                 container_id: containerRef.current.id,
                 style_id: import.meta.env.VITE_GEN_SDK_STYLE_ID,
@@ -147,14 +146,21 @@ const GenuinEmbed = ({
                 return;
             }
 
-            console.log('[CarousalEmbed] Forwarding video selection to parent web-sdk', {
-                videoId,
-                parentContainerId: parentWebSdkContainerId,
-                parentInstanceId: parentWebSdkInstanceId,
-                parentEmbedId: parentWebSdkEmbedId,
-                parentPlacementId: parentWebSdkPlacementId,
-                nestedInstanceId: childInstanceIdRef.current,
-            });
+            // Defensive check: Verify parent container exists in DOM
+            if (!parentWebSdkContainerId) {
+                return;
+            }
+
+            const parentContainer = document.getElementById(parentWebSdkContainerId);
+            if (!parentContainer) {
+                return;
+            }
+
+            // Verify parent container has a valid instance ID
+            const parentInstanceIdInDom = parentContainer.getAttribute('data-instance-id');
+            if (!parentInstanceIdInDom) {
+                return;
+            }
 
             const domOctoId = containerRef.current?.getAttribute('data-octo-panel-id') ?? undefined;
             const sourceInstanceId =
@@ -174,14 +180,14 @@ const GenuinEmbed = ({
 
                 if (maybePromise && typeof (maybePromise as Promise<unknown>).catch === 'function') {
                     (maybePromise as Promise<unknown>).catch((error: unknown) => {
-                        console.error('[CarousalEmbed] Failed to forward video selection to parent web-sdk', error);
+                        console.error('[CarousalEmbed] Failed to forward video selection', error);
                     });
                 }
-            } catch (error) {
-                console.error('[CarousalEmbed] Error while forwarding video selection to parent web-sdk', error);
-            }
 
-            forwardedVideoRef.current = { id: videoId, ts: now };
+                forwardedVideoRef.current = { id: videoId, ts: now };
+            } catch (error) {
+                console.error('[CarousalEmbed] Error while forwarding video selection', error);
+            }
         };
 
         const unsubscribe = window.genuin.onInternal?.('onVideoClicked', handleVideoClicked);

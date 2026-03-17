@@ -90,10 +90,22 @@ export function FeedContextProvider({
   // State is used to track whether the expand view is open or not.
   const {
     value: showExpandView,
-    setFalse: closeExpandView,
-    setTrue: openExpandView,
-    toggle: toggleExpandView,
+    setFalse: closeExpandViewInternal,
+    setTrue: openExpandViewInternal,
+    toggle: toggleExpandViewInternal,
   } = useBoolean(defaultExpandView);
+
+  const closeExpandView = React.useCallback(() => {
+    closeExpandViewInternal();
+  }, [closeExpandViewInternal]);
+
+  const openExpandView = React.useCallback(() => {
+    openExpandViewInternal();
+  }, [openExpandViewInternal]);
+
+  const toggleExpandView = React.useCallback(() => {
+    toggleExpandViewInternal();
+  }, [toggleExpandViewInternal]);
 
   useEffect(() => {
     // Track when the expand view is opened or closed
