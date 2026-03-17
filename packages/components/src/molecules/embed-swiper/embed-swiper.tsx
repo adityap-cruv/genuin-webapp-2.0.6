@@ -34,7 +34,7 @@ const SwiperWithModules = lazy(async () => {
       ...props
     }: {
       children: React.ReactNode;
-      freeMode?: boolean;
+      freeMode?: boolean | object;
       virtualizeSwiper?: boolean;
       [key: string]: any;
     }) => {
@@ -189,7 +189,7 @@ export function EmbedSwiper({
         }}
         spaceBetween={spaceBetweenVideos}
         speed={SWIPER_CONFIG.SCROLL_DELAY}
-        freeMode={freeMode}
+        freeMode={freeMode ? SWIPER_CONFIG.FREE_MODE : false}
         virtualizeSwiper={virtualizeSwiper}
         watchOverflow={true}
         keyboard={{
