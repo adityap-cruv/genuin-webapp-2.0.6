@@ -31,7 +31,7 @@ export function WebSDKInput({
             <CustomInput
                 hideBackground={hideBackground}
                 mode={mode}
-                suggestedPrompt={suggestedPrompt}
+                suggestedPrompt={suggestedPrompt ?? undefined}
                 countdown={countdown}
                 onSuggestedPromptSend={onCompactPromptSend}
                 isLoading={isLoadingPrompt}

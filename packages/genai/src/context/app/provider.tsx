@@ -1242,7 +1242,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
     // Convert cached response array to ChatHistoryEvent format
     function convertCachedResponseToEvents(
         cachedResponse: CachedResponseItem[],
-        userMessageId: string,
+        _userMessageId: string,
     ): { agentEvent: ChatHistoryEvent; sessionName: string | null } {
         let agentMessageContent = '';
         let carouselMetadata: CarousalMetadata | null = null;
@@ -1270,6 +1270,9 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
             isCompleted: true,
             carousel_metadata: carouselMetadata ?? undefined,
             metadata: toolMetadata ? { toolMetadata } : undefined,
+            parent_id: '',
+            feedback: null,
+            created_at: new Date().toISOString(),
         };
 
         return { agentEvent, sessionName };
@@ -1481,7 +1484,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                 s3_keys: s3_keys,
                 video_id: view === 'web-sdk' ? webSdkVideoId : undefined,
                 // For cached context follow-ups, use sessionId as temp_session_id for tracking
-                temp_session_id: needsPreviousContext ? sessionId : tempSessionId,
+                temp_session_id: (needsPreviousContext ? sessionId : tempSessionId) ?? undefined,
                 previous_context: needsPreviousContext ? sessionForPayload?.cachedContext : undefined,
             };
 

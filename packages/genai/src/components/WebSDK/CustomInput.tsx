@@ -42,7 +42,6 @@ export function CustomInput({
     } = useAgentsContext();
     const { input, setInput } = useInputContext();
     const [stopping, setStopping] = useState(false);
-    const [isFocused, setIsFocused] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement | null>(null);
     const [octoLottie, setOctoLottie] = useState<object | null>(() =>
         getCachedRemoteLottie(OCTO_IDLE_ANIMATION_PATH, OCTO_IDLE_IMAGES_PATH)
@@ -255,11 +254,10 @@ export function CustomInput({
                                         target.style.height = Math.min(Math.max(target.scrollHeight, 32), 120) + 'px';
                                     }}
                                     onFocus={() => {
-                                        setIsFocused(true);
                                         handleActivate();
                                     }}
                                     onBlur={() => {
-                                        setIsFocused(false);
+                                        // Blur handler
                                     }}
                                     value={input}
                                     onChange={e => {

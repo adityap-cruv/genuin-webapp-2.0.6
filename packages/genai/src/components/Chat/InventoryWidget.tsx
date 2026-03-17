@@ -51,7 +51,7 @@ const deriveRenderPayloads = (metadata: ToolMetadataPayload | undefined): Invent
     const inventoryId = firstInventory?.inventory_id ?? structured?.inventory_id;
     const brandId = firstInventory?.brand_id ?? fallbackBrandId;
 
-    if (templateId && inventoryId && brandId) {
+    if (typeof templateId === 'string' && typeof inventoryId === 'string' && typeof brandId === 'string') {
         return [
             {
                 template_id: templateId,

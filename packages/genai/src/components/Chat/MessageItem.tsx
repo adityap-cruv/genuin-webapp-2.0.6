@@ -34,7 +34,6 @@ import { EditUserMessage } from './EditUserMessage';
 import ThinkingIndicator from './ThinkingIndicator';
 import VideoMetadata from './VideoMetadata';
 import InventoryWidget from './InventoryWidget';
-import { Player } from '@lottiefiles/react-lottie-player';
 import { getCachedRemoteLottie, loadRemoteLottie } from '@/lib/lottie/load-remote-lottie';
 import ThinkingStatusList from './ThinkingStatusList';
 
@@ -307,7 +306,7 @@ const ItemComponent: React.FC<ItemProps> = ({
     messageType,
     currentSessionId,
     currentAgent,
-    agents,
+    agents: _agents,
     onBoardingAgents,
     isLastMessage,
     sessionThinking,
