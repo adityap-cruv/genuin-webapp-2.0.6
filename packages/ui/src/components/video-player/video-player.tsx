@@ -214,7 +214,7 @@ export const VideoPlayer = memo(function VideoPlayer({
   const playerRef = useRef<OpenPlayerJS | null>(null);
   const isPlayerInitialized = useRef(false); // Track if player has been initialized
   const [isLoading, setIsLoading] = useState(false);
-  const [showPosterOverlay, setShowPosterOverlay] = useState(true);
+  const [isPosterVisible, setIsPosterVisible] = useState(true);
   // const [allAdsCompleted, setAllAdsCompleted] = useState(adUrl ? false : true);
   const setupAdEventListenersRef = useRef<
     ((player: OpenPlayerJS) => void) | null
@@ -428,7 +428,6 @@ export const VideoPlayer = memo(function VideoPlayer({
   }, []);
 
   useEffect(() => {
-    setShowPosterOverlay(true);
     return () => {
       playerStateRef.current = {
         firstQuartileFired: false,
@@ -442,6 +441,7 @@ export const VideoPlayer = memo(function VideoPlayer({
 
       changePlayerStateRef(true);
 
+      setIsPosterVisible(true);
       isPlayerInitialized.current = false;
       playerRef.current = null;
     };
@@ -576,10 +576,9 @@ export const VideoPlayer = memo(function VideoPlayer({
     };
 
     const handlePlaying = () => {
-      // Hide the poster overlay once the video actually starts playing
-      setShowPosterOverlay(false);
       // Clear loading state when video actually starts playing
       updateLoadingState(false, true);
+      setIsPosterVisible(false);
 
       // Check if shouldPlay is false and pause if needed
       if (!playerStateRef.current.shouldPlay) {
@@ -766,18 +765,11 @@ export const VideoPlayer = memo(function VideoPlayer({
         // onEnded={handleEnded}
         {...props}
       />
-      {/* Poster overlay: covers the video element until it starts playing.
-          Allows full preloading without the decoded first frame flashing
-          through on inactive players. Hidden once `playing` fires. */}
-      {showPosterOverlay && poster && (
-        <img
-          aria-hidden="true"
-          src={poster}
-          className={cn(
-            "gencl:absolute gencl:inset-0 gencl:h-full gencl:w-full gencl:object-cover gencl:pointer-events-none",
-            className,
-          )}
-        />
+      {/**
+       * This dynamic poster implementation allows us to lazy load poster in whereas vidoe element's poster doesn't allow us to do that.
+       */}
+      {poster && isPosterVisible && (
+        <VideoPoster src={poster} className={className} />
       )}
       {isLoading && (
         <div
@@ -812,5 +804,37 @@ export const VideoPlayer = memo(function VideoPlayer({
         />
       )}
     </div>
+  );
+});
+
+type VideoPosterProps = {
+  src: string;
+  className?: string;
+};
+
+export const VideoPoster = memo(function VideoPoster({
+  src,
+  className,
+}: VideoPosterProps) {
+  const [visible, setVisible] = useState(true);
+
+  if (!visible) return null;
+
+  return (
+    <img
+      src={src}
+      loading="lazy"
+      className={cn(
+        "gencl:absolute gencl:inset-0 gencl:h-full gencl:w-full gencl:object-cover gencl:pointer-events-none",
+        className,
+      )}
+      style={{
+        // To manage blink in safari I have added this transform properties.
+        transform: "translate3d(0, 0, 0)",
+        WebkitTransform: "translate3d(0, 0, 0)",
+        // backfaceVisibility: "hidden",
+      }}
+      onError={() => setVisible(false)}
+    />
   );
 });
