@@ -1,4 +1,4 @@
-import { getBrandSessions, getChatHistoryV2, getSuggestedPrompts, getVideoSuggestedPrompts, updateSessionTitle } from '@/lib/api';
+import { getBrandSessions, getChatHistoryV2, getSuggestedPrompts, getVideoSuggestedPrompts, stopChatSession, updateSessionTitle } from '@/lib/api';
 import type { CachedResponseItem } from '@/lib/apiTypes';
 import { ingestDataToBCC } from '@/lib/ingestDataToBCC';
 import { useRudderEvents } from '@/services/analytics/useRudderAnalytics';
@@ -1219,7 +1219,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
         setCurrentSessionIdState(prev => (prev === tempSessionId ? realSessionId : prev));
     }, []);
 
-    const { sendSSEMessage, connectToStream } = useSSEHandler({
+    const { sendSSEMessage, connectToStream, cancelStream } = useSSEHandler({
         onMessage: handleSSEMessage,
         onError: handleOnSocketError,
         onSessionCreated: handleSessionCreated,
@@ -1238,6 +1238,97 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
             track('genai:chat_started', payload);
         }
     }
+
+    const stopSessionResponse = useCallback(
+        async (sessionId: string | null) => {
+            if (!sessionId) return;
+
+            const session =
+                sessions.find(s => s.id === sessionId) ||
+                sessions.find(s => s.backendSessionId === sessionId);
+
+            const backendSessionId = session?.backendSessionId ?? sessionId;
+            const tempSessionId =
+                sessionIdMapRef.current.get(sessionId) ||
+                (backendSessionId ? sessionIdMapRef.current.get(backendSessionId) : undefined);
+
+            const resolveRealSessionId = () => {
+                if (backendSessionId && !backendSessionId.startsWith('temp-')) {
+                    return backendSessionId;
+                }
+
+                for (const [realId, tempId] of sessionIdMapRef.current.entries()) {
+                    if (tempId === sessionId || (backendSessionId && tempId === backendSessionId)) {
+                        return realId;
+                    }
+                }
+
+                return undefined;
+            };
+
+            const realSessionId = resolveRealSessionId();
+
+            cancelStream(backendSessionId);
+            cancelStream(sessionId);
+            if (tempSessionId) {
+                cancelStream(tempSessionId);
+            }
+
+            try {
+                if (realSessionId) {
+                    await stopChatSession(realSessionId);
+                }
+            } catch (error: any) {
+                const status = error?.response?.status;
+                if (status !== 404) {
+                    console.error('Failed to stop agent response', error);
+                    toast.error('Failed to stop response. Please try again.');
+                }
+            } finally {
+                const targetIds = new Set<string>();
+                targetIds.add(sessionId);
+                if (backendSessionId) targetIds.add(backendSessionId);
+                if (realSessionId) targetIds.add(realSessionId);
+                if (tempSessionId) targetIds.add(tempSessionId);
+
+                setSessions(prev =>
+                    prev.map(s => {
+                        const matchesId = targetIds.has(s.id);
+                        const matchesBackend = s.backendSessionId ? targetIds.has(s.backendSessionId) : false;
+
+                        if (!matchesId && !matchesBackend) {
+                            return s;
+                        }
+
+                        const updatedChat = [...s.chat];
+                        if (updatedChat.length > 0) {
+                            const lastIndex = updatedChat.length - 1;
+                            const lastEvent = updatedChat[lastIndex];
+                            if (lastEvent.role === 'agent' && !lastEvent.isCompleted) {
+                                updatedChat[lastIndex] = {
+                                    ...lastEvent,
+                                    isCompleted: true,
+                                    metadata: {
+                                        ...lastEvent.metadata,
+                                        wasStopped: true,
+                                    },
+                                };
+                            }
+                        }
+
+                        return {
+                            ...s,
+                            chat: updatedChat,
+                            thinking: false,
+                            thinkingSteps: [],
+                            status: s.status === 'fetching' ? 'idle' : s.status,
+                        };
+                    })
+                );
+            }
+        },
+        [sessions, userId, cancelStream]
+    );
 
     // Convert cached response array to ChatHistoryEvent format
     function convertCachedResponseToEvents(
@@ -1698,6 +1789,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
         setCurrentSessionId,
         deleteSession,
         handleSendMessage,
+        stopSessionResponse,
         markSessionNameAnimationComplete,
         setIsSidebarCollapsed,
         setFeedback,

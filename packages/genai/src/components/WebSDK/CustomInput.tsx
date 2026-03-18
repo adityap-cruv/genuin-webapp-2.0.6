@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Player } from '@lottiefiles/react-lottie-player';
 import { useAgentsContext } from '@/context/app/context';
 import { useInputContext } from '@/context/input/context';
-import { stopAgent } from '@/lib/api';
 import ArrowUpward from '@/assets/SvgIcons/ArrowUpward';
 import Stop from '@/assets/SvgIcons/Stop';
 import { Button } from '../ui/button';
@@ -36,9 +35,9 @@ export function CustomInput({
         currentSessionId,
         sessions,
         handleSendMessage,
-        user_id,
         setTextAreaRef,
         enteredInChatMode,
+        stopSessionResponse,
     } = useAgentsContext();
     const { input, setInput } = useInputContext();
     const [stopping, setStopping] = useState(false);
@@ -89,11 +88,11 @@ export function CustomInput({
         handleActivate();
         if (currentSession?.thinking) {
             setStopping(true);
-            await stopAgent({
-                session_id: currentSessionId || '',
-                user_id: user_id,
-            });
-            setStopping(false);
+            try {
+                await stopSessionResponse(currentSessionId);
+            } finally {
+                setStopping(false);
+            }
         } else {
             await handleSendMessage({
                 targetSessionId: currentSessionId,
@@ -125,89 +124,79 @@ export function CustomInput({
             ? 'gai:bg-utility-white'
             : 'gai:bg-primary-50';
 
+    const rootClassName = [backgroundClass, isCompactMode ? 'gai:pt-0' : '']
+        .filter(Boolean)
+        .join(' ');
+    const wrapperClassName = ['gai:flex gai:w-full gai:justify-center', isCompactMode ? 'gai:mt-0' : '']
+        .filter(Boolean)
+        .join(' ');
+    const inputShellClassName = [
+        'gai:flex gai:w-full gai:max-w-full gai:items-center gai:box-border gai:p-2 gai:gap-2 gai:min-h-[60px]',
+        'gai:max-w-[472px]',
+        isCompactMode ? 'gai:bg-transparent gai:cursor-pointer' : 'gai:bg-white gai:border-t gai:border-[#DFE1E3]',
+    ]
+        .filter(Boolean)
+        .join(' ');
+    const avatarContainerClassName = [
+        'gai:flex gai:flex-shrink-0 gai:items-center gai:justify-center gai:h-11 gai:w-11 gai:rounded-[30px] gai:overflow-hidden',
+        isCompactMode
+            ? 'gai:border gai:border-[rgba(255,255,255,0.18)] gai:bg-[rgba(255,255,255,0.12)] gai:cursor-pointer'
+            : 'gai:border-[1.25px] gai:border-[#DFE1E3] gai:bg-[#F7F9FF]',
+    ]
+        .filter(Boolean)
+        .join(' ');
+    const showCountdownPrompt = shouldShowCompactPrompt && showCountdownTimer;
+    const inputContainerClassName = [
+        'gai:flex gai:flex-1 gai:min-w-0 gai:w-full gai:max-w-[404px] gai:rounded-[24px] gai:box-border',
+        isCompactMode ? 'gai:bg-white' : 'gai:bg-[#EFF3FF]',
+        showCountdownPrompt
+            ? 'gai:flex-col gai:items-stretch gai:gap-2 gai:px-4 gai:py-3 gai:min-h-[64px]'
+            : 'gai:items-center gai:gap-4 gai:p-1.5 gai:min-h-[44px]',
+    ]
+        .filter(Boolean)
+        .join(' ');
+
     return (
-        <div className={`${backgroundClass} ${isCompactMode ? 'gai:pt-0' : ''}`}>
-            <div className={`gai:flex gai:w-full gai:justify-center ${isCompactMode ? 'gai:mt-0' : ''}`}>
-                <div
-                    className='gai:flex gai:w-full gai:max-w-full gai:items-center'
-                    style={{
-                        width: '100%',
-                        maxWidth: '472px',
-                        minHeight: '60px',
-                        padding: '8px',
-                        gap: '8px',
-                        background: isCompactMode ? 'transparent' : '#FFFFFF',
-                        borderTop: isCompactMode ? 'none' : '1px solid #DFE1E3',
-                        boxSizing: 'border-box',
-                        cursor: isCompactMode ? 'pointer' : 'default',
-                    }}
-                    onClick={handleActivate}
-                >
-                    <div
-                        className='gai:flex gai:flex-shrink-0 gai:items-center gai:justify-center'
-                        style={{
-                            width: '44px',
-                            height: '44px',
-                            border: isCompactMode
-                                ? '1px solid rgba(255, 255, 255, 0.18)'
-                                : '1.25px solid #DFE1E3',
-                            borderRadius: '30px',
-                            background: isCompactMode
-                                ? 'rgba(255, 255, 255, 0.12)'
-                                : '#F7F9FF',
-                            overflow: 'hidden',
-                            cursor: isCompactMode ? 'pointer' : 'initial',
-                        }}
-                        onClick={handleActivate}
-                    >
+        <div className={rootClassName}>
+            <div className={wrapperClassName}>
+                <div className={inputShellClassName} onClick={handleActivate}>
+                    <div className={avatarContainerClassName} onClick={handleActivate}>
                         {octoLottie && !octoLottieError ? (
-                            <Player autoplay loop src={octoLottie} style={{ width: '100%', height: '100%' }} />
+                            <Player autoplay loop src={octoLottie} className='gai:h-full gai:w-full' />
                         ) : (
                             <span className='gai:text-xs gai:font-semibold gai:text-secondary-gray-500'>Octo</span>
                         )}
                     </div>
 
-                    <div
-                        className={shouldShowCompactPrompt && showCountdownTimer ? 'gai:flex gai:flex-1 gai:flex-col' : 'gai:flex gai:flex-1 gai:items-center'}
-                        style={{
-                            flex: '1 1 auto',
-                            minWidth: 0,
-                            width: '100%',
-                            maxWidth: '404px',
-                            minHeight: shouldShowCompactPrompt && showCountdownTimer ? '64px' : '44px',
-                            padding: shouldShowCompactPrompt && showCountdownTimer ? '12px 16px' : '6px',
-                            gap: shouldShowCompactPrompt && showCountdownTimer ? '8px' : '16px',
-                            background: isCompactMode ? '#FFFFFF' : '#EFF3FF',
-                            alignItems: shouldShowCompactPrompt && showCountdownTimer ? 'stretch' : 'center',
-                            borderRadius: '24px',
-                            boxSizing: 'border-box',
-                        }}
-                    >
+                    <div className={inputContainerClassName}>
                         {shouldShowCompactPrompt ? (
                             <>
-                                {showCountdownTimer ? (
+                                {showCountdownPrompt ? (
                                     <>
-                                        <div className='gai:flex gai:flex-1 gai:overflow-hidden' style={{ minWidth: 0 }}>
-                                            <span className='gai:line-clamp-3 gai:text-sm gai:font-semibold gai:text-secondary-gray-900'>
+                                        <div className='gai:flex gai:flex-1 gai:min-w-0 gai:overflow-hidden'>
+                                            <span className='gai:line-clamp-3 gai:text-xs gai:md:text-sm gai:font-semibold gai:text-secondary-gray-900'>
                                                 {displayPrompt}
                                             </span>
                                         </div>
                                         <div className='gai:flex gai:items-center gai:justify-between'>
-                                            <span className='gai:text-xs gai:font-medium gai:text-secondary-gray-500'>
+                                            <span className='gai:text-[10px] gai:md:text-xs gai:font-medium gai:text-secondary-gray-500'>
                                                 Prompting in...
                                             </span>
-                                            <div className='gai:flex gai:h-9 gai:w-9 gai:items-center gai:justify-center gai:rounded-full gai:bg-primary-600'>
-                                                <span className='gai:text-sm gai:font-semibold gai:text-white'>{countdown}</span>
-                                            </div>
+                                            <Button
+                                                size={'icon'}
+                                                className='gai:pointer-events-none gai:flex-shrink-0 gai:rounded-full gai:h-9 gai:w-9'
+                                            >
+                                                <span className='gai:text-xs gai:md:text-sm gai:font-semibold gai:text-white'>{countdown}</span>
+                                            </Button>
                                         </div>
                                     </>
                                 ) : (
                                     <>
-                                        <div className='gai:flex gai:flex-1 gai:flex-col gai:gap-1 gai:overflow-hidden gai:pl-4' style={{ minWidth: 0 }}>
-                                            <span className='gai:text-[10px] gai:font-medium gai:uppercase gai:tracking-wide gai:text-secondary-gray-500'>
+                                        <div className='gai:flex gai:flex-1 gai:flex-col gai:gap-1 gai:min-w-0 gai:overflow-hidden gai:pl-4'>
+                                            <span className='gai:text-[9px] gai:md:text-[10px] gai:font-medium gai:uppercase gai:tracking-wide gai:text-secondary-gray-500'>
                                                 Suggested
                                             </span>
-                                            <span className='gai:line-clamp-3 gai:text-sm gai:font-semibold gai:text-secondary-gray-900'>
+                                            <span className='gai:line-clamp-3 gai:text-xs gai:md:text-sm gai:font-semibold gai:text-secondary-gray-900'>
                                                 {displayPrompt}
                                             </span>
                                         </div>
@@ -220,8 +209,7 @@ export function CustomInput({
                                                     onSuggestedPromptSend();
                                                 }
                                             }}
-                                            className='gai:cursor-pointer gai:flex-shrink-0 gai:rounded-full'
-                                            style={{ width: '36px', height: '36px' }}
+                                            className='gai:cursor-pointer gai:flex-shrink-0 gai:rounded-full gai:h-9 gai:w-9'
                                         >
                                             {creatingSession ? (
                                                 <Spinner size='sm' color='secondary' />
@@ -237,16 +225,7 @@ export function CustomInput({
                                 <textarea
                                     ref={textareaRef}
                                     rows={1}
-                                    className='gai:flex-1 gai:max-h-[120px] gai:resize-none gai:overflow-y-auto gai:border-0 gai:bg-transparent gai:text-secondary-gray-900 gai:outline-0 gai:placeholder:text-secondary-gray-600'
-                                    style={{
-                                        minWidth: 0,
-                                        fontSize: '16px',
-                                        fontWeight: 500,
-                                        lineHeight: '32px',
-                                        minHeight: '32px',
-                                        height: '100%',
-                                        padding: '0',
-                                    }}
+                                    className='gai:flex-1 gai:min-w-0 gai:max-h-[120px] gai:resize-none gai:overflow-y-auto gai:border-0 gai:bg-transparent gai:text-sm gai:md:text-base gai:font-medium gai:leading-5 gai:md:leading-6 gai:text-secondary-gray-900 gai:outline-0 gai:placeholder:text-secondary-gray-600 gai:placeholder:text-xs gai:md:placeholder:text-sm gai:min-h-[32px] gai:py-1.5 gai:text-left'
                                     placeholder='Type your message here...'
                                     onInput={e => {
                                         const target = e.target as HTMLTextAreaElement;
@@ -276,8 +255,7 @@ export function CustomInput({
                                     }
                                     size={'icon'}
                                     onClick={handleOnClick}
-                                    className='gai:cursor-pointer gai:flex-shrink-0 gai:rounded-full'
-                                    style={{ width: '36px', height: '36px' }}
+                                    className='gai:cursor-pointer gai:flex-shrink-0 gai:rounded-full gai:h-9 gai:w-9'
                                 >
                                     {creatingSession ? (
                                         <Spinner size='sm' color='secondary' />

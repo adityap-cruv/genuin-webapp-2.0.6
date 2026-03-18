@@ -16,6 +16,7 @@ import type {
     GetChatHistoryV2Response,
     GetSessionsV2Response,
     StartChatResponse,
+    StopChatResponse,
     SuggestedPromptsResponse,
     VideoSuggestedPromptsResponse
 } from './apiTypes';
@@ -104,6 +105,7 @@ const routes = {
     deleteSessionV2: `/api/v1/maya/sessions`,
     startChat: `/api/v1/maya/chat/start`,
     chatStream: `/api/v1/maya/chat/stream`,
+    stopChat: `/api/v1/maya/chat/stop`,
     getAgentId: `/api/v1/maya/agent_id`,
     getVideoSuggestedPrompts: `/api/v1/maya/agents/get_video_suggested_prompts`,
     renderInventory: `/api/v1/maya/inventory/render`,
@@ -846,6 +848,17 @@ export interface StartChatPayload {
 export async function startChatSession(payload: StartChatPayload): Promise<StartChatResponse> {
     return api
         .post(routes.startChat, payload)
+        .then(res => {
+            return res.data;
+        })
+        .catch(error => {
+            throw error;
+        });
+}
+
+export async function stopChatSession(sessionId: string): Promise<StopChatResponse> {
+    return api
+        .post(`${routes.stopChat}/${sessionId}`)
         .then(res => {
             return res.data;
         })

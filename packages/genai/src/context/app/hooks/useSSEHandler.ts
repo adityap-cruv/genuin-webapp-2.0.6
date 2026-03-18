@@ -28,7 +28,7 @@ interface UseSSEHandlerParams {
 interface UseSSEHandlerResult {
     sendSSEMessage: (payload: SSEMessagePayload) => Promise<void>;
     connectToStream: (sessionId: string) => Promise<{ isCompleted: boolean }>;
-    abortController: AbortController | null;
+    cancelStream: (sessionId: string | null | undefined) => void;
 }
 
 export const useSSEHandler = ({
@@ -384,9 +384,18 @@ export const useSSEHandler = ({
         }
     }, [onMessage, onError, onSessionCreated]);
 
+    const cancelStream = useCallback((sessionId: string | null | undefined) => {
+        if (!sessionId) return;
+        const controller = abortControllersRef.current.get(sessionId);
+        if (controller) {
+            controller.abort();
+            abortControllersRef.current.delete(sessionId);
+        }
+    }, []);
+
     return {
         sendSSEMessage,
         connectToStream,
-        abortController: null,
+        cancelStream,
     };
 };

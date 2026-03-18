@@ -56,6 +56,7 @@ export interface AgentsContextType {
     setCurrentSessionId: (sessionId: string | null) => Promise<void>;
     deleteSession: (sessionId: string) => void;
     handleSendMessage: (params: HandleSendMessageParams) => Promise<void>;
+    stopSessionResponse: (sessionId: string | null) => Promise<void>;
     markSessionNameAnimationComplete: (sessionId: string) => void;
     setIsSidebarCollapsed: (isCollapsed: boolean) => void;
     setFeedback: (sessionId: string, responseId: string, liked: boolean) => void;

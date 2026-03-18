@@ -590,6 +590,11 @@ const ItemComponent: React.FC<ItemProps> = ({
                                         {isAnimating || !hasFinished ? (
                                             <span className='gai:inline-block gai:animate-pulse gai:text-secondary-gray-600'>|</span>
                                         ) : null}
+                                        {event.metadata?.wasStopped && event.isCompleted ? (
+                                            <span className='gai:mt-2 gai:block gai:text-xs gai:font-medium gai:text-secondary-gray-500'>
+                                                Response stopped
+                                            </span>
+                                        ) : null}
                                     </div>
                                 );
                             }

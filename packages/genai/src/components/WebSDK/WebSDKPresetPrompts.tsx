@@ -63,6 +63,9 @@ export function WebSDKPresetPrompts({ setIsSuggestionsOpen, onClose }: WebSDKPre
 
     return (
         <div ref={suggestionsRef} className={containerClasses}>
+            <div className="gai:px-4 gai:pt-3 gai:pb-2 gai:font-body-1-bold gai:text-secondary-gray-800">
+                Suggested prompts
+            </div>
             {suggestedPrompts.map((prompt, index) => (
                 <div
                     key={index}

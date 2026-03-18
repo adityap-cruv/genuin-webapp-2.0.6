@@ -107,3 +107,12 @@ export interface StartChatResponse extends BaseResponse {
     };
     is_cached?: boolean; // Derived from message containing "(cached)"
 }
+
+export interface StopChatResponse extends BaseResponse {
+    data: {
+        stopped: boolean;
+        session_id: string;
+        agent_message_id?: string;
+        partial_content?: string;
+    };
+}

@@ -1,7 +1,6 @@
 import Stop from '@/assets/SvgIcons/Stop';
 import { useAgentsContext } from '@/context/app/context';
 import { useInputContext } from '@/context/input/context';
-import { stopAgent } from '@/lib/api';
 import { useEffect, useRef, useState } from 'react';
 import ArrowUpward from '../../assets/SvgIcons/ArrowUpward';
 import { Button } from '../ui/button';
@@ -17,11 +16,11 @@ const MessageInput = () => {
         currentSessionId,
         sessions,
         handleSendMessage,
-        user_id,
         // isSuggestionsOpen,
         setIsSuggestionsOpen,
         setTextAreaRef,
         suggestedPrompts,
+        stopSessionResponse,
     } = useAgentsContext();
     const { input, setInput } = useInputContext();
     const [stopping, setStopping] = useState(false);
@@ -64,11 +63,11 @@ const MessageInput = () => {
     const handleOnClick = async () => {
         if (currentSession?.thinking) {
             setStopping(true);
-            await stopAgent({
-                session_id: currentSessionId || '',
-                user_id: user_id,
-            });
-            setStopping(false);
+            try {
+                await stopSessionResponse(currentSessionId);
+            } finally {
+                setStopping(false);
+            }
         } else {
             await handleSendMessage({
                 targetSessionId: currentSessionId,
