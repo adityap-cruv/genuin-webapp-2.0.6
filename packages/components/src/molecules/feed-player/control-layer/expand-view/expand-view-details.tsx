@@ -61,6 +61,15 @@ const CommentsDialog = lazy(() =>
 
 type BrandLayoutType = "default" | "iheart" | "ted" | "walmart" | "grubhub";
 
+// State priority for detecting downward swipes on Octo sheet
+const OCTO_STATE_PRIORITY: Record<DynamicSheetState, number> = {
+  default: 0,
+  "default-active": 1,
+  "expand-view": 2,
+  "panel-view": 3,
+  "full-view": 4,
+};
+
 // Utility functions
 const brandHidesPills = (type: BrandLayoutType): boolean =>
   type === "iheart" || type === "ted";
@@ -497,7 +506,7 @@ const SharedActions = memo(function SharedActions({
   ) => void;
   isActive: boolean;
 }) {
-  const { openContentType, setContentTypeState } = useSheetState();
+  const { openContentType, setContentTypeState, hasContentType, resetSheet } = useSheetState();
 
   // Handle iHeart brand controls
   if (brandLayoutType === "iheart") {
@@ -545,8 +554,13 @@ const SharedActions = memo(function SharedActions({
                 key="octo-action"
                 onClick={(e) => {
                   e.stopPropagation();
-                  openContentType("octo", "inside", "default");
-                  setContentTypeState("octo", "default");
+                  // Toggle: if sheet is open, close it; if closed, open it
+                  if (hasContentType("octo")) {
+                    resetSheet(); // Close and destroy GenAI SDK
+                  } else {
+                    openContentType("octo", "inside", "default");
+                    setContentTypeState("octo", "default");
+                  }
                 }}
               >
                 {defaultNode}
@@ -654,7 +668,12 @@ export function ExpandViewDetails({
       const prev = prevOctoSheetStateRef.current;
       prevOctoSheetStateRef.current = next;
 
-      if (prev === "panel-view" && next !== "panel-view") {
+      // Get priorities for prev and next states
+      const prevPriority = OCTO_STATE_PRIORITY[prev] || 0;
+      const nextPriority = OCTO_STATE_PRIORITY[next] || 0;
+
+      // Close sheet when swiping down (going from higher state to lower state)
+      if (prevPriority > nextPriority) {
         resetSheet();
         return;
       }
@@ -711,7 +730,13 @@ export function ExpandViewDetails({
           className={cn(
             "gencl:flex gencl:flex-col gencl:gap-4 gencl:sm:gap-2 gencl:w-5/6 gencl:sm:w-full gencl:transition-all",
             brandLayoutType === "ted" ||
-              (brandLayoutType === "iheart" && "gencl:gap-3")
+              (brandLayoutType === "iheart" && "gencl:gap-3"),
+            // Prevent video swiping when Octo is in collapsed states
+            hasContentType("octo") &&
+              (octoSheetState === "default" ||
+                octoSheetState === "default-active" ||
+                octoSheetState === "expand-view") &&
+              "swiper-no-swiping"
           )}
           onClick={(e) => e.stopPropagation()}
         >

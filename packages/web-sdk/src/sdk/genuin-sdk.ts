@@ -379,7 +379,7 @@ export class GenuinSDK {
       // Handle live embed initialization
       if (config.live) {
         await this.initializeLiveEmbed(element, config)
-        return
+        return true
       }
 
       // This is where we get the brand details
@@ -524,6 +524,11 @@ export class GenuinSDK {
     element: HTMLElement,
     config: Partial<SingleEmbedDataConfig>,
   ): Promise<void> {
+    // Check if this is a nested instance and disable shadow DOM if so
+    if (config.live?.is_nested || config.parentInstanceId) {
+      config.useShadowDOM = false
+    }
+
     const brandDetails = await this.brandDetailsManager.getBrandDetails(
       config.apiKey,
     )
@@ -542,11 +547,15 @@ export class GenuinSDK {
     }
 
     if (config.placementId && config.styleId) {
-      let embedDetails = parsePlacementToEmbedData(
-        config.live.live_customization_data,
-        config.styleId,
-      )
-      config.embedDetails = embedDetails
+      // Only parse placement if live_customization_data exists
+      // For nested instances, this might not be present
+      if (config.live?.live_customization_data) {
+        let embedDetails = parsePlacementToEmbedData(
+          config.live.live_customization_data,
+          config.styleId,
+        )
+        config.embedDetails = embedDetails
+      }
     }
 
     if (config.live?.live_customization_data && config.embedDetails) {
@@ -946,12 +955,17 @@ export class GenuinSDK {
 
     // Deduplicate using a Set to track element references
     const uniqueElements = new Set<HTMLElement>()
+    console.log('[SDK Init] Found elements:', elements.length, 'with parent_instance_id:', configByUser?.parent_instance_id)
+
     elements.forEach((element) => {
       // Ignore gen-sdk-toaster-root
       if ((element as HTMLElement).id === 'gen-sdk-toaster-root') {
         return
       }
-      if (this.getInitializationStatus(element as HTMLElement) === 'pending') {
+
+      const status = this.getInitializationStatus(element as HTMLElement)
+
+      if (status === 'pending') {
         uniqueElements.add(element as HTMLElement)
       } else {
         console.log('Embed already initialized in element:', element)
@@ -959,6 +973,17 @@ export class GenuinSDK {
     })
 
     Array.from(uniqueElements).forEach((element) => {
+      // If this init call has parent_instance_id, it's a nested SDK initialization
+      // Skip any container that's already been initialized (the parent)
+      if (configByUser?.parent_instance_id) {
+        const existingInstanceId = element.getAttribute('data-instance-id')
+
+        if (existingInstanceId && this.sdkElements[existingInstanceId]) {
+          // This is the parent container, skip it
+          return
+        }
+      }
+
       const instanceId = this.setInstanceId(element)
       this.validateHTML(element)
       // Show loading view immediately

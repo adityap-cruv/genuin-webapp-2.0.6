@@ -1202,6 +1202,9 @@ importers:
       '@genuin/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
+      '@genuin/genai-sdk':
+        specifier: workspace:*
+        version: link:../genai
       '@genuin/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config

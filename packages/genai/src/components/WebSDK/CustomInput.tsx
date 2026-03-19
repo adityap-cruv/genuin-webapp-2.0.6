@@ -78,11 +78,25 @@ export function CustomInput({
     const displayPrompt = isLoading ? 'Loading...' : suggestedPrompt || '';
     const showCountdownTimer = countdown !== null && countdown > 0;
 
+    // In expand-view state (compact mode with active session), prevent textarea focus
+    // to avoid keyboard opening during transition to panel-view
+    const isExpandViewState = isCompactMode && !!currentSessionId;
+    const shouldPreventFocus = isExpandViewState;
+
     const handleActivate = useCallback(() => {
         if (isCompactMode) {
             onActivate?.();
         }
     }, [isCompactMode, onActivate]);
+
+    // Handle click on input container when in expand-view state
+    // This triggers transition to panel-view without focusing textarea
+    const handleInputContainerClick = useCallback(() => {
+        if (shouldPreventFocus) {
+            // In expand-view state, trigger activation to transition to panel-view
+            onActivate?.();
+        }
+    }, [shouldPreventFocus, onActivate]);
 
     const handleOnClick = async () => {
         handleActivate();
@@ -152,6 +166,7 @@ export function CustomInput({
         showCountdownPrompt
             ? 'gai:flex-col gai:items-stretch gai:gap-2 gai:px-4 gai:py-3 gai:min-h-[64px]'
             : 'gai:items-center gai:gap-4 gai:p-1.5 gai:min-h-[44px]',
+        shouldPreventFocus && 'gai:cursor-pointer',
     ]
         .filter(Boolean)
         .join(' ');
@@ -168,7 +183,10 @@ export function CustomInput({
                         )}
                     </div>
 
-                    <div className={inputContainerClassName}>
+                    <div
+                        className={inputContainerClassName}
+                        onClick={shouldPreventFocus ? handleInputContainerClick : undefined}
+                    >
                         {shouldShowCompactPrompt ? (
                             <>
                                 {showCountdownPrompt ? (
@@ -227,12 +245,18 @@ export function CustomInput({
                                     rows={1}
                                     className='gai:flex-1 gai:min-w-0 gai:max-h-[120px] gai:resize-none gai:overflow-y-auto gai:border-0 gai:bg-transparent gai:text-sm gai:md:text-base gai:font-medium gai:leading-5 gai:md:leading-6 gai:text-secondary-gray-900 gai:outline-0 gai:placeholder:text-secondary-gray-600 gai:placeholder:text-xs gai:md:placeholder:text-sm gai:min-h-[32px] gai:py-1.5 gai:text-left'
                                     placeholder='Type your message here...'
+                                    readOnly={shouldPreventFocus}
                                     onInput={e => {
                                         const target = e.target as HTMLTextAreaElement;
                                         target.style.height = '32px';
                                         target.style.height = Math.min(Math.max(target.scrollHeight, 32), 120) + 'px';
                                     }}
-                                    onFocus={() => {
+                                    onFocus={(e) => {
+                                        // Prevent focus in expand-view state to avoid keyboard opening
+                                        if (shouldPreventFocus) {
+                                            e.target.blur();
+                                            return;
+                                        }
                                         handleActivate();
                                     }}
                                     onBlur={() => {

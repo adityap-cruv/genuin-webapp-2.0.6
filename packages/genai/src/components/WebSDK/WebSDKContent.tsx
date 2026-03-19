@@ -33,6 +33,8 @@ export function WebSDKContent() {
     const [showDummyMessage, setShowDummyMessage] = useState(false);
     const [countdown, setCountdown] = useState<number | null>(null);
     const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
+    const [panelViewCountdown, setPanelViewCountdown] = useState<number | null>(null);
+    const panelViewCountdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
     const expandRequestedMessageRef = useRef<string | null>(null);
     const [showPresetPrompts, setShowPresetPrompts] = useState(false);
     const [compactOctoLottie, setCompactOctoLottie] = useState<object | null>(() =>
@@ -46,12 +48,17 @@ export function WebSDKContent() {
 
         const firstPrompt = suggestedPrompts[0];
 
-        // Cancel countdown
+        // Cancel both compact and panel-view countdowns
         if (countdownIntervalRef.current) {
             clearInterval(countdownIntervalRef.current);
             countdownIntervalRef.current = null;
         }
+        if (panelViewCountdownIntervalRef.current) {
+            clearInterval(panelViewCountdownIntervalRef.current);
+            panelViewCountdownIntervalRef.current = null;
+        }
         setCountdown(null);
+        setPanelViewCountdown(null);
 
         // Hide dummy message
         setShowDummyMessage(false);
@@ -86,12 +93,18 @@ export function WebSDKContent() {
 
         const firstPrompt = suggestedPrompts[0];
 
+        // Clear both compact and panel-view countdowns
         if (countdownIntervalRef.current) {
             clearInterval(countdownIntervalRef.current);
             countdownIntervalRef.current = null;
         }
+        if (panelViewCountdownIntervalRef.current) {
+            clearInterval(panelViewCountdownIntervalRef.current);
+            panelViewCountdownIntervalRef.current = null;
+        }
 
         setCountdown(null);
+        setPanelViewCountdown(null);
         setShowDummyMessage(false);
 
         // Dispatch event to deactivate countdown state
@@ -111,6 +124,7 @@ export function WebSDKContent() {
             messageInput: firstPrompt,
             onMessageQueued: () => {
                 setCountdown(null);
+                setPanelViewCountdown(null);
             },
         });
     };
@@ -137,7 +151,7 @@ export function WebSDKContent() {
         if (!currentSessionId && suggestedPrompts.length > 0) {
             const firstPrompt = suggestedPrompts[0];
             setShowDummyMessage(true);
-            setCountdown(5);
+            setCountdown(3);
             setShowPresetPrompts(false);
             setIsSuggestionsOpen(false);
 
@@ -154,7 +168,7 @@ export function WebSDKContent() {
             }
 
             // Start countdown timer
-            let timeLeft = 5;
+            let timeLeft = 3;
             countdownIntervalRef.current = setInterval(() => {
                 timeLeft -= 1;
                 setCountdown(timeLeft);
@@ -208,6 +222,75 @@ export function WebSDKContent() {
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentSessionId, suggestedPrompts, parentOctoPanelId, webSdkRenderMode]);
+
+    // Start panel-view countdown when transitioning from compact to full mode
+    const prevRenderModeRef = useRef(webSdkRenderMode);
+    const countdownValueRef = useRef(countdown);
+
+    // Keep countdown value in ref to avoid re-running effect when countdown changes
+    useEffect(() => {
+        countdownValueRef.current = countdown;
+    }, [countdown]);
+
+    useEffect(() => {
+        const prevMode = prevRenderModeRef.current;
+        prevRenderModeRef.current = webSdkRenderMode;
+
+        // Only start panel-view countdown when transitioning from compact to full
+        // and when there's an active countdown in compact mode (interval still running)
+        if (prevMode === 'compact' &&
+            webSdkRenderMode === 'full' &&
+            countdownValueRef.current !== null &&
+            countdownValueRef.current > 0 &&
+            countdownIntervalRef.current !== null) {
+            // Clear the compact countdown
+            clearInterval(countdownIntervalRef.current);
+            countdownIntervalRef.current = null;
+
+            // Continue countdown from where it left off in compact mode
+            const remainingTime = countdownValueRef.current;
+            setCountdown(null);
+            setPanelViewCountdown(remainingTime);
+            let timeLeft = remainingTime;
+            panelViewCountdownIntervalRef.current = setInterval(() => {
+                timeLeft -= 1;
+                setPanelViewCountdown(timeLeft);
+
+                if (timeLeft <= 0) {
+                    if (panelViewCountdownIntervalRef.current) {
+                        clearInterval(panelViewCountdownIntervalRef.current);
+                        panelViewCountdownIntervalRef.current = null;
+                    }
+                    setPanelViewCountdown(null);
+                    // Auto-send the message
+                    if (suggestedPrompts.length > 0) {
+                        const firstPrompt = suggestedPrompts[0];
+                        handleSendMessage({
+                            targetSessionId: currentSessionId,
+                            messageInput: firstPrompt,
+                            onMessageQueued: () => {
+                                setPanelViewCountdown(null);
+                            },
+                        });
+                    }
+                }
+            }, 1000);
+        }
+
+        // Cleanup panel-view countdown when going back to compact or when session is created
+        if (webSdkRenderMode === 'compact' || currentSessionId) {
+            if (panelViewCountdownIntervalRef.current) {
+                clearInterval(panelViewCountdownIntervalRef.current);
+                panelViewCountdownIntervalRef.current = null;
+            }
+            setPanelViewCountdown(null);
+        }
+
+        return () => {
+            // Only clear if we're actually changing mode or unmounting
+            // Don't clear if we're just re-running due to other state changes
+        };
+    }, [webSdkRenderMode, currentSessionId, suggestedPrompts, handleSendMessage]);
 
     // Auto-scroll to the bottom when new messages arrive
     useEffect(() => {
@@ -407,15 +490,15 @@ export function WebSDKContent() {
                                         {primaryPrompt}
                                     </div>
                                     {/* Countdown timer - blue badge with white background for number */}
-                                    {countdown !== null && countdown > 0 && (
+                                    {((countdown !== null && countdown > 0) || (panelViewCountdown !== null && panelViewCountdown > 0)) && (
                                         <div className='gai:flex gai:items-center gai:gap-1.5 gai:px-1'>
                                             <div className='gai:flex gai:h-4 gai:w-4 gai:items-center gai:justify-center gai:rounded-full gai:bg-primary-500'>
                                                 <span className='gai:text-[10px] gai:font-bold gai:leading-none gai:text-white'>
-                                                    {countdown}
+                                                    {panelViewCountdown !== null && panelViewCountdown > 0 ? panelViewCountdown : countdown}
                                                 </span>
                                             </div>
                                             <span className='gai:text-[10px] gai:text-secondary-gray-500'>
-                                                Auto-sending...
+                                                Prompting in...
                                             </span>
                                         </div>
                                     )}

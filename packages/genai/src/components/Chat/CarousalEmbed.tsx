@@ -84,13 +84,19 @@ const GenuinEmbed = ({
                 return;
             }
 
-            window.genuin.init({
+            const nestedConfig = {
                 container_id: containerRef.current.id,
                 style_id: import.meta.env.VITE_GEN_SDK_STYLE_ID,
                 placement_id: import.meta.env.VITE_GEN_SDK_PLACEMENT_ID,
                 api_key: import.meta.env.VITE_API_KEY,
                 parent_instance_id: parentWebSdkInstanceId,
-            });
+                useShadowDOM: false, // Disable shadow DOM for nested instances to avoid conflicts
+                // Note: Not passing 'live' config for nested instances
+                // Nested instances should go through normal init path, not live path
+                // The useShadowDOM: false flag will be respected in both paths
+            };
+
+            window.genuin.init(nestedConfig);
 
             requestAnimationFrame(() => {
                 const instanceId = containerRef.current?.getAttribute('data-instance-id') || null;

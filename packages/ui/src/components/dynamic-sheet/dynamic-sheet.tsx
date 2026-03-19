@@ -366,6 +366,7 @@ function DynamicSheet({
         onPointerDown={handleSheetPointerDown}
         onPointerUp={handleSheetPointerUp}
         onPointerCancel={handleSheetPointerUp}
+        onClick={(e) => e.stopPropagation()}
         className={cn(
           // Positioned modes pin to bottom edge of their containing block.
           !isInlineMode && "gencl:bottom-0 gencl:left-0 gencl:right-0",
