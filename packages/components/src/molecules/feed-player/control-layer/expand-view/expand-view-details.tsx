@@ -554,13 +554,9 @@ const SharedActions = memo(function SharedActions({
                 key="octo-action"
                 onClick={(e) => {
                   e.stopPropagation();
-                  // Toggle: if sheet is open, close it; if closed, open it
-                  if (hasContentType("octo")) {
-                    resetSheet(); // Close and destroy GenAI SDK
-                  } else {
-                    openContentType("octo", "inside", "default");
-                    setContentTypeState("octo", "default");
-                  }
+                  // Always open sheet in panel-view state
+                  openContentType("octo", "inside", "panel-view");
+                  setContentTypeState("octo", "panel-view");
                 }}
               >
                 {defaultNode}
@@ -674,18 +670,37 @@ export function ExpandViewDetails({
 
       // Close sheet when swiping down (going from higher state to lower state)
       if (prevPriority > nextPriority) {
+        // Reset the ref to "default" so the next video can auto-open without triggering another close
+        prevOctoSheetStateRef.current = "default";
         resetSheet();
+        return;
+      }
+
+      // Get the current desired state from the hook
+      const currentDesiredState = getContentTypeState("octo");
+      const currentDesiredPriority = OCTO_STATE_PRIORITY[currentDesiredState] || 0;
+
+      // Skip if DynamicSheet is transitioning to a lower state than what we want
+      // This happens when sheet opens and resets to "default" before auto-advancing
+      if (nextPriority < currentDesiredPriority) {
         return;
       }
 
       setContentTypeState("octo", next);
     },
-    [resetSheet, setContentTypeState],
+    [resetSheet, setContentTypeState, getContentTypeState],
   );
 
   useEffect(() => {
     prevOctoSheetStateRef.current = octoSheetState;
   }, [octoSheetState]);
+
+  // Handle close from DynamicSheet (close button or dismiss)
+  const handleOctoSheetClose = useCallback(() => {
+    // Reset the ref to "default" so the next video can auto-open without triggering another close
+    prevOctoSheetStateRef.current = "default";
+    resetSheet();
+  }, [resetSheet]);
 
   const handleOctoCompactExpand = useCallback(() => {
     // Transition to expand-view when user sends message and agent starts thinking
@@ -764,7 +779,7 @@ export function ExpandViewDetails({
             config={{
               ...octoConfig,
               onStateChange: handleOctoSheetStateChange,
-              onClose: () => resetSheet(),
+              onClose: handleOctoSheetClose,
             }}
             onSwiperToggle={onSwiperToggle}
             className={octoClassName(octoSheetState)}

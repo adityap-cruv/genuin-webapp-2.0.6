@@ -12,6 +12,7 @@ type WebSDKInputProps = {
     onCompactPromptSend?: () => void;
     isLoadingPrompt?: boolean;
     onActivate?: () => void;
+    onInputStart?: () => void;
 };
 
 export function WebSDKInput({
@@ -25,6 +26,7 @@ export function WebSDKInput({
     onCompactPromptSend,
     isLoadingPrompt,
     onActivate,
+    onInputStart,
 }: WebSDKInputProps) {
     return (
         <div className='gai:relative gai:w-full'>
@@ -36,6 +38,7 @@ export function WebSDKInput({
                 onSuggestedPromptSend={onCompactPromptSend}
                 isLoading={isLoadingPrompt}
                 onActivate={onActivate}
+                onInputStart={onInputStart}
             />
             {showPresetPrompts && (
                 <WebSDKPresetPrompts

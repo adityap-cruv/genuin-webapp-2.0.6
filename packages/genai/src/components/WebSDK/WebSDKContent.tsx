@@ -75,9 +75,14 @@ export function WebSDKContent() {
             );
         }
 
-        // Show preset prompts dropdown once user interacts with auto prompt
-        setShowPresetPrompts(true);
-        setIsSuggestionsOpen(true);
+        // Only show preset prompts dropdown if no user message has been sent yet
+        const session = sessions.find(s => s.id === currentSessionId);
+        const hasUserMessages = session?.chat?.some(message => message.role === 'user') ?? false;
+
+        if (!hasUserMessages) {
+            setShowPresetPrompts(true);
+            setIsSuggestionsOpen(true);
+        }
 
         // Copy message to input
         setInput(firstPrompt);
@@ -87,6 +92,45 @@ export function WebSDKContent() {
             textAreaRef.focus();
         }
     };
+
+    // Handle when user interacts with input (focus or typing) - cancel countdown and show suggested prompt
+    const handleInputStart = useCallback(() => {
+        // Cancel both compact and panel-view countdowns
+        if (countdownIntervalRef.current) {
+            clearInterval(countdownIntervalRef.current);
+            countdownIntervalRef.current = null;
+        }
+        if (panelViewCountdownIntervalRef.current) {
+            clearInterval(panelViewCountdownIntervalRef.current);
+            panelViewCountdownIntervalRef.current = null;
+        }
+        setCountdown(null);
+        setPanelViewCountdown(null);
+
+        // Hide dummy message
+        setShowDummyMessage(false);
+
+        // Dispatch event to deactivate countdown state
+        if (parentOctoPanelId && webSdkRenderMode === 'compact') {
+            window.dispatchEvent(
+                new CustomEvent('genai:webSdkCountdownActive', {
+                    detail: {
+                        parentOctoPanelId,
+                        isActive: false,
+                    },
+                })
+            );
+        }
+
+        // Only show preset prompts dropdown if no user message has been sent yet
+        const session = sessions.find(s => s.id === currentSessionId);
+        const hasUserMessages = session?.chat?.some(message => message.role === 'user') ?? false;
+
+        if (!hasUserMessages) {
+            setShowPresetPrompts(true);
+            setIsSuggestionsOpen(true);
+        }
+    }, [parentOctoPanelId, webSdkRenderMode, setIsSuggestionsOpen, sessions, currentSessionId]);
 
     const handleCompactPromptSend = () => {
         if (suggestedPrompts.length === 0) return;
@@ -521,6 +565,7 @@ export function WebSDKContent() {
                         onClosePresetPrompts={handleClosePresetPrompts}
                         setIsSuggestionsOpen={setIsSuggestionsOpen}
                         onActivate={isCompactMode ? handleCompactInputActivate : undefined}
+                        onInputStart={!isCompactMode ? handleInputStart : undefined}
                     />
                 </div>
             </div>

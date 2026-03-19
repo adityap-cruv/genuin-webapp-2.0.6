@@ -16,6 +16,7 @@ type CustomInputProps = {
     onSuggestedPromptSend?: () => void;
     isLoading?: boolean;
     onActivate?: () => void;
+    onInputStart?: () => void;
 };
 
 const OCTO_IDLE_ANIMATION_PATH = 'updating/animations/57d84bf1-8b2c-481d-b47f-69cd84633961.json';
@@ -29,6 +30,7 @@ export function CustomInput({
     onSuggestedPromptSend,
     isLoading = false,
     onActivate,
+    onInputStart,
 }: CustomInputProps) {
     const {
         creatingSession,
@@ -258,12 +260,18 @@ export function CustomInput({
                                             return;
                                         }
                                         handleActivate();
+                                        // Trigger onInputStart on focus (click on input)
+                                        onInputStart?.();
                                     }}
                                     onBlur={() => {
                                         // Blur handler
                                     }}
                                     value={input}
                                     onChange={e => {
+                                        // Trigger onInputStart when user starts typing (first character)
+                                        if (!input && e.target.value && onInputStart) {
+                                            onInputStart();
+                                        }
                                         setInput(e.target.value);
                                     }}
                                     onKeyDown={handleKeyDown}
