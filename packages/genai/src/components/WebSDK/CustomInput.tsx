@@ -251,7 +251,7 @@ export function CustomInput({
                                 <textarea
                                     ref={textareaRef}
                                     rows={1}
-                                    className='gai:flex-1 gai:min-w-0 gai:max-h-[120px] gai:resize-none gai:overflow-y-auto gai:border-0 gai:bg-transparent gai:text-sm gai:md:text-base gai:font-medium gai:leading-5 gai:md:leading-6 gai:text-secondary-gray-900 gai:outline-0 gai:placeholder:text-secondary-gray-600 gai:placeholder:text-xs gai:md:placeholder:text-sm gai:min-h-[32px] gai:py-1.5 gai:text-left'
+                                    className='gai:flex-1 gai:min-w-0 gai:max-h-[120px] gai:resize-none gai:overflow-y-auto gai:border-0 gai:bg-transparent gai:text-sm gai:md:text-base gai:font-medium gai:leading-5 gai:md:leading-6 gai:text-secondary-gray-900 gai:outline-0 gai:placeholder:text-secondary-gray-600 gai:placeholder:text-xs gai:md:placeholder:text-sm gai:min-h-[32px] gai:py-1.5 gai:pl-2 gai:text-left'
                                     placeholder='Type your message here...'
                                     readOnly={shouldPreventFocus}
                                     onInput={e => {
