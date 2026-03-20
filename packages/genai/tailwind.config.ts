@@ -15,6 +15,15 @@ const config: Config = {
                 '2xl': '16px',
                 '3xl': '24px', // This ensures gai:rounded-3xl is always 24px
             },
+            animation: {
+                shimmer: 'shimmer 2.5s ease-in-out infinite',
+            },
+            keyframes: {
+                shimmer: {
+                    '0%': { backgroundPosition: '200% 0' },
+                    '100%': { backgroundPosition: '-200% 0' },
+                },
+            },
         },
     },
 };

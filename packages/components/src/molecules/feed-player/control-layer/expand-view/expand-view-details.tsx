@@ -492,6 +492,7 @@ const SharedActions = memo(function SharedActions({
   onCommentCountChange,
   brandLayoutType,
   isActive,
+  onOctoOpen,
 }: {
   postDetails: PostDetailsType;
   defaultOpenCommentDialog: boolean;
@@ -505,6 +506,7 @@ const SharedActions = memo(function SharedActions({
     isReacted: boolean
   ) => void;
   isActive: boolean;
+  onOctoOpen?: () => void;
 }) {
   const { openContentType, setContentTypeState, hasContentType, resetSheet } = useSheetState();
 
@@ -554,6 +556,8 @@ const SharedActions = memo(function SharedActions({
                 key="octo-action"
                 onClick={(e) => {
                   e.stopPropagation();
+                  // Reset the ref tracking state before opening
+                  onOctoOpen?.();
                   // Always open sheet in panel-view state
                   openContentType("octo", "inside", "panel-view");
                   setContentTypeState("octo", "panel-view");
@@ -658,9 +662,32 @@ export function ExpandViewDetails({
   }, [octoSheetState, setContentTypeState]);
 
   const prevOctoSheetStateRef = useRef<DynamicSheetState>(octoSheetState);
+  const isSheetOpenRef = useRef(false);
+
+  // Track when sheet opens/closes to distinguish between video transitions and user swipes
+  useEffect(() => {
+    const isOpen = isNonDesktop && hasContentType("octo") && isActive;
+    const wasOpen = isSheetOpenRef.current;
+    isSheetOpenRef.current = isOpen;
+
+    // Reset ref when sheet opens fresh (new video or reopening)
+    if (isOpen && !wasOpen) {
+      prevOctoSheetStateRef.current = "default";
+    }
+  }, [isNonDesktop, hasContentType, isActive, postDetails.video.id]);
 
   const handleOctoSheetStateChange = useCallback(
     (next: DynamicSheetState) => {
+      // Only process state changes for the active video
+      if (!isActive) {
+        return;
+      }
+
+      // Check if the sheet was not previously tracked as open
+      // This indicates the sheet is freshly opening (first state change after open)
+      // In this case, skip swipe-down detection to prevent false positives
+      const wasSheetTrackedAsOpen = isSheetOpenRef.current;
+
       const prev = prevOctoSheetStateRef.current;
       prevOctoSheetStateRef.current = next;
 
@@ -668,29 +695,23 @@ export function ExpandViewDetails({
       const prevPriority = OCTO_STATE_PRIORITY[prev] || 0;
       const nextPriority = OCTO_STATE_PRIORITY[next] || 0;
 
-      // Close sheet when swiping down (going from higher state to lower state)
-      if (prevPriority > nextPriority) {
-        // Reset the ref to "default" so the next video can auto-open without triggering another close
+      // Close sheet when user swipes down (going from higher state to lower state)
+      // Only treat as user swipe-down if:
+      // 1. We're actually going down from a higher state
+      // 2. It's not the initial open (which also triggers with "default")
+      // 3. The sheet was already tracked as open (not a fresh open where ref might be stale)
+      if (prevPriority > nextPriority && prev !== "default" && wasSheetTrackedAsOpen) {
         prevOctoSheetStateRef.current = "default";
         resetSheet();
         return;
       }
 
-      // Get the current desired state from the hook
-      const currentDesiredState = getContentTypeState("octo");
-      const currentDesiredPriority = OCTO_STATE_PRIORITY[currentDesiredState] || 0;
-
-      // Skip if DynamicSheet is transitioning to a lower state than what we want
-      // This happens when sheet opens and resets to "default" before auto-advancing
-      if (nextPriority < currentDesiredPriority) {
-        return;
-      }
-
       setContentTypeState("octo", next);
     },
-    [resetSheet, setContentTypeState, getContentTypeState],
+    [resetSheet, setContentTypeState, isActive],
   );
 
+  // Keep ref in sync with external state
   useEffect(() => {
     prevOctoSheetStateRef.current = octoSheetState;
   }, [octoSheetState]);
@@ -722,6 +743,11 @@ export function ExpandViewDetails({
       }
     }
   }, [octoSheetState, setContentTypeState]);
+
+  // Reset ref when Octo action is clicked to ensure proper state tracking
+  const handleOctoActionOpen = useCallback(() => {
+    prevOctoSheetStateRef.current = "default";
+  }, []);
 
   return (
     <div
@@ -776,6 +802,7 @@ export function ExpandViewDetails({
           <DynamicSheet
             isOpen={isNonDesktop && hasContentType("octo") && isActive}
             renderMode="inline"
+            controlledState={octoSheetState}
             config={{
               ...octoConfig,
               onStateChange: handleOctoSheetStateChange,
@@ -835,6 +862,7 @@ export function ExpandViewDetails({
           onReactionStateChange={onReactionStateChange}
           onCommentCountChange={onCommentCountChange}
           isActive={isActive}
+          onOctoOpen={handleOctoActionOpen}
         />
       </div>
       {(!hideGroupPill || !hideCommunityPill) && (

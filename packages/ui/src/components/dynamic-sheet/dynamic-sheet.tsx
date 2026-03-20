@@ -48,6 +48,7 @@ function DynamicSheet({
   isOpen,
   onDismissed,
   config = {},
+  controlledState,
   renderMode = "fixed",
   containerRef,
   header,
@@ -179,19 +180,25 @@ function DynamicSheet({
     autoAdvance: config.autoAdvance,
   });
 
-  // ── Reset to initial state when sheet opens ────────────────────────────
+  // ── Reset to initial/controlled state when sheet opens ──────────────────
   useEffect(() => {
     if (isOpen && !prevIsOpenRef.current) {
-      // Sheet is opening - reset to initial state
-      const targetState = enabledStates.includes(
-        config.initialState ?? "default",
-      )
-        ? (config.initialState ?? "default")
+      // Sheet is opening - use controlled state if provided, otherwise initial state
+      const desiredState = controlledState ?? config.initialState ?? "default";
+      const targetState = enabledStates.includes(desiredState)
+        ? desiredState
         : enabledStates[0];
       transitionTo(targetState ?? "default");
     }
     prevIsOpenRef.current = isOpen;
-  }, [isOpen, config.initialState, enabledStates, transitionTo]);
+  }, [isOpen, config.initialState, controlledState, enabledStates, transitionTo]);
+
+  // ── Sync with controlled state changes while open ─────────────────────────
+  useEffect(() => {
+    if (isOpen && controlledState && enabledStates.includes(controlledState)) {
+      transitionTo(controlledState);
+    }
+  }, [isOpen, controlledState, enabledStates, transitionTo]);
 
   // ── Notify parent when dragging state changes ─────────────────────────
   useEffect(() => {
@@ -384,10 +391,12 @@ function DynamicSheet({
         style={panelPositionStyle}
         {...rest}
       >
-        {/* Drag indicator */}
+        {/* Drag indicator - show in expanded states (expand-view, panel-view, full-view) */}
         {!disableDragAndSwipe &&
           config.showIndicator !== false &&
-          currentState !== "default" && (
+          (currentState === "expand-view" ||
+            currentState === "panel-view" ||
+            currentState === "full-view") && (
             <DynamicSheetDragIndicator
               theme={config.theme}
               isDragging={isDragging}

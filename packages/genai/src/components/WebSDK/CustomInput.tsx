@@ -213,12 +213,18 @@ export function CustomInput({
                                 ) : (
                                     <>
                                         <div className='gai:flex gai:flex-1 gai:flex-col gai:gap-1 gai:min-w-0 gai:overflow-hidden gai:pl-4'>
-                                            <span className='gai:text-[9px] gai:md:text-[10px] gai:font-medium gai:uppercase gai:tracking-wide gai:text-secondary-gray-500'>
+                                            <span className='gai:text-[9px] gai:md:text-[10px] gai:font-medium gai:uppercase gai:tracking-wide gai:text-secondary-gray-700'>
                                                 Suggested
                                             </span>
-                                            <span className='gai:line-clamp-3 gai:text-xs gai:md:text-sm gai:font-semibold gai:text-secondary-gray-900'>
-                                                {displayPrompt}
-                                            </span>
+                                            {isLoading ? (
+                                                <span className='gai:text-xs gai:md:text-sm gai:font-semibold gai:bg-gradient-to-r gai:from-primary-400 gai:via-primary-200 gai:to-primary-400 gai:bg-[length:200%_100%] gai:animate-shimmer gai:bg-clip-text gai:text-transparent'>
+                                                    Loading...
+                                                </span>
+                                            ) : (
+                                                <span className='gai:line-clamp-3 gai:text-xs gai:md:text-sm gai:font-semibold gai:text-secondary-gray-900'>
+                                                    {displayPrompt}
+                                                </span>
+                                            )}
                                         </div>
                                         <Button
                                             disabled={creatingSession || isLoading || !displayPrompt || !onSuggestedPromptSend}

@@ -360,7 +360,9 @@ a swiper inside another swiper.
     const prevId = prevMobileVideoIdRef.current;
     prevMobileVideoIdRef.current = activeVideoId ?? null;
 
-    if (!activeVideoId) return;
+    if (!activeVideoId) {
+      return;
+    }
 
     if (!prevId) {
       setPendingOctoReopen(true);
@@ -398,12 +400,24 @@ a swiper inside another swiper.
   }, []);
 
   useEffect(() => {
-    if (!shouldAutoOpenOcto) return;
-    if (!showExpandView) return;
-    if (!activeVideoId) return;
-    if (isAdPlaying) return;
-    if (!pendingOctoReopen) return;
-    if (hasContentType("octo")) return;
+    if (!shouldAutoOpenOcto) {
+      return;
+    }
+    if (!showExpandView) {
+      return;
+    }
+    if (!activeVideoId) {
+      return;
+    }
+    if (isAdPlaying) {
+      return;
+    }
+    if (!pendingOctoReopen) {
+      return;
+    }
+    if (hasContentType("octo")) {
+      return;
+    }
 
     openContentType("octo", "inside", "default");
     setContentTypeState("octo", "default");

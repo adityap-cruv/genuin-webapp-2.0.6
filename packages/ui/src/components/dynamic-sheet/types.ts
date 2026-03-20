@@ -112,6 +112,11 @@ export interface DynamicSheetProps extends ComponentProps<"div">  {
   onDismissed?: () => void;
   /** Sheet behaviour configuration */
   config?: DynamicSheetConfig;
+  /**
+   * Controlled state - when provided, the sheet will transition to this state
+   * instead of using initialState when opening. Useful when parent manages state.
+   */
+  controlledState?: DynamicSheetState;
   /** Render strategy – "fixed" (portal) or "container" (inline absolute) */
   renderMode?: DynamicSheetRenderMode;
   /**
