@@ -7,6 +7,7 @@ import {
 
 import type { PostDetailsSchema, PostDetailsType } from "./schema";
 import type { FeedResponseFromGoApi } from "./types";
+import { VideoTypes } from "@genuin/components/context";
 
 // TODO: SCRAP THIS.
 function tryJsonParse<T>(data: string | undefined): T | null {
@@ -33,7 +34,7 @@ function tryJsonParse<T>(data: string | undefined): T | null {
 export function parseFeed(
   data: FeedResponseFromGoApi,
   shouldShowMiddlewareOverlay: boolean = false,
-  endOfFeed: boolean = false
+  endOfFeed: boolean = false,
 ): Array<z.infer<typeof PostDetailsSchema>> {
   if (!data || !Array.isArray(data)) {
     return [];
@@ -49,6 +50,7 @@ export function parseFeed(
         video: {
           id: item?.video.uuid + "_overlay",
           type: "overlay",
+          video_type: getVideoType(item.type, item.video.video_layout_id ?? 0),
           createdAt: item?.video.conversation_at,
           commentCount: item?.video.no_of_comments || 0,
           shareUrl: item?.video.share_url,
@@ -102,7 +104,7 @@ export function parseFeed(
             item?.video.placement_card_section_layout_id || null,
         },
       };
-      result.push(mappedItem as PostDetailsType);
+      result.push(mappedItem as unknown as PostDetailsType);
     } else if (item.type !== "all_caught_up") {
       // Map the API response to our schema
       const mappedItem: z.infer<typeof PostDetailsSchema> = {
@@ -114,6 +116,7 @@ export function parseFeed(
           commentCount: item.video.no_of_comments || 0,
           shareUrl: item.video.share_url,
           attachedLink: item.video.attached_link || null,
+          video_type: getVideoType(item.type, item.video.video_layout_id ?? 0),
           source: item.video.media_url_m3u8 ?? item.video.media_url,
           isSparked: item.video.is_sparked || false,
           isWatched: item.video.is_watched || false,
@@ -172,7 +175,7 @@ export function parseFeed(
           isPrivate: isGroupPrivate(
             item.loop.actions,
             item.community.logged_in_user_role,
-            item.loop.member_info
+            item.loop.member_info,
           ),
         },
         community: {
@@ -240,14 +243,27 @@ export function parseFeed(
       result.push({
         video: {
           type: "complete",
+          video_type: VideoTypes.Content,
           id: item.video.uuid + "_complete",
           slug: item.video.slug,
         },
-      } as PostDetailsType);
+      } as unknown as PostDetailsType);
     }
   }
   return result;
 }
+
+const getVideoType = (type: string, videoLayoutId: number): VideoTypes => {
+  if (type === "ads") {
+    return VideoTypes.HouseAd;
+  }
+
+  if (videoLayoutId === 6) {
+    return VideoTypes.Sponsored;
+  }
+
+  return VideoTypes.Content;
+};
 
 /**
  * Determines if a user can see group posts based on actions, community role, and membership.
@@ -264,7 +280,7 @@ function isGroupPrivate(
     | null
     | undefined,
   communityRole: number | undefined,
-  memberInfo: unknown | null | undefined
+  memberInfo: unknown | null | undefined,
 ): boolean {
   // Community role enum values
   const CommunityMemberRole = {
@@ -274,7 +290,7 @@ function isGroupPrivate(
   };
 
   const actionModel = actionList?.find(
-    (action) => action.actionId === 3 || action.actionId === 4
+    (action) => action.actionId === 3 || action.actionId === 4,
   );
 
   switch (actionModel?.actionId) {

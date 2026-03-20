@@ -5,27 +5,30 @@ import { ComponentProps } from "react";
 import { CommunityCard } from "./community-card";
 import { Loader } from "@genuin/ui/components/loader";
 import { ComponentErrorState } from "@genuin/components/organisms/error-state-component";
+import { VideoTypes } from "@genuin/components/context";
 
 type RepostModalProps = ComponentProps<typeof DialogTrigger> & {
   videoId: string;
+  videoType : VideoTypes
 };
 
 export function RepostModal({
   videoId,
   children,
+  videoType,
   ...restProps
 }: RepostModalProps) {
   return (
     <Dialog type="repost-dialog">
       <DialogTrigger {...restProps}>{children}</DialogTrigger>
       <DialogContent className="gencl:max-w-2xl gencl:w-full">
-        <Content videoId={videoId} />
+        <Content videoId={videoId} videoType={videoType} />
       </DialogContent>
     </Dialog>
   );
 }
 
-function Content({ videoId }: { videoId: string }) {
+function Content({ videoId, videoType }: { videoId: string; videoType: VideoTypes }) {
   const {
     data: destinations,
     isLoading,
@@ -62,6 +65,7 @@ function Content({ videoId }: { videoId: string }) {
         key={communityInfo.community_id || index}
         communityInfo={communityInfo as RepostCommunityType}
         videoId={videoId}
+        videoType={videoType}
       />
     ));
   };

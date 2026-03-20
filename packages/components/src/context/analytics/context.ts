@@ -84,6 +84,29 @@ export const EventName = {
   GET_APP_LINK_SENT: "Get App Link Sent",
 } as const;
 
+/**
+ * Supported screen names used across embed and app navigation flows.
+ */
+export type ScreenType =
+  | "view_embed"
+  | "view_placement"
+  | "expanded_view"
+  | "community"
+  | "profile"
+  | "brand"
+  | "group"
+  | "explore"
+  | "home"
+  | "explore"
+  | "popular"
+  | "latest";
+
+export enum VideoTypes {
+  Content = "content",
+  HouseAd = "house_ad",
+  Sponsored = "sponsored",
+}
+
 type AnalyticsContextType = {
   /**
    * Tracks an event with an optional payload using the AnalyticsService.
@@ -92,10 +115,18 @@ type AnalyticsContextType = {
    */
   track: TrackFunction;
   EventName: typeof EventName; // Expose EventName for easy access
+  /**
+   * Updates the current screen value.
+   */
+  updateScreen: (screen: ScreenType) => void;
+  /**
+   * Returns the currently active screen.
+   */
+  getScreen: () => ScreenType;
 };
 
 export const AnalyticsContext = createContext<AnalyticsContextType | undefined>(
-  undefined
+  undefined,
 );
 
 /**

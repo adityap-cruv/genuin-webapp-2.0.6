@@ -146,9 +146,10 @@ export const ReadMore = memo(function ReadMore({
                 ? viewMoreText.length > viewLessText.length
                   ? viewMoreText
                   : viewLessText
-                : ""
+                : "",
             );
             setCalculatedMaxChars(limit);
+            console.log("Calculated max characters:", limit);
           }
         });
       });
@@ -178,6 +179,12 @@ export const ReadMore = memo(function ReadMore({
     }
     if (typeof parsedText === "string") {
       const words = parsedText.split(" ");
+      if (words.length === 1) {
+        // If it's a single long word, truncate by characters rather than words to avoid returning an empty teaser
+        const teaser = parsedText.slice(0, maxCharacter);
+        const remaining = parsedText.slice(maxCharacter);
+        return { teaser, remaining, shouldTruncate: true };
+      }
       const teaserWords: string[] = [];
       let teaserLen = 0;
       let i = 0;
@@ -260,7 +267,7 @@ export const ReadMore = memo(function ReadMore({
       textElement,
       isExpanded ? null : maxLines,
       display,
-      isLineTruncate
+      isLineTruncate,
     );
   }, [maxLines, isExpanded, display, isLineTruncate]);
 
@@ -373,7 +380,7 @@ export const ReadMore = memo(function ReadMore({
         onExpandChange?.(false);
       }
     },
-    [isExpanded, onExpandChange]
+    [isExpanded, onExpandChange],
   );
 
   // Memoize height calculations
@@ -382,7 +389,7 @@ export const ReadMore = memo(function ReadMore({
       collapsed: `${maxLines * 24}px`,
       expanded: useDynamicHeight ? measuredHeight : expandedHeight,
     }),
-    [maxLines, expandedHeight, measuredHeight, useDynamicHeight]
+    [maxLines, expandedHeight, measuredHeight, useDynamicHeight],
   );
 
   // Memoize display text generation
@@ -416,7 +423,7 @@ export const ReadMore = memo(function ReadMore({
         tabIndex={-1}
         className={cn(
           "gencl:inline gencl:bg-transparent gencl:!text-secondary-600 gencl:hover:underline gencl:cursor-pointer",
-          buttonClassName
+          buttonClassName,
         )}
         style={{
           padding: 0,
@@ -483,7 +490,7 @@ export const ReadMore = memo(function ReadMore({
           <span
             className={cn(
               "gencl:max-h-[10em] gencl:opacity-100 gencl:text-inherit",
-              lineClampClassName
+              lineClampClassName,
             )}
             tabIndex={-1}
           >
@@ -499,7 +506,7 @@ export const ReadMore = memo(function ReadMore({
         <span
           className={cn(
             "gencl:max-h-[10em] gencl:opacity-100 gencl:text-inherit",
-            lineClampClassName
+            lineClampClassName,
           )}
           tabIndex={-1}
         >
@@ -534,7 +541,7 @@ export const ReadMore = memo(function ReadMore({
         className={cn(
           "gencl:transition-all gencl:relative gencl:duration-500 gencl:ease-in-out gencl:overflow-auto gencl:scrollbar-none gencl:w-full",
           "swiper-no-swiping",
-          className
+          className,
         )}
         style={{
           maxHeight:
@@ -577,7 +584,7 @@ export const ReadMore = memo(function ReadMore({
             position !== "outside"
               ? "gencl:text-white!"
               : "gencl:text-secondary-900",
-            textClassName
+            textClassName,
           )}
           style={
             !shouldAnimate && !isExpanded && expandable
@@ -597,7 +604,7 @@ export const ReadMore = memo(function ReadMore({
         {...rest}
         className={cn(
           "gencl:transition-all gencl:relative gencl:duration-500 gencl:ease-in-out gencl:overflow-auto gencl:scrollbar-none gencl:w-full",
-          className
+          className,
         )}
         style={{
           maxHeight:
@@ -621,7 +628,7 @@ export const ReadMore = memo(function ReadMore({
             position !== "outside"
               ? "gencl:text-white!"
               : "gencl:text-secondary-900",
-            textClassName
+            textClassName,
           )}
           style={
             !shouldAnimate && !isExpanded && expandable
@@ -641,7 +648,7 @@ export const ReadMore = memo(function ReadMore({
       href={href}
       className={cn(
         "gencl:cursor-pointer hover:gencl:underline focus:gencl:outline-none gencl:w-full",
-        linkClassName
+        linkClassName,
       )}
     >
       {display === "inline" ? renderInlineContent : renderBlockContent}
@@ -656,7 +663,7 @@ export const ReadMore = memo(function ReadMore({
     <div
       className={cn(
         "gencl:relative",
-        display === "inline" && "gencl:inline"
+        display === "inline" && "gencl:inline",
         // showOverlay && isExpanded && "gencl:z-10"
       )}
     >
@@ -668,7 +675,7 @@ export const ReadMore = memo(function ReadMore({
             isExpanded
               ? "gencl:opacity-100 gencl:pointer-events-auto"
               : "gencl:opacity-0 gencl:pointer-events-none",
-            overlayClassName
+            overlayClassName,
           )}
           onClick={handleOverlayClick}
         />

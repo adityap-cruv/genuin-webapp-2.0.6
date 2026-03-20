@@ -4,9 +4,10 @@ import {
   useEffect, // Keep useEffect for the initial service initialization call
   useCallback,
   ReactNode,
+  useState,
 } from "react";
 import { AnalyticsService } from "./service"; // Import the singleton service
-import { AnalyticsContext, EventName } from "./context";
+import { AnalyticsContext, EventName, ScreenType } from "./context";
 import { EventNameType, EventPayload } from "./types";
 import { useBaseContext } from "../base";
 import { getDeviceId } from "@genuin/components/lib/utils/device-id";
@@ -36,7 +37,8 @@ type AnalyticsProviderProps = {
    */
   embedData?: EmbedDataType;
   brandDetails: BrandDetailsConfigType;
-  user : AuthUser | null;
+  user: AuthUser | null;
+  currentScreen?: ScreenType; // Optional initial screen value, defaults to "view_embed".
 };
 
 enum Channel {
@@ -56,10 +58,25 @@ export function AnalyticsProvider({
   embedData,
   brandDetails,
   user,
+  currentScreen = "view_embed",
 }: AnalyticsProviderProps) {
   const { isInIframe } = useBaseContext();
   const embedDetails = useSafeEmbedContext();
   const pathname = usePathname();
+
+  // Holds the current active screen. Defaults to "view_embed".
+  const [screen, setScreen] = useState<ScreenType>(currentScreen);
+
+  // Updates the current screen in state.
+  const updateScreen = useCallback((newScreen: ScreenType): void => {
+    setScreen(newScreen);
+  }, []);
+
+  // Returns the current screen value.
+  const getScreen = useCallback((): ScreenType => {
+    return screen;
+  }, [screen]);
+
   useEffect(() => {
     if (!isWebSDK) AnalyticsService.track(EventName.PAGE_VIEW);
   }, [pathname]);
@@ -104,7 +121,7 @@ export function AnalyticsProvider({
         url: typeof window !== "undefined" ? window.location.href : undefined,
         path: pathname,
         query_params: Object.fromEntries(
-          new URLSearchParams(window.location.search)
+          new URLSearchParams(window.location.search),
         ),
         title: document.title,
       };
@@ -159,7 +176,7 @@ user_longitude
       AnalyticsService.initialize(
         initPayload,
         brandDetails,
-        embedDetails?.embedData
+        embedDetails?.embedData,
       )
         .then(() => {
           // console.log(
@@ -169,7 +186,7 @@ user_longitude
         .catch((error) => {
           console.error(
             "[AnalyticsProvider] AnalyticsService.initialize() failed:",
-            error
+            error,
           );
         });
     });
@@ -209,7 +226,7 @@ user_longitude
         eventPayload: filteredPayload,
       });
     },
-    []
+    [],
   );
 
   const sendVideoCompletedToBackend = useCallback(
@@ -240,22 +257,27 @@ user_longitude
       brandDetails.environment,
       brandDetails.brand_id,
       isInIframe,
-    ]
+    ],
   );
 
   const track = useCallback(
     async (eventName: EventNameType, payload?: EventPayload) => {
-      await AnalyticsService.track(eventName, payload);
+      await AnalyticsService.track(eventName, {
+        ...payload,
+        event_record_screen: getScreen(),
+      });
       emitAnalyticsEvent(eventName, payload);
       if (eventName === EventName.VIDEO_COMPLETED) {
         sendVideoCompletedToBackend(payload);
       }
     },
-    [emitAnalyticsEvent, sendVideoCompletedToBackend]
+    [emitAnalyticsEvent, sendVideoCompletedToBackend, getScreen],
   );
 
   return (
-    <AnalyticsContext.Provider value={{ track, EventName }}>
+    <AnalyticsContext.Provider
+      value={{ track, EventName, updateScreen, getScreen }}
+    >
       {children}
     </AnalyticsContext.Provider>
   );

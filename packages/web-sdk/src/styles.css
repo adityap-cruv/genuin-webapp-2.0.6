@@ -97,3 +97,18 @@
   line-height: 20px;
   font-weight: 500;
 }
+
+.op-ads > div {
+  height: 100% !important;
+  width: 100% !important;
+}
+
+.op-ads > div > iframe {
+  height: 100% !important;
+  width: 100% !important;
+}
+
+.op-ads {
+  display: flex !important;
+  justify-content: center;
+}

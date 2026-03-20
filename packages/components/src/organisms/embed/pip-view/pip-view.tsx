@@ -1,5 +1,5 @@
 import { useEmbedContext } from "@genuin/components/context/embed";
-import { useAnalytics } from "@genuin/components/context/analytics/context";
+import { useAnalytics, VideoTypes } from "@genuin/components/context/analytics/context";
 import {
   ControlLayer,
   FeedPlayer,
@@ -8,7 +8,7 @@ import { PlayerProvider } from "@genuin/components/molecules/feed-player/context
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { XIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
-import { ComponentProps, useCallback, useEffect, useState } from "react";
+import { ComponentProps, useCallback, useEffect, useMemo, useState } from "react";
 import { RootPortal } from "@genuin/components/molecules/root-portal";
 
 type PipViewProps = {
@@ -126,11 +126,13 @@ function PipPlayer({
         videoUrl={videoDetails.video.source}
         onPlayerIterationEnd={onInterationEnd ?? (() => {})}
         totalVideos={totalVideos}
+        videoType={videoDetails.video.video_type ?? VideoTypes.Content}
       >
         <FeedPlayer
           videoId={videoDetails.video.id}
           src={videoDetails.video.source}
           poster={videoDetails.video.thumbnail}
+          videoType={videoDetails.video.video_type ?? VideoTypes.Content}
           className="gencl:object-cover gencl:w-full gencl:h-full!"
         />
         <ControlLayer variant="embed-pip" isActive postDetails={videoDetails} />

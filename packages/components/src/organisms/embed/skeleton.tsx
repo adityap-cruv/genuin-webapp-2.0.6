@@ -68,7 +68,9 @@ export function SdkSkeleton({
       <div
         className={cn(
           "gencl:rounded-md",
-          theme === "dark" ? "gencl:bg-secondary-900" : "gencl:bg-secondary-200"
+          theme === "dark"
+            ? "gencl:bg-secondary-900"
+            : "gencl:bg-secondary-200",
         )}
         style={{
           height: Math.max(0, containerHeight || 0),
@@ -94,7 +96,7 @@ export function SdkSkeleton({
                   className={cn(
                     "gencl:aspect-reel gencl:relative gencl:overflow-hidden gencl:rounded-md",
                     "gencl:transition-all gencl:duration-300 gencl:ease-in-out",
-                    "gencl:cursor-pointer"
+                    "gencl:cursor-pointer",
                   )}
                 >
                   <Skeleton
@@ -102,7 +104,7 @@ export function SdkSkeleton({
                       "gencl:h-full gencl:w-full",
                       theme === "dark"
                         ? "gencl:bg-secondary-800"
-                        : "gencl:bg-secondary-100"
+                        : "gencl:bg-secondary-100",
                     )}
                   />
                 </div>
@@ -121,7 +123,7 @@ export function SdkSkeleton({
           variant: variant || embedVariant,
           theme: theme,
         }),
-        className
+        className,
       )}
       style={{
         height: containerHeight,
@@ -158,24 +160,24 @@ export function SdkSkeleton({
                     "gencl:h-full gencl:w-full",
                     theme === "dark"
                       ? "gencl:bg-secondary-800"
-                      : "gencl:bg-secondary-100"
+                      : "gencl:bg-secondary-100",
                   )}
                 />
               </SwiperSlide>
             );
           })}
         </EmbedSwiper>
-        <NavigationButtons
-          theme={theme}
-          embedVariant={embedVariant}
-          onPrev={() => {}}
-          onNext={() => {}}
-          isIheartLayout={config.view.brandLayoutType === "iheart"}
-          isNavigationControlEnabled={
-            config.view.isNavigationControlEnabled ?? false
-          }
-        />
       </div>
+      <NavigationButtons
+        theme={theme}
+        embedVariant={embedVariant}
+        onPrev={() => {}}
+        onNext={() => {}}
+        isIheartLayout={config.view.brandLayoutType === "iheart"}
+        isNavigationControlEnabled={
+          config.view.isNavigationControlEnabled ?? false
+        }
+      />
     </div>
   );
 }
@@ -193,7 +195,7 @@ const embedHeaderSkeletonVariants = cva(
     defaultVariants: {
       variant: "carousel",
     },
-  }
+  },
 );
 
 function EmbedHeaderSkeleton({
@@ -225,7 +227,7 @@ function EmbedHeaderSkeleton({
               "gencl:h-5 gencl:w-32",
               theme === "dark"
                 ? "gencl:bg-secondary-800"
-                : "gencl:bg-secondary-100"
+                : "gencl:bg-secondary-100",
             )}
           />
         )}
@@ -235,7 +237,7 @@ function EmbedHeaderSkeleton({
               "gencl:h-3 gencl:w-24",
               theme === "dark"
                 ? "gencl:bg-secondary-800"
-                : "gencl:bg-secondary-100"
+                : "gencl:bg-secondary-100",
             )}
           />
         )}
@@ -246,7 +248,7 @@ function EmbedHeaderSkeleton({
             "gencl:h-10 gencl:w-24 gencl:rounded-md",
             theme === "dark"
               ? "gencl:bg-secondary-800"
-              : "gencl:bg-secondary-100"
+              : "gencl:bg-secondary-100",
           )}
         />
       )}
@@ -262,7 +264,9 @@ export function ShimmerSlide({ className }: { className?: string }) {
       <Skeleton
         className={cn(
           "gencl:h-full gencl:w-full gencl:rounded-lg",
-          theme === "dark" ? "gencl:bg-secondary-800" : "gencl:bg-secondary-100"
+          theme === "dark"
+            ? "gencl:bg-secondary-800"
+            : "gencl:bg-secondary-100",
         )}
       />
     </div>

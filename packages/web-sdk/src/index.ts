@@ -56,6 +56,7 @@ declare global {
       emitInternal: typeof Genuin.emitInternal
       destroy: typeof Genuin.destroy
       _initQueue?: Array<() => void>
+      version? : string
     }
     onGenuinReady?: (sdk: typeof Genuin) => void
   }

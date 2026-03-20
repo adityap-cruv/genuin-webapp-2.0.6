@@ -1,4 +1,4 @@
-import { type ComponentProps } from "react";
+import { useMemo, type ComponentProps } from "react";
 import {
   ControlLayer,
   FeedPlayer,
@@ -7,7 +7,7 @@ import { cn } from "@genuin/ui/lib/utils";
 import { GestureProvider } from "@genuin/components/molecules/gestures/context";
 import { PlayerProvider } from "@genuin/components/molecules/feed-player/context";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
-import { useBaseContext } from "@genuin/components/context";
+import { useBaseContext, VideoTypes } from "@genuin/components/context";
 
 type PostPlayerProps = ComponentProps<"div"> & {
   editClipVideo?: (url: string) => void;
@@ -27,11 +27,12 @@ export function PostPlayer({
   ...restProps
 }: PostPlayerProps) {
   const { isInIframe } = useBaseContext();
+  const videoType = post.video.video_type ?? VideoTypes.Content;
   return (
     <div
       className={cn(
         "gencl:relative gencl:group gencl:overflow-clip",
-        className
+        className,
       )}
       {...restProps}
     >
@@ -41,6 +42,7 @@ export function PostPlayer({
         videoUrl={post.video.source}
         onPlayerIterationEnd={() => null}
         videoDescription={post.video.descritptionText}
+        videoType={videoType}
       >
         <GestureProvider isInIframe={isInIframe}>
           <FeedPlayer
@@ -51,6 +53,7 @@ export function PostPlayer({
             style={{ height: "inherit" }}
             playsInline
             videoDescription={post.video.descritptionText}
+            videoType={videoType}
           />
           <ControlLayer
             isActive={true}

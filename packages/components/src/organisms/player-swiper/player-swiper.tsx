@@ -61,7 +61,7 @@ import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config
 import { type PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 
-import { useAnalytics } from "@genuin/components/context";
+import { useAnalytics, VideoTypes } from "@genuin/components/context";
 import { calculateSlideDimensions } from "./utils";
 
 import { useFocusManagement } from "@genuin/components/hooks/use-focus-management";
@@ -181,14 +181,6 @@ export function PlayerList({
   // if we use directly isTablet from the hook then for desktop it will be true based on useDeviceDetectMediaQuery implementation
   const isTablet = !isMobile && !isDesktop;
 
-  const handleAdStarted = useCallback((e?: AdInfoType) => {
-    setIsAdPlaying(true);
-  }, []);
-
-  const handleAdEnded = useCallback((e?: AdInfoType) => {
-    setIsAdPlaying(false);
-  }, []);
-
   // Container dimensions state
   const containerRef = useRef<HTMLDivElement>(null);
   const [slideDimensions, setSlideDimensions] = useState<{
@@ -298,6 +290,22 @@ export function PlayerList({
       }
     },
     [isSectioned, horizontalSwiper, activeSwiper],
+  );
+
+  const handleAdStarted = useCallback(
+    (e?: AdInfoType) => {
+      setIsAdPlaying(true);
+      handleSwiperToggle(true); // Disable swiper during ad playback
+    },
+    [handleSwiperToggle],
+  );
+
+  const handleAdEnded = useCallback(
+    (e?: AdInfoType) => {
+      setIsAdPlaying(false);
+      handleSwiperToggle(false); // Re-enable swiper after ad playback
+    },
+    [handleSwiperToggle],
   );
 
   // Disable swiper when sheet is in panel-view or full-view, enable otherwise
@@ -561,7 +569,7 @@ a swiper inside another swiper.
               {isSectioned ? (
                 <Suspense fallback={null}>
                   <SectionedContent
-                    sectionList={sectionList}
+                    sectionList={sectionList ?? []}
                     embedDetails={embedDetails}
                     filteredPost={filteredPost}
                     startIndex={startIndex}
@@ -584,6 +592,7 @@ a swiper inside another swiper.
                     setVerticalSwipers={setVerticalSwipers}
                     onAdStarted={handleAdStarted}
                     onAdEnded={handleAdEnded}
+                    onSwiperToggle={handleSwiperToggle}
                   />
                 </Suspense>
               ) : (
@@ -663,6 +672,7 @@ a swiper inside another swiper.
               contentId={filteredPost[activeIndex]?.video.id}
               groupSlug={filteredPost[activeIndex]?.group.slug}
               slug={filteredPost[activeIndex]?.video.slug}
+              videoType={filteredPost[activeIndex]?.video.video_type ?? VideoTypes.Content}
               reactionCount={filteredPost[activeIndex]?.video.sparkCount}
               theme={showExpandView ? "dark" : "light"}
               className={cn(

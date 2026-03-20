@@ -159,7 +159,7 @@ export type PlayerProps = ComponentProps<"video"> & {
   onVideoStart?: (
     duration: number,
     currentTime: number,
-    latency: number
+    latency: number,
   ) => void; // Add onVideoStart prop
   onMutedChange?: (muted: boolean) => void;
   onVideoLoadStart?: (isPlaying: boolean) => void; // Callback when video loading starts
@@ -214,6 +214,7 @@ export const VideoPlayer = memo(function VideoPlayer({
   const playerRef = useRef<OpenPlayerJS | null>(null);
   const isPlayerInitialized = useRef(false); // Track if player has been initialized
   const [isLoading, setIsLoading] = useState(false);
+  const [isPosterVisible, setIsPosterVisible] = useState(true);
   // const [allAdsCompleted, setAllAdsCompleted] = useState(adUrl ? false : true);
   const setupAdEventListenersRef = useRef<
     ((player: OpenPlayerJS) => void) | null
@@ -249,7 +250,7 @@ export const VideoPlayer = memo(function VideoPlayer({
         return loading;
       });
     },
-    [onVideoLoadStart, onVideoLoadEnd]
+    [onVideoLoadStart, onVideoLoadEnd],
   );
 
   useEffect(() => {
@@ -325,7 +326,7 @@ export const VideoPlayer = memo(function VideoPlayer({
 
       onOpenPlayerReady?.(player);
     },
-    [onOpenPlayerReady, adUrl, playbackSpeed]
+    [onOpenPlayerReady, adUrl, playbackSpeed],
   );
 
   const updatePlayerMutedState = useCallback(
@@ -335,7 +336,7 @@ export const VideoPlayer = memo(function VideoPlayer({
         onMutedChange?.(muted);
       }
     },
-    [onMutedChange, videoRef]
+    [onMutedChange],
   );
 
   const playThePlayer = useCallback(() => {
@@ -397,7 +398,7 @@ export const VideoPlayer = memo(function VideoPlayer({
       // Fallback to content if player state check fails
       console.warn(
         "Error checking player state, falling back to content:",
-        error
+        error,
       );
       player?.getMedia().play();
     }
@@ -440,6 +441,7 @@ export const VideoPlayer = memo(function VideoPlayer({
 
       changePlayerStateRef(true);
 
+      setIsPosterVisible(true);
       isPlayerInitialized.current = false;
       playerRef.current = null;
     };
@@ -524,6 +526,23 @@ export const VideoPlayer = memo(function VideoPlayer({
     updateLoadingState,
   ]);
 
+  useEffect(() => {
+    if (!videoRef.current) return;
+
+    const videoElement = videoRef.current;
+
+    const handleMuteAndPlay = () => {
+      updatePlayerMutedState(true);
+      playThePlayer();
+    };
+
+    videoElement.addEventListener("muteAndPlay", handleMuteAndPlay);
+
+    return () => {
+      videoElement.removeEventListener("muteAndPlay", handleMuteAndPlay);
+    };
+  }, [updatePlayerMutedState, playThePlayer]);
+
   // A function to check and call onEnded if both ads and video are completed
   const tryCallingEnd = useCallback(() => {
     const allAdsCompleted = playerStateRef.current.allAdsCompleted;
@@ -559,6 +578,7 @@ export const VideoPlayer = memo(function VideoPlayer({
     const handlePlaying = () => {
       // Clear loading state when video actually starts playing
       updateLoadingState(false, true);
+      setIsPosterVisible(false);
 
       // Check if shouldPlay is false and pause if needed
       if (!playerStateRef.current.shouldPlay) {
@@ -582,7 +602,7 @@ export const VideoPlayer = memo(function VideoPlayer({
           videoElement.currentTime,
           typeof startTime === "number" && startTime !== -1
             ? Math.floor(latency)
-            : 0
+            : 0,
         );
       }
     };
@@ -609,7 +629,7 @@ export const VideoPlayer = memo(function VideoPlayer({
       videoElement.removeEventListener("play", handlePlay);
       videoElement.removeEventListener(
         "adsallAdsCompleted",
-        handleAllAdsCompleted
+        handleAllAdsCompleted,
       );
       videoElement.removeEventListener("ended", handleEnded);
     };
@@ -652,7 +672,7 @@ export const VideoPlayer = memo(function VideoPlayer({
         playerStateRef.current.thirdQuartileFired = false;
       }
     },
-    [playerStateRef]
+    [playerStateRef],
   );
 
   useEffect(() => {
@@ -720,10 +740,10 @@ export const VideoPlayer = memo(function VideoPlayer({
       changePlayerStateRef(
         false,
         videoRef.current?.duration,
-        videoRef.current?.currentTime
+        videoRef.current?.currentTime,
       );
     },
-    [playerStateRef, changePlayerStateRef, onSeeked]
+    [playerStateRef, changePlayerStateRef, onSeeked],
   );
 
   return (
@@ -732,12 +752,9 @@ export const VideoPlayer = memo(function VideoPlayer({
         id={id}
         className={cn(
           "gencl:h-auto gencl:w-auto gencl:bg-center gencl:bg-no-repeat gencl:object-cover",
-          className
+          className,
         )}
-        style={{
-          backgroundImage: `url(${poster})`,
-          ...style,
-        }}
+        style={style}
         // poster={poster}
         ref={videoRef}
         loop={loop}
@@ -748,6 +765,12 @@ export const VideoPlayer = memo(function VideoPlayer({
         // onEnded={handleEnded}
         {...props}
       />
+      {/**
+       * This dynamic poster implementation allows us to lazy load poster in whereas vidoe element's poster doesn't allow us to do that.
+       */}
+      {poster && isPosterVisible && (
+        <VideoPoster src={poster} className={className} />
+      )}
       {isLoading && (
         <div
           role="status"
@@ -781,5 +804,37 @@ export const VideoPlayer = memo(function VideoPlayer({
         />
       )}
     </div>
+  );
+});
+
+type VideoPosterProps = {
+  src: string;
+  className?: string;
+};
+
+export const VideoPoster = memo(function VideoPoster({
+  src,
+  className,
+}: VideoPosterProps) {
+  const [visible, setVisible] = useState(true);
+
+  if (!visible) return null;
+
+  return (
+    <img
+      src={src}
+      loading="lazy"
+      className={cn(
+        "gencl:absolute gencl:inset-0 gencl:h-full gencl:w-full gencl:object-cover gencl:pointer-events-none",
+        className,
+      )}
+      style={{
+        // To manage blink in safari I have added this transform properties.
+        transform: "translate3d(0, 0, 0)",
+        WebkitTransform: "translate3d(0, 0, 0)",
+        // backfaceVisibility: "hidden",
+      }}
+      onError={() => setVisible(false)}
+    />
   );
 });

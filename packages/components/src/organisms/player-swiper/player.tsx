@@ -22,6 +22,7 @@ import { useCallback, useMemo, lazy, Suspense } from "react";
 import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
 import { ComponentProps } from "react";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import { VideoTypes } from "@genuin/components/context";
 import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 
@@ -37,7 +38,7 @@ type PlayerProps = {
   onReactionStateChange?: (
     videoId: string,
     videoSlug: string,
-    isReacted: boolean
+    isReacted: boolean,
   ) => void;
   onCommunityJoinStatusChange: ComponentProps<
     typeof ControlLayer
@@ -123,6 +124,7 @@ export function Player({
         activeIndex={activeIndex}
         onAdStarted={onAdStarted}
         onAdEnded={onAdEnded}
+        videoType={post.video.video_type ?? VideoTypes.Content}
       >
         <div
           className={cn(
@@ -160,6 +162,7 @@ export function Player({
                 adUrl={post.video.adUrl ?? undefined}
                 id={"feed-player--" + post.video.id}
                 poster={post.video.thumbnail ?? ""}
+                videoType={post.video.video_type ?? VideoTypes.Content}
                 className={cn(
                   "gencl:h-full! gencl:w-full",
                   videoCrop ||

@@ -15,6 +15,34 @@ type RootPortalProps = {
   enabledToaster?: boolean;
 };
 
+const BRAND_OVERLAY_Z_INDEX: Record<number, string> = {
+  // Adland, India-express
+  2764: "2147483647",
+  2793: "2147483647",
+  // Fansided, Minute Media
+  3211: "50",
+  2633: "50",
+  // Carlist
+  3075: "1000000",
+  2314: "1000000",
+  // Mobil123
+  2992: "999999",
+  2556: "999999",
+  // one2car
+  2993: "99999",
+  2557: "99999",
+  // carmudi
+  3080: "1000000",
+  2558: "1000000",
+  // Bargain Hunter
+  2801: "10000",
+};
+
+const getOverlayZIndexByBrandId = (brandId?: number): string | undefined => {
+  if (!brandId) return undefined;
+  return BRAND_OVERLAY_Z_INDEX[brandId];
+};
+
 /**
  * The RootPortal component is a React component that renders its children into a portal at the root of the document body.
  * @param param0 RootPortalProps - The props for the RootPortal component.
@@ -52,27 +80,11 @@ export function RootPortal({
       if (useShadowDOM) {
         // Get or create overlay shadow host
         const { shadowRoot, host } = getOrCreateOverlayShadowHost();
-        // TODO: Apply z-index conditionally since we don’t want clients to set this manually. This can be removed once full custom CSS support for brands is added in BCC.
-        // Brand : Adland, India-exppress
-        if (brandDetails.brand_id === 2764 || brandDetails.brand_id === 2793) {
-          host.style.zIndex = "2147483647";
-        } else if (
-          // Brand : Fansided or Minute Media
-          brandDetails.brand_id === 3211 ||
-          brandDetails.brand_id === 2633
-        ) {
-          host.style.zIndex = "50";
-        }
-        // Brand : Carlist
-        else if (
-          brandDetails.brand_id === 3075 ||
-          brandDetails.brand_id === 2314
-        ) {
-          host.style.zIndex = "1000000";
-        }
-        // Brand : Bargain Hunter
-        else if (brandDetails.brand_id === 2801) {
-          host.style.zIndex = "10000";
+        const brandOverlayZIndex = getOverlayZIndexByBrandId(
+          brandDetails.brand_id,
+        );
+        if (brandOverlayZIndex) {
+          host.style.zIndex = brandOverlayZIndex;
         }
         // Apply custom styles to the overlay host when provided via props
         if (style) {
@@ -97,9 +109,8 @@ export function RootPortal({
   useEffect(() => {
     if (!containerElement) return;
     containerElement?.classList.add("gen-sdk-class");
-
-    const isCarlistBrand =
-      brandDetails.brand_id === 3075 || brandDetails.brand_id === 2314;
+    const carlistBrandIds = [2992, 2993, 3080, 3075, 2314, 2557, 2558, 2556];
+    const isCarlistBrand = carlistBrandIds.includes(brandDetails.brand_id);
     if (isCarlistBrand) {
       containerElement.style.backgroundColor = "rgba(0, 0, 0, 0.85)";
     } else {

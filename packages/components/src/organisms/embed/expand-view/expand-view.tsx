@@ -16,6 +16,7 @@ import {
 } from "@genuin/components/lib/sdk-event-emitter";
 import { FeedSkeleton } from "@genuin/components/templates/feed/feed-skeleton.js";
 import useViewportHeight from "@genuin/components/hooks/use-screen-height";
+import { useAnalytics } from "@genuin/components/context/index.js";
 import { isMiddlewareOverlayEnabled } from "@genuin/components/lib/utils";
 import { fetchVideoDetails } from "@genuin/components/react-query/api/video";
 import { queryClient } from "@genuin/components/react-query/client";
@@ -109,9 +110,11 @@ export function EmbedExpandView({
   } = useBaseContext();
   const {
     brand: { isIndianExpress },
+    view: { isPlacementView },
   } = useEmbedConfigs();
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
   const viewportHeight = useViewportHeight();
+  const { updateScreen } = useAnalytics();
   const previousMuteState = usePrevious(muted);
   const isSectioned = embedEventBus.getContext().isSectioned;
   const {
@@ -135,13 +138,9 @@ export function EmbedExpandView({
 
   // Function to handle closing expand view - restores mute state and goes back
   const handleCloseExpandView = (isEscapeKey?: boolean) => {
-    // For iHeart layout, maintain the current mute state (preserve user preference)
-    if (
-      brandLayoutType !== "iheart" &&
-      typeof previousMuteState === "boolean"
-    ) {
-      setMuted(true);
-    }
+    // Update the screen type based on the current view
+    updateScreen(isPlacementView ? "view_placement" : "view_embed");
+
     setPlaybackSpeed((x) => {
       if (x.speed !== 1) {
         return { ...x, speed: 1 };
@@ -195,6 +194,8 @@ export function EmbedExpandView({
   };
 
   useEffect(() => {
+    // Update the screen type based on the current view
+    updateScreen("expanded_view");
     /**
      * Initialization effect for EmbedExpandView component.
      *
@@ -389,9 +390,6 @@ export function EmbedExpandView({
   // Handle mute state and global playing state when entering expand view
   useEffect(() => {
     if (brandLayoutType === "iheart") {
-      setTimeout(() => {
-        setMuted(muted);
-      }, 100);
       if (
         websiteType === "legacy" &&
         !baseEventBus.getContext().globalPlayingState
@@ -407,7 +405,7 @@ export function EmbedExpandView({
         setMuted(false);
       }, 300);
     }
-  }, [brandLayoutType, setMuted, muted, baseEventBus, websiteType]);
+  }, [brandLayoutType, setMuted, baseEventBus, websiteType]);
 
   // Add keyboard event listener for ESC key
   useEffect(() => {
@@ -456,6 +454,8 @@ export function EmbedExpandView({
         }
       } catch (e) {
         // Silently ignore if the browser blocks without user gesture
+        // Update the screen type based on the current view
+        updateScreen(isPlacementView ? "view_placement" : "view_embed");
       }
     };
 

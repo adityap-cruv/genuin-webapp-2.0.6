@@ -156,7 +156,12 @@ export function EmbedRoot({
               embedData={embedData}
               isWebSDK={true}
               user={user ?? null}
-              brandDetails={brandDetails}>
+              brandDetails={brandDetails}
+              currentScreen={
+                config.embedDetails?.placement_id
+                  ? 'view_placement'
+                  : 'view_embed'
+              }>
               <AuthProvider
                 onSignIn={() => {}}
                 onSignOut={() => {}}

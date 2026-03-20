@@ -268,7 +268,6 @@ export function Embed({
                   activeIndex: 10,
                 },
               );
-              observer.disconnect();
             }
           });
         },
@@ -279,40 +278,14 @@ export function Embed({
       return () => observer.disconnect();
     },
     [
-      wasLazilyLoaded,
       isEmbed,
       EventName,
       config.community.communityIds,
       config.community.communityLoopIds,
       isSectioned,
       sectionList.length,
-      track,
     ],
   );
-
-  // Track EMBED_VIEWED/PLACEMENT_VIEWED immediately if was lazily loaded ( SDK handled the intersection )
-  useEffect(() => {
-    if (wasLazilyLoaded) {
-      track(isEmbed ? EventName.EMBED_VIEWED : EventName.PLACEMENT_VIEWED, {
-        community_id: config.community.communityIds,
-        group_id: config.community.communityLoopIds,
-        ...(!isEmbed && {
-          has_sections: isSectioned,
-          section_count: sectionList.length,
-        }),
-        activeIndex: 10,
-      });
-    }
-  }, [
-    wasLazilyLoaded,
-    isEmbed,
-    EventName,
-    config.community.communityIds,
-    config.community.communityLoopIds,
-    isSectioned,
-    sectionList.length,
-    track,
-  ]);
 
   // Track EMBED_INITIALIZED event when component mounts
   useEffect(() => {

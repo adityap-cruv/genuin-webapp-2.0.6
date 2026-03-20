@@ -26,28 +26,29 @@ const WatchBoundaryOverlay = lazy(() =>
     "@genuin/components/molecules/feed-player/control-layer/watch-boundary-overlay.js"
   ).then((m) => ({
     default: m.WatchBoundaryOverlay,
-  }))
+  })),
 );
 
 const ControlLayer = lazy(() =>
   import("../../molecules/feed-player/control-layer/index.js").then((m) => ({
     default: m.ControlLayer,
-  }))
+  })),
 );
 
 const FeedPlayer = lazy(() =>
   import("../../molecules/feed-player/index.js").then((m) => ({
     default: m.FeedPlayer,
-  }))
+  })),
 );
 
 const Linkouts = lazy(() =>
   import("../linkouts/index.js").then((m) => ({
     default: m.Linkouts,
-  }))
+  })),
 ) as React.ComponentType<any>;
 
 import { useEmbedManagerContext } from "../embed/context";
+import { VideoTypes } from "@genuin/components/context";
 
 /**
  * Helper function to extract the most appropriate URL from linkouts based on priority:
@@ -105,7 +106,7 @@ const embedTileVariants = cva(
     defaultVariants: {
       variant: "default",
     },
-  }
+  },
 );
 
 export function EmbedTile({
@@ -147,9 +148,8 @@ export function EmbedTile({
       postDetails.video.attributes?.podcast_id,
       postDetails.video.attributes?.station_id,
       postDetails.video.attributes?.type,
-    ]
+    ],
   );
-
   return (
     <>
       {shouldShowMiddlewareOverlay && postDetails.video.type === "overlay" ? (
@@ -175,7 +175,7 @@ export function EmbedTile({
               "gencl:border gencl:border-secondary-150":
                 config.video.showBorderAroundVideo,
             },
-            className
+            className,
           )}
           {...restProps}
         >
@@ -196,6 +196,7 @@ export function EmbedTile({
             totalVideos={totalVideos}
             swiper={swiper}
             activeIndex={activeIndex}
+            videoType={postDetails.video.video_type ?? VideoTypes.Content}
           >
             <EmbedPlayer
               postDetails={postDetails}
@@ -231,7 +232,7 @@ function EmbedPlayer({
     ? "responsiveness"
     : getBrandType(
         embedDetails?.embedData.card_layout_id,
-        embedDetails?.embedData.video_layout_id
+        embedDetails?.embedData.video_layout_id,
       );
 
   const handleClickOnEmbedTile = useCallback(() => {
@@ -292,7 +293,7 @@ function EmbedPlayer({
         {
           "gencl:opacity-50 gencl:transition-opacity":
             !isActive && config.styling.isOpacityDown,
-        }
+        },
       )}
     >
       <Suspense fallback={null}>
@@ -307,11 +308,13 @@ function EmbedPlayer({
               ? postDetails.section?.cover_url
               : postDetails.video.thumbnail
           }
-          className={
+          videoType={postDetails.video.video_type ?? VideoTypes.Content}
+          className={cn(
+            "gencl:h-full! gencl:w-full",
             videoCrop
-              ? "gencl:object-cover gencl:h-full! gencl:w-full gencl:bg-cover"
-              : "gencl:h-full! gencl:bg-contain!"
-          }
+              ? "gencl:object-cover gencl:bg-cover"
+              : "gencl:object-contain gencl:bg-contain!",
+          )}
           layoutType={layoutType}
           aria-hidden="true"
           tabIndex={-1}
@@ -431,13 +434,13 @@ function OutsideComponents({ postDetails }: { postDetails: PostDetailsType }) {
         <div className="gencl:h-10">
           <Stats
             className={cn(
-              "gencl:flex gencl:gap-2 gencl:justify-between gencl:p-3 gencl:w-full"
+              "gencl:flex gencl:gap-2 gencl:justify-between gencl:p-3 gencl:w-full",
             )}
             valueClassName={cn(
               "gencl:text-black! ",
               view.isPlacementView
                 ? "gencl:text-body-2-medium gencl:font-bold"
-                : "gencl:text-body-2-medium"
+                : "gencl:text-body-2-medium",
             )}
             pairClassName="gencl:gap-1"
             stats={stats}

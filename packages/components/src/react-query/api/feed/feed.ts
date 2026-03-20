@@ -40,7 +40,7 @@ async function fetchFeed(
     pageSession?: string;
     lastVideoId?: string | undefined;
   },
-  options?: UseFeedOptionsType
+  options?: UseFeedOptionsType,
 ) {
   const deviceId = getDeviceId(options?.isInIframe || false)
     ? encodeURI(getDeviceId(options?.isInIframe || false) as string)
@@ -227,10 +227,10 @@ async function fetchFeed(
       ...contextualFeedParamsBody,
     })
     .then((res) => {
-      if (res.status !== 200) {
-        throw new Error("Something went wrong feed api.");
-      }
-      if (!res.data || !res.data.data) {
+      // if (res.status !== 200) {
+      //   throw new Error("Something went wrong feed api.");
+      // }
+      if (!res.data || !res.data.data || res.status !== 200) {
         return {
           feed: [],
           hasSection: false,
@@ -245,7 +245,7 @@ async function fetchFeed(
         feed: parseFeed(
           res.data.data.feeds,
           options?.shouldShowMiddlewareOverlay,
-          res.data.data.end_of_feed
+          res.data.data.end_of_feed,
         ),
         hasSection: res.data.data.has_section ?? false,
         pageSession: res.data.data.page_session,
@@ -330,7 +330,7 @@ const createEmptyFeedPage = (): FeedPage => ({
  * @returns Feed page with the requested video details
  */
 async function fetchFeedByVideoIds(
-  options: UseFeedOptionsType
+  options: UseFeedOptionsType,
 ): Promise<FeedPage> {
   const videoDetails = await fetchVideoDetails(
     "",
@@ -338,7 +338,7 @@ async function fetchFeedByVideoIds(
     options.placementId,
     options.shouldShowMiddlewareOverlay,
     options.brandContext,
-    options.videoIds
+    options.videoIds,
   );
 
   return {
@@ -358,7 +358,7 @@ async function fetchFeedByVideoIds(
  */
 function isVideoInFeed(feed: FeedPage["feed"], slug: string): boolean {
   return feed.some(
-    (item) => item.video.slug === slug || item.video.id === slug
+    (item) => item.video.slug === slug || item.video.id === slug,
   );
 }
 
@@ -371,10 +371,10 @@ function isVideoInFeed(feed: FeedPage["feed"], slug: string): boolean {
  */
 function moveVideoToTop(
   feed: FeedPage["feed"],
-  slug: string
+  slug: string,
 ): FeedPage["feed"] {
   const videoIndex = feed.findIndex(
-    (item) => item.video.slug === slug || item.video.id === slug
+    (item) => item.video.slug === slug || item.video.id === slug,
   );
   const video = feed[videoIndex];
 
@@ -402,7 +402,7 @@ function moveVideoToTop(
 async function prependVideoToFeed(
   feedData: FeedPage,
   startVideoSlug: string,
-  options?: UseFeedOptionsType
+  options?: UseFeedOptionsType,
 ): Promise<FeedPage> {
   try {
     const videoDetails = await fetchVideoDetails(
@@ -410,7 +410,7 @@ async function prependVideoToFeed(
       options?.embedId,
       options?.placementId,
       options?.shouldShowMiddlewareOverlay,
-      options?.brandContext
+      options?.brandContext,
     );
 
     // For single video mode, return only the fetched video
@@ -441,7 +441,7 @@ async function prependVideoToFeed(
 async function prependInitialVideosToFeed(
   feedData: FeedPage,
   initialVideoIds: string[],
-  options?: UseFeedOptionsType
+  options?: UseFeedOptionsType,
 ): Promise<FeedPage> {
   try {
     const videoDetails = await fetchVideoDetails(
@@ -450,12 +450,12 @@ async function prependInitialVideosToFeed(
       options?.placementId,
       options?.shouldShowMiddlewareOverlay,
       options?.brandContext,
-      initialVideoIds
+      initialVideoIds,
     );
     // Filter out any videos that are already in the feed to avoid duplicates
     const existingVideoIds = new Set(initialVideoIds);
     const uniqueFeedVideos = feedData.feed.filter(
-      (feed) => !existingVideoIds.has(feed.video.id)
+      (feed) => !existingVideoIds.has(feed.video.id),
     );
     return {
       ...feedData,
@@ -483,7 +483,7 @@ async function prependInitialVideosToFeed(
 async function createFeedQueryFn(
   feedType: FeedType,
   pageParam: { pageSession?: string; lastVideoId?: string } | undefined,
-  options?: UseFeedOptionsType
+  options?: UseFeedOptionsType,
 ): Promise<FeedPage> {
   const startVideoSlug = options?.startVideoSlug;
   const hasVideoIds = options?.videoIds && options.videoIds.length > 0;
@@ -522,7 +522,7 @@ async function createFeedQueryFn(
     feedData = await prependInitialVideosToFeed(
       feedData,
       options!.initialVideoIds!,
-      options
+      options,
     );
   }
 
@@ -536,11 +536,11 @@ async function createFeedQueryFn(
   if (isFirstPage && hasPlaceholderData) {
     const placeholderVideos = options!.placeholderData!.pages[0]!.feed;
     const placeholderVideoIds = new Set(
-      placeholderVideos.map((item) => item.video.id)
+      placeholderVideos.map((item) => item.video.id),
     );
     // Filter out any videos from feedData that are already in placeholder data
     const uniqueFeedVideos = feedData.feed.filter(
-      (item) => !placeholderVideoIds.has(item.video.id)
+      (item) => !placeholderVideoIds.has(item.video.id),
     );
     feedData = {
       ...feedData,
@@ -559,7 +559,7 @@ async function createFeedQueryFn(
       ...feedData,
       feed: feedData.feed.filter(
         (item) =>
-          !idsToFilter.has(item.video.id) && !idsToFilter.has(item.video.slug)
+          !idsToFilter.has(item.video.id) && !idsToFilter.has(item.video.slug),
       ),
     };
   }
@@ -691,7 +691,7 @@ export function setQueryDataForJoinCommunityStatusInFeed({
         ...oldData,
         pages: updatedPages,
       };
-    }
+    },
   );
 }
 
@@ -782,7 +782,7 @@ export function setQueryDataForGroupSubscriptionChangeInFeed({
         ...oldData,
         pages: updatedPages,
       };
-    }
+    },
   );
 }
 

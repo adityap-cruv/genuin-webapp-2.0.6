@@ -9,7 +9,7 @@ import { AdInfoType } from "@genuin/components/molecules/feed-player";
 const WatchBoundaryOverlay = lazy(() =>
   import(
     "../../molecules/feed-player/control-layer/watch-boundary-overlay.js"
-  ).then((m) => ({ default: m.WatchBoundaryOverlay }))
+  ).then((m) => ({ default: m.WatchBoundaryOverlay })),
 ) as React.ComponentType<any>;
 
 interface SectionedContentProps {
@@ -33,7 +33,7 @@ interface SectionedContentProps {
   onReactionStateChange?: (
     videoId: string,
     videoSlug: string,
-    isReacted: boolean
+    isReacted: boolean,
   ) => void;
   onCommentCountChange?: any;
   totalVideos?: number;
@@ -44,6 +44,7 @@ interface SectionedContentProps {
   setVerticalSwipers: (swipers: Record<number, any>) => void;
   onAdStarted: (event?: AdInfoType) => void;
   onAdEnded: (event?: AdInfoType) => void;
+  onSwiperToggle: (disable: boolean) => void;
 }
 
 export function SectionedContent({
@@ -70,6 +71,7 @@ export function SectionedContent({
   setVerticalSwipers,
   onAdEnded,
   onAdStarted,
+  onSwiperToggle,
 }: SectionedContentProps) {
   const { track, EventName } = useAnalytics();
 
@@ -78,7 +80,7 @@ export function SectionedContent({
       direction="horizontal"
       className={cn(
         "gencl:h-full gencl:aspect-reel",
-        isMobile && "gencl:h-full gencl:w-full"
+        isMobile && "gencl:h-full gencl:w-full",
       )}
       onSwiper={setHorizontalSwiper}
       onActiveIndexChange={(swiper: any) => {
@@ -168,6 +170,7 @@ export function SectionedContent({
                         totalVideos={totalVideos}
                         onAdEnded={onAdEnded}
                         onAdStarted={onAdStarted}
+                        onSwiperToggle={onSwiperToggle}
                       />
                     ) : post.video.type === "complete" ? (
                       <Suspense fallback={null}>

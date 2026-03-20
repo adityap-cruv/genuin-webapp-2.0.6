@@ -18,7 +18,11 @@ import { useCommentMentions } from "../../hooks/use-comment-mentions";
 import { useCommentInputHandlers } from "../../hooks/use-comment-input-handlers";
 import { useCommentTextareaHandlers } from "../../hooks/use-description-textarea-handlers";
 import HighlightedInput from "./highlighted-field";
-import { Command, CommandList, CommandItem } from "@genuin/ui/components/command";
+import {
+  Command,
+  CommandList,
+  CommandItem,
+} from "@genuin/ui/components/command";
 import { useAnalytics } from "@genuin/components/context/analytics";
 
 // Types for props
@@ -92,11 +96,11 @@ export function MentionInput({
       }
       onCommentPosted?.(commentData);
     },
-    [track, EventName.VIDEO_COMMENTED, videoId, onCommentPosted]
+    [track, EventName.VIDEO_COMMENTED, videoId, onCommentPosted],
   );
 
   const [selectedMentions, setSelectedMentions] = useState<SelectedMention[]>(
-    []
+    [],
   );
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [commentValue, setCommentValue] = useState("");
@@ -158,7 +162,7 @@ export function MentionInput({
           "gencl:bg-white gencl:border-secondary-150 gencl:flex gencl:justify-between gencl:items-center",
           {
             "gencl:p-4 gencl:border-t": inputType === "text",
-          }
+          },
         )}
       >
         {isMentioning && (
@@ -168,7 +172,7 @@ export function MentionInput({
               {
                 "gencl:bottom-18.25": inputType === "text",
                 "gencl:top-36": inputType === "textarea",
-              }
+              },
             )}
           >
             <Command className="gencl:bg-white gencl:rounded-t-2xl gencl:max-h-60 gencl:overflow-y-auto gencl:shadow-[0px_-4px_15px_0px_#3F3F3F0D]">
@@ -193,7 +197,7 @@ export function MentionInput({
                       onSelect={() => handleUserSelect(mention)}
                       className={cn(
                         "gencl:flex gencl:items-center gencl:gap-x-3 gencl:rounded-md gencl:p-2 gencl:px-4 gencl:cursor-pointer gencl:hover:bg-secondary-100",
-                        idx === activeMentionIndex && "gencl:bg-secondary-100"
+                        idx === activeMentionIndex && "gencl:bg-secondary-100",
                       )}
                       value={name}
                     >
@@ -239,7 +243,7 @@ export function MentionInput({
               {
                 "gencl:border-red-400":
                   description.length === maxLength && inputType === "textarea",
-              }
+              },
             )}
           >
             {!!user && (
@@ -264,7 +268,7 @@ export function MentionInput({
                     {
                       "gencl:text-error-status":
                         description.length === maxLength,
-                    }
+                    },
                   )}
                 >
                   {description.length}/{maxLength}
@@ -340,7 +344,7 @@ export function MentionInput({
             theme="text"
             className={cn(
               "gencl:!text-body-1-medium",
-              isFormValid ? "gencl:text-primary" : "gencl:text-secondary-400"
+              isFormValid ? "gencl:text-primary" : "gencl:text-secondary-400",
             )}
             disabled={!isFormValid || isPending || !user}
             aria-label="Post comment"

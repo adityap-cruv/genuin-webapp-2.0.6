@@ -10,7 +10,7 @@
 export const validateVideoAspectRatio = (
   videoSource: File | string,
   aspectRatio: "9:16" | "1:1" = "9:16", // "9:16" (width : height)
-  tolerance: number = 0.0005 // lowerbound = 0.5620, upperbound = 0.5630
+  tolerance: number = 0.0005, // lowerbound = 0.5620, upperbound = 0.5630
 ): Promise<boolean> => {
   const targetWidth = Number(aspectRatio.split(":")[0]);
   const targetHeight = Number(aspectRatio.split(":")[1]);
@@ -61,7 +61,7 @@ export const validateVideoAspectRatio = (
 export const validateVideoDuration = (
   videoSource: File | string,
   minDuration?: number,
-  maxDuration?: number
+  maxDuration?: number,
 ): Promise<boolean> => {
   return new Promise((resolve, reject) => {
     const isFile = videoSource instanceof File;

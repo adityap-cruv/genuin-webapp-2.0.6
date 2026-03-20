@@ -19,7 +19,7 @@ export function parseUserData(
 ): AuthUser {
   return {
     id: data.user_id,
-    image: data.profile_image_s ?? data.profile_image,
+    image: data.profile_image_s || data.profile_image,
     isAvatar: data.is_avatar,
     // userId: data.user_id,
     phoneNumber: data.phone,

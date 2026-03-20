@@ -13,13 +13,16 @@ import { cn } from "@genuin/ui/lib/utils";
 import { Link } from "@genuin/components/molecules/link";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { useAnalytics } from "@genuin/components/context";
+import { VideoTypes } from "@genuin/components/context";
 
 export function CommunityCard({
   communityInfo,
   videoId,
+  videoType,
 }: {
   communityInfo: RepostCommunityType;
   videoId: string;
+  videoType: VideoTypes;
 }) {
   return (
     <div>
@@ -71,7 +74,11 @@ export function CommunityCard({
                     />
                   )}
                 </div>
-                <RepostButton videoId={videoId} destinationId={item.chat_id} />
+                <RepostButton
+                  videoType={videoType}
+                  videoId={videoId}
+                  destinationId={item.chat_id}
+                />
               </div>
             </li>
           );
@@ -84,9 +91,11 @@ export function CommunityCard({
 function RepostButton({
   destinationId,
   videoId,
+  videoType,
 }: {
   destinationId: string;
   videoId: string;
+  videoType: VideoTypes;
 }) {
   const { track, EventName } = useAnalytics();
 
@@ -101,6 +110,7 @@ function RepostButton({
         content_category: "loop",
         event_record_screen: "feed",
         event_target_screen: "none",
+        video_type: videoType,
       });
       Toast.Success({ message: "Video reposted successfully!" });
     },

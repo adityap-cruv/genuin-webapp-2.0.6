@@ -12,7 +12,7 @@ import {
 import { useBaseContext } from "@genuin/components/context/base";
 import { audioManager } from "@genuin/components/lib/audio-manager";
 import { usePlayerContext } from "./context/context";
-import { useAnalytics } from "@genuin/components/context/analytics";
+import { useAnalytics, VideoTypes } from "@genuin/components/context/analytics";
 import { cn } from "@genuin/ui/lib/utils";
 import { BrandType } from "@genuin/components/lib/utils/brand-layout";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
@@ -38,6 +38,7 @@ type FeedPlayerProps = Omit<
    * Index is needed so passing it.
    */
   index?: number;
+  videoType: VideoTypes;
 };
 
 /**
@@ -58,6 +59,7 @@ export const FeedPlayer = memo(function FeedPlayer({
   onPlay,
   onPause,
   onLoadStart,
+  videoType,
   ...props
 }: FeedPlayerProps) {
   // adUrl = undefined;
@@ -89,7 +91,7 @@ export const FeedPlayer = memo(function FeedPlayer({
   // TODO: this is temporary code for qa-testing, need to remove once qa is done.
   adUrl = useMemo(
     () => embedDetails?.rootElement?.getAttribute("data-ad-url") ?? adUrl,
-    [adUrl]
+    [adUrl],
   );
 
   useEffect(() => {
@@ -103,29 +105,10 @@ export const FeedPlayer = memo(function FeedPlayer({
   }, [baseContextManager]);
 
   useEffect(() => {
-    // If brand layout is iheart, do not register video
-    // TODO: refactor audio manager befor merging iheart branch in develop, otherwise it will break iheart feed player.
-    if (brandLayoutType === "iheart") return;
-
-    audioManager.register(id, () => {
-      mute(false);
-    });
-    return () => {
-      audioManager.unregister(id);
-    };
-  }, [id]);
-
-  useEffect(() => {
-    // If brand layout is iheart, do not register video
-    // TODO: refactor audio manager befor merging iheart branch in develop, otherwise it will break iheart feed player.
-    if (brandLayoutType === "iheart") return;
-
     // this is the key line — fire unmute when this player unmutes
     if (!muted) {
       audioManager.notifyPlaying(id);
-      unmute(false);
-    } else {
-      mute(false);
+      //  unmute(false);
     }
   }, [muted]);
 
@@ -142,8 +125,9 @@ export const FeedPlayer = memo(function FeedPlayer({
       title: videoDescription,
       video_id: videoId,
       video_url: src,
+      video_type: videoType,
     };
-  }, [videoId, totalVideos, src]);
+  }, [videoId, totalVideos, src, videoType]);
 
   // Track when video comes into view using IntersectionObserver
   useEffect(() => {
@@ -160,7 +144,7 @@ export const FeedPlayer = memo(function FeedPlayer({
       },
       {
         threshold: 0.5,
-      }
+      },
     );
 
     observer.observe(playerRef.current);
@@ -179,7 +163,7 @@ export const FeedPlayer = memo(function FeedPlayer({
         audioManager.notifyPlaying(id);
       }
     },
-    [mute, unmute, id]
+    [mute, unmute, id],
   );
 
   const handleTimeUpdate = useCallback(
@@ -197,7 +181,7 @@ export const FeedPlayer = memo(function FeedPlayer({
         videoId,
       });
     },
-    [baseContextManager]
+    [baseContextManager],
   );
 
   const handleEnded = useCallback(
@@ -211,19 +195,18 @@ export const FeedPlayer = memo(function FeedPlayer({
         video_view_length: target?.currentTime,
       });
     },
-    [onEnded, stateHandleEnded, track, EventName, analyticsEventData]
+    [onEnded, stateHandleEnded, track, EventName, analyticsEventData],
   );
 
   const handlePlayerLoad = useCallback(
     (player: any) => {
       if (feedPlayerShouldPlay) {
-        audioManager.notifyPlaying(id);
         player.play();
         baseContextManager.setVideoWatched({ videoId, isWatched: false });
       }
       setPlayingState("READY");
     },
-    [feedPlayerShouldPlay, id, baseContextManager, videoId]
+    [feedPlayerShouldPlay, id, baseContextManager, videoId],
   );
 
   const handleVideoFirstQuartile = useCallback(
@@ -234,7 +217,7 @@ export const FeedPlayer = memo(function FeedPlayer({
         video_view_length: currentTime,
       });
     },
-    [track, EventName, analyticsEventData]
+    [track, EventName, analyticsEventData],
   );
 
   const handleVideoWatched = useCallback(
@@ -245,7 +228,7 @@ export const FeedPlayer = memo(function FeedPlayer({
         video_view_length: currentTime,
       });
     },
-    [track, EventName, analyticsEventData]
+    [track, EventName, analyticsEventData],
   );
 
   const handleVideoMidpoint = useCallback(
@@ -256,7 +239,7 @@ export const FeedPlayer = memo(function FeedPlayer({
         video_view_length: currentTime,
       });
     },
-    [track, EventName, analyticsEventData]
+    [track, EventName, analyticsEventData],
   );
 
   const handleVideoThirdQuartile = useCallback(
@@ -267,7 +250,7 @@ export const FeedPlayer = memo(function FeedPlayer({
         video_view_length: currentTime,
       });
     },
-    [track, EventName, analyticsEventData]
+    [track, EventName, analyticsEventData],
   );
 
   const handleOpenPlayerReady = useCallback(
@@ -275,7 +258,7 @@ export const FeedPlayer = memo(function FeedPlayer({
       onOpenPlayerReady?.(player);
       setPlayerRef(player);
     },
-    [onOpenPlayerReady, setPlayerRef]
+    [onOpenPlayerReady, setPlayerRef],
   );
 
   const handleOnPlay = useCallback(
@@ -290,7 +273,7 @@ export const FeedPlayer = memo(function FeedPlayer({
       }
       baseContextManager.setVideoWatched({ isWatched: false, videoId });
     },
-    [onPlay, setPlayingState, baseContextManager, videoId]
+    [onPlay, setPlayingState, baseContextManager, videoId],
   );
 
   const handleOnPause = useCallback(
@@ -298,7 +281,7 @@ export const FeedPlayer = memo(function FeedPlayer({
       onPause?.(event);
       setPlayingState("PAUSED");
     },
-    [onPause, setPlayingState]
+    [onPause, setPlayingState],
   );
   const handleVideoStart = useCallback(
     (duration: number, currentTime: number, latency: number) => {
@@ -309,7 +292,7 @@ export const FeedPlayer = memo(function FeedPlayer({
         latency: latency,
       });
     },
-    [track, EventName.VIDEO_STARTED, analyticsEventData]
+    [track, EventName.VIDEO_STARTED, analyticsEventData],
   );
 
   const handleAdStarted = useCallback(
@@ -323,7 +306,7 @@ export const FeedPlayer = memo(function FeedPlayer({
       // Handle ad started event if needed
       updateAdInfo(true, event);
     },
-    [updateAdInfo, track]
+    [updateAdInfo, track],
   );
 
   const handleAdCompleted = useCallback(
@@ -337,7 +320,7 @@ export const FeedPlayer = memo(function FeedPlayer({
       // Handle ad ended event if needed
       updateAdInfo(false, event);
     },
-    [updateAdInfo, track, videoId]
+    [updateAdInfo, track, videoId],
   );
 
   const handleAdSkipped = useCallback(
@@ -345,7 +328,7 @@ export const FeedPlayer = memo(function FeedPlayer({
       // Handle ad skipped event if needed
       updateAdInfo(false, event);
     },
-    [updateAdInfo]
+    [updateAdInfo],
   );
 
   const handleAdError = useCallback(
@@ -366,7 +349,7 @@ export const FeedPlayer = memo(function FeedPlayer({
       // Note: The VideoPlayer component now handles error recovery internally
       // using discardAdBreak() for individual ad failures or destroy() for fatal errors
     },
-    [updateAdInfo]
+    [updateAdInfo],
   );
 
   const handleAdClicked = useCallback(
@@ -379,14 +362,14 @@ export const FeedPlayer = memo(function FeedPlayer({
         cta_name: event?.title,
       });
     },
-    [track, videoId]
+    [track, videoId],
   );
 
   // Handle video load start - set playing state to LOADING
   const handleVideoLoadStart = useCallback(() => {
     setIsLoading(true);
   }, [setIsLoading]);
-  
+
   // Handle video load end - playing state will be updated by onPlay/onPause handlers
   const handleVideoLoadEnd = useCallback(() => {
     setIsLoading(false);
@@ -401,13 +384,13 @@ export const FeedPlayer = memo(function FeedPlayer({
         cta_name: event?.title,
       });
     },
-    [track, videoId]
+    [track, videoId],
   );
 
   // If the videoid is registered already start it with that start tiime.
   const startTime = useMemo(
     () => baseContextManager.getTimeInfo(videoId).currentTime,
-    [baseContextManager]
+    [baseContextManager],
   );
 
   return (

@@ -15,6 +15,14 @@ export const SWIPER_CONFIG = {
     DEFAULT: 1, // Original sensitivity for other OS
   },
   DEBOUNCE_TIME: 150, // New debounce time for wheel events
+  FREE_MODE: {
+    enabled: true,
+    momentum: true,
+    momentumBounce: true,
+    momentumBounceRatio: 1,
+    momentumRatio: 0.4,
+    minimumVelocity: 0,
+  },
 };
 
 /**

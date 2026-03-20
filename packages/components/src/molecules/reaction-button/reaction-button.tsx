@@ -16,7 +16,7 @@ import { cn } from "@genuin/ui/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 import { createReturnQueryParams } from "@genuin/components/lib/utils/return-query";
 import { Link } from "../link";
-import { useAnalytics } from "@genuin/components/context/analytics";
+import { useAnalytics, VideoTypes } from "@genuin/components/context/analytics";
 import { ActionPopover } from "../actions/action-popover";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
@@ -53,6 +53,7 @@ type ReactionButtonProps = ComponentProps<typeof PrimitiveButton> & {
   onReactionStateChange?: (isReacted: boolean) => void;
   videoId?: string;
   isCommentsLoaded?: boolean;
+  videoType: VideoTypes;
 } & VariantProps<typeof reactionButtonVariant>;
 
 export const ReactionButton = React.memo(function ReactionButton({
@@ -65,6 +66,7 @@ export const ReactionButton = React.memo(function ReactionButton({
   onClick,
   videoId,
   contentType,
+  videoType,
   isCommentsLoaded,
   ...restProps
 }: ReactionButtonProps) {
@@ -120,6 +122,7 @@ export const ReactionButton = React.memo(function ReactionButton({
           clickHandler?.();
         }
       }}
+      videoType={videoType}
       {...restProps}
     />
   );
@@ -220,6 +223,7 @@ function Button({
   videoSlug,
   onReactionStateChange,
   isCommentsLoaded,
+  videoType,
   ...restProps
 }: ReactionButtonProps) {
   const { user } = useAuthContext();
@@ -245,6 +249,7 @@ function Button({
         {
           content_id: contentId,
           video_id: videoId ?? contentId,
+          video_type: videoType,
           content_category: "loop",
           event_record_screen: "feed",
           event_target_screen: "none",

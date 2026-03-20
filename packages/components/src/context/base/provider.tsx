@@ -12,7 +12,10 @@ import {
   getNewDeviceId,
   useGetDeviceId,
 } from "@genuin/components/lib/utils/device-id";
-import { setBrandIdInAxiosInstance } from "@genuin/components/react-query/axios-instance";
+import {
+  setBrandIdInAxiosInstance,
+  setSDKVersionInAxiosInstance,
+} from "@genuin/components/react-query/axios-instance";
 import type { BrandDetailsConfigType } from "@genuin/components/types/brand";
 import type { PlaybackSpeedType } from "@genuin/components/molecules/feed-player/context/types";
 
@@ -28,6 +31,7 @@ import {
   SDKEventPayloadMap,
   SDKListenerEventName,
 } from "@genuin/components/lib/sdk-event-emitter";
+import { getSdkVersion } from "../analytics/utils";
 
 type BaseContextProviderProps = {
   children: React.ReactNode;
@@ -108,6 +112,7 @@ export function BaseContextProvider({
     if (brandDetails) {
       setBrandIdInAxiosInstance(brandDetails.brand_id);
     }
+    setSDKVersionInAxiosInstance(getSdkVersion());
   }, [brandDetails]);
 
   const embedDetails = useSafeEmbedContext();
@@ -125,7 +130,7 @@ export function BaseContextProvider({
 
   const baseContextManager = useMemo(
     () => FeedContextManager.getInstance(),
-    []
+    [],
   );
 
   // TODO: move this states to event based states.
@@ -170,7 +175,7 @@ export function BaseContextProvider({
           muted: !muted,
           volume: baseEventBus.getContext().volume,
         },
-        { debounceTime: 300 }
+        { debounceTime: 300 },
       );
     };
   }, [muted]);
@@ -182,7 +187,7 @@ export function BaseContextProvider({
         if (isInIframe) {
           internalStorageManager.setItem(
             DEVICE_ID_KEY_FOR_LOCAL_STORAGE,
-            deviceId
+            deviceId,
           );
         } else {
           setDeviceId(deviceId);
@@ -213,7 +218,7 @@ export function BaseContextProvider({
       baseEventBus.emit(
         "globalPlayingStateChange",
         undefined,
-        (currentContext) => ({ ...currentContext, globalPlayingState: true })
+        (currentContext) => ({ ...currentContext, globalPlayingState: true }),
       );
     };
 
@@ -221,7 +226,7 @@ export function BaseContextProvider({
       baseEventBus.emit(
         "globalPlayingStateChange",
         undefined,
-        (currentContext) => ({ ...currentContext, globalPlayingState: false })
+        (currentContext) => ({ ...currentContext, globalPlayingState: false }),
       );
       baseContextManager.setPlayPauseTracker({ isPlaying: false });
     };
@@ -239,12 +244,12 @@ export function BaseContextProvider({
     SDKEventEmitter.on(SDKListenerEventName.PLAYER_PLAY, handlePlayFromOutside);
     SDKEventEmitter.on(
       SDKListenerEventName.PLAYER_PAUSE,
-      handlePauseFromOutside
+      handlePauseFromOutside,
     );
     SDKEventEmitter.on(SDKListenerEventName.PLAYER_MUTE, handleMuteFromOutside);
     SDKEventEmitter.on(
       SDKListenerEventName.PLAYER_UNMUTE,
-      handleUnmuteFromOutside
+      handleUnmuteFromOutside,
     );
 
     return () => {
@@ -253,19 +258,19 @@ export function BaseContextProvider({
 
       SDKEventEmitter.off(
         SDKListenerEventName.PLAYER_PLAY,
-        handlePlayFromOutside
+        handlePlayFromOutside,
       );
       SDKEventEmitter.off(
         SDKListenerEventName.PLAYER_PAUSE,
-        handlePauseFromOutside
+        handlePauseFromOutside,
       );
       SDKEventEmitter.off(
         SDKListenerEventName.PLAYER_MUTE,
-        handleMuteFromOutside
+        handleMuteFromOutside,
       );
       SDKEventEmitter.off(
         SDKListenerEventName.PLAYER_UNMUTE,
-        handleUnmuteFromOutside
+        handleUnmuteFromOutside,
       );
     };
   }, [baseEventBus]);
@@ -284,7 +289,7 @@ export function BaseContextProvider({
     return () => {
       embedDetails.embedEventBus.off(
         "containerInViewChange",
-        handleInViewChange
+        handleInViewChange,
       );
     };
   }, [embedDetails?.embedEventBus, baseContextManager]);
@@ -305,7 +310,7 @@ export function BaseContextProvider({
           volume: baseContext.volume,
           autoplay: embedDetails?.embedData.media_play?.enable_autoplay,
         },
-        { debounceTime: 300 }
+        { debounceTime: 300 },
       );
     };
 
@@ -324,7 +329,7 @@ export function BaseContextProvider({
           muted: baseContext.muted,
           volume: baseContext.volume,
         },
-        { debounceTime: 300 }
+        { debounceTime: 300 },
       );
     };
 
