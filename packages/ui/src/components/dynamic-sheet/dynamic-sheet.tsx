@@ -204,11 +204,23 @@ function DynamicSheet({
   useEffect(() => {
     onDragging?.(isDragging);
     // Keep swiper disabled while the sheet is being dragged
-    onSwiperToggle?.(isDragging);
-  }, [isDragging, onDragging, onSwiperToggle]);
+    // When dragging ends, only re-enable swiper if not in panel-view or full-view
+    if (isDragging) {
+      onSwiperToggle?.(true);
+    } else if (currentState !== "panel-view" && currentState !== "full-view") {
+      onSwiperToggle?.(false);
+    }
+  }, [isDragging, onDragging, onSwiperToggle, currentState]);
 
   // ── Sheet-level pointer handlers (disable swiper on any touch/click) ───
   const disableDragAndSwipe = config.disableDragAndSwipe ?? false;
+
+  // Helper to safely re-enable swiper only when not in expanded states
+  const safeEnableSwiper = useCallback(() => {
+    if (currentState !== "panel-view" && currentState !== "full-view") {
+      onSwiperToggle?.(false);
+    }
+  }, [currentState, onSwiperToggle]);
 
   const handleSheetPointerDown = useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
@@ -221,8 +233,8 @@ function DynamicSheet({
 
   const handleSheetPointerUp = useCallback(() => {
     if (disableDragAndSwipe) return;
-    onSwiperToggle?.(false);
-  }, [disableDragAndSwipe, onSwiperToggle]);
+    safeEnableSwiper();
+  }, [disableDragAndSwipe, safeEnableSwiper]);
 
   // ── Content pull-to-close gesture ─────────────────────────────────────
   const contentRef = useRef<HTMLDivElement>(null);
@@ -237,9 +249,9 @@ function DynamicSheet({
     onSwiperToggle?.(true);
     if (scrollEndTimerRef.current) clearTimeout(scrollEndTimerRef.current);
     scrollEndTimerRef.current = setTimeout(() => {
-      onSwiperToggle?.(false);
+      safeEnableSwiper();
     }, 150);
-  }, [onSwiperToggle]);
+  }, [onSwiperToggle, safeEnableSwiper]);
 
   const handleContentPointerDown = useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
@@ -295,8 +307,8 @@ function DynamicSheet({
   const handleContentPointerUp = useCallback(() => {
     contentGesture.current = null;
     if (disableDragAndSwipe) return;
-    onSwiperToggle?.(false);
-  }, [disableDragAndSwipe, onSwiperToggle]);
+    safeEnableSwiper();
+  }, [disableDragAndSwipe, safeEnableSwiper]);
 
   // ── Computed height & transitions ──────────────────────────────────────
   const snappedHeight =
@@ -391,12 +403,10 @@ function DynamicSheet({
         style={panelPositionStyle}
         {...rest}
       >
-        {/* Drag indicator - show in expanded states (expand-view, panel-view, full-view) */}
+        {/* Drag indicator */}
         {!disableDragAndSwipe &&
           config.showIndicator !== false &&
-          (currentState === "expand-view" ||
-            currentState === "panel-view" ||
-            currentState === "full-view") && (
+          currentState !== "default" && (
             <DynamicSheetDragIndicator
               theme={config.theme}
               isDragging={isDragging}
