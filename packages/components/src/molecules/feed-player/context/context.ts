@@ -125,6 +125,10 @@ export type PlayerContextType = {
    * To update is loading state of the video
    */
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  /**
+   * A function to move to the next video.
+   */
+  moveToNextVideo: () => void;
 } & ExpandViewProps;
 
 export const PlayerContext = createContext<PlayerContextType | null>(null);

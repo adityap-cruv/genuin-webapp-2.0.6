@@ -150,6 +150,11 @@ export function PlayerList({
   const embedDetails = useSafeEmbedContext();
   const [isEndOfFeedReached, setEndOfFeedReached] = useState<boolean>(false);
   const [isAdPlaying, setIsAdPlaying] = useState<boolean>(false);
+  const [isAdFilled, setIsAdFilled] = useState<boolean>(false);
+
+  const handleAdStateChange = useCallback((isFilled: boolean) => {
+    setIsAdFilled(isFilled);
+  }, []);
   // if we use directly isTablet from the hook then for desktop it will be true based on useDeviceDetectMediaQuery implementation
   const isTablet = !isMobile && !isDesktop;
 
@@ -289,6 +294,25 @@ a swiper inside another swiper.
     return posts.filter((post) => post.video.type !== "overlay");
   }, [posts]);
 
+  const handleActiveIndexChange = useCallback(
+    (index: number) => {
+      const newPost = filteredPost[index];
+      if (isAdFilled && newPost && !("adTagObject" in newPost)) {
+        setIsAdFilled(false);
+      }
+      onActiveIndexChange?.(index);
+    },
+    [isAdFilled, filteredPost, onActiveIndexChange],
+  );
+
+  const handleAdFilled = useCallback((type: string) => {
+    if (type === "banner") setIsAdFilled(true);
+  }, []);
+
+  const handleAdFilldEnd = useCallback(() => {
+    setIsAdFilled(false);
+  }, []);
+
   // Focus management hook (only for iHeart)
   const {
     containerRef: playerListRef,
@@ -402,7 +426,7 @@ a swiper inside another swiper.
                     slideDimensions={slideDimensions}
                     disableSwiper={disableSwiper}
                     websiteType={websiteType}
-                    onActiveIndexChange={onActiveIndexChange}
+                    onActiveIndexChange={handleActiveIndexChange}
                     setEndOfFeedReached={setEndOfFeedReached}
                     isEndOfFeedReached={isEndOfFeedReached}
                     onCommunityJoinStatusChange={onCommunityJoinStatusChange}
@@ -419,6 +443,9 @@ a swiper inside another swiper.
                     onAdStarted={handleAdStarted}
                     onAdEnded={handleAdEnded}
                     onSwiperToggle={handleSwiperToggle}
+                    onAdStateChange={handleAdStateChange}
+                    onAdFilled={handleAdFilled}
+                    onAdFilledEnd={handleAdFilldEnd}
                   />
                 </Suspense>
               ) : (
@@ -429,7 +456,7 @@ a swiper inside another swiper.
                     disableSwiper={disableSwiper}
                     websiteType={websiteType}
                     setVerticalSwipers={setVerticalSwipers}
-                    onActiveIndexChange={onActiveIndexChange}
+                    onActiveIndexChange={handleActiveIndexChange}
                     brandLayoutType={brandLayoutType}
                     isDesktop={isDesktop}
                     setEndOfFeedReached={setEndOfFeedReached}
@@ -445,6 +472,8 @@ a swiper inside another swiper.
                     onAdStarted={handleAdStarted}
                     onAdEnded={handleAdEnded}
                     onSwiperToggle={handleSwiperToggle}
+                    onAdFilled={handleAdFilled}
+                    onAdFilledEnd={handleAdFilldEnd}
                   />
                 </Suspense>
               )}
@@ -490,7 +519,8 @@ a swiper inside another swiper.
       {!isMobile &&
         brandLayoutType !== "iheart" &&
         filteredPost[activeIndex] &&
-        !isAdPlaying && (
+        !isAdPlaying &&
+        !isAdFilled && (
           <Suspense fallback={null}>
             <Actions
               shareUrl={filteredPost[activeIndex]?.video.shareUrl ?? ""}
@@ -605,6 +635,7 @@ a swiper inside another swiper.
         showExpandView &&
         showCommentBox &&
         !isAdPlaying &&
+        !isAdFilled &&
         filteredPost[activeIndex] &&
         brandLayoutType !== "iheart" &&
         isDesktop && (

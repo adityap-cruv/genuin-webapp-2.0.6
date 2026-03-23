@@ -10,7 +10,7 @@ const WatchBoundaryOverlay = lazy(() =>
   import(
     "../../molecules/feed-player/control-layer/watch-boundary-overlay.js"
   ).then((m) => ({ default: m.WatchBoundaryOverlay })),
-) as React.ComponentType<any>;
+);
 
 interface SectionedContentProps {
   sectionList: any[];
@@ -45,6 +45,8 @@ interface SectionedContentProps {
   onAdStarted: (event?: AdInfoType) => void;
   onAdEnded: (event?: AdInfoType) => void;
   onSwiperToggle: (disable: boolean) => void;
+  onAdFilled?: (type: string) => void;
+  onAdFilledEnd?: () => void;
 }
 
 export function SectionedContent({
@@ -72,6 +74,8 @@ export function SectionedContent({
   onAdEnded,
   onAdStarted,
   onSwiperToggle,
+  onAdFilled,
+  onAdFilledEnd,
 }: SectionedContentProps) {
   const { track, EventName } = useAnalytics();
 
@@ -171,6 +175,8 @@ export function SectionedContent({
                         onAdEnded={onAdEnded}
                         onAdStarted={onAdStarted}
                         onSwiperToggle={onSwiperToggle}
+                        onAdFilled={onAdFilled}
+                        onAdFilledEnd={onAdFilledEnd}
                       />
                     ) : post.video.type === "complete" ? (
                       <Suspense fallback={null}>

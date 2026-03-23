@@ -18,7 +18,7 @@ import type { PostDetailsType } from "@genuin/components/react-query/api/feed/sc
 import { useFeedContext } from "@genuin/components/templates/feed/context";
 
 import { useSwiper } from "swiper/react";
-import { useCallback, useMemo, lazy, Suspense } from "react";
+import { useCallback, useMemo, lazy, Suspense, useState } from "react";
 import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
 import { ComponentProps } from "react";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
@@ -53,6 +53,9 @@ type PlayerProps = {
   onAdStarted?: ComponentProps<typeof PlayerProvider>["onAdStarted"];
   onAdEnded?: ComponentProps<typeof PlayerProvider>["onAdEnded"];
   onSwiperToggle?: (disable: boolean) => void;
+  onAdStateChange?: (isFilled: boolean) => void;
+  onAdFilled?: (event: any) => void;
+  onAdFilledEnd?: (event: any) => void;
 };
 
 // TODO: This component is using feed context, which is not ideal. Remove this dep of FeedContext in future.
@@ -73,6 +76,7 @@ export function Player({
   onAdStarted,
   onAdEnded,
   onSwiperToggle,
+  onAdStateChange,
 }: PlayerProps) {
   const { showExpandView, toggleExpandView, activeIndex, variant } =
     useFeedContext();
@@ -87,6 +91,17 @@ export function Player({
 
   // Detect accessibility mode based on browser accessibility preferences
   const isAccessibilityMode = useMemo(() => detectAccessibilityMode(), []);
+
+  const handleAdFilled = useCallback(
+    (type: string) => {
+      onAdStateChange?.(true);
+    },
+    [onAdStateChange],
+  );
+
+  const handleAdFilldEnd = useCallback(() => {
+    onAdStateChange?.(false);
+  }, [onAdStateChange]);
 
   const handleTimeUpdate = useCallback(
     (event: React.SyntheticEvent<HTMLVideoElement>) => {
@@ -151,6 +166,10 @@ export function Player({
                   : "gencl:object-contain gencl:bg-contain!",
               )}
               playsInline
+              isActive={isActive}
+              adTagObject={(post as any).adTagObject ?? undefined}
+              onAdFilled={handleAdFilled}
+              onAdFilldEnd={handleAdFilldEnd}
               onTimeUpdate={handleTimeUpdate}
               onEnded={() => {
                 showGestureOverlay("SWIPE");

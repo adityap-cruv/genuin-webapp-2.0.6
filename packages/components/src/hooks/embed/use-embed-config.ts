@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { useDeviceDetectMediaQuery } from "../use-devide-detect-media-query";
 import type { CustomizationType } from "@genuin/components/context/embed/embed.types";
 import { useBrowserDetect } from "@genuin/ui/hooks";
+import { FeedType } from "@genuin/components/types/post";
 
 const MIN_EMBED_WIDTH = 150;
 const MIN_EMBED_HEIGHT = 268; // Based on 9:16 aspect ratio for 150 width
@@ -45,7 +46,7 @@ export function useEmbedConfigs() {
       containerWidth: customization?.dimensions?.width,
       aspectRatio: embedData?.aspect_ratio, // Add aspect ratio support from embedData
     }),
-    [customization?.dimensions, embedData?.aspect_ratio]
+    [customization?.dimensions, embedData?.aspect_ratio],
   );
 
   // ============================================================
@@ -55,8 +56,7 @@ export function useEmbedConfigs() {
     return {
       embedStyle: embedData?.style,
       isFeed: embedData?.style === "feed",
-      isExpandOnly:
-        embedData?.style === "expand_only",
+      isExpandOnly: embedData?.style === "expand_only",
       isCarousel: embedData?.style === "carousel",
       isStandardWall: embedData?.style === "standard_wall",
       isGrid: embedData?.style === "grid",
@@ -113,7 +113,7 @@ export function useEmbedConfigs() {
           }
         : null,
     }),
-    [customization]
+    [customization],
   );
 
   // ============================================================
@@ -129,7 +129,10 @@ export function useEmbedConfigs() {
           (viewConfig.websiteType === "polaris" &&
             viewConfig.brandLayoutType === "iheart")
         : !!customization?.autoplay,
-      moveToNextTime: embedData?.media_play?.auto_advance_playback ?? 0,
+      moveToNextTime:
+        brandDetails.brand_id === 2476
+          ? 5
+          : embedData?.media_play?.auto_advance_playback || 0,
       showBorderAroundVideo:
         (!!customization?.is_show_social_interaction_data ||
           (customization?.links?.is_show_links &&
@@ -146,7 +149,7 @@ export function useEmbedConfigs() {
         embedData?.media_play?.video_preview_seconds !== undefined &&
         embedData.media_play.video_preview_seconds > 0,
     }),
-    [customization, brandDetails.brand_id, embedData?.style]
+    [customization, brandDetails.brand_id, embedData?.style],
   );
 
   // ============================================================
@@ -203,7 +206,7 @@ export function useEmbedConfigs() {
       embedData?.show_style_details,
       embedData?.social_metrics,
       embedData?.social_interaction_counts,
-    ]
+    ],
   );
 
   // ============================================================
@@ -222,7 +225,7 @@ export function useEmbedConfigs() {
       showUserName: !!customization?.is_show_username,
       showViewCount: !!customization?.is_show_view_count,
     }),
-    [customization]
+    [customization],
   );
 
   // ============================================================
@@ -279,7 +282,7 @@ export function useEmbedConfigs() {
           acc[key] = enabled;
           return acc;
         },
-        {} as Record<string, boolean>
+        {} as Record<string, boolean>,
       );
 
     // Generalized assignment for redirectionTools
@@ -327,7 +330,7 @@ export function useEmbedConfigs() {
         customization?.links?.is_show_links &&
         customization?.links?.position === "overlay",
     }),
-    [customization, embedData]
+    [customization, embedData],
   );
 
   // ============================================================
@@ -348,7 +351,7 @@ export function useEmbedConfigs() {
       embedData?.style,
       engagementConfig.showSocialInteractionData,
       linkConfig.showLinks,
-    ]
+    ],
   );
 
   // ============================================================
@@ -496,21 +499,28 @@ export function useEmbedConfigs() {
       viewConfig.brandLayoutType === "iheart" &&
       viewConfig.websiteType === "polaris" &&
       viewConfig.isFeed,
-    []
+    [],
   );
 
   const virtualizeSwiper = useMemo(
     () => (embedData?.videoIds && embedData.videoIds.length > 0) || isSafari,
-    []
+    [],
   );
 
   const brand = useMemo(() => {
+    const isUsWeekly = brandDetails.brand_id === 2476;
+    const feedType: FeedType = isUsWeekly
+      ? "FEED_V1"
+      : embedData?.placement_id
+        ? "PLACEMENT_SECTIONS"
+        : "EMBED_HOME";
     return {
       // configuration to identify US Weekly brand
-      isUsWeekly: brandDetails.brand_id === 2476,
+      isUsWeekly,
       isIndianExpress: brandDetails.brand_id === 2793,
-    } as const;
-  }, [brandDetails.brand_id]);
+      feedType,
+    };
+  }, [brandDetails.brand_id, embedData?.placement_id]);
 
   const embedSwiperConfigs = useMemo(() => {
     return {

@@ -128,7 +128,6 @@ export function Linkouts({
       setIsVisible(true);
 
       if (linkouts && linkouts.length > 0) {
-        console.log({ analyticsEventData });
         track(EventName.LINKOUTS_VIEWED, {
           ...analyticsEventData,
           linkoutId,

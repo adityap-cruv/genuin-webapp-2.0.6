@@ -82,7 +82,25 @@ export const EventName = {
   DOWNLOAD_APP_CLICKED: "Download App Clicked",
   DOWNLOAD_APP_VIEWED: "Download App Viewed",
   GET_APP_LINK_SENT: "Get App Link Sent",
+  AD_REQUESTED: "Ad Requested",
+  AD_REQUEST_FAILED: "Ad Request Failed",
+  AD_REQUEST_RECEIVED: "Ad Request Received",
+  AD_RENDERED: "Ad Rendered",
+  AD_RESPONSE_RECEIVED: "Ad Response Received",
+  AD_RENDER_FAILED: "Ad Render Failed",
+  AD_IMPRESSION: "Ad Impression",
+  AD_CLICKED: "Ad Clicked",
+  AD_MEDIA_QUARTILE: "Ad Media Quartile",
+  AD_SKIPPED: "Ad Skipped",
+  AD_ERROR: "Ad Error",
+  AD_MEDIA_PLAY: "Ad Media Play",
 } as const;
+
+export enum VideoTypes {
+  Content = "content",
+  HouseAd = "house_ad",
+  Sponsored = "sponsored",
+}
 
 /**
  * Supported screen names used across embed and app navigation flows.

@@ -34,8 +34,9 @@ type VideoProviderProps = {
   videoUrl: string;
   /**
    * Function to be called when the player completes it's iteration and is ready to play the next video.
+   * The `move` parameter indicates whether the player should automatically move to the next video or just signal that it's ready.
    */
-  onPlayerIterationEnd: () => void;
+  onPlayerIterationEnd: (move?: boolean) => void;
   /**
    * Post list index - used to compare against previous index
    *
@@ -1257,6 +1258,10 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     [baseContextManager, index],
   );
 
+  const moveToNextVideo = useCallback(() => {
+    onPlayerIterationEnd(true);
+  }, [onPlayerIterationEnd]);
+
   const value: PlayerContextType = {
     setPlayerRef,
 
@@ -1300,6 +1305,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     positionIndex: index,
     totalVideos,
     setIsLoading,
+    moveToNextVideo,
   };
 
   return (

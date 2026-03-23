@@ -271,9 +271,12 @@ export function Default({
               className={cn(
                 isMobile || isTablet || isIpad
                   ? `${!isSectioned && showExpandView && "gencl:top-0"}`
-                  : "gencl:group-hover:opacity-100 gencl:group-hover:pointer-events-auto gencl:opacity-0 gencl:pointer-events-none gencl:transition-opacity gencl:duration-300"
+                  : postDetails.video.videoLayoutId === 6
+                    ? ""
+                    : "gencl:group-hover:opacity-100 gencl:group-hover:pointer-events-auto gencl:opacity-0 gencl:pointer-events-none gencl:transition-opacity gencl:duration-300",
               )}
               variant={isSectioned ? "sectioned" : "default"}
+              isSponsored={postDetails.video.videoLayoutId === 6}
             />
 
             {/* this is wallet badge for wallet. */}

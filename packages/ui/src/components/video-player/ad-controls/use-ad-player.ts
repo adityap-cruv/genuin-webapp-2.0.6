@@ -9,6 +9,14 @@ export type AdDataType = {
   title: string | null;
   totalAds?: number;
   currentAdIndex?: number;
+  adType?: string | null;
+  adFormat?: string | null;
+  adUnitId?: string | null;
+  advertiserBrandId?: number | null;
+  campaignId?: string | null;
+  lineItemId?: string | null;
+  creativeId?: string | null;
+  mediaType?: string | null;
 };
 
 export type VideoPlayerStateRef = {
@@ -31,12 +39,18 @@ export function useAdPlayer({
   playerStateRef,
   updateLoadingState,
   onAdStarted,
+  onAdFirstQuartile,
   onAdCompleted,
   onAdError,
+  onAdRenderError,
+  onAdRequestFailed,
   onAdClicked,
   onAdSkipped,
   onAdPause,
   onAllAdsCompleted,
+  onAdImpression,
+  onAdRendered,
+  onAdResponseReceived,
   playThePlayer,
 }: {
   player: OpenPlayerJS | null;
@@ -45,12 +59,18 @@ export function useAdPlayer({
   playerStateRef: React.MutableRefObject<VideoPlayerStateRef>;
   updateLoadingState: (loading: boolean, isPlaying: boolean) => void;
   onAdStarted?: (adData: AdDataType) => void;
+  onAdFirstQuartile?: (adData: AdDataType) => void;
   onAdCompleted?: (adData: AdDataType) => void;
   onAdError?: (error: any) => void;
+  onAdRenderError?: (error: any) => void;
+  onAdRequestFailed?: (error: any) => void;
   onAdClicked?: (adData: AdDataType) => void;
   onAdSkipped?: (adData: AdDataType) => void;
   onAdPause?: (adData: AdDataType) => void;
   onAllAdsCompleted?: () => void;
+  onAdImpression?: (adData: AdDataType) => void;
+  onAdRendered?: (adData: AdDataType) => void;
+  onAdResponseReceived?: () => void;
   playThePlayer?: () => void;
 }) {
   const [adIsActive, setAdIsActive] = useState(false);
@@ -77,6 +97,24 @@ export function useAdPlayer({
 
   const onAdPauseRef = useRef(onAdPause);
   onAdPauseRef.current = onAdPause;
+
+  const onAdFirstQuartileRef = useRef(onAdFirstQuartile);
+  onAdFirstQuartileRef.current = onAdFirstQuartile;
+
+  const onAdRenderErrorRef = useRef(onAdRenderError);
+  onAdRenderErrorRef.current = onAdRenderError;
+
+  const onAdRequestFailedRef = useRef(onAdRequestFailed);
+  onAdRequestFailedRef.current = onAdRequestFailed;
+
+  const onAdImpressionRef = useRef(onAdImpression);
+  onAdImpressionRef.current = onAdImpression;
+
+  const onAdRenderedRef = useRef(onAdRendered);
+  onAdRenderedRef.current = onAdRendered;
+
+  const onAdResponseReceivedRef = useRef(onAdResponseReceived);
+  onAdResponseReceivedRef.current = onAdResponseReceived;
 
   const onAllAdsCompletedRef = useRef(onAllAdsCompleted);
   onAllAdsCompletedRef.current = onAllAdsCompleted;
@@ -108,6 +146,12 @@ export function useAdPlayer({
       url: string | null;
       title: string | null;
       adId: string | null;
+      creativeId?: string | null;
+      advertiserBrandId?: number | null;
+      campaignId?: string | null;
+      lineItemId?: string | null;
+      mediaType?: string | null;
+      adFormat?: string | null;
     } | null;
     allCompleted: boolean;
   }>({
@@ -129,11 +173,21 @@ export function useAdPlayer({
 
     player.getElement().addEventListener("playererror", (e: any) => {
       if (e.detail?.type === "Ads") {
-        console.log("Ad playback error:", { e });
         // Store the current content time for potential restoration
         const media = player.getMedia();
         if (media && !isNaN(media.currentTime)) {
           contentTimeBeforeAdError = media.currentTime;
+        }
+
+        if (e.detail?.message.includes("303")) {
+          onAdRequestFailedRef.current?.(e.detail);
+        } else if (
+          e.detail?.message.includes("400") ||
+          e.detail?.message.includes("401") ||
+          e.detail?.message.includes("403") ||
+          e.detail?.message.includes("404")
+        ) {
+          onAdRenderErrorRef.current?.(e.detail);
         }
 
         // If ad tag error 303 (no ads available), trigger all ads completed
@@ -198,6 +252,80 @@ export function useAdPlayer({
 
           // Store adsManager reference for mute/volume sync
           adsManagerRef.current = adsManager;
+
+          onAdResponseReceivedRef.current?.();
+
+          // LOADED event handler
+          adsManager.addEventListener(
+            (window as any)?.google?.ima?.AdEvent.Type.LOADED,
+            (e: any) => {
+              setAdInfo((prev) => {
+                const updatedCtaInfo = {
+                  adId: e.ad?.data?.adId || prev.ctaInfo?.adId || null,
+                  url: e.ad?.data?.clickThroughUrl || prev.ctaInfo?.url || null,
+                  title: e.ad?.data?.title || prev.ctaInfo?.title || null,
+                  creativeId: e.ad?.data?.creativeId || prev.ctaInfo?.creativeId || null,
+                  advertiserBrandId: e.ad?.data?.advertiserBrandId || prev.ctaInfo?.advertiserBrandId || null,
+                  campaignId: e.ad?.data?.campaignId || prev.ctaInfo?.campaignId || null,
+                  lineItemId: e.ad?.data?.lineItemId || prev.ctaInfo?.lineItemId || null,
+                  mediaType: e.ad?.data?.mediaType || e.ad?.data?.contentType || prev.ctaInfo?.mediaType || null,
+                  adFormat: e.ad?.data?.adFormat || prev.ctaInfo?.adFormat || null,
+                };
+                onAdRenderedRef.current?.({
+                  ...updatedCtaInfo,
+                  currentAdIndex: prev.currentIndex,
+                  totalAds: prev.totalAds,
+                });
+                return { ...prev, ctaInfo: updatedCtaInfo };
+              });
+            },
+          );
+
+          // IMPRESSION event handler
+          adsManager.addEventListener(
+            (window as any)?.google?.ima?.AdEvent.Type.IMPRESSION,
+            () => {
+              setAdInfo((prev) => {
+                onAdImpressionRef.current?.({
+                  adId: prev.ctaInfo?.adId || null,
+                  url: prev.ctaInfo?.url || null,
+                  title: prev.ctaInfo?.title || null,
+                  currentAdIndex: prev.currentIndex,
+                  totalAds: prev.totalAds,
+                  creativeId: prev.ctaInfo?.creativeId || null,
+                  advertiserBrandId: prev.ctaInfo?.advertiserBrandId || null,
+                  campaignId: prev.ctaInfo?.campaignId || null,
+                  lineItemId: prev.ctaInfo?.lineItemId || null,
+                  mediaType: prev.ctaInfo?.mediaType || null,
+                  adFormat: prev.ctaInfo?.adFormat || null,
+                });
+                return prev;
+              });
+            },
+          );
+
+          // FIRST_QUARTILE event handler
+          adsManager.addEventListener(
+            (window as any).google.ima.AdEvent.Type.FIRST_QUARTILE,
+            () => {
+              setAdInfo((prev) => {
+                onAdFirstQuartileRef.current?.({
+                  adId: prev.ctaInfo?.adId || null,
+                  url: prev.ctaInfo?.url || null,
+                  title: prev.ctaInfo?.title || null,
+                  currentAdIndex: prev.currentIndex,
+                  totalAds: prev.totalAds,
+                  creativeId: prev.ctaInfo?.creativeId || null,
+                  advertiserBrandId: prev.ctaInfo?.advertiserBrandId || null,
+                  campaignId: prev.ctaInfo?.campaignId || null,
+                  lineItemId: prev.ctaInfo?.lineItemId || null,
+                  mediaType: prev.ctaInfo?.mediaType || null,
+                  adFormat: prev.ctaInfo?.adFormat || null,
+                });
+                return prev;
+              });
+            },
+          );
 
           adsManager.addEventListener(
             (window as any)?.google?.ima?.AdEvent.Type.AD_PROGRESS,

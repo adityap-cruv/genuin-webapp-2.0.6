@@ -14,6 +14,7 @@ import { EmbedProvider } from '@genuin/components/context/embed'
 import { LinkProvider } from '@genuin/components/context/link'
 import { ReactQueryClientProvider } from '@genuin/components/react-query/react-query-provider'
 import { AnalyticsProvider } from '@genuin/components/context/analytics'
+import { UrlParamProvider } from '@genuin/components'
 
 // Additional imports for EmbedSkeleton
 import { Skeleton } from '@genuin/ui/components/skeleton'
@@ -167,6 +168,7 @@ export function EmbedRoot({
                 onSignOut={() => {}}
                 onUpdateUser={() => {}}
                 user={user}>
+                <UrlParamProvider name={embedData.name}>
                 <Suspense
                   fallback={
                     <EmbedSkeleton
@@ -188,6 +190,7 @@ export function EmbedRoot({
                     <LazyToaster />
                   </Suspense>
                 )}
+                </UrlParamProvider>
               </AuthProvider>
             </AnalyticsProvider>
           </LinkProvider>

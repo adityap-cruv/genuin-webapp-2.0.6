@@ -19,12 +19,18 @@ type AdControlsProps = {
   isInExpandView?: boolean;
   onSetupReady?: (setupFn: (player: OpenPlayerJS) => void) => void;
   onAdStarted?: (adData: AdDataType) => void;
+  onAdFirstQuartile?: (adData: AdDataType) => void;
   onAdCompleted?: (adData: AdDataType) => void;
   onAdError?: (error: any) => void;
+  onAdRenderError?: (error: any) => void;
+  onAdRequestFailed?: (error: any) => void;
   onAdClicked?: (adData: AdDataType) => void;
   onAdSkipped?: (adData: AdDataType) => void;
   onAdPause?: (adData: AdDataType) => void;
   onAllAdsCompleted?: () => void;
+  onAdImpression?: (adData: AdDataType) => void;
+  onAdRendered?: (adData: AdDataType) => void;
+  onAdResponseReceived?: () => void;
   playThePlayer?: () => void;
 };
 
@@ -38,12 +44,18 @@ export const AdControls = memo(function AdControls({
   isInExpandView,
   onSetupReady,
   onAdStarted,
+  onAdFirstQuartile,
   onAdCompleted,
   onAdError,
+  onAdRenderError,
+  onAdRequestFailed,
   onAdClicked,
   onAdSkipped,
   onAdPause,
   onAllAdsCompleted,
+  onAdImpression,
+  onAdRendered,
+  onAdResponseReceived,
   playThePlayer,
 }: AdControlsProps) {
   // Use the ad player hook internally
@@ -62,12 +74,18 @@ export const AdControls = memo(function AdControls({
     playerStateRef,
     updateLoadingState,
     onAdStarted,
+    onAdFirstQuartile,
     onAdCompleted,
     onAdError,
+    onAdRenderError,
+    onAdRequestFailed,
     onAdClicked,
     onAdSkipped,
     onAdPause,
     onAllAdsCompleted,
+    onAdImpression,
+    onAdRendered,
+    onAdResponseReceived,
     playThePlayer,
   });
 

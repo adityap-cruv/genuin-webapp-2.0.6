@@ -143,7 +143,7 @@ export function Embed({
   const isGridLayout = config.view.isGrid;
 
   // Data fetching
-  const feedType = embedData.placement_id ? "PLACEMENT_SECTIONS" : "EMBED_HOME";
+  const feedType = config.brand.feedType;
   const feedParams = {
     communityIds: config.community.communityIds,
     groupIds: config.community.communityLoopIds,
@@ -225,10 +225,10 @@ export function Embed({
         isSectioned: sectioned,
         feedType: feedType,
         thumbnailUrl:
-          filteredPost[0]?.video.thumbnail ||
-          filteredPost[0]?.video.thumbnailM ||
+          filteredPost[0]?.video?.thumbnail ||
+          filteredPost[0]?.video?.thumbnailM ||
           "",
-        videoUrl: filteredPost[0]?.video.source || "",
+        videoUrl: filteredPost[0]?.video?.source || "",
       });
     }
     // In embed mode, the sections list does not need to be updated.
@@ -375,8 +375,8 @@ export function Embed({
   const totalSlides = useMemo(() => {
     const conditions = websiteType === "legacy" ? true : !isDesktop;
     return conditions
-      ? videos.filter((item) => item.video.type !== "complete").length
-      : videos.filter((item) => item.video.type === "video").length;
+      ? videos.filter((item) => item.video?.type !== "complete").length
+      : videos.filter((item) => item.video?.type === "video").length;
   }, [videos, isDesktop]);
 
   /**
@@ -595,15 +595,15 @@ export function Embed({
                 }
                 customHeightFor={{
                   index: filteredPost.findIndex(
-                    (feed) => feed.video.type === "overlay",
+                    (feed) => feed.video?.type === "overlay",
                   ),
                   height: 160,
                 }}
               >
                 {filteredPost?.map((videoData, idx) => {
-                  return videoData.video.type === "complete" ? (
+                  return videoData.video?.type === "complete" ? (
                     <></>
-                  ) : videoData.video.type === "overlay" &&
+                  ) : videoData.video?.type === "overlay" &&
                     config.view.brandLayoutType === "iheart" &&
                     isDesktop &&
                     websiteType !== "legacy" ? (

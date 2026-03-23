@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useCallback } from "react";
 import { SwiperSlide } from "swiper/react";
 import { SwiperImplementation } from "./swiper-implementation";
 import { AdInfoType } from "@genuin/components/molecules/feed-player";
@@ -43,6 +43,8 @@ interface NonSectionedContentProps {
   onAdStarted?: (event?: AdInfoType) => void;
   onAdEnded?: (event?: AdInfoType) => void;
   onSwiperToggle?: (disable: boolean) => void;
+  onAdFilled?: (type: string) => void;
+  onAdFilledEnd?: () => void;
 }
 
 export function NonSectionedContent({
@@ -67,7 +69,20 @@ export function NonSectionedContent({
   onAdEnded,
   onAdStarted,
   onSwiperToggle,
+  onAdFilled,
+  onAdFilledEnd,
 }: NonSectionedContentProps) {
+  const handleAdFilled = useCallback(
+    (type: string) => {
+      onAdFilled?.(type);
+    },
+    [onAdFilled],
+  );
+
+  const handleAdFilldEnd = useCallback(() => {
+    onAdFilledEnd?.();
+  }, [onAdFilledEnd]);
+
   return (
     <SwiperImplementation
       initialSlide={startIndex}
@@ -137,6 +152,8 @@ export function NonSectionedContent({
                     onAdEnded={onAdEnded}
                     onAdStarted={onAdStarted}
                     onSwiperToggle={onSwiperToggle}
+                    onAdFilled={handleAdFilled}
+                    onAdFilledEnd={handleAdFilldEnd}
                   />
                 </Suspense>
               ) : post.video.type === "complete" ? (

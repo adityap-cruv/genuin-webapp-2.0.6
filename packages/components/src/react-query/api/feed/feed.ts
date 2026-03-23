@@ -24,6 +24,8 @@ const feedTypeToNumber: Record<FeedType, number> = {
   PLACEMENT_SECTIONS: 1,
   SECTION_FEED: 1,
   VIDEO: 1,
+  // This is just a placeholder value. The actual value should be set according to the backend implementation for FEED_V1.
+  FEED_V1: -1,
 };
 
 // TODO: Suggestion unify this api with all the apis for feed in profile/group/community. So that
@@ -206,6 +208,20 @@ async function fetchFeed(
       };
       break;
 
+    case feedType === "FEED_V1":
+      url = API_PATHS.FEED_V1;
+      requestBody = {
+        ...(deviceId && { device_id: deviceId }),
+        ...(options?.embedId && { embed_id: options.embedId }),
+        ...(pageParam?.lastVideoId && { last_video_id: pageParam.lastVideoId }),
+        ...(pageParam?.pageSession && { page_session: pageParam.pageSession }),
+        ...(options?.communityIds?.length && {
+          community_ids: options.communityIds,
+        }),
+        ...(options?.groupIds?.length && { loop_ids: options.groupIds }),
+      };
+      break;
+
     default:
       url = API_PATHS.FEED_HOME;
       requestBody = {
@@ -358,7 +374,7 @@ async function fetchFeedByVideoIds(
  */
 function isVideoInFeed(feed: FeedPage["feed"], slug: string): boolean {
   return feed.some(
-    (item) => item.video.slug === slug || item.video.id === slug,
+    (item) => item.video?.slug === slug || item.video?.id === slug,
   );
 }
 
@@ -374,7 +390,7 @@ function moveVideoToTop(
   slug: string,
 ): FeedPage["feed"] {
   const videoIndex = feed.findIndex(
-    (item) => item.video.slug === slug || item.video.id === slug,
+    (item) => item.video?.slug === slug || item.video?.id === slug,
   );
   const video = feed[videoIndex];
 
@@ -455,7 +471,7 @@ async function prependInitialVideosToFeed(
     // Filter out any videos that are already in the feed to avoid duplicates
     const existingVideoIds = new Set(initialVideoIds);
     const uniqueFeedVideos = feedData.feed.filter(
-      (feed) => !existingVideoIds.has(feed.video.id),
+      (feed) => !feed.video?.id || !existingVideoIds.has(feed.video.id),
     );
     return {
       ...feedData,
@@ -536,11 +552,13 @@ async function createFeedQueryFn(
   if (isFirstPage && hasPlaceholderData) {
     const placeholderVideos = options!.placeholderData!.pages[0]!.feed;
     const placeholderVideoIds = new Set(
-      placeholderVideos.map((item) => item.video.id),
+      placeholderVideos.flatMap((item) =>
+        item.video?.id ? [item.video.id] : [],
+      ),
     );
     // Filter out any videos from feedData that are already in placeholder data
     const uniqueFeedVideos = feedData.feed.filter(
-      (item) => !placeholderVideoIds.has(item.video.id),
+      (item) => !item.video?.id || !placeholderVideoIds.has(item.video.id),
     );
     feedData = {
       ...feedData,
@@ -559,7 +577,8 @@ async function createFeedQueryFn(
       ...feedData,
       feed: feedData.feed.filter(
         (item) =>
-          !idsToFilter.has(item.video.id) && !idsToFilter.has(item.video.slug),
+          (!item.video?.id || !idsToFilter.has(item.video.id)) &&
+          (!item.video?.slug || !idsToFilter.has(item.video.slug)),
       ),
     };
   }
@@ -581,7 +600,7 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
       if (!lastPageData) return undefined;
       return {
         pageSession: lastPage.pageSession,
-        lastVideoId: lastPageData.video.id,
+        lastVideoId: lastPageData.video?.id,
       };
     },
     refetchOnWindowFocus: false,
@@ -620,15 +639,15 @@ export function setQueryDataForReactionInFeed({
       return {
         ...page,
         feed: page.feed.map((video) => {
-          if (video.video.id === videoId) {
-            const sparkCount = video.video.sparkCount ?? 0;
+          if (video.video?.id === videoId) {
+            const sparkCount = video.video?.sparkCount ?? 0;
             return {
               ...video,
               video: {
                 ...video.video,
                 isSparked: isReacted,
                 sparkCount: isReacted
-                  ? (video.video.sparkCount ?? 0) + 1
+                  ? (video.video?.sparkCount ?? 0) + 1
                   : sparkCount > 0
                     ? sparkCount - 1
                     : 0,
@@ -644,7 +663,7 @@ export function setQueryDataForReactionInFeed({
     return {
       ...oldData,
       pages: updatedPages,
-    };
+    } as NonNullable<QueryData>;
   });
 }
 
@@ -672,7 +691,7 @@ export function setQueryDataForJoinCommunityStatusInFeed({
         return {
           ...page,
           feed: page.feed.map((video) => {
-            if (video.community.id === communityId) {
+            if (video.community?.id === communityId) {
               return {
                 ...video,
                 community: {
@@ -690,7 +709,7 @@ export function setQueryDataForJoinCommunityStatusInFeed({
       return {
         ...oldData,
         pages: updatedPages,
-      };
+      } as NonNullable<QueryData>;
     },
   );
 }
@@ -736,7 +755,7 @@ export function setQueryDataForJoinGroupStatusInFeed({
     return {
       ...oldData,
       pages: updatedPages,
-    };
+    } as NonNullable<QueryData>;
   });
 }
 
@@ -781,7 +800,7 @@ export function setQueryDataForGroupSubscriptionChangeInFeed({
       return {
         ...oldData,
         pages: updatedPages,
-      };
+      } as NonNullable<QueryData>;
     },
   );
 }
@@ -807,8 +826,8 @@ export function setQueryDataForCommentCountInFeed({
       return {
         ...page,
         feed: page.feed.map((video) => {
-          if (video.video.id === videoId) {
-            const commentCount = video.video.commentCount ?? 0;
+          if (video.video?.id === videoId) {
+            const commentCount = video.video?.commentCount ?? 0;
             return {
               ...video,
               video: {
@@ -830,6 +849,6 @@ export function setQueryDataForCommentCountInFeed({
     return {
       ...oldData,
       pages: updatedPages,
-    };
+    } as NonNullable<QueryData>;
   });
 }

@@ -8,6 +8,10 @@ export const API_PATHS = {
    */
   EMBED_FEED_HOME: "/goservices/feed/embed/home",
   /**
+   * Api path to fetch feed v1 which is used in the web app for feed and explore section.
+   */
+  FEED_V1: "/goservices/feed/v1/home",
+  /**
    * Api path to fetch placement sections.
    */
   PLACEMENT_SECTIONS: "/goservices/placement/sections",

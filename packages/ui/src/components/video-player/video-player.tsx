@@ -140,6 +140,7 @@ export type PlayerProps = ComponentProps<"video"> & {
   playbackSpeed?: number;
   play?: boolean;
   adUrl?: string; // URL for video ads
+  adPlatform?: string | null; // Platform for video ads (e.g., "google", "geniusads")
   startTime?: number;
   enableLazyLoading?: boolean; // Enable lazy loading optimization (default: false)
   isInExpandView?: boolean;
@@ -150,12 +151,19 @@ export type PlayerProps = ComponentProps<"video"> & {
   onVideoThirdQuartile?: (duration: number, currentTime: number) => void;
   onVideoWatched?: (duration: number, currentTime: number) => void;
   onAdStarted?: (adData: AdDataType) => void; // Callback when ad starts
+  onAdFirstQuartile?: (adData: AdDataType) => void; // Callback when ad reaches first quartile (25%)
   onAdCompleted?: (adData: AdDataType) => void; // Callback when ad completes
-  onAdError?: (error: any) => void; // Callback when ad errors
+  onAdError?: (error: any) => void; // Callback when ad errors (generic/unclassified)
+  onAdRenderError?: (error: any) => void; // Callback when ad fails to render (4xx errors)
+  onAdRequestFailed?: (error: any) => void; // Callback when ad request fails (303 no ads available)
   onAdClicked?: (adData: AdDataType) => void; // Callback when ad is clicked
   onAdSkipped?: (adData: AdDataType) => void; // Callback when ad is skipped
   onAdPause?: (adData: AdDataType) => void; // Callback when ad is paused
   onAllAdsCompleted?: () => void; // Callback when all ads are completed
+  onAdImpression?: (adData: AdDataType) => void; // Callback when ad impression is recorded
+  onAdRendered?: (adData: AdDataType) => void; // Callback when ad is rendered
+  onAdResponseReceived?: () => void; // Callback when ad response is received
+  onAdRequested?: () => void; // Callback when ad is requested
   onVideoStart?: (
     duration: number,
     currentTime: number,
@@ -182,6 +190,7 @@ export const VideoPlayer = memo(function VideoPlayer({
   play = true,
   loop = false, // loop prop is now destructured
   adUrl,
+  adPlatform,
   enableLazyLoading = false, // Default to false for backward compatibility
   isInExpandView,
   onVideoFirstQuartile,
@@ -192,12 +201,19 @@ export const VideoPlayer = memo(function VideoPlayer({
   onVideoWatched,
   onVideoStart, // Destructure onVideoStart prop
   onAdStarted,
+  onAdFirstQuartile,
   onAdCompleted,
   onAdError,
+  onAdRenderError,
+  onAdRequestFailed,
   onAdClicked,
   onAdSkipped,
   onAdPause,
   onAllAdsCompleted,
+  onAdImpression,
+  onAdRendered,
+  onAdResponseReceived,
+  onAdRequested,
   onSeeked,
   onMutedChange,
   onVideoLoadStart,
@@ -261,6 +277,14 @@ export const VideoPlayer = memo(function VideoPlayer({
   }, [volume]);
 
   useEffect(() => {
+    if (!isPlayerInitialized.current) return;
+
+    if (adUrl) {
+      playerRef.current?.loadAd(adUrl);
+    }
+  }, [adUrl]);
+
+  useEffect(() => {
     if (typeof muted === "undefined") return;
     if (videoRef.current) {
       videoRef.current.muted = muted;
@@ -300,8 +324,11 @@ export const VideoPlayer = memo(function VideoPlayer({
       }
 
       // Set up ad event listeners if ads are enabled
-      if (adUrl && setupAdEventListenersRef.current) {
-        setupAdEventListenersRef.current(player);
+      if (adUrl) {
+        onAdRequested?.();
+        if (setupAdEventListenersRef.current) {
+          setupAdEventListenersRef.current(player);
+        }
       }
 
       // Dispatch playerLoad event after player is ready
@@ -795,11 +822,18 @@ export const VideoPlayer = memo(function VideoPlayer({
             setupAdEventListenersRef.current = fn;
           }}
           onAdStarted={onAdStarted}
+          onAdFirstQuartile={onAdFirstQuartile}
           onAdCompleted={onAdCompleted}
           onAdError={onAdError}
+          onAdRenderError={onAdRenderError}
+          onAdRequestFailed={onAdRequestFailed}
           onAdClicked={onAdClicked}
           onAdSkipped={onAdSkipped}
           onAdPause={onAdPause}
+          onAllAdsCompleted={onAllAdsCompleted}
+          onAdImpression={onAdImpression}
+          onAdRendered={onAdRendered}
+          onAdResponseReceived={onAdResponseReceived}
           playThePlayer={playThePlayer}
         />
       )}
