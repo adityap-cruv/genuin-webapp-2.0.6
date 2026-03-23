@@ -276,7 +276,7 @@ class DeviceResolver extends BaseResolver implements DeviceResolverConfig {
    * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
    */
   resolveLanguage() {
-    this.setKeyValue("device.language", navigator.language);
+    this.setKeyValue("device.language", navigator.language.split("-")[0]);
   }
 
   /**
@@ -649,7 +649,10 @@ class SiteResolver extends BaseResolver implements SiteResolverConfig {
    */
   resolvePublisherDomain() {
     const raw = window.location.hostname;
-    this.setKeyValue("site.publisher.domain", raw.startsWith("www.") ? raw.slice(4) : raw);
+    this.setKeyValue(
+      "site.publisher.domain",
+      raw.startsWith("www.") ? raw.slice(4) : raw,
+    );
   }
 
   /**
