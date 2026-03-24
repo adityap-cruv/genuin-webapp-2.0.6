@@ -23,5 +23,4 @@ export type ExpandViewCallbacks = {
   onCommentCountChange?: ComponentProps<
     typeof CommentsDialog
   >["onCommentCountChange"];
-  onSwiperToggle?: (disable: boolean) => void;
 };

@@ -44,7 +44,6 @@ interface SectionedContentProps {
   setVerticalSwipers: (swipers: Record<number, any>) => void;
   onAdStarted: (event?: AdInfoType) => void;
   onAdEnded: (event?: AdInfoType) => void;
-  onSwiperToggle: (disable: boolean) => void;
   onAdFilled?: (type: string) => void;
   onAdFilledEnd?: () => void;
 }
@@ -73,7 +72,6 @@ export function SectionedContent({
   setVerticalSwipers,
   onAdEnded,
   onAdStarted,
-  onSwiperToggle,
   onAdFilled,
   onAdFilledEnd,
 }: SectionedContentProps) {
@@ -174,7 +172,6 @@ export function SectionedContent({
                         totalVideos={totalVideos}
                         onAdEnded={onAdEnded}
                         onAdStarted={onAdStarted}
-                        onSwiperToggle={onSwiperToggle}
                         onAdFilled={onAdFilled}
                         onAdFilledEnd={onAdFilledEnd}
                       />

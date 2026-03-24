@@ -42,7 +42,6 @@ interface NonSectionedContentProps {
   isSectioned: boolean;
   onAdStarted?: (event?: AdInfoType) => void;
   onAdEnded?: (event?: AdInfoType) => void;
-  onSwiperToggle?: (disable: boolean) => void;
   onAdFilled?: (type: string) => void;
   onAdFilledEnd?: () => void;
 }
@@ -68,7 +67,6 @@ export function NonSectionedContent({
   isSectioned,
   onAdEnded,
   onAdStarted,
-  onSwiperToggle,
   onAdFilled,
   onAdFilledEnd,
 }: NonSectionedContentProps) {
@@ -151,7 +149,6 @@ export function NonSectionedContent({
                     index={index}
                     onAdEnded={onAdEnded}
                     onAdStarted={onAdStarted}
-                    onSwiperToggle={onSwiperToggle}
                     onAdFilled={handleAdFilled}
                     onAdFilledEnd={handleAdFilldEnd}
                   />

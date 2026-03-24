@@ -442,7 +442,6 @@ a swiper inside another swiper.
                     setVerticalSwipers={setVerticalSwipers}
                     onAdStarted={handleAdStarted}
                     onAdEnded={handleAdEnded}
-                    onSwiperToggle={handleSwiperToggle}
                     onAdStateChange={handleAdStateChange}
                     onAdFilled={handleAdFilled}
                     onAdFilledEnd={handleAdFilldEnd}
@@ -471,7 +470,6 @@ a swiper inside another swiper.
                     isSectioned={isSectioned}
                     onAdStarted={handleAdStarted}
                     onAdEnded={handleAdEnded}
-                    onSwiperToggle={handleSwiperToggle}
                     onAdFilled={handleAdFilled}
                     onAdFilledEnd={handleAdFilldEnd}
                   />
@@ -528,7 +526,10 @@ a swiper inside another swiper.
               contentId={filteredPost[activeIndex]?.video.id}
               groupSlug={filteredPost[activeIndex]?.group.slug}
               slug={filteredPost[activeIndex]?.video.slug}
-              videoType={filteredPost[activeIndex]?.video.video_type ?? VideoTypes.Content}
+              videoType={
+                filteredPost[activeIndex]?.video.video_type ??
+                VideoTypes.Content
+              }
               reactionCount={filteredPost[activeIndex]?.video.sparkCount}
               theme={showExpandView ? "dark" : "light"}
               className={cn(

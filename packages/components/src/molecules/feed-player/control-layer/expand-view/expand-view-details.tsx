@@ -320,14 +320,12 @@ const AdaptiveDescription = memo(function AdaptiveDescription({
   isExpanded,
   onExpand,
   layoutType,
-  onSwiperToggle,
 }: {
   video: PostDetailsType["video"];
   type: BrandLayoutType;
   isExpanded?: boolean;
   onExpand?: () => void;
   layoutType?: BrandLayoutType;
-  onSwiperToggle?: (disable: boolean) => void;
 }) {
   const { description, createdAt, duration } = video;
 
@@ -385,18 +383,6 @@ const AdaptiveDescription = memo(function AdaptiveDescription({
             maxLines={2}
             tabIndex={0}
             aria-label={`${getMonthYear(createdAt ?? 0)}${duration ? ` • ${getFormattedDuration(String(duration))}` : ""} ${Array.isArray(description) ? description.join(" ") : description || ""}, Video description`}
-            onPointerEnter={() => {
-              onSwiperToggle?.(true);
-            }}
-            onPointerLeave={() => {
-              onSwiperToggle?.(false);
-            }}
-            onTouchStart={() => {
-              onSwiperToggle?.(true);
-            }}
-            onTouchEnd={() => {
-              onSwiperToggle?.(false);
-            }}
           />
         </div>
       );
@@ -410,18 +396,6 @@ const AdaptiveDescription = memo(function AdaptiveDescription({
           position="overlay"
           className="gencl:text-body-2-normal! gencl:[&_span]:leading-[125%]! gencl:tracking-[-0.042px]!"
           showOverlay={true}
-          onPointerEnter={() => {
-            onSwiperToggle?.(true);
-          }}
-          onPointerLeave={() => {
-            onSwiperToggle?.(false);
-          }}
-          onTouchStart={() => {
-            onSwiperToggle?.(true);
-          }}
-          onTouchEnd={() => {
-            onSwiperToggle?.(false);
-          }}
         />
       );
     case "walmart":
@@ -437,18 +411,6 @@ const AdaptiveDescription = memo(function AdaptiveDescription({
           position="overlay"
           className="gencl:text-body-1-medium"
           showOverlay={true}
-          onPointerEnter={() => {
-            onSwiperToggle?.(true);
-          }}
-          onPointerLeave={() => {
-            onSwiperToggle?.(false);
-          }}
-          onTouchStart={() => {
-            onSwiperToggle?.(true);
-          }}
-          onTouchEnd={() => {
-            onSwiperToggle?.(false);
-          }}
         />
       );
   }
@@ -577,7 +539,6 @@ export function ExpandViewDetails({
   onCommunityJoinStatusChange,
   onReactionStateChange,
   onCommentCountChange,
-  onSwiperToggle,
   ...restProps
 }: ExpandViewProps) {
   const {
@@ -678,7 +639,6 @@ export function ExpandViewDetails({
               onExpand,
             })}
             layoutType={brandLayoutType}
-            onSwiperToggle={onSwiperToggle}
           />
         </div>
 
@@ -702,18 +662,6 @@ export function ExpandViewDetails({
           )}
           onClick={(e) => {
             e.stopPropagation();
-          }}
-          onPointerEnter={() => {
-            onSwiperToggle?.(true);
-          }}
-          onPointerLeave={() => {
-            onSwiperToggle?.(false);
-          }}
-          onTouchStart={() => {
-            onSwiperToggle?.(true);
-          }}
-          onTouchEnd={() => {
-            onSwiperToggle?.(false);
           }}
           style={{
             scrollBehavior: "smooth",

@@ -15,6 +15,7 @@ import { API_PATHS } from "@genuin/components/react-query/paths";
 import { GroupUserStatusType } from "@genuin/components/types/roles";
 import { fetchVideoDetails } from "../video";
 import { EmbedDataType } from "@genuin/components/context/embed/embed.types";
+import { AdsPostDetailsType } from "./schema";
 // Mapper for FeedType to corresponding numbers
 const feedTypeToNumber: Record<FeedType, number> = {
   HOME: 1,
@@ -598,9 +599,22 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
       if (lastPage.endOfFeed) return undefined;
       const lastPageData = lastPage.feed[lastPage.feed.length - 1];
       if (!lastPageData) return undefined;
+      // If the last item is an ads item, find the last non-ads video for lastVideoId
+      const lastVideoData =
+        (lastPageData as AdsPostDetailsType).type === "ads" ||
+        lastPageData?.video?.videoLayoutId === 6
+          ? [...lastPage.feed]
+              .reverse()
+              .find(
+                (item) =>
+                  (item as AdsPostDetailsType).type !== "ads" &&
+                  item.video?.videoLayoutId !== 6,
+              )
+          : lastPageData;
+
       return {
         pageSession: lastPage.pageSession,
-        lastVideoId: lastPageData.video?.id,
+        lastVideoId: lastVideoData?.video?.id,
       };
     },
     refetchOnWindowFocus: false,

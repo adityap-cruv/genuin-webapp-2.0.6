@@ -52,7 +52,6 @@ type PlayerProps = {
   >["onCommentCountChange"];
   onAdStarted?: ComponentProps<typeof PlayerProvider>["onAdStarted"];
   onAdEnded?: ComponentProps<typeof PlayerProvider>["onAdEnded"];
-  onSwiperToggle?: (disable: boolean) => void;
   onAdStateChange?: (isFilled: boolean) => void;
   onAdFilled?: (event: any) => void;
   onAdFilledEnd?: (event: any) => void;
@@ -75,7 +74,6 @@ export function Player({
   onCommentCountChange,
   onAdStarted,
   onAdEnded,
-  onSwiperToggle,
   onAdStateChange,
 }: PlayerProps) {
   const { showExpandView, toggleExpandView, activeIndex, variant } =
@@ -189,7 +187,6 @@ export function Player({
               showCloseButton={variant === "expand"}
               onReactionStateChange={onReactionStateChange}
               onCommentCountChange={onCommentCountChange}
-              onSwiperToggle={onSwiperToggle}
               // Applies GPU acceleration to prevent layer flickering on iOS devices during animations
               className="gencl:translate-x-0"
             />
