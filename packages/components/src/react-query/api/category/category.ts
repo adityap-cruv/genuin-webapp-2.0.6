@@ -1,9 +1,10 @@
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
-import { useQuery } from "@tanstack/react-query";
+import { useAxiosInstance } from "@genuin/components/context/axios";
 import { getQueryKeyForCategories } from "@genuin/components/react-query/keys/authentication";
+import { useQuery } from "@tanstack/react-query";
 import { parseCategory } from "./index";
+import type { AxiosInstance } from "axios";
 
-async function fetchCategories() {
+async function fetchCategories(axiosInstance: AxiosInstance) {
   try {
     const res = await axiosInstance.get(
       "/api/v3/trending/categories_communities"
@@ -19,8 +20,10 @@ async function fetchCategories() {
 }
 
 export function useCategory() {
+  const axiosInstance = useAxiosInstance();
+
   return useQuery({
     queryKey: getQueryKeyForCategories(),
-    queryFn: fetchCategories,
+    queryFn: () => fetchCategories(axiosInstance),
   });
 }

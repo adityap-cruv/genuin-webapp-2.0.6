@@ -1,7 +1,7 @@
 import type {
   InfiniteData,
   UseInfiniteQueryResult,
-} from "@tanstack/react-query";
+} from "@genuin/components/react-query";
 
 import type { CommunityType, LoopType } from "./schema";
 

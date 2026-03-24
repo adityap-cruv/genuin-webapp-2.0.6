@@ -1,12 +1,13 @@
 import { useMutation } from "@tanstack/react-query";
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
+import { useAxiosInstance } from "@genuin/components/context/axios";
 import { API_PATHS } from "@genuin/components/react-query/paths";
 import { PayloadDraftPost } from "./video-draft";
+import type { AxiosInstance } from "axios";
 
 
 //------------------------Move draft to active video------------------------
 
-export async function videoPost(payload: PayloadDraftPost) {
+export async function videoPost(payload: PayloadDraftPost, axiosInstance: AxiosInstance) {
   return await axiosInstance
     .post(API_PATHS.DRAFT_TO_ACTIVE_POST, payload)
     .then((res) => ({ res }))
@@ -25,8 +26,10 @@ export function usePostVideoMutation({
   onSuccess?: (data: Awaited<ReturnType<typeof videoPost>>) => void;
   onError?: (error: Error) => void;
 }) {
+  const axiosInstance = useAxiosInstance();
+
   return useMutation({
-    mutationFn: videoPost,
+    mutationFn: (payload: PayloadDraftPost) => videoPost(payload, axiosInstance),
     onError,
     onSuccess,
   });
@@ -35,7 +38,7 @@ export function usePostVideoMutation({
 
 //------------------------Get active video------------------------
 
-export async function getActiveVideo(payload: PayloadDraftPost) {
+export async function getActiveVideo(payload: PayloadDraftPost, axiosInstance: AxiosInstance) {
   return await axiosInstance
     .get(`${API_PATHS.ACTIVE_POST}/${payload.uuid}`)
     .then((res) => ({ res }))
@@ -54,8 +57,10 @@ export function useGetActiveVideoMutation({
   onSuccess?: (data: Awaited<ReturnType<typeof getActiveVideo>>) => void;
   onError?: (error: Error) => void;
 }) {
+  const axiosInstance = useAxiosInstance();
+
   return useMutation({
-    mutationFn: getActiveVideo,
+    mutationFn: (payload: PayloadDraftPost) => getActiveVideo(payload, axiosInstance),
     onError,
     onSuccess,
   });
@@ -63,7 +68,7 @@ export function useGetActiveVideoMutation({
 
 //------------------------Edit active video------------------------
 
-export async function editActiveVideo(payload: PayloadDraftPost) {
+export async function editActiveVideo(payload: PayloadDraftPost, axiosInstance: AxiosInstance) {
   return await axiosInstance
     .patch(API_PATHS.EDIT_ACTIVE_POST, payload)
     .then((res) => ({ res }))
@@ -82,8 +87,10 @@ export function useEditActiveVideoMutation({
   onSuccess?: (data: Awaited<ReturnType<typeof editActiveVideo>>) => void;
   onError?: (error: Error) => void;
 }) {
+  const axiosInstance = useAxiosInstance();
+
   return useMutation({
-    mutationFn: editActiveVideo,
+    mutationFn: (payload: PayloadDraftPost) => editActiveVideo(payload, axiosInstance),
     onError,
     onSuccess,
   });

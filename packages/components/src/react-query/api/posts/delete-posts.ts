@@ -1,8 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
+import { useAxiosInstance } from "@genuin/components/context/axios";
 import { API_PATHS } from "@genuin/components/react-query/paths";
+import type { AxiosInstance } from "axios";
 
-export async function deletePosts(postIds: string[]) {
+export async function deletePosts(postIds: string[], axiosInstance: AxiosInstance) {
   return await axiosInstance
     .delete(API_PATHS.DELETE_POST, {
       data: {
@@ -27,8 +28,10 @@ export function useDeletePostsMutation({
   onSuccess?: () => void;
   onError?: (error: Error) => void;
 }) {
+  const axiosInstance = useAxiosInstance();
+
   return useMutation({
-    mutationFn: deletePosts,
+    mutationFn: (postIds: string[]) => deletePosts(postIds, axiosInstance),
     onError,
     onSuccess,
   });

@@ -1,12 +1,13 @@
 import { useMutation } from "@tanstack/react-query";
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
+import { useAxiosInstance } from "@genuin/components/context/axios";
 import { API_PATHS } from "@genuin/components/react-query/paths";
+import type { AxiosInstance } from "axios";
 
 type PayloadFetchMetaPost = {
     url: string
 }
 
-export async function fetchMetaPost(payload: PayloadFetchMetaPost) {
+export async function fetchMetaPost(payload: PayloadFetchMetaPost, axiosInstance: AxiosInstance) {
   return await axiosInstance
     .post(API_PATHS.FETCH_META_DATA, payload)
     .then((res) => ({ res }))
@@ -25,8 +26,10 @@ export function usePostFetchMetaMutation({
   onSuccess?: (data: Awaited<ReturnType<typeof fetchMetaPost>>) => void;
   onError?: (error: Error) => void;
 }) {
+  const axiosInstance = useAxiosInstance();
+
   return useMutation({
-    mutationFn: fetchMetaPost,
+    mutationFn: (payload: PayloadFetchMetaPost) => fetchMetaPost(payload, axiosInstance),
     onError,
     onSuccess,
   });

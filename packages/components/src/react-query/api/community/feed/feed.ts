@@ -1,14 +1,16 @@
 import { API_PATHS } from "@genuin/components/react-query/paths";
 import { parseFeed } from "../../feed/parser";
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useAxiosInstance } from "@genuin/components/context/axios";
 import { getQueryKeyForCommunityFeed } from "@genuin/components/react-query/keys/community";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import type { AxiosInstance } from "axios";
 
 async function fetchLoopVideos(
   slug: string,
-  pageParams?: { lastVideoId?: string }
+  axios: AxiosInstance,
+  pageParams?: { lastVideoId: string }
 ) {
-  return await axiosInstance
+  return await axios
     .get(API_PATHS.COMMUNITY_FEED, {
       params: {
         slug,
@@ -26,17 +28,22 @@ async function fetchLoopVideos(
 }
 
 export function useGetCommunityFeed(slug: string, videoId: string) {
+  const axios = useAxiosInstance();
+
   return useInfiniteQuery({
-    queryFn: async ({ pageParam }: { pageParam?: { lastVideoId?: string } }) =>
-      await fetchLoopVideos(slug, pageParam),
+    queryFn: ({ pageParam }) => fetchLoopVideos(slug, axios, pageParam),
     queryKey: getQueryKeyForCommunityFeed(slug, videoId),
     initialPageParam: { lastVideoId: videoId },
     getNextPageParam: (lastPage) => {
       if (lastPage.end || lastPage.feed.length === 0) {
         return undefined;
       }
+      const lastFeed = lastPage.feed[lastPage.feed.length - 1];
+      if (!lastFeed) {
+        return undefined;
+      }
       return {
-        lastVideoId: lastPage?.feed[lastPage.feed.length - 1]?.video.id,
+        lastVideoId: lastFeed.video.id,
       };
     },
   });

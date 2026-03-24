@@ -1,9 +1,13 @@
+import { useQuery } from "@tanstack/react-query";
+import {
+  useAxiosInstance,
+} from "@genuin/components/context/axios";
+import { axiosInstance as globalAxiosInstance } from "@genuin/components/context/axios/context";
 import { NOT_FOUND_ERROR_CODES } from "@genuin/components/lib/constants/errors";
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
 import { API_PATHS } from "@genuin/components/react-query/paths";
 import { PostDetailsType } from "../feed/schema";
 import { getQueryKeyForVideoDetails } from "../../keys/video";
-import { QueryKey, useQuery } from "@tanstack/react-query";
+import type { QueryKey } from "@tanstack/react-query";
 import { queryClient } from "@genuin/components/react-query/client";
 import { parseFeed } from "../feed/parser";
 import { isUuid } from "@genuin/components/lib/utils";
@@ -12,6 +16,7 @@ import {
   SDKEventName,
 } from "@genuin/components/lib/sdk-event-emitter";
 import { FeedResponseFromGoApi } from "../feed/types";
+import type { AxiosInstance } from "axios";
 
 type BrandContext =
   | {
@@ -26,8 +31,11 @@ export async function fetchVideoDetails(
   placementId?: string,
   shouldShowMiddlewareOverlay?: boolean,
   brandContext?: BrandContext,
-  videoIds?: string[]
+  videoIds?: string[],
+  axiosInstance?: AxiosInstance
 ) {
+  const requestAxiosInstance = axiosInstance ?? globalAxiosInstance;
+
   try {
     const params: Record<string, any> = {
       ...(slug ? (isUuid(slug) ? { uuid: slug } : { slug }) : undefined),
@@ -40,7 +48,7 @@ export async function fetchVideoDetails(
         }),
     };
 
-    const response = await axiosInstance.get(API_PATHS.VIDEO_DETAILS, {
+    const response = await requestAxiosInstance.get(API_PATHS.VIDEO_DETAILS, {
       params,
       // If videoIds are provided, serialize them as multiple uuid/slug parameters
       paramsSerializer:
@@ -101,6 +109,8 @@ export function useGetVideoDetailsAsFeed(
   brandContext?: BrandContext,
   videoIds?: string[]
 ) {
+  const axiosInstance = useAxiosInstance();
+
   return useQuery({
     queryKey: getQueryKeyForVideoDetails(slug, videoIds),
     queryFn: async () => {
@@ -114,7 +124,8 @@ export function useGetVideoDetailsAsFeed(
         placementId,
         shouldShowMiddlewareOverlay,
         brandContext,
-        videoIds
+        videoIds,
+        axiosInstance
       );
     },
     // Don't run the query if slug is empty

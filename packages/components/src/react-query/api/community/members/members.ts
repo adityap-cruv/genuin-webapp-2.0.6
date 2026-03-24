@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
-
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
+import { useAxiosInstance } from "@genuin/components/context/axios";
 import { getQueryKeyForCommunityMembers } from "@genuin/components/react-query/keys/community";
 import { API_PATHS } from "@genuin/components/react-query/paths";
 
 import { validateCommunityMembers } from "./schema";
+import type { AxiosInstance } from "axios";
 
-async function fetchCommunityMembers(slug: string) {
+async function fetchCommunityMembers(slug: string, axiosInstance: AxiosInstance) {
   return await axiosInstance
     .get(API_PATHS.COMMUNITY_MEMBERS, {
       params: {
@@ -29,8 +29,10 @@ async function fetchCommunityMembers(slug: string) {
  * @returns
  */
 export function useGetCommunityMembers(slug: string) {
+  const axiosInstance = useAxiosInstance();
+
   return useQuery({
-    queryFn: async () => await fetchCommunityMembers(slug),
+    queryFn: async (context) => await fetchCommunityMembers(slug, axiosInstance),
     queryKey: getQueryKeyForCommunityMembers(slug),
   });
 }

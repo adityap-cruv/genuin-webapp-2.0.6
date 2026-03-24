@@ -1,5 +1,5 @@
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
 import { API_PATHS } from "@genuin/components/react-query/paths";
+import type { AxiosInstance } from "axios";
 
 
 type NotificationType = {
@@ -9,9 +9,10 @@ type NotificationType = {
 }
 
 export async function notificationsSettings(
-  payload: Partial<NotificationType>
+  payload: Partial<NotificationType>,
+  axios: AxiosInstance
 ): Promise<{ status: boolean; data: any }> {
-  return await axiosInstance
+  return await axios
     .patch(API_PATHS.UPDATE_NOTIFICATION_SETTINGS, payload)
     .then((res) => {
       return { status: res.status === 200, data: res.data.data }

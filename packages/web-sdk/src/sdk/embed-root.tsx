@@ -18,7 +18,7 @@ import { UrlParamProvider } from '@genuin/components'
 
 // Additional imports for EmbedSkeleton
 import { Skeleton } from '@genuin/ui/components/skeleton'
-import { SdkSkeleton } from '@genuin/components'
+import { AxiosProvider, SdkSkeleton } from '@genuin/components'
 import { useDeviceDetectMediaQuery } from '@genuin/components/hooks/use-devide-detect-media-query'
 import { cn } from '@genuin/ui/lib/utils'
 import { LazyToaster } from './react-utils'
@@ -127,75 +127,77 @@ export function EmbedRoot({
 }: EmbedRootProps) {
   return (
     <ReactQueryClientProvider>
-      <EmbedProvider
-        container={targetContainer}
-        trackObservability={
-          (brandDetails.track_observability_enabled ?? true) &&
-          TRACK_OBSERVABILITY === 'true'
-        }
-        sdkInitTime={Genuin.getSDKInitTime()}
-        embedData={{
-          ...embedData,
-          brand_id: embedData.brand_id,
-          action: embedData.autoUserInteractionToPerform,
-          initialVideoIds: config.initialVideoIds,
-          videoIds: config.videoIds,
-          websiteType: config.websiteType,
-          startVideoSlug: config.startVideoSlug,
-          configs: {
-            allowGestureScroll: config.allowGestureScroll,
-          },
-        }}
-        brandLayoutType={brandLayoutType}>
-        <BaseContextProvider
-          brandDetails={brandDetails}
-          theme={config.theme}
-          useShadowDOM={config.useShadowDOM ?? false}
-          isEmbed>
-          <LinkProvider>
-            <AnalyticsProvider
-              embedData={embedData}
-              isWebSDK={true}
-              user={user ?? null}
-              brandDetails={brandDetails}
-              currentScreen={
-                config.embedDetails?.placement_id
-                  ? 'view_placement'
-                  : 'view_embed'
-              }>
-              <AuthProvider
-                onSignIn={() => {}}
-                onSignOut={() => {}}
-                onUpdateUser={() => {}}
-                user={user}>
-                <UrlParamProvider name={embedData.name}>
-                <Suspense
-                  fallback={
-                    <EmbedSkeleton
-                      theme={config.theme}
-                      container={container}
-                    />
-                  }>
-                  {embedData.style === 'standard_wall' ? (
-                    <LazyStandardWall />
-                  ) : (
-                    <LazyEmbed
-                      wasLazilyLoaded={wasLazilyLoaded}
-                      isOnlyForExpand={isOnlyForExpand}
-                    />
-                  )}
-                </Suspense>
-                {config.useShadowDOM && (
-                  <Suspense fallback={null}>
-                    <LazyToaster />
-                  </Suspense>
-                )}
-                </UrlParamProvider>
-              </AuthProvider>
-            </AnalyticsProvider>
-          </LinkProvider>
-        </BaseContextProvider>
-      </EmbedProvider>
+      <AxiosProvider brandId={brandDetails.brand_id}>
+        <EmbedProvider
+          container={targetContainer}
+          trackObservability={
+            (brandDetails.track_observability_enabled ?? true) &&
+            TRACK_OBSERVABILITY === 'true'
+          }
+          sdkInitTime={Genuin.getSDKInitTime()}
+          embedData={{
+            ...embedData,
+            brand_id: embedData.brand_id,
+            action: embedData.autoUserInteractionToPerform,
+            initialVideoIds: config.initialVideoIds,
+            videoIds: config.videoIds,
+            websiteType: config.websiteType,
+            startVideoSlug: config.startVideoSlug,
+            configs: {
+              allowGestureScroll: config.allowGestureScroll,
+            },
+          }}
+          brandLayoutType={brandLayoutType}>
+          <BaseContextProvider
+            brandDetails={brandDetails}
+            theme={config.theme}
+            useShadowDOM={config.useShadowDOM ?? false}
+            isEmbed>
+            <LinkProvider>
+              <AnalyticsProvider
+                embedData={embedData}
+                isWebSDK={true}
+                user={user ?? null}
+                brandDetails={brandDetails}
+                currentScreen={
+                  config.embedDetails?.placement_id
+                    ? 'view_placement'
+                    : 'view_embed'
+                }>
+                <AuthProvider
+                  onSignIn={() => {}}
+                  onSignOut={() => {}}
+                  onUpdateUser={() => {}}
+                  user={user}>
+                  <UrlParamProvider name={embedData.name}>
+                    <Suspense
+                      fallback={
+                        <EmbedSkeleton
+                          theme={config.theme}
+                          container={container}
+                        />
+                      }>
+                      {embedData.style === 'standard_wall' ? (
+                        <LazyStandardWall />
+                      ) : (
+                        <LazyEmbed
+                          wasLazilyLoaded={wasLazilyLoaded}
+                          isOnlyForExpand={isOnlyForExpand}
+                        />
+                      )}
+                    </Suspense>
+                    {config.useShadowDOM && (
+                      <Suspense fallback={null}>
+                        <LazyToaster />
+                      </Suspense>
+                    )}
+                  </UrlParamProvider>
+                </AuthProvider>
+              </AnalyticsProvider>
+            </LinkProvider>
+          </BaseContextProvider>
+        </EmbedProvider>
+      </AxiosProvider>
     </ReactQueryClientProvider>
   )
 }

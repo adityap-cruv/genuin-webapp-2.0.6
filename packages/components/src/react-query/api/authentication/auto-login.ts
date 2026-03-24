@@ -1,11 +1,12 @@
-import { getDeviceId } from "@genuin/components/lib/utils/device-id";
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
-import { API_PATHS } from "@genuin/components/react-query/paths";
 import { useMutation } from "@tanstack/react-query";
+import { useAxiosInstance } from "@genuin/components/context/axios";
+import { getDeviceId } from "@genuin/components/lib/utils/device-id";
+import { API_PATHS } from "@genuin/components/react-query/paths";
 import { LOGIN_SOURCE } from "./constants";
 import { encryptText } from "@genuin/components/lib/utils/encryption";
 import { parseUserData } from "./parser";
 import { NEXT_PUBLIC_REDIRECT_URI } from "@genuin/components/lib/utils/env";
+import type { AxiosInstance } from "axios";
 
 const DEVICE_TYPE_WEB = 3;
 
@@ -13,7 +14,7 @@ async function getUrlToRedirectForSSO({
   thirdPartyId,
 }: {
   thirdPartyId: "google" | "apple" | string;
-}) {
+}, axiosInstance: AxiosInstance) {
   try {
     // TODO: Update the redirect URI to a dynamic one if needed
     const res = await axiosInstance.get(API_PATHS.AUTH_GET_REDIRECTION_URL, {
@@ -40,8 +41,10 @@ export function useGetRedirectionUrlForSSOMutation({
   onSuccess: (url: string) => void;
   onError: (error: Error) => void;
 }) {
+  const axiosInstance = useAxiosInstance();
+
   return useMutation({
-    mutationFn: getUrlToRedirectForSSO,
+    mutationFn: (params: { thirdPartyId: "google" | "apple" | string }) => getUrlToRedirectForSSO(params, axiosInstance),
     onSuccess,
     onError,
   });
@@ -61,7 +64,7 @@ export async function getUserDataForSSO({
   code: string;
   provider: string;
   isInIframe: boolean;
-}) {
+}, axiosInstance: AxiosInstance) {
   const deviceId = getDeviceId(isInIframe);
   // TODO: Update the deviceId to a dynamic one if needed
   return await axiosInstance
@@ -105,8 +108,10 @@ export function useGetUserDataForSSOMutation({
   onSuccess: (props: Awaited<ReturnType<typeof getUserDataForSSO>>) => void;
   onError: (error: Error) => void;
 }) {
+  const axiosInstance = useAxiosInstance();
+
   return useMutation({
-    mutationFn: getUserDataForSSO,
+    mutationFn: (params: { code: string; provider: string; isInIframe: boolean }) => getUserDataForSSO(params, axiosInstance),
     onSuccess,
     onError,
   });

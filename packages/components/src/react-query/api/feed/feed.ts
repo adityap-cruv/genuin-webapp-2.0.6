@@ -1,4 +1,8 @@
 import { QueryKey, useInfiniteQuery } from "@tanstack/react-query";
+import {
+  useAxiosInstance,
+} from "@genuin/components/context/axios";
+import { axiosInstance as globalAxiosInstance } from "@genuin/components/context/axios/context";
 
 import { getDeviceId } from "@genuin/components/lib/utils/device-id";
 import { getQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
@@ -7,14 +11,13 @@ import type {
   FeedType,
 } from "@genuin/components/types/post";
 
-import { axiosInstance } from "../../axios-instance";
-
 import { parseFeed } from "./parser";
 import { queryClient } from "@genuin/components/react-query/client";
 import { API_PATHS } from "@genuin/components/react-query/paths";
 import { GroupUserStatusType } from "@genuin/components/types/roles";
 import { fetchVideoDetails } from "../video";
 import { EmbedDataType } from "@genuin/components/context/embed/embed.types";
+import { type AxiosInstance } from "axios";
 import { AdsPostDetailsType } from "./schema";
 // Mapper for FeedType to corresponding numbers
 const feedTypeToNumber: Record<FeedType, number> = {
@@ -44,7 +47,10 @@ async function fetchFeed(
     lastVideoId?: string | undefined;
   },
   options?: UseFeedOptionsType,
+  axiosInstance?: AxiosInstance,
 ) {
+  const requestAxiosInstance = axiosInstance ?? globalAxiosInstance;
+
   const deviceId = getDeviceId(options?.isInIframe || false)
     ? encodeURI(getDeviceId(options?.isInIframe || false) as string)
     : undefined;
@@ -238,7 +244,7 @@ async function fetchFeed(
       };
   }
 
-  return await axiosInstance
+  return await requestAxiosInstance
     .post(url, {
       ...requestBody,
       ...contextualFeedParamsBody,
@@ -501,6 +507,7 @@ async function createFeedQueryFn(
   feedType: FeedType,
   pageParam: { pageSession?: string; lastVideoId?: string } | undefined,
   options?: UseFeedOptionsType,
+  axiosInstance?: AxiosInstance,
 ): Promise<FeedPage> {
   const startVideoSlug = options?.startVideoSlug;
   const hasVideoIds = options?.videoIds && options.videoIds.length > 0;
@@ -513,7 +520,7 @@ async function createFeedQueryFn(
   // Scenario 3: Regular feed - fetch from API
   let feedData = options?.isSingleVideo
     ? createEmptyFeedPage()
-    : await fetchFeed(feedType, pageParam, options);
+    : await fetchFeed(feedType, pageParam, options, axiosInstance);
 
   // For the first page with a startVideoSlug, ensure the video is included
   const isFirstPage = !pageParam;
@@ -590,9 +597,12 @@ async function createFeedQueryFn(
 export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
   const queryKey = getQueryKeyForFeed(feedType, options);
 
+  const axiosInstance = useAxiosInstance();
+
   return useInfiniteQuery({
     queryKey,
-    queryFn: ({ pageParam }) => createFeedQueryFn(feedType, pageParam, options),
+    queryFn: ({ pageParam }) =>
+      createFeedQueryFn(feedType, pageParam, options, axiosInstance),
     enabled: options?.enabled !== false,
     initialPageParam: undefined,
     getNextPageParam: (lastPage) => {

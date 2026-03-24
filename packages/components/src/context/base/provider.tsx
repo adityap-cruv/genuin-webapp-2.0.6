@@ -13,10 +13,6 @@ import {
   getNewDeviceId,
   useGetDeviceId,
 } from "@genuin/components/lib/utils/device-id";
-import {
-  setBrandIdInAxiosInstance,
-  setSDKVersionInAxiosInstance,
-} from "@genuin/components/react-query/axios-instance";
 import type { BrandDetailsConfigType } from "@genuin/components/types/brand";
 import type { PlaybackSpeedType } from "@genuin/components/molecules/feed-player/context/types";
 
@@ -124,14 +120,6 @@ export function BaseContextProvider({
   useShadowDOM,
   theme,
 }: BaseContextProviderProps) {
-  useLayoutEffect(() => {
-    // Set the brand details in the context.
-    if (brandDetails) {
-      setBrandIdInAxiosInstance(brandDetails.brand_id);
-    }
-    setSDKVersionInAxiosInstance(getSdkVersion());
-  }, [brandDetails]);
-
   const embedDetails = useSafeEmbedContext();
 
   const baseEventBus = useMemo(() => {

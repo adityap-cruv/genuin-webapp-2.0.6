@@ -14,8 +14,6 @@ import {
   deleteCommentFromQueryData,
   useDeleteCommentMutation,
 } from "@genuin/components/react-query/api/comments";
-import { useQueryClient } from "@tanstack/react-query";
-import { getQueryKeyForComments } from "@genuin/components/react-query/keys/comment";
 import { Toast } from "@genuin/ui/toaster";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { useBaseContext } from "@genuin/components/context";

@@ -1,8 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
+import { useAxiosInstance } from "@genuin/components/context/axios";
 import { API_PATHS } from "@genuin/components/react-query/paths";
 import { MEDIA_BASE_URL } from "@genuin/components/lib/utils/env";
 import axios from "axios";
+import type { AxiosInstance } from "axios";
 
 type UploadKind = "video" | "image";
 
@@ -20,12 +21,12 @@ type UploadResponse = {
 export async function createUploadUrlPost({
   file,
   kind,
-}: UploadPayload): Promise<UploadResponse | null> {
+}: UploadPayload, axiosInst: AxiosInstance): Promise<UploadResponse | null> {
   try {
     const folder = kind === "video" ? "temp_video" : "uploads/thumbnails";
     const path = `${folder}/${file.name}`;
 
-    const getUrlResponse = await axiosInstance.post(API_PATHS.UPLOAD_URL, {
+    const getUrlResponse = await axiosInst.post(API_PATHS.UPLOAD_URL, {
       contentType: file.type,
       path,
     });
@@ -64,8 +65,10 @@ export function usePostCreateUploadUrlMutation({
   onError?: (error: Error) => void;
   onMutate?: () => void;
 }) {
+  const axiosInstance = useAxiosInstance();
+
   return useMutation({
-    mutationFn: createUploadUrlPost,
+    mutationFn: (payload: UploadPayload) => createUploadUrlPost(payload, axiosInstance),
     onError,
     onSuccess,
     onMutate,

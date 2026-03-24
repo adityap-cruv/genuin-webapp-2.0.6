@@ -1,6 +1,7 @@
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
-import { useQuery } from "@tanstack/react-query";
+import { UseQueryOptions, useQuery } from "@tanstack/react-query";
+import { useAxiosInstance } from "@genuin/components/context/axios";
 import { getQueryKeyForNotificationCount } from "../../keys/notification";
+import type { AxiosInstance } from "axios";
 
 /**
  * Response type for notification count API
@@ -14,7 +15,7 @@ export interface NotificationCountResponse {
  * Fetches the notification count. In case of error it throws an error to be handled by React Query.
  * @returns NotificationCountResponse containing status and count
  */
-export async function fetchNotificationCount(): Promise<NotificationCountResponse> {
+export async function fetchNotificationCount(axiosInstance: AxiosInstance): Promise<NotificationCountResponse> {
   return await axiosInstance
     .get("/api/v3/notification_count")
     .then((res) => {
@@ -32,12 +33,14 @@ export async function fetchNotificationCount(): Promise<NotificationCountRespons
  */
 export function useNotificationCount(
   options: Omit<
-    Parameters<typeof useQuery>[0],
+    UseQueryOptions,
     "queryFn" | "queryKey" | "refetchOnWindowFocus"
   > = {}
 ) {
+  const axiosInstance = useAxiosInstance();
+
   return useQuery({
-    queryFn: fetchNotificationCount,
+    queryFn: (context) => fetchNotificationCount(axiosInstance),
     queryKey: getQueryKeyForNotificationCount(),
     refetchOnWindowFocus: true,
     // Default to 5 minute staleTime to reduce unnecessary refetches

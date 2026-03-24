@@ -1,12 +1,13 @@
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
-import { API_PATHS } from "@genuin/components/react-query/paths";
 import { useMutation } from "@tanstack/react-query";
+import { useAxiosInstance } from "@genuin/components/context/axios";
+import { API_PATHS } from "@genuin/components/react-query/paths";
+import type { AxiosInstance } from "axios";
 
 export const sendGetAppLink = async (payload: {
   email?: string;
   mobile?: string;
   query_params?: string;
-}) => {
+}, axiosInstance: AxiosInstance) => {
   try {
     const res = await axiosInstance.post(
       API_PATHS.SEND_DOWNLOAD_APP_LINK,
@@ -27,8 +28,10 @@ export function useSendGetAppLinkMutation({
   onSuccess?: () => void;
   onError?: (error: any) => void;
 }) {
+  const axiosInstance = useAxiosInstance();
+
   return useMutation({
-    mutationFn: sendGetAppLink,
+    mutationFn: (payload: { email?: string; mobile?: string; query_params?: string }) => sendGetAppLink(payload, axiosInstance),
     onError,
     onSuccess,
   });

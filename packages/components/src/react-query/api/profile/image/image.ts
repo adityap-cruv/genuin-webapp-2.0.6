@@ -1,8 +1,7 @@
 import axios from "axios";
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
 import { API_PATHS } from "@genuin/components/react-query/paths";
 import { MEDIA_BASE_URL } from "@genuin/components/lib/utils/env";
-import { useMutation } from "@tanstack/react-query";
+import type { AxiosInstance } from "axios";
 
 export async function fetchImageBlob(url: string): Promise<string> {
   try {
@@ -33,7 +32,7 @@ export async function fetchImageBlob(url: string): Promise<string> {
   }
 }
 
-export async function uploadProfileImage(file: File, path: string) {
+export async function uploadProfileImage(file: File, path: string, axiosInstance: AxiosInstance) {
   try {
     const getUrlResponse = await axiosInstance.post(API_PATHS.UPLOAD_URL, {
       contentType: file.type,

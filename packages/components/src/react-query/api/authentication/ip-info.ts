@@ -1,8 +1,8 @@
-import { useQuery, UseQueryResult } from "@tanstack/react-query";
-import axios from "axios";
-import { axiosInstance } from "../../axios-instance";
+import { useAxiosInstance } from "@genuin/components/context/axios";
 import { API_PATHS } from "../../paths";
 import { getQueryKeyForIpInfo } from "../../keys/ip-info";
+import type { AxiosInstance } from "axios";
+import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 
 type Response = {
   city: string;
@@ -16,7 +16,7 @@ type Response = {
   timezone: string;
 };
 
-async function fetchIpInfo<T>(): Promise<T> {
+async function fetchIpInfo<T>(axiosInstance: AxiosInstance): Promise<T> {
   try {
     const response = await axiosInstance.get(API_PATHS.FETCH_IP_INFO);
     return response.data;
@@ -33,9 +33,11 @@ async function fetchIpInfo<T>(): Promise<T> {
  * @returns Query result containing IP geolocation data
  */
 export function useIpInfo<T extends Response>(): UseQueryResult<T> {
+  const axiosInstance = useAxiosInstance();
+
   return useQuery<T>({
     queryKey: getQueryKeyForIpInfo(),
-    queryFn: () => fetchIpInfo<T>(),
+    queryFn: () => fetchIpInfo<T>(axiosInstance),
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });

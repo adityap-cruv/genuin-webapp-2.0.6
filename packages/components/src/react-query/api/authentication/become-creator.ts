@@ -1,10 +1,10 @@
-import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useAxiosInstance } from "@genuin/components/context/axios";
 import { getQueryKeyForksCbStatus } from "@genuin/components/react-query/keys/become-creator";
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
 import { API_PATHS } from "../../paths";
-import { useQueryClient } from "@tanstack/react-query";
 import { queryClient } from "@genuin/components/react-query/client";
 import { ksCbRequestStatusType } from "@genuin/components/types/roles";
+import type { AxiosInstance } from "axios";
 
 /**
  * Returns the KS CB request status. If there is an error, it will return status 4.
@@ -15,13 +15,11 @@ import { ksCbRequestStatusType } from "@genuin/components/types/roles";
  * @returns { { status: number } } - The status of the request.
  */
 
-export async function fetchKsCbRequestStatus(): Promise<{
+export async function fetchKsCbRequestStatus(axiosInstance: AxiosInstance): Promise<{
   status: ksCbRequestStatusType;
 }> {
   try {
-    const res = await axiosInstance.get(
-      API_PATHS.BECOME_CREATOR_REQUEST_STATUS
-    );
+    const res = await axiosInstance.get(API_PATHS.BECOME_CREATOR_REQUEST_STATUS);
     return {
       status: parseBecomeCreatorStatus(res.data.data.cb_request_status),
     };
@@ -31,21 +29,25 @@ export async function fetchKsCbRequestStatus(): Promise<{
 }
 
 export function parseBecomeCreatorStatus(
-  status: number
+  status: number,
 ): ksCbRequestStatusType {
   return status === 1 ? "Pending" : status === 2 ? "Requested" : "Accepted";
 }
 
 export function useKsCbStatus({ id }: { id: string }) {
+  const axiosInstance = useAxiosInstance();
+
   return useQuery({
     queryKey: getQueryKeyForksCbStatus(id),
-    queryFn: fetchKsCbRequestStatus,
+    queryFn: (context) => fetchKsCbRequestStatus(axiosInstance),
     // staleTime: 1000 * 60 * 5,
     retry: 0,
   });
 }
 
-async function postCbRequest(): Promise<{ isRequestSent: boolean; data: any }> {
+async function postCbRequest(
+  axiosInstance: AxiosInstance,
+): Promise<{ isRequestSent: boolean; data: any }> {
   try {
     const res = await axiosInstance.post(API_PATHS.BECOME_CREATOR_REQUEST, {
       source: "app_web",
@@ -63,8 +65,10 @@ export function useCbRequestMutation({
   onSuccess: (result: { isRequestSent: boolean; data: any }) => void;
   onError: (error: Error) => void;
 }) {
+  const axiosInstance = useAxiosInstance();
+
   return useMutation({
-    mutationFn: postCbRequest,
+    mutationFn: (_) => postCbRequest(axiosInstance),
     onSuccess,
     onError,
   });
@@ -73,6 +77,6 @@ export function useCbRequestMutation({
 export function setQueryDataBecomeCreator(id: string) {
   queryClient.setQueryData<{ status: ksCbRequestStatusType }>(
     getQueryKeyForksCbStatus(id),
-    () => ({ status: "Requested" })
+    () => ({ status: "Requested" }),
   );
 }

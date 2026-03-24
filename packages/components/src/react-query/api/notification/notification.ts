@@ -1,14 +1,15 @@
 import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
+import { useAxiosInstance } from "@genuin/components/context/axios";
 import { API_PATHS } from "@genuin/components/react-query/paths";
 import { getQueryKeyForNotifications } from "../../keys/notification";
+import type { AxiosInstance } from "axios";
 
 type PageParam = {
   first_notification_id?: string;
   last_notification_id?: string;
 };
 
-async function fetchNotifications(limit: number, pageParam: PageParam) {
+async function fetchNotifications(limit: number, pageParam: PageParam, axiosInstance: AxiosInstance) {
   const params: {
     limit: number;
     first_notification_id?: string;
@@ -41,11 +42,13 @@ type NotificationsPage = {
 };
 
 export function useGetNotifications(limit: number) {
+  const axiosInstance = useAxiosInstance();
+
   return useInfiniteQuery({
     initialPageParam: undefined,
     queryKey: getQueryKeyForNotifications(),
-    queryFn: async ({ pageParam }: { pageParam?: PageParam }) => {
-      return await fetchNotifications(limit, pageParam ?? {});
+    queryFn: ({ pageParam }) => {
+      return fetchNotifications(limit, pageParam ?? {}, axiosInstance);
     },
     getNextPageParam: (lastPage: NotificationsPage) => {
       if (lastPage.end) {
@@ -64,9 +67,10 @@ export function useGetNotifications(limit: number) {
  * Marks all notifications as read or unread.
  * In case of error it returns null.
  * @param readAll
+ * @param axiosInstance - Axios instance to use for the request
  * @returns
  */
-export async function readNotifications(readAll: boolean) {
+export async function readNotifications(readAll: boolean, axiosInstance: AxiosInstance) {
   return await axiosInstance
     .put(API_PATHS.NOTIFICATION_READ, {
       read_all: readAll,
@@ -86,8 +90,10 @@ export function useReadNotifications({
   onSuccess?: (props: Awaited<ReturnType<typeof readNotifications>>) => void;
   onError?: (error: Error) => void;
 }) {
+  const axiosInstance = useAxiosInstance();
+
   return useMutation({
-    mutationFn: (readAll: boolean) => readNotifications(readAll),
+    mutationFn: (readAll: boolean) => readNotifications(readAll, axiosInstance),
     onSuccess,
     onError,
   });

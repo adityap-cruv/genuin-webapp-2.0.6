@@ -1,29 +1,28 @@
+import { useMutation } from "@tanstack/react-query";
+import { useAxiosInstance } from "@genuin/components/context/axios";
 import { encryptText } from "@genuin/components/lib/utils/encryption";
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
 import { API_PATHS } from "@genuin/components/react-query/paths";
 import { getDeviceId } from "@genuin/components/lib/utils/device-id";
-import { useMutation } from "@tanstack/react-query";
+import type { AxiosInstance } from "axios";
 
 type SendOtpProps = Partial<{ email: string; phoneNumber: string }> & {
   isUpdate?: boolean;
   isInIframe: boolean;
 };
 
-export async function sendOtp({
-  email,
-  phoneNumber,
-  isUpdate,
-  isInIframe,
-}: SendOtpProps) {
+export async function sendOtp(
+  { email, phoneNumber, isUpdate, isInIframe }: SendOtpProps,
+  axiosInstance: AxiosInstance,
+) {
   const deviceId = getDeviceId(isInIframe);
-  const encryptedDeviceId = deviceId
+    const encryptedDeviceId = deviceId
     ? await encryptText(deviceId, true)
     : undefined;
   const encryptedPhoneNumber = phoneNumber
     ? await encryptText(phoneNumber, false)
     : undefined;
   const encryptedEmail = email ? await encryptText(email, false) : undefined;
-
+  
   return await axiosInstance
     .post(API_PATHS.AUTH_SEND_OTP, {
       phoneNumber: encryptedPhoneNumber,
@@ -78,7 +77,7 @@ type SendOtpMutationCallbacks = {
   onSuccess?: (
     data: Awaited<ReturnType<typeof sendOtp>>,
     variables: SendOtpProps,
-    context: unknown
+    context: unknown,
   ) => void;
   onError?: (error: Error, variables: SendOtpProps, context: unknown) => void;
 };
@@ -93,8 +92,10 @@ export function useSendOtpMutation({
   onError,
   onSuccess,
 }: SendOtpMutationCallbacks) {
+  const axiosInstance = useAxiosInstance();
+
   return useMutation({
-    mutationFn: sendOtp,
+    mutationFn: (variables) => sendOtp(variables, axiosInstance),
     retry: false,
     onSuccess,
     onError,

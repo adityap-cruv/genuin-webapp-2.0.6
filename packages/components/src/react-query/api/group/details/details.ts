@@ -1,15 +1,20 @@
 import { useQuery } from "@tanstack/react-query";
+import { useAxiosInstance } from "@genuin/components/context/axios";
 
 import { NOT_FOUND_ERROR_CODES } from "@genuin/components/lib/constants/errors";
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
 import { getQueryKeyForLoopDetails } from "@genuin/components/react-query/keys/group";
 import { API_PATHS } from "@genuin/components/react-query/paths";
 
 import { parseGroupDetails } from "./parser";
 import { queryClient } from "@genuin/components/react-query/client";
 import { GroupUserStatusType } from "@genuin/components/types/roles";
+import type { AxiosInstance } from "axios";
 
-export async function fetchLoopDetails(slug?: string, chat_id?: string) {
+export async function fetchLoopDetails(
+  axiosInstance: AxiosInstance,
+  slug?: string,
+  chat_id?: string
+) {
   try {
     const response = await axiosInstance.get(API_PATHS.GROUP_DETAILS, {
       params: { slug, chat_id },
@@ -30,9 +35,11 @@ export async function fetchLoopDetails(slug?: string, chat_id?: string) {
  * @returns An object containing the query key and query function.
  */
 export function useGetGroupDetails(slug: string) {
+  const axiosInstance = useAxiosInstance();
+
   return useQuery({
     queryKey: getQueryKeyForLoopDetails(slug),
-    queryFn: () => fetchLoopDetails(slug),
+    queryFn: () => fetchLoopDetails(axiosInstance, slug, undefined),
   });
 }
 

@@ -1,22 +1,25 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { useAxiosInstance } from "@genuin/components/context/axios";
 
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
 import { getQueryKeyForGroupFeed } from "@genuin/components/react-query/keys/feed";
 import { API_PATHS } from "@genuin/components/react-query/paths";
 
 import { parseFeed } from "../../feed/parser";
+import type { AxiosInstance } from "axios";
 
 /**
  *
  * @param slug
  * @param pageParam
+ * @param axiosInstance - Axios instance to use for the request
  * @returns
  */
 async function fetchFeed(
   slug: string,
   pageParam: {
     lastVideoId?: string | undefined;
-  }
+  },
+  axiosInstance: AxiosInstance
 ) {
   return await axiosInstance
     .get(API_PATHS.GROUP_FEED, {
@@ -46,11 +49,13 @@ async function fetchFeed(
  * @returns An object containing the query key and query function.
  */
 export function useGetGroupFeed(slug: string) {
+  const axiosInstance = useAxiosInstance();
+
   return useInfiniteQuery({
-    queryFn: async ({ pageParam }: { pageParam: { lastVideoId?: string } }) =>
-      await fetchFeed(slug, pageParam),
+    queryFn: ({ pageParam }: { pageParam: { lastVideoId?: string } }) =>
+      fetchFeed(slug, pageParam, axiosInstance),
     queryKey: getQueryKeyForGroupFeed(slug),
-    initialPageParam: { lastVideoId: undefined },
+    initialPageParam: { lastVideoId: undefined as string | undefined },
     getNextPageParam: (lastPage) => {
       if (lastPage.end) {
         return;
