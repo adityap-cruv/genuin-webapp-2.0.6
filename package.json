@@ -14,6 +14,7 @@
     "build": "turbo run build",
     "check-build": "node ./scripts/check-chunk-size.js",
     "dev": "turbo run dev",
+    "lighthouse": "./scripts/run-lighthouse.sh",
     "lint": "turbo run lint",
     "dev:web": "npx concurrently \"pnpm  --filter=@genuin/ui dev:styles\" \"pnpm --filter=@genuin/components dev:styles\" \"pnpm dev --filter=@genuin/webapp -- --turbo\"",
     "dev:sdk": "npx concurrently \"pnpm  --filter=@genuin/ui dev:styles\" \"pnpm --filter=@genuin/components dev:styles\" \"pnpm dev --filter=@genuin/web-sdk\"",
@@ -58,7 +59,7 @@
     "react-hook-form": "^7.57.0",
     "tailwindcss": "^4.1.8",
     "zod": "^3.25.16",
-    "ua-parser-js": "^2.0.3"
+    "ua-parser-js": "^2.0.3"    
   },
   "devDependencies": {
     "@alloc/quick-lru": "^5.2.0",
@@ -89,13 +90,15 @@
     "eslint-plugin-turbo": "^2.5.4",
     "globals": "^15.15.0",
     "husky": "^8.0.3",
+    "lighthouse": "^13.0.1",
     "npm-check-updates": "^17.1.18",
     "postcss": "^8.5.3",
     "prettier": "^3.5.3",
     "syncpack": "^13.0.4",
     "turbo": "^2.5.4",
     "tw-animate-css": "^1.3.0",
-    "typescript-eslint": "^8.33.1"
+    "typescript-eslint": "^8.33.1",
+    "wait-on": "^9.0.3"
   },
   "pnpm": {
     "overrides": {
