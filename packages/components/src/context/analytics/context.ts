@@ -9,6 +9,7 @@ import { TrackFunction } from "./types";
  * Add more event names as your application requires.
  */
 export const EventName = {
+  SDK_PERFORMANCE: "SDK Performance",
   VIDEO_STARTED: "Video Started",
   VIDEO_IMPRESSION: "Video Impression",
   VIDEO_FIRST_QUARTILE: "Video First Quartile",
@@ -95,12 +96,6 @@ export const EventName = {
   AD_ERROR: "Ad Error",
   AD_MEDIA_PLAY: "Ad Media Play",
 } as const;
-
-export enum VideoTypes {
-  Content = "content",
-  HouseAd = "house_ad",
-  Sponsored = "sponsored",
-}
 
 /**
  * Supported screen names used across embed and app navigation flows.

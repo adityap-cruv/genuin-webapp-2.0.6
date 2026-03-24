@@ -6,6 +6,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { AnalyticsService, EventName } from "../analytics";
 
 import {
   DEVICE_ID_KEY_FOR_LOCAL_STORAGE,
@@ -94,6 +95,22 @@ function getShouldAutoplay(params: AutoplayParams): boolean {
   return autoplayType === 1; // type 1 = "always" autoplay
 }
 
+/** Brand ID used as a pilot for INP tracking before rolling out to all brands. */
+const INP_TEST_BRAND_ID = 2476;
+/** INP values above this threshold (ms) are considered "poor" and worth tracking. */
+const INP_POOR_THRESHOLD_MS = 200;
+
+/**
+ * Returns true when the interaction target belongs to the Genuin SDK.
+ * SDK elements carry a "gencl:" prefix in their selector strings.
+ */
+function isGenuinElement(target: string | null | undefined): boolean {
+  if (typeof target !== "string" || target.length === 0) {
+    return false;
+  }
+  return target.includes("gencl:");
+}
+
 /**
  * BaseContextProvider is a context provider that provides the base context to its children.
  * It is used to manage the base state of the application.
@@ -179,6 +196,62 @@ export function BaseContextProvider({
       );
     };
   }, [muted]);
+
+  useEffect(() => {
+    // Pilot: enable INP tracking only for INP_TEST_BRAND_ID before rolling out to all brands.
+    if (brandDetails.brand_id !== INP_TEST_BRAND_ID) return;
+
+    import("web-vitals/attribution")
+      .then(({ onINP }) => {
+        onINP(
+          (metric) => {
+            if (metric.value <= INP_POOR_THRESHOLD_MS) return;
+            const attribution = metric.attribution;
+
+            if (!isGenuinElement(attribution.interactionTarget)) return;
+
+            AnalyticsService.track(EventName.SDK_PERFORMANCE, {
+              // ── Core Metric ──────────────────────────────────────────────
+              metric_name: metric.name, // always "INP"
+              metric_id: metric.id, // unique per page session e.g "v4-1234567890-1"
+              // use this to deduplicate events in rudderstack
+              value: metric.value, // ms — the INP score (worst interaction so far)
+              delta: metric.delta, // ms — change from last reported value
+              // first report: delta === value
+              // subsequent: delta = new value - previous value
+              rating: metric.rating, // "good" | "needs-improvement" | "poor"
+              navigation_type: metric.navigationType, // "navigate" | "reload" | "back-forward"
+              // | "back-forward-cache" | "prerender"
+              // ── Interaction Timing Breakdown ─────────────────────────────
+              // value = input_delay + processing_duration + presentation_delay
+              inp_breakdown: {
+                input_delay: attribution.inputDelay, // ms waiting in event queue
+                // main thread was busy
+                processing_duration: attribution.processingDuration, // ms your JS event handlers ran
+                presentation_delay: attribution.presentationDelay, // ms browser took to paint
+              },
+
+              // ── Element & Interaction Details ────────────────────────────
+              interaction: {
+                selector: attribution.interactionTarget, // CSS selector string e.g "button#play"
+                type: attribution.interactionType, // "pointer" | "keyboard"
+              },
+            });
+          },
+          {
+            // reportAllChanges: true — fire callback every time INP worsens
+            // without this you only get the final value on page unload (too late)
+            reportAllChanges: true,
+          },
+        );
+      })
+      .catch((error) => {
+        console.warn(
+          "Failed to load web-vitals for performance tracking:",
+          error,
+        );
+      });
+  }, [brandDetails?.brand_id]);
 
   useEffect(() => {
     // If deviceId is not available, get a new one.

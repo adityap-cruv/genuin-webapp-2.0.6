@@ -693,6 +693,9 @@ importers:
       uuid:
         specifier: ^11.0.5
         version: 11.1.0
+      web-vitals:
+        specifier: ^5.1.0
+        version: 5.1.0
       wouter:
         specifier: ^3.5.1
         version: 3.7.1(react@19.1.0)
@@ -18774,6 +18777,10 @@ packages:
     dependencies:
       defaults: 1.0.4
     dev: true
+
+  /web-vitals@5.1.0:
+    resolution: {integrity: sha512-ArI3kx5jI0atlTtmV0fWU3fjpLmq/nD3Zr1iFFlJLaqa5wLBkUSzINwBPySCX/8jRyjlmy1Volw1kz1g9XE4Jg==}
+    dev: false
 
   /webidl-conversions@3.0.1:
     resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
