@@ -199,30 +199,32 @@ export function BaseContextProvider({
             if (!isGenuinElement(attribution.interactionTarget)) return;
 
             AnalyticsService.track(EventName.SDK_PERFORMANCE, {
-              // ── Core Metric ──────────────────────────────────────────────
-              metric_name: metric.name, // always "INP"
-              metric_id: metric.id, // unique per page session e.g "v4-1234567890-1"
-              // use this to deduplicate events in rudderstack
-              value: metric.value, // ms — the INP score (worst interaction so far)
-              delta: metric.delta, // ms — change from last reported value
-              // first report: delta === value
-              // subsequent: delta = new value - previous value
-              rating: metric.rating, // "good" | "needs-improvement" | "poor"
-              navigation_type: metric.navigationType, // "navigate" | "reload" | "back-forward"
-              // | "back-forward-cache" | "prerender"
-              // ── Interaction Timing Breakdown ─────────────────────────────
-              // value = input_delay + processing_duration + presentation_delay
-              inp_breakdown: {
-                input_delay: attribution.inputDelay, // ms waiting in event queue
-                // main thread was busy
-                processing_duration: attribution.processingDuration, // ms your JS event handlers ran
-                presentation_delay: attribution.presentationDelay, // ms browser took to paint
-              },
+              performance_details: {
+                // ── Core Metric ──────────────────────────────────────────────
+                metric_name: metric.name, // always "INP"
+                metric_id: metric.id, // unique per page session e.g "v4-1234567890-1"
+                // use this to deduplicate events in rudderstack
+                value: metric.value, // ms — the INP score (worst interaction so far)
+                delta: metric.delta, // ms — change from last reported value
+                // first report: delta === value
+                // subsequent: delta = new value - previous value
+                rating: metric.rating, // "good" | "needs-improvement" | "poor"
+                navigation_type: metric.navigationType, // "navigate" | "reload" | "back-forward"
+                // | "back-forward-cache" | "prerender"
+                // ── Interaction Timing Breakdown ─────────────────────────────
+                // value = input_delay + processing_duration + presentation_delay
+                inp_breakdown: {
+                  input_delay: attribution.inputDelay, // ms waiting in event queue
+                  // main thread was busy
+                  processing_duration: attribution.processingDuration, // ms your JS event handlers ran
+                  presentation_delay: attribution.presentationDelay, // ms browser took to paint
+                },
 
-              // ── Element & Interaction Details ────────────────────────────
-              interaction: {
-                selector: attribution.interactionTarget, // CSS selector string e.g "button#play"
-                type: attribution.interactionType, // "pointer" | "keyboard"
+                // ── Element & Interaction Details ────────────────────────────
+                interaction: {
+                  selector: attribution.interactionTarget, // CSS selector string e.g "button#play"
+                  type: attribution.interactionType, // "pointer" | "keyboard"
+                },
               },
             });
           },
