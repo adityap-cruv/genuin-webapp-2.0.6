@@ -1,11 +1,5 @@
 "use client";
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useState,
-} from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AnalyticsService, EventName } from "../analytics";
 
 import {
@@ -92,7 +86,7 @@ function getShouldAutoplay(params: AutoplayParams): boolean {
 }
 
 /** Brand ID used as a pilot for INP tracking before rolling out to all brands. */
-const INP_TEST_BRAND_ID = 2476;
+const INP_TEST_BRAND_ID = [2476, 2808, 3219];
 /** INP values above this threshold (ms) are considered "poor" and worth tracking. */
 const INP_POOR_THRESHOLD_MS = 200;
 
@@ -187,7 +181,7 @@ export function BaseContextProvider({
 
   useEffect(() => {
     // Pilot: enable INP tracking only for INP_TEST_BRAND_ID before rolling out to all brands.
-    if (brandDetails.brand_id !== INP_TEST_BRAND_ID) return;
+    if (!INP_TEST_BRAND_ID.includes(brandDetails.brand_id)) return;
 
     import("web-vitals/attribution")
       .then(({ onINP }) => {
