@@ -132,7 +132,7 @@ export function Player({
         activeIndex={activeIndex}
         onAdStarted={onAdStarted}
         onAdEnded={onAdEnded}
-        videoType={post.video.video_type ?? VideoTypes.Content}
+        videoType={post.video.videoType ?? VideoTypes.Content}
       >
         <div
           className={cn(
@@ -156,7 +156,7 @@ export function Player({
               adUrl={post.video.adUrl ?? undefined}
               id={"feed-player--" + post.video.id}
               poster={post.video.thumbnail ?? ""}
-              videoType={post.video.video_type ?? VideoTypes.Content}
+              videoType={post.video.videoType ?? VideoTypes.Content}
               className={cn(
                 "gencl:h-full! gencl:w-full",
                 videoCrop

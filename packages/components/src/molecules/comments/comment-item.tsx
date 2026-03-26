@@ -19,6 +19,7 @@ import { useAuthContext } from "@genuin/components/context/auth";
 import { useFeedContext } from "@genuin/components/templates/feed/context";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { DeleteComment } from "../delete-comment";
+import { VideoTypes } from "@genuin/components/context";
 
 export type CommentItemProps = {
   comment: CommentListType[number];
@@ -30,6 +31,7 @@ export type CommentItemProps = {
     typeof DeleteComment
   >["onCommentCountChange"];
   isCommentsLoaded?: boolean;
+  videoType : VideoTypes
 };
 
 // TODO: Check why brand is not handled in the comment item
@@ -37,6 +39,7 @@ export const CommentItem = memo(function CommentItem({
   comment,
   shareUrl,
   videoId,
+  videoType,
   onReactionStateChange,
   onCommentCountChange,
   videoSlug,
@@ -79,6 +82,7 @@ export const CommentItem = memo(function CommentItem({
               ownerId={owner.memberId}
               userId={user?.id}
               videoId={videoId}
+              videoType={videoType}
               onCommentCountChange={onCommentCountChange}
               className={cn(
                 "gencl:block",
@@ -95,6 +99,7 @@ export const CommentItem = memo(function CommentItem({
             videoId={videoId}
             contentType="COMMENT"
             isReacted={comment.isSparked}
+            videoType={videoType}
             reactionCount={comment.noOfSparks}
             onReactionStateChange={(isReacted) => {
               onReactionStateChange?.(comment.commentId, isReacted);

@@ -9,7 +9,7 @@ import {
 import React, { ComponentProps, useCallback, useState } from "react";
 import { Button } from "@genuin/ui/button";
 import { Loader } from "@genuin/ui/loader";
-import { useAnalytics } from "@genuin/components/context/analytics";
+import { useAnalytics, VideoTypes } from "@genuin/components/context/analytics";
 import {
   deleteCommentFromQueryData,
   useDeleteCommentMutation,
@@ -21,6 +21,7 @@ import { useBaseContext } from "@genuin/components/context";
 type ReportProps = ComponentProps<typeof Dialog> & {
   contentId: string;
   videoId: string;
+  videoType: VideoTypes;
   children: React.ReactNode;
   onCommentCountChange?: (videoId: string, increment?: boolean) => void;
 };
@@ -29,6 +30,7 @@ export function DeleteComment({
   contentId,
   videoId,
   children,
+  videoType,
   onCommentCountChange,
   ...props
 }: ReportProps) {
@@ -52,6 +54,7 @@ export function DeleteComment({
         content_category: "loop",
         event_record_screen: "feed",
         event_target_screen: "none",
+        video_type: videoType,
       });
 
       Toast.Success({
@@ -77,9 +80,7 @@ export function DeleteComment({
   return (
     <Dialog modal open={isOpen} onOpenChange={setIsOpen} {...props}>
       <DialogTrigger className="gencl:!border-none">{children}</DialogTrigger>
-      <DialogContent
-        className="gencl:max-w-xl gencl:rounded-t-2xl! gencl:md:rounded-2xl! gencl:flex gencl:flex-col gencl:gap-4 gencl:sm:gap-5!"
-      >
+      <DialogContent className="gencl:max-w-xl gencl:rounded-t-2xl! gencl:md:rounded-2xl! gencl:flex gencl:flex-col gencl:gap-4 gencl:sm:gap-5!">
         <DialogHeader className="gencl:border-none gencl:text-center gencl:sm:text-start! gencl:gap-3 gencl:sm:gap-6!">
           <p className="gencl:text-headline-3-semi-bold gencl:text-black">
             Delete comment?

@@ -7,13 +7,15 @@ const AuthenticationModal = lazy(() =>
   import("@genuin/components/organisms/authentication-modal/index.js").then(
     (m) => ({
       default: m.AuthenticationModal,
-    })
-  )
+    }),
+  ),
 ) as React.ComponentType<AuthenticationModalProps>;
 
 // Lazy load MentionInput to defer vendor-forms chunks (react-hook-form + zod)
 const MentionInput = lazy(() =>
-  import("../mention-input/index.js").then((m) => ({ default: m.MentionInput }))
+  import("../mention-input/index.js").then((m) => ({
+    default: m.MentionInput,
+  })),
 ) as React.ComponentType<any>;
 
 import { type CommentListType } from "@genuin/components/react-query/api/comments";
@@ -22,6 +24,7 @@ import { createReturnQueryParams } from "@genuin/components/lib/utils/return-que
 import { ActionPopover } from "../actions/action-popover";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { Link } from "../link";
+import { VideoTypes } from "@genuin/components/context";
 
 // const commentFormSchema = z.object({
 //   comment: z.string().min(1, { message: "" }),
@@ -41,6 +44,7 @@ type CommentInputProps = {
 type CommentInputBoxProps = {
   communityId: string;
   videoSlug: string;
+  videoType: VideoTypes;
   /**
    * Share url of the video to be used for sharing comments.
    */
@@ -57,6 +61,7 @@ export function CommentInputBox({
   communityId,
   videoSlug,
   shareUrl,
+  videoType,
   onCommentPosted,
   ...commentInputProps
 }: CommentInputBoxProps) {
@@ -78,7 +83,7 @@ export function CommentInputBox({
           videoSlug,
         },
       }),
-    [shareUrl, videoSlug]
+    [shareUrl, videoSlug],
   );
 
   const authClickHandler = handleAuthCallback({
@@ -110,6 +115,7 @@ export function CommentInputBox({
             videoId={videoId}
             loopId={loopId}
             readonly={true}
+            videoType={videoType}
             onCommentPosted={onCommentPosted}
             {...commentInputProps}
           />
@@ -127,6 +133,7 @@ export function CommentInputBox({
             loopId={loopId}
             onCommentPosted={onCommentPosted}
             onClick={authClickHandler}
+            videoType={videoType}
             // disabled={true}
             {...commentInputProps}
           />
@@ -140,6 +147,7 @@ export function CommentInputBox({
           <MentionInput
             videoId={videoId}
             loopId={loopId}
+            videoType={videoType}
             {...commentInputProps}
           />
         </Link>
@@ -152,6 +160,7 @@ export function CommentInputBox({
             <MentionInput
               videoId={videoId}
               loopId={loopId}
+              videoType={videoType}
               onCommentPosted={onCommentPosted}
               {...commentInputProps}
             />
@@ -174,6 +183,7 @@ export function CommentInputBox({
             <MentionInput
               videoId={videoId}
               loopId={loopId}
+              videoType={videoType}
               onCommentPosted={onCommentPosted}
               {...commentInputProps}
             />
@@ -187,6 +197,7 @@ export function CommentInputBox({
     <MentionInput
       videoId={videoId}
       loopId={loopId}
+      videoType={videoType}
       onCommentPosted={onCommentPosted}
       onClick={authClickHandler}
       disabled={!user}

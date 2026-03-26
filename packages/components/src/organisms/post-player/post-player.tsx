@@ -27,7 +27,7 @@ export function PostPlayer({
   ...restProps
 }: PostPlayerProps) {
   const { isInIframe } = useBaseContext();
-  const videoType = post.video.video_type ?? VideoTypes.Content;
+  const videoType = post.video.videoType ?? VideoTypes.Content;
   return (
     <div
       className={cn(

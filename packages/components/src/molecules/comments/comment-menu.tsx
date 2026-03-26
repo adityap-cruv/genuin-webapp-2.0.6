@@ -9,6 +9,7 @@ import { Button } from "@genuin/ui/button";
 import { ComponentProps } from "react";
 import { cn } from "@genuin/ui/lib/utils";
 import { DeleteComment } from "../delete-comment";
+import { VideoTypes } from "@genuin/components/context";
 
 type CommentMenuPropsType = ComponentProps<typeof PopoverTrigger> & {
   contentId: string;
@@ -18,6 +19,7 @@ type CommentMenuPropsType = ComponentProps<typeof PopoverTrigger> & {
   onCommentCountChange?: ComponentProps<
     typeof DeleteComment
   >["onCommentCountChange"];
+  videoType : VideoTypes
 };
 
 export function CommentMenu({
@@ -26,6 +28,7 @@ export function CommentMenu({
   ownerId,
   userId,
   videoId,
+  videoType,
   onCommentCountChange,
   ...restProps
 }: CommentMenuPropsType) {
@@ -63,6 +66,7 @@ export function CommentMenu({
           <DeleteComment
             contentId={contentId}
             videoId={videoId}
+            videoType={videoType}
             onCommentCountChange={onCommentCountChange}
             type="delete-comment-dialog"
           >

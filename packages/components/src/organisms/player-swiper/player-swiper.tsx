@@ -527,7 +527,7 @@ a swiper inside another swiper.
               groupSlug={filteredPost[activeIndex]?.group.slug}
               slug={filteredPost[activeIndex]?.video.slug}
               videoType={
-                filteredPost[activeIndex]?.video.video_type ??
+                filteredPost[activeIndex]?.video.videoType ??
                 VideoTypes.Content
               }
               reactionCount={filteredPost[activeIndex]?.video.sparkCount}
@@ -593,6 +593,7 @@ a swiper inside another swiper.
                           videoId={filteredPost[activeIndex]?.video.id}
                           videoSlug={filteredPost[activeIndex]?.video.slug}
                           shareUrl={filteredPost[activeIndex]?.video.shareUrl}
+                          videoType={filteredPost[activeIndex]?.video.videoType ?? VideoTypes.Content}
                           defaultOpen={value}
                           key={
                             "feed-comment-box" +
@@ -647,6 +648,7 @@ a swiper inside another swiper.
                 loopId={filteredPost[activeIndex].group.id}
                 communityId={filteredPost[activeIndex].community?.id}
                 videoSlug={filteredPost[activeIndex].video.slug}
+                videoType={filteredPost[activeIndex].video.videoType ?? VideoTypes.Content}
                 className="gencl:h-full"
                 showCloseButton={value}
                 onClose={toggle}

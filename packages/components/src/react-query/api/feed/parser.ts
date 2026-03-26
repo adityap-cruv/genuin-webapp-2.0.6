@@ -255,6 +255,7 @@ export function parseFeed(
       const houseAdVideo = item.house_ad?.video;
       if (houseAdVideo) {
         const mapped = mapVideoItem(houseAdVideo);
+        mapped.video.videoType = VideoTypes.HouseAd;
         result.push({
           type: "ads",
           adTagObject,

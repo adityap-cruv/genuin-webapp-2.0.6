@@ -33,6 +33,7 @@ import { ClipPlayerCTA } from "../embed/iheart/clip-player-cta";
 import { getBaseUrlWithouthighlights } from "../embed/iheart/use-iheart-playback";
 import type { ExpandViewCallbacks } from "./types";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import { VideoTypes } from "@genuin/components/context";
 
 // Lazy load heavy components
 const Actions = lazy(() =>
@@ -491,7 +492,7 @@ const SharedActions = memo(function SharedActions({
         reactionCount={postDetails.video.sparkCount}
         shareUrl={postDetails.video.shareUrl}
         slug={postDetails.video.slug}
-        videoType={postDetails.video.video_type}
+        videoType={postDetails.video.videoType}
         groupSlug={postDetails.group.slug}
         actionWrapper={{
           COMMENT: (defaultNode) => {
@@ -504,6 +505,7 @@ const SharedActions = memo(function SharedActions({
                 videoId={postDetails.video.id}
                 videoSlug={postDetails.video.slug}
                 commentCount={postDetails.video.commentCount}
+                videoType={postDetails.video.videoType ?? VideoTypes.Content}
                 defaultOpen={defaultOpenCommentDialog}
                 onCommentCountChange={(videoId, increment) => {
                   onCommentCountChange?.(videoId, increment);

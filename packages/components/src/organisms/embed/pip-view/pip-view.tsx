@@ -126,13 +126,13 @@ function PipPlayer({
         videoUrl={videoDetails.video.source}
         onPlayerIterationEnd={onInterationEnd ?? (() => {})}
         totalVideos={totalVideos}
-        videoType={videoDetails.video.video_type ?? VideoTypes.Content}
+        videoType={videoDetails.video.videoType ?? VideoTypes.Content}
       >
         <FeedPlayer
           videoId={videoDetails.video.id}
           src={videoDetails.video.source}
           poster={videoDetails.video.thumbnail}
-          videoType={videoDetails.video.video_type ?? VideoTypes.Content}
+          videoType={videoDetails.video.videoType ?? VideoTypes.Content}
           className="gencl:object-cover gencl:w-full gencl:h-full!"
         />
         <ControlLayer variant="embed-pip" isActive postDetails={videoDetails} />
