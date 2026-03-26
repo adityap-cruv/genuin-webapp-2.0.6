@@ -544,6 +544,7 @@ export const FeedPlayer = memo(function FeedPlayer({
             isVisible={isAdFilled}
             moveToNextVideo={moveToNextVideo}
             videoId={videoId}
+            videoType={videoType}
             onAdFilled={(provider) => {
               setIsAdFilled(true);
               onAdStateChange?.(true);

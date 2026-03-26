@@ -48,6 +48,8 @@ export type GenAdContainerProps = {
   isVisible: boolean;
   /** Video ID for analytics event payloads. */
   videoId?: string;
+  /** Video Type for analytics event payloads. */
+  videoType?: string;
   /** Called when the waterfall finds an ad (provider name is passed). */
   onAdFilled?: (provider: string) => void;
   /** Called when all waterfall providers are exhausted (no ad to show). */

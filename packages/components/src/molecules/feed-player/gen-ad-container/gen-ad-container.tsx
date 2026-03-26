@@ -35,6 +35,7 @@ export function GenAdContainer({
   isActive,
   isVisible,
   videoId,
+  videoType,
   moveToNextVideo,
   onAdFilled,
   onAdFillFailed,
@@ -76,7 +77,11 @@ export function GenAdContainer({
         clearInterval(initInterval);
         try {
           const { adSlotId: _adSlotId, ...genAdInitConfig } = config;
-          const baseAdParams = { video_id: videoId, ad_type: "in_feed" };
+          const baseAdParams = {
+            video_id: videoId,
+            ad_type: "in_feed",
+            video_type: videoType,
+          };
           instanceId = (window as any).GenAd.init({
             containerElement: adContainerRef.current,
             ...genAdInitConfig,
