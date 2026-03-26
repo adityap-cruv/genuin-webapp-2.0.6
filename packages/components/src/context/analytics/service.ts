@@ -115,8 +115,7 @@ class AnalyticsServiceSingleton {
         ];
 
         // Create stub for each method to queue calls
-        for (let i = 0; i < methods.length; i++) {
-          const method = methods[i];
+        for (const method of methods) {
           rudderanalytics[method] = (function (methodName: string) {
             return function () {
               rudderanalytics.push(
@@ -243,6 +242,13 @@ class AnalyticsServiceSingleton {
                 integrations: {
                   All: false, // Disables all third-party integrations
                   "Google Analytics": false,
+                },
+                queueOptions: {
+                  batch: {
+                    enabled: true,
+                    maxItems: 30,
+                    flushInterval: 10000,
+                  },
                 },
               }
               // Optional: add load options if any, e.g. { configUrl: "YOUR_CONFIG_URL" }
@@ -540,6 +546,25 @@ class AnalyticsServiceSingleton {
       }
     }
     // console.log("[AnalyticsService] Event queue processed.");
+  }
+
+  public flush(): void {
+    try {
+      if (!this.isInitialized) return;
+
+      if (this.eventQueue.length > 0) {
+        this.processEventQueue();
+      }
+
+      if (
+        this.rudderAnalyticsInstance &&
+        typeof this.rudderAnalyticsInstance.flush === "function"
+      ) {
+        this.rudderAnalyticsInstance.flush();
+      }
+    } catch (error) {
+      console.warn("[AnalyticsService] Failed to flush analytics events:", error);
+    }
   }
 
   public getIsInitialized(): boolean {
