@@ -1061,6 +1061,19 @@ class Ads {
     if (event.type === google.ima.AdEvent.Type.LOG) {
       const adData = event.getAdData();
       if (adData.adError) {
+        // Capture current media time in case CONTENT_PAUSE_REQUESTED did not fire
+        // before this error, so CONTENT_RESUME_REQUESTED can restore the correct position
+        // if (
+        //   __classPrivateFieldGet(this, _Ads_lastTimePaused, "f") === 0 &&
+        //   __classPrivateFieldGet(this, _Ads_media, "f").currentTime > 0
+        // ) {
+        __classPrivateFieldSet(
+          this,
+          _Ads_lastTimePaused,
+          __classPrivateFieldGet(this, _Ads_media, "f").currentTime,
+          "f",
+        );
+        // }
         const message = adData.adError.getMessage();
         console.warn(`Ad warning: Non-fatal error occurred: ${message}`);
         const details = {
@@ -1074,6 +1087,20 @@ class Ads {
         __classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(
           errorEvent,
         );
+        // genuin-mod: This callback is to call all ads completed
+        const isLastAd =
+          !Array.isArray(__classPrivateFieldGet(this, _Ads_ads, "f")) ||
+          __classPrivateFieldGet(this, _Ads_currentIndex, "f") >=
+            __classPrivateFieldGet(this, _Ads_ads, "f").length - 1;
+        if (isLastAd && !__classPrivateFieldGet(this, _Ads_ended, "f")) {
+          __classPrivateFieldSet(this, _Ads_ended, true, "f");
+          const allAdsCompletedEvent = addEvent("adsallAdsCompleted");
+          __classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(
+            allAdsCompletedEvent,
+          );
+          this._resumeMedia();
+        }
+        // genuin-mod end
       }
     } else {
       const e = addEvent(`ads${event.type}`);
@@ -1537,8 +1564,17 @@ class Ads {
     __classPrivateFieldSet(this, _Ads_playTriggered, true, "f");
   }
   _prepareMedia() {
-    __classPrivateFieldGet(this, _Ads_media, "f").currentTime =
-      __classPrivateFieldGet(this, _Ads_lastTimePaused, "f");
+    // geuin-mod: to reset the playback to lastTimePaused.
+    if (
+      !__classPrivateFieldGet(this, _Ads_media, "f").ended &&
+      __classPrivateFieldGet(this, _Ads_media, "f").currentTime !== 0 &&
+      __classPrivateFieldGet(this, _Ads_lastTimePaused, "f") >
+        __classPrivateFieldGet(this, _Ads_media, "f").currentTime
+    ) {
+      __classPrivateFieldGet(this, _Ads_media, "f").currentTime =
+        __classPrivateFieldGet(this, _Ads_lastTimePaused, "f");
+    }
+    // genuin-mod end:
     __classPrivateFieldGet(this, _Ads_element, "f").removeEventListener(
       "loadedmetadata",
       this._loadedMetadataHandler,

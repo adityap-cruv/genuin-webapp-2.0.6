@@ -168,17 +168,8 @@ export function useAdPlayer({
       return;
     }
 
-    // Store current video position before ad error occurs
-    let contentTimeBeforeAdError = 0;
-
     player.getElement().addEventListener("playererror", (e: any) => {
       if (e.detail?.type === "Ads") {
-        // Store the current content time for potential restoration
-        const media = player.getMedia();
-        if (media && !isNaN(media.currentTime)) {
-          contentTimeBeforeAdError = media.currentTime;
-        }
-
         if (e.detail?.message.includes("303")) {
           onAdRequestFailedRef.current?.(e.detail);
         } else if (
@@ -188,6 +179,9 @@ export function useAdPlayer({
           e.detail?.message.includes("404")
         ) {
           onAdRenderErrorRef.current?.(e.detail);
+        } else {
+          // this ad error
+          onAdErrorRef.current?.(e.detail);
         }
 
         // If ad tag error 303 (no ads available), trigger all ads completed
@@ -207,10 +201,6 @@ export function useAdPlayer({
 
         // Resume content playback from the correct position
         setTimeout(() => {
-          if (media && contentTimeBeforeAdError > 0) {
-            media.currentTime = contentTimeBeforeAdError;
-          }
-
           if (playerStateRef.current.shouldPlay) {
             player.play();
           } else {
@@ -264,12 +254,23 @@ export function useAdPlayer({
                   adId: e.ad?.data?.adId || prev.ctaInfo?.adId || null,
                   url: e.ad?.data?.clickThroughUrl || prev.ctaInfo?.url || null,
                   title: e.ad?.data?.title || prev.ctaInfo?.title || null,
-                  creativeId: e.ad?.data?.creativeId || prev.ctaInfo?.creativeId || null,
-                  advertiserBrandId: e.ad?.data?.advertiserBrandId || prev.ctaInfo?.advertiserBrandId || null,
-                  campaignId: e.ad?.data?.campaignId || prev.ctaInfo?.campaignId || null,
-                  lineItemId: e.ad?.data?.lineItemId || prev.ctaInfo?.lineItemId || null,
-                  mediaType: e.ad?.data?.mediaType || e.ad?.data?.contentType || prev.ctaInfo?.mediaType || null,
-                  adFormat: e.ad?.data?.adFormat || prev.ctaInfo?.adFormat || null,
+                  creativeId:
+                    e.ad?.data?.creativeId || prev.ctaInfo?.creativeId || null,
+                  advertiserBrandId:
+                    e.ad?.data?.advertiserBrandId ||
+                    prev.ctaInfo?.advertiserBrandId ||
+                    null,
+                  campaignId:
+                    e.ad?.data?.campaignId || prev.ctaInfo?.campaignId || null,
+                  lineItemId:
+                    e.ad?.data?.lineItemId || prev.ctaInfo?.lineItemId || null,
+                  mediaType:
+                    e.ad?.data?.mediaType ||
+                    e.ad?.data?.contentType ||
+                    prev.ctaInfo?.mediaType ||
+                    null,
+                  adFormat:
+                    e.ad?.data?.adFormat || prev.ctaInfo?.adFormat || null,
                 };
                 onAdRenderedRef.current?.({
                   ...updatedCtaInfo,
@@ -340,7 +341,7 @@ export function useAdPlayer({
                 // Update ad time countdown
                 const remainingTime = Math.max(
                   0,
-                  Math.ceil(adDuration - currentTime)
+                  Math.ceil(adDuration - currentTime),
                 );
 
                 setAdTimeCountdown(remainingTime);
@@ -351,7 +352,7 @@ export function useAdPlayer({
               } catch (err) {
                 console.warn("Error processing AD_PROGRESS event:", err);
               }
-            }
+            },
           );
 
           // STARTED event handler
@@ -393,6 +394,13 @@ export function useAdPlayer({
                         url: e.ad.data.clickThroughUrl || null,
                         title: e.ad.data.title || null,
                         adId: e.ad.data.adId || null,
+                        creativeId: e.ad.data.creativeId || null,
+                        advertiserBrandId: e.ad.data.advertiserBrandId || null,
+                        campaignId: e.ad.data.campaignId || null,
+                        lineItemId: e.ad.data.lineItemId || null,
+                        mediaType:
+                          e.ad.data.mediaType || e.ad.data.contentType || null,
+                        adFormat: e.ad.data.adFormat || null,
                       }
                     : null;
 
@@ -423,7 +431,7 @@ export function useAdPlayer({
               } catch (error) {
                 console.error("Error in ad started event:", error);
               }
-            }
+            },
           );
 
           // SKIPPED event handler
@@ -445,7 +453,7 @@ export function useAdPlayer({
               // As user clicks on ad and ad is loaded in iframe, window will lose focus
               // Bring back focus to the window after ad is skipped
               window.focus();
-            }
+            },
           );
 
           // COMPLETE event handler
@@ -459,8 +467,15 @@ export function useAdPlayer({
                         adId: prev.ctaInfo.adId,
                         url: prev.ctaInfo.url,
                         title: prev.ctaInfo.title,
+                        creativeId: prev.ctaInfo.creativeId || null,
+                        advertiserBrandId:
+                          prev.ctaInfo.advertiserBrandId || null,
+                        campaignId: prev.ctaInfo.campaignId || null,
+                        lineItemId: prev.ctaInfo.lineItemId || null,
+                        mediaType: prev.ctaInfo.mediaType || null,
+                        adFormat: prev.ctaInfo.adFormat || null,
                       }
-                    : { adId: null, url: null, title: null }
+                    : { adId: null, url: null, title: null },
                 );
                 return {
                   ...prev,
@@ -470,7 +485,7 @@ export function useAdPlayer({
               });
 
               setAdIsActive(false);
-            }
+            },
           );
 
           // CLICK event handler
@@ -485,11 +500,34 @@ export function useAdPlayer({
                     adId: e.ad?.data?.adId || null,
                     currentAdIndex: prev.currentIndex,
                     totalAds: prev.totalAds,
+                    creativeId:
+                      e.ad?.data?.creativeId ||
+                      prev.ctaInfo?.creativeId ||
+                      null,
+                    advertiserBrandId:
+                      e.ad?.data?.advertiserBrandId ||
+                      prev.ctaInfo?.advertiserBrandId ||
+                      null,
+                    campaignId:
+                      e.ad?.data?.campaignId ||
+                      prev.ctaInfo?.campaignId ||
+                      null,
+                    lineItemId:
+                      e.ad?.data?.lineItemId ||
+                      prev.ctaInfo?.lineItemId ||
+                      null,
+                    mediaType:
+                      e.ad?.data?.mediaType ||
+                      e.ad?.data?.contentType ||
+                      prev.ctaInfo?.mediaType ||
+                      null,
+                    adFormat:
+                      e.ad?.data?.adFormat || prev.ctaInfo?.adFormat || null,
                   });
                   return prev;
                 });
               }
-            }
+            },
           );
 
           // ALL_ADS_COMPLETED event handler
@@ -500,7 +538,7 @@ export function useAdPlayer({
               onAllAdsCompletedRef.current?.();
               setAdInfo((prev) => ({ ...prev, allCompleted: true }));
               setAdIsActive(false);
-            }
+            },
           );
 
           // RESUMED event handler
@@ -513,7 +551,7 @@ export function useAdPlayer({
                 try {
                   adsManager.pause();
                   console.log(
-                    "Ad paused on resume due to shouldPlay being false"
+                    "Ad paused on resume due to shouldPlay being false",
                   );
                   setAdInfo((prev) => ({ ...prev, isPlaying: false }));
                   return;
@@ -521,7 +559,7 @@ export function useAdPlayer({
                   console.warn("Error pausing ad on resume:", pauseErr);
                 }
               }
-            }
+            },
           );
 
           // PAUSED event handler
@@ -536,10 +574,26 @@ export function useAdPlayer({
                   title: adData?.title || prev.ctaInfo?.title || null,
                   currentAdIndex: prev.currentIndex,
                   totalAds: prev.totalAds,
+                  creativeId:
+                    adData?.creativeId || prev.ctaInfo?.creativeId || null,
+                  advertiserBrandId:
+                    adData?.advertiserBrandId ||
+                    prev.ctaInfo?.advertiserBrandId ||
+                    null,
+                  campaignId:
+                    adData?.campaignId || prev.ctaInfo?.campaignId || null,
+                  lineItemId:
+                    adData?.lineItemId || prev.ctaInfo?.lineItemId || null,
+                  mediaType:
+                    adData?.mediaType ||
+                    adData?.contentType ||
+                    prev.ctaInfo?.mediaType ||
+                    null,
+                  adFormat: adData?.adFormat || prev.ctaInfo?.adFormat || null,
                 });
                 return { ...prev, isPlaying: false };
               });
-            }
+            },
           );
 
           // AD_ERROR event handler
@@ -568,7 +622,7 @@ export function useAdPlayer({
               }, 50);
 
               onAdErrorRef.current?.(error);
-            }
+            },
           );
         });
       } catch (error) {

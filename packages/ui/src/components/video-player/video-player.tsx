@@ -141,6 +141,7 @@ export type PlayerProps = ComponentProps<"video"> & {
   play?: boolean;
   adUrl?: string; // URL for video ads
   adPlatform?: string | null; // Platform for video ads (e.g., "google", "geniusads")
+  isInFeed?: boolean; // When true, allows adUrl changes to trigger loadAd via useEffect
   startTime?: number;
   enableLazyLoading?: boolean; // Enable lazy loading optimization (default: false)
   isInExpandView?: boolean;
@@ -191,6 +192,7 @@ export const VideoPlayer = memo(function VideoPlayer({
   loop = false, // loop prop is now destructured
   adUrl,
   adPlatform,
+  isInFeed = false,
   enableLazyLoading = false, // Default to false for backward compatibility
   isInExpandView,
   onVideoFirstQuartile,
@@ -235,6 +237,11 @@ export const VideoPlayer = memo(function VideoPlayer({
   const setupAdEventListenersRef = useRef<
     ((player: OpenPlayerJS) => void) | null
   >(null);
+  const onAdRequestedRef = useRef(onAdRequested);
+  onAdRequestedRef.current = onAdRequested;
+
+  // adUrl =
+  //   "https://gov.aniview.com/api/adserver/vmap/srv/?AV_HEIGHT=[DEVICE_HEIGHT]&AV_PLACEMENT=1&AV_CONNECTIONTYPE=[DEVICE_CONNECTIONTYPE]&AV_IFA_TYPE=[IFA_TYPE]&AV_CHANNELID=698caa862051b1279703d98d&AV_CONTENT_URL=https://shorts.usmagazine.com/video/bestselling-mascara?community=214f3e23b8000d42&loop=214f3ea3b5801400&postroll=1&AV_PLCMT=1&AV_LATITUDE=[LOCATION_LAT]&AV_LMT=[LIMITED_AD_TRACKING]&preroll=1&AV_URL=https://shorts.usmagazine.com/video/bestselling-mascara?community=214f3e23b8000d42&loop=214f3ea3b5801400&AV_WIDTH=[DEVICE_WIDTH]&AV_RTB_DEVICE_TYPE=[DEVICE_TYPE]&AV_REGION=[REGION]&AV_MODEL=[DEVICE_MODEL]&AV_MAKE=[DEVICE_MAKE]&AV_LANGUAGE=[DEVICE_LANGUAGE]&AV_PUBLISHERID=6970e651e6f83878f3085364&cb=1774522459934970488&AV_IP=[IP]&AV_LONGITUDE=[LOCATION_LON]&AV_GDPR=[GDPR]&AV_DOMAIN=[DOMAIN]&AV_CONTENT_ID=56901c92-8a4e-4d27-a2c0-5acb5cfda65a&AV_USERAGENT=[UA]&AV_CONSENT=[GDPRCONSENT]&AV_OS=[OS]&AV_OSVERS=[OS_VERSION]&AV_DNT=[DNT]&midroll_times=00:00:08&AV_TIMESTAMP=1774522459934970818";
 
   const { isSafari } = useBrowserDetect();
 
@@ -277,14 +284,6 @@ export const VideoPlayer = memo(function VideoPlayer({
   }, [volume]);
 
   useEffect(() => {
-    if (!isPlayerInitialized.current) return;
-
-    if (adUrl) {
-      playerRef.current?.loadAd(adUrl);
-    }
-  }, [adUrl]);
-
-  useEffect(() => {
     if (typeof muted === "undefined") return;
     if (videoRef.current) {
       videoRef.current.muted = muted;
@@ -325,7 +324,7 @@ export const VideoPlayer = memo(function VideoPlayer({
 
       // Set up ad event listeners if ads are enabled
       if (adUrl) {
-        onAdRequested?.();
+        onAdRequestedRef.current?.();
         if (setupAdEventListenersRef.current) {
           setupAdEventListenersRef.current(player);
         }
@@ -375,9 +374,7 @@ export const VideoPlayer = memo(function VideoPlayer({
       player
         ?.getMedia()
         .play()
-        .then(() => {
-          console.log("Content resumed after fatal ad error");
-        })
+        .then(() => {})
         .catch((error) => {
           if (error?.name === "NotAllowedError") {
             updatePlayerMutedState(true);
@@ -553,6 +550,14 @@ export const VideoPlayer = memo(function VideoPlayer({
     updateLoadingState,
   ]);
 
+  // If adUrl changes after initialization, load the new ad (only in feed context)
+  useEffect(() => {
+    if (!isInFeed) return;
+    if (adUrl) {
+      playerRef.current?.loadAd(adUrl);
+    }
+  }, [adUrl, isInFeed]);
+
   useEffect(() => {
     if (!videoRef.current) return;
 
@@ -574,17 +579,12 @@ export const VideoPlayer = memo(function VideoPlayer({
   const tryCallingEnd = useCallback(() => {
     const allAdsCompleted = playerStateRef.current.allAdsCompleted;
     const videoCompleted = playerStateRef.current.videoCompleted;
-    console.log("tryCallingEnd: ", {
-      allAdsCompleted,
-      videoCompleted,
-    });
 
     // only call onEnded if both ads and video are completed
     if (allAdsCompleted && videoCompleted) {
       if (adUrl) {
-        playerRef.current?.loadAd(adUrl).then((e) => {
-          // console.log("Ad reloaded after video ended");
-        });
+        onAdRequestedRef.current?.();
+        playerRef.current?.loadAd(adUrl).then((e) => {});
         playerStateRef.current.allAdsCompleted = false;
       }
       playerStateRef.current.videoCompleted = false;
@@ -592,7 +592,21 @@ export const VideoPlayer = memo(function VideoPlayer({
       onEnded?.({ target: videoRef.current });
       changePlayerStateRef(true);
     }
-  }, [onEnded]);
+  }, [onEnded, adUrl]);
+
+  const handleAllAdsCompleted = useCallback(() => {
+    playerStateRef.current.allAdsCompleted = true;
+    onAllAdsCompleted?.();
+    tryCallingEnd();
+  }, [onAllAdsCompleted, tryCallingEnd]);
+
+  const handleEnded = useCallback(
+    (_e: any) => {
+      playerStateRef.current.videoCompleted = true;
+      tryCallingEnd();
+    },
+    [tryCallingEnd],
+  );
 
   useEffect(() => {
     const videoElement = videoRef.current;
@@ -634,17 +648,6 @@ export const VideoPlayer = memo(function VideoPlayer({
       }
     };
 
-    const handleAllAdsCompleted = () => {
-      playerStateRef.current.allAdsCompleted = true;
-      onAllAdsCompleted?.();
-      tryCallingEnd();
-    };
-
-    const handleEnded = (e: any) => {
-      playerStateRef.current.videoCompleted = true;
-      tryCallingEnd();
-    };
-
     videoElement.addEventListener("play", handlePlay);
     videoElement.addEventListener("playing", handlePlaying);
     // Added listener for all ads completed
@@ -660,7 +663,14 @@ export const VideoPlayer = memo(function VideoPlayer({
       );
       videoElement.removeEventListener("ended", handleEnded);
     };
-  }, [onVideoStart, src, updateLoadingState, pauseThePlayer, tryCallingEnd]);
+  }, [
+    onVideoStart,
+    src,
+    updateLoadingState,
+    pauseThePlayer,
+    handleAllAdsCompleted,
+    handleEnded,
+  ]);
 
   const changePlayerStateRef = useCallback(
     (isReset: boolean, duration?: number, currentTime?: number) => {

@@ -120,6 +120,7 @@ export function GenAdContainer({
 
             // },
             onWaterfallFail: () => {
+              console.log("waterfall failed");
               onAdFillFailedRef.current?.();
             },
             onAdCompleted: (provider: string) => {
