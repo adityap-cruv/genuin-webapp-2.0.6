@@ -378,9 +378,7 @@ export const FeedPlayer = memo(function FeedPlayer({
       cta_url: event?.url,
       cta_name: event?.title,
       ad_source: adsPlatform,
-      ad_type: event?.adType,
       ad_format: event?.adFormat,
-      ad_unit_id: event?.adUnitId,
       advertiser_brand_id: event?.advertiserBrandId,
       campaign_id: event?.campaignId,
       line_item_id: event?.lineItemId,
@@ -388,7 +386,7 @@ export const FeedPlayer = memo(function FeedPlayer({
       media_type: event?.mediaType,
       video_type: videoType,
     }),
-    [adsPlatform,videoType],
+    [adsPlatform, videoType],
   );
 
   const handleAdStarted = useCallback(

@@ -9,9 +9,7 @@ export type AdDataType = {
   title: string | null;
   totalAds?: number;
   currentAdIndex?: number;
-  adType?: string | null;
   adFormat?: string | null;
-  adUnitId?: string | null;
   advertiserBrandId?: number | null;
   campaignId?: string | null;
   lineItemId?: string | null;
