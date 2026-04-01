@@ -37,9 +37,10 @@ type EmbedManagerContextType = {
   /**
    * Function to go to the next video in the embed.
    * @param useAutoScroll Whether to use intelligent auto-scroll positioning (default: false)
+   * @param forceNextMove - Forces navigation to the next video (used for next button actions). Defaults to false.
    * @returns void
    */
-  goToNextVideo: (useAutoScroll?: boolean) => void;
+  goToNextVideo: (useAutoScroll?: boolean, forceNextMove?: boolean) => void;
   /**
    * Function to go to the previous video in the embed.
    * @returns void
@@ -231,7 +232,7 @@ export function EmbedManagerProvider({
   );
 
   const goToNextVideo = useCallback(
-    (useAutoScroll: boolean = false) => {
+    (useAutoScroll: boolean = false, forceNextMove: boolean = false) => {
       if (isGridLayout) {
         // For grid layout, just increment the index
         setActiveIndex((prevIndex) => prevIndex + 1);
@@ -276,7 +277,15 @@ export function EmbedManagerProvider({
           index: activeIndex + 1,
           dir: config.view.isFeed ? "vertical" : "horizontal",
         });
-        handleIHeartNavigation("next");
+        if (isIHeart || forceNextMove) {
+          handleIHeartNavigation("next");
+        } else {
+          // Always slide to ensure swiper navigation happens
+          if (visibilityPercentage < 100) {
+            swiper.slideNext();
+          }
+          setActiveIndex(targetIndex);
+        }
       }
     },
     [swiper, activeIndex, isGridLayout, isIHeart, handleIHeartNavigation],

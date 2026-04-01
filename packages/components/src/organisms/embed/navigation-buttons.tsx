@@ -317,7 +317,7 @@ export function NavigationButtonsWithContext({
       setSlidesOffsetBefore?.(48);
       setTimeout(
         () => {
-          goToNextVideo();
+          goToNextVideo(false, true);
         },
         activeIndex > 0 ? 0 : 50,
       );
