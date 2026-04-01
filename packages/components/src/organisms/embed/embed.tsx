@@ -41,6 +41,10 @@ import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-d
 import { isSlideVisible } from "./utils";
 import { FetchNextPageHandler } from "./fetch-next-page-handler";
 
+import { PipViewLoader } from "./pip-view/pip-view-loader";
+import { ExpandViewLoader } from "./expand-view/expand-view-loader";
+import { FeedSkeleton } from "@genuin/components/templates/feed";
+
 const IheartUrlManager = lazy(() =>
   import("./iheart-url-manager.js").then((m) => ({
     default: m.IheartUrlManager,
@@ -51,10 +55,6 @@ const IheartUrlManager = lazy(() =>
 const GridView = lazy(() =>
   import("./grid-view/grid-view.js").then((m) => ({ default: m.GridView })),
 );
-
-import { PipViewLoader } from "./pip-view/pip-view-loader";
-import { ExpandViewLoader } from "./expand-view/expand-view-loader";
-import { FeedSkeleton } from "@genuin/components/templates/feed";
 
 const EmbedExpandView = lazy(() =>
   import("./expand-view/index.js").then((m) => ({
@@ -200,7 +200,7 @@ export function Embed({
   // Hence, we filter out overlay posts when the conditions match.
   const filteredPost = useMemo(() => {
     return isDesktop && websiteType === "polaris" && isIheartLayout
-      ? videos.filter((post) => post.video.type !== "overlay")
+      ? videos.filter((post) => post.video?.type !== "overlay")
       : videos;
   }, [videos, isDesktop]);
 

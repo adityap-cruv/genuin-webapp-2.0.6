@@ -42,7 +42,6 @@ if [ $SDK_STATUS -ne 0 ]; then
   echo "❌ Push rejected. Please fix the build errors and try again."
   exit 1
 fi
-
 echo "✅ SDK production build successful"
 echo ""
 

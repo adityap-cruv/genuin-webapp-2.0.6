@@ -32,7 +32,7 @@ const LazyEmbed = lazy(() =>
       console.error('Failed to load Embed component:', error)
       // Fallback to a basic error component
       return { default: () => <div>Failed to load embed component</div> }
-    }),
+    })
 )
 
 const LazyStandardWall = lazy(() =>
@@ -46,7 +46,7 @@ const LazyStandardWall = lazy(() =>
       return {
         default: () => <div>Failed to load standard wall component</div>,
       }
-    }),
+    })
 )
 
 interface EmbedRootProps {
@@ -85,7 +85,7 @@ function EmbedSkeleton({
           }}
           className={cn(
             'gencl:w-full gencl:flex gencl:overflow-auto gencl:gap-2',
-            !isDesktop && websiteType === 'polaris' && 'gencl:flex-col',
+            !isDesktop && websiteType === 'polaris' && 'gencl:flex-col'
           )}>
           {Array.from({ length: 6 }).map((_, idx) => (
             <Skeleton
@@ -95,7 +95,7 @@ function EmbedSkeleton({
                 !isDesktop && websiteType === 'polaris'
                   ? 'gencl:w-full'
                   : 'gencl:h-full',
-                shimmerBgClass,
+                shimmerBgClass
               )}
             />
           ))}

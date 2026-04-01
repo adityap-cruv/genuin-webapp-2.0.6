@@ -6,8 +6,9 @@ import {
 } from "@genuin/ui/components/popover";
 import { ThreeDotsIcon } from "@genuin/ui/icons";
 import { Button } from "@genuin/ui/button";
-import { ComponentProps } from "react";
+import { ComponentProps, useState, useCallback, useEffect } from "react";
 import { cn } from "@genuin/ui/lib/utils";
+import { getRootContainer } from "@genuin/ui/lib/shadow-dom.utils";
 import { DeleteComment } from "../delete-comment";
 import { VideoTypes } from "@genuin/components/context";
 
@@ -32,12 +33,31 @@ export function CommentMenu({
   onCommentCountChange,
   ...restProps
 }: CommentMenuPropsType) {
+  const [open, setOpen] = useState(false);
+  const closePopover = useCallback(() => setOpen(false), []);
+
+  useEffect(() => {
+    if (!open) return;
+
+    // The popover content is portalled into a shadow root, so normal document-level listeners won't catch events inside it.
+    // getRootContainer() returns the shadow root (or document.body as fallback).
+    const container = getRootContainer();
+    const eventTarget: EventTarget =
+      container instanceof ShadowRoot ? container : (container ?? document);
+
+    const handlePopover = () => setOpen(false);
+    eventTarget.addEventListener("scroll", handlePopover, true);
+    return () => {
+      eventTarget.removeEventListener("scroll", handlePopover, true);
+    };
+  }, [open]);
+
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
         className={cn(
           "gencl:p-1 gencl:rounded-lg gencl:hover:bg-secondary-100",
-          className
+          className,
         )}
         {...restProps}
       >
@@ -52,6 +72,7 @@ export function CommentMenu({
             reportFor="COMMENT"
             contentId={contentId}
             type="report-comment-dialog"
+            onClose={closePopover}
           >
             <div className="gencl:p-3 gencl:rounded-xl gencl:border-secondary-100 gencl:bg-white gencl:cursor-pointer gencl:text-primary">
               <Button
@@ -69,6 +90,7 @@ export function CommentMenu({
             videoType={videoType}
             onCommentCountChange={onCommentCountChange}
             type="delete-comment-dialog"
+            onClose={closePopover}
           >
             <div className="gencl:p-3 gencl:rounded-xl gencl:border-secondary-100 gencl:bg-white gencl:cursor-pointer gencl:text-primary">
               <Button

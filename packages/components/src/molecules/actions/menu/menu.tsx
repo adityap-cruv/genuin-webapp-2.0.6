@@ -3,7 +3,7 @@ import { PlaybackSpeed } from "@genuin/components/molecules/playback-speed";
 const Report = React.lazy(() =>
   import("@genuin/components/molecules/report/index.js").then((m) => ({
     default: m.Report,
-  }))
+  })),
 ) as React.ComponentType<any>;
 
 import { Suspense } from "react";
@@ -77,7 +77,7 @@ export function Menu({
     brand: { isIndianExpress },
   } = useEmbedConfigs();
   const { isMobile } = useDeviceDetectMediaQuery();
-  const { brandDetails } = useBaseContext();
+  const { brandDetails, useShadowDOM } = useBaseContext();
   const embedDetails = useSafeEmbedContext();
   const [isOpen, setIsOpen] = useState(false);
   const { activeIndex } = useFeedContext();
@@ -165,9 +165,7 @@ export function Menu({
     return (
       <Dialog type="menu-dialog">
         <DialogTrigger>{children}</DialogTrigger>
-        <DialogContent
-          className="gen-sdk-expand-view gencl:p-4 gencl:border gencl:border-secondary-100 gencl:rounded-none gencl:!rounded-t-2xl gencl:flex gencl:flex-col gencl:gap-1 gencl:z-50 gencl:!bg-white gencl:focus-visible:outline-none gencl:focus-visible:ring-0"
-        >
+        <DialogContent className="gen-sdk-expand-view gencl:p-4 gencl:border gencl:border-secondary-100 gencl:rounded-none gencl:!rounded-t-2xl gencl:flex gencl:flex-col gencl:gap-1 gencl:z-50 gencl:!bg-white gencl:focus-visible:outline-none gencl:focus-visible:ring-0">
           <p className="gencl:text-body-0-semi-bold gencl:p-1">More options</p>
           {MenuData.map((data, index) => (
             <React.Fragment key={index}>{data.children}</React.Fragment>

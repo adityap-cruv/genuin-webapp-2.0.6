@@ -75,6 +75,14 @@ export function useEmbedConfigs() {
         brandLayoutType === "ted"
           ? false
           : customization?.is_navigation_control_enabled,
+      /**
+       * This flag is used to determine whether the player should pause when the player doesn't autoplay in unmuted state specifically for safari.
+       * If true: the player will pause when autoplay is not allowed error gets thrown from player.
+       * If false: the will play in muted state when auto play not allowed error gets thrown from player.
+       *
+       * right now it is not productised so keeping this flag static based on brand id (only for ted.)
+       */
+      playerShouldPauseOnNotAllowed: brandDetails.brand_id === 2357,
       centeredSlides:
         embedData?.style === "feed" &&
         embedData?.placement_card_layout_id === 2,

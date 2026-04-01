@@ -34,7 +34,8 @@ export function PlayingState({
   showOnlyPlayAction = false,
   ...restProps
 }: PlayingStateProps) {
-  const { playingState, buttonAction } = usePlayerContext();
+  const { playingState, buttonAction, pausedBySystem, resumeFromSystemPause } =
+    usePlayerContext();
 
   // If no buttonAction is set (which happens when not user initiated), don't render anything
   if (!buttonAction) {
@@ -50,7 +51,7 @@ export function PlayingState({
         className={cn(
           "gencl:rounded-full gencl:bg-black/40",
           "gencl:align-middle gencl:opacity-100 gencl:backdrop-blur-sm gencl:transition-all gencl:duration-100",
-          className
+          className,
         )}
         {...restProps}
       >
@@ -70,8 +71,8 @@ export function PlayingState({
           aria-label={getAriaLabelForAction(buttonAction)}
           className={cn(
             "gencl:rounded-full gencl:bg-black/40 gencl:align-middle gencl:backdrop-blur-sm",
-            "gencl:delay-500 gencl:animate-fade-out gencl:duration-[1500ms]",
-            className
+            "gencl:delay-500 gencl:animate-fade-out gencl:duration-1500",
+            className,
           )}
           {...restProps}
         >
@@ -86,24 +87,52 @@ export function PlayingState({
 
   // Default behavior for non-iHeart layouts
   if (buttonAction === "PAUSE" && playingState === "PAUSED") {
+    if (!pausedBySystem) {
+      return (
+        <div
+          key={buttonAction}
+          role="status"
+          aria-live="polite"
+          aria-label={getAriaLabelForAction(buttonAction)}
+          className={cn(
+            "gencl:rounded-full gencl:bg-black/40 gencl:align-middle gencl:backdrop-blur-sm",
+            className,
+          )}
+          {...restProps}
+        >
+          <PauseIcon theme="dark" size="xl" aria-hidden="true" />
+        </div>
+      );
+    }
+
     return (
       <div
         key={buttonAction}
-        role="status"
-        aria-live="polite"
-        aria-label={getAriaLabelForAction(buttonAction)}
-        className={cn(
-          "gencl:rounded-full gencl:bg-black/40 gencl:align-middle gencl:backdrop-blur-sm",
-          className
-        )}
-        {...restProps}
+        className="gencl:flex gencl:flex-col gencl:items-center gencl:gap-2 gencl:absolute gencl:h-full gencl:w-full gencl:justify-center"
+        onClick={(event) => {
+          event.stopPropagation();
+          resumeFromSystemPause();
+        }}
       >
-        <PauseIcon theme="dark" size="xl" aria-hidden="true" />
+        <div
+          role="status"
+          aria-live="polite"
+          aria-label={getAriaLabelForAction(buttonAction)}
+          className={cn(
+            "gencl:rounded-full gencl:bg-black/40 gencl:align-middle gencl:backdrop-blur-sm",
+            "gencl:flex gencl:items-center gencl:justify-center gencl:h-16 gencl:w-16",
+          )}
+          {...restProps}
+        >
+          <PauseIcon theme="dark" size="xl" aria-hidden="true" />
+        </div>
+        <p className="gencl:bg-black/40 gencl:p-2 gencl:backdrop-blur-sm gencl:rounded-md gencl:text-center gencl:text-body-1-semi-bold gencl:text-white">
+          Tap to unmute and play
+        </p>
       </div>
     );
   }
 
-  // Render icon based on buttonAction (only if it's a valid action)
   const renderIcon = () => {
     switch (buttonAction) {
       case "PLAY":
@@ -135,7 +164,7 @@ export function PlayingState({
       className={cn(
         "gencl:rounded-full gencl:bg-black/40 gencl:align-middle gencl:backdrop-blur-sm",
         "gencl:delay-500 gencl:animate-fade-out gencl:duration-1500",
-        className
+        className,
       )}
       {...restProps}
     >

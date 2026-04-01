@@ -62,6 +62,7 @@ export function Default({
     showSeeker,
     totalVideos,
     positionIndex,
+    pausedBySystem,
   } = usePlayerContext();
   const { gestureOverlayUI, hideGestureOverlay } = useGestureOverlayManager();
   const { isMobile, isTablet, isIpad } = useDeviceDetection();
@@ -108,6 +109,7 @@ export function Default({
   // Event handlers
   const handleVideoClick = useCallback(
     (e: React.MouseEvent) => {
+      if (pausedBySystem) return;
       e.stopPropagation();
       hideGestureOverlay("PLAY_PAUSE", muted);
 

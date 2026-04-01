@@ -53,7 +53,7 @@ type ReactionButtonProps = ComponentProps<typeof PrimitiveButton> & {
   onReactionStateChange?: (isReacted: boolean) => void;
   videoId?: string;
   isCommentsLoaded?: boolean;
-  videoType: VideoTypes;
+  videoType?: VideoTypes;
 } & VariantProps<typeof reactionButtonVariant>;
 
 export const ReactionButton = React.memo(function ReactionButton({

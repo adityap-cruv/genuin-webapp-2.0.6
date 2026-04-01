@@ -18,7 +18,7 @@ import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config
 const NativeFeedScroll = lazy(() =>
   import("../native-feed-scroll/index.js").then((m) => ({
     default: m.NativeFeedScroll,
-  }))
+  })),
 );
 
 // Lazy load Swiper with modules to defer loading until component renders
@@ -116,9 +116,9 @@ export function EmbedSwiper({
         containerDimensions?.width ?? 0,
         forFeed,
         aspectRatio,
-        useWindowSwiperMode
+        useWindowSwiperMode,
       ) ?? 1,
-    [forFeed, aspectRatio, containerDimensions, useWindowSwiperMode]
+    [forFeed, aspectRatio, containerDimensions, useWindowSwiperMode],
   );
 
   // Use native scroll for feed mode
@@ -133,7 +133,7 @@ export function EmbedSwiper({
           slidesOffsetBefore={slidesOffsetBefore}
           className={cn(
             className,
-            !allowGestureScroll && "gencl:overflow-hidden"
+            !allowGestureScroll && "gencl:overflow-hidden",
           )}
           customHeightFor={customHeightFor}
           onActiveIndexChange={(instance: unknown) => {
@@ -174,7 +174,7 @@ export function EmbedSwiper({
         <div
           className={cn(
             "gencl:h-full gencl:w-full gencl:rounded-lg",
-            className
+            className,
           )}
         >
           <div className="gencl:animate-pulse gencl:bg-gray-200 gencl:h-full gencl:w-full gencl:rounded-lg" />
@@ -231,7 +231,7 @@ export function EmbedSwiper({
         className={cn(
           "gencl:h-full gencl:w-full gencl:rounded-lg",
           !allowGestureScroll && "swiper-no-swiping",
-          className
+          className,
         )}
         slidesOffsetBefore={slidesOffsetBefore}
         onInit={(swiper: SwiperType) => {

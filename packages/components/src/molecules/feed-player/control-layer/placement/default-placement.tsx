@@ -5,7 +5,7 @@ import { type FC, useMemo, lazy, Suspense } from "react";
 const Linkouts = lazy(() =>
   import("@genuin/components/organisms/linkouts/index.js").then((m) => ({
     default: m.Linkouts,
-  }))
+  })),
 ) as React.ComponentType<any>;
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { EmbedControls } from "../controls/embed";
@@ -26,7 +26,7 @@ export const processVideoDescription = (description: any) => {
           ? desc
           : desc && typeof desc === "object" && "text" in desc
             ? desc.text
-            : ""
+            : "",
       )
       .filter(Boolean)
       .map((text, idx) => <span key={idx}>{text}</span>);
@@ -54,7 +54,7 @@ export const DefaultPlacement: FC<ControlLayerPropsType> = ({
           "gencl:flex gencl:items-center gencl:gap-2",
           contentDisplay.showSectionSubTitle &&
             postDetails.section?.description &&
-            "gencl:justify-between"
+            "gencl:justify-between",
         )}
       >
         {contentDisplay.showSectionThumbnail &&
@@ -65,7 +65,7 @@ export const DefaultPlacement: FC<ControlLayerPropsType> = ({
               alt="thumbnail"
               className={cn(
                 "gencl:object-cover",
-                shouldUseCompactText ? "gencl:size-8" : "gencl:size-12"
+                shouldUseCompactText ? "gencl:size-8" : "gencl:size-12",
               )}
             />
           )}
@@ -76,7 +76,7 @@ export const DefaultPlacement: FC<ControlLayerPropsType> = ({
                 "gencl:truncate",
                 shouldUseCompactText
                   ? "gencl:!text-[10px] gencl:font-semibold"
-                  : "gencl:text-body-2-semi-bold"
+                  : "gencl:text-body-2-semi-bold",
               )}
             >
               {postDetails.section?.title}
@@ -88,7 +88,7 @@ export const DefaultPlacement: FC<ControlLayerPropsType> = ({
                 "gencl:truncate",
                 shouldUseCompactText
                   ? "gencl:!text-[10px] gencl:font-normal"
-                  : "gencl:text-body-2-normal"
+                  : "gencl:text-body-2-normal",
               )}
             >
               {postDetails.section?.description}
@@ -105,7 +105,7 @@ export const DefaultPlacement: FC<ControlLayerPropsType> = ({
       shouldUseCompactText,
       shouldHideOnSmall,
       isXs,
-    ]
+    ],
   );
 
   const noOfClips = useMemo(
@@ -119,7 +119,7 @@ export const DefaultPlacement: FC<ControlLayerPropsType> = ({
                 "gencl:!leading-[16px]",
                 shouldUseCompactText
                   ? "gencl:!text-[10px] gencl:font-semibold"
-                  : "gencl:text-body-1-semi-bold"
+                  : "gencl:text-body-1-semi-bold",
               )}
             >
               {postDetails.section?.no_of_clips ?? 0} clips
@@ -132,7 +132,7 @@ export const DefaultPlacement: FC<ControlLayerPropsType> = ({
       postDetails.section?.no_of_clips,
       isSm,
       shouldUseCompactText,
-    ]
+    ],
   );
 
   const videoDetails = useMemo(() => {
@@ -142,7 +142,7 @@ export const DefaultPlacement: FC<ControlLayerPropsType> = ({
           {getMonthYear(
             postDetails.video.attributes?.timestamp ??
               postDetails.video.createdAt ??
-              0
+              0,
           )}
         </span>
       ),
@@ -167,7 +167,7 @@ export const DefaultPlacement: FC<ControlLayerPropsType> = ({
           "gencl:line-clamp-3",
           shouldUseCompactText
             ? "gencl:!text-[10px] gencl:font-normal"
-            : "gencl:text-body-2-normal"
+            : "gencl:text-body-2-normal",
         )}
       >
         {details.map((child, index, array) => (
@@ -207,7 +207,7 @@ export const DefaultPlacement: FC<ControlLayerPropsType> = ({
       isActive,
       postDetails.video.linkouts,
       postDetails.video.linkoutId,
-    ]
+    ],
   );
 
   const socialInteraction = useMemo(() => {
@@ -249,7 +249,7 @@ export const DefaultPlacement: FC<ControlLayerPropsType> = ({
     return (
       <Stats
         className={cn(
-          "gencl:flex gencl:gap-2 gencl:justify-between gencl:items-center gencl:w-full"
+          "gencl:flex gencl:gap-2 gencl:justify-between gencl:items-center gencl:w-full",
         )}
         valueClassName="gencl:text-body-2-medium"
         pairClassName="gencl:gap-1!"
@@ -295,7 +295,7 @@ export const DefaultPlacement: FC<ControlLayerPropsType> = ({
       noOfClips,
       linkoutSection,
       socialInteraction,
-    ]
+    ],
   );
 
   return (
@@ -325,7 +325,7 @@ export const DefaultPlacement: FC<ControlLayerPropsType> = ({
               section={postDetails.section}
             />
           </div>
-         )} 
+        )}
       </div>
 
       {/* Bottom Layout */}

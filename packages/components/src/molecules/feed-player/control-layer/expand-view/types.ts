@@ -9,7 +9,7 @@ export type ExpandViewCallbacks = {
   onReactionStateChange?: (
     videoId: string,
     videoSlug: string,
-    isReacted: boolean
+    isReacted: boolean,
   ) => void;
   onGroupJoinStatusChange?: ComponentProps<
     typeof Pills

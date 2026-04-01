@@ -160,6 +160,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
    */
   const [buttonAction, setButtonAction] = useState<ButtonActionType>();
   const [playingState, setPlayingState] = useState<PlayingStateType>("LOADING");
+  const [pausedBySystem, setPausedBySystem] = useState(false);
 
   /**
    * Whether to show seeker for player or not.
@@ -862,6 +863,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
           }
           const newPlayingState = !prev;
           if (byUser) {
+            setPausedBySystem(false);
             baseContextManager.setPlayPauseTracker({
               isPlaying: newPlayingState,
             });
@@ -894,6 +896,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
           }
           const newPlayingState = !prev;
           if (byUser) {
+            setPausedBySystem(false);
             baseContextManager.setPlayPauseTracker({
               isPlaying: newPlayingState,
             });
@@ -936,6 +939,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         }
         const newPlayingState = !prev;
         if (byUser) {
+          setPausedBySystem(false);
           baseContextManager.setPlayPauseTracker({
             isPlaying: newPlayingState,
           });
@@ -986,6 +990,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       }
 
       setFeedPlayerShouldPlay(true);
+      setPausedBySystem(false);
       if (byUser) {
         setButtonAction("PLAY");
         // Track play event with Analytics only if the video play is triggered by user.
@@ -1011,6 +1016,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       if (isLoading) return;
       setFeedPlayerShouldPlay(false);
       if (byUser) {
+        setPausedBySystem(false);
         baseContextManager.setPlayPauseTracker({ isPlaying: false });
         setButtonAction("PAUSE");
         // Track pause event with Analytics only if the video pause is triggered by user.
@@ -1029,6 +1035,44 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       isLoading,
     ],
   );
+
+  const pauseBySystem = useCallback(
+    (showPauseAction: boolean = false) => {
+      setFeedPlayerShouldPlay(false);
+      setPlayingState("PAUSED");
+      setIsLoading(false);
+      setPausedBySystem(true);
+      if (showPauseAction) {
+        setButtonAction("PAUSE");
+      }
+      baseContextManager.setPlayPauseTracker({ isPlaying: false });
+      baseEventBus.emit(
+        "globalPlayingStateChange",
+        undefined,
+        (currentContext) => ({
+          ...currentContext,
+          globalPlayingState: false,
+        }),
+      );
+    },
+    [baseContextManager, baseEventBus],
+  );
+
+  const resumeFromSystemPause = useCallback(() => {
+    setPausedBySystem(false);
+    setMuted(false);
+    setFeedPlayerShouldPlay(true);
+    setButtonAction("PLAY");
+    baseContextManager.setPlayPauseTracker({ isPlaying: true });
+    baseEventBus.emit(
+      "globalPlayingStateChange",
+      undefined,
+      (currentContext) => ({
+        ...currentContext,
+        globalPlayingState: true,
+      }),
+    );
+  }, [setMuted, baseContextManager, baseEventBus]);
 
   // toggleMuted: Toggles the muted state of the player.
   const toggleMuted = useCallback(
@@ -1278,6 +1322,8 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     togglePlay,
     play,
     pause,
+    pauseBySystem,
+    resumeFromSystemPause,
     seek,
     muted,
     toggleMuted,
@@ -1293,6 +1339,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     setPlayingState: setPlayingStateMiddleware,
 
     buttonAction,
+    pausedBySystem,
 
     playerConfigRef,
 

@@ -16,7 +16,6 @@ import {
 } from "@genuin/components/react-query/api/comments";
 import { Toast } from "@genuin/ui/toaster";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
-import { useBaseContext } from "@genuin/components/context";
 
 type ReportProps = ComponentProps<typeof Dialog> & {
   contentId: string;
@@ -24,6 +23,7 @@ type ReportProps = ComponentProps<typeof Dialog> & {
   videoType: VideoTypes;
   children: React.ReactNode;
   onCommentCountChange?: (videoId: string, increment?: boolean) => void;
+  onClose?: () => void;
 };
 
 export function DeleteComment({
@@ -32,17 +32,25 @@ export function DeleteComment({
   children,
   videoType,
   onCommentCountChange,
+  onClose,
   ...props
 }: ReportProps) {
   const { track, EventName } = useAnalytics();
   const { isMobile } = useDeviceDetectMediaQuery();
   const [isOpen, setIsOpen] = useState(false);
-  const { useShadowDOM } = useBaseContext();
+
+  const handleOpenChange = useCallback(
+    (value: boolean) => {
+      setIsOpen(value);
+      if (!value) onClose?.();
+    },
+    [onClose],
+  );
 
   const deleteCommentMutation = useDeleteCommentMutation({
     onSuccess: () => {
       // Close the dialog
-      setIsOpen(false);
+      handleOpenChange(false);
       deleteCommentFromQueryData({ commentId: contentId, videoId });
 
       // Call the comment count change callback to decrement the count
@@ -74,11 +82,11 @@ export function DeleteComment({
   }, [deleteCommentMutation, contentId]);
 
   const handleCancel = useCallback(() => {
-    setIsOpen(false);
-  }, []);
+    handleOpenChange(false);
+  }, [handleOpenChange]);
 
   return (
-    <Dialog modal open={isOpen} onOpenChange={setIsOpen} {...props}>
+    <Dialog modal open={isOpen} onOpenChange={handleOpenChange} {...props}>
       <DialogTrigger className="gencl:!border-none">{children}</DialogTrigger>
       <DialogContent className="gencl:max-w-xl gencl:rounded-t-2xl! gencl:md:rounded-2xl! gencl:flex gencl:flex-col gencl:gap-4 gencl:sm:gap-5!">
         <DialogHeader className="gencl:border-none gencl:text-center gencl:sm:text-start! gencl:gap-3 gencl:sm:gap-6!">

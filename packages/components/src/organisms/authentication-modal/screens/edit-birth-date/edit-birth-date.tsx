@@ -1,4 +1,4 @@
-import { ComponentProps, useCallback, useMemo } from "react";
+import { type ComponentProps, useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import {
@@ -14,7 +14,13 @@ import { useAuthContext } from "@genuin/components/context/auth";
 import { cn } from "@genuin/ui/lib/utils";
 
 import { useAuthenticationModalContext } from "../../context";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@genuin/ui/components/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@genuin/ui/components/select";
 import { Toast } from "@genuin/ui/components/toaster";
 import { SubmitButton } from "../../submit-button";
 
@@ -153,7 +159,7 @@ export function EditBirthDate({
       }
       updateUserDetails({ birthday: `${day}/${month}/${year}` });
     },
-    [currentYear, currentMonth, currentDay]
+    [currentYear, currentMonth, currentDay],
   );
 
   return (

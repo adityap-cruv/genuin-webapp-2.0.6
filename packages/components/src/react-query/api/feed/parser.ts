@@ -36,9 +36,11 @@ function mapVideoItem(item: VideoFeedItem): z.infer<typeof PostDetailsSchema> {
       id: item.video.uuid,
       type: "video",
       adUrl: item.video.ads_config?.ads_url || undefined,
+      adsPlatform: item.video.ads_config?.platform || undefined,
       createdAt: item.video.conversation_at,
       commentCount: item.video.no_of_comments || 0,
       shareUrl: item.video.share_url,
+      videoType: getVideoType(item.type, item.video.video_layout_id ?? 0),
       attachedLink: item.video.attached_link || null,
       source: item.video.media_url_m3u8 ?? item.video.media_url,
       isSparked: item.video.is_sparked || false,
@@ -254,8 +256,8 @@ export function parseFeed(
       const adTagObject = extractAdTagObject(item);
       const houseAdVideo = item.house_ad?.video;
       if (houseAdVideo) {
+        houseAdVideo.type = "ads";
         const mapped = mapVideoItem(houseAdVideo);
-        mapped.video.videoType = VideoTypes.HouseAd;
         result.push({
           type: "ads",
           adTagObject,
@@ -283,6 +285,7 @@ export function parseFeed(
           type: "complete",
           video_type: VideoTypes.Content,
           id: item.video.uuid + "_complete",
+          videoType: VideoTypes.Content,
           slug: item.video.slug,
         },
       } as unknown as PostDetailsType);

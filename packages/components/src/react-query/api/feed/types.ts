@@ -31,7 +31,12 @@ export type VideoFeedItem = {
 
 type DisplayAdConfig = { platform: string; tag_id: string };
 type NativeAdConfig = { platform: string; tag_id: string };
-type VideoAdConfig = { ads_url: string; url: string; cpm: number; platform: string };
+type VideoAdConfig = {
+  ads_url: string;
+  url: string;
+  cpm: number;
+  platform: string;
+};
 type HouseAd = { video: VideoFeedItem };
 
 export type AdTagObject = {
@@ -122,6 +127,7 @@ type VideoData = {
 
 type AdsConfig = {
   ads_url: string;
+  platform: string;
 };
 
 type Link = {

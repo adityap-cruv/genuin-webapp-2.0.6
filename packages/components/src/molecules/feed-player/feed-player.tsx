@@ -113,6 +113,7 @@ export const FeedPlayer = memo(function FeedPlayer({
     setVideoTimeState,
     setPlayingState,
     setPlayerRef,
+    pauseBySystem,
     mute,
     unmute,
     handleEnded: stateHandleEnded,
@@ -128,20 +129,18 @@ export const FeedPlayer = memo(function FeedPlayer({
   const playerRef = useRef<HTMLVideoElement>(null);
   const [isAdFilled, setIsAdFilled] = useState(false);
   const [waterfallFailed, setWaterfallFailed] = useState(false);
-  const { video, useWindowSwiperMode } = useEmbedConfigs();
+  const {
+    video,
+    useWindowSwiperMode,
+    view: { playerShouldPauseOnNotAllowed },
+  } = useEmbedConfigs();
 
   const { appendParamsToUrl } = useUrlParams();
+
   // TODO: this is temporary code for qa-testing, need to remove once qa is done.
   adUrl = useMemo(() => {
     const dataAdUrl = embedDetails?.rootElement?.getAttribute("data-ad-url");
-
-    if (dataAdUrl) {
-      return appendParamsToUrl(dataAdUrl);
-    }
-
-    if (adUrl) {
-      return appendParamsToUrl(adUrl);
-    }
+    return dataAdUrl ?? adUrl;
   }, [adUrl, adTagObject]);
 
   const resolvedAdConfig = useMemo(() => {
@@ -153,12 +152,17 @@ export const FeedPlayer = memo(function FeedPlayer({
     return adTagObject
       ? buildGenAdConfigFromAdTagObject(adTagObject, videoId)
       : undefined;
-  }, [adTagObject, videoId]);
+  }, [adConfig, adTagObject, videoId]);
 
   // When adTagObject/adConfig is present, suppress adUrl from VideoPlayer unless
   // the GenAd waterfall has failed (in which case fall back to adUrl for IMA).
-  const videoPlayerAdUrl =
-    resolvedAdConfig && !waterfallFailed ? undefined : adUrl;
+  const videoPlayerAdUrl = useMemo(() => {
+    return resolvedAdConfig && !waterfallFailed
+      ? undefined
+      : adUrl
+        ? appendParamsToUrl(adUrl)
+        : undefined;
+  }, [resolvedAdConfig, waterfallFailed]);
 
   useEffect(() => {
     baseContextManager.registerVideo({
@@ -202,8 +206,9 @@ export const FeedPlayer = memo(function FeedPlayer({
       video_id: videoId,
       ad_source: adsPlatform,
       ad_type: "in_stream",
+      video_type: videoType,
     }),
-    [videoId, adsPlatform],
+    [videoId, adsPlatform, videoType],
   );
 
   // Track when video comes into view using IntersectionObserver
@@ -384,9 +389,8 @@ export const FeedPlayer = memo(function FeedPlayer({
       line_item_id: event?.lineItemId,
       creative_id: event?.creativeId,
       media_type: event?.mediaType,
-      video_type: videoType,
     }),
-    [adsPlatform, videoType],
+    [adsPlatform],
   );
 
   const handleAdStarted = useCallback(
@@ -444,6 +448,7 @@ export const FeedPlayer = memo(function FeedPlayer({
 
   const handleAdClicked = useCallback(
     (event: any) => {
+      // Handle ad clicked event if needed
       track(EventName.AD_CTA_CLICKED, {
         ...adAnalyticsData,
         ...buildAdEventData(event),
@@ -486,6 +491,7 @@ export const FeedPlayer = memo(function FeedPlayer({
   const handleOnAdRequestFailed = useCallback(
     (error: any) => {
       console.error("Ad request failed for videoId:", videoId, "Error:", error);
+      // We could track ad request failures here with a custom event when needed
       track(EventName.AD_REQUEST_FAILED, { ...adAnalyticsData });
     },
     [track, adAnalyticsData],
@@ -525,6 +531,27 @@ export const FeedPlayer = memo(function FeedPlayer({
   const handleAdResponseReceived = useCallback(() => {
     track(EventName.AD_RESPONSE_RECEIVED, { ...adAnalyticsData });
   }, [track, adAnalyticsData]);
+
+  useEffect(() => {
+    const videoElement = playerRef.current;
+    if (!videoElement) return;
+
+    const handleBrowserRestrictionPause = () => {
+      pauseBySystem(true);
+    };
+
+    videoElement.addEventListener(
+      "videoPausedByBrowserRestriction",
+      handleBrowserRestrictionPause,
+    );
+
+    return () => {
+      videoElement.removeEventListener(
+        "videoPausedByBrowserRestriction",
+        handleBrowserRestrictionPause,
+      );
+    };
+  }, [pauseBySystem]);
 
   // If the videoid is registered already start it with that start tiime.
   const startTime = useMemo(
@@ -583,6 +610,7 @@ export const FeedPlayer = memo(function FeedPlayer({
           play={feedPlayerShouldPlay}
           playbackSpeed={playbackSpeed?.speed}
           isInExpandView={showExpandView}
+          playerShouldPauseOnNotAllowed={playerShouldPauseOnNotAllowed}
           onPlayerLoad={handlePlayerLoad}
           onOpenPlayerReady={handleOpenPlayerReady}
           onPlay={handleOnPlay}

@@ -17,7 +17,7 @@ type PlaybackSpeedProps = ComponentProps<typeof Dialog> & {
 };
 
 export function PlaybackSpeed({ children, ...props }: PlaybackSpeedProps) {
-  const { playbackSpeed } = useBaseContext();
+  const { playbackSpeed, useShadowDOM } = useBaseContext();
   const { isTablet } = useDeviceDetectMediaQuery();
   return (
     <Dialog modal {...props}>

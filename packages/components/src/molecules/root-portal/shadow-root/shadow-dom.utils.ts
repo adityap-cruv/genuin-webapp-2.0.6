@@ -1,10 +1,7 @@
 // shadow-dom.utils.ts
 // Centralized Shadow DOM management for main embed and overlay elements
 
-import {
-  hoistTailwindPropertyAtRulesFromShadowRoot,
-} from "./hoist-tailwind-property-rules";
-
+import { hoistTailwindPropertyAtRulesFromShadowRoot } from "./hoist-tailwind-property-rules";
 
 interface StyleRequirement {
   name: string;

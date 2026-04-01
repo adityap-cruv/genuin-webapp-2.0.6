@@ -27,7 +27,7 @@ export type PlayerContextType = {
 
   setVideoTimeState: SetVideoTimeStateType;
   onVideoTimeStateChange: (
-    callback: (state: VideoTimeStateType) => void
+    callback: (state: VideoTimeStateType) => void,
   ) => () => void;
 
   /**
@@ -68,6 +68,9 @@ export type PlayerContextType = {
    */
   play: (byUser: boolean, seekTime?: number) => void;
   pause: (byUser: boolean) => void;
+  pauseBySystem: (showPauseAction?: boolean) => void;
+  resumeFromSystemPause: () => void;
+  pausedBySystem: boolean;
   /**
    * Function to seek the video to a specific time.
    * @param seekTime - The target time (in seconds) to which the video should be moved.

@@ -36,6 +36,7 @@ export const videoSchema = z.object({
   isPinned: z.boolean(),
   thumbnailSprite: z.string().nullish(),
   adUrl: z.string().nullish(),
+  adsPlatform: z.string().nullish(),
   cardLayoutId: z.number().nullish(),
   videoLayoutId: z.number().nullish(),
   duration: z.number().nullish().optional(),

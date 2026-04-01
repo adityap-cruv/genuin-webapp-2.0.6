@@ -38,7 +38,7 @@ const controlsVariants = cva(
       variant: "default",
       spacing: "tight",
     },
-  }
+  },
 );
 
 type ControlButtonsPropsType = ComponentProps<"div"> & {

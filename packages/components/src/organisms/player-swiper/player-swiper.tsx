@@ -152,9 +152,6 @@ export function PlayerList({
   const [isAdPlaying, setIsAdPlaying] = useState<boolean>(false);
   const [isAdFilled, setIsAdFilled] = useState<boolean>(false);
 
-  const handleAdStateChange = useCallback((isFilled: boolean) => {
-    setIsAdFilled(isFilled);
-  }, []);
   // if we use directly isTablet from the hook then for desktop it will be true based on useDeviceDetectMediaQuery implementation
   const isTablet = !isMobile && !isDesktop;
 
@@ -250,6 +247,7 @@ export function PlayerList({
   // Callback to enable/disable swipers when interacting with Pills
   const handleSwiperToggle = useCallback(
     (disable: boolean) => {
+      console.log("Toggling swiper. Disable:", disable);
       if (isSectioned && horizontalSwiper) {
         if (disable) {
           horizontalSwiper.disable();
@@ -442,7 +440,6 @@ a swiper inside another swiper.
                     setVerticalSwipers={setVerticalSwipers}
                     onAdStarted={handleAdStarted}
                     onAdEnded={handleAdEnded}
-                    onAdStateChange={handleAdStateChange}
                     onAdFilled={handleAdFilled}
                     onAdFilledEnd={handleAdFilldEnd}
                   />
@@ -527,8 +524,7 @@ a swiper inside another swiper.
               groupSlug={filteredPost[activeIndex]?.group.slug}
               slug={filteredPost[activeIndex]?.video.slug}
               videoType={
-                filteredPost[activeIndex]?.video.videoType ??
-                VideoTypes.Content
+                filteredPost[activeIndex]?.video.videoType ?? VideoTypes.Content
               }
               reactionCount={filteredPost[activeIndex]?.video.sparkCount}
               theme={showExpandView ? "dark" : "light"}
@@ -593,7 +589,10 @@ a swiper inside another swiper.
                           videoId={filteredPost[activeIndex]?.video.id}
                           videoSlug={filteredPost[activeIndex]?.video.slug}
                           shareUrl={filteredPost[activeIndex]?.video.shareUrl}
-                          videoType={filteredPost[activeIndex]?.video.videoType ?? VideoTypes.Content}
+                          videoType={
+                            filteredPost[activeIndex]?.video.videoType ??
+                            VideoTypes.Content
+                          }
                           defaultOpen={value}
                           key={
                             "feed-comment-box" +
@@ -648,7 +647,10 @@ a swiper inside another swiper.
                 loopId={filteredPost[activeIndex].group.id}
                 communityId={filteredPost[activeIndex].community?.id}
                 videoSlug={filteredPost[activeIndex].video.slug}
-                videoType={filteredPost[activeIndex].video.videoType ?? VideoTypes.Content}
+                videoType={
+                  filteredPost[activeIndex].video.videoType ??
+                  VideoTypes.Content
+                }
                 className="gencl:h-full"
                 showCloseButton={value}
                 onClose={toggle}

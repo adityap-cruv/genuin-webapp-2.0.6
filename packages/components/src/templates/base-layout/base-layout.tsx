@@ -4,7 +4,6 @@ import { useEffect, useState, type ComponentProps } from "react";
 
 import { TopBar } from "@genuin/components/organisms/top-bar";
 import { SideBar } from "@genuin/components/organisms/side-bar";
-import { Toaster } from "@genuin/ui/toaster";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { buildPageUrl } from "@genuin/components/lib/utils/pages";
 import { usePathname } from "@genuin/components/hooks/use-pathname";

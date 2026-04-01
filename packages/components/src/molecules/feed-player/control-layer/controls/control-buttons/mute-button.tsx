@@ -27,7 +27,7 @@ export const AnimatedMuteIcon = ({
       toggleMuted(true);
       setStopAnimating(true);
     },
-    [toggleMuted]
+    [toggleMuted],
   );
 
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,7 +88,7 @@ export const AnimatedMuteIcon = ({
             showVolumeSlider
               ? "gencl:opacity-100 gencl:w-full"
               : "gencl:opacity-0 gencl:w-0",
-            "gencl:flex gencl:items-center gencl:overflow-hidden gencl:py-2"
+            "gencl:flex gencl:items-center gencl:overflow-hidden gencl:py-2",
           )}
         >
           <input

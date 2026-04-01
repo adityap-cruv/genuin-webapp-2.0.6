@@ -37,18 +37,18 @@ export function useAdPlayer({
   playerStateRef,
   updateLoadingState,
   onAdStarted,
-  onAdFirstQuartile,
   onAdCompleted,
   onAdError,
-  onAdRenderError,
-  onAdRequestFailed,
   onAdClicked,
   onAdSkipped,
   onAdPause,
-  onAllAdsCompleted,
+  onAdFirstQuartile,
+  onAdRenderError,
+  onAdRequestFailed,
   onAdImpression,
   onAdRendered,
   onAdResponseReceived,
+  onAllAdsCompleted,
   playThePlayer,
 }: {
   player: OpenPlayerJS | null;
@@ -57,18 +57,18 @@ export function useAdPlayer({
   playerStateRef: React.MutableRefObject<VideoPlayerStateRef>;
   updateLoadingState: (loading: boolean, isPlaying: boolean) => void;
   onAdStarted?: (adData: AdDataType) => void;
-  onAdFirstQuartile?: (adData: AdDataType) => void;
   onAdCompleted?: (adData: AdDataType) => void;
   onAdError?: (error: any) => void;
-  onAdRenderError?: (error: any) => void;
-  onAdRequestFailed?: (error: any) => void;
   onAdClicked?: (adData: AdDataType) => void;
   onAdSkipped?: (adData: AdDataType) => void;
   onAdPause?: (adData: AdDataType) => void;
-  onAllAdsCompleted?: () => void;
+  onAdFirstQuartile?: (adData: AdDataType) => void;
+  onAdRenderError?: (error: any) => void;
+  onAdRequestFailed?: (error: any) => void;
   onAdImpression?: (adData: AdDataType) => void;
   onAdRendered?: (adData: AdDataType) => void;
   onAdResponseReceived?: () => void;
+  onAllAdsCompleted?: () => void;
   playThePlayer?: () => void;
 }) {
   const [adIsActive, setAdIsActive] = useState(false);
@@ -416,6 +416,12 @@ export function useAdPlayer({
                   title: ctaInfo?.title || null,
                   currentAdIndex: currentIndex,
                   totalAds,
+                  creativeId: ctaInfo?.creativeId || null,
+                  advertiserBrandId: ctaInfo?.advertiserBrandId || null,
+                  campaignId: ctaInfo?.campaignId || null,
+                  lineItemId: ctaInfo?.lineItemId || null,
+                  mediaType: ctaInfo?.mediaType || null,
+                  adFormat: ctaInfo?.adFormat || null,
                 });
 
                 // Check if shouldPlay is false and pause if needed
@@ -443,6 +449,12 @@ export function useAdPlayer({
                   title: prev.ctaInfo?.title || null,
                   currentAdIndex: prev.currentIndex,
                   totalAds: prev.totalAds,
+                  creativeId: prev.ctaInfo?.creativeId || null,
+                  advertiserBrandId: prev.ctaInfo?.advertiserBrandId || null,
+                  campaignId: prev.ctaInfo?.campaignId || null,
+                  lineItemId: prev.ctaInfo?.lineItemId || null,
+                  mediaType: prev.ctaInfo?.mediaType || null,
+                  adFormat: prev.ctaInfo?.adFormat || null,
                 });
                 return prev;
               });

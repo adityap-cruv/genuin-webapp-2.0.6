@@ -1,7 +1,5 @@
 import { QueryKey, useInfiniteQuery } from "@tanstack/react-query";
-import {
-  useAxiosInstance,
-} from "@genuin/components/context/axios";
+import { useAxiosInstance } from "@genuin/components/context/axios";
 import { axiosInstance as globalAxiosInstance } from "@genuin/components/context/axios/context";
 
 import { getDeviceId } from "@genuin/components/lib/utils/device-id";

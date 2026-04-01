@@ -1,3 +1,4 @@
+import { useBaseContext } from "@genuin/components/context";
 import { Button } from "@genuin/ui/components/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@genuin/ui/tooltip";
 import { cn } from "@genuin/ui/utils";
@@ -35,6 +36,7 @@ export function TooltipAction({
   onClick,
   ...restProps
 }: TooltipActionProps) {
+  const { useShadowDOM } = useBaseContext();
   if (disableTooltip) {
     return (
       <Button
