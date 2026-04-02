@@ -1,12 +1,17 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { useAxiosInstance } from "@genuin/components/context/axios";
 
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
 import { getQueryKeyForGroupMembers } from "@genuin/components/react-query/keys/group";
 import { API_PATHS } from "@genuin/components/react-query/paths";
 
 import { validateGroupMembers } from "./schema";
+import type { AxiosInstance } from "axios";
 
-async function fetchGroupMembers(slug: string, pageParam?: string) {
+async function fetchGroupMembers(
+  slug: string,
+  axiosInstance: AxiosInstance,
+  pageParam?: string
+) {
   return await axiosInstance
     .get(API_PATHS.GROUP_MEMBERS, {
       params: {
@@ -33,16 +38,18 @@ async function fetchGroupMembers(slug: string, pageParam?: string) {
 }
 
 export function useGetGroupMembers(slug: string) {
+  const axiosInstance = useAxiosInstance();
+
   return useInfiniteQuery({
     queryKey: getQueryKeyForGroupMembers(slug),
-    queryFn: ({ pageParam }: { pageParam?: string }) =>
-      fetchGroupMembers(slug, pageParam),
+    queryFn: ({ pageParam }) =>
+      fetchGroupMembers(slug, axiosInstance, pageParam),
     getNextPageParam: (lastPage) => {
       if (lastPage.end) return undefined;
       const lastPageData = lastPage.members[lastPage.members.length - 1];
       if (!lastPageData) return undefined;
       return lastPageData?.member_id;
     },
-    initialPageParam: undefined,
+    initialPageParam: undefined as string | undefined,
   });
 }

@@ -196,6 +196,31 @@ user_longitude
     };
   }, [brandDetails, user, isWebSDK, embedData, pathname]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const flushAnalytics = () => {
+      AnalyticsService.flush();
+    };
+
+    const handleBeforeUnload = () => {
+      flushAnalytics();
+    };
+
+    const handlePageHide = () => {
+      flushAnalytics();
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("pagehide", handlePageHide);
+
+    return () => {
+      window.removeEventListener("pagehide", handlePageHide);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      flushAnalytics();
+    };
+  }, []);
+
   const emitAnalyticsEvent = useCallback(
     (eventName: EventNameType, customPayload?: EventPayload) => {
       if (

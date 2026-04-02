@@ -17,7 +17,7 @@ type SectionInfo = {
   sub_title?: string | null | undefined;
 } | null;
 
-export type FeedResponseFromGoApi = Array<{
+export type VideoFeedItem = {
   uuid: string;
   type: string;
   loop: FeedLoopInfo;
@@ -27,7 +27,35 @@ export type FeedResponseFromGoApi = Array<{
   owner: FeedOwnerInfo;
   score?: ScoreInfo;
   section?: SectionInfo;
-}>;
+};
+
+type DisplayAdConfig = { platform: string; tag_id: string };
+type NativeAdConfig = { platform: string; tag_id: string };
+type VideoAdConfig = {
+  ads_url: string;
+  url: string;
+  cpm: number;
+  platform: string;
+};
+type HouseAd = { video: VideoFeedItem };
+
+export type AdTagObject = {
+  display_ad?: DisplayAdConfig | null;
+  native_ad?: NativeAdConfig | null;
+  video_ad?: VideoAdConfig | null;
+  order?: string[] | null;
+};
+
+export type AdsFeedItem = {
+  type: "ads";
+  display_ad?: DisplayAdConfig | null;
+  native_ad?: NativeAdConfig | null;
+  video_ad?: VideoAdConfig | null;
+  order?: string[] | null;
+  house_ad?: HouseAd;
+};
+
+export type FeedResponseFromGoApi = Array<VideoFeedItem | AdsFeedItem>;
 
 type VideoData = {
   conversation_at: number;
@@ -99,6 +127,7 @@ type VideoData = {
 
 type AdsConfig = {
   ads_url: string;
+  platform: string;
 };
 
 type Link = {

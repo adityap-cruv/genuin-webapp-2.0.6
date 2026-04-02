@@ -1,7 +1,8 @@
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
+import { useMutation } from "@tanstack/react-query";
+import { useAxiosInstance } from "@genuin/components/context/axios";
 import { API_PATHS } from "@genuin/components/react-query/paths";
 import { CommunityUserRole } from "@genuin/components/types/post";
-import { useMutation } from "@tanstack/react-query";
+import type { AxiosInstance } from "axios";
 
 /**
  * This api call is used to request to join a community.
@@ -9,7 +10,7 @@ import { useMutation } from "@tanstack/react-query";
  * @param communityId
  * @returns
  */
-async function requestCommunity(communityId: string | undefined) {
+async function requestCommunity(communityId: string | undefined, axiosInstance: AxiosInstance) {
   return await axiosInstance
     .post(API_PATHS.COMMUNITY_JOIN_REQUEST, {
       community_id: communityId,
@@ -33,6 +34,7 @@ async function requestCommunity(communityId: string | undefined) {
 async function joinCommunity(
   communities: string[],
   users: Array<{ user_id?: string }>,
+  axiosInstance: AxiosInstance,
   onboardingCommunities?: boolean
 ) {
   return await axiosInstance
@@ -58,6 +60,8 @@ export function useJoinCommunityMutation({
   onSuccess: (data: Awaited<ReturnType<typeof joinCommunity>>) => void;
   onError?: (error: Error) => void;
 }) {
+  const axiosInstance = useAxiosInstance();
+
   return useMutation({
     mutationFn: async ({
       isPrivate,
@@ -69,9 +73,9 @@ export function useJoinCommunityMutation({
       users: Array<{ user_id: string }>;
     }) => {
       if (isPrivate) {
-        return await requestCommunity(communities[0]);
+        return await requestCommunity(communities[0], axiosInstance);
       }
-      return await joinCommunity(communities, users);
+      return await joinCommunity(communities, users, axiosInstance, undefined);
     },
     onSuccess,
     onError,
@@ -105,7 +109,7 @@ export function useJoinCommunityMutation({
   });
 }
 
-export async function leaveCommunity(communityId: string | undefined) {
+export async function leaveCommunity(communityId: string | undefined, axiosInstance: AxiosInstance) {
   return await axiosInstance
     .delete(API_PATHS.COMMUNITY_LEAVE, {
       params: {
@@ -127,8 +131,10 @@ export function useLeaveCommunityMutation({
   onSuccess: (data: Awaited<ReturnType<typeof leaveCommunity>>) => void;
   onError?: (error: Error) => void;
 }) {
+  const axiosInstance = useAxiosInstance();
+
   return useMutation({
-    mutationFn: leaveCommunity,
+    mutationFn: (communityId: string | undefined) => leaveCommunity(communityId, axiosInstance),
     onSuccess,
     onError,
   });

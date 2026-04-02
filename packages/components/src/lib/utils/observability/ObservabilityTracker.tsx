@@ -9,8 +9,8 @@ import {
   EmbedEventContextType,
   EmbedEventNameType,
 } from "@genuin/components/context/embed/event-bus";
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
 import { EventManager } from "@genuin/components/lib/utils/event-manager";
+import { useAxiosInstance } from "@genuin/components/context";
 
 interface ObservabilityTrackerProps {
   embedEventBus: EventManager<EmbedEventContextType, EmbedEventNameType>;
@@ -32,6 +32,7 @@ export function ObservabilityTracker({
 }: ObservabilityTrackerProps) {
   // Initialize observability hook for resource tracking
   useObservability({ embedEventBus, sdkInitTime });
+  const axiosInstance = useAxiosInstance();
 
   // Initialize axios observability interceptor
   useEffect(() => {

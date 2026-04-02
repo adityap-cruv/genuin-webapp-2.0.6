@@ -1,15 +1,16 @@
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useAxiosInstance } from "@genuin/components/context/axios";
 import { validateRepostCommunityListData } from "./schema";
 import { API_PATHS } from "@genuin/components/react-query/paths";
-import { useMutation, useQuery } from "@tanstack/react-query";
 import { getQueryKeyForRepostDestinations } from "@genuin/components/react-query/keys/repost";
+import type { AxiosInstance } from "axios";
 
 /**
  * Fetch repost destinations for a given video ID.
  * This function retrieves a list of communities where a video can be reposted.
  * @returns
  */
-async function fetchRepostDestinations(videoId: string) {
+async function fetchRepostDestinations(videoId: string, axiosInstance: AxiosInstance) {
   return await axiosInstance
     .get(API_PATHS.REPOST_DESTINATIONS, {
       params: { source_video_id: videoId, content_type: 2 },
@@ -27,9 +28,11 @@ async function fetchRepostDestinations(videoId: string) {
  * Custom hook to get repost destinations for a video.
  */
 export function useGetRepostDestinations(videoId: string) {
+  const axiosInstance = useAxiosInstance();
+
   return useQuery({
     queryKey: getQueryKeyForRepostDestinations(videoId),
-    queryFn: () => fetchRepostDestinations(videoId),
+    queryFn: (context) => fetchRepostDestinations(videoId, axiosInstance),
   });
 }
 
@@ -44,7 +47,7 @@ async function repostVideo({
 }: {
   destinationId: string;
   sourceVideoId: string;
-}) {
+}, axiosInstance: AxiosInstance) {
   return await axiosInstance
     .post(API_PATHS.REPOST_VIDEO, {
       chat_id: destinationId,
@@ -72,8 +75,10 @@ export function useRepostVideoMutation({
   onSuccess: () => void;
   onError: () => void;
 }) {
+  const axiosInstance = useAxiosInstance();
+
   return useMutation({
-    mutationFn: repostVideo,
+    mutationFn: (params: { destinationId: string; sourceVideoId: string }) => repostVideo(params, axiosInstance),
     onSuccess,
     onError,
   });

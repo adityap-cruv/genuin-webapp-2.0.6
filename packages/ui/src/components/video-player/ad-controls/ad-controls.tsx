@@ -7,7 +7,6 @@ import {
   type AdDataType,
   type VideoPlayerStateRef,
 } from "./use-ad-player";
-import { useBrowserDetect, useDeviceDetection } from "@genuin/ui/hooks";
 
 type AdControlsProps = {
   player: OpenPlayerJS | null;
@@ -24,7 +23,13 @@ type AdControlsProps = {
   onAdClicked?: (adData: AdDataType) => void;
   onAdSkipped?: (adData: AdDataType) => void;
   onAdPause?: (adData: AdDataType) => void;
+  onAdFirstQuartile?: (adData: AdDataType) => void;
+  onAdRenderError?: (error: any) => void;
+  onAdRequestFailed?: (error: any) => void;
   onAllAdsCompleted?: () => void;
+  onAdImpression?: (adData: AdDataType) => void;
+  onAdRendered?: (adData: AdDataType) => void;
+  onAdResponseReceived?: () => void;
   playThePlayer?: () => void;
 };
 
@@ -43,6 +48,12 @@ export const AdControls = memo(function AdControls({
   onAdClicked,
   onAdSkipped,
   onAdPause,
+  onAdFirstQuartile,
+  onAdRenderError,
+  onAdRequestFailed,
+  onAdImpression,
+  onAdRendered,
+  onAdResponseReceived,
   onAllAdsCompleted,
   playThePlayer,
 }: AdControlsProps) {
@@ -62,12 +73,18 @@ export const AdControls = memo(function AdControls({
     playerStateRef,
     updateLoadingState,
     onAdStarted,
+    onAdFirstQuartile,
     onAdCompleted,
     onAdError,
+    onAdRenderError,
+    onAdRequestFailed,
     onAdClicked,
     onAdSkipped,
     onAdPause,
     onAllAdsCompleted,
+    onAdImpression,
+    onAdRendered,
+    onAdResponseReceived,
     playThePlayer,
   });
 
@@ -111,7 +128,7 @@ export const AdControls = memo(function AdControls({
             "gencl:py-2 gencl:px-2 gencl:whitespace-nowrap gencl:rounded-full gencl:bg-white gencl:w-min gencl:text-black",
             isInExpandView
               ? "gencl:text-body-2-medium"
-              : "gencl:text-body-3-medium"
+              : "gencl:text-body-3-medium",
           )}
         >
           Ad {totalAds > 1 ? `${currentAdIndex} of ${totalAds}` : ""} •{" "}

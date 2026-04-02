@@ -38,7 +38,7 @@ const controlsVariants = cva(
       variant: "default",
       spacing: "tight",
     },
-  }
+  },
 );
 
 type ControlButtonsPropsType = ComponentProps<"div"> & {
@@ -79,8 +79,11 @@ export const Controls = memo(function Controls({
   showCloseButton,
   onClick,
   enableExpand,
+  isSponsored,
   ...restProps
-}: ControlButtonsPropsType) {
+}: ControlButtonsPropsType & {
+  isSponsored?: boolean;
+}) {
   const { isMobile } = useDeviceDetectMediaQuery();
   const { showExpandView, toggleExpandView } = usePlayerContext();
   const { getSearchParams } = useSearchParams();
@@ -124,7 +127,7 @@ export const Controls = memo(function Controls({
         </div>
       )}
 
-      {!isMobile && !isEmbed && enableExpand && (
+      {!isMobile && !isEmbed && enableExpand && !isSponsored && (
         <div
           onClick={toggleExpandView}
           className="gencl:flex gencl:h-12 gencl:w-12 gencl:cursor-pointer gencl:flex-shrink-0 gencl:items-center gencl:justify-center gencl:rounded-full gencl:bg-black/40"
@@ -139,7 +142,8 @@ export const Controls = memo(function Controls({
       {isMobile &&
         showCloseButton &&
         getSearchParams("feed") !== "1" &&
-        !pathname.includes("/video") && (
+        !pathname.includes("/video") &&
+        !isSponsored && (
           <div
             className="gencl:p-2 gencl:rounded-full gencl:bg-black/40 gencl:cursor-pointer"
             onClick={toggleExpandView}
@@ -148,7 +152,18 @@ export const Controls = memo(function Controls({
           </div>
         )}
 
-      {isMobile && isEmbed && showExpandView && (
+      {isSponsored && (
+        <div
+          className={cn(
+            "gencl:bg-black/40 gencl:z-50 gencl:px-4 gencl:rounded-[50px] gencl:flex-center gencl:text-white",
+            isMobile ? "gencl:h-9" : "gencl:h-12",
+          )}
+        >
+          <p className="gencl:text-body-1-normal">Sponsored</p>
+        </div>
+      )}
+
+      {isMobile && isEmbed && showExpandView && !isSponsored && (
         <div
           onClick={toggleExpandView}
           className="gencl:flex gencl:h-12 gencl:w-12 gencl:cursor-pointer gencl:flex-shrink-0 gencl:items-center gencl:justify-center gencl:rounded-full gencl:bg-black/40"

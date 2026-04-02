@@ -17,8 +17,7 @@
       document.currentScript ||
       Array.from(document.scripts).find(
         (script) =>
-          script.src.includes('genuin-loader') ||
-          script.src.includes('gen_sdk'),
+          script.src.includes('genuin-loader') || script.src.includes('gen_sdk')
       )
 
     if (currentScript && currentScript.src) {
@@ -128,7 +127,7 @@
             performance.measure(
               'genuin-sdk-load',
               'genuin-sdk-load-start',
-              'genuin-sdk-load-end',
+              'genuin-sdk-load-end'
             )
           }
         }
@@ -142,7 +141,7 @@
           console.log('✅ React detected in SDK module')
         } else {
           console.warn(
-            '⚠️ React not immediately detected - may be in separate vendor chunk',
+            '⚠️ React not immediately detected - may be in separate vendor chunk'
           )
         }
 
@@ -198,7 +197,7 @@
         const baseUrl = new URL(window.location.href)
         cssUrl = new URL(
           SDK_BASE_URL + 'assets/__CSS_FILENAME_PLACEHOLDER__',
-          baseUrl,
+          baseUrl
         ).href
       }
     } else {

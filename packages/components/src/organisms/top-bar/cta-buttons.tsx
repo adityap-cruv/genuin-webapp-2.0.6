@@ -15,7 +15,7 @@ import type { AuthenticationModalProps } from "@genuin/components/organisms/auth
 const AuthenticationModal = lazy(() =>
   import("../../organisms/authentication-modal/index.js").then((m) => ({
     default: m.AuthenticationModal,
-  }))
+  })),
 ) as React.ComponentType<AuthenticationModalProps>;
 
 import { Avatar } from "@genuin/ui/avatar";
@@ -41,7 +41,6 @@ import {
   SheetTrigger,
 } from "@genuin/ui/components/sheet";
 import { useAnalytics } from "@genuin/components/context/analytics";
-import { getRootContainer } from "@genuin/components/molecules/root-portal/shadow-root/shadow-dom.utils";
 
 export const iconVariant = cva(
   "gencl:flex gencl:size-9 gencl:items-center gencl:justify-center gencl:rounded-full gencl:sm:rounded-lg!",
@@ -55,7 +54,7 @@ export const iconVariant = cva(
     defaultVariants: {
       theme: "light",
     },
-  }
+  },
 );
 
 /**
@@ -296,7 +295,7 @@ function Notification() {
         "gencl:flex gencl:items-center gencl:justify-between",
         isMobile
           ? "gencl:border-b gencl:border-secondary-150 gencl:px-4 gencl:py-2"
-          : "gencl:mb-4"
+          : "gencl:mb-4",
       )}
     >
       <div className="gencl:flex gencl:items-center gencl:gap-2">

@@ -1,7 +1,8 @@
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
 import { useMutation } from "@tanstack/react-query";
+import { useAxiosInstance } from "@genuin/components/context/axios";
 import { parseComments } from "./parser";
 import { API_PATHS } from "../../paths";
+import type { AxiosInstance } from "axios";
 
 type PostCommentProps = {
   videoId: string;
@@ -37,7 +38,7 @@ async function postComment({
   loopId,
   commentText,
   commentData,
-}: PostCommentProps) {
+}: PostCommentProps, axiosInstance: AxiosInstance) {
   try {
     const res = await axiosInstance.post(API_PATHS.FEED_CREATE_COMMENT, {
       conversation_id: videoId,
@@ -65,8 +66,10 @@ export function useCreateCommentMutation({
   onSuccess,
   onError,
 }: PostCommentMutationCallbacks) {
+  const axiosInstance = useAxiosInstance();
+
   return useMutation({
-    mutationFn: postComment,
+    mutationFn: (props: PostCommentProps) => postComment(props, axiosInstance),
     retry: false,
     onSuccess,
     onError,

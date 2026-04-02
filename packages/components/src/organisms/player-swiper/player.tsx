@@ -18,7 +18,7 @@ import type { PostDetailsType } from "@genuin/components/react-query/api/feed/sc
 import { useFeedContext } from "@genuin/components/templates/feed/context";
 
 import { useSwiper } from "swiper/react";
-import { useCallback, useMemo, lazy, Suspense } from "react";
+import { useCallback, useMemo, lazy, Suspense, useState } from "react";
 import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
 import { ComponentProps } from "react";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
@@ -54,7 +54,9 @@ type PlayerProps = {
   >["onCommentCountChange"];
   onAdStarted?: ComponentProps<typeof PlayerProvider>["onAdStarted"];
   onAdEnded?: ComponentProps<typeof PlayerProvider>["onAdEnded"];
-  onSwiperToggle?: (disable: boolean) => void;
+  onAdStateChange?: (isFilled: boolean) => void;
+  onAdFilled?: (event: any) => void;
+  onAdFilledEnd?: (event: any) => void;
 };
 
 // TODO: This component is using feed context, which is not ideal. Remove this dep of FeedContext in future.
@@ -74,7 +76,7 @@ export function Player({
   onCommentCountChange,
   onAdStarted,
   onAdEnded,
-  onSwiperToggle,
+  onAdStateChange,
 }: PlayerProps) {
   const { showExpandView, toggleExpandView, activeIndex, variant } =
     useFeedContext();
@@ -92,6 +94,17 @@ export function Player({
 
   // Detect accessibility mode based on browser accessibility preferences
   const isAccessibilityMode = useMemo(() => detectAccessibilityMode(), []);
+
+  const handleAdFilled = useCallback(
+    (type: string) => {
+      onAdStateChange?.(true);
+    },
+    [onAdStateChange],
+  );
+
+  const handleAdFilldEnd = useCallback(() => {
+    onAdStateChange?.(false);
+  }, [onAdStateChange]);
 
   const handleTimeUpdate = useCallback(
     (event: React.SyntheticEvent<HTMLVideoElement>) => {
@@ -124,7 +137,7 @@ export function Player({
         activeIndex={activeIndex}
         onAdStarted={onAdStarted}
         onAdEnded={onAdEnded}
-        videoType={post.video.video_type ?? VideoTypes.Content}
+        videoType={post.video.videoType ?? VideoTypes.Content}
       >
         <div
           className={cn(
@@ -162,7 +175,7 @@ export function Player({
                 adUrl={post.video.adUrl ?? undefined}
                 id={"feed-player--" + post.video.id}
                 poster={post.video.thumbnail ?? ""}
-                videoType={post.video.video_type ?? VideoTypes.Content}
+                videoType={post.video.videoType ?? VideoTypes.Content}
                 className={cn(
                   "gencl:h-full! gencl:w-full",
                   videoCrop ||
@@ -173,6 +186,10 @@ export function Player({
                     ? "gencl:object-contain gencl:bg-contain!"
                     : "gencl:object-cover gencl:bg-cover!",
                 )}
+                isActive={isActive}
+                adTagObject={(post as any).adTagObject ?? undefined}
+                onAdFilled={handleAdFilled}
+                onAdFilldEnd={handleAdFilldEnd}
                 playsInline
                 onTimeUpdate={handleTimeUpdate}
                 onEnded={() => {
@@ -194,7 +211,6 @@ export function Player({
               showCloseButton={variant === "expand"}
               onReactionStateChange={onReactionStateChange}
               onCommentCountChange={onCommentCountChange}
-              onSwiperToggle={onSwiperToggle}
               // Applies GPU acceleration to prevent layer flickering on iOS devices during animations
               className="gencl:translate-x-0"
             />

@@ -1,9 +1,14 @@
-
 import React from "react";
 import { Table } from "@tanstack/react-table";
 
 import { cn } from "@genuin/ui/lib/utils";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@genuin/ui/components/select";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@genuin/ui/components/select";
 import { Button } from "@genuin/ui/components/button";
 import {
   ChevronFirstIcon,
@@ -11,15 +16,17 @@ import {
   ChevronLeftIcon,
   ChevronLastIcon,
 } from "@genuin/ui/icons";
+import { useBaseContext } from "@genuin/components/context";
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;
   totalCount?: number; // Total number of records for server-side pagination
 }
 export function DataTablePagination<TData>(
-  props: DataTablePaginationProps<TData>
+  props: DataTablePaginationProps<TData>,
 ) {
   const { table, totalCount } = props;
+  const { useShadowDOM } = useBaseContext();
   // Common style for all pagination buttons
   const baseBtnClass =
     "gencl:h-8 gencl:w-6 gencl:px-3 gencl:py-2 gencl:rounded-none gencl:border-0 gencl:text-body-2-medium gencl:shadow-none";
@@ -56,7 +63,7 @@ export function DataTablePagination<TData>(
         size="sm"
         className={cn(
           isIcon ? iconBtnClass : `${baseBtnClass} ${activeClass}`,
-          className
+          className,
         )}
         onClick={onClick}
         disabled={disabled}
@@ -121,7 +128,7 @@ export function DataTablePagination<TData>(
                     isActive={i === currentPage}
                   >
                     {i + 1}
-                  </PaginationButton>
+                  </PaginationButton>,
                 );
               }
             } else {
@@ -133,7 +140,7 @@ export function DataTablePagination<TData>(
                   isActive={0 === currentPage}
                 >
                   1
-                </PaginationButton>
+                </PaginationButton>,
               );
 
               if (currentPage <= 3) {
@@ -146,7 +153,7 @@ export function DataTablePagination<TData>(
                       isActive={i === currentPage}
                     >
                       {i + 1}
-                    </PaginationButton>
+                    </PaginationButton>,
                   );
                 }
                 pages.push(
@@ -155,7 +162,7 @@ export function DataTablePagination<TData>(
                     className="gencl:px-2 gencl:text-secondary-500"
                   >
                     ...
-                  </span>
+                  </span>,
                 );
               } else if (currentPage >= totalPages - 4) {
                 // Show ellipsis and last few pages when current is near end
@@ -165,7 +172,7 @@ export function DataTablePagination<TData>(
                     className="gencl:px-2 gencl:text-secondary-500"
                   >
                     ...
-                  </span>
+                  </span>,
                 );
                 for (let i = totalPages - 5; i < totalPages - 1; i++) {
                   pages.push(
@@ -175,7 +182,7 @@ export function DataTablePagination<TData>(
                       isActive={i === currentPage}
                     >
                       {i + 1}
-                    </PaginationButton>
+                    </PaginationButton>,
                   );
                 }
               } else {
@@ -186,7 +193,7 @@ export function DataTablePagination<TData>(
                     className="gencl:px-2 gencl:text-secondary-500"
                   >
                     ...
-                  </span>
+                  </span>,
                 );
                 for (let i = currentPage - 1; i <= currentPage + 1; i++) {
                   pages.push(
@@ -196,7 +203,7 @@ export function DataTablePagination<TData>(
                       isActive={i === currentPage}
                     >
                       {i + 1}
-                    </PaginationButton>
+                    </PaginationButton>,
                   );
                 }
                 pages.push(
@@ -205,7 +212,7 @@ export function DataTablePagination<TData>(
                     className="gencl:px-2 gencl:text-secondary-500"
                   >
                     ...
-                  </span>
+                  </span>,
                 );
               }
 
@@ -217,7 +224,7 @@ export function DataTablePagination<TData>(
                   isActive={currentPage === totalPages - 1}
                 >
                   {totalPages}
-                </PaginationButton>
+                </PaginationButton>,
               );
             }
 
@@ -257,10 +264,7 @@ export function DataTablePagination<TData>(
             <SelectTrigger className="gencl:h-8 gencl:w-18 gencl:bg-secondary-50">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent
-              side="top"
-              className="gencl:w-18"
-            >
+            <SelectContent side="top" className="gencl:w-18">
               {[10, 20].map((pageSize) => (
                 <SelectItem key={pageSize} value={`${pageSize}`}>
                   {pageSize}

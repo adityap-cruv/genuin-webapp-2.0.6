@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
+import { useAxiosInstance } from "@genuin/components/context/axios";
 import { API_PATHS } from "@genuin/components/react-query/paths";
 import {
   validateVideoStatisticsResponse,
@@ -7,9 +7,11 @@ import {
   VideoStatisticsResponse,
 } from "./video-statistics-types";
 import { getQueryKeyForVideoStatistics } from "../../keys/video";
+import type { AxiosInstance } from "axios";
 
 export async function fetchVideoStatistics(
-  params: VideoStatisticsParams
+  params: VideoStatisticsParams,
+  axiosInstance: AxiosInstance
 ): Promise<VideoStatisticsResponse> {
   try {
     // Build query params with array syntax: post_ids[]=id1&post_ids[]=id2
@@ -30,9 +32,11 @@ export async function fetchVideoStatistics(
 }
 
 export function useVideoStatistics(params: VideoStatisticsParams) {
+  const axiosInstance = useAxiosInstance();
+
   return useQuery({
     queryKey: getQueryKeyForVideoStatistics(params.post_ids),
-    queryFn: () => fetchVideoStatistics(params),
+    queryFn: (context) => fetchVideoStatistics(params, axiosInstance),
     enabled: params.post_ids.length > 0,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes

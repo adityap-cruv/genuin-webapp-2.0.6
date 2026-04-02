@@ -1,6 +1,6 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { useAxiosInstance } from "@genuin/components/context/axios";
 
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
 import {
   getQueryKeyForProfileCommunities,
   getQueryKeyForProfileFeed,
@@ -29,6 +29,7 @@ import type {
 } from "./types";
 import { queryClient } from "@genuin/components/react-query/client";
 import type { GroupUserStatusType } from "@genuin/components/types/roles";
+import type { AxiosInstance } from "axios";
 
 // TODO: Refactor these functions to use API_PATHS
 
@@ -78,6 +79,7 @@ export function getVideoLimit(hasPageParam: boolean, isMobile: boolean) {
 /**
  * Fetches the communities for the profile or brand.
  * @param param0
+ * @param axiosInstance - Axios instance to use for the request
  * @returns
  */
 async function fetchProfileCommunities({
@@ -85,7 +87,10 @@ async function fetchProfileCommunities({
   profileId,
   videosLimit,
   forBrand,
-}: BaseFunctionPropsType<FetchCommunityPageParamType>): Promise<FetchCommunityReturnType> {
+  axiosInstance,
+}: BaseFunctionPropsType<FetchCommunityPageParamType> & {
+  axiosInstance: AxiosInstance;
+}): Promise<FetchCommunityReturnType> {
   try {
     const url = prepareApiUrl(API_PATHS.USER_COMMUNITIES, {
       forBrand,
@@ -123,13 +128,16 @@ async function fetchProfileCommunities({
  * @returns
  */
 export function useGetProfileCommunities(profileId: string, forBrand = false) {
+  const axiosInstance = useAxiosInstance();
+
   return useInfiniteQuery({
-    queryFn: async ({ pageParam }) =>
+    queryFn: ({ pageParam }) =>
       fetchProfileCommunities({
         profileId,
         pageParam,
         videosLimit: getVideoLimit(!!pageParam.lastCommunityId, false),
         forBrand,
+        axiosInstance,
       }),
     queryKey: getQueryKeyForProfileCommunities(profileId, forBrand),
     initialPageParam: { lastCommunityId: "", pageSession: "" },
@@ -178,6 +186,7 @@ export function setQueryDataForJoinCommunityInProfileCommunities(
 /**
  * Fetches the loops for the profile or brand.
  * @param param0
+ * @param axiosInstance - Axios instance to use for the request
  * @returns
  */
 async function fetchProfileGroups({
@@ -186,10 +195,13 @@ async function fetchProfileGroups({
   communityId,
   videosLimit,
   forBrand,
+  axiosInstance,
 }: BaseFunctionPropsType<
   FetchLoopPageParamType,
   { communityId: string }
->): Promise<FetchLoopReturnType> {
+> & {
+  axiosInstance: AxiosInstance;
+}): Promise<FetchLoopReturnType> {
   try {
     const url = prepareApiUrl(API_PATHS.USER_GROUPS, {
       forBrand,
@@ -228,6 +240,8 @@ export function useGetProfileGroups(
   initialLoops: LoopType[],
   totalLoops: number
 ) {
+  const axiosInstance = useAxiosInstance();
+
   return useInfiniteQuery({
     queryFn: ({ pageParam }) =>
       fetchProfileGroups({
@@ -236,6 +250,7 @@ export function useGetProfileGroups(
         pageParam,
         videosLimit: getVideoLimit(!!pageParam?.lastLoopId, false),
         forBrand,
+        axiosInstance,
       }),
     initialPageParam: {
       lastLoopId: initialLoops[initialLoops.length - 1]?.id ?? "",
@@ -349,6 +364,7 @@ export function setQueryDataForGroupSubscribeInProfileGroups({
 /**
  * Fetches the videosList for the profile or brand.
  * @param param0
+ * @param axiosInstance - Axios instance to use for the request
  * @returns
  */
 async function fetchProfileVideos({
@@ -358,10 +374,13 @@ async function fetchProfileVideos({
   pageParam,
   videosLimit,
   forBrand,
+  axiosInstance,
 }: BaseFunctionPropsType<
   FetchVideosPageParamType,
   { communityId: string; loopId: string }
->): Promise<FetchVideosReturnType> {
+> & {
+  axiosInstance: AxiosInstance;
+}): Promise<FetchVideosReturnType> {
   try {
     const url = prepareApiUrl(API_PATHS.USER_VIDEOS, {
       forBrand,
@@ -405,9 +424,13 @@ export function useGetProfileVideos(
   initialVideos: VideoType[],
   totalVideos: number
 ) {
+  const axiosInstance = useAxiosInstance();
+
   return useInfiniteQuery({
     queryKey: getQueryKeyForProfileVideos(communityId, loopId, forBrand),
-    queryFn: ({ pageParam }: { pageParam: FetchVideosPageParamType }) =>
+    queryFn: ({ pageParam }: {
+      pageParam: { lastVideoId: string; pageSession: string } | null;
+    }) =>
       fetchProfileVideos({
         profileId,
         loopId,
@@ -415,8 +438,9 @@ export function useGetProfileVideos(
         communityId,
         videosLimit: getVideoLimit(!!pageParam?.lastVideoId, false),
         forBrand,
+        axiosInstance,
       }),
-    initialPageParam: null,
+    initialPageParam: null as { lastVideoId: string; pageSession: string } | null,
     initialData: {
       pageParams: [null],
       pages: [
@@ -449,11 +473,13 @@ export function useGetProfileVideos(
  * @param forBrand - A boolean indicating whether to fetch the feed for a brand or a user profile.
  * @param pageParam - An optional parameter to handle pagination, containing the last message ID.
  * @param fromVideoId - An optional parameter to specify the video ID from which to start fetching.
+ * @param axiosInstance - Axios instance to use for the request
  * @returns
  */
 export async function fetchProfileFeed(
   profileId: string,
   forBrand: boolean,
+  axiosInstance: AxiosInstance,
   pageParam?: { lastMessageId?: string },
   fromVideoId?: string
 ) {
@@ -501,13 +527,11 @@ export function useGetProfileFeed(
   forBrand: boolean,
   videoId?: string
 ) {
+  const axiosInstance = useAxiosInstance();
+
   return useInfiniteQuery({
     queryKey: getQueryKeyForProfileFeed(profileId, forBrand, videoId ?? ""),
-    queryFn: async ({
-      pageParam,
-    }: {
-      pageParam: { lastMessageId?: string };
-    }) => {
+    queryFn: async ({ pageParam }) => {
       // pageParam will be of type ProfileFeedPageParam | undefined here
       // TanStack Query v5 passes the initialPageParam as the first pageParam
       // or the result of getNextPageParam for subsequent pages.
@@ -515,12 +539,19 @@ export function useGetProfileFeed(
       const currentLastMessageId = pageParam?.lastMessageId;
 
       if (!currentLastMessageId && videoId) {
-        return await fetchProfileFeed(profileId, forBrand, undefined, videoId);
+        return await fetchProfileFeed(
+          profileId,
+          forBrand,
+          axiosInstance,
+          undefined,
+          videoId
+        );
       }
 
       return await fetchProfileFeed(
         profileId,
         forBrand,
+        axiosInstance,
         pageParam, // pageParam can be { lastMessageId: string } or undefined
         undefined
       );

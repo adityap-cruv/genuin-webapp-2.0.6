@@ -18,6 +18,7 @@ import {
 
 import { CommentItem, CommentsItemSkeleton } from "./comment-item";
 import { DeleteComment } from "../delete-comment";
+import { VideoTypes } from "@genuin/components/context";
 
 type CommentListProps = {
   videoId: string;
@@ -27,6 +28,7 @@ type CommentListProps = {
   onCommentCountChange?: ComponentProps<
     typeof DeleteComment
   >["onCommentCountChange"];
+  videoType : VideoTypes
 } & ComponentProps<"div">;
 
 export const CommentsList = memo(function CommentsList({
@@ -35,6 +37,7 @@ export const CommentsList = memo(function CommentsList({
   className,
   shareUrl,
   videoSlug,
+  videoType,
   onCommentCountChange,
   ...restProps
 }: CommentListProps) {
@@ -142,6 +145,7 @@ export const CommentsList = memo(function CommentsList({
             shareUrl={shareUrl}
             videoId={videoId}
             videoSlug={videoSlug}
+            videoType={videoType}
             onCommentCountChange={onCommentCountChange}
             onReactionStateChange={handleReactionStateChange}
             isCommentsLoaded={isCommentsLoaded}

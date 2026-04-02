@@ -15,7 +15,7 @@ import { GroupHoverCard } from "../group-hover-card";
 import { ComponentProps, useState, useEffect, useRef } from "react";
 import { JoinGroupButton } from "@genuin/components/molecules/join-group-button";
 import { GroupIcon } from "@genuin/ui/icons";
-import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import { useBaseContext } from "@genuin/components/context";
 
 const groupPillVariants = cva(
   "gencl:flex gencl:w-fit gencl:items-center gencl:gap-1 gencl:p-1 gencl:pr-2 gencl:rounded-full gencl:transition-all gencl:cursor-pointer",
@@ -65,6 +65,7 @@ export function GroupPill({
   hideGroupSubscriptionButton = false,
 }: GroupPillProps) {
   const { authenticationStatus } = useAuthContext();
+  const { useShadowDOM } = useBaseContext();
   const [localSubscriptionStatus, setLocalSubscriptionStatus] = useState<
     undefined | boolean
   >(undefined);

@@ -1,11 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
+import { useAxiosInstance } from "@genuin/components/context/axios";
 
 import { NOT_FOUND_ERROR_CODES } from "@genuin/components/lib/constants/errors";
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
 import { getQueryKeyForProfileDetails } from "@genuin/components/react-query/keys/profile";
 import { API_PATHS } from "@genuin/components/react-query/paths";
 
 import { validateProfileDetails } from "./schema";
+import type { AxiosInstance } from "axios";
 
 /**
  * Fetch user data by nickname.
@@ -14,7 +15,8 @@ import { validateProfileDetails } from "./schema";
  */
 export async function fetchProfileDetails(
   nickname: string,
-  forBrand: boolean = false
+  forBrand: boolean = false,
+  axiosInstance: AxiosInstance
 ) {
   return await axiosInstance
     .post(API_PATHS.USER_DETAILS, {
@@ -35,8 +37,10 @@ export async function fetchProfileDetails(
 }
 
 export function useGetProfileDetails(userName: string, forBrand: boolean) {
+  const axiosInstance = useAxiosInstance();
+
   return useQuery({
     queryKey: getQueryKeyForProfileDetails(userName, forBrand),
-    queryFn: () => fetchProfileDetails(userName, forBrand),
+    queryFn: (context) => fetchProfileDetails(userName, forBrand, axiosInstance),
   });
 }

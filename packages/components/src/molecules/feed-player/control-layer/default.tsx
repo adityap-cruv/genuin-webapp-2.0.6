@@ -10,13 +10,13 @@ import { Scrubber } from "./scrubber";
 const ExpandViewDetails = React.lazy(() =>
   import("./expand-view/index.js").then((m) => ({
     default: m.ExpandViewDetails,
-  }))
+  })),
 );
 
 const Linkouts = React.lazy(() =>
   import("@genuin/components/organisms/linkouts/index.js").then((m) => ({
     default: m.Linkouts,
-  }))
+  })),
 );
 
 import { PlaybackSpeedCapsule } from "@genuin/components/molecules/playback-speed/speed-capsule";
@@ -45,7 +45,6 @@ export function Default({
   onGroupSubscriptionChange,
   onReactionStateChange,
   onCommentCountChange,
-  onSwiperToggle,
   clipVideo,
   editCover,
   enableExpand = true,
@@ -63,6 +62,7 @@ export function Default({
     showSeeker,
     totalVideos,
     positionIndex,
+    pausedBySystem,
   } = usePlayerContext();
   const { gestureOverlayUI, hideGestureOverlay } = useGestureOverlayManager();
   const { isMobile, isTablet, isIpad } = useDeviceDetection();
@@ -109,6 +109,7 @@ export function Default({
   // Event handlers
   const handleVideoClick = useCallback(
     (e: React.MouseEvent) => {
+      if (pausedBySystem) return;
       e.stopPropagation();
       hideGestureOverlay("PLAY_PAUSE", muted);
 
@@ -137,7 +138,7 @@ export function Default({
           break;
       }
     },
-    [muted, togglePlay, toggleMuted]
+    [muted, togglePlay, toggleMuted],
   );
 
   switch (brandLayoutType) {
@@ -150,7 +151,7 @@ export function Default({
             className={cn(
               "group gencl:inset-0 gencl:z-10 gencl:flex gencl:justify-center",
               "gencl:appearance-none gencl:border-0 gencl:bg-transparent gencl:p-0 gencl:cursor-pointer gencl:w-full",
-              className
+              className,
             )}
             {...restProps}
           >
@@ -186,7 +187,6 @@ export function Default({
                   onCommentCountChange={onCommentCountChange}
                   variant={variant}
                   className={cn(playbackSpeed.speed !== 1 && "gencl:invisible")}
-                  onSwiperToggle={onSwiperToggle}
                 />
               </Suspense>
             )}
@@ -195,7 +195,7 @@ export function Default({
               className={cn(
                 "gencl:absolute gencl:left-1/2 gencl:top-1/2 gencl:flex gencl:items-center",
                 "gencl:justify-center gencl:h-16 gencl:w-16",
-                "gencl:-translate-x-1/2 gencl:-translate-y-1/2"
+                "gencl:-translate-x-1/2 gencl:-translate-y-1/2",
               )}
             />
             {/* Large reaction icon on double-click */}
@@ -209,7 +209,7 @@ export function Default({
                 theme="light"
                 className={cn(
                   "gencl:absolute gencl:left-1/2 gencl:top-1/2 gencl:-translate-x-1/2 gencl:-translate-y-1/2 gencl:z-20",
-                  "gencl:delay-1000 gencl:animate-fade-out gencl:transition-all gencl:duration-700 gencl:ease-out"
+                  "gencl:delay-1000 gencl:animate-fade-out gencl:transition-all gencl:duration-700 gencl:ease-out",
                 )}
               />
             )}
@@ -223,7 +223,7 @@ export function Default({
                 onReactionStateChange?.(
                   postDetails.video.id,
                   postDetails.video.slug,
-                  isReacted
+                  isReacted,
                 )
               }
               onClick={(e) => {
@@ -261,7 +261,7 @@ export function Default({
               "group gencl:inset-0 gencl:z-10 gencl:flex gencl:justify-center",
               // showSeeker && "gencl:-translate-y-4",
               // showScrubber ? "gencl:hidden" : "gencl:block",
-              className
+              className,
             )}
             {...restProps}
           >
@@ -271,9 +271,12 @@ export function Default({
               className={cn(
                 isMobile || isTablet || isIpad
                   ? `${!isSectioned && showExpandView && "gencl:top-0"}`
-                  : "gencl:group-hover:opacity-100 gencl:group-hover:pointer-events-auto gencl:opacity-0 gencl:pointer-events-none gencl:transition-opacity gencl:duration-300"
+                  : postDetails.video.videoLayoutId === 6
+                    ? ""
+                    : "gencl:group-hover:opacity-100 gencl:group-hover:pointer-events-auto gencl:opacity-0 gencl:pointer-events-none gencl:transition-opacity gencl:duration-300",
               )}
               variant={isSectioned ? "sectioned" : "default"}
+              isSponsored={postDetails.video.videoLayoutId === 6}
             />
 
             {/* this is wallet badge for wallet. */}
@@ -304,11 +307,10 @@ export function Default({
                   onGroupSubscriptionChange={onGroupSubscriptionChange}
                   onReactionStateChange={onReactionStateChange}
                   onCommentCountChange={onCommentCountChange}
-                  onSwiperToggle={onSwiperToggle}
                   variant={variant}
                   className={cn(
                     playbackSpeed.speed !== 1 &&
-                      "gencl:hidden gencl:transition-all"
+                      "gencl:hidden gencl:transition-all",
                   )}
                 />
               </Suspense>
@@ -317,7 +319,7 @@ export function Default({
                 className={cn(
                   "gencl:absolute gencl:bottom-0 gencl:w-full gencl:p-2 gencl:transition-all",
                   showSeeker && "gencl:bottom-4",
-                  playbackSpeed.speed !== 1 && "gencl:hidden"
+                  playbackSpeed.speed !== 1 && "gencl:hidden",
                 )}
               >
                 {/**
@@ -359,7 +361,7 @@ export function Default({
               className={cn(
                 "gencl:absolute gencl:left-1/2 gencl:top-1/2 gencl:flex gencl:items-center",
                 "gencl:justify-center gencl:h-16 gencl:w-16",
-                "gencl:-translate-x-1/2 gencl:-translate-y-1/2"
+                "gencl:-translate-x-1/2 gencl:-translate-y-1/2",
               )}
             />
 
@@ -368,7 +370,7 @@ export function Default({
               <>
                 <PlaybackSpeedCapsule
                   className={cn(
-                    "gencl:absolute gencl:z-10 gencl:transition-all gencl:bottom-12"
+                    "gencl:absolute gencl:z-10 gencl:transition-all gencl:bottom-12",
                     // showExpandView ? "gencl:bottom-32" : "gencl:bottom-12"
                   )}
                 />
@@ -385,7 +387,7 @@ export function Default({
               className={cn(
                 "gencl:absolute gencl:bottom-0 gencl:z-20 gencl:transition-all",
                 showSeeker &&
-                  "gencl:mx-auto gencl:px-4 gencl:-translate-y-2 gencl:pb-3 gencl:py-1.5"
+                  "gencl:mx-auto gencl:px-4 gencl:-translate-y-2 gencl:pb-3 gencl:py-1.5",
               )}
             />
 

@@ -1,3 +1,4 @@
+"use client";
 import { cn } from "@genuin/ui/lib/utils";
 import type { EmbedTileProps } from "./embed-tile.types";
 import {
@@ -5,7 +6,7 @@ import {
   SDKEventName,
 } from "@genuin/components/lib/sdk-event-emitter";
 import { cva, VariantProps } from "class-variance-authority";
-import { lazy, Suspense, useCallback, useMemo } from "react";
+import { lazy, Suspense, useCallback, useMemo, useState } from "react";
 import {
   PlayerProvider,
   usePlayerContext,
@@ -20,6 +21,7 @@ import { DynamicReactionIcon } from "@genuin/components/molecules/reaction-butto
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
 import { isMiddlewareOverlayEnabled } from "@genuin/components/lib/utils";
+import { VideoTypes } from "@genuin/components/context/analytics";
 
 const WatchBoundaryOverlay = lazy(() =>
   import(
@@ -48,7 +50,6 @@ const Linkouts = lazy(() =>
 ) as React.ComponentType<any>;
 
 import { useEmbedManagerContext } from "../embed/context";
-import { VideoTypes } from "@genuin/components/context";
 
 /**
  * Helper function to extract the most appropriate URL from linkouts based on priority:
@@ -196,7 +197,7 @@ export function EmbedTile({
             totalVideos={totalVideos}
             swiper={swiper}
             activeIndex={activeIndex}
-            videoType={postDetails.video.video_type ?? VideoTypes.Content}
+            videoType={postDetails.video.videoType ?? VideoTypes.Content}
           >
             <EmbedPlayer
               postDetails={postDetails}
@@ -224,6 +225,7 @@ function EmbedPlayer({
 }: EmbedPlayerProps) {
   const { isAdPlaying } = usePlayerContext();
   const config = useEmbedConfigs();
+  const [isAdFilled, setIsAdFilled] = useState(false);
   const { changeActivePlayerType, embedData } = useEmbedContext();
   const videoCrop = config.video.videoCrop;
   const embedDetails = useSafeEmbedContext();
@@ -286,6 +288,18 @@ function EmbedPlayer({
     embedData.card_layout_id,
   ]);
 
+  const handleAdFilled = useCallback((type: string) => {
+    if (type === "banner") {
+      setIsAdFilled(true);
+    }
+  }, []);
+
+  const handleAdFilledEnd = useCallback(() => {
+    setIsAdFilled(false);
+  }, []);
+
+  const isSponsored = postDetails.video.cardLayoutId === 7; // Sponsored content is determined by cardLayoutId 7
+
   return (
     <div
       className={cn(
@@ -296,42 +310,58 @@ function EmbedPlayer({
         },
       )}
     >
-      <Suspense fallback={null}>
-        <FeedPlayer
-          videoDescription={postDetails.video.descritptionText}
-          videoId={postDetails.video.id}
-          adUrl={postDetails.video.adUrl ?? undefined}
-          src={postDetails.video.source}
-          poster={
-            config.contentDisplay.showSectionCover &&
-            postDetails.section?.cover_url
-              ? postDetails.section?.cover_url
-              : postDetails.video.thumbnail
-          }
-          videoType={postDetails.video.video_type ?? VideoTypes.Content}
-          className={cn(
-            "gencl:h-full! gencl:w-full",
-            videoCrop
-              ? "gencl:object-cover gencl:bg-cover"
-              : "gencl:object-contain gencl:bg-contain!",
-          )}
-          layoutType={layoutType}
-          aria-hidden="true"
-          tabIndex={-1}
-          index={index}
-        />
-      </Suspense>
-      <Suspense fallback={null}>
-        <ControlLayer
-          variant={config.view.isPlacementView ? "placement" : "embed"}
-          isActive={isActive}
-          index={index}
-          postDetails={postDetails}
-          onClick={handleClickOnEmbedTile}
-          onCommentCountChange={undefined}
-          layoutType={layoutType}
-        />
-      </Suspense>
+      <div className="gencl:w-full gencl:h-full gencl:relative">
+        <Suspense fallback={null}>
+          <FeedPlayer
+            videoDescription={postDetails.video.descritptionText}
+            videoId={postDetails.video.id}
+            adUrl={postDetails.video.adUrl ?? undefined}
+            src={postDetails.video.source}
+            poster={
+              config.contentDisplay.showSectionCover &&
+              postDetails.section?.cover_url
+                ? postDetails.section?.cover_url
+                : postDetails.video.thumbnail
+            }
+            className={
+              videoCrop
+                ? "gencl:object-cover gencl:h-full! gencl:w-full gencl:bg-cover"
+                : "gencl:h-full! gencl:bg-contain!"
+            }
+            layoutType={layoutType}
+            aria-hidden="true"
+            tabIndex={-1}
+            index={index}
+            isActive={isActive}
+            adTagObject={(postDetails as any).adTagObject ?? undefined}
+            onAdFilled={handleAdFilled}
+            onAdFilldEnd={handleAdFilledEnd}
+            isSponsored={
+              postDetails.video.cardLayoutId === 7 ||
+              postDetails.video.videoLayoutId === 6
+            }
+            videoType={postDetails.video.videoType ?? VideoTypes.Content}
+          />
+        </Suspense>
+        {!isAdFilled && (
+          <Suspense fallback={null}>
+            <ControlLayer
+              variant={config.view.isPlacementView ? "placement" : "embed"}
+              isActive={isActive}
+              index={index}
+              postDetails={postDetails}
+              onClick={handleClickOnEmbedTile}
+              onCommentCountChange={undefined}
+              layoutType={layoutType}
+            />
+          </Suspense>
+        )}
+        {isSponsored && (
+          <div className="gencl:absolute gencl:top-2 gencl:left-2 gencl:bg-black/40 gencl:h-8 gencl:z-50 gencl:px-2 gencl:rounded-[50px] gencl:text-white gencl:flex-center">
+            <p className="gencl:text-body-1-normal">Sponsored</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

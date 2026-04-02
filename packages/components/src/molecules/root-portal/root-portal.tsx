@@ -36,6 +36,8 @@ const BRAND_OVERLAY_Z_INDEX: Record<number, string> = {
   2558: "1000000",
   // Bargain Hunter
   2801: "10000",
+  // TED,
+  2357: "30",
 };
 
 const getOverlayZIndexByBrandId = (brandId?: number): string | undefined => {

@@ -1,4 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
+import { useAxiosInstance } from "@genuin/components/context/axios";
 import { feedback } from "./contact-us";
 import type { FeedbackType } from "./contact-us";
 
@@ -7,8 +8,10 @@ import type { FeedbackType } from "./contact-us";
  * @returns Mutation object from React Query
  */
 export function useContactUsMutation() {
+  const axiosInstance = useAxiosInstance();
+
   return useMutation({
-    mutationFn: (payload: Partial<FeedbackType>) => feedback(payload),
+    mutationFn: (payload: Partial<FeedbackType>) => feedback(payload, axiosInstance),
     retry: false,
   });
 }

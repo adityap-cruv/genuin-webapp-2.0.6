@@ -1,5 +1,5 @@
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
 import { API_PATHS } from "@genuin/components/react-query/paths";
+import type { AxiosInstance } from "axios";
 
 interface FetchCanonicalParams {
   url: string;
@@ -10,7 +10,8 @@ interface FetchCanonicalResponse {
 }
 
 export async function fetchHtml(
-  params: FetchCanonicalParams
+  params: FetchCanonicalParams,
+  axiosInstance: AxiosInstance
 ): Promise<FetchCanonicalResponse> {
   try {
     const response = await axiosInstance.get(API_PATHS.FETCH_HTML, {

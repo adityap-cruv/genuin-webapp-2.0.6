@@ -9,40 +9,48 @@ import {
 import React, { ComponentProps, useCallback, useState } from "react";
 import { Button } from "@genuin/ui/button";
 import { Loader } from "@genuin/ui/loader";
-import { useAnalytics } from "@genuin/components/context/analytics";
+import { useAnalytics, VideoTypes } from "@genuin/components/context/analytics";
 import {
   deleteCommentFromQueryData,
   useDeleteCommentMutation,
 } from "@genuin/components/react-query/api/comments";
-import { useQueryClient } from "@tanstack/react-query";
-import { getQueryKeyForComments } from "@genuin/components/react-query/keys/comment";
 import { Toast } from "@genuin/ui/toaster";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
-import { useBaseContext } from "@genuin/components/context";
 
 type ReportProps = ComponentProps<typeof Dialog> & {
   contentId: string;
   videoId: string;
+  videoType: VideoTypes;
   children: React.ReactNode;
   onCommentCountChange?: (videoId: string, increment?: boolean) => void;
+  onClose?: () => void;
 };
 
 export function DeleteComment({
   contentId,
   videoId,
   children,
+  videoType,
   onCommentCountChange,
+  onClose,
   ...props
 }: ReportProps) {
   const { track, EventName } = useAnalytics();
   const { isMobile } = useDeviceDetectMediaQuery();
   const [isOpen, setIsOpen] = useState(false);
-  const { useShadowDOM } = useBaseContext();
+
+  const handleOpenChange = useCallback(
+    (value: boolean) => {
+      setIsOpen(value);
+      if (!value) onClose?.();
+    },
+    [onClose],
+  );
 
   const deleteCommentMutation = useDeleteCommentMutation({
     onSuccess: () => {
       // Close the dialog
-      setIsOpen(false);
+      handleOpenChange(false);
       deleteCommentFromQueryData({ commentId: contentId, videoId });
 
       // Call the comment count change callback to decrement the count
@@ -54,6 +62,7 @@ export function DeleteComment({
         content_category: "loop",
         event_record_screen: "feed",
         event_target_screen: "none",
+        video_type: videoType,
       });
 
       Toast.Success({
@@ -73,15 +82,13 @@ export function DeleteComment({
   }, [deleteCommentMutation, contentId]);
 
   const handleCancel = useCallback(() => {
-    setIsOpen(false);
-  }, []);
+    handleOpenChange(false);
+  }, [handleOpenChange]);
 
   return (
-    <Dialog modal open={isOpen} onOpenChange={setIsOpen} {...props}>
+    <Dialog modal open={isOpen} onOpenChange={handleOpenChange} {...props}>
       <DialogTrigger className="gencl:!border-none">{children}</DialogTrigger>
-      <DialogContent
-        className="gencl:max-w-xl gencl:rounded-t-2xl! gencl:md:rounded-2xl! gencl:flex gencl:flex-col gencl:gap-4 gencl:sm:gap-5!"
-      >
+      <DialogContent className="gencl:max-w-xl gencl:rounded-t-2xl! gencl:md:rounded-2xl! gencl:flex gencl:flex-col gencl:gap-4 gencl:sm:gap-5!">
         <DialogHeader className="gencl:border-none gencl:text-center gencl:sm:text-start! gencl:gap-3 gencl:sm:gap-6!">
           <p className="gencl:text-headline-3-semi-bold gencl:text-black">
             Delete comment?

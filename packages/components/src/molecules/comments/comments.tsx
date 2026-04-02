@@ -7,6 +7,7 @@ import { X } from "lucide-react";
 import { cva, VariantProps } from "class-variance-authority";
 import { CommentsList } from "./comments-list";
 import { Button } from "@genuin/ui/button";
+import { VideoTypes } from "@genuin/components/context";
 
 const commentsVariant = cva("gencl:relative gencl:bg-white", {
   variants: {
@@ -29,6 +30,7 @@ type CommentPropsType = {
   showCloseButton?: boolean;
   shareUrl: string;
   onClose?: () => void;
+  videoType: VideoTypes;
   /**
    * @param videoId - The video id
    * @param increment - true to increment, false to decrement
@@ -48,6 +50,7 @@ export function Comments({
   shareUrl,
   onClose,
   onCommentCountChange,
+  videoType,
   ...restProps
 }: CommentPropsType) {
   return (
@@ -55,7 +58,7 @@ export function Comments({
       className={cn(
         commentsVariant({ variant }),
         "gencl:relative gencl:flex gencl:flex-col gencl:h-full",
-        className
+        className,
       )}
       {...restProps}
     >
@@ -89,6 +92,7 @@ export function Comments({
           videoSlug={videoSlug}
           showCloseButton={showCloseButton}
           onCommentCountChange={onCommentCountChange}
+          videoType={videoType}
           className="gencl:pb-24 gencl:h-full"
         />
       </div>
@@ -97,6 +101,7 @@ export function Comments({
         loopId={loopId}
         communityId={communityId}
         videoSlug={videoSlug}
+        videoType={videoType}
         shareUrl={shareUrl}
         onCommentPosted={(comments) => {
           setQueryDataForNewComment(videoId, comments);

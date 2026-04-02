@@ -8,13 +8,13 @@ const description = z.array(
   z
     .object({ member_id: z.string(), text: z.string() })
     .or(z.object({ community_id: z.string(), text: z.string() }))
-    .or(z.string())
+    .or(z.string()),
 );
 
 // Define the video schema
 export const videoSchema = z.object({
   id: z.string(),
-  video_type: z.nativeEnum(VideoTypes).optional(),
+  videoType: z.nativeEnum(VideoTypes).optional(),
   createdAt: z.number().default(-1).nullish(),
   commentCount: z.number(),
   viewCount: z.number(),
@@ -36,6 +36,7 @@ export const videoSchema = z.object({
   isPinned: z.boolean(),
   thumbnailSprite: z.string().nullish(),
   adUrl: z.string().nullish(),
+  adsPlatform: z.string().nullish(),
   cardLayoutId: z.number().nullish(),
   videoLayoutId: z.number().nullish(),
   duration: z.number().nullish().optional(),
@@ -141,6 +142,34 @@ const PostDetailsSchema = z.object({
 });
 
 type PostDetailsType = z.infer<typeof PostDetailsSchema>;
+
+export const adTagObjectSchema = z.object({
+  display_ad: z.object({ platform: z.string(), tag_id: z.string() }).nullish(),
+  native_ad: z.object({ platform: z.string(), tag_id: z.string() }).nullish(),
+  video_ad: z
+    .object({
+      ads_url: z.string(),
+      url: z.string(),
+      cpm: z.number(),
+      platform: z.string(),
+    })
+    .nullish(),
+  order: z.array(z.string()).nullish(),
+});
+
+export type AdTagObjectType = z.infer<typeof adTagObjectSchema>;
+
+export const AdsPostDetailsSchema = z.object({
+  type: z.literal("ads"),
+  adTagObject: adTagObjectSchema,
+  video: videoSchema.optional(),
+  group: GroupSchema.optional(),
+  community: communitySchema.optional(),
+  owner: ownerSchema.optional(),
+  section: SectionSchema,
+});
+
+export type AdsPostDetailsType = z.infer<typeof AdsPostDetailsSchema>;
 
 export { PostDetailsSchema };
 export type { PostDetailsType };

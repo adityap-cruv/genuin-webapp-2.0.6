@@ -1,8 +1,9 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
+import { UseQueryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useAxiosInstance } from "@genuin/components/context/axios";
 import { API_PATHS } from "@genuin/components/react-query/paths";
 import { validateRecentsResponse } from "./types";
 import { getQueryKeyForRecents } from "../../keys/search";
+import type { AxiosInstance } from "axios";
 
 // Shared constants for recent search content types
 export const RECENT_SEARCH_CONTENT_TYPE: Record<
@@ -16,7 +17,7 @@ export const RECENT_SEARCH_CONTENT_TYPE: Record<
   video: 5,
 };
 
-export async function fetchRecents() {
+export async function fetchRecents(axiosInstance: AxiosInstance) {
   try {
     const response = await axiosInstance.get(API_PATHS.SEARCH_RECENT);
     return validateRecentsResponse(response?.data?.data?.recent_searches);
@@ -26,16 +27,22 @@ export async function fetchRecents() {
 }
 
 export function useRecents(
-  options: Omit<Parameters<typeof useQuery>[0], "queryFn" | "queryKey"> = {}
+  options: Omit<UseQueryOptions, "queryFn" | "queryKey"> = {}
 ) {
+  const axiosInstance = useAxiosInstance();
+
   return useQuery({
     queryKey: getQueryKeyForRecents(),
-    queryFn: fetchRecents,
+    queryFn: () => fetchRecents(axiosInstance),
     ...options,
   });
 }
 
-export async function deleteRecent(id?: string, all?: boolean) {
+export async function deleteRecent(
+  axiosInstance: AxiosInstance,
+  id?: string,
+  all?: boolean
+) {
   try {
     const response = await axiosInstance.delete(API_PATHS.SEARCH_RECENT, {
       params: { id, delete_all: all },
@@ -55,9 +62,11 @@ export async function deleteRecent(id?: string, all?: boolean) {
 export function useDeleteRecent() {
   const queryClient = useQueryClient();
 
+  const axiosInstance = useAxiosInstance();
+
   return useMutation({
     mutationFn: ({ id, all }: { id?: string; all?: boolean }) =>
-      deleteRecent(id, all),
+      deleteRecent(axiosInstance, id, all),
     onSuccess: () => {
       // Invalidate and refetch recents
       queryClient.invalidateQueries({ queryKey: getQueryKeyForRecents() });
@@ -66,7 +75,12 @@ export function useDeleteRecent() {
 }
 
 // This is low priority api - no need to handle error and success strictly
-export function postRecents(type: number, id?: string, text?: string) {
+export function postRecents(
+  axiosInstance: AxiosInstance,
+  type: number,
+  id?: string,
+  text?: string
+) {
   const response = axiosInstance.post(API_PATHS.SEARCH_RECENT, {
     type,
     text,

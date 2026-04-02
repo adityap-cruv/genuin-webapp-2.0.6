@@ -40,14 +40,14 @@ export const LazyToaster = lazy(() =>
       // Inject styles once the toaster module is loaded
       injectStylesIntoShadowRoots()
     },
-  })),
+  }))
 )
 
 // Lazy load EmbedRoot for better code splitting
 const LazyEmbedRoot = lazy(() =>
   import('./embed-root').then((module) => ({
     default: module.EmbedRoot,
-  })),
+  }))
 )
 
 // Track React roots per container to support multiple embeds
@@ -87,7 +87,7 @@ function EmbedSkeleton({
           }}
           className={cn(
             'gencl:w-full gencl:flex gencl:overflow-auto gencl:gap-2',
-            !isDesktop && websiteType === 'polaris' && 'gencl:flex-col',
+            !isDesktop && websiteType === 'polaris' && 'gencl:flex-col'
           )}>
           {Array.from({ length: 6 }).map((_, idx) => (
             <Skeleton
@@ -97,7 +97,7 @@ function EmbedSkeleton({
                 !isDesktop && websiteType === 'polaris'
                   ? 'gencl:w-full'
                   : 'gencl:h-full',
-                shimmerBgClass,
+                shimmerBgClass
               )}
             />
           ))}
@@ -136,7 +136,7 @@ export function loadErrorView(container: HTMLElement): void {
 // Loading view function
 export function loadLoadingView(
   container: HTMLElement,
-  theme?: 'dark' | 'light',
+  theme?: 'dark' | 'light'
 ): void {
   // Unmount previous root if exists for this container
   const prevRoot = containerRootMap.get(container)
@@ -154,14 +154,14 @@ export function loadLoadingView(
     <EmbedSkeleton
       container={container}
       theme={theme}
-    />,
+    />
   )
 }
 
 // Expand view function
 export function loadExpandView(
   container: HTMLElement,
-  theme?: 'dark' | 'light',
+  theme?: 'dark' | 'light'
 ): void {
   if (container.getAttribute('data-web-sdk-nested') === 'true') {
     return
@@ -169,7 +169,7 @@ export function loadExpandView(
 
   // Check if loader div already exists, if not, create it
   let loaderDiv = document.getElementById(
-    'gen-sdk-expand-view-loader',
+    'gen-sdk-expand-view-loader'
   ) as HTMLElement | null
 
   if (!loaderDiv) {
@@ -223,7 +223,7 @@ export function loadExpandView(
           unsubscribe()
         }
       }
-    },
+    }
   )
 
   // Use HTML/CSS skeleton instead of React for faster initial load
@@ -235,7 +235,7 @@ export function loadExpandView(
 const LazyFeedSkeleton = lazy(() =>
   import('@genuin/components/templates/feed/feed-skeleton').then((m) => ({
     default: m.FeedSkeleton,
-  })),
+  }))
 )
 
 /**
@@ -316,7 +316,7 @@ export async function loadNewEmbed({
     : embedData.video_layout_id
   const brandLayoutType = getBrandType(
     cardLayoutId ? Number(cardLayoutId) : undefined,
-    videoLayoutId ? Number(videoLayoutId) : undefined,
+    videoLayoutId ? Number(videoLayoutId) : undefined
   )
 
   // Initialize toaster on first embed
@@ -330,7 +330,7 @@ export async function loadNewEmbed({
     toasterRoot.render(
       <Suspense fallback={null}>
         <LazyToaster />
-      </Suspense>,
+      </Suspense>
     )
   }
 

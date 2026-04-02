@@ -1,10 +1,11 @@
+import { useMutation } from "@tanstack/react-query";
+import { useAxiosInstance } from "@genuin/components/context/axios";
 import { getDeviceId } from "@genuin/components/lib/utils/device-id";
 import { encryptText } from "@genuin/components/lib/utils/encryption";
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
 import { LOGIN_SOURCE } from "./constants";
 import { parseUserData } from "./parser";
 import { API_PATHS } from "@genuin/components/react-query/paths";
-import { useMutation, type UseMutationOptions } from "@tanstack/react-query";
+import type { AxiosInstance } from "axios";
 
 type ConsumeOtpProps = Partial<{ email: string; phoneNumber: string }> & {
   code: string;
@@ -29,8 +30,8 @@ export async function consumeOtp({
   code,
   preAuthSessionId,
   responseDeviceId: resDeviceId,
-  isInIframe,
-}: ConsumeOtpProps) {
+  isInIframe
+}: ConsumeOtpProps, axiosInstance: AxiosInstance) {
   const deviceId = getDeviceId(isInIframe);
   return await axiosInstance
     .post(API_PATHS.AUTH_CONSUME_OTP, {
@@ -88,8 +89,10 @@ export function useConsumeOtpMutation({
   onError,
   onSuccess,
 }: UseConsumeOtpMutationOptions) {
+  const axiosInstance = useAxiosInstance();
+
   return useMutation({
-    mutationFn: (input: ConsumeOtpProps) => consumeOtp(input),
+    mutationFn: (input: ConsumeOtpProps) => consumeOtp(input, axiosInstance),
     retry: false, // Disable retry on failure
     onSuccess,
     onError,

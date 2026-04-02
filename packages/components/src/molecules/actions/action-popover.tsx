@@ -112,7 +112,7 @@ export const ActionPopover = memo(function ActionPopover({
   const generateAuthUrl = (
     baseUrl: string | Function | undefined,
     queryParams: Record<string, string>,
-    rawParamString: string
+    rawParamString: string,
   ): string | Function => {
     if (!baseUrl) return "";
 
@@ -121,7 +121,7 @@ export const ActionPopover = memo(function ActionPopover({
         return baseUrl(
           queryParams.videoSlug,
           queryParams.action,
-          queryParams.commentId
+          queryParams.commentId,
         );
       };
     }
@@ -137,12 +137,12 @@ export const ActionPopover = memo(function ActionPopover({
   const signInUrl: string | Function = generateAuthUrl(
     authInfo?.signInUrl,
     parsedParameters,
-    params
+    params,
   );
   const signUpUrl: string | Function = generateAuthUrl(
     authInfo?.signUpUrl,
     parsedParameters,
-    params
+    params,
   );
 
   return (
@@ -170,7 +170,7 @@ export const ActionPopover = memo(function ActionPopover({
                 e.stopPropagation();
                 onPopOverClick?.();
                 window.location.assign(
-                  typeof signInUrl === "function" ? signInUrl() : signInUrl
+                  typeof signInUrl === "function" ? signInUrl() : signInUrl,
                 );
               }}
             >
@@ -183,7 +183,7 @@ export const ActionPopover = memo(function ActionPopover({
                 e.stopPropagation();
                 onPopOverClick?.();
                 window.location.assign(
-                  typeof signUpUrl === "function" ? signUpUrl() : signUpUrl
+                  typeof signUpUrl === "function" ? signUpUrl() : signUpUrl,
                 );
               }}
             >

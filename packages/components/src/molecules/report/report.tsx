@@ -44,6 +44,7 @@ type ReportProps = ComponentProps<typeof Dialog> & {
   videoSlug?: string;
   videoType?: VideoTypes;
   children: React.ReactNode;
+  onClose?: () => void;
 };
 
 export function Report({
@@ -53,10 +54,20 @@ export function Report({
   videoSlug,
   videoType,
   children,
+  onClose,
   ...props
 }: ReportProps) {
   const [selectedReason, setSelectedReason] = useState<string>("");
   const [open, setOpen] = useState(false);
+
+  const handleOpenChange = useCallback(
+    (value: boolean) => {
+      setOpen(value);
+      if (!value) onClose?.();
+    },
+    [onClose],
+  );
+
   const { user } = useAuthContext();
   const { useShadowDOM } = useBaseContext();
   const { track, EventName } = useAnalytics();
@@ -168,7 +179,7 @@ export function Report({
     );
   }
   return (
-    <Dialog modal open={open} onOpenChange={setOpen} {...props}>
+    <Dialog modal open={open} onOpenChange={handleOpenChange} {...props}>
       <DialogTrigger
         autoFocus={false}
         className="gencl:border-none! gencl:flex gencl:justify-baseline gencl:outline-none "

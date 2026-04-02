@@ -1,5 +1,5 @@
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
 import { API_PATHS } from "@genuin/components/react-query/paths";
+import type { AxiosInstance } from "axios";
 
 type FeedbackType = {
   email?: string | null;
@@ -10,9 +10,10 @@ type FeedbackType = {
 export type { FeedbackType };
 
 export async function feedback(
-  payload: Partial<FeedbackType>
+  payload: Partial<FeedbackType>,
+  axios: AxiosInstance
 ): Promise<{ status: boolean; data: any }> {
-  return await axiosInstance
+  return await axios
     .post(API_PATHS.CONTACT_US, payload)
     .then((res) => {
       return { status: res.status === 200, data: res.data.data };

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
+import { useAxiosInstance } from "@genuin/components/context/axios";
 import { API_PATHS } from "@genuin/components/react-query/paths";
 import {
   validatePaginatedPostsResponse,
@@ -7,9 +7,11 @@ import {
   PaginatedPostsResponse,
 } from "./types";
 import { getQueryKeyForPaginatedPosts } from "../../keys/video";
+import type { AxiosInstance } from "axios";
 
 export async function fetchPaginatedPosts(
-  params: PaginatedPostsParams = {}
+  params: PaginatedPostsParams = {},
+  axiosInstance: AxiosInstance
 ): Promise<PaginatedPostsResponse> {
   try {
     const queryParams = {
@@ -31,8 +33,10 @@ export async function fetchPaginatedPosts(
 }
 
 export function usePaginatedPosts(params: PaginatedPostsParams = {}) {
+  const axiosInstance = useAxiosInstance();
+
   return useQuery({
     queryKey: getQueryKeyForPaginatedPosts(params),
-    queryFn: () => fetchPaginatedPosts(params),
+    queryFn: (context) => fetchPaginatedPosts(params, axiosInstance),
   });
 }

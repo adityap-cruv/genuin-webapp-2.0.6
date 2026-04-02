@@ -1,7 +1,6 @@
 import { useDebounceValue } from "usehooks-ts";
 import { useSuggestions } from "@genuin/components/react-query/api/search";
 import { SEARCH_CONFIG } from "../constants";
-import type { UseQueryResult } from "@tanstack/react-query";
 import type { SuggestionsResponseType } from "@genuin/components/react-query/api/search/types";
 
 // Define the return type explicitly to avoid TypeScript inference issues

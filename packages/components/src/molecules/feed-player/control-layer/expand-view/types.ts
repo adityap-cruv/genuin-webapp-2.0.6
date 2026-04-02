@@ -9,7 +9,7 @@ export type ExpandViewCallbacks = {
   onReactionStateChange?: (
     videoId: string,
     videoSlug: string,
-    isReacted: boolean
+    isReacted: boolean,
   ) => void;
   onGroupJoinStatusChange?: ComponentProps<
     typeof Pills
@@ -23,5 +23,4 @@ export type ExpandViewCallbacks = {
   onCommentCountChange?: ComponentProps<
     typeof CommentsDialog
   >["onCommentCountChange"];
-  onSwiperToggle?: (disable: boolean) => void;
 };

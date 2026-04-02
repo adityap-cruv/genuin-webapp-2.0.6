@@ -79,7 +79,7 @@ export function EmbedExpandSectionedView({
       videos,
       filteredSelectedSectionVideos,
       isInIframe,
-    ]
+    ],
   );
 
   // Use the correct feed type and options for the query with caching
@@ -97,7 +97,7 @@ export function EmbedExpandSectionedView({
 
   const sectionVideos = useMemo(
     () => sectionFeedData?.pages?.flatMap((page) => page.feed) || [],
-    [sectionFeedData]
+    [sectionFeedData],
   );
 
   useEffect(() => {

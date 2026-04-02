@@ -1,8 +1,9 @@
 import { getDeviceId } from "@genuin/components/lib/utils/device-id";
 import { encryptText } from "@genuin/components/lib/utils/encryption";
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
+import { useAxiosInstance } from "@genuin/components/context/axios";
 import { API_PATHS } from "@genuin/components/react-query/paths";
 import { useMutation } from "@tanstack/react-query";
+import type { AxiosInstance } from "axios";
 
 type UpdateEmailOrPhoneProps = {
   code: string;
@@ -25,8 +26,8 @@ export async function updateEmailOrPhone({
   code,
   preAuthSessionId,
   responseDeviceId: resDeviceId,
-  isInIframe,
-}: UpdateEmailOrPhoneProps) {
+  isInIframe
+}: UpdateEmailOrPhoneProps, axiosInstance: AxiosInstance) {
   const deviceId = getDeviceId(isInIframe);
   return await axiosInstance
     .post(API_PATHS.AUTH_UPDATE_EMAIL_OF_PHONE, {
@@ -56,8 +57,10 @@ export function useUpdateEmailOrPhoneMutation({
   onSuccess?: (data: { verified: boolean }) => void;
   onError?: (error: unknown) => void;
 } = {}) {
+  const axiosInstance = useAxiosInstance();
+
   return useMutation({
-    mutationFn: updateEmailOrPhone,
+    mutationFn: (variables: UpdateEmailOrPhoneProps) => updateEmailOrPhone(variables, axiosInstance),
     retry: false, // Disable retry for this mutation
     onSuccess,
     onError,
@@ -85,7 +88,8 @@ type UserType = {
 };
 
 export async function updateUser(
-  user: Partial<UserType>
+  user: Partial<UserType>,
+  axiosInstance: AxiosInstance
 ): Promise<{ status: boolean; user: any }> {
   return await axiosInstance
     .patch(API_PATHS.AUTH_UPDATE_USER, { user })
@@ -110,8 +114,10 @@ export function useUpdateUserMutation({
   onSuccess?: (data: Awaited<ReturnType<typeof updateUser>>) => void;
   onError?: (error: unknown) => void;
 }) {
+  const axiosInstance = useAxiosInstance();
+
   return useMutation({
-    mutationFn: updateUser,
+    mutationFn: (variables: Partial<UserType>) => updateUser(variables, axiosInstance),
     retry: false, // Disable retry for this mutation
     onSuccess,
     onError,

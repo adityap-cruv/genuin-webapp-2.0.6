@@ -23,7 +23,7 @@ import {
   CommandList,
   CommandItem,
 } from "@genuin/ui/components/command";
-import { useAnalytics } from "@genuin/components/context/analytics";
+import { useAnalytics, VideoTypes } from "@genuin/components/context/analytics";
 
 // Types for props
 export type SelectedMention = {
@@ -44,6 +44,7 @@ export { commentFormSchema, type CommentFormValues };
 export interface MentionInputProps {
   videoId: string;
   loopId: string;
+  videoType: VideoTypes;
   user?: {
     name?: string;
     isAvatar?: boolean;
@@ -67,6 +68,7 @@ export function MentionInput({
   videoId,
   loopId,
   user,
+  videoType,
   onCommentPosted,
   onClick,
   disabled = false,
@@ -92,6 +94,7 @@ export function MentionInput({
           video_id: videoId,
           content_id: commentData[0].commentId,
           content_category: "comment",
+          videoType: videoType,
         });
       }
       onCommentPosted?.(commentData);

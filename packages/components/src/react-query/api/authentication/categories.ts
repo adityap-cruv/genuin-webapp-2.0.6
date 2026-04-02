@@ -1,8 +1,9 @@
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useAxiosInstance } from "@genuin/components/context/axios";
 import { getQueryKeyForInterests } from "@genuin/components/react-query/keys/authentication";
 import { API_PATHS } from "@genuin/components/react-query/paths";
-import { useMutation, useQuery } from "@tanstack/react-query";
 import z from "zod";
+import type { AxiosInstance } from "axios";
 
 const TopicSchema = z.object({
   topic_id: z.string(),
@@ -28,7 +29,7 @@ function validateCategoryListResp(data: any) {
   }
 }
 
-async function fetchCategoryList() {
+async function fetchCategoryList(axiosInstance: AxiosInstance) {
   return await axiosInstance
     .get(API_PATHS.AUTH_GET_CATEGORIES)
     .then((res) => {
@@ -46,13 +47,15 @@ async function fetchCategoryList() {
  * @returns The query result object from React Query.
  */
 export function useGetCategoriesQuery() {
+  const axiosInstance = useAxiosInstance();
+
   return useQuery({
-    queryFn: fetchCategoryList,
+    queryFn: (context) => fetchCategoryList(axiosInstance),
     queryKey: getQueryKeyForInterests(),
   });
 }
 
-async function addTopics(topics: string[]) {
+async function addTopics(topics: string[], axiosInstance: AxiosInstance) {
   return await axiosInstance
     .post(API_PATHS.AUTH_ADD_TOPICS, { topicIds: topics })
     .then((res) => {
@@ -77,8 +80,10 @@ export function useAddCategoriesMutation({
   onSuccess?: (params: Awaited<ReturnType<typeof addTopics>>) => void;
   onError?: (error: unknown) => void;
 }) {
+  const axiosInstance = useAxiosInstance();
+
   return useMutation({
-    mutationFn: addTopics,
+    mutationFn: (topics: string[]) => addTopics(topics, axiosInstance),
     mutationKey: getQueryKeyForInterests(),
     onSuccess,
     onError,

@@ -16,6 +16,8 @@ export const DefaultEmbed: FC<ControlLayerPropsType> = ({
   postDetails,
   className,
   isActive,
+  onReactionStateChange,
+  onCommentCountChange,
   ...restProps
 }) => {
   const config = useEmbedConfigs();

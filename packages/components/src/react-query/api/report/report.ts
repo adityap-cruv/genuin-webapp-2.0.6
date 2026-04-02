@@ -1,6 +1,7 @@
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
 import { useMutation } from "@tanstack/react-query";
+import { useAxiosInstance } from "@genuin/components/context/axios";
 import { getQueryKeyForReport } from "@genuin/components/react-query/keys/report";
+import type { AxiosInstance } from "axios";
 
 /**
  * Submits a report for a video or comment to the server.
@@ -29,7 +30,7 @@ export type ReportType = {
   };
 };
 
-async function submitReport(data: ReportType): Promise<boolean> {
+async function submitReport(data: ReportType, axiosInstance: AxiosInstance): Promise<boolean> {
   try {
     const response = await axiosInstance.post("/api/v3/report", {
       content_id: data.contentId,
@@ -47,9 +48,11 @@ async function submitReport(data: ReportType): Promise<boolean> {
  * @returns Mutation object for handling report submissions
  */
 function useReport(contentId: string, type: "VIDEO" | "COMMENT") {
+  const axiosInstance = useAxiosInstance();
+
   return useMutation({
     mutationKey: getQueryKeyForReport(contentId, type),
-    mutationFn: submitReport,
+    mutationFn: (data: ReportType) => submitReport(data, axiosInstance),
     onError: (error) => {
       console.error("Report submission failed:", error);
     },

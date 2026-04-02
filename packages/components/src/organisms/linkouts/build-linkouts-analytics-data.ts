@@ -1,3 +1,4 @@
+import { VideoTypes } from "@genuin/components/context";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 /**
@@ -9,6 +10,7 @@ export type LinkoutsAnalyticsData = {
   event_record_screen: string;
   event_target_screen: string;
   title?: string | null;
+  video_type?: VideoTypes;
   video_id?: string;
   video_description?: string | null;
   video_url?: string;
@@ -45,5 +47,6 @@ export function buildLinkoutsAnalyticsData({
     title: videoDetails?.descritptionText,
     video_id: videoDetails?.id,
     video_url: videoDetails?.source,
+    video_type: videoDetails?.videoType ?? VideoTypes.Content,
   };
 }

@@ -9,6 +9,7 @@ import { TrackFunction } from "./types";
  * Add more event names as your application requires.
  */
 export const EventName = {
+  SDK_PERFORMANCE: "SDK Performance",
   VIDEO_STARTED: "Video Started",
   VIDEO_IMPRESSION: "Video Impression",
   VIDEO_FIRST_QUARTILE: "Video First Quartile",
@@ -82,6 +83,18 @@ export const EventName = {
   DOWNLOAD_APP_CLICKED: "Download App Clicked",
   DOWNLOAD_APP_VIEWED: "Download App Viewed",
   GET_APP_LINK_SENT: "Get App Link Sent",
+  AD_REQUESTED: "Ad Requested",
+  AD_REQUEST_FAILED: "Ad Request Failed",
+  AD_REQUEST_RECEIVED: "Ad Request Received",
+  AD_RENDERED: "Ad Rendered",
+  AD_RESPONSE_RECEIVED: "Ad Response Received",
+  AD_RENDER_FAILED: "Ad Render Failed",
+  AD_IMPRESSION: "Ad Impression",
+  AD_CLICKED: "Ad Clicked",
+  AD_MEDIA_QUARTILE: "Ad Media Quartile",
+  AD_SKIPPED: "Ad Skipped",
+  AD_ERROR: "Ad Error",
+  AD_MEDIA_PLAY: "Ad Media Play",
 } as const;
 
 /**

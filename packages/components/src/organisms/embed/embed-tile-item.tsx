@@ -41,12 +41,12 @@ export function EmbedItem({
   const { isTablet, isMobile } = useDeviceDetection();
   const [isHovering, setIsHovering] = useState(false);
   const [embedIsActive, setEmbedIsActive] = useState(
-    embedEventBus.getContext().activePlayerType === "embed"
+    embedEventBus.getContext().activePlayerType === "embed",
   );
   const [isVideoWatched, setIsVideoWatched] = useState<boolean>(
     postDetails.video.isWatched ||
       (baseContextManager.getVideoState(postDetails.video.id)?.isWatched ??
-        false)
+        false),
   );
   const isSectioned = embedEventBus.getContext().isSectioned;
   const moveToNext = !config.video.videoLoop;
@@ -68,7 +68,7 @@ export function EmbedItem({
   useEffect(() => {
     const handleActivePlayerTypeChange = (
       eventData: any,
-      context: EmbedEventContextType
+      context: EmbedEventContextType,
     ) => {
       if (context.activePlayerType === "embed") {
         setEmbedIsActive(true);
@@ -90,7 +90,7 @@ export function EmbedItem({
 
   const debouncedSetActiveIndex = useDebounceCallback(
     setActiveIndexCallback,
-    config.video.videoShouldPreview ? 300 : 700
+    config.video.videoShouldPreview ? 300 : 700,
   );
 
   const handleMouseEnter = useCallback(() => {
@@ -108,25 +108,33 @@ export function EmbedItem({
   }, [isTablet, isMobile, debouncedSetActiveIndex]);
 
   // Handle automatic progression when video ends
-  const handlePlayerIterationEnd = useCallback(() => {
-    // Use intelligent auto-scroll for placement view when enabled
+  const handlePlayerIterationEnd = useCallback(
+    (move?: boolean) => {
+      // Use intelligent auto-scroll for placement view when enabled
 
-    // Immediate move to next video for grid layout when moveToNextTime(full video complete) is 0
-    if (moveToNext && moveToNextTime === 0) {
-      goToNextVideo();
-      return;
-    }
+      if (move) {
+        goToNextVideo(true);
+        return;
+      }
 
-    if (
-      (config.view.isPlacementView && !config.video.autoScrollToNextSlide) ||
-      !moveToNext
-    )
-      return;
+      // Immediate move to next video for grid layout when moveToNextTime(full video complete) is 0
+      if (moveToNext && moveToNextTime === 0) {
+        goToNextVideo();
+        return;
+      }
 
-    const useAutoScroll =
-      config.view.isPlacementView && config.video.autoScrollToNextSlide;
-    goToNextVideo(useAutoScroll);
-  }, [goToNextVideo, config, moveToNext, moveToNextTime]);
+      if (
+        (config.view.isPlacementView && !config.video.autoScrollToNextSlide) ||
+        !moveToNext
+      )
+        return;
+
+      const useAutoScroll =
+        config.view.isPlacementView && config.video.autoScrollToNextSlide;
+      goToNextVideo(useAutoScroll);
+    },
+    [goToNextVideo, config, moveToNext, moveToNextTime],
+  );
 
   // Auto-advance logic: Move to next video after moveToNextTime seconds
   useEffect(() => {

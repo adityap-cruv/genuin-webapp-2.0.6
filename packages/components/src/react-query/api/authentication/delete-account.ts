@@ -1,9 +1,9 @@
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
 import { API_PATHS } from "@genuin/components/react-query/paths";
+import type { AxiosInstance } from "axios";
 
 
-export async function deleteUserAccount(): Promise<{ code: number; data: any }> {
-  return await axiosInstance
+export async function deleteUserAccount(axios: AxiosInstance): Promise<{ code: number; data: any }> {
+  return await axios
     .delete(API_PATHS.DELETE_ACCOUNT)
     .then((res) => {
       return { code: res.data.code, data: res.data.data }

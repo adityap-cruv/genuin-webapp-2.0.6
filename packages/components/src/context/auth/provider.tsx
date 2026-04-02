@@ -1,10 +1,8 @@
 "use client";
 import {
-  axiosInstance,
-  clearAuthTokenInterceptor,
-  removeAllAuthToken,
-  setAuthTokenInAxiosInstance,
-} from "@genuin/components/react-query/axios-instance";
+  axiosRegistry,
+  useAxiosInstance,
+} from "@genuin/components/context/axios";
 import type { AuthUser } from "../../types/auth";
 
 import {
@@ -16,7 +14,7 @@ import { useCallback, useLayoutEffect, useEffect, useState } from "react";
 import { useSearchParams } from "@genuin/components/hooks/use-search-params";
 import { useGetUserDataForSSOMutation } from "@genuin/components/react-query/api/authentication/auto-login";
 import { Toast } from "@genuin/ui/components/toaster";
-import { queryClient } from "@genuin/components/react-query/client";
+import { invalidateAllQueries } from "@genuin/components/react-query/client";
 import { useBaseContext } from "../base";
 import {
   SDKEventEmitter,
@@ -84,6 +82,8 @@ export function AuthProvider({
   >(user);
   const { removeSearchParams, getSearchParams, searchParams } =
     useSearchParams();
+  // Get the brand-scoped axios instance for this embed
+  const axiosInstance = useAxiosInstance();
 
   // Access isEmbed from BaseContext
   const { isEmbed, isInIframe } = useBaseContext?.() || { isEmbed: false };
@@ -107,7 +107,7 @@ export function AuthProvider({
 
   const [authenticationStatus, setAuthenticationStatus] =
     useState<AuthenticationStatusType>(
-      !!user ? "authenticated" : "unauthenticated"
+      !!user ? "authenticated" : "unauthenticated",
     );
 
   useLayoutEffect(() => {
@@ -146,7 +146,7 @@ export function AuthProvider({
           // In embed mode, just clear auth without redirect
           setAuthenticatedUser(null);
           setAuthenticationStatus("unauthenticated");
-          removeAllAuthToken();
+          axiosRegistry.clearAuthTokenFromAll();
         } else {
           // In non-embed mode, perform full sign-out with redirect
           await signOut("/home");
@@ -158,7 +158,7 @@ export function AuthProvider({
 
     SDKEventEmitter.on(
       SDKListenerEventName.AUTHENTICATE_USER,
-      handleAuthenticateUser
+      handleAuthenticateUser,
     );
 
     SDKEventEmitter.on(SDKListenerEventName.LOGOUT_USER, handleLogoutUser);
@@ -166,7 +166,7 @@ export function AuthProvider({
     return () => {
       SDKEventEmitter.off(
         SDKListenerEventName.AUTHENTICATE_USER,
-        handleAuthenticateUser
+        handleAuthenticateUser,
       );
       SDKEventEmitter.off(SDKListenerEventName.LOGOUT_USER, handleLogoutUser);
     };
@@ -177,45 +177,19 @@ export function AuthProvider({
   useLayoutEffect(() => {
     // Use authenticatedUser first as it reflects the most current state (including refreshed tokens)
     // If authenticatedUser is explicitly null (after logout), don't fall back to user prop
+
+    // hasTokenChanged tracks the token & ensures we only invalidate queries if the token actually changes, preventing unnecessary refetches
     const token =
       authenticatedUser === null
         ? null
-        : (authenticatedUser?.accessToken ?? user?.accessToken);
-    if (!!token) {
-      setAuthTokenInAxiosInstance(token);
-      // IMPORTANT: Do NOT use invalidateAllQueries() as it will invalidate ALL queries
-      // including feed queries in parent SDK instances when nested SDKs initialize.
-      // Only invalidate auth-dependent queries like user profile, settings, etc.
-      // Feed queries are independent of auth state and should not be invalidated.
-      queryClient.invalidateQueries({
-        predicate: (query) => {
-          const queryKey = query.queryKey;
-          // Only invalidate queries that are explicitly auth-dependent
-          // Do NOT invalidate 'feed' queries as they work independently
-          return (
-            Array.isArray(queryKey) &&
-            (queryKey.includes('user') ||
-             queryKey.includes('profile') ||
-             queryKey.includes('settings') ||
-             queryKey.includes('auth'))
-          );
-        },
-      });
-    } else {
-      clearAuthTokenInterceptor();
-      // Same targeted invalidation on logout
-      queryClient.invalidateQueries({
-        predicate: (query) => {
-          const queryKey = query.queryKey;
-          return (
-            Array.isArray(queryKey) &&
-            (queryKey.includes('user') ||
-             queryKey.includes('profile') ||
-             queryKey.includes('settings') ||
-             queryKey.includes('auth'))
-          );
-        },
-      });
+        : (authenticatedUser?.accessToken ?? user?.accessToken ?? null);
+
+    const hasTokenChanged = token
+      ? axiosRegistry.setAuthTokenOnAll(token)
+      : axiosRegistry.clearAuthTokenFromAll();
+
+    if (hasTokenChanged) {
+      invalidateAllQueries();
     }
   }, [authenticatedUser, user]);
 
@@ -250,7 +224,7 @@ export function AuthProvider({
         setAuthenticatedUser(null);
       }
     },
-    [onSignIn]
+    [onSignIn],
   );
 
   const signOut = useCallback(
@@ -260,13 +234,13 @@ export function AuthProvider({
         await onSignOut?.(redirectPath);
         setAuthenticatedUser(null);
         setAuthenticationStatus("unauthenticated");
-        removeAllAuthToken(); // Ensure token is removed on sign out.
+        axiosRegistry.clearAuthTokenFromAll(); // Ensure token is removed on sign out.
       } catch (error) {
         setAuthenticationStatus("unauthenticated");
         console.error("Error during sign out:", error);
       }
     },
-    [onSignOut]
+    [onSignOut],
   );
 
   const updateUser = useCallback(
@@ -293,11 +267,11 @@ export function AuthProvider({
       } catch (error) {
         console.error("Error during user update:", error);
         setAuthenticationStatus(
-          authenticatedUser ? "authenticated" : "unauthenticated"
+          authenticatedUser ? "authenticated" : "unauthenticated",
         );
       }
     },
-    [onUpdateUser, authenticatedUser]
+    [onUpdateUser, authenticatedUser],
   );
 
   /**
@@ -361,11 +335,12 @@ export function AuthProvider({
       authenticationStatus,
       embedData?.authInfo,
       embedContext?.rootElement?.id,
-    ]
+    ],
   );
 
   useEffect(() => {
     // Response interceptor to handle token refresh
+    // Uses the brand-scoped axios instance for multi-embed support
     const responseInterceptor = axiosInstance.interceptors.response.use(
       (response) => response,
       async (error: AxiosError) => {
@@ -382,7 +357,7 @@ export function AuthProvider({
           try {
             const newTokens = await performTokenRefresh(
               user?.accessToken,
-              user?.refreshToken
+              user?.refreshToken,
             );
 
             if (newTokens) {
@@ -391,12 +366,13 @@ export function AuthProvider({
               if (isEmbed) emitCachedUserUpdateEvent(updatedUser);
 
               await updateUser(updatedUser);
-              setAuthTokenInAxiosInstance(newTokens.accessToken);
+              // Set auth token on all brand instances (shared auth)
+              axiosRegistry.setAuthTokenOnAll(newTokens.accessToken);
               return axiosInstance(originalRequest);
             }
           } catch (refreshError) {
             if (isEmbed) {
-              removeAllAuthToken();
+              axiosRegistry.clearAuthTokenFromAll();
               emitRefreshFailedEvent({
                 token:
                   authenticatedUser?.autoLoginToken || user?.autoLoginToken,
@@ -411,13 +387,13 @@ export function AuthProvider({
         }
 
         return Promise.reject(error);
-      }
+      },
     );
 
     return () => {
       axiosInstance.interceptors.response.eject(responseInterceptor);
     };
-  }, []);
+  }, [axiosInstance]);
 
   return (
     <AuthContext.Provider

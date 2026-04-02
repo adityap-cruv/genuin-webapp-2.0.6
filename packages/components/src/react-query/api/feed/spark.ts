@@ -1,6 +1,7 @@
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
-import { API_PATHS } from "@genuin/components/react-query/paths";
 import { useMutation } from "@tanstack/react-query";
+import { useAxiosInstance } from "@genuin/components/context/axios";
+import { API_PATHS } from "@genuin/components/react-query/paths";
+import type { AxiosInstance } from "axios";
 
 const TYPE_MAPPING = {
   VIDEO: 2,
@@ -22,7 +23,7 @@ async function videoReaction({
   contentId: string;
   type: "VIDEO" | "COMMENT";
   reaction: boolean;
-}) {
+}, axiosInstance: AxiosInstance) {
   return await axiosInstance
     .post(API_PATHS.FEED_SPARK, {
       content_id: contentId,
@@ -56,8 +57,10 @@ export function useVideoReationMutation({
   onSuccess?: (props: Awaited<ReturnType<typeof videoReaction>>) => void;
   onError?: (error: Error) => void;
 }) {
+  const axiosInstance = useAxiosInstance();
+
   return useMutation({
-    mutationFn: videoReaction,
+    mutationFn: (props: { contentId: string; type: "VIDEO" | "COMMENT"; reaction: boolean }) => videoReaction(props, axiosInstance),
     onSuccess,
     onError,
   });

@@ -178,6 +178,8 @@ export function PlayerList({
   } = useSheetState();
   const [isEndOfFeedReached, setEndOfFeedReached] = useState<boolean>(false);
   const [isAdPlaying, setIsAdPlaying] = useState<boolean>(false);
+  const [isAdFilled, setIsAdFilled] = useState<boolean>(false);
+
   // if we use directly isTablet from the hook then for desktop it will be true based on useDeviceDetectMediaQuery implementation
   const isTablet = !isMobile && !isDesktop;
 
@@ -273,6 +275,7 @@ export function PlayerList({
   // Callback to enable/disable swipers when interacting with Pills
   const handleSwiperToggle = useCallback(
     (disable: boolean) => {
+      console.log("Toggling swiper. Disable:", disable);
       if (isSectioned && horizontalSwiper) {
         if (disable) {
           horizontalSwiper.disable();
@@ -323,6 +326,25 @@ a swiper inside another swiper.
   const filteredPost = useMemo(() => {
     return posts.filter((post) => post.video.type !== "overlay");
   }, [posts]);
+
+  const handleActiveIndexChange = useCallback(
+    (index: number) => {
+      const newPost = filteredPost[index];
+      if (isAdFilled && newPost && !("adTagObject" in newPost)) {
+        setIsAdFilled(false);
+      }
+      onActiveIndexChange?.(index);
+    },
+    [isAdFilled, filteredPost, onActiveIndexChange],
+  );
+
+  const handleAdFilled = useCallback((type: string) => {
+    if (type === "banner") setIsAdFilled(true);
+  }, []);
+
+  const handleAdFilldEnd = useCallback(() => {
+    setIsAdFilled(false);
+  }, []);
 
   const activeVideoId = filteredPost[activeIndex]?.video.id;
 
@@ -576,7 +598,7 @@ a swiper inside another swiper.
                     slideDimensions={slideDimensions}
                     disableSwiper={disableSwiper}
                     websiteType={websiteType}
-                    onActiveIndexChange={onActiveIndexChange}
+                    onActiveIndexChange={handleActiveIndexChange}
                     setEndOfFeedReached={setEndOfFeedReached}
                     isEndOfFeedReached={isEndOfFeedReached}
                     onCommunityJoinStatusChange={onCommunityJoinStatusChange}
@@ -592,7 +614,8 @@ a swiper inside another swiper.
                     setVerticalSwipers={setVerticalSwipers}
                     onAdStarted={handleAdStarted}
                     onAdEnded={handleAdEnded}
-                    onSwiperToggle={handleSwiperToggle}
+                    onAdFilled={handleAdFilled}
+                    onAdFilledEnd={handleAdFilldEnd}
                   />
                 </Suspense>
               ) : (
@@ -603,7 +626,7 @@ a swiper inside another swiper.
                     disableSwiper={disableSwiper}
                     websiteType={websiteType}
                     setVerticalSwipers={setVerticalSwipers}
-                    onActiveIndexChange={onActiveIndexChange}
+                    onActiveIndexChange={handleActiveIndexChange}
                     brandLayoutType={brandLayoutType}
                     isDesktop={isDesktop}
                     setEndOfFeedReached={setEndOfFeedReached}
@@ -618,7 +641,8 @@ a swiper inside another swiper.
                     isSectioned={isSectioned}
                     onAdStarted={handleAdStarted}
                     onAdEnded={handleAdEnded}
-                    onSwiperToggle={handleSwiperToggle}
+                    onAdFilled={handleAdFilled}
+                    onAdFilledEnd={handleAdFilldEnd}
                   />
                 </Suspense>
               )}
@@ -664,7 +688,8 @@ a swiper inside another swiper.
       {!isMobile &&
         brandLayoutType !== "iheart" &&
         filteredPost[activeIndex] &&
-        !isAdPlaying && (
+        !isAdPlaying &&
+        !isAdFilled && (
           <Suspense fallback={null}>
             <Actions
               shareUrl={filteredPost[activeIndex]?.video.shareUrl ?? ""}
@@ -672,7 +697,9 @@ a swiper inside another swiper.
               contentId={filteredPost[activeIndex]?.video.id}
               groupSlug={filteredPost[activeIndex]?.group.slug}
               slug={filteredPost[activeIndex]?.video.slug}
-              videoType={filteredPost[activeIndex]?.video.video_type ?? VideoTypes.Content}
+              videoType={
+                filteredPost[activeIndex]?.video.videoType ?? VideoTypes.Content
+              }
               reactionCount={filteredPost[activeIndex]?.video.sparkCount}
               theme={showExpandView ? "dark" : "light"}
               className={cn(
@@ -737,6 +764,10 @@ a swiper inside another swiper.
                           videoSlug={filteredPost[activeIndex]?.video.slug}
                           shareUrl={filteredPost[activeIndex]?.video.shareUrl}
                           defaultOpen={isCommentOpen}
+                          videoType={
+                            filteredPost[activeIndex]?.video.videoType ??
+                            VideoTypes.Content
+                          }
                           key={
                             "feed-comment-box" +
                             filteredPost[activeIndex]?.video.id
@@ -817,6 +848,73 @@ a swiper inside another swiper.
         showExpandView &&
         showCommentBox &&
         !isAdPlaying &&
+        !isAdFilled &&
+        filteredPost[activeIndex] &&
+        brandLayoutType !== "iheart" &&
+        isDesktop && (
+          <div className="gencl:max-w-118 gencl:w-full gencl:h-[calc(100%-48px)] gencl:hidden gencl:sm:block! gencl:py-6">
+            <Suspense fallback={null}>
+              <DynamicSheet
+                isOpen
+                renderMode="inline"
+                config={{
+                  initialState: "full-view",
+                  enabledStates: ["full-view"],
+                  heights: {
+                    "full-view": "100%",
+                  },
+                  showClose: true,
+                  showIndicator: false,
+                  navTitle: "Comments",
+                  disableDragAndSwipe: true,
+                  disableAnimation: true,
+                  onClose: () => {
+                    toggleComment();
+                  },
+                  theme: "light",
+                }}
+                onDragging={handleSwiperToggle}
+                footer={
+                  <CommentInputBox
+                    communityId={filteredPost[activeIndex].community.id}
+                    shareUrl={filteredPost[activeIndex].video.shareUrl}
+                    loopId={filteredPost[activeIndex].group.id}
+                    videoId={filteredPost[activeIndex].video.id}
+                    videoSlug={filteredPost[activeIndex].video.slug}
+                    videoType={
+                  filteredPost[activeIndex].video.videoType ??
+                  VideoTypes.Content
+                }
+                    onCommentPosted={(comments) => {
+                      if (filteredPost[activeIndex]) {
+                        setQueryDataForNewComment(
+                          filteredPost[activeIndex].video.id,
+                          comments,
+                        );
+                        onCommentCountChange?.(
+                          filteredPost[activeIndex].video.id,
+                        );
+                      }
+                    }}
+                  />
+                }
+                footerClassName="gencl:px-0 gencl:py-0"
+              >
+                <CommentsList
+                  videoId={filteredPost[activeIndex].video.id}
+                  showCloseButton={false}
+                  shareUrl={filteredPost[activeIndex].video.shareUrl}
+                  className="gencl:pt-4"
+                  videoSlug={filteredPost[activeIndex].video.slug}
+                  onCommentCountChange={onCommentCountChange}
+                />
+              </DynamicSheet>
+            </Suspense>
+          </div>
+        )}
+      {isOctoOpen &&
+        showExpandView &&
+        !isAdPlaying &&
         filteredPost[activeIndex] &&
         brandLayoutType !== "iheart" &&
         isDesktop && (
@@ -871,6 +969,10 @@ a swiper inside another swiper.
                   className="gencl:pt-4"
                   videoSlug={filteredPost[activeIndex].video.slug}
                   onCommentCountChange={onCommentCountChange}
+                  videoType={
+                  filteredPost[activeIndex].video.videoType ??
+                  VideoTypes.Content
+                }
                 />
               </DynamicSheet>
             </Suspense>
@@ -879,6 +981,7 @@ a swiper inside another swiper.
       {isOctoOpen &&
         showExpandView &&
         !isAdPlaying &&
+        !isAdFilled &&
         filteredPost[activeIndex] &&
         brandLayoutType !== "iheart" &&
         isDesktop && (

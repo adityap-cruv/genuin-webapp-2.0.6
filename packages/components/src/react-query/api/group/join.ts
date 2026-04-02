@@ -1,12 +1,13 @@
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
-import { API_PATHS } from "@genuin/components/react-query/paths";
 import { useMutation } from "@tanstack/react-query";
+import { useAxiosInstance } from "@genuin/components/context/axios";
+import { API_PATHS } from "@genuin/components/react-query/paths";
 import { GroupUserStatusType } from "@genuin/components/types/roles";
+import type { AxiosInstance } from "axios";
 
 /**
  * Function to join a group.
  */
-async function joinGroup({ groupId }: { groupId: string }) {
+async function joinGroup({ groupId }: { groupId: string }, axiosInstance: AxiosInstance) {
   return await axiosInstance
     .post(API_PATHS.GROUP_JOIN, {
       chat_id: groupId,
@@ -32,8 +33,10 @@ export function useJoinGroupMutation({
   onSuccess?: (props: Awaited<ReturnType<typeof joinGroup>>) => void;
   onError?: (error: Error) => void;
 }) {
+  const axiosInstance = useAxiosInstance();
+
   return useMutation({
-    mutationFn: joinGroup,
+    mutationFn: (params: { groupId: string }) => joinGroup(params, axiosInstance),
     onError,
     onSuccess,
   });
@@ -44,7 +47,7 @@ export function useJoinGroupMutation({
  * @param uuid - The UUID of the group to leave.
  * @returns
  */
-async function leaveGroup({ groupId }: { groupId: string }) {
+async function leaveGroup({ groupId }: { groupId: string }, axiosInstance: AxiosInstance) {
   return await axiosInstance
     .delete(API_PATHS.GROUP_LEAVE, {
       params: {
@@ -70,8 +73,10 @@ export function useLeaveGroupMutation({
   onSuccess?: () => void;
   onError?: (error: Error) => void;
 }) {
+  const axiosInstance = useAxiosInstance();
+
   return useMutation({
-    mutationFn: leaveGroup,
+    mutationFn: (params: { groupId: string }) => leaveGroup(params, axiosInstance),
     onError,
     onSuccess,
   });

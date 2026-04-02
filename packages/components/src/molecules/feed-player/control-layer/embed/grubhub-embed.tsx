@@ -6,7 +6,7 @@ import { PriceTagIcon } from "@genuin/ui/icons";
 const Linkouts = lazy(() =>
   import("@genuin/components/organisms/linkouts/index.js").then((m) => ({
     default: m.Linkouts,
-  }))
+  })),
 ) as React.ComponentType<any>;
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 
@@ -22,7 +22,7 @@ export const GrubhubEmbed: FC<ControlLayerPropsType> = ({
     <div
       className={cn(
         "gencl:flex gencl:flex-col gencl:justify-between",
-        className
+        className,
       )}
       {...restProps}
     >

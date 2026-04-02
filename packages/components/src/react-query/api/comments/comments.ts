@@ -1,6 +1,5 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
+import { useAxiosInstance } from "@genuin/components/context/axios";
 import {
   getQueryKeyForComments,
   getQueryKeyForMentions,
@@ -9,14 +8,20 @@ import {
 import { parseComments } from "./parser";
 import { API_PATHS } from "@genuin/components/react-query/paths";
 import { queryClient } from "@genuin/components/react-query/client";
+import type { AxiosInstance } from "axios";
 
 /**
  * Fetch comments for a video.
  * @param videoId - The ID of the video for which comments are to be fetched.
  * @param pageParam - The ID of the last fetched comment, used for pagination.
+ * @param axiosInstance - Axios instance to use for the request.
  * @returns A promise that resolves to the fetched comments.
  */
-async function fetchComments(videoId: string, pageParam?: string) {
+async function fetchComments(
+  videoId: string,
+  axiosInstance: AxiosInstance,
+  pageParam?: string
+) {
   try {
     const res = await axiosInstance.get(API_PATHS.FEED_GET_COMMENTS, {
       params: {
@@ -40,11 +45,13 @@ async function fetchComments(videoId: string, pageParam?: string) {
  * @returns
  */
 export function useComments(videoId: string) {
+  const axiosInstance = useAxiosInstance();
+
   return useInfiniteQuery({
     queryKey: getQueryKeyForComments(videoId),
-    queryFn: ({ pageParam }: { pageParam: string | undefined }) =>
-      fetchComments(videoId, pageParam),
-    initialPageParam: undefined,
+    queryFn: ({ pageParam }) =>
+      fetchComments(videoId, axiosInstance, pageParam),
+    initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => {
       if (lastPage.end) {
         return;
@@ -151,6 +158,7 @@ export function deleteCommentFromQueryData({
 async function fetchMentionUser(
   chatId: string,
   queryString: string,
+  axiosInstance: AxiosInstance,
   signal?: AbortSignal
 ) {
   const searchParams = new URLSearchParams({
@@ -181,9 +189,12 @@ export function useMentionUser(
   enabled = true,
   mentionSignal: AbortSignal | undefined
 ) {
+  const axiosInstance = useAxiosInstance();
+
   return useQuery({
     queryKey: getQueryKeyForMentions(chatId, queryString),
-    queryFn: ({ signal }) => fetchMentionUser(chatId, queryString, signal),
+    queryFn: ({ signal }) =>
+      fetchMentionUser(chatId, queryString, axiosInstance, signal),
     enabled: !!chatId && !!queryString && enabled,
     // staleTime: 60 * 1000, // adjust as needed
   });

@@ -1,7 +1,8 @@
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
+import { useQuery } from "@tanstack/react-query";
+import { useAxiosInstance } from "@genuin/components/context/axios";
 import { getQueryKeyForLocations } from "@genuin/components/react-query/keys/locations";
 import { API_PATHS } from "@genuin/components/react-query/paths";
-import { useQuery } from "@tanstack/react-query";
+import type { AxiosInstance } from "axios";
 
 type fetchLocationParams = {
   query: string;
@@ -9,7 +10,7 @@ type fetchLocationParams = {
   longitude?: number;
 };
 
-async function fetchLocations({ query, ...params }: fetchLocationParams) {
+async function fetchLocations({ query, ...params }: fetchLocationParams, axiosInstance: AxiosInstance) {
   return await axiosInstance
     .get(API_PATHS.LOCATIONS_SEARCH, {
       params: { query_string: query, ...params },
@@ -23,9 +24,11 @@ async function fetchLocations({ query, ...params }: fetchLocationParams) {
 }
 
 export function useLocations(params: fetchLocationParams) {
+  const axiosInstance = useAxiosInstance();
+
   return useQuery({
     queryKey: getQueryKeyForLocations(params.query),
-    queryFn: () => fetchLocations(params),
+    queryFn: (context) => fetchLocations(params, axiosInstance),
     enabled: params.query.trim().length >= 3,
   });
 }

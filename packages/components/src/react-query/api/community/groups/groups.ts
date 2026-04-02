@@ -1,14 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
+import { useAxiosInstance } from "@genuin/components/context/axios";
 
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
 import { getQueryKeyForCommunityGroups } from "@genuin/components/react-query/keys/community";
 import { API_PATHS } from "@genuin/components/react-query/paths";
 
 import { validateCommunityGroups } from "./schema";
 import { queryClient } from "@genuin/components/react-query/client";
 import { GroupUserStatusType } from "@genuin/components/types/roles";
+import type { AxiosInstance } from "axios";
 
-export async function fetchCommunityGroups(slug: string) {
+export async function fetchCommunityGroups(slug: string, axiosInstance: AxiosInstance) {
   return await axiosInstance
     .get(API_PATHS.COMMUNITY_GROUPS, {
       params: {
@@ -26,8 +27,10 @@ export async function fetchCommunityGroups(slug: string) {
 
 // TODO: think about adding a lazy loading for community groups.
 export function useGetCommunityGroups(slug: string) {
+  const axiosInstance = useAxiosInstance();
+
   return useQuery({
-    queryFn: async () => await fetchCommunityGroups(slug),
+    queryFn: async (context) => await fetchCommunityGroups(slug, axiosInstance),
     queryKey: getQueryKeyForCommunityGroups(slug),
   });
 }

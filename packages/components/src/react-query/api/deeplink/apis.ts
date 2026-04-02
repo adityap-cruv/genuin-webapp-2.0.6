@@ -1,6 +1,6 @@
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
 import { API_PATHS } from "@genuin/components/react-query/paths";
 import { NEXT_PUBLIC_HOST_URL } from "@genuin/components/lib/utils/env";
+import type { AxiosInstance } from "axios";
 
 /**
  * Generates a deep link URL with the provided parameters
@@ -23,7 +23,8 @@ interface DeepLinkPayload {
 }
 
 export const generateDeepLink = async (
-  payload: DeepLinkPayload
+  payload: DeepLinkPayload,
+  axiosInstance: AxiosInstance
 ): Promise<string> => {
   const queryParams: Record<string, any> = {};
 
@@ -66,7 +67,8 @@ interface DeepLinkData {
 }
 
 export const resolveDeepLink = async (
-  linkIdentifier: string
+  linkIdentifier: string,
+  axiosInstance: AxiosInstance
 ): Promise<DeepLinkData | null> => {
   try {
     const res = await axiosInstance.get(`/goservices/links/${linkIdentifier}`);

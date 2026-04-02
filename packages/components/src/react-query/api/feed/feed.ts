@@ -1,4 +1,6 @@
 import { QueryKey, useInfiniteQuery } from "@tanstack/react-query";
+import { useAxiosInstance } from "@genuin/components/context/axios";
+import { axiosInstance as globalAxiosInstance } from "@genuin/components/context/axios/context";
 
 import { getDeviceId } from "@genuin/components/lib/utils/device-id";
 import { getQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
@@ -7,14 +9,14 @@ import type {
   FeedType,
 } from "@genuin/components/types/post";
 
-import { axiosInstance } from "../../axios-instance";
-
 import { parseFeed } from "./parser";
 import { queryClient } from "@genuin/components/react-query/client";
 import { API_PATHS } from "@genuin/components/react-query/paths";
 import { GroupUserStatusType } from "@genuin/components/types/roles";
 import { fetchVideoDetails } from "../video";
 import { EmbedDataType } from "@genuin/components/context/embed/embed.types";
+import { type AxiosInstance } from "axios";
+import { AdsPostDetailsType } from "./schema";
 // Mapper for FeedType to corresponding numbers
 const feedTypeToNumber: Record<FeedType, number> = {
   HOME: 1,
@@ -24,6 +26,8 @@ const feedTypeToNumber: Record<FeedType, number> = {
   PLACEMENT_SECTIONS: 1,
   SECTION_FEED: 1,
   VIDEO: 1,
+  // This is just a placeholder value. The actual value should be set according to the backend implementation for FEED_V1.
+  FEED_V1: -1,
 };
 
 // TODO: Suggestion unify this api with all the apis for feed in profile/group/community. So that
@@ -41,7 +45,10 @@ async function fetchFeed(
     lastVideoId?: string | undefined;
   },
   options?: UseFeedOptionsType,
+  axiosInstance?: AxiosInstance,
 ) {
+  const requestAxiosInstance = axiosInstance ?? globalAxiosInstance;
+
   const deviceId = getDeviceId(options?.isInIframe || false)
     ? encodeURI(getDeviceId(options?.isInIframe || false) as string)
     : undefined;
@@ -206,6 +213,20 @@ async function fetchFeed(
       };
       break;
 
+    case feedType === "FEED_V1":
+      url = API_PATHS.FEED_V1;
+      requestBody = {
+        ...(deviceId && { device_id: deviceId }),
+        ...(options?.embedId && { embed_id: options.embedId }),
+        ...(pageParam?.lastVideoId && { last_video_id: pageParam.lastVideoId }),
+        ...(pageParam?.pageSession && { page_session: pageParam.pageSession }),
+        ...(options?.communityIds?.length && {
+          community_ids: options.communityIds,
+        }),
+        ...(options?.groupIds?.length && { loop_ids: options.groupIds }),
+      };
+      break;
+
     default:
       url = API_PATHS.FEED_HOME;
       requestBody = {
@@ -221,7 +242,7 @@ async function fetchFeed(
       };
   }
 
-  return await axiosInstance
+  return await requestAxiosInstance
     .post(url, {
       ...requestBody,
       ...contextualFeedParamsBody,
@@ -358,7 +379,7 @@ async function fetchFeedByVideoIds(
  */
 function isVideoInFeed(feed: FeedPage["feed"], slug: string): boolean {
   return feed.some(
-    (item) => item.video.slug === slug || item.video.id === slug,
+    (item) => item.video?.slug === slug || item.video?.id === slug,
   );
 }
 
@@ -374,7 +395,7 @@ function moveVideoToTop(
   slug: string,
 ): FeedPage["feed"] {
   const videoIndex = feed.findIndex(
-    (item) => item.video.slug === slug || item.video.id === slug,
+    (item) => item.video?.slug === slug || item.video?.id === slug,
   );
   const video = feed[videoIndex];
 
@@ -455,7 +476,7 @@ async function prependInitialVideosToFeed(
     // Filter out any videos that are already in the feed to avoid duplicates
     const existingVideoIds = new Set(initialVideoIds);
     const uniqueFeedVideos = feedData.feed.filter(
-      (feed) => !existingVideoIds.has(feed.video.id),
+      (feed) => !feed.video?.id || !existingVideoIds.has(feed.video.id),
     );
     return {
       ...feedData,
@@ -484,6 +505,7 @@ async function createFeedQueryFn(
   feedType: FeedType,
   pageParam: { pageSession?: string; lastVideoId?: string } | undefined,
   options?: UseFeedOptionsType,
+  axiosInstance?: AxiosInstance,
 ): Promise<FeedPage> {
   const startVideoSlug = options?.startVideoSlug;
   const hasVideoIds = options?.videoIds && options.videoIds.length > 0;
@@ -496,7 +518,7 @@ async function createFeedQueryFn(
   // Scenario 3: Regular feed - fetch from API
   let feedData = options?.isSingleVideo
     ? createEmptyFeedPage()
-    : await fetchFeed(feedType, pageParam, options);
+    : await fetchFeed(feedType, pageParam, options, axiosInstance);
 
   // For the first page with a startVideoSlug, ensure the video is included
   const isFirstPage = !pageParam;
@@ -536,11 +558,13 @@ async function createFeedQueryFn(
   if (isFirstPage && hasPlaceholderData) {
     const placeholderVideos = options!.placeholderData!.pages[0]!.feed;
     const placeholderVideoIds = new Set(
-      placeholderVideos.map((item) => item.video.id),
+      placeholderVideos.flatMap((item) =>
+        item.video?.id ? [item.video.id] : [],
+      ),
     );
     // Filter out any videos from feedData that are already in placeholder data
     const uniqueFeedVideos = feedData.feed.filter(
-      (item) => !placeholderVideoIds.has(item.video.id),
+      (item) => !item.video?.id || !placeholderVideoIds.has(item.video.id),
     );
     feedData = {
       ...feedData,
@@ -559,7 +583,8 @@ async function createFeedQueryFn(
       ...feedData,
       feed: feedData.feed.filter(
         (item) =>
-          !idsToFilter.has(item.video.id) && !idsToFilter.has(item.video.slug),
+          (!item.video?.id || !idsToFilter.has(item.video.id)) &&
+          (!item.video?.slug || !idsToFilter.has(item.video.slug)),
       ),
     };
   }
@@ -570,18 +595,34 @@ async function createFeedQueryFn(
 export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
   const queryKey = getQueryKeyForFeed(feedType, options);
 
+  const axiosInstance = useAxiosInstance();
+
   return useInfiniteQuery({
     queryKey,
-    queryFn: ({ pageParam }) => createFeedQueryFn(feedType, pageParam, options),
+    queryFn: ({ pageParam }) =>
+      createFeedQueryFn(feedType, pageParam, options, axiosInstance),
     enabled: options?.enabled !== false,
     initialPageParam: undefined,
     getNextPageParam: (lastPage) => {
       if (lastPage.endOfFeed) return undefined;
       const lastPageData = lastPage.feed[lastPage.feed.length - 1];
       if (!lastPageData) return undefined;
+      // If the last item is an ads item, find the last non-ads video for lastVideoId
+      const lastVideoData =
+        (lastPageData as AdsPostDetailsType).type === "ads" ||
+        lastPageData?.video?.videoLayoutId === 6
+          ? [...lastPage.feed]
+              .reverse()
+              .find(
+                (item) =>
+                  (item as AdsPostDetailsType).type !== "ads" &&
+                  item.video?.videoLayoutId !== 6,
+              )
+          : lastPageData;
+
       return {
         pageSession: lastPage.pageSession,
-        lastVideoId: lastPageData.video.id,
+        lastVideoId: lastVideoData?.video?.id,
       };
     },
     refetchOnWindowFocus: false,
@@ -620,15 +661,15 @@ export function setQueryDataForReactionInFeed({
       return {
         ...page,
         feed: page.feed.map((video) => {
-          if (video.video.id === videoId) {
-            const sparkCount = video.video.sparkCount ?? 0;
+          if (video.video?.id === videoId) {
+            const sparkCount = video.video?.sparkCount ?? 0;
             return {
               ...video,
               video: {
                 ...video.video,
                 isSparked: isReacted,
                 sparkCount: isReacted
-                  ? (video.video.sparkCount ?? 0) + 1
+                  ? (video.video?.sparkCount ?? 0) + 1
                   : sparkCount > 0
                     ? sparkCount - 1
                     : 0,
@@ -644,7 +685,7 @@ export function setQueryDataForReactionInFeed({
     return {
       ...oldData,
       pages: updatedPages,
-    };
+    } as NonNullable<QueryData>;
   });
 }
 
@@ -672,7 +713,7 @@ export function setQueryDataForJoinCommunityStatusInFeed({
         return {
           ...page,
           feed: page.feed.map((video) => {
-            if (video.community.id === communityId) {
+            if (video.community?.id === communityId) {
               return {
                 ...video,
                 community: {
@@ -690,7 +731,7 @@ export function setQueryDataForJoinCommunityStatusInFeed({
       return {
         ...oldData,
         pages: updatedPages,
-      };
+      } as NonNullable<QueryData>;
     },
   );
 }
@@ -736,7 +777,7 @@ export function setQueryDataForJoinGroupStatusInFeed({
     return {
       ...oldData,
       pages: updatedPages,
-    };
+    } as NonNullable<QueryData>;
   });
 }
 
@@ -781,7 +822,7 @@ export function setQueryDataForGroupSubscriptionChangeInFeed({
       return {
         ...oldData,
         pages: updatedPages,
-      };
+      } as NonNullable<QueryData>;
     },
   );
 }
@@ -807,8 +848,8 @@ export function setQueryDataForCommentCountInFeed({
       return {
         ...page,
         feed: page.feed.map((video) => {
-          if (video.video.id === videoId) {
-            const commentCount = video.video.commentCount ?? 0;
+          if (video.video?.id === videoId) {
+            const commentCount = video.video?.commentCount ?? 0;
             return {
               ...video,
               video: {
@@ -830,6 +871,6 @@ export function setQueryDataForCommentCountInFeed({
     return {
       ...oldData,
       pages: updatedPages,
-    };
+    } as NonNullable<QueryData>;
   });
 }

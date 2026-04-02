@@ -1,8 +1,9 @@
-import { axiosInstance } from "@genuin/components/react-query/axios-instance";
-import { API_PATHS } from "@genuin/components/react-query/paths";
 import { useMutation } from "@tanstack/react-query";
+import { useAxiosInstance } from "@genuin/components/context/axios";
+import { API_PATHS } from "@genuin/components/react-query/paths";
+import type { AxiosInstance } from "axios";
 
-export async function validateUsername(nickname: string) {
+export async function validateUsername(nickname: string, axiosInstance: AxiosInstance) {
   return await axiosInstance
     .post(API_PATHS.AUTH_VALIDATE_USERNAME, { nickname })
     .then((res) => {
@@ -26,8 +27,10 @@ export function useValidateUsername({
   onSuccess?: (data: boolean) => void;
   onError?: (error: Error) => void;
 }) {
+  const axiosInstance = useAxiosInstance();
+
   return useMutation({
-    mutationFn: validateUsername,
+    mutationFn: (nickname: string) => validateUsername(nickname, axiosInstance),
     onSuccess,
     onError,
   });

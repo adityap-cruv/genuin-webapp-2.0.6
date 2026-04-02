@@ -8,7 +8,7 @@ import { ComponentProps, ReactNode } from "react";
 import { CommentsList } from "./comments-list";
 import { CommentInputBox } from "./comment-input";
 import { setQueryDataForNewComment } from "@genuin/components/react-query/api/comments";
-import { useBaseContext } from "@genuin/components/context";
+import { useBaseContext, VideoTypes } from "@genuin/components/context";
 
 type CommentDialogProps = {
   communityId: string;
@@ -25,6 +25,7 @@ type CommentDialogProps = {
    * @param increment - true to increment, false to decrement
    */
   onCommentCountChange?: (videoId: string, increment?: boolean) => void;
+  videoType: VideoTypes;
 } & React.ComponentProps<typeof DialogTrigger>;
 
 export function CommentsDialog({
@@ -37,6 +38,7 @@ export function CommentsDialog({
   shareUrl,
   className,
   defaultOpen,
+  videoType,
   onOpenChange,
   onCommentCountChange,
   ...props
@@ -63,6 +65,7 @@ export function CommentsDialog({
           videoId={videoId}
           showCloseButton={false}
           shareUrl={shareUrl}
+          videoType={videoType}
           className="gencl:pt-4"
           videoSlug={videoSlug}
           onCommentCountChange={onCommentCountChange}
@@ -72,6 +75,7 @@ export function CommentsDialog({
           shareUrl={shareUrl}
           loopId={loopId}
           videoId={videoId}
+          videoType={videoType}
           videoSlug={videoSlug}
           onCommentPosted={(comments) => {
             setQueryDataForNewComment(videoId, comments);
