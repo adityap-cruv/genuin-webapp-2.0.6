@@ -1,5 +1,8 @@
 import { useEmbedContext } from "@genuin/components/context/embed";
-import { useAnalytics, VideoTypes } from "@genuin/components/context/analytics/context";
+import {
+  useAnalytics,
+  VideoTypes,
+} from "@genuin/components/context/analytics/context";
 import {
   ControlLayer,
   FeedPlayer,
@@ -8,7 +11,13 @@ import { PlayerProvider } from "@genuin/components/molecules/feed-player/context
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { XIcon } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/lib/utils";
-import { ComponentProps, useCallback, useEffect, useMemo, useState } from "react";
+import {
+  ComponentProps,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { RootPortal } from "@genuin/components/molecules/root-portal";
 
 type PipViewProps = {
@@ -37,11 +46,11 @@ export function PipView({ videos, isLoading, totalVideos }: PipViewProps) {
       const currentVideo = videos[context.activeIndex];
       if (currentVideo) {
         track(EventName.FLOATING_EMBED, {
-          videoId: currentVideo.video.id,
-          postSlug: currentVideo.video.slug,
-          communityId: currentVideo.community.id,
-          brandId: currentVideo.community.brand?.id,
-          creatorName: currentVideo.owner.userName,
+          videoId: currentVideo.video?.id,
+          postSlug: currentVideo.video?.slug,
+          communityId: currentVideo.community?.id,
+          brandId: currentVideo.community?.brand?.id,
+          creatorName: currentVideo.owner?.userName,
         });
       }
     }
@@ -122,17 +131,17 @@ function PipPlayer({
     >
       <PlayerProvider
         isActive={isPipActive}
-        videoId={videoDetails.video.id}
-        videoUrl={videoDetails.video.source}
+        videoId={videoDetails.video?.id ?? ""}
+        videoUrl={videoDetails.video?.source ?? ""}
         onPlayerIterationEnd={onInterationEnd ?? (() => {})}
         totalVideos={totalVideos}
-        videoType={videoDetails.video.videoType ?? VideoTypes.Content}
+        videoType={videoDetails.video?.videoType ?? VideoTypes.Content}
       >
         <FeedPlayer
-          videoId={videoDetails.video.id}
-          src={videoDetails.video.source}
-          poster={videoDetails.video.thumbnail}
-          videoType={videoDetails.video.videoType ?? VideoTypes.Content}
+          videoId={videoDetails.video?.id ?? ""}
+          src={videoDetails.video?.source}
+          poster={videoDetails.video?.thumbnail}
+          videoType={videoDetails.video?.videoType ?? VideoTypes.Content}
           className="gencl:object-cover gencl:w-full gencl:h-full!"
         />
         <ControlLayer variant="embed-pip" isActive postDetails={videoDetails} />

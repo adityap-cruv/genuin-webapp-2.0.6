@@ -5,11 +5,7 @@ import {
   mapGroupJoinStatus,
 } from "@genuin/components/lib/utils";
 
-import type {
-  AdsPostDetailsType,
-  PostDetailsSchema,
-  PostDetailsType,
-} from "./schema";
+import type { PostDetailsSchema, PostDetailsType } from "./schema";
 import type {
   AdsFeedItem,
   FeedResponseFromGoApi,
@@ -182,12 +178,12 @@ export function parseFeed(
   data: FeedResponseFromGoApi,
   shouldShowMiddlewareOverlay: boolean = false,
   endOfFeed: boolean = false,
-): Array<PostDetailsType | AdsPostDetailsType> {
+): Array<PostDetailsType> {
   if (!data || !Array.isArray(data)) {
     return [];
   }
 
-  const result: Array<PostDetailsType | AdsPostDetailsType> = [];
+  const result: Array<PostDetailsType> = [];
 
   for (let index = 0; index < data.length; index++) {
     const item = data[index];
@@ -266,9 +262,9 @@ export function parseFeed(
           community: mapped.community,
           owner: mapped.owner,
           section: mapped.section,
-        } as AdsPostDetailsType);
+        } as PostDetailsType);
       } else {
-        result.push({ type: "ads", adTagObject } as AdsPostDetailsType);
+        result.push({ type: "ads", adTagObject } as PostDetailsType);
       }
     } else if (item.type !== "all_caught_up") {
       result.push(mapVideoItem(item));
