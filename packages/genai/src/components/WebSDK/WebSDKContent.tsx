@@ -389,7 +389,14 @@ export function WebSDKContent() {
 
         const latestAgentMessage = [...(currentSession.chat || [])]
             .reverse()
-            .find(event => event.role === 'agent' && event.message?.content?.trim());
+            .find(event =>
+                event.role === 'agent' && (
+                    event.message?.content?.trim() ||           // Has text content
+                    event.carousel_metadata ||                   // Has carousel/videos
+                    event.metadata?.toolMetadata ||             // Has inventory data
+                    (event.contentSequence && event.contentSequence.length > 0)  // Has any content sequence
+                )
+            );
 
         if (!latestAgentMessage) {
             expandRequestedMessageRef.current = null;

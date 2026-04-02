@@ -45,9 +45,27 @@ export default defineConfig(() => {
                             return 'chunks/vendor-deps-[hash].js';
                         }
 
+                        // Named chunks for lazy-loaded widgets
+                        if (chunkInfo.name === 'koah-widget') {
+                            return 'chunks/koah-widget-[hash].js';
+                        }
+                        if (chunkInfo.name === 'inventory-widget') {
+                            return 'chunks/inventory-widget-[hash].js';
+                        }
+
                         // Hardcoded conditions for specific component chunks
                         if (chunkInfo.moduleIds) {
                             const moduleIds = chunkInfo.moduleIds.join(' ');
+
+                            // Check for KoahAdWidget (lazy loaded)
+                            if (moduleIds.includes('KoahAdWidget')) {
+                                return 'chunks/koah-widget-[hash].js';
+                            }
+
+                            // Check for InventoryWidget (lazy loaded)
+                            if (moduleIds.includes('InventoryWidget')) {
+                                return 'chunks/inventory-widget-[hash].js';
+                            }
 
                             // Check for App component
                             if (moduleIds.includes('/src/App.tsx') || moduleIds.includes('/src/components/App/')) {
@@ -59,8 +77,10 @@ export default defineConfig(() => {
                                 return 'chunks/agentintro-[hash].js';
                             }
 
-                            // Check for Chat component
-                            if (moduleIds.includes('/src/components/Chat/')) {
+                            // Check for Chat component (excluding lazy-loaded widgets)
+                            if (moduleIds.includes('/src/components/Chat/') &&
+                                !moduleIds.includes('KoahAdWidget') &&
+                                !moduleIds.includes('InventoryWidget')) {
                                 return 'chunks/chat-[hash].js';
                             }
                         }

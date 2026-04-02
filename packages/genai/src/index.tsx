@@ -20,6 +20,10 @@ interface SDKConfig {
     parentWebSdkPlacementId?: string;
     parentOctoPanelId?: string;
     videoId?: string;
+    // Integration fields for embed/placement context
+    integrationType?: 'embed' | 'placement';
+    integrationId?: string;
+    contentOrder?: string[];
 }
 
 let appInstance: any = null;
@@ -122,6 +126,9 @@ async function loadFloaterApp(config: SDKConfig): Promise<void> {
             parentWebSdkPlacementId: config.parentWebSdkPlacementId,
             parentOctoPanelId: config.parentOctoPanelId,
             videoId: config.videoId,
+            integrationType: config.integrationType,
+            integrationId: config.integrationId,
+            contentOrder: config.contentOrder,
         }),
     };
 
@@ -149,6 +156,9 @@ async function loadDialogApp(config: SDKConfig): Promise<void> {
             parentWebSdkPlacementId: config.parentWebSdkPlacementId,
             parentOctoPanelId: config.parentOctoPanelId,
             videoId: config.videoId,
+            integrationType: config.integrationType,
+            integrationId: config.integrationId,
+            contentOrder: config.contentOrder,
         }),
     };
 
@@ -413,6 +423,9 @@ export async function init(initConfig: SDKConfig) {
                     parentWebSdkPlacementId: normalizedConfig.parentWebSdkPlacementId,
                     parentOctoPanelId: normalizedConfig.parentOctoPanelId,
                     videoId: normalizedConfig.videoId,
+                    integrationType: normalizedConfig.integrationType,
+                    integrationId: normalizedConfig.integrationId,
+                    contentOrder: normalizedConfig.contentOrder,
                 }),
             };
         } else if (viewMode === 'floater') {

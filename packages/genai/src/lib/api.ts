@@ -843,6 +843,10 @@ export interface StartChatPayload {
         agent_response: string;
         session_name: string;
     };
+    // Integration fields for embed/placement context
+    integration_type?: 'embed' | 'placement';
+    integration_id?: string;
+    content_order?: string[];
 }
 
 export async function startChatSession(payload: StartChatPayload): Promise<StartChatResponse> {

@@ -21,6 +21,10 @@ interface AppProvidersProps {
     parentWebSdkPlacementId?: string;
     parentOctoPanelId?: string;
     videoId?: string;
+    // Integration fields for embed/placement context
+    integrationType?: 'embed' | 'placement';
+    integrationId?: string;
+    contentOrder?: string[];
 }
 
 export const AppProviders: React.FC<AppProvidersProps> = ({
@@ -40,6 +44,9 @@ export const AppProviders: React.FC<AppProvidersProps> = ({
     parentWebSdkPlacementId,
     parentOctoPanelId,
     videoId,
+    integrationType,
+    integrationId,
+    contentOrder,
 }) => {
     return (
         <RudderAnalyticsProvider>
@@ -59,6 +66,9 @@ export const AppProviders: React.FC<AppProvidersProps> = ({
                 parentWebSdkPlacementId={parentWebSdkPlacementId}
                 parentOctoPanelId={parentOctoPanelId}
                 webSdkVideoId={videoId}
+                integrationType={integrationType}
+                integrationId={integrationId}
+                contentOrder={contentOrder}
             >
                 <InputProvider>{children}</InputProvider>
             </AgentsProvider>

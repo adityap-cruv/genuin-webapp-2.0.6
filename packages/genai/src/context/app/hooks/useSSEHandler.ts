@@ -17,6 +17,10 @@ export interface SSEMessagePayload {
         agent_response: string;
         session_name: string;
     };
+    // Integration fields for embed/placement context
+    integration_type?: 'embed' | 'placement';
+    integration_id?: string;
+    content_order?: string[];
 }
 
 interface UseSSEHandlerParams {
@@ -300,7 +304,17 @@ export const useSSEHandler = ({
                 s3_keys: payload.s3_keys,
                 video_id: payload.video_id,
                 previous_context: payload.previous_context,
+                integration_type: payload.integration_type,
+                integration_id: payload.integration_id,
+                content_order: payload.content_order,
             };
+
+            console.log('[SSE Handler] Sending to backend:', {
+                integration_type: startPayload.integration_type,
+                integration_id: startPayload.integration_id,
+                content_order: startPayload.content_order,
+                video_id: startPayload.video_id,
+            });
 
             const startResponse = await startChatSession(startPayload);
             const { session_id: realSessionId, user_message_id } = startResponse.data;

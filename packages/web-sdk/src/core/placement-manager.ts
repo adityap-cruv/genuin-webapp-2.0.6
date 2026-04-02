@@ -1,4 +1,4 @@
-import { EmbedDataType } from '@genuin/components/context/embed/embed.types'
+import { EmbedDataType, LiveCustomizationTools } from '@genuin/components/context/embed/embed.types'
 import { apiService } from './api'
 import { parsePlacementToEmbedData } from '@/utils'
 
@@ -28,6 +28,13 @@ export class PlacementManager {
       placementData,
       styleId,
     )
+
+    console.log('[PlacementManager] Fetched placement data:', {
+      placementId,
+      hasOctoSettings: !!(placementData as unknown as LiveCustomizationTools)?.octo_settings,
+      octoSettings: (placementData as unknown as LiveCustomizationTools)?.octo_settings,
+      parsedHasLiveCustomizationTools: !!parsedPlacementData?.live_customization_tools,
+    })
 
     if (parsedPlacementData) {
       this.placements.set(placementId, parsedPlacementData)

@@ -1,7 +1,8 @@
 import "@genuin/genai-sdk/styles";
 import { cn } from "@genuin/ui/utils";
-import type { ComponentProps, MouseEvent, ReactNode, RefObject } from "react";
+import type { ComponentProps, MouseEvent, ReactNode } from "react";
 import {
+  forwardRef,
   useCallback,
   useEffect,
   useImperativeHandle,
@@ -35,9 +36,12 @@ type GenAISDKModule = {
     parentWebSdkPlacementId?: string;
     parentOctoPanelId: string;
     videoId: string;
+    integrationType?: 'embed' | 'placement';
+    integrationId?: string;
+    contentOrder?: string[];
   }) => void;
   destroy: () => void | Promise<void>;
-  setWebSdkRenderMode: (mode: "compact" | "full") => void;
+  setWebSdkRenderMode?: (mode: "compact" | "full") => void;
 };
 
 /**
@@ -81,9 +85,15 @@ type OctoPanelPropsType = {
   onCompactExpand?: () => void;
   onCountdownActive?: (isActive: boolean) => void;
   /**
-   * React 19 ref prop - replaces forwardRef pattern
+   * Integration type for the chat session.
+   * If not provided, will be determined from embed context.
    */
-  ref?: RefObject<OctoPanelHandle>;
+  integrationType?: 'embed' | 'placement';
+  /**
+   * Integration ID (embed_id or placement_id) for the chat session.
+   * If not provided, will be read from embed context.
+   */
+  integrationId?: string;
 } & ComponentProps<"div">;
 
 export type OctoPanelHandle = {
@@ -132,7 +142,7 @@ function createPanelIdentity() {
  * />
  * ```
  */
-export function OctoPanel({
+export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(function OctoPanel({
   videoId,
   videoSlug,
   children,
@@ -147,9 +157,10 @@ export function OctoPanel({
   onExpandRequest,
   onCompactExpand,
   onCountdownActive,
-  ref,
+  integrationType: integrationTypeProp,
+  integrationId: integrationIdProp,
   ...triggerProps
-}: OctoPanelPropsType) {
+}: OctoPanelPropsType, ref) {
   // DOM References
   // We maintain both a ref and state for the container because:
   // - containerRef: Provides immediate DOM access without triggering re-renders
@@ -192,10 +203,16 @@ export function OctoPanel({
   const [parentEmbedId, setParentEmbedId] = useState<string | null>(null);
   const [parentPlacementId, setParentPlacementId] = useState<string | null>(null);
 
-  /**
-   * Callback ref handler that updates both the ref and state when container is mounted.
-   * This ensures we have both immediate access (via ref) and reactive updates (via state).
-   */
+  // Determine integration type and ID from props or embed context
+  const integrationType = integrationTypeProp
+    ?? (embedContext?.embedData?.embed_id ? 'embed' : embedContext?.embedData?.placement_id ? 'placement' : undefined);
+  const integrationId = integrationIdProp
+    ?? embedContext?.embedData?.embed_id
+    ?? (embedContext?.embedData?.placement_id ? String(embedContext.embedData.placement_id) : undefined);
+
+  // Extract content_order from octo_settings in live_customization_tools if available
+  const contentOrder = embedContext?.embedData?.live_customization_tools?.octo_settings?.content_order;
+
   const handleContainerRef = useCallback((node: HTMLDivElement | null) => {
     containerRef.current = node;
     setContainerNode(node);
@@ -417,6 +434,9 @@ export function OctoPanel({
         parentWebSdkPlacementId: parentPlacementId ?? undefined,
         parentOctoPanelId: panelIdentity.panelId,
         videoId: videoId,
+        integrationType,
+        integrationId,
+        contentOrder,
       });
       sdkInitializedRef.current = true;
       setIsReinitializing(false);
@@ -441,6 +461,9 @@ export function OctoPanel({
     videoId,
     previousVideoId,
     destroyCompleteCounter,
+    contentOrder,
+    integrationType,
+    integrationId,
     renderMode,
   ]);
 
@@ -708,4 +731,4 @@ export function OctoPanel({
       ) : null}
     </>
   );
-}
+});

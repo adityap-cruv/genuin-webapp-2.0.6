@@ -1,6 +1,7 @@
 import { AuthUser } from '@genuin/components/types/auth'
 import {
   EmbedDataType,
+  LiveCustomizationTools,
   PlacementDataResponse,
 } from '@genuin/components/context/embed/embed.types'
 
@@ -262,6 +263,9 @@ export function parsePlacementToEmbedData(
     show_style_details: configureView?.show_style_details,
     video_details: configureView?.video_details,
     social_interaction_counts: configureView?.social_interaction_counts,
+
+    // Pass the entire placement data as live_customization_tools for octo panel
+    live_customization_tools: data as unknown as LiveCustomizationTools,
   }
 }
 

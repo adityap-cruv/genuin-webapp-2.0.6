@@ -10,40 +10,29 @@ import {
     LikeFilled,
     Regenerate,
 } from '@/assets/SvgIcons/icons';
-// import { responseFeedback } from '@/lib/api';
 import type { Agent, Artifact, ChatHistoryEvent, ThinkingStep } from '@/types';
 import type { HandleSendMessageParams } from '@/context/app/provider';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
-import remarkGfm from 'remark-gfm';
+import React, { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
-import BrandAssets from '../BCC/BrandAssets';
-import BrandCTKWs from '../BCC/BrandCTKWs';
-import BrandGuidelines from '../BCC/BrandGuidelines';
-import BrandIndustryType from '../BCC/BrandIndustryType';
-import BrandPersona from '../BCC/BrandPersona';
 import { Button } from '../ui/button';
-import Markdown from './Markdown';
-import VideoPlayer from './VideoPlayer';
 import CarousalEmbed from './CarousalEmbed';
 import AttachmentCard from '../Attachments/AttachmentCard';
-import BrandConsumerBrands from '../BCC/BrandConsumerBrands';
-import BrandSocialHandleFetcher from '../BCC/BrandSocialHandleFetcher';
 import { EditUserMessage } from './EditUserMessage';
-import ThinkingIndicator from './ThinkingIndicator';
-import VideoMetadata from './VideoMetadata';
-import InventoryWidget from './InventoryWidget';
-import { getCachedRemoteLottie, loadRemoteLottie } from '@/lib/lottie/load-remote-lottie';
+import AgentTextContent from './AgentTextContent';
 import ThinkingStatusList from './ThinkingStatusList';
+import ThinkingIndicator from './ThinkingIndicator';
 
-const AGENT_THINKING_ANIMATION_PATH =
-    'Small thinking/animations/f151a6e3-0e0c-414c-9c71-621a2d9f4a2b.json';
-const AGENT_THINKING_IMAGES_PATH = 'Small thinking/';
+// Lazy load widgets - chunks only loaded when included in contentOrder
+const InventoryWidget = lazy(() => import('./InventoryWidget'));
+const KoahAdWidget = lazy(() => import('./KoahAdWidget'));
 
-const AGENT_SLEEPING_ANIMATION_PATH =
-    'sleeping/animations/51914e32-e62c-43d5-b17d-50369bbbf7d6.json';
-const AGENT_SLEEPING_IMAGES_PATH = 'sleeping/';
+const ThinkingMessages = () => {
+    return (
+        <div className='gai:font-body-2-med gai:text-secondary-gray-600 gai:italic'>
+            <ThinkingIndicator />
+        </div>
+    );
+};
 
 const FeedbackButton = ({
     iconName,
@@ -84,13 +73,6 @@ const FeedbackButton = ({
     );
 };
 
-const ThinkingMessages = () => {
-    return (
-        <div className='gai:font-body-2-med gai:text-secondary-gray-600 gai:italic'>
-            <ThinkingIndicator />
-        </div>
-    );
-};
 
 const ArtifactsList = ({ artifacts }: { artifacts: Artifact[] }) => {
     if (!artifacts || artifacts.length === 0) return null;
@@ -142,6 +124,7 @@ const ArtifactsList = ({ artifacts }: { artifacts: Artifact[] }) => {
 
 type ItemProps = {
     event: ChatHistoryEvent;
+    allEvents: ChatHistoryEvent[];
     messageType: 'user' | 'agent';
     currentSessionId: string | null;
     currentAgent: string;
@@ -150,6 +133,7 @@ type ItemProps = {
     isLastMessage: boolean;
     sessionThinking?: boolean;
     isSdkLoaded: boolean;
+    isKoahSdkLoaded: boolean;
     setFeedback: (sessionId: string, responseId: string, liked: boolean) => void;
     handleSendMessage: (params: HandleSendMessageParams) => Promise<void>;
     view: 'page' | 'floater' | 'dialog' | 'web-sdk';
@@ -303,6 +287,7 @@ const useStreamingDisplay = ({
 
 const ItemComponent: React.FC<ItemProps> = ({
     event,
+    allEvents,
     messageType,
     currentSessionId,
     currentAgent,
@@ -311,6 +296,7 @@ const ItemComponent: React.FC<ItemProps> = ({
     isLastMessage,
     sessionThinking,
     isSdkLoaded,
+    isKoahSdkLoaded,
     // setFeedback,
     handleSendMessage,
     view,
@@ -318,12 +304,26 @@ const ItemComponent: React.FC<ItemProps> = ({
 }) => {
     // Get the message content
     const content = event.message.content;
-    const functionName = event.message.function_name;
-    const functionResponse = event.message.function_response;
+
+    // Find user question for agent messages (used for Koah ads)
+    // Look for the most recent user message before this agent event
+    const userQuestion = messageType === 'agent'
+        ? (() => {
+            const currentIndex = allEvents.findIndex(e => e.id === event.id);
+            // Search backwards from current event to find the last user message
+            for (let i = currentIndex - 1; i >= 0; i--) {
+                if (allEvents[i].role === 'user' && allEvents[i].message?.content) {
+                    return allEvents[i].message.content;
+                }
+            }
+            return null;
+        })()
+        : null;
 
     const [copied, setCopied] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [editedText, setEditedText] = useState(content);
+    const [showKoahAd, setShowKoahAd] = useState(!event.is_cached);
     const [showInventoryWidget, setShowInventoryWidget] = useState(!event.is_cached);
     const [showCarousel, setShowCarousel] = useState(!event.is_cached);
     const handleCopy = async () => {
@@ -362,56 +362,6 @@ const ItemComponent: React.FC<ItemProps> = ({
         }
     };
 
-    const [agentThinkingLottieData, setAgentThinkingLottieData] = useState<object | null>(() =>
-        getCachedRemoteLottie(AGENT_THINKING_ANIMATION_PATH, AGENT_THINKING_IMAGES_PATH)
-    );
-    const [agentIdleLottieData, setAgentIdleLottieData] = useState<object | null>(() =>
-        getCachedRemoteLottie(AGENT_SLEEPING_ANIMATION_PATH, AGENT_SLEEPING_IMAGES_PATH)
-    );
-    const [thinkingLottieError, setThinkingLottieError] = useState(false);
-    const [idleLottieError, setIdleLottieError] = useState(false);
-
-    useEffect(() => {
-        let cancelled = false;
-
-        if (!agentThinkingLottieData && !thinkingLottieError) {
-            loadRemoteLottie(AGENT_THINKING_ANIMATION_PATH, AGENT_THINKING_IMAGES_PATH)
-                .then(data => {
-                    if (!cancelled) {
-                        setAgentThinkingLottieData(data);
-                    }
-                })
-                .catch(() => {
-                    if (!cancelled) {
-                        setThinkingLottieError(true);
-                    }
-                });
-        }
-
-        if (!agentIdleLottieData && !idleLottieError) {
-            loadRemoteLottie(AGENT_SLEEPING_ANIMATION_PATH, AGENT_SLEEPING_IMAGES_PATH)
-                .then(data => {
-                    if (!cancelled) {
-                        setAgentIdleLottieData(data);
-                    }
-                })
-                .catch(() => {
-                    if (!cancelled) {
-                        setIdleLottieError(true);
-                    }
-                });
-        }
-
-        return () => {
-            cancelled = true;
-        };
-    }, [
-        agentThinkingLottieData,
-        agentIdleLottieData,
-        thinkingLottieError,
-        idleLottieError,
-    ]);
-
     const messageId = event.id ?? '';
     const normalizedContent = content || '';
     const streamingActive =
@@ -437,13 +387,18 @@ const ItemComponent: React.FC<ItemProps> = ({
     useEffect(() => {
         if (!event.is_cached) {
             // Non-cached: show everything immediately
+            setShowKoahAd(true);
             setShowInventoryWidget(true);
             setShowCarousel(true);
             return;
         }
 
         // Cached: wait for text animation to finish, then show components sequentially
+        // Order: Koah Ad -> Inventory Widget -> Carousel
         if (hasFinished) {
+            const timer0 = setTimeout(() => {
+                setShowKoahAd(true);
+            }, 150);
             const timer1 = setTimeout(() => {
                 setShowInventoryWidget(true);
             }, 300);
@@ -451,6 +406,7 @@ const ItemComponent: React.FC<ItemProps> = ({
                 setShowCarousel(true);
             }, 600);
             return () => {
+                clearTimeout(timer0);
                 clearTimeout(timer1);
                 clearTimeout(timer2);
             };
@@ -458,7 +414,6 @@ const ItemComponent: React.FC<ItemProps> = ({
     }, [hasFinished, event.is_cached]);
 
     const toolMetadata = event.metadata?.toolMetadata;
-    const isToolMetadataEvent = Boolean(toolMetadata);
 
     const shouldRenderCarousel = messageType === 'agent' && Boolean(event.carousel_metadata);
 
@@ -516,152 +471,113 @@ const ItemComponent: React.FC<ItemProps> = ({
                 </div>
             ) : (
                 <div className={`gai:flex gai:w-full ${view === 'web-sdk' ? 'gai:flex-col' : 'gai:flex-row'} gai:gap-2`}>
-                    {/* Show agent thinking status (without avatar animation) for web-sdk view */}
-                    {view === 'web-sdk' && !isToolMetadataEvent && isLastMessage && sessionThinking && thinkingSteps.length > 0 && (
-                        <ThinkingStatusList steps={thinkingSteps} />
-                    )}
+                    {/* Thinking indicators - always at the top, before any content */}
+                    <div className='gai:flex gai:w-full gai:flex-col gai:gap-2'>
+                        {/* Show agent thinking status list - stays until response_completed */}
+                        {view === 'web-sdk' && isLastMessage && sessionThinking && thinkingSteps.length > 0 && (
+                            <ThinkingStatusList steps={thinkingSteps} />
+                        )}
+                        {/* Show thinking skeleton - hide when any agent content has arrived */}
+                        {(() => {
+                            const hasAnyContent = !!(
+                                content ||                              // Has agent text
+                                event.carousel_metadata ||              // Has videos
+                                toolMetadata ||                         // Has inventory
+                                (userQuestion && event.contentSequence?.includes('koah_ads'))  // Has koah ads data
+                            );
+                            const shouldShowSkeleton = isLastMessage &&
+                                sessionThinking &&
+                                messageType === 'agent' &&
+                                !hasAnyContent &&
+                                !(view === 'web-sdk' && thinkingSteps.length > 0);
+
+                            return shouldShowSkeleton ? <ThinkingMessages /> : null;
+                        })()}
+                    </div>
 
                     <div className='gai:flex gai:w-full gai:flex-col gai:gap-2'>
-                        {(() => {
-                            // Show thinking indicator if this is the last agent message and session is thinking but no content
-                            if (isLastMessage && sessionThinking && messageType === 'agent' && !content?.trim()) {
-                                return <ThinkingMessages />;
-                            }
+                        {event.contentSequence?.map((contentType) => {
+                            switch (contentType) {
+                                case 'koah_ads': {
+                                    // Find the actual agent text response (not tool/function content)
+                                    const agentTextResponse = (() => {
+                                        // Look for the last agent message with actual text content
+                                        const currentIndex = allEvents.findIndex(e => e.id === event.id);
+                                        for (let i = currentIndex; i >= 0; i--) {
+                                            const evt = allEvents[i];
+                                            // Find agent message with content that's not a function/tool
+                                            if (evt.role === 'agent' &&
+                                                evt.message?.content &&
+                                                !evt.message.function_name &&
+                                                !evt.message.function_response) {
+                                                return evt.message.content;
+                                            }
+                                        }
+                                        return ''; // No agent text yet
+                                    })();
 
-                            // const hasError =
-                            //     !sessionThinking && (!!event.error || (!content?.trim() && !sessionThinking));
-
-                            // if (hasError) {
-                            //     return (
-                            //         <div className='gai:max-w-[80%] gai:rounded-xl gai:border gai:border-red-300 gai:bg-red-50 gai:px-4 gai:py-3'>
-                            //             <div className='gai:font-body-2-med gai:text-red-700'>Something went wrong</div>
-                            //             <div className='gai:mt-1 gai:text-sm gai:text-secondary-gray-700'>
-                            //                 Please try again.
-                            //             </div>
-                            //         </div>
-                            //     );
-                            // }
-                            if (toolMetadata && showInventoryWidget) {
-                                return <InventoryWidget metadata={toolMetadata} />;
-                            }
-
-                            if (functionName === 'video_generator_agent') {
-                                return (
-                                    <>
-                                        <VideoMetadata content={content} metadata={event.metadata} />
-                                        {event.metadata?.video_meta?.url && event.metadata?.video_meta?.thumbnail && (
-                                            <VideoPlayer
-                                                videoUrl={event.metadata?.video_meta?.url}
-                                                thumbnailUrl={event.metadata?.video_meta?.thumbnail}
-                                            />
-                                        )}
-                                    </>
-                                );
-                            } else if (functionName === 'consumer_brands_agent') {
-                                return (
-                                    <BrandConsumerBrands
-                                        messageId={event.id}
-                                        existing={functionResponse?.existing}
-                                        new={functionResponse?.new}
-                                    />
-                                );
-                            } else if (functionName === 'get_ctkws') {
-                                return <BrandCTKWs jsonData={functionResponse.result} messageId={event.id} />;
-                            } else if (functionName === 'get_brand_asset') {
-                                return <BrandAssets jsonData={functionResponse} messageId={event.id} />;
-                            } else if (functionName === 'get_brand_guidelines_') {
-                                return <BrandGuidelines jsonData={functionResponse.result} messageId={event.id} />;
-                            } else if (functionName === 'get_brand_persona_') {
-                                return <BrandPersona jsonData={functionResponse.result} messageId={event.id} />;
-                            } else if (functionName === 'industry_type_agent') {
-                                return <BrandIndustryType jsonData={functionResponse} messageId={event.id} />;
-                            } else if (functionName === 'social_handle_fetcher_agent') {
-                                return <BrandSocialHandleFetcher jsonData={functionResponse} messageId={event.id} />;
-                            } else {
-                                return (
-                                    <div className='markdown-content'>
-                                        <ReactMarkdown
-                                            remarkPlugins={[remarkGfm]}
-                                            rehypePlugins={[rehypeRaw]}
-                                            components={Markdown}
-                                        >
-                                            {displayText || (event.isCompleted ? normalizedContent : '')}
-                                        </ReactMarkdown>
-                                        {isAnimating || !hasFinished ? (
-                                            <span className='gai:inline-block gai:animate-pulse gai:text-secondary-gray-600'>|</span>
-                                        ) : null}
-                                        {event.metadata?.wasStopped && event.isCompleted ? (
-                                            <span className='gai:mt-2 gai:block gai:text-xs gai:font-medium gai:text-secondary-gray-500'>
-                                                Response stopped
-                                            </span>
-                                        ) : null}
-                                    </div>
-                                );
-                            }
-                        })()}
-                        {/* Show carousel/skeleton for web-sdk view */}
-                        {shouldRenderCarousel && showCarousel && (
-                            <CarousalEmbed
-                                carousalMetadata={event.carousel_metadata}
-                                isLastMessage={isLastMessage}
-                                isSdkLoaded={isSdkLoaded}
-                            />
-                        )}
-                        {/* Show feedback buttons when not thinking (streaming/response completed) */}
-                        {/* {!sessionThinking && (
-                            <div
-                                className={`gai:mt-1 gai:flex gai:items-center gai:justify-between gai:gap-3 ${isLastMessage ? 'gai:pb-4' : ''}`}
-                            >
-                                <div className='gai:flex gai:items-center gai:gap-0'>
-                                    {messageType === 'agent' && (
-                                        <>
-                                            {event.feedback === true && (
-                                                <FeedbackButton
-                                                    iconName='LikeFilled'
-                                                    onClick={(e: React.MouseEvent) => e.preventDefault()}
-                                                    onBoardingAgents={onBoardingAgents}
-                                                    currentAgent={currentAgent}
+                                    // Show Koah ads when conditions are met
+                                    if (messageType === 'agent' && showKoahAd && userQuestion && isKoahSdkLoaded) {
+                                        return (
+                                            <Suspense key={contentType} fallback={null}>
+                                                <KoahAdWidget
+                                                    userMessage={userQuestion}
+                                                    aiResponse={agentTextResponse}
+                                                    messageId={event.id}
                                                 />
-                                            )}
-                                            {event.feedback === false && (
-                                                <FeedbackButton
-                                                    iconName='DislikeFilled'
-                                                    onClick={(e: React.MouseEvent) => e.preventDefault()}
-                                                    onBoardingAgents={onBoardingAgents}
-                                                    currentAgent={currentAgent}
-                                                />
-                                            )}
-                                            {event.feedback === null && (
-                                                <>
-                                                    <FeedbackButton
-                                                        iconName='LikeEmpty'
-                                                        onClick={(e: React.MouseEvent) => handleFeedback(e, true)}
-                                                        onBoardingAgents={onBoardingAgents}
-                                                        currentAgent={currentAgent}
-                                                    />
-                                                    <FeedbackButton
-                                                        iconName='DislikeEmpty'
-                                                        onClick={(e: React.MouseEvent) => handleFeedback(e, false)}
-                                                        onBoardingAgents={onBoardingAgents}
-                                                        currentAgent={currentAgent}
-                                                    />
-                                                </>
-                                            )}
-                                        </>
-                                    )}
-                                    {onBoardingAgents.includes(currentAgent) ? (
-                                        <FeedbackButton
-                                            iconName={'Regenerate'}
-                                            onClick={() => toast.info('Upcoming feature')}
-                                            onBoardingAgents={onBoardingAgents}
-                                            currentAgent={currentAgent}
+                                            </Suspense>
+                                        );
+                                    }
+                                    return null;
+                                }
+
+                                case 'agent_text': {
+                                    // Render agent text content
+                                    return (
+                                        <AgentTextContent
+                                            key={contentType}
+                                            event={event}
+                                            displayText={displayText}
+                                            normalizedContent={normalizedContent}
+                                            isAnimating={isAnimating}
+                                            hasFinished={hasFinished}
+                                            isLastMessage={isLastMessage}
+                                            sessionThinking={sessionThinking}
                                         />
-                                    ) : (
-                                        <FeedbackButton iconName={copied ? 'Copied' : 'Copy'} onClick={handleCopy} onBoardingAgents={onBoardingAgents} currentAgent={currentAgent}  />
-                                    )}
-                                </div>
-                            </div>
-                        )} */}
+                                    );
+                                }
+
+                                case 'videos': {
+                                    // Show carousel when conditions are met
+                                    if (shouldRenderCarousel && showCarousel) {
+                                        return (
+                                            <CarousalEmbed
+                                                key={contentType}
+                                                carousalMetadata={event.carousel_metadata}
+                                                isLastMessage={isLastMessage}
+                                                isSdkLoaded={isSdkLoaded}
+                                            />
+                                        );
+                                    }
+                                    return null;
+                                }
+
+                                case 'inventory': {
+                                    // Show inventory widget when tool metadata exists
+                                    if (toolMetadata && showInventoryWidget) {
+                                        return (
+                                            <Suspense key={contentType} fallback={null}>
+                                                <InventoryWidget metadata={toolMetadata} />
+                                            </Suspense>
+                                        );
+                                    }
+                                    return null;
+                                }
+
+                                default:
+                                    return null;
+                            }
+                        })}
                     </div>
                 </div>
             )}
@@ -679,6 +595,7 @@ const Item = React.memo(ItemComponent, (prevProps, nextProps) => {
         prevProps.isLastMessage === nextProps.isLastMessage &&
         prevProps.sessionThinking === nextProps.sessionThinking &&
         prevProps.thinkingSteps.length === nextProps.thinkingSteps.length &&
+        prevProps.allEvents.length === nextProps.allEvents.length &&
         Boolean(prevProps.event.carousel_metadata) === Boolean(nextProps.event.carousel_metadata)
     );
 });

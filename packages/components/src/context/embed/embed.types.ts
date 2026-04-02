@@ -73,6 +73,23 @@ export type LinksConfig = {
   position: LinkPosition;
 };
 
+/**
+ * Live customization tools data from placement API.
+ * Contains the raw placement configuration including octo settings.
+ */
+export type LiveCustomizationTools = {
+  octo_settings?: {
+    /**
+     * Order in which content components are displayed in Octo panel.
+     * Possible values: 'koah_ads', 'agent_text', 'videos', 'inventory'
+     * Components not in the array are not shown.
+     */
+    content_order?: ('koah_ads' | 'agent_text' | 'videos' | 'inventory')[];
+  };
+  // Allow other properties from the placement API response
+  [key: string]: any;
+};
+
 export type ContextualParamsType = {
   page_context?: string;
   geo?: {
@@ -579,6 +596,22 @@ export type EmbedDataType = {
    * this allows the child to notify the parent about video selections.
    */
   parentInstanceId?: string;
+  /**
+   * Octo panel settings for configuring content order and visibility.
+   */
+  octo_settings?: {
+    /**
+     * Order in which content components are displayed.
+     * Possible values: 'koah_ads', 'agent_text', 'videos', 'inventory'
+     * Components not in the array are not shown.
+     */
+    content_order?: ('koah_ads' | 'agent_text' | 'videos' | 'inventory')[];
+  };
+  /**
+   * Live customization tools containing the full placement configuration.
+   * This is the raw placement data from the backend API.
+   */
+  live_customization_tools?: LiveCustomizationTools;
 };
 
 export type CustomizationType = {

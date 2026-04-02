@@ -122,6 +122,7 @@ export type ChatHistoryEvent = BaseChatMessage & {
     error?: string;
     agent_id?: string | null;
     is_cached?: boolean; // Flag to indicate if this message is from cached response
+    contentSequence?: ('koah_ads' | 'inventory' | 'agent_text' | 'videos')[]; // Order in which content events arrived
 };
 
 export type ThinkingStepType = 'metadata' | 'function_call' | 'function_response' | 'message' | 'tool';

@@ -151,15 +151,6 @@ export function PlayerList({
   const { showExpandView, activeIndex, toggleExpandView } = useFeedContext();
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
   const { isIpad } = useDeviceDetection();
-
-  // Comment panel state
-  const { value: isCommentOpen, toggle: toggleComment, setValue: setCommentOpen } = useBoolean(isDesktop && !isIpad);
-
-  // OCTO panel state
-  const { value: isOctoOpen, setValue: setOctoOpen } = useBoolean(false);
-  const octoPanelRef = useRef<OctoPanelHandle | null>(null);
-  const lastOctoVideoIdRef = useRef<string | null>(null);
-
   const { track, EventName } = useAnalytics();
   const {
     engagement: {
@@ -168,6 +159,18 @@ export function PlayerList({
     },
     view: { brandLayoutType, websiteType, isAdsEnabledInIheart },
   } = useEmbedConfigs();
+
+  // Comment panel state - only auto-open if Octo is NOT enabled (Octo takes priority)
+  const { value: isCommentOpen, toggle: toggleComment, setValue: setCommentOpen } = useBoolean(
+    isDesktop && !isIpad && !(showEngagementTools && isOctoToolEnabled)
+  );
+
+  // OCTO panel state - auto-open on desktop when Octo tool is enabled
+  const { value: isOctoOpen, setValue: setOctoOpen } = useBoolean(
+    isDesktop && !isIpad && showEngagementTools && isOctoToolEnabled
+  );
+  const octoPanelRef = useRef<OctoPanelHandle | null>(null);
+  const lastOctoVideoIdRef = useRef<string | null>(null);
   const embedDetails = useSafeEmbedContext();
   const {
     sheetState,

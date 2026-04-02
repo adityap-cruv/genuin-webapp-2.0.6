@@ -1,6 +1,7 @@
 import { useAgentsContext } from '@/context/app/context';
 import { useEffect, useRef, useState, useMemo } from 'react';
 import SDKLoader from '../CarousalLoader';
+import KoahSDKLoader from './KoahSDKLoader';
 import Spinner from '../ui/spinner';
 import Item from './MessageItem';
 
@@ -16,6 +17,7 @@ const Chat = () => {
         view,
     } = useAgentsContext();
     const [sdkLoaded, setSdkLoaded] = useState(false);
+    const [koahSdkLoaded, setKoahSdkLoaded] = useState(false);
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const prevChatLengthRef = useRef<number>(0);
@@ -35,7 +37,12 @@ const Chat = () => {
         const hasNewEvents = eventsLength > prevEventsLength;
         const thinkingJustStarted = !prevThinking && thinking;
 
-        if ((hasNewEvents || thinkingJustStarted) && eventsLength > 0) {
+        // For web-sdk view: don't auto-scroll during thinking to keep focus on ThinkingStatusList
+        const shouldScroll = view === 'web-sdk'
+            ? (hasNewEvents || thinkingJustStarted) && eventsLength > 0 && !thinking
+            : (hasNewEvents || thinkingJustStarted) && eventsLength > 0;
+
+        if (shouldScroll) {
             messagesEndRef.current?.scrollIntoView({
                 behavior: 'smooth',
                 block: 'end',
@@ -44,7 +51,7 @@ const Chat = () => {
 
         prevChatLengthRef.current = eventsLength;
         prevThinkingRef.current = thinking;
-    }, [currentSession?.chat, currentSession?.thinking]);
+    }, [currentSession?.chat, currentSession?.thinking, view]);
 
     if (!currentSession || currentSession?.status === 'fetching' || currentSession?.status === 'idle') {
         return (
@@ -62,6 +69,7 @@ const Chat = () => {
     return (
         <>
             <SDKLoader onLoad={() => setSdkLoaded(true)} />
+            <KoahSDKLoader onLoad={() => setKoahSdkLoaded(true)} />
             <div className='gai:mx-auto gai:flex gai:w-full gai:flex-col gai:gap-6 gai:pb-6'>
                 {events.map(event => {
                     const isLastEvent = event.id === lastEventId;
@@ -69,6 +77,7 @@ const Chat = () => {
                         <Item
                             key={event.id}
                             event={event}
+                            allEvents={events}
                             messageType={event.role}
                             currentSessionId={currentSessionId}
                             currentAgent={currentAgent}
@@ -78,6 +87,7 @@ const Chat = () => {
                             isLastMessage={isLastEvent}
                             sessionThinking={sessionThinking}
                             isSdkLoaded={sdkLoaded}
+                            isKoahSdkLoaded={koahSdkLoaded}
                             handleSendMessage={handleSendMessage}
                             view={view}
                             thinkingSteps={thinkingSteps}

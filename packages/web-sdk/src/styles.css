@@ -50,13 +50,13 @@
 }
 
 .gen-sdk-class,
-.gen-sdk-class * {
+.gen-sdk-class *:not([data-koah]) {
   box-sizing: border-box;
   margin: revert-layer;
   padding: revert-layer;
 }
 
-.gen-sdk-class button {
+.gen-sdk-class button:not([data-koah]) {
   all: revert-layer;
 }
 

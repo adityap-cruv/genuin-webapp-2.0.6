@@ -18,6 +18,10 @@ export interface GenAISDKConfig {
     parentWebSdkPlacementId?: string;
     parentOctoPanelId?: string;
   videoId?: string;
+  renderMode?: 'compact' | 'full';
+  integrationType?: 'embed' | 'placement';
+  integrationId?: string;
+  contentOrder?: string[];
 }
 
 export interface GenAISDKInstance {

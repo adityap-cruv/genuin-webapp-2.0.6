@@ -40,6 +40,10 @@ interface AgentsProviderProps {
     parentWebSdkPlacementId?: string;
     parentOctoPanelId?: string;
     webSdkVideoId?: string;
+    // Integration fields for embed/placement context
+    integrationType?: 'embed' | 'placement';
+    integrationId?: string;
+    contentOrder?: string[];
 }
 
 export interface HandleSendMessageParams {
@@ -220,6 +224,9 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
     parentOctoPanelId,
     webSdkVideoId,
     webSdkRenderMode,
+    integrationType,
+    integrationId,
+    contentOrder,
 }) => {
     const initialAgent = isMaya ? 'maya' : '695cefa2c19e333c687787f7';
     // State
@@ -717,7 +724,6 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                     // Track if we're receiving streaming data (actual agent response chunks)
                     let hasStreamingUpdate = wasThinking;
                     const lastEvent = chat[chat.length - 1];
-                    let shouldStopThinking = false;
 
                     const existingSteps = s.thinkingSteps ?? [];
                     let thinkingSteps: ThinkingStep[] = existingSteps;
@@ -734,6 +740,40 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                         if (thinkingSteps.length > 0 || !stepsMutated) {
                             thinkingSteps = [];
                             stepsMutated = true;
+                        }
+                    };
+
+                    // Helper to add content types to sequence as events arrive
+                    const addToContentSequence = (contentType: 'koah_ads' | 'inventory' | 'agent_text' | 'videos') => {
+                        // Find or create agent event to attach sequence to
+                        let agentEvent = chat.slice().reverse().find(e => e.role === 'agent');
+
+                        if (!agentEvent) {
+                            // Create a new agent event if none exists
+                            const previousEventId = lastEvent?.id || '';
+                            agentEvent = {
+                                id: `pending-agent-${sessionId}`,
+                                message: { content: '' },
+                                role: 'agent',
+                                parent_id: previousEventId || null,
+                                feedback: null,
+                                created_at: new Date().toISOString(),
+                                contentSequence: [],
+                                isCompleted: false,
+                            };
+                            chat.push(agentEvent);
+                        }
+
+                        // Add content type to sequence if not already there
+                        const existingSequence = agentEvent.contentSequence || [];
+                        if (!existingSequence.includes(contentType)) {
+                            const index = chat.findIndex(e => e.id === agentEvent!.id);
+                            if (index >= 0) {
+                                chat[index] = {
+                                    ...chat[index],
+                                    contentSequence: [...existingSequence, contentType],
+                                };
+                            }
                         }
                     };
 
@@ -792,6 +832,11 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                         }
                     }
 
+                    // Handle koah_ads event - indicates Koah ads should be rendered
+                    if (data.type === 'koah_ads') {
+                        addToContentSequence('koah_ads');
+                    }
+
                     if (data.type === 'tool_metadata' && data.tool_metadata) {
                         const toolMetadataPayload = normalizeToolMetadata(data.tool_metadata);
                         if (toolMetadataPayload) {
@@ -831,6 +876,9 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                                 chat.push(updatedEvent);
                             }
 
+                            // Track that inventory content arrived
+                            addToContentSequence('inventory');
+
                             const summary = extractToolMetadataSummary(toolMetadataPayload);
                             if (summary) {
                                 addThinkingStep({
@@ -841,7 +889,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                                 });
                             }
 
-                            shouldStopThinking = true;
+                            // Don't stop thinking here - wait for response_completed
                         }
                     }
 
@@ -935,12 +983,19 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                                 ...lastEvent,
                                 carousel_metadata: normalizedCarousel,
                             };
+                            // Track that videos content arrived
+                            addToContentSequence('videos');
                         }
                     }
 
                     // Handle message chunks - streaming agent response
                     if (data.message !== undefined) {
                         hasStreamingUpdate = true;
+
+                        // Track that agent text content arrived (on first message chunk)
+                        if (lastEvent && !lastEvent.contentSequence?.includes('agent_text')) {
+                            addToContentSequence('agent_text');
+                        }
 
                         if (typeof data.message === 'string' && data.message.trim()) {
                             const chunk = normalizeWhitespace(data.message);
@@ -1113,12 +1168,6 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                     if (data.response_completed === true) {
                         // hasChanges = true;
                         const lastEvent = chat[chat.length - 1];
-                        console.log('lastEvent.role', lastEvent.role);
-                        console.log(
-                            'lastEvent.message?.function_response when response_completed is true',
-                            lastEvent.message?.function_response
-                        );
-                        console.log('lastEvent.message?.function_name', lastEvent.message?.function_name);
                         if (lastEvent && lastEvent.role === 'agent') {
                             chat[chat.length - 1] = {
                                 ...lastEvent,
@@ -1165,9 +1214,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                     // Determine thinking state
                     let thinking = s.thinking;
 
-                    if (shouldStopThinking) {
-                        thinking = false;
-                    } else if (data.response_completed === true) {
+                    if (data.response_completed === true) {
                         // SSE completed - stop thinking
                         thinking = false;
                     } else if (hasStreamingUpdate) {
@@ -1577,12 +1624,21 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                 // For cached context follow-ups, use sessionId as temp_session_id for tracking
                 temp_session_id: (needsPreviousContext ? sessionId : tempSessionId) ?? undefined,
                 previous_context: needsPreviousContext ? sessionForPayload?.cachedContext : undefined,
+                // Integration fields for embed/placement context (only for web-sdk view)
+                integration_type: view === 'web-sdk' ? integrationType : undefined,
+                integration_id: view === 'web-sdk' ? integrationId : undefined,
+                content_order: view === 'web-sdk' ? contentOrder : undefined,
             };
 
             console.log('[Provider] Sending SSE message with payload:', {
                 hasSessionId: !!payload.session_id,
                 hasPreviousContext: !!payload.previous_context,
                 previousContext: payload.previous_context,
+                view,
+                integration_type: payload.integration_type,
+                integration_id: payload.integration_id,
+                content_order: payload.content_order,
+                video_id: payload.video_id,
             });
 
             // if (effectiveAgent === 'video_generator_agent') {

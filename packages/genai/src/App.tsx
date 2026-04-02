@@ -57,6 +57,10 @@ interface AppProps {
     parentWebSdkPlacementId?: string;
     parentOctoPanelId?: string;
     videoId?: string;
+    // Integration fields for embed/placement context
+    integrationType?: 'embed' | 'placement';
+    integrationId?: string;
+    contentOrder?: string[];
 }
 
 function App({
@@ -76,6 +80,9 @@ function App({
     parentWebSdkPlacementId,
     parentOctoPanelId,
     videoId,
+    integrationType,
+    integrationId,
+    contentOrder,
 }: AppProps) {
     const [open, setOpen] = useState(true);
     // const [isCollapsed, setIsCollapsed] = useState(false);
@@ -151,6 +158,9 @@ function App({
             parentWebSdkPlacementId={parentWebSdkPlacementId}
             parentOctoPanelId={parentOctoPanelId}
             videoId={videoId}
+            integrationType={integrationType}
+            integrationId={integrationId}
+            contentOrder={contentOrder}
         >
             <AppContent />
         </AppProviders>
@@ -173,6 +183,9 @@ function App({
             parentWebSdkPlacementId={parentWebSdkPlacementId}
             parentOctoPanelId={parentOctoPanelId}
             videoId={videoId}
+            integrationType={integrationType}
+            integrationId={integrationId}
+            contentOrder={contentOrder}
         >
             <WebSDKContent />
         </AppProviders>
@@ -217,6 +230,8 @@ function App({
             parentWebSdkPlacementId={parentWebSdkPlacementId}
             parentOctoPanelId={parentOctoPanelId}
             videoId={videoId}
+            integrationType={integrationType}
+            integrationId={integrationId}
         >
             <AnimatedDialog open={open} onOpenChange={handleOpenChange}>
                 <AnimatedDialogContent
