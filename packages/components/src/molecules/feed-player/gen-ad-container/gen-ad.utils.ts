@@ -13,6 +13,7 @@ export function buildGenAdConfigFromAdTagObject(
   const hasVideo = !!adTagObj.video_ad;
   const hasNative = !!adTagObj.native_ad;
   if (!hasBanner && !hasNative && !hasVideo) return undefined;
+  console.log("Gen ad contaner::", { adTagObj });
 
   const config: GenAdConfig = { adSlotId: `genad-slot-${videoId}` };
 
@@ -36,6 +37,23 @@ export function buildGenAdConfigFromAdTagObject(
       vastUrl: adTagObj.video_ad.ads_url,
       platform: adTagObj.video_ad.platform,
     };
+  }
+
+  if (adTagObj.order) {
+    config.waterfallOrder = [];
+    for (let order in adTagObj.order) {
+      if (order === "video_ad") {
+        config.waterfallOrder.push("video");
+      }
+
+      if (order === "native_ad") {
+        config.waterfallOrder.push("native");
+      }
+
+      if (order === "display_ad") {
+        config.waterfallOrder.push("banner");
+      }
+    }
   }
   return config;
 }
