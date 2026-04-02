@@ -43,6 +43,7 @@ async function fetchFeed(
   pageParam?: {
     pageSession?: string;
     lastVideoId?: string | undefined;
+    lastVideoCount?: number;
   },
   options?: UseFeedOptionsType,
   axiosInstance?: AxiosInstance,
@@ -179,6 +180,7 @@ async function fetchFeed(
           community_ids: options.communityIds,
         }),
         ...(options?.groupIds?.length && { loop_ids: options.groupIds }),
+        ...(pageParam?.lastVideoCount !== undefined && { last_video_count: pageParam.lastVideoCount }),
       };
       break;
 
@@ -195,6 +197,7 @@ async function fetchFeed(
             ? { last_video_id: options.lastVideoId }
             : {}),
         ...(options?.brandContext && { brand_context: options.brandContext }),
+        ...(pageParam?.lastVideoCount !== undefined && { last_video_count: pageParam.lastVideoCount }),
       };
       break;
     case feedType === "SECTION_FEED":
@@ -210,6 +213,7 @@ async function fetchFeed(
             : {}),
         ...(options?.pageSession && { page_session: options.pageSession }),
         ...(options?.sectionId && { section_id: options.sectionId }),
+        ...(pageParam?.lastVideoCount !== undefined && { last_video_count: pageParam.lastVideoCount }),
       };
       break;
 
@@ -224,6 +228,7 @@ async function fetchFeed(
           community_ids: options.communityIds,
         }),
         ...(options?.groupIds?.length && { loop_ids: options.groupIds }),
+        ...(pageParam?.lastVideoCount !== undefined && { last_video_count: pageParam.lastVideoCount }),
       };
       break;
 
@@ -239,6 +244,7 @@ async function fetchFeed(
           community_ids: options.communityIds,
         }),
         ...(options?.groupIds?.length && { loop_ids: options.groupIds }),
+        ...(pageParam?.lastVideoCount !== undefined && { last_video_count: pageParam.lastVideoCount }),
       };
   }
 
@@ -294,7 +300,7 @@ type UseFeedOptionsType = {
   // Placeholder data for the query - must match the FeedPage structure
   placeholderData?: {
     pages: FeedPage[];
-    pageParams: (undefined | { pageSession?: string; lastVideoId?: string })[];
+    pageParams: (undefined | { pageSession?: string; lastVideoId?: string; lastVideoCount?: number })[];
   };
   // Caching options
   staleTime?: number;
@@ -503,7 +509,7 @@ async function prependInitialVideosToFeed(
  */
 async function createFeedQueryFn(
   feedType: FeedType,
-  pageParam: { pageSession?: string; lastVideoId?: string } | undefined,
+  pageParam: { pageSession?: string; lastVideoId?: string; lastVideoCount?: number } | undefined,
   options?: UseFeedOptionsType,
   axiosInstance?: AxiosInstance,
 ): Promise<FeedPage> {
@@ -602,8 +608,8 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
     queryFn: ({ pageParam }) =>
       createFeedQueryFn(feedType, pageParam, options, axiosInstance),
     enabled: options?.enabled !== false,
-    initialPageParam: undefined,
-    getNextPageParam: (lastPage) => {
+    initialPageParam: undefined as undefined | { pageSession?: string; lastVideoId?: string; lastVideoCount?: number },
+    getNextPageParam: (lastPage, _allPages, lastPageParam) => {
       if (lastPage.endOfFeed) return undefined;
       const lastPageData = lastPage.feed[lastPage.feed.length - 1];
       if (!lastPageData) return undefined;
@@ -623,6 +629,7 @@ export const useFeed = (feedType: FeedType, options?: UseFeedOptionsType) => {
       return {
         pageSession: lastPage.pageSession,
         lastVideoId: lastVideoData?.video?.id,
+        lastVideoCount: (lastPageParam?.lastVideoCount ?? 0) + lastPage.feed.length,
       };
     },
     refetchOnWindowFocus: false,

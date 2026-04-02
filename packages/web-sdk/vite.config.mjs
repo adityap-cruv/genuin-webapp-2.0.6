@@ -65,7 +65,7 @@ const genuinResolver = () => ({
     if (id === '@genuin/tailwind-config') {
       const configPath = resolve(
         __dirname,
-        '../tailwind-config/shared-styles.css',
+        '../tailwind-config/shared-styles.css'
       )
       if (fs.existsSync(configPath)) {
         return configPath
@@ -204,7 +204,7 @@ const copyLoaderPlugin = () => ({
   async writeBundle(options, bundle) {
     // Find the loader bundle entry
     const loaderEntry = Object.keys(bundle).find(
-      (key) => key.startsWith('gen_sdk') && bundle[key].type === 'chunk',
+      (key) => key.startsWith('gen_sdk') && bundle[key].type === 'chunk'
     )
 
     if (loaderEntry) {
@@ -223,7 +223,7 @@ const copyLoaderPlugin = () => ({
       const nodeEnvCheck = isDevelopment ? 'true' : 'false'
       loaderContent = loaderContent.replace(
         /__DEV_ENVIRONMENT__/g,
-        nodeEnvCheck,
+        nodeEnvCheck
       )
 
       // Replace __SDK_VERSION_PATH__ with version path if provided
@@ -232,7 +232,7 @@ const copyLoaderPlugin = () => ({
         const versionPath = `${sdkVersionPath.trim()}/`
         loaderContent = loaderContent.replace(
           /__SDK_VERSION_PATH__/g,
-          versionPath,
+          versionPath
         )
       } else {
         loaderContent = loaderContent.replace(/__SDK_VERSION_PATH__/g, '')
@@ -252,11 +252,11 @@ const copyLoaderPlugin = () => ({
             fileName.startsWith('genuin-sdk-') &&
             fileName.endsWith('.js') &&
             !fileName.includes('legacy') &&
-            fileName.match(/genuin-sdk-[a-zA-Z0-9_-]+\.js$/), // Ensure it has a hash (can include _, -)
+            fileName.match(/genuin-sdk-[a-zA-Z0-9_-]+\.js$/) // Ensure it has a hash (can include _, -)
         )
         console.log(
           '🔍 Dist directory files:',
-          distFiles.filter((f) => f.endsWith('.js')),
+          distFiles.filter((f) => f.endsWith('.js'))
         )
         console.log('🔍 Found hashed SDK file:', sdkFile)
 
@@ -264,7 +264,7 @@ const copyLoaderPlugin = () => ({
         const assetFiles = fs.readdirSync(distAssetsDir)
         cssFile = assetFiles.find(
           (fileName) =>
-            fileName.startsWith('web-sdk') && fileName.endsWith('.css'),
+            fileName.startsWith('web-sdk') && fileName.endsWith('.css')
         )
         console.log('🔍 Found CSS file:', cssFile)
       } catch (error) {
@@ -272,7 +272,7 @@ const copyLoaderPlugin = () => ({
       }
       if (!sdkFile) {
         console.error(
-          '❌ Could not find hashed ES module file in dist directory!',
+          '❌ Could not find hashed ES module file in dist directory!'
         )
         console.error('❌ This build is invalid - hashed ES module is required')
         throw new Error('Build failed: No hashed ES module found')
@@ -281,7 +281,7 @@ const copyLoaderPlugin = () => ({
         console.log('🔄 Found hashed SDK filename:', sdkFile)
         loaderContent = loaderContent.replace(
           /__SDK_FILENAME_PLACEHOLDER__/g,
-          sdkFile,
+          sdkFile
         )
         console.log('✅ Replaced SDK filename placeholder with:', sdkFile)
       }
@@ -291,14 +291,14 @@ const copyLoaderPlugin = () => ({
         console.log('🔄 Found hashed CSS filename:', cssFile)
         loaderContent = loaderContent.replace(
           /__CSS_FILENAME_PLACEHOLDER__/g,
-          cssFile,
+          cssFile
         )
         console.log('✅ Replaced CSS filename placeholder with:', cssFile)
       } else {
         // Fallback to default name if no hashed CSS file found (development)
         loaderContent = loaderContent.replace(
           /__CSS_FILENAME_PLACEHOLDER__/g,
-          'web-sdk.css',
+          'web-sdk.css'
         )
       }
 
@@ -307,7 +307,7 @@ const copyLoaderPlugin = () => ({
         // Remove console.log, console.warn, console.error, console.debug, console.info
         loaderContent = loaderContent.replace(
           /console\.(log|warn|error|debug|info|group|groupEnd|groupCollapsed)\([^)]*\);?/g,
-          '',
+          ''
         )
       }
 
@@ -389,7 +389,7 @@ const addImportantToGenclProps = () => ({
           selector.includes('.gencl\\:pr') ||
           selector.includes('.gencl\\:px') ||
           selector.includes('.gencl\\:py') ||
-          selector.includes('.gencl\\:text-'),
+          selector.includes('.gencl\\:text-')
       )
 
       if (hasGenclBgOrBorder) {
@@ -436,7 +436,7 @@ const scopePreflightCss = () => ({
     root.walkRules((rule) => {
       // Check if selector is :root - scope it to .gen-sdk-class
       const hasRootSelector = rule.selectors.some(
-        (selector) => selector === ':root',
+        (selector) => selector === ':root'
       )
 
       if (hasRootSelector) {
@@ -497,7 +497,7 @@ const scopePreflightCss = () => ({
         ]
 
         return preflightPatterns.some((pattern) =>
-          pattern.test(selector.trim()),
+          pattern.test(selector.trim())
         )
       })
 
@@ -538,7 +538,7 @@ const postBuildCssPlugin = () => ({
       const assetFiles = fs.readdirSync(distAssetsDir)
       cssFile = assetFiles.find(
         (fileName) =>
-          fileName.startsWith('web-sdk') && fileName.endsWith('.css'),
+          fileName.startsWith('web-sdk') && fileName.endsWith('.css')
       )
     } catch (error) {
       console.warn('⚠️ Could not read dist/assets directory:', error)
@@ -563,7 +563,7 @@ const postBuildCssPlugin = () => ({
       ]).process(css, { from: cssPath, to: cssPath })
       fs.writeFileSync(cssPath, result.css)
       console.log(
-        `✓ PostCSS applied on generated CSS: ${cssFile} (preflight scoped, variables renamed, @property inherits normalized, !important added to gencl properties)`,
+        `✓ PostCSS applied on generated CSS: ${cssFile} (preflight scoped, variables renamed, @property inherits normalized, !important added to gencl properties)`
       )
     } else {
       console.warn(`⚠️ CSS file not found: ${cssPath}`)
@@ -802,70 +802,70 @@ export default defineConfig({
 
     // Debug logging
     __DEBUG_API_URL: JSON.stringify(
-      process.env.NEXT_PUBLIC_API_URL || 'NOT_FOUND',
+      process.env.NEXT_PUBLIC_API_URL || 'NOT_FOUND'
     ),
     // Basic environment variables (for direct use in web-sdk)
     'process.env.NODE_ENV': JSON.stringify(
-      process.env.NODE_ENV || 'development',
+      process.env.NODE_ENV || 'development'
     ),
     'process.env.ENVIRONMENT': JSON.stringify(
-      process.env.ENVIRONMENT || 'development',
+      process.env.ENVIRONMENT || 'development'
     ),
     'process.env.DOMAIN': JSON.stringify(
-      process.env.DOMAIN || 'qa.begenuin.com',
+      process.env.DOMAIN || 'qa.begenuin.com'
     ),
     'process.env.BASE_URL': JSON.stringify(
-      process.env.BASE_URL || 'https://app.qa.begenuin.com',
+      process.env.BASE_URL || 'https://app.qa.begenuin.com'
     ),
     'process.env.API_BASE_URL': JSON.stringify(
-      process.env.API_BASE_URL || 'https://api.qa.begenuin.com',
+      process.env.API_BASE_URL || 'https://api.qa.begenuin.com'
     ),
     'process.env.MEDIA_BASE_URL': JSON.stringify(
-      process.env.MEDIA_BASE_URL || 'https://media.qa.begenuin.com',
+      process.env.MEDIA_BASE_URL || 'https://media.qa.begenuin.com'
     ),
     'process.env.RUDDERSTACK_URL': JSON.stringify(
-      process.env.RUDDERSTACK_URL || 'https://rudderstack.qa.begenuin.com',
+      process.env.RUDDERSTACK_URL || 'https://rudderstack.qa.begenuin.com'
     ),
     'process.env.RUDDERSTACK_API_KEY': JSON.stringify(
-      process.env.RUDDERSTACK_API_KEY || '',
+      process.env.RUDDERSTACK_API_KEY || ''
     ),
     'process.env.ENCRYPTION_SALT': JSON.stringify(
-      process.env.ENCRYPTION_SALT || '',
+      process.env.ENCRYPTION_SALT || ''
     ),
     'process.env.ACCESS_TOKEN_KEY': JSON.stringify(
-      process.env.ACCESS_TOKEN_KEY || '',
+      process.env.ACCESS_TOKEN_KEY || ''
     ),
     'process.env.UNIQUE_USER_ID_KEY': JSON.stringify(
-      process.env.UNIQUE_USER_ID_KEY || '',
+      process.env.UNIQUE_USER_ID_KEY || ''
     ),
     'process.env.ENCRYPTION_IV': JSON.stringify(
-      process.env.ENCRYPTION_IV || '',
+      process.env.ENCRYPTION_IV || ''
     ),
     'process.env.ENCRYPTION_KEY': JSON.stringify(
-      process.env.ENCRYPTION_KEY || '',
+      process.env.ENCRYPTION_KEY || ''
     ),
     'process.env.BRAND_ID_KEY': JSON.stringify(process.env.BRAND_ID_KEY || ''),
     'process.env.NEXT_PUBLIC_BCC_URL': JSON.stringify(
-      process.env.NEXT_PUBLIC_BCC_URL || 'https://brands.qa.begenuin.com',
+      process.env.NEXT_PUBLIC_BCC_URL || 'https://brands.qa.begenuin.com'
     ),
     'process.env.TRACK_OBSERVABILITY': JSON.stringify(
-      process.env.TRACK_OBSERVABILITY || 'false',
+      process.env.TRACK_OBSERVABILITY || 'false'
     ),
     // NEXT_PUBLIC_* environment variables for process.env access (components package compatibility)
     'process.env.NEXT_PUBLIC_RUDDERSTACK_KEY': JSON.stringify(
       process.env.NEXT_PUBLIC_RUDDERSTACK_KEY ||
         process.env.RUDDERSTACK_API_KEY ||
-        '',
+        ''
     ),
     'process.env.NEXT_PUBLIC_RUDDERSTACK_URL': JSON.stringify(
       process.env.NEXT_PUBLIC_RUDDERSTACK_URL ||
         process.env.RUDDERSTACK_URL ||
-        'https://rudderstack.qa.begenuin.com',
+        'https://rudderstack.qa.begenuin.com'
     ),
     'process.env.NEXT_PUBLIC_MEDIA_BASE_URL': JSON.stringify(
       process.env.NEXT_PUBLIC_MEDIA_BASE_URL ||
         process.env.MEDIA_BASE_URL ||
-        'https://media.qa.begenuin.com',
+        'https://media.qa.begenuin.com'
     ),
     'process.env.NEXT_PUBLIC_GENAI_ASSETS_BASE_URL': JSON.stringify(
       process.env.NEXT_PUBLIC_GENAI_ASSETS_BASE_URL ||
@@ -877,28 +877,26 @@ export default defineConfig({
     'process.env.NEXT_PUBLIC_HOST_URL': JSON.stringify(
       process.env.NEXT_PUBLIC_HOST_URL ||
         process.env.BASE_URL ||
-        'https://app.qa.begenuin.com',
+        'https://app.qa.begenuin.com'
     ),
     'process.env.NEXT_PUBLIC_API_URL': JSON.stringify(
       process.env.NEXT_PUBLIC_API_URL ||
         process.env.API_BASE_URL ||
-        'https://api.qa.begenuin.com',
+        'https://api.qa.begenuin.com'
     ),
     'process.env.NEXT_PUBLIC_AES_IV': JSON.stringify(
-      process.env.NEXT_PUBLIC_AES_IV || process.env.ENCRYPTION_IV || '',
+      process.env.NEXT_PUBLIC_AES_IV || process.env.ENCRYPTION_IV || ''
     ),
     'process.env.NEXT_PUBLIC_AES_KEY': JSON.stringify(
-      process.env.NEXT_PUBLIC_AES_KEY || process.env.ENCRYPTION_KEY || '',
+      process.env.NEXT_PUBLIC_AES_KEY || process.env.ENCRYPTION_KEY || ''
     ),
     'process.env.NEXT_PUBLIC_SECRET_STRING': JSON.stringify(
-      process.env.NEXT_PUBLIC_SECRET_STRING ||
-        process.env.ENCRYPTION_SALT ||
-        '',
+      process.env.NEXT_PUBLIC_SECRET_STRING || process.env.ENCRYPTION_SALT || ''
     ),
     'process.env.NEXT_PUBLIC_REDIRECT_URI': JSON.stringify(
       process.env.NEXT_PUBLIC_REDIRECT_URI ||
         process.env.BASE_URL ||
-        'https://app.qa.begenuin.com',
+        'https://app.qa.begenuin.com'
     ),
 
     // Components package environment variables (using import.meta.env format)
@@ -906,20 +904,23 @@ export default defineConfig({
     'import.meta.env.NEXT_PUBLIC_RUDDERSTACK_KEY': JSON.stringify(
       process.env.NEXT_PUBLIC_RUDDERSTACK_KEY ||
         process.env.RUDDERSTACK_API_KEY ||
-        '',
+        ''
+    ),
+    'import.meta.env.ENVIRONMENT': JSON.stringify(
+      process.env.ENVIRONMENT || 'development'
     ),
     'import.meta.env.TRACK_OBSERVABILITY': JSON.stringify(
-      process.env.TRACK_OBSERVABILITY || 'false',
+      process.env.TRACK_OBSERVABILITY || 'false'
     ),
     'import.meta.env.NEXT_PUBLIC_RUDDERSTACK_URL': JSON.stringify(
       process.env.NEXT_PUBLIC_RUDDERSTACK_URL ||
         process.env.RUDDERSTACK_URL ||
-        'https://rudderstack.qa.begenuin.com',
+        'https://rudderstack.qa.begenuin.com'
     ),
     'import.meta.env.NEXT_PUBLIC_MEDIA_BASE_URL': JSON.stringify(
       process.env.NEXT_PUBLIC_MEDIA_BASE_URL ||
         process.env.MEDIA_BASE_URL ||
-        'https://media.qa.begenuin.com',
+        'https://media.qa.begenuin.com'
     ),
     'import.meta.env.NEXT_PUBLIC_GENAI_ASSETS_BASE_URL': JSON.stringify(
       process.env.NEXT_PUBLIC_GENAI_ASSETS_BASE_URL ||
@@ -931,28 +932,26 @@ export default defineConfig({
     'import.meta.env.NEXT_PUBLIC_HOST_URL': JSON.stringify(
       process.env.NEXT_PUBLIC_HOST_URL ||
         process.env.BASE_URL ||
-        'https://app.qa.begenuin.com',
+        'https://app.qa.begenuin.com'
     ),
     'import.meta.env.NEXT_PUBLIC_API_URL': JSON.stringify(
       process.env.NEXT_PUBLIC_API_URL ||
         process.env.API_BASE_URL ||
-        'https://api.qa.begenuin.com',
+        'https://api.qa.begenuin.com'
     ),
     'import.meta.env.NEXT_PUBLIC_AES_IV': JSON.stringify(
-      process.env.NEXT_PUBLIC_AES_IV || process.env.ENCRYPTION_IV || '',
+      process.env.NEXT_PUBLIC_AES_IV || process.env.ENCRYPTION_IV || ''
     ),
     'import.meta.env.NEXT_PUBLIC_AES_KEY': JSON.stringify(
-      process.env.NEXT_PUBLIC_AES_KEY || process.env.ENCRYPTION_KEY || '',
+      process.env.NEXT_PUBLIC_AES_KEY || process.env.ENCRYPTION_KEY || ''
     ),
     'import.meta.env.NEXT_PUBLIC_SECRET_STRING': JSON.stringify(
-      process.env.NEXT_PUBLIC_SECRET_STRING ||
-        process.env.ENCRYPTION_SALT ||
-        '',
+      process.env.NEXT_PUBLIC_SECRET_STRING || process.env.ENCRYPTION_SALT || ''
     ),
     'import.meta.env.NEXT_PUBLIC_REDIRECT_URI': JSON.stringify(
       process.env.NEXT_PUBLIC_REDIRECT_URI ||
         process.env.BASE_URL ||
-        'https://app.qa.begenuin.com',
+        'https://app.qa.begenuin.com'
     ),
   },
 })

@@ -141,8 +141,6 @@ const PostDetailsSchema = z.object({
   section: SectionSchema,
 });
 
-type PostDetailsType = z.infer<typeof PostDetailsSchema>;
-
 export const adTagObjectSchema = z.object({
   display_ad: z.object({ platform: z.string(), tag_id: z.string() }).nullish(),
   native_ad: z.object({ platform: z.string(), tag_id: z.string() }).nullish(),
@@ -169,7 +167,9 @@ export const AdsPostDetailsSchema = z.object({
   section: SectionSchema,
 });
 
-export type AdsPostDetailsType = z.infer<typeof AdsPostDetailsSchema>;
-
+// export type AdsPostDetailsType = z.infer<typeof AdsPostDetailsSchema>;
+type PostDetailsType = z.infer<
+  typeof PostDetailsSchema | typeof AdsPostDetailsSchema
+>;
 export { PostDetailsSchema };
 export type { PostDetailsType };

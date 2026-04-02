@@ -157,7 +157,7 @@ export function EmbedExpandView({
     const nextVideo = videos[activeIndex + 1];
 
     // Case 1: At end of feed - move back one position before returning to embed view
-    const isEndOfFeed = currentVideo?.video.type === "complete";
+    const isEndOfFeed = currentVideo?.video?.type === "complete";
     if (isEndOfFeed) {
       changeActiveIndex(Math.max(activeIndex - 1, 0));
       embedEventBus.emit("centerActiveSlide", {});
@@ -168,7 +168,7 @@ export function EmbedExpandView({
     // Case 2: Closed via back button OR one position before end
     // No sync needed - indices already aligned (end card not shown in embed view)
     const isClosedViaBackButton = !isEscapeKey;
-    const isBeforeEndOfFeed = nextVideo?.video.type === "complete";
+    const isBeforeEndOfFeed = nextVideo?.video?.type === "complete";
     if (isClosedViaBackButton || isBeforeEndOfFeed) {
       embedEventBus.emit("centerActiveSlide", {});
       goBackToPreviousPlayerType();
@@ -178,7 +178,7 @@ export function EmbedExpandView({
     // Case 3: Closed via Escape key - sync indices if overlay card was skipped
     // Overlay card exists in embed view but not in expand view
     const overlayIndex = videos.findIndex(
-      (post) => post.video.type === "overlay",
+      (post) => post.video?.type === "overlay",
     );
     const hasPassedOverlay = activeIndex > overlayIndex && overlayIndex !== -1;
     if (
@@ -212,7 +212,7 @@ export function EmbedExpandView({
     // Store current mute state when entering expand view
     const currentActiveIndex = context.isSectioned ? 0 : context.activeIndex;
     const overlayIndex = videos.findIndex(
-      (post) => post.video.type === "overlay",
+      (post) => post.video?.type === "overlay",
     );
     setStartIndex(
       overlayIndex === -1
