@@ -1,6 +1,7 @@
 import './index.css';
 import { createFloaterElement, showFloaterSpinner, createFloaterSpinner } from './styles/floaterStyles';
 import type { PendingMessage } from './types';
+import { OctoAnalytics } from './analytics';
 
 interface SDKConfig {
     containerId?: string;
@@ -32,6 +33,8 @@ let currentConfig: SDKConfig | null = null;
 let persistentEventListener: ((event: Event) => void) | null = null;
 let messageEventListener: ((event: Event) => void) | null = null;
 let pendingMessages: Array<PendingMessage> = [];
+let sdkAnalytics: OctoAnalytics | null = null;
+const sdkLoadTime = Date.now();
 
 function createFloater() {
     // Remove existing floater if any
@@ -388,6 +391,38 @@ export async function init(initConfig: SDKConfig) {
         return;
     }
 
+    // Initialize analytics for SDK lifecycle tracking
+    if (!sdkAnalytics) {
+        const rudderstackWriteKey = import.meta.env.VITE_RUDDERSTACK_KEY ?? '';
+        const rudderstackDataplaneUrl = import.meta.env.VITE_RUDDERSTACK_URL ?? '';
+        const environment = import.meta.env.MODE === 'production' ? 'production' : 'development';
+
+        sdkAnalytics = new OctoAnalytics({
+            userId: initConfig.userId,
+            brandId: initConfig.brandId,
+            rudderstackWriteKey,
+            rudderstackDataplaneUrl,
+            environment,
+            parentWebSdkInstanceId: initConfig.parentWebSdkInstanceId,
+            parentWebSdkContainerId: initConfig.parentWebSdkContainerId,
+            parentWebSdkEmbedId: initConfig.parentWebSdkEmbedId,
+            parentWebSdkPlacementId: initConfig.parentWebSdkPlacementId,
+            parentOctoPanelId: initConfig.parentOctoPanelId,
+            videoId: initConfig.videoId,
+            debug: import.meta.env.MODE !== 'production', // Enable debug in dev/qa
+        });
+
+        // Initialize analytics and track SDK loaded
+        sdkAnalytics.initialize().then(() => {
+            sdkAnalytics?.trackSDKLoaded({
+                load_time: Date.now() - sdkLoadTime,
+                sdk_version: (window as any).GenAISDK?.version || '1.0.0',
+            });
+        }).catch((error) => {
+            console.error('[GenAI SDK] Failed to initialize analytics:', error);
+        });
+    }
+
     setupPersistentEventListener();
 
     try {
@@ -428,6 +463,12 @@ export async function init(initConfig: SDKConfig) {
                     contentOrder: normalizedConfig.contentOrder,
                 }),
             };
+
+            // Track SDK initialized
+            sdkAnalytics?.trackSDKInitialized({
+                view: viewMode,
+                init_time: Date.now() - sdkLoadTime,
+            });
         } else if (viewMode === 'floater') {
             // Show floater immediately
             createFloater();
@@ -449,6 +490,12 @@ export async function init(initConfig: SDKConfig) {
                     console.warn('Failed to load draggabilly, floater will remain static');
                 };
             }
+
+            // Track SDK initialized for floater view
+            sdkAnalytics?.trackSDKInitialized({
+                view: viewMode,
+                init_time: Date.now() - sdkLoadTime,
+            });
         } else {
             // Dialog mode - render dialog directly without floater
             const loadingOverlay = createLoadingOverlay();
@@ -456,13 +503,26 @@ export async function init(initConfig: SDKConfig) {
             try {
                 await loadDialogApp(normalizedConfig);
                 removeLoadingOverlay(loadingOverlay);
+
+                // Track SDK initialized
+                sdkAnalytics?.trackSDKInitialized({
+                    view: viewMode,
+                    init_time: Date.now() - sdkLoadTime,
+                });
             } catch (error) {
                 console.error('Failed to load GenAI content in dialog:', error);
                 removeLoadingOverlay(loadingOverlay);
+                throw error; // Re-throw to be caught by outer catch
             }
         }
     } catch (error) {
         console.error('Failed to initialize GenAI SDK:', error);
+
+        // Track SDK init failed
+        sdkAnalytics?.trackSDKInitFailed({
+            error_message: error instanceof Error ? error.message : 'Unknown error',
+            error_code: 'SDK_INIT_ERROR',
+        });
     }
 }
 
@@ -479,6 +539,11 @@ export function destroy() {
     if (floater) {
         floater.remove();
         floater = null;
+    }
+
+    if (sdkAnalytics) {
+        sdkAnalytics.destroy();
+        sdkAnalytics = null;
     }
 
     removePersistentEventListener();

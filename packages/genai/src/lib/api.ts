@@ -367,8 +367,9 @@ export async function getIpInfo() {
         .then(res => {
             return res.data;
         })
-        .catch(error => {
-            throw error;
+        .catch(_error => {
+            // IP info is optional - fail silently
+            return null;
         });
 }
 

@@ -1,0 +1,35 @@
+{
+  "name": "@genuin/analytics",
+  "version": "1.0.0",
+  "description": "Generic analytics package with multi-provider support",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./react": "./src/react/index.ts",
+    "./middleware": "./src/middleware/index.ts",
+    "./types": "./src/types/index.ts"
+  },
+  "scripts": {
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "ua-parser-js": "^2.0.3",
+    "uuid": "^11.0.5"
+  },
+  "peerDependencies": {
+    "react": ">=17.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@genuin/typescript-config": "workspace:*",
+    "@types/node": "^22.15.21",
+    "@types/react": "^19.1.5",
+    "@types/uuid": "^10.0.0"
+  }
+}

@@ -1,7 +1,9 @@
-import React, { type ReactNode } from 'react';
+import React, { useMemo, type ReactNode } from 'react';
 import { AgentsProvider } from './app/provider';
 import { InputProvider } from './input/provider';
 import { RudderAnalyticsProvider } from '@/services/analytics/RudderAnalyticsProvider';
+import { AnalyticsProvider } from './analytics/provider';
+import { OctoAnalytics } from '@/analytics';
 import type { PendingMessage } from '@/types';
 
 interface AppProvidersProps {
@@ -48,13 +50,45 @@ export const AppProviders: React.FC<AppProvidersProps> = ({
     integrationId,
     contentOrder,
 }) => {
+    // Create OctoAnalytics instance
+    const octoAnalytics = useMemo(() => {
+        const rudderstackWriteKey = import.meta.env.VITE_RUDDERSTACK_KEY ?? '';
+        const rudderstackDataplaneUrl = import.meta.env.VITE_RUDDERSTACK_URL ?? '';
+        const environment = import.meta.env.MODE === 'production' ? 'production' : 'development';
+
+        return new OctoAnalytics({
+            userId,
+            brandId,
+            rudderstackWriteKey,
+            rudderstackDataplaneUrl,
+            environment,
+            parentWebSdkInstanceId,
+            parentWebSdkContainerId,
+            parentWebSdkEmbedId,
+            parentWebSdkPlacementId,
+            parentOctoPanelId,
+            videoId,
+            debug: import.meta.env.MODE !== 'production', // Enable debug in dev/qa
+        });
+    }, [
+        userId,
+        brandId,
+        parentWebSdkInstanceId,
+        parentWebSdkContainerId,
+        parentWebSdkEmbedId,
+        parentWebSdkPlacementId,
+        parentOctoPanelId,
+        videoId,
+    ]);
+
     return (
         <RudderAnalyticsProvider>
-            <AgentsProvider
-                userId={userId}
-                brandId={brandId}
-                currentSessionId={currentSessionId}
-                view={view}
+            <AnalyticsProvider analytics={octoAnalytics}>
+                <AgentsProvider
+                    userId={userId}
+                    brandId={brandId}
+                    currentSessionId={currentSessionId}
+                    view={view}
                 webSdkRenderMode={webSdkRenderMode}
                 pendingMessages={pendingMessages}
                 userEmail={userEmail}
@@ -70,8 +104,9 @@ export const AppProviders: React.FC<AppProvidersProps> = ({
                 integrationId={integrationId}
                 contentOrder={contentOrder}
             >
-                <InputProvider>{children}</InputProvider>
-            </AgentsProvider>
+                    <InputProvider>{children}</InputProvider>
+                </AgentsProvider>
+            </AnalyticsProvider>
         </RudderAnalyticsProvider>
     );
 };

@@ -1,6 +1,7 @@
 import { getBrandSessions, getChatHistoryV2, getSuggestedPrompts, getVideoSuggestedPrompts, stopChatSession, updateSessionTitle } from '@/lib/api';
 import type { CachedResponseItem } from '@/lib/apiTypes';
 import { ingestDataToBCC } from '@/lib/ingestDataToBCC';
+import { useOctoAnalytics } from '@/context/analytics';
 import { useRudderEvents } from '@/services/analytics/useRudderAnalytics';
 import type {
     Agent,
@@ -256,6 +257,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
     const [webSdkRenderModeState, setWebSdkRenderModeState] = useState<'compact' | 'full'>(webSdkRenderMode ?? 'full');
     const { videoStyles, toggleStyleSelection, toggleOptionSelection, resetVideoStyles } =
         useVideoStyles(brandId);
+    const { analytics } = useOctoAnalytics();
     const handleSendMessageRef = useRef<HandleSendMessageFn | null>(null);
     // Map to track temp session IDs to real session IDs for handling race conditions
     const sessionIdMapRef = useRef<Map<string, string>>(new Map());
@@ -505,6 +507,14 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
 
             if (currentSessionId === sessionId && targetSession && targetSession.status === 'fetched') return;
 
+            // Track session switched if switching from one session to another (not initial load)
+            if (currentSessionId && currentSessionId !== sessionId) {
+                analytics.trackSessionSwitched({
+                    from_session_id: currentSessionId,
+                    to_session_id: sessionId,
+                });
+            }
+
             if (targetSession && targetSession.thinking) {
                 setCurrentSessionIdState(sessionId);
                 setCurrentAgentState(targetSession?.agentId || getInitialAgentId());
@@ -552,7 +562,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                 toast.error('Failed to load session history.');
             }
         },
-        [currentSessionId, sessions, currentAgent, checkAndReconnectStream]
+        [currentSessionId, sessions, currentAgent, checkAndReconnectStream, analytics]
     );
 
     const deleteSession = useCallback((sessionId: string) => {
@@ -1174,6 +1184,23 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                                 isCompleted: true,
                             };
 
+                            // Track response received
+                            const responseLength = lastEvent.message?.content?.length || 0;
+                            const createdAtTimestamp = lastEvent.created_at
+                                ? new Date(lastEvent.created_at).getTime()
+                                : undefined;
+                            const responseTime = createdAtTimestamp ? Date.now() - createdAtTimestamp : 0;
+                            const videoIds = lastEvent.carousel_metadata?.video_ids ?? [];
+                            const includesVideoCarousel = videoIds.length > 0;
+                            analytics.trackResponseReceived({
+                                response_time: responseTime,
+                                includes_video_carousel: includesVideoCarousel,
+                                video_count: includesVideoCarousel ? videoIds.length : undefined,
+                                response_length: responseLength,
+                                session_id: sessionId,
+                                agent_id: s.agentId,
+                            });
+
                             // Check if response is JSON for BCC ingestion
                             if (lastEvent.message?.function_response) {
                                 if (lastEvent.message?.function_name && lastEvent.message?.function_response) {
@@ -1262,9 +1289,21 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
             }
             return s;
         }));
+        setSessions(prev => {
+            const updated = prev.map(s => (s.id === tempSessionId ? { ...s, id: realSessionId } : s));
+
+            // Track session created - check if this is the first session ever
+            const isFirstSessionEver = updated.length === 1;
+            analytics.trackSessionCreated({
+                session_id: realSessionId,
+                is_first_session_ever: isFirstSessionEver,
+            });
+
+            return updated;
+        });
         // Update current session ID if it matches the temp ID
         setCurrentSessionIdState(prev => (prev === tempSessionId ? realSessionId : prev));
-    }, []);
+    }, [analytics]);
 
     const { sendSSEMessage, connectToStream, cancelStream } = useSSEHandler({
         onMessage: handleSSEMessage,
@@ -1646,8 +1685,24 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
             // }
 
             await sendSSEMessage(payload);
+
+            // Track message sent
+            analytics.trackMessageSent({
+                message_length: messageInput.length,
+                is_first_message: !sessionId,
+                is_auto_sent: false,
+                used_suggested_prompt: false,
+                session_id: sessionId || tempSessionId,
+                agent_id: agent.id,
+            });
         } catch (error) {
             handleOnSocketError(targetSessionId || tempSessionId || '', 'Failed to send message. Please try again.');
+
+            // Track message send failed
+            analytics.trackMessageSendFailed({
+                error_message: error instanceof Error ? error.message : 'Unknown error',
+                message_preview: messageInput.slice(0, 100),
+            });
         }
     }
 

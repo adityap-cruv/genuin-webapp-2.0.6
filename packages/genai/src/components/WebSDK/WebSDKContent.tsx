@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { WebSDKInput } from './WebSDKInput';
 import { useAgentsContext } from '@/context/app/context';
 import { useInputContext } from '@/context/input/context';
+import { useOctoAnalytics } from '@/context/analytics';
 import Chat from '../Chat';
 import { Skeleton } from '../ui/skeleton';
 import { CompactSkeleton } from '../ui/compact-skeleton';
@@ -27,6 +28,7 @@ export function WebSDKContent() {
         parentOctoPanelId,
     } = useAgentsContext();
     const { setInput } = useInputContext();
+    const { analytics } = useOctoAnalytics();
 
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const [hasSetInitialAgent, setHasSetInitialAgent] = useState(false);
@@ -59,6 +61,12 @@ export function WebSDKContent() {
         }
         setCountdown(null);
         setPanelViewCountdown(null);
+
+        // Track auto-prompt cancelled
+        analytics.trackAutoPromptCancelled({
+            prompt: firstPrompt,
+            seconds_remaining: countdown || 0,
+        });
 
         // Hide dummy message
         setShowDummyMessage(false);
@@ -211,6 +219,12 @@ export function WebSDKContent() {
                 );
             }
 
+            // Track countdown started
+            analytics.trackAutoPromptCountdownStarted({
+                prompt: firstPrompt,
+                countdown_duration: 5,
+            });
+
             // Start countdown timer
             let timeLeft = 3;
             countdownIntervalRef.current = setInterval(() => {
@@ -224,6 +238,12 @@ export function WebSDKContent() {
                     }
                     // Auto-send the message
                     setShowDummyMessage(false);
+
+                    // Track auto-prompt executed
+                    analytics.trackAutoPromptExecuted({
+                        prompt: firstPrompt,
+                    });
+
                     handleSendMessage({
                         targetSessionId: null,
                         messageInput: firstPrompt,

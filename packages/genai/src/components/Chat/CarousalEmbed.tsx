@@ -1,21 +1,32 @@
 import { useAgentsContext } from '@/context/app/context';
+import { useOctoAnalytics } from '@/context/analytics';
 import type { CarousalMetadata } from '@/types';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Skeleton } from '../ui/skeleton';
 
 const generateRandomId = () => Math.floor(Math.random() * 1000) + 1;
 
+interface GenuinInternalEvent {
+    payload?: {
+        videoId?: string;
+        [key: string]: unknown;
+    };
+    [key: string]: unknown;
+}
+
+type GenuinEventListener = (event: GenuinInternalEvent) => void;
+
 declare global {
     interface Window {
         genuin: {
             init: (config: Record<string, unknown>) => void;
             destroy: () => void;
-            update?: (config: Record<string, any>) => Promise<void> | void;
+            update?: (config: Record<string, unknown>) => Promise<void> | void;
             onInternal?: (
                 eventName: string,
-                listener: (event: any) => void
+                listener: GenuinEventListener
             ) => (() => void) | void;
-            offInternal?: (eventName: string, listener: (event: any) => void) => void;
+            offInternal?: (eventName: string, listener: GenuinEventListener) => void;
         };
     }
 }
@@ -40,6 +51,7 @@ const GenuinEmbed = ({
         parentWebSdkPlacementId,
         parentOctoPanelId,
     } = useAgentsContext();
+    const { analytics } = useOctoAnalytics();
     const currentSession = sessions.find((s) => s.id === currentSessionId);
 
     const containerRef = useRef<HTMLDivElement>(null);
@@ -115,6 +127,14 @@ const GenuinEmbed = ({
 
         isInitializedRef.current = true;
 
+        // Track carousel rendered
+        const videoIds = carousalMetadata.video_ids ?? [];
+        analytics.trackCarouselRendered({
+            video_count: videoIds.length,
+            video_ids: videoIds,
+            is_nested_in_web_sdk: isWebSdkView,
+        });
+
         // NO CLEANUP - Let React's normal unmounting handle it
         // The web-sdk's own cleanup in react-utils.tsx will handle React roots properly
         // Prevents cascade destroy when dependencies change during re-renders
@@ -123,6 +143,7 @@ const GenuinEmbed = ({
         isSdkLoaded,
         parentWebSdkInstanceId,
         view,
+        analytics,
     ]);
 
     useEffect(() => {
@@ -140,7 +161,7 @@ const GenuinEmbed = ({
 
         const allowedVideoIds = new Set(metadataVideoIds);
 
-        const handleVideoClicked = (event: any) => {
+        const handleVideoClicked: GenuinEventListener = (event) => {
             const videoId: string | undefined = event?.payload?.videoId;
             if (!videoId || !allowedVideoIds.has(videoId)) {
                 return;
@@ -152,21 +173,22 @@ const GenuinEmbed = ({
                 return;
             }
 
-            // Defensive check: Verify parent container exists in DOM
-            if (!parentWebSdkContainerId) {
-                return;
-            }
+            // Track carousel video clicked
+            const position = metadataVideoIds.indexOf(videoId);
+            analytics.trackCarouselVideoClicked({
+                video_id: videoId,
+                position: position >= 0 ? position : 0,
+                total_videos: metadataVideoIds.length,
+            });
 
-            const parentContainer = document.getElementById(parentWebSdkContainerId);
-            if (!parentContainer) {
-                return;
-            }
-
-            // Verify parent container has a valid instance ID
-            const parentInstanceIdInDom = parentContainer.getAttribute('data-instance-id');
-            if (!parentInstanceIdInDom) {
-                return;
-            }
+            console.log('[CarousalEmbed] Forwarding video selection to parent web-sdk', {
+                videoId,
+                parentContainerId: parentWebSdkContainerId,
+                parentInstanceId: parentWebSdkInstanceId,
+                parentEmbedId: parentWebSdkEmbedId,
+                parentPlacementId: parentWebSdkPlacementId,
+                nestedInstanceId: childInstanceIdRef.current,
+            });
 
             const domOctoId = containerRef.current?.getAttribute('data-octo-panel-id') ?? undefined;
             const sourceInstanceId =
@@ -184,15 +206,35 @@ const GenuinEmbed = ({
                     placement_id: parentWebSdkPlacementId,
                 });
 
-                if (maybePromise && typeof (maybePromise as Promise<unknown>).catch === 'function') {
-                    (maybePromise as Promise<unknown>).catch((error: unknown) => {
-                        console.error('[CarousalEmbed] Failed to forward video selection', error);
-                    });
-                }
+                // Normalize to Promise to handle both sync and async cases uniformly
+                Promise.resolve(maybePromise)
+                    .then(() => {
+                        // Track video forwarded to parent (successful call)
+                        analytics.trackVideoForwardedToParent({
+                            video_id: videoId,
+                            source: 'octo_carousel',
+                        });
 
-                forwardedVideoRef.current = { id: videoId, ts: now };
+                        // Only set dedupe ref after successful forward
+                        forwardedVideoRef.current = { id: videoId, ts: now };
+                    })
+                    .catch((error: unknown) => {
+                        console.error('[CarousalEmbed] Failed to forward video selection', error);
+
+                        // Track video forward failed
+                        analytics.trackVideoForwardFailed({
+                            video_id: videoId,
+                            error_message: error instanceof Error ? error.message : 'Unknown error',
+                        });
+                    });
             } catch (error) {
                 console.error('[CarousalEmbed] Error while forwarding video selection', error);
+
+                // Track video forward failed
+                analytics.trackVideoForwardFailed({
+                    video_id: videoId,
+                    error_message: error instanceof Error ? error.message : 'Unknown error',
+                });
             }
         };
 
@@ -212,7 +254,9 @@ const GenuinEmbed = ({
         parentWebSdkEmbedId,
         parentWebSdkInstanceId,
         parentWebSdkPlacementId,
+        parentOctoPanelId,
         view,
+        analytics,
     ]);
 
     if (

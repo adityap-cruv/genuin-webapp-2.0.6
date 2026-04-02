@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useAgentsContext } from '@/context/app/context';
 import { useInputContext } from '@/context/input/context';
+import { useOctoAnalytics } from '@/context/analytics';
 import { useRudderEvents } from '@/services/analytics/useRudderAnalytics';
 import PresetPromptsSkeleton from '../MessageInput/PresetPrompts/skeleton';
 
@@ -13,8 +14,10 @@ export function WebSDKPresetPrompts({ setIsSuggestionsOpen, onClose }: WebSDKPre
     const { enteredInChatMode, showAllObjectives, textAreaRef, ipInfo, currentAgent, suggestedPrompts, isLoadingSuggestedPrompts } =
         useAgentsContext();
     const { setInput } = useInputContext();
+    const { analytics } = useOctoAnalytics();
     const { track } = useRudderEvents();
     const suggestionsRef = useRef<HTMLDivElement>(null);
+    const hasTrackedOpenRef = useRef(false);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -28,6 +31,16 @@ export function WebSDKPresetPrompts({ setIsSuggestionsOpen, onClose }: WebSDKPre
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, [onClose]);
+
+    // Track preset prompts opened
+    useEffect(() => {
+        if (!hasTrackedOpenRef.current && suggestedPrompts.length > 0 && !isLoadingSuggestedPrompts) {
+            analytics.trackPresetPromptOpened({
+                prompt_count: suggestedPrompts.length,
+            });
+            hasTrackedOpenRef.current = true;
+        }
+    }, [suggestedPrompts, isLoadingSuggestedPrompts, analytics]);
 
     const focusInput = () => {
         if (textAreaRef) {
@@ -74,6 +87,14 @@ export function WebSDKPresetPrompts({ setIsSuggestionsOpen, onClose }: WebSDKPre
                         e.preventDefault();
                         e.stopPropagation();
                         trackEvent(prompt);
+
+                        // Track preset prompt selected
+                        analytics.trackPresetPromptSelected({
+                            prompt,
+                            position: index,
+                            total_prompts: suggestedPrompts.length,
+                        });
+
                         setInput(prompt);
                         focusInput();
                         setIsSuggestionsOpen(true);

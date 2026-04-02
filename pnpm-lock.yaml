@@ -616,6 +616,31 @@ importers:
         specifier: ^4.1.1
         version: 4.1.1(webpack@5.99.9)
 
+  packages/analytics:
+    dependencies:
+      react:
+        specifier: ^19.1.0 || 19
+        version: 19.1.0
+      ua-parser-js:
+        specifier: ^2.0.3
+        version: 2.0.4
+      uuid:
+        specifier: ^11.0.5
+        version: 11.1.0
+    devDependencies:
+      '@genuin/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/node':
+        specifier: ^22.15.21
+        version: 22.15.32
+      '@types/react':
+        specifier: ^19.1.5
+        version: 19.1.8
+      '@types/uuid':
+        specifier: ^10.0.0
+        version: 10.0.0
+
   packages/components:
     dependencies:
       '@genuin/genai-sdk':
@@ -782,6 +807,9 @@ importers:
 
   packages/genai:
     dependencies:
+      '@genuin/analytics':
+        specifier: workspace:*
+        version: link:../analytics
       '@lottiefiles/react-lottie-player':
         specifier: ^3.5.4
         version: 3.6.0(react@19.1.0)

@@ -61,6 +61,28 @@ const genuinResolver = () => ({
       }
     }
 
+    // Handle base @genuin/analytics import
+    if (id === '@genuin/analytics') {
+      const mainPath = resolve(__dirname, '../analytics/src/index.ts')
+      if (fs.existsSync(mainPath)) {
+        return mainPath
+      }
+    }
+
+    // Handle @genuin/analytics subpath imports
+    if (id.startsWith('@genuin/analytics/')) {
+      const subPath = id.replace('@genuin/analytics/', '')
+      const patterns = [
+        resolve(__dirname, `../analytics/src/${subPath}/index.ts`),
+        resolve(__dirname, `../analytics/src/${subPath}.ts`),
+      ]
+      for (const pattern of patterns) {
+        if (fs.existsSync(pattern)) {
+          return pattern
+        }
+      }
+    }
+
     // Handle @genuin/tailwind-config import
     if (id === '@genuin/tailwind-config') {
       const configPath = resolve(
@@ -183,7 +205,8 @@ const genuinResolver = () => ({
       if (subPath !== null) {
         const extensions = ['.ts', '.tsx', '.js', '.jsx']
         const base = resolve(genaiSrcDir, subPath)
-        if (fs.existsSync(base)) return base
+        // Only return base if it's a file, not a directory
+        if (fs.existsSync(base) && fs.statSync(base).isFile()) return base
         for (const ext of extensions) {
           if (fs.existsSync(base + ext)) return base + ext
         }
@@ -862,6 +885,17 @@ export default defineConfig({
         process.env.RUDDERSTACK_URL ||
         'https://rudderstack.qa.begenuin.com'
     ),
+    // GenAI SDK environment variables (VITE_* format for @genuin/genai-sdk)
+    'process.env.VITE_RUDDERSTACK_KEY': JSON.stringify(
+      process.env.NEXT_PUBLIC_RUDDERSTACK_KEY ||
+        process.env.RUDDERSTACK_API_KEY ||
+        '',
+    ),
+    'process.env.VITE_RUDDERSTACK_URL': JSON.stringify(
+      process.env.NEXT_PUBLIC_RUDDERSTACK_URL ||
+        process.env.RUDDERSTACK_URL ||
+        'https://rudderstack.qa.begenuin.com',
+    ),
     'process.env.NEXT_PUBLIC_MEDIA_BASE_URL': JSON.stringify(
       process.env.NEXT_PUBLIC_MEDIA_BASE_URL ||
         process.env.MEDIA_BASE_URL ||
@@ -916,6 +950,17 @@ export default defineConfig({
       process.env.NEXT_PUBLIC_RUDDERSTACK_URL ||
         process.env.RUDDERSTACK_URL ||
         'https://rudderstack.qa.begenuin.com'
+    ),
+    // GenAI SDK environment variables (VITE_* format for @genuin/genai-sdk)
+    'import.meta.env.VITE_RUDDERSTACK_KEY': JSON.stringify(
+      process.env.NEXT_PUBLIC_RUDDERSTACK_KEY ||
+        process.env.RUDDERSTACK_API_KEY ||
+        '',
+    ),
+    'import.meta.env.VITE_RUDDERSTACK_URL': JSON.stringify(
+      process.env.NEXT_PUBLIC_RUDDERSTACK_URL ||
+        process.env.RUDDERSTACK_URL ||
+        'https://rudderstack.qa.begenuin.com',
     ),
     'import.meta.env.NEXT_PUBLIC_MEDIA_BASE_URL': JSON.stringify(
       process.env.NEXT_PUBLIC_MEDIA_BASE_URL ||
