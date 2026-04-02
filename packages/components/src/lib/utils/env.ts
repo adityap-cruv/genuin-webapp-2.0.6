@@ -27,6 +27,10 @@
 // Determine if running in server or client environment
 const isServer = typeof process !== "undefined" && process.env;
 
+const ENVIRONMENT = isServer
+  ? (process.env.ENVIRONMENT as string)
+  : (import.meta.env.ENVIRONMENT as string);
+
 // Export environment variables with proper typing
 export const RUDDERSTACK_WRITE_KEY = isServer
   ? process.env.NEXT_PUBLIC_RUDDERSTACK_KEY
@@ -58,3 +62,4 @@ export const NEXT_PUBLIC_REDIRECT_URI = isServer
 export const TRACK_OBSERVABILITY = isServer
   ? (process.env.TRACK_OBSERVABILITY as string)
   : (import.meta.env.TRACK_OBSERVABILITY as string);
+export const IS_PRODUCTION_ENVIRONMENT = ENVIRONMENT === "prod";

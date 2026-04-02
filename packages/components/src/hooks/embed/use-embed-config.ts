@@ -5,6 +5,7 @@ import { useDeviceDetectMediaQuery } from "../use-devide-detect-media-query";
 import type { CustomizationType } from "@genuin/components/context/embed/embed.types";
 import { useBrowserDetect } from "@genuin/ui/hooks";
 import { FeedType } from "@genuin/components/types/post";
+import { IS_PRODUCTION_ENVIRONMENT } from "@genuin/components/lib/utils/env";
 
 const MIN_EMBED_WIDTH = 150;
 const MIN_EMBED_HEIGHT = 268; // Based on 9:16 aspect ratio for 150 width
@@ -517,11 +518,12 @@ export function useEmbedConfigs() {
 
   const brand = useMemo(() => {
     const isUsWeekly = brandDetails.brand_id === 2476;
-    const feedType: FeedType = isUsWeekly
-      ? "FEED_V1"
-      : embedData?.placement_id
-        ? "PLACEMENT_SECTIONS"
-        : "EMBED_HOME";
+    const feedType: FeedType =
+      !IS_PRODUCTION_ENVIRONMENT || isUsWeekly
+        ? "FEED_V1"
+        : embedData?.placement_id
+          ? "PLACEMENT_SECTIONS"
+          : "EMBED_HOME";
     return {
       // configuration to identify US Weekly brand
       isUsWeekly,
