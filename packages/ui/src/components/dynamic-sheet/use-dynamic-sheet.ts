@@ -98,18 +98,19 @@ export function useDynamicSheet({
     };
   }, [enabledStates, stateToPx, containerHeight]);
 
-  const clearHoldTimer = () => {
+  const clearHoldTimer = useCallback(() => {
     if (holdTimerRef.current) {
       clearTimeout(holdTimerRef.current);
       holdTimerRef.current = null;
     }
-  };
-  const clearAutoAdvanceTimer = () => {
+  }, []);
+
+  const clearAutoAdvanceTimer = useCallback(() => {
     if (autoAdvanceTimerRef.current) {
       clearTimeout(autoAdvanceTimerRef.current);
       autoAdvanceTimerRef.current = null;
     }
-  };
+  }, []);
 
   const transitionTo = useCallback(
     (next: DynamicSheetState) => {
@@ -146,7 +147,7 @@ export function useDynamicSheet({
       if (currentStateRef.current === from) transitionTo(to);
     }, delayMs);
     return clearAutoAdvanceTimer;
-  }, [currentState, enabledStates, autoAdvance, transitionTo]);
+  }, [currentState, enabledStates, autoAdvance, transitionTo, clearAutoAdvanceTimer]);
 
   const handleDragStart = useCallback(
     (e: ReactPointerEvent<HTMLDivElement>) => {
@@ -188,7 +189,7 @@ export function useDynamicSheet({
       setIsDragging(true);
       (e.target as HTMLElement).setPointerCapture(e.pointerId);
     },
-    [disableDragAndSwipe, stateToPx, enabledStates, transitionTo],
+    [disableDragAndSwipe, stateToPx, enabledStates, transitionTo, clearAutoAdvanceTimer],
   );
 
   useEffect(() => {
@@ -317,6 +318,8 @@ export function useDynamicSheet({
     onStateChange,
     stepByStepSwipeDown,
     onRequestClose,
+    clearHoldTimer,
+    clearAutoAdvanceTimer,
   ]);
 
   return {

@@ -1,8 +1,7 @@
 import "@genuin/genai-sdk/styles";
 import { cn } from "@genuin/ui/utils";
-import type { ComponentProps, MouseEvent, ReactNode } from "react";
+import type { ComponentProps, MouseEvent, ReactNode, RefObject } from "react";
 import {
-  forwardRef,
   useCallback,
   useEffect,
   useImperativeHandle,
@@ -15,6 +14,31 @@ import { useAuthContext } from "@genuin/components/context/auth";
 import { Button } from "@genuin/ui/button";
 import { X } from "lucide-react";
 import { useEmbedContext } from "@genuin/components/context/embed";
+import { usePrevious } from "@genuin/components/hooks/use-previous";
+
+/**
+ * Type definition for the GenAI SDK module
+ * This represents the dynamically imported @genuin/genai-sdk package
+ */
+type GenAISDKModule = {
+  init: (config: {
+    containerId: string;
+    containerElement: HTMLElement;
+    userId: string;
+    brandId: number;
+    view: string;
+    renderMode?: "compact" | "full";
+    sessionId?: string;
+    parentWebSdkInstanceId: string | null;
+    parentWebSdkContainerId?: string;
+    parentWebSdkEmbedId?: string;
+    parentWebSdkPlacementId?: string;
+    parentOctoPanelId: string;
+    videoId: string;
+  }) => void;
+  destroy: () => void | Promise<void>;
+  setWebSdkRenderMode: (mode: "compact" | "full") => void;
+};
 
 /**
  * Custom hook that only runs cleanup on actual component unmount
@@ -56,6 +80,10 @@ type OctoPanelPropsType = {
   onExpandRequest?: () => void;
   onCompactExpand?: () => void;
   onCountdownActive?: (isActive: boolean) => void;
+  /**
+   * React 19 ref prop - replaces forwardRef pattern
+   */
+  ref?: RefObject<OctoPanelHandle>;
 } & ComponentProps<"div">;
 
 export type OctoPanelHandle = {
@@ -74,55 +102,110 @@ function createPanelIdentity() {
   } as const;
 }
 
-export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
-  (
-    {
-      videoId,
-      videoSlug,
-      children,
-      className,
-      defaultOpen,
-      open,
-      onOpenChange,
-      panelClassName,
-      onClose,
-      variant = "standalone",
-      renderMode,
-      onExpandRequest,
-      onCompactExpand,
-      onCountdownActive,
-      ...triggerProps
-    },
-    ref
-  ) => {
+/**
+ * OctoPanel Component
+ *
+ * A dynamic panel component that integrates with the GenAI SDK to provide
+ * AI-powered interactions within video player interfaces. Supports both
+ * standalone and embedded (sheet) rendering modes.
+ *
+ * Key Features:
+ * - Lazy loads GenAI SDK only when panel opens (performance optimization)
+ * - Handles SDK lifecycle (init/destroy) automatically
+ * - Supports video transitions with proper cleanup/reinit
+ * - Manages parent-child SDK instance relationships
+ * - Provides imperative handle for external control via ref
+ *
+ * @example
+ * ```tsx
+ * // Standalone usage
+ * <OctoPanel videoId="123" variant="standalone">
+ *   <button>Open Octo</button>
+ * </OctoPanel>
+ *
+ * // Sheet usage (inside DynamicSheet)
+ * <OctoPanel
+ *   videoId="123"
+ *   variant="sheet"
+ *   open={isOpen}
+ *   renderMode="compact"
+ * />
+ * ```
+ */
+export function OctoPanel({
+  videoId,
+  videoSlug,
+  children,
+  className,
+  defaultOpen,
+  open,
+  onOpenChange,
+  panelClassName,
+  onClose,
+  variant = "standalone",
+  renderMode,
+  onExpandRequest,
+  onCompactExpand,
+  onCountdownActive,
+  ref,
+  ...triggerProps
+}: OctoPanelPropsType) {
+  // DOM References
+  // We maintain both a ref and state for the container because:
+  // - containerRef: Provides immediate DOM access without triggering re-renders
+  // - containerNode: State that triggers re-renders when container is attached
+  // This dual approach ensures the SDK initializes correctly while avoiding unnecessary renders
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [containerNode, setContainerNode] = useState<HTMLDivElement | null>(null);
-  const sdkInitializedRef = useRef(false);
-  const previousVideoIdRef = useRef<string | null>(null);
+
+  // SDK State Management
+  const sdkInitializedRef = useRef(false); // Tracks if SDK is currently initialized
+  const [isInitializing, setIsInitializing] = useState(false); // Loading state for SDK import
+  const [sdkModule, setSDKModule] = useState<GenAISDKModule | null>(null); // The loaded SDK module
+  const [panelIdentity, setPanelIdentity] = useState(createPanelIdentity); // Unique IDs for this panel instance
+
+  /**
+   * Tracks whether we're in the process of reinitializing the SDK for a new video.
+   * When true, displays a loading overlay to prevent user interaction during the transition.
+   * This is separate from isInitializing (which is for the initial SDK load).
+   */
+  const [isReinitializing, setIsReinitializing] = useState(false);
+
+  // Lifecycle Management
+  const isDestroyingRef = useRef(false); // Prevents concurrent destroy operations
+  const [destroyCompleteCounter, setDestroyCompleteCounter] = useState(0); // Triggers re-init after destroy completes
+
+  // Context
   const { brandDetails } = useBaseContext();
   const embedContext = useEmbedContext();
   const { user } = useAuthContext();
-  const [isSDKLoaded, setIsSDKLoaded] = useState(false);
-  const [isInitializing, setIsInitializing] = useState(false);
-  const [sdkModule, setSDKModule] = useState<any>(null);
-  const [panelIdentity, setPanelIdentity] = useState(createPanelIdentity);
-  const [isReinitializing, setIsReinitializing] = useState(false);
-  const previousRenderModeRef = useRef<"compact" | "full" | undefined>(renderMode);
-  const mountTimestamp = useRef(Date.now());
-  const isDestroyingRef = useRef(false);
-  const [destroyCompleteCounter, setDestroyCompleteCounter] = useState(0);
+
+  // Track previous values for change detection
+  const previousVideoId = usePrevious(videoId);
+  const previousRenderMode = usePrevious(renderMode);
 
 
+  // Parent SDK Instance Tracking
+  // These IDs link this OctoPanel to its parent Web SDK instance for proper event routing
   const [parentInstanceId, setParentInstanceId] = useState<string | null>(null);
   const [parentContainerId, setParentContainerId] = useState<string | null>(null);
   const [parentEmbedId, setParentEmbedId] = useState<string | null>(null);
   const [parentPlacementId, setParentPlacementId] = useState<string | null>(null);
 
+  /**
+   * Callback ref handler that updates both the ref and state when container is mounted.
+   * This ensures we have both immediate access (via ref) and reactive updates (via state).
+   */
   const handleContainerRef = useCallback((node: HTMLDivElement | null) => {
     containerRef.current = node;
     setContainerNode(node);
   }, []);
 
+  /**
+   * Effect: Extract and track parent SDK instance IDs from the embed context.
+   * Sets up a MutationObserver to detect when the parent SDK re-initializes and updates its data-instance-id.
+   * This ensures OctoPanel always communicates with the correct parent instance.
+   */
   useEffect(() => {
     if (!embedContext?.rootElement) {
       setParentInstanceId((prev) => prev ?? panelIdentity.panelId);
@@ -225,13 +308,17 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
     setOpen(false, "close");
   }, [setOpen]);
 
-  // Load GenAI SDK dynamically when panel opens
+  /**
+   * Effect: Lazy load the GenAI SDK module when the panel first opens.
+   * This defers the SDK bundle download until actually needed, improving initial page load performance.
+   */
   useEffect(() => {
     if (!isOpen) {
       return;
     }
 
-    if (isSDKLoaded || isInitializing) {
+    // Skip if already loaded or currently loading
+    if (sdkModule || isInitializing) {
       return;
     }
 
@@ -240,8 +327,7 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
     const loadSDK = async () => {
       try {
         const module = await import('@genuin/genai-sdk');
-        setSDKModule(module);
-        setIsSDKLoaded(true);
+        setSDKModule(module as GenAISDKModule);
       } catch (error) {
         console.error('[OctoPanel] Failed to load GenAI SDK:', error);
       } finally {
@@ -250,56 +336,72 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
     };
 
     loadSDK();
-  }, [isOpen, isSDKLoaded, isInitializing]);
+  }, [isOpen, sdkModule, isInitializing]);
 
+  /**
+   * Effect: Initialize/destroy the GenAI SDK based on panel state and video changes.
+   *
+   * Why useLayoutEffect?
+   * - We use useLayoutEffect instead of useEffect to ensure SDK initialization happens
+   *   synchronously BEFORE the browser paints. This prevents visual flicker and ensures
+   *   the SDK UI is ready when the panel becomes visible.
+   * - The SDK modifies the DOM directly, so we need the init/destroy operations to
+   *   complete before React commits the changes to the screen.
+   *
+   * What this effect does:
+   * 1. Initializes the SDK when the panel opens for the first time
+   * 2. Destroys and reinitializes when the video changes (to clear conversation history)
+   * 3. Prevents concurrent destroy operations to avoid race conditions
+   * 4. Uses a counter-based trigger (destroyCompleteCounter) to re-run after async destroy
+   */
   useLayoutEffect(() => {
     const effectiveContainer = containerNode ?? containerRef.current;
 
-    if (!isOpen || !isSDKLoaded || !sdkModule || !effectiveContainer || !parentInstanceId) {
+    // Guard: Ensure all prerequisites are met before SDK operations
+    if (!isOpen || !sdkModule || !effectiveContainer || !parentInstanceId) {
       return;
     }
 
-    const hasVideoChanged =
-      previousVideoIdRef.current !== null && previousVideoIdRef.current !== videoId;
+    // Detect if video has changed since last initialization
+    const hasVideoChanged = previousVideoId !== null && previousVideoId !== videoId;
 
+    // Early return: SDK already initialized for current video
     if (sdkInitializedRef.current && !hasVideoChanged) {
-      // Already initialised for this video, nothing to do.
       return;
     }
 
-    // If we're currently destroying, wait for it to complete
+    // Guard: Prevent concurrent destroy operations
     if (isDestroyingRef.current) {
       return;
     }
 
+    // Scenario: Video changed - destroy current SDK and prepare for reinit
     if (sdkInitializedRef.current && hasVideoChanged) {
-      // Mark that we're destroying
       isDestroyingRef.current = true;
       setIsReinitializing(true);
 
-      // Destroy the current SDK instance asynchronously
       const destroyAndReinit = async () => {
         try {
           await Promise.resolve(sdkModule.destroy());
           sdkInitializedRef.current = false;
-          previousVideoIdRef.current = null;
 
-          // Wait a bit to ensure cleanup is complete
+          // Grace period to ensure DOM cleanup completes
           await new Promise(resolve => setTimeout(resolve, 100));
 
         } catch (error) {
           console.error('[OctoPanel] Failed to destroy SDK during video change:', error);
         } finally {
           isDestroyingRef.current = false;
-          // Increment counter to trigger re-initialization
+          // Trigger effect re-run by incrementing counter
           setDestroyCompleteCounter(prev => prev + 1);
         }
       };
 
       destroyAndReinit();
-      return; // Exit and let the effect re-run after destroy completes
+      return; // Exit - effect will re-run after destroy completes
     }
 
+    // Initialize SDK for current video
     try {
       sdkModule.init({
         containerId: panelIdentity.containerId,
@@ -317,9 +419,7 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
         videoId: videoId,
       });
       sdkInitializedRef.current = true;
-      previousVideoIdRef.current = videoId;
       setIsReinitializing(false);
-      previousRenderModeRef.current = renderMode;
     } catch (error) {
       console.error('[OctoPanel] Failed to initialize GenAI SDK:', error);
       sdkInitializedRef.current = false;
@@ -327,7 +427,6 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
     }
   }, [
     isOpen,
-    isSDKLoaded,
     sdkModule,
     user?.id,
     brandDetails.brand_id,
@@ -340,20 +439,23 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
     panelIdentity.containerId,
     panelIdentity.panelId,
     videoId,
+    previousVideoId,
     destroyCompleteCounter,
+    renderMode,
   ]);
 
-  // Panel close logic with grace period to prevent rapid open/close cycles
+  /**
+   * Effect: Destroy SDK when panel closes, with grace period to prevent rapid cycles.
+   * The 300ms delay prevents unnecessary destroy/reinit if user quickly reopens the panel.
+   */
   useEffect(() => {
     if (isOpen) return;
 
-    // Panel closed - wait a bit to see if it reopens (prevents unnecessary destroy)
     const timeout = setTimeout(() => {
       if (!isOpen && sdkModule && sdkInitializedRef.current) {
         try {
           sdkModule.destroy();
           sdkInitializedRef.current = false;
-          previousVideoIdRef.current = null;
           setIsReinitializing(false);
         } catch (error) {
           console.error('[OctoPanel] Failed to destroy SDK on close:', error);
@@ -364,8 +466,11 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
     return () => clearTimeout(timeout);
   }, [isOpen, sdkModule]);
 
-  // Only run cleanup on TRUE unmount (not on re-renders or dependency changes)
-  // This prevents cascade destroy when component re-renders in nested contexts
+  /**
+   * Effect: Cleanup SDK on component unmount.
+   * Only runs on TRUE unmount (not on re-renders or dependency changes).
+   * This prevents cascade destroy when component re-renders in nested contexts.
+   */
   useUnmount(() => {
     if (sdkModule && sdkInitializedRef.current) {
       // CRITICAL: Defer destroy to after React render completes
@@ -381,10 +486,13 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
 
       sdkInitializedRef.current = false;
     }
-    previousVideoIdRef.current = null;
     setIsReinitializing(false);
   });
 
+  /**
+   * Expose imperative handle for external control.
+   * Provides resetForVideo method to force SDK reinit for a specific video.
+   */
   useImperativeHandle(
     ref,
     () => ({
@@ -422,29 +530,32 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
 
           destroyForReset();
         }
-
-        // Keep the previous video ID as current so useLayoutEffect detects the change
-        // This will trigger re-initialization with nextVideoId in the next render
-        previousVideoIdRef.current = videoId;
       },
     }),
     [isOpen, sdkModule, videoId]
   );
 
+  /**
+   * Effect: Update SDK render mode when it changes (compact <-> full).
+   * Only updates if SDK is initialized and the mode actually changed.
+   */
   useEffect(() => {
     if (!renderMode) return;
     if (!sdkModule || typeof sdkModule.setWebSdkRenderMode !== "function") return;
     if (!sdkInitializedRef.current) return;
-    if (previousRenderModeRef.current === renderMode) return;
+    if (previousRenderMode === renderMode) return;
 
     try {
       sdkModule.setWebSdkRenderMode(renderMode);
-      previousRenderModeRef.current = renderMode;
     } catch (error) {
       console.error("[OctoPanel] Failed to update web-sdk render mode", error);
     }
-  }, [renderMode, sdkModule]);
+  }, [renderMode, sdkModule, previousRenderMode]);
 
+  /**
+   * Effect: Listen for expand request events from the GenAI SDK.
+   * Filters events to only respond to those targeting this specific panel instance.
+   */
   useEffect(() => {
     if (!onExpandRequest) return;
 
@@ -465,6 +576,10 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
     };
   }, [onExpandRequest, panelIdentity.panelId]);
 
+  /**
+   * Effect: Listen for compact expand events from the GenAI SDK.
+   * Triggered when user sends a message and the agent starts thinking.
+   */
   useEffect(() => {
     if (!onCompactExpand) {
       return;
@@ -487,6 +602,10 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
     };
   }, [onCompactExpand, panelIdentity.panelId]);
 
+  /**
+   * Effect: Listen for countdown active state changes from the GenAI SDK.
+   * Tracks when the auto-send countdown is active/cancelled.
+   */
   useEffect(() => {
     if (!onCountdownActive) {
       return;
@@ -512,7 +631,7 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
   // Render SDK container content (used in both variants)
   const sdkContainerContent = (
     <div className="gencl:relative gencl:h-full">
-      {isSDKLoaded ? (
+      {sdkModule ? (
         <div
           id={panelIdentity.containerId}
           key={panelIdentity.key}
@@ -529,7 +648,7 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
         </div>
       )}
 
-      {isSDKLoaded && isReinitializing ? (
+      {sdkModule && isReinitializing ? (
         <div className="gencl:absolute gencl:inset-0 gencl:flex gencl:items-center gencl:justify-center gencl:bg-white/80">
           <div className="gencl:text-center">
             <div className="gencl:mx-auto gencl:h-12 gencl:w-12 gencl:animate-spin gencl:rounded-full gencl:border-b-2 gencl:border-primary-500"></div>
@@ -589,7 +708,4 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
       ) : null}
     </>
   );
-  }
-);
-
-OctoPanel.displayName = "OctoPanel";
+}

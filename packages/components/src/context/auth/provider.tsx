@@ -188,6 +188,9 @@ export function AuthProvider({
       ? axiosRegistry.setAuthTokenOnAll(token)
       : axiosRegistry.clearAuthTokenFromAll();
 
+    // Invalidate ALL queries when auth token changes
+    // Authentication data is included in every API request, so all responses
+    // (including feed, user data, etc.) are personalized based on the user's auth state
     if (hasTokenChanged) {
       invalidateAllQueries();
     }

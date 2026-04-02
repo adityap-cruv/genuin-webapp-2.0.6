@@ -34,11 +34,10 @@ import { ClipPlayerCTA } from "../embed/iheart/clip-player-cta";
 import { getBaseUrlWithouthighlights } from "../embed/iheart/use-iheart-playback";
 import type { ExpandViewCallbacks } from "./types";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
-import { DynamicSheet } from "@genuin/ui";
 import type { DynamicSheetState } from "@genuin/ui/dynamic-sheet";
 import useViewportHeight from "@genuin/components/hooks/use-screen-height";
-import { OctoPanel } from "@genuin/components/molecules/octo-panel";
-import { getOctoSheetConfig } from "@genuin/components/molecules/octo-panel/octo-sheet-config";
+import { useOctoSheetManagement } from "./use-octo-sheet-management";
+import { OctoDynamicSheet } from "./octo-dynamic-sheet";
 
 // Lazy load heavy components
 const Actions = lazy(() =>
@@ -60,15 +59,6 @@ const CommentsDialog = lazy(() =>
 );
 
 type BrandLayoutType = "default" | "iheart" | "ted" | "walmart" | "grubhub";
-
-// State priority for detecting downward swipes on Octo sheet
-const OCTO_STATE_PRIORITY: Record<DynamicSheetState, number> = {
-  default: 0,
-  "default-active": 1,
-  "expand-view": 2,
-  "panel-view": 3,
-  "full-view": 4,
-};
 
 // Utility functions
 const brandHidesPills = (type: BrandLayoutType): boolean =>
@@ -594,6 +584,9 @@ export function ExpandViewDetails({
     setIsExpanded((prev) => !prev);
   }, []);
 
+  // Octo Sheet Management
+  const { engagement } = useEmbedConfigs();
+  const isOctoEnabled = engagement.engagementTools.octo;
   const octoSheetState = getContentTypeState("octo");
 
   const isCompactOctoState = !octoSheetState
@@ -601,115 +594,24 @@ export function ExpandViewDetails({
     : octoSheetState === "default" ||
       octoSheetState === "default-active" ||
       octoSheetState === "expand-view";
-  const octoRenderMode: "compact" | "full" = isCompactOctoState ? "compact" : "full";
+  const octoRenderMode: "compact" | "full" = isCompactOctoState
+    ? "compact"
+    : "full";
 
-  // Get Octo sheet configuration
+  // Use custom hook for Octo sheet state management
   const {
-    config: octoConfig,
-    className: octoClassName,
-    footerClassName: octoFooterClassName,
-  } = getOctoSheetConfig({
-    isMobile: isNonDesktop,
-    octoState: octoSheetState,
-    viewportHeight,
+    handleOctoExpandRequest,
+    handleOctoSheetStateChange,
+    handleOctoSheetClose,
+    handleOctoCompactExpand,
+    handleOctoCountdownActive,
+    handleOctoActionOpen,
+  } = useOctoSheetManagement({
+    isActive,
+    octoSheetState,
+    setContentTypeState,
+    resetSheet,
   });
-
-  const handleOctoExpandRequest = useCallback(() => {
-    if (octoSheetState === "panel-view" || octoSheetState === "full-view") {
-      return;
-    }
-
-    // Go directly to panel-view when agent response is ready
-    setContentTypeState("octo", "panel-view");
-  }, [octoSheetState, setContentTypeState]);
-
-  const prevOctoSheetStateRef = useRef<DynamicSheetState>(octoSheetState);
-  const isSheetOpenRef = useRef(false);
-
-  // Track when sheet opens/closes to distinguish between video transitions and user swipes
-  useEffect(() => {
-    const isOpen = isNonDesktop && hasContentType("octo") && isActive;
-    const wasOpen = isSheetOpenRef.current;
-    isSheetOpenRef.current = isOpen;
-
-    // Reset ref when sheet opens fresh (new video or reopening)
-    if (isOpen && !wasOpen) {
-      prevOctoSheetStateRef.current = "default";
-    }
-  }, [isNonDesktop, hasContentType, isActive, postDetails.video.id]);
-
-  const handleOctoSheetStateChange = useCallback(
-    (next: DynamicSheetState) => {
-      // Only process state changes for the active video
-      if (!isActive) {
-        return;
-      }
-
-      // Check if the sheet was not previously tracked as open
-      // This indicates the sheet is freshly opening (first state change after open)
-      // In this case, skip swipe-down detection to prevent false positives
-      const wasSheetTrackedAsOpen = isSheetOpenRef.current;
-
-      const prev = prevOctoSheetStateRef.current;
-      prevOctoSheetStateRef.current = next;
-
-      // Get priorities for prev and next states
-      const prevPriority = OCTO_STATE_PRIORITY[prev] || 0;
-      const nextPriority = OCTO_STATE_PRIORITY[next] || 0;
-
-      // Close sheet when user swipes down (going from higher state to lower state)
-      // Only treat as user swipe-down if:
-      // 1. We're actually going down from a higher state
-      // 2. It's not the initial open (which also triggers with "default")
-      // 3. The sheet was already tracked as open (not a fresh open where ref might be stale)
-      if (prevPriority > nextPriority && prev !== "default" && wasSheetTrackedAsOpen) {
-        prevOctoSheetStateRef.current = "default";
-        resetSheet();
-        return;
-      }
-
-      setContentTypeState("octo", next);
-    },
-    [resetSheet, setContentTypeState, isActive],
-  );
-
-  // Keep ref in sync with external state
-  useEffect(() => {
-    prevOctoSheetStateRef.current = octoSheetState;
-  }, [octoSheetState]);
-
-  // Handle close from DynamicSheet (close button or dismiss)
-  const handleOctoSheetClose = useCallback(() => {
-    // Reset the ref to "default" so the next video can auto-open without triggering another close
-    prevOctoSheetStateRef.current = "default";
-    resetSheet();
-  }, [resetSheet]);
-
-  const handleOctoCompactExpand = useCallback(() => {
-    // Transition to expand-view when user sends message and agent starts thinking
-    if (octoSheetState === "default" || octoSheetState === "default-active") {
-      setContentTypeState("octo", "expand-view");
-    }
-  }, [octoSheetState, setContentTypeState]);
-
-  const handleOctoCountdownActive = useCallback((isActive: boolean) => {
-    if (isActive) {
-      // Transition to default-active when countdown starts
-      if (octoSheetState === "default") {
-        setContentTypeState("octo", "default-active");
-      }
-    } else {
-      // Transition back to default when countdown is cancelled
-      if (octoSheetState === "default-active") {
-        setContentTypeState("octo", "default");
-      }
-    }
-  }, [octoSheetState, setContentTypeState]);
-
-  // Reset ref when Octo action is clicked to ensure proper state tracking
-  const handleOctoActionOpen = useCallback(() => {
-    prevOctoSheetStateRef.current = "default";
-  }, []);
 
   return (
     <div
@@ -761,32 +663,23 @@ export function ExpandViewDetails({
             )}
           </div>
 
-          <DynamicSheet
-            isOpen={isNonDesktop && hasContentType("octo") && isActive}
-            renderMode="inline"
-            controlledState={octoSheetState}
-            config={{
-              ...octoConfig,
-              onStateChange: handleOctoSheetStateChange,
-              onClose: handleOctoSheetClose,
-            }}
-            onSwiperToggle={onSwiperToggle}
-            className={octoClassName(octoSheetState)}
-            contentClassName="gencl:bg-transparent"
-            footerClassName={octoFooterClassName(octoSheetState)}
-          >
-            <OctoPanel
+          {/* Octo AI Sheet - Only loaded when octo is enabled */}
+          {isOctoEnabled && (
+            <OctoDynamicSheet
+              isOpen={isNonDesktop && hasContentType("octo") && isActive}
               videoId={postDetails.video.id}
               videoSlug={postDetails.video.slug}
-              variant="sheet"
-              open={isNonDesktop && hasContentType("octo") && isActive}
-              panelClassName="gencl:h-full"
-              renderMode={octoRenderMode}
+              octoSheetState={octoSheetState}
+              isMobile={isNonDesktop}
+              viewportHeight={viewportHeight}
+              octoRenderMode={octoRenderMode}
+              onStateChange={handleOctoSheetStateChange}
+              onClose={handleOctoSheetClose}
               onExpandRequest={handleOctoExpandRequest}
               onCompactExpand={handleOctoCompactExpand}
               onCountdownActive={handleOctoCountdownActive}
             />
-          </DynamicSheet>
+          )}
 
           {showLinkoutInExpand &&
             brandLayoutType !== "iheart" &&

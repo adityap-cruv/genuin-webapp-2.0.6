@@ -1,117 +1,24 @@
 import { OctoIconAnimated } from "@genuin/ui/icons";
 import { cn } from "@genuin/ui/utils";
 import type { OctoActionIconProps } from "./octo-action-icon.types";
-import {
-  useCallback,
-  useEffect,
-  useState,
-  type CSSProperties,
-  type MouseEvent,
-} from "react";
-import { GENAI_ASSETS_BASE_URL } from "@genuin/components/lib/utils/env";
-
-const FALLBACK_GENAI_ASSETS_BASE_URL =
-  "https://media.begenuin.com/webapp_assets/assets/genai/";
-
-function withTrailingSlash(value: string) {
-  const sanitized = value.trim();
-  return sanitized.endsWith("/") ? sanitized : `${sanitized}/`;
-}
-
-const resolvedGenaiAssetsBaseUrl = withTrailingSlash(
-  (GENAI_ASSETS_BASE_URL && GENAI_ASSETS_BASE_URL.trim().length > 0
-    ? GENAI_ASSETS_BASE_URL
-    : FALLBACK_GENAI_ASSETS_BASE_URL) as string
-);
-
-const OCTO_ANIMATION_URL = new URL(
-  "gathering/animations/c6620ae0-a5cd-477c-9441-7c90b34a7ed4.json",
-  resolvedGenaiAssetsBaseUrl
-).toString();
-
-const OCTO_ANIMATION_IMAGES_BASE_URL = new URL(
-  "gathering/",
-  resolvedGenaiAssetsBaseUrl
-).toString();
-
-let cachedOctoAnimationData: object | null = null;
-let octoAnimationPromise: Promise<object> | null = null;
-
-function normaliseOctoAnimationData(rawData: any) {
-  if (!rawData || typeof rawData !== "object") return rawData;
-
-  if (!Array.isArray(rawData.assets)) {
-    return { ...rawData };
-  }
-
-  const normalisedAssets = rawData.assets.map((asset: any) => {
-    if (!asset || typeof asset !== "object") return asset;
-
-    if (typeof asset.p !== "string" || asset.p.startsWith("data:")) {
-      return asset;
-    }
-
-    const assetFolder =
-      typeof asset.u === "string" && asset.u.length > 0 ? asset.u : "";
-    const combinedPath = `${assetFolder}${asset.p}`;
-    const absoluteAssetUrl = new URL(
-      combinedPath
-        .replace(/^\/+/u, "")
-        .replace(/^(\.\/)+/u, "")
-        .replace(/^(\.\.\/)+/u, ""),
-      OCTO_ANIMATION_IMAGES_BASE_URL
-    ).toString();
-
-    return {
-      ...asset,
-      u: "",
-      p: absoluteAssetUrl,
-    };
-  });
-
-  return {
-    ...rawData,
-    assets: normalisedAssets,
-  };
-}
-
-async function loadOctoAnimationData() {
-  if (cachedOctoAnimationData) {
-    return cachedOctoAnimationData;
-  }
-
-  if (!octoAnimationPromise) {
-    octoAnimationPromise = fetch(OCTO_ANIMATION_URL)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to load octo animation");
-        }
-
-        return response.json();
-      })
-      .then((data) => {
-        const normalised = normaliseOctoAnimationData(data);
-        cachedOctoAnimationData = normalised;
-        return normalised;
-      })
-      .finally(() => {
-        octoAnimationPromise = null;
-      });
-  }
-
-  return octoAnimationPromise;
-}
+import { useCallback, type CSSProperties, type MouseEvent } from "react";
+import { useOctoAnimation } from "./use-octo-animation";
 
 /**
- * OctoActionIcon - Smart component that manages Octo icon animation state
+ * OctoActionIcon - Animated Octo icon component with loading states
  *
- * This component handles:
- * - Hover state management
- * - Click/active state management
- * - Animation triggers based on interaction
- * - Lottie file loading and fallback
+ * A simplified wrapper around OctoIconAnimated that handles:
+ * - Lazy loading of animation data
+ * - Loading and error states with fallbacks
+ * - Click interactions
+ * - Animation lifecycle callbacks
  *
- * Usage:
+ * Architecture:
+ * - OctoActionIcon (this component) - UI wrapper with interaction handlers
+ * - useOctoAnimation hook - Animation data loading and caching
+ * - OctoIconAnimated - Lottie rendering layer
+ *
+ * @example
  * ```tsx
  * <OctoActionIcon
  *   size={32}
@@ -128,36 +35,10 @@ export function OctoActionIcon({
   onClick,
   ...restProps
 }: OctoActionIconProps) {
+  const { animationData, isLoading, hasError } = useOctoAnimation();
+
   const dimensionStyle: CSSProperties | undefined =
     size !== undefined ? { width: size, height: size } : undefined;
-  const [octoAnimationData, setOctoAnimationData] = useState<object | null>(
-    cachedOctoAnimationData
-  );
-  const [loadError, setLoadError] = useState(false);
-
-  useEffect(() => {
-    if (octoAnimationData) {
-      return;
-    }
-
-    let cancelled = false;
-
-    loadOctoAnimationData()
-      .then((data) => {
-        if (!cancelled) {
-          setOctoAnimationData(data);
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setLoadError(true);
-        }
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [octoAnimationData]);
 
   const handleClick = useCallback(
     (e: MouseEvent<HTMLDivElement>) => {
@@ -170,8 +51,8 @@ export function OctoActionIcon({
     onAnimationComplete?.();
   }, [onAnimationComplete]);
 
-  // If animation data is not available, show a placeholder
-  if (!octoAnimationData || loadError) {
+  // Loading or error state - show minimal placeholder
+  if (isLoading || hasError) {
     return (
       <div
         className={cn(
@@ -183,12 +64,12 @@ export function OctoActionIcon({
         onClick={handleClick}
         {...restProps}
       >
-        <div className="gencl:text-xs gencl:text-center gencl:text-secondary-500">
-        </div>
+        <div className="gencl:text-xs gencl:text-center gencl:text-secondary-500" />
       </div>
     );
   }
 
+  // Render Lottie animation
   return (
     <div
       className={cn(
@@ -201,7 +82,7 @@ export function OctoActionIcon({
       {...restProps}
     >
       <OctoIconAnimated
-        src={octoAnimationData}
+        src={animationData}
         width={size}
         height={size}
         loop

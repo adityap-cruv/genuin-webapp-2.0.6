@@ -407,8 +407,9 @@ export function Actions({
         const key = `action-${action.actionType}`;
         const isOctoAction = action.actionType === "OCTO";
 
+        // Clone Octo icon with size="100%" for both mobile and desktop
         const iconElement =
-          isOctoAction && variant !== "mobile" && isValidElement(action.icon)
+          isOctoAction && isValidElement(action.icon)
             ? cloneElement(action.icon, {
                 size: "100%",
                 className: cn(
@@ -420,20 +421,9 @@ export function Actions({
 
         // For mobile variant, render icon directly (Octo gets circular treatment)
         if (variant === "mobile") {
-          const mobileIcon =
-            isOctoAction && isValidElement(action.icon)
-              ? cloneElement(action.icon, {
-                  size: "100%",
-                  className: cn(
-                    "gencl:h-full gencl:w-full",
-                    (action.icon.props as { className?: string }).className
-                  ),
-                })
-              : iconElement;
-
           const mobileNode = isOctoAction ? (
             <TooltipAction
-              icon={mobileIcon}
+              icon={iconElement}
               tooltipText={action.tooltipText}
               variant={theme}
               iconSize="fill"
@@ -441,7 +431,7 @@ export function Actions({
             />
           ) : (
             <div className="gencl:flex gencl:h-12 gencl:w-12 gencl:items-center gencl:justify-center">
-              {mobileIcon}
+              {iconElement}
             </div>
           );
 
