@@ -503,5 +503,172 @@
       "param": "buyeruid_u",
       "macros": "[BUYERUID]"
     }
+  },
+  "imp": [
+    {
+      "video": {
+        "h": {
+          "value": null,
+          "param": "player_height",
+          "macros": "[HEIGHT]"
+        },
+        "w": {
+          "value": null,
+          "param": "player_width",
+          "macros": "[WIDTH]"
+        },
+        "startdelay": {
+          "value": null,
+          "param": "startdelay_iv",
+          "macros": "[VIDEO_STARTDELAY]"
+        },
+        "minbitrate": {
+          "value": null,
+          "param": "min_bitrate",
+          "macros": "[MIN_BITRATE]"
+        },
+        "protocols": [
+          {
+            "value": null,
+            "param": "protocols_iv",
+            "macros": "[IMP_VIDEO_PROTOCOLS]"
+          }
+        ],
+        "podid": {
+          "value": null,
+          "param": "podid_iv",
+          "macros": "[VIDEO_PODID]"
+        },
+        "podseq": {
+          "value": null,
+          "param": "podseq_iv",
+          "macros": "[VIDEO_PODSEQ]"
+        },
+        "rqddurs": [
+          {
+            "value": null,
+            "param": "rqddurs_iv",
+            "macros": "[VIDEO_RQDDURS]"
+          }
+        ],
+        "placement": {
+          "value": null,
+          "param": "placement_iv",
+          "macros": "[VIDEO_PLACEMENT]"
+        },
+        "linearity": {
+          "value": null,
+          "param": "linearity_iv",
+          "macros": "[VIDEO_LINEARITY]"
+        },
+        "skip": {
+          "value": null,
+          "param": "skip_iv",
+          "macros": "[VIDEO_SKIP]"
+        },
+        "skipmin": {
+          "value": null,
+          "param": "skipmin_iv",
+          "macros": "[VIDEO_SKIPMIN]"
+        },
+        "skipafter": {
+          "value": null,
+          "param": "skipafter_iv",
+          "macros": "[VIDEO_SKIPAFTER]"
+        },
+        "sequence": {
+          "value": null,
+          "param": "sequence_iv",
+          "macros": "[VIDEO_SEQUENCE]"
+        },
+        "slotinpod": {
+          "value": null,
+          "param": "slotinpod_iv",
+          "macros": "[VIDEO_SLOTINPOD]"
+        },
+        "mincpmpersec": {
+          "value": null,
+          "param": "mincpmpersec_iv",
+          "macros": "[VIDEO_MINCPMPERSEC]"
+        },
+        "battr": [
+          {
+            "value": null,
+            "param": "battr_iv",
+            "macros": "[VIDEO_BATTR]"
+          }
+        ],
+        "maxextended": {
+          "value": null,
+          "param": "maxextended_iv",
+          "macros": "[VIDEO_MAXEXTENDED]"
+        },
+        "maxbitrate": {
+          "value": null,
+          "param": "max_bitrate",
+          "macros": "[MAX_BITRATE]"
+        },
+        "boxingallowed": {
+          "value": null,
+          "param": "boxingallowed_iv",
+          "macros": "[VIDEO_BOXINGALLOWED]"
+        },
+        "playbackmethod": [
+          {
+            "value": null,
+            "param": "playbackmethod_iv",
+            "macros": "[VIDEO_PLAYBACKMETHOD]"
+          }
+        ],
+        "playbackend": {
+          "value": null,
+          "param": "playbackend_iv",
+          "macros": "[VIDEO_PLAYBACKEND]"
+        },
+        "delivery": [
+          {
+            "value": null,
+            "param": "delivery_iv",
+            "macros": "[VIDEO_DELIVERY]"
+          }
+        ],
+        "pos": {
+          "value": null,
+          "param": "pos_iv",
+          "macros": "[VIDEO_POS]"
+        },
+        "companiontype": [
+          {
+            "value": null,
+            "param": "companiontype_iv",
+            "macros": "[VIDEO_COMPANIONTYPE]"
+          }
+        ],
+        "maxseq": {
+          "value": null,
+          "param": "maxseq_iv",
+          "macros": "[VIDEO_MAXSEQ]"
+        },
+        "poddur": {
+          "value": null,
+          "param": "pod_duration",
+          "macros": "[POD_DURATION]"
+        },
+        "maxduration": {
+          "value": null,
+          "param": "max_ad_duration",
+          "macros": "[MAX_AD_DURATION]"
+        }
+      }
+    }
+  ],
+  "regs": {
+    "ext": {
+      "gdpr": {
+        "value": null,
+        "param": "regs_ext_gdpr",
+        "macros": "[REGS_EXT_GDPR]"
+      }
+    }
   }
 }

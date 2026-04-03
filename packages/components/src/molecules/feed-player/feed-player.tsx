@@ -66,6 +66,10 @@ type FeedPlayerProps = Omit<
    */
   isActive?: boolean;
   /**
+   * The size of the player, used for analytics and ad configuration.
+   */
+  playerSize?: { height: number; width: number };
+  /**
    * Called when the GenAd fill state changes (true = ad is showing, false = no ad / ad failed).
    */
   onAdStateChange?: (isFilled: boolean) => void;
@@ -94,6 +98,7 @@ export const FeedPlayer = memo(function FeedPlayer({
   videoType,
   adsPlatform,
   isSponsored,
+  playerSize,
   onAdStateChange,
   onOpenPlayerReady,
   onTimeUpdate,
@@ -135,15 +140,30 @@ export const FeedPlayer = memo(function FeedPlayer({
     view: { playerShouldPauseOnNotAllowed },
   } = useEmbedConfigs();
 
-  const { appendParamsToUrl } = useUrlParams();
+  const { appendParamsToUrl, setPlayerSize } = useUrlParams();
+  // adUrl =
+  //   "https://gov.aniview.com/api/adserver/vmap/srv/?AV_HEIGHT=[DEVICE_HEIGHT]&p_height=[HEIGHT]&p_width=[WIDTH]&AV_PLACEMENT=1&AV_CONNECTIONTYPE=[DEVICE_CONNECTIONTYPE]&AV_IFA_TYPE=[IFA_TYPE]&AV_CHANNELID=698caa862051b1279703d98d&AV_CONTENT_URL=https://shorts.usmagazine.com/video/bestselling-mascara?community=214f3e23b8000d42&loop=214f3ea3b5801400&postroll=1&AV_PLCMT=1&AV_LATITUDE=[LOCATION_LAT]&AV_LMT=[LIMITED_AD_TRACKING]&preroll=1&AV_URL=https://shorts.usmagazine.com/video/bestselling-mascara?community=214f3e23b8000d42&loop=214f3ea3b5801400&AV_WIDTH=[DEVICE_WIDTH]&AV_RTB_DEVICE_TYPE=[DEVICE_TYPE]&AV_REGION=[REGION]&AV_MODEL=[DEVICE_MODEL]&AV_MAKE=[DEVICE_MAKE]&AV_LANGUAGE=[DEVICE_LANGUAGE]&AV_PUBLISHERID=6970e651e6f83878f3085364&cb=1774522459934970488&AV_IP=[IP]&AV_LONGITUDE=[LOCATION_LON]&AV_GDPR=[GDPR]&AV_DOMAIN=[DOMAIN]&AV_CONTENT_ID=56901c92-8a4e-4d27-a2c0-5acb5cfda65a&AV_USERAGENT=[UA]&AV_CONSENT=[GDPRCONSENT]&AV_OS=[OS]&AV_OSVERS=[OS_VERSION]&AV_DNT=[DNT]&midroll_times=00:00:08&AV_TIMESTAMP=1774522459934970818";
 
   // TODO: this is temporary code for qa-testing, need to remove once qa is done.
   adUrl = useMemo(() => {
     const dataAdUrl = embedDetails?.rootElement?.getAttribute("data-ad-url");
-    return dataAdUrl ?? adUrl;
+    // This function call sets player size before appending params to url,
+    // Do not add it into dep array of useMemo, otherwise it will cause changes in adUrl which will load ad again.
+    if (playerSize) setPlayerSize(playerSize);
+
+    if (dataAdUrl) {
+      return appendParamsToUrl(dataAdUrl);
+    }
+
+    if (adUrl) {
+      return appendParamsToUrl(adUrl);
+    }
   }, [adUrl, adTagObject]);
 
   const resolvedAdConfig = useMemo(() => {
+    // This function call sets player size before appending params to url,
+    // Do not add it into dep array of useMemo, otherwise it will cause changes in adUrl which will load ad again.
+    if (playerSize) setPlayerSize(playerSize);
     if (adTagObject?.video_ad?.ads_url) {
       adTagObject.video_ad.ads_url = appendParamsToUrl(
         adTagObject.video_ad.ads_url,

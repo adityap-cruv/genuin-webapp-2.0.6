@@ -30,7 +30,7 @@ export function GridView({
 
   const { width: widthRatio, height: heightRatio } = useMemo(
     () => getAspectRatio(aspectRatio),
-    [aspectRatio]
+    [aspectRatio],
   );
 
   // Memoize sorted and limited videos
@@ -73,7 +73,7 @@ export function GridView({
             className={cn(
               "gencl:relative gencl:overflow-hidden gencl:rounded-md",
               "gencl:transition-all gencl:duration-300 gencl:ease-in-out",
-              "gencl:cursor-pointer"
+              "gencl:cursor-pointer",
             )}
             style={{
               aspectRatio: `${widthRatio} / ${heightRatio}`,
@@ -85,7 +85,7 @@ export function GridView({
                 {
                   activePlayerType: "expand-view",
                   activeIndex: index,
-                }
+                },
               );
             }}
           >
@@ -94,6 +94,10 @@ export function GridView({
               swiper={swiper}
               index={index}
               postDetails={videoData}
+              itemSize={{
+                height: containerHeight / rows - 8, // Subtracting gap
+                width: containerWidth / cols - 8, // Subtracting gap
+              }}
             />
           </div>
         ))}

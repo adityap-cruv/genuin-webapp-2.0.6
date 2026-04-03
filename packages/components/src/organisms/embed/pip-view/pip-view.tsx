@@ -92,6 +92,10 @@ export function PipView({ videos, isLoading, totalVideos }: PipViewProps) {
                 totalVideos={totalVideos}
                 isPipActive
                 onClick={handlePipPlayerClick}
+                itemSize={{
+                  height: 300,
+                  width: 180,
+                }}
               />
             </div>
             <button
@@ -111,6 +115,7 @@ type PipPLayerPropsType = {
   isPipActive?: boolean;
   onInterationEnd?: () => void;
   totalVideos: number;
+  itemSize: { height: number; width: number };
 } & ComponentProps<"div">;
 
 function PipPlayer({
@@ -119,6 +124,7 @@ function PipPlayer({
   isPipActive = false,
   totalVideos,
   onInterationEnd,
+  itemSize,
   ...restProps
 }: PipPLayerPropsType) {
   return (
@@ -143,6 +149,7 @@ function PipPlayer({
           poster={videoDetails.video?.thumbnail}
           videoType={videoDetails.video?.videoType ?? VideoTypes.Content}
           className="gencl:object-cover gencl:w-full gencl:h-full!"
+          playerSize={itemSize}
         />
         <ControlLayer variant="embed-pip" isActive postDetails={videoDetails} />
       </PlayerProvider>

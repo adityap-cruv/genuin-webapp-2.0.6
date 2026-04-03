@@ -173,6 +173,10 @@ export function Player({
                 showGestureOverlay("SWIPE");
               }}
               style={{ height: "inherit" }}
+              playerSize={{
+                height: swiper.height,
+                width: swiper.width,
+              }}
             />
           </Suspense>
           <Suspense fallback={null}>

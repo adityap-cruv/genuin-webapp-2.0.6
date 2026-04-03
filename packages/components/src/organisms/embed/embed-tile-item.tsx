@@ -24,6 +24,13 @@ type EmbedItemProps = Omit<
    * Swiper instance for the video player.
    */
   swiper: Swiper | null;
+  /**
+   * Height and width of the video player, used for analytics and ad configuration.
+   */
+  itemSize: {
+    height: number;
+    width: number;
+  };
 };
 
 export function EmbedItem({
@@ -31,6 +38,7 @@ export function EmbedItem({
   postDetails,
   totalVideos,
   swiper,
+  itemSize,
   ...restProps
 }: EmbedItemProps) {
   const { updateActiveIndex, goToNextVideo, activeIndex } =
@@ -222,6 +230,7 @@ export function EmbedItem({
       index={index}
       swiper={swiper}
       totalVideos={totalVideos}
+      itemSize={itemSize}
       {...restProps}
     />
   );

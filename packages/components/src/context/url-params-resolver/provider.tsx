@@ -25,10 +25,16 @@ type UserResolverConfig = BaseResolverConfig & {
   resolvers: Record<string, () => void | Promise<void>>;
 };
 
+type ImpressionResolverConfig = BaseResolverConfig & {
+  instance?: ImpressionResolver;
+  resolvers: Record<string, () => void | Promise<void>>;
+};
+
 type MainResolverConfig = {
   deviceResolver: DeviceResolver;
   siteResolver: SiteResolver;
   userResolver: UserResolver;
+  impressionResolver: ImpressionResolver;
 };
 
 // Base Resolver class
@@ -65,15 +71,23 @@ class BaseResolver implements BaseResolverConfig {
    */
   setKeyValue(keyPath: string, value: any): void {
     const keys = keyPath.split(".");
-    let current = this.keyParamMapping;
+    let current: any = this.keyParamMapping;
     for (let i = 0; i < keys.length - 1; i++) {
-      if (!current[keys[i] as string]) current[keys[i] as string] = {};
-      current = current[keys[i] as string];
+      const key = keys[i] as string;
+      const index = Array.isArray(current) ? parseInt(key, 10) : NaN;
+      if (!isNaN(index)) {
+        if (!current[index]) current[index] = {};
+        current = current[index];
+      } else {
+        if (!current[key]) current[key] = {};
+        current = current[key];
+      }
     }
-    current[keys[keys.length - 1] as string] = {
+    const lastKey = keys[keys.length - 1] as string;
+    current[lastKey] = {
       value,
-      param: current[keys[keys.length - 1] as string]?.param,
-      macros: current[keys[keys.length - 1] as string]?.macros,
+      param: current[lastKey]?.param,
+      macros: current[lastKey]?.macros,
     };
   }
 
@@ -884,17 +898,84 @@ class UserResolver extends BaseResolver implements UserResolverConfig {
   }
 }
 
+/**
+ * ImpressionResolver class to resolve impression-related properties
+ * @class
+ * @extends BaseResolver
+ * @see {@link https://iabtechlab.com/wp-content/uploads/2022/04/OpenRTB-2-6_FINAL.pdf|OpenRTB Specification}
+ */
+class ImpressionResolver
+  extends BaseResolver
+  implements ImpressionResolverConfig
+{
+  static instance?: ImpressionResolver;
+  resolvers!: Record<string, () => void | Promise<void>>;
+  private playerSize: { height: number; width: number } | null = null;
+
+  constructor() {
+    super();
+    // Implement Singleton pattern
+    if (ImpressionResolver.instance) {
+      return ImpressionResolver.instance;
+    }
+    ImpressionResolver.instance = this;
+
+    // Define resolvers for impression properties
+    this.resolvers = {
+      playersize: this.resolvePlayerSize.bind(this),
+    };
+  }
+
+  /**
+   * Sets the player dimensions and immediately applies them to imp.0.video.h / imp.0.video.w.
+   */
+  setPlayerSize(size: { height: number; width: number } | null): void {
+    this.playerSize = size;
+    this.resolvePlayerSize();
+  }
+
+  /**
+   * Resolves player size into impression video height and width params.
+   * @description
+   * Sets `imp.0.video.h` and `imp.0.video.w` as per OpenRTB specification section 3.2.4.
+   */
+  private resolvePlayerSize(): void {
+    this.setKeyValue("imp.0.video.h", this.playerSize?.height ?? undefined);
+    this.setKeyValue("imp.0.video.w", this.playerSize?.width ?? undefined);
+  }
+
+  /**
+   * Resolves all impression properties
+   */
+  async resolve() {
+    for (const [key, resolver] of Object.entries(this.resolvers)) {
+      await this.safeExecute(`imp.${key}`, resolver);
+    }
+  }
+}
+
 // MainResolver class to orchestrate all resolvers
 class MainResolver implements MainResolverConfig {
   deviceResolver: DeviceResolver;
   siteResolver: SiteResolver;
   userResolver: UserResolver;
+  impressionResolver: ImpressionResolver;
 
   constructor() {
     // Initialize individual resolvers
     this.deviceResolver = new DeviceResolver();
     this.siteResolver = new SiteResolver();
     this.userResolver = new UserResolver();
+    this.impressionResolver = new ImpressionResolver();
+  }
+
+  /**
+   * Sets the player element whose dimensions will be used for imp.0.video.h / imp.0.video.w.
+   * When set, dimensions are read lazily at each updateUrlWithParams / getResolvedParams call
+   * so that expand-view size changes are automatically captured.
+   */
+  setPlayerSize(size: { height: number; width: number } | null): void {
+    this.impressionResolver.setPlayerSize(size);
   }
 
   /**
@@ -904,6 +985,7 @@ class MainResolver implements MainResolverConfig {
     await Promise.all([
       this.deviceResolver.resolve(),
       this.siteResolver.resolve(),
+      this.impressionResolver.resolve(),
     ]);
     await this.userResolver.resolve();
   }
@@ -968,7 +1050,10 @@ class MainResolver implements MainResolverConfig {
       device: this.deviceResolver.keyParamMapping.device,
       site: this.siteResolver.keyParamMapping.site,
       user: this.userResolver.keyParamMapping.user,
+      imp: this.impressionResolver.keyParamMapping.imp,
+      regs: this.deviceResolver.keyParamMapping.regs,
     };
+    console.log("All mappings for URL update:", { imp: allMappings.imp });
     traverseJson(allMappings);
     return urlObj.toString();
   }
@@ -1006,6 +1091,8 @@ class MainResolver implements MainResolverConfig {
       device: this.deviceResolver.keyParamMapping.device,
       site: this.siteResolver.keyParamMapping.site,
       user: this.userResolver.keyParamMapping.user,
+      imp: this.impressionResolver.keyParamMapping.imp,
+      regs: this.deviceResolver.keyParamMapping.regs,
     };
     traverseJson(allMappings);
     return resolvedParams;
@@ -1027,11 +1114,13 @@ class MainResolver implements MainResolverConfig {
 type UrlParamContextType = {
   resolvedParams: Record<string, any>;
   appendParamsToUrl: (url: string) => string;
+  setPlayerSize: (size: { height: number; width: number } | null) => void;
 };
 
 const UrlParamContext = createContext<UrlParamContextType>({
   resolvedParams: {},
   appendParamsToUrl: (url: string) => url,
+  setPlayerSize: () => {},
 });
 
 /**
@@ -1080,9 +1169,22 @@ export const UrlParamProvider: React.FC<{
     return url;
   };
 
+  const setPlayerSize = (
+    size: { height: number; width: number } | null,
+  ): void => {
+    console.log("Setting player size:", size);
+    resolverRef.current?.setPlayerSize(
+      size ? { height: size.height, width: size.width } : null,
+    );
+  };
+
   return (
     <UrlParamContext.Provider
-      value={{ resolvedParams: resolvedParamsRef.current, appendParamsToUrl }}
+      value={{
+        resolvedParams: resolvedParamsRef.current,
+        appendParamsToUrl,
+        setPlayerSize,
+      }}
     >
       {children}
     </UrlParamContext.Provider>
