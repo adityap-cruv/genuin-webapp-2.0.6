@@ -222,6 +222,8 @@ async function fetchFeed(
       requestBody = {
         ...(deviceId && { device_id: deviceId }),
         ...(options?.embedId && { embed_id: options.embedId }),
+        ...(options?.placementId && { placement_id: options.placementId }),
+        ...(options?.styleId && { style_id: options.styleId }),
         ...(pageParam?.lastVideoId && { last_video_id: pageParam.lastVideoId }),
         ...(pageParam?.pageSession && { page_session: pageParam.pageSession }),
         ...(options?.communityIds?.length && {
@@ -238,6 +240,8 @@ async function fetchFeed(
         type: feedTypeToNumber[feedType],
         ...(deviceId && { device_id: deviceId }),
         ...(options?.embedId && { embed_id: options.embedId }),
+        ...(options?.placementId && { placement_id: options.placementId }),
+        ...(options?.styleId && { style_id: options.styleId }),
         ...(pageParam?.lastVideoId && { last_video_id: pageParam.lastVideoId }),
         ...(pageParam?.pageSession && { page_session: pageParam.pageSession }),
         ...(options?.communityIds?.length && {
