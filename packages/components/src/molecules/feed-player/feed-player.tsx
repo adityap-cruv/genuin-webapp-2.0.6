@@ -537,7 +537,7 @@ export const FeedPlayer = memo(function FeedPlayer({
     if (!videoElement) return;
 
     const handleBrowserRestrictionPause = () => {
-      pauseBySystem(true);
+      pauseBySystem();
     };
 
     videoElement.addEventListener(

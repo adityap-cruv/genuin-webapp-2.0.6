@@ -37,6 +37,35 @@ export function PlayingState({
   const { playingState, buttonAction, pausedBySystem, resumeFromSystemPause } =
     usePlayerContext();
 
+  // System pause UI must remain stable across active/index/src transitions.
+  if (pausedBySystem) {
+    return (
+      <div
+        key="system-pause"
+        className="gencl:flex gencl:flex-col gencl:items-center gencl:gap-2 gencl:absolute gencl:h-full gencl:w-full gencl:justify-center"
+        onClick={(event) => {
+          event.stopPropagation();
+          resumeFromSystemPause();
+        }}
+      >
+        <div
+          role="status"
+          aria-live="polite"
+          className={cn(
+            "gencl:rounded-full gencl:bg-black/40 gencl:align-middle gencl:backdrop-blur-sm",
+            "gencl:flex gencl:items-center gencl:justify-center gencl:h-16 gencl:w-16",
+          )}
+          {...restProps}
+        >
+          <PauseIcon theme="dark" size="xl" aria-hidden="true" />
+        </div>
+        <p className="gencl:bg-black/40 gencl:p-2 gencl:backdrop-blur-sm gencl:rounded-md gencl:text-center gencl:text-body-1-semi-bold gencl:text-white">
+          Tap to unmute and play
+        </p>
+      </div>
+    );
+  }
+
   // If no buttonAction is set (which happens when not user initiated), don't render anything
   if (!buttonAction) {
     return null;
@@ -87,9 +116,8 @@ export function PlayingState({
 
   // Default behavior for non-iHeart layouts
   if (buttonAction === "PAUSE" && playingState === "PAUSED") {
-    if (!pausedBySystem) {
-      return (
-        <div
+    return (
+      <div
           key={buttonAction}
           role="status"
           aria-live="polite"
@@ -102,34 +130,6 @@ export function PlayingState({
         >
           <PauseIcon theme="dark" size="xl" aria-hidden="true" />
         </div>
-      );
-    }
-
-    return (
-      <div
-        key={buttonAction}
-        className="gencl:flex gencl:flex-col gencl:items-center gencl:gap-2 gencl:absolute gencl:h-full gencl:w-full gencl:justify-center"
-        onClick={(event) => {
-          event.stopPropagation();
-          resumeFromSystemPause();
-        }}
-      >
-        <div
-          role="status"
-          aria-live="polite"
-          aria-label={getAriaLabelForAction(buttonAction)}
-          className={cn(
-            "gencl:rounded-full gencl:bg-black/40 gencl:align-middle gencl:backdrop-blur-sm",
-            "gencl:flex gencl:items-center gencl:justify-center gencl:h-16 gencl:w-16",
-          )}
-          {...restProps}
-        >
-          <PauseIcon theme="dark" size="xl" aria-hidden="true" />
-        </div>
-        <p className="gencl:bg-black/40 gencl:p-2 gencl:backdrop-blur-sm gencl:rounded-md gencl:text-center gencl:text-body-1-semi-bold gencl:text-white">
-          Tap to unmute and play
-        </p>
-      </div>
     );
   }
 

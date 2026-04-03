@@ -343,6 +343,7 @@ export const VideoPlayer = memo(function VideoPlayer({
     const videoElement = videoRef.current;
     if (!videoElement) return;
 
+    updatePlayerMutedState(true)
     pauseThePlayer();
     videoElement.dispatchEvent(
       new CustomEvent("videoPausedByBrowserRestriction", {

@@ -9,9 +9,17 @@ export type BaseEventBusContext = {
    * This will only work for iheart, not other brands.
    */
   globalPlayingState: boolean;
+  /**
+   * Whether the player was paused by a system/browser restriction.
+   * When true, all players should show the system pause recovery UI.
+   */
+  systemPaused: boolean;
 };
 
-type EventNames = "userFocusChange" | "globalPlayingStateChange";
+type EventNames =
+  | "userFocusChange"
+  | "globalPlayingStateChange"
+  | "systemPauseStateChange";
 
 export function createBaseEventBus(initialGlobalPlayingState: boolean = true) {
   return new EventManager<BaseEventBusContext, EventNames>({
@@ -19,5 +27,6 @@ export function createBaseEventBus(initialGlobalPlayingState: boolean = true) {
     muted: true,
     volume: 100,
     globalPlayingState: initialGlobalPlayingState,
+    systemPaused: false,
   });
 }
