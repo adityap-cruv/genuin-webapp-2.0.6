@@ -248,7 +248,7 @@ export function useEmbedConfigs() {
 
     // Default and disabled engagement tool states
     const defaultEngagementTools = {
-      octo: true, 
+      octo: true,
       repost: true,
       spark: true,
       comment: true,
@@ -373,8 +373,7 @@ export function useEmbedConfigs() {
 
     return {
       enable: !isDisabled && (customization?.is_popup_view ?? true),
-      isShowByDefault:
-        !isDisabled && !!customization?.is_show_popup_by_default,
+      isShowByDefault: !isDisabled && !!customization?.is_show_popup_by_default,
     };
   }, [customization, embedData?.disable_expand_view]);
 
@@ -507,14 +506,7 @@ export function useEmbedConfigs() {
   /**
    * If we want to render slides into window directly instead of redering it into container.
    */
-  const useWindowSwiperMode = useMemo(
-    () =>
-      !isDesktop &&
-      viewConfig.brandLayoutType === "iheart" &&
-      viewConfig.websiteType === "polaris" &&
-      viewConfig.isFeed,
-    [],
-  );
+  const useWindowSwiperMode = useMemo(() => false, []);
 
   const virtualizeSwiper = useMemo(
     () => (embedData?.videoIds && embedData.videoIds.length > 0) || isSafari,
