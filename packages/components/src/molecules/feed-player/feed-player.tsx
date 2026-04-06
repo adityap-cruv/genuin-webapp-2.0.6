@@ -367,12 +367,6 @@ export const FeedPlayer = memo(function FeedPlayer({
     (event: any) => {
       onPlay?.(event);
       setPlayingState("PLAYING");
-      if (
-        index !== undefined &&
-        !baseContextManager.checkIfVideoPreviewActive({ index })
-      ) {
-        baseContextManager.setPlayPauseTracker({ isPlaying: true });
-      }
       baseContextManager.setVideoWatched({ isWatched: false, videoId });
     },
     [onPlay, setPlayingState, baseContextManager, videoId],

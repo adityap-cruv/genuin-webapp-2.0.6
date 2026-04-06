@@ -238,7 +238,10 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       setFeedPlayerShouldPlay(context.globalPlayingState);
     }
 
-    function handleSystemPauseStateChange(_: any, context: BaseEventBusContext) {
+    function handleSystemPauseStateChange(
+      _: any,
+      context: BaseEventBusContext,
+    ) {
       setPausedBySystem(context.systemPaused);
 
       if (context.systemPaused) {
@@ -342,6 +345,10 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     isEmbed,
     isExpandOnly,
   ]);
+
+  useEffect(() => {
+    baseContextManager.setPlayPauseTracker({ isPlaying: playerPlayFlag });
+  }, [baseContextManager, playerPlayFlag]);
 
   const handleVideoImpression = useCallback(
     ({
@@ -641,7 +648,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       }));
     }
 
-
     function handleUserFocusChange() {
       const context = baseEventBus.getContext();
       setFocusState((prev) => ({ ...prev, isFocused: context.userIsFocused }));
@@ -710,7 +716,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       embedEventBus.off("containerInViewChange", handleContainerInViewChange);
       baseEventBus.off("userFocusChange", handleUserFocusChange);
       embedEventBus.off("activeIndexChange", handleActiveIndexChange);
-      embedEventBus.on("activePlayerTypeChange", handleActivePlayerChange);
+      embedEventBus.off("activePlayerTypeChange", handleActivePlayerChange);
       baseContextManager.off("onVideoWatchedChanged", handleVideoWatched);
     };
   }, [
@@ -906,10 +912,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
           }
           const newPlayingState = !prev;
           if (byUser) {
-            baseContextManager.setPlayPauseTracker({
-              isPlaying: newPlayingState,
-            });
-
             setButtonAction(prev ? "PAUSE" : "PLAY");
 
             // Track play/pause events with Analytics only if the video play pause is triggered by user.
@@ -938,10 +940,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
           }
           const newPlayingState = !prev;
           if (byUser) {
-            baseContextManager.setPlayPauseTracker({
-              isPlaying: newPlayingState,
-            });
-
             setButtonAction(prev ? "PAUSE" : "PLAY");
 
             // Track play/pause events with Analytics only if the video play pause is triggered by user.
@@ -968,9 +966,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
           ...context,
           globalPlayingState: true,
         }));
-        baseContextManager.setPlayPauseTracker({
-          isPlaying: feedPlayerShouldPlay,
-        });
         return;
       }
 
@@ -980,9 +975,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         }
         const newPlayingState = !prev;
         if (byUser) {
-          baseContextManager.setPlayPauseTracker({
-            isPlaying: newPlayingState,
-          });
           setButtonAction(prev ? "PAUSE" : "PLAY");
 
           // Track play/pause events with Analytics only if the video play pause is triggered by user.
@@ -1027,7 +1019,10 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       if (isLoading) return;
 
       // Prevent non-user triggered play while system pause is active.
-      if (!byUser && (pausedBySystem || baseEventBus.getContext().systemPaused)) {
+      if (
+        !byUser &&
+        (pausedBySystem || baseEventBus.getContext().systemPaused)
+      ) {
         return;
       }
 
@@ -1049,7 +1044,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       track,
       EventName.VIDEO_PLAY,
       baseAnalyticsData,
-      baseContextManager,
       isLoading,
       pausedBySystem,
       baseEventBus,
@@ -1063,7 +1057,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       if (isLoading) return;
       setFeedPlayerShouldPlay(false);
       if (byUser) {
-        baseContextManager.setPlayPauseTracker({ isPlaying: false });
         setButtonAction("PAUSE");
         // Track pause event with Analytics only if the video pause is triggered by user.
         track(EventName.VIDEO_PAUSED, {
@@ -1072,33 +1065,22 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         });
       }
     },
-    [
-      EventName.VIDEO_PAUSED,
-      baseEventBus,
-      baseContextManager,
-      track,
-      baseAnalyticsData,
-      isLoading,
-    ],
+    [EventName.VIDEO_PAUSED, baseEventBus, track, baseAnalyticsData, isLoading],
   );
 
-  const pauseBySystem = useCallback(
-    () => {
-      baseEventBus.emit("systemPauseStateChange", undefined, (context) => ({
-        ...context,
-        systemPaused: true,
-        globalPlayingState: false,
-      }));
+  const pauseBySystem = useCallback(() => {
+    baseEventBus.emit("systemPauseStateChange", undefined, (context) => ({
+      ...context,
+      systemPaused: true,
+      globalPlayingState: false,
+    }));
 
-      setFeedPlayerShouldPlay(false);
-      setPlayingState("PAUSED");
-      setIsLoading(false);
-      setPausedBySystem(true);
-      setButtonAction("PAUSE");
-      baseContextManager.setPlayPauseTracker({ isPlaying: false });
-    },
-    [baseContextManager, baseEventBus],
-  );
+    setFeedPlayerShouldPlay(false);
+    setPlayingState("PAUSED");
+    setIsLoading(false);
+    setPausedBySystem(true);
+    setButtonAction("PAUSE");
+  }, [baseEventBus]);
 
   const resumeFromSystemPause = useCallback(() => {
     baseEventBus.emit("systemPauseStateChange", undefined, (context) => ({
@@ -1111,8 +1093,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     setMuted(false);
     setFeedPlayerShouldPlay(true);
     setButtonAction("PLAY");
-    baseContextManager.setPlayPauseTracker({ isPlaying: true });
-  }, [setMuted, baseContextManager, baseEventBus]);
+  }, [setMuted, baseEventBus]);
 
   // toggleMuted: Toggles the muted state of the player.
   const toggleMuted = useCallback(
@@ -1286,9 +1267,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       onPlayerIterationEnd();
       return;
     }
-
-    // set isplaying paused, no swipe next had happened.
-    baseContextManager.setPlayPauseTracker({ isPlaying: false });
   }, [
     isEmbed,
     baseContextManager,

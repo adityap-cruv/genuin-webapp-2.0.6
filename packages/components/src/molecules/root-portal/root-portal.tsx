@@ -113,6 +113,8 @@ export function RootPortal({
   useEffect(() => {
     if (!containerElement) return;
     containerElement?.classList.add("gen-sdk-class");
+    containerElement.style.position = "fixed";
+    containerElement.style.inset = "0";
     const carlistBrandIds = [2992, 2993, 3080, 3075, 2314, 2557, 2558, 2556];
     const isCarlistBrand = carlistBrandIds.includes(brandDetails.brand_id);
     if (isCarlistBrand) {

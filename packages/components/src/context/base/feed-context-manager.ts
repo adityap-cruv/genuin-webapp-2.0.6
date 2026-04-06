@@ -189,6 +189,7 @@ export class FeedContextManager {
   public isAnyVideoPlaying(): boolean {
     return this.playPauseTracker.isPlaying;
   }
+  
   /**
    * Register a new video with initial state
    */

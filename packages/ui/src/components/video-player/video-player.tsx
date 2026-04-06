@@ -315,23 +315,34 @@ export const VideoPlayer = memo(function VideoPlayer({
   const pauseThePlayer = useCallback(() => {
     const player = playerRef.current;
     if (!player) return;
-    // If an ad error occurred, just pause the main content
-    if (playerStateRef.current.isAdErrored) {
-      player?.getMedia().pause();
-      return;
+
+    // During rapid tile switches, ad/content state can race.
+    // Pause every possible playback surface defensively.
+    try {
+      const ad = player.getAd?.();
+      ad?.pause?.();
+      const adsManager = ad?.getAdsManager?.() as
+        | {
+            pause?: () => void;
+            // stop?: () => void;
+          }
+        | undefined;
+      adsManager?.pause?.();
+      // adsManager?.stop?.();
+    } catch (error) {
+      console.warn("Error pausing ad playback:", error);
     }
 
-    // Pause based on current player state
     try {
-      if (player.isAd()) {
-        player?.getAd()?.pause(); // Pause ad if playing
-      } else {
-        player?.getMedia().pause();
-      }
+      player.getMedia?.()?.pause?.();
     } catch (error) {
-      // Fallback to direct pause if specific methods fail
-      console.warn("Error pausing player, using fallback:", error);
-      player?.getElement().pause();
+      console.warn("Error pausing media playback:", error);
+    }
+
+    try {
+      player.getElement?.()?.pause?.();
+    } catch (error) {
+      console.warn("Error pausing player element:", error);
     }
   }, []);
 
@@ -339,7 +350,7 @@ export const VideoPlayer = memo(function VideoPlayer({
     const videoElement = videoRef.current;
     if (!videoElement) return;
 
-    updatePlayerMutedState(true)
+    updatePlayerMutedState(true);
     pauseThePlayer();
     videoElement.dispatchEvent(
       new CustomEvent("videoPausedByBrowserRestriction", {
@@ -477,6 +488,23 @@ export const VideoPlayer = memo(function VideoPlayer({
     return () => {
       const currentPlayer = playerRef.current;
       try {
+        try {
+          const ad = currentPlayer?.getAd?.();
+          ad?.pause?.();
+          const adsManager = ad?.getAdsManager?.() as
+            | {
+                pause?: () => void;
+                stop?: () => void;
+                destroy?: () => void;
+              }
+            | undefined;
+          adsManager?.pause?.();
+          adsManager?.stop?.();
+          adsManager?.destroy?.();
+        } catch (adError) {
+          console.warn("Error stopping ad during player cleanup:", adError);
+        }
+
         currentPlayer?.getMedia()?.pause();
         currentPlayer?.destroy();
       } catch (e) {
@@ -485,22 +513,8 @@ export const VideoPlayer = memo(function VideoPlayer({
 
       isPlayerInitialized.current = false;
       playerRef.current = null;
-      playerStateRef.current = {
-        firstQuartileFired: false,
-        midpointFired: false,
-        thirdQuartileFired: false,
-        videoWatchedFired: false,
-        videoStartFired: false,
-        shouldPlay: play,
-        isAdErrored: false,
-        allAdsCompleted: adUrl ? false : true,
-        videoCompleted: false,
-      };
       changePlayerStateRef(true);
-
       setIsPosterVisible(true);
-      isPlayerInitialized.current = false;
-      playerRef.current = null;
     };
   }, [src]);
 
@@ -725,6 +739,8 @@ export const VideoPlayer = memo(function VideoPlayer({
           videoWatchedFired: false,
           videoStartFired: playerStateRef.current.videoStartFired,
           shouldPlay: playerStateRef.current.shouldPlay,
+          videoCompleted: false,
+          isAdErrored: false,
           allAdsCompleted: adUrl ? false : true,
         };
         return;
