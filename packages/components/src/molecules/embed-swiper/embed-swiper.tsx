@@ -72,6 +72,7 @@ type EmbedSwiperProps = {
     index: number;
     height: number;
   };
+  slidesPerView: number;
 } & ComponentProps<typeof Swiper>;
 
 /**
@@ -86,7 +87,6 @@ export function EmbedSwiper({
   spaceBetweenVideos,
   containerDimensions,
   className,
-  aspectRatio,
   freeMode = false,
   slidesOffsetBefore,
   isIheartLayout = false,
@@ -94,6 +94,7 @@ export function EmbedSwiper({
   virtual,
   threshold,
   touchReleaseOnEdges,
+  slidesPerView,
   onActiveIndexChange,
   onInit,
   onSwiper,
@@ -108,18 +109,6 @@ export function EmbedSwiper({
       allowGestureScroll,
     },
   } = useEmbedConfigs();
-
-  const slidesPerView = useMemo(
-    () =>
-      getSlidesPerView(
-        containerDimensions?.height ?? 0,
-        containerDimensions?.width ?? 0,
-        forFeed,
-        aspectRatio,
-        useWindowSwiperMode,
-      ) ?? 1,
-    [forFeed, aspectRatio, containerDimensions, useWindowSwiperMode],
-  );
 
   // Use native scroll for feed mode
   if (useWindowSwiperMode) {

@@ -31,4 +31,8 @@ export type EmbedTileProps = {
    * Swiper instance for the video player.
    */
   swiper: Swiper | null;
+  /**
+   * Height and width of the video player, used for analytics and ad configuration.
+   */
+  itemSize: { height: number; width: number };
 } & ComponentProps<"div">;

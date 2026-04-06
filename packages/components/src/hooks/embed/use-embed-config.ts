@@ -508,10 +508,7 @@ export function useEmbedConfigs() {
    */
   const useWindowSwiperMode = useMemo(() => false, []);
 
-  const virtualizeSwiper = useMemo(
-    () => (embedData?.videoIds && embedData.videoIds.length > 0) || isSafari,
-    [],
-  );
+  const virtualizeSwiper = true;
 
   const brand = useMemo(() => {
     const isUsWeekly = brandDetails.brand_id === 2476;

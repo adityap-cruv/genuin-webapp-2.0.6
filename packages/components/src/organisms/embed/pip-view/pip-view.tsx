@@ -92,6 +92,10 @@ export function PipView({ videos, isLoading, totalVideos }: PipViewProps) {
                 totalVideos={totalVideos}
                 isPipActive
                 onClick={handlePipPlayerClick}
+                itemSize={{
+                  height: 300,
+                  width: 180,
+                }}
               />
             </div>
             <button
@@ -111,6 +115,7 @@ type PipPLayerPropsType = {
   isPipActive?: boolean;
   onInterationEnd?: () => void;
   totalVideos: number;
+  itemSize: { height: number; width: number };
 } & ComponentProps<"div">;
 
 function PipPlayer({
@@ -119,8 +124,11 @@ function PipPlayer({
   isPipActive = false,
   totalVideos,
   onInterationEnd,
+  itemSize,
   ...restProps
 }: PipPLayerPropsType) {
+  const [isAdFilled, setIsAdFilled] = useState(false);
+
   return (
     <div
       className={cn(
@@ -143,8 +151,25 @@ function PipPlayer({
           poster={videoDetails.video?.thumbnail}
           videoType={videoDetails.video?.videoType ?? VideoTypes.Content}
           className="gencl:object-cover gencl:w-full gencl:h-full!"
+          adTagObject={(videoDetails as any).adTagObject ?? undefined}
+          isSponsored={
+            videoDetails.video?.cardLayoutId === 7 ||
+            videoDetails.video?.videoLayoutId === 6
+          }
+          playerSize={{
+            height: 180,
+            width: 200,
+          }}
+          onAdStateChange={setIsAdFilled}
         />
-        <ControlLayer variant="embed-pip" isActive postDetails={videoDetails} />
+        {!isAdFilled && (
+          <ControlLayer
+            variant="embed-pip"
+            isActive
+            postDetails={videoDetails}
+            style={{ touchAction: "manipulation" }}
+          />
+        )}
       </PlayerProvider>
     </div>
   );

@@ -119,6 +119,7 @@ export function EmbedTile({
   index,
   swiper,
   totalVideos,
+  itemSize,
   onPlayerIterationEnd,
   ...restProps
 }: EmbedTileProps & VariantProps<typeof embedTileVariants>) {
@@ -203,6 +204,7 @@ export function EmbedTile({
               postDetails={postDetails}
               isActive={isActive}
               index={index}
+              itemSize={itemSize}
             />
           </PlayerProvider>
           <OutsideComponents postDetails={postDetails} />
@@ -216,12 +218,14 @@ type EmbedPlayerProps = {
   postDetails: PostDetailsType;
   isActive?: boolean;
   index: number;
+  itemSize: { height: number; width: number };
 };
 
 function EmbedPlayer({
   postDetails,
   isActive = false,
   index,
+  itemSize,
 }: EmbedPlayerProps) {
   const { isAdPlaying } = usePlayerContext();
   const config = useEmbedConfigs();
@@ -289,9 +293,9 @@ function EmbedPlayer({
   ]);
 
   const handleAdFilled = useCallback((type: string) => {
-    if (type === "banner") {
-      setIsAdFilled(true);
-    }
+    // if (type === "banner") {
+    setIsAdFilled(true);
+    // }
   }, []);
 
   const handleAdFilledEnd = useCallback(() => {
@@ -341,6 +345,7 @@ function EmbedPlayer({
               postDetails.video.videoLayoutId === 6
             }
             videoType={postDetails.video.videoType ?? VideoTypes.Content}
+            playerSize={itemSize}
           />
         </Suspense>
         {!isAdFilled && (

@@ -24,6 +24,7 @@ import { EmbedEventContextType } from "@genuin/components/context/embed/event-bu
 
 import { getQueryKeyForFeed } from "@genuin/components/react-query/keys/feed";
 import { useEmbedDimensions } from "@genuin/components/hooks/embed/use-embed-dimensions";
+import { getSlidesPerView } from "../../molecules/embed-swiper/utils";
 
 import { SdkErrorState } from "./error-state";
 import { SdkEmptyState } from "./empty-state";
@@ -209,6 +210,53 @@ export function Embed({
     () => filteredPost.map((videoData) => videoData.section || null),
     [filteredPost],
   );
+
+  const slidesPerView = useMemo(
+    () =>
+      getSlidesPerView(
+        config.view.isFeed
+          ? availableHeight - spaceBetweenVideos
+          : availableHeight + spaceBetweenVideos,
+        containerWidth,
+        config.view.isFeed,
+        embedData.aspect_ratio,
+        config.embedSwiperConfigs.useWindowSwiperMode,
+      ) ?? 1,
+    [
+      config.view.isFeed,
+      embedData.aspect_ratio,
+      availableHeight,
+      spaceBetweenVideos,
+      containerWidth,
+      config.embedSwiperConfigs.useWindowSwiperMode,
+    ],
+  );
+
+  // Compute the pixel dimensions of a single SwiperSlide.
+  // Reuses getSlidesPerView (same function EmbedSwiper uses) so aspect-ratio
+  // math stays in one place (DRY). Slide size differs by view type:
+  //   feed     – vertical scroll, slides are full-width; height is derived from ratio
+  //   carousel – horizontal scroll, slides are full-height; width is derived from ratio
+  const slideItemSize = useMemo(() => {
+    if (config.view.isFeed) {
+      const containerHeight = availableHeight - spaceBetweenVideos;
+      return {
+        height: containerHeight / slidesPerView,
+        width: containerWidth,
+      };
+    }
+    return {
+      height: availableHeight,
+      width: containerWidth / slidesPerView,
+    };
+  }, [
+    config.view.isFeed,
+    containerWidth,
+    availableHeight,
+    spaceBetweenVideos,
+    slidesPerView,
+    embedData.aspect_ratio,
+  ]);
 
   // Extract sectioned property from feedData and update the context
   useEffect(() => {
@@ -560,6 +608,7 @@ export function Embed({
                 forFeed={config.view.isFeed}
                 aspectRatio={embedData.aspect_ratio}
                 spaceBetweenVideos={spaceBetweenVideos}
+                slidesPerView={slidesPerView}
                 isIheartLayout={isIheartLayout}
                 onSlideChange={(swiperInstance: any) => {
                   // Early safety check
@@ -616,6 +665,7 @@ export function Embed({
                           postDetails={videoData}
                           totalVideos={feedData?.pages?.[0]?.totalVideos}
                           swiper={swiper}
+                          itemSize={slideItemSize}
                         />
                       </Suspense>
                     </SwiperSlide>

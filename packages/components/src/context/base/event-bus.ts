@@ -60,13 +60,19 @@ export type BaseEventBusContext = {
   sheetContentPlacements: Partial<
     Record<SheetContentType, SheetContentPlacement>
   >;
+  /*
+   * Whether the player was paused by a system/browser restriction.
+   * When true, all players should show the system pause recovery UI.
+   */
+  systemPaused: boolean;
 };
 
 type EventNames =
   | "userFocusChange"
   | "globalPlayingStateChange"
   | "sheetStateChange"
-  | "sheetContentTypeChange";
+  | "sheetContentTypeChange"
+  | "systemPauseStateChange";
 
 export function createBaseEventBus(initialGlobalPlayingState: boolean = true) {
   return new EventManager<BaseEventBusContext, EventNames>({
@@ -77,5 +83,6 @@ export function createBaseEventBus(initialGlobalPlayingState: boolean = true) {
     sheetContentStates: {},
     activeSheetContentTypes: [],
     sheetContentPlacements: {},
+    systemPaused: false,
   });
 }

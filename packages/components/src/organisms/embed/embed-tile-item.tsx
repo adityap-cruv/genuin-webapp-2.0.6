@@ -24,6 +24,13 @@ type EmbedItemProps = Omit<
    * Swiper instance for the video player.
    */
   swiper: Swiper | null;
+  /**
+   * Height and width of the video player, used for analytics and ad configuration.
+   */
+  itemSize: {
+    height: number;
+    width: number;
+  };
 };
 
 export function EmbedItem({
@@ -31,6 +38,7 @@ export function EmbedItem({
   postDetails,
   totalVideos,
   swiper,
+  itemSize,
   ...restProps
 }: EmbedItemProps) {
   const { updateActiveIndex, goToNextVideo, activeIndex } =
@@ -44,8 +52,9 @@ export function EmbedItem({
     embedEventBus.getContext().activePlayerType === "embed",
   );
   const [isVideoWatched, setIsVideoWatched] = useState<boolean>(
-    postDetails.video.isWatched ||
-      (baseContextManager.getVideoState(postDetails.video.id)?.isWatched ??
+    postDetails.video?.isWatched ||
+      (baseContextManager.getVideoState(postDetails.video?.id || "")
+        ?.isWatched ??
         false),
   );
   const isSectioned = embedEventBus.getContext().isSectioned;
@@ -55,8 +64,8 @@ export function EmbedItem({
   useEffect(() => {
     if (config.view.brandLayoutType !== "iheart") return;
     function handleVideoWatched(payload: Partial<GenericData>) {
-      if (postDetails.video.id === payload?.videoId)
-        setIsVideoWatched(payload.isVideoWatched ?? false);
+      if (postDetails.video?.id === payload?.videoId)
+        setIsVideoWatched(payload?.isVideoWatched ?? false);
     }
 
     baseContextManager.on("onVideoWatchedChanged", handleVideoWatched);
@@ -146,6 +155,7 @@ export function EmbedItem({
     // 3. moveToNext is true (video looping is disabled)
     // 4. activePlayerType is "embed" (not in expand view)
     // 5. user is not hovering over this tile
+    // 6. video is in active playing state.
     if (
       activeIndex !== index ||
       moveToNextTime === 0 ||
@@ -183,7 +193,8 @@ export function EmbedItem({
     }
 
     const timer = setTimeout(() => {
-      goToNextVideo();
+      const isVideoPlaying = baseContextManager.isAnyVideoPlaying();
+      if (isVideoPlaying) goToNextVideo();
     }, moveToNextTime * 1000);
 
     return () => {
@@ -199,6 +210,7 @@ export function EmbedItem({
     swiper,
     isHovering,
     moveToNextTime,
+    baseContextManager,
   ]);
 
   return (
@@ -222,6 +234,7 @@ export function EmbedItem({
       index={index}
       swiper={swiper}
       totalVideos={totalVideos}
+      itemSize={itemSize}
       {...restProps}
     />
   );

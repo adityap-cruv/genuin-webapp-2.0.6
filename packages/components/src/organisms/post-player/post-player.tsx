@@ -27,7 +27,7 @@ export function PostPlayer({
   ...restProps
 }: PostPlayerProps) {
   const { isInIframe } = useBaseContext();
-  const videoType = post.video.videoType ?? VideoTypes.Content;
+  const videoType = post.video?.videoType ?? VideoTypes.Content;
   return (
     <div
       className={cn(
@@ -38,21 +38,21 @@ export function PostPlayer({
     >
       <PlayerProvider
         isActive={true}
-        videoId={post.video.id}
-        videoUrl={post.video.source}
+        videoId={post.video?.id ?? ""}
+        videoUrl={post.video?.source ?? ""}
         onPlayerIterationEnd={() => null}
-        videoDescription={post.video.descritptionText}
+        videoDescription={post.video?.descritptionText}
         videoType={videoType}
       >
         <GestureProvider isInIframe={isInIframe}>
           <FeedPlayer
-            src={post.video.source}
-            videoId={post.video.id}
-            poster={post.video.thumbnail ?? ""}
+            src={post.video?.source}
+            videoId={post.video?.id || ""}
+            poster={post.video?.thumbnail ?? ""}
             className="gencl:bg-secondary-200 gencl:w-full"
             style={{ height: "inherit" }}
             playsInline
-            videoDescription={post.video.descritptionText}
+            videoDescription={post.video?.descritptionText}
             videoType={videoType}
           />
           <ControlLayer
