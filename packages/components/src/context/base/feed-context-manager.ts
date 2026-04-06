@@ -120,7 +120,7 @@ export class FeedContextManager {
     // Helper function to check if a tracker property has changed
     const hasPropertyChanged = <K extends keyof PlayPauseTracker>(
       key: K,
-      newValue: PlayPauseTracker[K] | undefined
+      newValue: PlayPauseTracker[K] | undefined,
     ): boolean => {
       return (
         typeof newValue === "boolean" && this.playPauseTracker[key] !== newValue
@@ -130,7 +130,7 @@ export class FeedContextManager {
     // Helper function to handle auto-pause when a condition becomes false (lost focus or out of view)
     const handleAutoPause = <K extends keyof PlayPauseTracker>(
       key: K,
-      newValue: PlayPauseTracker[K]
+      newValue: PlayPauseTracker[K],
     ): boolean => {
       this.playPauseTracker[key] = newValue;
 
@@ -174,6 +174,21 @@ export class FeedContextManager {
     this.playPauseTracker = { ...this.playPauseTracker, ...playPauseTracker };
   }
 
+  /**
+   * Returns whether any video is currently playing.
+   *
+   * This method reflects the global playback state managed by the
+   * FeedContextManager (not a specific video).
+   *
+   * It is derived from the internal playPauseTracker and indicates
+   * if at least one video is actively playing while also being in
+   * a valid state (focused and in view).
+   *
+   * @returns boolean - true if a video is currently playing, false otherwise
+   */
+  public isAnyVideoPlaying(): boolean {
+    return this.playPauseTracker.isPlaying;
+  }
   /**
    * Register a new video with initial state
    */
@@ -321,7 +336,7 @@ export class FeedContextManager {
    */
   public on(
     eventName: GenericEventNames,
-    listener: GenericEventListener
+    listener: GenericEventListener,
   ): void {
     this.eventManager.on(eventName, listener);
   }
@@ -370,7 +385,7 @@ export class FeedContextManager {
    */
   public off(
     eventName: GenericEventNames,
-    listener: GenericEventListener
+    listener: GenericEventListener,
   ): void {
     this.eventManager.off(eventName, listener);
   }
