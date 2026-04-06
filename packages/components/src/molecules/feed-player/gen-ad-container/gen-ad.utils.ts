@@ -41,19 +41,19 @@ export function buildGenAdConfigFromAdTagObject(
 
   if (adTagObj.order) {
     config.waterfallOrder = [];
-    for (let order in adTagObj.order) {
+    adTagObj.order.forEach((order) => {
       if (order === "video_ad") {
-        config.waterfallOrder.push("video");
+        config.waterfallOrder?.push("video");
       }
 
       if (order === "native_ad") {
-        config.waterfallOrder.push("native");
+        config.waterfallOrder?.push("native");
       }
 
       if (order === "display_ad") {
-        config.waterfallOrder.push("banner");
+        config.waterfallOrder?.push("banner");
       }
-    }
+    });
   }
   return config;
 }

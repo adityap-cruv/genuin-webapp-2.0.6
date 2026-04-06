@@ -127,6 +127,8 @@ function PipPlayer({
   itemSize,
   ...restProps
 }: PipPLayerPropsType) {
+  const [isAdFilled, setIsAdFilled] = useState(false);
+
   return (
     <div
       className={cn(
@@ -149,9 +151,25 @@ function PipPlayer({
           poster={videoDetails.video?.thumbnail}
           videoType={videoDetails.video?.videoType ?? VideoTypes.Content}
           className="gencl:object-cover gencl:w-full gencl:h-full!"
-          playerSize={itemSize}
+          adTagObject={(videoDetails as any).adTagObject ?? undefined}
+          isSponsored={
+            videoDetails.video?.cardLayoutId === 7 ||
+            videoDetails.video?.videoLayoutId === 6
+          }
+          playerSize={{
+            height: 180,
+            width: 200,
+          }}
+          onAdStateChange={setIsAdFilled}
         />
-        <ControlLayer variant="embed-pip" isActive postDetails={videoDetails} />
+        {!isAdFilled && (
+          <ControlLayer
+            variant="embed-pip"
+            isActive
+            postDetails={videoDetails}
+            style={{ touchAction: "manipulation" }}
+          />
+        )}
       </PlayerProvider>
     </div>
   );

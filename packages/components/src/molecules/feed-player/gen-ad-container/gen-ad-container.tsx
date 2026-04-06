@@ -76,7 +76,11 @@ export function GenAdContainer({
       if ((window as any).GenAd && adContainerRef.current) {
         clearInterval(initInterval);
         try {
-          const { adSlotId: _adSlotId, ...genAdInitConfig } = config;
+          const {
+            adSlotId: _adSlotId,
+            waterfallOrder,
+            ...genAdInitConfig
+          } = config;
           const baseAdParams = {
             video_id: videoId,
             ad_type: "in_feed",
@@ -85,6 +89,9 @@ export function GenAdContainer({
           instanceId = (window as any).GenAd.init({
             containerElement: adContainerRef.current,
             ...genAdInitConfig,
+            ...(!!waterfallOrder && waterfallOrder.length !== 0
+              ? { waterfallOrder }
+              : {}),
             onStageStart: (provider: string) => {
               trackRef.current(EventName.AD_REQUESTED, {
                 ...baseAdParams,
@@ -165,6 +172,8 @@ export function GenAdContainer({
                 });
               },
               onAdSkipped: (event: any) => {
+                // Whenever the user skips the ad window loses focus and player pauses to avoid this behavious we have kept window.focus here.
+                window.focus();
                 trackRef.current(EventName.AD_SKIPPED, {
                   ...baseAdParams,
                   provider: event?.provider,

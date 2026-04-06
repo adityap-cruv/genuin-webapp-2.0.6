@@ -293,9 +293,9 @@ function EmbedPlayer({
   ]);
 
   const handleAdFilled = useCallback((type: string) => {
-    if (type === "banner") {
-      setIsAdFilled(true);
-    }
+    // if (type === "banner") {
+    setIsAdFilled(true);
+    // }
   }, []);
 
   const handleAdFilledEnd = useCallback(() => {
