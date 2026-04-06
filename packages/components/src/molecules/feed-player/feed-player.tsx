@@ -579,8 +579,9 @@ export const FeedPlayer = memo(function FeedPlayer({
     [baseContextManager],
   );
 
+  // This onClick handler prevents the expanded view from opening when ads are present.
   return (
-    <>
+    <div onClick={(e) => e.stopPropagation()}>
       {resolvedAdConfig && (
         <Suspense fallback={null}>
           <GenAdContainer
@@ -661,6 +662,6 @@ export const FeedPlayer = memo(function FeedPlayer({
           {...props}
         />
       )}
-    </>
+    </div>
   );
 });
