@@ -581,7 +581,7 @@ export const FeedPlayer = memo(function FeedPlayer({
 
   // This onClick handler prevents the expanded view from opening when ads are present.
   return (
-    <div onClick={(e) => e.stopPropagation()}>
+    <div className="gencl:h-full" onClick={(e) => e.stopPropagation()}>
       {resolvedAdConfig && (
         <Suspense fallback={null}>
           <GenAdContainer
