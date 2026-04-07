@@ -110,6 +110,9 @@ export function NavigationButtons({
   const handlePrevClick = onPrev;
   const handleNextClick = onNext;
 
+  if (isIheartLayout) {
+    return;
+  }
   // Helper to create navigation buttons
   const createNavButton = ({
     Icon,

@@ -2,10 +2,12 @@ import { useBaseContext } from "@genuin/components/context/base";
 import { cn } from "@genuin/ui/lib/utils";
 import * as React from "react";
 import { createPortal } from "react-dom";
-import { cleanupOverlayShadowHost,getOrCreateOverlayShadowHost } from "./shadow-root/shadow-dom.utils";
+import {
+  cleanupOverlayShadowHost,
+  getOrCreateOverlayShadowHost,
+} from "./shadow-root/shadow-dom.utils";
 import { Toaster } from "@genuin/ui";
 import { useEffect } from "react";
-
 
 type RootPortalProps = {
   children: React.ReactNode;
@@ -38,6 +40,8 @@ const BRAND_OVERLAY_Z_INDEX: Record<number, string> = {
   2801: "10000",
   // TED,
   2357: "30",
+  // Mike iheart
+  1729: "11",
 };
 
 const getOverlayZIndexByBrandId = (brandId?: number): string | undefined => {
@@ -88,14 +92,14 @@ export function RootPortal({
         if (brandOverlayZIndex) {
           host.style.zIndex = brandOverlayZIndex;
         }
-        // Apply custom styles to the overlay host when provided via props
-        if (style) {
-          Object.assign(host.style, style);
-        }
-
         const container = shadowRoot.querySelector(
           "[data-portal-container]",
         ) as HTMLElement;
+        // Apply custom styles to the overlay host when provided via props
+        if (style) {
+          Object.assign(host.style, style);
+          Object.assign(container.style, style);
+        }
         setContainerElement(container);
       } else {
         // Default to document.body
