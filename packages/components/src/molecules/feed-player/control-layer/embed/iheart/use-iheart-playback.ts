@@ -149,7 +149,7 @@ export function useIHeartPlayback({
         podcastId?: number;
         episodeId?: number;
         stationId?: number;
-      } | null
+      } | null,
     ) => {
       if (payload === null) {
         baseContextManager.setActiveIHeartContent(null);
@@ -165,7 +165,7 @@ export function useIHeartPlayback({
         });
       }
     },
-    [baseContextManager]
+    [baseContextManager],
   );
 
   useEffect(() => {
@@ -178,12 +178,12 @@ export function useIHeartPlayback({
     }
     SDKEventEmitter.on(
       SDKListenerEventName.PLAY_CHANGE_IHEART_CONTENT,
-      handlePlayChange
+      handlePlayChange,
     );
     return () => {
       SDKEventEmitter.off(
         SDKListenerEventName.PLAY_CHANGE_IHEART_CONTENT,
-        handlePlayChange
+        handlePlayChange,
       );
     };
   }, [
@@ -204,18 +204,18 @@ export function useIHeartPlayback({
         info.type === payload?.type &&
           (info.station === payload?.stationId ||
             (info.episode === payload?.episodeId &&
-              info.podcast === payload?.podcastId))
+              info.podcast === payload?.podcastId)),
       );
     }
 
     baseContextManager.on(
       "onActiveIHeartContentChanged",
-      activeIHeartContentChange as any
+      activeIHeartContentChange as any,
     );
     return () => {
       baseContextManager.off(
         "onActiveIHeartContentChanged",
-        activeIHeartContentChange as any
+        activeIHeartContentChange as any,
       );
     };
   }, [baseContextManager, info.type, info.episode, info.podcast, info.station]);
@@ -259,7 +259,7 @@ export function useIHeartPlayback({
       // Handle "Go to Episode" redirection logic (for overlay-buttons)
       if (isGoToEpisode) {
         if (isPolaris && info.type) {
-          if (videoDetails.attributes?.slug && info.type) {
+          if (videoDetails?.attributes?.slug && info.type) {
             SDKEventEmitter.emit(SDKEventName.PLAY_IHEART_CONTENT, {
               ...payload,
               navigate: true,
@@ -274,7 +274,7 @@ export function useIHeartPlayback({
           isPolaris &&
           embedDetails?.embedData.brand_context?.[0]?.type === "podcast"
         ) {
-          if (videoDetails.attributes?.slug && info.type) {
+          if (videoDetails?.attributes?.slug && info.type) {
             SDKEventEmitter.emit(SDKEventName.PLAY_IHEART_CONTENT, {
               ...payload,
               navigate: true,
@@ -297,9 +297,9 @@ export function useIHeartPlayback({
             episodeId: undefined,
             play: !isPlaying,
             navigate: true,
-            slug: videoDetails.attributes?.slug ?? "",
-            videoId: videoDetails.id,
-            videoTitle: videoDetails.attributes?.title ?? undefined,
+            slug: videoDetails?.attributes?.slug ?? "",
+            videoId: videoDetails?.id,
+            videoTitle: videoDetails?.attributes?.title ?? undefined,
           });
           // setIsPlaying(!isPlaying);
         }
@@ -316,8 +316,8 @@ export function useIHeartPlayback({
           slug: clipPlayerPayLoad.slug ?? undefined,
           play: true,
           navigate: true,
-          videoId: videoDetails.id,
-          videoTitle: videoDetails.attributes?.title ?? undefined,
+          videoId: videoDetails?.id,
+          videoTitle: videoDetails?.attributes?.title ?? undefined,
         });
         return;
       }
@@ -334,10 +334,10 @@ export function useIHeartPlayback({
         }
         SDKEventEmitter.emit(SDKEventName.PLAY_IHEART_CONTENT, {
           ...payload,
-          videoTitle: videoDetails.attributes?.description ?? undefined,
-          slug: videoDetails.attributes?.slug ?? undefined,
+          videoTitle: videoDetails?.attributes?.description ?? undefined,
+          slug: videoDetails?.attributes?.slug ?? undefined,
           play: !isPlaying,
-          videoId: videoDetails.id,
+          videoId: videoDetails?.id,
         });
       }
     },
@@ -349,7 +349,7 @@ export function useIHeartPlayback({
       isGoToEpisode,
       variant,
       info.type,
-    ]
+    ],
   );
 
   return {

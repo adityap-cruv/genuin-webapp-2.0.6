@@ -41,12 +41,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
   const { isMobile } = useDeviceDetectMediaQuery();
   const { togglePlay } = usePlayerContext();
   const embedConfigs = useEmbedConfigs();
-  const [isVideoWatched, setIsVideoWatched] = useState<boolean>(
-    postDetails.video?.isWatched ||
-      (baseContextManager.getVideoState(postDetails.video?.id || "")
-        ?.isWatched ??
-        false),
-  );
+  const [isVideoWatched, setIsVideoWatched] = useState<boolean>(false);
 
   // Navigation announcement state
   const [navigationAnnouncement, setNavigationAnnouncement] =

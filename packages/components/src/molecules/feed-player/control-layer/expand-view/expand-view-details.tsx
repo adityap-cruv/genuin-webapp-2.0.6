@@ -198,15 +198,15 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
         if (typeof window === "undefined") return "";
 
         // If content type matches, use current URL without highlights
-        if (contentType === attributes?.type) {
-          return getBaseUrlWithouthighlights({
-            type: attributes.type,
-            slug: attributes.slug,
-          });
-        }
+        // if (contentType === attributes?.type) {
+        //   return getBaseUrlWithouthighlights({
+        //     type: attributes.type,
+        //     slug: attributes.slug,
+        //   });
+        // }
 
         // Otherwise, generate URL for the other content type
-        const baseUrl = getBaseUrl(window.location.href);
+        const baseUrl = new URL("https://iheart.com").origin;
         const path = attributes?.type === "podcast" ? "/podcast" : "/live";
         const slug = postDetails.video?.attributes?.slug;
 
@@ -222,6 +222,8 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
                 bypassChecks
                 aria-label={`${postDetails.video?.attributes?.title || contentType} podcast artwork`}
                 tabIndex={0}
+                target=
+                "_blank"
               >
                 <Image
                   aspectRatio="square"
@@ -242,6 +244,8 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
                   bypassChecks
                   aria-label={`${postDetails.video.attributes?.title} heading`}
                   tabIndex={0}
+                   target=
+                "_blank"
                 >
                   <ReadMore
                     text={postDetails.video.attributes?.title}

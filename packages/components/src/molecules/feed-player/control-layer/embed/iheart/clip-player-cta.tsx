@@ -12,7 +12,7 @@ import { usePlayerContext } from "../../../context";
 const Linkouts = lazy(() =>
   import("@genuin/components/organisms/linkouts/index.js").then((m) => ({
     default: m.Linkouts,
-  }))
+  })),
 ) as React.ComponentType<any>;
 
 interface ClipPlayerCTAProps {
@@ -36,17 +36,17 @@ export const ClipPlayerCTA = ({
   const handleCTAClick = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
-      const type = postDetails.video.attributes?.type;
-      const episodeId = postDetails.video.attributes?.episode_id
+      const type = postDetails.video?.attributes?.type;
+      const episodeId = postDetails.video?.attributes?.episode_id
         ? Number(postDetails.video.attributes?.episode_id)
         : undefined;
-      const podcastId = postDetails.video.attributes?.podcast_id
+      const podcastId = postDetails.video?.attributes?.podcast_id
         ? Number(postDetails.video.attributes?.podcast_id)
         : undefined;
-      const stationId = postDetails.video.attributes?.station_id
+      const stationId = postDetails.video?.attributes?.station_id
         ? Number(postDetails.video.attributes?.station_id)
         : undefined;
-      const slug = postDetails.video.attributes?.slug;
+      const slug = postDetails.video?.attributes?.slug;
 
       if (slug) {
         SDKEventEmitter.emit(SDKEventName.PLAY_IHEART_CONTENT, {
@@ -58,20 +58,30 @@ export const ClipPlayerCTA = ({
           slug,
           stationId,
           type,
-          videoId: postDetails.video.id,
-          videoTitle: postDetails.video.attributes?.description ?? undefined,
+          videoId: postDetails.video?.id,
+          videoTitle: postDetails.video?.attributes?.description ?? undefined,
         });
       }
+      const isGoToEpisode = podcastId && !episodeId;
+      const isFullEpisode = podcastId && episodeId;
+      const isStation = !podcastId && !episodeId;
+      const url = new URL(
+        "https://iheart.com/" +
+          (isStation ? "live/" : "podcast/") +
+          (isStation ? stationId : slug) +
+          (isFullEpisode ? "/episode/" + episodeId : ""),
+      );
 
       const isExpandViewOpen = embedDetails?.embedEventBus.getContext();
-      if (isExpandViewOpen) {
-        embedDetails?.goBackToPreviousPlayerType();
-      }
+      // if (isExpandViewOpen) {
+      //   embedDetails?.goBackToPreviousPlayerType();
+      // }
+      window.open(url, "_blank", "noopener,noreferrer",);
     },
-    [postDetails, embedDetails]
+    [postDetails, embedDetails],
   );
 
-  if (!postDetails.video.attributes?.slug) return;
+  if (!postDetails.video?.attributes?.slug) return;
   if (!postDetails.video.linkoutId) return;
 
   return (
