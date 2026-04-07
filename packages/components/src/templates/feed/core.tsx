@@ -50,6 +50,18 @@ import { useBaseContext } from "@genuin/components/context";
 import useViewportHeight from "@genuin/components/hooks/use-screen-height";
 import { useRouter } from "@genuin/components/hooks/use-router";
 
+// Must be defined at module level — NOT inside a component.
+// Defining lazy() inside a component creates a new component type on every render,
+// causing React to unmount/remount the entire subtree (destroying the Swiper on
+// every re-render, which produces the iHeart infinite-loop/snap-back bug).
+const IheartFullscreenContainerLazy = lazy(() =>
+  import(
+    "@genuin/components/molecules/iheart-full-screen-contaner/index.js"
+  ).then((m) => ({
+    default: m.IheartFullscreenContainer,
+  })),
+);
+
 /**
  * Internal component to conditionally wrap feed content based on brand layout type.
  * Uses IheartFullscreenContainer only for iHeart brand to follow DRY principle.
@@ -61,14 +73,6 @@ const FeedContentWrapper = memo(function FeedContentWrapper({
   isIHeart: boolean;
   children: React.ReactNode;
 }) {
-  const IheartFullscreenContainerLazy = lazy(() =>
-    import(
-      "@genuin/components/molecules/iheart-full-screen-contaner/index.js"
-    ).then((m) => ({
-      default: m.IheartFullscreenContainer,
-    })),
-  );
-
   if (isIHeart) {
     return (
       <Suspense fallback={null}>

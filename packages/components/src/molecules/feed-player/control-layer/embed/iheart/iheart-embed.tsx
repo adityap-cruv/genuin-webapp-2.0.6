@@ -42,9 +42,10 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
   const { togglePlay } = usePlayerContext();
   const embedConfigs = useEmbedConfigs();
   const [isVideoWatched, setIsVideoWatched] = useState<boolean>(
-    postDetails.video.isWatched ||
-      (baseContextManager.getVideoState(postDetails.video.id)?.isWatched ??
-        false)
+    postDetails.video?.isWatched ||
+      (baseContextManager.getVideoState(postDetails.video?.id || "")
+        ?.isWatched ??
+        false),
   );
 
   // Navigation announcement state
@@ -54,6 +55,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
 
   // Enhanced description logic matching expand-view-details
   const enhancedDescription: ReadMoreTextType = useMemo(() => {
+    if (!postDetails.video) return "";
     const { description, createdAt, duration } = postDetails.video;
 
     const monthYear = getMonthYear(createdAt ?? 0);
@@ -77,9 +79,9 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
         : []),
     ];
   }, [
-    postDetails.video.createdAt,
-    postDetails.video.duration,
-    postDetails.video.description,
+    postDetails.video?.createdAt,
+    postDetails.video?.duration,
+    postDetails.video?.description,
   ]);
 
   useEffect(() => {
@@ -88,7 +90,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
         payload &&
         "videoId" in payload &&
         "isVideoWatched" in payload &&
-        postDetails.video.id === payload.videoId
+        postDetails.video?.id === payload.videoId
       )
         setIsVideoWatched(payload.isVideoWatched ?? false);
     }
@@ -105,7 +107,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
       typeof index === "number" &&
       typeof previousIndexRef.current === "number"
     ) {
-      const videoTitle = postDetails.video.attributes?.title || "video";
+      const videoTitle = postDetails.video?.attributes?.title || "video";
       let announcement = "";
 
       if (index > previousIndexRef.current) {
@@ -122,7 +124,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
     }
 
     previousIndexRef.current = index;
-  }, [index, postDetails.video.attributes?.title]);
+  }, [index, postDetails.video?.attributes?.title]);
 
   /**
    * Triggers preview playback when user hovers over the video.
@@ -145,11 +147,11 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
         // Set preview index to activate hover preview for this video
         baseContextManager.setPreviewIndex({
           index,
-          videoId: postDetails.video.id,
+          videoId: postDetails.video?.id || "",
         });
       }
     },
-    [onMouseEnter, isVideoWatched]
+    [onMouseEnter, isVideoWatched],
   );
 
   /**
@@ -168,32 +170,32 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
         // Clear preview index to stop preview playback
         baseContextManager.setPreviewIndex({
           index: null,
-          videoId: postDetails.video.id,
+          videoId: postDetails.video?.id || "",
         });
       }
     },
-    [onMouseLeave, postDetails, baseContextManager, embedConfigs]
+    [onMouseLeave, postDetails, baseContextManager, embedConfigs],
   );
 
   const listenLiveButtonInfo = useMemo(
     () => ({
-      episode: postDetails.video.attributes?.episode_id
+      episode: postDetails.video?.attributes?.episode_id
         ? Number(postDetails.video.attributes.episode_id)
         : undefined,
-      podcast: postDetails.video.attributes?.podcast_id
-        ? Number(postDetails.video.attributes.podcast_id)
+      podcast: postDetails.video?.attributes?.podcast_id
+        ? Number(postDetails.video?.attributes.podcast_id)
         : undefined,
-      station: postDetails.video.attributes?.station_id
-        ? Number(postDetails.video.attributes.station_id)
+      station: postDetails.video?.attributes?.station_id
+        ? Number(postDetails.video?.attributes.station_id)
         : undefined,
-      type: postDetails.video.attributes?.type,
+      type: postDetails.video?.attributes?.type,
     }),
     [
-      postDetails.video.attributes?.episode_id,
-      postDetails.video.attributes?.podcast_id,
-      postDetails.video.attributes?.station_id,
-      postDetails.video.attributes?.type,
-    ]
+      postDetails.video?.attributes?.episode_id,
+      postDetails.video?.attributes?.podcast_id,
+      postDetails.video?.attributes?.station_id,
+      postDetails.video?.attributes?.type,
+    ],
   );
 
   return (
@@ -219,12 +221,12 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
       {/* Top gradient overlay (10% height) */}
       <div
         role="region"
-        aria-label={`${postDetails.video.attributes?.title} click to play`}
+        aria-label={`${postDetails.video?.attributes?.title} click to play`}
         tabIndex={0}
         className={cn(
           "gencl:h-full gencl:relative gencl:cursor-pointer",
           isVideoWatched && "gencl:cursor-default",
-          className
+          className,
         )}
         onClick={(e) => {
           if (isVideoWatched) {
@@ -280,7 +282,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
 
         {/* Header Section */}
         <header className="gencl:absolute gencl:top-0 gencl:w-full gencl:flex gencl:justify-between gencl:items-center gencl:gap-2 gencl:text-white gencl:p-3">
-          {postDetails.video.attributes?.image_url && (
+          {postDetails.video?.attributes?.image_url && (
             <Image
               aspectRatio="square"
               src={postDetails.video.attributes?.image_url ?? ""}
@@ -290,12 +292,12 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
                 "gencl:rounded-md gencl:object-cover",
                 websiteType === "polaris"
                   ? "gencl:size-12 gencl:lg:size-16!"
-                  : "gencl:size-14!"
+                  : "gencl:size-14!",
               )}
             />
           )}
           <div className="gencl:w-full">
-            {postDetails.video.attributes?.title && (
+            {postDetails.video?.attributes?.title && (
               <p
                 tabIndex={isVideoWatched ? -1 : 0}
                 aria-label={`${postDetails.video.attributes?.title}, title`}
@@ -303,13 +305,13 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
                   "gencl:font-semibold gencl:leading-[18px] gencl:line-clamp-1 gencl:tracking-[-0.2px] gencl:lg:font-semibold! gencl:lg:leading-[24px]! gencl:lg:tracking-[-0.2px]!",
                   websiteType === "polaris"
                     ? "gencl:text-[14px] gencl:lg:text-[17px]!"
-                    : "gencl:text-[16px]"
+                    : "gencl:text-[16px]",
                 )}
               >
                 {postDetails.video.attributes?.title}
               </p>
             )}
-            {postDetails.video.attributes?.description && (
+            {postDetails.video?.attributes?.description && (
               <p
                 tabIndex={isVideoWatched ? -1 : 0}
                 aria-label={`${postDetails.video.attributes?.description}, Video title`}
@@ -323,7 +325,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
 
         {/* Footer Section */}
         <footer className="gencl:absolute gencl:bottom-0 gencl:p-3 gencl:text-white gencl:w-full gencl:space-y-3">
-          <div className="gencl:rounded">
+          {/* <div className="gencl:rounded">
             <ReadMore
               text={enhancedDescription}
               showExpandText={false}
@@ -334,14 +336,14 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
               textClassName="gencl:z-10 gencl:text-[14px] gencl:font-normal gencl:leading-[18px] gencl:tracking-[-0.2px]! gencl:text-white! gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]!"
               maxLines={2}
               tabIndex={isVideoWatched ? -1 : 0}
-              aria-label={`${getMonthYear(postDetails.video.createdAt ?? 0)}${postDetails.video.duration ? ` • ${getFormattedDuration(String(postDetails.video.duration))}` : ""} ${Array.isArray(postDetails.video.description) ? postDetails.video.description.join(" ") : postDetails.video.description || ""}, Video description`}
+              aria-label={`${getMonthYear(postDetails.video?.createdAt ?? 0)}${postDetails.video?.duration ? ` • ${getFormattedDuration(String(postDetails.video.duration))}` : ""} ${Array.isArray(postDetails.video?.description) ? postDetails.video.description.join(" ") : postDetails.video?.description || ""}, Video description`}
             />
-          </div>
+          </div> */}
 
           {/* Controls Section */}
           <div
             className={cn(
-              "gencl:overflow-hidden gencl:transition-all gencl:ease-in-out gencl:duration-300 gencl:flex gencl:items-center gencl:justify-between"
+              "gencl:overflow-hidden gencl:transition-all gencl:ease-in-out gencl:duration-300 gencl:flex gencl:items-center gencl:justify-end",
             )}
           >
             <IHeartControls
@@ -352,24 +354,24 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
               videoDetails={postDetails.video}
               index={index}
               isActive={isActive}
-              contentId={postDetails.video.id}
-              slug={postDetails.video.slug}
-              isReacted={postDetails.video.isSparked ?? false}
-              reactionCount={postDetails.video.sparkCount}
+              contentId={postDetails.video?.id}
+              slug={postDetails.video?.slug}
+              isReacted={postDetails.video?.isSparked ?? false}
+              reactionCount={postDetails.video?.sparkCount}
               onReactionStateChange={(isReacted) => {
                 onReactionStateChange?.(
-                  postDetails.video.id,
-                  postDetails.video.slug,
-                  isReacted
+                  postDetails.video?.id || "",
+                  postDetails.video?.slug || "",
+                  isReacted,
                 );
               }}
               isVideoWatched={isVideoWatched}
             />
-            <IHeartListenLiveButton
+            {/* <IHeartListenLiveButton
               variant="filled"
               info={listenLiveButtonInfo}
               videoDetails={postDetails.video}
-            />
+            /> */}
           </div>
         </footer>
 
@@ -381,7 +383,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
             onPlayAgain={() => {
               // Handle play again action
               baseContextManager.setVideoWatched({
-                videoId: postDetails.video.id,
+                videoId: postDetails.video?.id || "",
                 isWatched: false,
               });
               togglePlay(true);

@@ -112,42 +112,50 @@ export function IHeartControls({
   const generateShareUrl = (
     isExpand: boolean,
     slug?: string,
-    contentId?: string
+    contentId?: string,
   ) => {
-    let url = isExpand
-      ? window.location.href
-      : (() => {
-          const url = new URL(window.location.href);
-          const pathSegments = url.pathname.split("/").filter(Boolean);
-          const hasHighlights = pathSegments.includes("highlights");
+    // let url = isExpand
+    //   ? window.location.href
+    //   : (() => {
+    //       const url = new URL(window.location.href);
+    //       const pathSegments = url.pathname.split("/").filter(Boolean);
+    //       const hasHighlights = pathSegments.includes("highlights");
 
-          let newPath;
-          if (hasHighlights) {
-            newPath = `${url.pathname}/${slug}_${contentId}`;
-          } else {
-            newPath = `${url.pathname.replace(/\/$/, "")}/highlights/${slug}_${contentId}`;
-          }
-          const queryString = url.search;
-          return `${url.origin}${newPath}${queryString}`;
-        })();
+    //       let newPath;
+    //       if (hasHighlights) {
+    //         newPath = `${url.pathname}/${slug}_${contentId}`;
+    //       } else {
+    //         newPath = `${url.pathname.replace(/\/$/, "")}/highlights/${slug}_${contentId}`;
+    //       }
+    //       const queryString = url.search;
+    //       return `${url.origin}${newPath}${queryString}`;
+    //     })();
+    const isPodcast = videoDetails?.attributes?.type === "podcast";
+    const url = new URL(
+      "https://iheart.com/" +
+        (isPodcast ? "podcast/" : "live/") +
+        (isPodcast
+          ? videoDetails.attributes?.slug
+          : videoDetails?.attributes?.station_id) +
+        "/highlights/" +
+        videoDetails?.slug +
+        "_" +
+        videoDetails?.id,
+    );
 
-    // Add action=share query parameter if not already present
-    if (!url.includes("action=share")) {
-      const separator = url.includes("?") ? "&" : "?";
-      url = `${url}${separator}action=share`;
+    if (!url.searchParams.has("action")) {
+      url.searchParams.set("action", "share");
     }
 
-    if (!url.includes("cmp=")) {
-      const separator = url.includes("?") ? "&" : "?";
-      url = `${url}${separator}cmp=web_${websiteType}_hl_share`;
+    if (!url.searchParams.has("cmp")) {
+      url.searchParams.set("cmp", `web_${websiteType}_hl_share`);
     }
 
-    if (!url.includes("sc=")) {
-      const separator = url.includes("?") ? "&" : "?";
-      url = `${url}${separator}sc=web_${websiteType}_hl_social_share`;
+    if (!url.searchParams.has("sc")) {
+      url.searchParams.set("sc", `web_${websiteType}_hl_social_share`);
     }
 
-    return url;
+    return url.toString();
   };
 
   const shareUrl = generateShareUrl(isExpand, slug, contentId);
@@ -157,12 +165,12 @@ export function IHeartControls({
   const descriptionMaxLength = isMobile ? 120 : 180;
 
   const truncatedTitle = compressText(
-    videoDetails.attributes?.description ?? "",
-    titleMaxLength
+    videoDetails?.attributes?.description ?? "",
+    titleMaxLength,
   );
   const truncatedDescription = compressText(
-    videoDetails.descritptionText ?? "",
-    descriptionMaxLength
+    videoDetails?.descritptionText ?? "",
+    descriptionMaxLength,
   );
 
   return (
@@ -170,50 +178,46 @@ export function IHeartControls({
       // role="toolbar"
       // aria-label="Media controls"
       // aria-orientation={isExpand ? "vertical" : "horizontal"}
-      className={cn("gencl:flex", isExpand && "gencl:flex-col", className)}
+      className={cn("gencl:flex gencl:flex-col", className)}
       {...restProps}
     >
-      {isExpand && (
-        <ReactionButton
-          shareUrl={shareUrl ?? ""}
-          videoSlug={slug ?? ""}
-          isReacted={isReacted}
-          contentId={contentId ?? ""}
-          reactionCount={reactionCount}
-          contentType="VIDEO"
-          onReactionStateChange={onReactionStateChange}
-          reactionButtonTheme="dark"
-          withCustomChildren
-          onClick={(e) => {
-            e?.stopPropagation();
-          }}
-          className="gencl:w-11 gencl:h-11"
+      <ReactionButton
+        shareUrl={shareUrl ?? ""}
+        videoSlug={slug ?? ""}
+        isReacted={isReacted}
+        contentId={contentId ?? ""}
+        reactionCount={reactionCount}
+        contentType="VIDEO"
+        onReactionStateChange={onReactionStateChange}
+        reactionButtonTheme="dark"
+        withCustomChildren
+        onClick={(e) => {
+          e?.stopPropagation();
+        }}
+        className="gencl:w-11 gencl:h-11"
+        tabIndex={-1}
+        aria-hidden="true"
+      >
+        <Button
+          theme="custom"
+          aria-label={isReacted ? `Thumb up, Pressed` : `Thumb up, Not pressed`}
+          aria-pressed={isReacted}
+          role="button"
           tabIndex={-1}
-          aria-hidden="true"
+          variant="icon"
+          title="Thumbs Up"
+          className="gencl:w-11 gencl:h-11 gencl:p-0 gencl:flex gencl:items-center gencl:justify-center"
         >
-          <Button
-            theme="custom"
-            aria-label={
-              isReacted ? `Thumb up, Pressed` : `Thumb up, Not pressed`
-            }
-            aria-pressed={isReacted}
-            role="button"
-            tabIndex={-1}
-            variant="icon"
-            title="Thumbs Up"
-            className="gencl:w-11 gencl:h-11 gencl:p-0 gencl:flex gencl:items-center gencl:justify-center"
-          >
-            <DynamicReactionIcon
-              isSparked={isReacted}
-              sparkCount={reactionCount}
-              theme="dark"
-              iconHeight={24}
-              iconWidth={24}
-              type="feed"
-            />
-          </Button>
-        </ReactionButton>
-      )}
+          <DynamicReactionIcon
+            isSparked={isReacted}
+            sparkCount={reactionCount}
+            theme="dark"
+            iconHeight={24}
+            iconWidth={24}
+            type="feed"
+          />
+        </Button>
+      </ReactionButton>
 
       {/* {isExpand && (
         <Button
@@ -273,15 +277,13 @@ export function IHeartControls({
       <ShareButton
         pathName={shareUrl ?? ""}
         withCustomChildren
-        disableInternalFunctionality={
-          websiteType === "legacy" ? true : isDesktop
-        }
+        disableInternalFunctionality={false}
         onClick={() => {
           // Track share event (same as Actions component)
           if (contentId) {
             track(EventName.VIDEO_SHARED, {
               content_id: contentId,
-              title: videoDetails.descritptionText,
+              title: videoDetails?.descritptionText,
               content_category: "loop",
               event_record_screen: "feed",
               event_target_screen: "none",
@@ -290,16 +292,16 @@ export function IHeartControls({
           // Emit SDK share event
           SDKEventEmitter.emit(SDKEventName.SHARE, {
             shareUrl: shareUrl ?? "",
-            type: videoDetails.attributes?.type,
+            type: videoDetails?.attributes?.type,
             id:
-              videoDetails.attributes?.type === "podcast"
+              videoDetails?.attributes?.type === "podcast"
                 ? videoDetails.attributes?.podcast_id || undefined
-                : videoDetails.attributes?.type === "station"
-                  ? videoDetails.attributes?.station_id || undefined
+                : videoDetails?.attributes?.type === "station"
+                  ? videoDetails?.attributes?.station_id || undefined
                   : undefined,
             clipDescription: truncatedDescription ?? "",
             clipTitle: truncatedTitle ?? "",
-            clipThumbnailUrl: videoDetails.thumbnail,
+            clipThumbnailUrl: videoDetails?.thumbnail,
           });
         }}
       >

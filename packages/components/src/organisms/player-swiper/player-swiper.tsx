@@ -29,7 +29,7 @@ const CommentsDialog = lazy(() =>
 const OctoPanel = lazy(() =>
   import("../../molecules/octo-panel/index.js").then((m) => ({
     default: m.OctoPanel,
-  }))
+  })),
 );
 
 const SectionedContent = lazy(() =>
@@ -161,13 +161,17 @@ export function PlayerList({
   } = useEmbedConfigs();
 
   // Comment panel state - only auto-open if Octo is NOT enabled (Octo takes priority)
-  const { value: isCommentOpen, toggle: toggleComment, setValue: setCommentOpen } = useBoolean(
-    isDesktop && !isIpad && !(showEngagementTools && isOctoToolEnabled)
+  const {
+    value: isCommentOpen,
+    toggle: toggleComment,
+    setValue: setCommentOpen,
+  } = useBoolean(
+    isDesktop && !isIpad && !(showEngagementTools && isOctoToolEnabled),
   );
 
   // OCTO panel state - auto-open on desktop when Octo tool is enabled
   const { value: isOctoOpen, setValue: setOctoOpen } = useBoolean(
-    isDesktop && !isIpad && showEngagementTools && isOctoToolEnabled
+    isDesktop && !isIpad && showEngagementTools && isOctoToolEnabled,
   );
   const octoPanelRef = useRef<OctoPanelHandle | null>(null);
   const lastOctoVideoIdRef = useRef<string | null>(null);
@@ -243,9 +247,9 @@ export function PlayerList({
      * when transitioning to maintain the correct video position.
      */
     const overlayIndex = posts.findIndex(
-      (post) => post.video.type === "overlay",
+      (post) => post.video?.type === "overlay",
     );
-    const isNotAtEndOfFeed = posts[activeIndex + 1]?.video.type !== "complete";
+    const isNotAtEndOfFeed = posts[activeIndex + 1]?.video?.type !== "complete";
     // increment by 1 to account for overlay card that won't be shown in expand view
     if (
       overlayIndex !== -1 &&
@@ -327,7 +331,7 @@ or the full-screen view here, and we cannot simply skip the slide since we're us
 a swiper inside another swiper.
 */
   const filteredPost = useMemo(() => {
-    return posts.filter((post) => post.video.type !== "overlay");
+    return posts.filter((post) => post.video?.type !== "overlay");
   }, [posts]);
 
   const handleActiveIndexChange = useCallback(
@@ -349,7 +353,7 @@ a swiper inside another swiper.
     setIsAdFilled(false);
   }, []);
 
-  const activeVideoId = filteredPost[activeIndex]?.video.id;
+  const activeVideoId = filteredPost[activeIndex]?.video?.id;
 
   useEffect(() => {
     if (!activeVideoId) {
@@ -365,7 +369,10 @@ a swiper inside another swiper.
       try {
         octoPanelRef.current?.resetForVideo(activeVideoId);
       } catch (error) {
-        console.error('[PlayerList] Failed to reset OctoPanel for video change:', error);
+        console.error(
+          "[PlayerList] Failed to reset OctoPanel for video change:",
+          error,
+        );
       }
     }
 
@@ -425,12 +432,15 @@ a swiper inside another swiper.
     closeContentType,
   ]);
 
-  useEffect(() => () => {
-    if (octoReopenTimerRef.current) {
-      clearTimeout(octoReopenTimerRef.current);
-      octoReopenTimerRef.current = null;
-    }
-  }, []);
+  useEffect(
+    () => () => {
+      if (octoReopenTimerRef.current) {
+        clearTimeout(octoReopenTimerRef.current);
+        octoReopenTimerRef.current = null;
+      }
+    },
+    [],
+  );
 
   useEffect(() => {
     if (!shouldAutoOpenOcto) {
@@ -465,7 +475,6 @@ a swiper inside another swiper.
     isAdPlaying,
     pendingOctoReopen,
   ]);
-
 
   // Focus management hook (only for iHeart)
   const {
@@ -502,17 +511,31 @@ a swiper inside another swiper.
     const handleContextActiveIndexChange = (event: any, context: any) => {
       const newIndex = context.activeIndex;
 
+      // Guard: skip if this swiper has been destroyed (stale reference)
+      if (activeSwiper.destroyed) return;
+
       // Only navigate if the index actually changed and swiper is not already at that index
       if (activeSwiper.activeIndex !== newIndex && newIndex >= 0) {
-        console.log('[PlayerList] Programmatic navigation to index:', newIndex, 'current:', activeSwiper.activeIndex);
+        console.log(
+          "[PlayerList] Programmatic navigation to index:",
+          newIndex,
+          "current:",
+          activeSwiper.activeIndex,
+        );
         activeSwiper.slideTo(newIndex, 300); // Navigate with animation
       }
     };
 
-    embedDetails.embedEventBus.on('activeIndexChange', handleContextActiveIndexChange);
+    embedDetails.embedEventBus.on(
+      "activeIndexChange",
+      handleContextActiveIndexChange,
+    );
 
     return () => {
-      embedDetails.embedEventBus.off('activeIndexChange', handleContextActiveIndexChange);
+      embedDetails.embedEventBus.off(
+        "activeIndexChange",
+        handleContextActiveIndexChange,
+      );
     };
   }, [embedDetails, activeSwiper]);
 
@@ -578,7 +601,9 @@ a swiper inside another swiper.
             <Suspense fallback={null}>
               <PlayerHeader
                 isMobile={isMobile}
-                title={filteredPost[activeIndex]?.video.attributes?.title ?? ""}
+                title={
+                  filteredPost[activeIndex]?.video?.attributes?.title ?? ""
+                }
                 onBackClick={changeExpandViewType}
               />
             </Suspense>
@@ -695,15 +720,16 @@ a swiper inside another swiper.
         !isAdFilled && (
           <Suspense fallback={null}>
             <Actions
-              shareUrl={filteredPost[activeIndex]?.video.shareUrl ?? ""}
-              isReacted={filteredPost[activeIndex]?.video.isSparked ?? false}
-              contentId={filteredPost[activeIndex]?.video.id}
-              groupSlug={filteredPost[activeIndex]?.group.slug}
-              slug={filteredPost[activeIndex]?.video.slug}
+              shareUrl={filteredPost[activeIndex]?.video?.shareUrl ?? ""}
+              isReacted={filteredPost[activeIndex]?.video?.isSparked ?? false}
+              contentId={filteredPost[activeIndex]?.video?.id || ""}
+              groupSlug={filteredPost[activeIndex]?.group?.slug || ""}
+              slug={filteredPost[activeIndex]?.video?.slug || ""}
               videoType={
-                filteredPost[activeIndex]?.video.videoType ?? VideoTypes.Content
+                filteredPost[activeIndex]?.video?.videoType ??
+                VideoTypes.Content
               }
-              reactionCount={filteredPost[activeIndex]?.video.sparkCount}
+              reactionCount={filteredPost[activeIndex]?.video?.sparkCount || 0}
               theme={showExpandView ? "dark" : "light"}
               className={cn(
                 "gencl:shrink-0",
@@ -717,7 +743,7 @@ a swiper inside another swiper.
                   const defaultOpen =
                     embedDetails?.embedData.autoUserInteractionToPerform ===
                       "comment" &&
-                    filteredPost[activeIndex]?.video.slug ===
+                    filteredPost[activeIndex]?.video?.slug ===
                       embedDetails.embedData?.startVideoSlug &&
                     !embedDetails.embedEventBus.getContext()
                       .autoInteractionActionDone;
@@ -733,7 +759,7 @@ a swiper inside another swiper.
                     children: React.ReactNode;
                   }) {
                     const commentCount =
-                      filteredPost[activeIndex]?.video.commentCount ?? 0;
+                      filteredPost[activeIndex]?.video?.commentCount ?? 0;
                     return (
                       <>
                         {children}
@@ -759,21 +785,27 @@ a swiper inside another swiper.
                       <Suspense fallback={null}>
                         <CommentsDialog
                           commentCount={
-                            filteredPost[activeIndex]?.video.commentCount
+                            filteredPost[activeIndex]?.video?.commentCount || 0
                           }
-                          communityId={filteredPost[activeIndex]?.community.id}
-                          loopId={filteredPost[activeIndex]?.group.id}
-                          videoId={filteredPost[activeIndex]?.video.id}
-                          videoSlug={filteredPost[activeIndex]?.video.slug}
-                          shareUrl={filteredPost[activeIndex]?.video.shareUrl}
+                          communityId={
+                            filteredPost[activeIndex]?.community?.id || ""
+                          }
+                          loopId={filteredPost[activeIndex]?.group?.id || ""}
+                          videoId={filteredPost[activeIndex]?.video?.id || ""}
+                          videoSlug={
+                            filteredPost[activeIndex]?.video?.slug || ""
+                          }
+                          shareUrl={
+                            filteredPost[activeIndex]?.video?.shareUrl || ""
+                          }
                           defaultOpen={isCommentOpen}
                           videoType={
-                            filteredPost[activeIndex]?.video.videoType ??
+                            filteredPost[activeIndex]?.video?.videoType ??
                             VideoTypes.Content
                           }
                           key={
                             "feed-comment-box" +
-                            filteredPost[activeIndex]?.video.id
+                            filteredPost[activeIndex]?.video?.id
                           }
                           onCommentCountChange={onCommentCountChange}
                           onOpenChange={(open) => {
@@ -787,7 +819,8 @@ a swiper inside another swiper.
                   return (
                     <span
                       key={
-                        "feed-comment-box" + filteredPost[activeIndex]?.video.id
+                        "feed-comment-box" +
+                        filteredPost[activeIndex]?.video?.id
                       }
                       onClick={() => {
                         if (showExpandView) {
@@ -807,7 +840,7 @@ a swiper inside another swiper.
 
                   return (
                     <span
-                      key={"octo-panel-" + filteredPost[activeIndex]?.video.id}
+                      key={"octo-panel-" + filteredPost[activeIndex]?.video?.id}
                       onClick={(event) => {
                         event.stopPropagation();
 
@@ -838,8 +871,8 @@ a swiper inside another swiper.
               }}
               onReactionStateChange={(isReacted) => {
                 onReactionStateChange?.(
-                  filteredPost[activeIndex]?.video.id ?? "",
-                  filteredPost[activeIndex]?.video.slug ?? "",
+                  filteredPost[activeIndex]?.video?.id ?? "",
+                  filteredPost[activeIndex]?.video?.slug ?? "",
                   isReacted,
                 );
               }}
@@ -879,23 +912,23 @@ a swiper inside another swiper.
                 onDragging={handleSwiperToggle}
                 footer={
                   <CommentInputBox
-                    communityId={filteredPost[activeIndex].community.id}
-                    shareUrl={filteredPost[activeIndex].video.shareUrl}
-                    loopId={filteredPost[activeIndex].group.id}
-                    videoId={filteredPost[activeIndex].video.id}
-                    videoSlug={filteredPost[activeIndex].video.slug}
+                    communityId={filteredPost[activeIndex].community?.id || ""}
+                    shareUrl={filteredPost[activeIndex].video?.shareUrl || ""}
+                    loopId={filteredPost[activeIndex].group?.id || ""}
+                    videoId={filteredPost[activeIndex].video?.id || ""}
+                    videoSlug={filteredPost[activeIndex].video?.slug || ""}
                     videoType={
-                  filteredPost[activeIndex].video.videoType ??
-                  VideoTypes.Content
-                }
+                      filteredPost[activeIndex].video?.videoType ??
+                      VideoTypes.Content
+                    }
                     onCommentPosted={(comments) => {
                       if (filteredPost[activeIndex]) {
                         setQueryDataForNewComment(
-                          filteredPost[activeIndex].video.id,
+                          filteredPost[activeIndex].video?.id || "",
                           comments,
                         );
                         onCommentCountChange?.(
-                          filteredPost[activeIndex].video.id,
+                          filteredPost[activeIndex].video?.id || "",
                         );
                       }
                     }}
@@ -904,12 +937,16 @@ a swiper inside another swiper.
                 footerClassName="gencl:px-0 gencl:py-0"
               >
                 <CommentsList
-                  videoId={filteredPost[activeIndex].video.id}
+                  videoId={filteredPost[activeIndex].video?.id || ""}
                   showCloseButton={false}
-                  shareUrl={filteredPost[activeIndex].video.shareUrl}
+                  shareUrl={filteredPost[activeIndex].video?.shareUrl || ""}
                   className="gencl:pt-4"
-                  videoSlug={filteredPost[activeIndex].video.slug}
+                  videoSlug={filteredPost[activeIndex].video?.slug || ""}
                   onCommentCountChange={onCommentCountChange}
+                  videoType={
+                    filteredPost[activeIndex].video?.videoType ||
+                    VideoTypes.Content
+                  }
                 />
               </DynamicSheet>
             </Suspense>
@@ -926,8 +963,8 @@ a swiper inside another swiper.
             <Suspense fallback={null}>
               <OctoPanel
                 ref={octoPanelRef}
-                videoId={filteredPost[activeIndex].video.id}
-                videoSlug={filteredPost[activeIndex].video.slug}
+                videoId={filteredPost[activeIndex].video?.id || ""}
+                videoSlug={filteredPost[activeIndex].video?.slug}
                 open={isOctoOpen}
                 onOpenChange={(open) => {
                   if (!open) setOctoOpen(false);

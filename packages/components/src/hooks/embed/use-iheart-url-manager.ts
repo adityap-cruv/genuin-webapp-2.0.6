@@ -32,7 +32,7 @@ export function useIheartUrlManager({
 
   const getVideoPathSegment = (index: number): string => {
     const video = videos[index];
-    if (!video || video.video.type !== "video") return "";
+    if (!video || video.video?.type !== "video") return "";
     return `${video.video.slug}_${video.video.id}`;
   };
 
@@ -89,20 +89,20 @@ export function useIheartUrlManager({
     if (!isIheartLayout) return;
 
     if (activePlayerType === "expand-view") {
-      const currentUrl = new URL(window.location.href);
-      const pathSegments = currentUrl.pathname.split("/").filter(Boolean);
+      // const currentUrl = new URL(window.location.href);
+      // const pathSegments = currentUrl.pathname.split("/").filter(Boolean);
 
-      removeVideoPath(pathSegments);
-      const baseUrl = new URL(window.location.href);
-      baseUrl.pathname = "/" + pathSegments.join("/");
-      baseUrl.search = "";
-      baseUrlRef.current = baseUrl.toString();
+      // removeVideoPath(pathSegments);
+      // const baseUrl = new URL(window.location.href);
+      // baseUrl.pathname = "/" + pathSegments.join("/");
+      // baseUrl.search = "";
+      // baseUrlRef.current = baseUrl.toString();
 
-      const videoPath = getVideoPathSegment(activeIndex);
-      if (videoPath) {
-        setVideoPath(pathSegments, videoPath);
-        updateUrl(pathSegments);
-      }
+      // const videoPath = getVideoPathSegment(activeIndex);
+      // if (videoPath) {
+      //   setVideoPath(pathSegments, videoPath);
+      //   updateUrl(pathSegments);
+      // }
     } else if (baseUrlRef.current) {
       window.history.pushState({}, "", baseUrlRef.current);
       baseUrlRef.current = null;
@@ -110,17 +110,17 @@ export function useIheartUrlManager({
   }, [activePlayerType, isIheartLayout]);
 
   useEffect(() => {
-    if (!isIheartLayout || activePlayerType !== "expand-view") return;
+    // if (!isIheartLayout || activePlayerType !== "expand-view") return;
 
-    const pathSegments = window.location.pathname.split("/").filter(Boolean);
-    const videoPath = getVideoPathSegment(activeIndex);
+    // const pathSegments = window.location.pathname.split("/").filter(Boolean);
+    // const videoPath = getVideoPathSegment(activeIndex);
 
-    if (!videoPath) {
-      removeVideoPath(pathSegments);
-    } else {
-      setVideoPath(pathSegments, videoPath);
-    }
+    // if (!videoPath) {
+    //   removeVideoPath(pathSegments);
+    // } else {
+    //   setVideoPath(pathSegments, videoPath);
+    // }
 
-    updateUrl(pathSegments, true);
+    // updateUrl(pathSegments, true);
   }, [activeIndex, activePlayerType, isIheartLayout, websiteType, videos]);
 }

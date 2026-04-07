@@ -40,7 +40,7 @@ function mapVideoItem(item: VideoFeedItem): z.infer<typeof PostDetailsSchema> {
       attachedLink: item.video.attached_link || null,
       source: item.video.media_url_m3u8 ?? item.video.media_url,
       isSparked: item.video.is_sparked || false,
-      isWatched: item.video.is_watched || false,
+      isWatched: false,
       sparkCount: item.video.no_of_sparks || 0,
       thumbnail: item.video.thumbnail_url,
       viewCount: item.video.no_of_views || 0,

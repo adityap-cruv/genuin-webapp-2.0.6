@@ -109,11 +109,11 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
   const showLinkoutInExpand = embedConfig.links.showLinksInExpand;
 
   const videoLayoutId = embedConfig.view.isPlacementView
-    ? postDetails.video.placement_video_layout_id
-    : postDetails.video.videoLayoutId;
+    ? postDetails.video?.placement_video_layout_id
+    : postDetails.video?.videoLayoutId;
   const cardLayoutId = embedConfig.view.isPlacementView
-    ? postDetails.video.placement_card_layout_id
-    : postDetails.video.cardLayoutId;
+    ? postDetails.video?.placement_card_layout_id
+    : postDetails.video?.cardLayoutId;
 
   const brandLayoutType =
     embedConfig.view.brandLayoutType === "iheart"
@@ -132,11 +132,11 @@ function useExpandViewConfig(postDetails: PostDetailsType): {
       (embedDetails?.embedData.autoUserInteractionToPerform ===
         "comment-spark" ||
         embedDetails?.embedData.autoUserInteractionToPerform === "comment") &&
-      embedDetails.embedData.startVideoSlug === postDetails.video.slug &&
+      embedDetails.embedData.startVideoSlug === postDetails.video?.slug &&
       !isDesktop &&
       !embedDetails?.embedEventBus.getContext().autoInteractionActionDone
     );
-  }, [embedDetails, postDetails.video.slug, isDesktop]);
+  }, [embedDetails, postDetails.video?.slug, isDesktop]);
 
   useEffect(() => {
     if (
@@ -208,10 +208,10 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
         // Otherwise, generate URL for the other content type
         const baseUrl = getBaseUrl(window.location.href);
         const path = attributes?.type === "podcast" ? "/podcast" : "/live";
-        const slug = postDetails.video.attributes?.slug;
+        const slug = postDetails.video?.attributes?.slug;
 
         return `${baseUrl}${path}/${slug}`;
-      }, [contentType, attributes?.type, postDetails.video.attributes?.slug]);
+      }, [contentType, attributes?.type, postDetails.video?.attributes?.slug]);
 
       return (
         <div className="gencl:flex gencl:gap-2 gencl:items-center gencl:text-white">
@@ -220,13 +220,13 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
               <Link
                 href={linkUrl}
                 bypassChecks
-                aria-label={`${postDetails.video.attributes?.title || contentType} podcast artwork`}
+                aria-label={`${postDetails.video?.attributes?.title || contentType} podcast artwork`}
                 tabIndex={0}
               >
                 <Image
                   aspectRatio="square"
                   src={attributes.image_url}
-                  alt={`${postDetails.video.attributes?.title || contentType} podcast artwork`}
+                  alt={`${postDetails.video?.attributes?.title || contentType} podcast artwork`}
                   className={cn(
                     "gencl:rounded-md gencl:object-cover gencl:size-[68px]",
                   )}
@@ -236,7 +236,7 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
           )}
           <div className="gencl:w-full gencl:flex gencl:flex-col gencl:self-start">
             <div className="gencl:flex gencl:items-center gencl:gap-2 gencl:h-11">
-              {postDetails.video.attributes?.title && (
+              {postDetails.video?.attributes?.title && (
                 <Link
                   href={linkUrl}
                   bypassChecks
@@ -261,14 +261,14 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
                 </Link>
               )}
 
-              <div className="gencl:h-11 gencl:flex gencl:items-center">
+              {/* <div className="gencl:h-11 gencl:flex gencl:items-center">
                 <IHeartFollowButton
                   websiteType={websiteType}
                   attributes={attributes}
                   videoSlug={video.slug}
                   videoId={video.id}
                 />
-              </div>
+              </div> */}
             </div>
 
             {attributes?.description && (
@@ -298,18 +298,18 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
       return (
         <div className="gencl:flex gencl:gap-2 gencl:items-center gencl:text-white gencl:text-body-0-semi-bold">
           <Avatar
-            imageUrl={owner.profileImage}
-            alt={owner.name ?? ""}
-            isAvatar={owner.isAvatar}
+            imageUrl={owner?.profileImage || ""}
+            alt={owner?.name ?? ""}
+            isAvatar={owner?.isAvatar ?? false}
           />
           <ProfileLink
             url={buildPageUrl({
-              type: !!owner.brand ? "brand" : "profile",
-              slug: !!owner.brand ? owner.brand.slug : owner.userName,
+              type: !!owner?.brand ? "brand" : "profile",
+              slug: !!owner?.brand ? owner.brand.slug : owner?.userName,
             })}
-            userLogoType={owner.brand?.userLogo}
+            userLogoType={owner?.brand?.userLogo}
           >
-            @{owner.userName}
+            @{owner?.userName}
           </ProfileLink>
         </div>
       );
@@ -460,7 +460,8 @@ const SharedActions = memo(function SharedActions({
   isActive: boolean;
   onOctoOpen?: () => void;
 }) {
-  const { openContentType, setContentTypeState, hasContentType, resetSheet } = useSheetState();
+  const { openContentType, setContentTypeState, hasContentType, resetSheet } =
+    useSheetState();
 
   // Handle iHeart brand controls
   if (brandLayoutType === "iheart") {
@@ -471,14 +472,14 @@ const SharedActions = memo(function SharedActions({
         size="lg"
         variant="expand"
         isActive={isActive}
-        contentId={postDetails.video.id}
-        slug={postDetails.video.slug}
-        isReacted={postDetails.video.isSparked ?? false}
-        reactionCount={postDetails.video.sparkCount}
+        contentId={postDetails.video?.id}
+        slug={postDetails.video?.slug}
+        isReacted={postDetails.video?.isSparked ?? false}
+        reactionCount={postDetails.video?.sparkCount}
         onReactionStateChange={(isReacted) => {
           onReactionStateChange?.(
-            postDetails.video.id,
-            postDetails.video.slug,
+            postDetails.video?.id || "",
+            postDetails.video?.slug || "",
             isReacted,
           );
         }}
@@ -495,13 +496,13 @@ const SharedActions = memo(function SharedActions({
         className="gencl:sm:hidden!"
         variant="mobile"
         theme="dark"
-        contentId={postDetails.video.id}
-        isReacted={postDetails.video.isSparked ?? false}
-        reactionCount={postDetails.video.sparkCount}
-        shareUrl={postDetails.video.shareUrl}
-        slug={postDetails.video.slug}
-        videoType={postDetails.video.videoType}
-        groupSlug={postDetails.group.slug}
+        contentId={postDetails.video?.id || ""}
+        isReacted={postDetails.video?.isSparked ?? false}
+        reactionCount={postDetails.video?.sparkCount || 0}
+        shareUrl={postDetails.video?.shareUrl || ""}
+        slug={postDetails.video?.slug || ""}
+        videoType={postDetails.video?.videoType}
+        groupSlug={postDetails.group?.slug || ""}
         actionWrapper={{
           OCTO: (defaultNode) => {
             return (
@@ -523,8 +524,8 @@ const SharedActions = memo(function SharedActions({
         }}
         onReactionStateChange={(isReacted) => {
           onReactionStateChange?.(
-            postDetails.video.id,
-            postDetails.video.slug,
+            postDetails.video?.id || "", 
+            postDetails.video?.slug || "",
             isReacted,
           );
         }}
@@ -641,7 +642,7 @@ export function ExpandViewDetails({
               (octoSheetState === "default" ||
                 octoSheetState === "default-active" ||
                 octoSheetState === "expand-view") &&
-              "swiper-no-swiping"
+              "swiper-no-swiping",
           )}
           onClick={(e) => e.stopPropagation()}
         >
@@ -667,8 +668,8 @@ export function ExpandViewDetails({
           {isOctoEnabled && (
             <OctoDynamicSheet
               isOpen={isNonDesktop && hasContentType("octo") && isActive}
-              videoId={postDetails.video.id}
-              videoSlug={postDetails.video.slug}
+              videoId={postDetails.video?.id || ""}
+              videoSlug={postDetails.video?.slug || ""}
               octoSheetState={octoSheetState}
               isMobile={isNonDesktop}
               viewportHeight={viewportHeight}
@@ -683,7 +684,7 @@ export function ExpandViewDetails({
 
           {showLinkoutInExpand &&
             brandLayoutType !== "iheart" &&
-            postDetails.video.linkoutId && (
+            postDetails.video?.linkoutId && (
               <Suspense fallback={null}>
                 <Linkouts
                   linkouts={postDetails.video.linkouts}
@@ -738,7 +739,7 @@ export function ExpandViewDetails({
           <Pills
             communityDetails={postDetails.community}
             groupDetails={postDetails.group}
-            videoId={postDetails.video.id}
+            videoId={postDetails.video?.id }
             onGroupJoinStatusChange={onGroupJoinStatusChange}
             onGroupSubscriptionChange={onGroupSubscriptionChange}
             onCommunityJoinStatusChange={onCommunityJoinStatusChange}
@@ -760,7 +761,7 @@ export function ExpandViewDetails({
           <Scrubber
             className={cn("gencl:z-20 gencl:transition-all")}
             showOnlyTime={true}
-            duration={postDetails.video.duration}
+            duration={postDetails.video?.duration}
           />
         </div>
       ) : (

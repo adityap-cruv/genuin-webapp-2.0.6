@@ -28,45 +28,45 @@ export function IheartFullscreenContainer({
     height: 0,
   });
 
-  useEffect(() => {
-    if (!isDesktop || !isIheart) return;
+  // useEffect(() => {
+  //   if (!isDesktop || !isIheart) return;
 
-    const updateDimensions = () => {
-      const presetsDrawerContainer = document.getElementById(
-        "presets-drawer-container"
-      );
-      if (presetsDrawerContainer) {
-        const rect = presetsDrawerContainer.getBoundingClientRect();
-        setContainerDimensions({
-          x: rect.x,
-          y: rect.y,
-          width: rect.width,
-          height: rect.height,
-        });
-      }
-    };
+  //   const updateDimensions = () => {
+  //     const presetsDrawerContainer = document.getElementById(
+  //       "presets-drawer-container"
+  //     );
+  //     if (presetsDrawerContainer) {
+  //       const rect = presetsDrawerContainer.getBoundingClientRect();
+  //       setContainerDimensions({
+  //         x: rect.x,
+  //         y: rect.y,
+  //         width: rect.width,
+  //         height: rect.height,
+  //       });
+  //     }
+  //   };
 
-    // Initial update
-    updateDimensions();
+  //   // Initial update
+  //   updateDimensions();
 
-    // Handle resize
-    const resizeObserver = new ResizeObserver(updateDimensions);
-    const presetsDrawerContainer = document.getElementById(
-      "presets-drawer-container"
-    );
+  //   // Handle resize
+  //   const resizeObserver = new ResizeObserver(updateDimensions);
+  //   const presetsDrawerContainer = document.getElementById(
+  //     "presets-drawer-container"
+  //   );
 
-    if (presetsDrawerContainer) {
-      resizeObserver.observe(presetsDrawerContainer);
-    }
+  //   if (presetsDrawerContainer) {
+  //     resizeObserver.observe(presetsDrawerContainer);
+  //   }
 
-    // Also handle window resize
-    window.addEventListener("resize", updateDimensions);
+  //   // Also handle window resize
+  //   window.addEventListener("resize", updateDimensions);
 
-    return () => {
-      resizeObserver.disconnect();
-      window.removeEventListener("resize", updateDimensions);
-    };
-  }, [isDesktop, isIheart]);
+  //   return () => {
+  //     resizeObserver.disconnect();
+  //     window.removeEventListener("resize", updateDimensions);
+  //   };
+  // }, [isDesktop, isIheart]);
 
   if (!isIheart) return children;
 
