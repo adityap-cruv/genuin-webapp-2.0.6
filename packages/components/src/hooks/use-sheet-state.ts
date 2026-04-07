@@ -226,3 +226,5 @@ export function useSheetState() {
     resetSheet,
   } as const;
 }
+
+export type UseSheetStateReturn = ReturnType<typeof useSheetState>;

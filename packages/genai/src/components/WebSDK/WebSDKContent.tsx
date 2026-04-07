@@ -302,11 +302,13 @@ export function WebSDKContent() {
 
         // Only start panel-view countdown when transitioning from compact to full
         // and when there's an active countdown in compact mode (interval still running)
-        if (prevMode === 'compact' &&
+        if (
+            prevMode === 'compact' &&
             webSdkRenderMode === 'full' &&
             countdownValueRef.current !== null &&
             countdownValueRef.current > 0 &&
-            countdownIntervalRef.current !== null) {
+            countdownIntervalRef.current !== null
+        ) {
             // Clear the compact countdown
             clearInterval(countdownIntervalRef.current);
             countdownIntervalRef.current = null;
@@ -407,16 +409,14 @@ export function WebSDKContent() {
             return;
         }
 
-        const latestAgentMessage = [...(currentSession.chat || [])]
-            .reverse()
-            .find(event =>
-                event.role === 'agent' && (
-                    event.message?.content?.trim() ||           // Has text content
-                    event.carousel_metadata ||                   // Has carousel/videos
-                    event.metadata?.toolMetadata ||             // Has inventory data
-                    (event.contentSequence && event.contentSequence.length > 0)  // Has any content sequence
-                )
-            );
+        const latestAgentMessage = [...(currentSession.chat || [])].reverse().find(
+            event =>
+                event.role === 'agent' &&
+                (event.message?.content?.trim() || // Has text content
+                    event.carousel_metadata || // Has carousel/videos
+                    event.metadata?.toolMetadata || // Has inventory data
+                    (event.contentSequence && event.contentSequence.length > 0)) // Has any content sequence
+        );
 
         if (!latestAgentMessage) {
             expandRequestedMessageRef.current = null;
@@ -482,10 +482,10 @@ export function WebSDKContent() {
         }
 
         const hasSession = !!currentSessionId && !!currentSession;
-        const shouldExpand = hasSession && (
-            currentSession?.thinking || // Agent is generating
-            currentSession?.chat?.some(msg => msg.role === 'user') // Or user message exists
-        );
+        const shouldExpand =
+            hasSession &&
+            (currentSession?.thinking || // Agent is generating
+                currentSession?.chat?.some(msg => msg.role === 'user')); // Or user message exists
 
         if (shouldExpand) {
             // Expand sheet to show message bubble and generation skeleton
@@ -500,7 +500,8 @@ export function WebSDKContent() {
     }, [currentSessionId, currentSession, webSdkRenderMode, parentOctoPanelId]);
 
     // Show loader when: no session AND (loading prompts OR haven't shown dummy message yet)
-    const shouldShowLoader = !currentSessionId && (isLoadingSuggestedPrompts || (!showDummyMessage && suggestedPrompts.length === 0));
+    const shouldShowLoader =
+        !currentSessionId && (isLoadingSuggestedPrompts || (!showDummyMessage && suggestedPrompts.length === 0));
     const isLoadingCompactPrompt = isCompactMode && (isLoadingSuggestedPrompts || !primaryPrompt);
     const countdownForInput = isCompactMode ? countdown : null;
 
@@ -555,17 +556,20 @@ export function WebSDKContent() {
                             <div className='gai:flex gai:w-full gai:justify-end'>
                                 <div className='gai:flex gai:w-[80%] gai:flex-col gai:items-end gai:gap-2'>
                                     <div
-                                        className='gai:max-w-[80%] gai:cursor-pointer gai:rounded-3xl gai:rounded-br-none gai:bg-primary-50 gai:px-4 gai:py-3 gai:font-body-1-med gai:text-secondary-gray-900 gai:transition-colors hover:gai:bg-primary-100'
+                                        className='hover:gai:bg-primary-100 gai:max-w-[80%] gai:cursor-pointer gai:rounded-3xl gai:rounded-br-none gai:bg-primary-50 gai:px-4 gai:py-3 gai:font-body-1-med gai:text-secondary-gray-900 gai:transition-colors'
                                         onClick={handleAutoPromptClick}
                                     >
                                         {primaryPrompt}
                                     </div>
                                     {/* Countdown timer - blue badge with white background for number */}
-                                    {((countdown !== null && countdown > 0) || (panelViewCountdown !== null && panelViewCountdown > 0)) && (
+                                    {((countdown !== null && countdown > 0) ||
+                                        (panelViewCountdown !== null && panelViewCountdown > 0)) && (
                                         <div className='gai:flex gai:items-center gai:gap-1.5 gai:px-1'>
                                             <div className='gai:flex gai:h-4 gai:w-4 gai:items-center gai:justify-center gai:rounded-full gai:bg-primary-500'>
-                                                <span className='gai:text-[10px] gai:font-bold gai:leading-none gai:text-white'>
-                                                    {panelViewCountdown !== null && panelViewCountdown > 0 ? panelViewCountdown : countdown}
+                                                <span className='gai:text-[10px] gai:leading-none gai:font-bold gai:text-white'>
+                                                    {panelViewCountdown !== null && panelViewCountdown > 0
+                                                        ? panelViewCountdown
+                                                        : countdown}
                                                 </span>
                                             </div>
                                             <span className='gai:text-[10px] gai:text-secondary-gray-500'>
@@ -576,7 +580,9 @@ export function WebSDKContent() {
                                 </div>
                             </div>
                         </div>
-                    ) : !isCompactMode ? <div className='gai:flex gai:w-full gai:items-center gai:justify-center' /> : null}
+                    ) : !isCompactMode ? (
+                        <div className='gai:flex gai:w-full gai:items-center gai:justify-center' />
+                    ) : null}
                 </div>
             </div>
             <div className={`${inputSectionBackground} ${inputSectionClasses}`}>
@@ -584,7 +590,7 @@ export function WebSDKContent() {
                     <WebSDKInput
                         hideBackground={shouldShowLoader}
                         mode={webSdkRenderMode}
-                        suggestedPrompt={isCompactMode ? primaryPrompt ?? '' : undefined}
+                        suggestedPrompt={isCompactMode ? (primaryPrompt ?? '') : undefined}
                         countdown={countdownForInput}
                         onCompactPromptSend={isCompactMode ? handleCompactPromptSend : undefined}
                         isLoadingPrompt={isLoadingCompactPrompt}

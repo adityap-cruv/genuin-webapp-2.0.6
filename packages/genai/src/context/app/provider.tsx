@@ -1,4 +1,11 @@
-import { getBrandSessions, getChatHistoryV2, getSuggestedPrompts, getVideoSuggestedPrompts, stopChatSession, updateSessionTitle } from '@/lib/api';
+import {
+    getBrandSessions,
+    getChatHistoryV2,
+    getSuggestedPrompts,
+    getVideoSuggestedPrompts,
+    stopChatSession,
+    updateSessionTitle,
+} from '@/lib/api';
 import type { CachedResponseItem } from '@/lib/apiTypes';
 import { ingestDataToBCC } from '@/lib/ingestDataToBCC';
 import { useOctoAnalytics } from '@/context/analytics';
@@ -13,7 +20,7 @@ import type {
     PendingMessage,
     Session,
     ThinkingStep,
-    ToolMetadataPayload
+    ToolMetadataPayload,
 } from '@/types';
 import React, { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { toast } from 'sonner';
@@ -154,9 +161,7 @@ const toNumberArray = (value: unknown): number[] => {
 const toStringArray = (value: unknown): string[] => {
     if (value == null) return [];
     if (Array.isArray(value)) {
-        return value
-            .map(item => String(item ?? '').trim())
-            .filter((item): item is string => Boolean(item));
+        return value.map(item => String(item ?? '').trim()).filter((item): item is string => Boolean(item));
     }
     if (typeof value === 'string') {
         const trimmed = value.trim();
@@ -176,14 +181,15 @@ const normalizeCarouselMetadata = (value: unknown): CarousalMetadata | null => {
 
     const videoIds = toStringArray(parsed.video_ids);
     const keywordsValue = parsed.keywords;
-    const keywords = typeof keywordsValue === 'string'
-        ? keywordsValue
-        : Array.isArray(keywordsValue)
+    const keywords =
+        typeof keywordsValue === 'string'
             ? keywordsValue
-                  .map(item => (typeof item === 'string' ? item.trim() : ''))
-                  .filter(Boolean)
-                  .join(', ')
-            : '';
+            : Array.isArray(keywordsValue)
+              ? keywordsValue
+                    .map(item => (typeof item === 'string' ? item.trim() : ''))
+                    .filter(Boolean)
+                    .join(', ')
+              : '';
 
     if (!videoIds.length && !keywords) {
         return null;
@@ -255,8 +261,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
     const [isLoadingSuggestedPrompts, setIsLoadingSuggestedPrompts] = useState<boolean>(false);
     const [cachedPromptResponses, setCachedPromptResponses] = useState<Map<string, CachedResponseItem[]>>(new Map());
     const [webSdkRenderModeState, setWebSdkRenderModeState] = useState<'compact' | 'full'>(webSdkRenderMode ?? 'full');
-    const { videoStyles, toggleStyleSelection, toggleOptionSelection, resetVideoStyles } =
-        useVideoStyles(brandId);
+    const { videoStyles, toggleStyleSelection, toggleOptionSelection, resetVideoStyles } = useVideoStyles(brandId);
     const { analytics } = useOctoAnalytics();
     const handleSendMessageRef = useRef<HandleSendMessageFn | null>(null);
     // Map to track temp session IDs to real session IDs for handling race conditions
@@ -420,67 +425,51 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
      * Check and reconnect to an ongoing stream for a session.
      * Called after chat history is loaded to handle browser refresh scenarios.
      */
-    const checkAndReconnectStream = useCallback(
-        async (sessionId: string) => {
-            const connectToStream = connectToStreamRef.current;
-            if (!connectToStream) {
-                console.warn('connectToStream not yet available');
-                return;
-            }
+    const checkAndReconnectStream = useCallback(async (sessionId: string) => {
+        const connectToStream = connectToStreamRef.current;
+        if (!connectToStream) {
+            console.warn('connectToStream not yet available');
+            return;
+        }
 
-            // Set session to thinking state before connecting
-            setSessions(prev =>
-                prev.map(s => {
-                    if (s.id !== sessionId) return s;
-                    // Add a thinking agent event if the last message was from user
-                    const lastEvent = s.chat[s.chat.length - 1];
-                    if (lastEvent && lastEvent.role === 'user') {
-                        const thinkingAgentEvent: ChatHistoryEvent = {
-                            id: `agent-${Date.now()}`,
-                            message: { content: '' },
-                            role: 'agent',
-                            parent_id: lastEvent.id,
-                            feedback: null,
-                            created_at: new Date().toISOString(),
-                        };
-                        return {
-                            ...s,
-                            chat: [...s.chat, thinkingAgentEvent],
-                            thinking: true,
-                            thinkingSteps: [],
-                        };
-                    }
-                    return { ...s, thinking: true, thinkingSteps: [] };
-                })
-            );
-
-            try {
-                const result = await connectToStream(sessionId);
-
-                if (result.isCompleted) {
-                    // Stream is completed or not found - update session state
-                    setSessions(prev =>
-                        prev.map(s => {
-                            if (s.id !== sessionId) return s;
-                            // Remove empty thinking event if it exists
-                            const chat = s.chat.filter(e => !(e.role === 'agent' && !e.message?.content?.trim() && e.id.startsWith('agent-')));
-                            return {
-                                ...s,
-                                chat,
-                                thinking: false,
-                                thinkingSteps: [],
-                            };
-                        })
-                    );
+        // Set session to thinking state before connecting
+        setSessions(prev =>
+            prev.map(s => {
+                if (s.id !== sessionId) return s;
+                // Add a thinking agent event if the last message was from user
+                const lastEvent = s.chat[s.chat.length - 1];
+                if (lastEvent && lastEvent.role === 'user') {
+                    const thinkingAgentEvent: ChatHistoryEvent = {
+                        id: `agent-${Date.now()}`,
+                        message: { content: '' },
+                        role: 'agent',
+                        parent_id: lastEvent.id,
+                        feedback: null,
+                        created_at: new Date().toISOString(),
+                    };
+                    return {
+                        ...s,
+                        chat: [...s.chat, thinkingAgentEvent],
+                        thinking: true,
+                        thinkingSteps: [],
+                    };
                 }
-                // If not completed, the stream will continue and handleSSEMessage will handle updates
-            } catch (error) {
-                console.error('Failed to reconnect to stream:', error);
-                // Clean up thinking state on error
+                return { ...s, thinking: true, thinkingSteps: [] };
+            })
+        );
+
+        try {
+            const result = await connectToStream(sessionId);
+
+            if (result.isCompleted) {
+                // Stream is completed or not found - update session state
                 setSessions(prev =>
                     prev.map(s => {
                         if (s.id !== sessionId) return s;
-                        const chat = s.chat.filter(e => !(e.role === 'agent' && !e.message?.content?.trim() && e.id.startsWith('agent-')));
+                        // Remove empty thinking event if it exists
+                        const chat = s.chat.filter(
+                            e => !(e.role === 'agent' && !e.message?.content?.trim() && e.id.startsWith('agent-'))
+                        );
                         return {
                             ...s,
                             chat,
@@ -490,9 +479,26 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                     })
                 );
             }
-        },
-        []
-    );
+            // If not completed, the stream will continue and handleSSEMessage will handle updates
+        } catch (error) {
+            console.error('Failed to reconnect to stream:', error);
+            // Clean up thinking state on error
+            setSessions(prev =>
+                prev.map(s => {
+                    if (s.id !== sessionId) return s;
+                    const chat = s.chat.filter(
+                        e => !(e.role === 'agent' && !e.message?.content?.trim() && e.id.startsWith('agent-'))
+                    );
+                    return {
+                        ...s,
+                        chat,
+                        thinking: false,
+                        thinkingSteps: [],
+                    };
+                })
+            );
+        }
+    }, []);
 
     const setCurrentSessionId = useCallback(
         async (sessionId: string | null, forceSessionsFetched = false, fetchedSessions?: Session[]) => {
@@ -756,7 +762,10 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                     // Helper to add content types to sequence as events arrive
                     const addToContentSequence = (contentType: 'koah_ads' | 'inventory' | 'agent_text' | 'videos') => {
                         // Find or create agent event to attach sequence to
-                        let agentEvent = chat.slice().reverse().find(e => e.role === 'agent');
+                        let agentEvent = chat
+                            .slice()
+                            .reverse()
+                            .find(e => e.role === 'agent');
 
                         if (!agentEvent) {
                             // Create a new agent event if none exists
@@ -795,7 +804,10 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                         }
                     };
 
-                    const updateThinkingStepAtIndex = (index: number, updater: (current: ThinkingStep) => ThinkingStep) => {
+                    const updateThinkingStepAtIndex = (
+                        index: number,
+                        updater: (current: ThinkingStep) => ThinkingStep
+                    ) => {
                         if (index < 0 || index >= thinkingSteps.length) return;
                         ensureStepsClone();
                         thinkingSteps[index] = updater(thinkingSteps[index]);
@@ -814,16 +826,9 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                         resetThinkingSteps();
                     }
 
-                    if (
-                        data.type === 'metadata' &&
-                        typeof data.session_name === 'string' &&
-                        data.session_name.trim()
-                    ) {
+                    if (data.type === 'metadata' && typeof data.session_name === 'string' && data.session_name.trim()) {
                         const stepId = `session-name-${sessionId}`;
-                        const summary = truncateText(
-                            normalizeWhitespace(data.session_name),
-                            80
-                        );
+                        const summary = truncateText(normalizeWhitespace(data.session_name), 80);
                         const existingIndex = thinkingSteps.findIndex(step => step.id === stepId);
                         const payload: ThinkingStep = {
                             id: stepId,
@@ -907,9 +912,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                         hasStreamingUpdate = true;
                         if (typeof data.function_name === 'string' && data.function_name.trim()) {
                             const functionName = data.function_name.trim();
-                            const existingFunctionStep = thinkingSteps.find(
-                                step => step.functionName === functionName
-                            );
+                            const existingFunctionStep = thinkingSteps.find(step => step.functionName === functionName);
 
                             if (!existingFunctionStep && data.type === 'function_call') {
                                 addThinkingStep({
@@ -1225,7 +1228,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                                 .reverse()
                                 .find(e => e.role === 'user');
                             const agentResponse = lastEvent?.message?.content || '';
-                            
+
                             fetchSuggestedPrompts(sessionAgentId, {
                                 user_query: lastUserMessage?.message?.content || '',
                                 agent_response: agentResponse,
@@ -1270,40 +1273,45 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
     );
 
     // Handler for when a new session is created from streaming response
-    const handleSessionCreated = useCallback((tempSessionId: string, realSessionId: string) => {
-        // Store the mapping immediately (synchronous) so handleSSEMessage can use it
-        sessionIdMapRef.current.set(realSessionId, tempSessionId);
+    const handleSessionCreated = useCallback(
+        (tempSessionId: string, realSessionId: string) => {
+            // Store the mapping immediately (synchronous) so handleSSEMessage can use it
+            sessionIdMapRef.current.set(realSessionId, tempSessionId);
 
-        // Update the temporary session with the real session ID
-        // Also clear cached context flags if this was a cached context session
-        setSessions(prev => prev.map(s => {
-            if (s.id === tempSessionId) {
-                return {
-                    ...s,
-                    id: realSessionId,
-                    // Clear cached context flags after getting real session_id
-                    isCachedContextSession: false,
-                    cachedContext: undefined,
-                    backendSessionId: realSessionId,
-                };
-            }
-            return s;
-        }));
-        setSessions(prev => {
-            const updated = prev.map(s => (s.id === tempSessionId ? { ...s, id: realSessionId } : s));
+            // Update the temporary session with the real session ID
+            // Also clear cached context flags if this was a cached context session
+            setSessions(prev =>
+                prev.map(s => {
+                    if (s.id === tempSessionId) {
+                        return {
+                            ...s,
+                            id: realSessionId,
+                            // Clear cached context flags after getting real session_id
+                            isCachedContextSession: false,
+                            cachedContext: undefined,
+                            backendSessionId: realSessionId,
+                        };
+                    }
+                    return s;
+                })
+            );
+            setSessions(prev => {
+                const updated = prev.map(s => (s.id === tempSessionId ? { ...s, id: realSessionId } : s));
 
-            // Track session created - check if this is the first session ever
-            const isFirstSessionEver = updated.length === 1;
-            analytics.trackSessionCreated({
-                session_id: realSessionId,
-                is_first_session_ever: isFirstSessionEver,
+                // Track session created - check if this is the first session ever
+                const isFirstSessionEver = updated.length === 1;
+                analytics.trackSessionCreated({
+                    session_id: realSessionId,
+                    is_first_session_ever: isFirstSessionEver,
+                });
+
+                return updated;
             });
-
-            return updated;
-        });
-        // Update current session ID if it matches the temp ID
-        setCurrentSessionIdState(prev => (prev === tempSessionId ? realSessionId : prev));
-    }, [analytics]);
+            // Update current session ID if it matches the temp ID
+            setCurrentSessionIdState(prev => (prev === tempSessionId ? realSessionId : prev));
+        },
+        [analytics]
+    );
 
     const { sendSSEMessage, connectToStream, cancelStream } = useSSEHandler({
         onMessage: handleSSEMessage,
@@ -1330,8 +1338,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
             if (!sessionId) return;
 
             const session =
-                sessions.find(s => s.id === sessionId) ||
-                sessions.find(s => s.backendSessionId === sessionId);
+                sessions.find(s => s.id === sessionId) || sessions.find(s => s.backendSessionId === sessionId);
 
             const backendSessionId = session?.backendSessionId ?? sessionId;
             const tempSessionId =
@@ -1419,7 +1426,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
     // Convert cached response array to ChatHistoryEvent format
     function convertCachedResponseToEvents(
         cachedResponse: CachedResponseItem[],
-        _userMessageId: string,
+        _userMessageId: string
     ): { agentEvent: ChatHistoryEvent; sessionName: string | null } {
         let agentMessageContent = '';
         let carouselMetadata: CarousalMetadata | null = null;
@@ -1438,6 +1445,13 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
             }
         }
 
+        // Build contentSequence based on what data is present
+        // koah_ads always appears first for cached video prompt responses
+        const contentSequence: ChatHistoryEvent['contentSequence'] = ['koah_ads'];
+        if (agentMessageContent) contentSequence.push('agent_text');
+        if (toolMetadata) contentSequence.push('inventory');
+        if (carouselMetadata) contentSequence.push('videos');
+
         const agentMessageId = `agent-${Date.now()}`;
         const agentEvent: ChatHistoryEvent = {
             id: agentMessageId,
@@ -1450,6 +1464,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
             parent_id: '',
             feedback: null,
             created_at: new Date().toISOString(),
+            contentSequence,
         };
 
         return { agentEvent, sessionName };
@@ -1489,9 +1504,8 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
             trackChatStarted(messageInput);
 
             // Extract agent response content for previous_context
-            const agentResponseContent = typeof agentEvent.message === 'string'
-                ? agentEvent.message
-                : agentEvent.message?.content || '';
+            const agentResponseContent =
+                typeof agentEvent.message === 'string' ? agentEvent.message : agentEvent.message?.content || '';
 
             // Wait a small delay to ensure SDK has time to load
             // This prevents race condition where carousel renders before SDK is ready
@@ -1628,7 +1642,9 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                 );
             }
             const agentsIncludingMaya = [...agents, { type: 'maya' as AgentType, id: 'maya' }];
-            const agent = agentsIncludingMaya.find(a => a.id === agent_id) || agentsIncludingMaya.find(a => a.id === currentAgent);
+            const agent =
+                agentsIncludingMaya.find(a => a.id === agent_id) ||
+                agentsIncludingMaya.find(a => a.id === currentAgent);
             if (!agent) {
                 toast.error('Agent not found.');
                 return;
@@ -1639,7 +1655,8 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
 
             // Check if this is a follow-up to cached response
             const sessionForPayload = sessions.find((s: Session) => s.id === sessionId);
-            const needsPreviousContext = sessionForPayload?.isCachedContextSession && !sessionForPayload?.backendSessionId;
+            const needsPreviousContext =
+                sessionForPayload?.isCachedContextSession && !sessionForPayload?.backendSessionId;
 
             console.log('[Provider] Preparing payload:', {
                 sessionId,
@@ -1656,7 +1673,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                 message: messageInput,
                 agent_id: agent.id,
                 agent_type: agent.type,
-                session_id: needsPreviousContext ? null : (sessionId || null), // Send null if using previous_context
+                session_id: needsPreviousContext ? null : sessionId || null, // Send null if using previous_context
                 user_id: userId,
                 s3_keys: s3_keys,
                 video_id: view === 'web-sdk' ? webSdkVideoId : undefined,
@@ -1838,26 +1855,25 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
         };
     }, [parentOctoPanelId]);
 
-    const setWebSdkRenderModeValue = useCallback(
-        (mode: 'compact' | 'full') => {
-            setWebSdkRenderModeState(prev => {
-                if (prev === mode) {
-                    return prev;
-                }
-                return mode;
-            });
-
-            if (typeof window !== 'undefined') {
-                const globalSdk = (window as unknown as { GenAISDK?: { setWebSdkRenderMode?: (mode: 'compact' | 'full') => void } }).GenAISDK;
-                try {
-                    globalSdk?.setWebSdkRenderMode?.(mode);
-                } catch (error) {
-                    console.error('[AgentsProvider] Failed to propagate render mode to SDK', error);
-                }
+    const setWebSdkRenderModeValue = useCallback((mode: 'compact' | 'full') => {
+        setWebSdkRenderModeState(prev => {
+            if (prev === mode) {
+                return prev;
             }
-        },
-        []
-    );
+            return mode;
+        });
+
+        if (typeof window !== 'undefined') {
+            const globalSdk = (
+                window as unknown as { GenAISDK?: { setWebSdkRenderMode?: (mode: 'compact' | 'full') => void } }
+            ).GenAISDK;
+            try {
+                globalSdk?.setWebSdkRenderMode?.(mode);
+            } catch (error) {
+                console.error('[AgentsProvider] Failed to propagate render mode to SDK', error);
+            }
+        }
+    }, []);
 
     const contextValue = {
         // State

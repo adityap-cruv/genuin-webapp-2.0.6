@@ -118,6 +118,7 @@ function DynamicSheet({
 
   const startClose = useCallback(() => {
     config.onClose?.();
+    if (config.preventCloseCollapse) return; // caller handles state reset; don't collapse
     if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
     setIsVisible(false);
     closeTimerRef.current = setTimeout(

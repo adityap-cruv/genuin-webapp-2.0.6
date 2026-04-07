@@ -22,6 +22,8 @@ import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 import { getBrandType } from "@genuin/components/lib/utils/brand-layout";
 import { isMiddlewareOverlayEnabled } from "@genuin/components/lib/utils";
 import { VideoTypes } from "@genuin/components/context/analytics";
+import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
+import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 
 const WatchBoundaryOverlay = lazy(() =>
   import(
@@ -240,6 +242,9 @@ function EmbedPlayer({
         embedDetails?.embedData.card_layout_id,
         embedDetails?.embedData.video_layout_id,
       );
+  const { sheetState } = useSheetState();
+  const { isDesktop } = useDeviceDetectMediaQuery();
+  const isNonDesktop = !isDesktop;
 
   const handleClickOnEmbedTile = useCallback(() => {
     // Emit SDK event for video click
@@ -304,50 +309,68 @@ function EmbedPlayer({
 
   const isSponsored = postDetails.video.cardLayoutId === 7; // Sponsored content is determined by cardLayoutId 7
 
+  const isSheetExpanded =
+    isNonDesktop &&
+    isActive &&
+    (sheetState === "panel-view" || sheetState === "full-view");
+
   return (
     <div
       className={cn(
-        "gencl:relative gencl:bg-black gencl:flex-1 gencl:min-h-0 gencl:flex gencl:items-center gencl:justify-center",
+        "gencl:relative gencl:bg-black gencl:flex-1 gencl:min-h-0 gencl:h-full gencl:flex gencl:items-center gencl:justify-center",
         {
           "gencl:opacity-50 gencl:transition-opacity":
             !isActive && config.styling.isOpacityDown,
         },
+        isSheetExpanded && "gencl:flex-col gencl:justify-start",
       )}
     >
-      <div className="gencl:w-full gencl:h-full gencl:relative">
-        <Suspense fallback={null}>
-          <FeedPlayer
-            videoDescription={postDetails.video.descritptionText}
-            videoId={postDetails.video.id}
-            adUrl={postDetails.video.adUrl ?? undefined}
-            src={postDetails.video.source}
-            poster={
-              config.contentDisplay.showSectionCover &&
-              postDetails.section?.cover_url
-                ? postDetails.section?.cover_url
-                : postDetails.video.thumbnail
-            }
-            className={
-              videoCrop
-                ? "gencl:object-cover gencl:h-full! gencl:w-full gencl:bg-cover"
-                : "gencl:h-full! gencl:bg-contain!"
-            }
-            layoutType={layoutType}
-            aria-hidden="true"
-            tabIndex={-1}
-            index={index}
-            isActive={isActive}
-            adTagObject={(postDetails as any).adTagObject ?? undefined}
-            onAdFilled={handleAdFilled}
-            onAdFilldEnd={handleAdFilledEnd}
-            isSponsored={
-              postDetails.video.cardLayoutId === 7 ||
-              postDetails.video.videoLayoutId === 6
-            }
-            videoType={postDetails.video.videoType ?? VideoTypes.Content}
-            playerSize={itemSize}
-          />
-        </Suspense>
+      <div className={cn("gencl:w-full gencl:h-full gencl:relative")}>
+        <div
+          className={cn(
+            "gencl:w-full gencl:transition-all gencl:duration-300 gencl:ease-in-out",
+            isNonDesktop && isActive && sheetState === "panel-view"
+              ? "gencl:h-[30%] gencl:flex-shrink-0"
+              : isNonDesktop && isActive && sheetState === "full-view"
+                ? "gencl:h-0 gencl:flex-shrink-0"
+                : "gencl:h-full",
+          )}
+        >
+          <Suspense fallback={null}>
+            <FeedPlayer
+              videoDescription={postDetails.video.descritptionText}
+              videoId={postDetails.video.id}
+              adUrl={postDetails.video.adUrl ?? undefined}
+              src={postDetails.video.source}
+              poster={
+                config.contentDisplay.showSectionCover &&
+                postDetails.section?.cover_url
+                  ? postDetails.section?.cover_url
+                  : postDetails.video.thumbnail
+              }
+              className={cn(
+                "gencl:h-full! gencl:w-full",
+                videoCrop || isSheetExpanded
+                  ? "gencl:object-contain gencl:bg-contain!"
+                  : "gencl:object-cover gencl:bg-cover!",
+              )}
+              layoutType={layoutType}
+              aria-hidden="true"
+              tabIndex={-1}
+              index={index}
+              isActive={isActive}
+              adTagObject={(postDetails as any).adTagObject ?? undefined}
+              onAdFilled={handleAdFilled}
+              onAdFilldEnd={handleAdFilledEnd}
+              isSponsored={
+                postDetails.video.cardLayoutId === 7 ||
+                postDetails.video.videoLayoutId === 6
+              }
+              videoType={postDetails.video.videoType ?? VideoTypes.Content}
+              playerSize={itemSize}
+            />
+          </Suspense>
+        </div>
         {!isAdFilled && (
           <Suspense fallback={null}>
             <ControlLayer

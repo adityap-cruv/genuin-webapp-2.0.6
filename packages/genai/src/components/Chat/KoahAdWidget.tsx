@@ -41,82 +41,85 @@ const KoahAdWidget = ({ userMessage, aiResponse, messageId }: KoahAdWidgetProps)
 
     const isWebSdkView = view === 'web-sdk';
 
-    const processAd = useCallback(async (currentAiResponse: string) => {
-        if (!window.koah || !containerRef.current || !userMessage || processedRef.current) {
-            setIsLoading(false);
-            return;
-        }
+    const processAd = useCallback(
+        async (currentAiResponse: string) => {
+            if (!window.koah || !containerRef.current || !userMessage || processedRef.current) {
+                setIsLoading(false);
+                return;
+            }
 
-        processedRef.current = true;
-        processingStartTime.current = Date.now();
+            processedRef.current = true;
+            processingStartTime.current = Date.now();
 
-        // Track: Ad processing started
-        analytics.trackKoahAdProcessingStarted({
-            message_id: messageId,
-            user_message: userMessage,
-            session_id: currentSessionId || undefined,
-        });
+            // Track: Ad processing started
+            analytics.trackKoahAdProcessingStarted({
+                message_id: messageId,
+                user_message: userMessage,
+                session_id: currentSessionId || undefined,
+            });
 
-        try {
-            const served = await window.koah.process(userMessage, currentAiResponse, 'suffix', {
-                target: containerRef.current,
-                messageId: `koah-${messageId}`,
-                onFill: () => {
-                    if (containerRef.current) {
-                        injectKoahStyles(containerRef.current);
-                    }
-                    setAdServed(true);
-                    setIsLoading(false);
+            try {
+                const served = await window.koah.process(userMessage, currentAiResponse, 'suffix', {
+                    target: containerRef.current,
+                    messageId: `koah-${messageId}`,
+                    onFill: () => {
+                        if (containerRef.current) {
+                            injectKoahStyles(containerRef.current);
+                        }
+                        setAdServed(true);
+                        setIsLoading(false);
 
-                    // Track: Ad served successfully
-                    const processingTime = Date.now() - processingStartTime.current;
-                    analytics.trackKoahAdServed({
-                        message_id: messageId,
-                        user_message: userMessage,
-                        processing_time_ms: processingTime,
-                        session_id: currentSessionId || undefined,
-                    });
-                },
-                onNoFill: () => {
+                        // Track: Ad served successfully
+                        const processingTime = Date.now() - processingStartTime.current;
+                        analytics.trackKoahAdServed({
+                            message_id: messageId,
+                            user_message: userMessage,
+                            processing_time_ms: processingTime,
+                            session_id: currentSessionId || undefined,
+                        });
+                    },
+                    onNoFill: () => {
+                        setAdServed(false);
+                        setIsLoading(false);
+
+                        // Track: No ad available
+                        analytics.trackKoahAdNoFill({
+                            message_id: messageId,
+                            user_message: userMessage,
+                            reason: 'onNoFill callback triggered',
+                            session_id: currentSessionId || undefined,
+                        });
+                    },
+                });
+
+                if (!served) {
                     setAdServed(false);
                     setIsLoading(false);
 
-                    // Track: No ad available
+                    // Track: No ad served (returned false)
                     analytics.trackKoahAdNoFill({
                         message_id: messageId,
                         user_message: userMessage,
-                        reason: 'onNoFill callback triggered',
+                        reason: 'koah.process returned false',
                         session_id: currentSessionId || undefined,
                     });
-                },
-            });
-
-            if (!served) {
+                }
+            } catch (error) {
+                console.error('[KoahAdWidget] Failed to process ad', error);
                 setAdServed(false);
                 setIsLoading(false);
 
-                // Track: No ad served (returned false)
-                analytics.trackKoahAdNoFill({
+                // Track: Ad processing failed
+                analytics.trackKoahAdProcessingFailed({
                     message_id: messageId,
-                    user_message: userMessage,
-                    reason: 'koah.process returned false',
+                    error_message: error instanceof Error ? error.message : String(error),
+                    error_stack: error instanceof Error ? error.stack : undefined,
                     session_id: currentSessionId || undefined,
                 });
             }
-        } catch (error) {
-            console.error('[KoahAdWidget] Failed to process ad', error);
-            setAdServed(false);
-            setIsLoading(false);
-
-            // Track: Ad processing failed
-            analytics.trackKoahAdProcessingFailed({
-                message_id: messageId,
-                error_message: error instanceof Error ? error.message : String(error),
-                error_stack: error instanceof Error ? error.stack : undefined,
-                session_id: currentSessionId || undefined,
-            });
-        }
-    }, [userMessage, messageId, analytics, currentSessionId]);
+        },
+        [userMessage, messageId, analytics, currentSessionId]
+    );
 
     // Track ad clicks
     useEffect(() => {
@@ -202,12 +205,7 @@ const KoahAdWidget = ({ userMessage, aiResponse, messageId }: KoahAdWidgetProps)
         return null;
     }
 
-    return (
-        <div
-            ref={containerRef}
-            className='adsbykoah gai:w-full gai:text-black'
-        />
-    );
+    return <div ref={containerRef} className='adsbykoah gai:w-full gai:text-black' />;
 };
 
 export default KoahAdWidget;

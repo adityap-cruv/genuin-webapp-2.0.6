@@ -90,6 +90,12 @@ export interface DynamicSheetConfig {
   /** Called when the sheet requests to close */
   onClose?: () => void;
   /**
+   * When true, the close button/gesture calls onClose but does NOT collapse
+   * the sheet (no setIsVisible(false)). Useful for inline/embed variants where
+   * "close" should snap back to a default state rather than disappear entirely.
+   */
+  preventCloseCollapse?: boolean;
+  /**
    * Rules that automatically advance the sheet from one state to another
    * after an optional delay. Replaces the previous hardcoded
    * default-active → expand-view behaviour.

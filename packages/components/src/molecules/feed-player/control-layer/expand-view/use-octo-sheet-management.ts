@@ -18,6 +18,7 @@ type UseOctoSheetManagementProps = {
   octoSheetState: DynamicSheetState;
   setContentTypeState: UseSheetStateReturn["setContentTypeState"];
   resetSheet: UseSheetStateReturn["resetSheet"];
+  variant?: "expand" | "embed";
 };
 
 /**
@@ -32,6 +33,7 @@ export function useOctoSheetManagement({
   octoSheetState,
   setContentTypeState,
   resetSheet,
+  variant = "expand",
 }: UseOctoSheetManagementProps) {
   const prevOctoSheetStateRef = useRef<DynamicSheetState>(octoSheetState);
   const isSheetOpenRef = useRef(false);
@@ -70,6 +72,7 @@ export function useOctoSheetManagement({
    */
   const handleOctoSheetStateChange = useCallback(
     (next: DynamicSheetState) => {
+      console.log('[octo] handleOctoSheetStateChange:', next);
       // Only process state changes for the active video
       if (!isActive) {
         return;
@@ -116,7 +119,8 @@ export function useOctoSheetManagement({
 
   /**
    * Handles close from DynamicSheet (close button or dismiss).
-   * Resets the ref so the next video can auto-open without triggering another close.
+   * For embed variant: go back to "default" state (sheet stays visible at compact height).
+   * For expand variant: fully reset the sheet.
    */
   const handleOctoSheetClose = useCallback(() => {
     prevOctoSheetStateRef.current = "default";

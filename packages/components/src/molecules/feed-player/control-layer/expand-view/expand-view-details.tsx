@@ -528,7 +528,7 @@ const SharedActions = memo(function SharedActions({
         }}
         onReactionStateChange={(isReacted) => {
           onReactionStateChange?.(
-            postDetails.video?.id || "", 
+            postDetails.video?.id || "",
             postDetails.video?.slug || "",
             isReacted,
           );
@@ -591,7 +591,7 @@ export function ExpandViewDetails({
 
   // Octo Sheet Management
   const { engagement } = useEmbedConfigs();
-  const isOctoEnabled = engagement.engagementTools.octo;
+  const isOctoEnabled = true;
   const octoSheetState = getContentTypeState("octo");
 
   const isCompactOctoState = !octoSheetState
@@ -651,6 +651,24 @@ export function ExpandViewDetails({
           onClick={(e) => e.stopPropagation()}
         >
           <div className="gencl:z-20">
+            {/* Octo AI Sheet - Only loaded when octo is enabled */}
+            {isOctoEnabled && (
+              <OctoDynamicSheet
+                isOpen={isActive}
+                videoId={postDetails.video.id}
+                videoSlug={postDetails.video.slug}
+                octoSheetState={octoSheetState}
+                isMobile={isNonDesktop}
+                viewportHeight={viewportHeight}
+                octoRenderMode={octoRenderMode}
+                onStateChange={handleOctoSheetStateChange}
+                onClose={handleOctoSheetClose}
+                onExpandRequest={handleOctoExpandRequest}
+                onCompactExpand={handleOctoCompactExpand}
+                onCountdownActive={handleOctoCountdownActive}
+              />
+            )}
+
             {/**
              * If the brand is US Weekly, we do not show the user profile in expand view.
              */}
@@ -687,6 +705,7 @@ export function ExpandViewDetails({
           )}
 
           {showLinkoutInExpand &&
+            !isOctoEnabled &&
             brandLayoutType !== "iheart" &&
             postDetails.video?.linkoutId && (
               <Suspense fallback={null}>
@@ -703,15 +722,17 @@ export function ExpandViewDetails({
               </Suspense>
             )}
 
-          <AdaptiveDescription
-            video={postDetails.video}
-            type={brandLayoutType}
-            {...(brandLayoutType === "iheart" && {
-              isExpanded,
-              onExpand,
-            })}
-            layoutType={brandLayoutType}
-          />
+          {!isOctoEnabled && (
+            <AdaptiveDescription
+              video={postDetails.video}
+              type={brandLayoutType}
+              {...(brandLayoutType === "iheart" && {
+                isExpanded,
+                onExpand,
+              })}
+              layoutType={brandLayoutType}
+            />
+          )}
         </div>
 
         <SharedActions
@@ -743,7 +764,7 @@ export function ExpandViewDetails({
           <Pills
             communityDetails={postDetails.community}
             groupDetails={postDetails.group}
-            videoId={postDetails.video?.id }
+            videoId={postDetails.video?.id}
             onGroupJoinStatusChange={onGroupJoinStatusChange}
             onGroupSubscriptionChange={onGroupSubscriptionChange}
             onCommunityJoinStatusChange={onCommunityJoinStatusChange}

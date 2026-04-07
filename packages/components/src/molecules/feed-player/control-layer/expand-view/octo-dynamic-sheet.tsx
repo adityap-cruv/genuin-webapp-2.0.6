@@ -2,7 +2,7 @@ import { DynamicSheet } from "@genuin/ui";
 import type { DynamicSheetState } from "@genuin/ui/dynamic-sheet";
 import { OctoPanel } from "@genuin/components/molecules/octo-panel";
 import { getOctoSheetConfig } from "@genuin/components/molecules/octo-panel/octo-sheet-config";
-import type { ComponentProps } from "react";
+import type { ComponentProps, RefObject } from "react";
 
 type OctoDynamicSheetProps = {
   /**
@@ -33,6 +33,13 @@ type OctoDynamicSheetProps = {
    * Render mode for OctoPanel
    */
   octoRenderMode: "compact" | "full";
+
+  variant?: "expand" | "embed";
+  /**
+   * Optional container ref used to compute %-based heights (e.g. panel-view 70%)
+   * against the current slide/control-layer dimensions.
+   */
+  containerRef?: RefObject<HTMLDivElement | null>;
   /**
    * Handler for sheet state changes
    */
@@ -96,6 +103,8 @@ export function OctoDynamicSheet({
   isMobile,
   viewportHeight,
   octoRenderMode,
+  variant = "expand",
+  containerRef,
   onStateChange,
   onClose,
   onExpandRequest,
@@ -112,6 +121,7 @@ export function OctoDynamicSheet({
     isMobile,
     octoState: octoSheetState,
     viewportHeight,
+    variant,
   });
 
   return (
@@ -119,10 +129,15 @@ export function OctoDynamicSheet({
       isOpen={isOpen}
       renderMode="inline"
       controlledState={octoSheetState}
-          config={{
+      config={{
         ...octoConfig,
         onStateChange,
         onClose,
+        // For embed variant: prevent DynamicSheet from collapsing to height=0 on close.
+        // onClose (handleOctoSheetClose) already resets state to "default" so the sheet
+        // stays visible at its compact height.
+        // preventCloseCollapse: variant === "embed",
+        disableDragAndSwipe: variant === "embed", // Disable drag/swipe for embed variant to prevent conflicts with control layer interactions
       }}
       {...(onSwiperToggle && { onSwiperToggle })}
       className={octoClassName(octoSheetState)}

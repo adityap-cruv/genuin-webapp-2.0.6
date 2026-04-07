@@ -36,7 +36,7 @@ const ThinkingMessages = () => {
 
 const FeedbackButton = ({
     iconName,
-    onClick
+    onClick,
 }: {
     iconName: string;
     onClick: (e: React.MouseEvent) => void;
@@ -52,8 +52,12 @@ const FeedbackButton = ({
         DislikeEmpty: <DislikeEmpty className='gai:text-secondary-gray-600 gai:hover:text-secondary-gray-900' />,
         Regenerate: <Regenerate className='gai:text-secondary-gray-600 gai:hover:text-secondary-gray-900' />,
         Edit: <Edit className='gai:text-secondary-gray-600 gai:hover:text-secondary-gray-900' />,
-        ChevronLeft: <ChevronLeft className='gai:h-5 gai:w-5 gai:text-secondary-gray-600 gai:hover:text-secondary-gray-900' />,
-        ChevronRight: <ChevronRight className='gai:h-5 gai:w-5 gai:text-secondary-gray-600 gai:hover:text-secondary-gray-900' />,
+        ChevronLeft: (
+            <ChevronLeft className='gai:h-5 gai:w-5 gai:text-secondary-gray-600 gai:hover:text-secondary-gray-900' />
+        ),
+        ChevronRight: (
+            <ChevronRight className='gai:h-5 gai:w-5 gai:text-secondary-gray-600 gai:hover:text-secondary-gray-900' />
+        ),
     };
 
     // if(iconName === 'Edit' && onBoardingAgents.includes(currentAgent)) {
@@ -64,7 +68,7 @@ const FeedbackButton = ({
         <div>
             <Button
                 size='icon'
-                className='gai:flex gai:cursor-pointer gai:items-center gai:gap-1 gai:border-0 gai:bg-transparent gai:p-0 gai:py-0 gai:text-secondary-gray-600 gai:shadow-none gai:rounded-md gai:hover:bg-primary-50 gai:hover:text-secondary-gray-900'
+                className='gai:flex gai:cursor-pointer gai:items-center gai:gap-1 gai:rounded-md gai:border-0 gai:bg-transparent gai:p-0 gai:py-0 gai:text-secondary-gray-600 gai:shadow-none gai:hover:bg-primary-50 gai:hover:text-secondary-gray-900'
                 onClick={onClick}
             >
                 {IconMap[iconName]}
@@ -72,7 +76,6 @@ const FeedbackButton = ({
         </div>
     );
 };
-
 
 const ArtifactsList = ({ artifacts }: { artifacts: Artifact[] }) => {
     if (!artifacts || artifacts.length === 0) return null;
@@ -105,7 +108,7 @@ const ArtifactsList = ({ artifacts }: { artifacts: Artifact[] }) => {
                             href={url}
                             target='_blank'
                             rel='noopener noreferrer'
-                            className='gai:hover:border-primary-200 gai:flex-1'
+                            className='gai:flex-1 gai:hover:border-primary-200'
                         >
                             {card}
                         </a>
@@ -182,10 +185,7 @@ const useStreamingDisplay = ({
         }
 
         const pendingLength = pendingRef.current.length;
-        const chunkSize = Math.min(
-            STREAM_CHUNK_MAX,
-            Math.max(STREAM_CHUNK_MIN, Math.ceil(pendingLength / 6))
-        );
+        const chunkSize = Math.min(STREAM_CHUNK_MAX, Math.max(STREAM_CHUNK_MIN, Math.ceil(pendingLength / 6)));
         const nextChunk = pendingRef.current.slice(0, chunkSize);
         pendingRef.current = pendingRef.current.slice(chunkSize);
 
@@ -307,18 +307,19 @@ const ItemComponent: React.FC<ItemProps> = ({
 
     // Find user question for agent messages (used for Koah ads)
     // Look for the most recent user message before this agent event
-    const userQuestion = messageType === 'agent'
-        ? (() => {
-            const currentIndex = allEvents.findIndex(e => e.id === event.id);
-            // Search backwards from current event to find the last user message
-            for (let i = currentIndex - 1; i >= 0; i--) {
-                if (allEvents[i].role === 'user' && allEvents[i].message?.content) {
-                    return allEvents[i].message.content;
-                }
-            }
-            return null;
-        })()
-        : null;
+    const userQuestion =
+        messageType === 'agent'
+            ? (() => {
+                  const currentIndex = allEvents.findIndex(e => e.id === event.id);
+                  // Search backwards from current event to find the last user message
+                  for (let i = currentIndex - 1; i >= 0; i--) {
+                      if (allEvents[i].role === 'user' && allEvents[i].message?.content) {
+                          return allEvents[i].message.content;
+                      }
+                  }
+                  return null;
+              })()
+            : null;
 
     const [copied, setCopied] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
@@ -354,7 +355,7 @@ const ItemComponent: React.FC<ItemProps> = ({
                 targetSessionId: currentSessionId,
                 messageInput: editedText,
                 agent_id: currentAgent,
-                editedChatId: event.id
+                editedChatId: event.id,
             });
             setIsEditing(false);
         } catch {
@@ -364,11 +365,7 @@ const ItemComponent: React.FC<ItemProps> = ({
 
     const messageId = event.id ?? '';
     const normalizedContent = content || '';
-    const streamingActive =
-        messageType === 'agent' &&
-        isLastMessage &&
-        Boolean(sessionThinking) &&
-        !event.isCompleted;
+    const streamingActive = messageType === 'agent' && isLastMessage && Boolean(sessionThinking) && !event.isCompleted;
     const shouldAnimateOnMount =
         messageType === 'agent' &&
         (event.is_cached || (isLastMessage && (!event.isCompleted || Boolean(sessionThinking))));
@@ -434,7 +431,6 @@ const ItemComponent: React.FC<ItemProps> = ({
 
     // we may have function name
 
-
     return (
         <div className={`gai:flex gai:w-full ${messageType === 'user' ? 'gai:justify-end' : 'gai:justify-start'}`}>
             {messageType === 'user' ? (
@@ -464,13 +460,20 @@ const ItemComponent: React.FC<ItemProps> = ({
                     )}
                     {!isEditing && view !== 'web-sdk' && (
                         <div className='gai:flex gai:items-center gai:gap-0'>
-                            <FeedbackButton iconName={copied ? 'Copied' : 'Copy'} onClick={handleCopy} onBoardingAgents={onBoardingAgents} currentAgent={currentAgent} />
+                            <FeedbackButton
+                                iconName={copied ? 'Copied' : 'Copy'}
+                                onClick={handleCopy}
+                                onBoardingAgents={onBoardingAgents}
+                                currentAgent={currentAgent}
+                            />
                             {/* <FeedbackButton iconName='Edit' onClick={startEditing} onBoardingAgents={onBoardingAgents} currentAgent={currentAgent} /> */}
                         </div>
                     )}
                 </div>
             ) : (
-                <div className={`gai:flex gai:w-full ${view === 'web-sdk' ? 'gai:flex-col' : 'gai:flex-row'} gai:gap-2`}>
+                <div
+                    className={`gai:flex gai:w-full ${view === 'web-sdk' ? 'gai:flex-col' : 'gai:flex-row'} gai:gap-2`}
+                >
                     {/* Thinking indicators - always at the top, before any content */}
                     <div className='gai:flex gai:w-full gai:flex-col gai:gap-2'>
                         {/* Show agent thinking status list - stays until response_completed */}
@@ -480,12 +483,13 @@ const ItemComponent: React.FC<ItemProps> = ({
                         {/* Show thinking skeleton - hide when any agent content has arrived */}
                         {(() => {
                             const hasAnyContent = !!(
-                                content ||                              // Has agent text
-                                event.carousel_metadata ||              // Has videos
-                                toolMetadata ||                         // Has inventory
-                                (userQuestion && event.contentSequence?.includes('koah_ads'))  // Has koah ads data
+                                content || // Has agent text
+                                event.carousel_metadata || // Has videos
+                                toolMetadata || // Has inventory
+                                (userQuestion && event.contentSequence?.includes('koah_ads')) // Has koah ads data
                             );
-                            const shouldShowSkeleton = isLastMessage &&
+                            const shouldShowSkeleton =
+                                isLastMessage &&
                                 sessionThinking &&
                                 messageType === 'agent' &&
                                 !hasAnyContent &&
@@ -496,7 +500,7 @@ const ItemComponent: React.FC<ItemProps> = ({
                     </div>
 
                     <div className='gai:flex gai:w-full gai:flex-col gai:gap-2'>
-                        {event.contentSequence?.map((contentType) => {
+                        {event.contentSequence?.map(contentType => {
                             switch (contentType) {
                                 case 'koah_ads': {
                                     // Find the actual agent text response (not tool/function content)
@@ -506,10 +510,12 @@ const ItemComponent: React.FC<ItemProps> = ({
                                         for (let i = currentIndex; i >= 0; i--) {
                                             const evt = allEvents[i];
                                             // Find agent message with content that's not a function/tool
-                                            if (evt.role === 'agent' &&
+                                            if (
+                                                evt.role === 'agent' &&
                                                 evt.message?.content &&
                                                 !evt.message.function_name &&
-                                                !evt.message.function_response) {
+                                                !evt.message.function_response
+                                            ) {
                                                 return evt.message.content;
                                             }
                                         }
@@ -517,7 +523,7 @@ const ItemComponent: React.FC<ItemProps> = ({
                                     })();
 
                                     // Show Koah ads when conditions are met
-                                    if (messageType === 'agent' && showKoahAd && userQuestion && isKoahSdkLoaded) {
+                                    if (true) {
                                         return (
                                             <Suspense key={contentType} fallback={null}>
                                                 <KoahAdWidget

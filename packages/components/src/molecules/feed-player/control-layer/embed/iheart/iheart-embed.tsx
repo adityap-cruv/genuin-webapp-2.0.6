@@ -6,6 +6,8 @@ import {
   useMemo,
   useState,
   useRef,
+  lazy,
+  Suspense,
   type FC,
 } from "react";
 import { Image } from "@genuin/ui/components/image";
@@ -20,6 +22,17 @@ import { usePlayerContext } from "../../../context";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { ReadMoreTextType } from "@genuin/components/molecules/read-more/read-more.types";
 import { IHeartEndOfContentOverlay } from "./end-of-content-overlay";
+import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
+import { useOctoSheetManagement } from "../../expand-view/use-octo-sheet-management";
+import useViewportHeight from "@genuin/components/hooks/use-screen-height";
+import type { DynamicSheetState } from "@genuin/ui/dynamic-sheet";
+import { useEmbedManagerContext } from "@genuin/components/organisms/embed/context";
+
+const OctoDynamicSheet = lazy(() =>
+  import("../../expand-view/octo-dynamic-sheet.js").then((m) => ({
+    default: m.OctoDynamicSheet,
+  })),
+);
 
 export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
   postDetails,
@@ -37,10 +50,61 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
   const { baseContextManager } = useBaseContext();
   const {
     view: { websiteType },
+    engagement,
   } = useEmbedConfigs();
   const { isMobile } = useDeviceDetectMediaQuery();
   const { togglePlay } = usePlayerContext();
+  const { swiper } = useEmbedManagerContext();
   const embedConfigs = useEmbedConfigs();
+
+  // Octo sheet integration
+  // const isOctoEnabled = engagement.engagementTools.octo;
+  const isOctoEnabled = true;
+
+  const viewportHeight = useViewportHeight();
+  const {
+    hasContentType,
+    getContentTypeState,
+    setContentTypeState,
+    resetSheet,
+    sheetContentStates,
+  } = useSheetState();
+  const isActiveOctoSheet =
+    getContentTypeState("octo") === "panel-view" ||
+    getContentTypeState("octo") === "full-view";
+  const octoSheetState: DynamicSheetState = getContentTypeState("octo");
+  const isCompactOctoState =
+    octoSheetState === "default" ||
+    octoSheetState === "default-active" ||
+    octoSheetState === "expand-view";
+  const octoRenderMode: "compact" | "full" = isCompactOctoState
+    ? "compact"
+    : "full";
+
+  const {
+    handleOctoExpandRequest,
+    handleOctoSheetStateChange,
+    handleOctoSheetClose,
+    handleOctoCompactExpand,
+    handleOctoCountdownActive,
+  } = useOctoSheetManagement({
+    isActive: isActive ?? false,
+    octoSheetState,
+    setContentTypeState,
+    resetSheet,
+    variant: "embed",
+  });
+
+  useEffect(() => {
+    console.log("octo octoSheetState", octoSheetState);
+  }, [octoSheetState]);
+
+  // When this tile becomes inactive (user swiped to another video), close/reset the sheet
+  // so the next time this tile becomes active it starts fresh
+  useEffect(() => {
+    resetSheet();
+  }, [isActive]);
+
   const [isVideoWatched, setIsVideoWatched] = useState<boolean>(false);
 
   // Navigation announcement state
@@ -193,6 +257,22 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
     ],
   );
 
+  useEffect(() => {
+    const swiperInstance = swiper;
+    const shouldDisableSwiper =
+      octoSheetState === "panel-view" || octoSheetState === "full-view";
+
+    if (!swiperInstance) {
+      return;
+    }
+
+    if (shouldDisableSwiper) {
+      swiperInstance.disable();
+    } else {
+      swiperInstance.enable();
+    }
+  }, [swiper, isActive, octoSheetState]);
+
   return (
     <div
       // role="region"
@@ -276,50 +356,57 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
         />
 
         {/* Header Section */}
-        <header className="gencl:absolute gencl:top-0 gencl:w-full gencl:flex gencl:justify-between gencl:items-center gencl:gap-2 gencl:text-white gencl:p-3">
-          {postDetails.video?.attributes?.image_url && (
-            <Image
-              aspectRatio="square"
-              src={postDetails.video.attributes?.image_url ?? ""}
-              alt={`${postDetails.video.attributes?.title || ""}, live radio artwork`}
-              tabIndex={isVideoWatched ? -1 : 0}
-              className={cn(
-                "gencl:rounded-md gencl:object-cover",
-                websiteType === "polaris"
-                  ? "gencl:size-12 gencl:lg:size-16!"
-                  : "gencl:size-14!",
-              )}
-            />
-          )}
-          <div className="gencl:w-full">
-            {postDetails.video?.attributes?.title && (
-              <p
+        {!isActiveOctoSheet && (
+          <header className="gencl:absolute gencl:top-0 gencl:w-full gencl:flex gencl:justify-between gencl:items-center gencl:gap-2 gencl:text-white gencl:p-3">
+            {postDetails.video?.attributes?.image_url && (
+              <Image
+                aspectRatio="square"
+                src={postDetails.video.attributes?.image_url ?? ""}
+                alt={`${postDetails.video.attributes?.title || ""}, live radio artwork`}
                 tabIndex={isVideoWatched ? -1 : 0}
-                aria-label={`${postDetails.video.attributes?.title}, title`}
                 className={cn(
-                  "gencl:font-semibold gencl:leading-[18px] gencl:line-clamp-1 gencl:tracking-[-0.2px] gencl:lg:font-semibold! gencl:lg:leading-[24px]! gencl:lg:tracking-[-0.2px]!",
+                  "gencl:rounded-md gencl:object-cover",
                   websiteType === "polaris"
-                    ? "gencl:text-[14px] gencl:lg:text-[17px]!"
-                    : "gencl:text-[16px]",
+                    ? "gencl:size-12 gencl:lg:size-16!"
+                    : "gencl:size-14!",
                 )}
-              >
-                {postDetails.video.attributes?.title}
-              </p>
+              />
             )}
-            {postDetails.video?.attributes?.description && (
-              <p
-                tabIndex={isVideoWatched ? -1 : 0}
-                aria-label={`${postDetails.video.attributes?.description}, Video title`}
-                className="gencl:text-[12px] gencl:font-normal gencl:leading-[16px] gencl:line-clamp-2 gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]!"
-              >
-                {postDetails.video.attributes?.description}
-              </p>
-            )}
-          </div>
-        </header>
+            <div className="gencl:w-full">
+              {postDetails.video?.attributes?.title && (
+                <p
+                  tabIndex={isVideoWatched ? -1 : 0}
+                  aria-label={`${postDetails.video.attributes?.title}, title`}
+                  className={cn(
+                    "gencl:font-semibold gencl:leading-[18px] gencl:line-clamp-1 gencl:tracking-[-0.2px] gencl:lg:font-semibold! gencl:lg:leading-[24px]! gencl:lg:tracking-[-0.2px]!",
+                    websiteType === "polaris"
+                      ? "gencl:text-[14px] gencl:lg:text-[17px]!"
+                      : "gencl:text-[16px]",
+                  )}
+                >
+                  {postDetails.video.attributes?.title}
+                </p>
+              )}
+              {postDetails.video?.attributes?.description && (
+                <p
+                  tabIndex={isVideoWatched ? -1 : 0}
+                  aria-label={`${postDetails.video.attributes?.description}, Video title`}
+                  className="gencl:text-[12px] gencl:font-normal gencl:leading-[16px] gencl:line-clamp-2 gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]!"
+                >
+                  {postDetails.video.attributes?.description}
+                </p>
+              )}
+            </div>
+          </header>
+        )}
 
         {/* Footer Section */}
-        <footer className="gencl:absolute gencl:bottom-0 gencl:p-3 gencl:text-white gencl:w-full gencl:space-y-3">
+        <footer
+          className={cn(
+            "gencl:absolute gencl:bottom-0 gencl:p-3 gencl:text-white gencl:w-full",
+            isActiveOctoSheet && "gencl:space-y-3 gencl:h-full gencl:p-0",
+          )}
+        >
           {/* <div className="gencl:rounded">
             <ReadMore
               text={enhancedDescription}
@@ -338,30 +425,61 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
           {/* Controls Section */}
           <div
             className={cn(
-              "gencl:overflow-hidden gencl:transition-all gencl:ease-in-out gencl:duration-300 gencl:flex gencl:items-center gencl:justify-end",
+              "gencl:overflow-hidden gencl:transition-all gencl:ease-in-out gencl:duration-300 gencl:flex gencl:items-end gencl:justify-end",
+              isActiveOctoSheet && "gencl:space-y-3 gencl:h-full gencl:p-0",
             )}
           >
-            <IHeartControls
-              onClick={(e) => e.stopPropagation()}
-              className={cn("gencl:z-20 gencl:lg:gap-1!")}
-              size="lg"
-              variant="clip"
-              videoDetails={postDetails.video}
-              index={index}
-              isActive={isActive}
-              contentId={postDetails.video?.id}
-              slug={postDetails.video?.slug}
-              isReacted={postDetails.video?.isSparked ?? false}
-              reactionCount={postDetails.video?.sparkCount}
-              onReactionStateChange={(isReacted) => {
-                onReactionStateChange?.(
-                  postDetails.video?.id || "",
-                  postDetails.video?.slug || "",
-                  isReacted,
-                );
+            {/* Octo Sheet */}
+            <div
+              className="gencl:relative gencl:h-full gencl:w-full swiper-no-swiping"
+              onClick={(e) => {
+                e.stopPropagation();
               }}
-              isVideoWatched={isVideoWatched}
-            />
+            >
+              {isOctoEnabled && isActive && (
+                <Suspense fallback={null}>
+                  <OctoDynamicSheet
+                    key={postDetails.video?.id}
+                    isOpen={isActive ?? false}
+                    videoId={postDetails.video?.id ?? ""}
+                    videoSlug={postDetails.video?.slug ?? ""}
+                    octoSheetState={octoSheetState}
+                    isMobile={isMobile}
+                    viewportHeight={viewportHeight}
+                    octoRenderMode={octoRenderMode}
+                    variant="embed"
+                    onStateChange={handleOctoSheetStateChange}
+                    onClose={handleOctoSheetClose}
+                    onExpandRequest={handleOctoExpandRequest}
+                    onCompactExpand={handleOctoCompactExpand}
+                    onCountdownActive={handleOctoCountdownActive}
+                  />
+                </Suspense>
+              )}
+            </div>
+            {!isActiveOctoSheet && (
+              <IHeartControls
+                onClick={(e) => e.stopPropagation()}
+                className={cn("gencl:z-20 gencl:lg:gap-1!")}
+                size="lg"
+                variant="clip"
+                videoDetails={postDetails.video}
+                index={index}
+                isActive={isActive}
+                contentId={postDetails.video?.id}
+                slug={postDetails.video?.slug}
+                isReacted={postDetails.video?.isSparked ?? false}
+                reactionCount={postDetails.video?.sparkCount}
+                onReactionStateChange={(isReacted) => {
+                  onReactionStateChange?.(
+                    postDetails.video?.id || "",
+                    postDetails.video?.slug || "",
+                    isReacted,
+                  );
+                }}
+                isVideoWatched={isVideoWatched}
+              />
+            )}
             {/* <IHeartListenLiveButton
               variant="filled"
               info={listenLiveButtonInfo}
