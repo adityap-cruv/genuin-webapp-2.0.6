@@ -44,7 +44,7 @@
     }
   }
 
-  const SDK_VERSION = '2.0.5'
+  const SDK_VERSION = '2.0.6'
 
   // Global state
   let sdkLoaded = false
