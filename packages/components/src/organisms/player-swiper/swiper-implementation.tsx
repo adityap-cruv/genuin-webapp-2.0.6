@@ -92,7 +92,7 @@ export function SwiperImplementation({
 
   // Track if any modal is open
   const [modalOpen, setModalOpen] = useState(
-    dialogManager.getRegisteredDialogs().length > 0
+    dialogManager.getRegisteredDialogs().length > 0,
   );
 
   useEffect(() => {
@@ -138,8 +138,8 @@ export function SwiperImplementation({
           virtualizeSwiper
             ? {
                 enabled: true,
-                addSlidesBefore: 2,
-                addSlidesAfter: 2,
+                addSlidesBefore: 1,
+                addSlidesAfter: 1,
                 cache: true,
               }
             : undefined
@@ -166,6 +166,7 @@ export function SwiperImplementation({
           scrollOnFocus: true,
         }}
         followFinger
+        snapToSlideEdge
         {...restProps}
       >
         {children}

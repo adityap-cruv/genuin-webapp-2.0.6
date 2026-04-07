@@ -674,7 +674,10 @@ export function Embed({
                 {/* Add shimmer slides when fetching next page */}
                 {isFetchingNextPage &&
                   Array.from({ length: 3 }).map((_, idx) => (
-                    <SwiperSlide key={`shimmer-${idx}`}>
+                    <SwiperSlide
+                      key={`shimmer-${idx}`}
+                      virtualIndex={filteredPost.length + idx}
+                    >
                       <ShimmerSlide />
                     </SwiperSlide>
                   ))}

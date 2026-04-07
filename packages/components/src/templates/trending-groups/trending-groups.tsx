@@ -142,6 +142,7 @@ function TrendingGroupsMobileView({
           spaceBetween={10}
           slidesPerView={1.05} // Show 5% of the next slide
           className="gencl:w-full"
+          snapToSlideEdge
           modules={[Navigation]}
           touchStartPreventDefault={false}
           navigation={{
