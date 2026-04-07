@@ -235,6 +235,7 @@ export function TrendingCommunitiesMobileView({
             spaceBetween={10}
             slidesPerView={1.05} // Show 5% of the next slide
             className="gencl:w-full gencl:h-58"
+            snapToSlideEdge
             modules={[Navigation]}
             navigation={{
               prevEl: ".swiper-community-prev-button",

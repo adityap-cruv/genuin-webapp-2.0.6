@@ -181,6 +181,7 @@ export function EmbedSwiper({
         freeMode={freeMode ? SWIPER_CONFIG.FREE_MODE : false}
         virtualizeSwiper={virtualizeSwiper}
         watchOverflow={true}
+        snapToSlideEdge
         keyboard={{
           enabled: !isIheartLayout,
           onlyInViewport: false,
@@ -198,7 +199,16 @@ export function EmbedSwiper({
         //   itemRoleDescriptionMessage: "video clip",
         //   scrollOnFocus: true,
         // }}
-        virtual={virtualizeSwiper}
+        virtual={
+          virtualizeSwiper
+            ? {
+                enabled: true,
+                addSlidesBefore: 1,
+                addSlidesAfter: 1,
+                cache: true,
+              }
+            : undefined
+        }
         allowTouchMove={allowGestureScroll}
         simulateTouch={allowGestureScroll}
         touchReleaseOnEdges={!allowGestureScroll || touchReleaseOnEdges}

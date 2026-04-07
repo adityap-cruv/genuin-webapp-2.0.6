@@ -685,8 +685,8 @@ importers:
         specifier: ^2.7.1
         version: 2.7.1(@types/react@19.1.8)(react@19.1.0)
       swiper:
-        specifier: ^11.2.7
-        version: 11.2.8
+        specifier: ^12.1.3
+        version: 12.1.3
       tailwindcss:
         specifier: ^4.1.8
         version: 4.1.10
@@ -18518,6 +18518,11 @@ packages:
 
   /swiper@11.2.8:
     resolution: {integrity: sha512-S5FVf6zWynPWooi7pJ7lZhSUe2snTzqLuUzbd5h5PHUOhzgvW0bLKBd2wv0ixn6/5o9vwc/IkQT74CRcLJQzeg==}
+    engines: {node: '>= 4.7.0'}
+    dev: false
+
+  /swiper@12.1.3:
+    resolution: {integrity: sha512-XcWlVmkHFICI4fuoJKgbp8PscDcS4i7pBH8nwJRBi3dpQvhCySwsWRYm4bOf/BzKVWkHOYaFw7qz9uBSrY3oug==}
     engines: {node: '>= 4.7.0'}
     dev: false
 
