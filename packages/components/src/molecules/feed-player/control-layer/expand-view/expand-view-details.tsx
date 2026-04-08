@@ -589,7 +589,7 @@ export function ExpandViewDetails({
 
   // Octo Sheet Management
   const { engagement } = useEmbedConfigs();
-  const isOctoEnabled = true;
+  const isOctoEnabled = engagement.engagementTools.octo;
   const octoSheetState = getContentTypeState("octo");
 
   const isCompactOctoState = !octoSheetState

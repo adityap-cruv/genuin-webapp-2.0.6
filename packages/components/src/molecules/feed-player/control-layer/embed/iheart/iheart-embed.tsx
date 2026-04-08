@@ -60,8 +60,8 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
   const embedConfigs = useEmbedConfigs();
 
   // Octo sheet integration
-  // const isOctoEnabled = engagement.engagementTools.octo;
-  const isOctoEnabled = Boolean(embedConfigs.view.isFeed);
+  const isOctoEnabled = engagement.engagementTools.octo;
+  // const isOctoEnabled = Boolean(embedConfigs.view.isFeed);
 
   const viewportHeight = useViewportHeight();
   const { getContentTypeState, setContentTypeState, resetSheet } =
