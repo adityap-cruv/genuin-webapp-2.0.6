@@ -10,7 +10,7 @@ import { getCachedRemoteLottie, loadRemoteLottie } from '@/lib/lottie/load-remot
 
 // Duration constants for the auto-prompt cycle (in milliseconds)
 const FULL_VIEW_IDLE_TIMEOUT_MS = 5_000; // Wait 5s after response before closing chat
-const VIDEO_PLAY_DURATION_MS = 30_000; // Play video for 30s before triggering next prompt
+const VIDEO_PLAY_DURATION_MS = 5_000; // Play video for 30s before triggering next prompt
 
 const OCTO_IDLE_ANIMATION_PATH = 'sleeping/animations/51914e32-e62c-43d5-b17d-50369bbbf7d6.json';
 const OCTO_IDLE_IMAGES_PATH = 'sleeping/';
@@ -573,22 +573,7 @@ export function WebSDKContent() {
         };
     }, [webSdkRenderMode, currentSessionId, suggestedPrompts, handleSendMessage]);
 
-    // Auto-scroll to the bottom when new messages arrive
-    useEffect(() => {
-        if (!scrollContainerRef.current) {
-            return;
-        }
-
-        const container = scrollContainerRef.current;
-        const currentSession = sessions.find(session => session.id === currentSessionId);
-        const chatLength = currentSession?.chat?.length ?? 0;
-
-        if (chatLength === 0) {
-            return;
-        }
-
-        container.scrollTop = container.scrollHeight;
-    }, [sessions, currentSessionId]);
+    // Auto-scroll disabled — keep the view fixed at the top during streaming and on completion.
 
     useEffect(() => {
         let cancelled = false;

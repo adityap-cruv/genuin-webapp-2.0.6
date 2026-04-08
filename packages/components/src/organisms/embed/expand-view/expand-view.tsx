@@ -96,9 +96,16 @@ export function EmbedExpandView({
   fetchNextPage,
 }: EmbedExpandViewProps) {
   const [startIndex, setStartIndex] = useState(0);
-  const { changeActiveIndex, embedEventBus, goBackToPreviousPlayerType, embedData } =
-    useEmbedContext();
-  const lastProcessedVideoRef = useRef<{ slug: string; timestamp: number } | null>(null);
+  const {
+    changeActiveIndex,
+    embedEventBus,
+    goBackToPreviousPlayerType,
+    embedData,
+  } = useEmbedContext();
+  const lastProcessedVideoRef = useRef<{
+    slug: string;
+    timestamp: number;
+  } | null>(null);
 
   const {
     setMuted,
@@ -234,25 +241,33 @@ export function EmbedExpandView({
       // Guard against infinite loops: Check if we recently processed this same video
       const now = Date.now();
       const lastProcessed = lastProcessedVideoRef.current;
-      if (lastProcessed && lastProcessed.slug === newVideoSlug && now - lastProcessed.timestamp < 3000) {
+      if (
+        lastProcessed &&
+        lastProcessed.slug === newVideoSlug &&
+        now - lastProcessed.timestamp < 3000
+      ) {
         return;
       }
 
       // Check if this video is already active
       const context = embedEventBus.getContext();
       const currentVideo = videos[context.activeIndex];
-      if (currentVideo && (currentVideo.video.slug === newVideoSlug || currentVideo.video.id === newVideoSlug)) {
+      if (
+        currentVideo &&
+        (currentVideo.video?.slug === newVideoSlug ||
+          currentVideo.video?.id === newVideoSlug)
+      ) {
         return;
       }
 
       const sourceInstanceId =
-        typeof payload?.sourceInstanceId === 'string'
+        typeof payload?.sourceInstanceId === "string"
           ? payload.sourceInstanceId
           : payload.instanceId;
 
       const isNestedOctoUpdate =
-        typeof sourceInstanceId === 'string' &&
-        sourceInstanceId.startsWith('octo-panel-');
+        typeof sourceInstanceId === "string" &&
+        sourceInstanceId.startsWith("octo-panel-");
 
       if (isNestedOctoUpdate) {
         if (!context.autoInteractionActionDone) {
@@ -264,11 +279,16 @@ export function EmbedExpandView({
       }
 
       const videoIndex = videos.findIndex(
-        (video) => video.video.slug === newVideoSlug || video.video.id === newVideoSlug,
+        (video) =>
+          video.video?.slug === newVideoSlug ||
+          video.video?.id === newVideoSlug,
       );
 
       if (videoIndex !== -1) {
-        lastProcessedVideoRef.current = { slug: newVideoSlug, timestamp: Date.now() };
+        lastProcessedVideoRef.current = {
+          slug: newVideoSlug,
+          timestamp: Date.now(),
+        };
         changeActiveIndex(videoIndex);
         setStartIndex(videoIndex);
         return;
@@ -298,78 +318,84 @@ export function EmbedExpandView({
 
           let didInsert = false;
 
-          queryClient.setQueryData<InfiniteData<FeedPage>>(queryKey, (oldData) => {
-            if (!oldData) return oldData;
+          queryClient.setQueryData<InfiniteData<FeedPage>>(
+            queryKey,
+            (oldData) => {
+              if (!oldData) return oldData;
 
-            let remainingIndex = Math.max(targetIndex, 0);
+              let remainingIndex = Math.max(targetIndex, 0);
 
-            const updatedPages = oldData.pages.map((page) => {
-              const feed = [...page.feed];
-              let insertedOnThisPage = false;
-              if (!didInsert) {
-                if (remainingIndex <= feed.length) {
-                  // Avoid duplicate insertions if the video already exists in this page
-                  const alreadyExists = feed.some(
+              const updatedPages = oldData.pages.map((page) => {
+                const feed = [...page.feed];
+                let insertedOnThisPage = false;
+                if (!didInsert) {
+                  if (remainingIndex <= feed.length) {
+                    // Avoid duplicate insertions if the video already exists in this page
+                    const alreadyExists = feed.some(
+                      (item) =>
+                        item.video?.slug === newVideoSlug ||
+                        item.video?.id === newVideoSlug,
+                    );
+
+                    if (!alreadyExists) {
+                      feed.splice(remainingIndex, 0, videoToInsert);
+                      insertedOnThisPage = true;
+                      didInsert = true;
+                    }
+                  }
+                  remainingIndex = Math.max(remainingIndex - feed.length, 0);
+                }
+                return {
+                  ...page,
+                  feed,
+                  totalVideos:
+                    typeof page.totalVideos === "number"
+                      ? page.totalVideos + (insertedOnThisPage ? 1 : 0)
+                      : page.totalVideos,
+                };
+              });
+
+              if (!didInsert && updatedPages.length > 0) {
+                const lastPageIndex = updatedPages.length - 1;
+                const lastPage = updatedPages[lastPageIndex];
+
+                if (lastPage) {
+                  const alreadyExists = lastPage.feed.some(
                     (item) =>
-                      item.video.slug === newVideoSlug ||
-                      item.video.id === newVideoSlug,
+                      item.video?.slug === newVideoSlug ||
+                      item.video?.id === newVideoSlug,
                   );
-
                   if (!alreadyExists) {
-                    feed.splice(remainingIndex, 0, videoToInsert);
-                    insertedOnThisPage = true;
+                    updatedPages[lastPageIndex] = {
+                      ...lastPage,
+                      feed: [...lastPage.feed, videoToInsert],
+                      totalVideos:
+                        typeof lastPage.totalVideos === "number"
+                          ? lastPage.totalVideos + 1
+                          : lastPage.totalVideos,
+                    } as FeedPage;
                     didInsert = true;
                   }
                 }
-                remainingIndex = Math.max(remainingIndex - feed.length, 0);
               }
+
               return {
-                ...page,
-                feed,
-                totalVideos:
-                  typeof page.totalVideos === 'number'
-                    ? page.totalVideos + (insertedOnThisPage ? 1 : 0)
-                    : page.totalVideos,
+                ...oldData,
+                pages: updatedPages,
               };
-            });
-
-            if (!didInsert && updatedPages.length > 0) {
-              const lastPageIndex = updatedPages.length - 1;
-              const lastPage = updatedPages[lastPageIndex];
-
-              if (lastPage) {
-                const alreadyExists = lastPage.feed.some(
-                  (item) =>
-                    item.video.slug === newVideoSlug ||
-                    item.video.id === newVideoSlug,
-                );
-                if (!alreadyExists) {
-                  updatedPages[lastPageIndex] = {
-                    ...lastPage,
-                    feed: [...lastPage.feed, videoToInsert],
-                    totalVideos:
-                      typeof lastPage.totalVideos === 'number'
-                        ? lastPage.totalVideos + 1
-                        : lastPage.totalVideos,
-                  } as FeedPage;
-                  didInsert = true;
-                }
-              }
-            }
-
-            return {
-              ...oldData,
-              pages: updatedPages,
-            };
-          });
+            },
+          );
 
           if (didInsert) {
-            lastProcessedVideoRef.current = { slug: newVideoSlug, timestamp: Date.now() };
+            lastProcessedVideoRef.current = {
+              slug: newVideoSlug,
+              timestamp: Date.now(),
+            };
             changeActiveIndex(targetIndex);
             setStartIndex(targetIndex);
           }
         } catch (error) {
-          console.error('Failed to fetch/append video:', error);
+          console.error("Failed to fetch/append video:", error);
         }
       })();
     };

@@ -16,7 +16,7 @@ export function IheartFullscreenContainer({
 }) {
   const { isDesktop } = useDeviceDetectMediaQuery();
   const {
-    view: { brandLayoutType, websiteType },
+    view: { brandLayoutType, websiteType, embedStyle },
   } = useEmbedConfigs();
   const { height } = useWindowSize();
   const isIheart = brandLayoutType === "iheart";
@@ -73,14 +73,33 @@ export function IheartFullscreenContainer({
   return (
     <div
       style={{
-        height: isDesktop
-          ? websiteType === "legacy"
-            ? "100vh"
-            : containerDimensions.height || height - IHEART_MINI_PLAYER_HEIGHT
-          : height - IHEART_TOP_BAR,
-        width: isDesktop ? containerDimensions.width || "100%" : "100%",
-        top: isDesktop ? containerDimensions.y || 0 : IHEART_TOP_BAR,
-        left: isDesktop ? containerDimensions.x : undefined,
+        height:
+          embedStyle === "feed"
+            ? "100%"
+            : isDesktop
+              ? websiteType === "legacy"
+                ? "100vh"
+                : containerDimensions.height ||
+                  height - IHEART_MINI_PLAYER_HEIGHT
+              : height - IHEART_TOP_BAR,
+        width:
+          embedStyle === "feed"
+            ? "100%"
+            : isDesktop
+              ? containerDimensions.width || "100%"
+              : "100%",
+        top:
+          embedStyle === "feed"
+            ? 0
+            : isDesktop
+              ? containerDimensions.y || 0
+              : IHEART_TOP_BAR,
+        left:
+          embedStyle === "feed"
+            ? 0
+            : isDesktop
+              ? containerDimensions.x
+              : undefined,
         position: "fixed",
         zIndex: 50,
       }}
