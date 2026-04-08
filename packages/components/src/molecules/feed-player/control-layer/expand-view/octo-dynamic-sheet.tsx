@@ -53,13 +53,21 @@ type OctoDynamicSheetProps = {
    */
   onExpandRequest: () => void;
   /**
-   * Handler for compact expand event
+   * @deprecated Use onThinkingStarted instead.
    */
-  onCompactExpand: () => void;
+  onCompactExpand?: () => void;
+  /**
+   * Handler for when the agent starts thinking (fires once per session).
+   */
+  onThinkingStarted?: () => void;
   /**
    * Handler for countdown active state
    */
   onCountdownActive: (isActive: boolean) => void;
+  /**
+   * Handler for GenAI SDK errors
+   */
+  onError?: () => void;
   /**
    * Handler for swiper toggle
    */
@@ -109,7 +117,9 @@ export function OctoDynamicSheet({
   onClose,
   onExpandRequest,
   onCompactExpand,
+  onThinkingStarted,
   onCountdownActive,
+  onError,
   onSwiperToggle,
 }: OctoDynamicSheetProps) {
   // Get Octo sheet configuration based on current state and viewport
@@ -121,28 +131,25 @@ export function OctoDynamicSheet({
     isMobile,
     octoState: octoSheetState,
     viewportHeight,
-    variant,
   });
 
   return (
     <DynamicSheet
       isOpen={isOpen}
-      renderMode="inline"
+      renderMode="container"
       controlledState={octoSheetState}
       config={{
         ...octoConfig,
         onStateChange,
         onClose,
-        // For embed variant: prevent DynamicSheet from collapsing to height=0 on close.
-        // onClose (handleOctoSheetClose) already resets state to "default" so the sheet
-        // stays visible at its compact height.
-        // preventCloseCollapse: variant === "embed",
-        disableDragAndSwipe: variant === "embed", // Disable drag/swipe for embed variant to prevent conflicts with control layer interactions
+        disableDragAndSwipe: variant === "embed",
+        // preventCloseCollapse: true,
+        // navTitle: octoSheetState !== "default" ? "Octo GPT" : undefined,
       }}
-      {...(onSwiperToggle && { onSwiperToggle })}
       className={octoClassName(octoSheetState)}
       contentClassName="gencl:bg-transparent"
       footerClassName={octoFooterClassName(octoSheetState)}
+      headerClassName="gencl:text-body-1-semi-bold!"
     >
       <OctoPanel
         videoId={videoId}
@@ -153,7 +160,10 @@ export function OctoDynamicSheet({
         renderMode={octoRenderMode}
         onExpandRequest={onExpandRequest}
         onCompactExpand={onCompactExpand}
+        onThinkingStarted={onThinkingStarted}
         onCountdownActive={onCountdownActive}
+        onError={onError}
+        onClose={onClose}
       />
     </DynamicSheet>
   );

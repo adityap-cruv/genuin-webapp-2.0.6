@@ -1207,8 +1207,8 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       }
       return;
     }
-    if (isIHeartLayout)
-      baseContextManager.setVideoWatched({ videoId, isWatched: true });
+    // if (isIHeartLayout)
+    //   baseContextManager.setVideoWatched({ videoId, isWatched: true });
 
     if (isIHeartLayout && websiteType === "legacy") {
       if (globalPlayState) {

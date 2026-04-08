@@ -4,15 +4,15 @@ import { WebSDKPresetPrompts } from './WebSDKPresetPrompts';
 type WebSDKInputProps = {
     hideBackground?: boolean;
     showPresetPrompts: boolean;
-    onClosePresetPrompts: () => void;
-    setIsSuggestionsOpen: (isSuggestionsOpen: boolean) => void;
     mode?: 'compact' | 'full';
     suggestedPrompt?: string | null;
     countdown?: number | null;
-    onCompactPromptSend?: () => void;
     isLoadingPrompt?: boolean;
     onActivate?: () => void;
     onInputStart?: () => void;
+    onCompactPromptSend?: () => void;
+    onClosePresetPrompts: () => void;
+    setIsSuggestionsOpen: (isSuggestionsOpen: boolean) => void;
 };
 
 export function WebSDKInput({
@@ -41,10 +41,7 @@ export function WebSDKInput({
                 onInputStart={onInputStart}
             />
             {showPresetPrompts && (
-                <WebSDKPresetPrompts
-                    setIsSuggestionsOpen={setIsSuggestionsOpen}
-                    onClose={onClosePresetPrompts}
-                />
+                <WebSDKPresetPrompts setIsSuggestionsOpen={setIsSuggestionsOpen} onClose={onClosePresetPrompts} />
             )}
         </div>
     );

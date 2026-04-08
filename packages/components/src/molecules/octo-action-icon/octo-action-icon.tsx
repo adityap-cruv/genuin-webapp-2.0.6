@@ -44,7 +44,7 @@ export function OctoActionIcon({
     (e: MouseEvent<HTMLDivElement>) => {
       onClick?.(e);
     },
-    [onClick]
+    [onClick],
   );
 
   const handleComplete = useCallback(() => {
@@ -57,7 +57,7 @@ export function OctoActionIcon({
       <div
         className={cn(
           "gencl:flex gencl:items-center gencl:justify-center gencl:rounded-full gencl:bg-secondary-100",
-          className
+          className,
         )}
         style={dimensionStyle}
         data-active={isActive ? true : undefined}
@@ -74,7 +74,7 @@ export function OctoActionIcon({
     <div
       className={cn(
         "gencl:flex gencl:items-center gencl:justify-center gencl:cursor-pointer",
-        className
+        className,
       )}
       style={dimensionStyle}
       data-active={isActive ? true : undefined}

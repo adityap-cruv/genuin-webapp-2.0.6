@@ -14,6 +14,7 @@ const OCTO_STATE_PRIORITY: Record<DynamicSheetState, number> = {
 };
 
 type UseOctoSheetManagementProps = {
+  enabled?: boolean;
   isActive: boolean;
   octoSheetState: DynamicSheetState;
   setContentTypeState: UseSheetStateReturn["setContentTypeState"];
@@ -29,6 +30,7 @@ type UseOctoSheetManagementProps = {
  * @returns Handlers for Octo sheet events
  */
 export function useOctoSheetManagement({
+  enabled = true,
   isActive,
   octoSheetState,
   setContentTypeState,
@@ -43,19 +45,23 @@ export function useOctoSheetManagement({
    * Transitions from default/default-active/expand-view to panel-view.
    */
   const handleOctoExpandRequest = useCallback(() => {
+    if (!enabled) return;
+
     if (octoSheetState === "panel-view" || octoSheetState === "full-view") {
       return;
     }
 
     // Go directly to panel-view when agent response is ready
     setContentTypeState("octo", "panel-view");
-  }, [octoSheetState, setContentTypeState]);
+  }, [enabled, octoSheetState, setContentTypeState]);
 
   /**
    * Track when sheet opens/closes to distinguish between video transitions and user swipes.
    * Resets tracking when sheet opens fresh (new video or reopening).
    */
   useEffect(() => {
+    if (!enabled) return;
+
     const isOpen = isActive;
     const wasOpen = isSheetOpenRef.current;
     isSheetOpenRef.current = isOpen;
@@ -64,7 +70,7 @@ export function useOctoSheetManagement({
     if (isOpen && !wasOpen) {
       prevOctoSheetStateRef.current = "default";
     }
-  }, [isActive]);
+  }, [enabled, isActive]);
 
   /**
    * Handles Octo sheet state changes from DynamicSheet drag interactions.
@@ -72,7 +78,8 @@ export function useOctoSheetManagement({
    */
   const handleOctoSheetStateChange = useCallback(
     (next: DynamicSheetState) => {
-      console.log('[octo] handleOctoSheetStateChange:', next);
+      if (!enabled) return;
+
       // Only process state changes for the active video
       if (!isActive) {
         return;
@@ -101,41 +108,60 @@ export function useOctoSheetManagement({
         wasSheetTrackedAsOpen
       ) {
         prevOctoSheetStateRef.current = "default";
+        // if (variant === "embed") {
+        //   // Embed variant: go back to default (keep octo visible at compact height)
+        //   setContentTypeState("octo", "default");
+        // } else {
+        //   resetSheet();
+        // }
+        setContentTypeState("octo", "default");
         resetSheet();
         return;
       }
 
       setContentTypeState("octo", next);
     },
-    [resetSheet, setContentTypeState, isActive]
+    [enabled, resetSheet, setContentTypeState, isActive, variant],
   );
 
   /**
    * Keep ref in sync with external state changes.
    */
   useEffect(() => {
+    if (!enabled) return;
     prevOctoSheetStateRef.current = octoSheetState;
-  }, [octoSheetState]);
+  }, [enabled, octoSheetState]);
 
   /**
    * Handles close from DynamicSheet (close button or dismiss).
-   * For embed variant: go back to "default" state (sheet stays visible at compact height).
-   * For expand variant: fully reset the sheet.
+   * Resets the sheet to default state and dispatches genai:webSdkClose
+   * so the GenAI SDK clears its chat/prompt state for a fresh start.
    */
   const handleOctoSheetClose = useCallback(() => {
+    if (!enabled) return;
+
     prevOctoSheetStateRef.current = "default";
+
+    setContentTypeState("octo", "default");
     resetSheet();
-  }, [resetSheet]);
+  }, [enabled, setContentTypeState, resetSheet]);
 
   /**
-   * Handles compact expand event when user sends message and agent starts thinking.
+   * Handles thinking started event — fires once per session when agent starts generating.
    * Transitions from default/default-active to expand-view.
    */
-  const handleOctoCompactExpand = useCallback(() => {
+  const handleOctoThinkingStarted = useCallback(() => {
+    if (!enabled) return;
+
     if (octoSheetState === "default" || octoSheetState === "default-active") {
       setContentTypeState("octo", "expand-view");
     }
-  }, [octoSheetState, setContentTypeState]);
+  }, [enabled, octoSheetState, setContentTypeState]);
+
+  /**
+   * @deprecated Use handleOctoThinkingStarted instead.
+   */
+  const handleOctoCompactExpand = handleOctoThinkingStarted;
 
   /**
    * Handles countdown active state changes from GenAI SDK.
@@ -143,6 +169,8 @@ export function useOctoSheetManagement({
    */
   const handleOctoCountdownActive = useCallback(
     (isActive: boolean) => {
+      if (!enabled) return;
+
       if (isActive) {
         // Transition to default-active when countdown starts
         if (octoSheetState === "default") {
@@ -155,23 +183,38 @@ export function useOctoSheetManagement({
         }
       }
     },
-    [octoSheetState, setContentTypeState]
+    [enabled, octoSheetState, setContentTypeState],
   );
+
+  /**
+   * Handles error events from GenAI SDK.
+   * Hides octo by resetting the sheet.
+   */
+  const handleOctoError = useCallback(() => {
+    if (!enabled) return;
+
+    prevOctoSheetStateRef.current = "default";
+    resetSheet();
+  }, [enabled, resetSheet]);
 
   /**
    * Resets ref when Octo action is clicked to ensure proper state tracking.
    * Called before opening the sheet via action button.
    */
   const handleOctoActionOpen = useCallback(() => {
+    if (!enabled) return;
+
     prevOctoSheetStateRef.current = "default";
-  }, []);
+  }, [enabled]);
 
   return {
     handleOctoExpandRequest,
     handleOctoSheetStateChange,
     handleOctoSheetClose,
+    handleOctoThinkingStarted,
     handleOctoCompactExpand,
     handleOctoCountdownActive,
+    handleOctoError,
     handleOctoActionOpen,
   };
 }

@@ -1,3 +1,4 @@
+"use client";
 import { cn, detectAccessibilityMode } from "@genuin/ui/utils";
 import { useBaseContext } from "@genuin/components/context/base";
 const ControlLayer = lazy(() =>
@@ -18,13 +19,38 @@ import type { PostDetailsType } from "@genuin/components/react-query/api/feed/sc
 import { useFeedContext } from "@genuin/components/templates/feed/context";
 
 import { useSwiper } from "swiper/react";
-import { useCallback, useMemo, lazy, Suspense, useState } from "react";
+import { useCallback, useEffect, useMemo, lazy, Suspense } from "react";
 import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
 import { ComponentProps } from "react";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { VideoTypes } from "@genuin/components/context";
 import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
+import { usePlayerContext } from "../../molecules/feed-player/context/context";
+
+/**
+ * Inner component that lives inside PlayerProvider so it can access player context.
+ * Pauses the video when the octo sheet is in full-view or panel-view, and resumes when not.
+ */
+function SheetStatePlaybackController({ isActive }: { isActive: boolean }) {
+  const { pause, play } = usePlayerContext();
+  const { getContentTypeState, sheetState } = useSheetState();
+
+  useEffect(() => {
+    if (!isActive) return;
+
+    const octoState = getContentTypeState("octo");
+    const shouldPause = octoState === "full-view" || octoState === "panel-view";
+
+    if (shouldPause) {
+      pause(false);
+    } else {
+      play(false);
+    }
+  }, [sheetState, isActive, pause, play, getContentTypeState]);
+
+  return null;
+}
 
 type PlayerProps = {
   post: PostDetailsType;
@@ -139,6 +165,7 @@ export function Player({
         onAdEnded={onAdEnded}
         videoType={post.video.videoType ?? VideoTypes.Content}
       >
+        <SheetStatePlaybackController isActive={isActive} />
         <div
           className={cn(
             "gencl:group gencl:relative gencl:h-full gencl:w-full gencl:overflow-clip gencl:transition-all gencl:duration-300 gencl:ease-in-out",
@@ -148,8 +175,8 @@ export function Player({
             {
               "gencl:sm:rounded!": brandLayoutType === "iheart",
             },
-            isNonDesktop &&
-              isActive &&
+
+            isActive &&
               (sheetState === "panel-view" || sheetState === "full-view") &&
               "gencl:flex gencl:flex-col",
           )}
@@ -160,9 +187,9 @@ export function Player({
           <div
             className={cn(
               "gencl:relative gencl:transition-all gencl:duration-300 gencl:ease-in-out",
-              isNonDesktop && isActive && sheetState === "panel-view"
-                ? "gencl:h-[30vh] gencl:flex-shrink-0"
-                : isNonDesktop && isActive && sheetState === "full-view"
+              isActive && sheetState === "panel-view"
+                ? "gencl:h-[30%] gencl:flex-shrink-0"
+                : isActive && sheetState === "full-view"
                   ? "gencl:h-0 gencl:flex-shrink-0"
                   : "gencl:h-full",
             )}
@@ -179,8 +206,7 @@ export function Player({
                 className={cn(
                   "gencl:h-full! gencl:w-full",
                   videoCrop ||
-                    (isNonDesktop &&
-                      isActive &&
+                    (isActive &&
                       (sheetState === "panel-view" ||
                         sheetState === "full-view"))
                     ? "gencl:object-contain gencl:bg-contain!"

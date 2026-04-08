@@ -8,6 +8,10 @@ import { Skeleton } from '../ui/skeleton';
 import { CompactSkeleton } from '../ui/compact-skeleton';
 import { getCachedRemoteLottie, loadRemoteLottie } from '@/lib/lottie/load-remote-lottie';
 
+// Duration constants for the auto-prompt cycle (in milliseconds)
+const FULL_VIEW_IDLE_TIMEOUT_MS = 5_000; // Wait 5s after response before closing chat
+const VIDEO_PLAY_DURATION_MS = 30_000; // Play video for 30s before triggering next prompt
+
 const OCTO_IDLE_ANIMATION_PATH = 'sleeping/animations/51914e32-e62c-43d5-b17d-50369bbbf7d6.json';
 const OCTO_IDLE_IMAGES_PATH = 'sleeping/';
 
@@ -20,6 +24,7 @@ export function WebSDKContent() {
         setEnteteredInChatMode,
         suggestedPrompts,
         handleSendMessage,
+        handleNewChat,
         isLoadingSuggestedPrompts,
         textAreaRef,
         setIsSuggestionsOpen,
@@ -38,11 +43,199 @@ export function WebSDKContent() {
     const [panelViewCountdown, setPanelViewCountdown] = useState<number | null>(null);
     const panelViewCountdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
     const expandRequestedMessageRef = useRef<string | null>(null);
+    const thinkingFiredForSessionRef = useRef<string | null>(null);
+    const errorFiredForSessionRef = useRef<string | null>(null);
+    // After a close event, show normal chat input instead of suggestion/auto-prompt
+    const [isPostCloseMode, setIsPostCloseMode] = useState(false);
     const [showPresetPrompts, setShowPresetPrompts] = useState(false);
+
+    // --- Full-view auto-prompt cycle state ---
+    // Tracks whether the user has interacted since the response completed.
+    const userInteractedRef = useRef(false);
+    // Holds the ID of the last agent message we've already started a cycle for,
+    // so we don't re-trigger the same cycle if the component re-renders.
+    const cycleStartedForMessageRef = useRef<string | null>(null);
+    // setTimeout handles for the idle wait and video-play wait — stored in refs
+    // so we can cancel them on user interaction or unmount.
+    const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const videoPlayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const countdownSignalTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    // Index into suggestedPrompts for the next prompt in the cycle.
+    // We keep it in a ref so it persists across renders without causing re-renders.
+    const nextPromptIndexRef = useRef(1); // index 0 is sent first automatically
     const [compactOctoLottie, setCompactOctoLottie] = useState<object | null>(() =>
         getCachedRemoteLottie(OCTO_IDLE_ANIMATION_PATH, OCTO_IDLE_IMAGES_PATH)
     );
     const [compactLottieError, setCompactLottieError] = useState(false);
+
+    // --- Full-view auto-prompt cycle ---
+    // Helper: cancel both timers and mark user as having interacted.
+    const cancelFullViewCycle = useCallback(() => {
+        userInteractedRef.current = true;
+        if (idleTimerRef.current) {
+            clearTimeout(idleTimerRef.current);
+            idleTimerRef.current = null;
+        }
+        if (videoPlayTimerRef.current) {
+            clearTimeout(videoPlayTimerRef.current);
+            videoPlayTimerRef.current = null;
+        }
+        if (countdownSignalTimerRef.current) {
+            clearTimeout(countdownSignalTimerRef.current);
+            countdownSignalTimerRef.current = null;
+        }
+    }, []);
+
+    // Detect when the current session's last agent message completes while in full-view mode.
+    // When that happens, wait FULL_VIEW_IDLE_TIMEOUT_MS. If the user doesn't interact:
+    //   1. Close the chat (reset sheet + switch to compact mode).
+    //   2. Wait VIDEO_PLAY_DURATION_MS (video plays naturally during this gap).
+    //   3. Send the next suggested prompt to restart the cycle.
+    useEffect(() => {
+        // Only run this cycle in full-screen chat mode
+        if (webSdkRenderMode !== 'full') return;
+        if (!currentSessionId) return;
+
+        const currentSession = sessions.find(s => s.id === currentSessionId);
+        if (!currentSession) return;
+
+        // Find the last agent event in the chat
+        const lastAgentEvent = [...(currentSession.chat || [])].reverse().find(e => e.role === 'agent');
+        if (!lastAgentEvent?.isCompleted) return;
+
+        // Guard: only start a new cycle once per unique agent message
+        const messageId = lastAgentEvent.id ?? null;
+        if (!messageId || cycleStartedForMessageRef.current === messageId) return;
+        cycleStartedForMessageRef.current = messageId;
+        userInteractedRef.current = false; // reset interaction flag for this cycle
+
+        // Step 1: Wait FULL_VIEW_IDLE_TIMEOUT_MS of inactivity before closing the chat.
+        // NOTE: setWebSdkRenderMode('compact') inside this callback will change the
+        // webSdkRenderMode dep and re-trigger the effect, firing the cleanup. To prevent
+        // that cleanup from killing the video-play timer (Step 2) before it fires, we
+        // snapshot the captured refs/closures we need and schedule Step 2 BEFORE calling
+        // setWebSdkRenderMode, so the timer is already running when the effect cleans up.
+        idleTimerRef.current = setTimeout(() => {
+            idleTimerRef.current = null;
+
+            // Abort if the user interacted during the idle window
+            if (userInteractedRef.current) return;
+
+            // Capture the prompts array now (before any state updates invalidate the closure)
+            const promptsSnapshot = suggestedPrompts.slice();
+
+            // Clear session state immediately so the chat UI is blank when the sheet closes.
+            // This must happen before setWebSdkRenderMode so no stale content flashes.
+            handleNewChat();
+            setInput('');
+
+            // Step 2: Schedule the next-prompt trigger BEFORE calling setWebSdkRenderMode
+            // so the cleanup triggered by the mode change cannot cancel this timer.
+
+            // Signal 1 second before handleSendMessage fires that the countdown is active.
+            countdownSignalTimerRef.current = setTimeout(() => {
+                countdownSignalTimerRef.current = null;
+                if (userInteractedRef.current) return;
+                if (parentOctoPanelId) {
+                    window.dispatchEvent(
+                        new CustomEvent('genai:webSdkCountdownActive', {
+                            detail: {
+                                parentOctoPanelId,
+                                isActive: true,
+                                source: 'auto_prompt_restart',
+                            },
+                        })
+                    );
+                }
+            }, VIDEO_PLAY_DURATION_MS - 1000);
+
+            videoPlayTimerRef.current = setTimeout(() => {
+                videoPlayTimerRef.current = null;
+
+                // Abort if the user interacted during the video-play window
+                if (userInteractedRef.current) return;
+
+                // Pick the next prompt in round-robin order; wrap around if needed
+                if (promptsSnapshot.length === 0) return;
+                const index = nextPromptIndexRef.current % promptsSnapshot.length;
+                nextPromptIndexRef.current = index + 1;
+                const nextPrompt = promptsSnapshot[index];
+
+                // Send the next prompt to restart the cycle
+                handleSendMessage({
+                    targetSessionId: null,
+                    messageInput: nextPrompt,
+                });
+            }, VIDEO_PLAY_DURATION_MS);
+
+            // Collapse the sheet and signal the sheet layer to reset its state.
+            // Changing the render mode will re-run this effect and fire its cleanup,
+            // but videoPlayTimerRef.current is already set above so cancelFullViewCycle
+            // (called by user interaction) can still cancel it — while the effect cleanup
+            // will NOT clear it (see return block below).
+            setWebSdkRenderMode('compact');
+            if (parentOctoPanelId) {
+                window.dispatchEvent(
+                    new CustomEvent('genai:webSdkAutoClose', {
+                        detail: { parentOctoPanelId },
+                    })
+                );
+            }
+        }, FULL_VIEW_IDLE_TIMEOUT_MS);
+
+        return () => {
+            // Only cancel the IDLE timer here (the video-play timer is intentionally
+            // allowed to survive a mode-change re-run; cancelFullViewCycle handles it
+            // when the user actually interacts).
+            if (idleTimerRef.current) {
+                clearTimeout(idleTimerRef.current);
+                idleTimerRef.current = null;
+            }
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentSessionId, sessions, webSdkRenderMode]);
+
+    // Cancel the full-view cycle on any user interaction (click, key, scroll, touch).
+    // Use `document` instead of `window` so events from inside shadow DOM or nested
+    // containers are captured. Scroll is attached to the scroll container ref because
+    // `scroll` does not bubble — it only fires on the element that actually scrolls.
+    useEffect(() => {
+        if (webSdkRenderMode !== 'full') return;
+
+        const onInteraction = () => cancelFullViewCycle();
+        const scrollEl = scrollContainerRef.current;
+
+        document.addEventListener('keydown', onInteraction, { capture: true });
+        document.addEventListener('pointerdown', onInteraction, { capture: true });
+        document.addEventListener('touchstart', onInteraction, { capture: true });
+        // scroll doesn't bubble, so attach directly to the scrollable container
+        scrollEl?.addEventListener('scroll', onInteraction);
+
+        return () => {
+            document.removeEventListener('keydown', onInteraction, { capture: true });
+            document.removeEventListener('pointerdown', onInteraction, { capture: true });
+            document.removeEventListener('touchstart', onInteraction, { capture: true });
+            scrollEl?.removeEventListener('scroll', onInteraction);
+        };
+    }, [webSdkRenderMode, cancelFullViewCycle]);
+
+    // Cancel the video-play / countdown timers when the player signals user interaction.
+    // This runs regardless of webSdkRenderMode because the timers survive the mode change
+    // from 'full' → 'compact' and must be cancellable during the video-play window.
+    useEffect(() => {
+        const onPlayerInteraction = () => cancelFullViewCycle();
+        window.addEventListener('sdk:userInteracted', onPlayerInteraction);
+        return () => {
+            window.removeEventListener('sdk:userInteracted', onPlayerInteraction);
+        };
+    }, [cancelFullViewCycle]);
+
+    // Reset the prompt-cycle index and cycle guard whenever suggestedPrompts refresh
+    // so we always start from the first prompt of the new set
+    useEffect(() => {
+        nextPromptIndexRef.current = 1;
+        cycleStartedForMessageRef.current = null;
+    }, [suggestedPrompts]);
 
     // Handle click on auto-prompt message - cancel countdown and copy to input
     const handleAutoPromptClick = () => {
@@ -78,6 +271,7 @@ export function WebSDKContent() {
                     detail: {
                         parentOctoPanelId,
                         isActive: false,
+                        source: 'auto_prompt_click',
                     },
                 })
             );
@@ -103,6 +297,9 @@ export function WebSDKContent() {
 
     // Handle when user interacts with input (focus or typing) - cancel countdown and show suggested prompt
     const handleInputStart = useCallback(() => {
+        // Also cancel the full-view auto-prompt cycle if it's running
+        cancelFullViewCycle();
+
         // Cancel both compact and panel-view countdowns
         if (countdownIntervalRef.current) {
             clearInterval(countdownIntervalRef.current);
@@ -125,6 +322,7 @@ export function WebSDKContent() {
                     detail: {
                         parentOctoPanelId,
                         isActive: false,
+                        source: 'input_start',
                     },
                 })
             );
@@ -138,7 +336,7 @@ export function WebSDKContent() {
             setShowPresetPrompts(true);
             setIsSuggestionsOpen(true);
         }
-    }, [parentOctoPanelId, webSdkRenderMode, setIsSuggestionsOpen, sessions, currentSessionId]);
+    }, [parentOctoPanelId, webSdkRenderMode, setIsSuggestionsOpen, sessions, currentSessionId, cancelFullViewCycle]);
 
     const handleCompactPromptSend = () => {
         if (suggestedPrompts.length === 0) return;
@@ -166,6 +364,7 @@ export function WebSDKContent() {
                     detail: {
                         parentOctoPanelId,
                         isActive: false,
+                        source: 'compact_prompt_send',
                     },
                 })
             );
@@ -199,6 +398,11 @@ export function WebSDKContent() {
 
     // Auto-prompt feature: show dummy message and start countdown
     useEffect(() => {
+        // After a close event, skip auto-prompt — user should see normal chat input
+        if (isPostCloseMode) {
+            return;
+        }
+
         // Only trigger if there's no session and we have prompts
         if (!currentSessionId && suggestedPrompts.length > 0) {
             const firstPrompt = suggestedPrompts[0];
@@ -214,6 +418,7 @@ export function WebSDKContent() {
                         detail: {
                             parentOctoPanelId,
                             isActive: true,
+                            source: 'countdown_started',
                         },
                     })
                 );
@@ -271,6 +476,7 @@ export function WebSDKContent() {
                         detail: {
                             parentOctoPanelId,
                             isActive: false,
+                            source: 'session_exists',
                         },
                     })
                 );
@@ -285,7 +491,7 @@ export function WebSDKContent() {
             }
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentSessionId, suggestedPrompts, parentOctoPanelId, webSdkRenderMode]);
+    }, [currentSessionId, suggestedPrompts, parentOctoPanelId, webSdkRenderMode, isPostCloseMode]);
 
     // Start panel-view countdown when transitioning from compact to full mode
     const prevRenderModeRef = useRef(webSdkRenderMode);
@@ -451,9 +657,13 @@ export function WebSDKContent() {
     }, [currentSessionId, sessions, parentOctoPanelId, webSdkRenderMode, setWebSdkRenderMode]);
 
     // Always use white background for web-sdk view
+    // After a close event, treat as full mode so the normal input box shows
     const isCompactMode = webSdkRenderMode === 'compact';
     const backgroundClass = isCompactMode ? 'gai:bg-transparent' : 'gai:bg-utility-white';
-    const currentSession = sessions.find(session => session.id === currentSessionId);
+    // Guard on currentSessionId explicitly: if it's null, treat the session as absent
+    // even if the sessions array hasn't flushed its state update yet (batching race between
+    // setSessions and setCurrentSessionIdState in handleNewChat).
+    const currentSession = currentSessionId ? sessions.find(session => session.id === currentSessionId) : undefined;
     const primaryPrompt = suggestedPrompts[0];
 
     const handleCompactInputActivate = useCallback(() => {
@@ -475,29 +685,73 @@ export function WebSDKContent() {
         }
     }, [webSdkRenderMode, setWebSdkRenderMode, parentOctoPanelId, currentSessionId]);
 
-    // Handle sheet expansion when message is sent in compact mode
+    const isCurrentSessionThinking = currentSession?.thinking ?? false;
+    const currentSessionStatus = currentSession?.status;
+
+    // Fire genai:webSdkThinkingStarted exactly once per session when thinking begins.
+    // Replaces the old genai:webSdkCompactExpand which could fire multiple times.
     useEffect(() => {
-        if (webSdkRenderMode !== 'compact' || !parentOctoPanelId) {
+        if (!parentOctoPanelId || !currentSessionId) {
             return;
         }
 
-        const hasSession = !!currentSessionId && !!currentSession;
-        const shouldExpand =
-            hasSession &&
-            (currentSession?.thinking || // Agent is generating
-                currentSession?.chat?.some(msg => msg.role === 'user')); // Or user message exists
+        // Only fire once per session
+        if (thinkingFiredForSessionRef.current === currentSessionId) {
+            return;
+        }
 
-        if (shouldExpand) {
-            // Expand sheet to show message bubble and generation skeleton
+        if (isCurrentSessionThinking) {
+            thinkingFiredForSessionRef.current = currentSessionId;
             window.dispatchEvent(
-                new CustomEvent('genai:webSdkCompactExpand', {
-                    detail: {
-                        parentOctoPanelId,
-                    },
+                new CustomEvent('genai:webSdkThinkingStarted', {
+                    detail: { parentOctoPanelId },
                 })
             );
         }
-    }, [currentSessionId, currentSession, webSdkRenderMode, parentOctoPanelId]);
+    }, [currentSessionId, isCurrentSessionThinking, parentOctoPanelId]);
+
+    // Fire genai:webSdkError exactly once per session when an error occurs.
+    useEffect(() => {
+        if (!parentOctoPanelId || !currentSessionId) {
+            return;
+        }
+
+        if (errorFiredForSessionRef.current === currentSessionId) {
+            return;
+        }
+
+        if (currentSessionStatus === 'error') {
+            errorFiredForSessionRef.current = currentSessionId;
+            window.dispatchEvent(
+                new CustomEvent('genai:webSdkError', {
+                    detail: { parentOctoPanelId },
+                })
+            );
+        }
+    }, [currentSessionId, currentSessionStatus, parentOctoPanelId]);
+
+    // Reset per-session refs when session changes
+    useEffect(() => {
+        if (!currentSessionId) {
+            thinkingFiredForSessionRef.current = null;
+            errorFiredForSessionRef.current = null;
+            expandRequestedMessageRef.current = null;
+        } else {
+            // New session created (user sent a message) — exit post-close mode
+            setIsPostCloseMode(false);
+        }
+    }, [currentSessionId]);
+
+    useEffect(() => {
+        const handleAutoClose = () => {
+            setIsPostCloseMode(true);
+        };
+
+        window.addEventListener('genai:webSdkAutoClose', handleAutoClose);
+        return () => {
+            window.removeEventListener('genai:webSdkAutoClose', handleAutoClose);
+        };
+    }, []);
 
     // Show loader when: no session AND (loading prompts OR haven't shown dummy message yet)
     const shouldShowLoader =
@@ -518,7 +772,7 @@ export function WebSDKContent() {
         : 'gai:mx-auto gai:flex gai:min-h-full gai:w-full gai:justify-center';
 
     const inputSectionBackground = isCompactMode || shouldShowLoader ? 'gai:bg-transparent' : 'gai:bg-white';
-    const inputSectionClasses = hasCompactContent ? 'gai:py-1' : 'gai:py-2 gai:mt-2';
+    // const inputSectionClasses = hasCompactContent ? 'gai:py-1' : 'gai:py-2 gai:mt-2';
 
     // Guard: Don't show content in default/default-active states (compact mode without session)
     const shouldHideContent = isCompactMode && !currentSessionId;
@@ -585,12 +839,12 @@ export function WebSDKContent() {
                     ) : null}
                 </div>
             </div>
-            <div className={`${inputSectionBackground} ${inputSectionClasses}`}>
+            <div className={`${inputSectionBackground}`}>
                 <div className='gai:mx-auto gai:w-full'>
                     <WebSDKInput
                         hideBackground={shouldShowLoader}
                         mode={webSdkRenderMode}
-                        suggestedPrompt={isCompactMode ? (primaryPrompt ?? '') : undefined}
+                        suggestedPrompt={isCompactMode && !isPostCloseMode ? (primaryPrompt ?? '') : undefined}
                         countdown={countdownForInput}
                         onCompactPromptSend={isCompactMode ? handleCompactPromptSend : undefined}
                         isLoadingPrompt={isLoadingCompactPrompt}

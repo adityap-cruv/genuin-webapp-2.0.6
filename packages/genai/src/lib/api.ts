@@ -155,14 +155,13 @@ export async function getBrandAgentId(
 }
 
 
-export async function getVideoSuggestedPrompts(params: { video_id: string; user_journey?: string | null }) {
+export async function getVideoSuggestedPrompts(params: { video_id: string; includeCarouselMetadata: boolean; includeAgentResponse: boolean; user_journey?: string | null }) {
     return api
         .post<VideoSuggestedPromptsResponse>(routes.getVideoSuggestedPrompts, {
+            video_id: params.video_id,
+            include_carousel_metadata: params.includeCarouselMetadata,
+            include_agent_response: params.includeAgentResponse,
             user_journey: params.user_journey ?? undefined,
-        }, {
-            params: {
-                video_id: params.video_id,
-            },
         })
         .then(res => res.data);
 }

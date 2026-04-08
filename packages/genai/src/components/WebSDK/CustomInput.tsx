@@ -76,7 +76,7 @@ export function CustomInput({
     const currentSession = sessions.find(session => session.id === currentSessionId);
     const hasUserMessages = currentSession?.chat?.some(message => message.role === 'user') ?? false;
     const isCompactMode = mode === 'compact';
-    const shouldShowCompactPrompt = isCompactMode && !hasUserMessages;
+    const shouldShowCompactPrompt = isCompactMode && !hasUserMessages && suggestedPrompt !== undefined;
     const displayPrompt = isLoading ? 'Loading...' : suggestedPrompt || '';
     const showCountdownTimer = countdown !== null && countdown > 0;
 
@@ -134,20 +134,19 @@ export function CustomInput({
         }
     };
 
-    const backgroundClass = hideBackground || isCompactMode
-        ? 'gai:bg-transparent'
-        : enteredInChatMode
-            ? 'gai:bg-utility-white'
-            : 'gai:bg-primary-50';
+    const backgroundClass =
+        hideBackground || isCompactMode
+            ? 'gai:bg-transparent'
+            : enteredInChatMode
+              ? 'gai:bg-utility-white'
+              : 'gai:bg-primary-50';
 
-    const rootClassName = [backgroundClass, isCompactMode ? 'gai:pt-0' : '']
-        .filter(Boolean)
-        .join(' ');
+    const rootClassName = [backgroundClass, isCompactMode ? 'gai:pt-0' : ''].filter(Boolean).join(' ');
     const wrapperClassName = ['gai:flex gai:w-full gai:justify-center', isCompactMode ? 'gai:mt-0' : '']
         .filter(Boolean)
         .join(' ');
     const inputShellClassName = [
-        'gai:flex gai:w-full gai:max-w-full gai:items-center gai:box-border gai:p-2 gai:gap-2 gai:min-h-[60px]',
+        'gai:flex gai:w-full gai:max-w-full gai:items-end gai:box-border gai:p-2 gai:gap-2 gai:min-h-[60px]',
         'gai:max-w-[472px]',
         isCompactMode ? 'gai:bg-transparent gai:cursor-pointer' : 'gai:bg-white gai:border-t gai:border-[#DFE1E3]',
     ]
@@ -193,41 +192,45 @@ export function CustomInput({
                             <>
                                 {showCountdownPrompt ? (
                                     <>
-                                        <div className='gai:flex gai:flex-1 gai:min-w-0 gai:overflow-hidden'>
-                                            <span className='gai:line-clamp-3 gai:text-xs gai:md:text-sm gai:font-semibold gai:text-secondary-gray-900'>
+                                        <div className='gai:flex gai:min-w-0 gai:flex-1 gai:overflow-hidden'>
+                                            <span className='gai:line-clamp-3 gai:text-xs gai:font-semibold gai:text-secondary-gray-900 gai:md:text-sm'>
                                                 {displayPrompt}
                                             </span>
-                                        </div>
+                                        </div> 
                                         <div className='gai:flex gai:items-center gai:justify-between'>
-                                            <span className='gai:text-[10px] gai:md:text-xs gai:font-medium gai:text-secondary-gray-500'>
+                                            <span className='gai:text-[10px] gai:font-medium gai:text-secondary-gray-500 gai:md:text-xs'>
                                                 Prompting in...
                                             </span>
                                             <Button
                                                 size={'icon'}
-                                                className='gai:pointer-events-none gai:flex-shrink-0 gai:rounded-full gai:h-9 gai:w-9'
+                                                className='gai:pointer-events-none gai:h-9 gai:w-9 gai:flex-shrink-0 gai:rounded-full'
                                             >
-                                                <span className='gai:text-xs gai:md:text-sm gai:font-semibold gai:text-white'>{countdown}</span>
+                                                <span className='gai:text-xs gai:font-semibold gai:text-white gai:md:text-sm'>
+                                                    {countdown}
+                                                </span>
                                             </Button>
                                         </div>
                                     </>
                                 ) : (
                                     <>
-                                        <div className='gai:flex gai:flex-1 gai:flex-col gai:gap-1 gai:min-w-0 gai:overflow-hidden gai:pl-4'>
-                                            <span className='gai:text-[9px] gai:md:text-[10px] gai:font-medium gai:uppercase gai:tracking-wide gai:text-secondary-gray-700'>
+                                        <div className='gai:flex gai:min-w-0 gai:flex-1 gai:flex-col gai:gap-1 gai:overflow-hidden gai:pl-4'>
+                                            <span className='gai:text-[9px] gai:font-medium gai:tracking-wide gai:text-secondary-gray-700 gai:uppercase gai:md:text-[10px]'>
                                                 Suggested
                                             </span>
                                             {isLoading ? (
-                                                <span className='gai:text-xs gai:md:text-sm gai:font-semibold gai:bg-gradient-to-r gai:from-primary-400 gai:via-primary-200 gai:to-primary-400 gai:bg-[length:200%_100%] gai:animate-shimmer gai:bg-clip-text gai:text-transparent'>
+                                                <span className='gai:animate-shimmer gai:bg-gradient-to-r gai:from-primary-400 gai:via-primary-200 gai:to-primary-400 gai:bg-[length:200%_100%] gai:bg-clip-text gai:text-xs gai:font-semibold gai:text-transparent gai:md:text-sm'>
                                                     Loading...
                                                 </span>
                                             ) : (
-                                                <span className='gai:line-clamp-3 gai:text-xs gai:md:text-sm gai:font-semibold gai:text-secondary-gray-900'>
+                                                <span className='gai:line-clamp-3 gai:text-xs gai:font-semibold gai:text-secondary-gray-900 gai:md:text-sm'>
                                                     {displayPrompt}
                                                 </span>
                                             )}
                                         </div>
                                         <Button
-                                            disabled={creatingSession || isLoading || !displayPrompt || !onSuggestedPromptSend}
+                                            disabled={
+                                                creatingSession || isLoading || !displayPrompt || !onSuggestedPromptSend
+                                            }
                                             size={'icon'}
                                             onClick={() => {
                                                 handleActivate();
@@ -235,7 +238,7 @@ export function CustomInput({
                                                     onSuggestedPromptSend();
                                                 }
                                             }}
-                                            className='gai:cursor-pointer gai:flex-shrink-0 gai:rounded-full gai:h-9 gai:w-9'
+                                            className='gai:h-9 gai:w-9 gai:flex-shrink-0 gai:cursor-pointer gai:rounded-full'
                                         >
                                             {creatingSession ? (
                                                 <Spinner size='sm' color='secondary' />
@@ -251,7 +254,7 @@ export function CustomInput({
                                 <textarea
                                     ref={textareaRef}
                                     rows={1}
-                                    className='gai:flex-1 gai:min-w-0 gai:max-h-[120px] gai:resize-none gai:overflow-y-auto gai:border-0 gai:bg-transparent gai:text-sm gai:md:text-base gai:font-medium gai:leading-5 gai:md:leading-6 gai:text-secondary-gray-900 gai:outline-0 gai:placeholder:text-secondary-gray-600 gai:placeholder:text-xs gai:md:placeholder:text-sm gai:min-h-[32px] gai:py-1.5 gai:pl-2 gai:text-left'
+                                    className='gai:max-h-[120px] gai:min-h-[32px] gai:min-w-0 gai:flex-1 gai:resize-none gai:overflow-y-auto gai:border-0 gai:bg-transparent gai:py-1.5 gai:pl-2 gai:text-left gai:text-sm gai:leading-5 gai:font-medium gai:text-secondary-gray-900 gai:outline-0 gai:placeholder:text-xs gai:placeholder:text-secondary-gray-600 gai:md:text-base gai:md:leading-6 gai:md:placeholder:text-sm'
                                     placeholder='Type your message here...'
                                     readOnly={shouldPreventFocus}
                                     onInput={e => {
@@ -259,7 +262,7 @@ export function CustomInput({
                                         target.style.height = '32px';
                                         target.style.height = Math.min(Math.max(target.scrollHeight, 32), 120) + 'px';
                                     }}
-                                    onFocus={(e) => {
+                                    onFocus={e => {
                                         // Prevent focus in expand-view state to avoid keyboard opening
                                         if (shouldPreventFocus) {
                                             e.target.blur();
@@ -288,12 +291,12 @@ export function CustomInput({
                                         creatingSession || stopping
                                             ? true
                                             : !input && !currentSession?.thinking
-                                                ? true
-                                                : false
+                                              ? true
+                                              : false
                                     }
                                     size={'icon'}
                                     onClick={handleOnClick}
-                                    className='gai:cursor-pointer gai:flex-shrink-0 gai:rounded-full gai:h-9 gai:w-9'
+                                    className='gai:h-9 gai:w-9 gai:flex-shrink-0 gai:cursor-pointer gai:rounded-full'
                                 >
                                     {creatingSession ? (
                                         <Spinner size='sm' color='secondary' />

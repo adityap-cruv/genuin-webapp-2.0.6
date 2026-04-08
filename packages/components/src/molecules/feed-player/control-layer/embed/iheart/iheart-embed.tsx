@@ -27,6 +27,7 @@ import { useOctoSheetManagement } from "../../expand-view/use-octo-sheet-managem
 import useViewportHeight from "@genuin/components/hooks/use-screen-height";
 import type { DynamicSheetState } from "@genuin/ui/dynamic-sheet";
 import { useEmbedManagerContext } from "@genuin/components/organisms/embed/context";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 
 const OctoDynamicSheet = lazy(() =>
   import("../../expand-view/octo-dynamic-sheet.js").then((m) => ({
@@ -53,26 +54,22 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
     engagement,
   } = useEmbedConfigs();
   const { isMobile } = useDeviceDetectMediaQuery();
-  const { togglePlay } = usePlayerContext();
+  const { togglePlay, play, pause } = usePlayerContext();
   const { swiper } = useEmbedManagerContext();
+  const embedDetails = useSafeEmbedContext();
   const embedConfigs = useEmbedConfigs();
 
   // Octo sheet integration
   // const isOctoEnabled = engagement.engagementTools.octo;
-  const isOctoEnabled = true;
+  const isOctoEnabled = Boolean(embedConfigs.view.isFeed);
 
   const viewportHeight = useViewportHeight();
-  const {
-    hasContentType,
-    getContentTypeState,
-    setContentTypeState,
-    resetSheet,
-    sheetContentStates,
-  } = useSheetState();
-  const isActiveOctoSheet =
-    getContentTypeState("octo") === "panel-view" ||
-    getContentTypeState("octo") === "full-view";
+  const { getContentTypeState, setContentTypeState, resetSheet } =
+    useSheetState();
   const octoSheetState: DynamicSheetState = getContentTypeState("octo");
+  const isActiveOctoSheet =
+    isOctoEnabled &&
+    (octoSheetState === "panel-view" || octoSheetState === "full-view");
   const isCompactOctoState =
     octoSheetState === "default" ||
     octoSheetState === "default-active" ||
@@ -85,9 +82,11 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
     handleOctoExpandRequest,
     handleOctoSheetStateChange,
     handleOctoSheetClose,
-    handleOctoCompactExpand,
+    handleOctoThinkingStarted,
     handleOctoCountdownActive,
+    handleOctoError,
   } = useOctoSheetManagement({
+    enabled: isOctoEnabled,
     isActive: isActive ?? false,
     octoSheetState,
     setContentTypeState,
@@ -95,15 +94,46 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
     variant: "embed",
   });
 
-  useEffect(() => {
-    console.log("octo octoSheetState", octoSheetState);
-  }, [octoSheetState]);
+  // Delay Octo visibility by 5 seconds after the video becomes active.
+  // Resets immediately on slide change so the next active slide waits its own 5 s.
+  const [shouldShowOcto, setShouldShowOcto] = useState(false);
 
-  // When this tile becomes inactive (user swiped to another video), close/reset the sheet
-  // so the next time this tile becomes active it starts fresh
   useEffect(() => {
-    resetSheet();
-  }, [isActive]);
+    setShouldShowOcto(false);
+
+    if (!isOctoEnabled || !isActive) return;
+    const timer = setTimeout(() => setShouldShowOcto(true), 5000);
+    return () => {
+      clearTimeout(timer);
+      resetSheet();
+    };
+  }, [isActive, isOctoEnabled, resetSheet]);
+
+  // Hide OctoDynamicSheet visually after close; reveal again when any action starts.
+  const [isOctoHidden, setIsOctoHidden] = useState(false);
+
+  const handleOctoSheetCloseWithHide = useCallback(() => {
+    setIsOctoHidden(true);
+    handleOctoSheetClose();
+  }, [handleOctoSheetClose]);
+
+  const handleOctoThinkingStartedWithShow = useCallback(() => {
+    setIsOctoHidden(false);
+    handleOctoThinkingStarted();
+  }, [handleOctoThinkingStarted]);
+
+  const handleOctoCountdownActiveWithShow = useCallback(
+    (active: boolean) => {
+      if (active) setIsOctoHidden(false);
+      handleOctoCountdownActive(active);
+    },
+    [handleOctoCountdownActive],
+  );
+
+  const handleOctoExpandRequestWithShow = useCallback(() => {
+    setIsOctoHidden(false);
+    handleOctoExpandRequest();
+  }, [handleOctoExpandRequest]);
 
   const [isVideoWatched, setIsVideoWatched] = useState<boolean>(false);
 
@@ -259,19 +289,33 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
 
   useEffect(() => {
     const swiperInstance = swiper;
-    const shouldDisableSwiper =
-      octoSheetState === "panel-view" || octoSheetState === "full-view";
-
     if (!swiperInstance) {
       return;
     }
 
+    if (!isOctoEnabled) {
+      swiperInstance.enable();
+      if (isActive) {
+        play(false);
+      }
+      return;
+    }
+
+    const shouldDisableSwiper =
+      octoSheetState === "panel-view" || octoSheetState === "full-view";
+
     if (shouldDisableSwiper) {
       swiperInstance.disable();
+      if (isActive) {
+        pause(false);
+      }
     } else {
       swiperInstance.enable();
+      if (isActive) {
+        play(false);
+      }
     }
-  }, [swiper, isActive, octoSheetState]);
+  }, [swiper, isActive, octoSheetState, isOctoEnabled, play, pause]);
 
   return (
     <div
@@ -284,6 +328,9 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
           return;
         }
         onClick?.(e);
+      }}
+      onPointerDown={() => {
+        window.dispatchEvent(new CustomEvent("sdk:userInteracted"));
       }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -407,26 +454,29 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
             isActiveOctoSheet && "gencl:space-y-3 gencl:h-full gencl:p-0",
           )}
         >
-          {/* <div className="gencl:rounded">
-            <ReadMore
-              text={enhancedDescription}
-              showExpandText={false}
-              shouldAnimate
-              expandable={false}
-              position="overlay"
-              showOverlay={true}
-              textClassName="gencl:z-10 gencl:text-[14px] gencl:font-normal gencl:leading-[18px] gencl:tracking-[-0.2px]! gencl:text-white! gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]!"
-              maxLines={2}
-              tabIndex={isVideoWatched ? -1 : 0}
-              aria-label={`${getMonthYear(postDetails.video?.createdAt ?? 0)}${postDetails.video?.duration ? ` • ${getFormattedDuration(String(postDetails.video.duration))}` : ""} ${Array.isArray(postDetails.video?.description) ? postDetails.video.description.join(" ") : postDetails.video?.description || ""}, Video description`}
-            />
-          </div> */}
+          {embedDetails?.embedData.style !== "feed" && (
+            <div className="gencl:rounded">
+              <ReadMore
+                text={enhancedDescription}
+                showExpandText={false}
+                shouldAnimate
+                expandable={false}
+                position="overlay"
+                showOverlay={true}
+                textClassName="gencl:z-10 gencl:text-[14px] gencl:font-normal gencl:leading-[18px] gencl:tracking-[-0.2px]! gencl:text-white! gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]!"
+                maxLines={2}
+                tabIndex={isVideoWatched ? -1 : 0}
+                aria-label={`${getMonthYear(postDetails.video?.createdAt ?? 0)}${postDetails.video?.duration ? ` • ${getFormattedDuration(String(postDetails.video.duration))}` : ""} ${Array.isArray(postDetails.video?.description) ? postDetails.video.description.join(" ") : postDetails.video?.description || ""}, Video description`}
+              />
+            </div>
+          )}
 
           {/* Controls Section */}
           <div
             className={cn(
-              "gencl:overflow-hidden gencl:transition-all gencl:ease-in-out gencl:duration-300 gencl:flex gencl:items-end gencl:justify-end",
+              "gencl:overflow-hidden gencl:transition-all gencl:ease-in-out gencl:duration-300 gencl:items-end gencl:justify-end",
               isActiveOctoSheet && "gencl:space-y-3 gencl:h-full gencl:p-0",
+              embedDetails?.embedData.style === "feed" && "gencl:flex",
             )}
           >
             {/* Octo Sheet */}
@@ -436,24 +486,27 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
                 e.stopPropagation();
               }}
             >
-              {isOctoEnabled && isActive && (
+              {isOctoEnabled && isActive && shouldShowOcto && (
                 <Suspense fallback={null}>
-                  <OctoDynamicSheet
-                    key={postDetails.video?.id}
-                    isOpen={isActive ?? false}
-                    videoId={postDetails.video?.id ?? ""}
-                    videoSlug={postDetails.video?.slug ?? ""}
-                    octoSheetState={octoSheetState}
-                    isMobile={isMobile}
-                    viewportHeight={viewportHeight}
-                    octoRenderMode={octoRenderMode}
-                    variant="embed"
-                    onStateChange={handleOctoSheetStateChange}
-                    onClose={handleOctoSheetClose}
-                    onExpandRequest={handleOctoExpandRequest}
-                    onCompactExpand={handleOctoCompactExpand}
-                    onCountdownActive={handleOctoCountdownActive}
-                  />
+                  <div className={cn(isOctoHidden && "gencl:invisible")}>
+                    <OctoDynamicSheet
+                      key={postDetails.video?.id}
+                      isOpen={isActive ?? false}
+                      videoId={postDetails.video?.id ?? ""}
+                      videoSlug={postDetails.video?.slug ?? ""}
+                      octoSheetState={octoSheetState}
+                      isMobile={isMobile}
+                      viewportHeight={viewportHeight}
+                      octoRenderMode={octoRenderMode}
+                      variant="embed"
+                      onStateChange={handleOctoSheetStateChange}
+                      onClose={handleOctoSheetCloseWithHide}
+                      onExpandRequest={handleOctoExpandRequestWithShow}
+                      onThinkingStarted={handleOctoThinkingStartedWithShow}
+                      onCountdownActive={handleOctoCountdownActiveWithShow}
+                      onError={handleOctoError}
+                    />
+                  </div>
                 </Suspense>
               )}
             </div>
@@ -488,7 +541,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
           </div>
         </footer>
 
-        {isVideoWatched && (
+        {/* {isVideoWatched && (
           <IHeartEndOfContentOverlay
             isMobile={isMobile}
             info={listenLiveButtonInfo}
@@ -502,7 +555,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
               togglePlay(true);
             }}
           />
-        )}
+        )} */}
       </div>
     </div>
   );

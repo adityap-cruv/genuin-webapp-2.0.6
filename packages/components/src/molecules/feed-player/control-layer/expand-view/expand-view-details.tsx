@@ -222,8 +222,7 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
                 bypassChecks
                 aria-label={`${postDetails.video?.attributes?.title || contentType} podcast artwork`}
                 tabIndex={0}
-                target=
-                "_blank"
+                target="_blank"
               >
                 <Image
                   aspectRatio="square"
@@ -244,8 +243,7 @@ const AdaptiveUserProfile = memo(function AdaptiveUserProfile({
                   bypassChecks
                   aria-label={`${postDetails.video.attributes?.title} heading`}
                   tabIndex={0}
-                   target=
-                "_blank"
+                  target="_blank"
                 >
                   <ReadMore
                     text={postDetails.video.attributes?.title}
@@ -608,8 +606,9 @@ export function ExpandViewDetails({
     handleOctoExpandRequest,
     handleOctoSheetStateChange,
     handleOctoSheetClose,
-    handleOctoCompactExpand,
+    handleOctoThinkingStarted,
     handleOctoCountdownActive,
+    handleOctoError,
     handleOctoActionOpen,
   } = useOctoSheetManagement({
     isActive,
@@ -617,6 +616,47 @@ export function ExpandViewDetails({
     setContentTypeState,
     resetSheet,
   });
+
+  // Hide OctoDynamicSheet visually after close; reveal again when any action starts.
+  const [isOctoHidden, setIsOctoHidden] = useState(false);
+
+  const handleOctoSheetCloseWithHide = useCallback(() => {
+    setIsOctoHidden(true);
+    handleOctoSheetClose();
+  }, [handleOctoSheetClose]);
+
+  const handleOctoThinkingStartedWithShow = useCallback(() => {
+    setIsOctoHidden(false);
+    handleOctoThinkingStarted();
+  }, [handleOctoThinkingStarted]);
+
+  const handleOctoCountdownActiveWithShow = useCallback(
+    (active: boolean) => {
+      if (active) setIsOctoHidden(false);
+      handleOctoCountdownActive(active);
+    },
+    [handleOctoCountdownActive],
+  );
+
+  const handleOctoExpandRequestWithShow = useCallback(() => {
+    setIsOctoHidden(false);
+    handleOctoExpandRequest();
+  }, [handleOctoExpandRequest]);
+
+  // Delay Octo visibility by 5 seconds after the video becomes active.
+  // Resets immediately on slide change so the next active slide waits its own 5 s.
+  const [shouldShowOcto, setShouldShowOcto] = useState(false);
+
+  useEffect(() => {
+    setShouldShowOcto(false);
+
+    if (!isActive) return;
+    const timer = setTimeout(() => setShouldShowOcto(true), 5000);
+    return () => {
+      clearTimeout(timer);
+      resetSheet();
+    };
+  }, [isActive]);
 
   return (
     <div
@@ -651,23 +691,37 @@ export function ExpandViewDetails({
           onClick={(e) => e.stopPropagation()}
         >
           <div className="gencl:z-20">
-            {/* Octo AI Sheet - Only loaded when octo is enabled */}
-            {isOctoEnabled && (
-              <OctoDynamicSheet
-                isOpen={isActive}
-                videoId={postDetails.video.id}
-                videoSlug={postDetails.video.slug}
-                octoSheetState={octoSheetState}
-                isMobile={isNonDesktop}
-                viewportHeight={viewportHeight}
-                octoRenderMode={octoRenderMode}
-                onStateChange={handleOctoSheetStateChange}
-                onClose={handleOctoSheetClose}
-                onExpandRequest={handleOctoExpandRequest}
-                onCompactExpand={handleOctoCompactExpand}
-                onCountdownActive={handleOctoCountdownActive}
-              />
-            )}
+            {/* Octo Sheet */}
+            <div
+              className="gencl:relative gencl:h-full gencl:w-full swiper-no-swiping"
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+            >
+              {isOctoEnabled && isActive && shouldShowOcto && (
+                <Suspense fallback={null}>
+                  <div className={cn(isOctoHidden && "gencl:invisible")}>
+                    <OctoDynamicSheet
+                      key={postDetails.video?.id}
+                      isOpen={isActive ?? false}
+                      videoId={postDetails.video?.id ?? ""}
+                      videoSlug={postDetails.video?.slug ?? ""}
+                      octoSheetState={octoSheetState}
+                      isMobile={isNonDesktop}
+                      viewportHeight={viewportHeight}
+                      octoRenderMode={octoRenderMode}
+                      variant="embed"
+                      onStateChange={handleOctoSheetStateChange}
+                      onClose={handleOctoSheetCloseWithHide}
+                      onExpandRequest={handleOctoExpandRequestWithShow}
+                      onThinkingStarted={handleOctoThinkingStartedWithShow}
+                      onCountdownActive={handleOctoCountdownActiveWithShow}
+                      onError={handleOctoError}
+                    />
+                  </div>
+                </Suspense>
+              )}
+            </div>
 
             {/**
              * If the brand is US Weekly, we do not show the user profile in expand view.
@@ -685,24 +739,6 @@ export function ExpandViewDetails({
               />
             )}
           </div>
-
-          {/* Octo AI Sheet - Only loaded when octo is enabled */}
-          {isOctoEnabled && (
-            <OctoDynamicSheet
-              isOpen={isNonDesktop && hasContentType("octo") && isActive}
-              videoId={postDetails.video?.id || ""}
-              videoSlug={postDetails.video?.slug || ""}
-              octoSheetState={octoSheetState}
-              isMobile={isNonDesktop}
-              viewportHeight={viewportHeight}
-              octoRenderMode={octoRenderMode}
-              onStateChange={handleOctoSheetStateChange}
-              onClose={handleOctoSheetClose}
-              onExpandRequest={handleOctoExpandRequest}
-              onCompactExpand={handleOctoCompactExpand}
-              onCountdownActive={handleOctoCountdownActive}
-            />
-          )}
 
           {showLinkoutInExpand &&
             !isOctoEnabled &&

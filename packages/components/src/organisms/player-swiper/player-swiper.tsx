@@ -182,6 +182,7 @@ export function PlayerList({
     setContentTypeState,
     hasContentType,
     closeContentType,
+    getContentTypeState,
   } = useSheetState();
   const [isEndOfFeedReached, setEndOfFeedReached] = useState<boolean>(false);
   const [isAdPlaying, setIsAdPlaying] = useState<boolean>(false);
@@ -321,7 +322,8 @@ export function PlayerList({
   // Disable swiper when sheet is in panel-view or full-view, enable otherwise
   useEffect(() => {
     const shouldDisable =
-      sheetState === "full-view" || sheetState === "panel-view";
+      getContentTypeState("octo") === "full-view" ||
+      getContentTypeState("octo") === "panel-view";
     handleSwiperToggle(shouldDisable);
   }, [sheetState, handleSwiperToggle]);
 

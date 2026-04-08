@@ -324,6 +324,8 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                 try {
                     const response = await getVideoSuggestedPrompts({
                         video_id: webSdkVideoId,
+                        includeCarouselMetadata: false,
+                        includeAgentResponse: true,
                     });
 
                     // Extract prompts and build cached responses map

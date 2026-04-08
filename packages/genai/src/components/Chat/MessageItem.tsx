@@ -325,6 +325,7 @@ const ItemComponent: React.FC<ItemProps> = ({
     const [isEditing, setIsEditing] = useState(false);
     const [editedText, setEditedText] = useState(content);
     const [showKoahAd, setShowKoahAd] = useState(!event.is_cached);
+    const [shouldRenderKoahAd, setShouldRenderKoahAd] = useState(false);
     const [showInventoryWidget, setShowInventoryWidget] = useState(!event.is_cached);
     const [showCarousel, setShowCarousel] = useState(!event.is_cached);
     const handleCopy = async () => {
@@ -409,6 +410,10 @@ const ItemComponent: React.FC<ItemProps> = ({
             };
         }
     }, [hasFinished, event.is_cached]);
+
+    useEffect(() => {
+        setShouldRenderKoahAd(Boolean(isKoahSdkLoaded && showKoahAd));
+    }, [isKoahSdkLoaded, showKoahAd]);
 
     const toolMetadata = event.metadata?.toolMetadata;
 
@@ -523,7 +528,7 @@ const ItemComponent: React.FC<ItemProps> = ({
                                     })();
 
                                     // Show Koah ads when conditions are met
-                                    if (true) {
+                                    if (shouldRenderKoahAd) {
                                         return (
                                             <Suspense key={contentType} fallback={null}>
                                                 <KoahAdWidget
@@ -602,7 +607,8 @@ const Item = React.memo(ItemComponent, (prevProps, nextProps) => {
         prevProps.sessionThinking === nextProps.sessionThinking &&
         prevProps.thinkingSteps.length === nextProps.thinkingSteps.length &&
         prevProps.allEvents.length === nextProps.allEvents.length &&
-        Boolean(prevProps.event.carousel_metadata) === Boolean(nextProps.event.carousel_metadata)
+        Boolean(prevProps.event.carousel_metadata) === Boolean(nextProps.event.carousel_metadata) &&
+        prevProps.isKoahSdkLoaded === nextProps.isKoahSdkLoaded
     );
 });
 

@@ -8,13 +8,6 @@ export interface OctoSheetConfigParams {
   isMobile: boolean;
   octoState: DynamicSheetState;
   viewportHeight: number;
-  /**
-   * "expand" (default) — used inside the expand-view overlay: collapsed states are transparent
-   * floating pills; panel-view/full-view are fixed full-width sheets.
-   * "embed" — used inside an embed tile: panel-view fills 70% of the tile height so the video
-   * sits in the top 30%, full-view fills the entire tile.
-   */
-  variant?: "expand" | "embed";
 }
 
 export interface OctoSheetConfig {
@@ -30,32 +23,12 @@ function panelFullClassName(state: DynamicSheetState): string {
   return cn(
     TRANSITION,
     state === "default" && "gencl:bg-transparent! gencl:shadow-none!",
-    state === "default-active" &&
-      "gencl:bg-transparent! gencl:shadow-none!",
-    state === "expand-view" &&
-      "gencl:bg-transparent! gencl:shadow-none!",
+    state === "default-active" && "gencl:bg-transparent! gencl:shadow-none!",
+    state === "expand-view" && "gencl:bg-transparent! gencl:shadow-none!",
     state === "panel-view" &&
-      "gencl:fixed! gencl:bottom-0! gencl:left-0! gencl:right-0! gencl:h-[70vh]! gencl:w-screen! gencl:rounded-t-2xl! gencl:rounded-b-none! gencl:z-50! gencl:bg-white!",
+      "gencl:fixed! gencl:bottom-0! gencl:left-0! gencl:right-0! gencl:h-[70%]! gencl:w-full! gencl:rounded-t-2xl! gencl:rounded-b-none! gencl:z-50! gencl:bg-white!",
     state === "full-view" &&
-      "gencl:fixed! gencl:bottom-0! gencl:left-0! gencl:right-0! gencl:w-screen! gencl:rounded-t-2xl! gencl:rounded-b-none! gencl:z-50! gencl:bg-white!",
-  );
-}
-
-/**
- * Embed-variant panel class: renders inline within the tile, not fixed to the viewport.
- * panel-view → 70% of tile height, full-view → fills the entire tile.
- */
-function embedPanelClassName(state: DynamicSheetState): string {
-  return cn(
-    TRANSITION,
-    (state === "default" ||
-      state === "default-active" ||
-      state === "expand-view") &&
-      "gencl:bg-transparent! gencl:shadow-none!",
-    state === "panel-view" &&
-      "gencl:absolute! gencl:bottom-0! gencl:left-0! gencl:right-0! gencl:h-[70%]! gencl:rounded-t-2xl! gencl:rounded-b-none! gencl:z-50! gencl:bg-white!",
-    state === "full-view" &&
-      "gencl:absolute! gencl:inset-0! gencl:rounded-none! gencl:z-50! gencl:bg-white!",
+      "gencl:fixed! gencl:bottom-0! gencl:left-0! gencl:right-0! gencl:w-full! gencl:rounded-t-2xl! gencl:rounded-b-none! gencl:z-50! gencl:bg-white!",
   );
 }
 
@@ -68,12 +41,10 @@ export function getOctoSheetConfig({
   isMobile,
   octoState,
   viewportHeight,
-  variant,
 }: OctoSheetConfigParams): OctoSheetConfig {
   const isPanelOrFullState =
     octoState === "panel-view" || octoState === "full-view";
-  const isExpandedState =
-    octoState === "expand-view" || isPanelOrFullState;
+  const isExpandedState = octoState === "expand-view" || isPanelOrFullState;
 
   const autoAdvanceRules: DynamicSheetConfig["autoAdvance"] = (() => {
     switch (octoState) {
@@ -107,8 +78,6 @@ export function getOctoSheetConfig({
 
   const theme: "light" | "dark" = isPanelOrFullState ? "light" : "dark";
 
-  const isEmbed = variant === "embed";
-
   return {
     config: {
       initialState: "default",
@@ -119,29 +88,21 @@ export function getOctoSheetConfig({
         "panel-view",
         "full-view",
       ],
-      heights: isEmbed
-        ? {
-            default: "124px",
-            "default-active": "180px",
-            "expand-view": "280px",
-            "panel-view": "70%",
-            "full-view": "100%",
-          }
-        : {
-            default: "120px",
-            "default-active": "220px",
-            "expand-view": "460px",
-            "panel-view": "70vh",
-            "full-view": `${viewportHeight}px`,
-          },
+      heights: {
+        default: "108px",
+        "default-active": "178px",
+        "expand-view": "280px",
+        "panel-view": "70%",
+        "full-view": "100%",
+      },
       autoAdvance: autoAdvanceRules,
       showClose: isExpandedState,
       showOverlay: isPanelOrFullState,
-      showIndicator: true,
+      showIndicator: false,
       navTitle: "Octo GPT",
       theme,
     },
-    className: isEmbed ? embedPanelClassName : panelFullClassName,
+    className: panelFullClassName,
     footerClassName: collapsedFooterClassName,
   };
 }

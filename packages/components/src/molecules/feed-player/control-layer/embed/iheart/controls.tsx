@@ -25,6 +25,7 @@ import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema"
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { Button } from "@genuin/ui/components/button";
 import { compressText } from "@genuin/components/lib/utils";
+import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 
 type IHeartControlsProps = ComponentProps<"div"> & {
   /**
@@ -79,6 +80,8 @@ export function IHeartControls({
   //  Access baseContextManager to subscribe to preview index change events
   // const { baseContextManager } = useBaseContext();
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
+  const embedDetails = useSafeEmbedContext();
+  const isFeedLayout = embedDetails?.embedData.style === "feed";
 
   //  Track custom muted state for video preview (hover) mode
   // This state is separate from the actual player mute state and controls UI appearance only
@@ -178,46 +181,50 @@ export function IHeartControls({
       // role="toolbar"
       // aria-label="Media controls"
       // aria-orientation={isExpand ? "vertical" : "horizontal"}
-      className={cn("gencl:flex gencl:flex-col", className)}
+      className={cn("gencl:flex", (isFeedLayout || isExpand) && "gencl:flex-col", className)}
       {...restProps}
     >
-      <ReactionButton
-        shareUrl={shareUrl ?? ""}
-        videoSlug={slug ?? ""}
-        isReacted={isReacted}
-        contentId={contentId ?? ""}
-        reactionCount={reactionCount}
-        contentType="VIDEO"
-        onReactionStateChange={onReactionStateChange}
-        reactionButtonTheme="dark"
-        withCustomChildren
-        onClick={(e) => {
-          e?.stopPropagation();
-        }}
-        className="gencl:w-11 gencl:h-11"
-        tabIndex={-1}
-        aria-hidden="true"
-      >
-        <Button
-          theme="custom"
-          aria-label={isReacted ? `Thumb up, Pressed` : `Thumb up, Not pressed`}
-          aria-pressed={isReacted}
-          role="button"
+      {(isFeedLayout || isExpand) && (
+        <ReactionButton
+          shareUrl={shareUrl ?? ""}
+          videoSlug={slug ?? ""}
+          isReacted={isReacted}
+          contentId={contentId ?? ""}
+          reactionCount={reactionCount}
+          contentType="VIDEO"
+          onReactionStateChange={onReactionStateChange}
+          reactionButtonTheme="dark"
+          withCustomChildren
+          onClick={(e) => {
+            e?.stopPropagation();
+          }}
+          className="gencl:w-11 gencl:h-11"
           tabIndex={-1}
-          variant="icon"
-          title="Thumbs Up"
-          className="gencl:w-11 gencl:h-11 gencl:p-0 gencl:flex gencl:items-center gencl:justify-center"
+          aria-hidden="true"
         >
-          <DynamicReactionIcon
-            isSparked={isReacted}
-            sparkCount={reactionCount}
-            theme="dark"
-            iconHeight={24}
-            iconWidth={24}
-            type="feed"
-          />
-        </Button>
-      </ReactionButton>
+          <Button
+            theme="custom"
+            aria-label={
+              isReacted ? `Thumb up, Pressed` : `Thumb up, Not pressed`
+            }
+            aria-pressed={isReacted}
+            role="button"
+            tabIndex={-1}
+            variant="icon"
+            title="Thumbs Up"
+            className="gencl:w-11 gencl:h-11 gencl:p-0 gencl:flex gencl:items-center gencl:justify-center"
+          >
+            <DynamicReactionIcon
+              isSparked={isReacted}
+              sparkCount={reactionCount}
+              theme="dark"
+              iconHeight={24}
+              iconWidth={24}
+              type="feed"
+            />
+          </Button>
+        </ReactionButton>
+      )}
 
       {/* {isExpand && (
         <Button

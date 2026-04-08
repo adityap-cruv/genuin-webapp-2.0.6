@@ -82,8 +82,13 @@ type OctoPanelPropsType = {
   variant?: "standalone" | "sheet";
   renderMode?: "compact" | "full";
   onExpandRequest?: () => void;
+  /**
+   * @deprecated Use onThinkingStarted instead. Kept for backward compat.
+   */
   onCompactExpand?: () => void;
+  onThinkingStarted?: () => void;
   onCountdownActive?: (isActive: boolean) => void;
+  onError?: () => void;
   /**
    * Integration type for the chat session.
    * If not provided, will be determined from embed context.
@@ -158,7 +163,9 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
       renderMode,
       onExpandRequest,
       onCompactExpand,
+      onThinkingStarted,
       onCountdownActive,
+      onError,
       integrationType: integrationTypeProp,
       integrationId: integrationIdProp,
       ...triggerProps
@@ -313,6 +320,18 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
     const isControlled = open !== undefined;
     const [internalOpen, setInternalOpen] = useState(defaultOpen ?? false);
     const isOpen = isControlled ? open! : internalOpen;
+
+    /**
+     * Dispatch genai:webSdkClose to tell the GenAI SDK to reset its chat/prompt state.
+     * Called on panel close and unmount so the next open starts fresh.
+     */
+    const dispatchCloseToGenai = useCallback(() => {
+      window.dispatchEvent(
+        new CustomEvent("genai:webSdkClose", {
+          detail: { parentOctoPanelId: panelIdentity.panelId },
+        }),
+      );
+    }, [panelIdentity.panelId]);
 
     const {
       onClick: triggerOnClick,
@@ -498,6 +517,7 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
     /**
      * Effect: Destroy SDK when panel closes, with grace period to prevent rapid cycles.
      * The 300ms delay prevents unnecessary destroy/reinit if user quickly reopens the panel.
+     * Also dispatches genai:webSdkClose so the GenAI SDK resets its state.
      */
     useEffect(() => {
       if (isOpen) return;
@@ -505,6 +525,7 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
       const timeout = setTimeout(() => {
         if (!isOpen && sdkModule && sdkInitializedRef.current) {
           try {
+            dispatchCloseToGenai();
             sdkModule.destroy();
             sdkInitializedRef.current = false;
             setIsReinitializing(false);
@@ -515,15 +536,18 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
       }, 300); // 300ms grace period
 
       return () => clearTimeout(timeout);
-    }, [isOpen, sdkModule]);
+    }, [isOpen, sdkModule, dispatchCloseToGenai]);
 
     /**
      * Effect: Cleanup SDK on component unmount.
      * Only runs on TRUE unmount (not on re-renders or dependency changes).
      * This prevents cascade destroy when component re-renders in nested contexts.
+     * Dispatches genai:webSdkClose so the GenAI SDK resets on video change / unmount.
      */
     useUnmount(() => {
       if (sdkModule && sdkInitializedRef.current) {
+        dispatchCloseToGenai();
+
         // CRITICAL: Defer destroy to after React render completes
         // This prevents "Attempted to synchronously unmount a root while React was already rendering"
         // Use setTimeout to push destroy to next tick, allowing React to finish current render
@@ -644,15 +668,34 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
     }, [onExpandRequest, panelIdentity.panelId]);
 
     /**
-     * Effect: Listen for compact expand events from the GenAI SDK.
-     * Triggered when user sends a message and the agent starts thinking.
+     * Effect: Listen for the auto-close event dispatched by the GenAI SDK after the
+     * full-view idle timeout expires (user didn't interact within 5 s of response).
+     * Resets the sheet to its default (compact) state so the video can play unobstructed.
+     * Only responds when this hook's video is the active one to avoid stale closures.
      */
     useEffect(() => {
-      if (!onCompactExpand) {
+      const handleAutoClose = () => {
+        onClose?.();
+      };
+
+      window.addEventListener("genai:webSdkAutoClose", handleAutoClose);
+      return () => {
+        window.removeEventListener("genai:webSdkAutoClose", handleAutoClose);
+      };
+    }, [onClose]);
+
+    /**
+     * Effect: Listen for thinking started events from the GenAI SDK.
+     * Fires exactly once per session when the agent starts generating.
+     * Also supports legacy genai:webSdkCompactExpand for backward compat.
+     */
+    useEffect(() => {
+      const callback = onThinkingStarted ?? onCompactExpand;
+      if (!callback) {
         return;
       }
 
-      const handleCompactExpand = (event: Event) => {
+      const handler = (event: Event) => {
         const { detail } = event as CustomEvent<{ parentOctoPanelId?: string }>;
         const targetPanelId = detail?.parentOctoPanelId;
 
@@ -660,17 +703,17 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
           return;
         }
 
-        onCompactExpand();
+        callback();
       };
 
-      window.addEventListener("genai:webSdkCompactExpand", handleCompactExpand);
+      window.addEventListener("genai:webSdkThinkingStarted", handler);
+      // Keep legacy listener for backward compat
+      window.addEventListener("genai:webSdkCompactExpand", handler);
       return () => {
-        window.removeEventListener(
-          "genai:webSdkCompactExpand",
-          handleCompactExpand,
-        );
+        window.removeEventListener("genai:webSdkThinkingStarted", handler);
+        window.removeEventListener("genai:webSdkCompactExpand", handler);
       };
-    }, [onCompactExpand, panelIdentity.panelId]);
+    }, [onThinkingStarted, onCompactExpand, panelIdentity.panelId]);
 
     /**
      * Effect: Listen for countdown active state changes from the GenAI SDK.
@@ -685,6 +728,7 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
         const { detail } = event as CustomEvent<{
           parentOctoPanelId?: string;
           isActive: boolean;
+          source?: string;
         }>;
         const targetPanelId = detail?.parentOctoPanelId;
 
@@ -706,6 +750,32 @@ export const OctoPanel = forwardRef<OctoPanelHandle, OctoPanelPropsType>(
         );
       };
     }, [onCountdownActive, panelIdentity.panelId]);
+
+    /**
+     * Effect: Listen for error events from the GenAI SDK.
+     * Fires when the session enters an error state.
+     */
+    useEffect(() => {
+      if (!onError) {
+        return;
+      }
+
+      const handleError = (event: Event) => {
+        const { detail } = event as CustomEvent<{ parentOctoPanelId?: string }>;
+        const targetPanelId = detail?.parentOctoPanelId;
+
+        if (targetPanelId && targetPanelId !== panelIdentity.panelId) {
+          return;
+        }
+
+        onError();
+      };
+
+      window.addEventListener("genai:webSdkError", handleError);
+      return () => {
+        window.removeEventListener("genai:webSdkError", handleError);
+      };
+    }, [onError, panelIdentity.panelId]);
 
     // Render SDK container content (used in both variants)
     const sdkContainerContent = (

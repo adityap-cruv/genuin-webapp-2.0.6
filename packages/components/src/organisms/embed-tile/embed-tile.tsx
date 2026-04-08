@@ -329,11 +329,11 @@ function EmbedPlayer({
         <div
           className={cn(
             "gencl:w-full gencl:transition-all gencl:duration-300 gencl:ease-in-out",
-            isNonDesktop && isActive && sheetState === "panel-view"
+            isNonDesktop &&
+              isActive &&
+              (sheetState === "panel-view" || sheetState === "full-view")
               ? "gencl:h-[30%] gencl:flex-shrink-0"
-              : isNonDesktop && isActive && sheetState === "full-view"
-                ? "gencl:h-0 gencl:flex-shrink-0"
-                : "gencl:h-full",
+              : "gencl:h-full",
           )}
         >
           <Suspense fallback={null}>
