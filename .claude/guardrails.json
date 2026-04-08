@@ -1,0 +1,49 @@
+{
+  "guardrails": {
+    "description": "Rules that AI tools must follow when generating or modifying code in this repo",
+
+    "never": [
+      "Add console.log statements to committed code",
+      "Use hardcoded secrets, tokens, API keys, or environment-specific URLs",
+      "Use @ts-ignore or @ts-expect-error without an explanatory comment",
+      "Use the `any` type without a justified comment",
+      "Create barrel files (index.ts re-exporting everything)",
+      "Cross-import between apps in the apps/ directory",
+      "Use CommonJS require() — this repo uses ESM only",
+      "Leave TODO comments without a name: use TODO(yourname): format",
+      "Write tests that depend on execution order or shared mutable state",
+      "Modify files inside .github/ or .claude/ directly — these are generated",
+      "Use dangerouslySetInnerHTML without explicit sanitisation via DOMPurify",
+      "Interpolate user input directly into query strings — use parameterised queries",
+      "Return full database records from API endpoints — pick only the fields needed",
+      "Log sensitive data (passwords, tokens, PII) via any logger",
+      "Store auth tokens in localStorage — use httpOnly cookies",
+      "Use page.waitForTimeout() in Playwright tests — use waitFor() or expect().toBeVisible()",
+      "Select elements in E2E tests by CSS class or tag alone — use data-testid or ARIA roles",
+      "Suppress focus outlines without providing a visible replacement",
+      "Render interactive content in a <div> — use semantic elements (<button>, <a>, etc.)"
+    ],
+
+    "always": [
+      "Follow the conventions in .team/instructions.md",
+      "Write TypeScript in strict mode",
+      "Handle errors explicitly — no empty catch blocks",
+      "Colocate test files next to source files (feature.ts → feature.test.ts)",
+      "Add JSDoc to all exported functions and types",
+      "Use named exports over default exports",
+      "Return { data, error } result objects at API boundaries instead of throwing",
+      "Validate and narrow external data (API responses, form inputs) at trust boundaries using Zod or equivalent",
+      "Associate form inputs with labels via htmlFor/id or aria-labelledby",
+      "Add data-testid attributes to interactive elements that need to be testable"
+    ],
+
+    "requireApproval": [
+      "Deleting or renaming public API surfaces",
+      "Changing shared packages in packages/ that other apps depend on",
+      "Modifying CI/CD pipeline configuration",
+      "Adding new external dependencies",
+      "Changing authentication or session handling logic",
+      "Changing CORS, CSP, or any security-related HTTP headers"
+    ]
+  }
+}

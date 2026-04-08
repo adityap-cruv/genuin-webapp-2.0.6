@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "pre-commit": {
+      "description": "Sync AI config then run formatting and linting before every commit",
+      "commands": ["node scripts/sync-ai-config.mjs", "pnpm lint-staged"]
+    },
+    "pre-push": {
+      "description": "Run tests before pushing to remote",
+      "commands": ["pnpm test --run"]
+    }
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": ["eslint --fix", "prettier --write"],
+    "*.{json,md,yml,yaml}": ["prettier --write"]
+  }
+}
