@@ -36,6 +36,8 @@ export function WebSDKContent() {
     const { analytics } = useOctoAnalytics();
 
     const scrollContainerRef = useRef<HTMLDivElement>(null);
+    // Root container ref used to scope user-interaction detection to this component only
+    const rootContainerRef = useRef<HTMLDivElement>(null);
     const [hasSetInitialAgent, setHasSetInitialAgent] = useState(false);
     const [showDummyMessage, setShowDummyMessage] = useState(false);
     const [countdown, setCountdown] = useState<number | null>(null);
@@ -187,6 +189,7 @@ export function WebSDKContent() {
             // Only cancel the IDLE timer here (the video-play timer is intentionally
             // allowed to survive a mode-change re-run; cancelFullViewCycle handles it
             // when the user actually interacts).
+            console.log('[AutoCycle] cleanup, idleTimerRef=', !!idleTimerRef.current);
             if (idleTimerRef.current) {
                 clearTimeout(idleTimerRef.current);
                 idleTimerRef.current = null;
@@ -196,26 +199,32 @@ export function WebSDKContent() {
     }, [currentSessionId, sessions, webSdkRenderMode]);
 
     // Cancel the full-view cycle on any user interaction (click, key, scroll, touch).
-    // Use `document` instead of `window` so events from inside shadow DOM or nested
-    // containers are captured. Scroll is attached to the scroll container ref because
-    // `scroll` does not bubble — it only fires on the element that actually scrolls.
+    // Attach to the genai root container (not window/document) so we only react to
+    // genuine gestures inside this component, never to synthetic React events or
+    // interactions happening outside the chat panel.
     useEffect(() => {
         if (webSdkRenderMode !== 'full') return;
 
-        const onInteraction = () => cancelFullViewCycle();
-        const scrollEl = scrollContainerRef.current;
+        const rootEl = rootContainerRef.current;
+        if (!rootEl) return;
 
-        document.addEventListener('keydown', onInteraction, { capture: true });
-        document.addEventListener('pointerdown', onInteraction, { capture: true });
-        document.addEventListener('touchstart', onInteraction, { capture: true });
-        // scroll doesn't bubble, so attach directly to the scrollable container
-        scrollEl?.addEventListener('scroll', onInteraction);
+        const onInteraction = (e: Event) => {
+            console.log('[AutoCycle] user interaction detected:', e.type, 'cancelling cycle');
+            cancelFullViewCycle();
+        };
+
+        // pointerdown and keydown bubble up through the root container.
+        // We intentionally exclude 'scroll' because auto-scroll on new messages
+        // (programmatic scrollTop assignment) fires the same event and would
+        // falsely cancel the cycle.
+        rootEl.addEventListener('pointerdown', onInteraction);
+        rootEl.addEventListener('keydown', onInteraction);
+        rootEl.addEventListener('touchstart', onInteraction);
 
         return () => {
-            document.removeEventListener('keydown', onInteraction, { capture: true });
-            document.removeEventListener('pointerdown', onInteraction, { capture: true });
-            document.removeEventListener('touchstart', onInteraction, { capture: true });
-            scrollEl?.removeEventListener('scroll', onInteraction);
+            rootEl.removeEventListener('pointerdown', onInteraction);
+            rootEl.removeEventListener('keydown', onInteraction);
+            rootEl.removeEventListener('touchstart', onInteraction);
         };
     }, [webSdkRenderMode, cancelFullViewCycle]);
 
@@ -778,7 +787,7 @@ export function WebSDKContent() {
     const shouldHideContent = isCompactMode && !currentSessionId;
 
     return (
-        <div className={`gai:flex gai:h-full gai:flex-col ${backgroundClass}`}>
+        <div ref={rootContainerRef} className={`gai:flex gai:h-full gai:flex-col ${backgroundClass}`}>
             <div ref={scrollContainerRef} className={scrollContainerClasses}>
                 <div className={contentWrapperClasses}>
                     {!shouldHideContent && currentSession ? (

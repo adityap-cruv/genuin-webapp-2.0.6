@@ -43,10 +43,10 @@ const Chat = () => {
             : (hasNewEvents || thinkingJustStarted) && eventsLength > 0;
 
         if (shouldScroll) {
-            messagesEndRef.current?.scrollIntoView({
-                behavior: 'smooth',
-                block: 'end',
-            });
+            // messagesEndRef.current?.scrollIntoView({
+            //     behavior: 'smooth',
+            //     block: 'end',
+            // });
         }
 
         prevChatLengthRef.current = eventsLength;
