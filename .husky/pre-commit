@@ -1,4 +1,9 @@
-# #!/usr/bin/env sh
-# . "$(dirname -- "$0")/_/husky.sh"
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
 
-# pnpm lint && pnpm format
+# Auto-sync AI config when .team/ files change
+if git diff --cached --name-only | grep -q "^\.team/"; then
+  echo "🔄 .team/ changed — syncing AI config..."
+  pnpm ai:sync
+  git add .claude/ .github/
+fi

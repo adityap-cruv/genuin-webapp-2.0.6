@@ -181,73 +181,100 @@ If any section is unclear or incomplete, please ask for clarification or suggest
 
 ---
 
-# Copilot-Specific Instructions
+## MANDATORY: Agent routing — check before every response
 
-This document **extends** the base project instructions in `../instructions.md`.  
-All base rules (1-7) apply to Copilot. The sections below add Copilot-specific routing and behavior.
+**This is not optional. Do not respond as a general assistant when a specialist agent exists.**
 
----
+Read the user's intent and activate the first matching agent via the Agent tool.
+The sub-agent responds directly — do not summarise or filter its output.
 
-## Table of Contents
+| User intent | Agent to activate |
+|---|---|
+| Investigate / "how does X work" / "why is" / "what's happening" | `planner` (read-only) |
+| Fix / broken / error / not working / failing | `debugger` |
+| Plan / design / structure / approach / where to put | `planner` |
+| Implement / build / add / create / write code | `implementer` |
+| Code review / check this / feedback on code | `code-reviewer` |
+| TypeScript review / type safety / PR review | `typescript-reviewer` |
+| Architecture / monorepo / package placement / ADR | `architect` |
+| Security / vulnerability / audit / is this safe | `security-auditor` |
+| E2E / Playwright / integration test | `e2e-tester` |
+| PRD / spec / requirements | `prd-writer` |
+| **Anything else (default)** | `planner` in read-only mode |
 
-1. [Additional Agent Routing](#additional-agent-routing)
-2. [Chat Mode Usage](#chat-mode-usage)
+**Skill loading** — also load the matching skill before responding:
 
----
-
-## Agent Routing (Keyword-Based)
-
-The base `instructions.md` defines the routing table. Apply the first matching rule below.
-
-**1. Planning** — prompt contains: `plan`, `how should I`, `what's the best approach`, `design`, `architecture`, `what would you recommend`, `where should I put`, `how do I structure`
-→ Activate `planner`. Do not write code. Explore codebase first.
-
-**2. Implementation** — prompt contains: `implement`, `build`, `add`, `create`, `write`, `make`, `add feature`, `write code for`
-→ Activate `implementer`. Types first, then implementation, then tests.
-
-**3. Review** — prompt contains: `review`, `check this`, `look at this`, `is this correct`, `is this good`, `what do you think of this code`, `give me feedback on`
-→ Activate `code-reviewer`.
-
-**4. Debug** — prompt contains: `debug`, `fix`, `broken`, `error`, `not working`, `failing`, `crash`, `exception`, `why is this`, `what's wrong`, `troubleshoot`, `investigate`, `stuck`, `no output`, `silent`, `trace`, `what's happening`, `why is it stopping`, `verify`, `can't figure out`, `there is a bug`, `bug`
-→ Activate `debugger`. Reproduce → localise → hypothesise → verify → minimal fix.
-
-**5. Security** — prompt contains: `security`, `audit`, `vulnerability`, `is this safe`, `secure`, `exploit`, `pentest`, `injection`, `auth issue`, `permissions`
-→ Activate `security-auditor`. Read-only — does not modify files.
-
-**6. E2E / testing** — prompt contains: `e2e`, `end-to-end`, `playwright`, `user flow`, `integration test`, `write a test for`
-→ Activate `e2e-tester`.
-
-**7. PRD / product** — prompt contains: `prd`, `product requirements`, `write a spec`, `feature spec`, `requirements doc`
-→ Activate `prd-writer`.
-
-**8. Investigation** — prompt contains: `how does this work`, `trace the issue`, `walk me through`, `step by step`, `understand the flow`, `where is it failing`, `investigate flow`, `deep dive`, `there is an issue`
-→ Activate `planner` in read-only mode. Map the flow without making changes.
+| User's goal | Skill to load |
+|---|---|
+| Investigating or fixing a bug | `.claude/skills/debug/SKILL.md` |
+| Writing or fixing Playwright / E2E tests | `.claude/skills/e2e-testing/SKILL.md` |
+| Auditing or improving accessibility (WCAG) | `.claude/skills/accessibility/SKILL.md` |
+| Auditing or improving performance | `.claude/skills/performance/SKILL.md` |
+| Security audit | `.claude/skills/security-audit/SKILL.md` |
+| Restructuring or cleaning up existing code | `.claude/skills/refactor/SKILL.md` |
+| Writing a PRD or feature spec | `.claude/skills/prd-writer/SKILL.md` |
+| Writing unit or integration tests with Vitest | `.claude/skills/test-runner/SKILL.md` |
+| Building React components or frontend UI | `.claude/skills/frontend-patterns/SKILL.md` |
 
 ---
 
-## Additional Routing (Copilot-specific)
+# Claude-Specific Instructions
 
-**9. Performance requests** — if the prompt contains any of:
-`performance`, `slow`, `optimise`, `optimize`, `re-render`, `bundle size`, `n+1`,
-`query is slow`, `lag`, `profiling`
-→ Check for: unnecessary re-renders, unstable props, missing memoisation, N+1 queries,
-missing indexes, large bundle imports. Measure before and after any change.
-
-**10. Accessibility requests** — if the prompt contains any of:
-`accessibility`, `a11y`, `wcag`, `screen reader`, `keyboard nav`, `aria`, `contrast`
-→ Target WCAG 2.1 Level AA. Check: semantic HTML, keyboard operability, label associations,
-ARIA correctness, colour contrast, focus visibility.
-
-**11. Refactor requests** — if the prompt contains any of:
-`refactor`, `clean up`, `restructure`, `rename`, `extract`, `simplify this`
-→ Confirm tests exist before making any changes. No behaviour changes — refactor only.
-Test before and after. One concern per change.
+- Never edit files in `.claude/` or `.github/` directly — they are generated by `scripts/sync-ai-config.mjs`. Edit `.team/` instead.
+- Never respond to a routed request without activating the correct agent via the Agent tool.
+- Never skip loading a skill file for a domain-specific request.
 
 ---
 
-## Chat Mode Usage
+## Agent routing (Claude Code)
 
-Use `/planning` chat mode when discussing approach before implementation — it is read-only
-and will not edit files.
+Claude Code activates specialist agents based on the **user's intent**, not exact keywords.
+Read the prompt, understand what the user is trying to accomplish, and activate the right agent.
+Do not respond as a general assistant when a specialist agent exists for the task.
 
-Use `/review` chat mode for a thorough structured code review — also read-only.
+When activating an agent, launch it as a sub-agent with the full user prompt.
+The sub-agent responds directly — do not summarise or filter its output.
+
+Agents available in `.claude/agents/`.
+
+---
+
+## Skill loading
+
+Skills are detailed instruction sets for specific domains. Load the relevant skill
+before responding — it contains project-specific conventions that override general
+best practices. Skills are in `.claude/skills/`.
+
+| User's goal                                   | Skill to load                               |
+| --------------------------------------------- | ------------------------------------------- |
+| Investigating or fixing a bug                 | `.claude/skills/debug/SKILL.md`             |
+| Writing or fixing Playwright / E2E tests      | `.claude/skills/e2e-testing/SKILL.md`       |
+| Auditing or improving accessibility (WCAG)    | `.claude/skills/accessibility/SKILL.md`     |
+| Auditing or improving performance             | `.claude/skills/performance/SKILL.md`       |
+| Security audit                                | `.claude/skills/security-audit/SKILL.md`    |
+| Restructuring or cleaning up existing code    | `.claude/skills/refactor/SKILL.md`          |
+| Writing a PRD or feature spec                 | `.claude/skills/prd-writer/SKILL.md`        |
+| Writing unit or integration tests with Vitest | `.claude/skills/test-runner/SKILL.md`       |
+| Building React components or frontend UI      | `.claude/skills/frontend-patterns/SKILL.md` |
+
+---
+
+## Multi-agent tasks
+
+For complex tasks that span multiple concerns, activate agents in sequence:
+
+1. **Plan then implement:** activate `planner` first, present the plan, then ask
+   the user to confirm before activating `implementer`.
+2. **Implement then review:** after `implementer` finishes, automatically activate
+   `code-reviewer` on the output before presenting it to the user.
+3. **Implement then test:** after `implementer` finishes a feature with no E2E tests,
+   prompt the user: "Should I also write E2E tests for this flow?"
+
+---
+
+## What Claude Code must never do
+
+- Respond to a routed request without activating the correct agent
+- Skip loading a skill file for a domain-specific request
+- Edit files in `.claude/` or `.github/` directly — these are generated by sync
+- Make changes to auth, CORS, CSP, or security headers without flagging approval required
