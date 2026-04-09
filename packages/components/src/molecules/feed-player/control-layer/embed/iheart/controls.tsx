@@ -25,7 +25,6 @@ import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema"
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { Button } from "@genuin/ui/components/button";
 import { compressText } from "@genuin/components/lib/utils";
-import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
 
 type IHeartControlsProps = ComponentProps<"div"> & {
   /**
@@ -80,8 +79,6 @@ export function IHeartControls({
   //  Access baseContextManager to subscribe to preview index change events
   // const { baseContextManager } = useBaseContext();
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
-  const embedDetails = useSafeEmbedContext();
-  const isFeedLayout = embedDetails?.embedData.style === "feed";
 
   //  Track custom muted state for video preview (hover) mode
   // This state is separate from the actual player mute state and controls UI appearance only
@@ -181,10 +178,10 @@ export function IHeartControls({
       // role="toolbar"
       // aria-label="Media controls"
       // aria-orientation={isExpand ? "vertical" : "horizontal"}
-      className={cn("gencl:flex", (isFeedLayout || isExpand) && "gencl:flex-col", className)}
+      className={cn("gencl:flex", isExpand && "gencl:flex-col", className)}
       {...restProps}
     >
-      {(isFeedLayout || isExpand) && (
+      {isExpand && (
         <ReactionButton
           shareUrl={shareUrl ?? ""}
           videoSlug={slug ?? ""}

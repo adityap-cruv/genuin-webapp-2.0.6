@@ -454,7 +454,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
             isActiveOctoSheet && "gencl:space-y-3 gencl:h-full gencl:p-0",
           )}
         >
-          {embedDetails?.embedData.style !== "feed" && (
+          {!isOctoEnabled && (
             <div className="gencl:rounded">
               <ReadMore
                 text={enhancedDescription}
@@ -466,7 +466,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
                 textClassName="gencl:z-10 gencl:text-[14px] gencl:font-normal gencl:leading-[18px] gencl:tracking-[-0.2px]! gencl:text-white! gencl:lg:text-[14px]! gencl:lg:font-normal! gencl:lg:leading-[18px]! gencl:lg:tracking-[-0.5px]!"
                 maxLines={2}
                 tabIndex={isVideoWatched ? -1 : 0}
-                aria-label={`${getMonthYear(postDetails.video?.createdAt ?? 0)}${postDetails.video?.duration ? ` • ${getFormattedDuration(String(postDetails.video.duration))}` : ""} ${Array.isArray(postDetails.video?.description) ? postDetails.video.description.join(" ") : postDetails.video?.description || ""}, Video description`}
+                aria-label={`${getMonthYear(postDetails.video.createdAt ?? 0)}${postDetails.video.duration ? ` • ${getFormattedDuration(String(postDetails.video.duration))}` : ""} ${Array.isArray(postDetails.video.description) ? postDetails.video.description.join(" ") : postDetails.video.description || ""}, Video description`}
               />
             </div>
           )}
@@ -474,9 +474,10 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
           {/* Controls Section */}
           <div
             className={cn(
-              "gencl:overflow-hidden gencl:transition-all gencl:ease-in-out gencl:duration-300 gencl:items-end gencl:justify-end",
-              isActiveOctoSheet && "gencl:space-y-3 gencl:h-full gencl:p-0",
-              embedDetails?.embedData.style === "feed" && "gencl:flex",
+              "gencl:overflow-hidden gencl:transition-all gencl:ease-in-out gencl:duration-300 gencl:flex",
+              isOctoEnabled
+                ? "gencl:justify-end gencl:items-end"
+                : "gencl:justify-between gencl:items-center",
             )}
           >
             {/* Octo Sheet */}
@@ -510,34 +511,37 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
                 </Suspense>
               )}
             </div>
+
             {!isActiveOctoSheet && (
               <IHeartControls
                 onClick={(e) => e.stopPropagation()}
                 className={cn("gencl:z-20 gencl:lg:gap-1!")}
                 size="lg"
-                variant="clip"
+                variant={isOctoEnabled ? "expand" : "clip"}
                 videoDetails={postDetails.video}
                 index={index}
                 isActive={isActive}
-                contentId={postDetails.video?.id}
-                slug={postDetails.video?.slug}
-                isReacted={postDetails.video?.isSparked ?? false}
-                reactionCount={postDetails.video?.sparkCount}
+                contentId={postDetails.video.id}
+                slug={postDetails.video.slug}
+                isReacted={postDetails.video.isSparked ?? false}
+                reactionCount={postDetails.video.sparkCount}
                 onReactionStateChange={(isReacted) => {
                   onReactionStateChange?.(
-                    postDetails.video?.id || "",
-                    postDetails.video?.slug || "",
+                    postDetails.video.id,
+                    postDetails.video.slug,
                     isReacted,
                   );
                 }}
                 isVideoWatched={isVideoWatched}
               />
             )}
-            {/* <IHeartListenLiveButton
-              variant="filled"
-              info={listenLiveButtonInfo}
-              videoDetails={postDetails.video}
-            /> */}
+            {!isOctoEnabled && (
+              <IHeartListenLiveButton
+                variant="filled"
+                info={listenLiveButtonInfo}
+                videoDetails={postDetails.video}
+              />
+            )}
           </div>
         </footer>
 
@@ -549,7 +553,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
             onPlayAgain={() => {
               // Handle play again action
               baseContextManager.setVideoWatched({
-                videoId: postDetails.video?.id || "",
+                videoId: postDetails.video.id,
                 isWatched: false,
               });
               togglePlay(true);
