@@ -511,6 +511,19 @@ export function useEmbedConfigs() {
   const virtualizeSwiper = true;
 
   const brand = useMemo(() => {
+    const AUTO_PAGE_CONTEXT_PLACEMENT_IDS = new Set([
+      "69c2812fd98484cf6b83a5ba",
+      "69c2846f506553c1e2b21722",
+    ]);
+    const AUTO_PAGE_CONTEXT_EMBED_IDS = new Set(["69c38273686a088a80a25ea2"]);
+
+    const autoPageContext =
+      (!!embedData?.placement_id &&
+        AUTO_PAGE_CONTEXT_PLACEMENT_IDS.has(embedData.placement_id)) ||
+      (!!embedData?.embed_id &&
+        AUTO_PAGE_CONTEXT_EMBED_IDS.has(embedData.embed_id));
+
+    const showIheartIframe = true;
     const isUsWeekly = brandDetails.brand_id === 2476;
     const feedType: FeedType =
       !IS_PRODUCTION_ENVIRONMENT || isUsWeekly
@@ -523,8 +536,14 @@ export function useEmbedConfigs() {
       isUsWeekly,
       isIndianExpress: brandDetails.brand_id === 2793,
       feedType,
+      autoPageContext,
+      showIheartIframe
     };
-  }, [brandDetails.brand_id, embedData?.placement_id]);
+  }, [
+    brandDetails.brand_id,
+    embedData?.placement_id,
+    embedData?.embed_id,
+  ]);
 
   const embedSwiperConfigs = useMemo(() => {
     return {

@@ -27,6 +27,10 @@ import { VideoTypes } from "@genuin/components/context";
 import { useSheetState } from "@genuin/components/hooks/use-sheet-state";
 import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-detect-media-query";
 import { usePlayerContext } from "../../molecules/feed-player/context/context";
+import {
+  IHeartEmbedBar,
+  IFRAME_HEIGHT,
+} from './iheart/iheart-embed-bar';
 
 /**
  * Inner component that lives inside PlayerProvider so it can access player context.
@@ -113,7 +117,10 @@ export function Player({
   const {
     view: { brandLayoutType },
     video: { videoCrop },
+    brand: { showIheartIframe },
   } = useEmbedConfigs();
+
+  const showIheartBar = showIheartIframe && isActive;
   const { sheetState } = useSheetState();
   const { isDesktop } = useDeviceDetectMediaQuery();
   const isNonDesktop = !isDesktop; // Mobile + Tablet (< 1024px)
@@ -175,9 +182,10 @@ export function Player({
             {
               "gencl:sm:rounded!": brandLayoutType === "iheart",
             },
-
-            isActive &&
-              (sheetState === "panel-view" || sheetState === "full-view") &&
+            (showIheartBar ||
+              (isActive &&
+                (sheetState === "panel-view" ||
+                  sheetState === "full-view"))) &&
               "gencl:flex gencl:flex-col",
           )}
           // tabIndex={showExpandView ? 0 : -1}
@@ -185,14 +193,21 @@ export function Player({
           // aria-label={`Video ${index + 1} - ${post.video.attributes?.title || post.video.descritptionText || "Video content"}`}
         >
           <div
-            className={cn(
-              "gencl:relative gencl:transition-all gencl:duration-300 gencl:ease-in-out",
-              isActive && sheetState === "panel-view"
-                ? "gencl:h-[30%] gencl:flex-shrink-0"
-                : isActive && sheetState === "full-view"
-                  ? "gencl:h-0 gencl:flex-shrink-0"
-                  : "gencl:h-full",
-            )}
+            className="gencl:relative gencl:transition-all gencl:duration-300 gencl:ease-in-out"
+            style={{
+              height: showIheartBar
+                ? `calc(100% - ${IFRAME_HEIGHT}px)`
+                : isActive && sheetState === "panel-view"
+                  ? "30%"
+                  : isActive && sheetState === "full-view"
+                    ? "0"
+                    : "100%",
+              flexShrink:
+                isActive &&
+                (sheetState === "panel-view" || sheetState === "full-view")
+                  ? 0
+                  : undefined,
+            }}
           >
             <Suspense fallback={null}>
               <FeedPlayer
@@ -224,23 +239,26 @@ export function Player({
                 style={{ height: "inherit" }}
               />
             </Suspense>
+            <Suspense fallback={null}>
+              <ControlLayer
+                index={index}
+                isActive={isActive}
+                postDetails={post}
+                isSectioned={isSectioned}
+                onCommunityJoinStatusChange={onCommunityJoinStatusChange}
+                onGroupJoinStatusChange={onGroupJoinStatusChange}
+                onGroupSubscriptionChange={onGroupSubscriptionChange}
+                showCloseButton={variant === "expand"}
+                onReactionStateChange={onReactionStateChange}
+                onCommentCountChange={onCommentCountChange}
+                // Applies GPU acceleration to prevent layer flickering on iOS devices during animations
+                className="gencl:translate-x-0"
+              />
+            </Suspense>
           </div>
-          <Suspense fallback={null}>
-            <ControlLayer
-              index={index}
-              isActive={isActive}
-              postDetails={post}
-              isSectioned={isSectioned}
-              onCommunityJoinStatusChange={onCommunityJoinStatusChange}
-              onGroupJoinStatusChange={onGroupJoinStatusChange}
-              onGroupSubscriptionChange={onGroupSubscriptionChange}
-              showCloseButton={variant === "expand"}
-              onReactionStateChange={onReactionStateChange}
-              onCommentCountChange={onCommentCountChange}
-              // Applies GPU acceleration to prevent layer flickering on iOS devices during animations
-              className="gencl:translate-x-0"
-            />
-          </Suspense>
+          {showIheartBar && (
+            <IHeartEmbedBar attributes={post.video?.attributes} />
+          )}
         </div>
       </PlayerProvider>
     );

@@ -145,13 +145,32 @@ export function Embed({
 
   // Data fetching
   const feedType = config.brand.feedType;
+
+  const enrichedContextualParams = useMemo(() => {
+    const params = embedData.contextualParams;
+    if (!config.brand.autoPageContext || params?.page_context) {
+      return params;
+    }
+    if (typeof document === "undefined") {
+      return params;
+    }
+    const keywords =
+      document
+        .querySelector('meta[name="keywords"]')
+        ?.getAttribute("content") ?? "";
+    if (!keywords) {
+      return params;
+    }
+    return { ...params, page_context: keywords };
+  }, [config.brand.autoPageContext, embedData.contextualParams]);
+
   const feedParams = {
     communityIds: config.community.communityIds,
     groupIds: config.community.communityLoopIds,
     startVideoSlug: embedData.startVideoSlug,
     placementId: embedData.placement_id,
     styleId: embedData.style_id,
-    contextualParams: embedData.contextualParams,
+    contextualParams: enrichedContextualParams,
     embedId: embedData.embed_id,
     isInIframe,
     shouldShowMiddlewareOverlay: isMiddlewareOverlayEnabled({

@@ -6,7 +6,7 @@ import { BrandType } from "@genuin/components/lib/utils/brand-layout";
 import type { ExpandViewCallbacks } from "./expand-view";
 
 export type ControlLayerPropsType = ComponentProps<"div"> & {
-  postDetails: any;
+  postDetails: PostDetailsType;
   isInModal?: boolean;
   isActive: boolean;
   index?: number;

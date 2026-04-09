@@ -16,6 +16,10 @@ import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config
 import { Stats } from "@genuin/components/molecules/stats";
 import { CommentIcon, PlayIcon } from "@genuin/ui/icons";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
+import {
+  IHeartEmbedBar,
+  IFRAME_HEIGHT,
+} from '@genuin/components/organisms/player-swiper/iheart/iheart-embed-bar';
 import { useEmbedContext } from "@genuin/components/context/embed";
 import { DynamicReactionIcon } from "@genuin/components/molecules/reaction-button";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
@@ -314,6 +318,8 @@ function EmbedPlayer({
     isActive &&
     (sheetState === "panel-view" || sheetState === "full-view");
 
+  const showIheartBar = config.brand.showIheartIframe && isActive;
+
   return (
     <div
       className={cn(
@@ -323,16 +329,20 @@ function EmbedPlayer({
             !isActive && config.styling.isOpacityDown,
         },
         isSheetExpanded && "gencl:flex-col gencl:justify-start",
+        showIheartBar && !isSheetExpanded && "gencl:flex-col",
       )}
     >
-      <div className={cn("gencl:w-full gencl:h-full gencl:relative")}>
+      <div
+        className="gencl:w-full gencl:relative gencl:transition-all gencl:duration-300 gencl:ease-in-out"
+        style={{ height: showIheartBar ? `calc(100% - ${IFRAME_HEIGHT}px)` : '100%' }}
+      >
         <div
           className={cn(
             "gencl:w-full gencl:transition-all gencl:duration-300 gencl:ease-in-out",
             isNonDesktop &&
               isActive &&
               (sheetState === "panel-view" || sheetState === "full-view")
-              ? "gencl:h-[30%] gencl:flex-shrink-0"
+              ? "gencl:h-[30%] gencl:shrink-0"
               : "gencl:h-full",
           )}
         >
@@ -390,6 +400,9 @@ function EmbedPlayer({
           </div>
         )}
       </div>
+      {showIheartBar && (
+        <IHeartEmbedBar attributes={postDetails.video?.attributes} />
+      )}
     </div>
   );
 }

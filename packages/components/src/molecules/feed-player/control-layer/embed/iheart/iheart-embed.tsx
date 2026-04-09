@@ -481,13 +481,13 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
             )}
           >
             {/* Octo Sheet */}
-            <div
-              className="gencl:relative gencl:h-full gencl:w-full swiper-no-swiping"
-              onClick={(e) => {
-                e.stopPropagation();
-              }}
-            >
-              {isOctoEnabled && isActive && shouldShowOcto && (
+            {isOctoEnabled && isActive && shouldShowOcto && (
+              <div
+                className="gencl:relative gencl:h-full gencl:w-full swiper-no-swiping"
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+              >
                 <Suspense fallback={null}>
                   <div className={cn(isOctoHidden && "gencl:invisible")}>
                     <OctoDynamicSheet
@@ -509,8 +509,8 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
                     />
                   </div>
                 </Suspense>
-              )}
-            </div>
+              </div>
+            )}
 
             {!isActiveOctoSheet && (
               <IHeartControls
