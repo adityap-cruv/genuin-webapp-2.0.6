@@ -525,12 +525,9 @@ export function useEmbedConfigs() {
 
     const showIheartIframe = false;
     const isUsWeekly = brandDetails.brand_id === 2476;
-    const feedType: FeedType =
-      !IS_PRODUCTION_ENVIRONMENT || isUsWeekly
-        ? "FEED_V1"
-        : embedData?.placement_id
-          ? "PLACEMENT_SECTIONS"
-          : "EMBED_HOME";
+    const feedType: FeedType = embedData?.placement_id
+      ? "PLACEMENT_SECTIONS"
+      : "FEED_V1";
     return {
       // configuration to identify US Weekly brand
       isUsWeekly,

@@ -167,6 +167,7 @@ export const AdsPostDetailsSchema = z.object({
   section: SectionSchema,
 });
 
+export type AdsPostDetailsType = z.infer<typeof AdsPostDetailsSchema>;
 // export type AdsPostDetailsType = z.infer<typeof AdsPostDetailsSchema>;
 type PostDetailsType = z.infer<
   typeof PostDetailsSchema | typeof AdsPostDetailsSchema
