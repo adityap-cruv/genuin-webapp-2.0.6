@@ -161,7 +161,8 @@ export function EmbedItem({
       moveToNextTime === 0 ||
       !moveToNext ||
       embedEventBus.getContext().activePlayerType !== "embed" ||
-      isHovering
+      isHovering ||
+      postDetails.type === "ads"
     ) {
       return;
     }
@@ -211,6 +212,7 @@ export function EmbedItem({
     isHovering,
     moveToNextTime,
     baseContextManager,
+    postDetails
   ]);
 
   return (

@@ -346,9 +346,36 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     isExpandOnly,
   ]);
 
+  // Only the active player should update isPlaying in the shared singleton tracker.
+  // All inactive players calling setPlayPauseTracker({ isPlaying: false }) would
+  // overwrite the active player's true value — causing auto-advance to break on
+  // the first video (which is active from initial render, competing with N inactive players).
   useEffect(() => {
-    baseContextManager.setPlayPauseTracker({ isPlaying: playerPlayFlag });
-  }, [baseContextManager, playerPlayFlag]);
+    if (!isActive) return;
+    // Use baseConditions (without globalPlayState gate) so isPlaying accurately reflects
+    // whether the video is playing from the user's perspective, not iHeart's sync state.
+    const activePlayerType =
+      embedDetails?.embedEventBus?.getContext().activePlayerType;
+    const isActuallyPlaying =
+      feedPlayerShouldPlay &&
+      (isEmbed ? !isVideoWatched : true) &&
+      focusState.isFocused &&
+      (isExpandOnly ||
+      activePlayerType === "pip" ||
+      activePlayerType === "expand-view"
+        ? true
+        : focusState.containerInView);
+    baseContextManager.setPlayPauseTracker({ isPlaying: isActuallyPlaying });
+  }, [
+    baseContextManager,
+    isActive,
+    feedPlayerShouldPlay,
+    isVideoWatched,
+    focusState.isFocused,
+    focusState.containerInView,
+    isEmbed,
+    isExpandOnly,
+  ]);
 
   const handleVideoImpression = useCallback(
     ({
