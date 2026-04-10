@@ -38,7 +38,7 @@ export function IHeartEmbedBar({ attributes }: IHeartEmbedBarProps) {
 
   return (
     <div
-      className="gencl:relative gencl:w-full gencl:shrink-0 gencl:border-t gencl:border-secondary-150 gencl:transition-all gencl:duration-300 gencl:ease-in-out"
+      className="gencl:relative gencl:w-full gencl:shrink-0 gencl:border-secondary-150 gencl:transition-all gencl:duration-300 gencl:ease-in-out"
       style={{ height: IFRAME_HEIGHT }}
     >
       {!isLoaded && (

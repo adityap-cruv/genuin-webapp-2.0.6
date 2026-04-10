@@ -523,7 +523,7 @@ export function useEmbedConfigs() {
       (!!embedData?.embed_id &&
         AUTO_PAGE_CONTEXT_EMBED_IDS.has(embedData.embed_id));
 
-    const showIheartIframe = true;
+    const showIheartIframe = false;
     const isUsWeekly = brandDetails.brand_id === 2476;
     const feedType: FeedType =
       !IS_PRODUCTION_ENVIRONMENT || isUsWeekly
@@ -537,13 +537,9 @@ export function useEmbedConfigs() {
       isIndianExpress: brandDetails.brand_id === 2793,
       feedType,
       autoPageContext,
-      showIheartIframe
+      showIheartIframe,
     };
-  }, [
-    brandDetails.brand_id,
-    embedData?.placement_id,
-    embedData?.embed_id,
-  ]);
+  }, [brandDetails.brand_id, embedData?.placement_id, embedData?.embed_id]);
 
   const embedSwiperConfigs = useMemo(() => {
     return {
