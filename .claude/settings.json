@@ -2,8 +2,12 @@
   "hooks": {
     "UserPromptSubmit": [
       {
-        "type": "command",
-        "command": "node scripts/inject-context.mjs"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node scripts/inject-context.mjs"
+          }
+        ]
       }
     ]
   }
