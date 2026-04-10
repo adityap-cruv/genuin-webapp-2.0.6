@@ -64,7 +64,11 @@ export function useEmbedDimensions() {
 
     // Calculate header height based on view type and configuration
     const getHeaderHeight = (): number => {
-      if (!config.header.showHeader || (config.view.isPlacementView && !config.contentDisplay.showStyleDetails)) return 0;
+      if (
+        !config.header.showHeader ||
+        (config.view.isPlacementView && !config.contentDisplay.showStyleDetails)
+      )
+        return 0;
 
       if (config.view.isFeed) {
         if (config.header.ctaButton?.url) {
@@ -93,8 +97,7 @@ export function useEmbedDimensions() {
         ? 40
         : 0;
     const linkoutHeight =
-      config.links.showLinkOutside &&
-      config.responsive.canShowEngagement
+      config.links.showLinkOutside && config.responsive.canShowEngagement
         ? 108
         : 0;
 
@@ -109,12 +112,14 @@ export function useEmbedDimensions() {
 
     const availableHeight = Math.max(
       containerHeight - headerHeight,
-      MIN_CAROUSEL_HEIGHT
+      MIN_CAROUSEL_HEIGHT,
     );
 
     // For iheart brand layout in carousel view, reserve space for navigation buttons below the embed
-    const isIheartCarouselLayout = config.view.brandLayoutType === 'iheart' && config.view.isCarousel;
-    const navigationButtonHeight = config.view.isNavigationControlEnabled ? 68 : 0; // Approximate height for navigation buttons
+    const isIheartCarouselLayout =
+      config.view.brandLayoutType === "iheart" && config.view.isCarousel;
+    // const navigationButtonHeight = config.view.isNavigationControlEnabled ? 68 : 0; // Approximate height for navigation buttons
+    const navigationButtonHeight = 0;
     const finalAvailableHeight = isIheartCarouselLayout
       ? Math.max(availableHeight - navigationButtonHeight, MIN_CAROUSEL_HEIGHT)
       : availableHeight;
