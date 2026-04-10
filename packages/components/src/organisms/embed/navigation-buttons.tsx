@@ -164,7 +164,7 @@ export function NavigationButtons({
 
     const iheartNavigationDivClasses = isCarousel
       ? "gencl:absolute gencl:left-1/2 gencl:flex gencl:justify-center gencl:items-center gencl:gap-2 gencl:my-4"
-      : "gencl:absolute gencl:right-[-15%] gencl:bottom-1/2 gencl:flex gencl:justify-center gencl:items-center gencl:gap-2 gencl:my-4 gencl:z-1 gencl:flex-col";
+      : "gencl:absolute gencl:right-[-15%] gencl:bottom-1/2 gencl:flex gencl:justify-center gencl:items-center gencl:gap-2 gencl:my-4 gencl:z-1 gencl:flex-col gencl:translate-y-1/2";
 
     const colors = isDarkTheme ? darkTheme : lightTheme;
 

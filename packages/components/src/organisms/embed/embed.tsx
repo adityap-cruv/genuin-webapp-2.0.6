@@ -674,7 +674,7 @@ export function Embed({
                   width: containerWidth,
                 }}
                 style={{
-                  height: availableHeight,
+                  height: containerHeight,
                 }}
                 freeMode={config.view.scrollBehavior === "free_scroll"}
                 centeredSlides={config.view.centeredSlides}
