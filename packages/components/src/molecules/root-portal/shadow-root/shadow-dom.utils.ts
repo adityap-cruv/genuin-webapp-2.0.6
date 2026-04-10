@@ -107,8 +107,6 @@ function createShadowRoot(container: HTMLElement): HTMLElement {
   // Distinguishes each shadow root in multi-embed cases.
   root.id = container.id;
   root.className = container.className;
-  // This class ensures that the feed view navigation button stays within the screen bounds.
-  root.classList.add("gencl:overflow-clip");
 
   // Copy all non-id/class attributes from container to shadow root
   container.getAttributeNames().forEach((attrName) => {

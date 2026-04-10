@@ -700,7 +700,8 @@ export function Embed({
                       <ShimmerSlide />
                     </SwiperSlide>
                   ))}
-                {!isIheartLayout && (
+                {((embedData.style === "carousel" && isIheartLayout) ||
+                  !isIheartLayout) && (
                   <NavigationButtonsWithContext
                     totalSlides={totalSlides}
                     theme={theme}
@@ -712,7 +713,7 @@ export function Embed({
             </div>
           )
         )}
-        {isIheartLayout && (
+        {isIheartLayout && embedData.style === "feed" && (
           <NavigationButtonsWithContext
             totalSlides={totalSlides}
             isIheartLayout={true}
