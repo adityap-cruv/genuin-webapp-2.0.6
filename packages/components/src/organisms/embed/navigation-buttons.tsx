@@ -110,9 +110,6 @@ export function NavigationButtons({
   const handlePrevClick = onPrev;
   const handleNextClick = onNext;
 
-  if (isIheartLayout) {
-    return;
-  }
   // Helper to create navigation buttons
   const createNavButton = ({
     Icon,
@@ -165,6 +162,10 @@ export function NavigationButtons({
       hover: { button: "#717277", icon: "#FFFFFF" },
     };
 
+    const iheartNavigationDivClasses = isCarousel
+      ? "gencl:absolute gencl:left-1/2 gencl:flex gencl:justify-center gencl:items-center gencl:gap-2 gencl:my-4"
+      : "gencl:absolute gencl:right-[-15%] gencl:bottom-1/2 gencl:flex gencl:justify-center gencl:items-center gencl:gap-2 gencl:my-4 gencl:z-1 gencl:flex-col";
+
     const colors = isDarkTheme ? darkTheme : lightTheme;
 
     // Component with hover and focus state
@@ -212,17 +213,16 @@ export function NavigationButtons({
         </div>
       );
     };
-
     return (
-      <div className="gencl:flex gencl:justify-center gencl:items-center gencl:gap-2 gencl:my-4">
+      <div className={iheartNavigationDivClasses}>
         <IHeartNavButton
-          Icon={ChevronLeftIcon}
+          Icon={isCarousel ? ChevronLeftIcon : ChevronUpIcon}
           disabled={isPrevDisabled}
           onClick={handlePrevClick}
           label="Previous"
         />
         <IHeartNavButton
-          Icon={ChevronRightIcon}
+          Icon={isCarousel ? ChevronRightIcon : ChevronDownIcon}
           disabled={isNextDisabled}
           onClick={handleNextClick}
           label="Next"

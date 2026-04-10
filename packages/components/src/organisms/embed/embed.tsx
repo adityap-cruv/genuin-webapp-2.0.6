@@ -712,7 +712,7 @@ export function Embed({
             </div>
           )
         )}
-        {isIheartLayout && config.view.isCarousel && (
+        {isIheartLayout && (
           <NavigationButtonsWithContext
             totalSlides={totalSlides}
             isIheartLayout={true}
