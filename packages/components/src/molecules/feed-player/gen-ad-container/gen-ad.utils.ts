@@ -13,7 +13,6 @@ export function buildGenAdConfigFromAdTagObject(
   const hasVideo = !!adTagObj.video_ad;
   const hasNative = !!adTagObj.native_ad;
   if (!hasBanner && !hasNative && !hasVideo) return undefined;
-  console.log("Gen ad contaner::", { adTagObj });
 
   const config: GenAdConfig = { adSlotId: `genad-slot-${videoId}` };
 

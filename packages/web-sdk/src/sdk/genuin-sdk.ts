@@ -129,7 +129,7 @@ export class GenuinSDK {
    */
   private storeCleanupFunction(
     element: HTMLElement,
-    cleanup: () => void,
+    cleanup: () => void
   ): void {
     const instanceId = element.getAttribute('data-instance-id')
     if (instanceId && this.sdkElements[instanceId]) {
@@ -209,7 +209,7 @@ export class GenuinSDK {
     } catch (error) {
       console.error(
         'Error during SDK initialization please contact admin:',
-        error,
+        error
       )
       // Still mark init end even on error
       try {
@@ -242,13 +242,13 @@ export class GenuinSDK {
         searchParams = new URLSearchParams(
           window.top?.location.search ||
             window.parent?.location.search ||
-            window.location.search,
+            window.location.search
         )
       } catch (error) {
         // Cross-origin access blocked - fall back to current window
         console.warn(
           'Unable to access parent window URL, falling back to iframe URL:',
-          error,
+          error
         )
         searchParams = new URLSearchParams(window.location.search)
       }
@@ -277,7 +277,7 @@ export class GenuinSDK {
     // Set up a handler for the embedProviderReady event
     const readyEmbeds: Array<string> = []
     const totalEmbeds = Object.values(this.sdkElements).filter(
-      (val) => !!val.config.embedId || !!val.config.placementId,
+      (val) => !!val.config.embedId || !!val.config.placementId
     ).length
 
     // Listen for ready signals from embed providers
@@ -290,14 +290,14 @@ export class GenuinSDK {
         this.callbackQueueManager.executeAllCallbacks()
         this.eventManager.off(
           SDKEventType.SDK_EMBED_PROVIDER_READY,
-          handleProviderReady,
+          handleProviderReady
         )
       }
     }
 
     this.eventManager.on(
       SDKEventType.SDK_EMBED_PROVIDER_READY,
-      handleProviderReady,
+      handleProviderReady
     )
 
     // If no embeds found, execute callbacks immediately
@@ -311,7 +311,7 @@ export class GenuinSDK {
     if (!this.isInitialized) {
       this.callbackQueueManager.enqueue(
         () => this._performUpdate(config),
-        config,
+        config
       )
       return
     }
@@ -387,7 +387,7 @@ export class GenuinSDK {
 
         const isSdkLoaded = await this.initializeSingleEmbedById(
           elementObject.element,
-          elementObject.config,
+          elementObject.config
         )
 
         if (isSdkLoaded) {
@@ -400,7 +400,7 @@ export class GenuinSDK {
       } else {
         console.log(
           'No valid object found for element or already initialized::',
-          instanceId,
+          instanceId
         )
       }
     }
@@ -414,7 +414,7 @@ export class GenuinSDK {
    */
   async initializeSingleEmbedById(
     element: HTMLElement,
-    config: Partial<SingleEmbedDataConfig>,
+    config: Partial<SingleEmbedDataConfig>
   ) {
     try {
       // Handle live embed initialization
@@ -425,7 +425,7 @@ export class GenuinSDK {
 
       // This is where we get the brand details
       const brandDetails = await this.brandDetailsManager.getBrandDetails(
-        config.apiKey,
+        config.apiKey
       )
 
       // Get embed details based on configuration
@@ -440,7 +440,7 @@ export class GenuinSDK {
       if (
         !config.disableExpandView &&
         (embedDetails.expandOnLoad === true ||
-          (config.startVideoSlug && config.expandOnLoad !== false)||
+          (config.startVideoSlug && config.expandOnLoad !== false) ||
           (embedDetails.startVideoSlug && embedDetails.expandOnLoad !== false))
       ) {
         const instanceId = element.getAttribute('data-instance-id')
@@ -478,7 +478,7 @@ export class GenuinSDK {
         embedDetails,
         element,
         user,
-        brandDetails.brand_id,
+        brandDetails.brand_id
       )
 
       // Apply brand colors to the element
@@ -490,7 +490,7 @@ export class GenuinSDK {
       // Function to perform the actual render
       const renderEmbed = async (
         wasLazilyLoaded = false,
-        isOnlyForExpand: boolean,
+        isOnlyForExpand: boolean
       ) => {
         const { loadNewEmbed } = await import('./react-utils')
         const cleanup = await loadNewEmbed({
@@ -532,7 +532,7 @@ export class GenuinSDK {
           {
             rootMargin: '200px', // Start loading 200px before viewport
             threshold: 0.01,
-          },
+          }
         )
         observer.observe(element)
 
@@ -563,7 +563,7 @@ export class GenuinSDK {
    */
   private async initializeLiveEmbed(
     element: HTMLElement,
-    config: Partial<SingleEmbedDataConfig>,
+    config: Partial<SingleEmbedDataConfig>
   ): Promise<void> {
     // Check if this is a nested instance and disable shadow DOM if so
     if (config.live?.is_nested || config.parentInstanceId) {
@@ -571,7 +571,7 @@ export class GenuinSDK {
     }
 
     const brandDetails = await this.brandDetailsManager.getBrandDetails(
-      config.apiKey,
+      config.apiKey
     )
 
     if (config.embedId) {
@@ -579,11 +579,17 @@ export class GenuinSDK {
       if (config.embedId !== 'preview') {
         embedDetails = await this.embedDetailsManager.getEmbedDetails(
           config.embedId,
-          brandDetails as any,
+          brandDetails as any
         )
       }
 
       embedDetails = { ...embedDetails, ...config.live }
+
+      Object.assign(
+        embedDetails.customization,
+        config.live.live_customization_data || {}
+      )
+
       config.embedDetails = embedDetails
     }
 
@@ -593,7 +599,7 @@ export class GenuinSDK {
       if (config.live?.live_customization_data) {
         let embedDetails = parsePlacementToEmbedData(
           config.live.live_customization_data,
-          config.styleId,
+          config.styleId
         )
         config.embedDetails = embedDetails
       }
@@ -602,7 +608,7 @@ export class GenuinSDK {
     if (config.live?.live_customization_data && config.embedDetails) {
       config.embedDetails.customization = this.deepMergeObjects(
         config.embedDetails.customization ?? {},
-        config.live.live_customization_data,
+        config.live.live_customization_data
       )
     }
 
@@ -611,7 +617,7 @@ export class GenuinSDK {
     // if embedDetails is not found then we can't load the embed.
     if (!config.embedDetails) {
       console.warn(
-        'No embed details or placement details found for live embed configuration.',
+        'No embed details or placement details found for live embed configuration.'
       )
       return
     }
@@ -640,7 +646,7 @@ export class GenuinSDK {
     embedDetails: EmbedDataType,
     element: HTMLElement,
     user: AuthUser | null | undefined,
-    brandId?: number,
+    brandId?: number
   ): void {
     // brandId 2801 is for bargainhunter, 2476 is for usmagazine & 2808 is for lifeandstylemag.
     const ignoreExpiry =
@@ -676,7 +682,10 @@ export class GenuinSDK {
       if (!embedDetails.startVideoSlug && pendingAction.videoId) {
         embedDetails.startVideoSlug = pendingAction.videoId
         // Load expand view when startVideoSlug is set from pending action, only if expandOnLoad is not explicitly false
-        if (embedDetails.expandOnLoad !== false && !embedDetails.disable_expand_view) {
+        if (
+          embedDetails.expandOnLoad !== false &&
+          !embedDetails.disable_expand_view
+        ) {
           const instanceId = element.getAttribute('data-instance-id')
           if (instanceId && this.sdkElements[instanceId]) {
             loadExpandView(element, this.sdkElements[instanceId].config.theme)
@@ -715,7 +724,7 @@ export class GenuinSDK {
    */
   private async getEmbedDetails(
     config: Partial<SingleEmbedDataConfig>,
-    brandDetails: any,
+    brandDetails: any
   ): Promise<void> {
     let embedDetails: EmbedDataType | null = null
 
@@ -723,7 +732,7 @@ export class GenuinSDK {
     if (config.embedId) {
       embedDetails = await this.embedDetailsManager.getEmbedDetails(
         config.embedId,
-        brandDetails,
+        brandDetails
       )
     }
 
@@ -731,7 +740,7 @@ export class GenuinSDK {
     if (config.placementId && config.styleId) {
       embedDetails = await this.placementManager.getPlacementData(
         config.placementId,
-        config.styleId,
+        config.styleId
       )
 
       if (!embedDetails)
@@ -739,10 +748,10 @@ export class GenuinSDK {
     } else if (!config.embedId) {
       // Neither embedId nor placementId/styleId provided - invalid configuration
       console.warn(
-        'Placement ID or Style ID is missing, and no embed ID provided',
+        'Placement ID or Style ID is missing, and no embed ID provided'
       )
       throw new Error(
-        'Placement ID or Style ID is missing, and no embed ID provided',
+        'Placement ID or Style ID is missing, and no embed ID provided'
       )
     }
 
@@ -810,21 +819,20 @@ export class GenuinSDK {
   }) {
     if (!containerId) {
       console.warn(
-        'Container id is required to update the start video slug scenario',
+        'Container id is required to update the start video slug scenario'
       )
       return
     }
     let embedId: string | undefined = undefined
     let placementId: string | undefined = undefined
     const targetUpdateElement = Object.values(this.sdkElements).find(
-      (element) => element.element.id === containerId,
+      (element) => element.element.id === containerId
     )
     if (!targetUpdateElement) return
     embedId = targetUpdateElement.config.embedDetails?.embed_id
     placementId = targetUpdateElement.config.embedDetails?.placement_id
-    const targetParentInstanceId = targetUpdateElement.element.getAttribute(
-      'data-instance-id',
-    )
+    const targetParentInstanceId =
+      targetUpdateElement.element.getAttribute('data-instance-id')
     const isNestedOctoUpdate = typeof sourceInstanceId === 'string'
     const shouldHandleExpandView =
       !targetUpdateElement?.config?.disableExpandView && !isNestedOctoUpdate
@@ -832,7 +840,7 @@ export class GenuinSDK {
     if (shouldHandleExpandView && targetUpdateElement?.element)
       loadExpandView(
         targetUpdateElement.element,
-        targetUpdateElement.config.theme,
+        targetUpdateElement.config.theme
       )
 
     this.eventManager.emit(SDKEventType.SDK_UPDATE_START_VIDEO_SLUG, {
@@ -866,14 +874,14 @@ export class GenuinSDK {
   }) {
     if (!containerId) {
       console.warn(
-        'Container id is not provided to update the contextual params',
+        'Container id is not provided to update the contextual params'
       )
       return
     }
     let embedId = undefined,
       placementId = undefined
     const updateTargetElement = Object.values(this.sdkElements).find(
-      (element) => element.element.id === containerId,
+      (element) => element.element.id === containerId
     )
     if (!updateTargetElement) return
     const oldContextualParams =
@@ -881,7 +889,7 @@ export class GenuinSDK {
 
     contextualParams = this.deepMergeObjects(
       oldContextualParams,
-      contextualParams || {},
+      contextualParams || {}
     )
     embedId = updateTargetElement.config.embedDetails?.embed_id
     placementId = updateTargetElement.config.embedDetails?.placement_id
@@ -934,9 +942,9 @@ export class GenuinSDK {
     return
   }
 
-  /** * Ensures the SDK-specific class is present on the given element. 
+  /** * Ensures the SDK-specific class is present on the given element.
         This is used to reliably identify and target elements managed by the SDK.
-        If the required class does not already exist on the element, 
+        If the required class does not already exist on the element,
         it will be explicitly added to avoid duplicate checks elsewhere in the codebase.
         @param element - The DOM element to validate and update */
   private validateHTML(element: HTMLElement): void {
@@ -953,23 +961,23 @@ export class GenuinSDK {
       '[id="gen-sdk"]:not(.gen-sdk-root-portal):not([data-portal-container]), [id^="gen-sdk-"]:not(.gen-sdk-root-portal):not([data-portal-container]), .gen-sdk-class:not(.gen-sdk-root-portal):not([data-portal-container])'
 
     const elements: HTMLElement[] = Array.from(
-      document.querySelectorAll(selector),
+      document.querySelectorAll(selector)
     ).filter((el): el is HTMLElement => el instanceof HTMLElement)
 
     const shadowHosts = Array.from(
-      document.querySelectorAll('[data-genuin-host], [data-genuin-overlay-host]'),
+      document.querySelectorAll(
+        '[data-genuin-host], [data-genuin-overlay-host]'
+      )
     ).filter((el): el is HTMLElement => el instanceof HTMLElement)
 
     shadowHosts.forEach((host) => {
       const { shadowRoot } = host
       if (!shadowRoot) return
-      shadowRoot
-        .querySelectorAll(selector)
-        .forEach((el) => {
-          if (el instanceof HTMLElement) {
-            elements.push(el)
-          }
-        })
+      shadowRoot.querySelectorAll(selector).forEach((el) => {
+        if (el instanceof HTMLElement) {
+          elements.push(el)
+        }
+      })
     })
 
     // Check for duplicate IDs and warn the user
@@ -989,14 +997,19 @@ export class GenuinSDK {
         console.warn(
           `[Genuin SDK Warning]: Found ${count} elements with the same ID "${id}". ` +
             `Each embed container must have a unique ID. Please change the duplicate IDs to ensure proper initialization. ` +
-            `Example: <div id="gen-sdk-1">, <div id="gen-sdk-2">, etc.`,
+            `Example: <div id="gen-sdk-1">, <div id="gen-sdk-2">, etc.`
         )
       }
     })
 
     // Deduplicate using a Set to track element references
     const uniqueElements = new Set<HTMLElement>()
-    console.log('[SDK Init] Found elements:', elements.length, 'with parent_instance_id:', configByUser?.parent_instance_id)
+    console.log(
+      '[SDK Init] Found elements:',
+      elements.length,
+      'with parent_instance_id:',
+      configByUser?.parent_instance_id
+    )
 
     elements.forEach((element) => {
       // Ignore gen-sdk-toaster-root
@@ -1083,7 +1096,7 @@ export class GenuinSDK {
    */
   private extractDataFromSingleDiv(
     singleElement: HTMLElement,
-    configByUser?: ConfigByUser,
+    configByUser?: ConfigByUser
   ): Partial<SingleEmbedDataConfig> {
     const answerToReturn: Partial<SingleEmbedDataConfig> = {}
 
@@ -1336,7 +1349,7 @@ export class GenuinSDK {
             answerToReturn.contextualParams || {}
           const brandsIdsParsed = this.tryJsonParse(value)
           answerToReturn.contextualParams.brands_ids = Array.isArray(
-            brandsIdsParsed,
+            brandsIdsParsed
           )
             ? brandsIdsParsed
             : configByUser?.contextual_params?.brands_ids
@@ -1346,7 +1359,7 @@ export class GenuinSDK {
             answerToReturn.contextualParams || {}
           const userInterestsParsed = this.tryJsonParse(value)
           answerToReturn.contextualParams.user_interests = Array.isArray(
-            userInterestsParsed,
+            userInterestsParsed
           )
             ? userInterestsParsed
             : configByUser?.contextual_params?.user_interests
@@ -1356,7 +1369,7 @@ export class GenuinSDK {
             answerToReturn.contextualParams || {}
           const postedByUserIdsParsed = this.tryJsonParse(value)
           answerToReturn.contextualParams.posted_by_user_ids = Array.isArray(
-            postedByUserIdsParsed,
+            postedByUserIdsParsed
           )
             ? postedByUserIdsParsed
             : configByUser?.contextual_params?.posted_by_user_ids
@@ -1366,7 +1379,7 @@ export class GenuinSDK {
             answerToReturn.contextualParams || {}
           const communityIdsParsed = this.tryJsonParse(value)
           answerToReturn.contextualParams.community_ids = Array.isArray(
-            communityIdsParsed,
+            communityIdsParsed
           )
             ? communityIdsParsed
             : configByUser?.contextual_params?.community_ids
@@ -1376,7 +1389,7 @@ export class GenuinSDK {
             answerToReturn.contextualParams || {}
           const loopIdsParsed = this.tryJsonParse(value)
           answerToReturn.contextualParams.loop_ids = Array.isArray(
-            loopIdsParsed,
+            loopIdsParsed
           )
             ? loopIdsParsed
             : configByUser?.contextual_params?.loop_ids
@@ -1461,7 +1474,9 @@ export class GenuinSDK {
     while (currentElement) {
       if (currentElement.getAttribute('data-web-sdk-nested') === 'true') {
         isNested = true
-        console.log('[Web-SDK] Detected nested rendering - expand view will be disabled')
+        console.log(
+          '[Web-SDK] Detected nested rendering - expand view will be disabled'
+        )
         break
       }
       currentElement = currentElement.parentElement
@@ -1482,7 +1497,7 @@ export class GenuinSDK {
    */
   private extractLiveEmbedData(
     answerToReturn: Partial<SingleEmbedDataConfig>,
-    configByUser: ConfigByUser,
+    configByUser: ConfigByUser
   ): Partial<SingleEmbedDataConfig> {
     const liveData = configByUser.live
 
@@ -1530,7 +1545,7 @@ export class GenuinSDK {
    */
   private setInitializationStatus(
     element: HTMLElement,
-    status: InitializationStatus,
+    status: InitializationStatus
   ): void {
     element.setAttribute('data-status', status)
   }
@@ -1561,7 +1576,7 @@ export class GenuinSDK {
     if (!ALLOWED_EVENTS.includes(eventType)) {
       console.warn(
         `Event "${eventType}" is not in the allowed events list. Allowed events:`,
-        ALLOWED_EVENTS,
+        ALLOWED_EVENTS
       )
       return () => {}
     }
@@ -1579,7 +1594,7 @@ export class GenuinSDK {
     if (!ALLOWED_EVENTS.includes(eventType)) {
       console.warn(
         `Event "${eventType}" is not in the allowed events list. Allowed events:`,
-        ALLOWED_EVENTS,
+        ALLOWED_EVENTS
       )
       return
     }
@@ -1609,7 +1624,7 @@ export class GenuinSDK {
    */
   private deepMergeObjects<T extends Record<string, any>>(
     target?: T,
-    source?: Record<string, any>,
+    source?: Record<string, any>
   ): T {
     if (!target) return source as T
     if (!source) return target as T
@@ -1651,7 +1666,7 @@ export class GenuinSDK {
     if (!ALLOWED_EMIT_EVENTS.includes(eventType)) {
       console.warn(
         `Event "${eventType}" is not in the allowed events list. Allowed events:`,
-        ALLOWED_EMIT_EVENTS,
+        ALLOWED_EMIT_EVENTS
       )
       return
     }
@@ -1691,7 +1706,7 @@ export class GenuinSDK {
     // Check if SDK is initialized
     if (!this.isInitialized) {
       console.error(
-        'SDK is not initialized. Please call genuin.init({}) first to use genuin.expand().',
+        'SDK is not initialized. Please call genuin.init({}) first to use genuin.expand().'
       )
       return
     }
@@ -1739,7 +1754,7 @@ export class GenuinSDK {
     // Check if SDK is initialized
     if (!this.isInitialized) {
       console.error(
-        'SDK is not initialized. Please call genuin.init({}) first to use genuin.collapse().',
+        'SDK is not initialized. Please call genuin.init({}) first to use genuin.collapse().'
       )
       return
     }
@@ -1789,7 +1804,7 @@ export class GenuinSDK {
     if (!this.isInitialized) {
       this.errorHandler.handleError(
         ErrorType.CONFIGURATION_ERROR,
-        'Cannot logout: SDK is not initialized. Please call initialize() first.',
+        'Cannot logout: SDK is not initialized. Please call initialize() first.'
       )
       return
     }
@@ -1810,7 +1825,7 @@ export class GenuinSDK {
       this.errorHandler.handleError(
         ErrorType.AUTHENTICATION_ERROR,
         `Failed to logout: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        { originalError: error instanceof Error ? error : undefined },
+        { originalError: error instanceof Error ? error : undefined }
       )
     }
   }

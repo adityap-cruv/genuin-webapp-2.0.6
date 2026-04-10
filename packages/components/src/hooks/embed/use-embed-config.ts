@@ -550,6 +550,13 @@ export function useEmbedConfigs() {
     };
   }, [useWindowSwiperMode, virtualizeSwiper]);
 
+  const renderOnlySingleVideoInEmbed = useMemo(() => {
+    return (
+      !!embedData?.initialVideoIds?.length &&
+      embedData?.embed_id === "6980fb600599bd5a2e1011b5"
+    );
+  }, [embedData?.initialVideoIds, embedData?.embed_id]);
+
   return {
     dimensions: dimensionsConfig,
     view: viewConfig,
@@ -577,5 +584,14 @@ export function useEmbedConfigs() {
     virtualizeSwiper,
     brand,
     embedSwiperConfigs,
+    /**
+     * TODO: Productise this — currently hardcoded to a specific embed ID (6980fb600599bd5a2e1011b5).
+     * Once validated, this should be driven by an embed-level config flag (e.g. embedData.render_only_single_video)
+     * instead of matching against a hardcoded embed ID.
+     *
+     * True only when `initialVideoIds` are provided AND the embed ID matches the target embed.
+     * Used to render only a single video in the embed view rather than the full feed.
+     */
+    renderOnlySingleVideoInEmbed,
   };
 }

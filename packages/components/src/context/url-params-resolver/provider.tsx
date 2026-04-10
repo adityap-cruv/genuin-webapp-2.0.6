@@ -1172,7 +1172,6 @@ export const UrlParamProvider: React.FC<{
   const setPlayerSize = (
     size: { height: number; width: number } | null,
   ): void => {
-    console.log("Setting player size:", size);
     resolverRef.current?.setPlayerSize(
       size ? { height: size.height, width: size.width } : null,
     );
