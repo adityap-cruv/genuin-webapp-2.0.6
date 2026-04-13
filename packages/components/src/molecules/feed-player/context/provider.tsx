@@ -1165,6 +1165,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       //   return;
       // }
       if (byUser) {
+        baseEventBus.updateContext((ctx) => ({ ...ctx, hasUserInteractedWithMute: true }));
         if (muted) {
           setButtonAction("UNMUTE");
           track(EventName.VIDEO_UNMUTED, {
@@ -1181,7 +1182,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       }
       setMuted((oldMuted) => !oldMuted);
     },
-    [setMuted, muted, track, EventName, baseAnalyticsData],
+    [setMuted, muted, track, EventName, baseAnalyticsData, baseEventBus],
   );
 
   // mute: Mutes the player.
@@ -1189,13 +1190,14 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     (byUser: boolean) => {
       setMuted(true);
       if (byUser) {
+        baseEventBus.updateContext((ctx) => ({ ...ctx, hasUserInteractedWithMute: true }));
         setButtonAction("MUTE");
         track(EventName.VIDEO_MUTED, {
           ...baseAnalyticsData,
         });
       }
     },
-    [setMuted, track, EventName.VIDEO_MUTED, baseAnalyticsData],
+    [setMuted, track, EventName.VIDEO_MUTED, baseAnalyticsData, baseEventBus],
   );
 
   // unmute: Unmutes the player.
@@ -1203,10 +1205,11 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     (byUser: boolean) => {
       setMuted(false);
       if (byUser) {
+        baseEventBus.updateContext((ctx) => ({ ...ctx, hasUserInteractedWithMute: true }));
         setButtonAction("UNMUTE");
       }
     },
-    [setMuted],
+    [setMuted, baseEventBus],
   );
 
   /*

@@ -416,6 +416,11 @@ export function EmbedExpandView({
   // Handle mute state and global playing state when entering expand view
   useEffect(() => {
     if (brandLayoutType === "iheart") {
+      if (!baseEventBus.getContext().hasUserInteractedWithMute) {
+        setTimeout(() => {
+          setMuted(false);
+        }, 300);
+      }
       if (
         websiteType === "legacy" &&
         !baseEventBus.getContext().globalPlayingState

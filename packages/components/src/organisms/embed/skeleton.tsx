@@ -1,6 +1,6 @@
 "use client";
 import { Skeleton } from "@genuin/ui/components/skeleton";
-import { cn } from "@genuin/ui/lib/utils";
+import { cn, getAspectRatio } from "@genuin/ui/lib/utils";
 import { ComponentProps } from "react";
 import { cva, VariantProps } from "class-variance-authority";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
@@ -63,6 +63,9 @@ export function SdkSkeleton({
   if (isGridLayout) {
     const rows = config.view.gridLayout?.row ?? 2;
     const cols = config.view.gridLayout?.column ?? 2;
+    const { width: widthRatio, height: heightRatio } = getAspectRatio(
+      config.dimensions.aspectRatio,
+    );
     // const autoAdjust = config.view.gridLayout?.auto_adjust;
     return (
       <div
@@ -94,10 +97,13 @@ export function SdkSkeleton({
                 <div
                   key={index}
                   className={cn(
-                    "gencl:aspect-reel gencl:relative gencl:overflow-hidden gencl:rounded-md",
+                    "gencl:relative gencl:overflow-hidden gencl:rounded-md",
                     "gencl:transition-all gencl:duration-300 gencl:ease-in-out",
                     "gencl:cursor-pointer",
                   )}
+                  style={{
+                    aspectRatio: `${widthRatio} / ${heightRatio}`,
+                  }}
                 >
                   <Skeleton
                     className={cn(
@@ -140,8 +146,9 @@ export function SdkSkeleton({
       <div className="gencl:relative">
         <EmbedSwiper
           forFeed={config.view.isFeed}
-          aspectRatio={embedData.aspect_ratio}
+          aspectRatio={config.dimensions.aspectRatio}
           spaceBetweenVideos={spaceBetweenVideos}
+          slidesPerView={1}
           containerDimensions={{
             height: config.view.isFeed
               ? availableHeight - spaceBetweenVideos

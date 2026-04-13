@@ -65,6 +65,11 @@ export type BaseEventBusContext = {
    * When true, all players should show the system pause recovery UI.
    */
   systemPaused: boolean;
+  /**
+   * Whether the user has explicitly interacted with mute/unmute controls.
+   * Used to prevent auto-unmute from overriding the user's explicit choice.
+   */
+  hasUserInteractedWithMute: boolean;
 };
 
 type EventNames =
@@ -84,5 +89,6 @@ export function createBaseEventBus(initialGlobalPlayingState: boolean = true) {
     activeSheetContentTypes: [],
     sheetContentPlacements: {},
     systemPaused: false,
+    hasUserInteractedWithMute: false,
   });
 }

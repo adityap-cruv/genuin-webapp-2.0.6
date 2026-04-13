@@ -70,7 +70,21 @@ export function useEmbedConfigs() {
       showViewLoopButton: !!customization?.show_view_loop_button,
       isShowPopupByDefault: !!customization?.is_show_popup_by_default,
       theme: customization?.theme || "light",
-      gridLayout: embedData?.grid_layout || undefined,
+      gridLayout: (() => {
+        if (embedData?.placement_id === "69c2846f506553c1e2b21722") {
+          const autoAdjust = embedData?.grid_layout?.auto_adjust ?? false;
+          if (isDesktop) {
+            return { column: 3, row: 3, auto_adjust: autoAdjust };
+          }
+          if (!isMobile && !isDesktop) {
+            return { column: 2, row: 4, auto_adjust: autoAdjust };
+          }
+          return { column: 1, row: 6, auto_adjust: autoAdjust };
+        }
+        return embedData?.grid_layout || undefined;
+      })(),
+      expandOnInteraction:
+        embedData?.embed_id === "69c38273686a088a80a25ea2" && isMobile,
       scrollBehavior: customization?.scroll_behavior || "paging",
       isNavigationControlEnabled:
         brandLayoutType === "ted"
@@ -97,7 +111,10 @@ export function useEmbedConfigs() {
     embedData?.placement_id,
     embedData?.card_layout_id,
     embedData?.placement_card_layout_id,
+    embedData?.grid_layout?.auto_adjust,
     brandLayoutType,
+    isMobile,
+    isDesktop,
   ]);
 
   // ============================================================

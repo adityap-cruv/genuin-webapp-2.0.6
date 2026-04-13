@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { getTabindexElementsInViewport } from "@genuin/ui/lib/utils";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { getTabindexElementsInViewport, detectAccessibilityMode } from "@genuin/ui/lib/utils";
 import type { Swiper } from "swiper/types";
 
 // Type definition for focusable elements
@@ -48,6 +48,10 @@ export function useFocusManagement({
   activeIndex,
   activeSwiper,
 }: UseFocusManagementOptions): UseFocusManagementReturn {
+  // Only activate when accessibility mode is detected (screen reader, high contrast, etc.)
+  const isAccessibilityMode = useMemo(() => detectAccessibilityMode(), []);
+  const isActive = isEnabled && isAccessibilityMode;
+
   // Create a ref for the container
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -86,7 +90,7 @@ export function useFocusManagement({
 
   // Focus management when enabled/disabled
   useEffect(() => {
-    if (isEnabled) {
+    if (isActive) {
       // Save the currently focused element before enabling focus management
       previousFocusedElementRef.current = document.activeElement as HTMLElement;
 
@@ -113,11 +117,11 @@ export function useFocusManagement({
       setCurrentFocusIndex(0);
       setFocusableElements([]);
     }
-  }, [isEnabled, updateFocusableElements]);
+  }, [isActive, updateFocusableElements]);
 
   // Update focusable elements when activeIndex changes
   useEffect(() => {
-    if (!isEnabled) return;
+    if (!isActive) return;
 
     const timeoutId = setTimeout(() => {
       const elements = updateFocusableElements();
@@ -149,11 +153,11 @@ export function useFocusManagement({
     }, 150);
 
     return () => clearTimeout(timeoutId);
-  }, [activeIndex, isEnabled, updateFocusableElements, currentFocusIndex]);
+  }, [activeIndex, isActive, updateFocusableElements, currentFocusIndex]);
 
   // Track focus changes to maintain current focus index and refresh elements when needed
   useEffect(() => {
-    if (!isEnabled) return;
+    if (!isActive) return;
 
     const handleFocusIn = (event: FocusEvent) => {
       const focusedElement = event.target as HTMLElement;
@@ -173,11 +177,11 @@ export function useFocusManagement({
 
     document.addEventListener("focusin", handleFocusIn);
     return () => document.removeEventListener("focusin", handleFocusIn);
-  }, [isEnabled, focusableElements, updateFocusableElements]);
+  }, [isActive, focusableElements, updateFocusableElements]);
 
   // Listen for swiper slide change events (handled by activeIndex effect above)
   useEffect(() => {
-    if (!activeSwiper || !isEnabled) return;
+    if (!activeSwiper || !isActive) return;
 
     const handleSlideChange = () => {
       setTimeout(() => {
@@ -187,12 +191,12 @@ export function useFocusManagement({
 
     activeSwiper.on("slideChange", handleSlideChange);
     return () => activeSwiper.off("slideChange", handleSlideChange);
-  }, [activeSwiper, isEnabled, updateFocusableElements]);
+  }, [activeSwiper, isActive, updateFocusableElements]);
 
   // Keyboard navigation handler with slide navigation
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (!isEnabled || focusableElements.length === 0) return;
+      if (!isActive || focusableElements.length === 0) return;
 
       if (event.key === "Tab") {
         event.preventDefault();
@@ -250,11 +254,11 @@ export function useFocusManagement({
       }
     };
 
-    if (isEnabled) {
+    if (isActive) {
       document.addEventListener("keydown", handleKeyDown);
       return () => document.removeEventListener("keydown", handleKeyDown);
     }
-  }, [isEnabled, focusableElements, currentFocusIndex, activeSwiper]);
+  }, [isActive, focusableElements, currentFocusIndex, activeSwiper]);
 
 
 

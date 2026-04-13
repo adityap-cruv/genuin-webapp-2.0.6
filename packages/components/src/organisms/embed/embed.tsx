@@ -122,8 +122,13 @@ export function Embed({
   const [slidesOffsetBefore, setSlidesOffsetBefore] = useState<number>(0);
 
   const { isInIframe, theme } = useBaseContext();
-  const { embedData, embedEventBus, updateIsSectioned, updateSectionList } =
-    useEmbedContext();
+  const {
+    embedData,
+    embedEventBus,
+    updateIsSectioned,
+    updateSectionList,
+    changeActivePlayerType,
+  } = useEmbedContext();
   // Local state for isSectioned synced with event bus
   const [isSectioned, setIsSectioned] = useState(
     embedEventBus.getContext().isSectioned,
@@ -138,6 +143,7 @@ export function Embed({
   );
   const { track, EventName } = useAnalytics();
   const config = useEmbedConfigs();
+  const embedAspectRatio = config.dimensions.aspectRatio;
   // check that does it is embed or placement
   const isEmbed: boolean = !config.view.isPlacementView;
   const embedVariant = config.embedStyle;
@@ -239,12 +245,12 @@ export function Embed({
           : availableHeight + spaceBetweenVideos,
         containerWidth,
         config.view.isFeed,
-        embedData.aspect_ratio,
+        embedAspectRatio,
         config.embedSwiperConfigs.useWindowSwiperMode,
       ) ?? 1,
     [
       config.view.isFeed,
-      embedData.aspect_ratio,
+      embedAspectRatio,
       availableHeight,
       spaceBetweenVideos,
       containerWidth,
@@ -275,7 +281,6 @@ export function Embed({
     availableHeight,
     spaceBetweenVideos,
     slidesPerView,
-    embedData.aspect_ratio,
   ]);
 
   // Extract sectioned property from feedData and update the context
@@ -632,7 +637,7 @@ export function Embed({
             rows={config.view.gridLayout?.row ?? 2}
             cols={config.view.gridLayout?.column ?? 2}
             autoAdjust={config.view.gridLayout?.auto_adjust}
-            aspectRatio={embedData.aspect_ratio}
+            aspectRatio={embedAspectRatio}
             totalVideos={feedData?.pages?.[0]?.totalVideos}
           />
         ) : (
@@ -647,7 +652,7 @@ export function Embed({
               <EmbedSwiper
                 onSwiper={(swiperInstance: any) => setSwiper(swiperInstance)}
                 forFeed={config.view.isFeed}
-                aspectRatio={embedData.aspect_ratio}
+                aspectRatio={embedAspectRatio}
                 spaceBetweenVideos={spaceBetweenVideos}
                 slidesPerView={slidesPerView}
                 isIheartLayout={isIheartLayout}
@@ -663,6 +668,15 @@ export function Embed({
                     setSlidesOffsetBefore(48);
                   }
                   onFeedSlideChange(swiperInstance);
+
+                  // Open expand view on swipe when expandOnInteraction is enabled
+                  if (
+                    config.view.expandOnInteraction &&
+                    config.expandViewConfig.enable &&
+                    embedEventBus.getContext().activePlayerType === "embed"
+                  ) {
+                    changeActivePlayerType("expand-view");
+                  }
                 }}
                 onReachBeginning={() => {
                   setSlidesOffsetBefore(0);
@@ -739,7 +753,7 @@ export function Embed({
             </div>
           )
         )}
-        {isIheartLayout && embedData.style === "feed" && (
+        {isIheartLayout && embedData.style === "feed" && !isMobile && (
           <NavigationButtonsWithContext
             totalSlides={totalSlides}
             isIheartLayout={true}
