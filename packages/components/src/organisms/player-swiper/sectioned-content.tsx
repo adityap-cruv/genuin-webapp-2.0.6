@@ -44,8 +44,8 @@ interface SectionedContentProps {
   setVerticalSwipers: (swipers: Record<number, any>) => void;
   onAdStarted: (event?: AdInfoType) => void;
   onAdEnded: (event?: AdInfoType) => void;
-  onAdFilled?: (type: string) => void;
-  onAdFilledEnd?: () => void;
+  onAdFilled?: (type: string, index: number) => void;
+  onAdPlaybackEnd?: (index: number) => void;
 }
 
 export function SectionedContent({
@@ -73,7 +73,7 @@ export function SectionedContent({
   onAdEnded,
   onAdStarted,
   onAdFilled,
-  onAdFilledEnd,
+  onAdPlaybackEnd,
 }: SectionedContentProps) {
   const { track, EventName } = useAnalytics();
 
@@ -173,7 +173,7 @@ export function SectionedContent({
                         onAdEnded={onAdEnded}
                         onAdStarted={onAdStarted}
                         onAdFilled={onAdFilled}
-                        onAdFilledEnd={onAdFilledEnd}
+                        onAdPlaybackEnd={onAdPlaybackEnd}
                       />
                     ) : post.video.type === "complete" ? (
                       <Suspense fallback={null}>

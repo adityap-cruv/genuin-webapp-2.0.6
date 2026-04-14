@@ -171,11 +171,8 @@ export function EmbedItem({
     let shouldMove = false;
 
     if (isGridLayout) {
-      // Grid layout: Check if we have more videos to advance to
-      const gridRow = config.view.gridLayout?.row || 1;
-      const gridCol = config.view.gridLayout?.column || 1;
-      const totalVideos = gridRow * gridCol;
-      shouldMove = activeIndex < totalVideos - 1;
+      // Grid layout: Allowing auto-advance for looping (will loop back to first video)
+      shouldMove = true;
     } else {
       // Feed/Carousel layout: Check if swiper exists and has more slides
       if (swiper) {

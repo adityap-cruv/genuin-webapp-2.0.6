@@ -474,17 +474,17 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
         return;
       }
       if (playerConfig.autoplay) {
-        // autoplay after sometime is true, so play the video after timeout.
-        if (playerConfig.autoplayAfter) {
-          autoplayTimeout = setTimeout(() => {
-            if (baseEventBus.getContext().systemPaused) return;
-            play(false);
-            // convert seconds to miliseconds.
-          }, playerConfig.autoplayAfter * 1000);
-          return;
-        }
         // autoplay is true, so play the video.
         play(false);
+      } else if (playerConfig.autoplayAfter > 0) {
+        // autoplay is false but delayed autoplay is enabled (type 3)
+        // Play the video after custom delay
+        autoplayTimeout = setTimeout(() => {
+          if (baseEventBus.getContext().systemPaused) return;
+          play(false);
+          // convert seconds to miliseconds.
+        }, playerConfig.autoplayAfter * 1000);
+        return;
       }
     } else {
       // For iHeart layout, don't reset player config to maintain shared state

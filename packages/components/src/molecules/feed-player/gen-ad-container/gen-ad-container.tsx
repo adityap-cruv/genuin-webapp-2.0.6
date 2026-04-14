@@ -36,12 +36,14 @@ export function GenAdContainer({
   isVisible,
   videoId,
   videoType,
+  muted,
   moveToNextVideo,
   onAdFilled,
   onAdFillFailed,
   onAdCompleted,
 }: GenAdContainerProps) {
   const adContainerRef = useRef<HTMLDivElement>(null);
+  const instanceIdRef = useRef<string | null>(null);
   const { track, EventName } = useAnalytics();
   const trackRef = useRef(track);
   trackRef.current = track;
@@ -61,7 +63,6 @@ export function GenAdContainer({
   useEffect(() => {
     if (!isActive) return;
 
-    let instanceId: string | null = null;
     let initInterval: ReturnType<typeof setInterval>;
     let missingContainerAttempts = 0;
 
@@ -86,8 +87,9 @@ export function GenAdContainer({
             ad_type: "in_feed",
             video_type: videoType,
           };
-          instanceId = (window as any).GenAd.init({
+          instanceIdRef.current = (window as any).GenAd.init({
             containerElement: adContainerRef.current,
+            muted: muted,
             ...genAdInitConfig,
             ...(!!waterfallOrder && waterfallOrder.length !== 0
               ? { waterfallOrder }
@@ -136,8 +138,8 @@ export function GenAdContainer({
                 provider,
                 ad_source: getAdSource(config, provider),
               });
-              moveToNextVideoRef.current();
               onAdCompletedRef.current?.();
+              moveToNextVideoRef.current?.();
             },
             onVolumeChange: (_data: { isMuted: boolean; volume: number }) => {},
             onAdBlocked: (_reason: string) => {},
@@ -202,11 +204,21 @@ export function GenAdContainer({
 
     return () => {
       clearInterval(initInterval);
-      if (instanceId && (window as any).GenAd) {
-        (window as any).GenAd.destroy(instanceId);
+      if (instanceIdRef.current && (window as any).GenAd) {
+        (window as any).GenAd.destroy(instanceIdRef.current);
+        instanceIdRef.current = null;
       }
     };
   }, [isActive, config]);
+
+  useEffect(() => {
+    if (!isActive) return;
+
+    const instanceId = instanceIdRef.current;
+    if (!instanceId || !(window as any).GenAd?.mute) return;
+
+    (window as any).GenAd.mute(instanceId, muted);
+  }, [isActive, muted]);
 
   return (
     <div

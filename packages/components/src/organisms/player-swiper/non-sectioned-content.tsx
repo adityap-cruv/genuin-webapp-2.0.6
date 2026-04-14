@@ -42,8 +42,8 @@ interface NonSectionedContentProps {
   isSectioned: boolean;
   onAdStarted?: (event?: AdInfoType) => void;
   onAdEnded?: (event?: AdInfoType) => void;
-  onAdFilled?: (type: string) => void;
-  onAdFilledEnd?: () => void;
+  onAdFilled?: (type: string, index: number) => void;
+  onAdPlaybackEnd: (index: number) => void;
 }
 
 export function NonSectionedContent({
@@ -65,22 +65,11 @@ export function NonSectionedContent({
   onCommentCountChange,
   totalVideos,
   isSectioned,
-  onAdEnded,
   onAdStarted,
+  onAdEnded,
   onAdFilled,
-  onAdFilledEnd,
+  onAdPlaybackEnd,
 }: NonSectionedContentProps) {
-  const handleAdFilled = useCallback(
-    (type: string) => {
-      onAdFilled?.(type);
-    },
-    [onAdFilled],
-  );
-
-  const handleAdFilldEnd = useCallback(() => {
-    onAdFilledEnd?.();
-  }, [onAdFilledEnd]);
-
   return (
     <SwiperImplementation
       initialSlide={startIndex}
@@ -149,8 +138,8 @@ export function NonSectionedContent({
                     index={index}
                     onAdEnded={onAdEnded}
                     onAdStarted={onAdStarted}
-                    onAdFilled={handleAdFilled}
-                    onAdFilledEnd={handleAdFilldEnd}
+                    onAdFilled={onAdFilled}
+                    onAdPlaybackEnd={onAdPlaybackEnd}
                   />
                 </Suspense>
               ) : post.video.type === "complete" ? (

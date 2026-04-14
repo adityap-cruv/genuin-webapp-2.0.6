@@ -1,6 +1,7 @@
 import React, { useCallback, memo, Suspense, lazy } from "react";
 import type { CommunityUserRole } from "@genuin/components/types/post";
 import { useAuthContext } from "@genuin/components/context/auth";
+import { cn } from "@genuin/ui/lib/utils";
 const AuthenticationModal = React.lazy(() =>
   import("../../organisms/authentication-modal/index.js").then((m) => ({
     default: m.AuthenticationModal,
@@ -231,6 +232,8 @@ function Button({
       disabled={buttonDisabled}
       onClick={handleClick}
       {...rest}
+      // when the role is MEMBER, we are adding background color to the button, so we need to override the theme
+      className={cn(role === "MEMBER" && "gencl:bg-secondary-50")}
       theme={
         theme
           ? theme

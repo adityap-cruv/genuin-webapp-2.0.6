@@ -99,6 +99,8 @@ export type SDKElementsType = Record<
   string,
   {
     element: HTMLElement
+    /** The element inside the Shadow DOM that React renders into. Available after Shadow DOM setup. */
+    shadowTarget?: HTMLElement
     config: Partial<SingleEmbedDataConfig>
     status: InitializationStatus
     cleanup?: () => void

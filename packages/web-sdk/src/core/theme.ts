@@ -29,6 +29,14 @@ export class ThemeManager {
       Object.keys(parsedColors).forEach((key) => {
         if (parsedColors[key]) {
           container.style.setProperty(key, parsedColors[key])
+          // Apply CSS custom properties to shadow root container
+          const shadowRoot = container.shadowRoot
+          if (shadowRoot) {
+            const rootContainer = shadowRoot.getElementById(container.id)
+            if (rootContainer) {
+              rootContainer.style.setProperty(key, parsedColors[key])
+            }
+          }
         }
       })
 

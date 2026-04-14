@@ -234,8 +234,13 @@ export function EmbedManagerProvider({
   const goToNextVideo = useCallback(
     (useAutoScroll: boolean = false, forceNextMove: boolean = false) => {
       if (isGridLayout) {
-        // For grid layout, just increment the index
-        setActiveIndex((prevIndex) => prevIndex + 1);
+        // For grid layout, increment the index and loop back to 0 at the end
+        setActiveIndex((prevIndex) => {
+          const gridRow = config.view.gridLayout?.row || 1;
+          const gridCol = config.view.gridLayout?.column || 1;
+          const totalVideos = gridRow * gridCol;
+          return (prevIndex + 1) % totalVideos;
+        });
         return;
       }
 
@@ -330,36 +335,36 @@ export function EmbedManagerProvider({
   }, [swiper, isGridLayout]);
 
   // Handle focus changes via tab navigation
-  useEffect(() => {
-    if (!swiper) return;
+  // useEffect(() => {
+  //   if (!swiper) return;
 
-    const handleFocusIn = (event: FocusEvent) => {
-      const focusedElement = event.target as HTMLElement;
+  //   const handleFocusIn = (event: FocusEvent) => {
+  //     const focusedElement = event.target as HTMLElement;
 
-      // Find the closest slide element
-      const slideElement = focusedElement.closest(
-        ".swiper-slide",
-      ) as HTMLElement;
-      if (!slideElement) return;
+  //     // Find the closest slide element
+  //     const slideElement = focusedElement.closest(
+  //       ".swiper-slide",
+  //     ) as HTMLElement;
+  //     if (!slideElement) return;
 
-      // Get the slide index from the swiper slides array
-      const slides = Array.from(swiper.slides);
-      const slideIndex = slides.indexOf(slideElement);
+  //     // Get the slide index from the swiper slides array
+  //     const slides = Array.from(swiper.slides);
+  //     const slideIndex = slides.indexOf(slideElement);
 
-      if (slideIndex !== -1 && slideIndex !== activeIndex) {
-        // Update active index when focus changes to a different slide
-        setActiveIndex(slideIndex);
-      }
-    };
+  //     if (slideIndex !== -1 && slideIndex !== activeIndex) {
+  //       // Update active index when focus changes to a different slide
+  //       setActiveIndex(slideIndex);
+  //     }
+  //   };
 
-    // Add event listener to the swiper container
-    const swiperContainer = swiper.el;
-    swiperContainer?.addEventListener("focusin", handleFocusIn);
+  //   // Add event listener to the swiper container
+  //   const swiperContainer = swiper.el;
+  //   swiperContainer?.addEventListener("focusin", handleFocusIn);
 
-    return () => {
-      swiperContainer?.removeEventListener("focusin", handleFocusIn);
-    };
-  }, [swiper, activeIndex]);
+  //   return () => {
+  //     swiperContainer?.removeEventListener("focusin", handleFocusIn);
+  //   };
+  // }, [swiper, activeIndex]);
 
   const getSlideVisibilityPercentage = useCallback(
     ({ index, dir }: { index: number; dir: "vertical" | "horizontal" }) => {

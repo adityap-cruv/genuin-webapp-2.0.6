@@ -61,7 +61,7 @@ export function FeedContextProvider({
     (newIndex: number) => {
       const { duration, currentTime } = usePlayerControlStore.getState()
       const playerProgress = Math.round((currentTime / duration) * 100)
-      const videoId = videos[currentIndex].video.id
+      const videoId = videos[currentIndex]?.video.id ?? ''
       setCurrentIndex((currentIndex) => {
         const eventName = newIndex < currentIndex ? 'Swipe Down' : 'Swipe Up'
         const properties = {
@@ -134,7 +134,7 @@ export function FeedContextProvider({
 
     // update IHeart audio for the community.
     if (shouldShowIHeartDemo) {
-      const audioUrl = getAudioUrlForCommunity(videos[currentIndex].community.slug)
+      const audioUrl = getAudioUrlForCommunity(videos[currentIndex]?.community?.slug ?? '')
       if (!audioUrl) return
       setAudioUrl(audioUrl)
     }

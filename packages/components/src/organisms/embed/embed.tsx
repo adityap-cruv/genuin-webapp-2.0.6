@@ -3,6 +3,7 @@ import { useFeed } from "@genuin/components/react-query/api/feed";
 import { EmbedProps } from "./embed.types";
 import { SdkSkeleton, ShimmerSlide } from "./skeleton";
 import { cn } from "@genuin/ui/lib/utils";
+import type { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 
 import {
   useMemo,
@@ -93,6 +94,125 @@ const EmbedHeader = lazy(() =>
 const EmbedItem = lazy(() =>
   import("./embed-tile-item.js").then((m) => ({ default: m.EmbedItem })),
 );
+
+/** Ad configs used to inject between videos in expand-view only. */
+const EXPAND_VIEW_AD_CONFIGS = [
+  {
+    videoSource:
+      "https://vz-8bbc7bbf-a1e.b-cdn.net/07283c40-a199-410c-9d57-6b070d35ab33/play_360p.mp4",
+    adUrl: "https://media.begenuin.com/ad-sdk/test-creatives/finance.xml",
+  },
+  {
+    videoSource:
+      "https://vz-8bbc7bbf-a1e.b-cdn.net/3aa3cdc7-1254-425d-93c0-2d060f19322e/play_360p.mp4",
+    adUrl:
+      "https://media.begenuin.com/ad-sdk/test-creatives/consumerserivce.xml",
+  },
+  {
+    videoSource:
+      "https://vz-8bbc7bbf-a1e.b-cdn.net/4f524c6b-153c-4e8e-8630-6b866f937a9a/play_360p.mp4",
+    adUrl:
+      "https://media.begenuin.com/ad-sdk/test-creatives/foodandgroceryads.xml",
+  },
+  {
+    videoSource:
+      "https://vz-8bbc7bbf-a1e.b-cdn.net/684a999f-8e14-4399-93e8-c0bc67f9d51c/play_360p.mp4",
+    adUrl: "https://media.begenuin.com/ad-sdk/test-creatives/soda.xml",
+  },
+] as const;
+
+/** Creates a synthetic ad feed item for injection between videos in expand-view. */
+function createInjectableAdItem(
+  videoSource: string,
+  adUrl: string,
+  idx: number,
+): PostDetailsType {
+  return {
+    type: "ads",
+    adTagObject: {
+      display_ad: null,
+      native_ad: null,
+      video_ad: {
+        url: adUrl,
+        ads_url: adUrl,
+        // platform: "aniview",
+        cpm: 0.001,
+        contentVideo: {
+          url: videoSource,
+          autoplay: true,
+          loop: true,
+          muted: true,
+          objectFit: "contain",
+        },
+      },
+      order: ["video_ad", "display_ad", "house_ad"],
+    },
+    video: {
+      id: `injected-ad-${idx}`,
+      type: "video",
+      source: videoSource,
+      adUrl,
+      adsPlatform: "aniview",
+      createdAt: null,
+      commentCount: 0,
+      viewCount: 0,
+      shareUrl: "",
+      attachedLink: null,
+      isSparked: false,
+      isWatched: false,
+      sparkCount: 0,
+      thumbnail: "",
+      thumbnailM: null,
+      description: null,
+      descritptionText: null,
+      slug: `injected-ad-${idx}`,
+      linkoutId: null,
+      clickableUrl: null,
+      linkouts: [],
+      isPinned: false,
+      thumbnailSprite: null,
+      cardLayoutId: null,
+      videoLayoutId: null,
+      duration: null,
+      attributes: null,
+      placement_card_layout_id: null,
+      placement_video_layout_id: null,
+      placement_card_section_layout_id: null,
+    },
+  } as PostDetailsType;
+}
+
+/**
+ * Interleaves synthetic ad items between every real video item.
+ * Ads are not inserted after existing ad items, overlay slides, or end cards.
+ * The ad URL is selected randomly from EXPAND_VIEW_AD_CONFIGS on each call.
+ */
+function injectAdsForExpandView(feed: PostDetailsType[]): PostDetailsType[] {
+  const result: PostDetailsType[] = [];
+  let adCounter = 0;
+
+  for (let i = 0; i < feed.length; i++) {
+    const item = feed[i]!;
+    result.push(item);
+
+    const isAlreadyAd = (item as { type?: string }).type === "ads";
+    const isSpecialSlide =
+      item.video?.type === "complete" || item.video?.type === "overlay";
+
+    if (!isAlreadyAd && !isSpecialSlide) {
+      const config =
+        EXPAND_VIEW_AD_CONFIGS[
+          Math.floor(Math.random() * EXPAND_VIEW_AD_CONFIGS.length)
+        ]!;
+      result.push(
+        createInjectableAdItem(config.videoSource, config.adUrl, adCounter),
+      );
+      adCounter++;
+    }
+  }
+
+  return result;
+}
 
 const embedVariants = cva("gencl:rounded-md gencl:overflow-auto", {
   variants: {
@@ -230,6 +350,13 @@ export function Embed({
       ? videos.filter((post) => post.video?.type !== "overlay")
       : videos;
   }, [videos, isDesktop]);
+
+  // Expand-view feed: real videos with synthetic ads interleaved between each video.
+  // Normal embed view uses `filteredPost` unchanged (no injected ads).
+  const expandViewFeed = useMemo(
+    () => injectAdsForExpandView(filteredPost),
+    [filteredPost],
+  );
 
   // Extract video titles from postDetails
   const sectionList = useMemo(
@@ -656,7 +783,10 @@ export function Embed({
                 spaceBetweenVideos={spaceBetweenVideos}
                 slidesPerView={slidesPerView}
                 isIheartLayout={isIheartLayout}
-                allowTouchMove={!renderOnlySingleVideoInEmbed}
+                allowTouchMove={
+                  !renderOnlySingleVideoInEmbed &&
+                  !config.view.expandOnInteraction
+                }
                 onSlideChange={(swiperInstance: any) => {
                   // Early safety check
                   if (!swiperInstance) return;
@@ -668,15 +798,6 @@ export function Embed({
                     setSlidesOffsetBefore(48);
                   }
                   onFeedSlideChange(swiperInstance);
-
-                  // Open expand view on swipe when expandOnInteraction is enabled
-                  if (
-                    config.view.expandOnInteraction &&
-                    config.expandViewConfig.enable &&
-                    embedEventBus.getContext().activePlayerType === "embed"
-                  ) {
-                    changeActivePlayerType("expand-view");
-                  }
                 }}
                 onReachBeginning={() => {
                   setSlidesOffsetBefore(0);
@@ -765,7 +886,7 @@ export function Embed({
       </EmbedManagerProvider>
       {config.expandViewConfig.enable && (
         <ExpandViewLoader
-          videos={filteredPost}
+          videos={expandViewFeed}
           isSectioned={isSectioned}
           pageSession={feedData?.pages[0]?.pageSession}
           hasNextPage={!!hasNextPage}

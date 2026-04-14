@@ -150,6 +150,15 @@ export const adTagObjectSchema = z.object({
       url: z.string(),
       cpm: z.number(),
       platform: z.string(),
+      contentVideo: z
+        .object({
+          url: z.string(),
+          autoplay: z.boolean(),
+          loop: z.boolean(),
+          muted: z.boolean(),
+          objectFit: z.string(),
+        })
+        .nullish(),
     })
     .nullish(),
   order: z.array(z.string()).nullish(),

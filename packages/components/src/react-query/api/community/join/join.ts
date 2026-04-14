@@ -15,7 +15,11 @@ async function requestCommunity(communityId: string | undefined, axiosInstance: 
     .post(API_PATHS.COMMUNITY_JOIN_REQUEST, {
       community_id: communityId,
     })
-    .then(() => {
+    .then((res) => {
+      const status = res.data?.data?.status;
+      if (status === "joined") {
+        return "MEMBER" as CommunityUserRole;
+      }      
       return "REQUESTED" as CommunityUserRole;
     })
     .catch(() => {

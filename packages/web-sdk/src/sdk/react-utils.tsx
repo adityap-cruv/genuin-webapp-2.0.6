@@ -11,7 +11,6 @@ import { generateExpandViewSkeletonHTML } from '../utils/skeleton-html'
 import {
   cleanupOverlayShadowHost,
   ensureStylesInShadowRoot,
-  setupMainShadowDOM,
 } from '@genuin/components/molecules/root-portal/shadow-root/shadow-dom.utils'
 
 import { useDeviceDetectMediaQuery } from '@genuin/components/hooks/use-devide-detect-media-query'
@@ -161,30 +160,45 @@ export function loadLoadingView(
 // Expand view function
 export function loadExpandView(
   container: HTMLElement,
-  theme?: 'dark' | 'light'
+  theme?: 'dark' | 'light',
+  /**
+   * The shadow root to render the expand loader inside.
+   * When provided (always the case after the Shadow DOM refactor) the loader div is
+   * appended to the shadow root instead of document.body, so it is scoped to the embed.
+   */
+  shadowRoot?: ShadowRoot | null
 ): void {
   if (container.getAttribute('data-web-sdk-nested') === 'true') {
     return
   }
 
-  // Check if loader div already exists, if not, create it
-  let loaderDiv = document.getElementById(
-    'gen-sdk-expand-view-loader'
+  const loaderId = 'gen-sdk-expand-view-loader'
+
+  // Prefer shadow-root-scoped lookup when a shadow root is provided
+  let loaderDiv = (
+    shadowRoot
+      ? (shadowRoot.getElementById(loaderId) as HTMLElement | null)
+      : document.getElementById(loaderId)
   ) as HTMLElement | null
 
   if (!loaderDiv) {
     loaderDiv = document.createElement('div')
-    loaderDiv.id = 'gen-sdk-expand-view-loader'
-    loaderDiv.classList.add('loader') // optional class
-    loaderDiv.classList.add('gen-sdk-class') // optional class
-    loaderDiv.classList.add('gen-sdk-root-portal') // optional class
+    loaderDiv.id = loaderId
+    loaderDiv.classList.add('loader')
+    loaderDiv.classList.add('gen-sdk-class')
+    loaderDiv.classList.add('gen-sdk-root-portal')
     loaderDiv.style.position = 'fixed'
     loaderDiv.style.zIndex = '30'
     loaderDiv.style.top = '0'
     loaderDiv.style.left = '0'
     loaderDiv.style.width = '100%'
     loaderDiv.style.height = '100%'
-    document.body.appendChild(loaderDiv)
+
+    if (shadowRoot) {
+      shadowRoot.appendChild(loaderDiv)
+    } else {
+      document.body.appendChild(loaderDiv)
+    }
   }
 
   // Create a React root inside the loader div
@@ -197,12 +211,12 @@ export function loadExpandView(
     })()
 
   /*
-  Remove or unmount the loader div when the "sdk:expand-view-loaded" event is emitted,
+  Remove or unmount the loader div when the SDK_EXPAND_VIEW_CHANGED event is emitted,
   indicating that the expand view has successfully loaded.
   */
   const cleanup = () => {
     if (loaderDiv) {
-      // Add a small delay before cleanup to ensure smooth transition
+      // Small delay before cleanup to ensure smooth transition
       setTimeout(() => {
         root.unmount()
         containerRootMap.delete(loaderDiv!)
@@ -215,10 +229,8 @@ export function loadExpandView(
   const unsubscribe = window.genuin?.onInternal?.(
     SDKEventType.SDK_EXPAND_VIEW_CHANGED,
     (payload: any) => {
-      // If payload is opened true, we need to clean up the loader
       if (payload.payload) {
         cleanup()
-        // Clean up the event listener
         if (typeof unsubscribe === 'function') {
           unsubscribe()
         }
@@ -226,7 +238,7 @@ export function loadExpandView(
     }
   )
 
-  // Use HTML/CSS skeleton instead of React for faster initial load
+  // Use HTML/CSS skeleton for fast initial render — no React needed here
   loaderDiv.innerHTML = generateExpandViewSkeletonHTML({ theme })
 }
 
@@ -260,6 +272,7 @@ function ExpandViewSkeleton({ theme }: { theme?: 'dark' | 'light' }) {
 
 export async function loadNewEmbed({
   container,
+  shadowTarget,
   embedData,
   brandDetails,
   config,
@@ -268,6 +281,8 @@ export async function loadNewEmbed({
   isOnlyForExpand,
 }: {
   container: HTMLElement
+  /** The element inside the already-created Shadow DOM to mount React into. */
+  shadowTarget: HTMLElement
   embedData: EmbedDataType
   brandDetails: BrandDetailsConfigType
   config: Partial<SingleEmbedDataConfig>
@@ -286,24 +301,12 @@ export async function loadNewEmbed({
     containerRootMap.delete(container)
   }
 
-  // enable the shadow dom for the brand Id : 2477 for the temporary bases
-  // if (brandDetails.brand_id === 2477 || brandDetails.brand_id === 3099) {
-  //   config.useShadowDOM = true
-  // }
+  // useShadowDOM is already resolved to its final boolean value by genuin-sdk.ts
+  // (default true, overridable via configByUser.useShadowDOM = false).
+  // shadowTarget is the React mount point: the shadow root inner element when
+  // Shadow DOM is on, or the host element itself when it is off.
 
-  let targetContainer = container
-
-  // TODO: This config flag should be removed in future once we have verified that shadow DOM works well with all use cases. For now, it can be enabled on demand for testing and specific brands.
-  config.useShadowDOM = true
-
-  if (config.useShadowDOM) {
-    targetContainer = await setupMainShadowDOM(container)
-  }
-
-  const ownsShadowHost = targetContainer !== container
-  containerOwnsHostMap.set(container, ownsShadowHost)
-
-  const root = createRoot(targetContainer)
+  const root = createRoot(shadowTarget)
   containerRootMap.set(container, root)
 
   // Determine brand layout type
@@ -334,6 +337,20 @@ export async function loadNewEmbed({
     )
   }
 
+  // Remove the HTML skeleton that was injected into the shadow root before React mounted.
+  // Called once by EmbedRoot on its first render via the onContentReady prop.
+  const handleContentReady = () => {
+    const shadowRoot = container.shadowRoot
+    if (!shadowRoot) return
+    const skeleton = shadowRoot.querySelector('.gen-sdk-skeleton-container')
+    if (skeleton) {
+      skeleton.remove()
+    }
+    window.genuin?.emitInternal?.(SDKEventType.SDK_EMBED_CONTENT_READY, {
+      instanceId: container.getAttribute('data-instance-id'),
+    })
+  }
+
   const rootToRender: ReactNode = (
     <Suspense
       fallback={
@@ -343,7 +360,7 @@ export async function loadNewEmbed({
         />
       }>
       <LazyEmbedRoot
-        targetContainer={targetContainer}
+        targetContainer={shadowTarget}
         container={container}
         embedData={embedData}
         brandDetails={brandDetails}
@@ -352,6 +369,7 @@ export async function loadNewEmbed({
         wasLazilyLoaded={wasLazilyLoaded}
         brandLayoutType={brandLayoutType}
         isOnlyForExpand={isOnlyForExpand}
+        onContentReady={handleContentReady}
       />
     </Suspense>
   )
@@ -378,13 +396,11 @@ export async function loadNewEmbed({
     }
 
     const rootNode = container.getRootNode()
-    if (rootNode instanceof ShadowRoot) {
-      if (ownsShadowHost) {
-        const host = rootNode.host as HTMLElement
-        host.remove()
-      } else {
-        container.remove()
-      }
+    if (
+      rootNode instanceof ShadowRoot &&
+      (rootNode as ShadowRoot).host.hasAttribute('data-genuin-host')
+    ) {
+      ;(rootNode as ShadowRoot).host.remove()
     } else {
       container.remove()
     }

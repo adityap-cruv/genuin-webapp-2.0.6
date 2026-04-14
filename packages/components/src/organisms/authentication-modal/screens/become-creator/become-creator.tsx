@@ -7,6 +7,7 @@ import { ComponentProps, useCallback, useEffect } from "react";
 import { Button } from "@genuin/ui/components/button";
 import { DialogClose } from "@genuin/ui/components/dialog";
 import {
+  parseBecomeCreatorStatus,
   setQueryDataBecomeCreator,
   useCbRequestMutation,
   useKsCbStatus,
@@ -22,13 +23,13 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
-import { Pagination, Mousewheel, Keyboard, Autoplay } from "swiper/modules";
+import { Pagination, Autoplay,Keyboard } from "swiper/modules";
 
 type BecomeCreatorProps = ComponentProps<"div">;
 
 export function BecomeCreator({ ...props }: BecomeCreatorProps) {
   const { brandDetails } = useBaseContext();
-  const { user, updateUser } = useAuthContext();
+  const { user, updateUser, updateLocalStorageUserData } = useAuthContext();
   const { data: cbStatus, isLoading: isCbStatusLoading } = useKsCbStatus({
     id: user?.id || "",
   });
@@ -37,11 +38,15 @@ export function BecomeCreator({ ...props }: BecomeCreatorProps) {
   const { mutate: requestCbMutate, isPending: isRequestMutating } =
     useCbRequestMutation({
       onSuccess: (res) => {
-        if (res.isRequestSent) {
-          updateUser({
-            ...user,
-            ksCbRequestStatus: "Requested",
-          });
+        if (res.isRequestSent && res.data) {
+          const numericalStatus = res.data.cb_request_status;
+          const parsedStatus = parseBecomeCreatorStatus(numericalStatus);
+          updateUser({ksCbRequestStatus: parsedStatus});
+          // Sync the updated status to localStorage so it persists across page refreshes.
+          // `updateUser` only updates the in-memory React state; without this, the
+          // cached user data in localStorage would return the stale status on reload.
+          updateLocalStorageUserData({ksCbRequestStatus: parsedStatus});
+          
           setQueryDataBecomeCreator(user?.id || "");
           track(EventName.BECOME_CREATOR);
         }
@@ -102,12 +107,11 @@ export function BecomeCreator({ ...props }: BecomeCreatorProps) {
   const slides = BecomeCreatorData(brandDetails.name);
 
   return (
-    <div className="gencl:text-center gencl:w-full gencl:h-fit" {...props}>
+    <div className="gencl:text-center gencl:w-full gencl:h-fit gencl:overflow-x-hidden" {...props}>
       <Swiper
-        mousewheel={true}
         keyboard={true}
         touchStartPreventDefault={false}
-        modules={[Autoplay, Pagination, Mousewheel, Keyboard]}
+        modules={[Autoplay, Pagination,Keyboard]}
         autoplay={{
           delay: 2500,
           pauseOnMouseEnter: true,
@@ -115,7 +119,7 @@ export function BecomeCreator({ ...props }: BecomeCreatorProps) {
         pagination={{ clickable: true }}
         spaceBetween={24}
         slidesPerView={1}
-        className="gencl:w-full gencl:h-fit gencl:mt-4"
+        className="gencl:w-full gencl:h-fit gencl:mt-4 [touch-action:pan-y]"
       >
         {slides.map((data: BecomeCreatorDataItem, index: number) => {
           const Icon = data.src;

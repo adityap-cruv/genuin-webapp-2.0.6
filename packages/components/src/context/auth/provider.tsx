@@ -66,6 +66,22 @@ type AuthProviderPropsType = {
   onUpdateUser: (newUser: Partial<AuthUser>) => Promise<void> | void;
 };
 
+function updateLocalStorageUserData(updates: Partial<AuthUser>) {
+  const existingData = localStorage.getItem("genuin-user-data");
+  if (existingData) {
+    try {
+      const parsedData = JSON.parse(existingData);
+      const newData = {
+        ...parsedData,
+        ...updates,
+      };
+      localStorage.setItem("genuin-user-data", JSON.stringify(newData));
+    } catch (error) {
+      console.error("Error parsing user data from localStorage:", error);
+    }
+  }
+}
+
 /**
  * AuthProvider manages authentication state and provides it to child components via context.
  * It handles sign-in, sign-out, user updates, and token management.
@@ -246,6 +262,7 @@ export function AuthProvider({
     [onSignOut],
   );
 
+  // this is used for updating the user state in the embed when the video is watched and the user is authenticated. We need to update the user state in the embed because the video watched status is stored in the user object and we want to reflect that change in the embed without requiring a page refresh.
   const updateUser = useCallback(
     async (newUser: Partial<AuthUser>) => {
       try {
@@ -406,6 +423,7 @@ export function AuthProvider({
         signIn,
         signOut,
         updateUser,
+        updateLocalStorageUserData,
         handleAuthCallback,
       }}
     >

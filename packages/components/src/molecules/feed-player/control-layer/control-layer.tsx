@@ -8,16 +8,16 @@ import { useDeviceDetection } from "@genuin/components/hooks/use-device-detectio
 
 // const Ad = lazy(() => import("./ad.js").then((m) => ({ default: m.default })));
 const Default = lazy(() =>
-  import("./default.js").then((m) => ({ default: m.Default }))
+  import("./default.js").then((m) => ({ default: m.Default })),
 );
 const Embed = lazy(() =>
-  import("./embed.js").then((m) => ({ default: m.Embed }))
+  import("./embed.js").then((m) => ({ default: m.Embed })),
 );
 const Placement = lazy(() =>
-  import("./placement.js").then((m) => ({ default: m.Placement }))
+  import("./placement.js").then((m) => ({ default: m.Placement })),
 );
 const EmbedPip = lazy(() =>
-  import("./embed-pip.js").then((m) => ({ default: m.EmbedPip }))
+  import("./embed-pip.js").then((m) => ({ default: m.EmbedPip })),
 );
 
 export const controlLayerVariant = cva(
@@ -34,14 +34,14 @@ export const controlLayerVariant = cva(
     defaultVariants: {
       variant: "default",
     },
-  }
+  },
 );
 
 /**
  * This control layer is only inteded to use for feed player.
  */
 export const ControlLayer = memo(function ControlLayer(
-  props: ControlLayerPropsType
+  props: ControlLayerPropsType,
 ) {
   const { isAdPlaying } = usePlayerContext();
   const { isIOS, isMac } = useDeviceDetection();
@@ -58,10 +58,11 @@ export const ControlLayer = memo(function ControlLayer(
         }
       : {};
 
-  if (isAdPlaying) {
-    return;
-    // return <Ad {...props} />;
-  }
+  // TODO - We need to handle the ad state properly here. Currently, we are just not rendering the control layer when an ad is playing. We might want to render a different control layer for ads in the future.
+  // if (isAdPlaying) {
+  //   return;
+  //   // return <Ad {...props} />;
+  // }
 
   /**
    * Render the default control layer.

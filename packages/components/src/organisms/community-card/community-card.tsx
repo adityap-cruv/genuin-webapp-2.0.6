@@ -201,11 +201,11 @@ function CommunityCardHeader({
     <div className={communityCardHeaderVariants({ variant })}>
       {community.banner ? (
         <Image
-          className="gencl:w-full gencl:h-15 gencl:object-cover"
+          className="gencl:w-full gencl:h-full gencl:object-cover"
           src={community.banner}
         />
       ) : (
-        <div className="gencl:w-full gencl:h-15 gencl:bg-secondary-500" />
+        <div className="gencl:w-full gencl:h-full gencl:bg-secondary-500" />
       )}
     </div>
   );

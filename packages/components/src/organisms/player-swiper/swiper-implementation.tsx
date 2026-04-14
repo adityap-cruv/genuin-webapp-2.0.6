@@ -74,6 +74,7 @@ export function SwiperImplementation({
   className,
   slidesPerView: slidesPerViewProp,
   spaceBetween: spaceBetweenProp,
+  onSwiper,
   ...restProps
 }: SwiperImplementationProps) {
   // const { height } = useFeedVideoSizeBox();
@@ -103,6 +104,7 @@ export function SwiperImplementation({
       if (swiperRef.current) {
         swiperRef.current.allowSlideNext = !isOpen;
         swiperRef.current.allowSlidePrev = !isOpen;
+        swiperRef.current.allowTouchMove = !isOpen;
       }
     };
     const unsubscribe = dialogManager.subscribe(updateModalState);
@@ -113,6 +115,24 @@ export function SwiperImplementation({
     };
   }, []);
 
+  // Don't know why in new version we have to do this.
+  // TODO: perform detailed R&D on it.
+  useEffect(() => {
+    const swiper = swiperRef.current;
+    if (!swiper) return;
+    if (!disableScroll && !disable) {
+      swiper.enable();
+      swiper.allowSlideNext = true;
+      swiper.allowSlidPrev = true;
+      swiper.allowTouchMove = true;
+    } else {
+      swiper.disable();
+      swiper.allowSlideNext = false;
+      swiper.allowSlidPrev = false;
+      swiper.allowTouchMove = false;
+    }
+  }, [disableScroll, disable]);
+
   return (
     <Suspense
       fallback={
@@ -122,13 +142,16 @@ export function SwiperImplementation({
       }
     >
       <SwiperWithModules
-        ref={swiperRef}
+        // ref={swiperRef}
         onSwiper={(swiper: SwiperType) => {
+          onSwiper?.(swiper);
           swiperRef.current = swiper;
         }}
         className={cn("gencl:h-full gencl:w-full", className)}
-        enabled={!disableScroll}
-        allowTouchMove={!disableScroll}
+        enabled={!disableScroll && !disable}
+        allowTouchMove={!disableScroll && !disable}
+        allowSlideNext={!disable && !disableScroll}
+        allowSlidePrev={!disable && !disableScroll}
         spaceBetween={swiperSpaceBetween}
         direction={direction}
         slidesPerView={swiperSlidesPerView}

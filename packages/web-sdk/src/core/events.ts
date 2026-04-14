@@ -20,6 +20,12 @@ export enum SDKEventType {
   SDK_EXPAND_EMBED = 'sdk:expandEmbed',
   SDK_COLLAPSE_EMBED = 'sdk:collapseEmbed',
   SDK_CLEAR_LOGIN_ACTION = 'sdk:clearLoginAction',
+  /**
+   * Emitted when the embed's actual React content has mounted for the first time,
+   * signalling that skeleton loaders inside the Shadow DOM should be removed.
+   * Payload: { instanceId: string }
+   */
+  SDK_EMBED_CONTENT_READY = 'sdk:embedContentReady',
 }
 
 export interface SDKEvent {

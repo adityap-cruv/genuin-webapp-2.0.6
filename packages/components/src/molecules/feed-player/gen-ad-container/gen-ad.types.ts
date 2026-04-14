@@ -17,6 +17,14 @@ export type GenAdNativeConfig = {
   adUnitPath: string;
 };
 
+export type ContentVideoConfig = {
+  url: string;
+  autoplay: boolean;
+  loop: boolean;
+  muted: boolean;
+  objectFit: string;
+};
+
 export type GenAdVideoConfig = {
   vastUrl: string;
   audioLayout?: string;
@@ -25,6 +33,7 @@ export type GenAdVideoConfig = {
   width?: number;
   height?: number;
   platform: string;
+  contentVideo?: ContentVideoConfig;
 };
 
 export type GenAdConfig = {
@@ -58,4 +67,6 @@ export type GenAdContainerProps = {
   onAdCompleted?: () => void;
   /** Advances the feed to the next video after the ad ends. */
   moveToNextVideo: () => void;
+  /** Whether the video is muted. Used to determine initial audio state for video ads. */
+  muted?: boolean;
 };

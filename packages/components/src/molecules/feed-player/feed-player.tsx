@@ -74,7 +74,7 @@ type FeedPlayerProps = Omit<
    */
   onAdStateChange?: (isFilled: boolean) => void;
   onAdFilled?: (type: string) => void;
-  onAdFilldEnd?: () => void;
+  onAdPlaybackEnd?: () => void;
   videoType?: VideoTypes;
   adsPlatform?: string | null;
   isSponsored?: boolean;
@@ -106,7 +106,7 @@ export const FeedPlayer = memo(function FeedPlayer({
   onPlay,
   onPause,
   onLoadStart,
-  onAdFilldEnd,
+  onAdPlaybackEnd,
   onAdFilled,
   ...props
 }: FeedPlayerProps) {
@@ -268,6 +268,12 @@ export const FeedPlayer = memo(function FeedPlayer({
     [mute, unmute, id],
   );
 
+  useEffect(() => {
+    if (!isActive && isAdFilled) {
+      setIsAdFilled(false);
+    }
+  }, [isActive, isAdFilled]);
+
   const handleTimeUpdate = useCallback(
     (event: any) => {
       onTimeUpdate?.(event);
@@ -420,10 +426,20 @@ export const FeedPlayer = memo(function FeedPlayer({
         cta_name: event?.title,
         video_type: videoType,
       });
+
+      onAdFilled?.("video");
+
       // Handle ad started event if needed
       updateAdInfo(true, event);
     },
-    [updateAdInfo, track, adAnalyticsData, buildAdEventData, videoId],
+    [
+      updateAdInfo,
+      track,
+      adAnalyticsData,
+      onAdFilled,
+      buildAdEventData,
+      videoId,
+    ],
   );
 
   const handleAdCompleted = useCallback(
@@ -432,16 +448,18 @@ export const FeedPlayer = memo(function FeedPlayer({
         ...adAnalyticsData,
         ...buildAdEventData(event),
       });
+      onAdPlaybackEnd?.();
       // Handle ad ended event if needed
       updateAdInfo(false, event);
     },
-    [updateAdInfo, track, adAnalyticsData, buildAdEventData],
+    [updateAdInfo, track, adAnalyticsData, buildAdEventData, onAdPlaybackEnd],
   );
 
   const handleAdSkipped = useCallback(
     (event: any) => {
       // Handle ad skipped event if needed
       updateAdInfo(false, event);
+      onAdPlaybackEnd?.();
       track(EventName.AD_SKIPPED, {
         ...adAnalyticsData,
         ...buildAdEventData(event),
@@ -575,11 +593,12 @@ export const FeedPlayer = memo(function FeedPlayer({
 
   // This onClick handler prevents the expanded view from opening when ads are present.
   return (
-    <div className="gencl:h-full" onClick={(e) => e.stopPropagation()}>
+    <>
       {resolvedAdConfig && (
         <Suspense fallback={null}>
           <GenAdContainer
             config={resolvedAdConfig}
+            muted={muted}
             isActive={isActive ?? false}
             isVisible={isAdFilled}
             moveToNextVideo={moveToNextVideo}
@@ -589,14 +608,28 @@ export const FeedPlayer = memo(function FeedPlayer({
               setIsAdFilled(true);
               onAdStateChange?.(true);
               onAdFilled?.(provider);
+              updateAdInfo(true, {
+                adId: provider,
+                url: null,
+                title: null,
+                totalAds: 1,
+                currentAdIndex: 1,
+              });
             }}
             onAdFillFailed={() => {
               setIsAdFilled(false);
               setWaterfallFailed(true);
               onAdStateChange?.(false);
+              updateAdInfo(false, {
+                adId: null,
+                url: null,
+                title: null,
+                totalAds: 0,
+                currentAdIndex: 0,
+              });
             }}
             onAdCompleted={() => {
-              onAdFilldEnd?.();
+              onAdPlaybackEnd?.();
             }}
           />
         </Suspense>
@@ -656,6 +689,6 @@ export const FeedPlayer = memo(function FeedPlayer({
           {...props}
         />
       )}
-    </div>
+    </>
   );
 });

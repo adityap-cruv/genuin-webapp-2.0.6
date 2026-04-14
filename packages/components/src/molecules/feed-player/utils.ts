@@ -42,9 +42,10 @@ export const getVideoPlayerConfigs = (
     autoplay = false;
   }
 
-  // if type is 3 than autoplay video after auto_play_after
+  // if type is 3 than autoplay video after auto_play_after 
   if (webConfigs?.video_autoplay.type === 3) {
-    autoplayAfter = webConfigs.video_autoplay.auto_play_after;
+    autoplay = false;  // Don't play immediately
+    autoplayAfter = webConfigs.video_autoplay.auto_play_after; 
   }
 
   const unmuteVideo =

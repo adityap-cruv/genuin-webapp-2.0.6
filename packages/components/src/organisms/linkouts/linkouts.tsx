@@ -102,7 +102,8 @@ export function Linkouts({
     enabled: !initialLinkouts && !!linkoutId,
     staleTime: 1000 * 60, // 1 minute
   });
-  const linkouts = initialLinkouts || fetchedLinkouts;
+  const linkouts = initialLinkouts ?? fetchedLinkouts;
+ 
   const { track, EventName } = useAnalytics();
   const [isVisible, setIsVisible] = useState(showImmediately);
   const [shouldRender, setShouldRender] = useState(
@@ -128,7 +129,6 @@ export function Linkouts({
       setIsVisible(true);
 
       if (linkouts && linkouts.length > 0) {
-        console.log({ analyticsEventData });
         track(EventName.LINKOUTS_VIEWED, {
           ...analyticsEventData,
           linkoutId,
@@ -146,7 +146,6 @@ export function Linkouts({
         setIsVisible(true);
 
         if (linkouts && linkouts.length > 0) {
-          console.log({ analyticsEventData });
           track(EventName.LINKOUTS_VIEWED, {
             ...analyticsEventData,
             linkoutId,

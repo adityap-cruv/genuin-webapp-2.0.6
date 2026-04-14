@@ -1053,7 +1053,6 @@ class MainResolver implements MainResolverConfig {
       imp: this.impressionResolver.keyParamMapping.imp,
       regs: this.deviceResolver.keyParamMapping.regs,
     };
-    console.log("All mappings for URL update:", { imp: allMappings.imp });
     traverseJson(allMappings);
     return urlObj.toString();
   }

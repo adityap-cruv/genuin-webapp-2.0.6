@@ -79,7 +79,7 @@ export function useEmbedConfigs() {
           if (!isMobile && !isDesktop) {
             return { column: 2, row: 4, auto_adjust: autoAdjust };
           }
-          return { column: 1, row: 6, auto_adjust: autoAdjust };
+          return { column: 2, row: 3, auto_adjust: autoAdjust };
         }
         return embedData?.grid_layout || undefined;
       })(),

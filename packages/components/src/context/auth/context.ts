@@ -21,6 +21,7 @@ type AuthContextType = {
   signIn: (user: AuthUser) => void;
   signOut: (redirectPath: string) => void;
   updateUser: (user: Partial<AuthUser>) => void;
+  updateLocalStorageUserData: (updates: Partial<AuthUser>) => void;
   /**
    * Handles authentication callback logic based on environment
    * @param authCallbackData - Data to pass to external auth handler

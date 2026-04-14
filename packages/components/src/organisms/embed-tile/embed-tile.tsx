@@ -19,7 +19,7 @@ import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema"
 import {
   IHeartEmbedBar,
   IFRAME_HEIGHT,
-} from '@genuin/components/organisms/player-swiper/iheart/iheart-embed-bar';
+} from "@genuin/components/organisms/player-swiper/iheart/iheart-embed-bar";
 import { useEmbedContext } from "@genuin/components/context/embed";
 import { DynamicReactionIcon } from "@genuin/components/molecules/reaction-button";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
@@ -134,40 +134,40 @@ export function EmbedTile({
   // Use the structured config object
   const config = useEmbedConfigs();
   const shouldShowMiddlewareOverlay = isMiddlewareOverlayEnabled({
-    videoLayoutId: postDetails.video.placement_video_layout_id ?? 0,
-    cardLayoutId: postDetails.video.placement_card_layout_id ?? 0,
+    videoLayoutId: postDetails.video?.placement_video_layout_id ?? 0,
+    cardLayoutId: postDetails.video?.placement_card_layout_id ?? 0,
   });
 
   const listenLiveButtonInfo = useMemo(
     () => ({
-      episode: postDetails.video.attributes?.episode_id
-        ? Number(postDetails.video.attributes.episode_id)
+      episode: postDetails.video?.attributes?.episode_id
+        ? Number(postDetails.video?.attributes.episode_id)
         : undefined,
-      podcast: postDetails.video.attributes?.podcast_id
-        ? Number(postDetails.video.attributes.podcast_id)
+      podcast: postDetails.video?.attributes?.podcast_id
+        ? Number(postDetails.video?.attributes.podcast_id)
         : undefined,
-      station: postDetails.video.attributes?.station_id
-        ? Number(postDetails.video.attributes.station_id)
+      station: postDetails.video?.attributes?.station_id
+        ? Number(postDetails.video?.attributes.station_id)
         : undefined,
-      type: postDetails.video.attributes?.type,
+      type: postDetails.video?.attributes?.type,
     }),
     [
-      postDetails.video.attributes?.episode_id,
-      postDetails.video.attributes?.podcast_id,
-      postDetails.video.attributes?.station_id,
-      postDetails.video.attributes?.type,
+      postDetails.video?.attributes?.episode_id,
+      postDetails.video?.attributes?.podcast_id,
+      postDetails.video?.attributes?.station_id,
+      postDetails.video?.attributes?.type,
     ],
   );
   return (
     <>
-      {shouldShowMiddlewareOverlay && postDetails.video.type === "overlay" ? (
+      {shouldShowMiddlewareOverlay && postDetails.video?.type === "overlay" ? (
         <WatchBoundaryOverlay
           info={listenLiveButtonInfo}
           videoDetails={postDetails.video}
           variant="overlay"
         />
       ) : shouldShowMiddlewareOverlay &&
-        postDetails.video.type === "complete" ? (
+        postDetails.video?.type === "complete" ? (
         <Suspense fallback={null}>
           <WatchBoundaryOverlay
             info={listenLiveButtonInfo}
@@ -191,8 +191,8 @@ export function EmbedTile({
           <PlayerProvider
             index={index}
             isActive={isActive}
-            videoId={postDetails.video.id}
-            videoUrl={postDetails.video.source}
+            videoId={postDetails.video?.id ?? ""}
+            videoUrl={postDetails.video?.source ?? ""}
             showExpandView={value}
             toggleExpandView={toggle}
             onPlayerIterationEnd={onPlayerIterationEnd}
@@ -200,11 +200,11 @@ export function EmbedTile({
             explicitAutoPlay={config.video.videoAutoplay && isActive}
             explicitLoop={config.video.videoLoop && isActive}
             updateActiveIndex={updateActiveIndex}
-            videoDescription={postDetails.video.descritptionText}
+            videoDescription={postDetails.video?.descritptionText}
             totalVideos={totalVideos}
             swiper={swiper}
             activeIndex={activeIndex}
-            videoType={postDetails.video.videoType ?? VideoTypes.Content}
+            videoType={postDetails.video?.videoType ?? VideoTypes.Content}
           >
             <EmbedPlayer
               postDetails={postDetails}
@@ -253,7 +253,7 @@ function EmbedPlayer({
   const handleClickOnEmbedTile = useCallback(() => {
     // Emit SDK event for video click
     SDKEventEmitter.emit(SDKEventName.VIDEO_CLICKED, {
-      videoId: postDetails.video.id,
+      videoId: postDetails.video?.id ?? "",
     });
 
     const isBrandPeacock = embedData.brandDetails?.brand_id === 3182;
@@ -263,7 +263,7 @@ function EmbedPlayer({
       if (nativeVideoHandler) {
         nativeVideoHandler.postMessage({
           source: "carousel",
-          videoId: postDetails.video.id,
+          videoId: postDetails.video?.id,
         });
       }
     }
@@ -273,7 +273,7 @@ function EmbedPlayer({
 
     if (embedData.card_layout_id === 4) {
       // For card_layout_id 4, prioritize URLs in this order: CTA, first linkout, or no action
-      const linkoutUrl = getLinkoutUrl(postDetails.video.linkouts);
+      const linkoutUrl = getLinkoutUrl(postDetails.video?.linkouts);
 
       if (linkoutUrl) {
         window.open(linkoutUrl, "_blank");
@@ -285,8 +285,8 @@ function EmbedPlayer({
     }
 
     // Default behavior for other card layouts
-    if (postDetails.video.clickableUrl) {
-      window.open(postDetails.video.clickableUrl, "_blank");
+    if (postDetails.video?.clickableUrl) {
+      window.open(postDetails.video?.clickableUrl, "_blank");
       return;
     }
 
@@ -301,17 +301,19 @@ function EmbedPlayer({
     embedData.card_layout_id,
   ]);
 
+  // Hide the control layer while an ad is showing, and notify the parent
+  // so it can lock the swiper and disable navigation buttons.
   const handleAdFilled = useCallback((type: string) => {
-    // if (type === "banner") {
     setIsAdFilled(true);
-    // }
   }, []);
 
-  const handleAdFilledEnd = useCallback(() => {
+  // Re-show the control layer once the ad fill ends, and notify the parent
+  // to re-enable swiper navigation.
+  const handleAdPlaybackEnd = useCallback(() => {
     setIsAdFilled(false);
   }, []);
 
-  const isSponsored = postDetails.video.cardLayoutId === 7; // Sponsored content is determined by cardLayoutId 7
+  const isSponsored = postDetails.video?.cardLayoutId === 7; // Sponsored content is determined by cardLayoutId 7
 
   const isSheetExpanded =
     isNonDesktop &&
@@ -334,7 +336,9 @@ function EmbedPlayer({
     >
       <div
         className="gencl:w-full gencl:relative gencl:transition-all gencl:duration-300 gencl:ease-in-out"
-        style={{ height: showIheartBar ? `calc(100% - ${IFRAME_HEIGHT}px)` : '100%' }}
+        style={{
+          height: showIheartBar ? `calc(100% - ${IFRAME_HEIGHT}px)` : "100%",
+        }}
       >
         <div
           className={cn(
@@ -348,22 +352,22 @@ function EmbedPlayer({
         >
           <Suspense fallback={null}>
             <FeedPlayer
-              videoDescription={postDetails.video.descritptionText}
-              videoId={postDetails.video.id}
-              adUrl={postDetails.video.adUrl ?? undefined}
-              src={postDetails.video.source}
+              videoDescription={postDetails.video?.descritptionText}
+              videoId={postDetails.video?.id ?? ""}
+              adUrl={postDetails.video?.adUrl ?? undefined}
+              src={postDetails.video?.source}
+              adsPlatform={postDetails.video?.adsPlatform}
               poster={
                 config.contentDisplay.showSectionCover &&
                 postDetails.section?.cover_url
                   ? postDetails.section?.cover_url
-                  : postDetails.video.thumbnail
+                  : postDetails.video?.thumbnail
               }
-              className={cn(
-                "gencl:h-full! gencl:w-full",
-                videoCrop || isSheetExpanded
-                  ? "gencl:object-contain gencl:bg-contain!"
-                  : "gencl:object-cover gencl:bg-cover!",
-              )}
+              className={
+                videoCrop
+                  ? "gencl:object-cover gencl:h-full! gencl:w-full gencl:bg-cover"
+                  : "gencl:h-full! gencl:bg-contain!"
+              }
               layoutType={layoutType}
               aria-hidden="true"
               tabIndex={-1}
@@ -371,12 +375,12 @@ function EmbedPlayer({
               isActive={isActive}
               adTagObject={(postDetails as any).adTagObject ?? undefined}
               onAdFilled={handleAdFilled}
-              onAdFilldEnd={handleAdFilledEnd}
+              onAdPlaybackEnd={handleAdPlaybackEnd}
               isSponsored={
-                postDetails.video.cardLayoutId === 7 ||
-                postDetails.video.videoLayoutId === 6
+                postDetails.video?.cardLayoutId === 7 ||
+                postDetails.video?.videoLayoutId === 6
               }
-              videoType={postDetails.video.videoType ?? VideoTypes.Content}
+              videoType={postDetails.video?.videoType ?? VideoTypes.Content}
               playerSize={itemSize}
             />
           </Suspense>
@@ -421,13 +425,13 @@ function OutsideComponents({ postDetails }: { postDetails: PostDetailsType }) {
       return {
         ...(contentDisplay.showViewCount && {
           Views: {
-            value: postDetails.video.viewCount,
+            value: postDetails.video?.viewCount,
             icon: <PlayIcon theme="light" size="sm" strokeWidth={2} />,
           },
         }),
         ...(contentDisplay.showReactionCount && {
           Reactions: {
-            value: postDetails.video.sparkCount,
+            value: postDetails.video?.sparkCount,
             icon: (
               <DynamicReactionIcon
                 sparkCount={0}
@@ -442,7 +446,7 @@ function OutsideComponents({ postDetails }: { postDetails: PostDetailsType }) {
         }),
         ...(contentDisplay.showCommentCount && {
           Comments: {
-            value: postDetails.video.commentCount,
+            value: postDetails.video?.commentCount,
             icon: <CommentIcon theme="light" size="sm" strokeWidth={3} />,
           },
         }),
@@ -451,11 +455,11 @@ function OutsideComponents({ postDetails }: { postDetails: PostDetailsType }) {
 
     return {
       Views: {
-        value: postDetails.video.viewCount,
+        value: postDetails.video?.viewCount,
         icon: <PlayIcon theme="light" size="sm" />,
       },
       Reactions: {
-        value: postDetails.video.sparkCount,
+        value: postDetails.video?.sparkCount,
         icon: (
           <DynamicReactionIcon
             sparkCount={0}
@@ -468,19 +472,19 @@ function OutsideComponents({ postDetails }: { postDetails: PostDetailsType }) {
         ),
       },
       Comments: {
-        value: postDetails.video.commentCount,
+        value: postDetails.video?.commentCount,
         icon: <CommentIcon theme="light" size="sm" />,
       },
     };
   }, [
     contentDisplay,
-    postDetails.video.sparkCount,
-    postDetails.video.commentCount,
+    postDetails.video?.sparkCount,
+    postDetails.video?.commentCount,
   ]);
 
   return (
     <>
-      {showLinkout && postDetails.video.linkoutId && (
+      {showLinkout && postDetails.video?.linkoutId && (
         <div className="gencl:h-27 gencl:w-full gencl:flex gencl:items-center">
           <Suspense fallback={null}>
             <Linkouts
@@ -488,8 +492,8 @@ function OutsideComponents({ postDetails }: { postDetails: PostDetailsType }) {
               isActive={true}
               isOutside
               showImmediately
-              linkouts={postDetails.video.linkouts}
-              linkoutId={postDetails.video.linkoutId}
+              linkouts={postDetails.video?.linkouts}
+              linkoutId={postDetails.video?.linkoutId}
               videoDetails={postDetails.video}
               autoplay={video.videoAutoplay}
             />

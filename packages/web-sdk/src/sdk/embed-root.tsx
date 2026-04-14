@@ -1,4 +1,4 @@
-import { Suspense, lazy } from 'react'
+import { Suspense, lazy, useEffect } from 'react'
 import { EmbedDataType } from '@genuin/components/context/embed/embed.types'
 import { BrandDetailsConfigType } from '@genuin/components/types/brand'
 import { AuthUser } from '@genuin/components/types/auth'
@@ -59,6 +59,8 @@ interface EmbedRootProps {
   wasLazilyLoaded?: boolean
   brandLayoutType: BrandType
   isOnlyForExpand?: boolean
+  /** Called once on first mount of the embed content — used to remove the shadow-DOM skeleton loader. */
+  onContentReady?: () => void
 }
 
 function EmbedSkeleton({
@@ -124,7 +126,14 @@ export function EmbedRoot({
   wasLazilyLoaded,
   brandLayoutType,
   isOnlyForExpand,
+  onContentReady,
 }: EmbedRootProps) {
+  // Signal to the SDK that real content has mounted so it can remove the shadow-DOM skeleton.
+  useEffect(() => {
+    onContentReady?.()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   return (
     <ReactQueryClientProvider>
       <AxiosProvider brandId={brandDetails.brand_id}>

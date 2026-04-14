@@ -23,7 +23,7 @@ export const communityCardVariants = cva(
 export const communityCardHeaderVariants = cva("", {
   variants: { 
     variant: {
-      explore: "gencl:w-full gencl:h-15 gencl:bg-secondary-500",
+      explore: "gencl:w-full gencl:aspect-ratio-[5/1] gencl:bg-secondary-500",
       search: "gencl:flex gencl:items-center gencl:gap-2 gencl:w-full",
       suggestion: "gencl:flex gencl:gap-2 gencl:w-full",
       recent: "gencl:flex gencl:gap-2 gencl:w-full",

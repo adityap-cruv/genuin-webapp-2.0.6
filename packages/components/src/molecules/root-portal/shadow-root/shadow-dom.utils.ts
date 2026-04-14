@@ -189,7 +189,14 @@ export async function setupMainShadowDOM(
   let shadowRoot: ShadowRoot | null = null;
   let root: HTMLElement | null = null;
 
-  if (!isInShadow && container.parentNode) {
+  if (!isInShadow && container.shadowRoot) {
+    // Shadow root already attached to this container (e.g. re-init or double call).
+    // Reuse the existing inner root element rather than calling attachShadow() again,
+    // which would throw a DOMException in all browsers.
+    shadowRoot = container.shadowRoot;
+    root = shadowRoot.querySelector<HTMLElement>(`#${CSS.escape(container.id)}`) ??
+      (shadowRoot.firstElementChild as HTMLElement | null);
+  } else if (!isInShadow && container.parentNode) {
     // Create new shadow DOM
     root = createShadowRoot(container);
     // Some external dependencies apply styles directly to the host (e.g. `:host { margin-left/right: auto; }`),

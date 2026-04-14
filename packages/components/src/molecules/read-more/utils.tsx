@@ -344,7 +344,7 @@ export function calculateMaxCharacterLimit(
 
     // Helper: checks if current text fits within maxLines using scrollHeight
     const fitsInLines = (text: string): boolean => {
-      textSpan.textContent = text + suffix;
+      textSpan.textContent = text;
 
       // Force reflow for Safari
       container.offsetHeight;

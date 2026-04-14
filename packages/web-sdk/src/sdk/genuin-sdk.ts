@@ -34,6 +34,7 @@ import {
 import { queryUtils } from '@/utils/query-utils'
 import { FeedContextManager } from '@genuin/components/context/base/feed-context-manager'
 import { loadExpandView } from './react-utils'
+import { setupMainShadowDOM } from '@genuin/components/molecules/root-portal/shadow-root/shadow-dom.utils'
 
 // Allowed events list - only these events can be listened to
 const ALLOWED_EVENTS = [
@@ -192,7 +193,7 @@ export class GenuinSDK {
       // Store in sdk Init Time
       this.sdkInitTime = performance.now()
 
-      this.getAndSetDivs(config)
+      await this.getAndSetDivs(config)
       this.setupEmbedProviderReadyHandler()
 
       await this.initializeAllEmbeds()
@@ -446,7 +447,11 @@ export class GenuinSDK {
         const instanceId = element.getAttribute('data-instance-id')
         if (instanceId && this.sdkElements[instanceId]) {
           const { loadExpandView } = await import('./react-utils')
-          loadExpandView(element, this.sdkElements[instanceId].config.theme)
+          loadExpandView(
+            element,
+            this.sdkElements[instanceId].config.theme,
+            element.shadowRoot
+          )
         }
       }
 
@@ -493,8 +498,14 @@ export class GenuinSDK {
         isOnlyForExpand: boolean
       ) => {
         const { loadNewEmbed } = await import('./react-utils')
+        const instanceId = element.getAttribute('data-instance-id')
+        const shadowTarget: HTMLElement =
+          (instanceId
+            ? this.sdkElements[instanceId]?.shadowTarget
+            : undefined) ?? element
         const cleanup = await loadNewEmbed({
           container: element,
+          shadowTarget,
           embedData: embedDetails,
           brandDetails,
           config,
@@ -544,12 +555,18 @@ export class GenuinSDK {
       }
     } catch (error) {
       console.error('Error initializing embed:', error)
-      console.log('[gen-sdk]: Calling user error handler with:')
       this.eventManager.emit(SDKEventType.SDK_EMBED_ERROR, {
         isError: true,
         isNoContent: false,
       })
-      loadErrorView(element)
+      // Write the error view into the shadow root target so it is visible.
+      // Falling back to element (the shadow host) would write into its light DOM,
+      // which is hidden behind the shadow root and would never be shown.
+      const instanceId = element.getAttribute('data-instance-id')
+      const errorTarget =
+        (instanceId ? this.sdkElements[instanceId]?.shadowTarget : undefined) ??
+        element
+      loadErrorView(errorTarget)
     }
 
     return true
@@ -623,8 +640,14 @@ export class GenuinSDK {
     }
 
     const { loadNewEmbed } = await import('./react-utils')
+    const liveInstanceId = element.getAttribute('data-instance-id')
+    const liveShadowTarget: HTMLElement =
+      (liveInstanceId
+        ? this.sdkElements[liveInstanceId]?.shadowTarget
+        : undefined) ?? element
     const cleanup = await loadNewEmbed({
       container: element,
+      shadowTarget: liveShadowTarget,
       embedData: config.embedDetails,
       brandDetails,
       config,
@@ -688,7 +711,11 @@ export class GenuinSDK {
         ) {
           const instanceId = element.getAttribute('data-instance-id')
           if (instanceId && this.sdkElements[instanceId]) {
-            loadExpandView(element, this.sdkElements[instanceId].config.theme)
+            loadExpandView(
+              element,
+              this.sdkElements[instanceId].config.theme,
+              element.shadowRoot
+            )
           }
         }
       }
@@ -840,7 +867,8 @@ export class GenuinSDK {
     if (shouldHandleExpandView && targetUpdateElement?.element)
       loadExpandView(
         targetUpdateElement.element,
-        targetUpdateElement.config.theme
+        targetUpdateElement.config.theme,
+        targetUpdateElement.element.shadowRoot
       )
 
     this.eventManager.emit(SDKEventType.SDK_UPDATE_START_VIDEO_SLUG, {
@@ -955,8 +983,10 @@ export class GenuinSDK {
 
   /**
    * Get and set elements with id "gen-sdk", starting with "gen-sdk-", or having gen-sdk-class, and dedupe them.
+   * Sets up the Shadow DOM for each element before rendering any loaders so all content
+   * (skeletons included) lives inside the shadow root from the very first paint.
    */
-  private getAndSetDivs(configByUser?: ConfigByUser) {
+  private async getAndSetDivs(configByUser?: ConfigByUser) {
     const selector =
       '[id="gen-sdk"]:not(.gen-sdk-root-portal):not([data-portal-container]), [id^="gen-sdk-"]:not(.gen-sdk-root-portal):not([data-portal-container]), .gen-sdk-class:not(.gen-sdk-root-portal):not([data-portal-container])'
 
@@ -1026,7 +1056,9 @@ export class GenuinSDK {
       }
     })
 
-    Array.from(uniqueElements).forEach((element) => {
+    console.log('uniqueElements',uniqueElements)
+
+    for (const element of Array.from(uniqueElements)) {
       // If this init call has parent_instance_id, it's a nested SDK initialization
       // Skip any container that's already been initialized (the parent)
       if (configByUser?.parent_instance_id) {
@@ -1040,23 +1072,47 @@ export class GenuinSDK {
 
       const instanceId = this.setInstanceId(element)
       this.validateHTML(element)
-      // Show loading view immediately
       const extractedData = this.extractDataFromSingleDiv(element, configByUser)
-      loadLoadingView(element, extractedData.theme)
+
+      // Shadow DOM is enabled by default (useShadowDOM !== false).
+      // Set up the Shadow DOM before any rendering so every subsequent write
+      // (skeleton, expand loader, React root) targets the shadow root from the
+      // very first paint — eliminating the blink caused by late attachment.
+      const useShadowDOM = extractedData.useShadowDOM !== false
+      const shadowTarget = useShadowDOM
+        ? await setupMainShadowDOM(element)
+        : element
+
+      // Propagate the resolved flag so downstream consumers (loadNewEmbed, EmbedRoot)
+      // see the same value without re-computing it.
+      extractedData.useShadowDOM = useShadowDOM
+
+      // Show loading skeleton immediately (inside shadow root when enabled)
+      loadLoadingView(shadowTarget, extractedData.theme)
+
+      // Load expand view if expandOnLoad is set
       if (
         extractedData.expandOnLoad === true ||
         (extractedData.startVideoSlug && extractedData.expandOnLoad !== false)
       ) {
-        loadExpandView(element, extractedData.theme)
+        loadExpandView(
+          element,
+          extractedData.theme,
+          useShadowDOM ? element.shadowRoot : null
+        )
       }
+
       if (extractedData) {
+        console.log('extractedData', extractedData)
+
         this.sdkElements[instanceId] = {
           element,
+          shadowTarget,
           config: extractedData,
           status: 'pending',
         }
       }
-    })
+    }
 
     const userErrorHandler =
       configByUser?.error_handler || configByUser?.errorHandler

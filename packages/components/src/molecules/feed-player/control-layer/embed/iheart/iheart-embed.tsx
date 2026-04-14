@@ -28,6 +28,7 @@ import useViewportHeight from "@genuin/components/hooks/use-screen-height";
 import type { DynamicSheetState } from "@genuin/ui/dynamic-sheet";
 import { useEmbedManagerContext } from "@genuin/components/organisms/embed/context";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
+import { useEmbedContext } from "@genuin/components/context/embed";
 
 const OctoDynamicSheet = lazy(() =>
   import("../../expand-view/octo-dynamic-sheet.js").then((m) => ({
@@ -50,12 +51,14 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
 }) => {
   const { baseContextManager } = useBaseContext();
   const {
-    view: { websiteType },
+    view: { websiteType, expandOnInteraction },
     engagement,
+    expandViewConfig,
   } = useEmbedConfigs();
   const { isMobile } = useDeviceDetectMediaQuery();
   const { togglePlay, play, pause } = usePlayerContext();
   const { swiper } = useEmbedManagerContext();
+  const { changeActivePlayerType } = useEmbedContext();
   const embedDetails = useSafeEmbedContext();
   const embedConfigs = useEmbedConfigs();
 
@@ -134,6 +137,8 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
     setIsOctoHidden(false);
     handleOctoExpandRequest();
   }, [handleOctoExpandRequest]);
+
+  const swipeStartYRef = useRef<number>(0);
 
   const [isVideoWatched, setIsVideoWatched] = useState<boolean>(false);
 
@@ -293,6 +298,14 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
       return;
     }
 
+    // When expandOnInteraction is active the overlay captures all taps and
+    // opens expand-view instead — swiping should be disabled entirely so the
+    // tile doesn't slide away before the expand handler fires.
+    if (expandOnInteraction) {
+      swiperInstance.disable();
+      return;
+    }
+
     if (!isOctoEnabled) {
       swiperInstance.enable();
       if (isActive) {
@@ -329,8 +342,16 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
         }
         onClick?.(e);
       }}
-      onPointerDown={() => {
+      onPointerDown={(e) => {
         window.dispatchEvent(new CustomEvent("sdk:userInteracted"));
+        if (expandOnInteraction && expandViewConfig.enable) {
+          swipeStartYRef.current = e.clientY;
+        }
+      }}
+      onPointerUp={(e) => {
+        if (!expandOnInteraction || !expandViewConfig.enable) return;
+        const dy = Math.abs(e.clientY - swipeStartYRef.current);
+        if (dy > 20) changeActivePlayerType("expand-view", index);
       }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -402,6 +423,21 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
           }}
         />
 
+        {/* Expand-on-interaction overlay — transparent tap target that opens
+            expand-view when the feature flag is active. Rendered at z-10 so it
+            sits above the video but below the IHeartControls / IHeartListenLiveButton
+            row which explicitly uses z-20. */}
+        {expandOnInteraction && isActive && expandViewConfig.enable && (
+          <div
+            aria-hidden="true"
+            className="gencl:absolute gencl:inset-0 gencl:z-10"
+            onClick={(e) => {
+              e.stopPropagation();
+              changeActivePlayerType("expand-view", index);
+            }}
+          />
+        )}
+
         {/* Header Section */}
         {!isActiveOctoSheet && (
           <header className="gencl:absolute gencl:top-0 gencl:w-full gencl:flex gencl:justify-between gencl:items-center gencl:gap-2 gencl:text-white gencl:p-3">
@@ -471,10 +507,10 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
             </div>
           )}
 
-          {/* Controls Section */}
+          {/* Controls Section — z-20 ensures these sit above the z-10 expand overlay */}
           <div
             className={cn(
-              "gencl:overflow-hidden gencl:transition-all gencl:ease-in-out gencl:duration-300 gencl:flex",
+              "gencl:relative gencl:z-20 gencl:overflow-hidden gencl:transition-all gencl:ease-in-out gencl:duration-300 gencl:flex",
               isOctoEnabled
                 ? "gencl:justify-end gencl:items-end"
                 : "gencl:justify-between gencl:items-center",

@@ -185,11 +185,10 @@ export function PlayerList({
     getContentTypeState,
   } = useSheetState();
   const [isEndOfFeedReached, setEndOfFeedReached] = useState<boolean>(false);
-  const [isAdPlaying, setIsAdPlaying] = useState<boolean>(false);
-  const [isAdFilled, setIsAdFilled] = useState<boolean>(false);
-
   // if we use directly isTablet from the hook then for desktop it will be true based on useDeviceDetectMediaQuery implementation
   const isTablet = !isMobile && !isDesktop;
+  const [isAdFilled, setIsAdFilled] = useState<boolean>(false);
+  const [adActiveOn, setAdActiveOn] = useState<number>(-1);
 
   // Container dimensions state
   const containerRef = useRef<HTMLDivElement>(null);
@@ -302,31 +301,6 @@ export function PlayerList({
     },
     [isSectioned, horizontalSwiper, activeSwiper],
   );
-
-  const handleAdStarted = useCallback(
-    (e?: AdInfoType) => {
-      setIsAdPlaying(true);
-      handleSwiperToggle(true); // Disable swiper during ad playback
-    },
-    [handleSwiperToggle],
-  );
-
-  const handleAdEnded = useCallback(
-    (e?: AdInfoType) => {
-      setIsAdPlaying(false);
-      handleSwiperToggle(false); // Re-enable swiper after ad playback
-    },
-    [handleSwiperToggle],
-  );
-
-  // Disable swiper when sheet is in panel-view or full-view, enable otherwise
-  useEffect(() => {
-    const shouldDisable =
-      getContentTypeState("octo") === "full-view" ||
-      getContentTypeState("octo") === "panel-view";
-    handleSwiperToggle(shouldDisable);
-  }, [sheetState, handleSwiperToggle]);
-
   /*
 We need to filter out these posts because we shouldn't show the overlay middleware
 or the full-screen view here, and we cannot simply skip the slide since we're using
@@ -346,12 +320,30 @@ a swiper inside another swiper.
     },
     [isAdFilled, filteredPost, onActiveIndexChange],
   );
+  // Focus management hook (only for iHeart)
+  const { containerRef: playerListRef } = useFocusManagement({
+    isEnabled: showExpandView && brandLayoutType === "iheart" && !isAdFilled,
+    activeIndex,
+    activeSwiper,
+  });
 
-  const handleAdFilled = useCallback((type: string) => {
-    if (type === "banner") setIsAdFilled(true);
+  const handleAdFilled = useCallback((type: string, index: number) => {
+    setAdActiveOn(index);
+    setIsAdFilled(true);
   }, []);
 
-  const handleAdFilldEnd = useCallback(() => {
+  const handleAdPlaybackEnd = useCallback((index: number) => {
+    setAdActiveOn(index);
+    setIsAdFilled(false);
+  }, []);
+
+  const handleAdStarted = useCallback((e?: AdInfoType, index?: number) => {
+    setAdActiveOn(index ?? -1);
+    setIsAdFilled(true);
+  }, []);
+
+  const handleAdEnded = useCallback((e?: AdInfoType, index?: number) => {
+    setAdActiveOn(index ?? -1);
     setIsAdFilled(false);
   }, []);
 
@@ -445,22 +437,14 @@ a swiper inside another swiper.
   );
 
   useEffect(() => {
-    if (!shouldAutoOpenOcto) {
-      return;
-    }
-    if (!showExpandView) {
-      return;
-    }
-    if (!activeVideoId) {
-      return;
-    }
-    if (isAdPlaying) {
-      return;
-    }
-    if (!pendingOctoReopen) {
-      return;
-    }
-    if (hasContentType("octo")) {
+    if (
+      !shouldAutoOpenOcto ||
+      !showExpandView ||
+      !activeVideoId ||
+      isAdFilled ||
+      !pendingOctoReopen ||
+      hasContentType("octo")
+    ) {
       return;
     }
 
@@ -474,22 +458,9 @@ a swiper inside another swiper.
     hasContentType,
     openContentType,
     setContentTypeState,
-    isAdPlaying,
+    isAdFilled,
     pendingOctoReopen,
   ]);
-
-  // Focus management hook (only for iHeart)
-  const {
-    containerRef: playerListRef,
-    focusableElements,
-    currentFocusIndex,
-    updateFocusableElements,
-    setSlideNavigationDirection,
-  } = useFocusManagement({
-    isEnabled: showExpandView && brandLayoutType === "iheart",
-    activeIndex,
-    activeSwiper,
-  });
 
   // Effect to navigate to selected section when it changes (only for sectioned mode)
   useEffect(() => {
@@ -599,17 +570,19 @@ a swiper inside another swiper.
           // aria-label="Video player"
         >
           {/* Header with back button and centered title */}
-          {brandLayoutType === "iheart" && !isEndOfFeedReached && (
-            <Suspense fallback={null}>
-              <PlayerHeader
-                isMobile={isMobile}
-                title={
-                  filteredPost[activeIndex]?.video?.attributes?.title ?? ""
-                }
-                onBackClick={changeExpandViewType}
-              />
-            </Suspense>
-          )}
+          {brandLayoutType === "iheart" &&
+            !isEndOfFeedReached &&
+            !isAdFilled && (
+              <Suspense fallback={null}>
+                <PlayerHeader
+                  isMobile={isMobile}
+                  title={
+                    filteredPost[activeIndex]?.video?.attributes?.title ?? ""
+                  }
+                  onBackClick={changeExpandViewType}
+                />
+              </Suspense>
+            )}
 
           {isSectioned && (
             <Suspense fallback={null}>
@@ -626,7 +599,7 @@ a swiper inside another swiper.
                     filteredPost={filteredPost}
                     startIndex={startIndex}
                     slideDimensions={slideDimensions}
-                    disableSwiper={disableSwiper}
+                    disableSwiper={disableSwiper || isAdFilled}
                     websiteType={websiteType}
                     onActiveIndexChange={handleActiveIndexChange}
                     setEndOfFeedReached={setEndOfFeedReached}
@@ -645,7 +618,7 @@ a swiper inside another swiper.
                     onAdStarted={handleAdStarted}
                     onAdEnded={handleAdEnded}
                     onAdFilled={handleAdFilled}
-                    onAdFilledEnd={handleAdFilldEnd}
+                    onAdPlaybackEnd={handleAdPlaybackEnd}
                   />
                 </Suspense>
               ) : (
@@ -653,7 +626,7 @@ a swiper inside another swiper.
                   <NonSectionedContent
                     startIndex={startIndex}
                     slideDimensions={slideDimensions}
-                    disableSwiper={disableSwiper}
+                    disableSwiper={disableSwiper || isAdFilled}
                     websiteType={websiteType}
                     setVerticalSwipers={setVerticalSwipers}
                     onActiveIndexChange={handleActiveIndexChange}
@@ -672,7 +645,7 @@ a swiper inside another swiper.
                     onAdStarted={handleAdStarted}
                     onAdEnded={handleAdEnded}
                     onAdFilled={handleAdFilled}
-                    onAdFilledEnd={handleAdFilldEnd}
+                    onAdPlaybackEnd={handleAdPlaybackEnd}
                   />
                 </Suspense>
               )}
@@ -693,7 +666,7 @@ a swiper inside another swiper.
                 className={cn("gencl:pl-10 gencl:justify-center")}
                 theme={theme}
                 size={websiteType === "polaris" ? "lg" : "xl"}
-                disable={isAdPlaying}
+                disable={isAdFilled}
               />
             </Suspense>
           )}
@@ -711,14 +684,13 @@ a swiper inside another swiper.
             postsLength={filteredPost.length}
             theme={theme}
             size={websiteType === "polaris" ? "lg" : "xl"}
-            disable={isAdPlaying}
+            disable={isAdFilled}
           />
         </Suspense>
       )}
       {!isMobile &&
         brandLayoutType !== "iheart" &&
         filteredPost[activeIndex] &&
-        !isAdPlaying &&
         !isAdFilled && (
           <Suspense fallback={null}>
             <Actions
@@ -787,24 +759,24 @@ a swiper inside another swiper.
                       <Suspense fallback={null}>
                         <CommentsDialog
                           commentCount={
-                            filteredPost[activeIndex]?.video?.commentCount || 0
+                            filteredPost[activeIndex]?.video?.commentCount ?? 0
                           }
                           communityId={
-                            filteredPost[activeIndex]?.community?.id || ""
+                            filteredPost[activeIndex]?.community?.id ?? ""
                           }
-                          loopId={filteredPost[activeIndex]?.group?.id || ""}
-                          videoId={filteredPost[activeIndex]?.video?.id || ""}
+                          loopId={filteredPost[activeIndex]?.group?.id ?? ""}
+                          videoId={filteredPost[activeIndex]?.video?.id ?? ""}
                           videoSlug={
-                            filteredPost[activeIndex]?.video?.slug || ""
+                            filteredPost[activeIndex]?.video?.slug ?? ""
                           }
                           shareUrl={
-                            filteredPost[activeIndex]?.video?.shareUrl || ""
+                            filteredPost[activeIndex]?.video?.shareUrl ?? ""
                           }
-                          defaultOpen={isCommentOpen}
                           videoType={
                             filteredPost[activeIndex]?.video?.videoType ??
                             VideoTypes.Content
                           }
+                          defaultOpen={isCommentOpen}
                           key={
                             "feed-comment-box" +
                             filteredPost[activeIndex]?.video?.id
@@ -884,9 +856,8 @@ a swiper inside another swiper.
       {/* Comment panel - show this only if expand view is open  */}
       {isCommentOpen &&
         showExpandView &&
-        showCommentBox &&
-        !isAdPlaying &&
         !isAdFilled &&
+        showCommentBox &&
         filteredPost[activeIndex] &&
         brandLayoutType !== "iheart" &&
         isDesktop && (
@@ -956,7 +927,6 @@ a swiper inside another swiper.
         )}
       {isOctoOpen &&
         showExpandView &&
-        !isAdPlaying &&
         !isAdFilled &&
         filteredPost[activeIndex] &&
         brandLayoutType !== "iheart" &&
