@@ -521,17 +521,31 @@ export class GenuinSDK {
       // tracks the embed's internally calculated height. The listener filters by
       // containerId so multiple embeds on the same page each resize only their own
       // container. No fixed height is required on the host element.
-      const handleEmbedResize = (event: { payload?: { height?: number; width?: number; containerId?: string | null } }) => {
+      const handleEmbedResize = (event: {
+        payload?: {
+          height?: number
+          width?: number
+          containerId?: string | null
+        }
+      }) => {
         const { height, containerId } = event.payload ?? {}
         if (typeof height !== 'number' || height <= 0) return
         // Match this listener to the correct container element. When containerId is
         // present, use it for an exact match. Otherwise update unconditionally
         // (single-embed fallback).
-        if (containerId !== undefined && containerId !== null && containerId !== element.id) return
+        if (
+          containerId !== undefined &&
+          containerId !== null &&
+          containerId !== element.id
+        )
+          return
         element.style.height = `${height}px`
       }
       // 'onResize' is the SDKEventName.RESIZE value emitted by embed.tsx
-      this.eventManager.on('onResize' as SDKEventType, handleEmbedResize as EventListener)
+      this.eventManager.on(
+        'onResize' as SDKEventType,
+        handleEmbedResize as EventListener
+      )
 
       // A flag to check if the component is only for expand view based on the initial size check, if true we will not lazy load this component as it might cause issues in loading the expand view.
       const ifComponentIsOnlyForExpand =
@@ -1072,7 +1086,7 @@ export class GenuinSDK {
       }
     })
 
-    console.log('uniqueElements',uniqueElements)
+    console.log('uniqueElements', uniqueElements)
 
     for (const element of Array.from(uniqueElements)) {
       // If this init call has parent_instance_id, it's a nested SDK initialization
@@ -1089,6 +1103,11 @@ export class GenuinSDK {
       const instanceId = this.setInstanceId(element)
       this.validateHTML(element)
       const extractedData = this.extractDataFromSingleDiv(element, configByUser)
+
+      // Override container height to 500px for specific placement ID
+      if (extractedData.placementId === '69c2812fd98484cf6b83a5ba') {
+        element.style.height = '500px'
+      }
 
       // Shadow DOM is enabled by default (useShadowDOM !== false).
       // Set up the Shadow DOM before any rendering so every subsequent write
