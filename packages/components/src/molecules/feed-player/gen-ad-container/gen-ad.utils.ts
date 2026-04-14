@@ -35,7 +35,7 @@ export function buildGenAdConfigFromAdTagObject(
     config.video = {
       vastUrl: adTagObj.video_ad.ads_url,
       platform: adTagObj.video_ad.platform,
-      audioLayout: 'transparent',
+      audioLayout: 'v2',
       ...(adTagObj.video_ad.contentVideo
         ? { contentVideo: adTagObj.video_ad.contentVideo }
         : {}),

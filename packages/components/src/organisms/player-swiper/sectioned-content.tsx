@@ -70,8 +70,6 @@ export function SectionedContent({
   setHorizontalSwiper,
   setActiveHorizontalIndex,
   setVerticalSwipers,
-  onAdEnded,
-  onAdStarted,
   onAdFilled,
   onAdPlaybackEnd,
 }: SectionedContentProps) {
@@ -170,8 +168,6 @@ export function SectionedContent({
                         onCommentCountChange={onCommentCountChange}
                         index={index}
                         totalVideos={totalVideos}
-                        onAdEnded={onAdEnded}
-                        onAdStarted={onAdStarted}
                         onAdFilled={onAdFilled}
                         onAdPlaybackEnd={onAdPlaybackEnd}
                       />

@@ -74,7 +74,7 @@ export function IheartFullscreenContainer({
     <div
       style={{
         height:
-          embedStyle === "feed"
+          embedStyle === "feed" || embedStyle === "grid"
             ? "100%"
             : isDesktop
               ? websiteType === "legacy"
@@ -83,19 +83,19 @@ export function IheartFullscreenContainer({
                   height - IHEART_MINI_PLAYER_HEIGHT
               : height - IHEART_TOP_BAR,
         width:
-          embedStyle === "feed"
+          embedStyle === "feed" || embedStyle === "grid"
             ? "100%"
             : isDesktop
               ? containerDimensions.width || "100%"
               : "100%",
         top:
-          embedStyle === "feed"
+          embedStyle === "feed" || embedStyle === "grid"
             ? 0
             : isDesktop
               ? containerDimensions.y || 0
               : IHEART_TOP_BAR,
         left:
-          embedStyle === "feed"
+          embedStyle === "feed" || embedStyle === "grid"
             ? 0
             : isDesktop
               ? containerDimensions.x

@@ -152,6 +152,7 @@ function PipPlayer({
           videoType={videoDetails.video?.videoType ?? VideoTypes.Content}
           className="gencl:object-cover gencl:w-full gencl:h-full!"
           adTagObject={(videoDetails as any).adTagObject ?? undefined}
+          sponsorshipInfo={videoDetails.sponsored}
           isSponsored={
             videoDetails.video?.cardLayoutId === 7 ||
             videoDetails.video?.videoLayoutId === 6

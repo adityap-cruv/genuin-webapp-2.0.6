@@ -36,6 +36,7 @@ export enum SDKEventName {
   CHECK_FOLLOWING_STATUS = "checkFollowingStatus",
   PLAY_IHEART_CONTENT = "playIHeartContent",
   VIDEO_CLICKED = "onVideoClicked",
+  RESIZE = "onResize",
 }
 
 /**
@@ -169,6 +170,24 @@ export interface SDKVideoClickedPayload {
   videoId: string;
 }
 
+/**
+ * Payload emitted when the embed's calculated height changes.
+ * Host pages can listen for this event to update the container element's height
+ * so the embed fits without a scrollbar.
+ */
+export interface SDKResizePayload {
+  /** The new calculated height of the embed in pixels */
+  height: number;
+  /** The current width of the embed in pixels */
+  width: number;
+  /**
+   * The `id` attribute of the host container element (e.g. "gen-sdk-1").
+   * Consumers with multiple embeds on a page can use this to identify which
+   * container to resize.
+   */
+  containerId: string | null;
+}
+
 export type PlayIheartContentPayload =
   | ({
       play: boolean;
@@ -237,6 +256,7 @@ export type SDKEventPayloadMap = {
   [SDKEventName.CHECK_FOLLOWING_STATUS]: SDKCheckFollowingPayload;
   [SDKEventName.PLAY_IHEART_CONTENT]: PlayIheartContentPayload;
   [SDKEventName.VIDEO_CLICKED]: SDKVideoClickedPayload;
+  [SDKEventName.RESIZE]: SDKResizePayload;
 };
 
 /**

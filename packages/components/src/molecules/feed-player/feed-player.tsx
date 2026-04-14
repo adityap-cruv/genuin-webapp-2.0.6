@@ -20,7 +20,10 @@ import { cn } from "@genuin/ui/lib/utils";
 import { BrandType } from "@genuin/components/lib/utils/brand-layout";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import { useSafeEmbedContext } from "@genuin/components/context/embed/context";
-import type { AdTagObjectType } from "@genuin/components/react-query/api/feed/schema";
+import type {
+  AdTagObjectType,
+  PostDetailsType,
+} from "@genuin/components/react-query/api/feed/schema";
 import { buildGenAdConfigFromAdTagObject } from "./gen-ad-container";
 import type { GenAdConfig } from "./gen-ad-container";
 import { useUrlParams } from "@genuin/components/context";
@@ -78,6 +81,10 @@ type FeedPlayerProps = Omit<
   videoType?: VideoTypes;
   adsPlatform?: string | null;
   isSponsored?: boolean;
+  /**
+   * Sponsorship info for video
+   */
+  sponsorshipInfo: NonNullable<PostDetailsType>["sponsored"];
 };
 
 /**
@@ -99,6 +106,7 @@ export const FeedPlayer = memo(function FeedPlayer({
   adsPlatform,
   isSponsored,
   playerSize,
+  sponsorshipInfo,
   onAdStateChange,
   onOpenPlayerReady,
   onTimeUpdate,
@@ -216,7 +224,10 @@ export const FeedPlayer = memo(function FeedPlayer({
       video_id: videoId,
       video_url: src,
       video_type: videoType ?? VideoTypes.Content,
-      ...(isSponsored && { ad_type: "sponsored_post" }),
+      ...(isSponsored && {
+        ad_type: "sponsored_post",
+        cpm_rate: sponsorshipInfo?.cpm,
+      }),
     };
   }, [videoId, totalVideos, src, isSponsored]);
 
@@ -604,9 +615,11 @@ export const FeedPlayer = memo(function FeedPlayer({
             moveToNextVideo={moveToNextVideo}
             videoId={videoId}
             videoType={videoType}
-            onAdFilled={(provider) => {
+            onAdInit={() => {
               setIsAdFilled(true);
               onAdStateChange?.(true);
+            }}
+            onAdFilled={(provider) => {
               onAdFilled?.(provider);
               updateAdInfo(true, {
                 adId: provider,
@@ -629,6 +642,7 @@ export const FeedPlayer = memo(function FeedPlayer({
               });
             }}
             onAdCompleted={() => {
+              setIsAdFilled(false);
               onAdPlaybackEnd?.();
             }}
           />

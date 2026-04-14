@@ -132,6 +132,14 @@ const SectionSchema = z
   .nullish()
   .optional();
 
+export const sponsoredSchema = z
+  .object({
+    id: z.string(),
+    title: z.string(),
+    cpm: z.number(),
+  })
+  .nullish();
+
 const PostDetailsSchema = z.object({
   type: z.string().optional().nullish(),
   video: videoSchema,
@@ -139,6 +147,7 @@ const PostDetailsSchema = z.object({
   community: communitySchema,
   owner: ownerSchema,
   section: SectionSchema,
+  sponsored: sponsoredSchema,
 });
 
 export const adTagObjectSchema = z.object({
@@ -174,6 +183,7 @@ export const AdsPostDetailsSchema = z.object({
   community: communitySchema.optional(),
   owner: ownerSchema.optional(),
   section: SectionSchema,
+  sponsored: sponsoredSchema,
 });
 
 export type AdsPostDetailsType = z.infer<typeof AdsPostDetailsSchema>;

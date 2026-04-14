@@ -262,6 +262,7 @@ export function Player({
                   height: swiper.height,
                   width: swiper.width,
                 }}
+                sponsorshipInfo={post.sponsored}
               />
             </Suspense>
             <Suspense fallback={null}>

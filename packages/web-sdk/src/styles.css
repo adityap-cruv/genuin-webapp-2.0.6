@@ -112,3 +112,666 @@
   display: flex !important;
   justify-content: center;
 }
+
+.gen-ext .swiper-navigation {
+    display: none!important
+}
+
+#ad-container {
+    width: 100%!important;
+    height: 100%!important;
+    margin: 0!important;
+    padding: 0!important;
+    overflow: hidden!important
+}
+
+.gen-ad-indicator {
+    color: #000;
+    z-index: 9999;
+    pointer-events: none;
+    text-align: center;
+    background: #fff;
+    border-radius: 10px;
+    min-width: 20px;
+    padding: 4px 6px !important;
+    font-family: Inter,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Noto Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    box-shadow: 0 1px 3px #0000004d
+}
+
+.gen-ad-debug-panel {
+    color: #fff;
+    z-index: 999999;
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    background: #1a1a2ef2;
+    border: 1px solid #ffffff1a;
+    border-radius: 8px;
+    flex-direction: column;
+    width: 300px;
+    max-height: 400px;
+    font-family: Inter,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Noto Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif;
+    font-size: 11px;
+    display: flex;
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    box-shadow: 0 4px 12px #00000080
+}
+
+.gen-ad-debug-header {
+    background: #4caf5033;
+    border-bottom: 1px solid #ffffff1a;
+    border-radius: 8px 8px 0 0;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    font-weight: 700;
+    display: flex
+}
+
+.gen-ad-debug-close {
+    color: #fff;
+    cursor: pointer;
+    opacity: .7;
+    background: 0 0;
+    border: none;
+    padding: 0;
+    font-size: 18px;
+    line-height: 1
+}
+
+.gen-ad-debug-close:hover {
+    opacity: 1
+}
+
+.gen-ad-debug-content {
+    padding: 10px;
+    overflow-y: auto
+}
+
+.gen-ad-debug-state {
+    border-bottom: 1px solid #ffffff1a;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    display: flex
+}
+
+.state-value,.provider-value {
+    font-weight: 700
+}
+
+.debug-log-item {
+    white-space: pre-wrap;
+    word-break: break-all;
+    border-radius: 3px;
+    margin-bottom: 4px;
+    padding: 2px 4px
+}
+
+.log-time {
+    color: #ffffff80
+}
+
+.log-log {
+    color: #fff
+}
+
+.log-warn {
+    color: #ffc107;
+    background: #ffc1071a
+}
+
+.log-error {
+    color: #f44336;
+    background: #f443361a
+}
+
+.gen-audio-ad {
+    cursor: pointer;
+    box-sizing: border-box;
+    background: linear-gradient(160deg,#1a1a3e 0%,#0d2847 50%,#0a1e3d 100%);
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 6%;
+    width: 100%;
+    height: 100%;
+    padding: 5% 8%;
+    font-family: Inter,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Noto Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif;
+    display: flex;
+    position: relative;
+    overflow: hidden
+}
+
+.gen-audio-ad:before {
+    content: "";
+    pointer-events: none;
+    background: radial-gradient(circle,#00c8c81f 0%,#0000 70%);
+    width: 60%;
+    height: 60%;
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%,-50%)
+}
+
+.gen-audio-vinyl-wrap {
+    aspect-ratio: 1;
+    flex-shrink: 0;
+    width: 50%;
+    max-width: 200px;
+    position: relative
+}
+
+.gen-audio-vinyl {
+    background: radial-gradient(circle,#111 0%,#111 12%,#0000 12.5%),radial-gradient(circle,#0000 36%,#28282899 36.5%,#28282899 37%,#0000 37.5%),radial-gradient(circle,#0000 56%,#28282866 56.5%,#28282866 57%,#0000 57.5%),radial-gradient(circle,#0000 76%,#2828284d 76.5%,#2828284d 77%,#0000 77.5%),conic-gradient(#1a1a1a,#2a2a2a,#1a1a1a,#2a2a2a,#1a1a1a,#2a2a2a,#1a1a1a);
+    border-radius: 50%;
+    width: 100%;
+    height: 100%;
+    animation: 4s linear infinite gen-audio-spin;
+    box-shadow: 0 0 0 3px #00d2d240,0 0 20px #00d2d21a,inset 0 0 30px #00000080
+}
+
+.gen-audio-vinyl.paused {
+    animation-play-state: paused
+}
+
+@keyframes gen-audio-spin {
+    0% {
+        transform: rotate(0)
+    }
+
+    to {
+        transform: rotate(360deg)
+    }
+}
+
+.gen-audio-vinyl-wrap:before {
+    content: "";
+    pointer-events: none;
+    border: 1px solid #00d2d233;
+    border-radius: 50%;
+    position: absolute;
+    top: -4%;
+    bottom: -4%;
+    left: -4%;
+    right: -4%
+}
+
+.gen-audio-vinyl-wrap:after {
+    content: "";
+    pointer-events: none;
+    border: 1px solid #00d2d214;
+    border-radius: 50%;
+    position: absolute;
+    top: -8%;
+    bottom: -8%;
+    left: -8%;
+    right: -8%
+}
+
+.gen-audio-vinyl-label {
+    z-index: 1;
+    background: linear-gradient(135deg,#0a4040 0%,#0d6060 50%,#0a4040 100%);
+    border-radius: 50%;
+    justify-content: center;
+    align-items: center;
+    width: 35%;
+    height: 35%;
+    display: flex;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    box-shadow: 0 0 15px #00d2d24d
+}
+
+.gen-audio-note {
+    fill: #00e5e5;
+    filter: drop-shadow(0 0 6px #00e5e599);
+    width: 50%;
+    height: 50%
+}
+
+.gen-audio-waveform {
+    justify-content: center;
+    align-items: center;
+    gap: 2px;
+    width: 70%;
+    max-width: 260px;
+    height: 10%;
+    min-height: 20px;
+    max-height: 40px;
+    display: flex
+}
+
+.gen-audio-waveform-bar {
+    background: linear-gradient(#00d2d2e6,#00d2d266);
+    border-radius: 2px;
+    width: 3px;
+    min-width: 2px;
+    animation: 1.2s ease-in-out infinite gen-audio-wave
+}
+
+.gen-audio-waveform-bar.paused {
+    animation-play-state: paused
+}
+
+@keyframes gen-audio-wave {
+    0%,to {
+        height: 20%
+    }
+
+    50% {
+        height: 100%
+    }
+}
+
+.gen-audio-progress-wrap {
+    background: #ffffff1a;
+    border-radius: 2px;
+    flex-shrink: 0;
+    width: 70%;
+    max-width: 260px;
+    height: 4px;
+    overflow: hidden
+}
+
+.gen-audio-progress-fill {
+    background: linear-gradient(90deg,#00c8c8,#00e5e5);
+    border-radius: 2px;
+    width: 0%;
+    height: 100%;
+    transition: width .3s linear;
+    box-shadow: 0 0 6px #00d2d266
+}
+
+.gen-audio-countdown {
+    color: #fff9;
+    letter-spacing: .5px;
+    flex-shrink: 0;
+    font-size: 11px
+}
+
+.gen-audio-ad video {
+    display: none
+}
+
+.gen-audio-ad.iheart {
+    background: linear-gradient(#c41220 0%,#aa0f1b 50%,#8b0a14 100%);
+    justify-content: space-between;
+    padding: 10% 8% 8%
+}
+
+.gen-audio-ad.iheart:before {
+    background: radial-gradient(circle,#ffffff1a 0%,#0000 70%);
+    width: 100%;
+    height: 100%
+}
+
+.gen-audio-logo-wrap {
+    flex-shrink: 0;
+    justify-content: center;
+    width: 55%;
+    max-width: 180px;
+    margin-top: 5%;
+    display: flex
+}
+
+.gen-audio-iheart-logo {
+    filter: drop-shadow(0 4px 6px #00000040);
+    background-image: url(https://media.begenuin.com/ad-sdk/in-feed/iheart-logo.png);
+    background-position: 50%;
+    background-repeat: no-repeat;
+    background-size: contain;
+    width: 100%;
+    height: 75px
+}
+
+@media (max-height: 400px) {
+    .gen-audio-ad.iheart {
+        justify-content:space-evenly;
+        padding: 5%
+    }
+
+    .gen-audio-logo-wrap {
+        width: 40%;
+        max-width: 120px;
+        margin-top: 0
+    }
+
+    .gen-audio-ad.iheart .gen-audio-waveform {
+        height: 10%;
+        min-height: 25px
+    }
+
+    .gen-audio-ad.iheart .gen-audio-bottom-bar {
+        margin-bottom: 0
+    }
+}
+
+.gen-audio-ad.iheart .gen-audio-waveform {
+    flex-grow: 1;
+    gap: 13px;
+    width: 85%;
+    max-width: 300px;
+    height: 15%;
+    min-height: 40px
+}
+
+.gen-audio-ad.iheart .gen-audio-waveform-bar {
+    background: linear-gradient(#fffffff2,#fff6);
+    border-radius: 4px;
+    width: 4px;
+    min-width: 3px
+}
+
+.gen-audio-ad.iheart .gen-audio-bottom-bar {
+    flex-direction: column;
+    flex-shrink: 0;
+    gap: 8px;
+    width: 90%;
+    max-width: 320px;
+    margin-bottom: 2%;
+    display: flex
+}
+
+.gen-audio-ad.iheart .gen-audio-progress-wrap {
+    cursor: default;
+    background: #fff3;
+    border-radius: 1.5px;
+    width: 100%;
+    max-width: 100%;
+    height: 3px;
+    position: relative;
+    overflow: visible
+}
+
+.gen-audio-ad.iheart .gen-audio-progress-fill {
+    background: #ff3b3f;
+    border-radius: 1.5px;
+    width: 0%;
+    height: 100%;
+    transition: width .15s linear;
+    position: relative;
+    box-shadow: 0 0 4px #ff3b3f80
+}
+
+.gen-audio-ad.iheart .gen-audio-progress-thumb {
+    background: #ff3b3f;
+    border-radius: 50%;
+    width: 10px;
+    height: 10px;
+    position: absolute;
+    top: 50%;
+    right: -5px;
+    transform: translateY(-50%);
+    box-shadow: 0 0 6px #0000004d
+}
+
+.gen-audio-ad.iheart .gen-audio-times-wrap {
+    justify-content: space-between;
+    width: 100%;
+    display: flex
+}
+
+.gen-audio-ad.iheart .gen-audio-time-text {
+    color: #fff;
+    letter-spacing: .2px;
+    font-size: 11px;
+    font-weight: 600
+}
+
+.gen-audio-ad.v2 {
+    z-index: 1;
+    background: linear-gradient(#c41220 0%,#aa0f1b 50%,#8b0a14 100%);
+    justify-content: center;
+    align-items: center;
+    gap: 8%;
+    padding: 10% 8% 28px
+}
+
+.gen-audio-ad.v2:before {
+    background: radial-gradient(circle,#ffffff1a 0%,#0000 70%);
+    width: 100%;
+    height: 100%
+}
+
+.gen-audio-ad.v2 .gen-audio-logo-wrap {
+    flex-shrink: 0;
+    width: 55%;
+    max-width: 180px;
+    margin-top: 0
+}
+
+.gen-audio-ad.v2 .gen-audio-waveform {
+    flex-grow: 0;
+    gap: 20px;
+    width: 85%;
+    max-width: 300px;
+    height: 15%;
+    min-height: 40px
+}
+
+.gen-audio-ad.v2 .gen-audio-waveform-bar {
+    background: linear-gradient(#ffffff4d,#fff9);
+    border-radius: 4px;
+    width: 3px;
+    min-width: 2px
+}
+
+.gen-audio-seek-wrap-v2 {
+    background: #fff6;
+    border-radius: 100px;
+    flex-shrink: 0;
+    height: 3px;
+    position: absolute;
+    bottom: 50px;
+    left: 8px;
+    right: 8px;
+    overflow: hidden
+}
+
+.gen-audio-seek-fill-v2 {
+    background: #fff;
+    border-radius: 10px;
+    width: 0%;
+    height: 100%;
+    transition: none
+}
+
+.gen-audio-seek-wrap-v2:not(.gen-audio-seek-wrap-v2--transparent) .gen-audio-seek-fill-v2 {
+    transition: width .25s linear
+}
+
+.gen-audio-seek-wrap-v2--transparent {
+    z-index: 12;
+    pointer-events: none;
+    bottom: 44px
+}
+
+.gen-audio-ad.v2.v2--strip {
+    background: #c41220;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 8px;
+    padding: 0 160px 0 8px
+}
+
+.gen-audio-ad.v2.v2--strip:before {
+    display: none
+}
+
+.gen-audio-ad.v2.v2--strip .gen-audio-logo-wrap {
+    flex-shrink: 0;
+    width: 32px;
+    max-width: 32px;
+    height: 32px;
+    margin-top: 0
+}
+
+.gen-audio-ad.v2.v2--strip .gen-audio-iheart-logo {
+    background-position: 50%;
+    background-size: contain;
+    width: 32px;
+    height: 32px
+}
+
+.gen-audio-strip-text {
+    flex-direction: column;
+    flex: 1;
+    justify-content: center;
+    gap: 2px;
+    min-width: 0;
+    display: flex
+}
+
+.gen-audio-strip-text.title-only {
+    justify-content: center
+}
+
+.gen-audio-strip-title {
+    color: #fff;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-family: Inter,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Noto Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 14px;
+    overflow: hidden
+}
+
+.gen-audio-strip-desc {
+    color: #ffffffbf;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-family: Inter,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Noto Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 14px;
+    overflow: hidden
+}
+
+.gen-audio-ad.v2.v2--small {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 0;
+    padding: 8px 8px 36px
+}
+
+.gen-audio-ad.v2.v2--small .gen-audio-logo-wrap {
+    flex-shrink: 0;
+    width: 48px;
+    max-width: 48px;
+    height: 48px;
+    margin-top: 0
+}
+
+.gen-audio-ad.v2.v2--small .gen-audio-iheart-logo {
+    background-position: 0 0;
+    background-size: contain;
+    width: 48px;
+    height: 48px
+}
+
+.gen-audio-ad.v2.v2--small .gen-audio-waveform {
+    position: absolute;
+    top: 40%
+}
+
+.gen-audio-ad.v2.v2--small .gen-audio-seek-wrap-v2 {
+    bottom: 44px
+}
+
+.gen-audio-ad.v2.v2--has-video {
+    gap: 0;
+    padding: 0
+}
+
+.gen-audio-ad.v2.v2--has-video .gen-audio-logo-wrap {
+    flex-shrink: 0;
+    width: 48px;
+    max-width: 48px;
+    height: 48px;
+    margin: 0;
+    position: absolute;
+    top: 8px;
+    left: 8px
+}
+
+.gen-audio-ad.v2.v2--has-video .gen-audio-iheart-logo {
+    background-position: 0 0;
+    background-size: contain;
+    width: 48px;
+    height: 48px
+}
+
+.gen-audio-ad.v2.v2--has-video .gen-audio-content-video {
+    object-fit: cover;
+    width: 100%;
+    height: min(41.67%,250px);
+    display: block;
+    position: absolute;
+    top: max(64px,15.83%);
+    left: 0
+}
+
+.gen-audio-ad.v2.v2--has-video .gen-audio-waveform {
+    width: 90%;
+    max-width: 300px;
+    height: 50px;
+    min-height: 40px;
+    margin: 0;
+    position: absolute;
+    top: max(170px,63.33%);
+    left: 50%;
+    transform: translate(-50%)
+}
+
+.gen-audio-ad.v2.v2--has-video .gen-audio-seek-wrap-v2 {
+    bottom: 50px
+}
+
+.gen-ad-shimmer {
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+    z-index: 2;
+    pointer-events: none;
+    background: #fff6;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    overflow: hidden
+}
+
+.gen-ad-shimmer:after {
+    content: "";
+    background: linear-gradient(90deg,#0000 0%,#ffffff8c 50%,#0000 100%);
+    animation: 1.4s ease-in-out infinite gen-ad-shimmer-sweep;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    transform: translate(-100%)
+}
+
+@keyframes gen-ad-shimmer-sweep {
+    0% {
+        transform: translate(-100%)
+    }
+
+    to {
+        transform: translate(100%)
+    }
+}

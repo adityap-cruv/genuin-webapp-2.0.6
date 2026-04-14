@@ -149,6 +149,13 @@ function mapVideoItem(item: VideoFeedItem): z.infer<typeof PostDetailsSchema> {
       cover_url: item.section?.cover_url || null,
       no_of_clips: item.section?.no_of_clips || null,
     },
+    sponsored: item.sponsored
+      ? {
+          id: item.sponsored.id,
+          title: item.sponsored.title,
+          cpm: item.sponsored.cpm,
+        }
+      : null,
   };
 }
 
@@ -246,6 +253,13 @@ export function parseFeed(
           placement_card_section_layout_id:
             item?.video.placement_card_section_layout_id || null,
         },
+        sponsored: item.sponsored
+          ? {
+              id: item.sponsored.id,
+              title: item.sponsored.title,
+              cpm: item.sponsored.cpm,
+            }
+          : null,
       };
       result.push(mappedItem as unknown as PostDetailsType);
     } else if (isAdsFeedItem(item)) {
@@ -262,6 +276,7 @@ export function parseFeed(
           community: mapped.community,
           owner: mapped.owner,
           section: mapped.section,
+          sponsored: mapped.sponsored,
         } as PostDetailsType);
       } else {
         result.push({ type: "ads", adTagObject } as PostDetailsType);

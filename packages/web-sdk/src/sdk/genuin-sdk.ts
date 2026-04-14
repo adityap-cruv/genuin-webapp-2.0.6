@@ -517,6 +517,22 @@ export class GenuinSDK {
         this.storeCleanupFunction(element, cleanup)
       }
 
+      // Register a resize listener for this element so the host container height
+      // tracks the embed's internally calculated height. The listener filters by
+      // containerId so multiple embeds on the same page each resize only their own
+      // container. No fixed height is required on the host element.
+      const handleEmbedResize = (event: { payload?: { height?: number; width?: number; containerId?: string | null } }) => {
+        const { height, containerId } = event.payload ?? {}
+        if (typeof height !== 'number' || height <= 0) return
+        // Match this listener to the correct container element. When containerId is
+        // present, use it for an exact match. Otherwise update unconditionally
+        // (single-embed fallback).
+        if (containerId !== undefined && containerId !== null && containerId !== element.id) return
+        element.style.height = `${height}px`
+      }
+      // 'onResize' is the SDKEventName.RESIZE value emitted by embed.tsx
+      this.eventManager.on('onResize' as SDKEventType, handleEmbedResize as EventListener)
+
       // A flag to check if the component is only for expand view based on the initial size check, if true we will not lazy load this component as it might cause issues in loading the expand view.
       const ifComponentIsOnlyForExpand =
         this.checkIfEmbedIsOnlyForExpand(element)

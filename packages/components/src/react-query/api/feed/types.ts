@@ -17,6 +17,12 @@ type SectionInfo = {
   sub_title?: string | null | undefined;
 } | null;
 
+type SponsoredInfo = {
+  id: string;
+  title: string;
+  cpm: number;
+} | null;
+
 export type VideoFeedItem = {
   uuid: string;
   type: string;
@@ -27,6 +33,7 @@ export type VideoFeedItem = {
   owner: FeedOwnerInfo;
   score?: ScoreInfo;
   section?: SectionInfo;
+  sponsored?: SponsoredInfo;
 };
 
 type DisplayAdConfig = { platform: string; tag_id: string };

@@ -330,7 +330,7 @@ export function NavigationButtonsWithContext({
 
   // Function to update disabled state based on current swiper state
   const updateDisabledState = useCallback(() => {
-    if (isIheartLayout) {
+    if (isIheartLayout && config.embedSwiperConfigs.useWindowSwiperMode) {
       // For iHeart layout, use slide visibility percentage
       // Disable prev if slide at index 1 is fully visible
       const prevDisabled =

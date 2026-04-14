@@ -312,13 +312,9 @@ a swiper inside another swiper.
 
   const handleActiveIndexChange = useCallback(
     (index: number) => {
-      const newPost = filteredPost[index];
-      if (isAdFilled && newPost && !("adTagObject" in newPost)) {
-        setIsAdFilled(false);
-      }
       onActiveIndexChange?.(index);
     },
-    [isAdFilled, filteredPost, onActiveIndexChange],
+    [adActiveOn, filteredPost, onActiveIndexChange],
   );
   // Focus management hook (only for iHeart)
   const { containerRef: playerListRef } = useFocusManagement({
@@ -333,7 +329,7 @@ a swiper inside another swiper.
   }, []);
 
   const handleAdPlaybackEnd = useCallback((index: number) => {
-    setAdActiveOn(index);
+    setAdActiveOn(-1);
     setIsAdFilled(false);
   }, []);
 
@@ -642,10 +638,10 @@ a swiper inside another swiper.
                     onCommentCountChange={onCommentCountChange}
                     totalVideos={totalVideos}
                     isSectioned={isSectioned}
-                    onAdStarted={handleAdStarted}
-                    onAdEnded={handleAdEnded}
                     onAdFilled={handleAdFilled}
                     onAdPlaybackEnd={handleAdPlaybackEnd}
+                    onAdStarted={handleAdStarted}
+                    onAdEnded={handleAdEnded}
                   />
                 </Suspense>
               )}
@@ -928,6 +924,7 @@ a swiper inside another swiper.
       {isOctoOpen &&
         showExpandView &&
         !isAdFilled &&
+        showCommentBox &&
         filteredPost[activeIndex] &&
         brandLayoutType !== "iheart" &&
         isDesktop && (

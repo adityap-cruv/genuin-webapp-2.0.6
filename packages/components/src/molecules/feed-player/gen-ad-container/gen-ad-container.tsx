@@ -38,6 +38,7 @@ export function GenAdContainer({
   videoType,
   muted,
   moveToNextVideo,
+  onAdInit,
   onAdFilled,
   onAdFillFailed,
   onAdCompleted,
@@ -50,6 +51,9 @@ export function GenAdContainer({
 
   const moveToNextVideoRef = useRef(moveToNextVideo);
   moveToNextVideoRef.current = moveToNextVideo;
+
+  const onAdInitRef = useRef(onAdInit);
+  onAdInitRef.current = onAdInit;
 
   const onAdFilledRef = useRef(onAdFilled);
   onAdFilledRef.current = onAdFilled;
@@ -87,6 +91,7 @@ export function GenAdContainer({
             ad_type: "in_feed",
             video_type: videoType,
           };
+          onAdInitRef.current?.();
           instanceIdRef.current = (window as any).GenAd.init({
             containerElement: adContainerRef.current,
             muted: muted,

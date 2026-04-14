@@ -245,6 +245,7 @@ export function Embed({
   const {
     embedData,
     embedEventBus,
+    rootElement,
     updateIsSectioned,
     updateSectionList,
     changeActivePlayerType,
@@ -508,6 +509,25 @@ export function Embed({
       });
     }
   }, [isEmbed, isLoading]);
+
+  // Emit RESIZE event whenever the embed's calculated dimensions change so the
+  // host container can update its height to match — eliminating scroll without a
+  // fixed hardcoded height on the container element.
+  // Grid layouts handle their own RESIZE emission from grid-view.tsx via
+  // ResizeObserver on the actual rendered grid element, so we skip here.
+  useEffect(() => {
+    if (isGridLayout) return;
+    if (containerHeight <= 0 || containerWidth <= 0) return;
+    SDKEventEmitter.emit(
+      SDKEventName.RESIZE,
+      {
+        height: containerHeight,
+        width: containerWidth,
+        containerId: rootElement?.id ?? null,
+      },
+      { debounceTime: 100 },
+    );
+  }, [containerHeight, containerWidth]);
 
   // Listen for centerActiveSlide event to center the swiper when exiting expand view
   useEffect(() => {
@@ -874,7 +894,7 @@ export function Embed({
             </div>
           )
         )}
-        {isIheartLayout && embedData.style === "feed" && !isMobile && (
+        {isIheartLayout && embedData.style === "feed" && (
           <NavigationButtonsWithContext
             totalSlides={totalSlides}
             isIheartLayout={true}

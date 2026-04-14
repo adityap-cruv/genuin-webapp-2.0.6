@@ -59,6 +59,8 @@ export type GenAdContainerProps = {
   videoId?: string;
   /** Video Type for analytics event payloads. */
   videoType?: string;
+  /** Called immediately after GenAd.init() is invoked — before waterfall resolves. */
+  onAdInit?: () => void;
   /** Called when the waterfall finds an ad (provider name is passed). */
   onAdFilled?: (provider: string) => void;
   /** Called when all waterfall providers are exhausted (no ad to show). */

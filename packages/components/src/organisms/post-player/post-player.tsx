@@ -54,6 +54,7 @@ export function PostPlayer({
             playsInline
             videoDescription={post.video?.descritptionText}
             videoType={videoType}
+            sponsorshipInfo={post.sponsored}
           />
           <ControlLayer
             isActive={true}

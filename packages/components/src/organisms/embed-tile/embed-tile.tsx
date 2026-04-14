@@ -382,6 +382,7 @@ function EmbedPlayer({
               }
               videoType={postDetails.video?.videoType ?? VideoTypes.Content}
               playerSize={itemSize}
+              sponsorshipInfo={postDetails.sponsored}
             />
           </Suspense>
         </div>

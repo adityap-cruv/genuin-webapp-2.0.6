@@ -1,11 +1,15 @@
 import { useEmbedContext } from "@genuin/components/context";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { useEmbedManagerContext } from "../context";
-import { ComponentProps, useMemo } from "react";
+import { ComponentProps, useEffect, useMemo, useRef } from "react";
 import { cn, getAspectRatio } from "@genuin/ui/lib/utils";
 import { useEmbedDimensions } from "@genuin/components/hooks/embed/use-embed-dimensions";
 import { EmbedItem } from "../embed-tile-item";
 import { EmbedHeader } from "@genuin/components/molecules/embed-header";
+import {
+  SDKEventEmitter,
+  SDKEventName,
+} from "@genuin/components/lib/sdk-event-emitter";
 
 export function GridView({
   videos,
@@ -23,10 +27,41 @@ export function GridView({
   aspectRatio?: string;
   totalVideos: number;
 } & ComponentProps<"div">) {
-  const { embedEventBus } = useEmbedContext();
+  const { embedEventBus, rootElement } = useEmbedContext();
   const { swiper } = useEmbedManagerContext();
   const { containerHeight, containerWidth, headerHeight } =
     useEmbedDimensions();
+
+  /** Ref to the inner grid div so we can measure its rendered height. */
+  const gridDivRef = useRef<HTMLDivElement>(null);
+
+  // Observe the inner grid div's rendered height and emit a RESIZE SDK event
+  // so the host container can grow to fit the grid without a fixed height.
+  useEffect(() => {
+    const gridEl = gridDivRef.current;
+    if (!gridEl) return;
+
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (!entry) return;
+
+      const gridHeight = entry.contentRect.height;
+      const totalHeight = headerHeight + gridHeight;
+
+      SDKEventEmitter.emit(
+        SDKEventName.RESIZE,
+        {
+          height: totalHeight,
+          width: Math.max(containerWidth, 0),
+          containerId: rootElement?.id ?? null,
+        },
+        { debounceTime: 100 },
+      );
+    });
+
+    observer.observe(gridEl);
+    return () => observer.disconnect();
+  }, [headerHeight, containerWidth, rootElement]);
 
   const { width: widthRatio, height: heightRatio } = useMemo(
     () => getAspectRatio(aspectRatio),
@@ -47,10 +82,9 @@ export function GridView({
   return (
     <div
       style={{
-        height: Math.max(containerHeight, 0),
         width: Math.max(containerWidth, 0),
       }}
-      className="gencl:h-full gencl:w-full"
+      className="gencl:w-full"
       {...restProps}
     >
       <EmbedHeader
@@ -60,6 +94,7 @@ export function GridView({
         variant="grid"
       />
       <div
+        ref={gridDivRef}
         className={cn("gencl:w-full gencl:gap-2")}
         style={{
           display: "grid",
