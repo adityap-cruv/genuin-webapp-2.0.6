@@ -26,6 +26,12 @@ const REQUIRED_STYLES: StyleRequirement[] = [
     check: (el: Element) =>
       (el as HTMLStyleElement).textContent?.includes("gencl:") || false,
   },
+  {
+    name: "gen-ad",
+    selector: 'link[rel="stylesheet"]',
+    check: (el: Element) =>
+      (el as HTMLLinkElement).href?.includes("gen_ad.min.css") || false,
+  },
 ] as const;
 
 /**
@@ -194,7 +200,8 @@ export async function setupMainShadowDOM(
     // Reuse the existing inner root element rather than calling attachShadow() again,
     // which would throw a DOMException in all browsers.
     shadowRoot = container.shadowRoot;
-    root = shadowRoot.querySelector<HTMLElement>(`#${CSS.escape(container.id)}`) ??
+    root =
+      shadowRoot.querySelector<HTMLElement>(`#${CSS.escape(container.id)}`) ??
       (shadowRoot.firstElementChild as HTMLElement | null);
   } else if (!isInShadow && container.parentNode) {
     // Create new shadow DOM

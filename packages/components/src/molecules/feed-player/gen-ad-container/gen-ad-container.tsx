@@ -3,6 +3,7 @@ import { useEffect, useRef } from "react";
 import { cn } from "@genuin/ui/lib/utils";
 import { useAnalytics } from "../../../context/analytics/context";
 import type { GenAdConfig, GenAdContainerProps } from "./gen-ad.types";
+import { ensureStylesInShadowRoot } from "../../root-portal/shadow-root/shadow-dom.utils";
 
 function getAdSource(config: GenAdConfig, provider?: string): string {
   const map: Record<string, string | undefined> = {
@@ -23,10 +24,27 @@ const GEN_AD_SCRIPT_URL =
 function loadGenAdScript(): void {
   const existing = document.querySelector(`script[src="${GEN_AD_SCRIPT_URL}"]`);
   if (existing) return; // already loading or loaded
+
   const script = document.createElement("script");
   script.src = GEN_AD_SCRIPT_URL;
   script.async = true;
   script.onerror = () => {};
+  script.onload = () => {
+    // Ensure required styles are injected into all relevant shadow roots
+    const injectStylesIntoShadowRoots = () => {
+      const mainHost = document.querySelector("[data-genuin-host]");
+      if (mainHost?.shadowRoot) {
+        void ensureStylesInShadowRoot(mainHost.shadowRoot);
+      }
+
+      const overlayHost = document.querySelector("[data-genuin-overlay-host]");
+      if (overlayHost?.shadowRoot) {
+        void ensureStylesInShadowRoot(overlayHost.shadowRoot);
+      }
+    };
+
+    injectStylesIntoShadowRoots();
+  };
   document.head.appendChild(script);
 }
 
