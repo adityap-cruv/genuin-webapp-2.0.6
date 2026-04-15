@@ -618,8 +618,18 @@ export const FeedPlayer = memo(function FeedPlayer({
             onAdInit={() => {
               setIsAdFilled(true);
               onAdStateChange?.(true);
+              onAdFilled?.("");
+              updateAdInfo(true, {
+                adId: "",
+                url: null,
+                title: null,
+                totalAds: 1,
+                currentAdIndex: 1,
+              });
             }}
             onAdFilled={(provider) => {
+              setIsAdFilled(true);
+              onAdStateChange?.(true);
               onAdFilled?.(provider);
               updateAdInfo(true, {
                 adId: provider,

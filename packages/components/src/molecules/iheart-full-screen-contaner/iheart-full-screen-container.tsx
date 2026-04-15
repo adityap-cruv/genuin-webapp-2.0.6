@@ -73,33 +73,38 @@ export function IheartFullscreenContainer({
   return (
     <div
       style={{
-        height:
-          embedStyle === "feed" || embedStyle === "grid"
-            ? "100%"
-            : isDesktop
-              ? websiteType === "legacy"
-                ? "100vh"
-                : containerDimensions.height ||
-                  height - IHEART_MINI_PLAYER_HEIGHT
-              : height - IHEART_TOP_BAR,
-        width:
-          embedStyle === "feed" || embedStyle === "grid"
-            ? "100%"
-            : isDesktop
-              ? containerDimensions.width || "100%"
-              : "100%",
-        top:
-          embedStyle === "feed" || embedStyle === "grid"
-            ? 0
-            : isDesktop
-              ? containerDimensions.y || 0
-              : IHEART_TOP_BAR,
-        left:
-          embedStyle === "feed" || embedStyle === "grid"
-            ? 0
-            : isDesktop
-              ? containerDimensions.x
-              : undefined,
+        // height:
+        //   embedStyle === "feed" || embedStyle === "grid"
+        //     ? "100%"
+        //     : isDesktop
+        //       ? websiteType === "legacy"
+        //         ? "100vh"
+        //         : containerDimensions.height ||
+        //           height - IHEART_MINI_PLAYER_HEIGHT
+        //       : height - IHEART_TOP_BAR,
+        // width:
+        //   embedStyle === "feed" || embedStyle === "grid"
+        //     ? "100%"
+        //     : isDesktop
+        //       ? containerDimensions.width || "100%"
+        //       : "100%",
+        // top:
+        //   embedStyle === "feed" || embedStyle === "grid"
+        //     ? 0
+        //     : isDesktop
+        //       ? containerDimensions.y || 0
+        //       : IHEART_TOP_BAR,
+        // left:
+        //   embedStyle === "feed" || embedStyle === "grid"
+        //     ? 0
+        //     : isDesktop
+        //       ? containerDimensions.x
+        //       : undefined,
+
+        height: "100%",
+        width: "100%",
+        top: 0,
+        left: 0,
         position: "fixed",
         zIndex: 50,
       }}

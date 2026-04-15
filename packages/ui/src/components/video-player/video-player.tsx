@@ -412,7 +412,7 @@ export const VideoPlayer = memo(function VideoPlayer({
             }
           } else {
             if ((error as any)?.name !== "NotAllowedError") {
-              updatePlayerMutedState(true);
+            updatePlayerMutedState(true);
             }
             await player.play();
           }
@@ -441,6 +441,10 @@ export const VideoPlayer = memo(function VideoPlayer({
               updatePlayerPlayState();
             } else {
               updatePlayerMutedState(true);
+              player
+                ?.getMedia()
+                .play()
+                .catch(() => {});
             }
           }
         });
@@ -470,6 +474,10 @@ export const VideoPlayer = memo(function VideoPlayer({
                 updatePlayerPlayState();
               } else {
                 updatePlayerMutedState(true);
+                player
+                  ?.getMedia()
+                  .play()
+                  .catch(() => {});
               }
             }
           });

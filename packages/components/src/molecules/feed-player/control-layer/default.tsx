@@ -150,7 +150,7 @@ export function Default({
           {isAdPlaying ? (
             <div
               // aria-label="Toggle video playback"
-              onClick={handleIHeartClick}
+              // onClick={handleIHeartClick}
               className={cn(
                 "group gencl:inset-0 gencl:z-50 gencl:flex gencl:justify-center",
                 "gencl:appearance-none gencl:border-0 gencl:bg-transparent gencl:p-0 gencl:cursor-pointer gencl:w-full",
@@ -160,7 +160,7 @@ export function Default({
             >
               <Button
                 theme="overlay"
-                className="gencl:px-0 gencl:absolute gencl:top-4 gencl:right-8"
+                className="gencl:px-0 gencl:absolute gencl:top-4 gencl:right-8 gencl:rounded-full! gencl:shrink-0"
                 size="md"
                 onClick={() => toggleMuted(true)}
               >
