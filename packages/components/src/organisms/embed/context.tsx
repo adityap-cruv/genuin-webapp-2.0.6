@@ -282,7 +282,7 @@ export function EmbedManagerProvider({
           index: activeIndex + 1,
           dir: config.view.isFeed ? "vertical" : "horizontal",
         });
-        if (isIHeart || forceNextMove) {
+        if (forceNextMove) {
           handleIHeartNavigation("next");
         } else {
           // Always slide to ensure swiper navigation happens

@@ -352,11 +352,14 @@ export function Embed({
       : videos;
   }, [videos, isDesktop]);
 
-  // Expand-view feed: real videos with synthetic ads interleaved between each video.
-  // Normal embed view uses `filteredPost` unchanged (no injected ads).
+  // Expand-view feed: inject synthetic ads only for the selected placements/embeds.
+  // All other embeds pass filteredPost through unchanged.
   const expandViewFeed = useMemo(
-    () => injectAdsForExpandView(filteredPost),
-    [filteredPost],
+    () =>
+      config.brand.shouldInjectExpandViewAds
+        ? injectAdsForExpandView(filteredPost)
+        : filteredPost,
+    [filteredPost, config.brand.shouldInjectExpandViewAds],
   );
 
   // Extract video titles from postDetails

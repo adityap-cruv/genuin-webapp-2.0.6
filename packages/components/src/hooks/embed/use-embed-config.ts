@@ -528,17 +528,21 @@ export function useEmbedConfigs() {
   const virtualizeSwiper = true;
 
   const brand = useMemo(() => {
-    const AUTO_PAGE_CONTEXT_PLACEMENT_IDS = new Set([
+    /** IHeart placement/embed IDs — shared across all IHeart-specific feature flags. */
+    const IHEART_PLACEMENT_IDS = new Set([
       "69c2812fd98484cf6b83a5ba",
       "69c2846f506553c1e2b21722",
     ]);
-    const AUTO_PAGE_CONTEXT_EMBED_IDS = new Set(["69c38273686a088a80a25ea2"]);
+    const IHEART_EMBED_IDS = new Set(["69c38273686a088a80a25ea2"]);
 
-    const autoPageContext =
-      (!!embedData?.placement_id &&
-        AUTO_PAGE_CONTEXT_PLACEMENT_IDS.has(embedData.placement_id)) ||
-      (!!embedData?.embed_id &&
-        AUTO_PAGE_CONTEXT_EMBED_IDS.has(embedData.embed_id));
+    const isIheart =
+      (!!embedData?.placement_id && IHEART_PLACEMENT_IDS.has(embedData.placement_id)) ||
+      (!!embedData?.embed_id && IHEART_EMBED_IDS.has(embedData.embed_id));
+
+    const autoPageContext = isIheart;
+
+    /** Placements/embeds where synthetic ads should be injected between videos in expand-view. */
+    const shouldInjectExpandViewAds = isIheart;
 
     const showIheartIframe = false;
     const isUsWeekly = brandDetails.brand_id === 2476;
@@ -552,6 +556,7 @@ export function useEmbedConfigs() {
       feedType,
       autoPageContext,
       showIheartIframe,
+      shouldInjectExpandViewAds,
     };
   }, [brandDetails.brand_id, embedData?.placement_id, embedData?.embed_id]);
 
