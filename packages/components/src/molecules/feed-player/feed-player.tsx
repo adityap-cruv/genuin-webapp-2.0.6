@@ -655,6 +655,13 @@ export const FeedPlayer = memo(function FeedPlayer({
               setIsAdFilled(false);
               onAdPlaybackEnd?.();
             }}
+            onSystemMuteChange={(isMuted) => {
+              if (isMuted) {
+                mute(false);
+              } else {
+                unmute(false);
+              }
+            }}
           />
         </Suspense>
       )}

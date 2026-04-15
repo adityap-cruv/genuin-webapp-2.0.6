@@ -12,14 +12,23 @@ import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-d
 // todo: check if we can use <Slider/> component instead of input[type="range"] here.
 export const AnimatedMuteIcon = ({
   shouldAnimate,
+  showText = false,
 }: {
   shouldAnimate: boolean;
+  /** When true, always show the "Tap to unmute" text while muted, ignoring the volume-slider hover state. */
+  showText?: boolean;
 }) => {
   const { volume, setVolume } = useBaseContext();
   const { toggleMuted, muted } = usePlayerContext();
   const { isMobile } = useDeviceDetectMediaQuery();
   const [showVolumeSlider, setShowVolumeSlider] = useState(false);
   const [stopAnimating, setStopAnimating] = useState(!shouldAnimate);
+
+  // Restart animation whenever system mutes (shouldAnimate flips to true),
+  // and stop it when the prop goes back to false (user acted or system unmuted).
+  useEffect(() => {
+    setStopAnimating(!shouldAnimate);
+  }, [shouldAnimate]);
 
   const handleClick = useCallback(
     (e: any) => {
@@ -76,8 +85,8 @@ export const AnimatedMuteIcon = ({
         )}
       </div>
 
-      {!showVolumeSlider && muted && (
-        <AnimatedText text="Tap to unmute" width={110} stop={stopAnimating} />
+      {(showText || !showVolumeSlider) && muted && (
+        <AnimatedText text="Tap to unmute" width={110} stop={stopAnimating} visible={showText} />
       )}
 
       {/* Volume slider with smooth animation */}

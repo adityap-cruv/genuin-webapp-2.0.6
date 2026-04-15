@@ -22,7 +22,10 @@ const Linkouts = React.lazy(() =>
 import { PlaybackSpeedCapsule } from "@genuin/components/molecules/playback-speed/speed-capsule";
 import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
 import { SpeedControlSideBars } from "../../playback-speed/speed-control-bars";
-import { VideoEditActionButtons } from "./controls/control-buttons";
+import {
+  AnimatedMuteIcon,
+  VideoEditActionButtons,
+} from "./controls/control-buttons";
 import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
 import {
   DynamicReactionIcon,
@@ -158,18 +161,9 @@ export function Default({
               )}
               {...restProps}
             >
-              <Button
-                theme="overlay"
-                className="gencl:px-0 gencl:absolute gencl:top-4 gencl:right-8 gencl:rounded-full! gencl:shrink-0"
-                size="md"
-                onClick={() => toggleMuted(true)}
-              >
-                {muted ? (
-                  <MuteIcon theme="dark" size="md" />
-                ) : (
-                  <UnmuteIcon theme="dark" size="md" />
-                )}
-              </Button>
+              <div className="gencl:px-0 gencl:absolute gencl:top-4 gencl:right-4 gencl:rounded-full! gencl:shrink-0">
+                <AnimatedMuteIcon shouldAnimate={false} showText={muted} />
+              </div>
             </div>
           ) : (
             <div

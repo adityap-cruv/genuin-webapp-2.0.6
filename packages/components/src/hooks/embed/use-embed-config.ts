@@ -84,7 +84,11 @@ export function useEmbedConfigs() {
         return embedData?.grid_layout || undefined;
       })(),
       expandOnInteraction:
-        embedData?.embed_id === "69c38273686a088a80a25ea2" && isMobile,
+        (embedData?.embed_id === "69c38273686a088a80a25ea2" ||
+          embedData?.placement_id === "69de71089f6934fe0ba22fb5" ||
+          embedData?.placement_id === "69de7b51ede71540a7f10fd7" ||
+          embedData?.placement_id === "69de814d6778217d372a2308") &&
+        isMobile,
       scrollBehavior: customization?.scroll_behavior || "paging",
       isNavigationControlEnabled:
         brandLayoutType === "ted"
@@ -536,7 +540,8 @@ export function useEmbedConfigs() {
     const IHEART_EMBED_IDS = new Set(["69c38273686a088a80a25ea2"]);
 
     const isIheart =
-      (!!embedData?.placement_id && IHEART_PLACEMENT_IDS.has(embedData.placement_id)) ||
+      (!!embedData?.placement_id &&
+        IHEART_PLACEMENT_IDS.has(embedData.placement_id)) ||
       (!!embedData?.embed_id && IHEART_EMBED_IDS.has(embedData.embed_id));
 
     const autoPageContext = isIheart;

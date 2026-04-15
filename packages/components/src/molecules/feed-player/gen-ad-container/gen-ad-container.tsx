@@ -60,6 +60,7 @@ export function GenAdContainer({
   onAdFilled,
   onAdFillFailed,
   onAdCompleted,
+  onSystemMuteChange,
 }: GenAdContainerProps) {
   const adContainerRef = useRef<HTMLDivElement>(null);
   const instanceIdRef = useRef<string | null>(null);
@@ -81,6 +82,9 @@ export function GenAdContainer({
 
   const onAdCompletedRef = useRef(onAdCompleted);
   onAdCompletedRef.current = onAdCompleted;
+
+  const onSystemMuteChangeRef = useRef(onSystemMuteChange);
+  onSystemMuteChangeRef.current = onSystemMuteChange;
 
   useEffect(() => {
     if (!isActive) return;
@@ -164,7 +168,11 @@ export function GenAdContainer({
               onAdCompletedRef.current?.();
               moveToNextVideoRef.current?.();
             },
-            onVolumeChange: (_data: { isMuted: boolean; volume: number }) => {},
+            onVolumeChange: (data: { isMuted: boolean; volume: number; reason?: 'system' | 'user' }) => {
+              if (data.reason === 'system') {
+                onSystemMuteChangeRef.current?.(data.isMuted);
+              }
+            },
             onAdBlocked: (_reason: string) => {},
             events: {
               onAdRendered: (event: any) => {

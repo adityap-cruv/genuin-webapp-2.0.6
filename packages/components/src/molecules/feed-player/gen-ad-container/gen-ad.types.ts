@@ -75,4 +75,6 @@ export type GenAdContainerProps = {
   moveToNextVideo: () => void;
   /** Whether the video is muted. Used to determine initial audio state for video ads. */
   muted?: boolean;
+  /** Called when the SDK mutes audio automatically (e.g. browser policy). Passes the new muted state. */
+  onSystemMuteChange?: (isMuted: boolean) => void;
 };
