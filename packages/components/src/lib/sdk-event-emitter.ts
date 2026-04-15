@@ -57,6 +57,7 @@ export enum SDKListenerEventName {
   PLAYER_ON_FOLLOW_CHANGED = "player:onFollowChanged",
   PLAY_CHANGE_IHEART_CONTENT = "player:onMiniPlayerPlayChange",
   THEME_CHANGE = "sdk:themeChange",
+  MUTE_CHANGE = "onMuteChange",
 }
 
 /**
@@ -114,6 +115,7 @@ export interface SDKPauseEventPayload {
 export interface SDKMuteChangePayload {
   muted: boolean;
   volume: number;
+  instanceId?: string;
 }
 
 export interface SDKShareEventPayload {
@@ -298,7 +300,7 @@ export class SDKEventEmitter {
    */
   private static emitEvent<T extends SDKEventName>(
     eventName: T,
-    payload: SDKEventPayloadMap[T]
+    payload: SDKEventPayloadMap[T],
   ): void {
     if (!this.isSDKAvailable()) {
       return;
@@ -333,7 +335,7 @@ export class SDKEventEmitter {
   static emit<T extends SDKEventName>(
     eventName: T,
     payload: SDKEventPayloadMap[T],
-    options?: SDKEmitOptions
+    options?: SDKEmitOptions,
   ): void {
     const { debounceTime } = options || {};
 
@@ -424,7 +426,7 @@ export class SDKEventEmitter {
    */
   static off(
     eventName: SDKListenerEventName,
-    listener: SDKEventListener
+    listener: SDKEventListener,
   ): void {
     if (!this.isSDKAvailable()) {
       return;

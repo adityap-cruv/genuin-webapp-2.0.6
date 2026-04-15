@@ -19,7 +19,6 @@ import { useSafeEmbedContext } from "../embed/context";
 import {
   SDKEventEmitter,
   SDKEventName,
-  SDKEventPayloadMap,
   SDKListenerEventName,
 } from "@genuin/components/lib/sdk-event-emitter";
 import { getSdkVersion } from "../analytics/utils";
@@ -115,7 +114,6 @@ export function BaseContextProvider({
   theme,
 }: BaseContextProviderProps) {
   const embedDetails = useSafeEmbedContext();
-
   const baseEventBus = useMemo(() => {
     const shouldAutoplay = getShouldAutoplay({
       isEmbed,
@@ -135,6 +133,16 @@ export function BaseContextProvider({
   // TODO: move this states to event based states.
   const [muted, setMuted] = useState(true);
   const [volume, setVolume] = useState(100);
+  const instanceId = useMemo(() => {
+    return embedDetails?.rootElement?.getAttribute("data-instance-id");
+  }, [embedDetails]);
+
+  // Per-embed play state. Uses baseEventBus (per-embed, created via useMemo) rather
+  // than FeedContextManager, which is a page-level singleton whose isPlaying reflects
+  // the last writer across all embeds and cannot be used for per-embed tracking.
+  const [isPlaying, setIsPlaying] = useState(
+    () => baseEventBus.getContext().globalPlayingState,
+  );
   const [currentTheme, setCurrentTheme] = useState<
     "dark" | "light" | undefined
   >(theme);
@@ -164,8 +172,53 @@ export function BaseContextProvider({
     }));
   }, [volume, muted]);
 
-  // This effect uses a cleanup function, which doesn't run on initial mount.
-  // The event will be ignored on first render and only emitted from the second time onwards when muted changes.
+  // ─── Cross-embed audio coordination ────────────────────────────────────────
+  //
+  // Each gen-sdk div is an independent React tree (createRoot), so React Context
+  // cannot cross embed boundaries. Coordination uses the SDK event bus
+  // (window.genuin) — the only object shared across all embeds on the page.
+  //
+  // Rule: only one embed may be audible at a time. When an embed becomes audible
+  // (user turns off mute, or presses play while already unmuted) it broadcasts
+  // MUTE_CHANGE { muted: false, instanceId }. Other playing+audible embeds
+  // receive the signal and mute themselves.
+  //
+  // Each embed identified by instanceId (data-instance-id from the root element).
+  //
+  // Three parts:
+  //   [1] isPlaying state (above)       — per-embed play flag via baseEventBus
+  //   [2] Listener effect (below)       — mutes this embed when another goes audible
+  //   [3a] Mute-change emitter (below)  — broadcasts when muted toggles
+  //   [3b] Play-start emitter (below)   — broadcasts when play starts while audible
+
+  // [2] Listener: mute this embed when another becomes audible.
+  // Guard A (!muted): skip if already muted — setMuted(true) would be a no-op.
+  // Guard B (isPlaying): skip if paused — a paused embed has no audio output and
+  //   should remain unmuted so it can resume with audio when play is pressed.
+  useEffect(() => {
+    function handleMuteChange(params: any) {
+      const payload = params.payload;
+      if (!payload) return;
+
+      const eventInstanceId = payload.instanceId;
+      if (!eventInstanceId || eventInstanceId.trim() === "") return;
+      if (eventInstanceId === instanceId) return; // ignore own broadcasts
+
+      // { muted: false } means the sender became audible — mute this embed.
+      if (!muted && payload.muted === false && isPlaying) {
+        setMuted(true);
+      }
+    }
+
+    SDKEventEmitter.on(SDKListenerEventName.MUTE_CHANGE, handleMuteChange);
+    return () =>
+      SDKEventEmitter.off(SDKListenerEventName.MUTE_CHANGE, handleMuteChange);
+  }, [muted, isPlaying]);
+
+  // [3a] Emitter — mute toggled.
+  // Uses the effect cleanup pattern: cleanup runs with the OLD muted value captured
+  // in the closure. When muted goes true→false (user turns off mute), cleanup emits
+  // { muted: false } — signalling "I became audible." Skips on initial mount.
   useEffect(() => {
     return () => {
       SDKEventEmitter.emit(
@@ -173,6 +226,7 @@ export function BaseContextProvider({
         {
           muted: !muted,
           volume: baseEventBus.getContext().volume,
+          instanceId: instanceId ?? "",
         },
         { debounceTime: 300 },
       );
@@ -400,6 +454,48 @@ export function BaseContextProvider({
       SDKEventEmitter.cancelAllDebounce();
     };
   }, [baseContextManager, baseEventBus, embedDetails]);
+
+  // [3b] Emitter — play started while already audible.
+  // Covers the case where muted never changes (both embeds have muted=false) but
+  // the user presses play on the paused embed. Since muted did not change, [3a]
+  // never fires. This handler listens to globalPlayingStateChange (per-embed bus)
+  // and broadcasts { muted: false } when play starts while this embed is audible.
+  //
+  // Dual responsibility:
+  //   1. Keep isPlaying in sync (always).
+  //   2. Broadcast audible-play signal (only when play starts AND !muted).
+  useEffect(() => {
+    function handleGlobalPlayingStateChange(
+      _: unknown,
+      context: { globalPlayingState: boolean },
+    ) {
+      // [1] Keep isPlaying in sync with this embed's actual play state.
+      setIsPlaying(context.globalPlayingState);
+
+      // [2] Broadcast only when transitioning to playing while audible.
+      //     Other embeds that are currently playing+audible will mute themselves
+      //     upon receiving this signal (see the Listener effect above).
+      if (context.globalPlayingState && !muted) {
+        SDKEventEmitter.emit(
+          SDKEventName.MUTE_CHANGE,
+          {
+            muted: false,
+            volume: baseEventBus.getContext().volume,
+            instanceId: instanceId ?? "",
+          },
+          { debounceTime: 300 },
+        );
+      }
+    }
+
+    baseEventBus.on("globalPlayingStateChange", handleGlobalPlayingStateChange);
+    return () => {
+      baseEventBus.off(
+        "globalPlayingStateChange",
+        handleGlobalPlayingStateChange,
+      );
+    };
+  }, [baseEventBus, muted, instanceId]);
 
   useEffect(() => {
     function handleThemeChange({
