@@ -95,11 +95,15 @@ export function RootPortal({
         const container = shadowRoot.querySelector(
           "[data-portal-container]",
         ) as HTMLElement;
-        // Apply custom styles to the overlay host when provided via props
-        if (style) {
-          Object.assign(host.style, style);
-          Object.assign(container.style, style);
-        }
+        // NOTE: Do NOT apply `style` to host/container here — they are shared
+        // across all RootPortal instances. Applying height/width from one
+        // instance (e.g. PipView with height:0px) would corrupt the shared
+        // container for all others. The `style` prop is applied to the inner
+        // <div> via JSX spread below.
+        // if (style) {
+        //   Object.assign(host.style, style);
+        //   Object.assign(container.style, style);
+        // }
         setContainerElement(container);
       } else {
         // Default to document.body

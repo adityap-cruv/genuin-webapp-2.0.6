@@ -35,7 +35,10 @@ export function buildGenAdConfigFromAdTagObject(
     config.video = {
       vastUrl: adTagObj.video_ad.ads_url,
       platform: adTagObj.video_ad.platform,
-      audioLayout: 'v2',
+      audioLayout: "v2",
+      ...(adTagObj.video_ad.advertiserDetails
+        ? { advertiserDetails: adTagObj.video_ad.advertiserDetails }
+        : {}),
       ...(adTagObj.video_ad.contentVideo
         ? { contentVideo: adTagObj.video_ad.contentVideo }
         : {}),
@@ -58,5 +61,7 @@ export function buildGenAdConfigFromAdTagObject(
       }
     });
   }
+
+  console.log('config::',config)
   return config;
 }

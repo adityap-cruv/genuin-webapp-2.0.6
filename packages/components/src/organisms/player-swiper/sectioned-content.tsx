@@ -118,7 +118,9 @@ export function SectionedContent({
                 });
               }}
               disableScroll={disableSwiper}
-              onReachEnd={() => {
+              onReachEnd={(swiper: any) => {
+                // Guard against spurious reachEnd fired when expand mode changes Swiper geometry:
+                if (swiper.activeIndex < filteredPost.length - 1) return;
                 setEndOfFeedReached(true);
               }}
               onSlideChange={() => {

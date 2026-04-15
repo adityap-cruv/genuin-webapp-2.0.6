@@ -33,6 +33,10 @@ export type GenAdVideoConfig = {
   width?: number;
   height?: number;
   platform: string;
+  advertiserDetails?: {
+    logo: string;
+    primaryColor: string;
+  };
   contentVideo?: ContentVideoConfig;
 };
 

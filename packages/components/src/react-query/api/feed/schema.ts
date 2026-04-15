@@ -159,6 +159,12 @@ export const adTagObjectSchema = z.object({
       url: z.string(),
       cpm: z.number(),
       platform: z.string(),
+      advertiserDetails: z
+        .object({
+          logo: z.string(),
+          primaryColor: z.string(),
+        })
+        .nullish(),
       contentVideo: z
         .object({
           url: z.string(),

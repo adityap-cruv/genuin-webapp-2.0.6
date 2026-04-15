@@ -101,23 +101,31 @@ const EXPAND_VIEW_AD_CONFIGS = [
     videoSource:
       "https://vz-8bbc7bbf-a1e.b-cdn.net/07283c40-a199-410c-9d57-6b070d35ab33/play_360p.mp4",
     adUrl: "https://media.begenuin.com/ad-sdk/test-creatives/finance.xml",
+    logo: "https://media.begenuin.com/ad-sdk/test-creatives/splitero.webp",
+    primaryColor: "#F97316",
   },
   {
     videoSource:
       "https://vz-8bbc7bbf-a1e.b-cdn.net/3aa3cdc7-1254-425d-93c0-2d060f19322e/play_360p.mp4",
     adUrl:
       "https://media.begenuin.com/ad-sdk/test-creatives/consumerserivce.xml",
+    logo: "https://media.begenuin.com/ad-sdk/test-creatives/airtasker.webp",
+    primaryColor: "#061257",
   },
   {
     videoSource:
       "https://vz-8bbc7bbf-a1e.b-cdn.net/4f524c6b-153c-4e8e-8630-6b866f937a9a/play_360p.mp4",
     adUrl:
       "https://media.begenuin.com/ad-sdk/test-creatives/foodandgroceryads.xml",
+    logo: "https://media.begenuin.com/ad-sdk/test-creatives/impossiblefoods.webp",
+    primaryColor: "#E10600",
   },
   {
     videoSource:
       "https://vz-8bbc7bbf-a1e.b-cdn.net/684a999f-8e14-4399-93e8-c0bc67f9d51c/play_360p.mp4",
     adUrl: "https://media.begenuin.com/ad-sdk/test-creatives/soda.xml",
+    logo: "https://media.begenuin.com/ad-sdk/test-creatives/skypop.webp",
+    primaryColor: "#061257",
   },
 ] as const;
 
@@ -125,6 +133,8 @@ const EXPAND_VIEW_AD_CONFIGS = [
 function createInjectableAdItem(
   videoSource: string,
   adUrl: string,
+  logo: string,
+  primaryColor: string,
   idx: number,
 ): PostDetailsType {
   return {
@@ -137,6 +147,10 @@ function createInjectableAdItem(
         ads_url: adUrl,
         // platform: "aniview",
         cpm: 0.001,
+        advertiserDetails: {
+          logo,
+          primaryColor,
+        },
         contentVideo: {
           url: videoSource,
           autoplay: true,
@@ -205,7 +219,13 @@ function injectAdsForExpandView(feed: PostDetailsType[]): PostDetailsType[] {
           Math.floor(Math.random() * EXPAND_VIEW_AD_CONFIGS.length)
         ]!;
       result.push(
-        createInjectableAdItem(config.videoSource, config.adUrl, adCounter),
+        createInjectableAdItem(
+          config.videoSource,
+          config.adUrl,
+          config.logo,
+          config.primaryColor,
+          adCounter,
+        ),
       );
       adCounter++;
     }
