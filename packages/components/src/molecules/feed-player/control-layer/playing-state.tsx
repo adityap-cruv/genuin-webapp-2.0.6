@@ -34,7 +34,7 @@ export function PlayingState({
   showOnlyPlayAction = false,
   ...restProps
 }: PlayingStateProps) {
-  const { playingState, buttonAction, pausedBySystem, resumeFromSystemPause } =
+  const { playingState, buttonAction, pausedBySystem } =
     usePlayerContext();
 
   // System pause UI must remain stable across active/index/src transitions.
@@ -43,10 +43,6 @@ export function PlayingState({
       <div
         key="system-pause"
         className="gencl:flex gencl:flex-col gencl:items-center gencl:gap-2 gencl:absolute gencl:h-full gencl:w-full gencl:justify-center"
-        onClick={(event) => {
-          event.stopPropagation();
-          resumeFromSystemPause();
-        }}
       >
         <div
           role="status"
@@ -118,18 +114,18 @@ export function PlayingState({
   if (buttonAction === "PAUSE" && playingState === "PAUSED") {
     return (
       <div
-          key={buttonAction}
-          role="status"
-          aria-live="polite"
-          aria-label={getAriaLabelForAction(buttonAction)}
-          className={cn(
-            "gencl:rounded-full gencl:bg-black/40 gencl:align-middle gencl:backdrop-blur-sm",
-            className,
-          )}
-          {...restProps}
-        >
-          <PauseIcon theme="dark" size="xl" aria-hidden="true" />
-        </div>
+        key={buttonAction}
+        role="status"
+        aria-live="polite"
+        aria-label={getAriaLabelForAction(buttonAction)}
+        className={cn(
+          "gencl:rounded-full gencl:bg-black/40 gencl:align-middle gencl:backdrop-blur-sm",
+          className,
+        )}
+        {...restProps}
+      >
+        <PauseIcon theme="dark" size="xl" aria-hidden="true" />
+      </div>
     );
   }
 

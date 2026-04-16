@@ -12,11 +12,10 @@ import { useDeviceDetectMediaQuery } from "@genuin/components/hooks/use-devide-d
 // todo: check if we can use <Slider/> component instead of input[type="range"] here.
 export const AnimatedMuteIcon = ({
   shouldAnimate,
-  showText = false,
+  enableVolumeSlider = true,
 }: {
   shouldAnimate: boolean;
-  /** When true, always show the "Tap to unmute" text while muted, ignoring the volume-slider hover state. */
-  showText?: boolean;
+  enableVolumeSlider?: boolean;
 }) => {
   const { volume, setVolume } = useBaseContext();
   const { toggleMuted, muted } = usePlayerContext();
@@ -69,12 +68,12 @@ export const AnimatedMuteIcon = ({
   return (
     <div
       onClick={handleClick}
-      className={`gencl:group gencl:cursor-pointer gencl:flex gencl:z-50 gencl:items-center gencl:justify-start gencl:overflow-hidden gencl:rounded-full gencl:bg-black/40 ${showVolumeSlider && !isMobile ? "gencl:w-full gencl:bg-black/50" : "gencl:bg-black/40"}`}
+      className={`gencl:group gencl:cursor-pointer gencl:flex gencl:z-50 gencl:items-center gencl:justify-start gencl:overflow-hidden gencl:rounded-full gencl:bg-black/40 ${showVolumeSlider ? "gencl:w-full gencl:bg-black/50" : "gencl:bg-black/40"}`}
       onMouseEnter={() => {
-        setShowVolumeSlider(true);
+        if (enableVolumeSlider) setShowVolumeSlider(true);
       }}
       onMouseLeave={() => {
-        setShowVolumeSlider(false);
+        if (enableVolumeSlider) setShowVolumeSlider(false);
       }}
     >
       <div className="gencl:flex gencl:size-9 gencl:sm:size-12! gencl:flex-shrink-0 gencl:items-center gencl:justify-center">
@@ -85,12 +84,12 @@ export const AnimatedMuteIcon = ({
         )}
       </div>
 
-      {(showText || !showVolumeSlider) && muted && (
-        <AnimatedText text="Tap to unmute" width={110} stop={stopAnimating} visible={showText} />
+      {!showVolumeSlider && muted && (
+        <AnimatedText text="Tap to unmute" width={110} stop={stopAnimating} />
       )}
 
       {/* Volume slider with smooth animation */}
-      {!isMobile && showVolumeSlider && (
+      {enableVolumeSlider && !isMobile && showVolumeSlider && (
         <div
           className={cn(
             "gencl:transition-all gencl:duration-300 gencl:ease-in-out",

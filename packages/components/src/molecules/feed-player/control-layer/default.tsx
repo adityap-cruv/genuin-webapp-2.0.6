@@ -67,6 +67,7 @@ export function Default({
     totalVideos,
     positionIndex,
     pausedBySystem,
+    resumeFromSystemPause,
     isAdPlaying,
   } = usePlayerContext();
   const { gestureOverlayUI, hideGestureOverlay } = useGestureOverlayManager();
@@ -114,8 +115,13 @@ export function Default({
   // Event handlers
   const handleVideoClick = useCallback(
     (e: React.MouseEvent) => {
-      if (pausedBySystem) return;
       e.stopPropagation();
+
+      if (pausedBySystem) {
+        resumeFromSystemPause();
+        return;
+      }
+
       hideGestureOverlay("PLAY_PAUSE", muted);
 
       if (postDetails.video.clickableUrl) {
@@ -162,7 +168,10 @@ export function Default({
               {...restProps}
             >
               <div className="gencl:px-0 gencl:absolute gencl:top-4 gencl:right-4 gencl:rounded-full! gencl:shrink-0">
-                <AnimatedMuteIcon shouldAnimate={false} showText={muted} />
+                <AnimatedMuteIcon
+                  shouldAnimate={muted}
+                  enableVolumeSlider={false}
+                />
               </div>
             </div>
           ) : (
