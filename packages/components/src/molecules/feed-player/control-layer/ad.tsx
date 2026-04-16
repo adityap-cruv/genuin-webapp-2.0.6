@@ -1,28 +1,32 @@
-// import { cn } from "@genuin/ui/lib/utils";
-// import { ControlLayerPropsType } from "./control-layer.types";
-// import { usePlayerContext } from "../context";
+"use client";
+import type { ComponentProps } from "react";
+import { cn } from "@genuin/ui/lib/utils";
+import { usePlayerContext } from "../context";
+import { AnimatedMuteIcon } from "./controls/control-buttons";
 
-// export type AdProps = ControlLayerPropsType;
+export type AdProps = ComponentProps<"div">;
 
-// // Mock Analytics object for demonstration purposes
-// // const Analytics = {
-// //   track: (eventName: string, data: any) => {
-// //     console.log(`Analytics Event: ${eventName}`, data);
-// //   },
-// //   EventNames: {
-// //     AdCtaClicked: "ad_cta_clicked",
-// //   },
-// // };
+/**
+ * Ad control layer overlay rendered when an ad is playing.
+ */
+export function Ad({ className, ...restProps }: AdProps) {
+  const { muted } = usePlayerContext();
 
-// export function Ad({
-//   className,
-//   postDetails,
-//   isActive,
-//   ...restProps
-// }: AdProps) {
-//   const { adInfo } = usePlayerContext();
-
-//   return (
-
-//   );
-// }
+  return (
+    <div
+      className={cn(
+        "gencl:absolute gencl:inset-0 gencl:z-50 gencl:flex gencl:pointer-events-none",
+        className,
+      )}
+      data-testid="ad-control-layer"
+      {...restProps}
+    >
+      <div
+        className="gencl:absolute gencl:top-4 gencl:right-4 gencl:rounded-full! gencl:shrink-0 gencl:pointer-events-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <AnimatedMuteIcon shouldAnimate={muted} enableVolumeSlider={false} />
+      </div>
+    </div>
+  );
+}

@@ -17,11 +17,15 @@ export const AnimatedText = memo(function ({
   const [animateText, setAnimateText] = useState(false);
   const animationIntervalRef = useRef<any>(null);
 
-  useEffect(() => {
+  const startAnimation = () => {
+    if (animationIntervalRef.current) return;
     animationIntervalRef.current = setInterval(() => {
       setAnimateText((prev) => !prev);
     }, 3000);
+  };
 
+  useEffect(() => {
+    startAnimation();
     return () => {
       if (animationIntervalRef.current) {
         clearInterval(animationIntervalRef.current);
@@ -32,6 +36,9 @@ export const AnimatedText = memo(function ({
   useEffect(() => {
     if (stop) {
       stopAnimation();
+    } else {
+      // Restart animation when stop flips back to false (e.g. player muted again).
+      startAnimation();
     }
   }, [stop]);
 

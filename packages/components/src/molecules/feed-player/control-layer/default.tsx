@@ -2,11 +2,24 @@ import { ControlLayerPropsType } from "./control-layer.types";
 import { cn } from "@genuin/ui/lib/utils";
 import React, { useCallback, Suspense } from "react";
 import { useBaseContext } from "@genuin/components/context/base";
-
 import { usePlayerContext } from "../context/context";
 import { Controls } from "./controls";
 import { PlayingState } from "./playing-state";
 import { Scrubber } from "./scrubber";
+import { PlaybackSpeedCapsule } from "@genuin/components/molecules/playback-speed/speed-capsule";
+import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
+import { SpeedControlSideBars } from "../../playback-speed/speed-control-bars";
+import { VideoEditActionButtons } from "./controls/control-buttons";
+import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
+import {
+  DynamicReactionIcon,
+  ReactionButton,
+} from "@genuin/components/molecules/reaction-button";
+import { Button } from "@genuin/ui/button";
+import { useDoubleClick } from "@genuin/components/hooks/use-double-click";
+import { useAuthContext } from "@genuin/components/context";
+import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
+
 const ExpandViewDetails = React.lazy(() =>
   import("./expand-view/index.js").then((m) => ({
     default: m.ExpandViewDetails,
@@ -18,24 +31,6 @@ const Linkouts = React.lazy(() =>
     default: m.Linkouts,
   })),
 );
-
-import { PlaybackSpeedCapsule } from "@genuin/components/molecules/playback-speed/speed-capsule";
-import { useGestureOverlayManager } from "@genuin/components/molecules/gestures";
-import { SpeedControlSideBars } from "../../playback-speed/speed-control-bars";
-import {
-  AnimatedMuteIcon,
-  VideoEditActionButtons,
-} from "./controls/control-buttons";
-import { useEmbedConfigs } from "@genuin/components/hooks/embed/use-embed-config";
-import {
-  DynamicReactionIcon,
-  ReactionButton,
-} from "@genuin/components/molecules/reaction-button";
-import { Button } from "@genuin/ui/button";
-import { useDoubleClick } from "@genuin/components/hooks/use-double-click";
-import { useAuthContext } from "@genuin/components/context";
-import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
-import { MuteIcon, UnmuteIcon } from "@genuin/ui";
 
 export function Default({
   className,
@@ -68,7 +63,6 @@ export function Default({
     positionIndex,
     pausedBySystem,
     resumeFromSystemPause,
-    isAdPlaying,
   } = usePlayerContext();
   const { gestureOverlayUI, hideGestureOverlay } = useGestureOverlayManager();
   const { isMobile, isTablet, isIpad } = useDeviceDetection();
@@ -117,17 +111,17 @@ export function Default({
     (e: React.MouseEvent) => {
       e.stopPropagation();
 
+      if (postDetails.video.clickableUrl) {
+        window.open(postDetails.video.clickableUrl, "_blank");
+        return;
+      }
+
       if (pausedBySystem) {
         resumeFromSystemPause();
         return;
       }
 
       hideGestureOverlay("PLAY_PAUSE", muted);
-
-      if (postDetails.video.clickableUrl) {
-        window.open(postDetails.video.clickableUrl, "_blank");
-        return;
-      }
 
       switch (tapBehavior) {
         case 1: // Tap to mute/unmute
@@ -155,131 +149,105 @@ export function Default({
   switch (brandLayoutType) {
     case "iheart":
       return (
-        <>
-          {isAdPlaying ? (
-            <div
-              // aria-label="Toggle video playback"
-              // onClick={handleIHeartClick}
-              className={cn(
-                "group gencl:inset-0 gencl:z-50 gencl:flex gencl:justify-center",
-                "gencl:appearance-none gencl:border-0 gencl:bg-transparent gencl:p-0 gencl:cursor-pointer gencl:w-full",
-                className,
-              )}
-              {...restProps}
-            >
-              <div className="gencl:px-0 gencl:absolute gencl:top-4 gencl:right-4 gencl:rounded-full! gencl:shrink-0">
-                <AnimatedMuteIcon
-                  shouldAnimate={muted}
-                  enableVolumeSlider={false}
-                />
-              </div>
-            </div>
-          ) : (
-            <div
-              // aria-label="Toggle video playback"
-              onClick={handleIHeartClick}
-              className={cn(
-                "group gencl:inset-0 gencl:z-10 gencl:flex gencl:justify-center",
-                "gencl:appearance-none gencl:border-0 gencl:bg-transparent gencl:p-0 gencl:cursor-pointer gencl:w-full",
-                className,
-              )}
-              {...restProps}
-            >
-              {/* Top gradient overlay (10% height) */}
-              <div
-                className="gencl:absolute gencl:top-0 gencl:left-0 gencl:right-0 gencl:pointer-events-none"
-                style={{
-                  height: "10%",
-                  background:
-                    "linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0) 100%)",
-                }}
-              />
-
-              {/* Bottom gradient overlay (40% height) */}
-              <div
-                className="gencl:absolute gencl:bottom-0 gencl:left-0 gencl:right-0 gencl:pointer-events-none"
-                style={{
-                  height: "40%",
-                  background:
-                    "linear-gradient(to top, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.6) 25%, rgba(0, 0, 0, 0.45) 50%, rgba(0, 0, 0, 0.25) 75%, rgba(0, 0, 0, 0) 100%)",
-                }}
-              />
-
-              {(showExpandView || isMobile || isTablet) &&
-                expandViewDetails && (
-                  <Suspense fallback={null}>
-                    <ExpandViewDetails
-                      postDetails={postDetails}
-                      isActive={isActive}
-                      onCommunityJoinStatusChange={onCommunityJoinStatusChange}
-                      onGroupJoinStatusChange={onGroupJoinStatusChange}
-                      onGroupSubscriptionChange={onGroupSubscriptionChange}
-                      onReactionStateChange={onReactionStateChange}
-                      onCommentCountChange={onCommentCountChange}
-                      variant={variant}
-                      className={cn(
-                        playbackSpeed.speed !== 1 && "gencl:invisible",
-                      )}
-                    />
-                  </Suspense>
-                )}
-              <PlayingState
-                showOnlyPlayAction={true}
-                className={cn(
-                  "gencl:absolute gencl:left-1/2 gencl:top-1/2 gencl:flex gencl:items-center",
-                  "gencl:justify-center gencl:h-16 gencl:w-16",
-                  "gencl:-translate-x-1/2 gencl:-translate-y-1/2",
-                )}
-              />
-              {/* Large reaction icon on double-click */}
-              {showReactionIcon && (
-                <DynamicReactionIcon
-                  isSparked={postDetails.video.isSparked ?? false}
-                  sparkCount={postDetails.video.sparkCount}
-                  type="feed_animate"
-                  iconHeight={185}
-                  iconWidth={185}
-                  theme="light"
-                  className={cn(
-                    "gencl:absolute gencl:left-1/2 gencl:top-1/2 gencl:-translate-x-1/2 gencl:-translate-y-1/2 gencl:z-20",
-                    "gencl:delay-1000 gencl:animate-fade-out gencl:transition-all gencl:duration-700 gencl:ease-out",
-                  )}
-                />
-              )}
-              {/* This is invisible button for reactions */}
-              <ReactionButton
-                contentId={postDetails.video.id}
-                isReacted={postDetails.video.isSparked ?? false}
-                reactionCount={postDetails.video.sparkCount}
-                contentType="VIDEO"
-                onReactionStateChange={(isReacted) =>
-                  onReactionStateChange?.(
-                    postDetails.video.id,
-                    postDetails.video.slug,
-                    isReacted,
-                  )
-                }
-                onClick={(e) => {
-                  e?.stopPropagation();
-                }}
-                asChild
-                withCustomChildren
-                tabIndex={-1}
-                aria-hidden={true}
-                children={
-                  <Button
-                    ref={reactionButtonRef}
-                    className="gencl:opacity-0"
-                    aria-hidden={true}
-                    tabIndex={-1}
-                  />
-                }
-              />
-
-              {/* {gestureOverlayUI} */}
-            </div>
+        <div
+          onClick={handleIHeartClick}
+          className={cn(
+            "group gencl:inset-0 gencl:z-10 gencl:flex gencl:justify-center",
+            "gencl:appearance-none gencl:border-0 gencl:bg-transparent gencl:p-0 gencl:cursor-pointer gencl:w-full",
+            className,
           )}
-        </>
+          {...restProps}
+        >
+          {/* Top gradient overlay (10% height) */}
+          <div
+            className="gencl:absolute gencl:top-0 gencl:left-0 gencl:right-0 gencl:pointer-events-none"
+            style={{
+              height: "10%",
+              background:
+                "linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0) 100%)",
+            }}
+          />
+
+          {/* Bottom gradient overlay (40% height) */}
+          <div
+            className="gencl:absolute gencl:bottom-0 gencl:left-0 gencl:right-0 gencl:pointer-events-none"
+            style={{
+              height: "40%",
+              background:
+                "linear-gradient(to top, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.6) 25%, rgba(0, 0, 0, 0.45) 50%, rgba(0, 0, 0, 0.25) 75%, rgba(0, 0, 0, 0) 100%)",
+            }}
+          />
+
+          {(showExpandView || isMobile || isTablet) && expandViewDetails && (
+            <Suspense fallback={null}>
+              <ExpandViewDetails
+                postDetails={postDetails}
+                isActive={isActive}
+                onCommunityJoinStatusChange={onCommunityJoinStatusChange}
+                onGroupJoinStatusChange={onGroupJoinStatusChange}
+                onGroupSubscriptionChange={onGroupSubscriptionChange}
+                onReactionStateChange={onReactionStateChange}
+                onCommentCountChange={onCommentCountChange}
+                variant={variant}
+                className={cn(playbackSpeed.speed !== 1 && "gencl:invisible")}
+              />
+            </Suspense>
+          )}
+          <PlayingState
+            showOnlyPlayAction={true}
+            className={cn(
+              "gencl:absolute gencl:left-1/2 gencl:top-1/2 gencl:flex gencl:items-center",
+              "gencl:justify-center gencl:h-16 gencl:w-16",
+              "gencl:-translate-x-1/2 gencl:-translate-y-1/2",
+            )}
+          />
+          {/* Large reaction icon on double-click */}
+          {showReactionIcon && (
+            <DynamicReactionIcon
+              isSparked={postDetails.video.isSparked ?? false}
+              sparkCount={postDetails.video.sparkCount}
+              type="feed_animate"
+              iconHeight={185}
+              iconWidth={185}
+              theme="light"
+              className={cn(
+                "gencl:absolute gencl:left-1/2 gencl:top-1/2 gencl:-translate-x-1/2 gencl:-translate-y-1/2 gencl:z-20",
+                "gencl:delay-1000 gencl:animate-fade-out gencl:transition-all gencl:duration-700 gencl:ease-out",
+              )}
+            />
+          )}
+          {/* This is invisible button for reactions */}
+          <ReactionButton
+            contentId={postDetails.video.id}
+            isReacted={postDetails.video.isSparked ?? false}
+            reactionCount={postDetails.video.sparkCount}
+            contentType="VIDEO"
+            onReactionStateChange={(isReacted) =>
+              onReactionStateChange?.(
+                postDetails.video.id,
+                postDetails.video.slug,
+                isReacted,
+              )
+            }
+            onClick={(e) => {
+              e?.stopPropagation();
+            }}
+            asChild
+            withCustomChildren
+            tabIndex={-1}
+            aria-hidden={true}
+            children={
+              <Button
+                ref={reactionButtonRef}
+                className="gencl:opacity-0"
+                aria-hidden={true}
+                tabIndex={-1}
+              />
+            }
+          />
+
+          {/* {gestureOverlayUI} */}
+        </div>
       );
 
     case "grubhub":

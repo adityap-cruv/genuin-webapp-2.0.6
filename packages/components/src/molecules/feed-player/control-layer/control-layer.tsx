@@ -6,7 +6,7 @@ import { ControlLayerPropsType } from "./control-layer.types";
 import { usePlayerContext } from "../context";
 import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 
-// const Ad = lazy(() => import("./ad.js").then((m) => ({ default: m.default })));
+const Ad = lazy(() => import("./ad.js").then((m) => ({ default: m.Ad })));
 const Default = lazy(() =>
   import("./default.js").then((m) => ({ default: m.Default })),
 );
@@ -58,11 +58,24 @@ export const ControlLayer = memo(function ControlLayer(
         }
       : {};
 
-  // TODO - We need to handle the ad state properly here. Currently, we are just not rendering the control layer when an ad is playing. We might want to render a different control layer for ads in the future.
-  // if (isAdPlaying) {
-  //   return;
-  //   // return <Ad {...props} />;
-  // }
+  /**
+   * When an ad is playing, render only the Ad overlay control layer.
+   * This centralizes all ad UI in a single component instead of
+   * handling it per-variant.
+   */
+  if (isAdPlaying) {
+    return (
+      <Suspense fallback={null}>
+        <Ad
+          className={cn(
+            controlLayerVariant({ variant: props.variant ?? "default" }),
+            props.className,
+          )}
+          style={safariOptimizationStyles}
+        />
+      </Suspense>
+    );
+  }
 
   /**
    * Render the default control layer.
@@ -83,7 +96,6 @@ export const ControlLayer = memo(function ControlLayer(
   /**
    * Render the embed control layer.
    */
-
   if (props.variant === "embed") {
     const { className, variant, ...restProps } = props;
     return (
@@ -101,7 +113,6 @@ export const ControlLayer = memo(function ControlLayer(
   /**
    * Render the placement control layer.
    */
-
   if (props.variant === "placement") {
     const { className, variant, ...restProps } = props;
     return (
@@ -115,6 +126,9 @@ export const ControlLayer = memo(function ControlLayer(
     );
   }
 
+  /**
+   * Render the embed-pip control layer.
+   */
   if (props.variant === "embed-pip") {
     const { className, variant, ...restProps } = props;
     return (

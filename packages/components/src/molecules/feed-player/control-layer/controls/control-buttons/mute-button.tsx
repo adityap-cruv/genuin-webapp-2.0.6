@@ -27,6 +27,7 @@ export const AnimatedMuteIcon = ({
   // and stop it when the prop goes back to false (user acted or system unmuted).
   useEffect(() => {
     setStopAnimating(!shouldAnimate);
+    setShowVolumeSlider(false);
   }, [shouldAnimate]);
 
   const handleClick = useCallback(
