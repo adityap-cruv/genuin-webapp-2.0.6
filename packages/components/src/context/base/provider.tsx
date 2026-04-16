@@ -531,6 +531,7 @@ export function BaseContextProvider({
         theme: currentTheme,
         setTheme: setCurrentTheme,
         useShadowDOM,
+        isPlaying,
       }}
     >
       {children}

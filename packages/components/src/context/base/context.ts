@@ -122,6 +122,10 @@ export type BaseContextType = {
   setTheme: React.Dispatch<React.SetStateAction<"dark" | "light" | undefined>>;
 
   useShadowDOM: boolean;
+  /**
+   * Indicates whether any video is currently playing within this embed.
+   */
+  isPlaying: boolean;
 };
 
 export const BaseContext = createContext<BaseContextType | null>(null);

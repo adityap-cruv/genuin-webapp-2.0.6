@@ -44,7 +44,7 @@ export function EmbedItem({
   const { updateActiveIndex, goToNextVideo, activeIndex } =
     useEmbedManagerContext();
   const config = useEmbedConfigs();
-  const { baseContextManager } = useBaseContext();
+  const { isPlaying, baseContextManager } = useBaseContext();
   const { embedEventBus, updateSelectedSection } = useEmbedContext();
   const { isTablet, isMobile } = useDeviceDetection();
   const [isHovering, setIsHovering] = useState(false);
@@ -191,8 +191,7 @@ export function EmbedItem({
     }
 
     const timer = setTimeout(() => {
-      const isVideoPlaying = baseContextManager.isAnyVideoPlaying();
-      if (isVideoPlaying) goToNextVideo();
+      if (isPlaying) goToNextVideo();
     }, moveToNextTime * 1000);
 
     return () => {
@@ -208,8 +207,8 @@ export function EmbedItem({
     swiper,
     isHovering,
     moveToNextTime,
-    baseContextManager,
-    postDetails
+    isPlaying,
+    postDetails,
   ]);
 
   return (
