@@ -69,7 +69,10 @@ export const AnimatedMuteIcon = ({
   return (
     <div
       onClick={handleClick}
-      className={`gencl:group gencl:cursor-pointer gencl:flex gencl:z-50 gencl:items-center gencl:justify-start gencl:overflow-hidden gencl:rounded-full gencl:bg-black/40 ${showVolumeSlider ? "gencl:w-full gencl:bg-black/50" : "gencl:bg-black/40"}`}
+      className={cn(
+        "gencl:group gencl:cursor-pointer gencl:flex gencl:z-50 gencl:items-center gencl:justify-start gencl:overflow-hidden gencl:rounded-full gencl:transition-all gencl:duration-300 gencl:ease-in-out",
+        showVolumeSlider ? "gencl:bg-black/50" : "gencl:bg-black/40",
+      )}
       onMouseEnter={() => {
         if (enableVolumeSlider) setShowVolumeSlider(true);
       }}
@@ -85,19 +88,23 @@ export const AnimatedMuteIcon = ({
         )}
       </div>
 
-      {!showVolumeSlider && muted && (
-        <AnimatedText text="Tap to unmute" width={110} stop={stopAnimating} />
+      {/* Always rendered so the close (width-collapse) animation plays on unmute */}
+      {muted && (
+        <AnimatedText
+          text="Tap to unmute"
+          width={110}
+          stop={stopAnimating || showVolumeSlider}
+        />
       )}
 
-      {/* Volume slider with smooth animation */}
-      {enableVolumeSlider && !isMobile && showVolumeSlider && (
+      {/* Volume slider — always rendered so close animation plays */}
+      {enableVolumeSlider && !isMobile && (
         <div
           className={cn(
-            "gencl:transition-all gencl:duration-300 gencl:ease-in-out",
+            "gencl:transition-all gencl:duration-300 gencl:ease-in-out gencl:flex gencl:items-center gencl:overflow-hidden gencl:py-2",
             showVolumeSlider
-              ? "gencl:opacity-100 gencl:w-full"
-              : "gencl:opacity-0 gencl:w-0",
-            "gencl:flex gencl:items-center gencl:overflow-hidden gencl:py-2",
+              ? "gencl:max-w-full gencl:opacity-100"
+              : "gencl:max-w-0 gencl:opacity-0",
           )}
         >
           <input
@@ -112,9 +119,9 @@ export const AnimatedMuteIcon = ({
             style={{
               accentColor: "white",
             }}
-            className="gencl:volume-slider gencl:relative gencl:h-1 gencl:w-full gencl:cursor-pointer gencl:rounded-full"
+            className="gencl:volume-slider gencl:relative gencl:h-1 gencl:w-[140px] gencl:cursor-pointer gencl:rounded-full"
           />
-          <div className="gencl:h-full gencl:w-4" />
+          <div className="gencl:h-full gencl:w-4 gencl:flex-shrink-0" />
         </div>
       )}
 
