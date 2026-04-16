@@ -638,6 +638,7 @@ export function EmbedExpandView({
   return (
     <RemoveScroll>
       <RootPortal
+        portalKey="expand-view"
         className={cn(
           "gen-sdk-class gen-sdk-expand-view gencl:h-full gencl:w-full gencl:inset-0 gencl:z-50",
           isMobile && "gencl:flex-col",

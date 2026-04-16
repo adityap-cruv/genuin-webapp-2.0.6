@@ -82,6 +82,7 @@ export function PipView({ videos, isLoading, totalVideos }: PipViewProps) {
       return (
         <RootPortal
           className="gen-sdk-class"
+          portalKey="pip"
           style={{ height: "0px", width: "0px" }}
         >
           <div className="gencl:fixed gencl:bottom-4 gencl:z-999999 gencl:flex gencl:right-4 gencl:h-75 gencl:w-50">

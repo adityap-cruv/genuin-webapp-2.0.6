@@ -35,10 +35,13 @@ const REQUIRED_STYLES: StyleRequirement[] = [
 ] as const;
 
 /**
- * Cache for overlay shadow host (one per document)
+ * Cache for overlay shadow hosts, keyed by portalKey.
+ * Each distinct portalKey gets its own host element and shadow root so that
+ * style props (e.g. PipView height:0px vs ExpandView height:812px) are fully
+ * isolated and can never overwrite each other.
  */
-const overlayShadowHostCache = new WeakMap<
-  Document,
+const overlayShadowHostCache = new Map<
+  string,
   {
     host: HTMLElement;
     shadowRoot: ShadowRoot;
@@ -234,92 +237,88 @@ export async function setupMainShadowDOM(
 }
 
 /**
- * Creates or retrieves the shared overlay shadow host
- * This is a separate shadow DOM for overlay elements (dialogs, tooltips, modals)
- * It derives styles from the main shadow root
+ * Creates or retrieves a keyed overlay shadow host.
+ *
+ * Each distinct `portalKey` gets its own `<div data-genuin-overlay-host>`
+ * element and shadow root, so that style props applied by different
+ * RootPortal instances (e.g. PipView height:0px vs ExpandView height:812px)
+ * are fully isolated and can never overwrite each other.
+ *
+ * @param portalKey - Unique identifier for this portal's host (default: "default")
  */
-export function getOrCreateOverlayShadowHost(): {
+export function getOrCreateOverlayShadowHost(portalKey: string = "default"): {
   host: HTMLElement;
   shadowRoot: ShadowRoot;
 } {
   const doc = document;
 
-  // Check cache first
-  let cached = overlayShadowHostCache.get(doc);
-
-  if (!cached || !doc.body.contains(cached.host)) {
-    // Create new shadow host for overlays
-    const host = document.createElement("div");
-    host.setAttribute("data-genuin-overlay-host", "true");
-    // Critical styles for the host (max z-index to stay on top)
-    host.style.position = "fixed";
-    host.style.top = "0";
-    host.style.left = "0";
-    host.style.width = "100%";
-    host.style.height = "100%";
-    host.style.border = "none";
-
-    host.classList.add("gen-sdk-root-portal");
-
-    // Append to body
-    doc.body.appendChild(host);
-
-    // Attach shadow root
-    const shadowRoot = host.attachShadow({ mode: "open" });
-
-    // First, copy styles from main embed's shadow DOM (if exists)
-    const mainShadowHost = doc.querySelector("[data-genuin-host]");
-    if (mainShadowHost?.shadowRoot) {
-      copyStylesBetweenShadowRoots(mainShadowHost.shadowRoot, shadowRoot);
-      console.log(
-        "✅ Copied styles from main shadow root to overlay shadow root",
-      );
-    }
-
-    // Then, ensure all required styles from document are present
-    void ensureStylesInShadowRoot(shadowRoot);
-
-    // Create portal container for overlay content
-    const portalContainer = document.createElement("div");
-    portalContainer.setAttribute("data-portal-container", "true");
-    portalContainer.style.position = "relative";
-    portalContainer.style.width = "100%";
-    portalContainer.style.height = "100%";
-    shadowRoot.appendChild(portalContainer);
-
-    // Cache for reuse
-    cached = { host, shadowRoot };
-    overlayShadowHostCache.set(doc, cached);
+  // Return the existing host+shadow root if already created for this portalKey
+  let cachedShadow = overlayShadowHostCache.get(portalKey);
+  if (cachedShadow) {
+    return { host: cachedShadow.host, shadowRoot: cachedShadow.shadowRoot };
   }
 
-  return cached;
-}
+  // Create a new shadow host for this portalKey
+  const host = document.createElement("div");
+  host.setAttribute("data-genuin-overlay-host", "true");
+  host.setAttribute("data-portal-key", portalKey);
+  host.style.position = "fixed";
+  host.style.top = "0";
+  host.style.left = "0";
+  host.style.width = "100%";
+  host.style.height = "100%";
+  host.style.border = "none";
 
-/**
- * Gets the main shadow root for the embed (if exists)
- */
-export function getMainShadowRoot(): ShadowRoot | null {
-  const mainShadowHost = document.querySelector("[data-genuin-host]");
-  return mainShadowHost?.shadowRoot || null;
-}
+  host.classList.add("gen-sdk-root-portal");
 
-/**
- * Gets the overlay shadow root (if exists)
- */
-export function getOverlayShadowRoot(): ShadowRoot | null {
-  const cached = overlayShadowHostCache.get(document);
-  return cached?.shadowRoot || null;
-}
+  doc.body.appendChild(host);
 
-/**
- * Cleans up the overlay shadow host
- * Call this when all embeds are destroyed
- */
-export function cleanupOverlayShadowHost(): void {
-  const cached = overlayShadowHostCache.get(document);
-  if (cached) {
-    cached.host.remove();
-    overlayShadowHostCache.delete(document);
-    console.log("✅ Cleaned up overlay shadow host");
+  const shadowRoot = host.attachShadow({ mode: "open" });
+
+  // Copy styles from the main embed's shadow DOM (if exists)
+  const mainShadowHost = doc.querySelector("[data-genuin-host]");
+  if (mainShadowHost?.shadowRoot) {
+    copyStylesBetweenShadowRoots(mainShadowHost.shadowRoot, shadowRoot);
+    console.log(
+      "✅ Copied styles from main shadow root to overlay shadow root",
+    );
   }
+
+  void ensureStylesInShadowRoot(shadowRoot);
+
+  // Create the portal container for this host's content
+  const portalContainer = document.createElement("div");
+  portalContainer.setAttribute("data-portal-container", "true");
+  portalContainer.style.position = "relative";
+  portalContainer.style.width = "100%";
+  portalContainer.style.height = "100%";
+  shadowRoot.appendChild(portalContainer);
+
+  overlayShadowHostCache.set(portalKey, { host, shadowRoot });
+  return { host, shadowRoot };
+}
+
+/**
+ * Cleans up overlay shadow host(s).
+ * Call this when the corresponding RootPortal unmounts.
+ *
+ * @param portalKey - Key matching the one passed to getOrCreateOverlayShadowHost.
+ *   If omitted, all tracked overlay shadow hosts are removed (global teardown).
+ */
+export function cleanupOverlayShadowHost(portalKey?: string): void {
+  if (!portalKey) {
+    // No portalKey provided — called from a global teardown (e.g. React utils cleanup).
+    // Remove every overlay shadow host that is currently tracked.
+    overlayShadowHostCache.forEach((value, key) => {
+      console.log(key, value.host, value.shadowRoot);
+      value.host.remove();
+      overlayShadowHostCache.delete(key);
+    });
+    return;
+  }
+  const cachedShadow = overlayShadowHostCache.get(portalKey);
+  if (!cachedShadow) return;
+  cachedShadow.host.remove();
+  overlayShadowHostCache.delete(portalKey);
+  console.log(`✅ Cleaned up overlay shadow host (key: ${portalKey})`);
 }

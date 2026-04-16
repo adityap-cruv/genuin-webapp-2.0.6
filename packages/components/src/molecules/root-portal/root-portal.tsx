@@ -15,6 +15,13 @@ type RootPortalProps = {
   container?: string | HTMLElement;
   style?: React.ComponentProps<"div">["style"];
   enabledToaster?: boolean;
+  /**
+   * Key that identifies which overlay shadow host to use.
+   * Each distinct key gets its own isolated host element so that style props
+   * (e.g. height) from different callers never overwrite each other.
+   * Defaults to "default" for backward compatibility.
+   */
+  portalKey?: string;
 };
 
 const BRAND_OVERLAY_Z_INDEX: Record<number, string> = {
@@ -60,6 +67,7 @@ export function RootPortal({
   container,
   style,
   enabledToaster = true,
+  portalKey = "default",
 }: RootPortalProps) {
   // SSR guard: don't render on server
   if (typeof window === "undefined") return null;
@@ -84,36 +92,34 @@ export function RootPortal({
       }
     } else {
       if (useShadowDOM) {
-        // Get or create overlay shadow host
-        const { shadowRoot, host } = getOrCreateOverlayShadowHost();
+        // Each portalKey gets its own isolated shadow host so that style props
+        // (e.g. PipView height:0px vs ExpandView height:812px) never overwrite
+        // each other.
+        const { shadowRoot, host } = getOrCreateOverlayShadowHost(portalKey);
         const brandOverlayZIndex = getOverlayZIndexByBrandId(
           brandDetails.brand_id,
         );
         if (brandOverlayZIndex) {
           host.style.zIndex = brandOverlayZIndex;
         }
-        const container = shadowRoot.querySelector(
+
+        const portalContainer = shadowRoot.querySelector(
           "[data-portal-container]",
         ) as HTMLElement;
-        // NOTE: Do NOT apply `style` to host/container here — they are shared
-        // across all RootPortal instances. Applying height/width from one
-        // instance (e.g. PipView with height:0px) would corrupt the shared
-        // container for all others. The `style` prop is applied to the inner
-        // <div> via JSX spread below.
-        // if (style) {
-        //   Object.assign(host.style, style);
-        //   Object.assign(container.style, style);
-        // }
-        setContainerElement(container);
+        if (style) {
+          Object.assign(host.style, style);
+          Object.assign(portalContainer.style, style);
+        }
+        setContainerElement(portalContainer);
+
+        return () => {
+          cleanupOverlayShadowHost(portalKey);
+        };
       } else {
         // Default to document.body
         setContainerElement(document.body);
       }
     }
-
-    return () => {
-      cleanupOverlayShadowHost();
-    };
   }, [container]);
 
   useEffect(() => {
