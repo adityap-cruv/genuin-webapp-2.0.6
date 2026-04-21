@@ -547,13 +547,17 @@ export function useEmbedConfigs() {
     const autoPageContext = isIheart;
 
     /** Placements/embeds where synthetic ads should be injected between videos in expand-view. */
-    const shouldInjectExpandViewAds = isIheart;
+    const isMikeIheart =
+      typeof window !== "undefined" &&
+      window.location.hostname === "mike.iheart.com";
+    const shouldInjectExpandViewAds = isIheart && isMikeIheart;
 
     const showIheartIframe = false;
     const isUsWeekly = brandDetails.brand_id === 2476;
-    const feedType: FeedType = embedData?.placement_id
-      ? "PLACEMENT_SECTIONS"
-      : "FEED_V1";
+    // const feedType: FeedType = embedData?.placement_id
+    //   ? "PLACEMENT_SECTIONS"
+    //   : "FEED_V1";
+    const feedType: FeedType = 'FEED_V1'
     return {
       // configuration to identify US Weekly brand
       isUsWeekly,
