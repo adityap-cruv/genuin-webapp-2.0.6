@@ -31,7 +31,7 @@ const Toaster = ({ position, style, ...props }: ToasterProps) => {
           "--normal-bg": "var(--gencl-white)",
           "--normal-text": "var(--gencl-black)",
           "--normal-border": "var(--gencl-border)",
-          "--width": isMobile ? "min(calc(100% - 32px), 380px)" : "auto",
+          "--width": isMobile ? "min(calc(100% - 32px), 380px)" : "100%",
           ...getGenclStyles(),
           ...style,
         } as React.CSSProperties
