@@ -79,14 +79,16 @@ export function GroupPill({
   useEffect(() => {
     if (
       prevSubscriptionStatus.current === false &&
-      groupDetails.isSubscribed === true
+      groupDetails?.isSubscribed === true
     ) {
       setLocalSubscriptionStatus(true);
     } else {
-      setLocalSubscriptionStatus(groupDetails.isSubscribed);
+      setLocalSubscriptionStatus(groupDetails?.isSubscribed);
     }
-    prevSubscriptionStatus.current = groupDetails.isSubscribed;
-  }, [groupDetails.isSubscribed]);
+    prevSubscriptionStatus.current = groupDetails?.isSubscribed;
+  }, [groupDetails?.isSubscribed]);
+
+  if (!groupDetails) return null;
 
   const hideButton = localSubscriptionStatus === true;
 

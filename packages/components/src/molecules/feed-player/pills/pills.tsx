@@ -43,7 +43,7 @@ export function Pills({
 }: PillsPropsType) {
   return (
     <div className={cn("gencl:flex gencl:gap-2", className)} {...restProps}>
-      {!hideCommunityPill && (
+      {!hideCommunityPill && communityDetails && (
         <CommunityPill
           isHoverable={isHoverable}
           variant={variant}
@@ -53,7 +53,7 @@ export function Pills({
           hideCommunityJoinButton={hideCommunityJoinButton}
         />
       )}
-      {!hideGroupPill && (
+      {!hideGroupPill && groupDetails && (
         <GroupPill
           isHoverable={isHoverable}
           variant={variant}

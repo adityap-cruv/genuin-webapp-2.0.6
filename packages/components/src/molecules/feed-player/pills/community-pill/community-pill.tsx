@@ -63,15 +63,15 @@ export function CommunityPill({
   // Truncate name to 24 characters for compact variant
   const displayName =
     variant === "compact" &&
-    communityDetails.name &&
-    communityDetails.name.length > 24
-      ? `${communityDetails.name.substring(0, 24)}...`
-      : communityDetails.name;
+    communityDetails?.name &&
+    communityDetails?.name.length > 24
+      ? `${communityDetails?.name.substring(0, 24)}...`
+      : communityDetails?.name;
 
   const [localJoinStatus, setLocalJoinStatus] = useState(
-    communityDetails.userRole,
+    communityDetails?.userRole,
   );
-  const prevJoinStatus = usePrevious(communityDetails.userRole);
+  const prevJoinStatus = usePrevious(communityDetails?.userRole);
 
   /**
    * When the user successfully joins (userRole becomes 'MEMBER'),
@@ -79,15 +79,22 @@ export function CommunityPill({
    * then hide it. For all other role changes, update immediately.
    */
   useEffect(() => {
-    if (prevJoinStatus !== "MEMBER" && communityDetails.userRole === "MEMBER") {
+    if (
+      prevJoinStatus !== "MEMBER" &&
+      communityDetails?.userRole === "MEMBER"
+    ) {
       setLocalJoinStatus("MEMBER");
     } else {
-      setLocalJoinStatus(communityDetails.userRole);
+      setLocalJoinStatus(communityDetails?.userRole);
     }
-  }, [communityDetails.userRole]);
+  }, [communityDetails?.userRole]);
 
   const hideButton =
     localJoinStatus === "MEMBER" || authenticationStatus === "unauthenticated";
+
+  if (!communityDetails) {
+    return null;
+  }
 
   const pill = (
     <Link
