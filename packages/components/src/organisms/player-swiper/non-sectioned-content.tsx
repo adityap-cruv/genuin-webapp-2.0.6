@@ -40,8 +40,6 @@ interface NonSectionedContentProps {
   onCommentCountChange?: any;
   totalVideos?: number;
   isSectioned: boolean;
-  onAdStarted?: (event?: AdInfoType) => void;
-  onAdEnded?: (event?: AdInfoType) => void;
   onAdFilled?: (type: string, index: number) => void;
   onAdPlaybackEnd: (index: number) => void;
 }
@@ -65,8 +63,6 @@ export function NonSectionedContent({
   onCommentCountChange,
   totalVideos,
   isSectioned,
-  onAdStarted,
-  onAdEnded,
   onAdFilled,
   onAdPlaybackEnd,
 }: NonSectionedContentProps) {
@@ -138,8 +134,6 @@ export function NonSectionedContent({
                     onReactionStateChange={onReactionStateChange}
                     onCommentCountChange={onCommentCountChange}
                     index={index}
-                    onAdEnded={onAdEnded}
-                    onAdStarted={onAdStarted}
                     onAdFilled={onAdFilled}
                     onAdPlaybackEnd={onAdPlaybackEnd}
                   />

@@ -160,15 +160,13 @@ export function EmbedProvider({
       // Either by instanceId match (for child->parent communication)
       // OR by embedId/placementId match (for normal SDK operations)
       const isTargetedToThisInstance = payload.instanceId
-        ? instanceId === payload.instanceId || instanceId === payload.sourceInstanceId
-        : ((payload.embedId && payload.embedId === stateEmbedData.embed_id) ||
-           (payload.placementId && payload.placementId === stateEmbedData.placement_id));
+        ? instanceId === payload.instanceId ||
+          instanceId === payload.sourceInstanceId
+        : (payload.embedId && payload.embedId === stateEmbedData.embed_id) ||
+          (payload.placementId &&
+            payload.placementId === stateEmbedData.placement_id);
 
-      if (
-        payload &&
-        isTargetedToThisInstance &&
-        payload.startVideoSlug
-      ) {
+      if (payload && isTargetedToThisInstance && payload.startVideoSlug) {
         const sourceInstanceId =
           typeof payload?.sourceInstanceId === "string"
             ? payload.sourceInstanceId
@@ -288,10 +286,10 @@ export function EmbedProvider({
           skipTimeOffsetOnce: true,
           previousActiveIndex: currentContext.activeIndex,
           shouldTrackImpression: activeIndex !== currentContext.activeIndex,
-        })
+        }),
       );
     },
-    [embedEventBus]
+    [embedEventBus],
   );
 
   const changeActivePlayerTypeToExpandView = useCallback(() => {
@@ -366,6 +364,12 @@ export function EmbedProvider({
     },
     [embedEventBus],
   );
+
+  useEffect(() => {
+    if (stateEmbedData.startVideoSlug) {
+      changeActivePlayerType("expand-view");
+    }
+  }, [stateEmbedData, changeActivePlayerType]);
 
   const goBackToPreviousPlayerType = useCallback(() => {
     embedEventBus.emit(

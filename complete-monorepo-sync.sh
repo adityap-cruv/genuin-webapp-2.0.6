@@ -533,7 +533,8 @@ EOF
 
     # Create QA priority files documentation
     if [ -f "$TEMP_DIR/qa_priority_files.txt" ] || [ -f "$TEMP_DIR/qa_deleted_files_to_respect.txt" ]; then
-        cat > "QA_PRIORITIZED_FILES.md" << EOF
+        mkdir -p docs/upgrades
+        cat > "docs/upgrades/QA_PRIORITIZED_FILES.md" << EOF
 # QA-Prioritized Files and Deletions
 
 ## Modified Files
@@ -561,12 +562,13 @@ else
 fi)
 
 EOF
-        git add "QA_PRIORITIZED_FILES.md"
-        print_info "Created QA_PRIORITIZED_FILES.md with notes about preserved QA changes"
+        git add "docs/upgrades/QA_PRIORITIZED_FILES.md"
+        print_info "Created docs/upgrades/QA_PRIORITIZED_FILES.md with notes about preserved QA changes"
     fi
 
     # Create monorepo conversion documentation
-    cat > "MONOREPO_CONVERSION.md" << EOF
+    mkdir -p docs/architecture
+    cat > "docs/architecture/MONOREPO_CONVERSION.md" << EOF
 # Monorepo Conversion
 
 This branch represents the conversion of the standalone webapp repository to a monorepo structure.
@@ -602,8 +604,8 @@ After reviewing this conversion:
 This conversion preserves the Git history of the standalone repository while adding the monorepo structure.
 EOF
 
-    git add "MONOREPO_CONVERSION.md"
-    print_info "Created MONOREPO_CONVERSION.md with conversion details"
+    git add "docs/architecture/MONOREPO_CONVERSION.md"
+    print_info "Created docs/architecture/MONOREPO_CONVERSION.md with conversion details"
 
     # Step 8: Collect author information and create commit
     print_status "Collecting author information from recent commits..."
@@ -622,7 +624,7 @@ This commit converts the repository from a standalone webapp to a complete monor
 Recent contributors whose work is preserved in this conversion:
 $AUTHOR_LIST
 
-See MONOREPO_CONVERSION.md for more details."
+See docs/architecture/MONOREPO_CONVERSION.md for more details."
 
     print_status "Monorepo conversion completed successfully!"
     print_info "New branch '$NEW_BRANCH' contains the converted monorepo structure"
@@ -641,7 +643,7 @@ else
         print_info "6. Remove platform-discovery files that were deleted in QA branch"
     fi
 
-    print_info "7. Create documentation files (QA_PRIORITIZED_FILES.md, MONOREPO_CONVERSION.md)"
+    print_info "7. Create documentation files (docs/upgrades/QA_PRIORITIZED_FILES.md, docs/architecture/MONOREPO_CONVERSION.md)"
     print_info "8. Commit all changes with attribution information"
 
     # Show detailed file statistics

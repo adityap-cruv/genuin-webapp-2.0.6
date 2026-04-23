@@ -1,6 +1,6 @@
 ## Linting
 
-See [LINTING.md](./LINTING.md) for details on the monorepo linting and ESLint setup.
+See [LINTING.md](./docs/setup/LINTING.md) for details on the monorepo linting and ESLint setup.
 # Genuin Monorepo
 
 This monorepo contains the Genuin web application and SDK packages, managed using Turborepo and pnpm workspaces.
@@ -24,7 +24,7 @@ genuin/
 - Node.js >= 20.12.0 (required for Next.js 15 and React 19)
 - [nvm](https://github.com/nvm-sh/nvm) (recommended for managing Node.js versions)
 
-See [NODE_VERSION.md](./NODE_VERSION.md) for detailed instructions on setting up the correct Node.js version.
+See [NODE_VERSION.md](./docs/setup/NODE_VERSION.md) for detailed instructions on setting up the correct Node.js version.
 
 - pnpm >= 8.0.0
 - Git
@@ -152,7 +152,7 @@ The root `package.json` includes several scripts to help manage and validate dep
 
 When adding a new shared dependency, prefer adding it to the root `package.json`. If a package requires a specific version of a shared library that conflicts with the root, carefully consider the implications. For new package-specific dependencies, add them directly to the package's `package.json`. Always run `pnpm install` from the root after making changes to dependencies.
 
-For more detailed information on the dependency management strategy and its implementation, see the [Dependency Optimization Instructions](./DEPENDECY_MANAGEMENT_IMPROVEMENT.md).
+For more detailed information on the dependency management strategy and its implementation, see the [Dependency Optimization Instructions](./docs/setup/DEPENDENCY_MANAGEMENT.md).
 
 ## Troubleshooting
 

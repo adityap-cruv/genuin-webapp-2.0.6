@@ -24,9 +24,9 @@
 
 4. ✅ Documentation
 
-   - Updated UPGRADE_GUIDE.md with migration details
-   - Created UPGRADE_TESTING_CHECKLIST.md
-   - Created UPGRADE_DEPLOYMENT_GUIDE.md
+   - Updated `apps/webapp/UPGRADE_GUIDE.md` with migration details
+   - Created `UPGRADE_TESTING_CHECKLIST.md` (same directory)
+   - Created `UPGRADE_DEPLOYMENT_GUIDE.md` (same directory)
 
 5. ✅ Next.js 15 Async Request APIs Update
 
@@ -44,11 +44,11 @@
 
    - Added staleTimes configuration to next.config.js
    - Set appropriate cache times for static and dynamic routes
-   - Created NEXT_JS_15_CHANGES.md documenting all changes
+   - Created `../migrations/NEXT_JS_15_CHANGES.md` documenting all changes
 
 8. ✅ Next.js 15 Codemods Setup and Execution
    - Created `run-nextjs15-codemods.sh` script to automate code transformations
-   - Added NEXTJS15_CODEMODS.md with detailed documentation
+   - Added `../migrations/NEXTJS15_CODEMODS.md` with detailed documentation
    - Successfully ran all necessary codemods for the upgrade
    - Reviewed and validated changes made by the codemods
 
@@ -60,7 +60,7 @@
    - Fixed compatibility issues with typedRoutes and middleware configuration
    - Resolved CSS module resolution issues by installing missing dependencies
    - Updated next.config.js with proper turbopack configuration
-   - Documented findings in TURBOPACK_TESTING_RESULTS.md
+   - Documented findings in `../migrations/TURBOPACK_TESTING_RESULTS.md`
 
 2. ✅ Complete React.FC Component Migrations
 
@@ -76,15 +76,15 @@
 4. ⬜ Enable Additional Next.js 15 Optimizations
 
    - Evaluate Partial Prerendering (PPR) for applicable pages
-     - Created SERVER_COMPONENTS_AND_PPR.md with implementation guide
+     - Created `../migrations/SERVER_COMPONENTS_AND_PPR.md` with implementation guide
      - Added configuration option in next.config.js (commented)
      - Created test component for Server Components pattern
    - Consider enabling React Compiler for production builds
-     - Created REACT_COMPILER.md with implementation details
+     - Created `../migrations/REACT_COMPILER.md` with implementation details
      - Added configuration option in next.config.js (commented)
    - Optimize additional package imports
      - Added additional libraries to optimizePackageImports configuration
-     - Created PACKAGE_IMPORT_OPTIMIZATION.md with detailed guidance
+     - Created `../migrations/PACKAGE_IMPORT_OPTIMIZATION.md` with detailed guidance
 
 5. ⬜ Test Sentry Integration
 

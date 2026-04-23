@@ -182,13 +182,16 @@ export function loadExpandView(
   ) as HTMLElement | null
 
   if (!loaderDiv) {
+    console.log(
+      '[gen-update-loader] loadExpandView — loaderDiv not found, creating new one'
+    )
     loaderDiv = document.createElement('div')
     loaderDiv.id = loaderId
     loaderDiv.classList.add('loader')
     loaderDiv.classList.add('gen-sdk-class')
     loaderDiv.classList.add('gen-sdk-root-portal')
     loaderDiv.style.position = 'fixed'
-    loaderDiv.style.zIndex = '30'
+    loaderDiv.style.zIndex = '2147483647'
     loaderDiv.style.top = '0'
     loaderDiv.style.left = '0'
     loaderDiv.style.width = '100%'
@@ -202,6 +205,7 @@ export function loadExpandView(
   }
 
   // Create a React root inside the loader div
+  const isExistingRoot = containerRootMap.has(loaderDiv)
   const root =
     containerRootMap.get(loaderDiv) ??
     (() => {
@@ -209,12 +213,17 @@ export function loadExpandView(
       containerRootMap.set(loaderDiv, newRoot)
       return newRoot
     })()
+  console.log(
+    '[gen-update-loader] loadExpandView — React root',
+    isExistingRoot ? 'reused existing' : 'created new'
+  )
 
   /*
   Remove or unmount the loader div when the SDK_EXPAND_VIEW_CHANGED event is emitted,
   indicating that the expand view has successfully loaded.
   */
   const cleanup = () => {
+    console.log('[gen-update-loader] cleanup called', loaderDiv)
     if (loaderDiv) {
       // Small delay before cleanup to ensure smooth transition
       setTimeout(() => {
@@ -222,7 +231,15 @@ export function loadExpandView(
         containerRootMap.delete(loaderDiv!)
         loaderDiv?.remove()
         loaderDiv = null
+        console.log(
+          '[gen-update-loader] loadExpandView — loaderDiv unmounted and removed'
+        )
       }, 200)
+    } else {
+      const loader = document.getElementById(loaderId)
+      if (loader) {
+        loader.remove()
+      }
     }
   }
 
@@ -230,6 +247,9 @@ export function loadExpandView(
     SDKEventType.SDK_EXPAND_VIEW_CHANGED,
     (payload: any) => {
       if (payload.payload) {
+        console.log(
+          '[gen-update-loader] loadExpandView — SDK_EXPAND_VIEW_CHANGED received, running cleanup'
+        )
         cleanup()
         if (typeof unsubscribe === 'function') {
           unsubscribe()
@@ -240,6 +260,7 @@ export function loadExpandView(
 
   // Use HTML/CSS skeleton for fast initial render — no React needed here
   loaderDiv.innerHTML = generateExpandViewSkeletonHTML({ theme })
+  console.log('[gen-update-loader] loadExpandView — skeleton HTML rendered')
 }
 
 // Lazy load FeedSkeleton only when expand view needs it

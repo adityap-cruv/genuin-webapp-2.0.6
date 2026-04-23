@@ -42,8 +42,6 @@ interface SectionedContentProps {
   setHorizontalSwiper: (swiper: any) => void;
   setActiveHorizontalIndex: (index: number) => void;
   setVerticalSwipers: (swipers: Record<number, any>) => void;
-  onAdStarted: (event?: AdInfoType) => void;
-  onAdEnded: (event?: AdInfoType) => void;
   onAdFilled?: (type: string, index: number) => void;
   onAdPlaybackEnd?: (index: number) => void;
 }

@@ -66,7 +66,7 @@ graph TD
 - Generate baseline report
 - Use `rollup-plugin-visualizer` or similar to visualize chunk composition
 
-4. **Document baseline metrics** in `packages/web-sdk/PERFORMANCE_BASELINE.md`
+4. **Document baseline metrics** in `packages/web-sdk/docs/performance/PERFORMANCE_BASELINE.md`
 
 - Initial bundle size (gen_sdk.min.js + genuin-sdk-[hash].js)
 - All vendor chunks loaded on init
@@ -383,7 +383,7 @@ Vite config creates vendor chunks, but they're still eagerly loaded because prov
 - Test with multiple embeds
 - Test expand/collapse functionality
 
-4. **Document improvements** in `packages/web-sdk/PERFORMANCE_IMPROVEMENTS.md`:
+4. **Document improvements** in `packages/web-sdk/docs/performance/PERFORMANCE_IMPROVEMENTS.md`:
 
 - Before/after metrics comparison
 - Chunk loading timeline comparison
@@ -391,7 +391,7 @@ Vite config creates vendor chunks, but they're still eagerly loaded because prov
 
 **Files to create/modify:**
 
-- `packages/web-sdk/PERFORMANCE_IMPROVEMENTS.md` (new)
+- `packages/web-sdk/docs/performance/PERFORMANCE_IMPROVEMENTS.md` (new)
 - `packages/web-sdk/scripts/measure-performance.ts` (new)
 
 ## Implementation Strategy
@@ -478,11 +478,11 @@ Vite config creates vendor chunks, but they're still eagerly loaded because prov
 
 ## Progress To Date
 
-- Baseline measurement: ran `npm run measure:baseline` and generated `packages/web-sdk/PERFORMANCE_BASELINE.md`. Baseline highlights: total ~5.29MB, 37 chunks, largest chunk `index-HJqWj5-y.js` ≈ 0.96MB; multiple index/app and vendor chunks are requested during `genuin.init()`.
+- Baseline measurement: ran `npm run measure:baseline` and generated `packages/web-sdk/docs/performance/PERFORMANCE_BASELINE.md`. Baseline highlights: total ~5.29MB, 37 chunks, largest chunk `index-HJqWj5-y.js` ≈ 0.96MB; multiple index/app and vendor chunks are requested during `genuin.init()`.
 
 - Validation: ran `npm run validate:chunks`. Validator exited non-zero; failing/oversized chunks include `index-HJqWj5-y.js` (981.19KB), `index-BRA4cOEx.js` (605.72KB), `standard-wall-BBTFSZuT.js` (919.76KB), and `vendor-forms-inputs-9qAuk8d8.js` (579.68KB). Warnings reported many very small chunks (<20KB) and total bundle size >5MB.
 
-- Chunk analysis: ran `npm run analyze:chunks` and generated `packages/web-sdk/CHUNK_ANALYSIS.md` with per-chunk recommendations (split large app/vendor chunks; merge tiny utility chunks).
+- Chunk analysis: ran `npm run analyze:chunks` and generated `packages/web-sdk/docs/performance/CHUNK_ANALYSIS.md` with per-chunk recommendations (split large app/vendor chunks; merge tiny utility chunks).
 
 - Runtime verification: confirmed production preview loads `gen_sdk.js` + `genuin-sdk` and immediately requests many `/dist/chunks/*` files on `genuin.init()` (eager embed initialization is causing early dynamic import execution).
 
@@ -490,8 +490,8 @@ Vite config creates vendor chunks, but they're still eagerly loaded because prov
     - `packages/web-sdk/scripts/measure-baseline.ts` (new)
     - `packages/web-sdk/scripts/analyze-chunks.ts` (new)
     - `packages/web-sdk/scripts/validate-chunk-sizes.ts` (new)
-    - `packages/web-sdk/PERFORMANCE_BASELINE.md` (generated)
-    - `packages/web-sdk/CHUNK_ANALYSIS.md` (generated)
+    - `packages/web-sdk/docs/performance/PERFORMANCE_BASELINE.md` (generated)
+    - `packages/web-sdk/docs/performance/CHUNK_ANALYSIS.md` (generated)
     - `packages/web-sdk/vite.config.mjs` (manual chunking/tuning)
     - `packages/web-sdk/src/index.ts` (selective exports, lazy CSS import)
     - `packages/web-sdk/src/sdk/react-utils.tsx` (dynamic provider imports)

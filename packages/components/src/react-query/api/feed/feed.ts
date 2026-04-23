@@ -201,7 +201,7 @@ async function fetchFeed(
       };
       break;
     case feedType === "SECTION_FEED":
-      url = API_PATHS.SECTION_FEED;
+      url = API_PATHS.FEED_V1;
       requestBody = {
         ...(deviceId && { device_id: deviceId }),
         ...(options?.placementId && { placement_id: options.placementId }),

@@ -51,4 +51,4 @@ pnpm up framer-motion classnames clsx immer zustand
 
 echo "✅ Dependencies updated! Please check for any peer dependency warnings."
 echo "⚠️ Remember to update your code for breaking changes in React 19 and Next.js 15."
-echo "📖 See UPGRADE_GUIDE.md for detailed instructions."
+echo "📖 See apps/webapp/UPGRADE_GUIDE.md for detailed instructions."

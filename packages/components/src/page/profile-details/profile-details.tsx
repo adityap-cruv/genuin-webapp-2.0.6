@@ -81,7 +81,7 @@ export function ProfileDetails({
   const ctas = (
     <div className="gencl:flex gencl:gap-2">
       {(forBrand || (!forBrand && profileData && profileData.brand)) &&
-        user?.ksCbRequestStatus !== "Accepted" && (
+        user?.ksCbRequestStatus !== "Accepted" && user?.ksCbRequestStatus !== "Success" && (
           <BecomeCreatorButton
             size={isMobile ? "sm" : "md"}
             theme="primary"

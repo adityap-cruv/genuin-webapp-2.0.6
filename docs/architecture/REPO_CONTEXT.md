@@ -146,9 +146,9 @@ genuin-webapp-standalone/
 
 ## 8. Documentation
 - Each package contains its own README with specific instructions
-- UPGRADE_GUIDE.md contains details on Next.js 15 and React 19 upgrade
-- MONOREPO_CONVERSION.md explains the repository structure conversion
-- Additional documentation in markdown files at project root
+- `apps/webapp/UPGRADE_GUIDE.md` contains details on Next.js 15 and React 19 upgrade
+- `MONOREPO_CONVERSION.md` (same directory) explains the repository structure conversion
+- Additional documentation in `docs/` subdirectories
 
 ---
 

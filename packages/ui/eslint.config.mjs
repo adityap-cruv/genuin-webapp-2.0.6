@@ -6,7 +6,7 @@ export default [
   ...sharedConfig,
   // UI-specific overrides to disable Next.js and type-aware rules that don't apply
   {
-    // TODO [eslint-migration]: Temporarily suppress most warnings for smoother migration. See LINTING.md for plan to re-enable.
+    // TODO [eslint-migration]: Temporarily suppress most warnings for smoother migration. See docs/setup/LINTING.md for plan to re-enable.
     rules: {
       "@next/next/no-html-link-for-pages": "off",
       "@typescript-eslint/no-misused-promises": "off",

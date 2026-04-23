@@ -308,38 +308,74 @@ export class GenuinSDK {
   }
 
   async newUpdate(config?: UpdateConfigByUserType) {
+    console.log('[gen-update-loader] newUpdate called with config:', config)
     // if sdk is not initialized then queue the update call.
     if (!this.isInitialized) {
+      console.log(
+        '[gen-update-loader] SDK not initialized, queuing update call'
+      )
       this.callbackQueueManager.enqueue(
         () => this._performUpdate(config),
         config
       )
       return
     }
+    console.log('[gen-update-loader] SDK initialized, calling _performUpdate')
     await this._performUpdate(config)
+    console.log('[gen-update-loader] newUpdate completed')
   }
 
   private async _performUpdate(config?: UpdateConfigByUserType) {
+    console.log(
+      '[gen-update-loader] _performUpdate started with config:',
+      config
+    )
     // In case of token comes authenticateUser, this function will authenticate user in all the embeds.
     if (this.isValidToken(config?.token)) {
+      console.log('[gen-update-loader] Valid token found, authenticating user')
       await this.authenticateUser({
         token: config.token,
         userParams: config.user_params,
       })
+      console.log('[gen-update-loader] User authentication completed')
+    } else {
+      console.log(
+        '[gen-update-loader] No valid token in config, skipping authentication'
+      )
     }
 
     // Update contextual params in the embed where the instance id matches.
     const contextualParams: ContextualParamsType | undefined =
       config?.contextual_params ?? config?.contextualParams
     if (contextualParams && config && config.container_id) {
+      console.log(
+        '[gen-update-loader] Updating contextual params for container:',
+        config.container_id,
+        'params:',
+        contextualParams
+      )
       await this.updateContextualParamsInEmbed({
         contextualParams: contextualParams,
         containerId: config.container_id,
       })
+      console.log('[gen-update-loader] Contextual params update completed')
+    } else {
+      console.log(
+        '[gen-update-loader] Skipping contextual params update — contextualParams:',
+        contextualParams,
+        'container_id:',
+        config?.container_id
+      )
     }
     // Update start video slug in the embed/placement where the instance id matches.
     if (config?.start_video_slug && config.container_id) {
       // User-provided data takes priority
+      console.log(
+        '[gen-update-loader] start_video_slug provided, updating start video:',
+        config.start_video_slug,
+        'container:',
+        config.container_id
+      )
       await this.updateStartVideoId({
         startVideoSlug: config.start_video_slug,
         containerId: config.container_id,
@@ -347,12 +383,26 @@ export class GenuinSDK {
         commentId: config.comment_id,
         sourceInstanceId: config.source_instance_id,
       })
+      console.log('[gen-update-loader] Start video slug update completed')
     } else {
       // No start_video_slug from user — check localStorage for a pending action
+      console.log(
+        '[gen-update-loader] No start_video_slug in config, checking localStorage for pending action'
+      )
       const pendingAction = getPendingAction()
+      console.log(
+        '[gen-update-loader] Pending action from localStorage:',
+        pendingAction
+      )
       if (pendingAction?.videoSlug) {
         // Use container_id from config if available, otherwise fall back to the divId stored in the pending action
         const containerId = config?.container_id ?? pendingAction.divId
+        console.log(
+          '[gen-update-loader] Found pending action videoSlug:',
+          pendingAction.videoSlug,
+          'resolved containerId:',
+          containerId
+        )
         if (containerId) {
           await this.updateStartVideoId({
             startVideoSlug: pendingAction.videoSlug,
@@ -361,9 +411,19 @@ export class GenuinSDK {
             commentId: pendingAction.commentId,
           })
           clearPendingAction()
+          console.log('[gen-update-loader] Pending action applied and cleared')
+        } else {
+          console.log(
+            '[gen-update-loader] No containerId resolved, skipping pending action'
+          )
         }
+      } else {
+        console.log(
+          '[gen-update-loader] No pending action found in localStorage'
+        )
       }
     }
+    console.log('[gen-update-loader] _performUpdate completed')
   }
 
   /**

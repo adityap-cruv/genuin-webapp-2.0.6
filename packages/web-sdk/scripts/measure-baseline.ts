@@ -264,7 +264,7 @@ async function main() {
     const formatted = formatReport(report)
 
     // Write to file
-    const reportPath = resolve(__dirname, '../PERFORMANCE_BASELINE.md')
+    const reportPath = resolve(__dirname, '../docs/performance/PERFORMANCE_BASELINE.md')
     await import('fs/promises').then((fs) =>
       fs.writeFile(reportPath, formatted, 'utf-8')
     )

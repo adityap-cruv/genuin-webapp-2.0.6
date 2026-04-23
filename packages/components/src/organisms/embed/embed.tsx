@@ -289,7 +289,7 @@ export function Embed({
   const isEmbed: boolean = !config.view.isPlacementView;
   const embedVariant = config.embedStyle;
   const isGridLayout = config.view.isGrid;
-  const { renderOnlySingleVideoInEmbed } = config;
+  // const { renderOnlySingleVideoInEmbed } = config;
 
   // Data fetching
   const feedType = config.brand.feedType;
@@ -569,39 +569,19 @@ export function Embed({
 
   // Listen for activePlayerType changes to sync local state.
   // When returning from expand-view to embed in single-video mode, reset the
-  // event bus index to 0 with shouldTrackImpression:false to avoid a spurious
-  // impression event for the video the user just watched in expand-view.
-  // above conditions will only work if renderOnlySingleVideoInEmbed is true
   useEffect(() => {
     function handleActivePlayerTypeChange(
       eventData: any,
       context: EmbedEventContextType,
     ) {
       setActivePlayerType(context.activePlayerType);
-
-      if (
-        renderOnlySingleVideoInEmbed &&
-        context.previousPlayerType === "expand-view" &&
-        context.activePlayerType === "embed"
-      ) {
-        embedEventBus.emit(
-          "activeIndexChange",
-          undefined,
-          (currentContext) => ({
-            ...currentContext,
-            activeIndex: 0,
-            previousActiveIndex: currentContext.activeIndex,
-            shouldTrackImpression: false,
-          }),
-        );
-      }
     }
 
     embedEventBus.on("activePlayerTypeChange", handleActivePlayerTypeChange);
     return () => {
       embedEventBus.off("activePlayerTypeChange", handleActivePlayerTypeChange);
     };
-  }, [embedEventBus, renderOnlySingleVideoInEmbed]);
+  }, [embedEventBus]);
 
   // Listen for activeIndex changes to sync local state
   useEffect(() => {
@@ -826,10 +806,7 @@ export function Embed({
                 spaceBetweenVideos={spaceBetweenVideos}
                 slidesPerView={slidesPerView}
                 isIheartLayout={isIheartLayout}
-                allowTouchMove={
-                  !renderOnlySingleVideoInEmbed &&
-                  !config.view.expandOnInteraction
-                }
+                allowTouchMove={!config.view.expandOnInteraction}
                 onSlideChange={(swiperInstance: any) => {
                   // Early safety check
                   if (!swiperInstance) return;
@@ -869,10 +846,7 @@ export function Embed({
                   height: 160,
                 }}
               >
-                {(renderOnlySingleVideoInEmbed
-                  ? filteredPost.slice(0, 1)
-                  : filteredPost
-                )?.map((videoData, idx) => {
+                {filteredPost?.map((videoData, idx) => {
                   return videoData.video?.type === "complete" ? (
                     <></>
                   ) : videoData.video?.type === "overlay" &&

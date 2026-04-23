@@ -3,6 +3,8 @@
 These rules apply to all AI tools working in this repository.
 They are the single source of truth for how code should be written here.
 
+> **Documentation map**: All docs in this repo are indexed in `docs.md` at the root. Read it to find the right file before guessing a path.
+>
 > **Detailed context** (React/Next.js patterns, Tailwind v4, package specifics, env vars, common issues) lives in `.team/docs/ai-context.md`. Read it when working in those domains.
 
 ---
@@ -169,10 +171,11 @@ genuin-webapp-standalone/
 
 ## Additional Resources
 
+- `docs.md` — **documentation map**: index of every doc file in this repo; read this first when looking for a doc or deciding where to put a new one
 - `.team/docs/ai-context.md` — React/Next.js patterns, Tailwind v4, env vars, package specifics, common issues
-- `UPGRADE_GUIDE.md` — Next.js 15 and React 19 upgrade details
-- `TAILWIND_V4_MIGRATION_GUIDE.md` — detailed Tailwind v4 migration steps
-- `NODE_VERSION.md` — Node.js version requirements and setup
+- `apps/webapp/UPGRADE_GUIDE.md` — Next.js 15 and React 19 upgrade details
+- `docs/migrations/TAILWIND_V4_MIGRATION_GUIDE.md` — detailed Tailwind v4 migration steps
+- `docs/setup/NODE_VERSION.md` — Node.js version requirements and setup
 - Package-specific `README` files — detailed per-package instructions
 
 ---

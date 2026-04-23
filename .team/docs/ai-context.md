@@ -135,8 +135,8 @@ a Next.js webapp, and an embeddable Web SDK.
    - Variant stacking order is left to right: `first:*:pt-0` → `*:first:pt-0`
 
 5. **Migration References**
-   - `TAILWIND_V4_MIGRATION.md` — migration status
-   - `TAILWIND_V4_MIGRATION_GUIDE.md` — detailed steps
+   - `docs/migrations/TAILWIND_V4_MIGRATION.md` — migration status
+   - `docs/migrations/TAILWIND_V4_MIGRATION_GUIDE.md` — detailed steps
 
 ---
 

@@ -187,8 +187,8 @@ export function PlayerList({
   const [isEndOfFeedReached, setEndOfFeedReached] = useState<boolean>(false);
   // if we use directly isTablet from the hook then for desktop it will be true based on useDeviceDetectMediaQuery implementation
   const isTablet = !isMobile && !isDesktop;
-  const [isAdFilled, setIsAdFilled] = useState<boolean>(false);
   const [adActiveOn, setAdActiveOn] = useState<number>(-1);
+  const isAdFilled = adActiveOn !== -1 && activeIndex === adActiveOn;
 
   // Container dimensions state
   const containerRef = useRef<HTMLDivElement>(null);
@@ -279,28 +279,6 @@ export function PlayerList({
     ? verticalSwipers[activeHorizontalIndex]
     : verticalSwipers[0];
 
-  // Callback to enable/disable swipers when interacting with Pills
-  const handleSwiperToggle = useCallback(
-    (disable: boolean) => {
-      console.log("Toggling swiper. Disable:", disable);
-      if (isSectioned && horizontalSwiper) {
-        if (disable) {
-          horizontalSwiper.disable();
-        } else {
-          horizontalSwiper.enable();
-        }
-      }
-      // Also disable/enable the active vertical swiper
-      if (activeSwiper) {
-        if (disable) {
-          activeSwiper.disable();
-        } else {
-          activeSwiper.enable();
-        }
-      }
-    },
-    [isSectioned, horizontalSwiper, activeSwiper],
-  );
   /*
 We need to filter out these posts because we shouldn't show the overlay middleware
 or the full-screen view here, and we cannot simply skip the slide since we're using
@@ -325,22 +303,10 @@ a swiper inside another swiper.
 
   const handleAdFilled = useCallback((type: string, index: number) => {
     setAdActiveOn(index);
-    setIsAdFilled(true);
   }, []);
 
   const handleAdPlaybackEnd = useCallback((index: number) => {
     setAdActiveOn(-1);
-    setIsAdFilled(false);
-  }, []);
-
-  const handleAdStarted = useCallback((e?: AdInfoType, index?: number) => {
-    setAdActiveOn(index ?? -1);
-    setIsAdFilled(true);
-  }, []);
-
-  const handleAdEnded = useCallback((e?: AdInfoType, index?: number) => {
-    setAdActiveOn(index ?? -1);
-    setIsAdFilled(false);
   }, []);
 
   const activeVideoId = filteredPost[activeIndex]?.video?.id;
@@ -611,8 +577,6 @@ a swiper inside another swiper.
                     setHorizontalSwiper={setHorizontalSwiper}
                     setActiveHorizontalIndex={setActiveHorizontalIndex}
                     setVerticalSwipers={setVerticalSwipers}
-                    onAdStarted={handleAdStarted}
-                    onAdEnded={handleAdEnded}
                     onAdFilled={handleAdFilled}
                     onAdPlaybackEnd={handleAdPlaybackEnd}
                   />
@@ -640,8 +604,6 @@ a swiper inside another swiper.
                     isSectioned={isSectioned}
                     onAdFilled={handleAdFilled}
                     onAdPlaybackEnd={handleAdPlaybackEnd}
-                    onAdStarted={handleAdStarted}
-                    onAdEnded={handleAdEnded}
                   />
                 </Suspense>
               )}
@@ -692,14 +654,14 @@ a swiper inside another swiper.
             <Actions
               shareUrl={filteredPost[activeIndex]?.video?.shareUrl ?? ""}
               isReacted={filteredPost[activeIndex]?.video?.isSparked ?? false}
-              contentId={filteredPost[activeIndex]?.video?.id || ""}
-              groupSlug={filteredPost[activeIndex]?.group?.slug || ""}
-              slug={filteredPost[activeIndex]?.video?.slug || ""}
+              contentId={filteredPost[activeIndex]?.video?.id ?? ""}
+              groupSlug={filteredPost[activeIndex]?.group?.slug ?? ""}
+              slug={filteredPost[activeIndex]?.video?.slug ?? ""}
               videoType={
                 filteredPost[activeIndex]?.video?.videoType ??
                 VideoTypes.Content
               }
-              reactionCount={filteredPost[activeIndex]?.video?.sparkCount || 0}
+              reactionCount={filteredPost[activeIndex]?.video?.sparkCount ?? 0}
               theme={showExpandView ? "dark" : "light"}
               className={cn(
                 "gencl:shrink-0",
@@ -878,7 +840,6 @@ a swiper inside another swiper.
                   },
                   theme: "light",
                 }}
-                onDragging={handleSwiperToggle}
                 footer={
                   <CommentInputBox
                     communityId={filteredPost[activeIndex].community?.id || ""}
@@ -921,6 +882,7 @@ a swiper inside another swiper.
             </Suspense>
           </div>
         )}
+
       {isOctoOpen &&
         showExpandView &&
         !isAdFilled &&

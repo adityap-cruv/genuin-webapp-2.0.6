@@ -2,13 +2,13 @@
 
 ## 📊 Executive Summary
 
-Comprehensive dependency cleanup completed for `packages/web-sdk/package.json` based on the reorganization changes documented in `README_REORGANIZATION_COMPLETE.md`. The cleanup removes redundant dependencies while preserving those required for the build plan and aligning with the monorepo's React 19 architecture.
+Comprehensive dependency cleanup completed for `packages/web-sdk/package.json` based on the reorganization changes documented in `../history/README_REORGANIZATION_COMPLETE.md`. The cleanup removes redundant dependencies while preserving those required for the build plan and aligning with the monorepo's React 19 architecture.
 
 ## 🎯 Key Achievements
 
 - **Removed 35+ redundant dependencies** now provided by shared packages
 - **Updated to React 19** to match the monorepo standard
-- **Added Vite build dependencies** required for `SINGLE_BUNDLE_BUILD_PLAN.md`
+- **Added Vite build dependencies** required for `../performance/SINGLE_BUNDLE_BUILD_PLAN.md`
 - **Established proper peer dependency structure** for shared packages
 - **Maintained all SDK-specific dependencies** required for functionality
 - **Aligned with root package.json versions** for consistency
@@ -304,7 +304,7 @@ Dynamic imports module flag requirements
 - ✅ **Import resolution issues** - Will be handled by new build configuration
 - ✅ **Module format conflicts** - New build system will use proper ES modules
 
-**Status**: These issues will be completely resolved when implementing `SINGLE_BUNDLE_BUILD_PLAN.md`
+**Status**: These issues will be completely resolved when implementing `../performance/SINGLE_BUNDLE_BUILD_PLAN.md`
 
 ---
 
@@ -349,8 +349,8 @@ Dynamic imports module flag requirements
 ## 📞 Support & References
 
 ### Documentation
-- **Build Plan:** `SINGLE_BUNDLE_BUILD_PLAN.md`
-- **Reorganization:** `README_REORGANIZATION_COMPLETE.md`
+- **Build Plan:** `../performance/SINGLE_BUNDLE_BUILD_PLAN.md`
+- **Reorganization:** `../history/README_REORGANIZATION_COMPLETE.md`
 - **Monorepo Guide:** Root-level README files
 
 ### Key Changes Summary
@@ -379,6 +379,6 @@ The dependency cleanup has **successfully achieved all primary objectives**:
 ✅ **Preserved all SDK-specific dependencies** required for functionality
 ✅ **Aligned with monorepo standards** for consistency
 
-**Current build issues are expected and acceptable** - they will be completely resolved when implementing the new Vite + Rollup build system. The package.json is now in the optimal state to begin fresh implementation of `SINGLE_BUNDLE_BUILD_PLAN.md`.
+**Current build issues are expected and acceptable** - they will be completely resolved when implementing the new Vite + Rollup build system. The package.json is now in the optimal state to begin fresh implementation of `../performance/SINGLE_BUNDLE_BUILD_PLAN.md`.
 
 **🚀 Ready to proceed with modern build system implementation!**

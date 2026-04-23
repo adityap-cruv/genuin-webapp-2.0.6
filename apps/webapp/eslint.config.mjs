@@ -14,7 +14,7 @@ const tsconfigRootDir = new URL('.', import.meta.url).pathname
  * - Sets browser and ES2021 env
  */
 // TODO [eslint-migration]: Temporarily suppress most warnings for smoother transition.
-// See LINTING.md for details and plan to re-enable rules after code cleanup.
+// See docs/setup/LINTING.md for details and plan to re-enable rules after code cleanup.
 // Create a Next.js config object for ESLint
 const nextJsConfig = {
   plugins: {

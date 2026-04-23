@@ -21,7 +21,7 @@ export async function fetchKsCbRequestStatus(axiosInstance: AxiosInstance): Prom
   try {
     const res = await axiosInstance.get(API_PATHS.BECOME_CREATOR_REQUEST_STATUS);
     return {
-      status: parseBecomeCreatorStatus(res.data.data.cb_request_status),
+      status: parseBecomeCreatorStatus(res.data.data.cb_request_status) ?? "Pending",
     };
   } catch (e) {
     throw new Error("Something went wrong!");
@@ -29,8 +29,9 @@ export async function fetchKsCbRequestStatus(axiosInstance: AxiosInstance): Prom
 }
 
 export function parseBecomeCreatorStatus(
-  status: number,
-): ksCbRequestStatusType {
+  status: number | undefined,
+): ksCbRequestStatusType | undefined {
+  if (status === undefined || status === null) return undefined;
   return status === 1 ? "Pending" : status === 2 ? "Requested" : "Accepted";
 }
 

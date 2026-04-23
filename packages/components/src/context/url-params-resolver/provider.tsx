@@ -94,7 +94,7 @@ class BaseResolver implements BaseResolverConfig {
   /**
    * Handles errors by logging them and setting an 'Unknown' value for the given key path
    * @param {string} keyPath - Dot-notation path to the key where the error occurred
-   * @param {Error} error - The error that occurred
+   * @param {Error} _error - The error that occurred
    *
    * @description
    * This method handles any errors that occur during the resolution process.
@@ -105,8 +105,7 @@ class BaseResolver implements BaseResolverConfig {
    * // Logs an error and sets the device operating system to 'Unknown'
    * handleError('device.os', new Error('Failed to resolve OS'))
    */
-  handleError(keyPath: string, error: Error): void {
-    console.error(`Error resolving ${keyPath}:`, error.message);
+  handleError(keyPath: string, _error: Error): void {
     this.setKeyValue(keyPath, "Unknown");
   }
 
@@ -764,7 +763,6 @@ class SiteResolver extends BaseResolver implements SiteResolverConfig {
     const required = ["id", "name", "domain", "page"];
     for (const field of required) {
       if (!this.keyParamMapping.site[field]?.value) {
-        console.error(`Missing required field: site.${field}`);
         return false;
       }
     }
@@ -1032,8 +1030,11 @@ class MainResolver implements MainResolverConfig {
           ) {
             // If the macros property exists in the URL's search string, replace the macro with the value
             if (obj[key].macros && urlObj.search.includes(obj[key].macros)) {
-              urlObj.search = urlObj.search.replaceAll(
-                obj[key].macros,
+              urlObj.search = urlObj.search.replace(
+                new RegExp(
+                  obj[key].macros.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+                  "g",
+                ),
                 obj[key].value,
               );
             }
@@ -1054,6 +1055,7 @@ class MainResolver implements MainResolverConfig {
       regs: this.deviceResolver.keyParamMapping.regs,
     };
     traverseJson(allMappings);
+
     return urlObj.toString();
   }
 
@@ -1154,16 +1156,15 @@ export const UrlParamProvider: React.FC<{
         const params = resolverInstance.getResolvedParams();
         resolvedParamsRef.current = params;
         resolverRef.current = resolverInstance;
-      } catch (error) {
-        console.error(error);
-      }
+      } catch (error) {}
     };
     resolveUrlParams();
   }, []);
 
   const appendParamsToUrl = (url: string): string => {
     if (resolverRef.current) {
-      return resolverRef.current.updateUrlWithParams(url);
+      const result = resolverRef.current.updateUrlWithParams(url);
+      return result;
     }
     return url;
   };

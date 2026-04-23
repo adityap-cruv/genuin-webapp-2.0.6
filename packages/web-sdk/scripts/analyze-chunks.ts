@@ -203,7 +203,7 @@ async function main() {
     const report = generateReport(analyses)
 
     // Write report
-    const reportPath = resolve(__dirname, '../CHUNK_ANALYSIS.md')
+    const reportPath = resolve(__dirname, '../docs/performance/CHUNK_ANALYSIS.md')
     await import('fs/promises').then((fs) =>
       fs.writeFile(reportPath, report, 'utf-8')
     )

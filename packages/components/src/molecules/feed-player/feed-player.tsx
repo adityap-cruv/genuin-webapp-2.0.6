@@ -119,7 +119,8 @@ export const FeedPlayer = memo(function FeedPlayer({
   ...props
 }: FeedPlayerProps) {
   // adUrl = undefined;
-  const { muted, volume, playbackSpeed, baseContextManager } = useBaseContext();
+  const { muted, volume, playbackSpeed, baseContextManager, brandDetails } =
+    useBaseContext();
   const embedDetails = useSafeEmbedContext();
   const {
     feedPlayerShouldPlay,
@@ -149,6 +150,7 @@ export const FeedPlayer = memo(function FeedPlayer({
   } = useEmbedConfigs();
 
   const { appendParamsToUrl, setPlayerSize } = useUrlParams();
+
   // adUrl =
   //   "https://gov.aniview.com/api/adserver/vmap/srv/?AV_HEIGHT=[DEVICE_HEIGHT]&p_height=[HEIGHT]&p_width=[WIDTH]&AV_PLACEMENT=1&AV_CONNECTIONTYPE=[DEVICE_CONNECTIONTYPE]&AV_IFA_TYPE=[IFA_TYPE]&AV_CHANNELID=698caa862051b1279703d98d&AV_CONTENT_URL=https://shorts.usmagazine.com/video/bestselling-mascara?community=214f3e23b8000d42&loop=214f3ea3b5801400&postroll=1&AV_PLCMT=1&AV_LATITUDE=[LOCATION_LAT]&AV_LMT=[LIMITED_AD_TRACKING]&preroll=1&AV_URL=https://shorts.usmagazine.com/video/bestselling-mascara?community=214f3e23b8000d42&loop=214f3ea3b5801400&AV_WIDTH=[DEVICE_WIDTH]&AV_RTB_DEVICE_TYPE=[DEVICE_TYPE]&AV_REGION=[REGION]&AV_MODEL=[DEVICE_MODEL]&AV_MAKE=[DEVICE_MAKE]&AV_LANGUAGE=[DEVICE_LANGUAGE]&AV_PUBLISHERID=6970e651e6f83878f3085364&cb=1774522459934970488&AV_IP=[IP]&AV_LONGITUDE=[LOCATION_LON]&AV_GDPR=[GDPR]&AV_DOMAIN=[DOMAIN]&AV_CONTENT_ID=56901c92-8a4e-4d27-a2c0-5acb5cfda65a&AV_USERAGENT=[UA]&AV_CONSENT=[GDPRCONSENT]&AV_OS=[OS]&AV_OSVERS=[OS_VERSION]&AV_DNT=[DNT]&midroll_times=00:00:08&AV_TIMESTAMP=1774522459934970818";
 
@@ -184,7 +186,7 @@ export const FeedPlayer = memo(function FeedPlayer({
 
   // When adTagObject/adConfig is present, suppress adUrl from VideoPlayer unless
   // the GenAd waterfall has failed (in which case fall back to adUrl for IMA).
-  const videoPlayerAdUrl = useMemo(() => {
+  let videoPlayerAdUrl = useMemo(() => {
     return resolvedAdConfig && !waterfallFailed
       ? undefined
       : adUrl
@@ -227,6 +229,7 @@ export const FeedPlayer = memo(function FeedPlayer({
       ...(isSponsored && {
         ad_type: "sponsored_post",
         cpm_rate: sponsorshipInfo?.cpm,
+        sponsorship_id: sponsorshipInfo?.id,
       }),
     };
   }, [videoId, totalVideos, src, isSponsored]);

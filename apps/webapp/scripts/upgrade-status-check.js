@@ -128,10 +128,10 @@ console.log(
   `1. Run ${colors.cyan}./apps/webapp/scripts/turbopack-test.sh${colors.reset} to evaluate Turbopack performance`
 )
 console.log(
-  `2. Review ${colors.cyan}SERVER_COMPONENTS_AND_PPR.md${colors.reset} and ${colors.cyan}REACT_COMPILER.md${colors.reset} for additional optimizations`
+  `2. Review ${colors.cyan}docs/migrations/SERVER_COMPONENTS_AND_PPR.md${colors.reset} and ${colors.cyan}docs/migrations/REACT_COMPILER.md${colors.reset} for additional optimizations`
 )
-console.log(`3. Complete outstanding tasks in ${colors.cyan}UPGRADE_STATUS.md${colors.reset}`)
-console.log(`4. Follow the testing checklist in ${colors.cyan}UPGRADE_TESTING_CHECKLIST.md${colors.reset}`)
+console.log(`3. Complete outstanding tasks in ${colors.cyan}docs/upgrades/UPGRADE_STATUS.md${colors.reset}`)
+console.log(`4. Follow the testing checklist in ${colors.cyan}docs/upgrades/UPGRADE_TESTING_CHECKLIST.md${colors.reset}`)
 console.log('')
 
 console.log(`${colors.cyan}====================================${colors.reset}`)

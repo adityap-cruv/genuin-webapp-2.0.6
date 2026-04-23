@@ -8,6 +8,7 @@ import { BaseLayout } from '@genuin/components/templates/base-layout/base-layout
 import { AuthBridge } from './auth-bridge'
 import { AnalyticsProvider } from '@genuin/components/context/analytics'
 import { LinkBridge } from './link-bridge'
+import { AxiosProvider } from '@genuin/components/context'
 
 interface SiteProvidersBaseProps {
   children: React.ReactNode
@@ -21,6 +22,7 @@ interface SiteProvidersBaseProps {
 function CoreProviders({ children, config, session }: SiteProvidersBaseProps) {
   return (
     <ReactQueryClientProvider>
+    <AxiosProvider brandId={config.brand_id}> 
       <BrandDetailsProviderClient brandDetails={config}>
         <SessionProvider refetchOnWindowFocus={false} refetchInterval={3600} session={session}>
           <LinkBridge>
@@ -30,6 +32,7 @@ function CoreProviders({ children, config, session }: SiteProvidersBaseProps) {
           </LinkBridge>
         </SessionProvider>
       </BrandDetailsProviderClient>
+      </AxiosProvider>
     </ReactQueryClientProvider>
   )
 }
