@@ -84,8 +84,7 @@ export function useEmbedConfigs() {
         return embedData?.grid_layout || undefined;
       })(),
       expandOnInteraction:
-        (embedData?.embed_id === "69c38273686a088a80a25ea2" ||
-          embedData?.placement_id === "69de71089f6934fe0ba22fb5" ||
+        (embedData?.placement_id === "69de71089f6934fe0ba22fb5" ||
           embedData?.placement_id === "69de7b51ede71540a7f10fd7" ||
           embedData?.placement_id === "69de814d6778217d372a2308") &&
         isMobile,
@@ -127,10 +126,14 @@ export function useEmbedConfigs() {
   const headerConfig = useMemo(
     () => ({
       showHeader:
+        embedData?.placement_id === "69c2812fd98484cf6b83a5ba" ||
         Boolean(customization?.heading) ||
         Boolean(customization?.sub_heading) ||
         Boolean(customization?.cta_button?.url),
-      heading: customization?.heading || null,
+      heading:
+        embedData?.placement_id === "69c2812fd98484cf6b83a5ba"
+          ? "Trending Highlights"
+          : customization?.heading || null,
       subHeading: customization?.sub_heading || null,
       headingTextColor: customization?.heading_text_color,
       subHeadingTextColor: customization?.sub_heading_text_color,
@@ -143,7 +146,7 @@ export function useEmbedConfigs() {
           }
         : null,
     }),
-    [customization],
+    [customization, embedData],
   );
 
   // ============================================================

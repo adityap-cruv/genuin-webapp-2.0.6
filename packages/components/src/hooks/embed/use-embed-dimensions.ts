@@ -66,7 +66,9 @@ export function useEmbedDimensions() {
     const getHeaderHeight = (): number => {
       if (
         !config.header.showHeader ||
-        (config.view.isPlacementView && !config.contentDisplay.showStyleDetails)
+        (config.view.isPlacementView &&
+          !config.contentDisplay.showStyleDetails &&
+          !config.header.heading)
       )
         return 0;
 

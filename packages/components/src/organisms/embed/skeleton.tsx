@@ -216,7 +216,9 @@ function EmbedHeaderSkeleton({
 
   if (
     !header.showHeader ||
-    (view.isPlacementView && !contentDisplay.showStyleDetails)
+    (view.isPlacementView &&
+      !contentDisplay.showStyleDetails &&
+      !header.heading)
   )
     return;
 

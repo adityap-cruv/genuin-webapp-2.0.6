@@ -8,7 +8,7 @@ import {
 export function parseUserData(
   userData: any,
   accessToken: string,
-  refreshToken?: string,
+  refreshToken?: string
 ): AuthUser {
   return {
     id: userData?.user_id,
@@ -51,7 +51,7 @@ export function parseUserData(
  */
 export function parsePlacementToEmbedData(
   data: PlacementDataResponse,
-  styleId: string,
+  styleId: string
 ): EmbedDataType {
   const webConfig = data.environments?.web
   const configureView = webConfig?.configure_view

@@ -43,7 +43,9 @@ export function EmbedHeader({
   // Use the header.showHeader property from our organized config
   if (
     !header.showHeader ||
-    (view.isPlacementView && !contentDisplay.showStyleDetails)
+    (view.isPlacementView &&
+      !contentDisplay.showStyleDetails &&
+      !header.heading)
   )
     return;
 

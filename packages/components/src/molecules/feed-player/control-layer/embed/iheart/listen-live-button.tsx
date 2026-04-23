@@ -175,7 +175,7 @@ export function IHeartListenLiveButton({
         tabIndex={isVisible ? 0 : -1}
         role="button"
         className={cn(
-          "gencl:border gencl:px-4 gencl:py-2 gencl:rounded-full gencl:flex gencl:items-center gencl:justify-center gencl:gap-1 gencl:transition-colors gencl:h-9! gencl:text-body-1-semi-bold!",
+          "gencl:border gencl:px-3 gencl:py-2 gencl:rounded-full gencl:flex gencl:items-center gencl:justify-center gencl:gap-1 gencl:transition-colors gencl:h-9! gencl:text-body-1-semi-bold!",
           "gencl:border-white gencl:bg-transparent gencl:text-white",
           !isVisible &&
             "gencl:opacity-0 gencl:invisible gencl:pointer-events-none",

@@ -1166,7 +1166,17 @@ export class GenuinSDK {
 
       // Override container height to 500px for specific placement ID
       if (extractedData.placementId === '69c2812fd98484cf6b83a5ba') {
-        element.style.height = '500px'
+        element.style.height = '560px'
+      }
+
+      // Hide embed on mobile for specific embed ID
+      if (
+        extractedData.embedId === '69c38273686a088a80a25ea2' &&
+        /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+      ) {
+        element.style.height = '0px'
+        element.style.width = '0px'
+        continue
       }
 
       // Shadow DOM is enabled by default (useShadowDOM !== false).
