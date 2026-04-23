@@ -313,8 +313,9 @@ const ItemComponent: React.FC<ItemProps> = ({
                   const currentIndex = allEvents.findIndex(e => e.id === event.id);
                   // Search backwards from current event to find the last user message
                   for (let i = currentIndex - 1; i >= 0; i--) {
-                      if (allEvents[i].role === 'user' && allEvents[i].message?.content) {
-                          return allEvents[i].message.content;
+                      const evt = allEvents[i];
+                      if (evt?.role === 'user' && evt.message?.content) {
+                          return evt.message.content;
                       }
                   }
                   return null;
@@ -516,7 +517,7 @@ const ItemComponent: React.FC<ItemProps> = ({
                                             const evt = allEvents[i];
                                             // Find agent message with content that's not a function/tool
                                             if (
-                                                evt.role === 'agent' &&
+                                                evt?.role === 'agent' &&
                                                 evt.message?.content &&
                                                 !evt.message.function_name &&
                                                 !evt.message.function_response

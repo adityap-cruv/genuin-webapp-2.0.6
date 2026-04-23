@@ -11,6 +11,7 @@
         "build": "pnpm exec cross-env NODE_ENV=development tsc -b && vite build --mode development",
         "minify-chunks": "find dist -name '*.js' -exec terser {} --compress drop_console=true,drop_debugger=true,passes=3 --mangle toplevel=true --format beautify=false,comments=false,semicolons=true,braces=true,max_line_len=false,wrap_func_args=false -o {} \\;",
         "build:qa": "pnpm exec cross-env NODE_ENV=qa tsc -b && vite build --mode qa && pnpm minify-chunks",
+        "typecheck": "pnpm exec tsc -b",
         "build:prod": "pnpm exec cross-env NODE_ENV=production tsc -b && vite build --mode production && pnpm minify-chunks",
         "publish:qa": "pnpm exec cross-env NODE_ENV=qa npx ts-node scripts/publish.ts",
         "publish:prod": "pnpm exec cross-env NODE_ENV=production npx ts-node scripts/publish.ts"
@@ -42,10 +43,14 @@
         "uuid": "^11.0.5"
     },
     "devDependencies": {
+        "@aws-sdk/client-cloudfront": "^3.835.0",
+        "@aws-sdk/client-s3": "^3.835.0",
+        "@aws-sdk/credential-provider-ini": "^3.835.0",
         "@eslint/js": "^9.25.0",
         "@inquirer/prompts": "^3.3.0",
         "@tailwindcss/postcss": "^4.1.8",
         "@tailwindcss/vite": "^4.1.10",
+        "@types/cli-progress": "^3.11.6",
         "@types/draggabilly": "^2.1.6",
         "@types/node": "^22.15.21",
         "@types/react": "^19.1.2",

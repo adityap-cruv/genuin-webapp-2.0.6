@@ -251,6 +251,7 @@ export function WebSDKContent() {
         if (suggestedPrompts.length === 0) return;
 
         const firstPrompt = suggestedPrompts[0];
+        if (!firstPrompt) return;
 
         // Cancel both compact and panel-view countdowns
         if (countdownIntervalRef.current) {
@@ -351,6 +352,7 @@ export function WebSDKContent() {
         if (suggestedPrompts.length === 0) return;
 
         const firstPrompt = suggestedPrompts[0];
+        if (!firstPrompt) return;
 
         // Clear both compact and panel-view countdowns
         if (countdownIntervalRef.current) {
@@ -415,6 +417,7 @@ export function WebSDKContent() {
         // Only trigger if there's no session and we have prompts
         if (!currentSessionId && suggestedPrompts.length > 0) {
             const firstPrompt = suggestedPrompts[0];
+            if (!firstPrompt) return;
             setShowDummyMessage(true);
             setCountdown(3);
             setShowPresetPrompts(false);

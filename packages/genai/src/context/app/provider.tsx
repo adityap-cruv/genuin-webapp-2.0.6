@@ -676,13 +676,16 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
 
                 if (chat.length > 0) {
                     const lastIndex = chat.length - 1;
-                    chat[lastIndex] = {
-                        ...chat[lastIndex],
-                        message: { content: 'Something went wrong. Please try again.' },
-                        role: 'agent',
-                        isCompleted: true,
-                        error: errorMessage,
-                    };
+                    const lastChat = chat[lastIndex];
+                    if (lastChat) {
+                        chat[lastIndex] = {
+                            ...lastChat,
+                            message: { content: 'Something went wrong. Please try again.' },
+                            role: 'agent',
+                            isCompleted: true,
+                            error: errorMessage,
+                        };
+                    }
                 } else {
                     const errorChatEvent: ChatHistoryEvent = {
                         id: `${new Date().toISOString()}-error`,
@@ -789,9 +792,10 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                         const existingSequence = agentEvent.contentSequence || [];
                         if (!existingSequence.includes(contentType)) {
                             const index = chat.findIndex(e => e.id === agentEvent!.id);
-                            if (index >= 0) {
+                            const chatAtIndex = chat[index];
+                            if (index >= 0 && chatAtIndex) {
                                 chat[index] = {
-                                    ...chat[index],
+                                    ...chatAtIndex,
                                     contentSequence: [...existingSequence, contentType],
                                 };
                             }
@@ -812,7 +816,10 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                     ) => {
                         if (index < 0 || index >= thinkingSteps.length) return;
                         ensureStepsClone();
-                        thinkingSteps[index] = updater(thinkingSteps[index]);
+                        const currentStep = thinkingSteps[index];
+                        if (currentStep) {
+                            thinkingSteps[index] = updater(currentStep);
+                        }
                     };
 
                     const newCycleTriggered =
@@ -862,16 +869,14 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                             const existingIndex = chat.findIndex(event => event.id === toolEventId);
 
                             const baseEvent: ChatHistoryEvent =
-                                existingIndex >= 0
-                                    ? chat[existingIndex]
-                                    : {
-                                          id: toolEventId,
-                                          message: { content: '' },
-                                          role: 'agent',
-                                          parent_id: lastEvent?.id || null,
-                                          feedback: null,
-                                          created_at: new Date().toISOString(),
-                                      };
+                                (existingIndex >= 0 ? chat[existingIndex] : undefined) ?? {
+                                    id: toolEventId,
+                                    message: { content: '' },
+                                    role: 'agent',
+                                    parent_id: lastEvent?.id || null,
+                                    feedback: null,
+                                    created_at: new Date().toISOString(),
+                                };
 
                             const updatedEvent: ChatHistoryEvent = {
                                 ...baseEvent,
@@ -962,6 +967,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                             for (let i = thinkingSteps.length - 1; i >= 0; i--) {
                                 const step = thinkingSteps[i];
                                 if (
+                                    step &&
                                     (step.type === 'function_call' || step.type === 'function_response') &&
                                     step.functionName
                                 ) {
@@ -972,7 +978,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
 
                             if (targetIndex >= 0) {
                                 const step = thinkingSteps[targetIndex];
-                                const friendlyName = humanizeIdentifier(step.functionName ?? 'Function');
+                                const friendlyName = humanizeIdentifier(step?.functionName ?? 'Function');
                                 updateThinkingStepAtIndex(targetIndex, current => ({
                                     ...current,
                                     type: 'function_response',
@@ -1399,7 +1405,7 @@ export const AgentsProvider: React.FC<AgentsProviderProps> = ({
                         if (updatedChat.length > 0) {
                             const lastIndex = updatedChat.length - 1;
                             const lastEvent = updatedChat[lastIndex];
-                            if (lastEvent.role === 'agent' && !lastEvent.isCompleted) {
+                            if (lastEvent && lastEvent.role === 'agent' && !lastEvent.isCompleted) {
                                 updatedChat[lastIndex] = {
                                     ...lastEvent,
                                     isCompleted: true,

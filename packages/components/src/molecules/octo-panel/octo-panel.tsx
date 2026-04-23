@@ -1,4 +1,3 @@
-import "@genuin/genai-sdk/styles";
 import { cn } from "@genuin/ui/utils";
 import type { ComponentProps, MouseEvent, ReactNode } from "react";
 import {

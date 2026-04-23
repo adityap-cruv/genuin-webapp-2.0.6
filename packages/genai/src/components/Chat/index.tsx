@@ -63,7 +63,7 @@ const Chat = () => {
         );
     }
     const events = currentSession?.chat || [];
-    const lastEventId = events.length > 0 ? events[events.length - 1].id : null;
+    const lastEventId = events.length > 0 ? (events[events.length - 1]?.id ?? null) : null;
     const sessionThinking = currentSession?.thinking;
     const thinkingSteps = currentSession?.thinkingSteps || [];
     return (
