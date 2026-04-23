@@ -534,10 +534,17 @@ export function useEmbedConfigs() {
   const brand = useMemo(() => {
     /** IHeart placement/embed IDs — shared across all IHeart-specific feature flags. */
     const IHEART_PLACEMENT_IDS = new Set([
+      "69de71089f6934fe0ba22fb5",
       "69c2812fd98484cf6b83a5ba",
-      "69c2846f506553c1e2b21722",
+      "69de78f2d89621dcaa5e7d79",
+      "69de7b51ede71540a7f10fd7",
+      "69de7ea22e853bae28d73adb",
+      "69de7ff541254f559233a72a",
+      "69de824b41254f559233a8b1",
+      "69de814d6778217d372a2308",
+      "69de834da5228bc03bca779b",
     ]);
-    const IHEART_EMBED_IDS = new Set(["69c38273686a088a80a25ea2"]);
+    const IHEART_EMBED_IDS = new Set<string>([]);
 
     const isIheart =
       (!!embedData?.placement_id &&
@@ -547,8 +554,11 @@ export function useEmbedConfigs() {
     const autoPageContext = isIheart;
 
     const shouldInjectExpandViewAds =
-      typeof window !== "undefined" &&
-      window.location.hostname === "iheartvip.prototype.begenuin.com";
+      (typeof window !== "undefined" &&
+        window.location.hostname === "iheartvip.prototype.begenuin.com") ||
+      (isIheart &&
+        typeof window !== "undefined" &&
+        window.location.hostname === "gendemo.b-cdn.net");
 
     const showIheartIframe = false;
     const isUsWeekly = brandDetails.brand_id === 2476;
