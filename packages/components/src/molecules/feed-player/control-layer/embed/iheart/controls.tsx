@@ -195,7 +195,7 @@ export function IHeartControls({
           onClick={(e) => {
             e?.stopPropagation();
           }}
-          className="gencl:w-11 gencl:h-11"
+          className="gencl:w-[42px] gencl:h-[42px]"
           tabIndex={-1}
           aria-hidden="true"
         >
@@ -209,7 +209,7 @@ export function IHeartControls({
             tabIndex={-1}
             variant="icon"
             title="Thumbs Up"
-            className="gencl:w-11 gencl:h-11 gencl:p-0 gencl:flex gencl:items-center gencl:justify-center"
+            className="gencl:w-[42px] gencl:h-[42px] gencl:p-0 gencl:flex gencl:items-center gencl:justify-center"
           >
             <DynamicReactionIcon
               isSparked={isReacted}
@@ -227,7 +227,7 @@ export function IHeartControls({
         <Button
           theme="custom"
           variant="icon"
-          className="gencl:w-11 gencl:h-11 gencl:p-0 gencl:flex gencl:items-center gencl:justify-center"
+          className="gencl:w-[42px] gencl:h-[42px] gencl:p-0 gencl:flex gencl:items-center gencl:justify-center"
           onClick={() => {
             onReactionClick?.();
           }}
@@ -243,7 +243,7 @@ export function IHeartControls({
         role="button"
         aria-pressed={muted}
         tabIndex={isVideoWatched ? -1 : 0}
-        className="gencl:w-11 gencl:h-11 gencl:p-0 gencl:flex gencl:items-center gencl:justify-center"
+        className="gencl:w-[42px] gencl:h-[42px] gencl:p-0 gencl:flex gencl:items-center gencl:justify-center"
         onClick={() => {
           toggleMuted(true);
         }}
@@ -265,7 +265,7 @@ export function IHeartControls({
         role="button"
         aria-pressed={playingState !== "PLAYING"}
         tabIndex={isVideoWatched ? -1 : 0}
-        className="gencl:w-11 gencl:h-11 gencl:p-0 gencl:flex gencl:items-center gencl:justify-center"
+        className="gencl:w-[42px] gencl:h-[42px] gencl:p-0 gencl:flex gencl:items-center gencl:justify-center"
         onClick={() => {
           togglePlay(true);
         }}
@@ -315,7 +315,7 @@ export function IHeartControls({
           aria-label="Share"
           role="button"
           tabIndex={isVideoWatched ? -1 : 0}
-          className="gencl:w-11 gencl:h-11 gencl:p-0 gencl:flex gencl:items-center gencl:justify-center"
+          className="gencl:w-[42px] gencl:h-[42px] gencl:p-0 gencl:flex gencl:items-center gencl:justify-center"
           title="Share"
         >
           <IHeartShareIcon theme="dark" size={size} aria-hidden="true" />

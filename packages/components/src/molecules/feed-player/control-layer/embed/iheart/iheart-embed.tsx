@@ -510,7 +510,7 @@ export const IHeartControlLayer: FC<ControlLayerPropsType> = ({
           {/* Controls Section — z-20 ensures these sit above the z-10 expand overlay */}
           <div
             className={cn(
-              "gencl:relative gencl:z-20 gencl:overflow-hidden gencl:transition-all gencl:ease-in-out gencl:duration-300 gencl:flex",
+              "gencl:relative gencl:z-20 gencl:overflow-hidden gencl:transition-all gencl:ease-in-out gencl:duration-300 gencl:flex gencl:pt-2",
               isOctoEnabled
                 ? "gencl:justify-end gencl:items-end"
                 : "gencl:justify-between gencl:items-center",
