@@ -379,8 +379,7 @@ export async function loadNewEmbed({
 
     toasterRoot = createRoot(toasterMount)
 
-    const isIheartIframe =
-      document.getElementsByName('iframe')?.[0]?.id === 'ihr-player-bar-frame'
+    const isIheartIframe = document.getElementById('ihr-player-bar-frame')
 
     toasterRoot.render(
       <Suspense fallback={null}>
