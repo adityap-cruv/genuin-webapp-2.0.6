@@ -20,26 +20,20 @@ import { getBrandType } from '@genuin/components/lib/utils/brand-layout'
 import { Loader } from '@genuin/ui/components/loader'
 // Lazy load Toaster for better code splitting
 export const LazyToaster = lazy(() =>
-  import('@genuin/ui/components/toaster').then((module) => ({
-    default: module.Toaster,
-    then: () => {
-      // Ensure required styles are injected into all relevant shadow roots
-      const injectStylesIntoShadowRoots = () => {
-        const mainHost = document.querySelector('[data-genuin-host]')
-        if (mainHost?.shadowRoot) {
-          void ensureStylesInShadowRoot(mainHost.shadowRoot)
-        }
-
-        const overlayHost = document.querySelector('[data-genuin-overlay-host]')
-        if (overlayHost?.shadowRoot) {
-          void ensureStylesInShadowRoot(overlayHost.shadowRoot)
-        }
-      }
-
-      // Inject styles once the toaster module is loaded
-      injectStylesIntoShadowRoots()
-    },
-  }))
+  import('@genuin/ui/components/toaster').then((module) => {
+    // Inject styles into all relevant shadow roots now that the toaster chunk is loaded.
+    // Must be done here (not on the returned object) — returning { then: fn } makes the
+    // object a thenable and causes the Promise to hang forever per the Promise spec.
+    const mainHost = document.querySelector('[data-genuin-host]')
+    if (mainHost?.shadowRoot) {
+      void ensureStylesInShadowRoot(mainHost.shadowRoot)
+    }
+    const overlayHost = document.querySelector('[data-genuin-overlay-host]')
+    if (overlayHost?.shadowRoot) {
+      void ensureStylesInShadowRoot(overlayHost.shadowRoot)
+    }
+    return { default: module.Toaster }
+  })
 )
 
 // Lazy load EmbedRoot for better code splitting

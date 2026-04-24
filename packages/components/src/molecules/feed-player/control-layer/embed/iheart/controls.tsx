@@ -108,6 +108,17 @@ export function IHeartControls({
 
   const isExpand = variant === "expand";
 
+  function hasIheartSubdomain(url: string): boolean {
+    try {
+      const { hostname } = new URL(url);
+
+      // must be a subdomain of iheart.com (not the root domain)
+      return hostname.endsWith(".iheart.com");
+    } catch {
+      return false;
+    }
+  }
+
   // Generate share URL with action=share parameter
   const generateShareUrl = (
     isExpand: boolean,
@@ -131,6 +142,7 @@ export function IHeartControls({
     //       return `${url.origin}${newPath}${queryString}`;
     //     })();
     const isPodcast = videoDetails?.attributes?.type === "podcast";
+
     const url = new URL(
       "https://iheart.com/" +
         (isPodcast ? "podcast/" : "live/") +
@@ -143,16 +155,21 @@ export function IHeartControls({
         videoDetails?.id,
     );
 
+    const windowUrl = typeof window !== "undefined" ? window.location.href : "";
+    const localWebsiteType = hasIheartSubdomain(windowUrl)
+      ? "inferno"
+      : websiteType;
+
     if (!url.searchParams.has("action")) {
       url.searchParams.set("action", "share");
     }
 
     if (!url.searchParams.has("cmp")) {
-      url.searchParams.set("cmp", `web_${websiteType}_hl_share`);
+      url.searchParams.set("cmp", `web_${localWebsiteType}_hl_share`);
     }
 
     if (!url.searchParams.has("sc")) {
-      url.searchParams.set("sc", `web_${websiteType}_hl_social_share`);
+      url.searchParams.set("sc", `web_${localWebsiteType}_hl_social_share`);
     }
 
     return url.toString();

@@ -22,8 +22,6 @@ import { AxiosProvider, SdkSkeleton } from '@genuin/components'
 import { useDeviceDetectMediaQuery } from '@genuin/components/hooks/use-devide-detect-media-query'
 import { cn } from '@genuin/ui/lib/utils'
 import { LazyToaster } from './react-utils'
-import { Toaster } from '@genuin/ui'
-import { ensureStylesInShadowRoot } from '@genuin/components/molecules/root-portal/shadow-root/shadow-dom.utils'
 
 const LazyEmbed = lazy(() =>
   import('@genuin/components/organisms/embed/embed')
@@ -133,22 +131,6 @@ export function EmbedRoot({
   // Signal to the SDK that real content has mounted so it can remove the shadow-DOM skeleton.
   useEffect(() => {
     onContentReady?.()
-
-    // Ensure required styles are injected into all relevant shadow roots
-    const injectStylesIntoShadowRoots = () => {
-      const mainHost = document.querySelector('[data-genuin-host]')
-      if (mainHost?.shadowRoot) {
-        void ensureStylesInShadowRoot(mainHost.shadowRoot)
-      }
-
-      const overlayHost = document.querySelector('[data-genuin-overlay-host]')
-      if (overlayHost?.shadowRoot) {
-        void ensureStylesInShadowRoot(overlayHost.shadowRoot)
-      }
-    }
-
-    // Inject styles once the toaster module is loaded
-    injectStylesIntoShadowRoots()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -213,12 +195,9 @@ export function EmbedRoot({
                         />
                       )}
                     </Suspense>
-                    {/* {config.useShadowDOM && (
-                      <Suspense fallback={null}>
-                        <LazyToaster />
-                      </Suspense>
-                    )} */}
-                    <Toaster />
+                    <Suspense fallback={null}>
+                      <LazyToaster />
+                    </Suspense>
                   </UrlParamProvider>
                 </AuthProvider>
               </AnalyticsProvider>
