@@ -55,6 +55,11 @@ const overlayShadowHostCache = new Map<
 export async function ensureStylesInShadowRoot(
   shadowRoot: ShadowRoot,
 ): Promise<void> {
+  // Bail if the host was removed from the DOM before we get to mutate it.
+  // Prevents "removeChild: not a child" crashes when React unmounts nodes
+  // concurrently with async style injection.
+  if (!shadowRoot.host?.isConnected) return;
+
   const cssURL = window.genuin?.cssUrl;
 
   if (cssURL) {
@@ -77,6 +82,8 @@ export async function ensureStylesInShadowRoot(
     // shadow root with inherits: true. This must complete before React renders
     // so that CSS custom properties have their initial values available.
     await hoistTailwindPropertyAtRulesFromShadowRoot(shadowRoot);
+    // Re-check after await — host may have been removed while we were fetching.
+    if (!shadowRoot.host?.isConnected) return;
   } else {
     console.warn(
       "⚠️ No cssUrl found in window.genuin. Required styles may not be applied to shadow root.",

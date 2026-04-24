@@ -1,7 +1,7 @@
 import { EmbedDataType } from '@genuin/components/context/embed/embed.types'
 import { createRoot } from 'react-dom/client'
 import type { Root } from 'react-dom/client'
-import { Suspense, lazy, type ReactNode } from 'react'
+import { Suspense, lazy, useEffect, type ReactNode } from 'react'
 import { BrandDetailsConfigType } from '@genuin/components/types/brand'
 import { AuthUser } from '@genuin/components/types/auth'
 import { SingleEmbedDataConfig } from '@/type'
@@ -18,23 +18,37 @@ import { Skeleton } from '@genuin/ui/components/skeleton'
 import { cn } from '@genuin/ui'
 import { getBrandType } from '@genuin/components/lib/utils/brand-layout'
 import { Loader } from '@genuin/ui/components/loader'
+import type { ToasterProps } from '@genuin/ui/components/toaster'
 // Lazy load Toaster for better code splitting
-export const LazyToaster = lazy(() =>
-  import('@genuin/ui/components/toaster').then((module) => {
-    // Inject styles into all relevant shadow roots now that the toaster chunk is loaded.
-    // Must be done here (not on the returned object) — returning { then: fn } makes the
-    // object a thenable and causes the Promise to hang forever per the Promise spec.
-    const mainHost = document.querySelector('[data-genuin-host]')
-    if (mainHost?.shadowRoot) {
-      void ensureStylesInShadowRoot(mainHost.shadowRoot)
-    }
-    const overlayHost = document.querySelector('[data-genuin-overlay-host]')
-    if (overlayHost?.shadowRoot) {
-      void ensureStylesInShadowRoot(overlayHost.shadowRoot)
-    }
-    return { default: module.Toaster }
-  })
+const LazyToasterInner = lazy(() =>
+  import('@genuin/ui/components/toaster').then((module) => ({
+    default: module.Toaster,
+  }))
 )
+
+/**
+ * Wraps Toaster so style sync runs after mount (inside useEffect), not during
+ * lazy resolution. Sonner injects its own <style> into document on mount —
+ * only after that can ensureStylesInShadowRoot clone it into shadow roots.
+ * Doing this inside the lazy factory (void / fire-and-forget) races React's
+ * commit phase and causes removeChild crashes.
+ */
+export function LazyToaster(props: ToasterProps) {
+  useEffect(() => {
+    const selectors = [
+      '[data-genuin-host]',
+      '[data-genuin-overlay-host]',
+      '[data-genuin-toaster-host]',
+    ]
+    selectors.forEach((sel) => {
+      document.querySelectorAll<HTMLElement>(sel).forEach((host) => {
+        if (host.shadowRoot) void ensureStylesInShadowRoot(host.shadowRoot)
+      })
+    })
+  }, [])
+
+  return <LazyToasterInner {...props} />
+}
 
 // Lazy load EmbedRoot for better code splitting
 const LazyEmbedRoot = lazy(() =>
@@ -198,8 +212,8 @@ export function loadExpandView(
     }
   }
 
-  // Create a React root inside the loader div
-  const isExistingRoot = containerRootMap.has(loaderDiv)
+  // Create a React root inside the loader div (or reuse existing)
+  const isNewRoot = !containerRootMap.has(loaderDiv)
   const root =
     containerRootMap.get(loaderDiv) ??
     (() => {
@@ -209,7 +223,7 @@ export function loadExpandView(
     })()
   console.log(
     '[gen-update-loader] loadExpandView — React root',
-    isExistingRoot ? 'reused existing' : 'created new'
+    !isNewRoot ? 'reused existing' : 'created new'
   )
 
   /*
@@ -219,16 +233,14 @@ export function loadExpandView(
   const cleanup = () => {
     console.log('[gen-update-loader] cleanup called', loaderDiv)
     if (loaderDiv) {
-      // Small delay before cleanup to ensure smooth transition
-      setTimeout(() => {
-        root.unmount()
-        containerRootMap.delete(loaderDiv!)
-        loaderDiv?.remove()
-        loaderDiv = null
-        console.log(
-          '[gen-update-loader] loadExpandView — loaderDiv unmounted and removed'
-        )
-      }, 200)
+      // unmount() is synchronous in React 18+. Remove the container in the
+      // same tick so React never tries removeChild on a detached node.
+      // A setTimeout here creates a window where React's passive-effect
+      // cleanup races the DOM removal and throws "removeChild: not a child".
+      root.unmount()
+      containerRootMap.delete(loaderDiv)
+      loaderDiv.remove()
+      loaderDiv = null
     } else {
       const loader = document.getElementById(loaderId)
       if (loader) {
@@ -241,9 +253,6 @@ export function loadExpandView(
     SDKEventType.SDK_EXPAND_VIEW_CHANGED,
     (payload: any) => {
       if (payload.payload) {
-        console.log(
-          '[gen-update-loader] loadExpandView — SDK_EXPAND_VIEW_CHANGED received, running cleanup'
-        )
         cleanup()
         if (typeof unsubscribe === 'function') {
           unsubscribe()
@@ -252,9 +261,12 @@ export function loadExpandView(
     }
   )
 
-  // Use HTML/CSS skeleton for fast initial render — no React needed here
-  loaderDiv.innerHTML = generateExpandViewSkeletonHTML({ theme })
-  console.log('[gen-update-loader] loadExpandView — skeleton HTML rendered')
+  // Only set innerHTML on a freshly created container. If React already owns
+  // this div (root reused), overwriting innerHTML destroys the fiber tree's
+  // DOM references and causes removeChild crashes on next reconcile.
+  if (isNewRoot) {
+    loaderDiv.innerHTML = generateExpandViewSkeletonHTML({ theme })
+  }
 }
 
 // Lazy load FeedSkeleton only when expand view needs it
@@ -321,8 +333,15 @@ export async function loadNewEmbed({
   // shadowTarget is the React mount point: the shadow root inner element when
   // Shadow DOM is on, or the host element itself when it is off.
 
-  const root = createRoot(shadowTarget)
-  containerRootMap.set(container, root)
+  // Reuse existing root if present — calling createRoot on the same node twice
+  // creates two competing React trees on the same DOM node, causing removeChild
+  // crashes and spurious re-renders. This happens when loadNewEmbed is called
+  // again (e.g. live embed update) before the previous root is cleaned up.
+  const existingRoot = containerRootMap.get(container)
+  const root = existingRoot ?? createRoot(shadowTarget)
+  if (!existingRoot) {
+    containerRootMap.set(container, root)
+  }
 
   // Determine brand layout type
   const isPlacementView = !!embedData.placement_id
@@ -337,17 +356,42 @@ export async function loadNewEmbed({
     videoLayoutId ? Number(videoLayoutId) : undefined
   )
 
-  // Initialize toaster on first embed
-  if (!toasterRoot && !config.useShadowDOM) {
-    const div = document.createElement('div')
-    div.id = 'gen-sdk-toaster-root'
-    div.classList.add('gen-sdk-class')
-    div.classList.add('gen-sdk-root-portal')
-    document.body.appendChild(div)
-    toasterRoot = createRoot(div)
+  // Initialize toaster singleton on first embed (shadow DOM mode only).
+  // Toaster gets its own shadow root so its DOM is fully isolated from embed
+  // shadow roots — no shared-root races, no removeChild conflicts.
+  if (!toasterRoot) {
+    const host = document.createElement('div')
+    host.id = 'gen-sdk-toaster-root'
+    host.setAttribute('data-genuin-toaster-host', 'true')
+    host.classList.add('gen-sdk-class')
+    host.classList.add('gen-sdk-root-portal')
+    document.body.appendChild(host)
+
+    const toasterShadow = host.attachShadow({ mode: 'open' })
+    // Inject styles into toaster shadow immediately (CSS link + cloned styles).
+    // ensureStylesInShadowRoot is also called from LazyToaster's useEffect after
+    // sonner mounts and injects its own <style> into document.
+    void ensureStylesInShadowRoot(toasterShadow)
+
+    const toasterMount = document.createElement('div')
+    toasterMount.classList.add('gen-sdk-class')
+    toasterShadow.appendChild(toasterMount)
+
+    toasterRoot = createRoot(toasterMount)
+
+    const isIheartIframe =
+      document.getElementsByName('iframe')?.[0]?.id === 'ihr-player-bar-frame'
+
     toasterRoot.render(
       <Suspense fallback={null}>
-        <LazyToaster />
+        <LazyToaster
+          style={
+            {
+              bottom: isIheartIframe ? '72px' : '24px',
+              '--offset-right': '16px',
+            } as React.CSSProperties
+          }
+        />
       </Suspense>
     )
   }
@@ -404,7 +448,7 @@ export async function loadNewEmbed({
     containerOwnsHostMap.delete(container)
 
     // Cleanup toaster when no embeds remain
-    if (containerRootMap.size === 0 && toasterRoot && !config.useShadowDOM) {
+    if (containerRootMap.size === 0 && toasterRoot) {
       toasterRoot.unmount()
       document.getElementById('gen-sdk-toaster-root')?.remove()
       toasterRoot = null

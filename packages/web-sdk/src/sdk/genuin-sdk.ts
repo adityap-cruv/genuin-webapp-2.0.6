@@ -1167,7 +1167,7 @@ export class GenuinSDK {
 
       // Override container height to 500px for specific placement ID
       if (extractedData.placementId === '69c2812fd98484cf6b83a5ba') {
-        element.style.height = '560px'
+        element.style.height = '500px'
       }
 
       // Hide embed on mobile for specific embed ID

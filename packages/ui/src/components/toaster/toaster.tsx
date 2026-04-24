@@ -45,7 +45,7 @@ const showCustomToast = (
   message: string,
   description: string | undefined,
   variant: ToastVariant,
-  isIheart?: boolean
+  isIheart?: boolean,
 ) => {
   toast.custom((id) => (
     <div
@@ -53,14 +53,14 @@ const showCustomToast = (
         "gencl:flex gencl:items-start gencl:justify-between gencl:gap-4 gencl:rounded-lg gencl:shadow-lg gencl:w-full!",
         isIheart
           ? "gencl:text-black gencl:bg-[#ACE7C0] gencl:p-3"
-          : "gencl:bg-white gencl:text-black gencl:border gencl:border-secondary-150 gencl:p-4 gencl:sm:w-sm! gencl:sm:max-w-sm! sm:gencl:mt-0!"
+          : "gencl:bg-white gencl:text-black gencl:border gencl:border-secondary-150 gencl:p-4 gencl:sm:w-sm! gencl:sm:max-w-sm! sm:gencl:mt-0!",
       )}
       tabIndex={-1}
     >
       <div
         className={cn(
           "gencl:flex gencl:items-center gencl:gap-2",
-          description && "gencl:items-start"
+          description && "gencl:items-start",
         )}
       >
         {variant === "success" ? (
@@ -69,13 +69,13 @@ const showCustomToast = (
               "gencl:size-5 gencl:rounded-2xl gencl:flex gencl:justify-center gencl:items-center gencl:shrink-0",
               isIheart
                 ? "gencl:bg-[#46815A]!"
-                : "gencl:bg-success-status gencl:border gencl:border-white"
+                : "gencl:bg-success-status gencl:border gencl:border-white",
             )}
           >
             <IHeartCheckIcon
               className={cn(
                 "gencl:shrink-0 gencl:fill-white",
-                isIheart ? "gencl:size-4" : "gencl:size-3"
+                isIheart ? "gencl:size-4" : "gencl:size-3",
               )}
             />
           </div>
@@ -83,9 +83,9 @@ const showCustomToast = (
           <X className="gencl:size-4 gencl:shrink-0 gencl:bg-error-status gencl:text-white gencl:rounded-full gencl:p-0.5" />
         )}
         <div className="gencl:text-body-0-semi-bold gencl:text-secondary-900 gencl:flex gencl:flex-col gencl:gap-2">
-          <p>{message}</p>
+          <p className="gencl:m-0!">{message}</p>
           {description && (
-            <p className="gencl:text-body-1-medium">{description}</p>
+            <p className="gencl:text-body-1-medium gencl:m-0!">{description}</p>
           )}
         </div>
       </div>
@@ -108,4 +108,5 @@ const ToastError = ({ message, description, isIheart }: ToastBodyProps) =>
 
 const Toast = { Success: ToastSuccess, Error: ToastError };
 
+export type { ToasterProps };
 export { Toaster, Toast };
