@@ -9,7 +9,7 @@ export function applyLineClampStyles(
   element: HTMLElement,
   maxLines: number | null,
   display: "inline" | "block",
-  isLineTruncate: boolean
+  isLineTruncate: boolean,
 ) {
   if (maxLines === null || !isLineTruncate) {
     element.style.display = display === "inline" ? "inline" : "-webkit-box"; // Reset display
@@ -82,7 +82,7 @@ export type AnchorTagType =
 
 // Utility function to convert URLs, mentions, and slugs to anchor tag data objects (for rendering in React)
 export function convertUrlsToAnchorTags(
-  strArr: Array<Record<string, unknown> | string | null>
+  strArr: Array<Record<string, unknown> | string | null>,
 ): AnchorTagType[] {
   return strArr.map((item) => {
     if (
@@ -145,7 +145,7 @@ export function convertUrlsToAnchorTags(
  */
 export function renderAnchorTag(
   item: AnchorTagType,
-  index: number
+  index: number,
 ): React.ReactNode {
   // Handle primitive types
   if (typeof item === "string" || item === null) {
@@ -274,7 +274,7 @@ export function calculateMaxCharacterLimit(
   maxLines: number,
   element: HTMLElement | undefined,
   textContent: string,
-  viewMoreText: string = "View More"
+  viewMoreText: string = "View More",
 ): number {
   if (!element || !textContent) return 0;
 
@@ -382,12 +382,16 @@ export function calculateMaxCharacterLimit(
             charIndex === 0 && i > 0
               ? `${previousString}${char}`
               : `${resultString}${char}`;
+          console.log({testStringWithChar,resultString});
 
           if (fitsInLines(testStringWithChar)) {
             resultString = testStringWithChar;
             lastFitString = resultString;
           } else {
-            return resultString.length;
+            console.log({resultString,textContent});
+            return resultString.length === textContent.length
+              ? resultString.length
+              : resultString.length - viewMoreText.length;
           }
         }
       }
@@ -416,7 +420,7 @@ export function calculateMaxCharacterLimitCached(
   maxLines: number,
   element: HTMLElement | undefined,
   textContent: string,
-  viewMoreText: string = "View More"
+  viewMoreText: string = "View More",
 ): number {
   if (!element || !textContent) return 0;
   const computedStyle = window.getComputedStyle(element);
@@ -433,7 +437,7 @@ export function calculateMaxCharacterLimitCached(
     maxLines,
     element,
     textContent,
-    viewMoreText
+    viewMoreText,
   );
   (element as any).__charLimitCache = { ...cache, [cacheKey]: result };
 
@@ -479,7 +483,7 @@ export function calculateMaxCharacterLimitCached(
  */
 export function calculateMaxHeight(
   element: HTMLElement | null,
-  maxLines: number
+  maxLines: number,
 ): string {
   if (!element) return "0px";
 

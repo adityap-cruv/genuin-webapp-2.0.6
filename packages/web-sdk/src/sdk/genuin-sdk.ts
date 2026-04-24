@@ -176,6 +176,7 @@ export class GenuinSDK {
    * @param config User-provided configuration for the SDK.
    */
   async newInit(config?: ConfigByUser) {
+    console.log('[web-sdk], init called multiple times')
     // Check if sdk initialization is disabled via URL parameter
     if (this.shouldDisableSdkInitialization()) {
       console.warn('SDK initialization is disabled via URL parameter.')
