@@ -224,6 +224,25 @@ function getBuildFiles(): string[] {
 }
 
 /**
+ * Returns the appropriate Cache-Control header value for a given file.
+ *
+ * The loader file (gen_sdk.min.js) uses a static name across releases, so browsers
+ * must revalidate it on every load to pick up updates. Hashed chunk and asset files
+ * are safe to cache indefinitely because their filenames change whenever content changes.
+ */
+function getCacheControl(filePath: string): string {
+  const filename = path.basename(filePath)
+
+  // Static-named loader — always revalidate so browsers pick up new releases
+  if (filename === 'gen_sdk.min.js' || filename === 'genuin-sdk.js' || filename === 'genuin-sdk-legacy.js') {
+    return 'no-cache'
+  }
+
+  // Hashed files: filename changes on content change, so they are safe to cache forever
+  return 'public, max-age=31536000, immutable'
+}
+
+/**
  * Uploads a single file to Oracle Object Storage with proper directory structure
  *
  * @param {S3Client} client - Initialized S3 client configured for Oracle
@@ -263,6 +282,7 @@ async function uploadFile(
     Key: oracleKey,
     Body: fileContent,
     ContentType: contentType,
+    CacheControl: getCacheControl(filePath),
   })
 
   try {
