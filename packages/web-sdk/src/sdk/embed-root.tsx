@@ -195,9 +195,11 @@ export function EmbedRoot({
                         />
                       )}
                     </Suspense>
-                    <Suspense fallback={null}>
-                      <LazyToaster />
-                    </Suspense>
+                    {/* {config.useShadowDOM && (
+                      <Suspense fallback={null}>
+                        <LazyToaster />
+                      </Suspense>
+                    )} */}
                   </UrlParamProvider>
                 </AuthProvider>
               </AnalyticsProvider>
