@@ -1177,6 +1177,13 @@ export class GenuinSDK {
       ) {
         element.style.height = '0px'
         element.style.width = '0px'
+        const parent = element.parentElement
+        if (parent) {
+          const headingTitle = parent.querySelector('.heading-title')
+          if (headingTitle instanceof HTMLElement) {
+            headingTitle.hidden = true
+          }
+        }
         continue
       }
 
