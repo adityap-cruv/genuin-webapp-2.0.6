@@ -13,6 +13,16 @@ import type {
 } from "./types";
 import { VideoTypes } from "@genuin/components/context";
 
+function isRetinaDisplay(): boolean {
+  return typeof window !== "undefined" && window.devicePixelRatio >= 2;
+}
+
+function appendImageOps(url: string | null | undefined): string | null {
+  if (!url) return null;
+  const ops = isRetinaDisplay() ? "?ops=fit(128,128)" : "?ops=fit(64,64)";
+  return `${url}${ops}`;
+}
+
 // TODO: SCRAP THIS.
 function tryJsonParse<T>(data: string | undefined): T | null {
   if (!data) {
@@ -63,20 +73,23 @@ function mapVideoItem(item: VideoFeedItem): z.infer<typeof PostDetailsSchema> {
         item.video.attributes.type &&
         (item.video.attributes.type === "station" ||
           item.video.attributes.type === "podcast")
-          ? (item.video.attributes as {
-              type: "station" | "podcast";
-              clip_type?: string | null;
-              description?: string | null;
-              image_url?: string | null;
-              timestamp?: number | null;
-              title?: string | null;
-              bucket_name?: string | null;
-              offer_text?: string | null;
-              slug?: string | null;
-              episode_id?: string | null;
-              podcast_id?: string | null;
-              station_id?: string | null;
-            })
+          ? {
+              ...(item.video.attributes as {
+                type: "station" | "podcast";
+                clip_type?: string | null;
+                description?: string | null;
+                image_url?: string | null;
+                timestamp?: number | null;
+                title?: string | null;
+                bucket_name?: string | null;
+                offer_text?: string | null;
+                slug?: string | null;
+                episode_id?: string | null;
+                podcast_id?: string | null;
+                station_id?: string | null;
+              }),
+              image_url: appendImageOps(item.video.attributes.image_url),
+            }
           : null,
       placement_card_layout_id: item.video.placement_card_layout_id || null,
       placement_video_layout_id: item.video.placement_video_layout_id || null,
@@ -230,20 +243,23 @@ export function parseFeed(
             item?.video.attributes.type &&
             (item?.video.attributes.type === "station" ||
               item?.video.attributes.type === "podcast")
-              ? (item?.video.attributes as {
-                  type: "station" | "podcast";
-                  clip_type?: string | null;
-                  description?: string | null;
-                  image_url?: string | null;
-                  timestamp?: number | null;
-                  title?: string | null;
-                  bucket_name?: string | null;
-                  offer_text?: string | null;
-                  slug?: string | null;
-                  episode_id?: string | null;
-                  podcast_id?: string | null;
-                  station_id?: string | null;
-                })
+              ? {
+                  ...(item?.video.attributes as {
+                    type: "station" | "podcast";
+                    clip_type?: string | null;
+                    description?: string | null;
+                    image_url?: string | null;
+                    timestamp?: number | null;
+                    title?: string | null;
+                    bucket_name?: string | null;
+                    offer_text?: string | null;
+                    slug?: string | null;
+                    episode_id?: string | null;
+                    podcast_id?: string | null;
+                    station_id?: string | null;
+                  }),
+                  image_url: appendImageOps(item?.video.attributes.image_url),
+                }
               : null,
 
           placement_card_layout_id:

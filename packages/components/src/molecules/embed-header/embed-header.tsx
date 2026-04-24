@@ -22,7 +22,7 @@ const embedHeaderVariants = cva(
     defaultVariants: {
       variant: "carousel",
     },
-  }
+  },
 );
 
 type EmbedHeaderPropsType = ComponentProps<"div"> &
@@ -58,7 +58,9 @@ export function EmbedHeader({
         {header.heading && (
           <p
             style={{ color: header.headingTextColor }}
-            className={cn("gencl:text-body-1-semi-bold gencl:line-clamp-1")}
+            className={cn(
+              "heading-title gencl:text-body-1-semi-bold gencl:line-clamp-1",
+            )}
           >
             {header.heading}
           </p>
