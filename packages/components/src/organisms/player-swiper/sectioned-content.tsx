@@ -7,9 +7,9 @@ import { SwiperImplementation } from "./swiper-implementation";
 import { AdInfoType } from "@genuin/components/molecules/feed-player";
 
 const WatchBoundaryOverlay = lazy(() =>
-  import(
-    "../../molecules/feed-player/control-layer/watch-boundary-overlay.js"
-  ).then((m) => ({ default: m.WatchBoundaryOverlay })),
+  import("../../molecules/feed-player/control-layer/watch-boundary-overlay.js").then(
+    (m) => ({ default: m.WatchBoundaryOverlay }),
+  ),
 );
 
 interface SectionedContentProps {
@@ -124,6 +124,8 @@ export function SectionedContent({
               onSlideChange={() => {
                 if (isEndOfFeedReached) setEndOfFeedReached(false);
               }}
+              onSlidePrevTransitionStart={() => track(EventName.SWIPE_UP)}
+              onSlideNextTransitionStart={() => track(EventName.SWIPE_DOWN)}
             >
               {filteredPost.map((post, index) => (
                 <SwiperSlide

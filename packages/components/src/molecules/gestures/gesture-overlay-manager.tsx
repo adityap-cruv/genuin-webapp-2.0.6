@@ -56,7 +56,7 @@ function useGestureOverlayMethods({
         setGestureOverlay(step, true);
       }
     },
-    [gestureOverlays, setGestureOverlay, tapBehavior]
+    [gestureOverlays, setGestureOverlay, tapBehavior],
   );
 
   const hideGestureOverlay = useCallback(
@@ -67,24 +67,26 @@ function useGestureOverlayMethods({
         step === "SWIPE";
 
       if (shouldHide) {
+        const wasVisible = gestureOverlays[step].isVisible;
         setGestureOverlay(step, false);
-        // track event of the swipe up gesture
-        track(
-          step === "SWIPE"
-            ? EventName.SWIPE_UP_GESTURE
-            : EventName.PLAY_PAUSE_GESTURE,
-          {
-            value: true,
-          }
-        );
+        if (wasVisible) {
+          track(
+            step === "SWIPE"
+              ? EventName.SWIPE_UP_GESTURE
+              : EventName.PLAY_PAUSE_GESTURE,
+            {
+              value: true,
+            },
+          );
+        }
       }
     },
-    [setGestureOverlay, tapBehavior]
+    [gestureOverlays, setGestureOverlay, tapBehavior],
   );
 
   const hasGestureBeenShown = useCallback(
     (step: GestureOverlayKeysType) => gestureOverlays[step].hasShown,
-    [gestureOverlays]
+    [gestureOverlays],
   );
 
   const gestureOverlayUI = useMemo(() => {
@@ -121,7 +123,7 @@ function useGestureOverlayMethods({
           if (gesture?.isVisible && gesture?.hasShown) {
             resetGestureOverlay(gestureKey as GestureOverlayKeysType);
           }
-        }
+        },
       );
     } catch (error) {
       console.error("Failed to parse _ks_gestures_:", error);

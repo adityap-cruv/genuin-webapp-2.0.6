@@ -2,15 +2,16 @@ import { lazy, Suspense, useCallback } from "react";
 import { SwiperSlide } from "swiper/react";
 import { SwiperImplementation } from "./swiper-implementation";
 import { AdInfoType } from "@genuin/components/molecules/feed-player";
+import { useAnalytics } from "@genuin/components/context";
 
 const Player = lazy(() =>
   import("./player.js").then((m) => ({ default: m.Player })),
 );
 
 const WatchBoundaryOverlay = lazy(() =>
-  import(
-    "../../molecules/feed-player/control-layer/watch-boundary-overlay.js"
-  ).then((m) => ({ default: m.WatchBoundaryOverlay })),
+  import("../../molecules/feed-player/control-layer/watch-boundary-overlay.js").then(
+    (m) => ({ default: m.WatchBoundaryOverlay }),
+  ),
 );
 
 interface NonSectionedContentProps {
@@ -66,6 +67,8 @@ export function NonSectionedContent({
   onAdFilled,
   onAdPlaybackEnd,
 }: NonSectionedContentProps) {
+  const { track, EventName } = useAnalytics();
+
   return (
     <SwiperImplementation
       initialSlide={startIndex}
@@ -102,6 +105,8 @@ export function NonSectionedContent({
       onSlideChange={() => {
         if (isEndOfFeedReached) setEndOfFeedReached(false);
       }}
+      onSlidePrevTransitionStart={() => track(EventName.SWIPE_UP)}
+      onSlideNextTransitionStart={() => track(EventName.SWIPE_DOWN)}
     >
       {filteredPost.map((post, index) => (
         <SwiperSlide
