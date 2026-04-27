@@ -8,11 +8,13 @@ import {
 import { Button } from "@genuin/ui/button";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { useIHeartPlayback } from "./use-iheart-playback";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import {
   SDKEventEmitter,
   SDKEventName,
 } from "@genuin/components/lib/sdk-event-emitter";
+import { useAnalytics } from "@genuin/components/context";
+import { buildLinkoutsAnalyticsData } from "@genuin/components/organisms";
 
 interface IHeartListenLiveButtonProps {
   className?: string;
@@ -35,6 +37,14 @@ export function IHeartListenLiveButton({
     info,
     videoDetails,
   });
+  const { track, EventName } = useAnalytics();
+  const analyticsEventData = useMemo(
+    () =>
+      buildLinkoutsAnalyticsData({
+        videoDetails,
+      }),
+    [videoDetails],
+  );
 
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [isVisible, setIsVisible] = useState(true);
@@ -143,7 +153,15 @@ export function IHeartListenLiveButton({
         (isStation ? stationId : slug) +
         (isFullEpisode ? "/episode/" + episodeId : ""),
     );
-
+    track(EventName.LINKOUTS_CLICKED, {
+      ...analyticsEventData,
+      linkUrl: url,
+      linkTitle: isGoToEpisode
+        ? "Go to Episode"
+        : isFullEpisode
+          ? "Full Episode"
+          : "Listen Live",
+    });
     window.open(url, "_blank", "noopener,noreferrer");
   }, [videoDetails]);
 

@@ -6,8 +6,10 @@ import {
 } from "@genuin/components/lib/sdk-event-emitter";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { cn } from "@genuin/ui/lib/utils";
-import { useCallback, lazy, Suspense } from "react";
+import { useCallback, lazy, Suspense, useMemo } from "react";
 import { usePlayerContext } from "../../../context";
+import { buildLinkoutsAnalyticsData } from "@genuin/components/organisms";
+import { useAnalytics } from "@genuin/components/context";
 
 const Linkouts = lazy(() =>
   import("@genuin/components/organisms/linkouts/index.js").then((m) => ({
@@ -32,6 +34,16 @@ export const ClipPlayerCTA = ({
   } = useEmbedConfigs();
   const embedDetails = useSafeEmbedContext();
   const { totalVideos, positionIndex } = usePlayerContext();
+  const { track, EventName } = useAnalytics();
+  const analyticsEventData = useMemo(
+    () =>
+      buildLinkoutsAnalyticsData({
+        videoDetails: postDetails.video,
+        totalVideos,
+        positionIndex,
+      }),
+    [postDetails.video, totalVideos, positionIndex],
+  );
 
   const handleCTAClick = useCallback(
     (e: React.MouseEvent) => {
@@ -72,11 +84,21 @@ export const ClipPlayerCTA = ({
           (isFullEpisode ? "/episode/" + episodeId : ""),
       );
 
+      track(EventName.LINKOUTS_CLICKED, {
+        ...analyticsEventData,
+        linkUrl: url,
+        linkTitle: isGoToEpisode
+          ? "Go to Episode"
+          : isFullEpisode
+            ? "Full Episode"
+            : "Listen Live",
+      });
+
       const isExpandViewOpen = embedDetails?.embedEventBus.getContext();
       // if (isExpandViewOpen) {
       //   embedDetails?.goBackToPreviousPlayerType();
       // }
-      window.open(url, "_blank", "noopener,noreferrer",);
+      window.open(url, "_blank", "noopener,noreferrer");
     },
     [postDetails, embedDetails],
   );

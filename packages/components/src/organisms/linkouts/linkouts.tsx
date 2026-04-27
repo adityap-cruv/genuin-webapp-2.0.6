@@ -103,7 +103,7 @@ export function Linkouts({
     staleTime: 1000 * 60, // 1 minute
   });
   const linkouts = initialLinkouts ?? fetchedLinkouts;
- 
+
   const { track, EventName } = useAnalytics();
   const [isVisible, setIsVisible] = useState(showImmediately);
   const [shouldRender, setShouldRender] = useState(
