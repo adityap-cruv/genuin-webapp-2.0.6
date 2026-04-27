@@ -174,6 +174,11 @@ export class FeedContextManager {
     this.playPauseTracker = { ...this.playPauseTracker, ...playPauseTracker };
   }
 
+  /** Returns current tracker snapshot. Used by auto-advance guard to check isFocused and isInView before advancing carousel. */
+  public getPlayPauseTracker() {
+    return this.playPauseTracker;
+  }
+
   /**
    * Returns whether any video is currently playing.
    *
@@ -189,7 +194,7 @@ export class FeedContextManager {
   public isAnyVideoPlaying(): boolean {
     return this.playPauseTracker.isPlaying;
   }
-  
+
   /**
    * Register a new video with initial state
    */

@@ -191,7 +191,12 @@ export function EmbedItem({
     }
 
     const timer = setTimeout(() => {
-      if (isPlaying) goToNextVideo();
+      // Guard against advancing when tab loses focus or embed scrolls out of view —
+      // both cases pause the video but isPlaying alone doesn't capture them.
+      const playPauseTracker = baseContextManager.getPlayPauseTracker();
+      const shouldeMoveToNextVideo =
+        isPlaying && playPauseTracker.isFocused && playPauseTracker.isInView;
+      if (shouldeMoveToNextVideo) goToNextVideo();
     }, moveToNextTime * 1000);
 
     return () => {
@@ -209,6 +214,7 @@ export function EmbedItem({
     moveToNextTime,
     isPlaying,
     postDetails,
+    baseContextManager,
   ]);
 
   return (
