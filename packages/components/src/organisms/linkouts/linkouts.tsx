@@ -12,6 +12,10 @@ import { CTAOnlyCard } from "@genuin/components/molecules/linkouts";
 import { PostDetailsType } from "@genuin/components/react-query/api/feed/schema";
 import { buildLinkoutsAnalyticsData } from "..";
 
+// Module-level set deduplicates tracking across simultaneous instances (embed + expand).
+// Key format: `${linkoutId}:${positionIndex ?? 0}`. Cleared when video goes inactive.
+const trackedKeys = new Set<string>();
+
 export const linkOutVariant = cva("gencl:space-y-4", {
   variants: {
     variant: {
@@ -105,6 +109,7 @@ export function Linkouts({
   const linkouts = initialLinkouts ?? fetchedLinkouts;
 
   const { track, EventName } = useAnalytics();
+  const trackingKey = `${linkoutId ?? 0}:${positionIndex ?? 0}`;
   const [isVisible, setIsVisible] = useState(showImmediately);
   const [shouldRender, setShouldRender] = useState(
     showImmediately || showLinkouts,
@@ -123,12 +128,18 @@ export function Linkouts({
   );
 
   useEffect(() => {
+    if (!isActive) {
+      trackedKeys.delete(trackingKey);
+      return;
+    }
     // Handle immediate display without animation
     if (showImmediately) {
       setShouldRender(true);
       setIsVisible(true);
 
-      if (linkouts && linkouts.length > 0) {
+      if (!trackedKeys.has(trackingKey) && linkouts && linkouts.length > 0) {
+        trackedKeys.add(trackingKey);
+        console.log("linkout called");
         track(EventName.LINKOUTS_VIEWED, {
           ...analyticsEventData,
           linkoutId,
@@ -141,15 +152,21 @@ export function Linkouts({
     if (showLinkouts) {
       setShouldRender(true);
 
+      const shouldTrack = !trackedKeys.has(trackingKey) && !!linkouts && linkouts.length > 0;
+      if (shouldTrack) {
+        trackedKeys.add(trackingKey);
+      }
+
       // Small delay for DOM update before animation
       const timer = setTimeout(() => {
         setIsVisible(true);
 
-        if (linkouts && linkouts.length > 0) {
+        if (shouldTrack) {
+          console.log("linkout viewed 2");
           track(EventName.LINKOUTS_VIEWED, {
             ...analyticsEventData,
             linkoutId,
-            count: linkouts.length,
+            count: linkouts!.length,
           });
         }
       }, 10);
@@ -157,6 +174,7 @@ export function Linkouts({
     } else {
       // Handle hiding with animation
       setIsVisible(false);
+      trackedKeys.delete(trackingKey);
 
       // Remove from DOM after animation completes
       const timer = setTimeout(() => setShouldRender(false), 300);
@@ -166,10 +184,12 @@ export function Linkouts({
     showLinkouts,
     linkouts,
     linkoutId,
+    trackingKey,
     track,
     EventName.LINKOUTS_VIEWED,
     showImmediately,
     analyticsEventData,
+    isActive
   ]);
 
   // Memoize rendered linkouts to avoid unnecessary re-renders
