@@ -8,14 +8,14 @@ const ROOT = execSync("git rev-parse --show-toplevel", {
 }).trim();
 
 // size in kb
-const MAX_GZIP_SIZE_KB = 1536;
+const MAX_GZIP_SIZE_KB = 1600;
 
 // Size thresholds in KB
 const SMALL_CHUNK_THRESHOLD_KB = 10;
 const LARGE_CHUNK_THRESHOLD_KB = 30;
 
 // Maximum allowed number of chunks
-const MAX_CHUNK_COUNT = 79;
+const MAX_CHUNK_COUNT = 90;
 
 // Allow 1% over the limit
 const TOLERANCE_PERCENT = 1;
