@@ -16,6 +16,11 @@ import {
 import { useAnalytics } from "@genuin/components/context";
 import { buildLinkoutsAnalyticsData } from "@genuin/components/organisms";
 
+// Module-level set deduplicates LINKOUTS_VIEWED tracking across simultaneous
+// instances of the IHeart listen-live button (e.g. embed + expand rendered at the
+// same time). Key format: `iheart-btn:${videoId}`. Cleared on unmount.
+const trackedViewedKeys = new Set<string>();
+
 interface IHeartListenLiveButtonProps {
   className?: string;
   variant?: "outlined" | "filled";
@@ -117,6 +122,25 @@ export function IHeartListenLiveButton({
       resizeObserver.disconnect();
     };
   }, [ctaText, isPlaying]);
+
+  // Fire LINKOUTS_VIEWED once when the button first mounts.
+  // Mirrors the module-level Set deduplication pattern in linkouts.tsx so that
+  // simultaneous embed + expand renders of the same video only fire once.
+  useEffect(() => {
+    const trackingKey = `iheart-btn:${videoDetails?.id ?? "unknown"}`;
+
+    if (!trackedViewedKeys.has(trackingKey)) {
+      trackedViewedKeys.add(trackingKey);
+      console.log("listen live", videoDetails?.id);
+      track(EventName.LINKOUTS_VIEWED, {
+        ...analyticsEventData,
+      });
+    }
+
+    return () => {
+      trackedViewedKeys.delete(trackingKey);
+    };
+  }, [videoDetails?.id, track, EventName.LINKOUTS_VIEWED, analyticsEventData]);
 
   const openClipPlayerLink = useCallback(() => {
     const episodeId = videoDetails?.attributes?.episode_id
