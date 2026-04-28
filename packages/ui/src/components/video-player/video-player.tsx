@@ -429,6 +429,12 @@ export const VideoPlayer = memo(function VideoPlayer({
     const player = playerRef.current;
     if (!player) return;
 
+    // Always mark shouldPlay as true before initiating playback.
+    // Without this, the RESUMED IMA event handler in use-ad-player.ts will
+    // see shouldPlay=false and immediately re-pause the ad (e.g. when the user
+    // clicks the AdControls overlay to resume an ad that started while paused).
+    playerStateRef.current.shouldPlay = true;
+
     // If ads manager was destroyed due to fatal error, always play main content
     if (playerStateRef.current.isAdErrored) {
       player
@@ -568,12 +574,12 @@ export const VideoPlayer = memo(function VideoPlayer({
             // debug: true,
             // sdkPath: "https://imasdk.googleapis.com/js/sdkloader/ima3.js",
             enablePreloading: false,
-            customClick: isInExpandView
-              ? {
-                  enabled: true,
-                  label: "Learn More",
-                }
-              : undefined,
+            // customClick: isInExpandView
+            //   ? {
+            //       enabled: true,
+            //       label: "Learn More",
+            //     }
+            //   : undefined,
           }
         : undefined,
     });
