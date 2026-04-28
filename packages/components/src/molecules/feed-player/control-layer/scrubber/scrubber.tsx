@@ -78,7 +78,7 @@ export function Scrubber({
     if (shouldBlockUpdates) return;
 
     const videoProgress = Math.round(
-      (playerTimeState.currentTime / totalDuration) * 100
+      (playerTimeState.currentTime / totalDuration) * 100,
     );
     setScrubberPosition(videoProgress);
   }, [
@@ -108,7 +108,7 @@ export function Scrubber({
         }, 400);
       }, delay);
     },
-    [setShowScrubber]
+    [setShowScrubber],
   );
 
   // Handle user dragging
@@ -129,7 +129,7 @@ export function Scrubber({
       setShowScrubber(true);
       setShowSeeker(true);
     },
-    [pause, brandLayoutType, showScrubber, setShowScrubber, setShowSeeker]
+    [pause, brandLayoutType, showScrubber, setShowScrubber, setShowSeeker],
   );
 
   // Handle when user finishes dragging
@@ -175,7 +175,7 @@ export function Scrubber({
       feedPlayerShouldPlay,
       setShowSeeker,
       resetUserInteraction,
-    ]
+    ],
   );
 
   // Shared skip logic
@@ -186,7 +186,7 @@ export function Scrubber({
       const currentTime = (scrubberPosition / 100) * totalDuration;
       const newTime = Math.max(
         0,
-        Math.min(currentTime + seconds, totalDuration)
+        Math.min(currentTime + seconds, totalDuration),
       );
       const newPosition = Math.round((newTime / totalDuration) * 100);
 
@@ -199,7 +199,7 @@ export function Scrubber({
         userPositionRef.current = null;
       }, 1000);
     },
-    [scrubberPosition, totalDuration, play]
+    [scrubberPosition, totalDuration, play],
   );
 
   const skipForward = useCallback(() => handleSkip(15), [handleSkip]);
@@ -225,12 +225,12 @@ export function Scrubber({
     if (showScrubber) {
       const events = ["mouseup", "touchend", "pointerup"];
       events.forEach((event) =>
-        document.addEventListener(event, handleGlobalEnd)
+        document.addEventListener(event, handleGlobalEnd),
       );
 
       return () => {
         events.forEach((event) =>
-          document.removeEventListener(event, handleGlobalEnd)
+          document.removeEventListener(event, handleGlobalEnd),
         );
       };
     }
@@ -248,16 +248,12 @@ export function Scrubber({
       className={cn(
         "swiper-no-swiping gencl:rounded-none",
         brandLayoutType === "iheart" && "gencl:py-2 gencl:px-1 gencl:min-h-6",
-        className
+        className,
       )}
       spriteUrl={spriteUrl ?? ""}
       showScrubber={showScrubber}
       onValueChange={handleSeek}
-      showSeeker={
-        feedPlayerShouldPlay
-          ? showSeeker
-          : showSeeker && playingState === "PAUSED"
-      }
+      showSeeker={showSeeker}
       playerTimeState={{
         duration: totalDuration,
         currentTime: (scrubberPosition / 100) * totalDuration,

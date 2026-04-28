@@ -160,12 +160,15 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
    */
   const [buttonAction, setButtonAction] = useState<ButtonActionType>();
   const [playingState, setPlayingState] = useState<PlayingStateType>("LOADING");
-
+  // Track globalPlayState from baseEventBus - controls if ANY player can play based on user action
+  const [globalPlayState, setGlobalPlayState] = useState(
+    baseEventBus.getContext().globalPlayingState,
+  );
   /**
    * Whether to show seeker for player or not.
    * Shows when user performs PAUSE action, hides when user performs PLAY action.
    */
-  const [showSeeker, setShowSeeker] = useState(false);
+  const [showSeeker, setShowSeeker] = useState(!globalPlayState);
   /**
    * Whether the user is actively scrubbing/seeking through the video.
    * True when user starts dragging the scrubber, false when released.
@@ -219,10 +222,6 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     [videoId, totalVideos, videoDescription, videoType],
   );
 
-  // Track globalPlayState from baseEventBus - controls if ANY player can play based on user action
-  const [globalPlayState, setGlobalPlayState] = useState(
-    baseEventBus.getContext().globalPlayingState,
-  );
   const [pausedBySystem, setPausedBySystem] = useState(
     baseEventBus.getContext().systemPaused,
   );
@@ -236,6 +235,7 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     function handlePlayingStateChange(_: any, context: BaseEventBusContext) {
       setGlobalPlayState(context.globalPlayingState);
       setFeedPlayerShouldPlay(context.globalPlayingState);
+      setShowSeeker(!context.globalPlayingState);
     }
 
     function handleSystemPauseStateChange(
@@ -903,6 +903,10 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
    */
   const togglePlay = useCallback(
     (byUser: boolean) => {
+      // Focus the video element before toggling to ensure browser routes
+      // the action correctly, even when focus is trapped in another element or iframe.
+      playerRef.current?.getElement().focus({ preventScroll: true });
+
       // If the player is still loading, ignore toggle requests.
       if (isLoading) return;
       if (byUser && video.videoShouldPreview && typeof index === "number") {
@@ -1125,6 +1129,10 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
   // toggleMuted: Toggles the muted state of the player.
   const toggleMuted = useCallback(
     (byUser: boolean, bypassMuteChange?: boolean) => {
+      // Focus the video element before toggling to ensure browser routes
+      // the action correctly, even when focus is trapped in another element or iframe.
+      playerRef.current?.getElement().focus({ preventScroll: true });
+
       // Special handling for video preview mode (hover-to-play feature)
       // if (video.videoShouldPreview && byUser) {
       //   // When a video is in preview mode and user clicks mute/unmute button:
@@ -1165,7 +1173,10 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
       //   return;
       // }
       if (byUser) {
-        baseEventBus.updateContext((ctx) => ({ ...ctx, hasUserInteractedWithMute: true }));
+        baseEventBus.updateContext((ctx) => ({
+          ...ctx,
+          hasUserInteractedWithMute: true,
+        }));
         if (muted) {
           setButtonAction("UNMUTE");
           track(EventName.VIDEO_UNMUTED, {
@@ -1190,7 +1201,10 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     (byUser: boolean) => {
       setMuted(true);
       if (byUser) {
-        baseEventBus.updateContext((ctx) => ({ ...ctx, hasUserInteractedWithMute: true }));
+        baseEventBus.updateContext((ctx) => ({
+          ...ctx,
+          hasUserInteractedWithMute: true,
+        }));
         setButtonAction("MUTE");
         track(EventName.VIDEO_MUTED, {
           ...baseAnalyticsData,
@@ -1205,7 +1219,10 @@ export const PlayerProvider: React.FC<VideoProviderProps> = ({
     (byUser: boolean) => {
       setMuted(false);
       if (byUser) {
-        baseEventBus.updateContext((ctx) => ({ ...ctx, hasUserInteractedWithMute: true }));
+        baseEventBus.updateContext((ctx) => ({
+          ...ctx,
+          hasUserInteractedWithMute: true,
+        }));
         setButtonAction("UNMUTE");
       }
     },

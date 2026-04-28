@@ -261,7 +261,8 @@ export function IHeartControls({
         aria-pressed={muted}
         tabIndex={isVideoWatched ? -1 : 0}
         className="gencl:w-[42px] gencl:h-[42px] gencl:p-0 gencl:flex gencl:items-center gencl:justify-center"
-        onClick={() => {
+        onClick={(e) => {
+          e.stopPropagation();
           toggleMuted(true);
         }}
         title={muted ? "Unmute" : "Mute"}
@@ -283,7 +284,8 @@ export function IHeartControls({
         aria-pressed={playingState !== "PLAYING"}
         tabIndex={isVideoWatched ? -1 : 0}
         className="gencl:w-[42px] gencl:h-[42px] gencl:p-0 gencl:flex gencl:items-center gencl:justify-center"
-        onClick={() => {
+        onClick={(e) => {
+          e.stopPropagation();
           togglePlay(true);
         }}
         title={playingState === "PLAYING" ? "Pause" : "Play"}
