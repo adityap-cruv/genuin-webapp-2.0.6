@@ -6,6 +6,13 @@ export function ThirdPartyScriptProvider({ children }: { children: React.ReactNo
   const analyticsRef = useRef<RudderAnalytics | null>(null)
 
   useEffect(() => {
+    if (
+      window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1'
+    ) {
+      return;
+    }
+
     if (!analyticsRef.current) {
       const analytics = new RudderAnalytics()
       analytics.load(process.env.NEXT_PUBLIC_RUDDERSTACK_KEY, process.env.NEXT_PUBLIC_RUDDERSTACK_URL, {
