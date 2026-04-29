@@ -1,6 +1,6 @@
 // ObservabilityTracker.tsx
 import { useEffect } from "react";
-import { useObservability } from "@genuin/components/hooks/use-observisibility";
+import { useObservability } from "@genuin/components/hooks/embed/use-observisibility";
 import {
   removeObservabilityInterceptor,
   setupObservabilityInterceptor,

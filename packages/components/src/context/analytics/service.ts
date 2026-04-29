@@ -15,7 +15,7 @@ import { EmbedDataType } from "../embed/embed.types";
 
 // Define an interface for the default payload.
 // You can customize this based on your specific default payload structure.
-type DefaultAnalyticsPayload = {
+export type DefaultAnalyticsPayload = {
   user_id: string | undefined;
   gen_user_id: string | undefined;
   brand_id: number | undefined;
@@ -37,6 +37,12 @@ type DefaultAnalyticsPayload = {
   browser_name?: string;
   browser_version?: string;
   device_name?: string;
+  user_city?: string;
+  user_country?: string;
+  user_region?: string;
+  user_location?: string;
+  user_postal?: string;
+  user_timezone?: string;
 };
 
 type DefaultVideoEventPayload = {
@@ -90,7 +96,8 @@ class AnalyticsServiceSingleton {
       }
 
       try {
-        // Create rudderanalytics stub methods to queue events before SDK loads
+        // Stub pattern: assign rudderanalytics as an array so that method calls queue
+        // as [methodName, ...args] entries until the real SDK replaces them on load.
         const rudderanalytics = ((window as any).rudderanalytics = [] as any);
 
         // Methods to stub
@@ -136,7 +143,7 @@ class AnalyticsServiceSingleton {
         };
 
         script.onerror = () => {
-          // Fallback to legacy bundle if modern fails
+          // Modern ES module bundle failed (older browsers); retry with the legacy IIFE bundle.
           const legacyScript = document.createElement("script");
           legacyScript.type = "text/javascript";
           legacyScript.async = true;
@@ -170,8 +177,9 @@ class AnalyticsServiceSingleton {
     embedData?: EmbedDataType,
   ): Promise<void> {
     if (
-      typeof window !== 'undefined' &&
-      (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+      typeof window !== "undefined" &&
+      (window.location.hostname === "localhost" ||
+        window.location.hostname === "127.0.0.1")
     ) {
       return Promise.resolve();
     }
@@ -299,7 +307,8 @@ class AnalyticsServiceSingleton {
         }
       };
 
-      // Defer initialization to be low priority
+      // Defer RudderStack init to idle time so it doesn't block first paint.
+      // 500ms setTimeout is the iOS Safari fallback — it lacks requestIdleCallback.
       if (typeof window !== "undefined" && "requestIdleCallback" in window) {
         window.requestIdleCallback(doInitialize, { timeout: 2000 });
       } else if (typeof window !== "undefined") {
@@ -320,6 +329,7 @@ class AnalyticsServiceSingleton {
     brandDetails?: BrandDetailsConfigType,
     embedData?: EmbedDataType,
   ) {
+    // Only build video payload once; re-running after first init would overwrite brand config values.
     if (this.defaultVideoEventPayload || !brandDetails) return;
     const { web_configs, reactions } = brandDetails;
     const isCarousel = embedData?.style === "carousel";
@@ -342,8 +352,6 @@ class AnalyticsServiceSingleton {
     keyOrObject: string | Partial<DefaultAnalyticsPayload>,
     value?: any,
   ) {
-    const previousBrandId = this.defaultPayload?.brand_id;
-
     // Start with existing payload or minimal base structure
     const currentPayload = this.defaultPayload ?? {
       user_id: undefined,
@@ -364,7 +372,8 @@ class AnalyticsServiceSingleton {
       };
     } else if (typeof keyOrObject === "object" && keyOrObject !== null) {
       // Updating multiple fields via an object - preserve all existing values
-      // Never allow brand_id to be overwritten with undefined/null
+      // Guard: IP-info updates and other partial merges arrive without brand_id.
+      // Preserve the existing brand_id rather than wiping it with undefined/null.
       const incomingBrandId = keyOrObject.brand_id;
       const shouldPreserveBrandId =
         currentPayload.brand_id &&
@@ -439,6 +448,8 @@ class AnalyticsServiceSingleton {
       return;
     }
 
+    // Video config fields (autoplay, tap behaviour, etc.) attach to all video-named events
+    // plus a few that don't follow the "Video" prefix convention.
     const remainingVideoEvents = ["Muted", "Unmuted", "Midpoint"];
     const mergedPayload = {
       ...(this.defaultPayload || {}),
@@ -524,7 +535,7 @@ class AnalyticsServiceSingleton {
       // Ensure initialization is triggered if not already in progress
       if (!this.initializationPromise) {
         if (this.defaultPayload) {
-          this.initialize(this.defaultPayload).catch((error) => {
+          this.initialize(this.defaultPayload).catch((_error) => {
             // console.error(
             //   "[AnalyticsService] Error during initialization after event track:",
             //   error

@@ -7,9 +7,9 @@ import {
 import {
   EmbedEventContextType,
   EmbedEventNameType,
-} from "../context/embed/event-bus";
-import { EventManager } from "../lib/utils/event-manager";
-import { AnalyticsService, EventName } from "../context";
+} from "../../context/embed/event-bus";
+import { EventManager } from "../../lib/utils/event-manager";
+import { AnalyticsService, EventName } from "../../context";
 
 // Lazy imports for observability utilities
 let observabilityUtils:
@@ -42,6 +42,7 @@ export function useObservability({
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
+    // Seed from context so re-mounting the hook doesn't re-fire an already-sent event.
     let isEmbedRenderedFired: boolean =
       embedEventBus.getContext().hasEmittedEmbedRendered;
 
@@ -68,6 +69,7 @@ export function useObservability({
           payload: { thumbnailUrl, videoUrl },
         } = eventData;
 
+        // Skip if URLs are empty (no media to track), or if event already fired (guards against duplicate FEED_LOADED emissions).
         if (
           (videoUrl === "" && thumbnailUrl === "") ||
           isEmbedRenderedFired ||
@@ -170,6 +172,7 @@ export function useObservability({
                 );
 
                 // Check if all resources loaded
+                // Both thumbnail and video must be fully loaded before firing embed_rendered.
                 const allLoaded =
                   updates.videos?.expected === updates.videos?.loaded &&
                   updates.thumbnailImages?.expected ===
@@ -188,7 +191,8 @@ export function useObservability({
 
           observer.observe({ entryTypes: ["resource"] });
 
-          // Failsafe timeout (10 seconds)
+          // Failsafe: fire embed_rendered after 10s even if resources never completed,
+          // so downstream latency metrics aren't blocked indefinitely.
           timeoutRef.current = setTimeout(() => {
             if (
               !isEmbedRenderedFired &&
@@ -263,6 +267,8 @@ export function useObservability({
     }
 
     return () => {
+      // Removes listener by reference identity; no-op lambda used because the original handleVideosLoaded
+      // is scoped inside setupObservability and unavailable here — acceptable since the effect re-runs rarely.
       SDKEventEmitter.off(SDKListenerEventName.FEED_LOADED, () => {});
 
       if (observerRef.current) {

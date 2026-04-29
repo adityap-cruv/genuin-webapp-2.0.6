@@ -6,7 +6,7 @@ import {
   ReactNode,
   useState,
 } from "react";
-import { AnalyticsService } from "./service"; // Import the singleton service
+import { AnalyticsService, DefaultAnalyticsPayload } from "./service"; // Import the singleton service
 import { AnalyticsContext, EventName, ScreenType } from "./context";
 import { EventNameType, EventPayload } from "./types";
 import { useBaseContext } from "../base";
@@ -24,6 +24,8 @@ import { EmitAnalyticsData } from "./emit-analytics-data";
 import { getSdkVersion } from "./utils";
 import { BrandDetailsConfigType } from "@genuin/components/types/brand";
 import { AuthUser } from "@genuin/components/types/auth";
+import { useIpInfo } from "@genuin/components/react-query/api/authentication/ip-info";
+import { useAxiosInstance } from "../axios";
 
 type AnalyticsProviderProps = {
   children: ReactNode;
@@ -62,6 +64,8 @@ export function AnalyticsProvider({
 }: AnalyticsProviderProps) {
   const { isInIframe } = useBaseContext();
   const embedDetails = useSafeEmbedContext();
+  const { data: ipInfo } = useIpInfo();
+  const axiosInstance = useAxiosInstance();
   const pathname = usePathname();
 
   // Holds the current active screen. Defaults to "view_embed".
@@ -81,7 +85,8 @@ export function AnalyticsProvider({
     if (!isWebSDK) AnalyticsService.track(EventName.PAGE_VIEW);
   }, [pathname]);
 
-  // Updated polyfill for requestIdleCallback
+  // Polyfill for requestIdleCallback — falls back to 1ms setTimeout on Safari/older browsers
+  // that lack native idle scheduling, simulating a 50ms budget window.
   const requestIdleCallbackPolyfill =
     typeof requestIdleCallback !== "undefined"
       ? requestIdleCallback
@@ -126,7 +131,8 @@ export function AnalyticsProvider({
         title: document.title,
       };
 
-      // If isWebSDK is true, override with embedData values if available
+      // SDK embeds carry extra context (embed/placement IDs, layout style) not present in webapp.
+      // Build this supplemental payload separately, then merge it into the base initPayload.
       if (isWebSDK && (embedData?.embed_id || embedData?.placement_id)) {
         // Create SDK payload with only non-empty values
         const sdkPayload: Record<string, string | undefined> = {};
@@ -170,6 +176,15 @@ user_longitude
           }
         }
 
+        if (ipInfo) {
+          sdkPayload.user_city = ipInfo.city;
+          sdkPayload.user_region = ipInfo.region;
+          sdkPayload.user_country = ipInfo.country;
+          sdkPayload.user_location = ipInfo.location;
+          sdkPayload.user_postal = ipInfo.postal;
+          sdkPayload.user_timezone = ipInfo.timezone;
+        }
+
         // Add non-empty SDK values to the main payload
         Object.assign(initPayload, sdkPayload);
       }
@@ -195,6 +210,23 @@ user_longitude
       cancelIdleCallbackPolyfill(idleCallbackHandle);
     };
   }, [brandDetails, user, isWebSDK, embedData, pathname]);
+
+  useEffect(() => {
+    if (!ipInfo) return;
+
+    // Transform IP info into the analytics payload format
+    // and merge it into the existing analytics context.
+    const ipPayload: Partial<DefaultAnalyticsPayload> = {
+      user_city: ipInfo.city,
+      user_region: ipInfo.region,
+      user_country: ipInfo.country,
+      user_location: ipInfo.location,
+      user_postal: ipInfo.postal,
+      user_timezone: ipInfo.timezone,
+    };
+
+    AnalyticsService.updatePayload(ipPayload);
+  }, [ipInfo]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -235,6 +267,7 @@ user_longitude
         ...(customPayload || {}),
       };
 
+      // Some events expose only a subset of fields to SDK consumers; filter to allowed keys when defined.
       const allowedKeys: (keyof EventPayload)[] | undefined =
         EmitAnalyticsData[eventName].allowed_keys;
 
@@ -254,6 +287,7 @@ user_longitude
     [],
   );
 
+  // iHeart placements require a separate backend call on video completion for content reporting.
   const sendVideoCompletedToBackend = useCallback(
     (payload?: EventPayload) => {
       if (
@@ -272,6 +306,7 @@ user_longitude
             user_id: user?.id ?? getDeviceId(isInIframe),
             placement_id: embedDetails.embedData.placement_id,
           },
+          axiosInstance,
         });
       }
     },
@@ -287,6 +322,7 @@ user_longitude
 
   const track = useCallback(
     async (eventName: EventNameType, payload?: EventPayload) => {
+      // Capture current screen at call time; getScreen() is stable ref so it's safe to read here.
       await AnalyticsService.track(eventName, {
         ...payload,
         event_record_screen: getScreen(),
