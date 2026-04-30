@@ -148,6 +148,7 @@ export function EmbedItem({
   // Auto-advance logic: Move to next video after moveToNextTime seconds
   useEffect(() => {
     const isGridLayout = config.view.isGrid;
+    const isSponsored = postDetails.video?.cardLayoutId === 7; // Sponsored content is determined by cardLayoutId 7
 
     // Only auto-advance if:
     // 1. This tile is currently active
@@ -162,7 +163,8 @@ export function EmbedItem({
       !moveToNext ||
       embedEventBus.getContext().activePlayerType !== "embed" ||
       isHovering ||
-      postDetails.type === "ads"
+      postDetails.type === "ads" ||
+      isSponsored
     ) {
       return;
     }
