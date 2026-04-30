@@ -22,6 +22,8 @@ import {
   SDKListenerEventName,
 } from "@genuin/components/lib/sdk-event-emitter";
 import { getSdkVersion } from "../analytics/utils";
+import { useDebounceCallback } from "usehooks-ts";
+import { useDeviceDetection } from "@genuin/components/hooks/use-device-detection";
 
 type BaseContextProviderProps = {
   children: React.ReactNode;
@@ -136,6 +138,7 @@ export function BaseContextProvider({
   const instanceId = useMemo(() => {
     return embedDetails?.rootElement?.getAttribute("data-instance-id");
   }, [embedDetails]);
+  const { isIOS } = useDeviceDetection();
 
   // Per-embed play state. Uses baseEventBus (per-embed, created via useMemo) rather
   // than FeedContextManager, which is a page-level singleton whose isPlaying reflects
@@ -307,22 +310,43 @@ export function BaseContextProvider({
     }
   }, [deviceId, isInIframe]);
 
-  // Track window focus state and update userIsFocused in embedEventBus
+  const handleWindowFocus = useDebounceCallback(() => {
+    baseEventBus.emit("userFocusChange", undefined, (currentContext) => ({
+      ...currentContext,
+      userIsFocused: true,
+    }));
+    baseContextManager.setPlayPauseTracker({ isFocused: true });
+  }, 50);
+
+  const handleWindowBlur = useDebounceCallback(() => {
+    baseEventBus.emit("userFocusChange", undefined, (currentContext) => ({
+      ...currentContext,
+      userIsFocused: false,
+    }));
+    baseContextManager.setPlayPauseTracker({ isFocused: false });
+  }, 50);
+
+  // iOS doesn't fire window focus/blur reliably (WebKit restriction + tab suspension).
+  // visibilitychange + pagehide/pageshow are used for iOS instead.
+  // On desktop, window focus/blur also handles DevTools clicks and window switches.
+  // Debounce prevents double firing when multiple events fire together (e.g. on minimize).
   useEffect(() => {
-    const handleWindowFocus = () => {
-      baseEventBus.emit("userFocusChange", undefined, (currentContext) => ({
-        ...currentContext,
-        userIsFocused: true,
-      }));
-      baseContextManager.setPlayPauseTracker({ isFocused: true });
+    // Handles iOS tab switch / app backgrounding (window focus/blur won't fire here)
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        handleWindowBlur();
+      } else {
+        handleWindowFocus();
+      }
     };
 
-    const handleWindowBlur = () => {
-      baseEventBus.emit("userFocusChange", undefined, (currentContext) => ({
-        ...currentContext,
-        userIsFocused: false,
-      }));
-      baseContextManager.setPlayPauseTracker({ isFocused: false });
+    // Handles iOS bfcache — page unloaded or cached during navigation
+    const handlePageHide = () => handleWindowBlur();
+
+    // Handles iOS bfcache restore (e.g. back navigation).
+    // e.persisted avoids double-firing on initial load
+    const handlePageShow = (e: PageTransitionEvent) => {
+      if (e.persisted) handleWindowFocus();
     };
 
     const handlePlayFromOutside = () => {
@@ -342,16 +366,22 @@ export function BaseContextProvider({
       baseContextManager.setPlayPauseTracker({ isPlaying: false });
     };
 
-    const handleMuteFromOutside = () => {
-      setMuted(true);
-    };
+    const handleMuteFromOutside = () => setMuted(true);
+    const handleUnmuteFromOutside = () => setMuted(false);
 
-    const handleUnmuteFromOutside = () => {
-      setMuted(false);
-    };
+    if (isIOS) {
+      // iOS: skip window focus/blur entirely, use visibilitychange + pagehide/pageshow
+      document.addEventListener("visibilitychange", handleVisibilityChange);
+      window.addEventListener("pagehide", handlePageHide);
+      window.addEventListener("pageshow", handlePageShow);
+    } else {
+      // Desktop: window focus/blur covers DevTools clicks + app/window switches.
+      // visibilitychange is added as a safety net for tab switches.
+      window.addEventListener("focus", handleWindowFocus);
+      window.addEventListener("blur", handleWindowBlur);
+      document.addEventListener("visibilitychange", handleVisibilityChange);
+    }
 
-    window.addEventListener("focus", handleWindowFocus);
-    window.addEventListener("blur", handleWindowBlur);
     SDKEventEmitter.on(SDKListenerEventName.PLAYER_PLAY, handlePlayFromOutside);
     SDKEventEmitter.on(
       SDKListenerEventName.PLAYER_PAUSE,
@@ -364,8 +394,24 @@ export function BaseContextProvider({
     );
 
     return () => {
-      window.removeEventListener("focus", handleWindowFocus);
-      window.removeEventListener("blur", handleWindowBlur);
+      handleWindowFocus.cancel();
+      handleWindowBlur.cancel();
+
+      if (isIOS) {
+        document.removeEventListener(
+          "visibilitychange",
+          handleVisibilityChange,
+        );
+        window.removeEventListener("pagehide", handlePageHide);
+        window.removeEventListener("pageshow", handlePageShow);
+      } else {
+        window.removeEventListener("focus", handleWindowFocus);
+        window.removeEventListener("blur", handleWindowBlur);
+        document.removeEventListener(
+          "visibilitychange",
+          handleVisibilityChange,
+        );
+      }
 
       SDKEventEmitter.off(
         SDKListenerEventName.PLAYER_PLAY,
@@ -384,7 +430,7 @@ export function BaseContextProvider({
         handleUnmuteFromOutside,
       );
     };
-  }, [baseEventBus]);
+  }, [baseEventBus, handleWindowFocus, handleWindowBlur]);
 
   useEffect(() => {
     if (!embedDetails) return;
