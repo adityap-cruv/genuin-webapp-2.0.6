@@ -63,7 +63,7 @@ export function FeedContextProvider({
       const playerProgress = Math.round((currentTime / duration) * 100)
       const videoId = videos[currentIndex]?.video.id ?? ''
       setCurrentIndex((currentIndex) => {
-        const eventName = newIndex < currentIndex ? 'Swipe Down' : 'Swipe Up'
+        const eventName = newIndex < currentIndex ? 'Swipe Previous' : 'Swipe Next'
         const properties = {
           content_category: 'loop',
           content_id: videoId,

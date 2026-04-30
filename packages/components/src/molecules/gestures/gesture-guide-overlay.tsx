@@ -70,7 +70,7 @@ export function LazyGestureGuideOverlay({
   return (
     <div
       className={cn(
-        "gencl:pointer-events-none gencl:z-[1000] gencl:h-full gencl:w-full gencl:bg-black/40 gencl:backdrop-blur-sm sm:gencl:absolute"
+        "gencl:pointer-events-none gencl:z-[1000] gencl:h-full gencl:w-full gencl:bg-black/40 gencl:backdrop-blur-sm sm:gencl:absolute",
       )}
       {...props}
     >
@@ -78,7 +78,7 @@ export function LazyGestureGuideOverlay({
         className={cn(
           "gencl:flex gencl:h-full gencl:w-full gencl:flex-col gencl:items-center gencl:justify-center gencl:gap-2",
           gestureStep === "SWIPE" && "sm:gencl:justify-end sm:gencl:pb-20",
-          className
+          className,
         )}
       >
         {isMobile ? (
