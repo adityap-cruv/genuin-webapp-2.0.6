@@ -399,7 +399,7 @@ function EmbedPlayer({
             />
           </Suspense>
         )}
-        {isSponsored && (
+        {isSponsored && !isAdFilled && (
           <div className="gencl:absolute gencl:top-2 gencl:left-2 gencl:bg-black/40 gencl:h-8 gencl:z-50 gencl:px-2 gencl:rounded-[50px] gencl:text-white gencl:flex-center">
             <p className="gencl:text-body-1-normal">Sponsored</p>
           </div>

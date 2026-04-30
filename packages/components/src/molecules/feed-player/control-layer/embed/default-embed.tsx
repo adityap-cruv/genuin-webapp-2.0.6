@@ -33,7 +33,7 @@ export const DefaultEmbed: FC<ControlLayerPropsType> = ({
       <div className="gencl:absolute gencl:bottom-0 gencl:p-2 gencl:space-y-2 gencl:w-full">
         {config.links.showLinkInside &&
           isActive &&
-          postDetails.video.linkoutId && (
+          postDetails.video?.linkoutId && (
             <Suspense fallback={null}>
               <Linkouts
                 variant="embed"
@@ -51,7 +51,7 @@ export const DefaultEmbed: FC<ControlLayerPropsType> = ({
             valueClassName="gencl:text-white!"
             stats={{
               Views: {
-                value: postDetails.video.viewCount,
+                value: postDetails.video?.viewCount ?? 0,
                 icon: <PlayIcon theme="dark" size="md" />,
               },
             }}
@@ -59,11 +59,11 @@ export const DefaultEmbed: FC<ControlLayerPropsType> = ({
         )}
       </div>
 
-      {isActive && (
+      {isActive && postDetails.owner?.userName && (
         <>
           <Controls
             variant="embed"
-            ownerInfo={{ userName: postDetails.owner.userName }}
+            ownerInfo={{ userName: postDetails.owner?.userName }}
             showUserName={config.community.showUserName}
           />
         </>
