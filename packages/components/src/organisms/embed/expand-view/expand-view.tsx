@@ -118,6 +118,7 @@ export function EmbedExpandView({
   const {
     brand: { isIndianExpress },
     view: { isPlacementView },
+    expandViewConfig: { defaultAudioUnmute },
   } = useEmbedConfigs();
   const { isMobile, isDesktop } = useDeviceDetectMediaQuery();
   const viewportHeight = useViewportHeight();
@@ -415,7 +416,11 @@ export function EmbedExpandView({
 
   // Handle mute state and global playing state when entering expand view
   useEffect(() => {
-    if (brandLayoutType === "iheart") {
+    if (defaultAudioUnmute) {
+      setTimeout(() => {
+        setMuted(false);
+      }, 300);
+    } else if (brandLayoutType === "iheart") {
       if (!baseEventBus.getContext().hasUserInteractedWithMute) {
         setTimeout(() => {
           setMuted(false);

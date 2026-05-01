@@ -394,6 +394,10 @@ export function useEmbedConfigs() {
     return {
       enable: !isDisabled && (customization?.is_popup_view ?? true),
       isShowByDefault: !isDisabled && !!customization?.is_show_popup_by_default,
+      defaultAudioUnmute:
+        embedData?.placement_id === "69f47831e964b815fc224b52" ||
+        embedData?.placement_id === "69f47bbbe964b815fc224dd2" ||
+        embedData?.placement_id === "69f47c44f1feb6b63d575df9",
     };
   }, [customization, embedData?.disable_expand_view]);
 
