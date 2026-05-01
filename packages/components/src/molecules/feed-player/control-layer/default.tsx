@@ -50,6 +50,7 @@ export function Default({
   editClipVideo,
   editCoverImage,
   expandViewDetails = true,
+  containerWidth,
   ...restProps
 }: ControlLayerPropsType) {
   const { brandDetails, playbackSpeed } = useBaseContext();
@@ -145,6 +146,8 @@ export function Default({
     },
     [muted, togglePlay, toggleMuted],
   );
+
+  const hidePlayerControls = (containerWidth ?? 0) < 200;
 
   switch (brandLayoutType) {
     case "iheart":
@@ -279,6 +282,7 @@ export function Default({
               )}
               variant={isSectioned ? "sectioned" : "default"}
               isSponsored={postDetails.video.videoLayoutId === 6}
+              hidePlayerControls={hidePlayerControls}
             />
 
             {/* this is wallet badge for wallet. */}

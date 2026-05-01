@@ -17,6 +17,7 @@ export type ControlLayerPropsType = ComponentProps<"div"> & {
   enableExpand?: boolean;
   expandViewDetails?: boolean;
   layoutType?: "responsiveness" | BrandType;
+  containerWidth?: number;
   editClipVideo?: (url: string) => void;
   editCoverImage?: (url: string) => void;
 } & ExpandViewCallbacks &

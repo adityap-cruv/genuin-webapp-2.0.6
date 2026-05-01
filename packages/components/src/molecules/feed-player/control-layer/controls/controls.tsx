@@ -80,9 +80,12 @@ export const Controls = memo(function Controls({
   onClick,
   enableExpand,
   isSponsored,
+  hidePlayerControls = false,
   ...restProps
 }: ControlButtonsPropsType & {
   isSponsored?: boolean;
+  /** When true, hides play/mute/expand controls while keeping the sponsored badge visible. */
+  hidePlayerControls?: boolean;
 }) {
   const { isMobile } = useDeviceDetectMediaQuery();
   const { showExpandView, toggleExpandView } = usePlayerContext();
@@ -113,10 +116,7 @@ export const Controls = memo(function Controls({
       }}
       {...restProps}
     >
-      {/**
-       * Show the animated icons only if it's not an embed
-       */}
-      {!isEmbed && (
+      {!isEmbed && !hidePlayerControls && (
         <div className="gencl:flex gencl:items-center gencl:gap-4 gencl:w-full">
           {showPlayButton && (
             <AnimatedPlayButton shouldAnimate={shouldAnimatePlayPause} />
@@ -127,7 +127,7 @@ export const Controls = memo(function Controls({
         </div>
       )}
 
-      {!isMobile && !isEmbed && enableExpand && !isSponsored && (
+      {!isMobile && !isEmbed && !hidePlayerControls && enableExpand && !isSponsored && (
         <div
           onClick={toggleExpandView}
           className="gencl:flex gencl:h-12 gencl:w-12 gencl:cursor-pointer gencl:flex-shrink-0 gencl:items-center gencl:justify-center gencl:rounded-full gencl:bg-black/40"
@@ -140,6 +140,7 @@ export const Controls = memo(function Controls({
         </div>
       )}
       {isMobile &&
+        !hidePlayerControls &&
         showCloseButton &&
         getSearchParams("feed") !== "1" &&
         !pathname.includes("/video") &&
@@ -163,7 +164,7 @@ export const Controls = memo(function Controls({
         </div>
       )}
 
-      {isMobile && isEmbed && showExpandView && !isSponsored && (
+      {isMobile && isEmbed && !hidePlayerControls && showExpandView && !isSponsored && (
         <div
           onClick={toggleExpandView}
           className="gencl:flex gencl:h-12 gencl:w-12 gencl:cursor-pointer gencl:flex-shrink-0 gencl:items-center gencl:justify-center gencl:rounded-full gencl:bg-black/40"

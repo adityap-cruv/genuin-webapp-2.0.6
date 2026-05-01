@@ -316,6 +316,8 @@ function EmbedPlayer({
 
   const isSponsored = postDetails.video?.cardLayoutId === 7; // Sponsored content is determined by cardLayoutId 7
 
+  const hidePlayerControls = itemSize.width < 200;
+
   const isSheetExpanded =
     isNonDesktop &&
     isActive &&
@@ -387,7 +389,7 @@ function EmbedPlayer({
             />
           </Suspense>
         </div>
-        {!isAdFilled && (
+        {!isAdFilled && (isSponsored ? !hidePlayerControls : true) && (
           <Suspense fallback={null}>
             <ControlLayer
               variant={config.view.isPlacementView ? "placement" : "embed"}
@@ -397,6 +399,7 @@ function EmbedPlayer({
               onClick={handleClickOnEmbedTile}
               onCommentCountChange={undefined}
               layoutType={layoutType}
+              containerWidth={itemSize.width}
             />
           </Suspense>
         )}
