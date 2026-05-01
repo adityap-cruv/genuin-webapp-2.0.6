@@ -27,7 +27,7 @@ export const TedEmbed: FC<ControlLayerPropsType> = ({
 
       <div className="gencl:px-3 gencl:py-4 gencl:absolute gencl:space-y-2 gencl:bottom-0 gencl:bg-gradient-to-t gencl:from-black/80 gencl:to-transparent">
         <ReadMore
-          text={postDetails.video.description}
+          text={postDetails.video?.description}
           position="overlay"
           viewLessText=""
           viewMoreText=""
@@ -43,12 +43,12 @@ export const TedEmbed: FC<ControlLayerPropsType> = ({
         >
           <Avatar
             size="xs"
-            imageUrl={postDetails.community.profileImage ?? ""}
+            imageUrl={postDetails.community?.profileImage ?? ""}
             isAvatar={false}
-            alt={postDetails.community.name ?? ""}
+            alt={postDetails.community?.name ?? ""}
           />
           <p className="gencl:text-white! gencl:text-body-1-bold gencl:line-clamp-1 gencl:tracking-[-0.21px]! gencl:leading-[130%]!">
-            {postDetails.community.name}
+            {postDetails.community?.name}
           </p>
         </div>
       </div>

@@ -56,6 +56,7 @@ const Linkouts = lazy(() =>
 ) as React.ComponentType<any>;
 
 import { useEmbedManagerContext } from "../embed/context";
+import { EmbedMuteButton } from "@genuin/components/molecules/feed-player/control-layer/controls/embed";
 
 /**
  * Helper function to extract the most appropriate URL from linkouts based on priority:
@@ -402,6 +403,11 @@ function EmbedPlayer({
         {isSponsored && !isAdFilled && (
           <div className="gencl:absolute gencl:top-2 gencl:left-2 gencl:bg-black/40 gencl:h-8 gencl:z-50 gencl:px-2 gencl:rounded-[50px] gencl:text-white gencl:flex-center">
             <p className="gencl:text-body-1-normal">Sponsored</p>
+          </div>
+        )}
+        {isAdFilled && (
+          <div className="gencl:absolute gencl:top-2 gencl:right-2">
+            <EmbedMuteButton size="xs" />
           </div>
         )}
       </div>
