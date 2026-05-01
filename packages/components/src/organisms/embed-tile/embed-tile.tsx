@@ -336,6 +336,9 @@ function EmbedPlayer({
         isSheetExpanded && "gencl:flex-col gencl:justify-start",
         showIheartBar && !isSheetExpanded && "gencl:flex-col",
       )}
+      {...(!isAdFilled && isSponsored && hidePlayerControls
+        ? { onClick: handleClickOnEmbedTile }
+        : {})}
     >
       <div
         className="gencl:w-full gencl:relative gencl:transition-all gencl:duration-300 gencl:ease-in-out"
