@@ -331,35 +331,38 @@ export function calculateMaxCharacterLimit(
     let resultString = "";
     let lastFitString = "";
 
-    // Helper: checks if current text fits within maxLines
-    // const fitsInLines = (text: string): boolean => {
-    //   textSpan.textContent = text + suffix;
-    //   const range = document.createRange();
-    //   range.selectNodeContents(textSpan);
-    //   const rects = range.getClientRects();
-    //   const lineCount = rects.length;
-    //   range.detach();
-    //   return lineCount <= maxLines;
-    // };
-
     // Helper: checks if current text fits within maxLines using scrollHeight
     const fitsInLines = (text: string): boolean => {
-      textSpan.textContent = text;
+      const isSafari = /^((?!chrome|android).)*safari/i.test(
+        navigator.userAgent,
+      );
 
-      // Force reflow for Safari
-      container.offsetHeight;
+      if (isSafari) {
+        textSpan.textContent = text;
 
-      // Use scrollHeight method (more reliable cross-browser)
-      const lineHeight = parseFloat(computedStyle.lineHeight);
-      const actualLineHeight = isNaN(lineHeight)
-        ? parseFloat(computedStyle.fontSize) * 1.2
-        : lineHeight;
+        // Force reflow for Safari
+        container.offsetHeight;
 
-      const maxHeight = actualLineHeight * maxLines;
-      const currentHeight = container.scrollHeight;
+        // Use scrollHeight method (more reliable cross-browser)
+        const lineHeight = parseFloat(computedStyle.lineHeight);
+        const actualLineHeight = isNaN(lineHeight)
+          ? parseFloat(computedStyle.fontSize) * 1.2
+          : lineHeight;
 
-      // Add small tolerance for Safari's sub-pixel rendering
-      return currentHeight <= maxHeight + 1;
+        const maxHeight = actualLineHeight * maxLines;
+        const currentHeight = container.scrollHeight;
+
+        // Add small tolerance for Safari's sub-pixel rendering
+        return currentHeight <= maxHeight + 1;
+      } else {
+        textSpan.textContent = text + suffix;
+        const range = document.createRange();
+        range.selectNodeContents(textSpan);
+        const rects = range.getClientRects();
+        const lineCount = rects.length;
+        range.detach();
+        return lineCount <= maxLines;
+      }
     };
 
     // Iteratively append text until overflow occurs
@@ -382,13 +385,13 @@ export function calculateMaxCharacterLimit(
             charIndex === 0 && i > 0
               ? `${previousString}${char}`
               : `${resultString}${char}`;
-          console.log({testStringWithChar,resultString});
+          console.log({ testStringWithChar, resultString });
 
           if (fitsInLines(testStringWithChar)) {
             resultString = testStringWithChar;
             lastFitString = resultString;
           } else {
-            console.log({resultString,textContent});
+            console.log({ resultString, textContent });
             return resultString.length === textContent.length
               ? resultString.length
               : resultString.length - viewMoreText.length;
